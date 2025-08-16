@@ -1,0 +1,7 @@
+// Add this to your package.json "scripts":
+{
+  "scripts": {
+    "prebuild": "node --experimental-modules ./scripts/prebuild-check.mjs",
+    "build": "vite build"
+  }
+}
