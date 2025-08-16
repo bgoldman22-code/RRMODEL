@@ -9,6 +9,38 @@ const HOTCOLD_CAP = 0.06;
 const MIN_PICKS = 12;
 const MAX_PER_GAME = 2;
 
+
+// Fallback "Why" explainer — shows only factors actually applied by the model.
+function explainRow({
+  baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null,
+  pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null
+}){
+  const pts = [];
+  if (typeof baseProb === 'number') pts.push(`model ${(baseProb*100).toFixed(1)}%`);
+  if (typeof hotBoost === 'number' && hotBoost !== 1){
+    const sign = hotBoost>1 ? '+' : '−';
+    pts.push(`hot/cold ${sign}${Math.abs((hotBoost-1)*100).toFixed(0)}%`);
+  }
+  if (typeof calScale === 'number' && calScale !== 1){
+    const sign = calScale>1 ? '+' : '−';
+    pts.push(`calibration ${sign}${Math.abs((calScale-1)*100).toFixed(0)}%`);
+  }
+  if (pitcherName){
+    pts.push(`vs ${pitcherName}${pitcherHand?` (${String(pitcherHand).toUpperCase()})`:''}`);
+  }
+  if (typeof parkHR === 'number' && parkHR !== 1){
+    const sign = parkHR>1 ? '+' : '−';
+    pts.push(`park HR ${sign}${Math.abs((parkHR-1)*100).toFixed(0)}%`);
+  }
+  if (typeof weatherHR === 'number' && weatherHR !== 1){
+    const sign = weatherHR>1 ? '+' : '−';
+    pts.push(`weather HR ${sign}${Math.abs((weatherHR-1)*100).toFixed(0)}%`);
+  }
+  if (oddsAmerican != null){
+    pts.push(`odds ${oddsAmerican>=0?'+':''}${Math.round(oddsAmerican)}`);
+  }
+  return pts.join(' • ');
+}
 function fmtET(date=new Date()){
   return new Intl.DateTimeFormat("en-US", { timeZone:"America/New_York", month:"short", day:"2-digit", year:"numeric"}).format(date);
 }
@@ -179,6 +211,14 @@ export default function MLB(){
         </button>
       </div>
       {message && <div className="mt-3 text-red-700">{message}</div>}
+        {typeof rrUnits === 'number' && rrCombos>0 && (
+          <div style={{margin:'8px 0', padding:'8px', border:'1px solid #eee', borderRadius:8}}>
+            <strong>RR EV (x2 & x3, $100 total):</strong>{" "}
+            {rrUnits>0 ? "+" : ""}{rrUnits.toFixed(2)}u{" "}
+            <span style={{opacity:0.6}}>(across {rrCombos} combos)</span>
+          </div>
+        )}
+        
       <div className="mt-2 text-sm text-gray-600">
         Date (ET): {meta.date} • Candidates: {meta.totalCandidates||0} • Using OddsAPI: {meta.usedOdds ? "yes":"no"} • Calibration scale: {meta.calibrationScale?.toFixed(2)}
       </div>
