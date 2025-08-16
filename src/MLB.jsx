@@ -6,18 +6,6 @@ import { normName, buildWhy } from "./utils/why.js";
 const CAL_LAMBDA = 0.25;
 const HOTCOLD_CAP = 0.06;
 const MIN_PICKS = 12;
-// Fallback Why explainer
-function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null }){
-  const pts = [];
-  if (typeof baseProb==='number') pts.push(`model ${(baseProb*100).toFixed(1)}%`);
-  if (typeof hotBoost==='number' && hotBoost!==1){ const sign=hotBoost>1?'+':'−'; pts.push(`hot/cold ${sign}${Math.abs((hotBoost-1)*100).toFixed(0)}%`); }
-  if (typeof calScale==='number' && calScale!==1){ const sign=calScale>1?'+':'−'; pts.push(`calibration ${sign}${Math.abs((calScale-1)*100).toFixed(0)}%`); }
-  if (pitcherName){ pts.push(`vs ${pitcherName}${pitcherHand?` (${String(pitcherHand).toUpperCase()})`:''}`); }
-  if (typeof parkHR==='number' && parkHR!==1){ const sign=parkHR>1?'+':'−'; pts.push(`park HR ${sign}${Math.abs((parkHR-1)*100).toFixed(0)}%`); }
-  if (typeof weatherHR==='number' && weatherHR!==1){ const sign=weatherHR>1?'+':'−'; pts.push(`weather HR ${sign}${Math.abs((weatherHR-1)*100).toFixed(0)}%`); }
-  if (oddsAmerican!=null){ pts.push(`odds ${oddsAmerican>=0?'+':''}${Math.round(oddsAmerican)}`); }
-  return pts.join(' • ');
-}
 const MAX_PER_GAME = 2;
 
 function fmtET(date=new Date()){
@@ -137,25 +125,16 @@ export default function MLB(){
         const ev = evFromProbAndOdds(p, american);
 
         rows.push({
-  name: c.name,
-  team: c.team,
-  game: c.gameId || c.game || c.opp || "",
-  batterId: c.batterId,
-  p_model: p,
-  american,
-  ev,
-  why: explainRow({
-    baseProb: Number(c.baseProb ?? c.prob ?? 0),
-    hotBoost: hcMul,
-    calScale,
-    oddsAmerican: american,
-    pitcherName: c.pitcherName ?? null,
-    pitcherHand: c.pitcherHand ?? null,
-    parkHR: c.parkHR ?? null,
-    weatherHR: c.weatherHR ?? null
-  })
-});
-}
+          name: c.name,
+          team: c.team,
+          game: c.gameId || c.game || c.opp || "",
+          batterId: c.batterId,
+          p_model: p,
+          american,
+          ev,
+          why: explainRow( baseProb:Number(c.baseProb||c.prob||0), hotBoost:hcMul, calScale , pitcherName: r.pitcherName || r.pname || null, pitcherHand: r.pitcherHand || r.phand || null, parkHR: r.parkHR ?? null, weatherHR: r.weatherHR ?? null),
+        });
+      }
 
       rows.sort((a,b)=> b.ev - a.ev);
 
