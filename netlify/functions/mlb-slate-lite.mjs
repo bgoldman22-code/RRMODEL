@@ -1,14 +1,11 @@
 import { getStore } from '@netlify/blobs';
+import { pitcherHRMultiplier } from './lib/hrPitcherMultiplier.js';
 import { parkHRFactorForAbbrev } from './lib/parkFactors.js';
 import { weatherHRMultiplier } from './lib/weatherMultiplier.js';
-import { pitcherHRMultiplier } from './lib/hrPitcherMultiplier.js';
+
 /**
  * netlify/functions/mlb-slate-lite.mjs
- * Build a daily slate of MLB batter candidates from the free MLB StatsAPI.
- * Output shape: { candidates: [ { name, team, opp, gameId, batterId, seasonHR, seasonPA, baseProb }, ... ] }
- * Notes:
- * - No lineup gating (uses active rosters)
- * - Season-based HR/PA with small prior; per-game HR prob = 1 - (1 - p_pa)^expPA (expPA~4.1)
+ * Rebuilt clean ESM file (no syntax traps). Computes candidates with pitcher + park + weather multipliers.
  */
 const SCHEDULE = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=";
 const TEAMS    = (season)=> `https://statsapi.mlb.com/api/v1/teams?sportId=1&season=${season}`;
@@ -17,7 +14,39 @@ const PEOPLE   = (ids, season)=> `https://statsapi.mlb.com/api/v1/people?personI
 
 function ok(data){ return new Response(JSON.stringify(data), { headers:{ "content-type":"application/json" }}); }
 async function fetchJSON(url){
-  const r = await fetch(url, { headers:{ "accept":"application/json" }
+  const r = await fetch(url, { headers:{ "accept":"application/json" }});
+  if(!r.ok) throw new Error(`http ${r.status}`);
+  return r.json();
+}
+function seasonFromET(d=new Date()){
+  const et = new Intl.DateTimeFormat("en-CA", { timeZone:"America/New_York", year:"numeric" }).format(d);
+  return Number(et) || (new Date().getFullYear());
+}
+function dateET(d=new Date()){
+  return new Intl.DateTimeFormat("en-CA", { timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
+}
+
+async function getProbablePitcherMap(games){
+  const out = new Map(); // teamId -> { pitcherId, name, hand }
+  for(const g of (games||[])){
+    const gamePk = g?.gamePk;
+    if(!gamePk) continue;
+    try{
+      const feed = await fetchJSON(`https://statsapi.mlb.com/api/v1.1/game/${gamePk}/feed/live`);
+      const homeId = g?.teams?.home?.team?.id;
+      const awayId = g?.teams?.away?.team?.id;
+      const probHome = feed?.gameData?.probablePitchers?.home?.id || g?.teams?.home?.probablePitcher?.id;
+      const probAway = feed?.gameData?.probablePitchers?.away?.id || g?.teams?.away?.probablePitcher?.id;
+      const homeName = feed?.gameData?.probablePitchers?.home?.fullName || null;
+      const awayName = feed?.gameData?.probablePitchers?.away?.fullName || null;
+      const homeHand = feed?.liveData?.boxscore?.teams?.home?.players?.[probHome?`ID${probHome}`:'']?.person?.pitchHand?.code || null;
+      const awayHand = feed?.liveData?.boxscore?.teams?.away?.players?.[probAway?`ID${probAway}`:'']?.person?.pitchHand?.code || null;
+      if(homeId && probAway) out.set(homeId, { pitcherId:probAway, name:awayName, hand:awayHand });
+      if(awayId && probHome) out.set(awayId, { pitcherId:probHome, name:homeName, hand:homeHand });
+    }catch{}
+  }
+  return out;
+}
 
 async function extractWeatherForGame(game){
   try{
@@ -25,14 +54,12 @@ async function extractWeatherForGame(game){
     if(!gamePk) return { tempF:null, windOutMph:null, precip:false };
     const feed = await fetchJSON(`https://statsapi.mlb.com/api/v1.1/game/${gamePk}/feed/live`);
     const w = feed?.gameData?.weather || {};
-    // MLB feed exposes temp in F and wind as "10 mph, Out to CF" text sometimes.
     const tempF = typeof w?.temp === 'number' ? w.temp : null;
     let windOutMph = null;
     if(typeof w?.windSpeed === 'number'){
-      // If direction string suggests "out to center", treat positive; if "in from center", negative.
       const dir = String(w?.windDirection||'').toLowerCase();
       const towardCF = /out.*center|out.*cf/.test(dir);
-      const fromCF = /in.*center|in.*cf/.test(dir);
+      const fromCF   = /in.*center|in.*cf/.test(dir);
       windOutMph = towardCF ? w.windSpeed : (fromCF ? -w.windSpeed : 0);
     }
     const precip = String(w?.condition||'').toLowerCase().includes('rain');
@@ -42,69 +69,39 @@ async function extractWeatherForGame(game){
   }
 }
 
-async function getProbablePitcherMap(games){
-  const out = new Map();
-  for (const g of (games||[])) {
-    const gamePk = g?.gamePk;
-    if(!gamePk) continue;
-    try{
-      const feed = await fetchJSON(`https://statsapi.mlb.com/api/v1.1/game/${gamePk}/feed/live`);
-      const homeId = g?.teams?.home?.team?.id;
-      const awayId = g?.teams?.away?.team?.id;
-      const probHome = feed?.gameData?.probablePitchers?.home?.id || g?.teams?.home?.probablePitcher?.id;
-      const probAway = feed?.gameData?.probablePitchers?.away?.id || g?.teams?.away?.probablePitcher?.id;
-      if(homeId && probAway) out.set(homeId, { pitcherId:probAway, name: feed?.gameData?.probablePitchers?.away?.fullName||null, hand: feed?.liveData?.boxscore?.teams?.away?.players?.[`ID${probAway}`]?.person?.pitchHand?.code||null });
-      if(awayId && probHome) out.set(awayId, { pitcherId:probHome, name: feed?.gameData?.probablePitchers?.home?.fullName||null, hand: feed?.liveData?.boxscore?.teams?.home?.players?.[`ID${probHome}`]?.person?.pitchHand?.code||null });
-    }catch{ /* ignore */ }
-  }
-  return out;
-}
-
-});
-  if(!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
-  return r.json();
-}
-function todayISOET(){
-  const d = new Date();
-  return new Intl.DateTimeFormat("en-CA", { timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
-}
-
 export default async (req) => {
   try{
     const url = new URL(req.url);
-    const date = url.searchParams.get("date") || todayISOET();
-    const season = Number(url.searchParams.get("season")) || new Date().getUTCFullYear();
-    const expPA = Number(url.searchParams.get("expPA")) || 4.1;
+    const date = url.searchParams.get("date") || dateET(new Date());
+    const season = Number(url.searchParams.get("season")) || seasonFromET(new Date());
     const priorPA = Number(url.searchParams.get("priorPA")) || 60;
-    const priorHRrate = Number(url.searchParams.get("priorHR")) || 0.04; // ~ league HR/PA
-    const capProb = Number(url.searchParams.get("cap")) || 0.40; // cap single-game HR prob at 40%
+    const priorHRrate = Number(url.searchParams.get("priorHR")) || 0.04;
+    const expPA = Number(url.searchParams.get("expPA")) || 4.1;
+    const capProb = Number(url.searchParams.get("cap")) || 0.40;
 
     // 1) Schedule
     const sched = await fetchJSON(SCHEDULE + encodeURIComponent(date));
     const games = (sched?.dates?.[0]?.games)||[];
-    if(games.length===0) return ok({ date, candidates: [], games:0 });
+    if(games.length===0) return ok({ ok:true, date, games:0, candidates:[] });
 
-    // 2) Teams & abbrev
+    // 2) Teams map
     const teamsJ = await fetchJSON(TEAMS(season));
     const abbrevById = new Map();
-    const nameById = new Map();
     for(const t of (teamsJ?.teams||[])){
       abbrevById.set(t.id, t.abbreviation || t.teamCode || t.clubName || t.name);
-      nameById.set(t.id, t.name);
     }
 
-    // 3) Per-game mapping: teamId -> { oppId, gameId, home/away }
+    // 3) Build team -> opp mapping
     const mapTeamToGame = new Map();
     for(const g of games){
       const home = g?.teams?.home?.team?.id;
       const away = g?.teams?.away?.team?.id;
       if(!home || !away) continue;
-      const gameId = `${abbrevById.get(away)||"AWY"}@${abbrevById.get(home)||"HOM"}`;
-      mapTeamToGame.set(home, { oppId: away, gameId, side:"home" });
-      mapTeamToGame.set(away, { oppId: home, gameId, side:"away" });
+      mapTeamToGame.set(home, { oppId: away, game: g, side:"home" });
+      mapTeamToGame.set(away, { oppId: home, game: g, side:"away" });
     }
 
-    // 4) Rosters (active, non-pitchers)
+    // 4) Rosters
     const teamIds = [...new Set(games.flatMap(g => [g?.teams?.home?.team?.id, g?.teams?.away?.team?.id]).filter(Boolean))];
     const rosterByTeam = new Map();
     for(const tid of teamIds){
@@ -115,7 +112,7 @@ export default async (req) => {
       }catch{ rosterByTeam.set(tid, []); }
     }
 
-    // 5) Stats for all hitters (season totals)
+    // 5) Stats for hitters
     const allIds = [];
     for(const tid of teamIds){
       for(const r of (rosterByTeam.get(tid)||[])){
@@ -126,7 +123,6 @@ export default async (req) => {
     const uniqueIds = [...new Set(allIds)];
     const chunks = [];
     for(let i=0;i<uniqueIds.length;i+=100) chunks.push(uniqueIds.slice(i,i+100));
-
     const statById = new Map();
     for(const chunk of chunks){
       try{
@@ -143,10 +139,16 @@ export default async (req) => {
           }
           statById.set(id, { name, hr, pa });
         }
-      }catch{ /* continue */ }
+      }catch{}
     }
 
-    // 6) Build candidates with season-based baseProb (with prior)
+    // 6) Multiplier sources
+    const learn = getStore('mlb-learning');
+    const teamToProbPitcher = await getProbablePitcherMap(games);
+    const weatherByGamePk = new Map();
+    for(const g of games){ weatherByGamePk.set(g.gamePk, await extractWeatherForGame(g)); }
+
+    // 7) Build candidates
     const candidates = [];
     for(const tid of teamIds){
       const meta = mapTeamToGame.get(tid);
@@ -161,11 +163,35 @@ export default async (req) => {
         const seasonHR = Number(st.hr||0);
         const seasonPA = Number(st.pa||0);
         if(seasonPA <= 0) continue;
-        // shrink toward league average
+
+        // baseline per-PA
         const adjHR = seasonHR + priorPA * priorHRrate;
         const adjPA = seasonPA + priorPA;
-        const p_pa = Math.max(0, Math.min(0.15, adjHR / adjPA)); // cap per-PA rate to avoid outliers
-        const p_game = 1 - Math.pow(1 - p_pa, expPA);
+        const p_pa = Math.max(0, Math.min(0.15, adjHR / adjPA));
+
+        // pitcher multiplier
+        let pitcherMult = 1.00, pitcherName=null, pitcherHand=null;
+        try{
+          const info = teamToProbPitcher.get(oppId);
+          if(info && info.pitcherId){
+            const prof = await learn.get(`profiles/pitcher/${info.pitcherId}.json`, { type:'json' }) || null;
+            if(prof && typeof prof.samples==='number' && typeof prof.hr==='number'){
+              pitcherMult = pitcherHRMultiplier({ samples: prof.samples, hr: prof.hr });
+            }
+            pitcherName = info.name || null;
+            pitcherHand = info.hand || null;
+          }
+        }catch{}
+
+        // park + weather multipliers (home park)
+        const homeAbbrev = meta.side==="home" ? teamAb : oppAb;
+        const parkHRMult = parkHRFactorForAbbrev(homeAbbrev);
+        const wx = weatherByGamePk.get(meta.game?.gamePk) || {};
+        const weatherHRMult = weatherHRMultiplier(wx);
+
+        // per-game prob
+        const p_pa_adj = Math.max(0, Math.min(0.15, p_pa * pitcherMult * parkHRMult * weatherHRMult));
+        const p_game = 1 - Math.pow(1 - p_pa_adj, expPA);
         const baseProb = Math.min(capProb, Math.max(0.001, p_game));
 
         candidates.push({
@@ -175,7 +201,10 @@ export default async (req) => {
           gameId: meta.side==="home" ? `${oppAb}@${teamAb}` : `${teamAb}@${oppAb}`,
           batterId: pid,
           seasonHR, seasonPA,
-          baseProb
+          baseProb,
+          pitcherName, pitcherHand,
+          parkHR: parkHRMult,
+          weatherHR: weatherHRMult
         });
       }
     }
