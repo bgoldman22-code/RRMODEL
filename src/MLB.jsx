@@ -1,9 +1,4 @@
 import React, { useEffect, useState } from "react";
-
-function impliedFromAmerican(a){
-  if (a == null || isNaN(a)) return null;
-  return a >= 0 ? 100/(a+100) : (-a)/((-a)+100);
-}
 import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./utils/ev.js";
 import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
@@ -142,13 +137,15 @@ export default function MLB(){
         const ev = evFromProbAndOdds(p, american);
 
         rows.push({
-name: c.name,
+  name: c.name,
   team: c.team,
   game: c.gameId || c.game || c.opp || "",
   batterId: c.batterId,
   p_model: p,
   american,
   ev,
+  why: explainRow({
+    baseProb: Number(c.baseProb ?? c.prob ?? 0),
     hotBoost: hcMul,
     calScale,
     oddsAmerican: american,
@@ -157,7 +154,6 @@ name: c.name,
     parkHR: c.parkHR ?? null,
     weatherHR: c.weatherHR ?? null
   })
-
 });
 }
 
