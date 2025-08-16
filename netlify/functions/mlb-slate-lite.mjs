@@ -13,8 +13,17 @@ const ROSTER   = (tid)=> `https://statsapi.mlb.com/api/v1/teams/${tid}/roster?ro
 const PEOPLE   = (ids, season)=> `https://statsapi.mlb.com/api/v1/people?personIds=${ids.join(",")}&hydrate=stats(group=hitting,type=season,season=${season})`;
 
 function ok(data){ return new Response(JSON.stringify(data), { headers:{ "content-type":"application/json" }}); }
-async function fetchJSON(url){
-  const r = await fetch(url, { headers:{ "accept":"application/json" }});
+async function fetchJSON(url, { timeoutMs=6000 } = {}){
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), timeoutMs);
+  try{
+    const r = await fetch(url, { headers:{ "accept":"application/json" }, signal: controller.signal });
+    if(!r.ok) throw new Error(`http ${r.status}`);
+    return r.json();
+  } finally {
+    clearTimeout(t);
+  }
+}});
   if(!r.ok) throw new Error(`http ${r.status}`);
   return r.json();
 }
@@ -80,7 +89,16 @@ export default async (req) => {
     const capProb = Number(url.searchParams.get("cap")) || 0.40;
 
     // 1) Schedule
-    const sched = await fetchJSON(SCHEDULE + encodeURIComponent(date));
+    // Cache layer: serve recent slate from store if present (15 min TTL)
+const cache = getStore('mlb-learning');
+const cacheKey = `slates/${date}.json`;
+try{
+  const cached = await cache.get(cacheKey, { type:'json' });
+  if(cached && typeof cached.ts==='number' && (Date.now() - cached.ts) < 15*60*1000){
+    return ok(cached.payload);
+  }
+}catch{ /* cache miss is fine */ }
+const sched = await fetchJSON(SCHEDULE + encodeURIComponent(date));
     const games = (sched?.dates?.[0]?.games)||[];
     if(games.length===0) return ok({ ok:true, date, games:0, candidates:[] });
 
@@ -209,7 +227,9 @@ export default async (req) => {
       }
     }
 
-    return ok({ ok:true, date, games: games.length, candidates });
+    const payload = { ok:true, date, games: games.length, candidates };
+try{ await cache.set(cacheKey, JSON.stringify({ ts: Date.now(), payload })); }catch{ /* ignore */ }
+return ok(payload);
   }catch(e){
     return ok({ ok:false, error:String(e?.message||e) });
   }
