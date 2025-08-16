@@ -1,25 +1,15 @@
-# Known-good Netlify config for this project
+# netlify.toml — build hardening
 [build]
-  command = "npm run build"
+  command = "npm ci && npm run build"
   publish = "dist"
 
-[build.environment]
-  NODE_VERSION = "20"
+  [build.environment]
+    NODE_VERSION = "20.18.0"
+    NPM_FLAGS = "--legacy-peer-deps --no-audit --no-fund"
+    # Uncomment to skip lifecycle scripts if a postinstall is crashing your build.
+    # NPM_CONFIG_IGNORE_SCRIPTS = "true"
 
+# Keep your existing functions config if present; this block is safe to merge.
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs"]
-  included_files = []
-
-  # Run once each morning to prefill Blobs cache so pages don't burn quota
-[[scheduled.functions]]
-  name = "prewarm-odds"
-  # 13:00 UTC ≈ 9:00 AM America/New_York during Daylight Saving Time
-  cron = "0 13 * * *"
-
-
-# SPA fallback
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
