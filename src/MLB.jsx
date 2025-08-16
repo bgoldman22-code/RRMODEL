@@ -9,8 +9,11 @@ const MIN_PICKS = 12;
 const MAX_PER_GAME = 2;
 
 
-// Minimal "why" explainer used in the table; safe fallback if utils/buildWhy isn't used here.
-function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pitcherName=null, pitcherHand=null }){
+// Why string that ONLY shows factors actually applied by the model (pitcher, park, weather, hot/cold, calibration, odds)
+function explainRow({
+  baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null,
+  pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null
+}){
   const pts = [];
   if(typeof baseProb === 'number') pts.push(`model ${(baseProb*100).toFixed(1)}%`);
   if(typeof hotBoost === 'number' && hotBoost !== 1){
@@ -21,11 +24,19 @@ function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pit
     const sign = calScale>1 ? '+' : '−';
     pts.push(`calibration ${sign}${Math.abs((calScale-1)*100).toFixed(0)}%`);
   }
+  if(pitcherName){
+    pts.push(`vs ${pitcherName}${pitcherHand?` (${String(pitcherHand).toUpperCase()})`:''}`);
+  }
+  if(typeof parkHR === 'number' && parkHR !== 1){
+    const sign = parkHR>1 ? '+' : '−';
+    pts.push(`park HR ${sign}${Math.abs((parkHR-1)*100).toFixed(0)}%`);
+  }
+  if(typeof weatherHR === 'number' && weatherHR !== 1){
+    const sign = weatherHR>1 ? '+' : '−';
+    pts.push(`weather HR ${sign}${Math.abs((weatherHR-1)*100).toFixed(0)}%`);
+  }
   if(oddsAmerican != null){
     pts.push(`odds ${oddsAmerican>=0?'+':''}${Math.round(oddsAmerican)}`);
-  }
-  if(pitcherName){
-    pts.push(`vs ${pitcherName}${pitcherHand?` (${pitcherHand})`:''}`);
   }
   return pts.join(' • ');
 }

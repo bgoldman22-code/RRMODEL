@@ -1,3 +1,7 @@
+import { getStore } from '@netlify/blobs';
+import { parkHRFactorForAbbrev } from './lib/parkFactors.js';
+import { weatherHRMultiplier } from './lib/weatherMultiplier.js';
+import { pitcherHRMultiplier } from './lib/hrPitcherMultiplier.js';
 /**
  * netlify/functions/mlb-slate-lite.mjs
  * Build a daily slate of MLB batter candidates from the free MLB StatsAPI.
@@ -13,7 +17,50 @@ const PEOPLE   = (ids, season)=> `https://statsapi.mlb.com/api/v1/people?personI
 
 function ok(data){ return new Response(JSON.stringify(data), { headers:{ "content-type":"application/json" }}); }
 async function fetchJSON(url){
-  const r = await fetch(url, { headers:{ "accept":"application/json" }});
+  const r = await fetch(url, { headers:{ "accept":"application/json" }
+
+async function extractWeatherForGame(game){
+  try{
+    const gamePk = game?.gamePk;
+    if(!gamePk) return { tempF:null, windOutMph:null, precip:false };
+    const feed = await fetchJSON(`https://statsapi.mlb.com/api/v1.1/game/${gamePk}/feed/live`);
+    const w = feed?.gameData?.weather || {};
+    // MLB feed exposes temp in F and wind as "10 mph, Out to CF" text sometimes.
+    const tempF = typeof w?.temp === 'number' ? w.temp : null;
+    let windOutMph = null;
+    if(typeof w?.windSpeed === 'number'){
+      // If direction string suggests "out to center", treat positive; if "in from center", negative.
+      const dir = String(w?.windDirection||'').toLowerCase();
+      const towardCF = /out.*center|out.*cf/.test(dir);
+      const fromCF = /in.*center|in.*cf/.test(dir);
+      windOutMph = towardCF ? w.windSpeed : (fromCF ? -w.windSpeed : 0);
+    }
+    const precip = String(w?.condition||'').toLowerCase().includes('rain');
+    return { tempF, windOutMph, precip };
+  }catch{
+    return { tempF:null, windOutMph:null, precip:false };
+  }
+}
+
+async function getProbablePitcherMap(games){
+  const out = new Map();
+  for (const g of (games||[])) {
+    const gamePk = g?.gamePk;
+    if(!gamePk) continue;
+    try{
+      const feed = await fetchJSON(`https://statsapi.mlb.com/api/v1.1/game/${gamePk}/feed/live`);
+      const homeId = g?.teams?.home?.team?.id;
+      const awayId = g?.teams?.away?.team?.id;
+      const probHome = feed?.gameData?.probablePitchers?.home?.id || g?.teams?.home?.probablePitcher?.id;
+      const probAway = feed?.gameData?.probablePitchers?.away?.id || g?.teams?.away?.probablePitcher?.id;
+      if(homeId && probAway) out.set(homeId, { pitcherId:probAway, name: feed?.gameData?.probablePitchers?.away?.fullName||null, hand: feed?.liveData?.boxscore?.teams?.away?.players?.[`ID${probAway}`]?.person?.pitchHand?.code||null });
+      if(awayId && probHome) out.set(awayId, { pitcherId:probHome, name: feed?.gameData?.probablePitchers?.home?.fullName||null, hand: feed?.liveData?.boxscore?.teams?.home?.players?.[`ID${probHome}`]?.person?.pitchHand?.code||null });
+    }catch{ /* ignore */ }
+  }
+  return out;
+}
+
+});
   if(!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
   return r.json();
 }
