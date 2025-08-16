@@ -8,38 +8,6 @@ const HOTCOLD_CAP = 0.06;
 const MIN_PICKS = 12;
 const MAX_PER_GAME = 2;
 
-
-// Why string that ONLY shows factors actually applied by the model (pitcher, park, weather, hot/cold, calibration, odds)
-function explainRow({
-  baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null,
-  pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null
-}){
-  const pts = [];
-  if(typeof baseProb === 'number') pts.push(`model ${(baseProb*100).toFixed(1)}%`);
-  if(typeof hotBoost === 'number' && hotBoost !== 1){
-    const sign = hotBoost>1 ? '+' : '−';
-    pts.push(`hot/cold ${sign}${Math.abs((hotBoost-1)*100).toFixed(0)}%`);
-  }
-  if(typeof calScale === 'number' && calScale !== 1){
-    const sign = calScale>1 ? '+' : '−';
-    pts.push(`calibration ${sign}${Math.abs((calScale-1)*100).toFixed(0)}%`);
-  }
-  if(pitcherName){
-    pts.push(`vs ${pitcherName}${pitcherHand?` (${String(pitcherHand).toUpperCase()})`:''}`);
-  }
-  if(typeof parkHR === 'number' && parkHR !== 1){
-    const sign = parkHR>1 ? '+' : '−';
-    pts.push(`park HR ${sign}${Math.abs((parkHR-1)*100).toFixed(0)}%`);
-  }
-  if(typeof weatherHR === 'number' && weatherHR !== 1){
-    const sign = weatherHR>1 ? '+' : '−';
-    pts.push(`weather HR ${sign}${Math.abs((weatherHR-1)*100).toFixed(0)}%`);
-  }
-  if(oddsAmerican != null){
-    pts.push(`odds ${oddsAmerican>=0?'+':''}${Math.round(oddsAmerican)}`);
-  }
-  return pts.join(' • ');
-}
 function fmtET(date=new Date()){
   return new Intl.DateTimeFormat("en-US", { timeZone:"America/New_York", month:"short", day:"2-digit", year:"numeric"}).format(date);
 }
@@ -49,6 +17,13 @@ function dateISO_ET(offsetDays=0){
   const base = new Date(et+"T00:00:00Z");
   base.setUTCDate(base.getUTCDate()+offsetDays);
   return new Intl.DateTimeFormat("en-CA",{ timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit" }).format(base);
+}
+
+async function fetchWithTimeout(url, { timeout=8000 }={}){
+  return await Promise.race([
+    fetch(url),
+    new Promise((_, rej)=> setTimeout(()=>rej(new Error("Request timeout")), timeout))
+  ]);
 }
 async function fetchJSON(url){
   const r = await fetch(url, { headers:{ "accept":"application/json" }, cache:"no-store" });
