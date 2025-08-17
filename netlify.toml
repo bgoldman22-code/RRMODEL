@@ -1,15 +1,14 @@
-# netlify.toml — build hardening
 [build]
-  command = "npm ci && npm run prebuild && npm run build"
+  command = "node ./scripts/prebuild-install-react.mjs && npm run build"
   publish = "dist"
+  functions = "netlify/functions"
 
-  [build.environment]
-    NODE_VERSION = "20.18.0"
-    NPM_FLAGS = "--legacy-peer-deps --no-audit --no-fund"
-    # Uncomment to skip lifecycle scripts if a postinstall is crashing your build.
-    # NPM_CONFIG_IGNORE_SCRIPTS = "true"
-
-# Keep your existing functions config if present; this block is safe to merge.
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs"]
+
+# Keep your SPA routing working
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
