@@ -1,56 +1,61 @@
-
 // src/utils/why.js
-import { impliedFromAmerican } from "./ev.js";
-
-export function normName(s){
-  return (s||"")
-    .toLowerCase()
-    .replace(/[.\-']/g, "")
-    .replace(/\s+(jr|sr|ii|iii|iv)\b/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
+function pct(n) {
+  if (n === null || n === undefined || isNaN(n)) return "—";
+  return `${(Number(n) * 100).toFixed(1)}%`;
+}
+function pctAdjFromMult(mult) {
+  const m = Number(mult);
+  if (!isFinite(m) || m === 1) return "neutral";
+  const adj = (m - 1) * 100;
+  const sign = adj > 0 ? "+" : "";
+  if (Math.abs(adj) < 0.5) return "neutral";
+  return `${sign}${Math.round(adj)}%`;
+}
+function formatHot(mult){
+  const m = Number(mult);
+  if (!isFinite(m) || m === 1) return "hot/cold +0%";
+  const d = ((m - 1) * 100);
+  const sign = d > 0 ? "+" : "";
+  return `hot/cold ${sign}${Math.round(d)}%`;
 }
 
-export function buildWhy({
-  modelHR, price=null, impliedFromOdds=null, edgePctPts=null,
-  pitcher=null, pitcherHand=null, pitcherHRper9=null, pitcherBarrelPct=null,
-  platoonSplit=null, park=null, parkHRIndex=null,
-  tempF=null, weatherWindMPH=null, weatherWindDir=null,
-  lineupSlot=null, hotCold=null
-}){
-  const bits = [];
-  if(typeof modelHR === 'number'){
-    bits.push(`model ${(modelHR*100).toFixed(1)}%`);
+/**
+ * explainRow can be called two ways:
+ *   explainRow({ baseProb, hotBoost, calScale, oddsAmerican, pitcherName, parkHR, weatherHR })
+ *   explainRow(baseProb, hotBoost, calScale, pitcherName, parkHR, weatherHR, oddsAmerican)  // legacy positional
+ */
+export function explainRow(a, b, c, d, e, f, g){
+  let params;
+  if (a && typeof a === "object" && !Array.isArray(a)) {
+    params = a;
+  } else {
+    params = {
+      baseProb: a,
+      hotBoost: b,
+      calScale: c,
+      pitcherName: d,
+      parkHR: e,
+      weatherHR: f,
+      oddsAmerican: g
+    };
   }
-  if(typeof price === 'number'){
-    const imp = impliedFromOdds != null ? (impliedFromOdds*100).toFixed(1) : ((impliedFromAmerican(price)||0)*100).toFixed(1);
-    const edge = edgePctPts != null ? `${(edgePctPts*100).toFixed(1)}pp` : null;
-    bits.push(`${price>=0?'+':''}${Math.round(price)} (imp ${imp}%${edge?`, +${edge} edge`:''})`);
-  }else{
-    bits.push(`no odds`);
-  }
-  if(pitcher){
-    const arms = pitcherHand ? ` (${pitcherHand})` : '';
-    const hr9 = typeof pitcherHRper9==='number' ? ` • ${pitcherHRper9.toFixed(2)} HR/9` : '';
-    const brl = typeof pitcherBarrelPct==='number' ? ` • ${pitcherBarrelPct.toFixed(1)}% brl` : '';
-    bits.push(`vs ${pitcher}${arms}${hr9}${brl}`);
-  }
-  if(typeof platoonSplit==='number'){
-    const sign = platoonSplit>=0 ? '+' : '−';
-    bits.push(`platoon ${sign}${Math.abs(platoonSplit*100).toFixed(1)}pp`);
-  }
-  if(park && typeof parkHRIndex==='number'){
-    const label = parkHRIndex === 100 ? 'neutral' : (parkHRIndex > 100 ? 'boost' : 'suppress');
-    bits.push(`${park} HR idx ${Math.round(parkHRIndex)} (${label})`);
-  }
-  const wx = [];
-  if(typeof tempF==='number') wx.push(`${Math.round(tempF)}°F`);
-  if(typeof weatherWindMPH==='number' && weatherWindDir) wx.push(`${Math.round(weatherWindMPH)}mph ${weatherWindDir}`);
-  if(wx.length) bits.push(`wx ${wx.join(', ')}`);
-  if(typeof hotCold==='number'){
-    const tag = hotCold >= 1 ? 'hot' : (hotCold <= -1 ? 'cold' : 'even');
-    bits.push(`${tag} (${hotCold.toFixed(1)}σ)`);
-  }
-  if(typeof lineupSlot==='number') bits.push(`batting ${lineupSlot}`);
-  return bits.join(' • ');
+
+  const {
+    baseProb = 0,
+    hotBoost = 1,
+    calScale = 1,
+    oddsAmerican = null,
+    pitcherName = "",
+    parkHR = 1,
+    weatherHR = 1,
+  } = params || {};
+
+  const hotTxt = formatHot(hotBoost);
+  const parkTxt = `park HR ${pctAdjFromMult(parkHR)}`;
+  const wxTxt = (weatherHR && weatherHR !== 1) ? ` • weather ${pctAdjFromMult(weatherHR)}` : "";
+  const vsTxt = pitcherName ? ` • vs ${String(pitcherName)}` : "";
+  const calTxt = (calScale && calScale !== 1) ? ` • cal ${pctAdjFromMult(calScale)}` : "";
+  const oddsTxt = (oddsAmerican !== null && oddsAmerican !== undefined) ? ` • odds ${oddsAmerican}` : "";
+
+  return `model ${pct(baseProb)} • ${hotTxt}${vsTxt} • ${parkTxt}${wxTxt}${calTxt}${oddsTxt}`;
 }
