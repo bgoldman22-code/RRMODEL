@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./utils/ev.js";
 import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
+import { pitchTypeEdgeMultiplier, rookieBlendBaseline } from "./utils/model_scalers.js";
 
 const CAL_LAMBDA = 0.25;
 const HOTCOLD_CAP = 0.06;
@@ -17,13 +18,6 @@ function dateISO_ET(offsetDays=0){
   const base = new Date(et+"T00:00:00Z");
   base.setUTCDate(base.getUTCDate()+offsetDays);
   return new Intl.DateTimeFormat("en-CA",{ timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit" }).format(base);
-}
-
-async function fetchWithTimeout(url, { timeout=8000 }={}){
-  return await Promise.race([
-    fetch(url),
-    new Promise((_, rej)=> setTimeout(()=>rej(new Error("Request timeout")), timeout))
-  ]);
 }
 async function fetchJSON(url){
   const r = await fetch(url, { headers:{ "accept":"application/json" }, cache:"no-store" });
@@ -119,12 +113,36 @@ export default function MLB(){
       const rows = [];
       for(const c of baseCandidates){
         let p = Number(c.baseProb||c.prob||0);
-        if(!p || p<=0) continue;
+        
+        // Rookie blend baseline adjust (safe, bounded)
+        try {
+          const hrpa_mlb = (Number(c.seasonHR||0) && Number(c.seasonPA||0)) ? Number(c.seasonHR)/Number(c.seasonPA) : null;
+          const hrpa_aaa = (c.hr_per_pa_aaa ?? c.hrpaAAA ?? null);
+          const blended = rookieBlendBaseline({ mlb_pa: Number(c.seasonPA||0), hrpa_mlb, hrpa_aaa });
+          if (blended && (hrpa_mlb ?? 0) > 0) {
+            const rel = Math.max(0.80, Math.min(1.20, blended / hrpa_mlb));
+            p = p * rel;
+          } else if (blended && !(hrpa_mlb ?? 0)) {
+            // no MLB baseline; allow small nudge only
+            p = p * 1.00;
+          }
+        } catch (e) { /* keep p unchanged */ }
+    if(!p || p<=0) continue;
         const hc = hotMap.get(String(c.batterId)) || { hr14:0, pa14:0 };
         const hcMul = hotColdMultiplier({ hr14:hc.hr14, pa14:hc.pa14, seasonHR:Number(c.seasonHR||0), seasonPA:Number(c.seasonPA||0) }, HOTCOLD_CAP);
         p = p * hcMul;
         const calScale = Number(cals?.global?.scale || 1.0);
         p = applyCalibration(p, calScale);
+
+        // Pitch-type edge multiplier (safe)
+        try {
+          const pitchMul = pitchTypeEdgeMultiplier({
+            hitter_vs_pitch: c.hitter_vs_pitch,
+            pitcher: c.pitcher,
+          });
+          p = p * pitchMul;
+        } catch (e) { /* keep p */ }
+
 
         const key = String(c.name||"").toLowerCase();
         const found = oddsMap.get(key);
@@ -139,7 +157,7 @@ export default function MLB(){
           p_model: p,
           american,
           ev,
-          why: explainRow({ baseProb:Number(c.baseProb||c.prob||0), hotBoost:hcMul, calScale }),
+          why: explainRow( baseProb:Number(c.baseProb||c.prob||0), hotBoost:hcMul, calScale , pitcherName: r.pitcherName || r.pname || null, pitcherHand: r.pitcherHand || r.phand || null, parkHR: r.parkHR ?? null, weatherHR: r.weatherHR ?? null),
         });
       }
 
