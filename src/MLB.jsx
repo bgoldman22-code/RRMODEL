@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./utils/ev.js";
 import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
+import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
 
 const CAL_LAMBDA = 0.25;
 const HOTCOLD_CAP = 0.06;
@@ -135,6 +136,16 @@ export default function MLB(){
         const found = oddsMap.get(key);
         const american = found?.american ?? americanFromProb(p);
         const ev = evFromProbAndOdds(p, american);
+
+// ---- pitch-type edge (safe, bounded; backend only) ----
+try {
+  const pitchMul = pitchTypeEdgeMultiplier ? pitchTypeEdgeMultiplier({
+    hitter_vs_pitch: c.hitter_vs_pitch || c.hvp || [],
+    pitcher: c.pitcher || { primary_pitches: c.primary_pitches || [] },
+  }) : 1.00;
+  if (typeof p === "number" && isFinite(p)) p *= pitchMul;
+} catch {}
+// --------------------------------------------------------
 
         rows.push({
   name: c.name,
