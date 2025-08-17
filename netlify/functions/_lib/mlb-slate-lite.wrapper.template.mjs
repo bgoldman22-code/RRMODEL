@@ -1,25 +1,39 @@
 // netlify/functions/_lib/mlb-slate-lite.wrapper.template.mjs
-// FANDUEL_ODDS_INTEGRATED
+// FANDUEL_ODDS_INTEGRATED (no top-level await; CJS-safe under esbuild)
 import { fetchFanDuelHrOdds, normName, americanToProb } from "./_lib/fanduel-hr.mjs";
-let orig;
-try { orig = await import("./mlb-slate-lite.orig.mjs"); } catch {}
-if (!orig || !orig.handler) { try { orig = await import("./mlb-slate-lite.orig.cjs"); } catch {} }
+
+// Prepare lazy dynamic imports without top-level await
+const tryImportMjs = () => import("./mlb-slate-lite.orig.mjs").catch(() => null);
+const tryImportCjs = () => import("./mlb-slate-lite.orig.cjs").catch(() => null);
+
 export const handler = async (event, context) => {
+  // Resolve the original handler at request time to avoid top-level await
+  let orig = await tryImportMjs();
   if (!orig || !orig.handler) {
-    return { statusCode: 500, headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ok:false, error:"mlb-slate-lite.orig missing" }) };
+    orig = await tryImportCjs();
   }
+  if (!orig || !orig.handler) {
+    return {
+      statusCode: 500,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ok:false, error:"mlb-slate-lite.orig missing" })
+    };
+  }
+
   const res = await orig.handler(event, context);
+
   try {
     const json = JSON.parse(res.body || "{}");
     const games = Array.isArray(json.games) ? json.games : [];
     const candidates = Array.isArray(json.candidates) ? json.candidates : [];
+
     const eventMap = new Map();
     for (const g of games) {
       const gid = g.gameId || g.id || g.game_id;
       const eid = g.eventId || g.oddsEventId || g.statsapiEventId;
       if (gid && eid) eventMap.set(gid, String(eid));
     }
+
     if (eventMap.size > 0 && candidates.length > 0) {
       const fd = await fetchFanDuelHrOdds(eventMap);
       for (const c of candidates) {
@@ -38,6 +52,9 @@ export const handler = async (event, context) => {
       }
       json.candidates = candidates;
     }
+
     return { ...res, body: JSON.stringify(json) };
-  } catch { return res; }
+  } catch {
+    return res;
+  }
 };
