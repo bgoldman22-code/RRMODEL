@@ -1,6 +1,6 @@
-
+\
 // netlify/functions/fd-proxy.cjs
-// CommonJS (works fine when package.json has "type":"module")
+// CommonJS proxy; safe with "type":"module" at repo root.
 
 const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
 
@@ -11,7 +11,6 @@ exports.handler = async (event) => {
       return json(400, { ok: false, error: 'missing_or_invalid_url' });
     }
 
-    // Example: forward GET with minimal headers
     const resp = await fetch(url.href, {
       method: 'GET',
       headers: { 'user-agent': 'fd-proxy/1.0' },
