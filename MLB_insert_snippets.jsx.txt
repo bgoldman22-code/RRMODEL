@@ -1,0 +1,16 @@
+// Place near top of src/MLB.jsx with other imports:
+import BetStructureNote from './components/BetStructureNote.jsx';
+import GameDiversification from './components/GameDiversification.jsx';
+
+// Add with your other useState declarations:
+const [allCandidates, setAllCandidates] = useState([]);
+
+// Inside build(), after you sort rows by EV:
+rows.sort((a,b)=> b.ev - a.ev);
+setAllCandidates(rows);
+
+// Under your page title:
+<BetStructureNote />
+
+// Under the Bonus table:
+<GameDiversification selected={picks} candidates={allCandidates} targetGames={8} />

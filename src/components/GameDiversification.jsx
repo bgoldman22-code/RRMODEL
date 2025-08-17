@@ -1,14 +1,6 @@
 import React, { useMemo } from 'react';
 
-/**
- * Add-on table that selects the best candidates from NEW games until we reach a
- * target number of unique games. It only reads props; if inputs are missing it renders nothing.
- *
- * Props:
- *  - selected: array of already-chosen picks (e.g., Top 12)
- *  - candidates: full ranked array (highest EV first)
- *  - targetGames: number (default 8)
- */
+/** Read-only table that fills to at least N unique games using your existing data. */
 export default function GameDiversification({ selected = [], candidates = [], targetGames = 8 }){
   const rows = useMemo(() => {
     if (!Array.isArray(candidates) || !candidates.length) return [];
@@ -16,7 +8,6 @@ export default function GameDiversification({ selected = [], candidates = [], ta
     const gamesCovered = new Set((selected||[]).map(r => r && r.game).filter(Boolean));
     const need = Math.max(0, targetGames - gamesCovered.size);
     if (need <= 0) return [];
-
     const out = [];
     for (const r of candidates){
       if (!r) continue;
@@ -32,7 +23,6 @@ export default function GameDiversification({ selected = [], candidates = [], ta
   }, [selected, candidates, targetGames]);
 
   if (!rows.length) return null;
-
   const CellMoney = ({v}) => <span>{(typeof v==='number') ? (v>0?`+${v}`:v) : '—'}</span>;
 
   return (
