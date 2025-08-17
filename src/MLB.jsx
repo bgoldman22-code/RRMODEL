@@ -34,3 +34,5 @@ rows.push({
     }
   })()
 });
+
+export default function MLBWrapper(){ return null }
