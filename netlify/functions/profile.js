@@ -13,6 +13,7 @@ exports.handler = async (event) => {
 function resp(statusCode, body) {
   return { statusCode, headers: { "content-type":"application/json" }, body: JSON.stringify(body) };
 }
+// Replace this with reads from your model's JSON cache/output.
 async function fakeProfile(player) {
   return {
     player,

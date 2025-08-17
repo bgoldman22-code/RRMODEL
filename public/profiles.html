@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Player Profile (Hidden)</title>
+    <style>
+      body{background:#0b0b0b;color:#e5e5e5;font-family:ui-sans-serif,system-ui;}
+      .wrap{max-width:900px;margin:0 auto;padding:24px}
+      .card{border:1px solid #333;border-radius:12px;padding:12px;margin-top:12px}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+      .muted{opacity:.7}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1 id="title" style="font-weight:700;font-size:28px">Player Profile</h1>
+      <p class="muted">Hidden profile • read-only</p>
+      <div id="status" class="card" style="display:none"></div>
+      <div class="grid">
+        <div class="card"><h2>Baseline</h2><ul id="baseline"></ul></div>
+        <div class="card"><h2>Archetype</h2><div id="arch"></div></div>
+      </div>
+      <div class="card"><h2>Batted-Ball Quality</h2><ul id="bbq" style="columns:2"></ul></div>
+      <div class="card"><h2>Pitch-Type HR Splits</h2><ul id="splits" style="columns:2"></ul></div>
+      <div class="card"><h2>Park Context</h2><ul id="park" style="columns:2"></ul></div>
+      <div class="card"><h2>WHY</h2><div id="why"></div></div>
+    </div>
+    <script>
+      function qs(k){return new URLSearchParams(location.search).get(k)||""}
+      const name = (qs("player")||"").replace(/-/g," ");
+      if(!name){
+        const s=document.getElementById("status"); s.style.display='block'; s.textContent="Add ?player=First Last to the URL."; 
+      }else{
+        document.getElementById("title").textContent = name;
+        fetch(`/.netlify/functions/profile?player=${encodeURIComponent(name)}`)
+          .then(r=>r.json()).then(data=>{
+            if(!data?.ok){const s=document.getElementById("status"); s.style.display='block'; s.textContent="No profile available." ; return;}
+            const p=data.profile;
+            document.getElementById("baseline").innerHTML = `
+              <li>Career HR/PA: <b>${(p.baseline?.hr_per_pa ?? 0).toFixed?.(3) ?? p.baseline?.hr_per_pa ?? "—"}</b></li>
+              <li>Last 30 HR/PA: <b>${(p.baseline?.last30_hr_pa ?? 0).toFixed?.(3) ?? p.baseline?.last30_hr_pa ?? "—"}</b></li>
+              <li>Hot/Cold: <b>${p.baseline?.hot_cold ?? "—"}</b></li>`;
+            document.getElementById("arch").innerHTML = \`
+              <p><b>\${p.archetype?.tag ?? "—"}</b></p>
+              <p class="muted">Confidence: \${(p.archetype?.confidence ?? 0).toFixed?.(2) ?? p.archetype?.confidence ?? "—"}</p>\`;
+            document.getElementById("bbq").innerHTML = \`
+              <li>EV p50: <b>\${p.battedBall?.ev_p50 ?? "—"}</b> mph</li>
+              <li>EV p75: <b>\${p.battedBall?.ev_p75 ?? "—"}</b> mph</li>
+              <li>EV max: <b>\${p.battedBall?.ev_max ?? "—"}</b> mph</li>
+              <li>LA p50: <b>\${p.battedBall?.la_p50 ?? "—"}</b>°</li>
+              <li>LA p75: <b>\${p.battedBall?.la_p75 ?? "—"}</b>°</li>
+              <li>HR mode LA: <b>\${p.battedBall?.hr_mode_la ?? "—"}</b></li>\`;
+            document.getElementById("splits").innerHTML = \`
+              <li>4-Seam: <b>\${p.splits?.four_seam?.hr ?? 0}</b> HR • HR/PA \${(p.splits?.four_seam?.hr_pa ?? 0).toFixed?.(3) ?? p.splits?.four_seam?.hr_pa ?? "—"}</li>
+              <li>Slider: <b>\${p.splits?.slider?.hr ?? 0}</b> HR • HR/PA \${(p.splits?.slider?.hr_pa ?? 0).toFixed?.(3) ?? p.splits?.slider?.hr_pa ?? "—"}</li>
+              <li>Changeup: <b>\${p.splits?.change?.hr ?? 0}</b> HR • HR/PA \${(p.splits?.change?.hr_pa ?? 0).toFixed?.(3) ?? p.splits?.change?.hr_pa ?? "—"}</li>\`;
+            document.getElementById("park").innerHTML = \`
+              <li>Home HR factor (handed): <b>\${p.park?.home_factor_rhh ?? p.park?.home_factor_lhh ?? "—"}</b></li>
+              <li>Home HR/PA: <b>\${(p.park?.home_hr_pa ?? 0).toFixed?.(3) ?? p.park?.home_hr_pa ?? "—"}</b></li>
+              <li>Road HR/PA: <b>\${(p.park?.road_hr_pa ?? 0).toFixed?.(3) ?? p.park?.road_hr_pa ?? "—"}</b></li>\`;
+            document.getElementById("why").textContent = p.why || "—";
+          }).catch(()=>{
+            const s=document.getElementById("status"); s.style.display='block'; s.textContent="Profile API error.";
+          });
+      }
+    </script>
+  </body>
+</html>
