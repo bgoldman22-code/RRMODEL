@@ -1,2 +1,2 @@
-# Learn Observability Patch (Safe)
-(See README in previous message for full snippet)
+# Learn Observability Patch (with Blobs token fallback)
+See in-chat instructions for wiring `writeReceipt(...)` at end of your learner.
