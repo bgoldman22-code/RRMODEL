@@ -7,6 +7,7 @@ import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
 const CAL_LAMBDA = 0.25;
 const HOTCOLD_CAP = 0.06;
 const MIN_PICKS = 12;
+const BONUS_COUNT = parseInt(import.meta.env.VITE_BONUS_COUNT||process.env.BONUS_COUNT||8,10);
 // Fallback Why explainer
 function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null }){
   const pts = [];
@@ -39,6 +40,7 @@ async function fetchJSON(url){
 
 export default function MLB(){
   const [picks, setPicks] = useState([]);
+  const [bonus, setBonus] = useState([]);
   const [meta, setMeta]   = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -181,7 +183,21 @@ try {
         if(out.length>=MIN_PICKS) break;
       }
 
+      // Build bonus picks (next best by EV not in top MIN_PICKS), respecting per-game cap
+      const picked = new Set(out.map(x => `${x.name}|${x.game}`));
+      const bonusOut = [];
+      for (const r of rows){
+        const key = `${r.name}|${r.game}`;
+        if (picked.has(key)) continue;
+        const n = (perGame.get(r.game||"UNK")||0);
+        if (n >= MAX_PER_GAME) continue;
+        bonusOut.push(r);
+        perGame.set(r.game||"UNK", n+1);
+        if (bonusOut.length >= BONUS_COUNT) break;
+      }
+
       setPicks(out);
+      setBonus(bonusOut);
       setMeta({
         date: fmtET(),
         totalCandidates: baseCandidates.length,
@@ -238,6 +254,38 @@ try {
             ))}
           </tbody>
         </table>
+      {bonus.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold">Bonus picks (near threshold)</h2>
+          <div className="mt-2 overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="px-3 py-2 text-left">Player</th>
+                  <th className="px-3 py-2 text-left">Game</th>
+                  <th className="px-3 py-2 text-right">Model HR%</th>
+                  <th className="px-3 py-2 text-right">American</th>
+                  <th className="px-3 py-2 text-right">EV (1u)</th>
+                  <th className="px-3 py-2 text-left">Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bonus.map((r,i)=> (
+                  <tr key={i} className="border-b">
+                    <td className="px-3 py-2">{r.name}</td>
+                    <td className="px-3 py-2">{r.game}</td>
+                    <td className="px-3 py-2 text-right">{(r.p_model*100).toFixed(1)}%</td>
+                    <td className="px-3 py-2 text-right">{r.american>0?`+${r.american}`:r.american}</td>
+                    <td className="px-3 py-2 text-right">{r.ev.toFixed(3)}</td>
+                    <td className="px-3 py-2">{r.why}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       </div>
     </div>
   );
