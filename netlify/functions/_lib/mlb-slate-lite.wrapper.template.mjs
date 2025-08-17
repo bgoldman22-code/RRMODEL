@@ -2,30 +2,30 @@
 // FANDUEL_ODDS_INTEGRATED (no top-level await; CJS-safe under esbuild)
 import { fetchFanDuelHrOdds, normName, americanToProb } from "./_lib/fanduel-hr.mjs";
 
-// Lazy dynamic imports; look for *_orig first (underscore, not dot)
-const tryImportMjs = () => import("./mlb-slate-lite_orig.mjs").catch(() => null);
-const tryImportCjs = () => import("./mlb-slate-lite_orig.cjs").catch(() => null);
+// Import original from the STASH directory that Netlify does NOT bundle as a function
+const tryImportMjs = () => import("./_lib/_orig/mlb-slate-lite_orig.mjs").catch(() => null);
+const tryImportCjs = () => import("./_lib/_orig/mlb-slate-lite_orig.cjs").catch(() => null);
 
 export const handler = async (event, context) => {
-  // Resolve original at request time
   let orig = await tryImportMjs();
-  if (!orig || !orig.handler) {
-    orig = await tryImportCjs();
-  }
+  if (!orig || !orig.handler) orig = await tryImportCjs();
   if (!orig || !orig.handler) {
     return {
       statusCode: 500,
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ok:false, error:"mlb-slate-lite_orig missing" })
+      body: JSON.stringify({ ok:false, error:"mlb-slate-lite original missing (stash)" })
     };
   }
 
   const res = await orig.handler(event, context);
 
+  // If anything goes wrong, or if candidates come back empty, just return the original
   try {
     const json = JSON.parse(res.body || "{}");
-    const games = Array.isArray(json.games) ? json.games : [];
     const candidates = Array.isArray(json.candidates) ? json.candidates : [];
+    const games = Array.isArray(json.games) ? json.games : [];
+
+    if (!candidates.length) return res; // <- ensure we never zero-out candidates
 
     const eventMap = new Map();
     for (const g of games) {
@@ -34,7 +34,7 @@ export const handler = async (event, context) => {
       if (gid && eid) eventMap.set(gid, String(eid));
     }
 
-    if (eventMap.size > 0 && candidates.length > 0) {
+    if (eventMap.size > 0) {
       const fd = await fetchFanDuelHrOdds(eventMap);
       for (const c of candidates) {
         const byPlayer = fd.get(c.gameId);
