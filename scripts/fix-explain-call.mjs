@@ -1,29 +1,20 @@
 // scripts/fix-explain-call.mjs
-// Converts invalid pseudo-named calls like explainRow(baseProb: x, hotBoost: y, ...)
-// into object calls explainRow({ baseProb: x, hotBoost: y, ... })
-import { readFileSync, writeFileSync } from "node:fs";
+import fs from "node:fs";
+import path from "node:path";
 
-const path = "src/MLB.jsx";
-let src;
-try {
-  src = readFileSync(path, "utf8");
-} catch (e) {
-  console.log("[fix-explain] src/MLB.jsx not found; skipping");
+const file = path.resolve("src/MLB.jsx");
+if (!fs.existsSync(file)) {
+  console.log("[fix-explain-call] skipped: src/MLB.jsx not found");
   process.exit(0);
 }
+let txt = fs.readFileSync(file, "utf8");
 
-// Quick heuristic: find explainRow( ... ) blocks that include "baseProb:" inside the parens
-let changed = false;
-src = src.replace(/explainRow\(\s*([^)]*?baseProb\s*:.*?)[\s\S]*?\)/g, (m) => {
-  // Wrap the entire argument list in braces if not already
-  if (/explainRow\(\s*\{/.test(m)) return m; // already an object
-  changed = true;
-  return m.replace(/explainRow\(\s*/, "explainRow({ ").replace(/\)\s*$/, " })");
+// Fix invalid "named arg" style: explainRow(baseProb: x, hotBoost: y, ...)
+// Convert to object call: explainRow({ baseProb: x, hotBoost: y, ... })
+// This is a conservative regex that only targets obvious cases.
+txt = txt.replace(/explainRow\s*\(\s*([\w$]+\s*:\s*[^)]+)\)/g, (m, inner) => {
+  return `explainRow({ ${inner} })`;
 });
 
-if (changed) {
-  writeFileSync(path, src);
-  console.log("[fix-explain] converted pseudo-named explainRow(...) to object form");
-} else {
-  console.log("[fix-explain] no pseudo-named explainRow() calls found");
-}
+fs.writeFileSync(file, txt, "utf8");
+console.log("[fix-explain-call] normalized calls");
