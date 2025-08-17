@@ -1,5 +1,6 @@
 [build]
-  command = "npm install --no-audit --no-fund && npm run build"
+  # Force visibility into what's failing:
+  command = "node ./scripts/print-env.mjs && npm install --no-audit --no-fund --loglevel verbose && npm run prebuild && npm run build"
   publish = "dist"
   functions = "netlify/functions"
 
@@ -7,7 +8,6 @@
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs"]
 
-# Keep your SPA routing
 [[redirects]]
   from = "/*"
   to = "/index.html"

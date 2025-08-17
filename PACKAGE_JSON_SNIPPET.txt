@@ -1,7 +1,9 @@
-// Add this to your package.json "scripts":
+// Ensure your package.json has at least:
 {
   "scripts": {
-    "prebuild": "node --experimental-modules ./scripts/prebuild-check.mjs",
-    "build": "vite build"
+    "prebuild": "node ./scripts/prebuild-check.mjs",
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview --port 4173"
   }
 }
