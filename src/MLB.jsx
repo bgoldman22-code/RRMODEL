@@ -1,5 +1,5 @@
 // src/MLB.jsx (patched Option B)
-import { buildWhy } from './utils/why';
+import { buildWhy } from './utils/why.js';
 
 // ... inside your map loop
 rows.push({
