@@ -1,0 +1,10 @@
+Add this to your package.json "scripts" section (merge if keys already exist):
+
+{
+  "scripts": {
+    "prebuild": "node ./scripts/prebuild-check.mjs",
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview --port 4173"
+  }
+}
