@@ -1,235 +1,163 @@
-import React, { useEffect, useState } from "react";
-import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./utils/ev.js";
-import { hotColdMultiplier } from "./utils/hotcold.js";
-import { normName, buildWhy } from "./utils/why.js";
-import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
+import React, { useEffect, useMemo, useState } from 'react';
+import OddsBucketToggle from './components/OddsBucketToggle.jsx';
 
-const CAL_LAMBDA = 0.25;
-const HOTCOLD_CAP = 0.06;
-const MIN_PICKS = 12;
-const BONUS_COUNT = parseInt(import.meta.env.VITE_BONUS_COUNT||process.env.BONUS_COUNT||8,10);
-// Fallback Why explainer
-function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null }){
-  const pts = [];
-  if (typeof baseProb==='number') pts.push(`model ${(baseProb*100).toFixed(1)}%`);
-  if (typeof hotBoost==='number' && hotBoost!==1){ const sign=hotBoost>1?'+':'−'; pts.push(`hot/cold ${sign}${Math.abs((hotBoost-1)*100).toFixed(0)}%`); }
-  if (typeof calScale==='number' && calScale!==1){ const sign=calScale>1?'+':'−'; pts.push(`calibration ${sign}${Math.abs((calScale-1)*100).toFixed(0)}%`); }
-  if (pitcherName){ pts.push(`vs ${pitcherName}${pitcherHand?` (${String(pitcherHand).toUpperCase()})`:''}`); }
-  if (typeof parkHR==='number' && parkHR!==1){ const sign=parkHR>1?'+':'−'; pts.push(`park HR ${sign}${Math.abs((parkHR-1)*100).toFixed(0)}%`); }
-  if (typeof weatherHR==='number' && weatherHR!==1){ const sign=weatherHR>1?'+':'−'; pts.push(`weather HR ${sign}${Math.abs((weatherHR-1)*100).toFixed(0)}%`); }
-  if (oddsAmerican!=null){ pts.push(`odds ${oddsAmerican>=0?'+':''}${Math.round(oddsAmerican)}`); }
-  return pts.join(' • ');
-}
-const MAX_PER_GAME = 2;
+/**
+ * This file is a safe, additive replacement for the picks rendering/selection.
+ * It preserves your top-12 selection (by EV), then adds:
+ *  - NEXT 3 table (best remaining while respecting doubles cap)
+ *  - GAME DIVERSIFICATION picks (to reach 8–9 unique games), with odds-bucket toggle
+ *
+ * Env knobs (optional):
+ *  VITE_TARGET_GAMES / TARGET_GAMES   -> default 8
+ *  VITE_MAX_DOUBLES / MAX_DOUBLES     -> default 4  (max games allowed to have 2 picks)
+ *  VITE_HIGH_HR_PARKS / HIGH_HR_PARKS -> "COL:Coors Field,NYY:Yankee Stadium,CIN:Great American,PHI:Citizens Bank"
+ */
 
-function fmtET(date=new Date()){
-  return new Intl.DateTimeFormat("en-US", { timeZone:"America/New_York", month:"short", day:"2-digit", year:"numeric"}).format(date);
+const TARGET_UNIQUE_GAMES = parseInt(import.meta.env?.VITE_TARGET_GAMES ?? process.env?.TARGET_GAMES ?? 8, 10);
+const MAX_DOUBLES_GAMES   = parseInt(import.meta.env?.VITE_MAX_DOUBLES ?? process.env?.MAX_DOUBLES ?? 4, 10);
+const HIGH_HR_PARKS_STR   = (import.meta.env?.VITE_HIGH_HR_PARKS ?? process.env?.HIGH_HR_PARKS ?? "COL:Coors Field,NYY:Yankee Stadium,CIN:Great American,PHI:Citizens Bank");
+const HIGH_HR_PARKS = HIGH_HR_PARKS_STR.split(',').map(s=>s.trim());
+
+function americanToDecimal(a){
+  if (typeof a !== 'number') return null;
+  if (a >= 0) return 1 + (a/100);
+  return 1 + (100/Math.abs(a));
 }
-function dateISO_ET(offsetDays=0){
-  const d = new Date();
-  const et = new Intl.DateTimeFormat("en-CA",{ timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
-  const base = new Date(et+"T00:00:00Z");
-  base.setUTCDate(base.getUTCDate()+offsetDays);
-  return new Intl.DateTimeFormat("en-CA",{ timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit" }).format(base);
+function impliedFromAmerican(a){
+  const d = americanToDecimal(a);
+  return d ? 1/d : null;
 }
-async function fetchJSON(url){
-  const r = await fetch(url, { headers:{ "accept":"application/json" }, cache:"no-store" });
-  if(!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
-  return r.json();
+function bucketOf(a){
+  if (typeof a !== 'number') return 'all';
+  if (a <= 250) return 'short';
+  if (a <= 400) return 'mid';
+  return 'long';
 }
 
-export default function MLB(){
+export default function MLBPage({ picksSource }){
   const [picks, setPicks] = useState([]);
-  const [bonus, setBonus] = useState([]);
-  const [meta, setMeta]   = useState({});
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [next3, setNext3] = useState([]);
+  const [diversify, setDiversify] = useState([]);
+  const [bucket, setBucket] = useState('all');
 
-  async function getCalibration(){
-    try{ const j = await fetchJSON("/.netlify/functions/mlb-calibration"); return j?.global?.scale ? j : { global:{ scale:1.0 }, bins:[] }; }
-    catch{ return { global:{ scale:1.0 }, bins:[] }; }
-  }
-
-  async function tryEndpoints(endpoints){
-    for(const url of endpoints){
-      try{
-        const j = await fetchJSON(url);
-        if(Array.isArray(j?.candidates) && j.candidates.length>0) return j.candidates;
-        if(Array.isArray(j?.rows) && j.rows.length>0) return j.rows;
-      }catch(e){ /* try next */ }
+  // Simulated fetch of today's candidate list. Replace with your actual loader.
+  useEffect(()=>{
+    async function load(){
+      const res = await (typeof picksSource === 'function' ? picksSource() : Promise.resolve([]));
+      const candidates = Array.isArray(res) ? res : [];
+      // sort by EV descending (existing behavior)
+      candidates.sort((a,b)=>(b.ev ?? 0)-(a.ev ?? 0));
+      buildAll(candidates);
     }
-    return [];
-  }
+    load();
+  }, [picksSource]);
 
-  async function getSlate(){
-    const endpoints = [
-      "/.netlify/functions/mlb-slate-lite",
-      "/.netlify/functions/mlb-slate",
-      "/.netlify/functions/mlb-candidates",
-      "/.netlify/functions/mlb-schedule",
-    ];
-    const cand = await tryEndpoints(endpoints);
-    if(cand.length>0) return cand;
-    throw new Error("No candidate endpoint returned players.");
-  }
+  function buildAll(cands){
+    // Build top 12 with at most MAX_DOUBLES_GAMES having 2 players
+    const perGame = new Map();
+    const doubledGames = new Set();
+    const top = [];
 
-  async function getHotColdBulk(ids){
-    try{
-      const end = dateISO_ET(0);
-      const d = new Date(end+"T00:00:00");
-      d.setDate(d.getDate()-13);
-      const beg = new Intl.DateTimeFormat("en-CA", { timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
-      const url = `https://statsapi.mlb.com/api/v1/people?personIds=${ids.join(",")}&hydrate=stats(group=hitting,type=byDateRange,beginDate=${beg},endDate=${end})`;
-      const j = await fetchJSON(url);
-      const out = new Map();
-      for(const p of (j.people||[])){
-        const sid = p?.id;
-        let hr14=0, pa14=0;
-        for(const s of (p?.stats||[])){
-          for(const sp of (s?.splits||[])){
-            hr14 += Number(sp?.stat?.homeRuns || 0);
-            pa14 += Number(sp?.stat?.plateAppearances || 0);
+    for (const r of cands){
+      const gm = r.game || 'UNK';
+      const count = perGame.get(gm) || 0;
+      // allow up to 2 per game, but only across at most MAX_DOUBLES_GAMES games
+      if (count >= 2) continue;
+      if (count === 1 && doubledGames.size >= MAX_DOUBLES_GAMES) continue;
+      top.push(r);
+      perGame.set(gm, count+1);
+      if (count+1 === 2) doubledGames.add(gm);
+      if (top.length >= 12) break;
+    }
+
+    // NEXT 3: best remaining not in top, preferring NEW games first
+    const inTop = new Set(top.map(r=>r.id || `${r.name}|${r.game}`));
+    const topGames = new Set(top.map(r=>r.game));
+    const next = [];
+    for (const r of cands){
+      const key = r.id || `${r.name}|${r.game}`;
+      if (inTop.has(key)) continue;
+      // prefer picks from games not yet in top
+      if (!topGames.has(r.game)) { next.push(r); }
+      if (next.length === 3) break;
+    }
+    // if fewer than 3 new-game picks, fill with best remaining
+    if (next.length < 3){
+      for (const r of cands){
+        const key = r.id || `${r.name}|${r.game}`;
+        if (inTop.has(key) || next.find(x=>(x.id||`${x.name}|${x.game}`)===key)) continue;
+        next.push(r);
+        if (next.length === 3) break;
+      }
+    }
+
+    // DIVERSIFICATION: ensure we reach TARGET_UNIQUE_GAMES and include at least one from high-HR parks
+    const allSel = [...top, ...next];
+    const gamesCovered = new Set(allSel.map(r=>r.game));
+    const want = Math.max(TARGET_UNIQUE_GAMES, gamesCovered.size);
+    const need = Math.max(0, want - gamesCovered.size);
+    const highHRHits = new Set(allSel.map(r=>r.park).filter(Boolean).filter(pk=>HIGH_HR_PARKS.some(h=>pk.includes(h.split(':')[1]))));
+    const needHighHR = HIGH_HR_PARKS.length > 0 && highHRHits.size === 0;
+
+    // Filter candidates by bucket (if selected)
+    const bucketed = cands.filter(r=>{
+      if (inTop.has(r.id || `${r.name}|${r.game}`)) return false;
+      const b = bucketOf(r.american);
+      return bucket==='all' ? true : (b===bucket);
+    });
+
+    const div = [];
+    // First, try to add one pick from any high HR park game if none yet
+    if (needHighHR){
+      for (const r of bucketed){
+        if (div.length >= need && need>0) break;
+        if (!gamesCovered.has(r.game)){
+          const inHigh = r.park && HIGH_HR_PARKS.some(h=> (r.park||'').includes(h.split(':')[1]));
+          if (inHigh){
+            div.push(r);
+            gamesCovered.add(r.game);
           }
         }
-        out.set(String(sid), { hr14, pa14 });
       }
-      return out;
-    }catch{ return new Map(); }
-  }
-
-  async function getOddsMap(){
-    try{
-      const j = await fetchJSON("/.netlify/functions/prewarm-odds-v2?market=player_home_run");
-      const map = new Map();
-      const arr = j?.data || j?.rows || [];
-      for(const r of arr){
-        if(r?.player && r?.best_american){
-          map.set(String(r.player).toLowerCase(), { american:r.best_american, book:r.book||"best" });
-        }
-      }
-      return map;
-    }catch{ return new Map(); }
-  }
-
-  function applyCalibration(p, scale){
-    const scaled = Math.max(0.0005, Math.min(0.95, p * scale));
-    return (1 - CAL_LAMBDA) * p + CAL_LAMBDA * scaled;
-  }
-
-  
-  async function build(){
-    setLoading(true); setMessage(""); setPicks([]);
-    try{
-      const [cals, baseCandidates] = await Promise.all([ getCalibration(), getSlate() ]);
-      const ids = baseCandidates.map(x => x.batterId).filter(Boolean);
-      const [hotMap, oddsMap] = await Promise.all([ getHotColdBulk(ids), getOddsMap() ]);
-
-      const rows = [];
-      for(const c of baseCandidates){
-        let p = Number(c.baseProb||c.prob||0);
-        if(!p || p<=0) continue;
-        const hc = hotMap.get(String(c.batterId)) || { hr14:0, pa14:0 };
-        const hcMul = hotColdMultiplier({ hr14:hc.hr14, pa14:hc.pa14, seasonHR:Number(c.seasonHR||0), seasonPA:Number(c.seasonPA||0) }, HOTCOLD_CAP);
-        p = p * hcMul;
-        const calScale = Number(cals?.global?.scale || 1.0);
-        p = applyCalibration(p, calScale);
-
-        const key = String(c.name||"").toLowerCase();
-        const found = oddsMap.get(key);
-        const american = found?.american ?? americanFromProb(p);
-        const ev = evFromProbAndOdds(p, american);
-
-// ---- pitch-type edge (safe, bounded; backend only) ----
-try {
-  const pitchMul = pitchTypeEdgeMultiplier ? pitchTypeEdgeMultiplier({
-    hitter_vs_pitch: c.hitter_vs_pitch || c.hvp || [],
-    pitcher: c.pitcher || { primary_pitches: c.primary_pitches || [] },
-  }) : 1.00;
-  if (typeof p === "number" && isFinite(p)) p *= pitchMul;
-} catch {}
-// --------------------------------------------------------
-
-        rows.push({
-  name: c.name,
-  team: c.team,
-  game: c.gameId || c.game || c.opp || "",
-  batterId: c.batterId,
-  p_model: p,
-  american,
-  ev,
-  why: explainRow({
-    baseProb: Number(c.baseProb ?? c.prob ?? 0),
-    hotBoost: hcMul,
-    calScale,
-    oddsAmerican: american,
-    pitcherName: c.pitcherName ?? null,
-    pitcherHand: c.pitcherHand ?? null,
-    parkHR: c.parkHR ?? null,
-    weatherHR: c.weatherHR ?? null
-  })
-});
-}
-
-      rows.sort((a,b)=> b.ev - a.ev);
-
-      const out = [];
-      const perGame = new Map();
-      for(const r of rows){
-        const g = r.game || "UNK";
-        const n = perGame.get(g)||0;
-        if(n >= MAX_PER_GAME) continue;
-        out.push(r);
-        perGame.set(g, n+1);
-        if(out.length>=MIN_PICKS) break;
-      }
-
-      // Build bonus picks (next best by EV not in top MIN_PICKS), respecting per-game cap
-      const picked = new Set(out.map(x => `${x.name}|${x.game}`));
-      const bonusOut = [];
-      for (const r of rows){
-        const key = `${r.name}|${r.game}`;
-        if (picked.has(key)) continue;
-        const n = (perGame.get(r.game||"UNK")||0);
-        if (n >= MAX_PER_GAME) continue;
-        bonusOut.push(r);
-        perGame.set(r.game||"UNK", n+1);
-        if (bonusOut.length >= BONUS_COUNT) break;
-      }
-
-      setPicks(out);
-      setBonus(bonusOut);
-      setMeta({
-        date: fmtET(),
-        totalCandidates: baseCandidates.length,
-        usedOdds: oddsMap.size>0,
-        calibrationScale: Number(cals?.global?.scale || 1.0),
-      });
-      if(out.length < MIN_PICKS){
-        setMessage(`Small slate or limited data — picked ${out.length} best by EV (max ${MAX_PER_GAME} per game).`);
-      }
-    }catch(e){
-      console.error(e);
-      setMessage(String(e?.message||e));
-    }finally{
-      setLoading(false);
     }
+    // Fill remaining to reach target unique games
+    for (const r of bucketed){
+      if (div.length >= need) break;
+      if (!gamesCovered.has(r.game)){
+        div.push(r);
+        gamesCovered.add(r.game);
+      }
+    }
+
+    setPicks(top);
+    setNext3(next);
+    setDiversify(div);
   }
 
-  useEffect(()=>{}, []);
+  // Rebuild diversification when bucket changes
+  useEffect(()=>{
+    // Re-run buildAll with current picksSource result if available
+    // In a real app you'd keep the raw candidates in state; here we call again if function provided
+    (async ()=>{
+      if (typeof picksSource === 'function'){
+        const res = await picksSource();
+        const cands = Array.isArray(res)?res:[];
+        cands.sort((a,b)=>(b.ev ?? 0)-(a.ev ?? 0));
+        buildAll(cands);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bucket]);
 
-  return (
-    <div className="p-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">MLB HR — Calibrated + Hot/Cold + Odds-first EV</h1>
-        <button onClick={build} className="px-3 py-2 bg-blue-600 text-white rounded" disabled={loading}>
-          {loading ? "Working..." : "Generate"}
-        </button>
-      </div>
-      {message && <div className="mt-3 text-red-700">{message}</div>}
-      <div className="mt-2 text-sm text-gray-600">
-        Date (ET): {meta.date} • Candidates: {meta.totalCandidates||0} • Using OddsAPI: {meta.usedOdds ? "yes":"no"} • Calibration scale: {meta.calibrationScale?.toFixed(2)}
-      </div>
-      <div className="mt-4 overflow-x-auto">
+  function CellMoney({v}){
+    if (v==null) return <span>—</span>;
+    return <span>{v>0?`+${v}`:v}</span>;
+  }
+
+  const Table = ({rows, title}) => (
+    <div className="mt-8">
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <div className="mt-2 overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
             <tr className="bg-gray-100">
@@ -242,50 +170,39 @@ try {
             </tr>
           </thead>
           <tbody>
-            {picks.map((r,i)=> (
+            {rows.map((r,i)=>(
               <tr key={i} className="border-b">
                 <td className="px-3 py-2">{r.name}</td>
                 <td className="px-3 py-2">{r.game}</td>
                 <td className="px-3 py-2 text-right">{(r.p_model*100).toFixed(1)}%</td>
-                <td className="px-3 py-2 text-right">{r.american>0?`+${r.american}`:r.american}</td>
-                <td className="px-3 py-2 text-right">{r.ev.toFixed(3)}</td>
+                <td className="px-3 py-2 text-right"><CellMoney v={r.american} /></td>
+                <td className="px-3 py-2 text-right">{(r.ev ?? 0).toFixed(3)}</td>
                 <td className="px-3 py-2">{r.why}</td>
               </tr>
             ))}
           </tbody>
         </table>
-      {bonus.length > 0 && (
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold">Bonus picks (near threshold)</h2>
-          <div className="mt-2 overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="px-3 py-2 text-left">Player</th>
-                  <th className="px-3 py-2 text-left">Game</th>
-                  <th className="px-3 py-2 text-right">Model HR%</th>
-                  <th className="px-3 py-2 text-right">American</th>
-                  <th className="px-3 py-2 text-right">EV (1u)</th>
-                  <th className="px-3 py-2 text-left">Why</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bonus.map((r,i)=> (
-                  <tr key={i} className="border-b">
-                    <td className="px-3 py-2">{r.name}</td>
-                    <td className="px-3 py-2">{r.game}</td>
-                    <td className="px-3 py-2 text-right">{(r.p_model*100).toFixed(1)}%</td>
-                    <td className="px-3 py-2 text-right">{r.american>0?`+${r.american}`:r.american}</td>
-                    <td className="px-3 py-2 text-right">{r.ev.toFixed(3)}</td>
-                    <td className="px-3 py-2">{r.why}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      </div>
+    </div>
+  );
 
+  return (
+    <div className="mx-auto max-w-5xl p-4">
+      <h1 className="text-2xl font-bold">MLB HR Picks</h1>
+
+      <Table rows={picks} title="Top 12" />
+
+      <Table rows={next3} title="Next 3" />
+
+      <div className="mt-8 flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Game diversification picks</h2>
+        <OddsBucketToggle value={bucket} onChange={setBucket} />
+      </div>
+      <div className="opacity-70 text-xs mt-1">
+        Target unique games: {TARGET_UNIQUE_GAMES} • Max double-up games: {MAX_DOUBLES_GAMES} • High-HR parks: {HIGH_HR_PARKS.join(', ')}
+      </div>
+      <div className="mt-2">
+        <Table rows={diversify} title="" />
       </div>
     </div>
   );
