@@ -2,12 +2,12 @@
 // FANDUEL_ODDS_INTEGRATED (no top-level await; CJS-safe under esbuild)
 import { fetchFanDuelHrOdds, normName, americanToProb } from "./_lib/fanduel-hr.mjs";
 
-// Prepare lazy dynamic imports without top-level await
-const tryImportMjs = () => import("./mlb-slate-lite.orig.mjs").catch(() => null);
-const tryImportCjs = () => import("./mlb-slate-lite.orig.cjs").catch(() => null);
+// Lazy dynamic imports; look for *_orig first (underscore, not dot)
+const tryImportMjs = () => import("./mlb-slate-lite_orig.mjs").catch(() => null);
+const tryImportCjs = () => import("./mlb-slate-lite_orig.cjs").catch(() => null);
 
 export const handler = async (event, context) => {
-  // Resolve the original handler at request time to avoid top-level await
+  // Resolve original at request time
   let orig = await tryImportMjs();
   if (!orig || !orig.handler) {
     orig = await tryImportCjs();
@@ -16,7 +16,7 @@ export const handler = async (event, context) => {
     return {
       statusCode: 500,
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ok:false, error:"mlb-slate-lite.orig missing" })
+      body: JSON.stringify({ ok:false, error:"mlb-slate-lite_orig missing" })
     };
   }
 
