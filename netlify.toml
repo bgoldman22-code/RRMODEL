@@ -1,9 +1,14 @@
 [build]
-  # Use npm install (works without package-lock.json). If you add a lockfile later,
-  # you can revert to `npm ci` for reproducible builds.
-  command = "npm install --no-audit --no-fund && npm run prebuild && npm run build"
+  # Run a safe prebuild checker, then a verbose Vite build via a Node wrapper
+  command = "npm install --no-audit --no-fund && npm run prebuild && node ./scripts/run-vite-build.mjs"
   publish = "dist"
   functions = "netlify/functions"
+
+[build.environment]
+  # Turn on Vite internal debug logs
+  DEBUG = "vite:*"
+  # Ensure CI verbosity
+  CI = "true"
 
 [functions]
   node_bundler = "esbuild"
