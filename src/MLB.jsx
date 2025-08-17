@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./utils/ev.js";
 import { hotColdMultiplier } from "./utils/hotcold.js";
-import { normName, buildWhy } from "./utils/why.js";
+import { normName, buildWhy, explainRow } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier, rookieBlendBaseline } from "./utils/model_scalers.js";
 
 const CAL_LAMBDA = 0.25;
@@ -157,7 +157,15 @@ export default function MLB(){
           p_model: p,
           american,
           ev,
-          why: explainRow( baseProb:Number(c.baseProb||c.prob||0), hotBoost:hcMul, calScale , pitcherName: r.pitcherName || r.pname || null, pitcherHand: r.pitcherHand || r.phand || null, parkHR: r.parkHR ?? null, weatherHR: r.weatherHR ?? null),
+          why: explainRow({
+            baseProb: Number(c.baseProb ?? c.prob ?? 0),
+            hotBoost: hcMul,
+            calScale,
+            oddsAmerican: american,
+            pitcherName: (c.pitcher && c.pitcher.name) ? c.pitcher.name : (c.pitcherName || ""),
+            parkHR: (c.parkHR ?? 1),
+            weatherHR: (c.weatherHR ?? 1)
+          }),
         });
       }
 
