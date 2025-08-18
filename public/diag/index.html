@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Odds Diagnostics</title>
+  <style>
+    body{font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; padding:16px;}
+    input,button{font-size:16px;padding:8px}
+    .row{margin:12px 0}
+    pre{background:#f7f7f9;border:1px solid #eee;padding:12px;overflow:auto}
+    .hint{color:#555;font-size:14px}
+    .ok{color:green}.bad{color:#b00020}
+  </style>
+</head>
+<body>
+  <h2>Odds Diagnostics (Hidden)</h2>
+  <div class="row">
+    <label>Player name: <input id="name" placeholder="e.g. Shohei Ohtani" size="32"></label>
+    <button id="btnLookup">Lookup</button>
+  </div>
+  <div class="row hint">GET <code>/.netlify/functions/odds-lookup?name=...</code></div>
+  <pre id="out1">…</pre>
+
+  <hr>
+  <div class="row">
+    <label>Comma-separated names: <input id="names" placeholder="Name1, Name2, ..." size="48"></label>
+    <button id="btnScan">Scan Missing</button>
+  </div>
+  <div class="row hint">POST <code>/.netlify/functions/odds-scan-missing</code> with <code>{"names":[...]}</code> or use <code>?names=</code></div>
+  <pre id="out2">…</pre>
+
+  <script src="./diag.js"></script>
+</body>
+</html>
