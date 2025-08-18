@@ -1,131 +1,113 @@
 // netlify/functions/odds-lookup.mjs
-import { getStore } from "@netlify/blobs";
 
-const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
-const CANDIDATE_KEYS = [
+function normName(s) {
+  if (!s) return "";
+  let t = String(s).toLowerCase().trim();
+  const m = t.match(/^([^,]+),\s*(.+)$/);
+  if (m) t = `${m[2]} ${m[1]}`;
+  t = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  t = t.replace(/[.]/g, "").replace(/[\u2019’]/g, "'").replace(/,+/g, "");
+  t = t.replace(/\b(jr|jr\.|iii|ii)\b/g, "").replace(/\s+/g, " ").trim();
+  return t;
+}
+function tokenSet(s){ return new Set(normName(s).split(" ").filter(Boolean)); }
+function jaccard(a,b){
+  const A = tokenSet(a), B = tokenSet(b);
+  const inter = new Set([...A].filter(x=>B.has(x)));
+  const union = new Set([...A, ...B]);
+  return union.size ? inter.size/union.size : 0;
+}
+function getBaseUrl(event){
+  if (process.env.URL) return process.env.URL;
+  const host = event?.headers?.host || "localhost:8888";
+  const proto = host.includes("localhost") ? "http" : "https";
+  return `${proto}://${host}`;
+}
+async function fetchJson(url, opts){
+  const r = await fetch(url, opts || {});
+  const ct = r.headers.get("content-type") || "";
+  if (!ct.includes("application/json")) {
+    const text = await r.text();
+    return { ok:false, error:`non-json ${r.status}`, body:text };
+  }
+  const j = await r.json();
+  return j;
+}
+
+const SNAPSHOT_KEYS = [
   process.env.ODDS_SNAPSHOT_KEY || "latest.json",
   "odds_latest.json",
   "hr_latest.json",
   "odds_batter_home_runs.json"
 ];
 
-function normName(s) {
-  if (!s) return "";
-  const lower = String(s).toLowerCase().trim();
-  // move "lastname, firstname" to "firstname lastname"
-  const m = lower.match(/^([^,]+),\s*(.+)$/);
-  let t = m ? (m[2] + " " + m[1]) : lower;
-  // remove punctuation/diacritics
-  t = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  t = t.replace(/[.]/g, "").replace(/[\u2019’]/g, "'").replace(/,+/g, "");
-  // collapse whitespace
-  t = t.replace(/\s+/g, " ").trim();
-  // remove common suffixes
-  t = t.replace(/\b(jr|jr\.|iii|ii)\b/g, "").replace(/\s+/g, " ").trim();
-  return t;
-}
-
-function tokenSetKey(s) {
-  return new Set(normName(s).split(" ").filter(Boolean));
-}
-
-function jaccard(a, b) {
-  const setA = tokenSetKey(a), setB = tokenSetKey(b);
-  const inter = new Set([...setA].filter(x => setB.has(x)));
-  const union = new Set([...setA, ...setB]);
-  return union.size ? inter.size / union.size : 0;
-}
-
-async function loadAliases(store) {
+async function loadFromBlobs() {
   try {
-    // allow shipping with repo or blobs; here we embed a small table inline if file not present
-    return {
-      "shohei ohtani": ["ohtani shohei", "ohtani, shohei"],
-      "ronald acuna jr.": ["ronald acuna", "acuna ronald", "ronald acuna jr", "ronald acuna junior"],
-      "giancarlo stanton": ["mike stanton"]
-    };
-  } catch { return {}; }
+    const mod = await import("@netlify/blobs");
+    const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
+    const store = mod.getStore({ name: STORE_NAME });
+    for (const key of SNAPSHOT_KEYS) {
+      const s = await store.get(key);
+      if (s) return { source:"blobs", key, json: JSON.parse(s) };
+    }
+  } catch (e) {
+    // no blobs or not configured
+  }
+  return null;
 }
 
-async function getSnapshot(store) {
-  const tried = [];
-  for (const key of CANDIDATE_KEYS) {
-    try {
-      const blob = await store.get(key);
-      if (blob) return { key, json: JSON.parse(blob) };
-      tried.push({ key, ok:false });
-    } catch (e) {
-      tried.push({ key, ok:false, err: String(e) });
-    }
-  }
-  return { tried, json:null };
+async function loadFromFunctions(event) {
+  const base = getBaseUrl(event);
+  let j = await fetchJson(`${base}/.netlify/functions/odds-get`);
+  if (j && j.ok && j.players) return { source:"odds-get", key:"odds-get", json:j.players };
+  // try quick refresh then get
+  await fetchJson(`${base}/.netlify/functions/odds-refresh-rapid?quick=1`);
+  j = await fetchJson(`${base}/.netlify/functions/odds-get`);
+  if (j && j.ok && j.players) return { source:"refreshed", key:"odds-get", json:j.players };
+  return null;
+}
+
+function flattenSnapshot(snap) {
+  // accept either {players: map} or flat map
+  if (!snap) return [];
+  if (snap.players && typeof snap.players === "object") return Object.entries(snap.players);
+  if (typeof snap === "object") return Object.entries(snap);
+  return [];
 }
 
 export const handler = async (event) => {
   try {
-    const qp = event?.queryStringParameters || {};
-    const name = qp.name || "";
-    if (!name) {
-      return json({ ok:false, error:"missing ?name= query" });
-    }
-    const store = getStore({ name: STORE_NAME });
+    const name = event?.queryStringParameters?.name || "";
+    if (!name) return json({ ok:false, error:"missing ?name=" });
 
-    const snap = await getSnapshot(store);
-    if (!snap?.json) {
-      return json({
-        ok:false,
-        error:"no odds snapshot found",
-        tried: snap?.tried || CANDIDATE_KEYS,
-        hint:"run your odds refresh first; then retry"
-      });
-    }
+    let snap = await loadFromBlobs();
+    if (!snap) snap = await loadFromFunctions(event);
+    if (!snap) return json({ ok:false, error:"no odds snapshot available (blobs+functions failed)" });
 
-    const odds = snap.json;
-    // odds could be: { players: {...} } or a flat map; handle generically
-    const allEntries = [];
-    if (odds.players && typeof odds.players === "object") {
-      for (const [k,v] of Object.entries(odds.players)) allEntries.push([k,v]);
-    } else {
-      for (const [k,v] of Object.entries(odds)) allEntries.push([k,v]);
-    }
-
-    const target = normName(name);
-    const aliases = await loadAliases(store);
-    const aliasList = [target, ...(aliases[target] || [])].map(normName);
+    const entries = flattenSnapshot(snap.json);
+    const target = name;
+    const targetNorm = normName(target);
 
     const exact = [];
     const fuzzy = [];
-    for (const [rawKey, val] of allEntries) {
-      const key = normName(rawKey);
-      if (aliasList.includes(key)) {
-        exact.push({ rawKey, key, val });
-      } else {
-        const score = jaccard(key, target);
-        if (score >= 0.5) fuzzy.push({ rawKey, key, score, val });
+    for (const [rawKey, val] of entries) {
+      const keyNorm = normName(rawKey);
+      if (keyNorm === targetNorm) exact.push({ rawKey, val });
+      else {
+        const score = jaccard(keyNorm, targetNorm);
+        if (score >= 0.5) fuzzy.push({ rawKey, score, val:null });
       }
     }
+    fuzzy.sort((a,b)=>b.score-a.score);
+    const fuzzy_sample = fuzzy.slice(0,10).map(x=>({ rawKey:x.rawKey, score:Number(x.score.toFixed(2)) }));
 
-    // also surface nearby names for manual inspection
-    fuzzy.sort((a,b) => b.score - a.score);
-    const sample = fuzzy.slice(0, 10).map(x => ({ rawKey: x.rawKey, score: Number(x.score.toFixed(2)) }));
-
-    return json({
-      ok:true,
-      store: STORE_NAME,
-      snapshot_key: snap.key,
-      target: name,
-      normalized: target,
-      exact_count: exact.length,
-      fuzzy_count: fuzzy.length,
-      exact: exact.slice(0, 10),
-      fuzzy_sample: sample
-    });
-  } catch (e) {
+    return json({ ok:true, source:snap.source, snapshot_key:snap.key, target, normalized:targetNorm, exact_count: exact.length, exact: exact.slice(0,10), fuzzy_count:fuzzy.length, fuzzy_sample });
+  } catch(e) {
     return json({ ok:false, error:String(e) });
   }
 };
 
-function json(body) {
+function json(body){
   return {
     statusCode: 200,
     headers: { "content-type":"application/json", "cache-control":"no-store" },
