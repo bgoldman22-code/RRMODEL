@@ -100,6 +100,7 @@ export default function MLB(){
   const [picks, setPicks] = useState([]);
   const [bonus, setBonus] = useState([]);
   const [meta, setMeta]   = useState({});
+  const [missing, setMissing] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -155,24 +156,18 @@ export default function MLB(){
     }catch{ return new Map(); }
   }
 
-  
-async function getOddsMap(){
+  async function getOddsMap(){
     try{
-      const res = await fetch("/.netlify/functions/odds-get", { cache: "no-store" });
-      if(!res.ok) return new Map();
-      const snap = await res.json();
-      const players = snap?.players || {};
+      const j = await fetchJSON("/.netlify/functions/prewarm-odds-v2?market=player_home_run");
       const map = new Map();
-      const normalize = (str) => String(str||"").toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-        .replace(/[.]/g,'').replace(/[’']/g,"'").trim();
-      for(const [raw, rec] of Object.entries(players)){
-        if(rec && rec.median_american!=null){
-          map.set(normalize(raw), { american: rec.median_american, books: rec.count_books, by_book: rec.by_book });
+      const arr = j?.data || j?.rows || [];
+      for(const r of arr){
+        if(r?.player && r?.best_american){
+          map.set(String(r.player).toLowerCase(), { american:r.best_american, book:r.book||"best" });
         }
       }
       return map;
-    }catch(e){ return new Map(); }
+    }catch{ return new Map(); }
   }
 
   function applyCalibration(p, scale){
@@ -254,8 +249,9 @@ async function getOddsMap(){
         // Odds & EV
         const keyName = String(c.name||"").toLowerCase();
         const found = oddsMap.get(keyName);
+        const hasOdds = !!(found && found.american!=null);
         const modelAmerican = americanFromProb(p);
-        const american = (found?.american!=null) ? found.american : modelAmerican;
+        const american = hasOdds ? found.american : modelAmerican;
         const ev = evFromProbAndOdds(p, american);
 
         // Rank score with odds weight suppressed
@@ -266,7 +262,7 @@ async function getOddsMap(){
         rows.push({
           name: c.name, team: c.team, game: c.gameId || c.game || c.opp || "",
           batterId: c.batterId,
-          p_model: p, modelAmerican, american, ev, rankScore,
+          p_model: p, modelAmerican, american, ev, rankScore, hasOdds,
           bvp_mod, protection_mod,
           why: explainRow({
             baseProb: Number(c.baseProb ?? c.prob ?? 0),
@@ -305,6 +301,12 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
       setPicks(out);
       setBonus(bonusOut);
+
+      // Build missing-odds list: top 20 by model probability with no attached odds
+      const top20 = rows.slice().sort((a,b)=> (b.p_model - a.p_model)).slice(0,20);
+      const missingList = top20.filter(r => !r.hasOdds).map(r => ({ name:r.name, game:r.game, modelPct:r.p_model, modelAmerican:r.modelAmerican }));
+      setMissing(missingList);
+
       setMeta({
         date: fmtET(),
         totalCandidates: baseCandidates.length,
@@ -343,8 +345,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
               <th className="px-3 py-2 text-left">Player</th>
               <th className="px-3 py-2 text-left">Game</th>
               <th className="px-3 py-2 text-right">Model HR%</th>
-              <th className="px-3 py-2 text-right">Model Odds</th>
-              <th className="px-3 py-2 text-right">Actual Odds</th>
+              <th className="px-3 py-2 text-right">American</th>
               <th className="px-3 py-2 text-right">EV (1u)</th>
               <th className="px-3 py-2 text-left">Why</th>
             </tr>
@@ -355,7 +356,6 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
                 <td className="px-3 py-2">{r.name}</td>
                 <td className="px-3 py-2">{r.game}</td>
                 <td className="px-3 py-2 text-right">{(r.p_model*100).toFixed(1)}%</td>
-                <td className="px-3 py-2 text-right">{r.modelAmerican>0?`+${r.modelAmerican}`:r.modelAmerican}</td>
                 <td className="px-3 py-2 text-right">{r.american>0?`+${r.american}`:r.american}</td>
                 <td className="px-3 py-2 text-right">{r.ev.toFixed(3)}</td>
                 <td className="px-3 py-2">{r.why}</td>
@@ -373,8 +373,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
                   <th className="px-3 py-2 text-left">Player</th>
                   <th className="px-3 py-2 text-left">Game</th>
                   <th className="px-3 py-2 text-right">Model HR%</th>
-                  <th className="px-3 py-2 text-right">Model Odds</th>
-                  <th className="px-3 py-2 text-right">Actual Odds</th>
+                  <th className="px-3 py-2 text-right">American</th>
                   <th className="px-3 py-2 text-right">EV (1u)</th>
                   <th className="px-3 py-2 text-left">Why</th>
                 </tr>
