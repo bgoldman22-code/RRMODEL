@@ -1,4 +1,7 @@
-/** See README_RAPIDAPI_ODDS.txt for configuration. */
+/**
+ * Netlify Function: odds-refresh-rapid (FIXED store usage)
+ * Uses a NAMED Blobs store. Set BLOBS_STORE to override (default 'mlb-odds').
+ */
 import { getStore } from '@netlify/blobs';
 
 function dateETISO(d=new Date()){
@@ -16,12 +19,13 @@ export const handler = async (event) => {
   const PROP_MARKET_KEY = process.env.PROP_MARKET_KEY || 'batter_anytime_hr';
   const PROP_OUTCOME_FIELD = process.env.PROP_OUTCOME_FIELD || 'participant';
   const BOOKS = (process.env.BOOKS||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const STORE_NAME = process.env.BLOBS_STORE || 'mlb-odds';
 
   if (!RAPIDAPI_KEY || !RAPIDAPI_HOST || !EVENTS_URL || !EVENT_PROPS_URL){
     return { statusCode: 400, body: JSON.stringify({ ok:false, error: 'Missing RAPIDAPI_* envs (HOST/KEY/EVENTS_URL/EVENT_PROPS_URL)' }) };
   }
 
-  const store = getStore();
+  const store = getStore(STORE_NAME);
   const date = (event.queryStringParameters && event.queryStringParameters.date) || dateETISO();
   const eventsUrl = EVENTS_URL.replace('{DATE}', date);
 
@@ -50,9 +54,8 @@ export const handler = async (event) => {
   }
 
   if (evIds.length === 0){
-    const key = `odds/${date}.json`;
-    await store.set(key, JSON.stringify({ date, provider:'rapidapi', players:{} }));
-    await store.set('odds/latest.json', JSON.stringify({ date, provider:'rapidapi', players:{} }));
+    await store.set(`${date}.json`, JSON.stringify({ date, provider:'rapidapi', players:{} }));
+    await store.set('latest.json', JSON.stringify({ date, provider:'rapidapi', players:{} }));
     return { statusCode: 200, body: JSON.stringify({ ok:true, events:0, players:0 }) };
   }
 
@@ -111,8 +114,8 @@ export const handler = async (event) => {
 
   const snapshot = { date, provider:'rapidapi', market: process.env.PROP_MARKET_KEY||'batter_anytime_hr', players: playersOut };
 
-  await store.set(`odds/${date}.json`, JSON.stringify(snapshot));
-  await store.set('odds/latest.json', JSON.stringify(snapshot));
+  await store.set(`${date}.json`, JSON.stringify(snapshot));
+  await store.set('latest.json', JSON.stringify(snapshot));
 
-  return { statusCode: 200, body: JSON.stringify({ ok:true, events: evIds.length, players: Object.keys(playersOut).length, markets: totalMarkets }) };
+  return { statusCode: 200, body: JSON.stringify({ ok:true, events: evIds.length, players: Object.keys(playersOut).length, markets: totalMarkets, store: STORE_NAME }) };
 };
