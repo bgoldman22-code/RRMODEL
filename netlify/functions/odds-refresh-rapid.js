@@ -1,4 +1,4 @@
-// odds-refresh-rapid.js (CommonJS) with PROVIDER override + debug
+
 const { getStore } = require('@netlify/blobs');
 
 function initStore(){
@@ -18,13 +18,33 @@ function dateETISO(d=new Date()){
   return `${y}-${m}-${dd}`;
 }
 
-// backoff helpers
+function parseBackoff(query){
+  const env = (process.env.BACKOFF_MS||'').trim();
+  let arr = env ? env.split(',').map(s=>parseInt(s.trim(),10)).filter(n=>n>0) : [700, 1500, 2500];
+  if (query && (query.quick === '1' || query.quick === 1)) arr = [500, 1000];
+  let total=0, trimmed=[];
+  for (const ms of arr){
+    if (total + ms > 8000) break;
+    trimmed.push(ms); total += ms;
+  }
+  return trimmed.length ? trimmed : [800];
+}
+
+function withTimeout(promise, ms){
+  return new Promise((resolve,reject)=>{
+    const ctrl = new AbortController();
+    const id = setTimeout(()=>{ try{ ctrl.abort(); }catch(_e){}; reject(new Error('fetch timeout '+ms+'ms')); }, ms);
+    promise(ctrl.signal).then(v=>{ clearTimeout(id); resolve(v); }).catch(e=>{ clearTimeout(id); reject(e) });
+  });
+}
+
 async function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
-async function jsonWithBackoff(url, headers, attempts=[1000, 2500, 6000, 10000]){
+
+async function jsonWithBackoff(url, headers, attempts){
   let lastErr = null;
   for (let i=0;i<attempts.length;i++){
     try{
-      const r = await fetch(url, { headers });
+      const r = await withTimeout((signal)=>fetch(url, { headers, signal }), 3500);
       if (r.status === 429){
         lastErr = new Error('429 Too Many Requests');
         await sleep(attempts[i]);
@@ -53,26 +73,31 @@ function buildUrls(date){
   const region    = process.env.ODDSAPI_REGION || 'us';
   const marketKey = process.env.ODDSAPI_MARKET || process.env.PROP_MARKET_KEY || 'player_home_run';
 
-  // 1) Explicit override
   if (providerPref === 'theoddsapi'){
     if (!apiKeyOdds) return { error: 'Missing THEODDS_API_KEY for TheOddsAPI', provider: 'theoddsapi' };
     const eventsUrl = `https://api.the-odds-api.com/v4/sports/${sport}/events?regions=${region}&dateFormat=iso&apiKey=${apiKeyOdds}`;
     const propsTpl2 = `https://api.the-odds-api.com/v4/sports/${sport}/events/{EVENT_ID}/odds?regions=${region}&markets=${marketKey}&oddsFormat=american&dateFormat=iso&apiKey=${apiKeyOdds}`;
-    return { provider:'theoddsapi', mode:'forced', headers:{}, eventsUrl, propsTpl: propsTpl2, marketKey, region, sport };
+    return { provider:'theoddsapi', mode:'forced', headers:{}, eventsUrl, propsTpl: propsTpl2 };
   }
   if (providerPref === 'rapidapi'){
     if (!(rapidHost && rapidKey && evTpl && propsTpl)) return { error: 'PROVIDER=rapidapi but missing RAPIDAPI_* envs', provider:'rapidapi' };
-    return { provider:'rapidapi', mode:'forced', headers: { 'x-rapidapi-key': rapidKey, 'x-rapidapi-host': rapidHost }, eventsUrl: evTpl.replace('{DATE}', date), propsTpl, marketKey, region, sport };
+    return { provider:'rapidapi', mode:'forced', headers: { 'x-rapidapi-key': rapidKey, 'x-rapidapi-host': rapidHost }, eventsUrl: evTpl.replace('{DATE}', date), propsTpl };
   }
 
-  // 2) Auto-detect
   if (rapidHost && rapidKey && evTpl && propsTpl){
-    return { provider:'rapidapi', mode:'auto', headers: { 'x-rapidapi-key': rapidKey, 'x-rapidapi-host': rapidHost }, eventsUrl: evTpl.replace('{DATE}', date), propsTpl, marketKey, region, sport };
+    return { provider:'rapidapi', mode:'auto', headers: { 'x-rapidapi-key': rapidKey, 'x-rapidapi-host': rapidHost }, eventsUrl: evTpl.replace('{DATE}', date), propsTpl };
   }
   if (!apiKeyOdds) return { error: 'No provider configured: set THEODDS_API_KEY or RAPIDAPI_* envs', provider:'auto' };
   const eventsUrl = `https://api.the-odds-api.com/v4/sports/${sport}/events?regions=${region}&dateFormat=iso&apiKey=${apiKeyOdds}`;
   const propsTpl2 = `https://api.the-odds-api.com/v4/sports/${sport}/events/{EVENT_ID}/odds?regions=${region}&markets=${marketKey}&oddsFormat=american&dateFormat=iso&apiKey=${apiKeyOdds}`;
-  return { provider:'theoddsapi', mode:'auto', headers:{}, eventsUrl, propsTpl: propsTpl2, marketKey, region, sport };
+  return { provider:'theoddsapi', mode:'auto', headers:{}, eventsUrl, propsTpl: propsTpl2 };
+}
+
+function median(arr){
+  if (!arr || !arr.length) return null;
+  const a = arr.slice().sort((x,y)=>x-y);
+  const mid = Math.floor(a.length/2);
+  return a.length%2 ? a[mid] : Math.round((a[mid-1]+a[mid])/2);
 }
 
 exports.handler = async (event) => {
@@ -82,8 +107,9 @@ exports.handler = async (event) => {
 
   const date = (event.queryStringParameters && event.queryStringParameters.date) || dateETISO();
   const debug = !!(event.queryStringParameters && event.queryStringParameters.debug);
+  const backoff = parseBackoff(event.queryStringParameters || {});
   const setup = buildUrls(date);
-  const store = initStore(); // declare ONCE
+  const store = initStore();
 
   if (setup && setup.error){
     return { statusCode: 400, body: JSON.stringify({ ok:false, step:'setup', error: setup.error, provider: setup.provider }) };
@@ -94,11 +120,11 @@ exports.handler = async (event) => {
   // 1) Events
   let events = [];
   try {
-    const ej = await jsonWithBackoff(eventsUrl, headers);
+    const ej = await jsonWithBackoff(eventsUrl, headers, backoff);
     events = Array.isArray(ej && ej.events) ? ej.events : (Array.isArray(ej) ? ej : ((ej && ej.data) || ej || []));
   } catch (e) {
     try { await store.set('latest_error.json', JSON.stringify({ date, step:'events', provider, error: String(e) })); } catch(_e) {}
-    return { statusCode: 429, body: JSON.stringify({ ok:false, step:'events', provider, error: String(e), hint:'Provider busy or rate-limited; try again shortly.', debug: debug ? setup : undefined }) };
+    return { statusCode: 504, body: JSON.stringify({ ok:false, step:'events', provider, error: String(e), hint:'Timed out contacting odds provider; try quick=1 or reduce BACKOFF_MS.', backoff, debug: debug ? setup : undefined }) };
   }
 
   const evIds = [];
@@ -118,10 +144,9 @@ exports.handler = async (event) => {
   for (const id of evIds){
     const url = propsTpl.replace('{EVENT_ID}', id);
     let pj;
-    try { pj = await jsonWithBackoff(url, headers); } catch (e) { continue; }
+    try { pj = await jsonWithBackoff(url, headers, backoff); } catch (e) { continue; }
 
     if (provider === 'theoddsapi' || Array.isArray(pj && pj.bookmakers)){
-      // TheOddsAPI shape
       const bms = Array.isArray(pj && pj.bookmakers) ? pj.bookmakers : [];
       for (const bm of bms){
         const bookKey = ((bm && (bm.key || bm.title)) || '').toLowerCase();
@@ -146,7 +171,6 @@ exports.handler = async (event) => {
         }
       }
     } else {
-      // RapidAPI-like shape
       const markets = (pj && (pj.markets || pj.props || pj.data)) || [];
       for (const mk of (Array.isArray(markets) ? markets : [])){
         const key = mk && (mk.key || mk.market || mk.name);
@@ -170,13 +194,6 @@ exports.handler = async (event) => {
     }
   }
 
-  function median(arr){
-    if (!arr || !arr.length) return null;
-    const a = arr.slice().sort((x,y)=>x-y);
-    const mid = Math.floor(a.length/2);
-    return a.length%2 ? a[mid] : Math.round((a[mid-1]+a[mid])/2);
-  }
-
   const playersOut = {};
   for (const [name, rec] of playersMap.entries()){
     playersOut[name] = {
@@ -195,6 +212,6 @@ exports.handler = async (event) => {
   await store.set('latest.json', JSON.stringify(snapshot));
 
   const resp = { ok:true, provider, mode, events: evIds.length, players: Object.keys(playersOut).length, markets: totalMarkets };
-  if (debug) resp.debug = setup;
+  if (debug) resp.debug = { ...setup, backoff };
   return { statusCode: 200, body: JSON.stringify(resp) };
 };
