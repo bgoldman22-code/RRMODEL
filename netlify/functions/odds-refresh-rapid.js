@@ -80,10 +80,10 @@ exports.handler = async (event) => {
   const PROP_OUTCOME_FIELD = process.env.PROP_OUTCOME_FIELD || 'name';
   const BOOKS = (process.env.BOOKS||'').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
 
-  const store = initStore();
   const date = (event.queryStringParameters && event.queryStringParameters.date) || dateETISO();
   const debug = !!(event.queryStringParameters && event.queryStringParameters.debug);
   const setup = buildUrls(date);
+  const store = initStore(); // declare ONCE
 
   if (setup && setup.error){
     return { statusCode: 400, body: JSON.stringify({ ok:false, step:'setup', error: setup.error, provider: setup.provider }) };
@@ -191,7 +191,6 @@ exports.handler = async (event) => {
   }
 
   const snapshot = { date, provider, market: PROP_MARKET_KEY, players: playersOut, mode };
-  const store = initStore();
   await store.set(date + '.json', JSON.stringify(snapshot));
   await store.set('latest.json', JSON.stringify(snapshot));
 
