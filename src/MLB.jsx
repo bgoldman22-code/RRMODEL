@@ -174,12 +174,6 @@ async function getOddsMap(){
       return map;
     }catch(e){ return new Map(); }
   }
-);
-        }
-      }
-      return map;
-    }catch{ return new Map(); }
-  }
 
   function applyCalibration(p, scale){
     const scaled = Math.max(0.0005, Math.min(0.95, p * scale));
