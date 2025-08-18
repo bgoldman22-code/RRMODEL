@@ -1,8 +1,7 @@
-/**
- * Netlify Function: odds-refresh-rapid (FIXED store usage)
- * Uses a NAMED Blobs store. Set BLOBS_STORE to override (default 'mlb-odds').
- */
 import { getStore } from '@netlify/blobs';
+
+/** Named store (env BLOBS_STORE or 'mlb-odds') */
+const STORE_NAME = process.env.BLOBS_STORE || 'mlb-odds';
 
 function dateETISO(d=new Date()){
   const y = d.getFullYear();
@@ -19,7 +18,6 @@ export const handler = async (event) => {
   const PROP_MARKET_KEY = process.env.PROP_MARKET_KEY || 'batter_anytime_hr';
   const PROP_OUTCOME_FIELD = process.env.PROP_OUTCOME_FIELD || 'participant';
   const BOOKS = (process.env.BOOKS||'').split(',').map(s=>s.trim()).filter(Boolean);
-  const STORE_NAME = process.env.BLOBS_STORE || 'mlb-odds';
 
   if (!RAPIDAPI_KEY || !RAPIDAPI_HOST || !EVENTS_URL || !EVENT_PROPS_URL){
     return { statusCode: 400, body: JSON.stringify({ ok:false, error: 'Missing RAPIDAPI_* envs (HOST/KEY/EVENTS_URL/EVENT_PROPS_URL)' }) };
