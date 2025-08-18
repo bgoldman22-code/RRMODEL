@@ -37,7 +37,29 @@ exports.handler = async (event) => {
 
   const headers = { 'x-rapidapi-key': RAPIDAPI_KEY, 'x-rapidapi-host': RAPIDAPI_HOST };
 
-  async function safeJson(url){
+  
+// --- retry helpers ---
+async function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+async function jsonWithBackoff(url, headers, attempts=[1000, 2500, 6000, 10000]){
+  let lastErr = null;
+  for (let i=0;i<attempts.length;i++){
+    try{
+      const r = await fetch(url, { headers });
+      if (r.status === 429){
+        lastErr = new Error('429 Too Many Requests');
+        await sleep(attempts[i]);
+        continue;
+      }
+      if (!r.ok) throw new Error('HTTP ' + r.status + ' for ' + url);
+      return await r.json();
+    }catch(e){
+      lastErr = e;
+      await sleep(attempts[i]);
+    }
+  }
+  throw lastErr || new Error('Failed after retries');
+}
+async function safeJson(url){
     const r = await fetch(url, { headers });
     if (!r.ok) throw new Error('HTTP ' + r.status + ' for ' + url);
     return await r.json();
@@ -46,10 +68,11 @@ exports.handler = async (event) => {
   // 1) Events
   let events = [];
   try {
-    const ej = await safeJson(eventsUrl);
+    const ej = await jsonWithBackoff(eventsUrl, headers);
     events = Array.isArray(ej && ej.events) ? ej.events : (Array.isArray(ej) ? ej : ((ej && ej.data) || []));
   } catch (e) {
-    return { statusCode: 502, body: JSON.stringify({ ok:false, step:'events', error: String(e) }) };
+    try { await store.set('latest_error.json', JSON.stringify({ date, step:'events', error: String(e) })); } catch(_e) {}
+    return { statusCode: 429, body: JSON.stringify({ ok:false, step:'events', error: String(e), hint:'Rate limited or provider busy; try again in a minute.' }) };
   }
 
   const evIds = [];
