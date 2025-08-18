@@ -3,9 +3,6 @@ import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./util
 import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
-import TopHRLeaders from "./components/TopHRLeaders.jsx";
-import MissingOddsTable from "./components/MissingOddsTable.jsx";
-
 
 
 const RANK_ODDS_WEIGHT = Number(import.meta.env.VITE_RANK_ODDS_WEIGHT || process.env.RANK_ODDS_WEIGHT || 0.3);
@@ -102,9 +99,6 @@ async function fetchJSON(url){
 export default function MLB(){
   const [picks, setPicks] = useState([]);
   const [bonus, setBonus] = useState([]);
-  const [top50Names, setTop50Names] = useState([]);
-  const [oddsMapState, setOddsMapState] = useState(new Map());
-  const [allRows, setAllRows] = useState([]);
   const [meta, setMeta]   = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -193,7 +187,6 @@ async function getOddsMap(){
       const [cals, baseCandidates] = await Promise.all([ getCalibration(), getSlate() ]);
       const ids = baseCandidates.map(x => x.batterId).filter(Boolean);
       const [hotMap, oddsMap] = await Promise.all([ getHotColdBulk(ids), getOddsMap() ]);
-      try { setOddsMapState(oddsMap); } catch {}
 
       
       const temp = [];
@@ -284,7 +277,6 @@ async function getOddsMap(){
           })
         });
       }
-try { setAllRows(rows.slice()); } catch {}
 rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
       const out = [];
@@ -403,18 +395,6 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
           </div>
         </div>
       )}
-
-      {/* Top 50 HR Leaders (auto) */}
-      <TopHRLeaders onLoaded={setTop50Names} />
-
-      {/* Missing Odds among Top 50 hitters (diagnostics) */}
-      <MissingOddsTable
-        candidates={allRows}
-        oddsMap={oddsMapState}
-        normName={normName}
-        leaderboard={top50Names}
-        maxRows={10}
-      />
 
       </div>
     </div>
