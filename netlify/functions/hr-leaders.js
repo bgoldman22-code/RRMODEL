@@ -1,52 +1,52 @@
 // netlify/functions/hr-leaders.js
-// CommonJS Netlify Function to fetch Top 50 HR leaders from MLB StatsAPI and cache in Netlify Blobs
-const fetch = require("node-fetch");
-const { getStore } = require("@netlify/blobs");
+// ESM version (package.json has "type":"module")
+// Uses built-in global `fetch` (Node 18+ on Netlify) — no node-fetch needed.
+import { getStore } from "@netlify/blobs";
 
 const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
 const CACHE_KEY = "leaders_hr_top50.json";
 const TTL_MS = 30 * 60 * 1000; // 30 minutes
 
-exports.handler = async function (event, context) {
+export const handler = async (event, context) => {
   try {
     const store = getStore({ name: STORE_NAME });
-    // Try cache first
+    // 1) Try cache
     const cachedStr = await store.get(CACHE_KEY);
-    let cached = null;
     if (cachedStr) {
-      try { cached = JSON.parse(cachedStr); } catch {}
-      if (cached?.fetchedAt && Date.now() - new Date(cached.fetchedAt).getTime() < TTL_MS) {
-        return ok({ source: "cache", count: cached?.leaders?.length || 0, leaders: cached.leaders });
-      }
+      try {
+        const cached = JSON.parse(cachedStr);
+        if (cached?.fetchedAt && Date.now() - new Date(cached.fetchedAt).getTime() < TTL_MS) {
+          return ok({ source: "cache", count: cached?.leaders?.length || 0, leaders: cached.leaders });
+        }
+      } catch {}
     }
 
-    // MLB StatsAPI leaders endpoint (unofficial but public)
-    // Example: https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=homeRuns&season=2025&sportId=1&limit=50
-    const season = (event.queryStringParameters && event.queryStringParameters.season) || new Date().getFullYear();
+    // 2) Fetch live from MLB StatsAPI (public)
+    const qp = event?.queryStringParameters || {};
+    const season = qp.season || new Date().getFullYear();
     const url = `https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=homeRuns&season=${season}&sportId=1&limit=50`;
-    const resp = await fetch(url, { headers: { "accept": "application/json" } });
-    if (!resp.ok) {
-      return error(`Upstream ${resp.status} for ${url}`);
-    }
+
+    const resp = await fetch(url, { headers: { accept: "application/json" } });
+    if (!resp.ok) return error(`Upstream ${resp.status} for ${url}`);
     const data = await resp.json();
-    // Normalize leaders array
+
+    // Normalize
     const leaders = [];
-    const cats = data?.leagueLeaders || data?.stats || data?.leaderLeaders || [];
-    const arr = Array.isArray(cats) ? cats : [];
-    for (const cat of arr) {
-      const people = cat?.leaders || [];
-      for (const p of people) {
+    const cats = Array.isArray(data?.leagueLeaders) ? data.leagueLeaders : [];
+    for (const cat of cats) {
+      const list = Array.isArray(cat?.leaders) ? cat.leaders : [];
+      for (const p of list) {
         const person = p?.person || p?.player || {};
         leaders.push({
           name: person?.fullName || person?.displayName || "",
           id: person?.id || null,
-          value: Number(p?.value || p?.stat?.homeRuns || p?.rank || 0),
+          value: Number(p?.value || 0),
           team: (p?.team && (p?.team?.abbreviation || p?.team?.name)) || "",
           rank: Number(p?.rank || leaders.length + 1),
         });
       }
     }
-    // Fall back if structure differs
+
     const top = leaders
       .filter(x => x.name)
       .sort((a,b) => (b.value||0) - (a.value||0))
@@ -54,9 +54,10 @@ exports.handler = async function (event, context) {
 
     const payload = { ok: true, season, fetchedAt: new Date().toISOString(), leaders: top };
     await store.set(CACHE_KEY, JSON.stringify(payload), { contentType: "application/json" });
+
     return ok({ source: "live", count: top.length, leaders: top });
   } catch (e) {
-    return error(e.message || String(e));
+    return error(e?.message || String(e));
   }
 };
 
