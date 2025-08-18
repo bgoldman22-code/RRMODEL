@@ -1,7 +1,4 @@
-// netlify/functions/odds-refresh-rapid.js
-// Supports TheOddsAPI "batter_home_runs" (Over/Under) as proxy for Anytime HR (we take Over only).
-// Also still supports RapidAPI (The Rundown) if PROVIDER=rapidapi and RAPIDAPI_* envs are present.
-
+// netlify/functions/odds-refresh-rapid.js (multi-region Over 0.5 HR via TheOddsAPI)
 const { getStore } = require('@netlify/blobs');
 
 function initStore(){
@@ -11,26 +8,18 @@ function initStore(){
   if (siteID && token) return getStore({ name, siteID, token });
   return getStore(name);
 }
-
 function dateETISO(d=new Date()){
   const y = d.getFullYear();
   const m = String(d.getMonth()+1).padStart(2,'0');
   const dd = String(d.getDate()).padStart(2,'0');
   return `${y}-${m}-${dd}`;
 }
-
 function parseBackoff(query){
   const env = (process.env.BACKOFF_MS||'').trim();
-  let arr = env ? env.split(',').map(s=>parseInt(s.trim(),10)).filter(n=>n>0) : [600, 1200, 2000];
-  if (query && (query.quick === '1' || query.quick === 1)) arr = [400, 900];
-  let total=0, trimmed=[];
-  for (const ms of arr){
-    if (total + ms > 8000) break;
-    trimmed.push(ms); total += ms;
-  }
-  return trimmed.length ? trimmed : [800];
+  let arr = env ? env.split(',').map(s=>parseInt(s.trim(),10)).filter(n=>n>0) : [500, 1000];
+  if (query && (query.quick === '1' || query.quick === 1)) arr = [400, 800];
+  return arr;
 }
-
 function withTimeout(promise, ms){
   return new Promise((resolve,reject)=>{
     const ctrl = new AbortController();
@@ -39,12 +28,11 @@ function withTimeout(promise, ms){
   });
 }
 async function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
-
 async function jsonWithBackoff(url, headers, attempts){
   let lastErr = null;
   for (let i=0;i<attempts.length;i++){
     try{
-      const r = await withTimeout((signal)=>fetch(url, { headers, signal }), 4000);
+      const r = await withTimeout((signal)=>fetch(url, { headers, signal }), 4500);
       if (r.status === 429){
         lastErr = new Error('429 Too Many Requests');
         await sleep(attempts[i]);
@@ -63,35 +51,18 @@ async function jsonWithBackoff(url, headers, attempts){
 function buildUrls(date){
   const providerPref = (process.env.PROVIDER || '').toLowerCase().trim();
   const apiKeyOdds   = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY || '';
-  const rapidHost = process.env.RAPIDAPI_HOST;
-  const rapidKey  = process.env.RAPIDAPI_KEY;
-  const evTpl     = process.env.RAPIDAPI_EVENTS_URL || '';
-  const propsTpl  = process.env.RAPIDAPI_EVENT_PROPS_URL || '';
-
   const sport     = process.env.ODDSAPI_SPORT_KEY || 'baseball_mlb';
-  const region    = process.env.ODDSAPI_REGION || 'us';
+  const regions   = String(process.env.ODDSAPI_REGION || 'us').split(',').map(s=>s.trim()).filter(Boolean);
   const marketKey = (process.env.ODDSAPI_MARKET || process.env.PROP_MARKET_KEY || 'batter_home_runs').trim();
 
-  // Force override by PROVIDER
-  if (providerPref === 'theoddsapi'){
-    if (!apiKeyOdds) return { error: 'Missing THEODDS_API_KEY for TheOddsAPI', provider: 'theoddsapi' };
-    const eventsUrl = `https://api.the-odds-api.com/v4/sports/${sport}/events?regions=${region}&dateFormat=iso&apiKey=${apiKeyOdds}`;
-    const propsTpl2 = `https://api.the-odds-api.com/v4/sports/${sport}/events/{EVENT_ID}/odds?regions=${region}&markets=${encodeURIComponent(marketKey)}&oddsFormat=american&dateFormat=iso&apiKey=${apiKeyOdds}`;
-    return { provider:'theoddsapi', mode:'forced', headers:{}, eventsUrl, propsTpl: propsTpl2, marketKey };
+  if (providerPref && providerPref !== 'theoddsapi'){
+    return { error: 'Only TheOddsAPI supported in this build (set PROVIDER=theoddsapi).', provider: providerPref };
   }
-  if (providerPref === 'rapidapi'){
-    if (!(rapidHost && rapidKey && evTpl && propsTpl)) return { error: 'PROVIDER=rapidapi but missing RAPIDAPI_* envs', provider:'rapidapi' };
-    return { provider:'rapidapi', mode:'forced', headers: { 'x-rapidapi-key': rapidKey, 'x-rapidapi-host': rapidHost }, eventsUrl: evTpl.replace('{DATE}', date), propsTpl, marketKey };
-  }
+  if (!apiKeyOdds) return { error: 'Missing THEODDS_API_KEY for TheOddsAPI', provider: 'theoddsapi' };
 
-  // Auto
-  if (rapidHost && rapidKey && evTpl && propsTpl){
-    return { provider:'rapidapi', mode:'auto', headers: { 'x-rapidapi-key': rapidKey, 'x-rapidapi-host': rapidHost }, eventsUrl: evTpl.replace('{DATE}', date), propsTpl, marketKey };
-  }
-  if (!apiKeyOdds) return { error: 'No provider configured: set THEODDS_API_KEY or RAPIDAPI_* envs', provider:'auto' };
-  const eventsUrl = `https://api.the-odds-api.com/v4/sports/${sport}/events?regions=${region}&dateFormat=iso&apiKey=${apiKeyOdds}`;
-  const propsTpl2 = `https://api.the-odds-api.com/v4/sports/${sport}/events/{EVENT_ID}/odds?regions=${region}&markets=${encodeURIComponent(marketKey)}&oddsFormat=american&dateFormat=iso&apiKey=${apiKeyOdds}`;
-  return { provider:'theoddsapi', mode:'auto', headers:{}, eventsUrl, propsTpl: propsTpl2, marketKey };
+  const eventsUrl = `https://api.the-odds-api.com/v4/sports/${sport}/events?regions=${encodeURIComponent(regions.join(','))}&dateFormat=iso&apiKey=${apiKeyOdds}`;
+  const propsTpl  = `https://api.the-odds-api.com/v4/sports/${sport}/events/{EVENT_ID}/odds?regions=${encodeURIComponent(regions.join(','))}&markets=${encodeURIComponent(marketKey)}&oddsFormat=american&dateFormat=iso&apiKey=${apiKeyOdds}`;
+  return { provider:'theoddsapi', headers:{}, eventsUrl, propsTpl, regions, marketKey };
 }
 
 function median(arr){
@@ -100,25 +71,18 @@ function median(arr){
   const mid = Math.floor(a.length/2);
   return a.length%2 ? a[mid] : Math.round((a[mid-1]+a[mid])/2);
 }
-
-// Try to extract the player name from an outcome object in batter_home_runs market
 function getOutcomePlayer(o){
   const fields = (process.env.PROP_OUTCOME_PLAYER_FIELDS || 'description,participant,name').split(',').map(s=>s.trim());
   for (const f of fields){
     if (o && o[f]) return String(o[f]).trim();
   }
-  // Sometimes book embeds player in outcome "description" like "Aaron Judge Over 0.5"
   if (o && o.description) return String(o.description).replace(/Over.*$/i,'').trim();
   return null;
 }
-
-// Decide if an outcome is the "Over" side
 function isOverOutcome(o){
   const name = (o && (o.name || o.title || o.label || '')).toString().toLowerCase();
   if (name.includes('over')) return true;
-  // Some books use boolean "over_under" or a code
   if (o && typeof o.over_under !== 'undefined') return String(o.over_under).toLowerCase() === 'over';
-  // Fallback: if outcome has point and maybe implied it's the higher side, but skip guessing
   return false;
 }
 
@@ -133,16 +97,15 @@ exports.handler = async (event) => {
   if (setup && setup.error){
     return { statusCode: 400, body: JSON.stringify({ ok:false, step:'setup', error: setup.error, provider: setup.provider }) };
   }
-  const { provider, headers, eventsUrl, propsTpl, mode, marketKey } = setup;
+  const { provider, headers, eventsUrl, propsTpl, regions, marketKey } = setup;
 
-  // 1) Fetch events
   let events = [];
   try {
     const ej = await jsonWithBackoff(eventsUrl, headers, backoff);
     events = Array.isArray(ej && ej.events) ? ej.events : (Array.isArray(ej) ? ej : ((ej && ej.data) || ej || []));
   } catch (e) {
     try { await store.set('latest_error.json', JSON.stringify({ date, step:'events', provider, error: String(e) })); } catch(_e) {}
-    return { statusCode: 504, body: JSON.stringify({ ok:false, step:'events', provider, error: String(e), backoff, debug: debug ? setup : undefined }) };
+    return { statusCode: 504, body: JSON.stringify({ ok:false, step:'events', provider, error: String(e), regions, marketKey }) };
   }
 
   const evIds = [];
@@ -151,10 +114,9 @@ exports.handler = async (event) => {
     if (id) evIds.push(String(id));
   }
   if (!evIds.length){
-    return { statusCode: 204, body: JSON.stringify({ ok:false, reason:'no MLB events returned for date', provider, debug: debug ? setup : undefined }) };
+    return { statusCode: 204, body: JSON.stringify({ ok:false, reason:'no MLB events returned for date', provider, regions, marketKey }) };
   }
 
-  // 2) Per-event props → collect Over 0.5 odds per player
   const playersMap = new Map();
   let totalMkts = 0;
   for (const id of evIds){
@@ -162,7 +124,6 @@ exports.handler = async (event) => {
     let pj;
     try { pj = await jsonWithBackoff(url, headers, backoff); } catch (e) { continue; }
 
-    // TheOddsAPI shape
     const bms = Array.isArray(pj && pj.bookmakers) ? pj.bookmakers : [];
     for (const bm of bms){
       const bookKey = ((bm && (bm.key || bm.title)) || '').toLowerCase();
@@ -174,8 +135,7 @@ exports.handler = async (event) => {
         totalMkts++;
         const outs = (mk && mk.outcomes) || [];
         for (const o of outs){
-          if (!isOverOutcome(o)) continue; // we only take Over
-          // If point exists, ensure it's 0.5 (typical for anytime proxy). If absent, accept.
+          if (!isOverOutcome(o)) continue;
           if (typeof o.point !== 'undefined'){
             const p = Number(o.point);
             if (!isNaN(p) && Math.abs(p - 0.5) > 1e-6) continue;
@@ -204,14 +164,12 @@ exports.handler = async (event) => {
   }
 
   if (Object.keys(playersOut).length === 0){
-    return { statusCode: 204, body: JSON.stringify({ ok:false, reason:'no Over 0.5 HR outcomes found', provider, marketKey, debug: debug ? setup : undefined }) };
+    return { statusCode: 204, body: JSON.stringify({ ok:false, reason:'no Over 0.5 HR outcomes found', provider, regions, marketKey }) };
   }
 
-  const snapshot = { date, provider, market: marketKey, players: playersOut, mode, type: 'HR_over_0_5' };
+  const snapshot = { date, provider, market: marketKey, regions, players: playersOut, type: 'HR_over_0_5' };
   await store.set(date + '.json', JSON.stringify(snapshot));
   await store.set('latest.json', JSON.stringify(snapshot));
 
-  const resp = { ok:true, provider, mode, events: evIds.length, players: Object.keys(playersOut).length, markets: totalMkts, marketKey };
-  if (debug) resp.debug = { ...setup, backoff };
-  return { statusCode: 200, body: JSON.stringify(resp) };
+  return { statusCode: 200, body: JSON.stringify({ ok:true, provider, regions, marketKey, events: evIds.length, players: Object.keys(playersOut).length, markets: totalMkts }) };
 };
