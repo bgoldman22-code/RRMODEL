@@ -1,7 +1,4 @@
-// odds-refresh-rapid.js (CommonJS)
-// Supports TheOddsAPI *or* RapidAPI provider based on env.
-// Strict mode: never overwrites with empty data; retries on 429.
-
+// odds-refresh-rapid.js (CommonJS) with PROVIDER override + debug
 const { getStore } = require('@netlify/blobs');
 
 function initStore(){
@@ -21,7 +18,7 @@ function dateETISO(d=new Date()){
   return `${y}-${m}-${dd}`;
 }
 
-// --- retry helpers ---
+// backoff helpers
 async function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
 async function jsonWithBackoff(url, headers, attempts=[1000, 2500, 6000, 10000]){
   let lastErr = null;
@@ -44,31 +41,38 @@ async function jsonWithBackoff(url, headers, attempts=[1000, 2500, 6000, 10000])
 }
 
 function buildUrls(date){
-  // If RapidAPI host & key set, use those URLs.
+  const providerPref = (process.env.PROVIDER || '').toLowerCase().trim();
+  const apiKeyOdds   = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY || '';
+
   const rapidHost = process.env.RAPIDAPI_HOST;
   const rapidKey  = process.env.RAPIDAPI_KEY;
-  const evTpl = process.env.RAPIDAPI_EVENTS_URL || '';
-  const propsTpl = process.env.RAPIDAPI_EVENT_PROPS_URL || '';
+  const evTpl     = process.env.RAPIDAPI_EVENTS_URL || '';
+  const propsTpl  = process.env.RAPIDAPI_EVENT_PROPS_URL || '';
 
-  const apiKey = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY || '';
+  const sport     = process.env.ODDSAPI_SPORT_KEY || 'baseball_mlb';
+  const region    = process.env.ODDSAPI_REGION || 'us';
+  const marketKey = process.env.ODDSAPI_MARKET || process.env.PROP_MARKET_KEY || 'player_home_run';
 
-  if (rapidHost && rapidKey && evTpl && propsTpl){
-    return {
-      provider: 'rapidapi',
-      headers: { 'x-rapidapi-key': rapidKey, 'x-rapidapi-host': rapidHost },
-      eventsUrl: evTpl.replace('{DATE}', date).replace('{API_KEY}', apiKey),
-      propsTpl: propsTpl.replace('{API_KEY}', apiKey),
-    };
+  // 1) Explicit override
+  if (providerPref === 'theoddsapi'){
+    if (!apiKeyOdds) return { error: 'Missing THEODDS_API_KEY for TheOddsAPI', provider: 'theoddsapi' };
+    const eventsUrl = `https://api.the-odds-api.com/v4/sports/${sport}/events?regions=${region}&dateFormat=iso&apiKey=${apiKeyOdds}`;
+    const propsTpl2 = `https://api.the-odds-api.com/v4/sports/${sport}/events/{EVENT_ID}/odds?regions=${region}&markets=${marketKey}&oddsFormat=american&dateFormat=iso&apiKey=${apiKeyOdds}`;
+    return { provider:'theoddsapi', mode:'forced', headers:{}, eventsUrl, propsTpl: propsTpl2, marketKey, region, sport };
+  }
+  if (providerPref === 'rapidapi'){
+    if (!(rapidHost && rapidKey && evTpl && propsTpl)) return { error: 'PROVIDER=rapidapi but missing RAPIDAPI_* envs', provider:'rapidapi' };
+    return { provider:'rapidapi', mode:'forced', headers: { 'x-rapidapi-key': rapidKey, 'x-rapidapi-host': rapidHost }, eventsUrl: evTpl.replace('{DATE}', date), propsTpl, marketKey, region, sport };
   }
 
-  // Default to TheOddsAPI
-  const sport  = process.env.ODDSAPI_SPORT_KEY || 'baseball_mlb';
-  const region = process.env.ODDSAPI_REGION || 'us';
-  const eventsUrl = `https://api.the-odds-api.com/v4/sports/${sport}/events?regions=${region}&dateFormat=iso&apiKey=${apiKey}`;
-  const market = process.env.ODDSAPI_MARKET || process.env.PROP_MARKET_KEY || 'player_home_run';
-  const propsTpl2 = `https://api.the-odds-api.com/v4/sports/${sport}/events/{EVENT_ID}/odds?regions=${region}&markets=${market}&oddsFormat=american&dateFormat=iso&apiKey=${apiKey}`;
-
-  return { provider: 'theoddsapi', headers: {}, eventsUrl, propsTpl: propsTpl2 };
+  // 2) Auto-detect
+  if (rapidHost && rapidKey && evTpl && propsTpl){
+    return { provider:'rapidapi', mode:'auto', headers: { 'x-rapidapi-key': rapidKey, 'x-rapidapi-host': rapidHost }, eventsUrl: evTpl.replace('{DATE}', date), propsTpl, marketKey, region, sport };
+  }
+  if (!apiKeyOdds) return { error: 'No provider configured: set THEODDS_API_KEY or RAPIDAPI_* envs', provider:'auto' };
+  const eventsUrl = `https://api.the-odds-api.com/v4/sports/${sport}/events?regions=${region}&dateFormat=iso&apiKey=${apiKeyOdds}`;
+  const propsTpl2 = `https://api.the-odds-api.com/v4/sports/${sport}/events/{EVENT_ID}/odds?regions=${region}&markets=${marketKey}&oddsFormat=american&dateFormat=iso&apiKey=${apiKeyOdds}`;
+  return { provider:'theoddsapi', mode:'auto', headers:{}, eventsUrl, propsTpl: propsTpl2, marketKey, region, sport };
 }
 
 exports.handler = async (event) => {
@@ -78,7 +82,14 @@ exports.handler = async (event) => {
 
   const store = initStore();
   const date = (event.queryStringParameters && event.queryStringParameters.date) || dateETISO();
-  const { provider, headers, eventsUrl, propsTpl } = buildUrls(date);
+  const debug = !!(event.queryStringParameters && event.queryStringParameters.debug);
+  const setup = buildUrls(date);
+
+  if (setup && setup.error){
+    return { statusCode: 400, body: JSON.stringify({ ok:false, step:'setup', error: setup.error, provider: setup.provider }) };
+  }
+
+  const { provider, headers, eventsUrl, propsTpl, mode } = setup;
 
   // 1) Events
   let events = [];
@@ -87,7 +98,7 @@ exports.handler = async (event) => {
     events = Array.isArray(ej && ej.events) ? ej.events : (Array.isArray(ej) ? ej : ((ej && ej.data) || ej || []));
   } catch (e) {
     try { await store.set('latest_error.json', JSON.stringify({ date, step:'events', provider, error: String(e) })); } catch(_e) {}
-    return { statusCode: 429, body: JSON.stringify({ ok:false, step:'events', provider, error: String(e), hint:'Provider busy or rate-limited; try again shortly.' }) };
+    return { statusCode: 429, body: JSON.stringify({ ok:false, step:'events', provider, error: String(e), hint:'Provider busy or rate-limited; try again shortly.', debug: debug ? setup : undefined }) };
   }
 
   const evIds = [];
@@ -97,10 +108,10 @@ exports.handler = async (event) => {
   }
 
   if (evIds.length === 0){
-    return { statusCode: 204, body: JSON.stringify({ ok:false, reason:'no MLB events returned for date', provider }) };
+    return { statusCode: 204, body: JSON.stringify({ ok:false, reason:'no MLB events returned for date', provider, debug: debug ? setup : undefined }) };
   }
 
-  // 2) Props per event (normalize TheOddsAPI and RapidAPI shapes)
+  // 2) Props per event
   const playersMap = new Map();
   let totalMarkets = 0;
 
@@ -109,9 +120,10 @@ exports.handler = async (event) => {
     let pj;
     try { pj = await jsonWithBackoff(url, headers); } catch (e) { continue; }
 
-    if (Array.isArray(pj && pj.bookmakers)){
+    if (provider === 'theoddsapi' || Array.isArray(pj && pj.bookmakers)){
       // TheOddsAPI shape
-      for (const bm of pj.bookmakers){
+      const bms = Array.isArray(pj && pj.bookmakers) ? pj.bookmakers : [];
+      for (const bm of bms){
         const bookKey = ((bm && (bm.key || bm.title)) || '').toLowerCase();
         if (BOOKS.length && (!bookKey || !BOOKS.includes(bookKey))) continue;
         const mkts = (bm && bm.markets) || [];
@@ -134,7 +146,7 @@ exports.handler = async (event) => {
         }
       }
     } else {
-      // RapidAPI-like shape (markets/props/data at top level)
+      // RapidAPI-like shape
       const markets = (pj && (pj.markets || pj.props || pj.data)) || [];
       for (const mk of (Array.isArray(markets) ? markets : [])){
         const key = mk && (mk.key || mk.market || mk.name);
@@ -174,14 +186,16 @@ exports.handler = async (event) => {
     };
   }
 
-  // If no players collected, do not overwrite snapshot.
   if (Object.keys(playersOut).length === 0){
-    return { statusCode: 204, body: JSON.stringify({ ok:false, reason:'no HR player props found', provider }) };
+    return { statusCode: 204, body: JSON.stringify({ ok:false, reason:'no HR player props found', provider, debug: debug ? setup : undefined }) };
   }
 
-  const snapshot = { date, provider, market: PROP_MARKET_KEY, players: playersOut };
+  const snapshot = { date, provider, market: PROP_MARKET_KEY, players: playersOut, mode };
+  const store = initStore();
   await store.set(date + '.json', JSON.stringify(snapshot));
   await store.set('latest.json', JSON.stringify(snapshot));
 
-  return { statusCode: 200, body: JSON.stringify({ ok:true, provider, events: evIds.length, players: Object.keys(playersOut).length, markets: totalMarkets }) };
+  const resp = { ok:true, provider, mode, events: evIds.length, players: Object.keys(playersOut).length, markets: totalMarkets };
+  if (debug) resp.debug = setup;
+  return { statusCode: 200, body: JSON.stringify(resp) };
 };
