@@ -1,29 +1,37 @@
-// netlify/functions/odds-diagnostics.js
-// Reports whether theodds snapshot is present + quick provider sanity.
-const { getStore } = require('@netlify/blobs');
-function initStore(){
-  const name = process.env.BLOBS_STORE || 'mlb-odds';
-  const siteID = process.env.NETLIFY_SITE_ID;
-  const token  = process.env.NETLIFY_BLOBS_TOKEN;
-  if (siteID && token) return getStore({ name, siteID, token });
-  return getStore(name);
-}
-exports.handler = async () => {
+import { getStore } from "@netlify/blobs";
+
+export default async (req, res) => {
   try {
-    const store = initStore();
-    const latest = await store.get('latest.json');
-    const env_present = !!process.env.THEODDS_API_KEY;
-    const provider = (process.env.PROVIDER||'').toLowerCase() || 'theoddsapi';
-    let has_hr_market=false, events_count=0, sample_hr_outcomes=0;
-    if (latest){
-      const j = JSON.parse(latest);
-      has_hr_market = (j.market || '').toLowerCase() === String(process.env.PROP_MARKET_KEY||'batter_home_runs').toLowerCase();
-      events_count = Array.isArray(j.events) ? j.events.length : (j.events || 0);
-      const players = j.players ? Object.keys(j.players).length : 0;
-      sample_hr_outcomes = players;
+    const store = getStore(process.env.BLOBS_STORE || "mlb-odds");
+    const snap = await store.get("latest.json");
+
+    let diag = { ok: true, env_present: !!process.env.THEODDS_API_KEY };
+
+    if (!snap) {
+      // Try probe
+      try {
+        const apiKey = process.env.THEODDS_API_KEY;
+        const sport = process.env.ODDSAPI_SPORT_KEY || "baseball_mlb";
+        const url = `https://api.the-odds-api.com/v4/sports/${sport}/odds?regions=us&markets=batter_home_runs&apiKey=${apiKey}`;
+        const r = await fetch(url);
+        const j = await r.json();
+        diag.probe = { len: j?.length || 0 };
+      } catch (e) {
+        diag.probe = { error: e.message };
+      }
+      return res.json({ ok: true, env_present: diag.env_present, has_hr_market: false, events_count: 0, probe: diag.probe });
     }
-    return { statusCode: 200, body: JSON.stringify({ ok:true, provider, env_present, has_hr_market, events_count, sample_hr_outcomes }) };
-  } catch (e){
-    return { statusCode: 500, body: JSON.stringify({ ok:false, error:String(e) }) };
+
+    return res.json({
+      ok: true,
+      env_present: diag.env_present,
+      has_hr_market: true,
+      ts: snap.ts,
+      market: snap.market,
+      events_count: snap.raw?.length || 0,
+      sample: (snap.raw?.[0]?.bookmakers || []).slice(0, 3),
+    });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
   }
 };
