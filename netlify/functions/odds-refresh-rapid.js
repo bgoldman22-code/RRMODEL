@@ -1,9 +1,5 @@
-// Netlify Blobs store init that works whether Blobs is auto-configured or not.
-// If your environment isn't auto-wired, set env vars:
-//   NETLIFY_SITE_ID=<your site id>
-//   NETLIFY_BLOBS_TOKEN=<a Blobs API token for that site>
-// Optionally set BLOBS_STORE (defaults to 'mlb-odds').
-import { getStore } from '@netlify/blobs';
+// odds-refresh-rapid.js (CommonJS)
+const { getStore } = require('@netlify/blobs');
 
 function initStore(){
   const name = process.env.BLOBS_STORE || 'mlb-odds';
@@ -15,10 +11,14 @@ function initStore(){
   return getStore(name);
 }
 
+function dateETISO(d=new Date()){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
 
-function dateETISO(d=new Date()){const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const dd=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${dd}`; }
-
-export const handler = async (event) => {
+exports.handler = async (event) => {
   const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
   const RAPIDAPI_HOST = process.env.RAPIDAPI_HOST;
   const EVENTS_URL = process.env.RAPIDAPI_EVENTS_URL;
@@ -39,47 +39,53 @@ export const handler = async (event) => {
 
   async function safeJson(url){
     const r = await fetch(url, { headers });
-    if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
+    if (!r.ok) throw new Error('HTTP ' + r.status + ' for ' + url);
     return await r.json();
   }
 
+  // 1) Events
   let events = [];
   try {
     const ej = await safeJson(eventsUrl);
-    events = Array.isArray(ej?.events) ? ej.events : (Array.isArray(ej) ? ej : (ej?.data || []));
+    events = Array.isArray(ej && ej.events) ? ej.events : (Array.isArray(ej) ? ej : ((ej && ej.data) || []));
   } catch (e) {
     return { statusCode: 502, body: JSON.stringify({ ok:false, step:'events', error: String(e) }) };
   }
 
   const evIds = [];
-  for (const ev of events){ const id = ev?.event_id || ev?.id || ev?.eventId; if (id) evIds.push(String(id)); }
+  for (const ev of events){
+    const id = (ev && (ev.event_id || ev.id || ev.eventId));
+    if (id) evIds.push(String(id));
+  }
 
   if (evIds.length === 0){
-    await store.set(`${date}.json`, JSON.stringify({ date, provider:'rapidapi', players:{} }));
+    await store.set(date + '.json', JSON.stringify({ date, provider:'rapidapi', players:{} }));
     await store.set('latest.json', JSON.stringify({ date, provider:'rapidapi', players:{} }));
     return { statusCode: 200, body: JSON.stringify({ ok:true, events:0, players:0 }) };
   }
 
+  // 2) Props per event
   const playersMap = new Map();
   let totalMarkets = 0;
 
   for (const id of evIds){
     const url = EVENT_PROPS_URL.replace('{EVENT_ID}', id);
-    let pj; try { pj = await safeJson(url); } catch (e){ continue; }
-    const markets = pj?.markets || pj?.props || pj?.data || [];
+    let pj;
+    try { pj = await safeJson(url); } catch (e){ continue; }
+    const markets = (pj && (pj.markets || pj.props || pj.data)) || [];
     totalMarkets += Array.isArray(markets) ? markets.length : 0;
-    for (const mk of (Array.isArray(markets) ? markets : []){
-      const key = mk?.key || mk?.market || mk?.name;
+    for (const mk of (Array.isArray(markets) ? markets : [])){
+      const key = mk && (mk.key || mk.market || mk.name);
       if (!key || String(key).toLowerCase().indexOf(String(PROP_MARKET_KEY).toLowerCase()) === -1) continue;
-      const outcomes = mk?.outcomes || mk?.selections || mk?.offers || [];
-      for (const o of (Array.isArray(outcomes) ? outcomes : []){
-        const rawName = o?.[PROP_OUTCOME_FIELD] || o?.name || o?.title || o?.runner || '';
+      const outcomes = mk.outcomes || mk.selections || mk.offers || [];
+      for (const o of (Array.isArray(outcomes) ? outcomes : [])){
+        const rawName = o[PROP_OUTCOME_FIELD] || o.name || o.title || o.runner || '';
         if (!rawName) continue;
-        const american = Number(o?.price_american || o?.american || o?.price || o?.odds || 0);
-        const book = (o?.book || o?.bookmaker || o?.source || '').toLowerCase();
+        const american = Number(o.price_american || o.american || o.price || o.odds || 0);
+        const book = ((o.book || o.bookmaker || o.source || '') + '').toLowerCase();
         if ((process.env.BOOKS||'') && process.env.BOOKS.length){
           const allow = process.env.BOOKS.split(',').map(s=>s.trim().toLowerCase());
-          if (!book || !allow.includes(book)) continue;
+          if (!book || allow.indexOf(book) === -1) continue;
         }
         const keyName = rawName.trim().toLowerCase();
         const rec = playersMap.get(keyName) || { prices: [], by_book: {} };
@@ -92,14 +98,25 @@ export const handler = async (event) => {
     }
   }
 
-  function median(arr){ if (!arr || !arr.length) return null; const a = arr.slice().sort((x,y)=>x-y); const mid = Math.floor(a.length/2); return a.length%2 ? a[mid] : Math.round((a[mid-1]+a[mid])/2); }
+  function median(arr){
+    if (!arr || !arr.length) return null;
+    const a = arr.slice().sort((x,y)=>x-y);
+    const mid = Math.floor(a.length/2);
+    return a.length%2 ? a[mid] : Math.round((a[mid-1]+a[mid])/2);
+  }
 
   const playersOut = {};
-  for (const [name, rec] of playersMap.entries()){ playersOut[name] = { median_american: median(rec.prices), by_book: rec.by_book, count_books: Object.keys(rec.by_book).length }; }
+  for (const [name, rec] of playersMap.entries()){
+    playersOut[name] = {
+      median_american: median(rec.prices),
+      by_book: rec.by_book,
+      count_books: Object.keys(rec.by_book).length
+    };
+  }
 
   const snapshot = { date, provider:'rapidapi', market: process.env.PROP_MARKET_KEY||'batter_anytime_hr', players: playersOut };
 
-  await store.set(`${date}.json`, JSON.stringify(snapshot));
+  await store.set(date + '.json', JSON.stringify(snapshot));
   await store.set('latest.json', JSON.stringify(snapshot));
 
   return { statusCode: 200, body: JSON.stringify({ ok:true, events: evIds.length, players: Object.keys(playersOut).length, markets: totalMarkets }) };
