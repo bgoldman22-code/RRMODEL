@@ -4,6 +4,23 @@ import LearningStatus from './components/LearningStatus.jsx';
 import { probToAmerican } from './utils/odds_estimator.js';
 import * as FGB from './fgb_pack/index.js';
 
+async function fetchSBContext(batch){
+  try{
+    const body = { players: batch.map(x => ({ id:x.id, name:x.name, team:x.team, gameId:x.gameId })) };
+    const r = await fetch('/.netlify/functions/sb-advanced', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if(!r.ok) return new Map();
+    const j = await r.json();
+    // Expect: { map: { "<id>": { speedMult, pitcherHoldMult, catcherArmMult, recentObpDelta, speedTier, pitcherHoldNote, catcherArmNote } } }
+    const m = new Map();
+    const src = j?.map || {};
+    for(const k of Object.keys(src)){ m.set(String(k), src[k]); }
+    return m;
+  }catch{ return new Map(); }
+}
+
+import { sbProbability } from './utils/sb_model.js';
+import { buildWhySB } from './utils/why_sb.js';
+
 // Tunables
 const PRICE_FACTOR = 0.94;
 const MAX_PER_GAME = 2;
@@ -103,13 +120,16 @@ export default function MLB_SB(){
               gameId: gamePk,
               gameCode: `${awayAbbr}@${homeAbbr}`,
               prob,
-              why: `SB profile: attempts2y ${attempts}, succ ${(success*100|0)}%, OBP ${(obp*100|0)}%`
+              why: buildWhySB({ attempts2y: attempts, success2y: success, obp, pa: paCurr, ctx: c?.ctx||{} })
             });
           }
         }
       }
 
       // 6) enhance + calibrate
+      // Attach optional SB context from server
+      const ctxMap = await fetchSBContext(pool);
+      pool.forEach(c => { const ctx = ctxMap.get(String(c.id)); if(ctx) c.ctx = { ...(c.ctx||{}), ...ctx }; });
       const enhanced = await (FGB.enhanceCandidates ? FGB.enhanceCandidates(pool) : pool);
       let calMult = 1.0;
       try{
