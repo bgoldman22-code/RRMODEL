@@ -324,6 +324,11 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
   useEffect(()=>{}, []);
 
+  import MLBExtras from "./MLBExtras.jsx";
+
+// …inside your existing component’s JSX, just below Bonus Picks:
+<MLBExtras />
+
   return (
     <div className="p-4">
       <div className="flex items-center justify-between">
