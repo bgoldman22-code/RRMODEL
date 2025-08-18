@@ -4,6 +4,24 @@ import * as FGB from "./fgb_pack/index.js";
 import RRSuggestion from "./components/RRSuggestion.jsx";
 import LearningStatus from "./components/LearningStatus.jsx";
 
+async function fetchHits2Context(batch){
+  try{
+    const body = { players: batch.map(x => ({ id:x.id, name:x.name, team:x.team, gameId:x.gameId })) };
+    const r = await fetch('/.netlify/functions/hits2-advanced', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if(!r.ok) return new Map();
+    const j = await r.json();
+    // Expect: { map: { "<id>": { formMult, formNote, pitchMatchNote, parkNote, lineupNote, pitchEdgeMult } } }
+    const m = new Map();
+    const src = j?.map || {};
+    for(const k of Object.keys(src)){ m.set(String(k), src[k]); }
+    return m;
+  }catch{ return new Map(); }
+}
+
+import { hits2Probability } from "./utils/hits2_model.js";
+import { buildWhyHits2 } from "./utils/why_hits2.js";
+import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
+
 // ---------- Tunables ----------
 const TARGET = 12;
 const MIN_TARGET = 6;
@@ -128,13 +146,20 @@ function MLB_HITS2() {
 
             const prob2 = pAtLeast2(expAB, avg);
 
-            pool.push({
+            
+            // --- Enhanced 2+ hits probability ---
+            const estPA = Number((a?.games||0) > 0 ? (a?.pa||0)/(a?.games||1) : 4.2) || 4.2;
+            const pitchEdgeMult = (typeof pitchTypeEdgeMultiplier==='function' && cand?.pitchMix && cand?.hitterVsPitch)
+              ? pitchTypeEdgeMultiplier({ pitchUsage: cand.pitchMix, hitterVsPitch: cand.hitterVsPitch, est_pa: estPA }) : 1.0;
+            const ctx = { pitchEdgeMult, parkMult: 1.0, formMult: cand?.ctx?.formMult||1.0 };
+            const prob2 = hits2Probability({ avg: Number(a.avg||0), estPA, ctx });
+pool.push({
               id: p.id,
               name: p.name,
               team: T.get(tid)?.abbr || "",
               gameId: gamePk,
               gameCode,
-              prob: clamp(prob2, 0.06, 0.55),
+              prob: prob2, why: buildWhyHits2({ avg: Number(a.avg||0), ctx }), 0.06, 0.55),
               why: `2+ hits model: BA ${(avg * 100).toFixed(0)}% • expAB ${expAB}`
             });
           }
