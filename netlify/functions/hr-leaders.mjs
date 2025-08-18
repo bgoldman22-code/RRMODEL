@@ -1,28 +1,53 @@
 // netlify/functions/hr-leaders.mjs
-// ESM function (your repo has "type":"module").
-// Uses built-in global `fetch` (Node 18+ on Netlify) — no `node-fetch` required.
+// ESM function (repo has "type":"module").
+// Uses built-in global `fetch` (Node 18+ on Netlify). No node-fetch.
+// Blobs is OPTIONAL: we try native context first, then siteID/token, else skip cache.
 import { getStore } from "@netlify/blobs";
 
 const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
 const CACHE_KEY  = "leaders_hr_top50.json";
 const TTL_MS     = 30 * 60 * 1000; // 30 minutes
 
+async function initStore() {
+  // Try auto environment (works when Netlify Blobs is enabled for the site)
+  try {
+    const s = getStore(STORE_NAME);
+    // quick no-op call to validate
+    await s.get("__ping__");
+    return s;
+  } catch (e) {
+    // Then try explicit siteID/token (if provided)
+    const siteID = process.env.NETLIFY_SITE_ID;
+    const token  = process.env.NETLIFY_BLOBS_TOKEN;
+    if (siteID && token) {
+      try {
+        const s = getStore({ name: STORE_NAME, siteID, token });
+        await s.get("__ping__");
+        return s;
+      } catch {}
+    }
+  }
+  return null; // fallback: operate without cache
+}
+
 export const handler = async (event) => {
   try {
-    const store = getStore({ name: STORE_NAME });
+    const store = await initStore();
 
-    // Try cache
-    const cachedStr = await store.get(CACHE_KEY);
-    if (cachedStr) {
+    // Serve cached leaders if valid
+    if (store) {
       try {
-        const cached = JSON.parse(cachedStr);
-        if (cached?.fetchedAt && Date.now() - new Date(cached.fetchedAt).getTime() < TTL_MS) {
-          return ok({ source: "cache", count: cached?.leaders?.length || 0, leaders: cached.leaders });
+        const cachedStr = await store.get(CACHE_KEY);
+        if (cachedStr) {
+          const cached = JSON.parse(cachedStr);
+          if (cached?.fetchedAt && Date.now() - new Date(cached.fetchedAt).getTime() < TTL_MS) {
+            return ok({ source: "cache", count: cached?.leaders?.length || 0, leaders: cached.leaders });
+          }
         }
       } catch {}
     }
 
-    // Live fetch from MLB StatsAPI (public)
+    // Fetch live from MLB StatsAPI (public)
     const qp = event?.queryStringParameters || {};
     const season = qp.season || new Date().getFullYear();
     const url = `https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=homeRuns&season=${season}&sportId=1&limit=50`;
@@ -31,7 +56,7 @@ export const handler = async (event) => {
     if (!resp.ok) return error(`Upstream ${resp.status} for ${url}`);
     const data = await resp.json();
 
-    // Normalize to a simple shape
+    // Normalize
     const leaders = [];
     const cats = Array.isArray(data?.leagueLeaders) ? data.leagueLeaders : [];
     for (const cat of cats) {
@@ -54,9 +79,13 @@ export const handler = async (event) => {
       .slice(0, 50);
 
     const payload = { ok: true, season, fetchedAt: new Date().toISOString(), leaders: top };
-    await store.set(CACHE_KEY, JSON.stringify(payload), { contentType: "application/json" });
 
-    return ok({ source: "live", count: top.length, leaders: top });
+    // Write cache if store available
+    if (store) {
+      try { await store.set(CACHE_KEY, JSON.stringify(payload), { contentType: "application/json" }); } catch {}
+    }
+
+    return ok({ source: store ? "live" : "live_nocache", count: top.length, leaders: top });
   } catch (e) {
     return error(e?.message || String(e));
   }
