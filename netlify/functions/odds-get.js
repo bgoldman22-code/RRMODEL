@@ -1,6 +1,5 @@
 // netlify/functions/odds-get.js
 const { getStore } = require('@netlify/blobs');
-
 function initStore(){
   const name = process.env.BLOBS_STORE || 'mlb-odds';
   const siteID = process.env.NETLIFY_SITE_ID;
@@ -8,7 +7,6 @@ function initStore(){
   if (siteID && token) return getStore({ name, siteID, token });
   return getStore(name);
 }
-
 exports.handler = async () => {
   try {
     const store = initStore();
