@@ -144,23 +144,18 @@ function MLB_HITS2() {
             const paPerG = clamp(pa / g, 2.5, 5.0);  // crude lineup proxy
             const expAB = Math.round(paPerG); // ~3–5 AB
 
-            const prob2 = pAtLeast2(expAB, avg);
-
-            
             // --- Enhanced 2+ hits probability ---
-            const estPA = Number((a?.games||0) > 0 ? (a?.pa||0)/(a?.games||1) : 4.2) || 4.2;
-            const pitchEdgeMult = (typeof pitchTypeEdgeMultiplier==='function' && cand?.pitchMix && cand?.hitterVsPitch)
-              ? pitchTypeEdgeMultiplier({ pitchUsage: cand.pitchMix, hitterVsPitch: cand.hitterVsPitch, est_pa: estPA }) : 1.0;
-            const ctx = { pitchEdgeMult, parkMult: 1.0, formMult: cand?.ctx?.formMult||1.0 };
-            const prob2 = hits2Probability({ avg: Number(a.avg||0), estPA, ctx });
-pool.push({
+            const estPA = paPerG;
+            const ctx = { pitchEdgeMult: 1.0, parkMult: 1.0, formMult: 1.0 };
+            const prob2 = hits2Probability({ avg, estPA, ctx });
+            pool.push({
               id: p.id,
               name: p.name,
               team: T.get(tid)?.abbr || "",
               gameId: gamePk,
               gameCode,
-              prob: prob2, why: buildWhyHits2({ avg: Number(a.avg||0), ctx }), 0.06, 0.55),
-              why: `2+ hits model: BA ${(avg * 100).toFixed(0)}% • expAB ${expAB}`
+              prob: prob2,
+              why: buildWhyHits2({ avg, ctx })
             });
           }
         }
