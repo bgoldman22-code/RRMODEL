@@ -155,14 +155,26 @@ export default function MLB(){
     }catch{ return new Map(); }
   }
 
-  async function getOddsMap(){
+  
+async function getOddsMap(){
     try{
-      const j = await fetchJSON("/.netlify/functions/prewarm-odds-v2?market=player_home_run");
+      const res = await fetch("/.netlify/functions/odds-get", { cache: "no-store" });
+      if(!res.ok) return new Map();
+      const snap = await res.json();
+      const players = snap?.players || {};
       const map = new Map();
-      const arr = j?.data || j?.rows || [];
-      for(const r of arr){
-        if(r?.player && r?.best_american){
-          map.set(String(r.player).toLowerCase(), { american:r.best_american, book:r.book||"best" });
+      const normalize = (str) => String(str||"").toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/[.]/g,'').replace(/[’']/g,"'").trim();
+      for(const [raw, rec] of Object.entries(players)){
+        if(rec && rec.median_american!=null){
+          map.set(normalize(raw), { american: rec.median_american, books: rec.count_books, by_book: rec.by_book });
+        }
+      }
+      return map;
+    }catch(e){ return new Map(); }
+  }
+);
         }
       }
       return map;
@@ -248,7 +260,8 @@ export default function MLB(){
         // Odds & EV
         const keyName = String(c.name||"").toLowerCase();
         const found = oddsMap.get(keyName);
-        const american = found?.american ?? americanFromProb(p);
+        const modelAmerican = americanFromProb(p);
+        const american = (found?.american!=null) ? found.american : modelAmerican;
         const ev = evFromProbAndOdds(p, american);
 
         // Rank score with odds weight suppressed
@@ -259,7 +272,7 @@ export default function MLB(){
         rows.push({
           name: c.name, team: c.team, game: c.gameId || c.game || c.opp || "",
           batterId: c.batterId,
-          p_model: p, american, ev, rankScore,
+          p_model: p, modelAmerican, american, ev, rankScore,
           bvp_mod, protection_mod,
           why: explainRow({
             baseProb: Number(c.baseProb ?? c.prob ?? 0),
@@ -336,7 +349,8 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
               <th className="px-3 py-2 text-left">Player</th>
               <th className="px-3 py-2 text-left">Game</th>
               <th className="px-3 py-2 text-right">Model HR%</th>
-              <th className="px-3 py-2 text-right">American</th>
+              <th className="px-3 py-2 text-right">Model Odds</th>
+              <th className="px-3 py-2 text-right">Actual Odds</th>
               <th className="px-3 py-2 text-right">EV (1u)</th>
               <th className="px-3 py-2 text-left">Why</th>
             </tr>
@@ -347,6 +361,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
                 <td className="px-3 py-2">{r.name}</td>
                 <td className="px-3 py-2">{r.game}</td>
                 <td className="px-3 py-2 text-right">{(r.p_model*100).toFixed(1)}%</td>
+                <td className="px-3 py-2 text-right">{r.modelAmerican>0?`+${r.modelAmerican}`:r.modelAmerican}</td>
                 <td className="px-3 py-2 text-right">{r.american>0?`+${r.american}`:r.american}</td>
                 <td className="px-3 py-2 text-right">{r.ev.toFixed(3)}</td>
                 <td className="px-3 py-2">{r.why}</td>
@@ -364,7 +379,8 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
                   <th className="px-3 py-2 text-left">Player</th>
                   <th className="px-3 py-2 text-left">Game</th>
                   <th className="px-3 py-2 text-right">Model HR%</th>
-                  <th className="px-3 py-2 text-right">American</th>
+                  <th className="px-3 py-2 text-right">Model Odds</th>
+                  <th className="px-3 py-2 text-right">Actual Odds</th>
                   <th className="px-3 py-2 text-right">EV (1u)</th>
                   <th className="px-3 py-2 text-left">Why</th>
                 </tr>

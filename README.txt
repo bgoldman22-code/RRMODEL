@@ -1,0 +1,1 @@
+Replace src/MLB.jsx with this patched file. It fetches odds-get, shows Model Odds + Actual Odds, and uses Actual for EV.
