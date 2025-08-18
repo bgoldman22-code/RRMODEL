@@ -1,7 +1,8 @@
 // netlify/functions/hr-leaders.mjs
 // ESM function (repo has "type":"module").
-// Uses built-in global `fetch` (Node 18+ on Netlify). No node-fetch.
-// Blobs is OPTIONAL: we try native context first, then siteID/token, else skip cache.
+// Uses built-in global `fetch` (Node 18+). No node-fetch.
+// Blobs is OPTIONAL: try auto context, then siteID/token, else no-cache.
+
 import { getStore } from "@netlify/blobs";
 
 const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
@@ -9,32 +10,30 @@ const CACHE_KEY  = "leaders_hr_top50.json";
 const TTL_MS     = 30 * 60 * 1000; // 30 minutes
 
 async function initStore() {
-  // Try auto environment (works when Netlify Blobs is enabled for the site)
+  // Try auto env (works if Blobs enabled on the site)
   try {
     const s = getStore(STORE_NAME);
-    // quick no-op call to validate
-    await s.get("__ping__");
+    await s.get("__ping__"); // probe
     return s;
-  } catch (e) {
-    // Then try explicit siteID/token (if provided)
-    const siteID = process.env.NETLIFY_SITE_ID;
-    const token  = process.env.NETLIFY_BLOBS_TOKEN;
-    if (siteID && token) {
-      try {
-        const s = getStore({ name: STORE_NAME, siteID, token });
-        await s.get("__ping__");
-        return s;
-      } catch {}
-    }
+  } catch {}
+  // Try explicit siteID/token if provided
+  const siteID = process.env.NETLIFY_SITE_ID;
+  const token  = process.env.NETLIFY_BLOBS_TOKEN;
+  if (siteID && token) {
+    try {
+      const s = getStore({ name: STORE_NAME, siteID, token });
+      await s.get("__ping__");
+      return s;
+    } catch {}
   }
-  return null; // fallback: operate without cache
+  return null; // operate without cache
 }
 
 export const handler = async (event) => {
   try {
     const store = await initStore();
 
-    // Serve cached leaders if valid
+    // Serve cache if present and fresh
     if (store) {
       try {
         const cachedStr = await store.get(CACHE_KEY);
@@ -47,7 +46,6 @@ export const handler = async (event) => {
       } catch {}
     }
 
-    // Fetch live from MLB StatsAPI (public)
     const qp = event?.queryStringParameters || {};
     const season = qp.season || new Date().getFullYear();
     const url = `https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=homeRuns&season=${season}&sportId=1&limit=50`;
@@ -80,7 +78,6 @@ export const handler = async (event) => {
 
     const payload = { ok: true, season, fetchedAt: new Date().toISOString(), leaders: top };
 
-    // Write cache if store available
     if (store) {
       try { await store.set(CACHE_KEY, JSON.stringify(payload), { contentType: "application/json" }); } catch {}
     }

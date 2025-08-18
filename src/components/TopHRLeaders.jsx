@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react";
 /**
  * TopHRLeaders
  * Auto-loads Top 50 HR leaders from /.netlify/functions/hr-leaders
- * and renders a compact table matching your existing style.
+ * and renders a compact table matching your style.
  *
  * Props:
  *  - season?: number (defaults to current year)
- *  - onLoaded?: (names: string[]) => void // optional callback; we also return array of names you can pass to MissingOddsTable
+ *  - onLoaded?: (names: string[]) => void // optional callback with names array
  */
 export default function TopHRLeaders({ season, onLoaded }) {
   const [rows, setRows] = useState([]);
