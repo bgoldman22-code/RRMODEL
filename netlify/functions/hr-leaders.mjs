@@ -1,8 +1,7 @@
 // netlify/functions/hr-leaders.mjs
 // ESM function (repo has "type":"module").
-// Uses built-in global `fetch` (Node 18+). No node-fetch.
-// Blobs is OPTIONAL: try auto context, then siteID/token, else no-cache.
-
+// Uses global `fetch` (Node 18+) — no node-fetch.
+// Blobs is OPTIONAL. If not available, it still returns live leaders.
 import { getStore } from "@netlify/blobs";
 
 const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
@@ -10,13 +9,13 @@ const CACHE_KEY  = "leaders_hr_top50.json";
 const TTL_MS     = 30 * 60 * 1000; // 30 minutes
 
 async function initStore() {
-  // Try auto env (works if Blobs enabled on the site)
+  // 1) Try auto context (works when Blobs is enabled on the site)
   try {
     const s = getStore(STORE_NAME);
-    await s.get("__ping__"); // probe
+    await s.get("__ping__");
     return s;
   } catch {}
-  // Try explicit siteID/token if provided
+  // 2) Try explicit credentials if provided
   const siteID = process.env.NETLIFY_SITE_ID;
   const token  = process.env.NETLIFY_BLOBS_TOKEN;
   if (siteID && token) {
@@ -26,14 +25,15 @@ async function initStore() {
       return s;
     } catch {}
   }
-  return null; // operate without cache
+  // 3) No cache mode
+  return null;
 }
 
 export const handler = async (event) => {
   try {
     const store = await initStore();
 
-    // Serve cache if present and fresh
+    // Serve fresh cache if valid
     if (store) {
       try {
         const cachedStr = await store.get(CACHE_KEY);
@@ -46,6 +46,7 @@ export const handler = async (event) => {
       } catch {}
     }
 
+    // Fetch live Top 50 HR leaders (current or provided season)
     const qp = event?.queryStringParameters || {};
     const season = qp.season || new Date().getFullYear();
     const url = `https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=homeRuns&season=${season}&sportId=1&limit=50`;
@@ -54,7 +55,7 @@ export const handler = async (event) => {
     if (!resp.ok) return error(`Upstream ${resp.status} for ${url}`);
     const data = await resp.json();
 
-    // Normalize
+    // Normalize output
     const leaders = [];
     const cats = Array.isArray(data?.leagueLeaders) ? data.leagueLeaders : [];
     for (const cat of cats) {
@@ -64,7 +65,7 @@ export const handler = async (event) => {
         leaders.push({
           name: person?.fullName || person?.displayName || "",
           id: person?.id || null,
-          value: Number(p?.value || 0),
+          value: Number(p?.value || 0),  // HR count
           team: (p?.team && (p?.team?.abbreviation || p?.team?.name)) || "",
           rank: Number(p?.rank || leaders.length + 1),
         });
