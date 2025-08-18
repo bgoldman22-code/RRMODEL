@@ -1,4 +1,7 @@
 // odds-refresh-rapid.js (CommonJS)
+// Supports TheOddsAPI *or* RapidAPI provider based on env.
+// Strict mode: never overwrites with empty data; retries on 429.
+
 const { getStore } = require('@netlify/blobs');
 
 function initStore(){
@@ -18,26 +21,6 @@ function dateETISO(d=new Date()){
   return `${y}-${m}-${dd}`;
 }
 
-exports.handler = async (event) => {
-  const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
-  const RAPIDAPI_HOST = process.env.RAPIDAPI_HOST;
-  const EVENTS_URL = process.env.RAPIDAPI_EVENTS_URL;
-  const EVENT_PROPS_URL = process.env.RAPIDAPI_EVENT_PROPS_URL;
-  const PROP_MARKET_KEY = process.env.PROP_MARKET_KEY || 'batter_anytime_hr';
-  const PROP_OUTCOME_FIELD = process.env.PROP_OUTCOME_FIELD || 'participant';
-  const BOOKS = (process.env.BOOKS||'').split(',').map(s=>s.trim()).filter(Boolean);
-
-  if (!RAPIDAPI_KEY || !RAPIDAPI_HOST || !EVENTS_URL || !EVENT_PROPS_URL){
-    return { statusCode: 400, body: JSON.stringify({ ok:false, error: 'Missing RAPIDAPI_* envs (HOST/KEY/EVENTS_URL/EVENT_PROPS_URL)' }) };
-  }
-
-  const store = initStore();
-  const date = (event.queryStringParameters && event.queryStringParameters.date) || dateETISO();
-  const eventsUrl = EVENTS_URL.replace('{DATE}', date);
-
-  const headers = { 'x-rapidapi-key': RAPIDAPI_KEY, 'x-rapidapi-host': RAPIDAPI_HOST };
-
-  
 // --- retry helpers ---
 async function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
 async function jsonWithBackoff(url, headers, attempts=[1000, 2500, 6000, 10000]){
@@ -59,20 +42,52 @@ async function jsonWithBackoff(url, headers, attempts=[1000, 2500, 6000, 10000])
   }
   throw lastErr || new Error('Failed after retries');
 }
-async function safeJson(url){
-    const r = await fetch(url, { headers });
-    if (!r.ok) throw new Error('HTTP ' + r.status + ' for ' + url);
-    return await r.json();
+
+function buildUrls(date){
+  // If RapidAPI host & key set, use those URLs.
+  const rapidHost = process.env.RAPIDAPI_HOST;
+  const rapidKey  = process.env.RAPIDAPI_KEY;
+  const evTpl = process.env.RAPIDAPI_EVENTS_URL || '';
+  const propsTpl = process.env.RAPIDAPI_EVENT_PROPS_URL || '';
+
+  const apiKey = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY || '';
+
+  if (rapidHost && rapidKey && evTpl && propsTpl){
+    return {
+      provider: 'rapidapi',
+      headers: { 'x-rapidapi-key': rapidKey, 'x-rapidapi-host': rapidHost },
+      eventsUrl: evTpl.replace('{DATE}', date).replace('{API_KEY}', apiKey),
+      propsTpl: propsTpl.replace('{API_KEY}', apiKey),
+    };
   }
+
+  // Default to TheOddsAPI
+  const sport  = process.env.ODDSAPI_SPORT_KEY || 'baseball_mlb';
+  const region = process.env.ODDSAPI_REGION || 'us';
+  const eventsUrl = `https://api.the-odds-api.com/v4/sports/${sport}/events?regions=${region}&dateFormat=iso&apiKey=${apiKey}`;
+  const market = process.env.ODDSAPI_MARKET || process.env.PROP_MARKET_KEY || 'player_home_run';
+  const propsTpl2 = `https://api.the-odds-api.com/v4/sports/${sport}/events/{EVENT_ID}/odds?regions=${region}&markets=${market}&oddsFormat=american&dateFormat=iso&apiKey=${apiKey}`;
+
+  return { provider: 'theoddsapi', headers: {}, eventsUrl, propsTpl: propsTpl2 };
+}
+
+exports.handler = async (event) => {
+  const PROP_MARKET_KEY = process.env.PROP_MARKET_KEY || 'player_home_run';
+  const PROP_OUTCOME_FIELD = process.env.PROP_OUTCOME_FIELD || 'name';
+  const BOOKS = (process.env.BOOKS||'').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+
+  const store = initStore();
+  const date = (event.queryStringParameters && event.queryStringParameters.date) || dateETISO();
+  const { provider, headers, eventsUrl, propsTpl } = buildUrls(date);
 
   // 1) Events
   let events = [];
   try {
     const ej = await jsonWithBackoff(eventsUrl, headers);
-    events = Array.isArray(ej && ej.events) ? ej.events : (Array.isArray(ej) ? ej : ((ej && ej.data) || []));
+    events = Array.isArray(ej && ej.events) ? ej.events : (Array.isArray(ej) ? ej : ((ej && ej.data) || ej || []));
   } catch (e) {
-    try { await store.set('latest_error.json', JSON.stringify({ date, step:'events', error: String(e) })); } catch(_e) {}
-    return { statusCode: 429, body: JSON.stringify({ ok:false, step:'events', error: String(e), hint:'Rate limited or provider busy; try again in a minute.' }) };
+    try { await store.set('latest_error.json', JSON.stringify({ date, step:'events', provider, error: String(e) })); } catch(_e) {}
+    return { statusCode: 429, body: JSON.stringify({ ok:false, step:'events', provider, error: String(e), hint:'Provider busy or rate-limited; try again shortly.' }) };
   }
 
   const evIds = [];
@@ -82,41 +97,63 @@ async function safeJson(url){
   }
 
   if (evIds.length === 0){
-    await store.set(date + '.json', JSON.stringify({ date, provider:'rapidapi', players:{} }));
-    await store.set('latest.json', JSON.stringify({ date, provider:'rapidapi', players:{} }));
-    return { statusCode: 200, body: JSON.stringify({ ok:true, events:0, players:0 }) };
+    return { statusCode: 204, body: JSON.stringify({ ok:false, reason:'no MLB events returned for date', provider }) };
   }
 
-  // 2) Props per event
+  // 2) Props per event (normalize TheOddsAPI and RapidAPI shapes)
   const playersMap = new Map();
   let totalMarkets = 0;
 
   for (const id of evIds){
-    const url = EVENT_PROPS_URL.replace('{EVENT_ID}', id);
+    const url = propsTpl.replace('{EVENT_ID}', id);
     let pj;
-    try { pj = await safeJson(url); } catch (e){ continue; }
-    const markets = (pj && (pj.markets || pj.props || pj.data)) || [];
-    totalMarkets += Array.isArray(markets) ? markets.length : 0;
-    for (const mk of (Array.isArray(markets) ? markets : [])){
-      const key = mk && (mk.key || mk.market || mk.name);
-      if (!key || String(key).toLowerCase().indexOf(String(PROP_MARKET_KEY).toLowerCase()) === -1) continue;
-      const outcomes = mk.outcomes || mk.selections || mk.offers || [];
-      for (const o of (Array.isArray(outcomes) ? outcomes : [])){
-        const rawName = o[PROP_OUTCOME_FIELD] || o.name || o.title || o.runner || '';
-        if (!rawName) continue;
-        const american = Number(o.price_american || o.american || o.price || o.odds || 0);
-        const book = ((o.book || o.bookmaker || o.source || '') + '').toLowerCase();
-        if ((process.env.BOOKS||'') && process.env.BOOKS.length){
-          const allow = process.env.BOOKS.split(',').map(s=>s.trim().toLowerCase());
-          if (!book || allow.indexOf(book) === -1) continue;
+    try { pj = await jsonWithBackoff(url, headers); } catch (e) { continue; }
+
+    if (Array.isArray(pj && pj.bookmakers)){
+      // TheOddsAPI shape
+      for (const bm of pj.bookmakers){
+        const bookKey = ((bm && (bm.key || bm.title)) || '').toLowerCase();
+        if (BOOKS.length && (!bookKey || !BOOKS.includes(bookKey))) continue;
+        const mkts = (bm && bm.markets) || [];
+        for (const mk of mkts){
+          const mkey = (mk && (mk.key || mk.market || mk.name)) || '';
+          if (String(mkey).toLowerCase() !== String(PROP_MARKET_KEY).toLowerCase()) continue;
+          totalMarkets++;
+          const outcomes = (mk && mk.outcomes) || [];
+          for (const o of outcomes){
+            const rawName = o[PROP_OUTCOME_FIELD] || o.name || o.participant || o.title || o.runner || '';
+            if (!rawName) continue;
+            const american = Number(o.price || o.odds || o.american || 0);
+            if (!american) continue;
+            const keyName = String(rawName).trim().toLowerCase();
+            const rec = playersMap.get(keyName) || { prices: [], by_book: {} };
+            rec.prices.push(american);
+            if (bookKey) rec.by_book[bookKey] = american;
+            playersMap.set(keyName, rec);
+          }
         }
-        const keyName = rawName.trim().toLowerCase();
-        const rec = playersMap.get(keyName) || { prices: [], by_book: {} };
-        if (!Number.isNaN(american) && american !== 0){
+      }
+    } else {
+      // RapidAPI-like shape (markets/props/data at top level)
+      const markets = (pj && (pj.markets || pj.props || pj.data)) || [];
+      for (const mk of (Array.isArray(markets) ? markets : [])){
+        const key = mk && (mk.key || mk.market || mk.name);
+        if (!key || String(key).toLowerCase().indexOf(String(PROP_MARKET_KEY).toLowerCase()) === -1) continue;
+        totalMarkets++;
+        const outcomes = mk.outcomes || mk.selections || mk.offers || [];
+        for (const o of (Array.isArray(outcomes) ? outcomes : [])){
+          const rawName = o[PROP_OUTCOME_FIELD] || o.name || o.title || o.runner || '';
+          if (!rawName) continue;
+          const american = Number(o.price_american || o.american || o.price || o.odds || 0);
+          const book = ((o.book || o.bookmaker || o.source || '') + '').toLowerCase();
+          if (BOOKS.length && (!book || !BOOKS.includes(book))) continue;
+          if (!american) continue;
+          const keyName = rawName.trim().toLowerCase();
+          const rec = playersMap.get(keyName) || { prices: [], by_book: {} };
           rec.prices.push(american);
           if (book) rec.by_book[book] = american;
+          playersMap.set(keyName, rec);
         }
-        playersMap.set(keyName, rec);
       }
     }
   }
@@ -137,10 +174,14 @@ async function safeJson(url){
     };
   }
 
-  const snapshot = { date, provider:'rapidapi', market: process.env.PROP_MARKET_KEY||'batter_anytime_hr', players: playersOut };
+  // If no players collected, do not overwrite snapshot.
+  if (Object.keys(playersOut).length === 0){
+    return { statusCode: 204, body: JSON.stringify({ ok:false, reason:'no HR player props found', provider }) };
+  }
 
+  const snapshot = { date, provider, market: PROP_MARKET_KEY, players: playersOut };
   await store.set(date + '.json', JSON.stringify(snapshot));
   await store.set('latest.json', JSON.stringify(snapshot));
 
-  return { statusCode: 200, body: JSON.stringify({ ok:true, events: evIds.length, players: Object.keys(playersOut).length, markets: totalMarkets }) };
+  return { statusCode: 200, body: JSON.stringify({ ok:true, provider, events: evIds.length, players: Object.keys(playersOut).length, markets: totalMarkets }) };
 };

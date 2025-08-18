@@ -1,4 +1,4 @@
-// odds-get.js (CommonJS)
+// odds-get.js (CommonJS; works with named Blobs store and optional token)
 const { getStore } = require('@netlify/blobs');
 
 function initStore(){
