@@ -4,6 +4,11 @@ import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
 
+
+const RANK_ODDS_WEIGHT = Number(import.meta.env.VITE_RANK_ODDS_WEIGHT || process.env.RANK_ODDS_WEIGHT || 0.3);
+const BVP_MIN_AB = 10; // >9 AB threshold
+const BVP_MAX_BOOST = 0.06; // ±6%
+const PROTECTION_MAX = 0.05; // +5% cap
 const CAL_LAMBDA = 0.25;
 const HOTCOLD_CAP = 0.06;
 const MIN_PICKS = 12;
@@ -24,6 +29,59 @@ const MAX_PER_GAME = 2;
 
 function fmtET(date=new Date()){
   return new Intl.DateTimeFormat("en-US", { timeZone:"America/New_York", month:"short", day:"2-digit", year:"numeric"}).format(date);
+}
+
+async function getBvPMap(pairs){
+  const out = new Map();
+  const uniq = [];
+  const seen = new Set();
+  for(const p of pairs){
+    if(!p || !p.batterId || !p.pitcherId) continue;
+    const key = `${p.batterId}|${p.pitcherId}`;
+    if(seen.has(key)) continue;
+    seen.add(key); uniq.push(p);
+  }
+  for(const {batterId, pitcherId} of uniq){
+    const key = `${batterId}|${pitcherId}`;
+    try{
+      const url = `https://statsapi.mlb.com/api/v1/people/${batterId}/stats?stats=vsPlayer&opposingPlayerId=${pitcherId}`;
+      const r = await fetch(url);
+      if(!r.ok) { out.set(key,{ab:0,hr:0,pa:0}); continue; }
+      const j = await r.json();
+      const splits = j?.stats?.[0]?.splits || [];
+      const stat = splits[0]?.stat || {};
+      const ab = Number(stat?.atBats||0);
+      const hr = Number(stat?.homeRuns||0);
+      const pa = Number(stat?.plateAppearances||ab||0);
+      out.set(key, {ab, hr, pa});
+    }catch(e){
+      out.set(key,{ab:0,hr:0,pa:0});
+    }
+  }
+  return out;
+}
+
+function bvpModifier(p_game, ab, hr){
+  const baseline_pa = 4.0;
+  const base_rate = Math.max(0, Math.min(0.5, Number(p_game||0)/baseline_pa));
+  if(!ab || ab < BVP_MIN_AB) return 0;
+  const hr_rate = Math.max(0, Math.min(0.5, hr/ab));
+  const delta = hr_rate - base_rate;
+  const weight = Math.min(1, ab / 40);
+  let mod = delta * weight * 100;
+  if (mod > BVP_MAX_BOOST*100) mod = BVP_MAX_BOOST*100;
+  if (mod < -BVP_MAX_BOOST*100) mod = -BVP_MAX_BOOST*100;
+  return mod/100;
+}
+
+function protectionModifier(p_self, teamPeers){
+  if(!Array.isArray(teamPeers) || teamPeers.length===0) return 0;
+  const sorted = teamPeers.slice().sort((a,b)=>b-a);
+  const sumTop2 = (sorted[0]||0) + (sorted[1]||0);
+  let mod = 0.08 * sumTop2;
+  if (mod > PROTECTION_MAX) mod = PROTECTION_MAX;
+  if (mod < 0) mod = 0;
+  return mod;
 }
 function dateISO_ET(offsetDays=0){
   const d = new Date();
@@ -124,7 +182,12 @@ export default function MLB(){
       const ids = baseCandidates.map(x => x.batterId).filter(Boolean);
       const [hotMap, oddsMap] = await Promise.all([ getHotColdBulk(ids), getOddsMap() ]);
 
-      const rows = [];
+      
+      const temp = [];
+      const teamToPpre = new Map();
+      const bvpPairs = [];
+
+      // Pass 1: compute calibrated p_pre (before new modifiers), collect team pools and BvP pairs
       for(const c of baseCandidates){
         let p = Number(c.baseProb||c.prob||0);
         if(!p || p<=0) continue;
@@ -134,43 +197,80 @@ export default function MLB(){
         const calScale = Number(cals?.global?.scale || 1.0);
         p = applyCalibration(p, calScale);
 
-        const key = String(c.name||"").toLowerCase();
-        const found = oddsMap.get(key);
+        // Pitch-type edge
+        try {
+          const pitchMul = pitchTypeEdgeMultiplier ? pitchTypeEdgeMultiplier({
+            hitter_vs_pitch: c.hitter_vs_pitch || c.hvp || [],
+            pitcher: c.pitcher || { primary_pitches: c.primary_pitches || [] },
+          }) : 1.00;
+          if (typeof p === "number" && isFinite(p)) p *= pitchMul;
+        } catch {}
+
+        temp.push({ c, p_pre: p, hcMul, calScale });
+        if (c.team){
+          const arr = teamToPpre.get(c.team) || [];
+          arr.push(p);
+          teamToPpre.set(c.team, arr);
+        }
+        if (c.batterId && c.pitcherId){
+          bvpPairs.push({ batterId: c.batterId, pitcherId: c.pitcherId });
+        }
+      }
+
+      // Fetch BvP
+      let bvpMap = new Map();
+      try { bvpMap = await getBvPMap(bvpPairs); } catch(e){ bvpMap = new Map(); }
+
+      // Pass 2: apply modifiers and build rows
+      const rows = [];
+      for (const t of temp){
+        const c = t.c;
+        let p = t.p_pre;
+        let bvp_mod = 0, protection_mod = 0;
+
+        // BvP (>=10 AB)
+        if (c.batterId && c.pitcherId){
+          const key = `${c.batterId}|${c.pitcherId}`;
+          const rec = bvpMap.get(key);
+          if (rec && rec.ab >= BVP_MIN_AB){
+            bvp_mod = bvpModifier(p, rec.ab, rec.hr);
+            p = p * (1 + bvp_mod);
+          }
+        }
+
+        // Protection
+        if (c.team){
+          const peers = (teamToPpre.get(c.team)||[]).filter(val => val !== t.p_pre);
+          protection_mod = protectionModifier(p, peers);
+          if (protection_mod > 0) p = p * (1 + protection_mod);
+        }
+
+        // Odds & EV
+        const keyName = String(c.name||"").toLowerCase();
+        const found = oddsMap.get(keyName);
         const american = found?.american ?? americanFromProb(p);
         const ev = evFromProbAndOdds(p, american);
 
-// ---- pitch-type edge (safe, bounded; backend only) ----
-try {
-  const pitchMul = pitchTypeEdgeMultiplier ? pitchTypeEdgeMultiplier({
-    hitter_vs_pitch: c.hitter_vs_pitch || c.hvp || [],
-    pitcher: c.pitcher || { primary_pitches: c.primary_pitches || [] },
-  }) : 1.00;
-  if (typeof p === "number" && isFinite(p)) p *= pitchMul;
-} catch {}
-// --------------------------------------------------------
+        // Rank score with odds weight suppressed
+        const implied = impliedFromAmerican(american);
+        const edge = (implied!=null) ? Math.max(0, p - implied) : 0;
+        const rankScore = p + (RANK_ODDS_WEIGHT * edge);
 
         rows.push({
-  name: c.name,
-  team: c.team,
-  game: c.gameId || c.game || c.opp || "",
-  batterId: c.batterId,
-  p_model: p,
-  american,
-  ev,
-  why: explainRow({
-    baseProb: Number(c.baseProb ?? c.prob ?? 0),
-    hotBoost: hcMul,
-    calScale,
-    oddsAmerican: american,
-    pitcherName: c.pitcherName ?? null,
-    pitcherHand: c.pitcherHand ?? null,
-    parkHR: c.parkHR ?? null,
-    weatherHR: c.weatherHR ?? null
-  })
-});
-}
-
-      rows.sort((a,b)=> b.ev - a.ev);
+          name: c.name, team: c.team, game: c.gameId || c.game || c.opp || "",
+          batterId: c.batterId,
+          p_model: p, american, ev, rankScore,
+          bvp_mod, protection_mod,
+          why: explainRow({
+            baseProb: Number(c.baseProb ?? c.prob ?? 0),
+            hotBoost: t.hcMul, calScale: t.calScale,
+            oddsAmerican: american,
+            pitcherName: c.pitcherName ?? null, pitcherHand: c.pitcherHand ?? null,
+            parkHR: c.parkHR ?? null, weatherHR: c.weatherHR ?? null
+          })
+        });
+      }
+rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
       const out = [];
       const perGame = new Map();
