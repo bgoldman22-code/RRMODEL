@@ -1,6 +1,7 @@
 // netlify/functions/nfl-schedule.mjs
-// Thu→Mon scheduler that merges ESPN preseason(1) + regular(2) (and postseason 3) scoreboards.
-// Safe: if a day returns nothing, continue; if normalization fails, still include teams.
+// Thu→Mon scheduler that merges ESPN preseason(1) + regular(2) + postseason(3) scoreboards.
+// NEVER filters out games if team normalization fails; falls back to raw abbreviations.
+// Adds meta.windowFrom/windowTo for UI and basic counts for debugging.
 
 import { normalizeTeam, gameKey } from "./lib/teamMaps.mjs";
 
@@ -33,7 +34,7 @@ function weekWindow(dateISO){
     const dt = new Date(thursday); dt.setUTCDate(thursday.getUTCDate()+i);
     dates.push(dt);
   }
-  return dates;
+  return { dates, fromISO: iso(thursday), toISO: iso(new Date(thursday.getTime() + 4*86400000)) };
 }
 
 function nextThursdayISO(){
@@ -42,10 +43,14 @@ function nextThursdayISO(){
   const days = (4 - dow + 7) % 7;
   const cand = new Date(now);
   cand.setUTCDate(now.getUTCDate() + days);
-  const y = cand.getUTCFullYear();
-  const m = String(cand.getUTCMonth()+1).padStart(2,'0');
-  const d = String(cand.getUTCDate()).padStart(2,'0');
-  return `${y}-${m}-${d}`;
+  return iso(cand);
+}
+
+function iso(d){
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth()+1).padStart(2,'0');
+  const day = String(d.getUTCDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
 }
 
 export default async (req) => {
@@ -54,12 +59,14 @@ export default async (req) => {
     const dateISO = (url.searchParams.get("date")||"").trim() || nextThursdayISO();
     const mode = (url.searchParams.get("mode")||"").toLowerCase();
 
-    const dates = (mode === "week") ? weekWindow(dateISO) : [new Date(dateISO + "T12:00:00Z")];
+    const { dates, fromISO, toISO } = (mode === "week") ? weekWindow(dateISO) : { dates:[new Date(dateISO + "T12:00:00Z")], fromISO: dateISO, toISO: dateISO };
     const seasonTypes = [1,2,3]; // 1=pre, 2=reg, 3=post
     const games = [];
+    let fetchedDays = 0, fetchedEvents = 0;
 
     for (const dt of dates){
       const day = ymd(dt);
+      fetchedDays++;
       // Try explicit season types first, then generic fallback
       const urls = seasonTypes.map(st => `https://site.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${day}&seasontype=${st}`);
       urls.push(`https://site.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${day}`);
@@ -68,6 +75,7 @@ export default async (req) => {
         const data = await j(u);
         const events = Array.isArray(data?.events) ? data.events : [];
         if (events.length === 0) continue;
+        fetchedEvents += events.length;
 
         for (const ev of events){
           const comp = ev?.competitions?.[0];
@@ -81,16 +89,20 @@ export default async (req) => {
           const rawHome = homeC?.team?.abbreviation || (homeC?.team?.displayName||'').split(' ').pop();
           const rawAway = awayC?.team?.abbreviation || (awayC?.team?.displayName||'').split(' ').pop();
 
-          const home = normalizeTeam(rawHome) || (rawHome ? String(rawHome).toUpperCase() : null);
-          const away = normalizeTeam(rawAway) || (rawAway ? String(rawAway).toUpperCase() : null);
+          const homeNorm = normalizeTeam(rawHome);
+          const awayNorm = normalizeTeam(rawAway);
 
-          if (!home || !away) continue; // must have recognizable teams to key
+          const home = homeNorm || (rawHome ? String(rawHome).toUpperCase() : null);
+          const away = awayNorm || (rawAway ? String(rawAway).toUpperCase() : null);
 
+          // Build even if normalization failed; UI can still show teams
           const rec = {
             gameId: ev?.id || comp?.id || null,
             kickoff: comp?.date || ev?.date || null,
             seasonType: (ev?.season?.type ?? ev?.seasonType?.type ?? null),
             home, away,
+            homeRaw: rawHome || null,
+            awayRaw: rawAway || null,
             key: gameKey(away, home),
             venue: comp?.venue?.fullName || null
           };
@@ -104,11 +116,11 @@ export default async (req) => {
     for (const g of games){ uniq.set(`${g.key}:${g.kickoff}`, g); }
     const list = Array.from(uniq.values());
 
-    return new Response(JSON.stringify({ ok:true, games: list }), {
+    return new Response(JSON.stringify({ ok:true, games: list, meta:{ windowFrom: fromISO, windowTo: toISO, daysQueried: fetchedDays, eventsSeen: fetchedEvents } }), {
       headers: { "content-type":"application/json", "cache-control":"no-store" }
     });
   }catch(e){
-    return new Response(JSON.stringify({ ok:true, games: [] }), {
+    return new Response(JSON.stringify({ ok:true, games: [], meta:{ error: "exception" } }), {
       headers: { "content-type":"application/json", "cache-control":"no-store" }
     });
   }
