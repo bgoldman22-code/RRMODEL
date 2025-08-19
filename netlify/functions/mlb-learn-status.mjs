@@ -1,26 +1,14 @@
 // netlify/functions/mlb-learn-status.mjs
-import { getStore } from "@netlify/blobs";
-const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
-const store = getStore(STORE_NAME);
-
-async function readJSON(key) {
-  try {
-    const rsp = await store.get(key, { type: "json" });
-    if (rsp != null) return rsp;
-  } catch (_) {}
-  const blob = await store.get(key);
-  if (!blob) return null;
-  const txt = await blob.text();
-  try { return JSON.parse(txt); } catch { return null; }
-}
+import { createStore, readJSON } from "./_blobs-helper.mjs";
 
 export async function handler(event, context) {
   try {
-    const manifest = await readJSON("learn/manifest.json");
-    const latest   = await readJSON("learn/latest.json");
+    const store = createStore();
+    const manifest = await readJSON(store, "learn/manifest.json");
+    const latest   = await readJSON(store, "learn/latest.json");
     const days = Array.isArray(manifest) ? manifest.length : 0;
 
-    const aggregate = await readJSON("learn/aggregate.json");
+    const aggregate = await readJSON(store, "learn/aggregate.json");
     let samples = null;
     if (aggregate && typeof aggregate.samples === "number") samples = aggregate.samples;
     else if (latest && latest.results_meta && typeof latest.results_meta.samples === "number") samples = latest.results_meta.samples;
