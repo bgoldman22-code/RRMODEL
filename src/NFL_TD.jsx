@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 function todayEtISO() {
   const now = new Date();
   const tzOffset = now.getTimezoneOffset();
-  const estOffset = 4 * 60; // America/New_York during DST; acceptable for daily date
+  const estOffset = 4 * 60; // EDT approx
   const d = new Date(now.getTime() - (tzOffset - estOffset) * 60000);
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -24,22 +24,14 @@ async function safeJSON(url) {
   }
 }
 
-function americanToDecimal(us) {
-  if (us == null) return null;
-  const n = Number(us);
-  if (!Number.isFinite(n)) return null;
-  if (n >= 100) return 1 + n / 100;
-  if (n <= -100) return 1 + 100 / Math.abs(n);
-  return null;
-}
-function impliedFromAmerican(us) {
-  const dec = americanToDecimal(us);
-  if (!dec) return null;
-  return 1 / dec;
+function formatUS(v){
+  if (v == null || !Number.isFinite(v)) return "";
+  return v > 0 ? `+${Math.round(v)}` : `${Math.round(v)}`;
 }
 
 export default function NFLAnytimeTD() {
   const [date, setDate] = useState(todayEtISO());
+  const [weekly, setWeekly] = useState(true); // NEW: default to Thu–Mon window
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [rows, setRows] = useState([]);
@@ -49,7 +41,8 @@ export default function NFLAnytimeTD() {
     setLoading(true);
     setError(null);
     try {
-      const data = await safeJSON(`/.netlify/functions/nfl-anytime-td-candidates?date=${date}`);
+      const modeParam = weekly ? "&mode=week" : "";
+      const data = await safeJSON(`/.netlify/functions/nfl-anytime-td-candidates?date=${date}${modeParam}`);
       const list = Array.isArray(data?.candidates) ? data.candidates : [];
       setRows(list);
       setStats({ candidates: list.length, info: data?.info || null });
@@ -60,7 +53,7 @@ export default function NFLAnytimeTD() {
     }
   }
 
-  useEffect(() => { generate(); }, [date]);
+  useEffect(() => { generate(); }, [date, weekly]);
 
   const topEV = useMemo(() => {
     return [...rows]
@@ -87,16 +80,20 @@ export default function NFLAnytimeTD() {
     <div className="max-w-6xl mx-auto px-4 py-6">
       <h1 className="text-2xl font-semibold mb-2">NFL — Anytime TD (Calibrated + Usage + Odds-first EV)</h1>
       <div className="text-sm text-gray-500 mb-4">
-        Date (ET): {date} • Candidates: {stats?.candidates ?? 0}
+        Date (ET): {date} • Mode: {weekly ? "Thu–Mon week" : "Single day"} • Candidates: {stats?.candidates ?? 0}
       </div>
 
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-4 items-center">
         <input
           type="date"
           value={date}
           onChange={e => setDate(e.target.value)}
           className="border px-2 py-1 rounded"
         />
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={weekly} onChange={e => setWeekly(e.target.checked)} />
+          Thu–Mon week window
+        </label>
         <button
           onClick={generate}
           disabled={loading}
@@ -154,8 +151,3 @@ function Section({ title, rows }) {
 
 function Th({ children }) { return <th className="text-left p-2 border-r">{children}</th>; }
 function Td({ children }) { return <td className="p-2 border-r align-top">{children}</td>; }
-
-function formatUS(v){
-  if (v == null || !Number.isFinite(v)) return "";
-  return v > 0 ? `+${Math.round(v)}` : `${Math.round(v)}`;
-}
