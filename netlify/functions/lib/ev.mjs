@@ -1,4 +1,3 @@
-
 // netlify/functions/lib/ev.mjs
 export function americanToDecimal(us){
   const n = Number(us);
