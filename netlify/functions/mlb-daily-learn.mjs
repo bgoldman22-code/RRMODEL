@@ -1,22 +1,5 @@
 // netlify/functions/mlb-daily-learn.mjs
-import { getStore } from "@netlify/blobs";
-
-const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
-const store = getStore(STORE_NAME);
-
-async function readJSON(key) {
-  try {
-    const rsp = await store.get(key, { type: "json" });
-    if (rsp != null) return rsp;
-  } catch (_) {}
-  const blob = await store.get(key);
-  if (!blob) return null;
-  const txt = await blob.text();
-  try { return JSON.parse(txt); } catch { return null; }
-}
-async function writeJSON(key, obj) {
-  await store.set(key, JSON.stringify(obj), { contentType: "application/json" });
-}
+import { createStore, readJSON, writeJSON } from "./_blobs-helper.mjs";
 
 function todayISO() {
   const now = new Date();
@@ -25,6 +8,7 @@ function todayISO() {
 
 export async function handler(event, context) {
   try {
+    const store = createStore();
     const url = new URL(event.rawUrl || `https://${event.headers.host}${event.path}${event.rawQuery ? "?" + event.rawQuery : ""}`);
     const date = url.searchParams.get("date") || todayISO();
 
@@ -40,13 +24,13 @@ export async function handler(event, context) {
     }
 
     const dayKey = `learn/daily/${date}.json`;
-    await writeJSON(dayKey, data);
+    await writeJSON(store, dayKey, data);
 
     const manifestKey = "learn/manifest.json";
-    const manifest = (await readJSON(manifestKey)) || [];
+    const manifest = (await readJSON(store, manifestKey)) || [];
     if (!manifest.includes(date)) manifest.push(date);
     manifest.sort();
-    await writeJSON(manifestKey, manifest);
+    await writeJSON(store, manifestKey, manifest);
 
     const latest = {
       ok: true,
@@ -58,7 +42,7 @@ export async function handler(event, context) {
       },
       at: new Date().toISOString()
     };
-    await writeJSON("learn/latest.json", latest);
+    await writeJSON(store, "learn/latest.json", latest);
 
     return { statusCode: 200, body: JSON.stringify({ ok:true, date, saved: dayKey, manifest_days: manifest.length, latest }) };
   } catch (err) {
