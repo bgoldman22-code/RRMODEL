@@ -1,18 +1,17 @@
 
-Patch: utils/why.js — opponent pitcher fix
-==========================================
-Files included:
-- src/utils/why.js (replace your existing file)
+Patch contents
+==============
+- src/components/MissingOddsTable.jsx   ← fixes your build by supplying the referenced component
+- src/utils/opponentPitchers.js         ← helper used by MLB.jsx to guarantee "vs [opponent pitcher]" correctness
 
-What it does:
-- Ensures the WHY line uses the TRUE opponent pitcher.
-- Accepts many possible data shapes (probables arrays, home/away objects, single fields).
-- Prevents "vs own pitcher" mistakes by dropping the pitcher line if we can’t reliably find the opponent.
-
-Install:
-1) Place `src/utils/why.js` into your repo (overwrite).
+How to install
+--------------
+1) Drop these files into the same relative paths in your repo.
 2) Commit and deploy.
 
-Optional (future):
-- In your MLB.jsx, when you assemble the object for buildWhy(...), pass an explicit `opponentPitcher` if you have it handy:
-    const why = buildWhy({ ...row, opponentPitcher }, 1);
+Notes
+-----
+* MissingOddsTable.jsx is defensive and will render if any of these props are provided by MLB.jsx:
+  items, data, missing, list, rows. It auto-detects fields like {name, reason, hint}.
+* opponentPitchers.js just provides helpers. MLB.jsx should already import and use it
+  if you followed the earlier patch. No backend changes required.
