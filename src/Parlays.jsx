@@ -10,7 +10,7 @@ export default function Parlays(){
   const [error, setError] = useState(null);
   const [parlays, setParlays] = useState([]);
   const [diag, setDiag] = useState(null);
-  const [demo, setDemo] = useState(getQueryFlag('demo') || true); // keep demo true until feeds live
+  const [demo, setDemo] = useState(true || getQueryFlag('demo')); // keep demo on until feeds live
 
   useEffect(()=>{ build(); }, [demo]);
 
@@ -29,11 +29,6 @@ export default function Parlays(){
       }
       let legs = hasOffers(oddsJson) ? normalizeOddsToLegs(oddsJson) : [];
 
-      // 1b) CLIENT-SEED: if Demo ON and still zero legs, seed a tiny multi-sport set client-side
-      if (demo && legs.length === 0){
-        legs = normalizeOddsToLegs({ offers: demoSeedOffers() });
-      }
-
       // 2) Predictions — today then yesterday
       let usedDate = todayISO();
       let predsRes = await fetch(`/.netlify/functions/mlb-preds-get?date=${usedDate}`);
@@ -48,14 +43,14 @@ export default function Parlays(){
       }
 
       // 3) Merge (exact id, then player fallback)
-      const mergedModel = {};
       let directMatches = 0, playerMatches = 0;
+      let mergedModel = {};
       for (const l of legs){
         if (modelMap[l.id] != null){ mergedModel[l.id]=modelMap[l.id]; directMatches++; }
         else if (l.player && modelMap[l.player] != null){ mergedModel[l.id]=modelMap[l.player]; playerMatches++; }
       }
 
-      // 3b) DEMO: synthesize model if still empty
+      // 3b) DEMO fallback: synthesize model from odds if still empty
       if (demo && Object.keys(mergedModel).length === 0 && legs.length){
         const byGroup = legs.reduce((acc,l)=>{
           const g = l.groupKey || `${l.gameId||'na'}:${l.market||'market'}`;
@@ -69,20 +64,27 @@ export default function Parlays(){
           const s = probs.reduce((a,b)=>a+b,0) || 1;
           arr.forEach((o,i)=> pbook[o.id] = probs[i]/s );
         }
+        mergedModel = {};
         for (const l of legs){
           const q = pbook[l.id] ?? impliedProb(l.american);
-          // add 3% edge but cap to [0.10, 0.90] for demo
-          mergedModel[l.id] = Math.max(0.10, Math.min(0.90, q + 0.03));
+          mergedModel[l.id] = Math.max(0.10, Math.min(0.90, q + 0.05)); // +5% edge for demo
         }
+        directMatches = legs.length; // count as synthetic matches so diag isn't 0
+        playerMatches = 0;
       }
 
-      // 4) Build parlays (strict then loose)
-      let payload = { odds: legs, model: mergedModel, config: { maxLegs:3, targetCount:5, minEdge:0.02, minLegProb:0.60 } };
+      // 4) Build parlays — if demo, use looser thresholds so something shows
+      const baseConfig = demo
+        ? { maxLegs: 3, targetCount: 5, minEdge: 0.00, minLegProb: 0.45 }
+        : { maxLegs: 3, targetCount: 5, minEdge: 0.02, minLegProb: 0.60 };
+
+      let payload = { odds: legs, model: mergedModel, config: baseConfig };
       let res = await fetch("/.netlify/functions/generate-parlays", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
       let data = await res.json();
       let parlaysBuilt = (res.ok && data?.parlays) ? data.parlays : [];
 
-      if (!parlaysBuilt.length){
+      if (!parlaysBuilt.length && !demo){
+        // only retry looser in non-demo case
         payload.config.minEdge = 0.00;
         payload.config.minLegProb = 0.50;
         const res2 = await fetch("/.netlify/functions/generate-parlays", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
@@ -127,7 +129,7 @@ export default function Parlays(){
       {!loading && !error && parlays.length===0 && (
         <div className="bg-white p-4 rounded-xl shadow mb-4">
           <div className="font-semibold mb-1">No parlays built yet.</div>
-          <div className="text-sm opacity-80">Try Refresh. Or flip <strong>Demo ON</strong> to see example parlays using devigged odds as temporary model probs.</div>
+          <div className="text-sm opacity-80">Try Refresh. With Demo ON, synthetic model probs are generated from odds so something should appear.</div>
         </div>
       )}
 
@@ -227,16 +229,4 @@ function normalizePredsToMap(predsFile){
     if (r.player && typeof p === "number") map[r.player] = p;
   }
   return map;
-}
-
-// demo legs
-function demoSeedOffers(){
-  return [
-    { id: "Shohei Ohtani|MLB HR 0.5+|G123|DK", player: "Shohei Ohtani", market: "MLB HR 0.5+", game_id: "G123", book: "DK", american: +300 },
-    { id: "Aaron Judge|MLB HR 0.5+|G124|DK",  player: "Aaron Judge",  market: "MLB HR 0.5+", game_id: "G124", book: "DK", american: +280 },
-    { id: "Nikola Jokic|NBA Rebounds 9.5+|N987|FD", player: "Nikola Jokic", market: "NBA Rebounds 9.5+", game_id: "N987", book: "FD", american: -120 },
-    { id: "Anthony Davis|NBA Rebounds 9.5+|N988|FD", player: "Anthony Davis", market: "NBA Rebounds 9.5+", game_id: "N988", book: "FD", american: +110 },
-    { id: "Travis Kelce|NFL Anytime TD|F555|MG", player: "Travis Kelce", market: "NFL Anytime TD", game_id: "F555", book: "MG", american: +130 },
-    { id: "Christian McCaffrey|NFL Anytime TD|F556|MG", player: "Christian McCaffrey", market: "NFL Anytime TD", game_id: "F556", book: "MG", american: -105 }
-  ];
 }

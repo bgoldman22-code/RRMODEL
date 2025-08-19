@@ -1,4 +1,7 @@
 // netlify/functions/nfl-schedule.mjs
+// Thu→Mon scheduler that merges ESPN preseason(1) + regular(2) (and postseason 3) scoreboards.
+// Safe: if a day returns nothing, continue; if normalization fails, still include teams.
+
 import { normalizeTeam, gameKey } from "./lib/teamMaps.mjs";
 
 async function j(url){
@@ -52,43 +55,56 @@ export default async (req) => {
     const mode = (url.searchParams.get("mode")||"").toLowerCase();
 
     const dates = (mode === "week") ? weekWindow(dateISO) : [new Date(dateISO + "T12:00:00Z")];
+    const seasonTypes = [1,2,3]; // 1=pre, 2=reg, 3=post
     const games = [];
 
     for (const dt of dates){
-      const data = await j(`https://site.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${ymd(dt)}`);
-      const events = Array.isArray(data?.events) ? data.events : [];
-      for (const ev of events){
-        const comp = ev?.competitions?.[0];
-        const c = Array.isArray(comp?.competitors) ? comp.competitors : [];
-        if (c.length !== 2) continue;
+      const day = ymd(dt);
+      // Try explicit season types first, then generic fallback
+      const urls = seasonTypes.map(st => `https://site.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${day}&seasontype=${st}`);
+      urls.push(`https://site.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${day}`);
 
-        const homeC = c.find(x => x?.homeAway === "home");
-        const awayC = c.find(x => x?.homeAway === "away");
+      for (const u of urls){
+        const data = await j(u);
+        const events = Array.isArray(data?.events) ? data.events : [];
+        if (events.length === 0) continue;
 
-        // Prefer ESPN team abbreviation; fallback to last word of team name
-        const rawHome = homeC?.team?.abbreviation || (homeC?.team?.displayName||'').split(' ').pop();
-        const rawAway = awayC?.team?.abbreviation || (awayC?.team?.displayName||'').split(' ').pop();
+        for (const ev of events){
+          const comp = ev?.competitions?.[0];
+          const c = Array.isArray(comp?.competitors) ? comp.competitors : [];
+          if (c.length < 2) continue;
 
-        const home = normalizeTeam(rawHome) || (homeC?.team?.abbreviation || '').toUpperCase();
-        const away = normalizeTeam(rawAway) || (awayC?.team?.abbreviation || '').toUpperCase();
+          const homeC = c.find(x => x?.homeAway === "home") || c[0];
+          const awayC = c.find(x => x?.homeAway === "away") || c[1];
 
-        // Build even if normalization failed; UI can still show teams
-        const rec = {
-          gameId: ev?.id || comp?.id || null,
-          kickoff: comp?.date || ev?.date || null,
-          seasonType: ev?.seasonType?.name || ev?.season?.type || null,
-          home, away,
-          key: gameKey(away, home),
-          venue: comp?.venue?.fullName || null
-        };
-        games.push(rec);
+          // Prefer ESPN abbreviation; fallback to last word of team name
+          const rawHome = homeC?.team?.abbreviation || (homeC?.team?.displayName||'').split(' ').pop();
+          const rawAway = awayC?.team?.abbreviation || (awayC?.team?.displayName||'').split(' ').pop();
+
+          const home = normalizeTeam(rawHome) || (rawHome ? String(rawHome).toUpperCase() : null);
+          const away = normalizeTeam(rawAway) || (rawAway ? String(rawAway).toUpperCase() : null);
+
+          if (!home || !away) continue; // must have recognizable teams to key
+
+          const rec = {
+            gameId: ev?.id || comp?.id || null,
+            kickoff: comp?.date || ev?.date || null,
+            seasonType: (ev?.season?.type ?? ev?.seasonType?.type ?? null),
+            home, away,
+            key: gameKey(away, home),
+            venue: comp?.venue?.fullName || null
+          };
+          games.push(rec);
+        }
       }
     }
 
-    // De-dup
+    // De-dup by key+kickoff
     const uniq = new Map();
     for (const g of games){ uniq.set(`${g.key}:${g.kickoff}`, g); }
-    return new Response(JSON.stringify({ ok:true, games: Array.from(uniq.values()) }), {
+    const list = Array.from(uniq.values());
+
+    return new Response(JSON.stringify({ ok:true, games: list }), {
       headers: { "content-type":"application/json", "cache-control":"no-store" }
     });
   }catch(e){
