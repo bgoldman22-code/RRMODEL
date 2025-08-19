@@ -1,4 +1,6 @@
 // netlify/functions/generate-parlays.js
+// Multi-sport parlay builder (sureshot bias).
+// Accepts optional filters: { sportIn:[], marketIn:[], minDecPrice?, maxDecPrice? }
 exports.handler = async (event) => {
   try {
     const body = event.body ? JSON.parse(event.body) : {};
@@ -11,14 +13,27 @@ exports.handler = async (event) => {
       minLegProb: config.minLegProb ?? 0.60,
       maxPairCorr: config.maxPairCorr ?? 0.35,
       boostPct: config.boostPct ?? 0.0,
+      sportIn: Array.isArray(config.sportIn) ? config.sportIn : null,
+      marketIn: Array.isArray(config.marketIn) ? config.marketIn : null,
+      minDecPrice: config.minDecPrice ?? 1.0,
+      maxDecPrice: config.maxDecPrice ?? 1000.0,
     };
 
     const americanToDecimal = (odds) =>
       odds > 0 ? 1 + (odds / 100) : 1 + (100 / Math.abs(odds));
     const impliedProb = (odds) => 1 / americanToDecimal(odds);
 
+    // Optional sport/market filter
+    function passFilter(o){
+      if (cfg.sportIn && o.sport && !cfg.sportIn.includes(o.sport)) return false;
+      if (cfg.marketIn && o.market && !cfg.marketIn.some(m => String(o.market).toLowerCase().includes(m.toLowerCase()))) return false;
+      return true;
+    }
+
+    // Group for de-vig
     const byGroup = {};
     for (const o of odds) {
+      if (!passFilter(o)) continue;
       const g = o.groupKey || `${o.gameId || 'na'}:${o.market || 'Generic'}`;
       if (!byGroup[g]) byGroup[g] = [];
       byGroup[g].push(o);
@@ -32,7 +47,9 @@ exports.handler = async (event) => {
       arr.forEach((o, i) => { devigMap[o.id] = probs[i] * scale; });
     }
 
+    // Build candidates
     const candidates = odds
+      .filter(passFilter)
       .map((o) => {
         const p_true = model[o.id];
         if (p_true == null) return null;
@@ -47,15 +64,30 @@ exports.handler = async (event) => {
           gameId: o.gameId,
           player: o.player || null,
           market: o.market || "",
+          sport: o.sport || o.league || null,
+          team: o.team || o.teamName || null,
         };
       })
       .filter(Boolean)
-      .filter((x) => x.p_true >= cfg.minLegProb && x.edge >= cfg.minEdge);
+      .filter((x) => x.p_true >= cfg.minLegProb && x.edge >= cfg.minEdge)
+      .filter((x) => x.dec >= cfg.minDecPrice && x.dec <= cfg.maxDecPrice);
 
     const pairCorr = (a, b) => {
+      // Same game → moderate correlation
       if (a.gameId && b.gameId && a.gameId === b.gameId) return 0.25;
+      // Same player → block
       if (a.player && b.player && a.player === b.player) return 0.9;
-      return 0.1;
+      // Cross-sport assumed low corr
+      if (a.sport && b.sport && a.sport !== b.sport) return 0.05;
+      // Totals with related side in same game → small corr
+      const mk = (x)=> String(x.market||'').toLowerCase();
+      if (a.gameId && b.gameId && a.gameId === b.gameId) {
+        if ((mk(a).includes('total') && (mk(b).includes('under')||mk(b).includes('over'))) ||
+            (mk(b).includes('total') && (mk(a).includes('under')||mk(a).includes('over')))) {
+          return 0.20;
+        }
+      }
+      return 0.10;
     };
 
     function* combos(arr, r, start = 0, prev = []) {
@@ -86,6 +118,7 @@ exports.handler = async (event) => {
         const pStarIndep = legs.reduce((acc, l) => acc * l.p_true, 1);
         const pStar = Math.max(0, Math.min(1, pStarIndep * (1 - 0.5 * avgR)));
         const decPrice = legs.reduce((acc, l) => acc * l.dec, 1);
+        if (decPrice < cfg.minDecPrice || decPrice > cfg.maxDecPrice) continue;
 
         const stake = 100;
         const profit = stake * (decPrice - 1);
@@ -93,10 +126,11 @@ exports.handler = async (event) => {
         const EV = pStar * boostedProfit - (1 - pStar) * stake;
 
         parlayList.push({
+          sportMix: Array.from(new Set(legs.map(l=>l.sport).filter(Boolean))),
           legs: legs.map((l) => ({
             id: l.id, american: l.american, dec: l.dec,
             p_true: l.p_true, p_book: l.p_book, edge: l.edge,
-            gameId: l.gameId, player: l.player, market: l.market
+            gameId: l.gameId, player: l.player, market: l.market, sport: l.sport
           })),
           decPrice, pStar, EV, avgR
         });
@@ -113,7 +147,7 @@ exports.handler = async (event) => {
       ...p,
       units: recommendUnits(p.pStar, p.EV, p.decPrice),
       why: p.legs.map((l) =>
-        `Model ${Math.round(l.p_true*100)}% vs book ${Math.round(l.p_book*100)}% (edge +${Math.round((l.edge)*100)}%). Market: ${l.market}${l.player ? " • " + l.player : ""}.`
+        `Model ${Math.round(l.p_true*100)}% vs book ${Math.round(l.p_book*100)}% (edge +${Math.round((l.edge)*100)}%). ${l.sport ? l.sport + ' • ' : ''}${l.market}${l.player ? " • " + l.player : ""}.`
       )
     }));
 

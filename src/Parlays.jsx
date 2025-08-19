@@ -4,11 +4,18 @@ import React, { useEffect, useState } from "react";
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function yesterdayISO(){ const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
 
+const SPORT_OPTIONS = ["MLB","NFL","NBA","NHL","MLS","NCAAF","NCAAB"];
+const MARKET_OPTIONS = ["moneyline","spread","total","over","under","player","hr","td","shots","rebounds","assists"];
+
 export default function Parlays(){
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [parlays, setParlays] = useState([]);
   const [diag, setDiag] = useState(null);
+  const [sports, setSports] = useState(["MLB","NFL","NBA"]);
+  const [markets, setMarkets] = useState(["moneyline","spread","total","player"]);
+
+  const toggle = (arr, setArr, v)=> setArr(a => a.includes(v) ? a.filter(x=>x!==v) : a.concat([v]));
 
   const build = async () => {
     try{
@@ -46,14 +53,22 @@ export default function Parlays(){
         else if (l.player && modelMap[l.player] != null){ mergedModel[l.id]=modelMap[l.player]; playerMatches++; }
       }
 
-      // Build
-      let payload = { odds: legs, model: mergedModel, config: { maxLegs:3, targetCount:5, minEdge:0.02, minLegProb:0.60 } };
+      // Build (pass sport/market filters)
+      let payload = { 
+        odds: legs, 
+        model: mergedModel, 
+        config: { 
+          maxLegs:3, targetCount:5, minEdge:0.02, minLegProb:0.60,
+          sportIn: sports, marketIn: markets
+        } 
+      };
       let res = await fetch("/.netlify/functions/generate-parlays", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
       let data = await res.json();
       let parlaysBuilt = (res.ok && data?.parlays) ? data.parlays : [];
 
       if (!parlaysBuilt.length){
-        payload = { odds: legs, model: mergedModel, config: { maxLegs:3, targetCount:5, minEdge:0.00, minLegProb:0.50 } };
+        payload.config.minEdge = 0.00;
+        payload.config.minLegProb = 0.50;
         const res2 = await fetch("/.netlify/functions/generate-parlays", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
         const data2 = await res2.json();
         if (res2.ok && data2?.parlays) parlaysBuilt = data2.parlays;
@@ -66,14 +81,12 @@ export default function Parlays(){
         directMatches, playerMatches,
         predsDateTried: usedDate,
       });
-    } catch(e){
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
+    }catch(e){ setError(e.message); }
+    finally{ setLoading(false); }
   };
 
   useEffect(()=>{ build(); }, []);
+  useEffect(()=>{ build(); }, [sports.join(','), markets.join(',')]);
 
   const manualRefresh = async () => {
     await fetch("/.netlify/functions/odds-refresh-rapid").catch(()=>{});
@@ -81,24 +94,24 @@ export default function Parlays(){
     build();
   };
 
-  const checkStores = async () => {
-    const today = todayISO();
-    const [o,p] = await Promise.all([
-      fetch("/.netlify/functions/odds-diag").then(r=>r.json()).catch(()=>({})),
-      fetch(`/.netlify/functions/preds-diag?date=${today}`).then(r=>r.json()).catch(()=>({}))
-    ]);
-    alert("Odds store: " + JSON.stringify(o) + "\n\nPreds store: " + JSON.stringify(p));
-  };
-
   return (
     <div className="max-w-6xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-1">Parlays (Sureshot Mode)</h1>
-      <p className="text-gray-600 mb-2">3–5 low-variance parlays from your live odds + model.</p>
-      <div className="text-xs opacity-70 mb-4">*P* is the model’s joint hit probability (correlation-adjusted heuristic).</div>
+      <p className="text-gray-600 mb-2">Multi-sport: pick your sports & markets below. Built from your live odds + model.</p>
+      <div className="text-xs opacity-70 mb-4">*P* = joint hit probability.</div>
 
+      <div className="flex flex-wrap gap-2 mb-3">
+        {SPORT_OPTIONS.map(s => (
+          <button key={s} onClick={()=>toggle(sports,setSports,s)} className={"px-2 py-1 rounded text-sm " + (sports.includes(s) ? "bg-black text-white" : "border")}>{s}</button>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-2 mb-3">
+        {MARKET_OPTIONS.map(m => (
+          <button key={m} onClick={()=>toggle(markets,setMarkets,m)} className={"px-2 py-1 rounded text-sm " + (markets.includes(m) ? "bg-black text-white" : "border")}>{m}</button>
+        ))}
+      </div>
       <div className="flex gap-2 mb-3">
         <button onClick={manualRefresh} className="px-3 py-1 rounded bg-black text-white">Refresh odds & retry</button>
-        <button onClick={checkStores} className="px-3 py-1 rounded border">Diag stores</button>
       </div>
 
       {loading && <div className="bg-white p-4 rounded-xl shadow">Building today’s picks…</div>}
@@ -107,7 +120,7 @@ export default function Parlays(){
       {!loading && !error && parlays.length===0 && (
         <div className="bg-white p-4 rounded-xl shadow mb-4">
           <div className="font-semibold mb-1">No parlays built yet.</div>
-          <div className="text-sm opacity-80">Hit “Refresh odds & retry”. If still empty, use “Diag stores” to see if blobs exist.</div>
+          <div className="text-sm opacity-80">Try selecting more sports/markets or hit Refresh. If still empty, odds snapshot or preds may be missing.</div>
         </div>
       )}
 
@@ -121,10 +134,11 @@ export default function Parlays(){
               <strong>EV (per $100):</strong> {p.EV.toFixed(2)}
             </div>
           </div>
+          <div className="text-xs opacity-80 mb-1">{(p.sportMix||[]).join(" • ")}</div>
           <ul className="mt-2 list-disc pl-6">
             {p.legs.map((l, i) => (
               <li key={i}>
-                {l.market}{l.player ? ` – ${l.player}` : ""}: {l.american > 0 ? `+${l.american}` : l.american}
+                {l.sport ? `${l.sport} • ` : ""}{l.market}{l.player ? ` – ${l.player}` : ""}: {l.american > 0 ? `+${l.american}` : l.american}
                 &nbsp;| Model {Math.round(l.p_true*100)}% vs book {Math.round(l.p_book*100)}% (edge {Math.round(l.edge*100)}%)
               </li>
             ))}
@@ -174,10 +188,11 @@ function normalizeOddsToLegs(snapshot){
       id,
       american: Number(american),
       gameId: o.game_id || o.gameId || o.eventId || o.game || null,
-      market: o.market || o.label || o.marketKey || "MLB HR 0.5+",
+      market: o.market || o.label || o.marketKey || "market",
       player: o.player || o.name || o.runner || o.selection || null,
       sgpOk: o.sgpOk ?? true,
-      groupKey: `${o.game_id || o.gameId || o.eventId || 'na'}:${o.market || o.marketKey || 'MLB HR'}`
+      groupKey: `${o.game_id || o.gameId || o.eventId || 'na'}:${o.market || o.marketKey || 'market'}`,
+      sport: o.sport || o.league || (inferSportFromMarket(o.market || o.marketKey || "")) || null
     });
   }
   return out;
@@ -191,15 +206,24 @@ function pickAmerican(o){
   if (typeof o.americanOdds === "string") return Number(o.americanOdds);
   return null;
 }
+function inferSportFromMarket(m){
+  const s = String(m).toLowerCase();
+  if (s.includes("home run") || s.includes("hr")) return "MLB";
+  if (s.includes("touchdown") || s.includes("td")) return "NFL";
+  if (s.includes("rebounds") || s.includes("assists") || s.includes("threes")) return "NBA";
+  if (s.includes("shots on goal")) return "NHL";
+  if (s.includes("goalscorer") || s.includes("ags")) return "MLS";
+  return null;
+}
 function normalizePredsToMap(predsFile){
   const map = {};
   const arr = predsFile?.predictions || predsFile?.rows || predsFile?.data || predsFile || [];
   for (const r of (Array.isArray(arr) ? arr : [])) {
-    const market = r.market || r.type || "MLB HR 0.5+";
+    const market = r.market || r.type || "market";
     const id = r.id || [r.player, market, r.game_id || r.gameId || r.eventId, r.book].filter(Boolean).join("|");
-    const p = r.p_true ?? r.prob ?? r.p ?? r.hr_prob;
+    const p = r.p_true ?? r.prob ?? r.p ?? r.hr_prob ?? r.td_prob ?? r.goal_prob;
     if (id && typeof p === "number") map[id] = p;
-    if (r.player && typeof r.hr_prob === "number") map[r.player] = r.hr_prob;
+    if (r.player && typeof p === "number") map[r.player] = p;
   }
   return map;
 }
