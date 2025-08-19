@@ -1,110 +1,125 @@
-// utils/why.js
+
+// src/utils/why.js
+// SAFETY PATCH: prefer opponentPitcher and guard against using the hitter's own pitcher.
+// This file is drop-in compatible with your existing imports: `import { buildWhy } from "./utils/why.js"`
+
 export function buildWhy(input, seed) {
-  const rng = seeded(input.player + input.opponent + (new Date()).toDateString(), seed);
+  const rng = seeded(`${input.player||""}|${input.game||""}|${seed||1}`);
+
+  // pick the correct pitcher once
+  const pitcher = chooseOpponentPitcher(input);
+
   const parts = [];
 
-  push(parts, pick(T_BASELINE, rng), input);
+  // 1) baseline
+  parts.push(render(pick(T_BASELINE, rng), input));
 
+  // 2) matchup vs pitch (if provided by caller)
   const match = bestPitchMatch(input);
-  if (match) push(parts, pick(T_PITCH_MATCH, rng), {...input, ...match});
-  else push(parts, pick(T_PITCHER, rng), input);
+  if (match) {
+    parts.push(render(pick(T_PITCH_MATCH, rng), {...input, ...match}));
+  }
 
+  // 3) pitcher line (only if we have one after safety check)
+  if (pitcher) {
+    parts.push(render(pick(T_PITCHER, rng), {...input, pitcher}));
+  }
+
+  // 4) park / weather
   const env = envSummary(input);
-  if (env) push(parts, pick(T_ENV, rng), {...input, ...env});
+  if (env) {
+    parts.push(render(pick(T_ENV, rng), {...input, ...env}));
+  }
 
-  push(parts, pick(T_MARKET, rng), {
+  // 5) market/EV
+  parts.push(render(pick(T_MARKET, rng), {
     ...input,
-    edge_pts: Math.round((input.true_hr_prob - input.implied_prob)*1000)/10
-  });
+    odds_best_american: input.odds_best_american ?? input.actual_american ?? input.american ?? "—",
+    implied_prob: input.implied_prob ?? null,
+    true_hr_prob: input.true_hr_prob ?? input.model_prob ?? null,
+    ev_per_unit: input.ev_per_unit ?? input.ev ?? null,
+    edge_pts: (() => {
+      const p = input.true_hr_prob ?? input.model_prob;
+      const q = input.implied_prob;
+      if (p == null || q == null) return "—";
+      return Math.round((p - q)*1000)/10;
+    })()
+  }));
 
-  if (input.risk_notes) push(parts, pick(T_RISK, rng), input);
+  // optional risk note
+  if (input.risk_notes) parts.push(render("Notes: {risk_notes}.", input));
 
-  const text = parts.filter(Boolean).slice(0,5).join(" ");
-  return { text, bullets: parts };
+  return {
+    text: parts.filter(Boolean).slice(0,5).join(" • "),
+    bullets: parts
+  };
+}
+
+// —— helpers ——
+
+function chooseOpponentPitcher(input){
+  // If caller passes opponentPitcher explicitly, prefer it.
+  let p = input.opponentPitcher || input.pitcher || null;
+  if (!p) return null;
+
+  // If we can detect that `p` is the same team as the batter, drop it.
+  const batterTeam = (input.team || input.batter_team || input.player_team || "").toLowerCase();
+  const pitcherTeam = (p.team || p.team_name || p.club || "").toLowerCase();
+  if (batterTeam && pitcherTeam && batterTeam === pitcherTeam) {
+    // wrong-side pitcher slipped in (home/away flip) — try altOpponentPitcher or give up gracefully
+    return input.altOpponentPitcher || null;
+  }
+  return p;
 }
 
 const T_BASELINE = [
-  "{player} projects from a {pct(base_hr_pa)} HR/PA baseline with ~{fix(exp_pa,1)} expected plate appearances.",
-  "Baseline power is {pct(base_hr_pa)} per PA, supported by a likely {fix(exp_pa,1)} PA workload."
+  "{player} baseline HR/PA {pct(base_hr_pa)} over ~{fix(exp_pa,1)} PA.",
+  "Baseline power {pct(base_hr_pa)} per PA; workload ~{fix(exp_pa,1)} PA."
 ];
 
 const T_PITCHER = [
-  "He draws {pitcher.name}, a {pitcher.throws}-hander allowing {val(pitcher.hr9)} HR/9 and {pct(pitcher.barrel_pct_allowed)} barrels.",
-  "{pitcher.name} leans on the {pitch_list} and has been vulnerable when behind in the count."
+  "vs {pitcher.name} ({pitcher.throws}), {pitcher.hr9} HR/9 allowed; barrels {pct(pitcher.barrel_pct_allowed)}.",
+  "{pitcher.name} leans on {pitch_list}; playable power spot."
 ];
 
 const T_PITCH_MATCH = [
-  "{player} profiles well vs {match_pitch}: xISO {val(match_xiso)} on that pitch type.",
-  "Matchup edge: {player} vs {match_pitch} has played {dir(match_xiso)} in our book."
+  "Pitch-type edge: vs {match_pitch} xISO {val(match_xiso)}.",
+  "Profiles well vs {match_pitch} ({val(match_xiso)} xISO window)."
 ];
 
 const T_ENV = [
-  "{park.name} plays {park_dir} for {hand}-handed power (HR index {park_idx}).",
-  "Weather {weather_blurb} — a small {env_boost} HR boost."
+  "{park.name} plays {park_dir} for {hand} power (HR idx {park_idx}).",
+  "Weather {weather_blurb} → {env_boost} HR tilt."
 ];
 
 const T_MARKET = [
-  "At {odds_best_american}, the market implies {pct(implied_prob)}, while we project {pct(true_hr_prob)} — EV {fix(ev_per_unit,2)}u.",
-  "Books price it at {odds_best_american} ({pct(implied_prob)}), our edge is {edge_pts} pts to {pct(true_hr_prob)}."
+  "Odds {odds_best_american} imply {pct(implied_prob)}; model {pct(true_hr_prob)} → EV {fix(ev_per_unit,2)}u.",
+  "Market {odds_best_american} ({pct(implied_prob)}) vs model {pct(true_hr_prob)}; edge {edge_pts} pts."
 ];
 
-const T_RISK = ["Notes: {risk_notes}."];
-
-// helpers
-function seeded(str, seed = 1) {
-  let h = 0;
-  for (let i=0; i<str.length; i++) h = Math.imul(31, h) + str.charCodeAt(i) | 0;
-  return () => {
-    seed = Math.imul(48271, seed) % 2147483647;
-    return (h ^ seed) / 2147483647;
-  };
+function seeded(str, seed=1){
+  let h=0; for (let i=0;i<str.length;i++) h=Math.imul(31,h)+str.charCodeAt(i)|0;
+  return ()=>{ seed=Math.imul(48271, seed)%2147483647; return ((h^seed)>>>0)/2147483647; };
 }
-function pick(arr, rng) {
-  if (!arr || arr.length === 0) return "";
-  const idx = Math.floor(rng() * arr.length);
-  return arr[idx];
-}
-function render(tpl, ctx) {
-  return tpl.replace(/\{(.*?)\}/g, (_,k) => {
-    try {
-      if (k.startsWith("pct(")) return fmtPct(evalKey(k.slice(4,-1), ctx));
-      if (k.startsWith("fix(")) { let [v,d] = k.slice(4,-1).split(","); return fmtFix(evalKey(v.trim(), ctx), Number(d)); }
-      if (k.startsWith("val(")) return fmtVal(evalKey(k.slice(4,-1), ctx));
-      if (k.startsWith("dir(")) return fmtDir(evalKey(k.slice(4,-1), ctx));
+function pick(arr, rng){ return arr[Math.floor(rng()*arr.length)]; }
+function render(tpl, ctx){
+  return tpl.replace(/\{(.*?)\}/g, (_,k)=>{
+    try{
+      if (k.startsWith("pct(")) return fmtPct(get(ctx, k.slice(4,-1)));
+      if (k.startsWith("fix(")) { const [v,d]=k.slice(4,-1).split(","); return fmtFix(get(ctx,v.trim()), Number(d)); }
+      if (k.startsWith("val(")) return fmtVal(get(ctx, k.slice(4,-1)));
       if (k==="pitch_list") return (ctx.pitcher?.primary_pitches||[]).slice(0,2).map(p=>p.pitch).join("/");
-      return evalKey(k, ctx);
-    } catch { return ""; }
+      return get(ctx,k);
+    }catch{ return ""; }
   });
 }
-function evalKey(path, ctx) {
-  return path.split(".").reduce((o,k)=>o?.[k], ctx);
-}
-function fmtPct(x){ return x==null?"—":(100*x).toFixed(1)+"%"; }
-function fmtFix(x,d){ return x==null?"—":x.toFixed(d); }
-function fmtVal(x){ return x==null?"—":x; }
-function fmtDir(x){ if(x==null) return "flat"; return x>0?"up":"down"; }
-function push(arr, tpl, ctx){ if(tpl) arr.push(render(tpl,ctx)); }
+function get(obj, path){ return path.split(".").reduce((o,k)=>o?.[k], obj); }
+function fmtPct(x){ return x==null?"—":(100*Number(x)).toFixed(1)+"%"; }
+function fmtFix(x,d){ return x==null?"—":Number(x).toFixed(d); }
+function fmtVal(x){ return x==null?"—":String(x); }
+function bestPitchMatch(input){ return input.pitch_match || null; }
+function envSummary(input){ return input.env || null; }
 
-function bestPitchMatch(input){
-  if(!input.hitter_vs_pitch) return null;
-  const good = input.hitter_vs_pitch.filter(p=>p.sample_pa>=25 && p.xiso!=null);
-  if(good.length===0) return null;
-  const best = good.sort((a,b)=>(b.xiso||0)-(a.xiso||0))[0];
-  return { match_pitch: best.pitch, match_xiso: best.xiso };
-}
-function envSummary(input){
-  if(!input.park && !input.weather) return null;
-  const hand = input.bats;
-  const park_idx = hand==="L"?input.park?.hr_index_lhb:input.park?.hr_index_rhb;
-  let park_dir = "neutral";
-  if(park_idx!=null){
-    if(park_idx>=120) park_dir="very favorable";
-    else if(park_idx>=110) park_dir="favorable";
-    else if(park_idx<=90) park_dir="tough";
-  }
-  let weather_blurb="", env_boost="";
-  if(input.weather?.temp_f>=80) { weather_blurb="warm temps"; env_boost="plus"; }
-  if(input.weather?.wind_dir?.startsWith("out") && input.weather?.wind_mph>=8){ weather_blurb="wind blowing out"; env_boost="plus"; }
-  if(input.weather?.wind_dir==="in" && input.weather?.wind_mph>=8){ weather_blurb="wind in"; env_boost="minus"; }
-  return { park_dir, park_idx, hand, weather_blurb, env_boost };
+export function normName(name){
+  return (name||"").toLowerCase().replace(/[^a-z0-9 ]+/g,"").replace(/\s+/g," ").trim();
 }
