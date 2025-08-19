@@ -36,7 +36,7 @@ export default function NFL(){
   return (
     <div className="min-h-screen flex flex-col items-center py-10">
       <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-6xl">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">NFL Anytime TD — Regular Season Only</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">NFL Anytime TD — Weekly Window (Thu–Mon)</h1>
         <p className="text-gray-600 mb-4 text-center text-sm">
           Window: {meta.start||'—'} → {meta.end||'—'} • Games: {meta.games}
         </p>
