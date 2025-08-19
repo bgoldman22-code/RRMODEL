@@ -1,12 +1,10 @@
 // netlify/functions/preds-diag.js
 const { getStore } = require('@netlify/blobs');
-
 exports.handler = async (event) => {
   try {
     const params = event.queryStringParameters || {};
     const date = (params.date || '').trim();
     const store = getStore('mlb-logs');
-    // Try both predictions paths used in your mlb-preds-get
     const keys = [
       `predictions-with-ctx/${date}.json`,
       `predictions/${date}.json`,
