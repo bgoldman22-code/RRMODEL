@@ -1,19 +1,18 @@
 
-PATCH: pitcher-side safety for Why column
-
+Patch: utils/why.js — opponent pitcher fix
+==========================================
 Files included:
-- src/utils/why.js
+- src/utils/why.js (replace your existing file)
 
 What it does:
-- Prefers `opponentPitcher` if present.
-- If only `pitcher` is provided and its `team` matches the batter's team,
-  it's ignored to avoid "vs own pitcher" mistakes.
-- Keeps the rest of the Why generation intact and backward-compatible.
-- Accepts optional fields your app already passes (odds_best_american, implied_prob, true_hr_prob, ev, env, pitch_match).
+- Ensures the WHY line uses the TRUE opponent pitcher.
+- Accepts many possible data shapes (probables arrays, home/away objects, single fields).
+- Prevents "vs own pitcher" mistakes by dropping the pitcher line if we can’t reliably find the opponent.
 
-How to deploy:
-1) Drop `src/utils/why.js` over your existing file (same path).
-2) Commit and deploy — no other code changes required.
+Install:
+1) Place `src/utils/why.js` into your repo (overwrite).
+2) Commit and deploy.
 
-Optional (front-end, if you want to be explicit):
-- When constructing the input for buildWhy, pass `opponentPitcher` instead of `pitcher`.
+Optional (future):
+- In your MLB.jsx, when you assemble the object for buildWhy(...), pass an explicit `opponentPitcher` if you have it handy:
+    const why = buildWhy({ ...row, opponentPitcher }, 1);
