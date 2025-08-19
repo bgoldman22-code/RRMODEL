@@ -1,0 +1,52 @@
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>MLB Total Bases (Over 1.5) — Odds‑first EV</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;padding:20px;max-width:1100px;margin:0 auto;color:#222}
+    h1{font-size:1.4rem;margin:0 0 10px}
+    .note{font-size:0.92rem;color:#555;margin-bottom:12px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{border-bottom:1px solid #eee;padding:8px 6px;text-align:left;font-size:0.95rem}
+    th{background:#fafafa;font-weight:600}
+    .evpos{color:#107c10;font-weight:600}
+    .evneg{color:#a4262c;font-weight:600}
+    .small{font-size:0.86rem;color:#666}
+  </style>
+</head>
+<body>
+  <h1>MLB Total Bases (Over 1.5) — Odds‑first EV</h1>
+  <div class="note">
+    Uses real odds (median across books) + modelled P(Over) from season baseline, 15‑game form, park boost, and live calibration.
+    <button id="refresh">Refresh odds</button>
+  </div>
+  <table id="tbl"><thead><tr>
+    <th>#</th><th>Player</th><th>Odds</th><th>P(Over)</th><th>EV (1u)</th><th class="small">Why</th>
+  </tr></thead><tbody></tbody></table>
+<script>
+async function get(u){ const r=await fetch(u); if(!r.ok) throw new Error(r.status); return await r.json(); }
+function pct(x){ return (100*x).toFixed(1)+"%"; }
+function fmt(a){ return a>0 ? "+"+a : a; }
+
+async function load(){
+  const j = await get("/.netlify/functions/props-prob?market=tb");
+  const rows = j.rows||[];
+  const tb = document.querySelector("#tbl tbody");
+  tb.innerHTML = rows.slice(0,50).map((r,i)=>`<tr>
+    <td>${i+1}</td><td>${title(r.key)}</td><td>${fmt(r.american)}</td>
+    <td>${pct(r.p)}</td><td class="${r.ev>=0?"evpos":"evneg"}">${r.ev.toFixed(3)}</td>
+    <td class="small">${r.why}</td>
+  </tr>`).join("");
+}
+function title(k){ return k.replace(/\b\w/g,c=>c.toUpperCase()); }
+document.getElementById("refresh").addEventListener("click", async()=>{
+  try{ await get("/.netlify/functions/props-refresh?markets=tb"); }catch(e){}
+  load();
+});
+load();
+</script>
+</body>
+</html>
