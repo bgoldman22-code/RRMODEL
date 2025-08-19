@@ -1,17 +1,10 @@
+This patch adds robust opponent‑pitcher mapping and a tiny diagnostics table.
 
-Patch contents
-==============
-- src/components/MissingOddsTable.jsx   ← fixes your build by supplying the referenced component
-- src/utils/opponentPitchers.js         ← helper used by MLB.jsx to guarantee "vs [opponent pitcher]" correctness
+Add these files to your repo keeping the same paths:
+- src/utils/opponentPitchers.js
+- src/components/MissingOddsTable.jsx
 
-How to install
---------------
-1) Drop these files into the same relative paths in your repo.
-2) Commit and deploy.
+Your `src/MLB.jsx` should import:
+  import { resolveOpponentPitcher, makeProbablesMap } from "./utils/opponentPitchers.js";
 
-Notes
------
-* MissingOddsTable.jsx is defensive and will render if any of these props are provided by MLB.jsx:
-  items, data, missing, list, rows. It auto-detects fields like {name, reason, hint}.
-* opponentPitchers.js just provides helpers. MLB.jsx should already import and use it
-  if you followed the earlier patch. No backend changes required.
+No other changes required.
