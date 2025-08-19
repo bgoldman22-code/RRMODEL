@@ -1,6 +1,5 @@
 // netlify/functions/generate-parlays.js
-// ESM function that builds parlays from payload { odds[], model{}, config{} }
-// Adds strict conflict filtering and supports cross-sport combos.
+// ESM server builder with conflict filter, cross-sport, sportsbook & prices
 
 export async function handler(event){
   try{
@@ -8,52 +7,46 @@ export async function handler(event){
     const odds = Array.isArray(body.odds) ? body.odds : [];
     const model = body.model || {};
     const cfg = Object.assign({ maxLegs: 3, targetCount: 5, minEdge: 0.00, minLegProb: 0.40, allowCrossSport: true }, body.config||{});
-
     if (!odds.length) return json(400, { ok:false, error: "no odds" });
 
-    // enrich legs
     const legs = odds.map(l => {
       const american = Number(l.american);
       const p_book = impliedProb(american);
       const p_true = clamp01(Number(model[l.id] ?? p_book));
       return {
         ...l,
-        outcome: l.outcome || l.name || l.description || l.selection || null,
         american, p_book, p_true,
         dec: american > 0 ? 1 + (american/100) : 1 + (100/Math.abs(american)),
       };
     });
 
-    // filter low-prob legs
+    // Filter
     const pool = legs.filter(l => l.p_true >= cfg.minLegProb);
-    // sort by edge desc to bias selection
     pool.sort((a,b) => (b.p_true-b.p_book) - (a.p_true-a.p_book));
 
-    // build combos
+    // Build combos
     const results = [];
-    const maxCombos = 6000;
     let scanned = 0;
-    outer:
-    for (let i=0; i<pool.length; i++){
-      for (let j=i+1; j<pool.length; j++){
-        for (let k=j+1; k<pool.length; k++){
-          const combo3 = [pool[i], pool[j], pool[k]];
+    for (let i=0;i<pool.length;i++){
+      for (let j=i+1;j<pool.length;j++){
+        for (let k=j+1;k<pool.length;k++){
+          const combo = [pool[i], pool[j], pool[k]];
           scanned++;
-          if (passesConflictRules(combo3)){
-            const scored = scoreCombo(combo3);
-            results.push(scored);
+          if (passesConflictRules(combo)){
+            results.push(scoreCombo(combo));
           }
-          if (results.length >= cfg.targetCount || scanned > maxCombos) break outer;
+          if (results.length >= cfg.targetCount) break;
         }
+        if (results.length >= cfg.targetCount) break;
       }
+      if (results.length >= cfg.targetCount) break;
     }
-    // if we still don't have enough, try 2-leg
     if (results.length < cfg.targetCount){
-      for (let i=0; i<pool.length; i++){
-        for (let j=i+1; j<pool.length; j++){
-          const combo2 = [pool[i], pool[j]];
-          if (passesConflictRules(combo2)){
-            results.push(scoreCombo(combo2));
+      for (let i=0;i<pool.length;i++){
+        for (let j=i+1;j<pool.length;j++){
+          const combo = [pool[i], pool[j]];
+          if (passesConflictRules(combo)){
+            results.push(scoreCombo(combo));
           }
           if (results.length >= cfg.targetCount) break;
         }
@@ -61,12 +54,17 @@ export async function handler(event){
       }
     }
 
-    // rank by EV * P*
-    results.sort((a,b)=>(b.EV*b.pStar) - (a.EV*a.pStar));
+    results.sort((a,b)=>(b.EV*b.pStar)-(a.EV*a.pStar));
     const top = results.slice(0, cfg.targetCount).map(s => ({
-      sportMix: Array.from(new Set(s.combo.map(l=>l.sport).filter(Boolean))),
-      legs: s.combo.map(l => ({ id:l.id, american:l.american, dec:l.dec, p_true:l.p_true, p_book:l.p_book, edge:(l.p_true-l.p_book), gameId:l.gameId, player:l.player, team:l.team, market:l.market, sport:l.sport, outcome:l.outcome })),
-      decPrice: s.decPrice, pStar: s.pStar, EV: s.EV, avgR: s.avgR,
+      sportMix: Array.from(new Set(s.combo.map(l=>prettySport(l.sport)).filter(Boolean))),
+      legs: s.combo.map(l => ({
+        id:l.id, american:l.american, dec:l.dec, p_true:l.p_true, p_book:l.p_book, edge:(l.p_true-l.p_book),
+        gameId:l.gameId, player:l.player, team:l.team, market:l.market, sport: prettySport(l.sport), outcome: l.outcome || l.team || "",
+        book: l.book || ""
+      })),
+      decPrice: s.decPrice,
+      amPrice: decToAmerican(s.decPrice),
+      pStar: s.pStar, EV: s.EV, avgR: s.avgR,
       units: { flat_units: 0.75, kelly_lite_units: 0.25 },
       why: s.combo.map(l => reasonLine(l))
     }));
@@ -81,6 +79,15 @@ export async function handler(event){
 function json(code, obj){ return { statusCode: code, headers:{"content-type":"application/json"}, body: JSON.stringify(obj) }; }
 function clamp01(x){ return Math.max(0, Math.min(1, x)); }
 function impliedProb(a){ const dec = a > 0 ? 1 + (a/100) : 1 + (100/Math.abs(a)); return 1/dec; }
+function decToAmerican(dec){ const d=Number(dec); if (!isFinite(d)||d<=1) return -100; return d>=2 ? Math.round((d-1)*100) : Math.round(-100/(d-1)); }
+function prettySport(code){
+  const c = String(code||"").toLowerCase();
+  if (c.includes("baseball_mlb")) return "MLB";
+  if (c.includes("basketball_nba")) return "NBA";
+  if (c.includes("americanfootball_nfl")) return "NFL";
+  if (c.includes("icehockey_nhl")) return "NHL";
+  return code || "";
+}
 function scoreCombo(legs){
   const pInd = legs.reduce((a,b)=> a*b.p_true, 1);
   const corr = avgCorr(legs);
@@ -107,14 +114,34 @@ function pairCorr(a,b){
 }
 function reasonLine(l){
   const edgePct = Math.round((l.p_true - l.p_book)*100);
-  const parts = [];
-  parts.push(`Model ${Math.round(l.p_true*100)}% vs book ${Math.round(l.p_book*100)}% (${edgePct >= 0 ? "+" : ""}${edgePct}% edge).`);
-  if (l.sport) parts.push(l.sport);
-  if (l.market) parts.push(l.market);
-  if (l.outcome) parts.push(l.outcome);
-  if (l.player) parts.push(l.player);
-  if (l.team && !l.player) parts.push(l.team);
-  return parts.join(" ");
+  const sport = prettySport(l.sport);
+  const bet = prettyMarket(l.market);
+  const sel = l.outcome || l.player || l.team || "";
+  const book = l.book || "";
+  return `Model ${Math.round(l.p_true*100)}% vs book ${Math.round(l.p_book*100)}% (${edgePct>=0?"+":""}${edgePct}% edge). ${sport} ${bet} ${sel} ${book}`.trim();
+}
+function prettyMarket(m){
+  const s = String(m || "").toLowerCase();
+  if (s === "h2h") return "Moneyline";
+  if (s === "spreads") return "Spread";
+  if (s === "totals") return "Total";
+  if (s.includes("player_home_runs")) return "HR 0.5+";
+  if (s.includes("player_points")) return "Player Points";
+  if (s.includes("player_rebounds")) return "Rebounds";
+  if (s.includes("player_assists")) return "Assists";
+  if (s.includes("player_threes")) return "3PT Made";
+  if (s.includes("player_shots_on_goal")) return "Shots on Goal";
+  if (s.includes("player_total_bases")) return "Total Bases";
+  if (s.includes("pitcher_strikeouts")) return "Pitcher Ks";
+  if (s.includes("player_rbis")) return "RBIs";
+  if (s.includes("player_hits")) return "Hits";
+  if (s.includes("player_runs")) return "Runs";
+  if (s.includes("player_anytime_td")) return "Anytime TD";
+  if (s.includes("player_pass_tds")) return "Pass TDs";
+  if (s.includes("player_pass_yds")) return "Pass Yds";
+  if (s.includes("player_rush_yds")) return "Rush Yds";
+  if (s.includes("player_rec_yds")) return "Rec Yds";
+  return m || "market";
 }
 
 // conflicts
@@ -124,7 +151,7 @@ function passesConflictRules(legs){
   for (const l of legs){
     if (l.player){ if (players.has(l.player)) return false; players.add(l.player); }
     const key = `${l.gameId||'na'}:${(l.market||'').toLowerCase()}`;
-    const side = (l.outcome||'').toLowerCase() || (l.team||'').toLowerCase();
+    const side = String(l.outcome || l.team || "").toLowerCase();
     if (!seen[key]) { seen[key] = new Set(); }
     // Totals: block O/U together
     if (key.endsWith(":totals")){
@@ -133,7 +160,7 @@ function passesConflictRules(legs){
       seen[key].add(side.includes("over") ? "over" : (side.includes("under") ? "under" : side));
       continue;
     }
-    // ML conflicts
+    // H2H conflicts
     if (key.endsWith(":h2h")){
       if (seen[key].size && !seen[key].has(side)) return false;
       seen[key].add(side);
