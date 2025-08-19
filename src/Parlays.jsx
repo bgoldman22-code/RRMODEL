@@ -1,5 +1,5 @@
 // src/Parlays.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function yesterdayISO(){ const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
@@ -10,7 +10,7 @@ export default function Parlays(){
   const [error, setError] = useState(null);
   const [parlays, setParlays] = useState([]);
   const [diag, setDiag] = useState(null);
-  const [demo, setDemo] = useState(getQueryFlag('demo'));
+  const [demo, setDemo] = useState(getQueryFlag('demo') || true); // keep demo true until feeds live
 
   useEffect(()=>{ build(); }, [demo]);
 
@@ -27,7 +27,12 @@ export default function Parlays(){
         oddsRes = await fetch("/.netlify/functions/odds-get");
         oddsJson = await oddsRes.json().catch(()=> ({}));
       }
-      const legs = hasOffers(oddsJson) ? normalizeOddsToLegs(oddsJson) : [];
+      let legs = hasOffers(oddsJson) ? normalizeOddsToLegs(oddsJson) : [];
+
+      // 1b) CLIENT-SEED: if Demo ON and still zero legs, seed a tiny multi-sport set client-side
+      if (demo && legs.length === 0){
+        legs = normalizeOddsToLegs({ offers: demoSeedOffers() });
+      }
 
       // 2) Predictions — today then yesterday
       let usedDate = todayISO();
@@ -50,14 +55,14 @@ export default function Parlays(){
         else if (l.player && modelMap[l.player] != null){ mergedModel[l.id]=modelMap[l.player]; playerMatches++; }
       }
 
-      // 3b) DEMO fallback: if still zero preds and demo is on, synthesize model from odds (de-vig + tiny edge)
+      // 3b) DEMO: synthesize model if still empty
       if (demo && Object.keys(mergedModel).length === 0 && legs.length){
         const byGroup = legs.reduce((acc,l)=>{
           const g = l.groupKey || `${l.gameId||'na'}:${l.market||'market'}`;
           (acc[g] ||= []).push(l);
           return acc;
         },{});
-        const pbook = {}; // devig implied per group
+        const pbook = {};
         for (const g in byGroup){
           const arr = byGroup[g];
           const probs = arr.map(o => impliedProb(o.american));
@@ -66,8 +71,8 @@ export default function Parlays(){
         }
         for (const l of legs){
           const q = pbook[l.id] ?? impliedProb(l.american);
-          // add 3% edge but cap to [0.05, 0.90] for demo
-          mergedModel[l.id] = Math.max(0.05, Math.min(0.90, q + 0.03));
+          // add 3% edge but cap to [0.10, 0.90] for demo
+          mergedModel[l.id] = Math.max(0.10, Math.min(0.90, q + 0.03));
         }
       }
 
@@ -164,7 +169,7 @@ export default function Parlays(){
   );
 }
 
-/* helpers */
+/* Helpers */
 function hasOffers(s){
   if (!s) return false;
   if (Array.isArray(s) && s.length) return true;
@@ -222,4 +227,16 @@ function normalizePredsToMap(predsFile){
     if (r.player && typeof p === "number") map[r.player] = p;
   }
   return map;
+}
+
+// demo legs
+function demoSeedOffers(){
+  return [
+    { id: "Shohei Ohtani|MLB HR 0.5+|G123|DK", player: "Shohei Ohtani", market: "MLB HR 0.5+", game_id: "G123", book: "DK", american: +300 },
+    { id: "Aaron Judge|MLB HR 0.5+|G124|DK",  player: "Aaron Judge",  market: "MLB HR 0.5+", game_id: "G124", book: "DK", american: +280 },
+    { id: "Nikola Jokic|NBA Rebounds 9.5+|N987|FD", player: "Nikola Jokic", market: "NBA Rebounds 9.5+", game_id: "N987", book: "FD", american: -120 },
+    { id: "Anthony Davis|NBA Rebounds 9.5+|N988|FD", player: "Anthony Davis", market: "NBA Rebounds 9.5+", game_id: "N988", book: "FD", american: +110 },
+    { id: "Travis Kelce|NFL Anytime TD|F555|MG", player: "Travis Kelce", market: "NFL Anytime TD", game_id: "F555", book: "MG", american: +130 },
+    { id: "Christian McCaffrey|NFL Anytime TD|F556|MG", player: "Christian McCaffrey", market: "NFL Anytime TD", game_id: "F556", book: "MG", american: -105 }
+  ];
 }
