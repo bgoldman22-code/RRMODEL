@@ -31,7 +31,10 @@ export function normalizeTeam(raw) {
     MIN: 'MIN',
     NYM: 'NYM', MET: 'NYM',
     NYY: 'NYY', YAN: 'NYY',
-    OAK: 'OAK', ATH: 'OAK', A: 'OAK', A\'S: 'OAK',
+    OAK: 'OAK',
+    ATH: 'OAK',
+    "A'S": 'OAK',  // use double quotes for keys with apostrophes
+    AS:  'OAK',    // only works if you normalize names to strip punctuation
     PHI: 'PHI', PHILLIES: 'PHI',
     PIT: 'PIT',
     SDP: 'SD', SD: 'SD', SDG: 'SD',
