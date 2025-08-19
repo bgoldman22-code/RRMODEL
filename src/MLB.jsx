@@ -69,19 +69,23 @@ export default function MLB() {
     setLoading(true);
     setError(null);
     try {
-      const r = await fetch(`/.netlify/functions/mlb-candidates?date=${date}`);
-      if (!r.ok) throw new Error(`candidates ${r.status}`);
-      const data = await r.json();
+            // SAFER: tolerate missing function, HTML responses, or missing fields
+      const resp = await fetch(`/.netlify/functions/mlb-candidates?date=${date}`);
+      const text = await resp.text();
+      let data = null;
+      try { data = resp.ok ? JSON.parse(text) : null; } catch { data = null; }
 
-      // data.candidates should already be sorted by EV. Before we compute Why/EV, fix pitcher
-      const fixed = (data.candidates || []).map((c) => {
+      const candidates = Array.isArray(data?.candidates) ? data.candidates : [];
+      const statsObj = data?.stats ?? null;
+
+      // Before we compute Why/EV, fix pitcher (also tolerate string return)
+            // Before we compute Why/EV, fix pitcher (also tolerate string return)
+      const fixed = candidates.map((c) => {
         const opp = resolveOpponentPitcher(c, probables);
         const oppName = typeof opp === 'string' ? opp : (opp?.name || null);
         const oppHand = (opp && typeof opp === 'object') ? (opp.hand || null) : null;
         return { ...c, pitcherName: oppName || c.pitcherName, pitcherHand: oppHand || c.pitcherHand };
-      });
-
-      // enrich for display
+      });// enrich for display
       const withCalcs = fixed.map((c) => {
         const baseProb = c.modelProb ?? c.model ?? c.p; // be permissive
         const hotcold = hotColdMultiplier(c);
@@ -139,8 +143,8 @@ export default function MLB() {
 
       setRows(main);
       setBonusRows(bonus);
-      setRawRows(raw);
-      setStats(data.stats || null);
+      setRawRows(fixed);
+      setStats(statsObj);
     } catch (e) {
       setError(String(e));
     } finally {
