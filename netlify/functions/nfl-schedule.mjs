@@ -1,6 +1,7 @@
 // netlify/functions/nfl-schedule.mjs
-// Thu→Mon scheduler with robust ESPN fallbacks + strong de-duplication.
-// Dedup order: (1) by gameId if present, (2) by key + normalized kickoff (to minute).
+// Thu→Mon scheduler with ESPN fallbacks and TRUE de-duplication.
+// Primary dedupe: matchup key (away@home) + normalized kickoff minute.
+// Secondary: unique gameIds aggregated under each merged game (for reference).
 
 import { normalizeTeam, gameKey } from "./lib/teamMaps.mjs";
 
@@ -55,12 +56,9 @@ function nextThursdayISO(){
 // normalize kickoff to minute precision to dedupe across slightly different timestamp formats
 function normalizeKickoff(k){
   if (!k) return null;
-  // accept "2025-08-21T23:00Z" or "2025-08-21T23:00:00Z" etc.
-  // we only keep YYYY-MM-DDTHH:MMZ if Zulu, else return as-is trimmed to minute.
   try{
     const m = String(k).match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
     if (m) return `${m[1]}T${m[2]}Z`;
-    // Fallback: Date parse and reformat to minute Z
     const d = new Date(k);
     if (!isNaN(d.getTime())){
       const y = d.getUTCFullYear();
@@ -99,42 +97,59 @@ export default async (req) => {
       return list;
     }
 
+    // Gather raw events from all sources
     const raw = [];
-
     for (const dt of dates){
       const day = ymd(dt);
       const urls = urlsForDay(day);
       for (const u of urls){
         const data = await j(u);
         if (!data) continue;
-        // Try common shapes
         collectFrom(raw, data);
       }
     }
 
-    // Strong de-dup: first by gameId, then by (key + normalized kickoff)
-    const byId = new Map();
-    const byKeyKick = new Map();
-    const out = [];
-
+    // TRUE de-dup: primary by (key + kickoffMinute), secondary by unique gameIds aggregated
+    const merged = new Map();
     for (const g of raw){
-      const gid = g.gameId || null;
-      const kickN = normalizeKickoff(g.kickoff);
-      const key = gameKey(g.away, g.home);
+      const away = g.away;
+      const home = g.home;
+      if (!away || !home) continue;
+      const key = gameKey(away, home);
+      const kick = normalizeKickoff(g.kickoff);
+      const kk = `${key}:${kick}`;
 
-      if (gid){
-        if (byId.has(gid)) continue;
-        byId.set(gid, true);
-        out.push({ ...g, kickoff: kickN, key });
+      if (!merged.has(kk)){
+        merged.set(kk, { ...g, key, kickoff: kick, ids: new Set(), sources: 1 });
+        if (g.gameId) merged.get(kk).ids.add(g.gameId);
       }else{
-        const kk = `${key}:${kickN}`;
-        if (byKeyKick.has(kk)) continue;
-        byKeyKick.set(kk, true);
-        out.push({ ...g, kickoff: kickN, key });
+        const m = merged.get(kk);
+        m.sources += 1;
+        if (g.gameId) m.ids.add(g.gameId);
+        // prefer a venue if missing
+        if (!m.venue && g.venue) m.venue = g.venue;
+        // seasonType: prefer non-null, otherwise keep existing
+        if (g.seasonType != null) m.seasonType = g.seasonType;
       }
     }
 
-    return new Response(JSON.stringify({ ok:true, games: out, meta:{ windowFrom: fromISO, windowTo: toISO, uniqueById: byId.size, uniqueByKeyKick: byKeyKick.size, totalRaw: raw.length } }), {
+    const out = Array.from(merged.values()).map(g => ({
+      gameId: Array.from(g.ids)[0] || g.gameId || null,
+      kickoff: g.kickoff,
+      seasonType: g.seasonType ?? null,
+      home: g.home,
+      away: g.away,
+      venue: g.venue || null,
+      key: g.key,
+      idsMerged: Array.from(g.ids),
+      sources: g.sources
+    }));
+
+    return new Response(JSON.stringify({
+      ok:true,
+      games: out,
+      meta:{ windowFrom: fromISO, windowTo: toISO, mergedCount: out.length, rawCount: raw.length }
+    }), {
       headers: { "content-type":"application/json", "cache-control":"no-store" }
     });
   }catch(e){
