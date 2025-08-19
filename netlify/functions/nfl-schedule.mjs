@@ -1,7 +1,6 @@
 // netlify/functions/nfl-schedule.mjs
-// Thu→Mon scheduler with ESPN fallbacks and TRUE de-duplication.
-// Primary dedupe: matchup key (away@home) + normalized kickoff minute.
-// Secondary: unique gameIds aggregated under each merged game (for reference).
+// Thu→Mon scheduler with robust ESPN fallbacks + strong de-duplication
+// NEW v8: Strictly filter games to kickoff within [windowFrom 00:00Z, windowTo 23:59:59Z]
 
 import { normalizeTeam, gameKey } from "./lib/teamMaps.mjs";
 
@@ -36,12 +35,15 @@ function weekWindow(dateISO){
   const toMonday = (dow + 6) % 7;
   const monday = new Date(d); monday.setUTCDate(d.getUTCDate() - toMonday);
   const thursday = new Date(monday); thursday.setUTCDate(monday.getUTCDate() + 3);
+  const fromISO = iso(thursday);
+  const toDate = new Date(thursday); toDate.setUTCDate(thursday.getUTCDate()+4);
+  const toISO = iso(toDate);
   const dates = [];
   for (let i=0;i<5;i++){
     const dt = new Date(thursday); dt.setUTCDate(thursday.getUTCDate()+i);
     dates.push(dt);
   }
-  return { dates, fromISO: iso(thursday), toISO: iso(new Date(thursday.getTime() + 4*86400000)) };
+  return { dates, fromISO, toISO };
 }
 
 function nextThursdayISO(){
@@ -72,91 +74,14 @@ function normalizeKickoff(k){
   }catch{ return String(k); }
 }
 
-export default async (req) => {
+function withinWindow(kickISO, fromISO, toISO){
+  if (!kickISO) return false;
   try{
-    const url = new URL(req.url);
-    const dateISO = (url.searchParams.get("date")||"").trim() || nextThursdayISO();
-    const mode = (url.searchParams.get("mode")||"").toLowerCase();
-
-    const { dates, fromISO, toISO } = (mode === "week") ? weekWindow(dateISO) : { dates:[new Date(dateISO + "T12:00:00Z")], fromISO: dateISO, toISO: dateISO };
-
-    // Build list of ESPN URLs to try per day
-    const seasonTypes = [1,2,3]; // pre/reg/post
-    function urlsForDay(day){
-      const base1 = `https://site.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${day}`;
-      const base2 = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${day}`;
-      const base3 = `https://site.web.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${day}`;
-      const core  = `https://cdn.espn.com/core/nfl/scoreboard?xhr=1&render=false&dates=${day}`;
-      const list = [];
-      for (const st of seasonTypes){
-        list.push(`${base1}&seasontype=${st}`);
-        list.push(`${base2}&seasontype=${st}`);
-        list.push(`${base3}&seasontype=${st}`);
-      }
-      list.push(base1, base2, base3, core);
-      return list;
-    }
-
-    // Gather raw events from all sources
-    const raw = [];
-    for (const dt of dates){
-      const day = ymd(dt);
-      const urls = urlsForDay(day);
-      for (const u of urls){
-        const data = await j(u);
-        if (!data) continue;
-        collectFrom(raw, data);
-      }
-    }
-
-    // TRUE de-dup: primary by (key + kickoffMinute), secondary by unique gameIds aggregated
-    const merged = new Map();
-    for (const g of raw){
-      const away = g.away;
-      const home = g.home;
-      if (!away || !home) continue;
-      const key = gameKey(away, home);
-      const kick = normalizeKickoff(g.kickoff);
-      const kk = `${key}:${kick}`;
-
-      if (!merged.has(kk)){
-        merged.set(kk, { ...g, key, kickoff: kick, ids: new Set(), sources: 1 });
-        if (g.gameId) merged.get(kk).ids.add(g.gameId);
-      }else{
-        const m = merged.get(kk);
-        m.sources += 1;
-        if (g.gameId) m.ids.add(g.gameId);
-        // prefer a venue if missing
-        if (!m.venue && g.venue) m.venue = g.venue;
-        // seasonType: prefer non-null, otherwise keep existing
-        if (g.seasonType != null) m.seasonType = g.seasonType;
-      }
-    }
-
-    const out = Array.from(merged.values()).map(g => ({
-      gameId: Array.from(g.ids)[0] || g.gameId || null,
-      kickoff: g.kickoff,
-      seasonType: g.seasonType ?? null,
-      home: g.home,
-      away: g.away,
-      venue: g.venue || null,
-      key: g.key,
-      idsMerged: Array.from(g.ids),
-      sources: g.sources
-    }));
-
-    return new Response(JSON.stringify({
-      ok:true,
-      games: out,
-      meta:{ windowFrom: fromISO, windowTo: toISO, mergedCount: out.length, rawCount: raw.length }
-    }), {
-      headers: { "content-type":"application/json", "cache-control":"no-store" }
-    });
-  }catch(e){
-    return new Response(JSON.stringify({ ok:true, games: [], meta:{ error: "exception" } }), {
-      headers: { "content-type":"application/json", "cache-control":"no-store" }
-    });
-  }
+    const start = Date.parse(fromISO + "T00:00:00Z");
+    const end = Date.parse(toISO + "T23:59:59Z");
+    const t = Date.parse(kickISO);
+    return Number.isFinite(start) && Number.isFinite(end) && Number.isFinite(t) && t >= start && t <= end;
+  }catch{ return false; }
 }
 
 // Pull competitions->competitors from whatever shape ESPN returns
@@ -211,4 +136,68 @@ function pushGame(out, ev, comp, competitors){
     home, away,
     venue: comp?.venue?.fullName || null
   });
+}
+
+export default async (req) => {
+  try{
+    const url = new URL(req.url);
+    const dateISO = (url.searchParams.get("date")||"").trim() || nextThursdayISO();
+    const mode = (url.searchParams.get("mode")||"").toLowerCase();
+
+    const { dates, fromISO, toISO } = (mode === "week") ? weekWindow(dateISO) : { dates:[new Date(dateISO + "T12:00:00Z")], fromISO: dateISO, toISO: dateISO };
+
+    // Build list of ESPN URLs to try per day
+    const seasonTypes = [1,2,3]; // pre/reg/post
+    function urlsForDay(day){
+      const base1 = `https://site.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${day}`;
+      const base2 = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${day}`;
+      const base3 = `https://site.web.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${day}`;
+      const core  = `https://cdn.espn.com/core/nfl/scoreboard?xhr=1&render=false&dates=${day}`;
+      const list = [];
+      for (const st of seasonTypes){
+        list.push(`${base1}&seasontype=${st}`);
+        list.push(`${base2}&seasontype=${st}`);
+        list.push(`${base3}&seasontype=${st}`);
+      }
+      list.push(base1, base2, base3, core);
+      return list;
+    }
+
+    const raw = [];
+
+    for (const dt of dates){
+      const day = ymd(dt);
+      const urls = urlsForDay(day);
+      for (const u of urls){
+        const data = await j(u);
+        if (!data) continue;
+        collectFrom(raw, data);
+      }
+    }
+
+    // Strong de-dup onto unique games within the actual window
+    const byKeyKick = new Map();
+    const out = [];
+    const start = Date.parse(fromISO + "T00:00:00Z");
+    const end = Date.parse(toISO + "T23:59:59Z");
+
+    for (const g of raw){
+      const kickN = normalizeKickoff(g.kickoff);
+      if (!withinWindow(kickN, fromISO, toISO)) continue;
+
+      const key = gameKey(g.away, g.home);
+      const kk = `${key}:${kickN}`;
+      if (byKeyKick.has(kk)) continue;
+      byKeyKick.set(kk, true);
+      out.push({ ...g, kickoff: kickN, key });
+    }
+
+    return new Response(JSON.stringify({ ok:true, games: out, meta:{ windowFrom: fromISO, windowTo: toISO, mergedCount: out.length, rawCount: raw.length } }), {
+      headers: { "content-type":"application/json", "cache-control":"no-store" }
+    });
+  }catch(e){
+    return new Response(JSON.stringify({ ok:true, games: [], meta:{ error: "exception" } }), {
+      headers: { "content-type":"application/json", "cache-control":"no-store" }
+    });
+  }
 }
