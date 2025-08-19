@@ -2,7 +2,18 @@
 // netlify/functions/nfl-anytime-td-candidates.mjs
 import { normalizeTeam, gameKey } from "./lib/teamMaps.mjs";
 import { impliedFromAmerican, probToAmerican, evFromProbAndUS } from "./lib/ev.mjs";
-import { tdWeatherMultiplier } from "./lib/weatherNFL.mjs";
+
+function nextThursdayISO() {
+  const now = new Date();
+  const dow = now.getUTCDay(); // 0=Sun..6=Sat (UTC)
+  const daysUntilThu = (4 - dow + 7) % 7; // Thu = 4
+  const cand = new Date(now);
+  cand.setUTCDate(now.getUTCDate() + daysUntilThu);
+  const y = cand.getUTCFullYear();
+  const m = String(cand.getUTCMonth()+1).padStart(2,'0');
+  const d = String(cand.getUTCDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
 
 async function j(url){
   const r = await fetch(url, { headers:{ 'accept':'application/json' } });
@@ -18,19 +29,19 @@ function guessPositionFromName(name){ return "WR"; }
 export default async (req) => {
   try{
     const url = new URL(req.url);
-    const date = (url.searchParams.get("date")||"").trim();
     const mode = (url.searchParams.get("mode")||"").toLowerCase();
+    const date = (url.searchParams.get("date")||"").trim() || nextThursdayISO();
+
     const sched = await j(`/.netlify/functions/nfl-schedule?date=${date}${mode==='week' ? '&mode=week' : ''}`);
     const games = Array.isArray(sched?.games) ? sched.games : [];
 
-    // Try to pull props; if none, we still produce a placeholder list from team priors so UI shows something.
+    // Odds are optional; if unavailable, candidates may be empty but we never throw.
     const odds = await j(`/.netlify/functions/nfl-odds?date=${date}`);
     const props = Array.isArray(odds?.props) ? odds.props : [];
 
     const byGame = new Set(games.map(g => g.key));
     const out = [];
 
-    // If we have props, use them
     for (const p of props){
       const away = p.away, home = p.home;
       if (!away || !home) continue;
@@ -54,17 +65,14 @@ export default async (req) => {
       });
     }
 
-    // If no props, return 0 rows to avoid misleading output (UI remains usable)
     out.sort((a,b) => (b.EV ?? -1) - (a.EV ?? -1));
-    return json(200, { ok:true, date, candidates: out, info: { games: games.length, props: props.length, mode } });
+    return new Response(JSON.stringify({ ok:true, date, candidates: out, info: { games: games.length, props: props.length, mode } }), {
+      headers: { 'content-type':'application/json', 'cache-control':'no-store' }
+    });
   }catch(e){
-    return json(200, { ok:true, candidates: [], info: { error: "exception" } });
+    return new Response(JSON.stringify({ ok:true, candidates: [], info: { error: "exception" } }), {
+      headers: { 'content-type':'application/json', 'cache-control':'no-store' },
+      status: 200
+    });
   }
-}
-
-function json(statusCode, body){
-  return new Response(JSON.stringify(body), {
-    status: statusCode,
-    headers: { "content-type":"application/json", "cache-control":"no-store" }
-  });
 }
