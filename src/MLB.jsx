@@ -76,7 +76,9 @@ export default function MLB() {
       // data.candidates should already be sorted by EV. Before we compute Why/EV, fix pitcher
       const fixed = (data.candidates || []).map((c) => {
         const opp = resolveOpponentPitcher(c, probables);
-        return { ...c, pitcherName: opp?.name || c.pitcherName, pitcherHand: opp?.hand || c.pitcherHand };
+        const oppName = typeof opp === 'string' ? opp : (opp?.name || null);
+        const oppHand = (opp && typeof opp === 'object') ? (opp.hand || null) : null;
+        return { ...c, pitcherName: oppName || c.pitcherName, pitcherHand: oppHand || c.pitcherHand };
       });
 
       // enrich for display
