@@ -1,12 +1,8 @@
 // src/Parlays.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function todayISO(){ return new Date().toISOString().slice(0,10); }
-function yesterdayISO(){
-  const d = new Date();
-  d.setDate(d.getDate()-1);
-  return d.toISOString().slice(0,10);
-}
+function yesterdayISO(){ const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
 
 export default function Parlays(){
   const [loading, setLoading] = useState(true);
@@ -14,86 +10,71 @@ export default function Parlays(){
   const [parlays, setParlays] = useState([]);
   const [diag, setDiag] = useState(null);
 
-  useEffect(()=>{
-    (async function run(){
-      try{
-        setLoading(true); setError(null);
-        // 1) Get actual odds
-        const oddsRes = await fetch("/.netlify/functions/odds-get");
-        const oddsJson = await oddsRes.json();
-        if(!oddsRes.ok) throw new Error(oddsJson?.error || "Failed to fetch odds");
-        const legs = normalizeOddsToLegs(oddsJson);
-        const legPlayers = new Set(legs.map(l=>l.player).filter(Boolean));
+  useEffect(()=>{ (async function run(){
+    try{
+      setLoading(true); setError(null);
 
-        // 2) Get preds (try today, then yesterday)
-        let modelMap = {};
-        let usedDate = todayISO();
-        let predsRes = await fetch(`/.netlify/functions/mlb-preds-get?date=${usedDate}`);
-        if (!predsRes.ok){
-          usedDate = yesterdayISO();
-          predsRes = await fetch(`/.netlify/functions/mlb-preds-get?date=${usedDate}`);
-        }
-        if (predsRes.ok){
-          const predsJson = await predsRes.json();
-          modelMap = normalizePredsToMap(predsJson?.data ?? predsJson);
-        }
+      // 1) Try to load odds snapshot
+      let oddsRes = await fetch("/.netlify/functions/odds-get");
+      let oddsJson = await oddsRes.json().catch(()=> ({}));
+      if (!oddsRes.ok || !hasOffers(oddsJson)){
+        // Try to refresh the snapshot server-side (requires your env keys on Netlify)
+        await fetch("/.netlify/functions/odds-refresh-rapid").catch(()=>{});
+        // small delay then refetch
+        await new Promise(r=>setTimeout(r, 500));
+        oddsRes = await fetch("/.netlify/functions/odds-get");
+        oddsJson = await oddsRes.json().catch(()=> ({}));
+      }
+      if (!oddsRes.ok) throw new Error(oddsJson?.error || "No odds snapshot");
+      const legs = normalizeOddsToLegs(oddsJson);
 
-        // 3) Build a merged model keyed by odds leg id; fall back to player-only match
-        const mergedModel = {};
-        let directMatches = 0, playerMatches = 0;
-        for (const l of legs){
-          if (modelMap[l.id] != null){
-            mergedModel[l.id] = modelMap[l.id];
-            directMatches++;
-          } else if (l.player && modelMap[l.player] != null){
-            mergedModel[l.id] = modelMap[l.player];
-            playerMatches++;
-          }
-        }
+      // 2) Predictions: try today then yesterday
+      let usedDate = todayISO();
+      let predsRes = await fetch(`/.netlify/functions/mlb-preds-get?date=${usedDate}`);
+      if (!predsRes.ok){
+        usedDate = yesterdayISO();
+        predsRes = await fetch(`/.netlify/functions/mlb-preds-get?date=${usedDate}`);
+      }
+      let modelMap = {};
+      if (predsRes.ok){
+        const predsJson = await predsRes.json();
+        modelMap = normalizePredsToMap(predsJson?.data ?? predsJson);
+      }
 
-        // 4) First attempt (strict sureshot filters)
-        let payload = {
-          odds: legs,
-          model: mergedModel,
-          config: { maxLegs: 3, targetCount: 5, minEdge: 0.02, minLegProb: 0.60 }
-        };
-        let res = await fetch("/.netlify/functions/generate-parlays", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        let data = await res.json();
-        let parlaysBuilt = (res.ok && data?.parlays) ? data.parlays : [];
+      // 3) Merge (exact id, then player fallback)
+      const mergedModel = {};
+      let directMatches = 0, playerMatches = 0;
+      for (const l of legs){
+        if (modelMap[l.id] != null){ mergedModel[l.id]=modelMap[l.id]; directMatches++; }
+        else if (l.player && modelMap[l.player] != null){ mergedModel[l.id]=modelMap[l.player]; playerMatches++; }
+      }
 
-        // 5) If empty, relax thresholds a bit and retry so the page never looks blank
-        if (!parlaysBuilt.length){
-          payload = {
-            odds: legs,
-            model: mergedModel,
-            config: { maxLegs: 3, targetCount: 5, minEdge: 0.00, minLegProb: 0.50 }
-          };
-          const res2 = await fetch("/.netlify/functions/generate-parlays", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-          const data2 = await res2.json();
-          if (res2.ok && data2?.parlays) parlaysBuilt = data2.parlays;
-        }
+      // 4) Build parlays (strict)
+      let payload = { odds: legs, model: mergedModel, config: { maxLegs:3, targetCount:5, minEdge:0.02, minLegProb:0.60 } };
+      let res = await fetch("/.netlify/functions/generate-parlays", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
+      let data = await res.json();
+      let parlaysBuilt = (res.ok && data?.parlays) ? data.parlays : [];
 
-        setParlays(parlaysBuilt);
-        setDiag({
-          legsParsed: legs.length,
-          modelKeys: Object.keys(modelMap).length,
-          directMatches,
-          playerMatches,
-          usedDate,
-          emptinessGuardTriggered: parlaysBuilt.length === 0
-        });
-      }catch(e){ setError(e.message); }
-      finally{ setLoading(false); }
-    })();
-  },[]);
+      // 5) Retry looser
+      if (!parlaysBuilt.length){
+        payload = { odds: legs, model: mergedModel, config: { maxLegs:3, targetCount:5, minEdge:0.00, minLegProb:0.50 } };
+        const res2 = await fetch("/.netlify/functions/generate-parlays", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
+        const data2 = await res2.json();
+        if (res2.ok && data2?.parlays) parlaysBuilt = data2.parlays;
+      }
+
+      setParlays(parlaysBuilt);
+      setDiag({
+        legsParsed: legs.length,
+        modelKeys: Object.keys(modelMap).length,
+        directMatches, playerMatches,
+        predsDateTried: usedDate,
+        oddsOffersDetected: hasOffers(oddsJson),
+        emptinessGuardTriggered: parlaysBuilt.length===0
+      });
+    }catch(e){ setError(e.message); }
+    finally{ setLoading(false); }
+  })(); }, []);
 
   return (
     <div className="max-w-6xl mx-auto p-4">
@@ -107,7 +88,7 @@ export default function Parlays(){
       {!loading && !error && parlays.length===0 && (
         <div className="bg-white p-4 rounded-xl shadow mb-4">
           <div className="font-semibold mb-1">No parlays built yet.</div>
-          <div className="text-sm opacity-80">Likely causes: (1) odds snapshot empty, (2) no model matches for today, or (3) filters too strict. I auto-retried with looser thresholds.</div>
+          <div className="text-sm opacity-80">I tried to refresh odds and loosen filters once. If still empty, predictions/odds keys likely don’t align—send a sample and I’ll hard-wire mapping.</div>
         </div>
       )}
 
@@ -142,14 +123,22 @@ export default function Parlays(){
 
       {diag && (
         <div className="text-xs opacity-70 mt-3">
-          <div>Diag — legs parsed: {diag.legsParsed}, model keys: {diag.modelKeys}, direct matches: {diag.directMatches}, player matches: {diag.playerMatches}, preds date: {diag.usedDate}</div>
+          <div>Diag — legs parsed: {diag.legsParsed}, model keys: {diag.modelKeys}, direct matches: {diag.directMatches}, player matches: {diag.playerMatches}, preds date: {diag.predsDateTried}, odds offers detected: {String(diag.oddsOffersDetected)}</div>
         </div>
       )}
     </div>
   );
 }
 
-/** Odds normalizer — tries multiple shapes */
+function hasOffers(s){
+  if (!s) return false;
+  if (Array.isArray(s) && s.length) return true;
+  if (Array.isArray(s?.offers) && s.offers.length) return true;
+  if (Array.isArray(s?.data) && s.data.length) return true;
+  if (Array.isArray(s?.bets) && s.bets.length) return true;
+  return false;
+}
+
 function normalizeOddsToLegs(snapshot){
   const out = [];
   const arrays = [];
@@ -157,20 +146,19 @@ function normalizeOddsToLegs(snapshot){
   if (Array.isArray(snapshot?.offers)) arrays.push(snapshot.offers);
   if (Array.isArray(snapshot?.data)) arrays.push(snapshot.data);
   if (Array.isArray(snapshot?.bets)) arrays.push(snapshot.bets);
-
   const offers = arrays.find(a => a && a.length) || [];
   for (const o of offers){
     const american = pickAmerican(o);
     if (american == null) continue;
-    const id = o.id || [o.player, o.market, o.game_id || o.gameId, o.book].filter(Boolean).join("|");
+    const id = o.id || [o.player, o.market, o.game_id || o.gameId || o.eventId, o.book].filter(Boolean).join("|");
     out.push({
       id,
       american: Number(american),
-      gameId: o.game_id || o.gameId || o.game || null,
-      market: o.market || o.label || "MLB HR 0.5+",
-      player: o.player || o.name || o.runner || null,
+      gameId: o.game_id || o.gameId || o.eventId || o.game || null,
+      market: o.market || o.label || o.marketKey || "MLB HR 0.5+",
+      player: o.player || o.name || o.runner || o.selection || null,
       sgpOk: o.sgpOk ?? true,
-      groupKey: `${o.game_id || o.gameId || 'na'}:${o.market || 'MLB HR'}`
+      groupKey: `${o.game_id || o.gameId || o.eventId || 'na'}:${o.market || o.marketKey || 'MLB HR'}`
     });
   }
   return out;
@@ -181,23 +169,18 @@ function pickAmerican(o){
   if (typeof o.odds === "number") return o.odds;
   if (typeof o.odds_american === "string") return Number(o.odds_american);
   if (typeof o.oddsAmerican === "string") return Number(o.oddsAmerican);
+  if (typeof o.americanOdds === "string") return Number(o.americanOdds);
   return null;
 }
-
-/** Preds normalizer — supports several layouts and player-only fallback */
 function normalizePredsToMap(predsFile){
   const map = {};
   const arr = predsFile?.predictions || predsFile?.rows || predsFile?.data || predsFile || [];
   for (const r of (Array.isArray(arr) ? arr : [])) {
     const market = r.market || r.type || "MLB HR 0.5+";
-    const id = r.id || [r.player, market, r.game_id || r.gameId, r.book].filter(Boolean).join("|");
+    const id = r.id || [r.player, market, r.game_id || r.gameId || r.eventId, r.book].filter(Boolean).join("|");
     const p = r.p_true ?? r.prob ?? r.p ?? r.hr_prob;
-    if (id && typeof p === "number") {
-      map[id] = p;
-    }
-    if (r.player && typeof r.hr_prob === "number") {
-      map[r.player] = r.hr_prob; // player-only fallback
-    }
+    if (id && typeof p === "number") map[id] = p;
+    if (r.player && typeof r.hr_prob === "number") map[r.player] = r.hr_prob;
   }
   return map;
 }
