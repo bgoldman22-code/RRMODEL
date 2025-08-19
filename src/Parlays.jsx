@@ -10,25 +10,22 @@ export default function Parlays(){
   const [parlays, setParlays] = useState([]);
   const [diag, setDiag] = useState(null);
 
-  useEffect(()=>{ (async function run(){
+  const build = async () => {
     try{
       setLoading(true); setError(null);
 
-      // 1) Try to load odds snapshot
+      // Odds snapshot (try refresh if empty)
       let oddsRes = await fetch("/.netlify/functions/odds-get");
       let oddsJson = await oddsRes.json().catch(()=> ({}));
       if (!oddsRes.ok || !hasOffers(oddsJson)){
-        // Try to refresh the snapshot server-side (requires your env keys on Netlify)
         await fetch("/.netlify/functions/odds-refresh-rapid").catch(()=>{});
-        // small delay then refetch
-        await new Promise(r=>setTimeout(r, 500));
+        await new Promise(r=>setTimeout(r, 600));
         oddsRes = await fetch("/.netlify/functions/odds-get");
         oddsJson = await oddsRes.json().catch(()=> ({}));
       }
-      if (!oddsRes.ok) throw new Error(oddsJson?.error || "No odds snapshot");
-      const legs = normalizeOddsToLegs(oddsJson);
+      const legs = hasOffers(oddsJson) ? normalizeOddsToLegs(oddsJson) : [];
 
-      // 2) Predictions: try today then yesterday
+      // Predictions (today, then yesterday)
       let usedDate = todayISO();
       let predsRes = await fetch(`/.netlify/functions/mlb-preds-get?date=${usedDate}`);
       if (!predsRes.ok){
@@ -41,7 +38,7 @@ export default function Parlays(){
         modelMap = normalizePredsToMap(predsJson?.data ?? predsJson);
       }
 
-      // 3) Merge (exact id, then player fallback)
+      // Merge
       const mergedModel = {};
       let directMatches = 0, playerMatches = 0;
       for (const l of legs){
@@ -49,13 +46,12 @@ export default function Parlays(){
         else if (l.player && modelMap[l.player] != null){ mergedModel[l.id]=modelMap[l.player]; playerMatches++; }
       }
 
-      // 4) Build parlays (strict)
+      // Build
       let payload = { odds: legs, model: mergedModel, config: { maxLegs:3, targetCount:5, minEdge:0.02, minLegProb:0.60 } };
       let res = await fetch("/.netlify/functions/generate-parlays", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
       let data = await res.json();
       let parlaysBuilt = (res.ok && data?.parlays) ? data.parlays : [];
 
-      // 5) Retry looser
       if (!parlaysBuilt.length){
         payload = { odds: legs, model: mergedModel, config: { maxLegs:3, targetCount:5, minEdge:0.00, minLegProb:0.50 } };
         const res2 = await fetch("/.netlify/functions/generate-parlays", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
@@ -69,12 +65,30 @@ export default function Parlays(){
         modelKeys: Object.keys(modelMap).length,
         directMatches, playerMatches,
         predsDateTried: usedDate,
-        oddsOffersDetected: hasOffers(oddsJson),
-        emptinessGuardTriggered: parlaysBuilt.length===0
       });
-    }catch(e){ setError(e.message); }
-    finally{ setLoading(false); }
-  })(); }, []);
+    } catch(e){
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(()=>{ build(); }, []);
+
+  const manualRefresh = async () => {
+    await fetch("/.netlify/functions/odds-refresh-rapid").catch(()=>{});
+    await new Promise(r=>setTimeout(r, 800));
+    build();
+  };
+
+  const checkStores = async () => {
+    const today = todayISO();
+    const [o,p] = await Promise.all([
+      fetch("/.netlify/functions/odds-diag").then(r=>r.json()).catch(()=>({})),
+      fetch(`/.netlify/functions/preds-diag?date=${today}`).then(r=>r.json()).catch(()=>({}))
+    ]);
+    alert("Odds store: " + JSON.stringify(o) + "\n\nPreds store: " + JSON.stringify(p));
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-4">
@@ -82,13 +96,18 @@ export default function Parlays(){
       <p className="text-gray-600 mb-2">3–5 low-variance parlays from your live odds + model.</p>
       <div className="text-xs opacity-70 mb-4">*P* is the model’s joint hit probability (correlation-adjusted heuristic).</div>
 
+      <div className="flex gap-2 mb-3">
+        <button onClick={manualRefresh} className="px-3 py-1 rounded bg-black text-white">Refresh odds & retry</button>
+        <button onClick={checkStores} className="px-3 py-1 rounded border">Diag stores</button>
+      </div>
+
       {loading && <div className="bg-white p-4 rounded-xl shadow">Building today’s picks…</div>}
       {error && <div className="bg-white p-4 rounded-xl shadow text-red-600">{String(error)}</div>}
 
       {!loading && !error && parlays.length===0 && (
         <div className="bg-white p-4 rounded-xl shadow mb-4">
           <div className="font-semibold mb-1">No parlays built yet.</div>
-          <div className="text-sm opacity-80">I tried to refresh odds and loosen filters once. If still empty, predictions/odds keys likely don’t align—send a sample and I’ll hard-wire mapping.</div>
+          <div className="text-sm opacity-80">Hit “Refresh odds & retry”. If still empty, use “Diag stores” to see if blobs exist.</div>
         </div>
       )}
 
@@ -123,7 +142,7 @@ export default function Parlays(){
 
       {diag && (
         <div className="text-xs opacity-70 mt-3">
-          <div>Diag — legs parsed: {diag.legsParsed}, model keys: {diag.modelKeys}, direct matches: {diag.directMatches}, player matches: {diag.playerMatches}, preds date: {diag.predsDateTried}, odds offers detected: {String(diag.oddsOffersDetected)}</div>
+          <div>Diag — legs parsed: {diag.legsParsed}, model keys: {diag.modelKeys}, direct matches: {diag.directMatches}, player matches: {diag.playerMatches}, preds date: {diag.predsDateTried}</div>
         </div>
       )}
     </div>
