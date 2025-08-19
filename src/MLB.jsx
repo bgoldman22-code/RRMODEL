@@ -99,7 +99,8 @@ async function fetchJSON(url){
 export default function MLB(){
   const [picks, setPicks] = useState([]);
   const [bonus, setBonus] = useState([]);
-  const [meta, setMeta]   = useState({});
+    const [anchor, setAnchor] = useState(null);
+const [meta, setMeta]   = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -267,7 +268,7 @@ async function getOddsMap(){
           name: c.name, team: c.team, game: c.gameId || c.game || c.opp || "",
           batterId: c.batterId,
           p_model: p, modelAmerican, american, ev, rankScore,
-          bvp_mod, protection_mod,
+          bvp_mod, protection_mod, parkHR: (c.parkHR ?? null),
           why: explainRow({
             baseProb: Number(c.baseProb ?? c.prob ?? 0),
             hotBoost: t.hcMul, calScale: t.calScale,
@@ -301,6 +302,28 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
         bonusOut.push(r);
         perGame.set(r.game||"UNK", n+1);
         if (bonusOut.length >= BONUS_COUNT) break;
+      // Anchor pick (context override): surface elite short-odds bat in big-HR park
+      try {
+        const already = new Set([...out.map(r=>String(r.name).toLowerCase()), ...bonusOut.map(r=>String(r.name).toLowerCase())]);
+        const pcts = rows.map(r=>r.p_model).filter(x=>typeof x==='number' && x>0).sort((a,b)=>a-b);
+        const q = pcts.length ? pcts[Math.floor(0.75*(pcts.length-1))] : 0.30; // top quartile or 30%
+        let best = null;
+        for (const r of rows){
+          const key = String(r.name||'').toLowerCase();
+          if (already.has(key)) continue;
+          const odds = Number(r.american);
+          const park = (typeof r.parkHR==='number') ? r.parkHR : 0;
+          if (!Number.isFinite(odds) || odds < 120 || odds > 240) continue;   // short-to-mid
+          if (!(park >= 0.15)) continue;                                      // needs big park boost (e.g., Coors ~0.25)
+          if (!(typeof r.p_model==='number' && r.p_model >= Math.max(q, 0.30))) continue;
+          const score = (r.p_model||0)*100 + (240-(odds||240)) + (park*100);
+          if (!best || score > best.anchorScore){
+            best = { ...r, anchorScore: score, anchorWhy: (r.why ? (r.why + ' • Anchor rule') : 'Anchor rule') };
+          }
+        }
+        setAnchor(best||null);
+      } catch { setAnchor(null); }
+
       }
 
       setPicks(out);
@@ -336,6 +359,37 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       <div className="mt-2 text-sm text-gray-600">
         Date (ET): {meta.date} • Candidates: {meta.totalCandidates||0} • Using OddsAPI: {meta.usedOdds ? "yes":"no"} • Calibration scale: {meta.calibrationScale?.toFixed(2)}
       </div>
+      
+      {anchor && (
+        <div className="mt-6">
+          <div className="text-sm font-semibold mb-2">Anchor pick (context override)</div>
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="bg-blue-50">
+                <th className="px-3 py-2 text-left">Player</th>
+                <th className="px-3 py-2 text-left">Game</th>
+                <th className="px-3 py-2 text-right">Model HR%</th>
+                <th className="px-3 py-2 text-right">Model Odds</th>
+                <th className="px-3 py-2 text-right">Actual Odds</th>
+                <th className="px-3 py-2 text-right">EV (1u)</th>
+                <th className="px-3 py-2 text-left">Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b">
+                <td className="px-3 py-2">{anchor.name} <span className="ml-2 text-xs rounded border border-blue-200 bg-blue-50 text-blue-700 px-2 py-0.5">Anchor</span></td>
+                <td className="px-3 py-2">{anchor.game}</td>
+                <td className="px-3 py-2 text-right">{(anchor.p_model*100).toFixed(1)}%</td>
+                <td className="px-3 py-2 text-right">{anchor.modelAmerican>0?`+${anchor.modelAmerican}`:anchor.modelAmerican}</td>
+                <td className="px-3 py-2 text-right">{anchor.american>0?`+${anchor.american}`:anchor.american}</td>
+                <td className="px-3 py-2 text-right">{anchor.ev.toFixed(3)}</td>
+                <td className="px-3 py-2">{anchor.anchorWhy || anchor.why}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
       <div className="mt-4 overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
