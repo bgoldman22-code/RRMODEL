@@ -5,6 +5,11 @@ import { normName, buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
 
 
+// --- Straight HR Bets helpers ---
+const _fmtPct = (p) => (p != null ? `${(p*100).toFixed(1)}%` : "—");
+const _fmtAmerican = (a) => (a == null ? "—" : (a > 0 ? `+${a}` : `${a}`));
+
+
 const RANK_ODDS_WEIGHT = Number(import.meta.env.VITE_RANK_ODDS_WEIGHT || process.env.RANK_ODDS_WEIGHT || 0.3);
 const BVP_MIN_AB = 10; // >9 AB threshold
 const BVP_MAX_BOOST = 0.06; // ±6%
@@ -99,6 +104,8 @@ async function fetchJSON(url){
 export default function MLB(){
   const [picks, setPicks] = useState([]);
   const [bonus, setBonus] = useState([]);
+
+  const [rawTop, setRawTop] = useState([]);
     const [anchor, setAnchor] = useState(null);
 const [meta, setMeta]   = useState({});
   const [loading, setLoading] = useState(false);
@@ -328,6 +335,15 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
       setPicks(out);
       setBonus(bonusOut);
+      try{
+        const raw = rows
+          .filter(r=> typeof r.p_model === 'number')
+          .sort((a,b)=> b.p_model - a.p_model)
+          .slice(0,13)
+          .map(r => ({ name: r.name, game: r.game, p_model: r.p_model, american: r.american, why: r.why }));
+        setRawTop(raw);
+      }catch{ setRawTop([]); }
+    
       setMeta({
         date: fmtET(),
         totalCandidates: baseCandidates.length,
@@ -446,6 +462,40 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
                 ))}
               </tbody>
             </table>
+      {/* --- Straight HR Bets (Top 13 Raw Probability) --- */}
+      {Array.isArray(rawTop) && rawTop.length>0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold">Straight HR Bets (Top 13 Raw Probability)</h2>
+          <div className="mt-2 overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="px-3 py-2 text-left">Player</th>
+                  <th className="px-3 py-2 text-left">Game</th>
+                  <th className="px-3 py-2 text-right">Model HR%</th>
+                  <th className="px-3 py-2 text-right">Actual Odds</th>
+                  <th className="px-3 py-2 text-left">Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rawTop.map((r,i)=>(
+                  <tr key={`rawprob-${i}`} className="border-b">
+                    <td className="px-3 py-2">{r.name}</td>
+                    <td className="px-3 py-2">{r.game || "—"}</td>
+                    <td className="px-3 py-2 text-right">{_fmtPct(r.p_model)}</td>
+                    <td className="px-3 py-2 text-right">{_fmtAmerican(r.american)}</td>
+                    <td className="px-3 py-2">{r.why || ""}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="text-xs text-gray-500 mt-2">
+              This list ignores EV and shows the highest raw HR probabilities so you don’t miss marquee bats or extreme park spots even when books price them tightly.
+            </p>
+          </div>
+        </div>
+      )}
+
           </div>
         </div>
       )}
