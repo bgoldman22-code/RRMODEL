@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Learning Backfill</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:20px}
+    input,button{font-size:16px;padding:8px}
+    .row{margin:10px 0}
+    pre{background:#f7f7f9;border:1px solid #eee;padding:12px;overflow:auto}
+  </style>
+</head>
+<body>
+  <h2>MLB HR Learning Backfill</h2>
+  <div class="row">
+    <label>Date (YYYY-MM-DD): <input id="date" placeholder="2025-08-10"></label>
+    <button onclick="runOne()">Run one day</button>
+  </div>
+  <div class="row">
+    <label>Start: <input id="start" placeholder="2025-08-01"></label>
+    <label>End: <input id="end" placeholder="2025-08-10"></label>
+    <button onclick="batch()">Get batch URLs</button>
+  </div>
+  <div class="row">
+    <button onclick="summary()">Load summary</button>
+  </div>
+  <pre id="out">…</pre>
+<script>
+async function runOne(){
+  const date = document.getElementById('date').value.trim();
+  const r = await fetch(`/.netlify/functions/mlb-learn?date=${encodeURIComponent(date)}`);
+  const j = await r.json(); document.getElementById('out').textContent = JSON.stringify(j,null,2);
+}
+async function batch(){
+  const s = document.getElementById('start').value.trim();
+  const e = document.getElementById('end').value.trim();
+  const r = await fetch(`/.netlify/functions/mlb-learn-batch?start=${encodeURIComponent(s)}&end=${encodeURIComponent(e)}`);
+  const j = await r.json(); document.getElementById('out').textContent = JSON.stringify(j,null,2);
+}
+async function summary(){
+  const r = await fetch(`/.netlify/functions/mlb-learn-summary`);
+  const j = await r.json(); document.getElementById('out').textContent = JSON.stringify(j,null,2);
+}
+</script>
+</body>
+</html>
