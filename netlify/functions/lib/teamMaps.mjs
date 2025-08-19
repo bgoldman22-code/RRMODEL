@@ -1,5 +1,6 @@
 // netlify/functions/lib/teamMaps.mjs
 // Complete NFL team normalization with common alternates and historical abbreviations.
+// Fixed: quote numeric key '49ERS' to avoid syntax error; cleaned aliases.
 
 export const TEAM_ABBR = {
   // Current standard 32
@@ -13,19 +14,20 @@ export const TEAM_ABBR = {
   JAC:'JAX',
   LA:'LAR', STL:'LAR',
   SD:'LAC',
-  OAK:'LV', LVR:'LV', LVD:'LV',
-  WSH:'WAS', WDC:'WAS', 'WAS':'WAS', // tolerate both WAS/WSH
+  OAK:'LV', LVR:'LV',
+  WSH:'WAS', WDC:'WAS', 'WAS':'WAS',
   NOO:'NO',
   GBY:'GB',
-  NWE:'NE', NENG:'NE',
+  NWE:'NE',
+  NENG:'NE',
   NOL:'NO',
   TAM:'TB', TBB:'TB',
-  SFO:'SF', SFF:'SF',
+  SFO:'SF',
   SEAHAWKS:'SEA', EAGLES:'PHI', JETS:'NYJ', GIANTS:'NYG', PATRIOTS:'NE', COWBOYS:'DAL',
   STEELERS:'PIT', PANTHERS:'CAR', FALCONS:'ATL', CHIEFS:'KC', BEARS:'CHI', VIKINGS:'MIN',
   TITANS:'TEN', TEXANS:'HOU', SAINTS:'NO', DOLPHINS:'MIA', BILLS:'BUF', BRONCOS:'DEN',
   PACKERS:'GB', LIONS:'DET', COLTS:'IND', RAVENS:'BAL', BROWNS:'CLE', BENGALS:'CIN',
-  JAGUARS:'JAX', RAIDERS:'LV', RAMS:'LAR', CHARGERS:'LAC', CARDINALS:'ARI', 49ERS:'SF',
+  JAGUARS:'JAX', RAIDERS:'LV', RAMS:'LAR', CHARGERS:'LAC', CARDINALS:'ARI', '49ERS':'SF',
   BUCCANEERS:'TB', SEAHAWK:'SEA', SAINT:'NO'
 };
 
