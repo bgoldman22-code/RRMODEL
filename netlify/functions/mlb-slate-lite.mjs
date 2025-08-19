@@ -197,7 +197,7 @@ export default async (req) => {
         // pitcher multiplier
         let pitcherMult = 1.00, pitcherName=null, pitcherHand=null;
         try{
-          const info = teamToProbPitcher.get(oppId);
+          const info = teamToProbPitcher.get(tid);
           if(info && info.pitcherId){
             const prof = await learn.get(`profiles/pitcher/${info.pitcherId}.json`, { type:'json' }) || null;
             if(prof && typeof prof.samples==='number' && typeof prof.hr==='number'){
