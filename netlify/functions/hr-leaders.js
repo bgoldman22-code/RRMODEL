@@ -2,6 +2,9 @@
 // ESM version (package.json has "type":"module")
 // Uses built-in global `fetch` (Node 18+ on Netlify) — no node-fetch needed.
 import { getStore } from "@netlify/blobs";
+const SAFE_GET_STORE = (name)=>{
+  try { return getStore({ name }); } catch (e) { return null; }
+};
 
 const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
 const CACHE_KEY = "leaders_hr_top50.json";
@@ -9,7 +12,8 @@ const TTL_MS = 30 * 60 * 1000; // 30 minutes
 
 export const handler = async (event, context) => {
   try {
-    const store = getStore({ name: STORE_NAME });
+    const store = SAFE_GET_STORE(STORE_NAME);
+    if(!store){ return fallbackOk(); }
     // 1) Try cache
     const cachedStr = await store.get(CACHE_KEY);
     if (cachedStr) {
@@ -73,5 +77,15 @@ function error(msg) {
     statusCode: 200,
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ ok: false, error: msg }),
+  };
+}
+
+
+/* Fallback: if Blobs isn't configured, return an empty leaders list */
+function fallbackOk(){
+  return {
+    statusCode: 200,
+    headers: { "content-type": "application/json", "cache-control": "no-store" },
+    body: JSON.stringify({ ok: true, leaders: [], note: "Blobs not configured; returning empty leaders." }),
   };
 }
