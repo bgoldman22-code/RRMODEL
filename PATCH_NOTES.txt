@@ -1,0 +1,27 @@
+PATCH: Moderate-power Exploitable Boost (safe add-on)
+
+Files in this patch:
+- src/MLB.jsx  (contains ONLY a new helper function with PATCH START/END markers)
+
+What this does:
+- Adds a tiny helper `moderatePowerExploitableMultiplier(candidate, pModel)`
+- When a hitter sits in the 20–30% model HR% band AND the opposing pitcher relies on one pitch (>=45% usage)
+  AND that pitch matches a pitch the hitter historically crushes (xwOBA-like >= .500), we apply a +3% bump.
+
+How to integrate (two lines):
+1) Paste the helper function anywhere at top-level in src/MLB.jsx (I suggest near your other multipliers).
+2) In the place where you finalize the player’s `pModel` (after park/hot/cold etc, BEFORE EV is computed),
+   add these lines:
+
+   // Moderate-power exploitable micro-boost
+   const mpex = moderatePowerExploitableMultiplier(candidate, pModel);
+   if (mpex > 1) {
+     pModel = Math.min(pModel * mpex, 0.60);   // safety cap
+     why.push('mod-power exploitable +3%');    // surfaces in the UI
+   }
+
+Notes:
+- The helper is defensive: if any required data (top pitch, usage, hitter-vs-pitch) is missing, it returns 1 (no change).
+- It will not change your output unless conditions are clearly met.
+- Zero impact on EV/anchor logic except for the tiny approved bump.
+- You can tweak thresholds inside the function: usage >= 0.45, damage >= 0.50, band 0.20–0.30.
