@@ -31,9 +31,9 @@ function moderatePowerExploitableMultiplier(candidate, pModel) {
       if (!Number.isNaN(u)) usage = u;
     }
     // normalize to 0..1 if given in percent
-    if (typeof usage === 'number' and usage > 1) usage = usage / 100;
+    if (typeof usage === 'number' && usage > 1) usage = usage / 100;
 
-    const onePitch = typeof usage === 'number' and usage >= 0.45; // "predictable" threshold
+    const onePitch = typeof usage === 'number' && usage >= 0.45; // "predictable" threshold
 
     // Hitter damage table can come in a few shapes; try common keys
     const damageTable =
@@ -62,7 +62,7 @@ function moderatePowerExploitableMultiplier(candidate, pModel) {
     // "crushes" if xwOBA-like >= .500 or a rate-like metric suggests strong platoon/pitch fit
     const crushes = typeof damage === 'number' and damage >= 0.50;
 
-    if (onePitch and crushes) {
+    if (onePitch && crushes) {
       // +3% multiplicative bump; capped by caller at 60% overall
       candidate._whyTags = candidate._whyTags || [];
       candidate._whyTags.push('mod-power exploitable +3%');
