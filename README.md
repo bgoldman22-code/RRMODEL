@@ -1,29 +1,43 @@
-# Round Robin Picks (Odds‑Free)
+# PATCH: Moderate-power exploitable micro-boost (+3%)
 
-Three pages, no sportsbook odds:
+This patch adds a tiny, **safe** multiplier that only applies when:
+- Model HR probability is in the **0.20–0.30** band, and
+- The pitcher is effectively **one‑pitch** (>= 45% usage of a single pitch), and
+- The hitter **crushes that pitch** (xwOBA-like >= 0.50).
 
-- **MLB HR** — StatsAPI model (no key).
-- **NFL Anytime TD** — ESPN schedule + roster; heuristic baselines (RB/WR/TE).
-- **Soccer Anytime Goal** — football-data.org top scorers + fixtures (requires free API key).
+It also appends `mod-power exploitable +3%` to the Why column.
 
-## Quick Deploy (Netlify + GitHub)
+## Files in this patch
+- `src/mpex-helper.js` — the helper function (ESM export).
+- `src/MLB.jsx.additions.txt` — **exact lines to paste** in your `src/MLB.jsx`:
+  1) an import near the top
+  2) a 6‑line call block placed **after park/hot-cold** multipliers (when you have `pModel`) and **before** EV is computed.
 
-1. **Upload to GitHub** (repo root should have `package.json`, `index.html`, `netlify.toml`, `src/`).
-2. On Netlify: **Import from Git** → set Build `npm run build`, Publish `dist`.
-3. Set env var (only for Soccer page):  
-   - `VITE_FOOTBALL_DATA_KEY` = your football-data.org API key.
-4. Deploy. App uses **HashRouter** so `/mlb`, `/nfl`, `/soccer` work without custom redirects.
+We are not auto-editing your `MLB.jsx` to avoid breaking your good repo. Just paste the two snippets where indicated.
 
-## Data Sources (free)
+## 1) Import (near the top of `src/MLB.jsx`)
+```js
+import { moderatePowerExploitableMultiplier } from "./mpex-helper.js";
+```
 
-- MLB: https://statsapi.mlb.com/ (schedule, rosters, people, stats)
-- NFL: ESPN public scoreboard & team rosters (no key): `site.api.espn.com` (unofficial, public JSON)
-- Soccer: https://www.football-data.org/ (free key; v4 endpoints)
+## 2) Call (after park/hot-cold multipliers, before EV)
+You should already have `candidate`, `pModel` (0..1), and `why` (array of strings). Insert:
+```js
+// === PATCH: Moderate-power exploitable micro-boost ===
+const mpex = moderatePowerExploitableMultiplier(candidate, pModel);
+if (mpex > 1) {
+  pModel = Math.min(pModel * mpex, 0.60); // safety cap
+  if (Array.isArray(why)) {
+    why.push('mod-power exploitable +3%');
+  } else if (candidate) {
+    candidate._whyTags = candidate._whyTags || [];
+    candidate._whyTags.push('mod-power exploitable +3%');
+  }
+}
+// === END PATCH ===
+```
 
-## Notes
-
-- Picks enforce **12 total**, **≥ 8 different games**, **≤ 2 per game**.
-- MLB model blends: season + last-15 HR rates, pitcher HR allowed, platoon, and a coarse park factor table.
-- NFL model is heuristic until we add richer public stats (TD share, red-zone). It still yields stable candidates daily.
-- Soccer uses each league’s **Top Scorers** endpoint as a proxy for goal likelihood on matchdays.
-- Non‑commercial use only.
+### Notes
+- Pure JS (`&&`), defensive against missing fields.
+- No changes to EV math or table wiring beyond a small, capped multiplier.
+- Reversible: delete the import + block to revert.
