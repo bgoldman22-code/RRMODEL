@@ -1,6 +1,6 @@
-// patch-hr-all-in-one-2025-08-20/netlify/functions/odds-refresh-multi.cjs
-// All-in-one MLB HR props fetcher: OddsAPI primary + SGO fallback (Over 0.5 / Yes).
-// CommonJS (.cjs), Node 18+ native fetch, Netlify Blobs write.
+// patch-hr-ui-lock-provider-2025-08-20/netlify/functions/odds-refresh-multi.cjs
+// MLB HR props fetcher (FanDuel batter_home_runs Over 0.5) with legacy-compatible 'provider' field.
+// CommonJS, Node 18+ (global fetch), Netlify Blobs.
 
 const { getStore } = require("@netlify/blobs");
 
@@ -23,21 +23,15 @@ const VALID_REGIONS = new Set(["us","us2","uk","eu","au","ca","in","us_il","us_n
 function sanitizeRegions(input) {
   const arr = sanitizeCSV(input);
   const out = arr.filter((r) => VALID_REGIONS.has(r));
-  return out.length ? out : ["us"]; // default: 'us' to prefer FanDuel
+  return out.length ? out : ["us"]; // default FanDuel
 }
 
 function stripDiacritics(s) {
-  try {
-    return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  } catch (e) {
-    return s;
-  }
+  try { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); } catch { return s; }
 }
-
 function normalizePlayerName(name) {
   if (!name) return null;
-  const s = stripDiacritics(String(name)).toLowerCase().trim();
-  return s;
+  return stripDiacritics(String(name)).toLowerCase().trim();
 }
 
 function isOver05(out) {
@@ -46,7 +40,6 @@ function isOver05(out) {
   if (nm === "over" && pt === 0.5) return true;
   if (nm.includes("over 0.5")) return true;
   if (nm === "yes") return true;
-  // Some books send 'O 0.5'
   if (/^o\s*0?\.5$/.test(nm)) return true;
   return false;
 }
@@ -54,9 +47,8 @@ function isOver05(out) {
 function baseOffer(out, marketKey, sport, gameId, bk, labelHint) {
   const bookKey = bk.key || (bk.title || bk.name || "book").toLowerCase().replace(/\s+/g,"");
   let team = out.team || (out.name && !out.player ? out.name : null);
-  // Clean 'Over/Yes' from 'team'
   const teamLower = String(team || "").toLowerCase();
-  if (teamLower === "over" || teamLower === "yes" || teamLower === "under" || teamLower === "no") team = null;
+  if (["over","under","yes","no"].includes(teamLower)) team = null;
 
   const playerRaw = out.description || out.player || out.participant || out.selection || null;
   const player = playerRaw ? String(playerRaw).trim() : null;
@@ -133,22 +125,17 @@ async function oddsapiCollectHR({ sport, apiKey, regions, bookmakers, hrMarket, 
       const adds = normalizeOddsapiEvent(evOdds, sport, ev.id, hrMarket, diag);
       if (adds.length) offers = offers.concat(adds);
     } catch (e) {
-      // 422 on unsupported market is expected on some plans
       diag.errors.push(String(e.message || e));
     }
   }
   return offers;
 }
 
-// ---------- SGO fallback (scaffold; finalize when endpoint shape is confirmed) ----------
+// ---------- SGO fallback (scaffold) ----------
 async function sgoFetchHR(diag) {
   const base = process.env.SGO_BASE;
   const key = process.env.SPORTSGAMEODDS_KEY || process.env.SGO_KEY;
-  if (!base || !key) {
-    diag.sgo = "missing_base_or_key";
-    return [];
-  }
-  // Example endpoint guess — adjust once you share a sample payload
+  if (!base || !key) { diag.sgo = "missing_base_or_key"; return []; }
   const u = new URL(base.replace(/\/$/, '') + "/mlb/batter_home_runs");
   u.searchParams.set("apiKey", key);
   try {
@@ -190,17 +177,12 @@ exports.handler = async function () {
     const apiKey = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
     if (!apiKey) throw new Error("Missing THEODDS_API_KEY");
 
-    // Hard default: 'us' and FanDuel priority
     const regions = sanitizeRegions(process.env.ODDS_REGIONS || "us");
     const bookmakers = sanitizeCSV(process.env.ODDS_BOOKMAKERS || "fanduel");
-
-    // Lock market to FanDuel's batter HR market
     const hrMarket = "batter_home_runs";
-
     const storeName = process.env.BLOBS_STORE || "mlb-odds";
     const store = getStoreSafe(storeName);
 
-    // Primary: OddsAPI
     let offers = [];
     let fromOddsApiCount = 0;
     try {
@@ -210,37 +192,29 @@ exports.handler = async function () {
       diag.errors.push("oddsapiCollectHR: " + String(e.message || e));
     }
 
-    // Fallback: SGO (only if empty)
     let fromSgoCount = 0;
     if (!offers.length) {
       const sgoOffers = await sgoFetchHR(diag);
-      if (sgoOffers.length) {
-        offers = sgoOffers;
-        fromSgoCount = sgoOffers.length;
-      }
+      if (sgoOffers.length) { offers = sgoOffers; fromSgoCount = sgoOffers.length; }
     }
 
-    // End filter by bookmaker list (defensive; OddsAPI 'bookmakers' param should do this already)
     if (bookmakers.length) {
       const before = offers.length;
       offers = offers.filter(o => !o.bookKey || bookmakers.includes(o.bookKey));
       diag.bookmakerFiltered = before - offers.length;
     }
 
-    // De-dupe by id
     const seen = new Set();
     const deduped = [];
-    for (const o of offers) {
-      if (seen.has(o.id)) continue;
-      seen.add(o.id);
-      deduped.push(o);
-    }
+    for (const o of offers) { if (!seen.has(o.id)) { seen.add(o.id); deduped.push(o); } }
 
     const usingOddsApi = fromOddsApiCount > 0;
-    const source = usingOddsApi ? "oddsapi" : (fromSgoCount > 0 ? "sgo" : "none");
+    // Legacy-compatible provider field:
+    const provider = usingOddsApi ? "theoddsapi" : (fromSgoCount > 0 ? "sgo" : "none");
+    const source = provider;
 
     const payload = {
-      provider: "theoddsapi+fallback:sgo",
+      provider,         // <— legacy UI expects exactly 'theoddsapi' for "Using OddsAPI: yes"
       source,
       usingOddsApi,
       fromOddsApiCount,
@@ -264,9 +238,8 @@ exports.handler = async function () {
         wrote: ["mlb-hr-over05.json","latest.json"],
         count: deduped.length,
         usingOddsApi,
+        provider,
         source,
-        fromOddsApiCount,
-        fromSgoCount,
         timeMs: Date.now() - started
       })
     };
