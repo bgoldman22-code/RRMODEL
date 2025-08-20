@@ -101,6 +101,53 @@ async function fetchJSON(url){
   return r.json();
 }
 
+
+// ----- Model adjustment helpers (no-ops if metadata missing) -----
+function platoonMultiplier(bats, pitcherHand) {
+  if (!bats || !pitcherHand) return 1;
+  const b = (''+bats).toUpperCase()[0]; // 'L'|'R'|'S'
+  const p = (''+pitcherHand).toUpperCase()[0];
+  if (b === 'S') return p === 'R' ? 1.05 : 0.97;
+  if (b === 'L' && p === 'R') return 1.06;
+  if (b === 'L' && p === 'L') return 0.94;
+  if (b === 'R' && p === 'L') return 1.04;
+  if (b === 'R' && p === 'R') return 0.96;
+  return 1;
+}
+function hotColdMultiplier(recentHRs7d, paLast50) {
+  let m = 1;
+  if (typeof recentHRs7d === 'number' && recentHRs7d > 0) m *= 1.04;
+  if (typeof paLast50 === 'number' && paLast50 >= 50 && recentHRs7d === 0) m *= 0.98;
+  return m;
+}
+function pitchMixMultiplier(playerWeakness, pitcherMix) {
+  // playerWeakness: { sliderBad?:boolean, fastballBad?:boolean, sliderGood?:boolean, fastballGood?:boolean }
+  // pitcherMix: { ff?: number, fa?:number, fourseam?:number, sl?:number, slider?:number }
+  if (!pitcherMix) return 1;
+  const ff = pitcherMix.ff ?? pitcherMix.fa ?? pitcherMix.fourseam;
+  const sl = pitcherMix.sl ?? pitcherMix.slider;
+  let adj = 0;
+  if (sl && playerWeakness?.sliderBad) adj += Math.min(sl * 0.15, 0.05); // up to +5%
+  if (sl && playerWeakness?.sliderGood) adj -= Math.min(sl * 0.15, 0.05);
+  if (ff && playerWeakness?.fastballBad) adj += Math.min(ff * 0.10, 0.04);
+  if (ff && playerWeakness?.fastballGood) adj -= Math.min(ff * 0.10, 0.04);
+  return Math.max(0.90, Math.min(1.10, 1 + adj));
+}
+function envMultiplier(parkHrFactor, weather={}){
+  // parkHrFactor: +0.20 => Coors; -0.10 => DET; or already as decimal delta
+  let m = 1;
+  if (typeof parkHrFactor === 'number') {
+    m *= (1 + Math.max(-0.20, Math.min(0.20, parkHrFactor))); // clamp ±20%
+  }
+  const { windOut, tempF } = weather;
+  if (typeof windOut === 'number' && windOut >= 10) m *= 1.05;
+  if (typeof tempF === 'number' && tempF >= 85) m *= 1.02;
+  return m;
+}
+function clampProb(p){
+  return Math.max(0.01, Math.min(0.95, p));
+}
+
 export default function MLB(){
   const [picks, setPicks] = useState([]);
   const [bonus, setBonus] = useState([]);
@@ -556,4 +603,29 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       </div>
     </div>
   );
+
+      // Adjust probabilities with easy-win factors when metadata available
+      rows.forEach(r => {
+        const base = typeof r.p_model === 'number' ? r.p_model : (typeof r.p === 'number' ? r.p : null);
+        if (base == null) return;
+        const bats = r.bats || r.batterHand || r.side;
+        const pHand = r.pitcherHand || r.p_hand || r.hand;
+        const parkF = r.parkHR ?? r.parkHr ?? r.parkHrFactor;
+        const weather = r.weather || { windOut: r.windOut, tempF: r.tempF };
+        const pitcherMix = r.pitchMix || r.pitcherMix;
+        const weakness = r.weakness || r.playerWeakness;
+        let pAdj = base;
+        pAdj *= platoonMultiplier(bats, pHand);
+        pAdj *= hotColdMultiplier(r.recentHRs7d, r.paLast50);
+        pAdj *= pitchMixMultiplier(weakness, pitcherMix);
+        pAdj *= envMultiplier(parkF, weather);
+        r.p_model = clampProb(pAdj);
+        // Recompute model odds & EV (keep existing american if present)
+        const dec = 1 + (r.american ? (r.american > 0 ? 100/r.american : -r.american/100) : (r.modelAmerican ? (r.modelAmerican>0?100/r.modelAmerican:-r.modelAmerican/100) : (r.p_model>0?1/r.p_model:0)));
+        const useAmerican = r.american ?? r.modelAmerican ?? Math.round(r.p_model>0 ? (r.p_model>=0.5 ? -(r.p_model/(1-r.p_model))*100 : (100*(1-r.p_model)/r.p_model)) : 0);
+        r.modelAmerican = r.modelAmerican ?? useAmerican;
+        // EV: use actual odds if available, else model odds
+        const decActual = r.american ? (r.american>0?1 + 100/r.american : 1 + (-r.american/100)) : (r.modelAmerican>0?1 + 100/r.modelAmerican : 1 + (-r.modelAmerican/100));
+        r.ev = r.p_model*(decActual-1) - (1 - r.p_model);
+      });
 }
