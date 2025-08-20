@@ -16,46 +16,10 @@ const BVP_MAX_BOOST = 0.06; // ±6%
 const PROTECTION_MAX = 0.05; // +5% cap
 const CAL_LAMBDA = 0.25;
 const HOTCOLD_CAP = 0.06;
-
-// Moderate-power exploitable helper (small boost for ~20–30%% model vs one-pitch arms the hitter crushes)
-function moderatePowerExploitableMultiplier(candidate, pModel) {
-  try {
-    const usageRaw = candidate && candidate.pitcher && candidate.pitcher.topPitchUsage;
-    let usage = usageRaw;
-    if (typeof usage === 'number' && usage > 1) usage = usage / 100;
-    const onePitch = (typeof usage === 'number' && usage >= 0.45);
-
-    const damage = candidate && candidate.hitter && candidate.hitter.vsPitchDamage;
-    const crushes = (typeof damage === 'number' && damage >= 0.50);
-
-    let m = 1;
-    if (onePitch && crushes) m *= 1.03;
-    else if (onePitch) m *= 1.01;
-    else if (crushes) m *= 1.015;
-
-    if (typeof pModel === 'number' && pModel >= 0.20 && pModel <= 0.30 && onePitch && crushes) {
-      m *= 1.03; // extra micro-boost for moderate-power exploitable spot
-    }
-    return m;
-  } catch (e) {
-    return 1;
-  }
-}
-
-
 const MIN_PICKS = 12;
 const BONUS_COUNT = parseInt(import.meta.env.VITE_BONUS_COUNT||process.env.BONUS_COUNT||8,10);
 // Fallback Why explainer
 function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null }){
-  // Append tag if moderate-power exploitable applied
-  if (arguments && arguments[0] && arguments[0].mpex) {
-    try { 
-      // 'pts' is the local array used to build why; if not present, initialize
-      if (typeof pts === 'undefined') { var pts = []; }
-      pts.push('mod-power exploitable +3%');
-    } catch {}
-  }
-
   const pts = [];
   if (typeof baseProb==='number') pts.push(`model ${(baseProb*100).toFixed(1)}%`);
   if (typeof hotBoost==='number' && hotBoost!==1){ const sign=hotBoost>1?'+':'−'; pts.push(`hot/cold ${sign}${Math.abs((hotBoost-1)*100).toFixed(0)}%`); }
@@ -237,7 +201,7 @@ async function getOddsMap(){
       const teamToPpre = new Map();
       const bvpPairs = [];
 
-      // Pass 1: compute calibrated p_pre (before new modifiers), collect team pools and BvP pairs
+      // Pass 1: compute calibrated p_pre (before new modifiers), collect team pools && BvP pairs
       for(const c of baseCandidates){
         let p = Number(c.baseProb||c.prob||0);
         if(!p || p<=0) continue;
@@ -256,16 +220,7 @@ async function getOddsMap(){
           if (typeof p === "number" && isFinite(p)) p *= pitchMul;
         } catch {}
 
-        
-        // Moderate-power exploitable micro-boost (after park/hot-cold/pitch-type)
-        try {
-          const _mpex = moderatePowerExploitableMultiplier(c, p);
-          if (typeof _mpex === 'number' && _mpex > 1) {
-            p = Math.min(p * _mpex, 0.60);
-            c._mpex = true;
-          }
-        } catch {}
-temp.push({ c, p_pre: p, hcMul, calScale });
+        temp.push({ c, p_pre: p, hcMul, calScale });
         if (c.team){
           const arr = teamToPpre.get(c.team) || [];
           arr.push(p);
@@ -280,7 +235,7 @@ temp.push({ c, p_pre: p, hcMul, calScale });
       let bvpMap = new Map();
       try { bvpMap = await getBvPMap(bvpPairs); } catch(e){ bvpMap = new Map(); }
 
-      // Pass 2: apply modifiers and build rows
+      // Pass 2: apply modifiers && build rows
       const rows = [];
       for (const t of temp){
         const c = t.c;
@@ -327,7 +282,7 @@ temp.push({ c, p_pre: p, hcMul, calScale });
             oddsAmerican: american,
             pitcherName: c.pitcherName ?? null, pitcherHand: c.pitcherHand ?? null,
             parkHR: c.parkHR ?? null, weatherHR: c.weatherHR ?? null
-          , mpex: !!c._mpex }\)
+          })
         });
       }
 rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
@@ -535,7 +490,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
               </tbody>
             </table>
             <p className="text-xs text-gray-500 mt-2">
-              This list ignores EV and shows the highest raw HR probabilities so you don’t miss marquee bats or extreme park spots even when books price them tightly.
+              This list ignores EV && shows the highest raw HR probabilities so you don’t miss marquee bats or extreme park spots even when books price them tightly.
             </p>
           </div>
         </div>
