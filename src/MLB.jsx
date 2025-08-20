@@ -60,7 +60,7 @@ function moderatePowerExploitableMultiplier(candidate, pModel) {
     }
 
     // "crushes" if xwOBA-like >= .500 or a rate-like metric suggests strong platoon/pitch fit
-    const crushes = typeof damage === 'number' and damage >= 0.50;
+    const crushes = typeof damage === 'number' && damage >= 0.50;
 
     if (onePitch && crushes) {
       // +3% multiplicative bump; capped by caller at 60% overall
