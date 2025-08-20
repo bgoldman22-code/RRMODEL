@@ -1,12 +1,13 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 
-// Lightweight helpers kept inline to avoid extra imports
 const fmtPct = (x) => (x == null ? "—" : `${(x * 100).toFixed(1)}%`);
 const americanToDecimal = (american) => {
   if (american == null) return null;
-  if (american >= 100) return 1 + american / 100;
-  if (american <= -100) return 1 + 100 / Math.abs(american);
+  const n = Number(american);
+  if (Number.isNaN(n)) return null;
+  if (n >= 100) return 1 + n / 100;
+  if (n <= -100) return 1 + 100 / Math.abs(n);
   return null;
 };
 const decimalToAmerican = (dec) => {
@@ -15,12 +16,11 @@ const decimalToAmerican = (dec) => {
   return imp >= 1 ? `+${Math.round(imp*100)}` : `-${Math.round(100/imp)}`;
 };
 
-// Simple hot/cold and pitch-type multipliers (safe defaults)
 function hotColdMultiplier({ hr7 = 0, pa50 = 50 } = {}) {
   let m = 1;
   if (hr7 >= 2) m *= 1.06;
   else if (hr7 === 1) m *= 1.03;
-  if (pa50 < 30) m *= 0.98; // low sample nudge
+  if (pa50 < 30) m *= 0.98;
   return m;
 }
 function pitchTypeFitMultiplier({ damage = 0 } = {}) {
@@ -34,6 +34,41 @@ async function fetchJson(url) {
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
+}
+
+async function tryLoadCandidates(oddsSnapshot) {
+  const tryPaths = [
+    "/.netlify/functions/mlb-daily-learn",
+    "/.netlify/functions/mlb-candidates",
+    "/data/mlb/model-candidates.json",
+    "/data/mlb/candidates.json"
+  ];
+  for (const p of tryPaths) {
+    try {
+      const j = await fetchJson(p);
+      const cand = j?.candidates || j?.picksToday || j?.rows || j;
+      if (Array.isArray(cand) && cand.length) return cand;
+    } catch { /* keep trying */ }
+  }
+  // last resort: synthesize from odds (implied prob) so UI isn't empty
+  const out = [];
+  const offers = Array.isArray(oddsSnapshot?.offers) ? oddsSnapshot.offers : [];
+  for (const o of offers) {
+    if (o.market === "batter_home_runs" && o.outcome === "Over" && o.point === 0.5) {
+      const dec = americanToDecimal(o.american);
+      const implied = dec ? 1/dec : 0.28;
+      out.push({
+        player: o.player,
+        game: o.groupKey ? o.groupKey.split(":")[0].split("|")[0] : "",
+        baseHrProb: implied,
+        recent: { hr7: 0, pa50: 50 },
+        pitcherPitchTypeDamage: 0,
+        gameId: o.gameId,
+        why: "implied from market; fallback"
+      });
+    }
+  }
+  return out;
 }
 
 export default function MLB() {
@@ -51,29 +86,16 @@ export default function MLB() {
     setLoading(true);
     setError("");
     try {
-      // 1) Refresh odds (multi tries TheOddsAPI then falls back to SGO)
       try { await fetchJson("/.netlify/functions/odds-refresh-multi"); } catch {}
-
-      // 2) Get cached odds snapshot (frontend-friendly)
       let odds = { offers: [] };
       try {
         odds = await fetchJson("/.netlify/functions/odds-get");
       } catch {}
-
       const usingOddsApi = Array.isArray(odds.offers) && odds.offers.length > 0;
 
-      // 3) Pull your model inputs (assumes you have an endpoint in your app)
-      // If you already have them injected in page state, replace this with that.
-      // Here we fall back to a tiny set so UI renders even if your endpoint isn't present.
-      let modelInputs = [];
-      try {
-        const data = await fetchJson("/data/mlb/model-candidates.json");
-        modelInputs = Array.isArray(data?.candidates) ? data.candidates : [];
-      } catch {
-        modelInputs = [];
-      }
+      // load candidates from the best available source
+      const modelInputs = await tryLoadCandidates(odds);
 
-      // 4) Build picks joining minimal odds
       const fanduelOver05 = new Map();
       for (const o of odds.offers || []) {
         if (o.market === "batter_home_runs" && o.outcome === "Over" && o.point === 0.5 && o.bookKey === "fanduel") {
@@ -83,7 +105,6 @@ export default function MLB() {
 
       const out = [];
       for (const c of modelInputs) {
-        // expected c: { player, game, baseHrProb, pitcherPitchTypeDamage, recent: {hr7, pa50} }
         const base = Math.max(0, Math.min(0.9, c.baseHrProb ?? 0.27));
         const m =
           hotColdMultiplier(c.recent) *
@@ -109,7 +130,6 @@ export default function MLB() {
         });
       }
 
-      // 5) Sort by EV desc, fall back to prob
       out.sort((a,b) => (b.ev ?? 0) - (a.ev ?? 0) || (b.modelPct - a.modelPct));
 
       setRows(out);
