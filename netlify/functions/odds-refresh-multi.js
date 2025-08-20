@@ -1,8 +1,7 @@
-// netlify/functions/odds-refresh-multi.js (CommonJS version)
-// - Avoids ESM import errors by using require/exports.handler
+// netlify/functions/odds-refresh-multi.js (CommonJS, with explicit Blobs creds)
+// - Uses require()/exports.handler to avoid ESM import crashes
 // - Requests player_props for MLB and maps labels back to canonical keys
-// - Respects env overrides but self-heals invalid MLB markets
-// - Writes a single latest.json blob that your UI already reads
+// - Writes to Netlify Blobs with explicit siteID/token (fallback to env if provided)
 
 const { getStore } = require("@netlify/blobs");
 
@@ -29,7 +28,6 @@ function effectiveMarketsForMLB(marketsInput){
   const wantsProps = marketsInput.some(m => BAD_PLAYER_MARKETS.has(m)) || marketsInput.includes("player_props");
   const base = marketsInput.filter(m => !BAD_PLAYER_MARKETS.has(m));
   if (wantsProps && !base.includes("player_props")) base.push("player_props");
-  // Always allow game lines too if requested elsewhere
   return uniq(base.length ? base : ["player_props"]);
 }
 
@@ -38,7 +36,6 @@ async function fetchOdds({ sport, regions, markets, apiKey }){
   url.searchParams.set("regions", regions.join(","));
   url.searchParams.set("markets", markets.join(","));
   url.searchParams.set("oddsFormat", "american");
-  // NOTE: you can set bookmakers= if you want to restrict; leaving default = all
   url.searchParams.set("apiKey", apiKey);
 
   const res = await fetch(url.toString());
@@ -90,14 +87,26 @@ exports.handler = async function(event, context){
   const started = Date.now();
   try {
     const storeName = process.env.BLOBS_STORE || "mlb-odds";
-    const store = getStore(storeName);
+
+    // Prefer env if set; otherwise use provided credentials
+    const siteID = process.env.NETLIFY_SITE_ID || "967be648-eddc-4cc5-a7cc-e2ab7db8ac75";
+    const token  = process.env.NETLIFY_BLOBS_TOKEN || "nfp_UhqxsS88iqAnWCKbegv2w3PApVrYws6K6263";
+    if (!siteID || !token) {
+      return { statusCode: 500, body: JSON.stringify({
+        error: "Missing NETLIFY_SITE_ID or NETLIFY_BLOBS_TOKEN for Blobs"
+      }) };
+    }
+
+    const store = getStore(storeName, { siteID, token });
 
     const apiKey = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
     if (!apiKey) throw new Error("Missing THEODDS_API_KEY");
 
     const sport = process.env.ODDS_SPORT || "baseball_mlb";
-    const regions = (process.env.ODDS_REGIONS || process.env.ODDSAPI_REGION || "us,us2").split(",").map(s=>s.trim()).filter(Boolean);
-    const marketsInput = (process.env.ODDS_MARKETS||"").split(",").map(s=>s.trim()).filter(Boolean);
+    const regions = (process.env.ODDS_REGIONS || process.env.ODDSAPI_REGION || "us,us2")
+      .split(",").map(s=>s.trim()).filter(Boolean);
+    const marketsInput = (process.env.ODDS_MARKETS||"")
+      .split(",").map(s=>s.trim()).filter(Boolean);
 
     const markets = (sport === "baseball_mlb")
       ? effectiveMarketsForMLB(marketsInput)
@@ -125,12 +134,13 @@ exports.handler = async function(event, context){
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ ok:true, wrote:"latest.json", count: offers.length, timeMs: Date.now()-started, diag: payload.diag })
+      body: JSON.stringify({
+        ok:true, wrote:"latest.json", count: offers.length, timeMs: Date.now()-started, diag: payload.diag
+      })
     };
   } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: String(err.message || err), stack: String(err.stack||"") })
-    };
+      body: JSON.stringify({ error: String(err.message || err), stack: String(err.stack||"") }) }
   }
 };
