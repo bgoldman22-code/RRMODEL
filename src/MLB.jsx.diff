@@ -1,0 +1,22 @@
+--- a/src/MLB.jsx
++++ b/src/MLB.jsx
+@@
+-import React from 'react';
++import React from 'react';
++import { moderatePowerExploitableMultiplier } from "./mpex-helper.js"; // PATCH: mpex
+
+@@
+-  // ... after you finish park/hot-cold etc. and have pModel in 0..1
++  // ... after you finish park/hot-cold etc. and have pModel in 0..1
++  // PATCH START: Moderate-power exploitable micro-boost
++  const mpex = moderatePowerExploitableMultiplier(candidate, pModel);
++  if (mpex > 1) {
++    pModel = Math.min(pModel * mpex, 0.60); // safety cap
++    if (Array.isArray(why)) {
++      why.push('mod-power exploitable +3%');
++    } else if (candidate) {
++      candidate._whyTags = candidate._whyTags || [];
++      candidate._whyTags.push('mod-power exploitable +3%');
++    }
++  }
++  // PATCH END
