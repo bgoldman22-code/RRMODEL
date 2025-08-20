@@ -1,3 +1,4 @@
+const fetch = require("node-fetch");
 const { getStore } = require("@netlify/blobs");
 
 const SITE_ID = process.env.NETLIFY_SITE_ID || "967be648-eddc-4cc5-a7cc-e2ab7db8ac75";
@@ -13,12 +14,16 @@ exports.handler = async function () {
       token: BLOBS_TOKEN,
     });
 
-    const odds = await store.getJSON("latest.json");
+    const resp = await fetch("https://api.the-odds-api.com/v4/sports/baseball_mlb/odds", {
+      headers: { "x-api-key": process.env.THEODDS_API_KEY },
+    });
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(odds || { error: "No odds stored yet" }),
-    };
+    if (!resp.ok) throw new Error(`OddsAPI error: ${resp.statusText}`);
+
+    const data = await resp.json();
+    await store.setJSON("latest-refresh.json", data);
+
+    return { statusCode: 200, body: JSON.stringify({ ok: true, count: data.length }) };
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
