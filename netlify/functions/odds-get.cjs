@@ -22,9 +22,41 @@ exports.handler = async function () {
       data = raw ? JSON.parse(raw) : null;
     }
 
+    // Build backward-compatible players map for UI consuming snapshot.players
+    let payload = data || { provider: "none", offers: [], count: 0 };
+    if (payload && !payload.players) {
+      const players = {};
+      const strip = (s)=> (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      for (const o of (payload.offers || [])) {
+        const name = (o && o.player) ? String(o.player).trim() : null;
+        if (!name) continue;
+        const key = name.toLowerCase();
+        const american = Number(o.american ?? o.price ?? o.odds ?? NaN);
+        if (!Number.isFinite(american)) continue;
+        // Keep the best (most favorable) price if duplicates
+        if (!players[key] || (american >= 0 && american > players[key].american) || (american < 0 && american > players[key].american)) {
+          players[key] = {
+            name,
+            american,
+            book: o.book || o.bookKey || null,
+            gameId: o.gameId || null,
+            market: o.market || null
+          };
+          const keyNorm = strip(key);
+          if (keyNorm && keyNorm !== key) {
+            const prev = players[keyNorm];
+            if (!prev || (american >= 0 && american > prev.american) || (american < 0 && american > prev.american)) {
+              players[keyNorm] = players[key];
+            }
+          }
+        }
+      }
+      payload.players = players;
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify(data || { error: "No odds stored yet" }),
+      body: JSON.stringify(payload),
     };
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ error: String(err.message || err) }) };
