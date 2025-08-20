@@ -1,0 +1,3 @@
+<td className="px-3 py-2 text-right">{r.modelAmerican > 0 ? `+${r.modelAmerican}` : r.modelAmerican}</td>
+<td className="px-3 py-2 text-right">{r.american > 0 ? `+${r.american}` : r.american}</td>
+<td className="px-3 py-2 text-right">{Number(r.ev ?? 0).toFixed(3)}</td>
