@@ -1,10 +1,16 @@
-// netlify/functions/odds-refresh-multi.js
-// ESM, uses built-in fetch (Node 18+), writes unified offers[]
-// Adds book branding, outcome text, and skips alternate lines if ODDS_EXCLUDE_ALTS=true
+// netlify/functions/odds-refresh-multi.js (CommonJS version)
+// - Avoids ESM import errors by using require/exports.handler
+// - Requests player_props for MLB and maps labels back to canonical keys
+// - Respects env overrides but self-heals invalid MLB markets
+// - Writes a single latest.json blob that your UI already reads
 
-import { getStore } from "@netlify/blobs";
+const { getStore } = require("@netlify/blobs");
 
-// Map player_props market labels to canonical keys our UI expects
+const BAD_PLAYER_MARKETS = new Set([
+  "player_home_runs","player_total_bases","player_rbis",
+  "player_runs","player_hits","pitcher_strikeouts"
+]);
+
 function mapPropsLabelToKey(label){
   const s = String(label||"").toLowerCase();
   if (s === "home runs") return "player_home_runs";
@@ -16,145 +22,115 @@ function mapPropsLabelToKey(label){
   return "player_props";
 }
 
+function uniq(arr){ return Array.from(new Set(arr.filter(Boolean))); }
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const env = (k, d = "") => String(process.env[k] || process.env[k.toUpperCase()] || d).trim();
-
-const ALLOW = {
-  baseball_mlb: new Set(["h2h","spreads","totals","player_home_runs","player_total_bases","player_rbis","player_runs","player_hits","pitcher_strikeouts","player_props",
-  basketball_nba: new Set(["h2h","spreads","totals","player_points","player_rebounds","player_assists","player_threes"]),
-  americanfootball_nfl: new Set(["h2h","spreads","totals","player_pass_tds","player_pass_yds","player_rush_yds","player_rec_yds","player_anytime_td"]),
-  icehockey_nhl: new Set(["h2h","spreads","totals","player_shots_on_goal","player_points"]),
-};
-
-const EXCLUDE_ALTS = (/^(1|true|yes)$/i).test(env("ODDS_EXCLUDE_ALTS","true"));
-
-const BOOK_NAME = (key, title) => {
-  const k = String(key||"").toLowerCase();
-  if (k.includes("fanduel")) return "FanDuel";
-  if (k.includes("draftkings")) return "DraftKings";
-  if (k.includes("williamhill") || k.includes("caesars")) return "Caesars";
-  if (k.includes("mgm")) return "BetMGM";
-  if (k.includes("pointsbet")) return "PointsBet";
-  if (k.includes("betrivers")) return "BetRivers";
-  if (title) return title;
-  return key || "agg";
-};
-
-function americanFromDecimal(decimal) {
-  const d = Number(decimal);
-  if (!isFinite(d) || d <= 1) return -100;
-  return d >= 2 ? Math.round((d - 1) * 100) : Math.round(-100 / (d - 1));
+function effectiveMarketsForMLB(marketsInput){
+  // If caller asked for invalid v4 markets, rewrite to player_props.
+  const wantsProps = marketsInput.some(m => BAD_PLAYER_MARKETS.has(m)) || marketsInput.includes("player_props");
+  const base = marketsInput.filter(m => !BAD_PLAYER_MARKETS.has(m));
+  if (wantsProps && !base.includes("player_props")) base.push("player_props");
+  // Always allow game lines too if requested elsewhere
+  return uniq(base.length ? base : ["player_props"]);
 }
 
-function pickAmerican(outcome){
-  if (outcome?.price && typeof outcome.price.american !== "undefined"){
-    const a = Number(outcome.price.american);
-    if (!Number.isNaN(a)) return a;
+async function fetchOdds({ sport, regions, markets, apiKey }){
+  const url = new URL(`https://api.the-odds-api.com/v4/sports/${sport}/odds`);
+  url.searchParams.set("regions", regions.join(","));
+  url.searchParams.set("markets", markets.join(","));
+  url.searchParams.set("oddsFormat", "american");
+  // NOTE: you can set bookmakers= if you want to restrict; leaving default = all
+  url.searchParams.set("apiKey", apiKey);
+
+  const res = await fetch(url.toString());
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`fetch ${sport}/${markets.join(",")} -> ${res.status}: ${text}`);
   }
-  if (typeof outcome?.price_american === "number") return outcome.price_american;
-  if (typeof outcome?.american === "number") return outcome.american;
-  if (typeof outcome?.price === "number") return outcome.price;
-  if (typeof outcome?.price_decimal === "number") return americanFromDecimal(outcome.price_decimal);
-  if (typeof outcome?.decimal === "number") return americanFromDecimal(outcome.decimal);
-  return null;
+  return res.json(); // array of events
 }
 
-const safeId = (parts) => parts.filter(Boolean).join("|").replace(/\s+/g, " ").trim();
+function normalizeOffersFromEvents(events, { sport, requestedMarkets }){
+  const offers = [];
+  const diagCounts = {};
+  const inc = (k)=>diagCounts[k]=(diagCounts[k]||0)+1;
 
-function outcomeText(marketKey, outcome){
-  const name = outcome?.name || outcome?.description || outcome?.runner || outcome?.selection || outcome?.label || "";
-  if (name) return name;
-  // fallback for ML: team name may sit on team/participant
-  return outcome?.team || outcome?.participant || "";
-}
-
-function normalizeOutcomeToOffer({ sport, marketKey, event, bookmaker, outcome }){
-  if (EXCLUDE_ALTS && /alt|alternate/i.test(marketKey)) return null;
-  const american = pickAmerican(outcome);
-  if (american == null) return null;
-
-  const player = outcome.player || null;
-  const team = outcome.team || outcome.participant || null;
-  const outcomeName = outcomeText(marketKey, outcome);
-  const bookKey = bookmaker?.key || "";
-  const book = BOOK_NAME(bookKey, bookmaker?.title);
-
-  const id = outcome.id || safeId([player || team || outcomeName, marketKey, event?.id || event?.commence_time, bookKey || book]);
-  const groupKey = `${event?.id || event?.commence_time || "na"}:${marketKey}`;
-
-  return {
-    id,
-    american,
-    market: marketKey,
-    sport,
-    gameId: event?.id || event?.commence_time || null,
-    player: player || null,
-    team: team || null,
-    outcome: outcomeName || null,
-    book,
-    bookKey,
-    sgpOk: true,
-    groupKey
-  };
-}
-
-async function fetchSportMarket({ apiKey, sport, market, regions }){
-  const url = `https://api.the-odds-api.com/v4/sports/${encodeURIComponent(sport)}/odds?apiKey=${encodeURIComponent(apiKey)}&regions=${encodeURIComponent(regions)}&markets=${encodeURIComponent(market)}&oddsFormat=american`;
-  const res = await fetch(url);
-  if (!res.ok){
-    const t = await res.text().catch(()=> String(res.status));
-    throw new Error(`fetch ${sport}/${market} -> ${res.status}: ${t.slice(0,160)}`);
-  }
-  const data = await res.json();
-  return Array.isArray(data) ? data : [];
-}
-
-export async function handler() {
-  const apiKey = env("THEODDS_API_KEY") || env("ODDS_API_KEY");
-  const regions = env("ODDS_REGIONS","us,us2");
-  const sports = env("ODDS_SPORT","baseball_mlb").split(",").map(s=>s.trim()).filter(Boolean);
-  const marketsInput = env("ODDS_MARKETS","h2h,spreads,totals").split(",").map(m=>m.trim()).filter(Boolean);
-  const storeName = env("BLOBS_STORE","mlb-odds");
-
-  if (!apiKey) return { statusCode: 400, body: JSON.stringify({ ok:false, error:"Missing THEODDS_API_KEY/ODDS_API_KEY" }) };
-
-  const siteID = env("NETLIFY_SITE_ID",""); const token = env("NETLIFY_BLOBS_TOKEN","");
-  const store = (siteID && token) ? getStore({ name: storeName, siteID, token }) : getStore(storeName);
-
-  const offers = []; const errors = []; let fetches = 0;
-  for (const sport of sports){
-    const allow = ALLOW[sport] || new Set(["h2h","spreads","totals"]);
-    for (const mkt of marketsInput) {
-      const requestedMkt = mkt;
-      const mktEff = (sport==="baseball_mlb" && ["player_home_runs","player_total_bases","player_rbis","player_runs","player_hits","pitcher_strikeouts"].includes(mkt)) ? "player_props" : mkt;
-      if (!allow.has(mktEff)){ errors.push({ sport, market:mktEff, skipped:true, reason:"not-allowed-for-sport" }); continue; }
-      try{
-        const events = await fetchSportMarket({ apiKey, sport, market:mktEff, regions }); fetches++;
-        for (const ev of (Array.isArray(events)?events:[])){
-          for (const bm of (Array.isArray(ev.bookmakers)?ev.bookmakers:[])){
-            for (const mk of (Array.isArray(bm.markets)?bm.markets:[])){
-              const marketKeyRaw = mk.key || mktEff; const marketKey = (marketKeyRaw==="player_props") ? mapPropsLabelToKey(mk.name || mk.title || mk.key || mktEff) : marketKeyRaw;
-              for (const oc of (Array.isArray(mk.outcomes)?mk.outcomes:[])){
-                const offer = normalizeOutcomeToOffer({ sport, marketKey, event: ev, bookmaker: bm, outcome: oc });
-                if (offer) offers.push(offer);
-              }
-            }
-          }
+  for (const ev of (events||[])) {
+    const gameId = ev.id || ev.commence_time || ev.event_id || ev.key || "";
+    for (const bk of (ev.bookmakers||[])) {
+      const bookKey = bk.key || bk.bookmaker || bk.bookmaker_key || "unknown";
+      for (const mk of (bk.markets||[])) {
+        let marketKey = mk.key || mk.market || "unknown";
+        if (marketKey === "player_props") {
+          marketKey = mapPropsLabelToKey(mk.name || mk.title || mk.key || "player_props");
         }
-        await sleep(200);
-      }catch(e){
-        errors.push({ sport, market:mktEff, error: e.message });
-        await sleep(100);
+        for (const out of (mk.outcomes||[])) {
+          offers.push({
+            id: `${out.name||out.description||out.player||out.participant||"?"}|${marketKey}|${gameId}|${bookKey}`,
+            american: Number(out.price || out.american || out.odds || 0),
+            market: marketKey,
+            sport,
+            gameId,
+            player: out.description || out.player || out.participant || null,
+            team: out.name && !out.player ? out.name : null,
+            outcome: out.name || out.label || out.outcome || null,
+            book: bk.title || bk.name || bookKey,
+            bookKey,
+            sgpOk: Boolean(mk.sgp_enabled || out.sgp_enabled || false),
+            groupKey: `${gameId}:${marketKey}`
+          });
+          inc(marketKey);
+        }
       }
     }
   }
-
-  try{
-    const payload = { provider:"theoddsapi", regions: regions.split(",").map(x=>x.trim()), sports, markets: marketsInput, fetched: new Date().toISOString(), count: offers.length, offers };
-    await store.set("latest.json", JSON.stringify(payload), { contentType:"application/json" });
-    return { statusCode: 200, headers:{ "content-type":"application/json" }, body: JSON.stringify({ ok:true, wrote:"latest.json", offers: offers.length, fetches, errors }) };
-  }catch(e){
-    return { statusCode: 500, body: JSON.stringify({ ok:false, error:"write latest.json failed: " + e.message, partialOffers: offers.length, errors }) };
-  }
+  return { offers, diagCounts };
 }
+
+exports.handler = async function(event, context){
+  const started = Date.now();
+  try {
+    const storeName = process.env.BLOBS_STORE || "mlb-odds";
+    const store = getStore(storeName);
+
+    const apiKey = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
+    if (!apiKey) throw new Error("Missing THEODDS_API_KEY");
+
+    const sport = process.env.ODDS_SPORT || "baseball_mlb";
+    const regions = (process.env.ODDS_REGIONS || process.env.ODDSAPI_REGION || "us,us2").split(",").map(s=>s.trim()).filter(Boolean);
+    const marketsInput = (process.env.ODDS_MARKETS||"").split(",").map(s=>s.trim()).filter(Boolean);
+
+    const markets = (sport === "baseball_mlb")
+      ? effectiveMarketsForMLB(marketsInput)
+      : uniq(marketsInput.length ? marketsInput : ["h2h","spreads","totals"]);
+
+    const events = await fetchOdds({ sport, regions, markets, apiKey });
+    const { offers, diagCounts } = normalizeOffersFromEvents(events, { sport, requestedMarkets: marketsInput });
+
+    const payload = {
+      provider: "theoddsapi",
+      regions,
+      sports: [sport],
+      markets,
+      fetched: new Date().toISOString(),
+      count: offers.length,
+      offers,
+      diag: {
+        requestedMarkets: marketsInput,
+        effectiveMarkets: markets,
+        countsByMarket: diagCounts
+      }
+    };
+
+    await store.setJSON("latest.json", payload);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok:true, wrote:"latest.json", count: offers.length, timeMs: Date.now()-started, diag: payload.diag })
+    };
+  } catch (err) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: String(err.message || err), stack: String(err.stack||"") })
+    };
+  }
+};
