@@ -11,7 +11,7 @@ function makeStore(name) {
     throw new Error("Missing NETLIFY_SITE_ID or NETLIFY_BLOBS_TOKEN");
   }
   // Use two-arg form to avoid SDK complaining about env
-  return getStore(name, { siteID: SITE_ID, token: BLOBS_TOKEN });
+  return getStore({ name: name, siteID: SITE_ID, token: BLOBS_TOKEN });
 }
 
 const BAD_PLAYER_MARKETS = new Set([
