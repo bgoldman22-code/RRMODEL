@@ -3,49 +3,6 @@ import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./util
 import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
-// --- New modifiers (platoon, environment) ---
-function platoonMultiplier({ bats=null, pitcherHand=null }){
-  try{
-    const b = String(bats||'').trim().toUpperCase();
-    const p = String(pitcherHand||'').trim().toUpperCase();
-    if(!b || !p) return 1.00;
-    // Switch hitters bat opposite pitcher
-    const batSide = (b==='S') ? (p==='L'?'R':'L') : b;
-    // Conservative league-average HR% platoon deltas
-    // L vs R: +6%, L vs L: -6%
-    // R vs L: +4%, R vs R: -4%
-    const tbl = {
-      'L': { 'R': 1.06, 'L': 0.94 },
-      'R': { 'L': 1.04, 'R': 0.96 },
-    };
-    const mul = (tbl[batSide] && tbl[batSide][p]) ? tbl[batSide][p] : 1.00;
-    return Math.max(0.92, Math.min(1.08, mul));
-  }catch{ return 1.00; }
-}
-
-function normalizeMultiplier(x){
-  if (x == null) return 1.00;
-  const v = Number(x);
-  if (!isFinite(v)) return 1.00;
-  if (v > 0.5 && v < 1.5) return v;        // already a factor
-  if (v > -0.5 && v < 0.5) return 1 + v;   // treat as +/- delta
-  return 1.00;
-}
-
-function environmentMultiplier(c){
-  try{
-    let mul = 1.00;
-    if (c && typeof c==='object'){
-      if (c.parkHR!=null) mul *= normalizeMultiplier(c.parkHR);
-      if (c.weatherHR!=null) mul *= normalizeMultiplier(c.weatherHR);
-    }
-    // clamp so we don't blow up: ±20%
-    if (mul < 0.80) mul = 0.80;
-    if (mul > 1.20) mul = 1.20;
-    return mul;
-  }catch{ return 1.00; }
-}
-
 
 
 // --- Straight HR Bets helpers ---
@@ -62,9 +19,8 @@ const HOTCOLD_CAP = 0.06;
 const MIN_PICKS = 12;
 const BONUS_COUNT = parseInt(import.meta.env.VITE_BONUS_COUNT||process.env.BONUS_COUNT||8,10);
 // Fallback Why explainer
-function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null, platoonMul=null }){
+function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null }){
   const pts = [];
-  if (typeof platoonMul==='number' && platoonMul!==1){ const sign = (platoonMul>1?'+':''); pts.push(`platoon ${sign}${Math.round((platoonMul-1)*100)}%`); }
   if (typeof baseProb==='number') pts.push(`model ${(baseProb*100).toFixed(1)}%`);
   if (typeof hotBoost==='number' && hotBoost!==1){ const sign=hotBoost>1?'+':'−'; pts.push(`hot/cold ${sign}${Math.abs((hotBoost-1)*100).toFixed(0)}%`); }
   if (typeof calScale==='number' && calScale!==1){ const sign=calScale>1?'+':'−'; pts.push(`calibration ${sign}${Math.abs((calScale-1)*100).toFixed(0)}%`); }
@@ -150,8 +106,7 @@ export default function MLB(){
   const [bonus, setBonus] = useState([]);
 
   const [rawTop, setRawTop] = useState([]);
-  const [pureEVTop, setPureEVTop] = useState([]);
-  const PURE_EV_FLOOR = Number(import.meta.env.VITE_PURE_EV_FLOOR || process.env.PURE_EV_FLOOR || 0.22);
+  const [pureEV, setPureEV] = useState([]);
     const [anchor, setAnchor] = useState(null);
 const [meta, setMeta]   = useState({});
   const [loading, setLoading] = useState(false);
@@ -266,16 +221,6 @@ async function getOddsMap(){
           if (typeof p === "number" && isFinite(p)) p *= pitchMul;
         } catch {}
 
-
-        // Platoon (handedness) and environment (park, weather)
-        try {
-          const bats = c.bats || c.batterHand || c.batSide || c.batside || c.hand || null;
-          const pHand = c.pitcherHand || (c.pitcher && c.pitcher.throws) || null;
-          const platoonMul = platoonMultiplier({ bats, pitcherHand: pHand });
-          const envMul = environmentMultiplier(c);
-          if (typeof p === "number" && isFinite(p)) p *= platoonMul * envMul;
-          Object.assign(c, { platoonMulApplied: platoonMul, envMulApplied: envMul });
-        } catch {}
         temp.push({ c, p_pre: p, hcMul, calScale });
         if (c.team){
           const arr = teamToPpre.get(c.team) || [];
@@ -331,17 +276,26 @@ async function getOddsMap(){
           name: c.name, team: c.team, game: c.gameId || c.game || c.opp || "",
           batterId: c.batterId,
           p_model: p, modelAmerican, american, ev, rankScore,
-          bvp_mod, protection_mod, parkHR: (c.parkHR ?? null), platoonMul: (c.platoonMulApplied ?? null),
+          bvp_mod, protection_mod, parkHR: (c.parkHR ?? null),
           why: explainRow({
             baseProb: Number(c.baseProb ?? c.prob ?? 0),
             hotBoost: t.hcMul, calScale: t.calScale,
             oddsAmerican: american,
             pitcherName: c.pitcherName ?? null, pitcherHand: c.pitcherHand ?? null,
-            parkHR: c.parkHR ?? null, weatherHR: c.weatherHR ?? null, platoonMul: (c.platoonMulApplied ?? null)
+            parkHR: c.parkHR ?? null, weatherHR: c.weatherHR ?? null
           })
         });
       }
 rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
+
+      // Build Pure EV list with probability floor
+      const EV_FLOOR = Number(import.meta.env.VITE_PURE_EV_FLOOR || process.env.PURE_EV_FLOOR || 0.22);
+      const pureEvAll = rows
+        .filter(r => typeof r.p_model === 'number' && r.p_model >= EV_FLOOR && typeof r.ev === 'number')
+        .slice()  // copy
+        .sort((a,b)=> (b.ev - a.ev));
+      setPureEV(pureEvAll.slice(0, 13));
+
 
       const out = [];
       const perGame = new Map();
@@ -511,6 +465,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
                     <td className="px-3 py-2">{r.name}</td>
                     <td className="px-3 py-2">{r.game}</td>
                     <td className="px-3 py-2 text-right">{(r.p_model*100).toFixed(1)}%</td>
+                    <td className="px-3 py-2 text-right">{r.modelAmerican>0?`+${r.modelAmerican}`:r.modelAmerican}</td>
                     <td className="px-3 py-2 text-right">{r.american>0?`+${r.american}`:r.american}</td>
                     <td className="px-3 py-2 text-right">{r.ev.toFixed(3)}</td>
                     <td className="px-3 py-2">{r.why}</td>
@@ -548,41 +503,49 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
             <p className="text-xs text-gray-500 mt-2">
               This list ignores EV and shows the highest raw HR probabilities so you don’t miss marquee bats or extreme park spots even when books price them tightly.
             </p>
-          </div>
-      {/* --- Pure EV picks (with floor) --- */}
-      {Array.isArray(pureEVTop) && pureEVTop.length>0 && (
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold">Best EV (floor ≥ {Math.round(PURE_EV_FLOOR*100)}% model HR)</h2>
-          <div className="mt-2 overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="px-3 py-2 text-left">Player</th>
-                  <th className="px-3 py-2 text-left">Game</th>
-                  <th className="px-3 py-2 text-right">Model HR%</th>
-                  <th className="px-3 py-2 text-right">Actual Odds</th>
-                  <th className="px-3 py-2 text-right">EV (1u)</th>
-                  <th className="px-3 py-2 text-left">Why</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pureEVTop.map((r,i)=> (
-                  <tr key={i} className={i%2? 'bg-white':'bg-gray-50'}>
-                    <td className="px-3 py-2">{r.name}</td>
-                    <td className="px-3 py-2">{r.game}</td>
-                    <td className="px-3 py-2 text-right">{_fmtPct(r.p_model)}</td>
-                    <td className="px-3 py-2 text-right">{_fmtAmerican(r.american)}</td>
-                    <td className="px-3 py-2 text-right">{r.ev!=null ? r.ev.toFixed(3) : '—'}</td>
-                    <td className="px-3 py-2 text-left">{r.why}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="text-xs text-gray-500 mt-1">EV computed as p·(decimal−1) − (1−p). Floor is adjustable via <code>VITE_PURE_EV_FLOOR</code>.</div>
         </div>
-      )}
 
+        {/* --- Pure EV (with probability floor) --- */}
+        {Array.isArray(pureEV) && pureEV.length>0 && (
+          <div className="mt-8">
+            <h2 className="text-lg font-semibold">
+              Best EV (floor ≥ {(Number(import.meta.env.VITE_PURE_EV_FLOOR || process.env.PURE_EV_FLOOR || 0.22)*100).toFixed(0)}% model HR)
+            </h2>
+            <div className="mt-2 overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="px-3 py-2 text-left">Player</th>
+                    <th className="px-3 py-2 text-left">Game</th>
+                    <th className="px-3 py-2 text-right">Model HR%</th>
+                    <th className="px-3 py-2 text-right">Model Odds</th>
+                    <th className="px-3 py-2 text-right">Actual Odds</th>
+                    <th className="px-3 py-2 text-right">EV (1u)</th>
+                    <th className="px-3 py-2 text-left">Why</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pureEV.map((r,i)=>(
+                    <tr key={`pureev-${i}`} className="border-b">
+                      <td className="px-3 py-2">{r.name}</td>
+                      <td className="px-3 py-2">{r.game}</td>
+                      <td className="px-3 py-2 text-right">{(r.p_model*100).toFixed(1)}%</td>
+                      <td className="px-3 py-2 text-right">{r.modelAmerican>0?`+${r.modelAmerican}`:r.modelAmerican}</td>
+                      <td className="px-3 py-2 text-right">{r.american>0?`+${r.american}`:r.american}</td>
+                      <td className="px-3 py-2 text-right">{r.ev.toFixed(3)}</td>
+                      <td className="px-3 py-2">{r.why}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="text-xs text-gray-500 mt-2">
+                EV(1u) = p·(decimal−1) − (1−p). Uses book odds when available, else model odds.
+              </p>
+            </div>
+          </div>
+        )}
+
+          </div>
         </div>
       )}
 
