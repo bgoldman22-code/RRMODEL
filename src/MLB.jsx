@@ -151,7 +151,8 @@ export default function MLB(){
 
   const [rawTop, setRawTop] = useState([]);
   const [pureEVTop, setPureEVTop] = useState([]);
-  const PURE_EV_FLOOR = Number(import.meta.env.VITE_PURE_EV_FLOOR || process.env.PURE_EV_FLOOR || 0.22);
+  const PURE_EV_TOPN = Number(import.meta.env.VITE_PURE_EV_TOPN || process.env.PURE_EV_TOPN || 10);
+const PURE_EV_FLOOR = Number(import.meta.env.VITE_PURE_EV_FLOOR || process.env.PURE_EV_FLOOR || 0.19);
     const [anchor, setAnchor] = useState(null);
 const [meta, setMeta]   = useState({});
   const [loading, setLoading] = useState(false);
@@ -398,6 +399,23 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
           .slice(0,13)
           .map(r => ({ name: r.name, game: r.game, p_model: r.p_model, american: r.american, why: r.why }));
         setRawTop(raw);
+
+      // Build Pure EV table (top N with probability floor)
+      try {
+        const pure = rows
+          .filter(r => typeof r.p_model === 'number' && r.p_model >= PURE_EV_FLOOR && r.american !== undefined && r.american !== null)
+          .map(r => {
+            const ev = evFromProbAndOdds(r.p_model, Number(r.american));
+            return { ...r, ev };
+          })
+          .filter(r => Number.isFinite(r.ev))
+          .sort((a, b) => b.ev - a.ev)
+          .slice(0, PURE_EV_TOPN);
+        setPureEVTop(pure);
+      } catch (e) {
+        setPureEVTop([]);
+      }
+
       }catch{ setRawTop([]); }
     
       setMeta({
@@ -552,7 +570,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       {/* --- Pure EV picks (with floor) --- */}
       {Array.isArray(pureEVTop) && pureEVTop.length>0 && (
         <div className="mt-8">
-          <h2 className="text-lg font-semibold">Best EV (floor ≥ {Math.round(PURE_EV_FLOOR*100)}% model HR)</h2>
+          <h2 className="text-lg font-semibold">Pure EV (Top {PURE_EV_TOPN}, floor {Math.round(PURE_EV_FLOOR*100)}%)</h2>
           <div className="mt-2 overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
