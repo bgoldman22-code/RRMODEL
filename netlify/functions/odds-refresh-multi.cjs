@@ -1,23 +1,19 @@
-// CommonJS Netlify Functions (.cjs) — compatible with package.json "type":"module"
-// Uses built-in fetch (Node 18+) — no 'node-fetch' dep
-// Explicit Netlify Blobs credentials so it works in any runtime
+// netlify/functions/odds-refresh-multi.cjs
 const { getStore } = require("@netlify/blobs");
 
 const SITE_ID = process.env.NETLIFY_SITE_ID || "967be648-eddc-4cc5-a7cc-e2ab7db8ac75";
 const BLOBS_TOKEN = process.env.NETLIFY_BLOBS_TOKEN || "nfp_UhqxsS88iqAnWCKbegv2w3PApVrYws6K6263";
 
 function makeStore(name) {
-  if (!SITE_ID || !BLOBS_TOKEN) {
-    throw new Error("Missing NETLIFY_SITE_ID or NETLIFY_BLOBS_TOKEN");
-  }
-  // Use two-arg form to avoid SDK complaining about env
-  return getStore({ name: name, siteID: SITE_ID, token: BLOBS_TOKEN });
+  return getStore({ name, siteID: SITE_ID, token: BLOBS_TOKEN });
 }
 
 const BAD_PLAYER_MARKETS = new Set([
   "player_home_runs","player_total_bases","player_rbis",
   "player_runs","player_hits","pitcher_strikeouts"
 ]);
+
+const VALID_REGIONS = new Set(["us","us2","uk","eu","au","ca","in","us_il","us_nj"]); // OddsAPI v4
 
 function mapPropsLabelToKey(label){
   const s = String(label||"").toLowerCase();
@@ -31,6 +27,12 @@ function mapPropsLabelToKey(label){
 }
 
 function uniq(arr){ return Array.from(new Set((arr||[]).filter(Boolean))); }
+
+function sanitizeRegions(input){
+  const arr = (input||"").split(",").map(s=>s.trim()).filter(Boolean);
+  const out = arr.filter(r => VALID_REGIONS.has(r));
+  return (out.length ? out : ["us","us2"]);
+}
 
 function effectiveMarketsForMLB(marketsInput){
   const wantsProps = (marketsInput||[]).some(m => BAD_PLAYER_MARKETS.has(m)) || (marketsInput||[]).includes("player_props");
@@ -101,14 +103,12 @@ exports.handler = async function(event){
     if (!apiKey) throw new Error("Missing THEODDS_API_KEY");
 
     const sport = process.env.ODDS_SPORT || "baseball_mlb";
-    const regions = (process.env.ODDS_REGIONS || process.env.ODDSAPI_REGION || "us,us2")
-      .split(",").map(s=>s.trim()).filter(Boolean);
-    const marketsInput = (process.env.ODDS_MARKETS||"")
-      .split(",").map(s=>s.trim()).filter(Boolean);
+    const regions = sanitizeRegions(process.env.ODDS_REGIONS || process.env.ODDSAPI_REGION || "us,us2");
+    const marketsInput = (process.env.ODDS_MARKETS||"").split(",").map(s=>s.trim()).filter(Boolean);
 
     const markets = (sport === "baseball_mlb")
       ? effectiveMarketsForMLB(marketsInput)
-      : uniq(marketsInput.length ? marketsInput : ["h2h","spreads","totals"]);
+      : (marketsInput.length ? marketsInput : ["h2h","spreads","totals"]);
 
     const events = await fetchOdds({ sport, regions, markets, apiKey });
     const { offers, counts } = normalizeOffersFromEvents(events, { sport });
