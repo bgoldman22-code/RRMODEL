@@ -1,14 +1,13 @@
-# patch-mlb-v5
+# Patch MLB v3
 
-This bundle includes BOTH the latest algo tweaks and a build-stability sweep.
+This patch fixes the Netlify build errors (unterminated regex, duplicate helpers)
+and adds the Pure EV table + Bonus table alignment.
 
-## Files
-- src/MLB.jsx — drop-in, includes Pure EV table + column alignment + new multipliers.
-- src/lib/hr-factors_v4.js — helper module imported by MLB.jsx.
-- docs/netlify-notes.md — small checklist for Netlify build stability.
-- docs/package.json.merge.json — safe merge fields to ensure scripts/deps exist (do not replace your whole package.json; merge).
+## How to apply
 
-## Apply
-1) Copy `src/MLB.jsx` over your repo's `src/MLB.jsx`.
-2) Copy `src/lib/hr-factors_v4.js` to `src/lib/hr-factors_v4.js`.
-3) (Optional but recommended) Review `docs/netlify-notes.md` and ensure your `package.json` has the listed scripts.
+1. Open your project in your editor.
+2. Replace the Pure EV block in `src/MLB.jsx` with the code from `snippets/pure-ev-block.jsx`.
+3. Fix the Bonus table alignment by using the code in `snippets/bonus-row-fix.txt`.
+4. If you still get duplicate helper errors, replace the helper functions with those in `snippets/helpers-v2.js`.
+
+That's it! Save, commit, and redeploy.
