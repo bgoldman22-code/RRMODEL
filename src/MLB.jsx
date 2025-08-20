@@ -1,210 +1,351 @@
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
-const fmtPct = (x) => (x == null ? "—" : `${(x * 100).toFixed(1)}%`);
-const americanToDecimal = (american) => {
-  if (american == null) return null;
-  const n = Number(american);
-  if (Number.isNaN(n)) return null;
-  if (n >= 100) return 1 + n / 100;
-  if (n <= -100) return 1 + 100 / Math.abs(n);
-  return null;
-};
-const decimalToAmerican = (dec) => {
-  if (!dec || dec <= 1) return null;
-  const imp = (dec - 1);
-  return imp >= 1 ? `+${Math.round(imp*100)}` : `-${Math.round(100/imp)}`;
-};
+/**
+ * MLB HR — Calibrated + Hot/Cold + Odds-first EV
+ * This file restores:
+ *  - Generate button wiring
+ *  - Header summary line (Date • Candidates • Using OddsAPI • Calibration scale)
+ *  - Tables: Main (EV-first), Bonus (near threshold), Pure Probability (top 13),
+ *            Pure EV (top 13 with floor)
+ *  - Filters to avoid odds-only fallback rows flooding the page
+ *  - Clean columns: Model HR% • Model Odds • Actual Odds • EV (1u) • Why
+ *
+ * NOTES:
+ *  - We only populate tables from CANDIDATES that include a model probability.
+ *    If odds-only fallback (FanDuel Over 0.5) is all we have, we show a short
+ *    notice and keep the page concise.
+ *  - We keep lightweight multipliers (hot/cold + pitch-fit) but they are SAFE:
+ *    they only apply when the needed fields exist; otherwise multiplier = 1.
+ */
 
-function hotColdMultiplier({ hr7 = 0, pa50 = 50 } = {}) {
+const DECIMALS = 3;
+const MAIN_TABLE_SIZE = 12;
+const PURE_PROB_SIZE = 13;
+const PURE_EV_SIZE = 13;
+const PURE_EV_FLOOR = 0.25; // floor probability for the Pure EV table (25% default)
+const EV_THRESHOLD = 0.0005; // main picks threshold
+const EV_NEAR = 0.001; // bonus window above/below threshold
+
+function fmtPct(p) {
+  if (p == null || isNaN(p)) return "";
+  return `${(p * 100).toFixed(1)}%`;
+}
+
+function americanFromProb(p) {
+  if (p == null || p <= 0 || p >= 1) return null;
+  const fav = p >= 0.5;
+  if (fav) {
+    const val = Math.round((p / (1 - p)) * 100);
+    return -val;
+  }
+  const val = Math.round(((1 - p) / p) * 100);
+  return val;
+}
+
+function decimalFromAmerican(a) {
+  if (a == null || a === 0) return null;
+  if (a > 0) return 1 + a / 100;
+  return 1 + 100 / (-a);
+}
+
+function impliedFromAmerican(a) {
+  if (a == null) return null;
+  if (a > 0) return 100 / (a + 100);
+  return (-a) / ((-a) + 100);
+}
+
+function fmtAmerican(a) {
+  if (a == null || isNaN(a)) return "";
+  return a > 0 ? `+${a}` : `${a}`;
+}
+
+function evOneUnit(p, american) {
+  // EV(1u) = p * decimal - 1
+  const d = decimalFromAmerican(american);
+  if (!d || p == null) return null;
+  return p * d - 1;
+}
+
+function clamp(n, lo, hi) {
+  return Math.max(lo, Math.min(hi, n));
+}
+
+// SAFE multipliers (only apply when data exists)
+function hotColdMultiplier(recentHRs7d, paLast50) {
+  // Tiny, bounded effect
   let m = 1;
-  if (hr7 >= 2) m *= 1.06;
-  else if (hr7 === 1) m *= 1.03;
-  if (pa50 < 30) m *= 0.98;
-  return m;
-}
-function pitchTypeFitMultiplier({ damage = 0 } = {}) {
-  if (damage >= 40) return 1.06;
-  if (damage >= 25) return 1.03;
-  if (damage <= -25) return 0.97;
-  return 1.0;
+  if (typeof recentHRs7d === "number" && recentHRs7d > 0) m *= 1.04;
+  if (typeof paLast50 === "number") {
+    if (paLast50 < 25) m *= 0.98;
+    else if (paLast50 > 80) m *= 1.01;
+  }
+  return clamp(m, 0.94, 1.06);
 }
 
-async function fetchJson(url) {
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+function pitchTypeFitMultiplier(dmg = {}) {
+  let bump = 1;
+  // Expect fields like dmg.vsFourSeam, dmg.vsSinker … in [0..1] scale (relative)
+  const vals = Object.values(dmg).filter((x) => typeof x === "number");
+  if (vals.length) {
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    if (avg > 0.6) bump *= 1.04;
+    else if (avg < 0.4) bump *= 0.98;
+  }
+  return clamp(bump, 0.95, 1.05);
 }
 
-async function tryLoadCandidates(oddsSnapshot) {
-  const tryPaths = [
+async function getJSON(path) {
+  const r = await fetch(path, { credentials: "same-origin" });
+  if (!r.ok) throw new Error(`${path} -> ${r.status}`);
+  return r.json();
+}
+
+async function tryMany(paths) {
+  for (const p of paths) {
+    try {
+      const j = await getJSON(p);
+      // Heuristics: valid list when it's array-ish with length
+      if (Array.isArray(j) && j.length) return j;
+      if (j && Array.isArray(j.candidates) && j.candidates.length) return j.candidates;
+      if (j && Array.isArray(j.players) && j.players.length) return j.players;
+    } catch (e) {
+      // ignore and continue
+    }
+  }
+  return [];
+}
+
+async function loadOdds() {
+  // Odds refresh (non-fatal)
+  try { await fetch("/.netlify/functions/odds-refresh-multi", { method: "POST" }); } catch {}
+  // Then read odds
+  try {
+    const j = await getJSON("/.netlify/functions/odds-get");
+    // Expect j.offers[] with { player, american, market:'batter_home_runs', point:0.5, bookKey:'fanduel' }
+    const offers = Array.isArray(j?.offers) ? j.offers : [];
+    const fdOverOnly = offers.filter(
+      o => o?.market?.includes("home_runs") && o?.point === 0.5 && o?.bookKey === "fanduel"
+    );
+    // index by lowercased player name
+    const byPlayer = new Map();
+    for (const o of fdOverOnly) {
+      if (!o?.player) continue;
+      const key = o.player.trim().toLowerCase();
+      // choose best (highest price) if duplicates
+      const prev = byPlayer.get(key);
+      if (!prev || (typeof o.american === "number" && o.american > prev.american)) {
+        byPlayer.set(key, o);
+      }
+    }
+    return { usingOddsApi: fdOverOnly.length > 0, mapByPlayer: byPlayer, raw: fdOverOnly };
+  } catch (e) {
+    return { usingOddsApi: false, mapByPlayer: new Map(), raw: [] };
+  }
+}
+
+async function loadCandidates() {
+  const candidates = await tryMany([
     "/.netlify/functions/mlb-daily-learn",
     "/.netlify/functions/mlb-candidates",
     "/data/mlb/model-candidates.json",
     "/data/mlb/candidates.json"
-  ];
-  for (const p of tryPaths) {
+  ]);
+  // Normalize expected fields
+  return candidates.map((c) => ({
+    player: c.player || c.name || "",
+    game: c.game || c.matchup || "",
+    modelP: typeof c.modelHRProb === "number" ? c.modelHRProb :
+            typeof c.model_p === "number" ? c.model_p :
+            typeof c.prob === "number" ? c.prob : null,
+    // optional inputs for multipliers
+    recentHRs7d: c.recentHRs7d,
+    paLast50: c.paLast50,
+    pitchDamage: c.pitchDamage || c.pitch_fit || {},
+    why: c.why || "",
+  })).filter((c) => c.player && c.modelP != null);
+}
+
+function useGenerator() {
+  const [busy, setBusy] = useState(false);
+  const [summary, setSummary] = useState({ dateEt: "", candidatesN: 0, usingOddsApi: false, calib: 1.0 });
+  const [rows, setRows] = useState([]);
+  const [notice, setNotice] = useState("");
+
+  async function generate() {
+    setBusy(true);
+    setNotice("");
     try {
-      const j = await fetchJson(p);
-      const cand = j?.candidates || j?.picksToday || j?.rows || j;
-      if (Array.isArray(cand) && cand.length) return cand;
-    } catch { /* keep trying */ }
-  }
-  // last resort: synthesize from odds (implied prob) so UI isn't empty
-  const out = [];
-  const offers = Array.isArray(oddsSnapshot?.offers) ? oddsSnapshot.offers : [];
-  for (const o of offers) {
-    if (o.market === "batter_home_runs" && o.outcome === "Over" && o.point === 0.5) {
-      const dec = americanToDecimal(o.american);
-      const implied = dec ? 1/dec : 0.28;
-      out.push({
-        player: o.player,
-        game: o.groupKey ? o.groupKey.split(":")[0].split("|")[0] : "",
-        baseHrProb: implied,
-        recent: { hr7: 0, pa50: 50 },
-        pitcherPitchTypeDamage: 0,
-        gameId: o.gameId,
-        why: "implied from market; fallback"
+      const [odds, cands] = await Promise.all([ loadOdds(), loadCandidates() ]);
+      const dateEt = new Date().toISOString().slice(0,10);
+      const usingOddsApi = !!odds.usingOddsApi;
+
+      // Join odds to candidates (model-first). Skip odds-only fallback rows entirely.
+      const joined = cands.map((c) => {
+        const baseP = c.modelP;
+        const mHotCold = hotColdMultiplier(c.recentHRs7d, c.paLast50);
+        const mPitch = pitchTypeFitMultiplier(c.pitchDamage);
+        const p = clamp(baseP * mHotCold * mPitch, 0.01, 0.95);
+
+        const modelOdds = americanFromProb(p);
+
+        const k = c.player.trim().toLowerCase();
+        const offer = odds.mapByPlayer.get(k);
+        const actualAmerican = typeof offer?.american === "number" ? offer.american : null;
+        const ev = actualAmerican != null ? evOneUnit(p, actualAmerican) : null;
+
+        const whyBits = [];
+        whyBits.push(`model ${(p*100).toFixed(1)}%`);
+        if (mHotCold !== 1) whyBits.push(`hot/cold ${(mHotCold>=1?"+":"")}${((mHotCold-1)*100).toFixed(0)}%`);
+        if (mPitch !== 1) whyBits.push(`pitch-fit ${(mPitch>=1?"+":"")}${((mPitch-1)*100).toFixed(0)}%`);
+        if (actualAmerican != null) whyBits.push(`odds ${fmtAmerican(actualAmerican)}`);
+
+        return {
+          player: c.player,
+          game: c.game,
+          modelP: p,
+          modelOdds,
+          actualOdds: actualAmerican,
+          ev,
+          why: whyBits.join(" • ")
+        };
       });
+
+      // Filter to reasonable list
+      const valid = joined.filter(r => r.player && r.modelP != null);
+
+      setRows(valid);
+      setSummary({ dateEt, candidatesN: valid.length, usingOddsApi, calib: 1.00 });
+
+      if (!valid.length) {
+        // If we truly have zero model candidates, don’t flood page with odds-only items
+        if (odds.raw.length) {
+          setNotice("Model candidates unavailable. Showing no picks to avoid odds-only noise. (Odds are available and will be used once candidates load.)");
+        } else {
+          setNotice("No candidates and no odds available.");
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      setNotice("Generate failed. Check functions and data sources.");
+    } finally {
+      setBusy(false);
     }
   }
-  return out;
+
+  return { busy, summary, rows, notice, generate };
+}
+
+function Section({ title, children }) {
+  return (
+    <div style={{ marginTop: 24 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function Table({ items }) {
+  if (!items?.length) return <div style={{ color: "#777" }}>No rows</div>;
+  return (
+    <div className="rr-table" style={{ overflowX: "auto" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead>
+          <tr>
+            <th style={{ textAlign: "left" }}>Player</th>
+            <th style={{ textAlign: "left" }}>Game</th>
+            <th style={{ textAlign: "right" }}>Model HR%</th>
+            <th style={{ textAlign: "right" }}>Model Odds</th>
+            <th style={{ textAlign: "right" }}>Actual Odds</th>
+            <th style={{ textAlign: "right" }}>EV (1u)</th>
+            <th style={{ textAlign: "left" }}>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((r, i) => (
+            <tr key={i}>
+              <td>{r.player}</td>
+              <td>{r.game}</td>
+              <td style={{ textAlign: "right" }}>{fmtPct(r.modelP)}</td>
+              <td style={{ textAlign: "right" }}>{fmtAmerican(r.modelOdds)}</td>
+              <td style={{ textAlign: "right" }}>{fmtAmerican(r.actualOdds)}</td>
+              <td style={{ textAlign: "right" }}>{r.ev != null ? r.ev.toFixed(3) : ""}</td>
+              <td>{r.why}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 export default function MLB() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [diagnostics, setDiagnostics] = useState({
-    usingOddsApi: false,
-    candidates: 0,
-    calibrationScale: 1.0,
-    dateET: new Date().toISOString().slice(0,10),
-  });
-  const [rows, setRows] = useState([]);
+  const { busy, summary, rows, notice, generate } = useGenerator();
 
-  const generate = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    try {
-      try { await fetchJson("/.netlify/functions/odds-refresh-multi"); } catch {}
-      let odds = { offers: [] };
-      try {
-        odds = await fetchJson("/.netlify/functions/odds-get");
-      } catch {}
-      const usingOddsApi = Array.isArray(odds.offers) && odds.offers.length > 0;
+  const mainPicks = useMemo(() => {
+    return rows
+      .filter(r => r.actualOdds != null && (r.ev ?? -1) >= EV_THRESHOLD)
+      .sort((a,b) => (b.ev ?? -1) - (a.ev ?? -1))
+      .slice(0, MAIN_TABLE_SIZE);
+  }, [rows]);
 
-      // load candidates from the best available source
-      const modelInputs = await tryLoadCandidates(odds);
+  const bonusPicks = useMemo(() => {
+    return rows
+      .filter(r => r.actualOdds != null && (r.ev ?? -1) >= (EV_THRESHOLD - EV_NEAR) && (r.ev ?? -1) < (EV_THRESHOLD))
+      .sort((a,b) => (b.ev ?? -1) - (a.ev ?? -1))
+      .slice(0, 20);
+  }, [rows]);
 
-      const fanduelOver05 = new Map();
-      for (const o of odds.offers || []) {
-        if (o.market === "batter_home_runs" && o.outcome === "Over" && o.point === 0.5 && o.bookKey === "fanduel") {
-          fanduelOver05.set(`${o.gameId}|${o.player}`, o);
-        }
-      }
+  const pureProb = useMemo(() => {
+    return rows
+      .slice()
+      .sort((a,b) => b.modelP - a.modelP)
+      .slice(0, PURE_PROB_SIZE);
+  }, [rows]);
 
-      const out = [];
-      for (const c of modelInputs) {
-        const base = Math.max(0, Math.min(0.9, c.baseHrProb ?? 0.27));
-        const m =
-          hotColdMultiplier(c.recent) *
-          pitchTypeFitMultiplier({ damage: c.pitcherPitchTypeDamage ?? 0 });
-
-        const p = Math.max(0, Math.min(0.95, base * m));
-        const modelAmerican = decimalToAmerican(1 / p) ?? "+200";
-
-        const key = `${c.gameId || ""}|${c.player}`;
-        const book = fanduelOver05.get(key);
-        const actualAmerican = book?.american ?? null;
-        const actualDecimal = americanToDecimal(actualAmerican);
-        const ev = actualDecimal ? p * (actualDecimal - 1) - (1 - p) : null;
-
-        out.push({
-          player: c.player,
-          game: c.game,
-          modelPct: p,
-          modelOdds: modelAmerican,
-          actualOdds: actualAmerican,
-          ev: ev,
-          why: c.why || "",
-        });
-      }
-
-      out.sort((a,b) => (b.ev ?? 0) - (a.ev ?? 0) || (b.modelPct - a.modelPct));
-
-      setRows(out);
-      setDiagnostics({
-        usingOddsApi,
-        candidates: modelInputs.length,
-        calibrationScale: 1.00,
-        dateET: new Date().toISOString().slice(0,10),
-      });
-    } catch (e) {
-      console.error(e);
-      setError(String(e?.message || e));
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const headerLine = useMemo(() => {
-    const using = diagnostics.usingOddsApi ? "yes" : "no";
-    return `Date (ET): ${diagnostics.dateET} • Candidates: ${diagnostics.candidates} • Using OddsAPI: ${using} • Calibration scale: ${diagnostics.calibrationScale.toFixed(2)}`;
-  }, [diagnostics]);
+  const pureEV = useMemo(() => {
+    return rows
+      .filter(r => r.actualOdds != null && r.modelP >= PURE_EV_FLOOR)
+      .slice()
+      .sort((a,b) => (b.ev ?? -1) - (a.ev ?? -1))
+      .slice(0, PURE_EV_SIZE);
+  }, [rows]);
 
   return (
-    <div className="p-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">MLB HR — Calibrated + Hot/Cold + Odds-first EV</h1>
-        <button
-          onClick={generate}
-          disabled={loading}
-          className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
-        >
-          {loading ? "Generating…" : "Generate"}
+    <div style={{ padding: 16 }}>
+      <h2>MLB HR — Calibrated + Hot/Cold + Odds-first EV</h2>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "8px 0 16px" }}>
+        <button onClick={generate} disabled={busy} style={{ padding: "8px 14px", borderRadius: 8, fontWeight: 600 }}>
+          {busy ? "Generating…" : "Generate"}
         </button>
       </div>
 
-      <div className="text-sm text-gray-600 mt-3">{headerLine}</div>
-
-      <div className="mt-4">
-        {error && (
-          <div className="text-red-600 text-sm mb-2">Error: {error}</div>
-        )}
-        {rows.length === 0 && !loading && (
-          <div className="text-gray-600 text-sm">No picks yet. Click Generate.</div>
-        )}
-        {rows.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="text-left border-b">
-                  <th className="py-2 pr-4">Player</th>
-                  <th className="py-2 pr-4">Game</th>
-                  <th className="py-2 pr-4">Model HR%</th>
-                  <th className="py-2 pr-4">Model Odds</th>
-                  <th className="py-2 pr-4">Actual Odds</th>
-                  <th className="py-2 pr-4">EV (1u)</th>
-                  <th className="py-2">Why</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i} className="border-b">
-                    <td className="py-2 pr-4">{r.player}</td>
-                    <td className="py-2 pr-4">{r.game}</td>
-                    <td className="py-2 pr-4">{fmtPct(r.modelPct)}</td>
-                    <td className="py-2 pr-4">{r.modelOdds}</td>
-                    <td className="py-2 pr-4">{r.actualOdds ?? "—"}</td>
-                    <td className="py-2 pr-4">{r.ev == null ? "—" : r.ev.toFixed(3)}</td>
-                    <td className="py-2">{r.why}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+      <div style={{ color: "#666", marginBottom: 12 }}>
+        Date (ET): {summary.dateEt || "—"} • Candidates: {summary.candidatesN} • Using OddsAPI: {summary.usingOddsApi ? "yes" : "no"} • Calibration scale: {summary.calib.toFixed(2)}
       </div>
+
+      {notice && (
+        <div style={{ background: "#fff7e6", border: "1px solid #ffd596", padding: 10, borderRadius: 8, marginBottom: 12 }}>
+          {notice}
+        </div>
+      )}
+
+      <Section title="Main picks (EV-first)">
+        <Table items={mainPicks} />
+      </Section>
+
+      <Section title="Bonus picks (near threshold)">
+        <Table items={bonusPicks} />
+      </Section>
+
+      <Section title="Straight HR Bets (Top 13 Raw Probability)">
+        <Table items={pureProb} />
+      </Section>
+
+      <Section title={`Pure EV (Top ${PURE_EV_SIZE}, floor ${Math.round(PURE_EV_FLOOR*100)}%)`}>
+        <Table items={pureEV} />
+      </Section>
     </div>
   );
 }
