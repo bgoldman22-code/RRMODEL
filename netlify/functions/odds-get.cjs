@@ -1,4 +1,4 @@
-// netlify/functions/odds-get.cjs
+// patch-over05-2025-08-20/netlify/functions/odds-get.cjs
 const { getStore } = require("@netlify/blobs");
 
 const SITE_ID = process.env.NETLIFY_SITE_ID || "967be648-eddc-4cc5-a7cc-e2ab7db8ac75";
@@ -13,12 +13,11 @@ exports.handler = async function () {
     const storeName = process.env.BLOBS_STORE || "mlb-odds";
     const store = makeStore(storeName);
 
-    // Try getJSON if available; else use get + JSON.parse
-    let data;
+    let data = null;
     if (typeof store.getJSON === "function") {
-      data = await store.getJSON("latest.json");
+      data = await store.getJSON("mlb-hr-over05.json") || await store.getJSON("latest.json");
     } else {
-      const raw = await store.get("latest.json");
+      const raw = await store.get("mlb-hr-over05.json") || await store.get("latest.json");
       data = raw ? JSON.parse(raw) : null;
     }
 
