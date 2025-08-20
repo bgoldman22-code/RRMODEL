@@ -1,4 +1,4 @@
-// patch-oddsapi-sgo-hr-2025-08-20/netlify/functions/odds-get.cjs
+// patch-oddsapi-hr-only-us-fanduel-2025-08-20/netlify/functions/odds-get.cjs
 const { getStore } = require("@netlify/blobs");
 
 const SITE_ID = process.env.NETLIFY_SITE_ID || "967be648-eddc-4cc5-a7cc-e2ab7db8ac75";

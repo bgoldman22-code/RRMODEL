@@ -1,4 +1,7 @@
-// patch-oddsapi-sgo-hr-2025-08-20/netlify/functions/odds-refresh-multi.cjs
+// patch-oddsapi-hr-only-us-fanduel-2025-08-20/netlify/functions/odds-refresh-multi.cjs
+// MLB HR props (Over 0.5 / Yes) — OddsAPI primary (FanDuel, batter_home_runs) with SGO fallback.
+// CommonJS, Node >=18 native fetch, explicit Netlify Blobs creds.
+
 const { getStore } = require("@netlify/blobs");
 
 const SITE_ID = process.env.NETLIFY_SITE_ID || "967be648-eddc-4cc5-a7cc-e2ab7db8ac75";
@@ -8,17 +11,15 @@ function storeFor(name) {
   return getStore({ name, siteID: SITE_ID, token: BLOBS_TOKEN });
 }
 
-function sanitizeCSV(input) {
-  return String(input || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+function csv(input) {
+  return String(input || "").split(",").map(s => s.trim()).filter(Boolean);
 }
 
-const VALID_REGIONS = new Set(["us","us2","uk","eu","au","ca","in","us_il","us_nj"]);
 function sanitizeRegions(input) {
-  const arr = sanitizeCSV(input);
-  const out = arr.filter((r) => VALID_REGIONS.has(r));
+  // Lock default to 'us' to target FanDuel first
+  const valid = new Set(["us","us2","uk","eu","au","ca","in","us_il","us_nj"]);
+  const arr = csv(input);
+  const out = arr.filter(r => valid.has(r));
   return out.length ? out : ["us"];
 }
 
@@ -30,6 +31,16 @@ function isOver05(out) {
   if (name.startsWith("o ") && name.includes("0.5")) return true;
   if (name === "yes") return true;
   return false;
+}
+
+function cleanOffers(list) {
+  // Remove bogus team labels like 'Over', 'Under', 'Yes', 'No'
+  const badTeam = new Set(["over","under","yes","no","o","u"]);
+  return list.map(o => ({ 
+    ...o, 
+    team: o.team && badTeam.has(String(o.team).toLowerCase()) ? null : o.team, 
+    player: o.player ? String(o.player).trim() : o.player 
+  }));
 }
 
 function baseOffer(out, marketKey, sport, gameId, bk, labelHint) {
@@ -59,7 +70,6 @@ async function fetchJSON(url) {
   try { return JSON.parse(text); } catch (e) { throw new Error(`Bad JSON from ${url}: ${text.slice(0,200)}`); }
 }
 
-// OddsAPI per-event
 async function oddsapiListEvents(sport, apiKey) {
   const url = new URL(`https://api.the-odds-api.com/v4/sports/${sport}/events`);
   url.searchParams.set("apiKey", apiKey);
@@ -70,7 +80,7 @@ async function oddsapiEventOdds({ sport, eventId, apiKey, regions, market, bookm
   const url = new URL(`https://api.the-odds-api.com/v4/sports/${sport}/events/${eventId}/odds`);
   url.searchParams.set("apiKey", apiKey);
   url.searchParams.set("regions", regions.join(","));
-  url.searchParams.set("markets", market);
+  url.searchParams.set("markets", market); // we will use batter_home_runs only
   if (bookmakers && bookmakers.length) url.searchParams.set("bookmakers", bookmakers.join(","));
   url.searchParams.set("oddsFormat", "american");
   return fetchJSON(url);
@@ -95,45 +105,60 @@ function normalizeOddsapiEvent(evOdds, sport, eventId, wantMarket, diag) {
   return out;
 }
 
-async function oddsapiCollectHR({ sport, apiKey, regions, bookmakers, hrMarkets, diag }) {
+async function oddsapiCollectHR({ sport, apiKey, regions, bookmakers, diag }) {
+  const wantMarket = "batter_home_runs"; // hard-lock
   const events = await oddsapiListEvents(sport, apiKey);
   let offers = [];
   for (const ev of (events || [])) {
-    for (const m of hrMarkets) {
-      try {
-        const evOdds = await oddsapiEventOdds({ sport, eventId: ev.id, apiKey, regions, market: m, bookmakers });
-        const adds = normalizeOddsapiEvent(evOdds, sport, ev.id, m, diag);
-        if (adds.length) offers = offers.concat(adds);
-      } catch (e) {
-        diag.errors = diag.errors || [];
-        diag.errors.push(String(e.message||e));
-      }
+    try {
+      const evOdds = await oddsapiEventOdds({ sport, eventId: ev.id, apiKey, regions, market: wantMarket, bookmakers });
+      const adds = normalizeOddsapiEvent(evOdds, sport, ev.id, wantMarket, diag);
+      if (adds.length) offers = offers.concat(adds);
+    } catch (e) {
+      // If OddsAPI rejects the market, log and continue (SGO may still save the run)
+      diag.errors.push(String(e.message||e));
     }
   }
   return offers;
 }
 
-// SGO fallback (scaffold; will log if base/key missing)
-async function sgoFetchHR({ diag }) {
+// ---- SGO fallback (scaffold; adjust to your endpoint) ----
+async function sgoFetchHR(diag) {
   const base = process.env.SGO_BASE;
   const key = process.env.SPORTSGAMEODDS_KEY || process.env.SGO_KEY;
   if (!base || !key) {
     diag.sgo = "missing_base_or_key";
     return [];
   }
-  // Placeholder: adjust to your SGO endpoint shape
   const u = new URL(base.replace(/\/$/, '') + "/mlb/batter_home_runs");
   u.searchParams.set("apiKey", key);
   try {
     const data = await fetchJSON(u.toString());
-    // Expect: array or {offers:[]}; pass-through until we confirm shape
     const arr = Array.isArray(data) ? data : (data.offers || []);
-    // Best-effort filter: any outcome that looks like Over 0.5 or Yes
-    return arr.filter((row) => {
-      const nm = String(row.outcome || row.name || row.selection || "").toLowerCase();
-      const pt = (row.point !== undefined && row.point !== null) ? Number(row.point) : (row.line !== undefined ? Number(row.line) : NaN);
-      return nm.includes("over 0.5") || nm === "yes" || (nm === "over" && pt === 0.5);
-    });
+    // Convert to our offer shape; best-effort mapping until we confirm exact fields
+    const out = [];
+    for (const row of arr) {
+      const name = String(row.outcome || row.name || row.selection || "").toLowerCase();
+      const point = (row.point !== undefined && row.point !== null) ? Number(row.point) : (row.line !== undefined ? Number(row.line) : NaN);
+      if (!(name.includes("over 0.5") || name === "yes" || (name === "over" && point === 0.5))) continue;
+      const bkKey = (row.bookKey || row.book || "").toLowerCase() || "book";
+      out.push({
+        id: `${row.outcome||row.name||"?"}|batter_home_runs|${row.gameId||row.eventId||"?"}|${bkKey}`,
+        american: Number(row.american || row.odds || row.price || 0),
+        market: "batter_home_runs",
+        sport: "baseball_mlb",
+        gameId: row.gameId || row.eventId || null,
+        player: row.player || row.participant || null,
+        team: row.team || null,
+        outcome: row.outcome || row.name || null,
+        point: isFinite(point) ? point : undefined,
+        book: row.book || row.bookName || bkKey,
+        bookKey: bkKey,
+        sgpOk: Boolean(row.sgpOk || row.sgp_enabled || false),
+        groupKey: `${row.gameId||row.eventId||"?"}:batter_home_runs`
+      });
+    }
+    return out;
   } catch (e) {
     diag.sgoErrors = (diag.sgoErrors || []);
     diag.sgoErrors.push(String(e.message||e));
@@ -143,36 +168,39 @@ async function sgoFetchHR({ diag }) {
 
 exports.handler = async function () {
   const started = Date.now();
-  const diag = { mode: "hr-only+sgo-fallback", errors: [], marketLabels: [], outcomesSeen: 0, outcomesFiltered: 0, bookmakerFiltered: 0 };
+  const diag = { mode: "hr-only-us+fanduel+sgo-fallback", errors: [], marketLabels: [], outcomesSeen: 0, outcomesFiltered: 0, bookmakerFiltered: 0 };
   try {
     const sport = process.env.ODDS_SPORT || "baseball_mlb";
     const apiKey = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
     if (!apiKey) throw new Error("Missing THEODDS_API_KEY");
 
     const regions = sanitizeRegions(process.env.ODDS_REGIONS || process.env.ODDSAPI_REGION || "us");
-    const bookmakers = sanitizeCSV(process.env.ODDS_BOOKMAKERS || "fanduel");
-    const hrMarkets = sanitizeCSV(process.env.ODDS_HR_MARKETS || "batter_home_runs,player_home_runs");
+    const bookmakers = csv(process.env.ODDS_BOOKMAKERS || "fanduel");
 
     const store = storeFor(process.env.BLOBS_STORE || "mlb-odds");
 
+    // Primary OddsAPI
     let offers = [];
     try {
-      offers = await oddsapiCollectHR({ sport, apiKey, regions, bookmakers, hrMarkets, diag });
+      offers = await oddsapiCollectHR({ sport, apiKey, regions, bookmakers, diag });
     } catch (e) {
       diag.errors.push("oddsapiCollectHR: " + String(e.message||e));
     }
 
+    // Fallback: SGO
     if (offers.length === 0) {
-      const sgoOffers = await sgoFetchHR({ diag });
-      if (sgoOffers.length) offers = sgoOffers;
+      const sgo = await sgoFetchHR(diag);
+      if (sgo.length) offers = sgo;
     }
 
+    // Filter by bookmaker list at the end as well (defensive)
     if (bookmakers.length) {
       const before = offers.length;
       offers = offers.filter(o => !o.bookKey || bookmakers.includes(o.bookKey));
       diag.bookmakerFiltered = before - offers.length;
     }
 
+    // Dedup + cleanup
     const seen = new Set();
     const deduped = [];
     for (const o of offers) {
@@ -180,15 +208,16 @@ exports.handler = async function () {
       seen.add(o.id);
       deduped.push(o);
     }
+    const cleaned = cleanOffers(deduped);
 
     const payload = {
       provider: "theoddsapi+fallback:sgo",
       regions,
       sports: [sport],
-      markets: hrMarkets,
+      markets: ["batter_home_runs"],
       fetched: new Date().toISOString(),
-      count: deduped.length,
-      offers: deduped,
+      count: cleaned.length,
+      offers: cleaned,
       diag
     };
 
@@ -197,7 +226,7 @@ exports.handler = async function () {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ ok: true, wrote: ["mlb-hr-over05.json","latest.json"], count: deduped.length, diag, timeMs: Date.now() - started })
+      body: JSON.stringify({ ok: true, wrote: ["mlb-hr-over05.json","latest.json"], count: cleaned.length, diag, timeMs: Date.now() - started })
     };
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ error: String(err.message||err) }) };
