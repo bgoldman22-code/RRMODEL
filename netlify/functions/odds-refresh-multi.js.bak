@@ -4,24 +4,11 @@
 
 import { getStore } from "@netlify/blobs";
 
-// Map player_props market labels to canonical keys our UI expects
-function mapPropsLabelToKey(label){
-  const s = String(label||"").toLowerCase();
-  if (s === "home runs") return "player_home_runs";
-  if (s === "total bases") return "player_total_bases";
-  if (s === "runs batted in" || s === "rbis" || s === "rbi") return "player_rbis";
-  if (s === "runs") return "player_runs";
-  if (s === "hits") return "player_hits";
-  if (s === "strikeouts" || s === "pitcher strikeouts") return "pitcher_strikeouts";
-  return "player_props";
-}
-
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const env = (k, d = "") => String(process.env[k] || process.env[k.toUpperCase()] || d).trim();
 
 const ALLOW = {
-  baseball_mlb: new Set(["h2h","spreads","totals","player_home_runs","player_total_bases","player_rbis","player_runs","player_hits","pitcher_strikeouts","player_props",
+  baseball_mlb: new Set(["h2h","spreads","totals","player_home_runs","player_total_bases","player_rbis","player_runs","player_hits","pitcher_strikeouts"]),
   basketball_nba: new Set(["h2h","spreads","totals","player_points","player_rebounds","player_assists","player_threes"]),
   americanfootball_nfl: new Set(["h2h","spreads","totals","player_pass_tds","player_pass_yds","player_rush_yds","player_rec_yds","player_anytime_td"]),
   icehockey_nhl: new Set(["h2h","spreads","totals","player_shots_on_goal","player_points"]),
@@ -125,16 +112,14 @@ export async function handler() {
   const offers = []; const errors = []; let fetches = 0;
   for (const sport of sports){
     const allow = ALLOW[sport] || new Set(["h2h","spreads","totals"]);
-    for (const mkt of marketsInput) {
-      const requestedMkt = mkt;
-      const mktEff = (sport==="baseball_mlb" && ["player_home_runs","player_total_bases","player_rbis","player_runs","player_hits","pitcher_strikeouts"].includes(mkt)) ? "player_props" : mkt;
-      if (!allow.has(mktEff)){ errors.push({ sport, market:mktEff, skipped:true, reason:"not-allowed-for-sport" }); continue; }
+    for (const mkt of marketsInput){
+      if (!allow.has(mkt)){ errors.push({ sport, market:mkt, skipped:true, reason:"not-allowed-for-sport" }); continue; }
       try{
-        const events = await fetchSportMarket({ apiKey, sport, market:mktEff, regions }); fetches++;
+        const events = await fetchSportMarket({ apiKey, sport, market:mkt, regions }); fetches++;
         for (const ev of (Array.isArray(events)?events:[])){
           for (const bm of (Array.isArray(ev.bookmakers)?ev.bookmakers:[])){
             for (const mk of (Array.isArray(bm.markets)?bm.markets:[])){
-              const marketKeyRaw = mk.key || mktEff; const marketKey = (marketKeyRaw==="player_props") ? mapPropsLabelToKey(mk.name || mk.title || mk.key || mktEff) : marketKeyRaw;
+              const marketKey = mk.key || mkt;
               for (const oc of (Array.isArray(mk.outcomes)?mk.outcomes:[])){
                 const offer = normalizeOutcomeToOffer({ sport, marketKey, event: ev, bookmaker: bm, outcome: oc });
                 if (offer) offers.push(offer);
@@ -144,7 +129,7 @@ export async function handler() {
         }
         await sleep(200);
       }catch(e){
-        errors.push({ sport, market:mktEff, error: e.message });
+        errors.push({ sport, market:mkt, error: e.message });
         await sleep(100);
       }
     }
