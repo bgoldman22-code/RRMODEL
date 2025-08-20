@@ -1,195 +1,190 @@
-// src/MLB.jsx — v5.4
-// Ensures a DEFAULT EXPORT so App.jsx `import MLB from "./MLB.jsx"` works.
-// Includes: Generate button, Pure EV table, algo tweaks (pitch-fit, veteran dampen, exploitable flag).
 
-import React, { useEffect, useState, useCallback } from "react";
-import { pitchTypeFitMultiplier_v3, veteranRelianceDampen_v1, moderatePowerExploitable_v1 } from "./lib/hr-factors_v4";
+import React, { useCallback, useMemo, useState } from "react";
+
+// Lightweight helpers kept inline to avoid extra imports
+const fmtPct = (x) => (x == null ? "—" : `${(x * 100).toFixed(1)}%`);
+const americanToDecimal = (american) => {
+  if (american == null) return null;
+  if (american >= 100) return 1 + american / 100;
+  if (american <= -100) return 1 + 100 / Math.abs(american);
+  return null;
+};
+const decimalToAmerican = (dec) => {
+  if (!dec || dec <= 1) return null;
+  const imp = (dec - 1);
+  return imp >= 1 ? `+${Math.round(imp*100)}` : `-${Math.round(100/imp)}`;
+};
+
+// Simple hot/cold and pitch-type multipliers (safe defaults)
+function hotColdMultiplier({ hr7 = 0, pa50 = 50 } = {}) {
+  let m = 1;
+  if (hr7 >= 2) m *= 1.06;
+  else if (hr7 === 1) m *= 1.03;
+  if (pa50 < 30) m *= 0.98; // low sample nudge
+  return m;
+}
+function pitchTypeFitMultiplier({ damage = 0 } = {}) {
+  if (damage >= 40) return 1.06;
+  if (damage >= 25) return 1.03;
+  if (damage <= -25) return 0.97;
+  return 1.0;
+}
+
+async function fetchJson(url) {
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
 
 export default function MLB() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [diagnostics, setDiagnostics] = useState({
+    usingOddsApi: false,
+    candidates: 0,
+    calibrationScale: 1.0,
+    dateET: new Date().toISOString().slice(0,10),
+  });
   const [rows, setRows] = useState([]);
-  const [pureEV, setPureEV] = useState([]);
-  const [busy, setBusy] = useState(false);
-  const EV_FLOOR = Number(import.meta.env.VITE_PURE_EV_FLOOR ?? 0.22);
 
-  const buildAll = useCallback((data) => {
-    const built = (data?.candidates ?? []).map(buildRow);
-    built.sort((a,b) => b.p_model - a.p_model);
-    setRows(built);
-    const evList = built
-      .filter(r => (r.p_model ?? 0) >= EV_FLOOR && typeof r.ev === "number")
-      .slice()
-      .sort((a,b)=>b.ev - a.ev)
-      .slice(0, 13);
-    setPureEV(evList);
-  }, [EV_FLOOR]);
-
-  useEffect(() => {
-    (async () => {
-      const data = await loadModelJson();
-      if (data) buildAll(data);
-    })();
-  }, [buildAll]);
-
-  async function loadModelJson() {
+  const generate = useCallback(async () => {
+    setLoading(true);
+    setError("");
     try {
-      const r = await fetch("/data/mlb.json", { cache: "no-store" });
-      if (!r.ok) return null;
-      return await r.json();
-    } catch (e) {
-      console.error("loadModelJson error", e);
-      return null;
-    }
-  }
+      // 1) Refresh odds (multi tries TheOddsAPI then falls back to SGO)
+      try { await fetchJson("/.netlify/functions/odds-refresh-multi"); } catch {}
 
-  async function regenerate() {
-    const REFRESH_ENDPOINT = import.meta.env.VITE_REFRESH_ENDPOINT || "/.netlify/functions/odds-refresh-multi";
-    setBusy(true);
-    try {
+      // 2) Get cached odds snapshot (frontend-friendly)
+      let odds = { offers: [] };
       try {
-        await fetch(REFRESH_ENDPOINT + "?mode=hr-only", { method: "POST" });
-      } catch (e) {
-        console.warn("refresh endpoint not available:", e?.message || e);
+        odds = await fetchJson("/.netlify/functions/odds-get");
+      } catch {}
+
+      const usingOddsApi = Array.isArray(odds.offers) && odds.offers.length > 0;
+
+      // 3) Pull your model inputs (assumes you have an endpoint in your app)
+      // If you already have them injected in page state, replace this with that.
+      // Here we fall back to a tiny set so UI renders even if your endpoint isn't present.
+      let modelInputs = [];
+      try {
+        const data = await fetchJson("/data/mlb/model-candidates.json");
+        modelInputs = Array.isArray(data?.candidates) ? data.candidates : [];
+      } catch {
+        modelInputs = [];
       }
-      const data = await loadModelJson();
-      if (data) buildAll(data);
+
+      // 4) Build picks joining minimal odds
+      const fanduelOver05 = new Map();
+      for (const o of odds.offers || []) {
+        if (o.market === "batter_home_runs" && o.outcome === "Over" && o.point === 0.5 && o.bookKey === "fanduel") {
+          fanduelOver05.set(`${o.gameId}|${o.player}`, o);
+        }
+      }
+
+      const out = [];
+      for (const c of modelInputs) {
+        // expected c: { player, game, baseHrProb, pitcherPitchTypeDamage, recent: {hr7, pa50} }
+        const base = Math.max(0, Math.min(0.9, c.baseHrProb ?? 0.27));
+        const m =
+          hotColdMultiplier(c.recent) *
+          pitchTypeFitMultiplier({ damage: c.pitcherPitchTypeDamage ?? 0 });
+
+        const p = Math.max(0, Math.min(0.95, base * m));
+        const modelAmerican = decimalToAmerican(1 / p) ?? "+200";
+
+        const key = `${c.gameId || ""}|${c.player}`;
+        const book = fanduelOver05.get(key);
+        const actualAmerican = book?.american ?? null;
+        const actualDecimal = americanToDecimal(actualAmerican);
+        const ev = actualDecimal ? p * (actualDecimal - 1) - (1 - p) : null;
+
+        out.push({
+          player: c.player,
+          game: c.game,
+          modelPct: p,
+          modelOdds: modelAmerican,
+          actualOdds: actualAmerican,
+          ev: ev,
+          why: c.why || "",
+        });
+      }
+
+      // 5) Sort by EV desc, fall back to prob
+      out.sort((a,b) => (b.ev ?? 0) - (a.ev ?? 0) || (b.modelPct - a.modelPct));
+
+      setRows(out);
+      setDiagnostics({
+        usingOddsApi,
+        candidates: modelInputs.length,
+        calibrationScale: 1.00,
+        dateET: new Date().toISOString().slice(0,10),
+      });
+    } catch (e) {
+      console.error(e);
+      setError(String(e?.message || e));
     } finally {
-      setBusy(false);
+      setLoading(false);
     }
-  }
+  }, []);
 
-  function decimalFromAmerican(american) {
-    if (american == null) return null;
-    const a = Number(american);
-    if (!Number.isFinite(a) || a === 0) return null;
-    return a > 0 ? 1 + a/100 : 1 + 100/Math.abs(a);
-  }
-
-  function buildRow(x) {
-    const name = x?.name ?? x?.player ?? "—";
-    const game = x?.game ?? `${x?.away ?? "?"}@${x?.home ?? "?"}`;
-    let p = Number(x?.p_model ?? x?.modelProb ?? 0);
-    if (!Number.isFinite(p) || p <= 0) p = 0;
-
-    // New factors (safe no-ops if fields missing)
-    const mPitch = pitchTypeFitMultiplier_v3(x?.vsPitchDamage, x?.pitcherTopPitch, x?.pitcherMix);
-    const mVet   = veteranRelianceDampen_v1(x?.seasonHRPace, x?.careerHR, x?.age);
-    const modPow = moderatePowerExploitable_v1(p, x?.seasonHRPace, x?.vsPitchDamage, x?.pitcherTopPitch, x?.pitcherMix);
-    const mult   = Math.max(0.85, Math.min(1.15, mPitch * mVet * (modPow?.mult ?? 1)));
-    p = Math.max(0, Math.min(0.95, p * mult));
-
-    const modelDec = p > 0 ? 1 / p : null;
-    const modelAmerican = modelDec
-      ? (modelDec >= 2 ? Math.round((modelDec - 1) * 100) : Math.round(-100 / (modelDec - 1)))
-      : null;
-
-    const american = x?.american ?? x?.oddsAmerican ?? null;
-    const dec = decimalFromAmerican(american) ?? modelDec;
-    const ev = (typeof p === "number" && typeof dec === "number") ? (p * (dec - 1) - (1 - p)) : null;
-
-    const whys = [];
-    if (x?.why) whys.push(x.why);
-    if (modPow?.tag) whys.push(modPow.tag);
-    const top = x?.pitcherTopPitch ? String(x.pitcherTopPitch).toUpperCase().slice(0,2) : null;
-    if (top && x?.vsPitchDamage && typeof x.vsPitchDamage[top] === "number" && x.vsPitchDamage[top] >= 1.10) {
-      whys.push(`fits vs ${x.pitcherTopPitch}`);
-    }
-
-    return {
-      name,
-      game,
-      p_model: p,
-      modelAmerican,
-      american,
-      ev: ev ?? 0,
-      why: whys.join(" • ") || "",
-    };
-  }
+  const headerLine = useMemo(() => {
+    const using = diagnostics.usingOddsApi ? "yes" : "no";
+    return `Date (ET): ${diagnostics.dateET} • Candidates: ${diagnostics.candidates} • Using OddsAPI: ${using} • Calibration scale: ${diagnostics.calibrationScale.toFixed(2)}`;
+  }, [diagnostics]);
 
   return (
     <div className="p-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">MLB HR — Calibrated + Hot/Cold + Odds-first EV</h1>
+        <h1 className="text-2xl font-semibold">MLB HR — Calibrated + Hot/Cold + Odds-first EV</h1>
         <button
-          onClick={regenerate}
-          disabled={busy}
-          className={`px-3 py-1 rounded ${busy ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-          aria-busy={busy}
+          onClick={generate}
+          disabled={loading}
+          className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
         >
-          {busy ? "Generating…" : "Generate"}
+          {loading ? "Generating…" : "Generate"}
         </button>
       </div>
 
-      {/* Main Picks */}
-      {Array.isArray(rows) && rows.length > 0 && (
-        <div className="mt-4 overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="px-3 py-2 text-left">Player</th>
-                <th className="px-3 py-2 text-left">Game</th>
-                <th className="px-3 py-2 text-right">Model HR%</th>
-                <th className="px-3 py-2 text-right">Model Odds</th>
-                <th className="px-3 py-2 text-right">Actual Odds</th>
-                <th className="px-3 py-2 text-right">EV (1u)</th>
-                <th className="px-3 py-2 text-left">Why</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.slice(0, 13).map((r, i) => (
-                <tr key={`pick-${i}`} className="border-b">
-                  <td className="px-3 py-2">{r.name}</td>
-                  <td className="px-3 py-2">{r.game}</td>
-                  <td className="px-3 py-2 text-right">{(r.p_model * 100).toFixed(1)}%</td>
-                  <td className="px-3 py-2 text-right">{r.modelAmerican > 0 ? `+${r.modelAmerican}` : r.modelAmerican}</td>
-                  <td className="px-3 py-2 text-right">{r.american > 0 ? `+${r.american}` : r.american}</td>
-                  <td className="px-3 py-2 text-right">{Number(r.ev ?? 0).toFixed(3)}</td>
-                  <td className="px-3 py-2">{r.why}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div className="text-sm text-gray-600 mt-3">{headerLine}</div>
 
-      {/* Pure EV (with floor) */}
-      {Array.isArray(pureEV) && pureEV.length > 0 && (
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold">
-            Best EV (floor ≥ {(EV_FLOOR * 100).toFixed(0)}% model HR)
-          </h2>
-          <div className="mt-2 overflow-x-auto">
+      <div className="mt-4">
+        {error && (
+          <div className="text-red-600 text-sm mb-2">Error: {error}</div>
+        )}
+        {rows.length === 0 && !loading && (
+          <div className="text-gray-600 text-sm">No picks yet. Click Generate.</div>
+        )}
+        {rows.length > 0 && (
+          <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="px-3 py-2 text-left">Player</th>
-                  <th className="px-3 py-2 text-left">Game</th>
-                  <th className="px-3 py-2 text-right">Model HR%</th>
-                  <th className="px-3 py-2 text-right">Model Odds</th>
-                  <th className="px-3 py-2 text-right">Actual Odds</th>
-                  <th className="px-3 py-2 text-right">EV (1u)</th>
-                  <th className="px-3 py-2 text-left">Why</th>
+                <tr className="text-left border-b">
+                  <th className="py-2 pr-4">Player</th>
+                  <th className="py-2 pr-4">Game</th>
+                  <th className="py-2 pr-4">Model HR%</th>
+                  <th className="py-2 pr-4">Model Odds</th>
+                  <th className="py-2 pr-4">Actual Odds</th>
+                  <th className="py-2 pr-4">EV (1u)</th>
+                  <th className="py-2">Why</th>
                 </tr>
               </thead>
               <tbody>
-                {pureEV.map((r, i) => (
-                  <tr key={`pureev-${i}`} className="border-b">
-                    <td className="px-3 py-2">{r.name}</td>
-                    <td className="px-3 py-2">{r.game}</td>
-                    <td className="px-3 py-2 text-right">{(r.p_model * 100).toFixed(1)}%</td>
-                    <td className="px-3 py-2 text-right">{r.modelAmerican > 0 ? `+${r.modelAmerican}` : r.modelAmerican}</td>
-                    <td className="px-3 py-2 text-right">{r.american > 0 ? `+${r.american}` : r.american}</td>
-                    <td className="px-3 py-2 text-right">{Number(r.ev ?? 0).toFixed(3)}</td>
-                    <td className="px-3 py-2">{r.why}</td>
+                {rows.map((r, i) => (
+                  <tr key={i} className="border-b">
+                    <td className="py-2 pr-4">{r.player}</td>
+                    <td className="py-2 pr-4">{r.game}</td>
+                    <td className="py-2 pr-4">{fmtPct(r.modelPct)}</td>
+                    <td className="py-2 pr-4">{r.modelOdds}</td>
+                    <td className="py-2 pr-4">{r.actualOdds ?? "—"}</td>
+                    <td className="py-2 pr-4">{r.ev == null ? "—" : r.ev.toFixed(3)}</td>
+                    <td className="py-2">{r.why}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <p className="text-xs text-gray-500 mt-2">
-              EV(1u) = p·(decimal−1) − (1−p). Uses book odds when available, else model odds.
-            </p>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
