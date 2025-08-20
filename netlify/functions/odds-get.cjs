@@ -1,6 +1,7 @@
-// patch-hr-ui-lock-provider-2025-08-20/netlify/functions/odds-get.cjs
-// Legacy-compatible odds getter: returns offers[] and also a 'players' map keyed by name and normalized name.
-// Adds top-level 'provider' and 'usingOddsApi' pass-through so legacy banners flip to "yes".
+// patch-odds-get-players-v3-2025-08-20/netlify/functions/odds-get.cjs
+// Backward-compatible odds getter for MLB HR props.
+// Builds players map with: median_american, count_books, by_book.
+// Also includes players_norm with same structure (best-effort).
 
 const { getStore } = require("@netlify/blobs");
 
@@ -15,10 +16,17 @@ function stripDiacritics(s) {
   try { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); } catch { return s; }
 }
 function normName(s) {
-  return s ? stripDiacritics(String(s)).toLowerCase().trim() : "";
+  return s ? stripDiacritics(String(s)).toLowerCase().replace(/[.]/g,'').replace(/[’']/g,"'").trim() : "";
 }
 
-exports.handler = async function () {
+function median(arr) {
+  if (!arr || !arr.length) return null;
+  const sorted = [...arr].sort((a,b)=>a-b);
+  const mid = Math.floor(sorted.length/2);
+  return sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid-1] + sorted[mid]) / 2);
+}
+
+exports.handler = async function() {
   try {
     const store = getStoreSafe(process.env.BLOBS_STORE || "mlb-odds");
     let snap = null;
@@ -30,42 +38,49 @@ exports.handler = async function () {
       snap = raw ? JSON.parse(raw) : null;
     }
 
-    if (!snap) {
-      return { statusCode: 200, body: JSON.stringify({ provider: "none", usingOddsApi: false, count: 0, offers: [], players: {} }) };
+    const offers = Array.isArray(snap?.offers) ? snap.offers : [];
+
+    // Build maps
+    const aggByName = new Map(); // name -> { prices:[], by_book:{}, books:Set }
+    for (const o of offers) {
+      const name = (o && o.player) ? String(o.player).trim() : null;
+      const bk = (o && o.bookKey) ? String(o.bookKey).toLowerCase() : (o && o.book ? String(o.book).toLowerCase().replace(/\s+/g,'') : 'book');
+      const priceRaw = (o && (o.american ?? o.price ?? o.odds));
+      const price = Number(priceRaw);
+      if (!name || !Number.isFinite(price)) continue;
+      if (!aggByName.has(name)) aggByName.set(name, { prices: [], by_book: {}, books: new Set() });
+      const a = aggByName.get(name);
+      a.prices.push(price);
+      a.by_book[bk] = price;
+      a.books.add(bk);
     }
 
-    const offers = Array.isArray(snap.offers) ? snap.offers : [];
-    const players = {};
-    const players_norm = {};
-
-    for (const o of offers) {
-      if (!o?.player) continue;
-      const price = Number(o.american ?? o.price ?? o.odds ?? NaN);
-      if (!Number.isFinite(price)) continue;
-
-      const name = String(o.player).trim();
+    const players = {}, players_norm = {};
+    for (const [name, a] of aggByName.entries()) {
+      const median_american = median(a.prices);
+      const count_books = a.books.size;
+      const by_book = a.by_book;
+      const rec = { median_american, count_books, by_book };
+      players[name] = rec;
       const key = normName(name);
-      // keep the best (most favorable) price
-      const prev = players[name];
-      const prevNorm = players_norm[key];
-      const better = (a, b) => {
-        if (a >= 0 && b >= 0) return a > b;
-        if (a < 0  && b < 0) return a > b; // -110 > -120
-        return a >= 0; // favor plus money
-      };
-      if (prev === undefined || better(price, prev)) players[name] = price;
-      if (prevNorm === undefined || better(price, prevNorm)) players_norm[key] = price;
+      if (!players_norm[key]) players_norm[key] = rec;
+      else {
+        // merge: prefer better (more favorable) median
+        const prev = players_norm[key];
+        const better = (x,y) => (x >= 0 && y >= 0) ? x>y : (x<0 && y<0) ? x>y : x>=0;
+        players_norm[key] = better(median_american, prev.median_american) ? rec : prev;
+      }
     }
 
     const out = {
-      provider: snap.provider,           // "theoddsapi" or "sgo" or "none"
-      usingOddsApi: !!snap.usingOddsApi, // boolean for your banner
-      count: Number(snap.count || offers.length || 0),
-      fetched: snap.fetched,
+      provider: snap?.provider || "none",
+      usingOddsApi: !!snap?.usingOddsApi,
+      count: Number(snap?.count || offers.length || 0),
+      fetched: snap?.fetched || null,
       offers,
       players,
       players_norm,
-      diag: snap.diag || null,
+      diag: snap?.diag || null,
     };
 
     return { statusCode: 200, body: JSON.stringify(out) };
