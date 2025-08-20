@@ -1,0 +1,66 @@
+*** src/MLB.jsx	original
+--- src/MLB.jsx	updated
+***************
+*** 1,120 ****
+  // ... other imports and helpers ...
+  
+  // Pitch-type fit / moderate-power exploitable helper
+  function moderatePowerExploitableMultiplier(candidate, pModelBase) {
+      const p = (val, def=0) => typeof val === 'number' ? val : def;
+      const usage = p(candidate?.opponentPitcher?.primaryPitchUsage, null);
+      const damage = p(candidate?.hitterVsPitch?.primaryPitchDamage, null);
+      
+      // normalize to 0..1 if given in percent
+!     if (typeof usage === 'number' and usage > 1) usage = usage / 100;
+  
+      // "predictable" threshold (>= 45% primary pitch)
+!     const onePitch = typeof usage === 'number' and usage >= 0.45;
+  
+      // "crushes" if xwOBA-like >= .500 or similar metric
+!     const crushes = typeof damage === 'number' and damage >= 0.50;
+  
+      let mult = 1.0;
+      // Only apply in the moderate-power band
+      if (pModelBase >= 0.20 && pModelBase <= 0.30) {
+          if (onePitch && crushes) {
+              mult *= 1.03;   // +3% micro boost
+          } else if (onePitch) {
+              mult *= 1.01;   // +1% tiny nudge for predictability
+          } else if (crushes) {
+              mult *= 1.01;   // +1% tiny nudge for strong pitch fit alone
+          }
+      }
+      return mult;
+  }
+---
+*** 1,120 ****
+  // ... other imports and helpers ...
+  
+  // Pitch-type fit / moderate-power exploitable helper
+  function moderatePowerExploitableMultiplier(candidate, pModelBase) {
+      const p = (val, def=0) => typeof val === 'number' ? val : def;
+      const usage = p(candidate?.opponentPitcher?.primaryPitchUsage, null);
+      const damage = p(candidate?.hitterVsPitch?.primaryPitchDamage, null);
+      
+      // normalize to 0..1 if given in percent
+!     if (typeof usage === 'number' && usage > 1) usage = usage / 100;
+  
+      // "predictable" threshold (>= 45% primary pitch)
+!     const onePitch = typeof usage === 'number' && usage >= 0.45;
+  
+      // "crushes" if xwOBA-like >= .500 or similar metric
+!     const crushes = typeof damage === 'number' && damage >= 0.50;
+  
+      let mult = 1.0;
+      // Only apply in the moderate-power band
+      if (pModelBase >= 0.20 && pModelBase <= 0.30) {
+          if (onePitch && crushes) {
+              mult *= 1.03;   // +3% micro boost
+          } else if (onePitch) {
+              mult *= 1.01;   // +1% tiny nudge for predictability
+          } else if (crushes) {
+              mult *= 1.01;   // +1% tiny nudge for strong pitch fit alone
+          }
+      }
+      return mult;
+  }
