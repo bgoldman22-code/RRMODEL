@@ -1,17 +1,12 @@
 # Netlify config for Round Robin Odds (NFL + MLB)
-# - Vite build -> dist
-# - Functions in netlify/functions (CommonJS .cjs)
-# - Use esbuild bundler and allow @netlify/blobs in functions
-# - SPA redirect to index.html
-
+# Enforce Node 20 to satisfy 'round-robin-odds-free@1.4.3' (engine >=20)
 [build]
   command = "npm ci && npm run build"
   publish = "dist"
 
 [build.environment]
-  # Ensure Node 18+ for native fetch in functions
-  NODE_VERSION = "18"
-  # Optional: faster/consistent installs
+  NODE_VERSION = "20"
+  # Optional: speed up installs and avoid audit/fund noise
   NPM_FLAGS = "--no-audit --no-fund"
 
 [functions]
@@ -19,10 +14,7 @@
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs"]
 
-# If you use background/scheduled functions, Netlify picks these up from the files' exported config.schedule.
-# No extra config is required here.
-
-# Single Page App redirect (so client-side routing works for /nfl and /nfl-td)
+# SPA redirect
 [[redirects]]
   from = "/*"
   to = "/index.html"
