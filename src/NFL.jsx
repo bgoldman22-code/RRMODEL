@@ -13,13 +13,13 @@ function fmtPct(v) {
   return "-";
 }
 
-async function loadDemoForWeek(week) {
-  if (week !== 1) return [];
+async function fetchDepthCharts() {
   try {
-    const res = await fetch("/src/nfl/demoCandidates-week1.json");
-    if (!res.ok) return [];
-    return await res.json();
-  } catch { return []; }
+    const res = await fetch("/.netlify/functions/nfl-rosters-get");
+    const j = await res.json();
+    if (j?.ok && j.depthCharts) return j.depthCharts;
+  } catch {}
+  return null;
 }
 
 export default function NFL() {
@@ -38,42 +38,33 @@ export default function NFL() {
       let rows = [];
       let diag = {};
 
-      // 1) normal engine (model-only, no odds needed)
-      try {
-        const res = await tdEngine(games, { week, requireOdds: false });
-        rows = Array.isArray(res?.candidates) ? res.candidates : Array.isArray(res) ? res : [];
-        diag = res?.diagnostics || {};
-      } catch (e) {
-        diag = { error: String(e) };
+      // Load depth charts from Blobs
+      const depthCharts = await fetchDepthCharts();
+      if (!depthCharts) {
+        diag = { ...diag, rosters:"missing" };
+      } else {
+        diag = { ...diag, rosters:"ok" };
       }
 
-      // 2) relaxed pass if empty
+      // Try engine (model-only)
+      try {
+        const res = await tdEngine(games, { week, requireOdds:false, depthCharts });
+        rows = Array.isArray(res?.candidates) ? res.candidates : Array.isArray(res) ? res : [];
+        diag = { ...diag, ...(res?.diagnostics || {}) };
+      } catch (e) {
+        diag = { ...diag, error: String(e) };
+      }
+
+      // Relaxed pass
       if (!rows.length) {
         try {
-          const res2 = await tdEngine(games, { week, requireOdds: false, relax: true });
+          const res2 = await tdEngine(games, { week, requireOdds:false, relax:true, depthCharts });
           const rows2 = Array.isArray(res2?.candidates) ? res2.candidates : Array.isArray(res2) ? res2 : [];
           if (rows2.length) {
             rows = rows2;
-            diag = { ...diag, retried: true };
+            diag = { ...diag, retried:true };
           }
         } catch {}
-      }
-
-      // 3) final fallback: demo snapshot (Week 1 only) so public page never renders blank
-      if (!rows.length) {
-        const demo = await loadDemoForWeek(week);
-        if (demo.length) {
-          rows = demo.map(d => ({
-            player: d.player,
-            team: d.team,
-            game: d.game,
-            modelTdPct: d.modelTdPct,
-            rzPath: d.rzPath,
-            expPath: d.expPath,
-            why: d.why
-          }));
-          diag = { ...diag, demoFallback: true };
-        }
       }
 
       if (alive) {
@@ -113,8 +104,9 @@ export default function NFL() {
       {diagnostics && (
         <p className="mt-2 text-xs text-gray-600">
           data (last 3 yrs): ok • diagnostics — weeks:{diagnostics.weeksAvailable} games:{diagnostics.games} candidates:{diagnostics.candidates}
+          {diagnostics.rosters ? ` • rosters:${diagnostics.rosters}` : ""}
           {diagnostics.retried ? " • retried" : ""}
-          {diagnostics.demoFallback ? " • demo" : ""}
+          {diagnostics.error ? ` • error:${diagnostics.error}` : ""}
         </p>
       )}
 
