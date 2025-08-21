@@ -1,62 +1,47 @@
-// public/nfl-negcorr/app.js
-import { scoreRows, suggestLines } from './engine.js';
 
-const $status = document.getElementById('status');
-const $table = document.getElementById('table');
+import { loadMetrics, scoreNegCorr, suggestLines } from './engine.js';
 
-async function loadMetrics(){
-  const res = await fetch('/data/nfl/negcorr-players.json');
-  if(!res.ok) throw new Error('metrics fetch failed');
-  return res.json();
+const $pick = document.getElementById('pick');
+const $banner = document.getElementById('banner');
+const $tbody = document.querySelector('#table tbody');
+
+function defaultThursday(){
+  const d = new Date();
+  const diff = (4 - d.getDay() + 7) % 7 || 7;
+  d.setDate(d.getDate() + diff);
+  return d.toISOString().slice(0,10);
 }
+$pick.value = defaultThursday();
 
-async function loadOdds(){
+async function loadWindow(){
   try{
-    const r = await fetch('/.netlify/functions/odds-nfl-negcorr');
-    if(!r.ok) return { ok:false };
-    const j = await r.json();
-    return j;
+    const d = $pick.value;
+    const res = await fetch('/.netlify/functions/nfl-schedule-local?date='+d);
+    const j = await res.json();
+    $banner.textContent = `Week ${j.week} • ${j.start} → ${j.end} • Games: ${j.games}`;
   }catch(e){
-    return { ok:false };
+    $banner.textContent = '';
   }
 }
 
-function rowHtml(r, odds){
-  const lines = (odds?.lines?.[r.player]) || suggestLines(r);
-  const s1 = r.profiles.recOver_ydsUnder.toFixed(2);
-  const s2 = r.profiles.recUnder_ydsOver.toFixed(2);
-  const overRec = lines.recLine ?? 4.5;
-  const underYds = lines.ydsLine ?? 50;
-  const altFloor = lines.altRecFloor ?? 3;
-
-  return `<tr>
-    <td><strong>${r.player}</strong> <span class="meta">(${r.team})</span></td>
-    <td><span class="pill">ALT ${altFloor}+</span> &nbsp; + Under <strong>${underYds}.5</strong> yds <span class="meta score">• ${s1}</span></td>
-    <td>Under <strong>${overRec}.5</strong> recs &nbsp; + Over <strong>${underYds}.5</strong> yds <span class="meta score">• ${s2}</span></td>
-    <td class="meta">${r.role} • ${r.seasons}</td>
-  </tr>`;
-}
-
-function render(rows, odds){
-  $status.innerHTML = odds?.ok
-    ? `<span class="ok">Using TheOddsAPI</span>`
-    : `<span class="warn">Odds-agnostic mode</span>`;
-
-  const head = `<table>
-    <thead><tr>
-      <th>Player</th><th>Receptions Over + Yards Under</th><th>Receptions Under + Yards Over</th><th>Role</th>
-    </tr></thead><tbody>`;
-  const body = rows.map(r => rowHtml(r, odds)).join('');
-  const foot = `</tbody></table>`;
-  $table.innerHTML = head + body + foot;
-}
-
-(async function init(){
-  try{
-    const [metrics, odds] = await Promise.all([loadMetrics(), loadOdds()]);
-    const rows = scoreRows(metrics);
-    render(rows, odds);
-  }catch(e){
-    $status.innerHTML = `<span class="err">Error: ${e?.message||e}</span>`;
+async function render(){
+  await loadWindow();
+  const metrics = await loadMetrics();
+  const rows = scoreNegCorr(metrics);
+  $tbody.innerHTML = '';
+  for(const r of rows){
+    const lines = suggestLines(r);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${r.player}</strong> <span class="muted">(${r.team})</span></td>
+      <td>ALT <span class="tag">${lines.altRecFloor}+</span> recs  +  Under ${lines.ydsLine}.5 yds
+          <span class="tiny">score ${r.profiles.receptionsOver_yardsUnder}</span></td>
+      <td>Under ${lines.recLine}.5 recs  +  Over ${lines.ydsLine}.5 yds
+          <span class="tiny">score ${r.profiles.receptionsUnder_yardsOver}</span></td>
+      <td class="tiny">${r.role} • ${r.seasons}</td>
+    `;
+    $tbody.appendChild(tr);
   }
-})();
+}
+$pick.addEventListener('change', render);
+render();
