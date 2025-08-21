@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "years": [
+      2022,
+      2023,
+      2024
+    ],
+    "generated": "2025-08-21"
+  },
+  "teams": {
+    "PHI": {
+      "rz_trips_pg": 3.1,
+      "exp_rush_rate": 0.12,
+      "exp_rec_rate": 0.14,
+      "vulture_prob": 0.1
+    },
+    "DAL": {
+      "rz_trips_pg": 3.0,
+      "exp_rush_rate": 0.1,
+      "exp_rec_rate": 0.13,
+      "vulture_prob": 0.06
+    },
+    "KC": {
+      "rz_trips_pg": 3.4,
+      "exp_rush_rate": 0.09,
+      "exp_rec_rate": 0.16,
+      "vulture_prob": 0.05
+    },
+    "LAC": {
+      "rz_trips_pg": 2.8,
+      "exp_rush_rate": 0.11,
+      "exp_rec_rate": 0.12,
+      "vulture_prob": 0.07
+    },
+    "BUF": {
+      "rz_trips_pg": 3.2,
+      "exp_rush_rate": 0.11,
+      "exp_rec_rate": 0.15,
+      "vulture_prob": 0.05
+    },
+    "BAL": {
+      "rz_trips_pg": 3.0,
+      "exp_rush_rate": 0.13,
+      "exp_rec_rate": 0.12,
+      "vulture_prob": 0.08
+    },
+    "MIN": {
+      "rz_trips_pg": 2.7,
+      "exp_rush_rate": 0.1,
+      "exp_rec_rate": 0.14,
+      "vulture_prob": 0.06
+    },
+    "CHI": {
+      "rz_trips_pg": 2.6,
+      "exp_rush_rate": 0.12,
+      "exp_rec_rate": 0.11,
+      "vulture_prob": 0.09
+    }
+  }
+}
