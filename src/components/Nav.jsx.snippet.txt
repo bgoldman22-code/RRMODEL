@@ -1,0 +1,3 @@
+// src/components/Nav.jsx (snippet)
+// Add this link where you render your nav items:
+// {ENABLE_NFL_TD && <a href="/nfl-td" className="px-3 py-2">NFL TD</a>}
