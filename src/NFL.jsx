@@ -9,29 +9,56 @@ export default function NFL() {
   const [week, setWeek] = useState(1);
   const [diagnostics, setDiagnostics] = useState(null);
   const [candidates, setCandidates] = useState([]);
+  const [offers, setOffers] = useState([]);
+  const [usingOddsApi, setUsingOddsApi] = useState(false);
 
   useEffect(() => {
-    async function run() {
+    let alive = true;
+    (async () => {
       const weeksAvailable = getWeeksAvailable();
       const games = getGamesForWeek(week);
-
-      const engineResult = tdEngine(games, { week });
-      const { candidates: rows = [], diagnostics: diag = {} } = Array.isArray(engineResult)
-        ? { candidates: engineResult, diagnostics: {} }
-        : (engineResult || {});
-
-      const odds = await fetchNflOdds(week);
-
-      setCandidates(rows);
-      setDiagnostics({
-        ...diag,
-        weeksAvailable: weeksAvailable.length,
-        games: games.length,
-        offers: odds?.offers?.length || 0,
-        usingOddsApi: !!odds?.usingOddsApi,
-      });
-    }
-    run();
+      try {
+        const odds = await fetchNflOdds(week);
+        if (alive) {
+          setOffers(odds?.offers || []);
+          setUsingOddsApi(!!odds?.usingOddsApi);
+        }
+      } catch {
+        if (alive) {
+          setOffers([]);
+          setUsingOddsApi(false);
+        }
+      }
+      try {
+        const { candidates: rows, diagnostics: diag } = await tdEngine(games, {
+          week,
+          offers,
+          requireOdds: false,
+        });
+        if (alive) {
+          setCandidates(rows || []);
+          setDiagnostics({
+            ...(diag || {}),
+            weeksAvailable: weeksAvailable.length,
+            games: games.length,
+            offers: (odds?.offers?.length) || 0,
+            usingOddsApi
+          });
+        }
+      } catch (e) {
+        console.warn("tdEngine shim error:", e);
+        if (alive) {
+          setCandidates([]);
+          setDiagnostics({
+            weeksAvailable: weeksAvailable.length,
+            games: games.length,
+            offers: 0,
+            usingOddsApi
+          });
+        }
+      }
+    })();
+    return () => { alive = false; };
   }, [week]);
 
   return (
@@ -50,59 +77,50 @@ export default function NFL() {
           ))}
         </select>
       </div>
-
       {diagnostics && (
         <p className="mt-2 text-xs text-gray-600">
-          Using OddsAPI: {diagnostics.usingOddsApi ? "yes" : "no"} • offers: {diagnostics.offers}
+          Using OddsAPI: {usingOddsApi ? "yes" : "no"} • offers: {offers.length}
           <br />
           data (last 3 yrs): ok • diagnostics — weeks:{diagnostics.weeksAvailable} games:{diagnostics.games} candidates:{candidates.length}
         </p>
       )}
-
       <div className="mt-4 overflow-x-auto">
         <table className="table-auto border-collapse border border-gray-400 text-xs min-w-full">
           <thead>
             <tr>
-              <th className="border border-gray-400 px-2 py-1">Player</th>
-              <th className="border border-gray-400 px-2 py-1">Team</th>
-              <th className="border border-gray-400 px-2 py-1">Game</th>
-              <th className="border border-gray-400 px-2 py-1">Model TD%</th>
-              <th className="border border-gray-400 px-2 py-1">RZ path</th>
-              <th className="border border-gray-400 px-2 py-1">EXP path</th>
-              <th className="border border-gray-400 px-2 py-1">Odds</th>
-              <th className="border border-gray-400 px-2 py-1">EV (1u)</th>
-              <th className="border border-gray-400 px-2 py-1">Why</th>
+              <th className="border px-2 py-1 text-left">Player</th>
+              <th className="border px-2 py-1 text-left">Team</th>
+              <th className="border px-2 py-1 text-left">Game</th>
+              <th className="border px-2 py-1 text-right">Model TD%</th>
+              <th className="border px-2 py-1 text-right">RZ path</th>
+              <th className="border px-2 py-1 text-right">EXP path</th>
+              <th className="border px-2 py-1 text-right">Odds</th>
+              <th className="border px-2 py-1 text-right">EV (1u)</th>
+              <th className="border px-2 py-1 text-left">Why</th>
             </tr>
           </thead>
           <tbody>
             {candidates.length === 0 ? (
-              <tr>
-                <td className="border border-gray-400 px-2 py-2 text-center" colSpan={9}>
-                  No candidates yet.
-                </td>
-              </tr>
+              <tr><td className="border px-2 py-2 text-center" colSpan={9}>No candidates yet.</td></tr>
             ) : (
               candidates.map((c, i) => (
                 <tr key={i}>
-                  <td className="border border-gray-400 px-2 py-1">{c.player}</td>
-                  <td className="border border-gray-400 px-2 py-1">{c.team}</td>
-                  <td className="border border-gray-400 px-2 py-1">{c.game}</td>
-                  <td className="border border-gray-400 px-2 py-1">{c.modelTdPct}%</td>
-                  <td className="border border-gray-400 px-2 py-1">{c.rzPath}%</td>
-                  <td className="border border-gray-400 px-2 py-1">{c.expPath}%</td>
-                  <td className="border border-gray-400 px-2 py-1">{c.oddsAmerican || "-"}</td>
-                  <td className="border border-gray-400 px-2 py-1">{typeof c.ev1u === "number" ? c.ev1u.toFixed(3) : "-"}</td>
-                  <td className="border border-gray-400 px-2 py-1">{c.why}</td>
+                  <td className="border px-2 py-1">{c.player}</td>
+                  <td className="border px-2 py-1">{c.team}</td>
+                  <td className="border px-2 py-1">{c.game}</td>
+                  <td className="border px-2 py-1 text-right">{c.modelTdPct || "-"}</td>
+                  <td className="border px-2 py-1 text-right">{c.rzPath ?? "-"}</td>
+                  <td className="border px-2 py-1 text-right">{c.expPath ?? "-"}</td>
+                  <td className="border px-2 py-1 text-right">{c.oddsAmerican ?? "-"}</td>
+                  <td className="border px-2 py-1 text-right">{typeof c.ev1u === "number" ? c.ev1u.toFixed(3) : "-"}</td>
+                  <td className="border px-2 py-1">{c.why || ""}</td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
-
-      <div className="mt-4">
-        <NflTdExplainer />
-      </div>
+      <div className="mt-4"><NflTdExplainer /></div>
     </div>
   );
 }
