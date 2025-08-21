@@ -1,0 +1,60 @@
+
+# How to link the NFL NegCorr page at the SAME URL without touching TD/HR
+
+**Target URL:** `/nfl-negcorr` (matches your current navbar link)
+
+## If you use React Router v6 in `src/App.jsx` (common):
+1) Open `src/App.jsx` (or wherever your `<Routes>` live).
+2) Add the import:
+   ```jsx
+   import NFLNegCorrPage from './routes/NFLNegCorr.jsx';
+   ```
+3) Add the route:
+   ```jsx
+   <Route path="/nfl-negcorr" element={<NFLNegCorrPage/>} />
+   ```
+4) (If your app uses a base `<HashRouter>`, make the path `#/nfl-negcorr` in the navbar only; the `<Route>` stays `/nfl-negcorr`.)
+
+## If you centralize routes (e.g., `src/routes.jsx`):
+1) Add:
+   ```jsx
+   { path: '/nfl-negcorr', element: <NFLNegCorrPage/> }
+   ```
+   and import the page.
+
+## Navbar link (no changes to TD/HR):
+Add (or ensure) a link item:
+```jsx
+<Link to="/nfl-negcorr">NFL NegCorr</Link>
+```
+If you use external `href` anchors (not `Link`), set `href="/nfl-negcorr"`.
+
+## Netlify SPA routing:
+Make sure your `public/_redirects` contains:
+```
+/*    /index.html   200
+```
+(You likely already have this for other pages.)
+
+---
+
+# Odds API key without affecting existing env vars
+
+- This module **prefers** `ODDS_API_KEY_NEGCORR`. If not set, it **falls back** to your existing `ODDS_API_KEY`. That means you can:
+  - Leave your MLB/TD env as‑is, OR
+  - Give NegCorr its **own** key limit by adding `ODDS_API_KEY_NEGCORR`.
+
+## Add in Netlify (safe):
+1) Netlify → Site → **Site settings** → **Build & deploy** → **Environment** → **Environment variables**.
+2) Click **Add variable**:
+   - Key: `ODDS_API_KEY_NEGCORR`
+   - Value: `<your TheOddsAPI key>`
+3) Save → Redeploy.
+
+No existing variables are modified. The NegCorr function filename is unique: `odds-nfl-negcorr.cjs`.
+
+---
+
+# Smoke test
+- Visit `/nfl-negcorr`. If you see players with suggested lines, routing is good.
+- If odds key is present, the page will show “Using TheOddsAPI”; otherwise it stays odds‑agnostic.
