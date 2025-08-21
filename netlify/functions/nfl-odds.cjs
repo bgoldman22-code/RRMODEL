@@ -1,100 +1,124 @@
 // netlify/functions/nfl-odds.cjs
-// Odds fetcher with verbose debug logs and robust aliasing for DraftKings Anytime TD.
-// Returns { ok, usingOddsApi, offers: [], marketTried: [], bookmaker, debug } when debug=1.
-
-const DEFAULT_MARKETS = [
+// DraftKings "Anytime TD" odds → normalized offers[]
+// Node 20 native fetch. Supports ?book= & ?market= & ?debug=1
+const DEFAULT_MARKET_ALIASES = [
   "player_anytime_td",
   "player_touchdown_anytime",
   "anytime_td",
   "touchdown_scorer_anytime"
 ];
 
-function pickBookmaker(event) {
-  const q = (event?.queryStringParameters?.book || "").toLowerCase().trim();
-  const env = (process.env.ODDSAPI_BOOKMAKER_NFL || "").toLowerCase().trim();
-  return q || env || "draftkings";
-}
+const pick = (q, env, def) => {
+  const v = (q ?? env ?? "").toString().trim();
+  return v || def;
+};
 
-function pickMarkets(event) {
-  const q = (event?.queryStringParameters?.market || "").toLowerCase().trim();
-  const env = (process.env.ODDSAPI_MARKET_NFL || "").toLowerCase().trim();
-  const primary = q || env || "player_anytime_td";
-  const list = [primary, ...DEFAULT_MARKETS];
-  // ensure unique, lowercase
-  return Array.from(new Set(list.map(s => s.toLowerCase().trim())));
-}
+const toDecimal = (american) => {
+  const num = Number(String(american ?? "").replace(/[^\-0-9]/g, ""));
+  if (!Number.isFinite(num)) return null;
+  return num > 0 ? 1 + num / 100 : 1 + 100 / Math.abs(num);
+};
 
-function normalizeOffer(o, book) {
-  const selection = o.title || o.name || o.player || (o.outcomes && o.outcomes[0] && o.outcomes[0].name) || o.selection;
-  let american = o.american || (o.price && o.price.american);
-  let decimal = o.decimal || (o.price && o.price.decimal);
-  if (!decimal && typeof american === "number") {
-    decimal = american > 0 ? 1 + american/100 : 1 + 100/Math.abs(american);
-  }
-  return { book: book || o.book || "DraftKings", selection, american, decimal };
-}
+const normOffer = (bookTitle, outcome) => {
+  const selection = outcome?.name || outcome?.title || outcome?.player || outcome?.label;
+  const american = outcome?.price?.american ?? outcome?.american ?? null;
+  const decimal = outcome?.price?.decimal ?? outcome?.decimal ?? toDecimal(american);
+  return { book: bookTitle || "unknown", selection, american, decimal };
+};
 
-module.exports.handler = async (event) => {
+exports.handler = async (event) => {
+  const qs = event?.queryStringParameters || {};
+  const debug = qs.debug === "1" || qs.debug === "true";
+  const SPORT = "americanfootball_nfl";
   const API_KEY = process.env.ODDS_API_KEY_NFL || process.env.VITE_ODDS_API_KEY || process.env.ODDS_API_KEY;
-  const bookmaker = pickBookmaker(event);
-  const markets = pickMarkets(event);
-  const debug = (event?.queryStringParameters?.debug === "1");
-  const sport = "americanfootball_nfl";
-  const base = `https://api.the-odds-api.com/v4/sports/${sport}/odds`;
-  const region = "us";
+
+  // Book + market (query overrides env)
+  const bookmaker = pick(qs.book, process.env.ODDSAPI_BOOKMAKER_NFL, "draftkings").toLowerCase();
+  const marketPref = pick(qs.market, process.env.ODDSAPI_MARKET_NFL, "player_anytime_td").toLowerCase();
+  const marketsToTry = Array.from(new Set([marketPref, ...DEFAULT_MARKET_ALIASES]));
 
   if (!API_KEY) {
-    const body = { ok: true, usingOddsApi: false, offers: [], meta: { sport, markets }, note: "No ODDS_API_KEY_NFL set" };
-    return { statusCode: 200, body: JSON.stringify(body) };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        ok: true,
+        usingOddsApi: false,
+        offers: [],
+        meta: { sport: SPORT, markets: marketsToTry, reason: "no_api_key" }
+      })
+    };
   }
 
-  let lastErr = null;
-  let marketTried = [];
-  let firstRawSample = null;
-  let offers = [];
+  const base = `https://api.the-odds-api.com/v4/sports/${SPORT}/odds`;
+  let lastError = null;
 
-  for (const market of markets) {
-    const url = `${base}?regions=${region}&markets=${encodeURIComponent(market)}&bookmakers=${encodeURIComponent(bookmaker)}&apiKey=${API_KEY}`;
-    marketTried.push(market);
+  for (const market of marketsToTry) {
     try {
-      const res = await fetch(url, { headers: { "Accept": "application/json" } });
+      const url = `${base}?regions=us&markets=${encodeURIComponent(market)}&bookmakers=${encodeURIComponent(bookmaker)}&apiKey=${API_KEY}`;
+      if (debug) console.log("[nfl-odds] GET", url);
+      const res = await fetch(url, { headers: { Accept: "application/json", "User-Agent": "NetlifyFns/odds" } });
       if (!res.ok) throw new Error(`http ${res.status}`);
       const data = await res.json();
-      if (debug && firstRawSample === null) {
-        firstRawSample = Array.isArray(data) ? data.slice(0,1) : data;
-        console.log("[nfl-odds] raw sample", JSON.stringify(firstRawSample).slice(0, 2000));
+
+      if (debug) {
+        const sample = Array.isArray(data) && data[0] ? data[0] : null;
+        console.log("[nfl-odds] raw sample event:", sample ? JSON.stringify(sample).slice(0, 2000) : "null");
       }
-      if (!Array.isArray(data) || data.length === 0) {
-        if (debug) console.log("[nfl-odds] empty data array for market", market);
-        continue;
-      }
-      for (const ev of data) {
-        if (debug) console.log("[nfl-odds] event", ev?.id || ev?.commence_time || "no-id");
-        const books = ev.bookmakers || [];
-        for (const bk of books) {
-          const bktitle = (bk.title || bk.key || "").toLowerCase();
-          if (!bktitle.includes(bookmaker)) continue;
-          const mkts = bk.markets || [];
-          for (const mk of mkts) {
-            const oc = mk.outcomes || [];
-            for (const outcome of oc) {
-              offers.push(normalizeOffer(outcome, bk.title));
+
+      const offers = [];
+      for (const ev of (Array.isArray(data) ? data : [])) {
+        for (const bk of (ev.bookmakers || [])) {
+          const title = (bk.title || bk.key || "").toString().toLowerCase();
+          if (!title.includes(bookmaker)) continue;
+          if (debug) console.log("[nfl-odds] bookmaker match:", title);
+          for (const mk of (bk.markets || [])) {
+            const mkey = (mk.key || mk.market || "").toString().toLowerCase();
+            const accept = (mkey === market) || DEFAULT_MARKET_ALIASES.includes(mkey) || mkey.includes("anytime");
+            if (!accept) continue;
+            if (debug) console.log("[nfl-odds] market match:", mkey);
+            for (const oc of (mk.outcomes || [])) {
+              const o = normOffer(bk.title || title, oc);
+              if (o.selection) offers.push(o);
             }
           }
         }
       }
+
       if (offers.length > 0) {
-        const body = { ok: true, usingOddsApi: true, offers, bookmaker, marketUsed: market, marketTried };
-        if (debug) body.debug = { url, sample: firstRawSample };
-        return { statusCode: 200, body: JSON.stringify(body) };
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            ok: true,
+            usingOddsApi: true,
+            offers,
+            meta: { sport: SPORT, marketTried: market, bookmaker }
+          })
+        };
       }
+
+      lastError = `no_offers_for_${bookmaker}_${market}`;
+      // continue to next alias
     } catch (e) {
-      lastErr = String(e);
-      if (debug) console.log("[nfl-odds] fetch error", market, lastErr);
-      continue;
+      lastError = String(e);
+      if (debug) console.log("[nfl-odds] fetch error:", lastError);
+      // continue to next alias
     }
   }
 
-  const body = { ok: true, usingOddsApi: true, offers: [], meta: { sport, markets: marketTried }, error: lastErr || null };
-  return { statusCode: 200, body: JSON.stringify(body) };
+  // Week 1 & shoulder periods can be sparse; return explicit meta so UI can show model-only
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      ok: true,
+      usingOddsApi: true,
+      offers: [],
+      meta: {
+        sport: SPORT,
+        markets: marketsToTry,
+        bookmaker,
+        message: "no offers found across tried markets; render model-only",
+        lastError
+      }
+    })
+  };
 };

@@ -1,11 +1,19 @@
 // src/nfl/oddsClient.js
+// Fetch NFL odds from Netlify function. Always returns { offers: [] } shape and a modelOnly flag if empty.
 export async function fetchNflOdds(week) {
-  const qs = new URLSearchParams();
-  if (typeof week === "number") qs.set("week", String(week));
-  const url = `/.netlify/functions/nfl-odds?${qs.toString()}`;
-  const res = await fetch(url);
-  const j = await res.json();
-  // tolerate both shapes: {offers:[]} or legacy {props:[]}
-  const offers = Array.isArray(j.offers) ? j.offers : (Array.isArray(j.props) ? j.props : []);
-  return { usingOddsApi: !!j.usingOddsApi, offers, meta: j.meta, bookmaker: j.bookmaker || j.book, error: j.error };
+  try {
+    const res = await fetch(`/.netlify/functions/nfl-odds`);
+    const json = await res.json();
+    const offers = Array.isArray(json.offers) ? json.offers : Array.isArray(json.props) ? json.props : [];
+    return {
+      ok: !!json.ok,
+      usingOddsApi: !!json.usingOddsApi,
+      offers,
+      modelOnly: offers.length === 0, // UI/engine can use this to display model-only results
+      meta: json.meta || {},
+      error: json.error || json.message || null
+    };
+  } catch (e) {
+    return { ok: false, usingOddsApi: false, offers: [], modelOnly: true, meta: { error: String(e) } };
+  }
 }
