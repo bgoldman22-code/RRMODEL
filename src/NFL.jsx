@@ -1,84 +1,47 @@
 // src/NFL.jsx
-import React, { useMemo, useState, useEffect } from "react";
-import { ENABLE_NFL_TD } from "./config/features";
-import { getWeeksAvailable, getGamesForWeek } from "./utils/nflSchedule";
+import React, { useEffect, useMemo, useState } from "react";
 import tdEngine from "./nfl/tdEngine.js";
+import { getWeeksAvailable, getGamesForWeek } from "./utils/nflSchedule.js";
+import NflTdExplainer from "./components/NflTdExplainer.jsx";
 import { fetchNflOdds } from "./nfl/oddsClient.js";
 
-function americanToDecimal(american) {
-  if (american == null) return null;
-  const a = Number(american);
-  if (!isFinite(a)) return null;
-  if (a > 0) return 1 + a / 100;
-  return 1 + 100 / Math.abs(a);
-}
-function impliedFromAmerican(american){
-  const a = Number(american);
-  if (!isFinite(a)) return null;
-  if (a > 0) return 100 / (a + 100);
-  return Math.abs(a) / (Math.abs(a) + 100);
-}
-function evOneUnit(p, american){
-  const dec = americanToDecimal(american);
-  if (!dec || p == null) return null;
-  return p * (dec - 1) - (1 - p);
-}
-
 export default function NFL() {
-  if (!ENABLE_NFL_TD) {
-    return (
-      <div className="p-6 max-w-6xl mx-auto">
-        <h1 className="text-2xl font-bold mb-2">NFL — Anytime TD</h1>
-        <p className="opacity-70 text-sm">This feature is currently disabled.</p>
-      </div>
-    );
-  }
-
   const weeks = getWeeksAvailable();
   const [week, setWeek] = useState(weeks[0] ?? 1);
   const games = useMemo(() => getGamesForWeek(week), [week]);
 
-  // Odds
+  // odds
   const [odds, setOdds] = useState({ usingOddsApi: false, offers: [], count: 0 });
   useEffect(() => {
     let alive = true;
-    fetchNflOdds({ week }).then(d => { if (alive) setOdds(d || { usingOddsApi:false, offers:[], count:0 }); });
+    fetchNflOdds({ week })
+      .then(d => { if (alive) setOdds(d || { usingOddsApi: false, offers: [], count: 0 }); })
+      .catch(() => {});
     return () => { alive = false; };
   }, [week]);
 
+  // roster status meta
+  const [rosterMeta, setRosterMeta] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    fetch('/.netlify/functions/nfl-data')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(j => {
+        if (!alive) return;
+        const meta = j?.data?.["meta-rosters.json"] || null;
+        setRosterMeta(meta);
+      }).catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
   const candidates = useMemo(
-    () => tdEngine(games, { offers: odds.offers || [] }),
-    [games, odds.offers]
+    () => (tdEngine(games, { offers: odds.offers || [], usingOdds: !!odds.usingOddsApi }) || []),
+    [games, odds.offers, odds.usingOddsApi]
   );
 
-  console.log("[NFL TD diagnostics]", { weeksAvailable: weeks.length, selectedWeek: week, games: games.length, usingOddsApi: odds.usingOddsApi, offers: odds.offers?.length ?? 0, engineCandidates: candidates.length });
-
-  // Build a fast name->offer map (case-insensitive)
-  const offerMap = useMemo(() => {
-    const m = new Map();
-    for (const o of odds.offers || []) {
-      if (!o?.player) continue;
-      m.set(o.player.toLowerCase(), o);
-    }
-    return m;
-  }, [odds.offers]);
-
-  function findOfferFor(name){
-    if (!name) return null;
-    const key = name.toLowerCase();
-    if (offerMap.has(key)) return offerMap.get(key);
-    // fallback: try last name
-    const parts = key.split(" ");
-    const last = parts[parts.length-1];
-    for (const [k, v] of offerMap.entries()){
-      if (k.endsWith(" " + last) || k === last) return v;
-    }
-    return null;
-  }
-
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-4">
+    <div className="p-6 max-w-6xl mx-auto">
+      <div className="flex items-center justify-between mb-2">
         <h1 className="text-2xl font-bold">NFL — Anytime TD</h1>
         <div className="flex items-center gap-2">
           <label className="text-sm opacity-70">Week:</label>
@@ -88,16 +51,23 @@ export default function NFL() {
             onChange={(e) => setWeek(parseInt(e.target.value, 10))}
           >
             {weeks.map((w) => (
-              <option key={w} value={w}>
-                Week {w}
-              </option>
+              <option key={w} value={w}>Week {w}</option>
             ))}
           </select>
         </div>
       </div>
 
-      <p className="text-sm opacity-70 mb-1">Using OddsAPI: {odds.usingOddsApi ? 'yes' : 'no'} • offers: {odds.count ?? (odds.offers?.length ?? 0)}</p>
-      <p className="text-xs opacity-60 mb-4">data (last 3 yrs): ok • diagnostics — weeks:{weeks.length} games:{games.length} candidates:{candidates.length}</p>
+      {/* Status lines */}
+      <p className="text-sm opacity-70">
+        Using OddsAPI: {odds.usingOddsApi ? 'yes' : 'no'} • offers: {odds.count ?? (odds.offers?.length ?? 0)}
+      </p>
+      <p className="text-xs opacity-60 mb-4">
+        {rosterMeta
+          ? <>Rosters updated: {new Date(rosterMeta.updated_at).toLocaleString()} • provider: {rosterMeta.provider || '—'}</>
+          : <>Rosters updated: —</>}
+      </p>
+
+      <p className="text-sm opacity-70 mb-4">data (last 3 yrs): ok • diagnostics — weeks:{weeks.length} games:{games.length} candidates:{candidates.length}</p>
 
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
@@ -115,30 +85,26 @@ export default function NFL() {
             </tr>
           </thead>
           <tbody>
-            {candidates.length === 0 && (
-              <tr><td colSpan="9" className="py-4 text-center opacity-70">No candidates yet.</td></tr>
-            )}
-            {candidates.map((c, i) => {
-              const offer = findOfferFor(c.player);
-              const american = offer?.american ?? null;
-              const ev = evOneUnit(c.model_td_pct, american);
-              return (
-                <tr key={i} className="border-b last:border-0">
-                  <td className="py-1 pr-3">{c.player}</td>
-                  <td className="py-1 pr-3">{c.team}</td>
-                  <td className="py-1 pr-3">{c.game}</td>
-                  <td className="py-1 pr-3">{(c.model_td_pct * 100).toFixed(1)}%</td>
-                  <td className="py-1 pr-3">{american ?? '—'}</td>
-                  <td className="py-1 pr-3">{ev == null ? '—' : ev.toFixed(3)}</td>
-                  <td className="py-1 pr-3">{(c.rz_path_pct * 100).toFixed(1)}%</td>
-                  <td className="py-1 pr-3">{(c.exp_path_pct * 100).toFixed(1)}%</td>
-                  <td className="py-1 pr-3">{c.why}</td>
-                </tr>
-              );
-            })}
+            {candidates.length === 0 ? (
+              <tr><td className="py-3" colSpan={9}>No candidates yet.</td></tr>
+            ) : candidates.map((c, i) => (
+              <tr key={i} className="border-b last:border-0">
+                <td className="py-1 pr-3">{c.player}</td>
+                <td className="py-1 pr-3">{c.team}</td>
+                <td className="py-1 pr-3">{c.game}</td>
+                <td className="py-1 pr-3">{(c.model_td_pct * 100).toFixed(1)}%</td>
+                <td className="py-1 pr-3">{c.odds_american ?? '—'}</td>
+                <td className="py-1 pr-3">{c.ev_1u != null ? c.ev_1u.toFixed(2) : '—'}</td>
+                <td className="py-1 pr-3">{(c.rz_path_pct * 100).toFixed(1)}%</td>
+                <td className="py-1 pr-3">{(c.exp_path_pct * 100).toFixed(1)}%</td>
+                <td className="py-1 pr-3">{c.why}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
+
+      <NflTdExplainer />
     </div>
   );
 }
