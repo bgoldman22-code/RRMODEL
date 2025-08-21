@@ -1,152 +1,99 @@
 // src/nfl/tdEngine.js
-// Baseline Anytime TD engine (RZ + Explosive) with odds-agnostic fallback.
-// Works even if offers == [] by using local 3yr aggregates & tendencies.
-// Exports both default and named for import flexibility.
-
-import pbpAgg from '../../data/nfl-td/pbp-aggregates-2022-2024.json';
+import pbp from '../../data/nfl-td/pbp-aggregates-2022-2024.json';
 import tendencies from '../../data/nfl-td/team-tendencies.json';
-import oppDef from '../../data/nfl-td/opponent-defense.json';
+import defense from '../../data/nfl-td/opponent-defense.json';
 import depth from '../../data/nfl-td/depth-charts.json';
-import playerExp from '../../data/nfl-td/player-explosive.json';
+import playerExplosive from '../../data/nfl-td/player-explosive.json';
 
-function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
-function nz(x, v=0) { return (x===undefined || x===null || Number.isNaN(x)) ? v : x; }
+function clamp(x, lo, hi){ return Math.max(lo, Math.min(hi, x)); }
 
-function teamKey(code){ return code; }
+export function tdEngine(games, opts = {}){
+  const { offers = [], usingOdds = false } = opts;
+  const W = tendencies.weights || { w_rz: 0.65, w_exp: 0.30, w_vult: 0.05 };
+  const posShare = tendencies.pos_shares || { RB:{rz:0.48}, WR:{rz:0.32}, TE:{rz:0.15}, QB:{rz:0.05} };
+  const inside5 = tendencies.inside5_bias || { RB:0.6, WR:0.2, TE:0.15, QB:0.05 };
 
-function playerListForTeam(team){
-  const dc = depth[team];
-  if(!dc) return [];
-  const out = [];
-  const add = (pos, name, share=1) => { if(name){ out.push({player:name, pos, share}); } };
-  // Basic extraction; adjust as needed based on your depth-charts.json structure
-  ['RB1','RB2','FB','WR1','WR2','WR3','WR4','TE1','TE2','QB1'].forEach(k=>{
-    const name = dc[k];
-    if(name) add(k.replace(/[0-9]/g,''), name, 1);
-  });
-  return out;
-}
-
-function modelForTeamVs(team, opp){
-  const tkey = teamKey(team);
-  const okey = teamKey(opp);
-  const agg = pbpAgg[tkey] || {};
-  const tend = tendencies[tkey] || { w_rz:0.65, w_exp:0.3, w_vult:0.05, rz_pos_share:{RB:0.5, WR:0.35, TE:0.12, QB:0.03} };
-  const od = oppDef[okey] || { rz_allow:{RB:0.35, WR:0.3, TE:0.28, QB:0.07}, exp_allow:{rush:0.08, rec:0.09} };
-  const rzTrips = nz(agg.rz_trips_pg, 3.0);
-  const vultureProb = clamp(nz(agg.vulture_prob, 0.08), 0, 0.3);
-  return { rzTrips, tend, od, vultureProb };
-}
-
-function posOf(k){
-  if(k.startsWith('RB')) return 'RB';
-  if(k.startsWith('WR')) return 'WR';
-  if(k.startsWith('TE')) return 'TE';
-  if(k.startsWith('QB')) return 'QB';
-  if(k==='FB') return 'RB';
-  return 'WR';
-}
-
-function playerExplosiveIdx(name, pos){
-  const p = playerExp[name];
-  if(!p) return 0.5;
-  // Map 0-100 to 0-1
-  if(typeof p.explosive_idx === 'number') return clamp(p.explosive_idx/100, 0, 1);
-  // or compute from components if available
-  return clamp(nz(p.deep_share,0.1)*0.4 + nz(p.yac_per_tgt,0.2)*0.3 + nz(p.breakaway,0.1)*0.3, 0, 1);
-}
-
-function buildCandidatesForGame(game){
-  const { away, home } = game;
-  const rows = [];
-
-  const teams = [
-    { atk: away, def: home, game: `${away} @ ${home}`, side:'away' },
-    { atk: home, def: away, game: `${away} @ ${home}`, side:'home' }
-  ];
-
-  teams.forEach(({atk, def, game})=>{
-    const { rzTrips, tend, od, vultureProb } = modelForTeamVs(atk, def);
-    const pool = playerListForTeam(atk);
-    // Assign naive internal depth shares by position
-    const posDepthShares = { RB: [0.6, 0.3, 0.1], WR: [0.4,0.3,0.2,0.1], TE: [0.75,0.25], QB:[1.0] };
-
-    // Build position-index list from depth keys order
-    const dc = depth[atk] || {};
-    const ordered = [];
-    ['RB1','RB2','FB','WR1','WR2','WR3','WR4','TE1','TE2','QB1'].forEach(key=>{
-      if(dc[key]) ordered.push({name:dc[key], key});
-    });
-
-    ordered.forEach(({name, key}, idx)=>{
-      const pos = posOf(key);
-      const posShare = nz((tend.rz_pos_share||{})[pos], 0.2);
-      const depthIdx = (pos==='RB') ? ['RB1','RB2','FB'].indexOf(key) :
-                       (pos==='WR') ? ['WR1','WR2','WR3','WR4'].indexOf(key) :
-                       (pos==='TE') ? ['TE1','TE2'].indexOf(key) :
-                       (pos==='QB') ? 0 : 0;
-      const depthArray = posDepthShares[pos] || [1];
-      const depthShare = depthArray[depthIdx] ?? depthArray[depthArray.length-1] ?? 1;
-
-      // RZ path
-      const posRzAllow = nz((od.rz_allow||{})[pos], 0.28);
-      const P_RZ = clamp(rzTrips/4.0 * posShare * depthShare * posRzAllow, 0, 0.8);
-
-      // EXP path
-      const expIdx = playerExplosiveIdx(name, pos); // 0..1
-      const expAllow = (pos==='RB') ? nz((od.exp_allow||{}).rush, 0.08) : nz((od.exp_allow||{}).rec, 0.09);
-      const P_EXP = clamp(expAllow * (0.5 + 0.8*expIdx), 0, 0.5);
-
-      // Vulture
-      const vultPenalty = (pos==='RB') ? vultureProb * (depthIdx>0 ? 0.4 : 0.15) : 0.0;
-
-      const w_rz = nz(tend.w_rz, 0.65), w_exp = nz(tend.w_exp, 0.30), w_vult = nz(tend.w_vult, 0.05);
-      let P_TD = clamp(w_rz*P_RZ + w_exp*P_EXP - w_vult*vultPenalty, 0, 0.95);
-
-      rows.push({
-        player: name,
-        team: atk,
-        game,
-        model_td_pct: P_TD,
-        rz_path_pct: clamp(P_RZ, 0, 1),
-        exp_path_pct: clamp(P_EXP, 0, 1),
-        why: buildWhy({name, pos, P_RZ, P_EXP, posShare, expIdx, od})
-      });
-    });
-  });
-
-  // Sort by model probability and return top n
-  rows.sort((a,b)=> b.model_td_pct - a.model_td_pct);
-  return rows.slice(0, 30);
-}
-
-function buildWhy({name, pos, P_RZ, P_EXP, posShare, expIdx, od}){
-  const bits = [];
-  if(P_RZ > 0.10) bits.push('strong RZ share');
-  if(P_EXP > 0.06) bits.push('live for explosive play');
-  if(posShare >= 0.4) bits.push('team favors this position in RZ');
-  const vsTag = (od && od.rz_allow && od.rz_allow[pos]) ? `vs RZ allow ${(od.rz_allow[pos]*100).toFixed(0)}%` : null;
-  if(vsTag) bits.push(vsTag);
-  if(expIdx >= 0.6) bits.push('high explosive index');
-  return bits.slice(0,3).join(' • ') || 'balanced profile';
-}
-
-/**
- * tdEngine
- * @param {Array} games - [{ away, home, date }]
- * @param {Object} opts - { offers?: [], usingOdds?: boolean }
- * @returns Array of candidate rows
- */
-export function tdEngine(games, opts={}){
-  const list = Array.isArray(games) ? games : [];
-  if(list.length===0) return [];
-  try{
-    const rows = list.flatMap(g => buildCandidatesForGame(g));
-    return rows;
-  }catch(err){
-    console.error('[tdEngine] error', err);
-    return [];
+  // Build a simple map of anytime TD odds by player if offers are supplied (optional for later EV calc).
+  const oddsByPlayer = new Map();
+  for(const o of offers){
+    if(o && o.player){ oddsByPlayer.set(o.player, o); }
   }
+
+  const rows = [];
+  for(const g of games){
+    const away = g.away, home = g.home;
+    const defHome = defense[home] || defense['BUF']; // fallback to any
+    const defAway = defense[away] || defense['BUF'];
+    const teams = [
+      { tm: away, opp: home, oppDef: defHome, venue: `${away} @ ${home}` },
+      { tm: home, opp: away, oppDef: defAway, venue: `${away} @ ${home}` },
+    ];
+    for(const side of teams){
+      const tm = side.tm, opp = side.opp, oppDef = side.oppDef;
+      const rzTrips = (pbp[tm]?.rz_trips_pg) ?? 3.0;
+      const vult = (pbp[tm]?.vulture_prob) ?? 0.10;
+
+      const RB1 = depth[tm]?.RB1;
+      const WR1 = depth[tm]?.WR1;
+      const TE1 = depth[tm]?.TE1;
+      const QB1 = depth[tm]?.QB1;
+      const players = [
+        { name: RB1, pos:'RB' },
+        { name: WR1, pos:'WR' },
+        { name: TE1, pos:'TE' },
+        { name: QB1, pos:'QB' },
+      ].filter(p => !!p.name);
+
+      for(const p of players){
+        const sharePos = posShare[p.pos]?.rz ?? 0.2;
+        // Depth share: we only model the top option per position for now
+        const depthShare = 0.8; // 80% of position share
+        // RZ component (bounded to reasonable per-game TD probability)
+        const oppAllow = oppDef?.rz_allow?.[p.pos] ?? 0.2;
+        let P_RZ = clamp((rzTrips * sharePos * depthShare * oppAllow), 0, 0.85);
+        // Normalize rough scale to probability (empirical): divide by ~3 to fit per-game TD prob scale
+        P_RZ = clamp(P_RZ / 3.0, 0, 0.7);
+
+        // Explosive component
+        const expIdx = (playerExplosive[p.name]?.explosive_idx ?? 50) / 100.0;
+        const expAllow = (p.pos === 'RB') ? (oppDef?.exp_allow?.rush ?? 0.10) : (oppDef?.exp_allow?.rec ?? 0.14);
+        let P_EXP = clamp(expAllow * expIdx, 0, 0.5);
+        // Mild dampener so EXP isn't overpowering
+        P_EXP = P_EXP * 0.6;
+
+        // Vulture penalty proportional to inside-5 bias for the player's position (RB hit most)
+        const vultPen = vult * (inside5[p.pos] ?? 0.1) * 0.5; // keep small
+
+        // Combine
+        let P = W.w_rz * P_RZ + W.w_exp * P_EXP - W.w_vult * vultPen;
+        P = clamp(P, 0.01, 0.75);
+
+        // Row
+        const model_td_pct = P;
+        const rz_path_pct = clamp((W.w_rz * P_RZ) / P, 0, 1);
+        const exp_path_pct = clamp((W.w_exp * P_EXP) / P, 0, 1);
+        const why = [
+          `${tm} RZ trips ~${rzTrips}/g`,
+          `${p.pos} share ${(sharePos*100)|0}%`,
+          `vs ${opp} RZ allow ${(oppAllow*100)|0}%`,
+          `EXP idx ${Math.round((playerExplosive[p.name]?.explosive_idx ?? 50))}`
+        ].join(' • ');
+
+        rows.push({
+          player: p.name,
+          team: tm,
+          game: side.venue,
+          model_td_pct,
+          rz_path_pct,
+          exp_path_pct,
+          why
+        });
+      }
+    }
+  }
+  // Sort and return top N
+  rows.sort((a,b) => b.model_td_pct - a.model_td_pct);
+  return rows.slice(0, 30);
 }
 
 export default tdEngine;

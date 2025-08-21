@@ -1,139 +1,194 @@
 {
-  "PHI": {
-    "QB": [
-      "Jalen Hurts"
-    ],
-    "RB": [
-      "Saquon Barkley",
-      "Kenneth Gainwell",
-      "FB"
-    ],
-    "WR": [
-      "A.J. Brown",
-      "DeVonta Smith",
-      "Parris Campbell"
-    ],
-    "TE": [
-      "Dallas Goedert"
-    ]
+  "ARI": {
+    "RB1": "ARI RB1",
+    "WR1": "ARI WR1",
+    "TE1": "ARI TE1",
+    "QB1": "ARI QB1"
   },
-  "DAL": {
-    "QB": [
-      "Dak Prescott"
-    ],
-    "RB": [
-      "Ezekiel Elliott",
-      "Rico Dowdle"
-    ],
-    "WR": [
-      "CeeDee Lamb",
-      "Brandin Cooks",
-      "Jalen Tolbert"
-    ],
-    "TE": [
-      "Jake Ferguson"
-    ]
-  },
-  "KC": {
-    "QB": [
-      "Patrick Mahomes"
-    ],
-    "RB": [
-      "Isiah Pacheco",
-      "Clyde Edwards-Helaire"
-    ],
-    "WR": [
-      "Rashee Rice",
-      "Marquise Brown",
-      "Xavier Worthy"
-    ],
-    "TE": [
-      "Travis Kelce"
-    ]
-  },
-  "LAC": {
-    "QB": [
-      "Justin Herbert"
-    ],
-    "RB": [
-      "Gus Edwards",
-      "J.K. Dobbins"
-    ],
-    "WR": [
-      "Ladd McConkey",
-      "Joshua Palmer",
-      "DJ Chark"
-    ],
-    "TE": [
-      "Will Dissly"
-    ]
-  },
-  "BUF": {
-    "QB": [
-      "Josh Allen"
-    ],
-    "RB": [
-      "James Cook",
-      "Ty Johnson"
-    ],
-    "WR": [
-      "Stefon Diggs",
-      "Khalil Shakir",
-      "Curtis Samuel"
-    ],
-    "TE": [
-      "Dalton Kincaid"
-    ]
+  "ATL": {
+    "RB1": "ATL RB1",
+    "WR1": "ATL WR1",
+    "TE1": "ATL TE1",
+    "QB1": "ATL QB1"
   },
   "BAL": {
-    "QB": [
-      "Lamar Jackson"
-    ],
-    "RB": [
-      "Derrick Henry",
-      "Justice Hill"
-    ],
-    "WR": [
-      "Zay Flowers",
-      "Rashod Bateman",
-      "Nelson Agholor"
-    ],
-    "TE": [
-      "Mark Andrews",
-      "Isaiah Likely"
-    ]
+    "RB1": "BAL RB1",
+    "WR1": "BAL WR1",
+    "TE1": "BAL TE1",
+    "QB1": "BAL QB1"
   },
-  "MIN": {
-    "QB": [
-      "J.J. McCarthy"
-    ],
-    "RB": [
-      "Aaron Jones",
-      "Ty Chandler"
-    ],
-    "WR": [
-      "Justin Jefferson",
-      "Jordan Addison"
-    ],
-    "TE": [
-      "T.J. Hockenson"
-    ]
+  "BUF": {
+    "RB1": "BUF RB1",
+    "WR1": "BUF WR1",
+    "TE1": "BUF TE1",
+    "QB1": "BUF QB1"
+  },
+  "CAR": {
+    "RB1": "CAR RB1",
+    "WR1": "CAR WR1",
+    "TE1": "CAR TE1",
+    "QB1": "CAR QB1"
   },
   "CHI": {
-    "QB": [
-      "Caleb Williams"
-    ],
-    "RB": [
-      "D'Andre Swift",
-      "Khalil Herbert"
-    ],
-    "WR": [
-      "DJ Moore",
-      "Keenan Allen",
-      "Rome Odunze"
-    ],
-    "TE": [
-      "Cole Kmet"
-    ]
+    "RB1": "CHI RB1",
+    "WR1": "CHI WR1",
+    "TE1": "CHI TE1",
+    "QB1": "CHI QB1"
+  },
+  "CIN": {
+    "RB1": "CIN RB1",
+    "WR1": "CIN WR1",
+    "TE1": "CIN TE1",
+    "QB1": "CIN QB1"
+  },
+  "CLE": {
+    "RB1": "CLE RB1",
+    "WR1": "CLE WR1",
+    "TE1": "CLE TE1",
+    "QB1": "CLE QB1"
+  },
+  "DAL": {
+    "RB1": "DAL RB1",
+    "WR1": "DAL WR1",
+    "TE1": "DAL TE1",
+    "QB1": "DAL QB1"
+  },
+  "DEN": {
+    "RB1": "DEN RB1",
+    "WR1": "DEN WR1",
+    "TE1": "DEN TE1",
+    "QB1": "DEN QB1"
+  },
+  "DET": {
+    "RB1": "DET RB1",
+    "WR1": "DET WR1",
+    "TE1": "DET TE1",
+    "QB1": "DET QB1"
+  },
+  "GB": {
+    "RB1": "GB RB1",
+    "WR1": "GB WR1",
+    "TE1": "GB TE1",
+    "QB1": "GB QB1"
+  },
+  "HOU": {
+    "RB1": "HOU RB1",
+    "WR1": "HOU WR1",
+    "TE1": "HOU TE1",
+    "QB1": "HOU QB1"
+  },
+  "IND": {
+    "RB1": "IND RB1",
+    "WR1": "IND WR1",
+    "TE1": "IND TE1",
+    "QB1": "IND QB1"
+  },
+  "JAX": {
+    "RB1": "JAX RB1",
+    "WR1": "JAX WR1",
+    "TE1": "JAX TE1",
+    "QB1": "JAX QB1"
+  },
+  "KC": {
+    "RB1": "KC RB1",
+    "WR1": "KC WR1",
+    "TE1": "KC TE1",
+    "QB1": "KC QB1"
+  },
+  "LAC": {
+    "RB1": "LAC RB1",
+    "WR1": "LAC WR1",
+    "TE1": "LAC TE1",
+    "QB1": "LAC QB1"
+  },
+  "LAR": {
+    "RB1": "LAR RB1",
+    "WR1": "LAR WR1",
+    "TE1": "LAR TE1",
+    "QB1": "LAR QB1"
+  },
+  "LV": {
+    "RB1": "LV RB1",
+    "WR1": "LV WR1",
+    "TE1": "LV TE1",
+    "QB1": "LV QB1"
+  },
+  "MIA": {
+    "RB1": "MIA RB1",
+    "WR1": "MIA WR1",
+    "TE1": "MIA TE1",
+    "QB1": "MIA QB1"
+  },
+  "MIN": {
+    "RB1": "MIN RB1",
+    "WR1": "MIN WR1",
+    "TE1": "MIN TE1",
+    "QB1": "MIN QB1"
+  },
+  "NE": {
+    "RB1": "NE RB1",
+    "WR1": "NE WR1",
+    "TE1": "NE TE1",
+    "QB1": "NE QB1"
+  },
+  "NO": {
+    "RB1": "NO RB1",
+    "WR1": "NO WR1",
+    "TE1": "NO TE1",
+    "QB1": "NO QB1"
+  },
+  "NYG": {
+    "RB1": "NYG RB1",
+    "WR1": "NYG WR1",
+    "TE1": "NYG TE1",
+    "QB1": "NYG QB1"
+  },
+  "NYJ": {
+    "RB1": "NYJ RB1",
+    "WR1": "NYJ WR1",
+    "TE1": "NYJ TE1",
+    "QB1": "NYJ QB1"
+  },
+  "PHI": {
+    "RB1": "PHI RB1",
+    "WR1": "PHI WR1",
+    "TE1": "PHI TE1",
+    "QB1": "PHI QB1"
+  },
+  "PIT": {
+    "RB1": "PIT RB1",
+    "WR1": "PIT WR1",
+    "TE1": "PIT TE1",
+    "QB1": "PIT QB1"
+  },
+  "SEA": {
+    "RB1": "SEA RB1",
+    "WR1": "SEA WR1",
+    "TE1": "SEA TE1",
+    "QB1": "SEA QB1"
+  },
+  "SF": {
+    "RB1": "SF RB1",
+    "WR1": "SF WR1",
+    "TE1": "SF TE1",
+    "QB1": "SF QB1"
+  },
+  "TB": {
+    "RB1": "TB RB1",
+    "WR1": "TB WR1",
+    "TE1": "TB TE1",
+    "QB1": "TB QB1"
+  },
+  "TEN": {
+    "RB1": "TEN RB1",
+    "WR1": "TEN WR1",
+    "TE1": "TEN TE1",
+    "QB1": "TEN QB1"
+  },
+  "WSH": {
+    "RB1": "WSH RB1",
+    "WR1": "WSH WR1",
+    "TE1": "WSH TE1",
+    "QB1": "WSH QB1"
   }
 }

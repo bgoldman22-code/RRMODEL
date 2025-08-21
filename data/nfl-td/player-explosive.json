@@ -1,90 +1,514 @@
 {
-  "Saquon Barkley": {
+  "ARI RB1": {
     "pos": "RB",
-    "explosive_idx": 0.26
+    "explosive_idx": 64.6
   },
-  "A.J. Brown": {
+  "ARI WR1": {
     "pos": "WR",
-    "explosive_idx": 0.35
+    "explosive_idx": 55.6
   },
-  "DeVonta Smith": {
-    "pos": "WR",
-    "explosive_idx": 0.27
-  },
-  "Dallas Goedert": {
+  "ARI TE1": {
     "pos": "TE",
-    "explosive_idx": 0.2
+    "explosive_idx": 61.2
   },
-  "Ezekiel Elliott": {
-    "pos": "RB",
-    "explosive_idx": 0.17
-  },
-  "CeeDee Lamb": {
-    "pos": "WR",
-    "explosive_idx": 0.32
-  },
-  "Jake Ferguson": {
-    "pos": "TE",
-    "explosive_idx": 0.18
-  },
-  "Isiah Pacheco": {
-    "pos": "RB",
-    "explosive_idx": 0.22
-  },
-  "Travis Kelce": {
-    "pos": "TE",
-    "explosive_idx": 0.24
-  },
-  "Rashee Rice": {
-    "pos": "WR",
-    "explosive_idx": 0.28
-  },
-  "Josh Allen": {
+  "ARI QB1": {
     "pos": "QB",
-    "explosive_idx": 0.3
+    "explosive_idx": 30.8
   },
-  "Stefon Diggs": {
-    "pos": "WR",
-    "explosive_idx": 0.29
-  },
-  "Dalton Kincaid": {
-    "pos": "TE",
-    "explosive_idx": 0.19
-  },
-  "Derrick Henry": {
+  "ATL RB1": {
     "pos": "RB",
-    "explosive_idx": 0.24
+    "explosive_idx": 48.7
   },
-  "Lamar Jackson": {
+  "ATL WR1": {
+    "pos": "WR",
+    "explosive_idx": 80.0
+  },
+  "ATL TE1": {
+    "pos": "TE",
+    "explosive_idx": 52.7
+  },
+  "ATL QB1": {
     "pos": "QB",
-    "explosive_idx": 0.33
+    "explosive_idx": 36.3
   },
-  "Zay Flowers": {
-    "pos": "WR",
-    "explosive_idx": 0.27
-  },
-  "Justin Jefferson": {
-    "pos": "WR",
-    "explosive_idx": 0.34
-  },
-  "Aaron Jones": {
+  "BAL RB1": {
     "pos": "RB",
-    "explosive_idx": 0.21
+    "explosive_idx": 37.0
   },
-  "T.J. Hockenson": {
-    "pos": "TE",
-    "explosive_idx": 0.19
-  },
-  "DJ Moore": {
+  "BAL WR1": {
     "pos": "WR",
-    "explosive_idx": 0.28
+    "explosive_idx": 66.6
   },
-  "D'Andre Swift": {
-    "pos": "RB",
-    "explosive_idx": 0.2
-  },
-  "Cole Kmet": {
+  "BAL TE1": {
     "pos": "TE",
-    "explosive_idx": 0.17
+    "explosive_idx": 55.0
+  },
+  "BAL QB1": {
+    "pos": "QB",
+    "explosive_idx": 35.0
+  },
+  "BUF RB1": {
+    "pos": "RB",
+    "explosive_idx": 51.6
+  },
+  "BUF WR1": {
+    "pos": "WR",
+    "explosive_idx": 75.6
+  },
+  "BUF TE1": {
+    "pos": "TE",
+    "explosive_idx": 48.9
+  },
+  "BUF QB1": {
+    "pos": "QB",
+    "explosive_idx": 37.4
+  },
+  "CAR RB1": {
+    "pos": "RB",
+    "explosive_idx": 39.1
+  },
+  "CAR WR1": {
+    "pos": "WR",
+    "explosive_idx": 65.4
+  },
+  "CAR TE1": {
+    "pos": "TE",
+    "explosive_idx": 58.0
+  },
+  "CAR QB1": {
+    "pos": "QB",
+    "explosive_idx": 46.8
+  },
+  "CHI RB1": {
+    "pos": "RB",
+    "explosive_idx": 56.1
+  },
+  "CHI WR1": {
+    "pos": "WR",
+    "explosive_idx": 71.5
+  },
+  "CHI TE1": {
+    "pos": "TE",
+    "explosive_idx": 52.0
+  },
+  "CHI QB1": {
+    "pos": "QB",
+    "explosive_idx": 49.4
+  },
+  "CIN RB1": {
+    "pos": "RB",
+    "explosive_idx": 42.0
+  },
+  "CIN WR1": {
+    "pos": "WR",
+    "explosive_idx": 57.6
+  },
+  "CIN TE1": {
+    "pos": "TE",
+    "explosive_idx": 45.3
+  },
+  "CIN QB1": {
+    "pos": "QB",
+    "explosive_idx": 42.9
+  },
+  "CLE RB1": {
+    "pos": "RB",
+    "explosive_idx": 62.4
+  },
+  "CLE WR1": {
+    "pos": "WR",
+    "explosive_idx": 68.7
+  },
+  "CLE TE1": {
+    "pos": "TE",
+    "explosive_idx": 53.0
+  },
+  "CLE QB1": {
+    "pos": "QB",
+    "explosive_idx": 31.4
+  },
+  "DAL RB1": {
+    "pos": "RB",
+    "explosive_idx": 48.8
+  },
+  "DAL WR1": {
+    "pos": "WR",
+    "explosive_idx": 69.0
+  },
+  "DAL TE1": {
+    "pos": "TE",
+    "explosive_idx": 50.1
+  },
+  "DAL QB1": {
+    "pos": "QB",
+    "explosive_idx": 33.6
+  },
+  "DEN RB1": {
+    "pos": "RB",
+    "explosive_idx": 37.5
+  },
+  "DEN WR1": {
+    "pos": "WR",
+    "explosive_idx": 81.3
+  },
+  "DEN TE1": {
+    "pos": "TE",
+    "explosive_idx": 66.8
+  },
+  "DEN QB1": {
+    "pos": "QB",
+    "explosive_idx": 39.1
+  },
+  "DET RB1": {
+    "pos": "RB",
+    "explosive_idx": 39.2
+  },
+  "DET WR1": {
+    "pos": "WR",
+    "explosive_idx": 78.2
+  },
+  "DET TE1": {
+    "pos": "TE",
+    "explosive_idx": 66.9
+  },
+  "DET QB1": {
+    "pos": "QB",
+    "explosive_idx": 40.4
+  },
+  "GB RB1": {
+    "pos": "RB",
+    "explosive_idx": 44.3
+  },
+  "GB WR1": {
+    "pos": "WR",
+    "explosive_idx": 59.2
+  },
+  "GB TE1": {
+    "pos": "TE",
+    "explosive_idx": 56.3
+  },
+  "GB QB1": {
+    "pos": "QB",
+    "explosive_idx": 45.8
+  },
+  "HOU RB1": {
+    "pos": "RB",
+    "explosive_idx": 54.7
+  },
+  "HOU WR1": {
+    "pos": "WR",
+    "explosive_idx": 88.3
+  },
+  "HOU TE1": {
+    "pos": "TE",
+    "explosive_idx": 66.1
+  },
+  "HOU QB1": {
+    "pos": "QB",
+    "explosive_idx": 45.1
+  },
+  "IND RB1": {
+    "pos": "RB",
+    "explosive_idx": 50.8
+  },
+  "IND WR1": {
+    "pos": "WR",
+    "explosive_idx": 57.0
+  },
+  "IND TE1": {
+    "pos": "TE",
+    "explosive_idx": 49.7
+  },
+  "IND QB1": {
+    "pos": "QB",
+    "explosive_idx": 36.0
+  },
+  "JAX RB1": {
+    "pos": "RB",
+    "explosive_idx": 55.8
+  },
+  "JAX WR1": {
+    "pos": "WR",
+    "explosive_idx": 68.9
+  },
+  "JAX TE1": {
+    "pos": "TE",
+    "explosive_idx": 68.5
+  },
+  "JAX QB1": {
+    "pos": "QB",
+    "explosive_idx": 48.7
+  },
+  "KC RB1": {
+    "pos": "RB",
+    "explosive_idx": 48.3
+  },
+  "KC WR1": {
+    "pos": "WR",
+    "explosive_idx": 66.0
+  },
+  "KC TE1": {
+    "pos": "TE",
+    "explosive_idx": 42.1
+  },
+  "KC QB1": {
+    "pos": "QB",
+    "explosive_idx": 38.4
+  },
+  "LAC RB1": {
+    "pos": "RB",
+    "explosive_idx": 47.8
+  },
+  "LAC WR1": {
+    "pos": "WR",
+    "explosive_idx": 63.6
+  },
+  "LAC TE1": {
+    "pos": "TE",
+    "explosive_idx": 62.7
+  },
+  "LAC QB1": {
+    "pos": "QB",
+    "explosive_idx": 34.9
+  },
+  "LAR RB1": {
+    "pos": "RB",
+    "explosive_idx": 62.3
+  },
+  "LAR WR1": {
+    "pos": "WR",
+    "explosive_idx": 76.0
+  },
+  "LAR TE1": {
+    "pos": "TE",
+    "explosive_idx": 57.0
+  },
+  "LAR QB1": {
+    "pos": "QB",
+    "explosive_idx": 45.7
+  },
+  "LV RB1": {
+    "pos": "RB",
+    "explosive_idx": 50.5
+  },
+  "LV WR1": {
+    "pos": "WR",
+    "explosive_idx": 66.9
+  },
+  "LV TE1": {
+    "pos": "TE",
+    "explosive_idx": 51.8
+  },
+  "LV QB1": {
+    "pos": "QB",
+    "explosive_idx": 31.3
+  },
+  "MIA RB1": {
+    "pos": "RB",
+    "explosive_idx": 50.1
+  },
+  "MIA WR1": {
+    "pos": "WR",
+    "explosive_idx": 68.8
+  },
+  "MIA TE1": {
+    "pos": "TE",
+    "explosive_idx": 55.1
+  },
+  "MIA QB1": {
+    "pos": "QB",
+    "explosive_idx": 45.6
+  },
+  "MIN RB1": {
+    "pos": "RB",
+    "explosive_idx": 38.8
+  },
+  "MIN WR1": {
+    "pos": "WR",
+    "explosive_idx": 75.2
+  },
+  "MIN TE1": {
+    "pos": "TE",
+    "explosive_idx": 56.5
+  },
+  "MIN QB1": {
+    "pos": "QB",
+    "explosive_idx": 34.1
+  },
+  "NE RB1": {
+    "pos": "RB",
+    "explosive_idx": 55.1
+  },
+  "NE WR1": {
+    "pos": "WR",
+    "explosive_idx": 59.0
+  },
+  "NE TE1": {
+    "pos": "TE",
+    "explosive_idx": 56.2
+  },
+  "NE QB1": {
+    "pos": "QB",
+    "explosive_idx": 46.5
+  },
+  "NO RB1": {
+    "pos": "RB",
+    "explosive_idx": 50.1
+  },
+  "NO WR1": {
+    "pos": "WR",
+    "explosive_idx": 87.2
+  },
+  "NO TE1": {
+    "pos": "TE",
+    "explosive_idx": 65.9
+  },
+  "NO QB1": {
+    "pos": "QB",
+    "explosive_idx": 43.1
+  },
+  "NYG RB1": {
+    "pos": "RB",
+    "explosive_idx": 47.6
+  },
+  "NYG WR1": {
+    "pos": "WR",
+    "explosive_idx": 89.8
+  },
+  "NYG TE1": {
+    "pos": "TE",
+    "explosive_idx": 48.6
+  },
+  "NYG QB1": {
+    "pos": "QB",
+    "explosive_idx": 31.6
+  },
+  "NYJ RB1": {
+    "pos": "RB",
+    "explosive_idx": 46.0
+  },
+  "NYJ WR1": {
+    "pos": "WR",
+    "explosive_idx": 68.8
+  },
+  "NYJ TE1": {
+    "pos": "TE",
+    "explosive_idx": 51.7
+  },
+  "NYJ QB1": {
+    "pos": "QB",
+    "explosive_idx": 36.8
+  },
+  "PHI RB1": {
+    "pos": "RB",
+    "explosive_idx": 58.0
+  },
+  "PHI WR1": {
+    "pos": "WR",
+    "explosive_idx": 73.2
+  },
+  "PHI TE1": {
+    "pos": "TE",
+    "explosive_idx": 45.6
+  },
+  "PHI QB1": {
+    "pos": "QB",
+    "explosive_idx": 36.7
+  },
+  "PIT RB1": {
+    "pos": "RB",
+    "explosive_idx": 49.9
+  },
+  "PIT WR1": {
+    "pos": "WR",
+    "explosive_idx": 89.1
+  },
+  "PIT TE1": {
+    "pos": "TE",
+    "explosive_idx": 48.2
+  },
+  "PIT QB1": {
+    "pos": "QB",
+    "explosive_idx": 42.9
+  },
+  "SEA RB1": {
+    "pos": "RB",
+    "explosive_idx": 57.7
+  },
+  "SEA WR1": {
+    "pos": "WR",
+    "explosive_idx": 76.3
+  },
+  "SEA TE1": {
+    "pos": "TE",
+    "explosive_idx": 67.2
+  },
+  "SEA QB1": {
+    "pos": "QB",
+    "explosive_idx": 47.9
+  },
+  "SF RB1": {
+    "pos": "RB",
+    "explosive_idx": 56.8
+  },
+  "SF WR1": {
+    "pos": "WR",
+    "explosive_idx": 58.9
+  },
+  "SF TE1": {
+    "pos": "TE",
+    "explosive_idx": 56.6
+  },
+  "SF QB1": {
+    "pos": "QB",
+    "explosive_idx": 48.4
+  },
+  "TB RB1": {
+    "pos": "RB",
+    "explosive_idx": 38.9
+  },
+  "TB WR1": {
+    "pos": "WR",
+    "explosive_idx": 69.7
+  },
+  "TB TE1": {
+    "pos": "TE",
+    "explosive_idx": 56.2
+  },
+  "TB QB1": {
+    "pos": "QB",
+    "explosive_idx": 39.3
+  },
+  "TEN RB1": {
+    "pos": "RB",
+    "explosive_idx": 39.2
+  },
+  "TEN WR1": {
+    "pos": "WR",
+    "explosive_idx": 56.6
+  },
+  "TEN TE1": {
+    "pos": "TE",
+    "explosive_idx": 65.7
+  },
+  "TEN QB1": {
+    "pos": "QB",
+    "explosive_idx": 36.9
+  },
+  "WSH RB1": {
+    "pos": "RB",
+    "explosive_idx": 53.7
+  },
+  "WSH WR1": {
+    "pos": "WR",
+    "explosive_idx": 87.9
+  },
+  "WSH TE1": {
+    "pos": "TE",
+    "explosive_idx": 59.2
+  },
+  "WSH QB1": {
+    "pos": "QB",
+    "explosive_idx": 43.8
   }
 }
