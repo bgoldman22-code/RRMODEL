@@ -42,15 +42,15 @@ exports.handler = async (event) => {
     const knownOut = Array.isArray(body.known_out) ? body.known_out : [];
     if (!picks) return cors(400, { ok:false, error:"Body must include picks: []" });
 
-    // Build tracks
+    // Build the two tracks
     const { control, adjusted } = buildTracks(picks, knownOut);
 
-    // Keys
+    // Keys / timestamps
     const dayIso = isoDateET(new Date());
     const now = new Date().toISOString();
 
-    // Write using getStore().set (compatible across Blobs SDK versions)
-    const store = getStore(); // default store
+    // Write using named store (fixes “getStore requires name”)
+    const store = getStore("default"); // change "default" to another store name if you prefer
     await store.set(
       `mlb-hr/experiments/${dayIso}/control.json`,
       JSON.stringify({ ok:true, date: dayIso, updated_at: now, picks: control }),
