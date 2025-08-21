@@ -1,9 +1,9 @@
 // src/NFL.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import { ENABLE_NFL_TD } from "./config/features";
-import { getWeeksAvailable, getGamesForWeek } from "./utils/nflSchedule";
-import NflTdExplainer from "./components/NflTdExplainer";
-import tdEngine from "./nfl/tdEngine"; // assumes the engine from previous patch
+import { ENABLE_NFL_TD } from "./config/features.js";
+import { getWeeksAvailable, getGamesForWeek } from "./utils/nflSchedule.js";
+import NflTdExplainer from "./components/NflTdExplainer.jsx";
+import tdEngine from "./nfl/tdEngine.js"; // ensure correct casing + extension
 
 export default function NFL() {
   if (!ENABLE_NFL_TD) {
@@ -43,7 +43,7 @@ export default function NFL() {
 
       <p className="text-sm opacity-70 mb-4">Using OddsAPI: no • data (last 3 yrs): ok</p>
 
-      {/* Top candidates table */}
+      {/* Top candidates table (placeholder if engine returns empty) */}
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
@@ -58,22 +58,25 @@ export default function NFL() {
             </tr>
           </thead>
           <tbody>
-            {candidates.map((c, i) => (
-              <tr key={i} className="border-b last:border-0">
-                <td className="py-1 pr-3">{c.player}</td>
-                <td className="py-1 pr-3">{c.team}</td>
-                <td className="py-1 pr-3">{c.game}</td>
-                <td className="py-1 pr-3">{(c.model_td_pct * 100).toFixed(1)}%</td>
-                <td className="py-1 pr-3">{(c.rz_path_pct * 100).toFixed(1)}%</td>
-                <td className="py-1 pr-3">{(c.exp_path_pct * 100).toFixed(1)}%</td>
-                <td className="py-1 pr-3">{c.why}</td>
-              </tr>
-            ))}
+            {candidates.length === 0 ? (
+              <tr><td className="py-2 pr-3" colSpan="7">No candidates yet.</td></tr>
+            ) : (
+              candidates.map((c, i) => (
+                <tr key={i} className="border-b last:border-0">
+                  <td className="py-1 pr-3">{c.player}</td>
+                  <td className="py-1 pr-3">{c.team}</td>
+                  <td className="py-1 pr-3">{c.game}</td>
+                  <td className="py-1 pr-3">{(c.model_td_pct * 100).toFixed(1)}%</td>
+                  <td className="py-1 pr-3">{(c.rz_path_pct * 100).toFixed(1)}%</td>
+                  <td className="py-1 pr-3">{(c.exp_path_pct * 100).toFixed(1)}%</td>
+                  <td className="py-1 pr-3">{c.why}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Explanatory block */}
       <NflTdExplainer />
     </div>
   );
