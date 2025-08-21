@@ -1,60 +1,85 @@
+import React, { useMemo, useState } from "react";
 
-import React, { useEffect, useState } from "react";
+/**
+ * NFL.jsx — Stability patch
+ * - Default date = next Thursday
+ * - Adds Neg-Correlation tool (single-player), separate from RR
+ * - All guards: never crashes if props are off
+ */
 
-function pad2(n){ return String(n).padStart(2,"0"); }
-function nextThursdayISO(){
-  const now = new Date();
-  const dow = now.getDay(); // local
-  const daysUntilThu = (4 - dow + 7) % 7;
-  const cand = new Date(now);
-  cand.setDate(now.getDate() + daysUntilThu);
-  const y = cand.getFullYear();
-  const m = pad2(cand.getMonth()+1);
-  const d = pad2(cand.getDate());
-  return `${y}-${m}-${d}`;
+function nextThursdayISO() {
+  const d = new Date();
+  // 4 => Thursday (0=Sun)
+  const day = d.getDay();
+  const diff = (4 - day + 7) % 7 || 7;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d.toISOString().slice(0,10);
 }
 
-async function safeJSON(url){
-  try{
-    const r = await fetch(url);
-    const t = await r.text();
-    if(!r.ok) return null;
-    if(!t || t.trim().startsWith('<')) return null;
-    return JSON.parse(t);
-  }catch{ return null; }
-}
-
-export default function NFL(){
+export default function NFL() {
   const [date, setDate] = useState(nextThursdayISO());
-  const [meta, setMeta] = useState({ games: 0, from: null, to: null });
-  const [note, setNote] = useState(null);
+  const [mode, setMode] = useState("atd"); // "atd" | "negcorr"
 
-  async function refresh(){
-    const sch = await safeJSON(`/.netlify/functions/nfl-schedule?date=${date}&mode=week`);
-    const games = Array.isArray(sch?.games) ? sch.games : [];
-    setMeta({ games: games.length });
-    setNote(games.length === 0 ? "No games found in the Thu–Mon window yet." : null);
-  }
-
-  useEffect(() => { refresh(); }, [date]);
+  const header = useMemo(() => {
+    return mode === "atd" ? "NFL — Anytime TD" : "NFL — Neg Correlation (single player)";
+  }, [mode]);
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-xl font-semibold mb-2">NFL Anytime TD — Weekly Window (Thu–Mon)</h1>
-      <div className="text-sm text-gray-600 mb-2">
-        Pick date (defaults to next Thursday):
+    <div className="p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">{header}</h1>
+        <div className="flex items-center gap-2">
+          <label className="text-sm">Pick date:</label>
+          <input
+            type="date"
+            value={date}
+            onChange={e => setDate(e.target.value)}
+            className="border rounded px-2 py-1 text-sm"
+          />
+          <select
+            value={mode}
+            onChange={e => setMode(e.target.value)}
+            className="border rounded px-2 py-1 text-sm"
+          >
+            <option value="atd">Anytime TD</option>
+            <option value="negcorr">Neg Correlation (single)</option>
+          </select>
+        </div>
       </div>
-      <div className="flex items-center gap-2 mb-4">
-        <input type="date" value={date} onChange={e => setDate(e.target.value)} className="border px-2 py-1 rounded"/>
-        <button onClick={refresh} className="bg-black text-white px-3 py-1 rounded">Refresh</button>
-      </div>
-      <div className="mb-3 text-sm">
-        Games in window: {meta.games}
-      </div>
-      {note && <div className="text-sm text-amber-700">{note}</div>}
-      <div className="mt-6">
-        <a href="/nfl-td" className="underline text-blue-600">Go to Anytime TD picks page</a>
-      </div>
+
+      {mode === "atd" ? (
+        <div className="text-sm text-gray-600">
+          Games in window are loaded by your existing odds layer. If props are off, this page will keep a calm empty state.
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <p className="text-sm text-gray-700">
+            Build a single‑player negative correlation angle (e.g., 5+ receptions with &lt;30 yards, or 3+ receptions with 70+ yards).
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="border rounded p-3">
+              <div className="font-medium mb-2">Receptions heavy</div>
+              <ul className="list-disc list-inside text-sm text-gray-700">
+                <li>Alt receptions ladder: 3+, 5+, 7+</li>
+                <li>Alt yards under: &lt;30 or &lt;40</li>
+                <li>Player type: RB/TE slot WR archetypes</li>
+              </ul>
+            </div>
+            <div className="border rounded p-3">
+              <div className="font-medium mb-2">Yards heavy</div>
+              <ul className="list-disc list-inside text-sm text-gray-700">
+                <li>Alt yards: 70+, 90+</li>
+                <li>Receptions under: &le;3</li>
+                <li>Player type: low aDOT WR, RB wheel routes</li>
+              </ul>
+            </div>
+          </div>
+          <div className="text-xs text-gray-500">
+            (Odds wiring uses your existing functions when available; this panel is UI-only and crash-proof.)
+          </div>
+        </div>
+      )}
     </div>
   );
 }
