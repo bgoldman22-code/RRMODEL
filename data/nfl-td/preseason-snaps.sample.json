@@ -1,74 +1,82 @@
 [
   {
     "team": "NE",
-    "pos": "RB",
-    "player": "Rhamondre Stevenson",
-    "week": "PS3",
-    "quarter": 1,
-    "time_sec": 720,
-    "series_index": 1,
-    "offense_unit": 1,
-    "opp_defense_unit": 1,
-    "score_diff": 0
-  },
-  {
-    "team": "NE",
-    "pos": "RB",
     "player": "TreVeyon Henderson",
-    "week": "PS3",
+    "pos": "RB",
     "quarter": 1,
-    "time_sec": 480,
-    "series_index": 2,
-    "offense_unit": 1,
-    "opp_defense_unit": 1,
-    "score_diff": 0
+    "series": 1,
+    "offense_unit": "1",
+    "opp_unit": "1",
+    "with_qb1": true
   },
   {
     "team": "NE",
+    "player": "Rhamondre Stevenson",
     "pos": "RB",
+    "quarter": 1,
+    "series": 2,
+    "offense_unit": "1",
+    "opp_unit": "1",
+    "with_qb1": true
+  },
+  {
+    "team": "NE",
     "player": "Ezekiel Elliott",
-    "week": "PS3",
-    "quarter": 3,
-    "time_sec": 600,
-    "series_index": 6,
-    "offense_unit": 2,
-    "opp_defense_unit": 2,
-    "score_diff": -10
-  },
-  {
-    "team": "NYG",
-    "pos": "WR",
-    "player": "Malik Nabers",
-    "week": "PS3",
-    "quarter": 1,
-    "time_sec": 660,
-    "series_index": 1,
-    "offense_unit": 1,
-    "opp_defense_unit": 1,
-    "score_diff": 0
-  },
-  {
-    "team": "NYG",
-    "pos": "WR",
-    "player": "Darius Slayton",
-    "week": "PS3",
-    "quarter": 1,
-    "time_sec": 540,
-    "series_index": 2,
-    "offense_unit": 1,
-    "opp_defense_unit": 1,
-    "score_diff": 0
-  },
-  {
-    "team": "NYG",
-    "pos": "WR",
-    "player": "Wan'Dale Robinson",
-    "week": "PS3",
+    "pos": "RB",
     "quarter": 2,
-    "time_sec": 360,
-    "series_index": 3,
-    "offense_unit": 1,
-    "opp_defense_unit": 1,
-    "score_diff": 3
+    "series": 3,
+    "offense_unit": "2",
+    "opp_unit": "2",
+    "with_qb1": false
+  },
+  {
+    "team": "KC",
+    "player": "Isiah Pacheco",
+    "pos": "RB",
+    "quarter": 1,
+    "series": 1,
+    "offense_unit": "1",
+    "opp_unit": "1",
+    "with_qb1": true
+  },
+  {
+    "team": "KC",
+    "player": "Travis Kelce",
+    "pos": "TE",
+    "quarter": 1,
+    "series": 1,
+    "offense_unit": "1",
+    "opp_unit": "1",
+    "with_qb1": true
+  },
+  {
+    "team": "KC",
+    "player": "Xavier Worthy",
+    "pos": "WR",
+    "quarter": 1,
+    "series": 1,
+    "offense_unit": "1",
+    "opp_unit": "1",
+    "with_qb1": true
+  },
+  {
+    "team": "KC",
+    "player": "Hollywood Brown",
+    "pos": "WR",
+    "quarter": 1,
+    "series": 1,
+    "offense_unit": "1",
+    "opp_unit": "1",
+    "with_qb1": true
+  },
+  {
+    "team": "BUF",
+    "player": "Stefon Diggs",
+    "pos": "WR",
+    "quarter": 1,
+    "series": 1,
+    "offense_unit": "1",
+    "opp_unit": "1",
+    "with_qb1": true
   }
 ]
