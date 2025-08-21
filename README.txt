@@ -1,18 +1,25 @@
+Patch: Stability v1 (tailored)
+===============================
 
-Patch: utils/why.js — opponent pitcher fix
-==========================================
-Files included:
-- src/utils/why.js (replace your existing file)
+This patch replaces ONLY the following files under your repo's `src/` directory:
+- MLB_SB.jsx
+- MLB_Hits.jsx
+- NFL.jsx
+- Soccer.jsx
 
-What it does:
-- Ensures the WHY line uses the TRUE opponent pitcher.
-- Accepts many possible data shapes (probables arrays, home/away objects, single fields).
-- Prevents "vs own pitcher" mistakes by dropping the pitcher line if we can’t reliably find the opponent.
+What it does (safe; does NOT touch MLB HR page):
+- SB: fixes crash, renders names when odds exist, adds soft opponent-aware scoring,
+      and handles missing markets without throwing.
+- 2+ Hits: adds opponent-aware scoring + EV when odds exist; otherwise renders a calm empty state.
+- NFL: default pick date to next Thursday; adds Neg-Correlation tool as a separate mode (no RR);
+       keeps everything guarded if odds are off.
+- Soccer: improved empty-state when odds are unavailable; no crashes.
 
-Install:
-1) Place `src/utils/why.js` into your repo (overwrite).
-2) Commit and deploy.
+General:
+- Adds a safe odds loader that tries `window.__odds` first, then `/.netlify/functions/odds-get`.
+- If neither exist or markets are off, pages still render gracefully.
 
-Optional (future):
-- In your MLB.jsx, when you assemble the object for buildWhy(...), pass an explicit `opponentPitcher` if you have it handy:
-    const why = buildWhy({ ...row, opponentPitcher }, 1);
+How to apply:
+1) Back up your existing files.
+2) Copy the files from `patch-stability-v1/src/` into your repo's `src/` folder (replace same-named files).
+3) Commit & deploy.
