@@ -1,5 +1,13 @@
+// Minimal shim so this patch is self-contained if hrExp.cjs isn't present yet.
+// If you already have src/utils/hrExp.cjs from earlier, keep that one—this is compatible.
 const { createBlob } = require('@netlify/blobs');
-const SLUGGERS = require('./sluggerSet.cjs');
+const SLUGGERS = new Set([
+  'Aaron Judge','Shohei Ohtani','Juan Soto','Kyle Schwarber','Yordan Alvarez',
+  'Vladimir Guerrero Jr.','Giancarlo Stanton','Freddie Freeman','Ronald Acuña Jr.',
+  'Corey Seager','Rafael Devers','Pete Alonso','Austin Riley','Matt Olson',
+  'Mookie Betts','Adolis García','Marcell Ozuna','José Ramírez','Bryce Harper',
+  'Fernando Tatis Jr.','Julio Rodríguez','Bo Bichette','Manny Machado','Nolan Arenado'
+]);
 
 const CAPS = {
   maxProb: 0.60,
