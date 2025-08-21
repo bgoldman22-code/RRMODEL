@@ -1,26 +1,20 @@
-# NFL TD Drop-in (Week 1, 2025)
+# nfl-preseason-usage-bundle
 
-This package adds a fully isolated NFL Anytime TD route powered by a local Week 1 schedule.
+Adds a *starter-rep weighted* preseason adjuster so depth charts reflect **when** players played, not just how many snaps.
 
 ## Files
-- `data/nfl-schedule-2025.json` — 2025 Week 1 (Thu–Mon) schedule
-- `src/config/features.js` — feature flag toggle (`ENABLE_NFL_TD`)
-- `src/utils/nflSchedule.js` — date windowing + schedule loader
-- `src/pages/NflTd.jsx` — React route at `/nfl-td`
-- `src/components/Nav.jsx.snippet.txt` — one-line snippet to add nav link
+- `src/nfl/usageAdjuster.js` — computes weights from preseason snap events and blends into depth charts.
+- `data/nfl-td/preseason-snaps.sample.json` — example schema for snaps input.
 
-## Install
-1. Copy the `data/` folder to your project root (next to `src/`).
-2. Copy `src/` contents into your project `src/`.
-3. Add the nav link in your `Nav` component:
-   ```jsx
-   import { ENABLE_NFL_TD } from '../config/features';
-   // ...
-   {ENABLE_NFL_TD && <a href="/nfl-td" className="px-3 py-2">NFL TD</a>}
-   ```
-4. Add a route for `/nfl-td` in your router (if needed), or ensure your router auto-loads pages in `src/pages/`.
+## How to use in your engine
+```js
+import { computeStarterRepWeights, applyPreseasonWeights } from './nfl/usageAdjuster.js';
+import depthCharts from '../data/nfl-td/depth-charts.json';
+import preseasonSnaps from '../data/nfl-td/preseason-snaps.json'; // add this file with your data
 
-## Notes
-- Odds are disabled by design for the first pass.
-- The schedule loader shows games in the Thu–Mon window around the selected date.
-- To hide the page without code removal, set `ENABLE_NFL_TD = false`.
+const weights = computeStarterRepWeights(preseasonSnaps);
+const adjustedDepth = applyPreseasonWeights(depthCharts, weights, 0.6);
+// then feed 'adjustedDepth' into your TD engine instead of the raw depthCharts
+```
+
+You can keep using the same engine; just replace its depth chart reference with the adjusted one.
