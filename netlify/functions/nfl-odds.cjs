@@ -1,110 +1,98 @@
 // netlify/functions/nfl-odds.cjs
-// Minimal Odds fetcher with DraftKings + Anytime TD defaults.
-// Uses native fetch (Node 20). Returns { ok, usingOddsApi, offers, market, bookmaker }.
-
-const DEFAULT_MARKET_ALIASES = [
+// Fetch Anytime TD offers (DraftKings by default) from The Odds API.
+// Returns { ok, usingOddsApi, offers, market, bookmaker, error? }
+const MARKET_ALIASES = [
   "player_anytime_td",
   "player_anytime_touchdown",
+  "player_touchdown_anytime",
   "anytime_td",
-  "touchdown_scorer_anytime"
+  "touchdown_scorer_anytime",
 ];
 
-function pickMarket() {
-  const env = process.env.ODDSAPI_MARKET_NFL || process.env.ODDS_MARKET_NFL || "";
-  const m = (env || "").toLowerCase().trim();
-  if (m) return m;
-  return "player_anytime_td";
+function pickMarket(query) {
+  const fromQuery = (query && query.market) ? String(query.market).toLowerCase() : "";
+  const fromEnv = (process.env.ODDSAPI_MARKET_NFL || process.env.ODDS_MARKET_NFL || "").toLowerCase();
+  const m = fromQuery || fromEnv;
+  return m || "player_anytime_td";
 }
 
-function pickBookmaker() {
-  const env = process.env.ODDSAPI_BOOKMAKER_NFL || process.env.BOOKMAKER_NFL || "";
-  const b = (env || "").toLowerCase().trim();
+function pickBookmaker(query) {
+  const fromQuery = (query && query.book) ? String(query.book).toLowerCase() : "";
+  const fromEnv = (process.env.ODDSAPI_BOOKMAKER_NFL || process.env.BOOKMAKER_NFL || "").toLowerCase();
+  const b = fromQuery || fromEnv;
   return b || "draftkings";
 }
 
-function normOffer(o, bookmaker) {
-  // Normalize a few fields so the UI/shim can read them.
-  const book = bookmaker || (o.bookmaker && o.bookmaker.title) || o.book || "unknown";
-  const selection = o.title || o.name || o.player || (o.outcomes && o.outcomes[0] && o.outcomes[0].name) || o.selection;
-  let american = o.american || (o.price && o.price.american);
-  let decimal = o.decimal || (o.price && o.price.decimal);
-  if (!decimal && typeof american === "number") {
-    decimal = american > 0 ? 1 + american/100 : 1 + 100/Math.abs(american);
-  }
-  return { book, selection, american, decimal };
+function decimalFromAmerican(a) {
+  if (a == null) return null;
+  const n = Number(String(a).replace(/[^0-9\-+]/g, ""));
+  if (!isFinite(n)) return null;
+  return n > 0 ? 1 + n/100 : 1 + 100/Math.abs(n);
+}
+
+function normalizeOffer({ book, team, player, name, selection, outcome, price, american, decimal }) {
+  const sel = selection || player || name || (outcome && outcome.name) || null;
+  let am = american || (price && price.american);
+  let dec = decimal || (price && price.decimal);
+  if (!dec && am != null) dec = decimalFromAmerican(am);
+  return { book: book || "unknown", selection: sel, american: am, decimal: dec };
 }
 
 module.exports.handler = async (event) => {
-  const API_KEY = process.env.ODDS_API_KEY_NFL || process.env.VITE_ODDS_API_KEY || process.env.ODDS_API_KEY;
-  const marketEnv = pickMarket();
-  const bookmakerEnv = pickBookmaker();
-  const marketsToTry = Array.from(new Set([marketEnv, ...DEFAULT_MARKET_ALIASES]));
-  const region = "us";
+  try {
+    const API_KEY = process.env.ODDS_API_KEY_NFL || process.env.VITE_ODDS_API_KEY || process.env.ODDS_API_KEY;
+    const query = event && event.queryStringParameters || {};
+    const marketPref = pickMarket(query);
+    const bookmaker = pickBookmaker(query);
+    const region = "us";
 
-  if (!API_KEY) {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        ok: true,
-        usingOddsApi: false,
-        offers: [],
-        market: marketEnv,
-        bookmaker: bookmakerEnv,
-        note: "No ODDS_API_KEY_NFL set; returning empty offers."
-      })
-    };
-  }
+    const tried = [];
+    const offers = [];
 
-  const base = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds";
-  let lastErr = null;
-
-  for (const market of marketsToTry) {
-    try {
-      const url = `${base}?regions=${region}&markets=${encodeURIComponent(market)}&bookmakers=${encodeURIComponent(bookmakerEnv)}&apiKey=${API_KEY}`;
-      const res = await fetch(url, {
-        headers: {
-          "Accept": "application/json",
-          "User-Agent": "NetlifyFunctions/odds-fetch"
-        }
-      });
-      if (!res.ok) throw new Error(`http ${res.status}`);
-      const data = await res.json();
-      // data = array of events, each with bookmakers/outcomes
-      const offers = [];
-      for (const ev of (Array.isArray(data) ? data : [])) {
-        for (const bk of (ev.bookmakers || [])) {
-          for (const mk of (bk.markets || [])) {
-            for (const oc of (mk.outcomes || [])) {
-              offers.push(normOffer({ ...oc, book: bk.title }, bk.title));
-            }
-          }
-        }
-      }
+    if (!API_KEY) {
       return {
         statusCode: 200,
         body: JSON.stringify({
           ok: true,
-          usingOddsApi: true,
+          usingOddsApi: false,
           offers,
-          market,
-          bookmaker: bookmakerEnv
+          market: marketPref,
+          bookmaker,
+          note: "No ODDS_API_KEY_NFL set; returning empty offers."
         })
       };
-    } catch (e) {
-      lastErr = String(e);
-      continue; // try next alias
     }
-  }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      ok: false,
-      usingOddsApi: true,
-      offers: [],
-      market: marketEnv,
-      bookmaker: bookmakerEnv,
-      error: lastErr || "unknown fetch error"
-    })
-  };
+    const base = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds";
+    for (const mk of [marketPref, ...MARKET_ALIASES]) {
+      if (tried.includes(mk)) continue;
+      tried.push(mk);
+      const url = `${base}?regions=${region}&markets=${encodeURIComponent(mk)}&bookmakers=${encodeURIComponent(bookmaker)}&apiKey=${API_KEY}`;
+      const res = await fetch(url, { headers: { "Accept": "application/json" } });
+      if (!res.ok) continue;
+      const data = await res.json();
+      for (const ev of (Array.isArray(data) ? data : [])) {
+        for (const bk of (ev.bookmakers || [])) {
+          for (const m of (bk.markets || [])) {
+            for (const oc of (m.outcomes || [])) {
+              offers.push(normalizeOffer({ ...oc, book: bk.title }));
+            }
+          }
+        }
+      }
+      if (offers.length) {
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ ok: true, usingOddsApi: true, offers, market: mk, bookmaker })
+        };
+      }
+    }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: false, usingOddsApi: true, offers: [], market: marketPref, bookmaker, error: "no_offers_found" })
+    };
+  } catch (e) {
+    return { statusCode: 200, body: JSON.stringify({ ok: false, usingOddsApi: false, offers: [], error: String(e) }) };
+  }
 };
