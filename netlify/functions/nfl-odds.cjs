@@ -1,108 +1,76 @@
 // netlify/functions/nfl-odds.cjs
-// CommonJS Netlify function to fetch NFL Anytime TD odds from TheOddsAPI.
-// Safe-by-default: if env is missing or API errors, returns usingOddsApi:false.
-
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 exports.handler = async function(event, context) {
-  const {
-    ODDS_API_KEY_NFL,
-    ODDSAPI_BASE = 'https://api.the-odds-api.com/v4',
-    ODDSAPI_REGION_NFL = 'us',
-    ODDSAPI_BOOKMAKER_NFL = 'fanduel',
-    ODDSAPI_MARKET_NFL = 'player_anytime_touchdown',
-    ODDSAPI_SPORT_NFL = 'americanfootball_nfl'
-  } = process.env;
-
-  // Quick guard: no key -> safe off
-  if (!ODDS_API_KEY_NFL) {
-    return response({
-      provider: 'theoddsapi',
-      usingOddsApi: false,
-      offers: [],
-      error: 'Missing ODDS_API_KEY_NFL'
-    });
-  }
-
-  // Optional query params (for future filtering / caching)
-  const params = new URLSearchParams(event.queryStringParameters || {});
-  const week = params.get('week') || '';
-
-  // Build URL (single call, single market/bookmaker for credit safety)
-  const url = `${ODDSAPI_BASE}/sports/${encodeURIComponent(ODDSAPI_SPORT_NFL)}/odds?` +
-    `regions=${encodeURIComponent(ODDSAPI_REGION_NFL)}` +
-    `&markets=${encodeURIComponent(ODDSAPI_MARKET_NFL)}` +
-    `&bookmakers=${encodeURIComponent(ODDSAPI_BOOKMAKER_NFL)}` +
-    `&oddsFormat=american` +
-    `&apiKey=${encodeURIComponent(ODDS_API_KEY_NFL)}`;
-
   try {
-    const r = await fetch(url, { timeout: 10000 });
-    const status = r.status;
-    let dataText = await r.text();
-    let data;
-    try { data = JSON.parse(dataText); } catch (_) { data = dataText; }
+    const params = event.queryStringParameters || {};
+    const week = params.week || '1';
+    const apiKey = process.env.ODDS_API_KEY_NFL;
+    const base = process.env.ODDSAPI_BASE || 'https://api.the-odds-api.com/v4';
+    const sport = process.env.ODDSAPI_SPORT_NFL || 'americanfootball_nfl';
+    const market = process.env.ODDSAPI_MARKET_NFL || 'player_anytime_touchdown';
+    const region = process.env.ODDSAPI_REGION_NFL || 'us';
+    const bookmaker = process.env.ODDSAPI_BOOKMAKER_NFL || 'fanduel';
 
-    if (!r.ok) {
-      // Common failure: 422 invalid market; 401 auth; 429 rate limit
-      return response({
-        provider: 'theoddsapi',
-        usingOddsApi: false,
-        offers: [],
-        error: `fetch error ${status}`,
-        details: (typeof data === 'string' ? data : JSON.stringify(data)).slice(0, 300)
-      });
+    if (!apiKey) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ provider: 'theoddsapi', usingOddsApi: false, offers: [], count: 0, error: 'Missing ODDS_API_KEY_NFL' })
+      };
     }
 
-    // Normalize to a flat offer list: [{player, team, game, american, bookmaker, market}]
+    // Credit-safe: single request for NFL market/bookmaker; many providers require event-level, but we try the aggregate endpoint first.
+    const url = `${base}/sports/${sport}/odds?apiKey=${apiKey}&regions=${region}&markets=${market}&bookmakers=${bookmaker}`;
+    const resp = await fetch(url);
+    if (!resp.ok) {
+      const text = await resp.text();
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ provider: 'theoddsapi', usingOddsApi: false, offers: [], count: 0, error: `fetch failed ${resp.status}: ${text.slice(0,200)}` })
+      };
+    }
+    const data = await resp.json();
+    // Shape offers as { player, team?, event?, american, bookmaker }
     const offers = [];
-    if (Array.isArray(data)) {
-      for (const ev of data) {
-        const game = `${ev.away_team} @ ${ev.home_team}`;
-        // ev.bookmakers -> markets -> outcomes
-        const bks = ev.bookmakers || [];
-        for (const bk of bks) {
-          const bookmaker = bk.key || bk.title || 'book';
-          const markets = bk.markets || [];
-          for (const mk of markets) {
-            const market = mk.key || mk.market || 'market';
-            const outcomes = mk.outcomes || [];
-            for (const o of outcomes) {
-              // Player name can be in .name or .description depending on sport/market
-              const player = o.name || o.description || o.participant || '';
-              const american = (o.price !== undefined ? o.price : (o.american ?? null));
-              if (!player || american === null) continue;
-              offers.push({ player, game, american, bookmaker, market });
-            }
+    for (const evt of data || []) {
+      const eventName = evt?.commence_time ? evt.home_team + ' vs ' + evt.away_team : (evt?.event ?? '');
+      const books = evt?.bookmakers || [];
+      for (const b of books) {
+        if (b?.key !== bookmaker) continue;
+        const mkts = b?.markets || [];
+        for (const m of mkts) {
+          if (m?.key !== market) continue;
+          for (const o of (m?.outcomes || [])) {
+            // The Odds API often encodes player name in outcome.name
+            const player = o.name || o.description || '';
+            const price = o.price || o.odds || null;
+            const american = typeof price === 'number' ? toAmerican(price) : (o?.price ? o.price : null);
+            offers.push({
+              player,
+              american,
+              event: eventName,
+              bookmaker: b?.title || bookmaker
+            });
           }
         }
       }
     }
-
-    return response({
-      provider: 'theoddsapi',
-      usingOddsApi: true,
-      offers,
-      count: offers.length
-    });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ provider: 'theoddsapi', usingOddsApi: true, offers, count: offers.length })
+    };
   } catch (err) {
-    return response({
-      provider: 'theoddsapi',
-      usingOddsApi: false,
-      offers: [],
-      error: 'exception',
-      details: String(err).slice(0, 300)
-    });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ provider: 'theoddsapi', usingOddsApi: false, offers: [], count: 0, error: String(err).slice(0,200) })
+    };
   }
 };
 
-function response(body) {
-  return {
-    statusCode: 200,
-    headers: {
-      'content-type': 'application/json',
-      'cache-control': 'public, max-age=60'
-    },
-    body: JSON.stringify(body)
-  };
+function toAmerican(decimal) {
+  // If decimal odds given, convert to American; but v4 usually returns American directly.
+  if (!decimal || decimal <= 1) return null;
+  const profit = decimal - 1;
+  if (profit >= 1) return Math.round(profit * 100);
+  return Math.round(-100 / profit);
 }
