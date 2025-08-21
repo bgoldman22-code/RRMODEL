@@ -13,6 +13,7 @@ import MLB_HITS2 from "./MLB_HITS2.jsx";
 import NFL_NegCorr from "./NFL_NegCorr.jsx";
 import FooterDiagnostics from "./components/FooterDiagnostics.jsx";
 import Parlays from "./Parlays.jsx";
+import { ENABLE_NFL_TD } from './config/features.js';
 
 export default function App() {
   return (
