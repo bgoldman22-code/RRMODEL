@@ -4,6 +4,7 @@ import { ENABLE_NFL_TD } from "./config/features.js";
 import { getWeeksAvailable, getGamesForWeek } from "./utils/nflSchedule.js";
 import NflTdExplainer from "./components/NflTdExplainer.jsx";
 import tdEngine from "./nfl/tdEngine.js"; // ensure correct casing + extension
+import { fetchNflOdds } from "./nfl/oddsClient.js";
 
 export default function NFL() {
   if (!ENABLE_NFL_TD) {
@@ -18,8 +19,17 @@ export default function NFL() {
   const weeks = getWeeksAvailable();
   const [week, setWeek] = useState(weeks[0] ?? 1);
 
+  // OddsAPI integration state
+  const [odds, setOdds] = useState({ usingOddsApi: false, offers: [], count: 0 });
+
+  useEffect(() => {
+    let alive = true;
+    fetchNflOdds({ week }).then(d => { if (alive) setOdds(d || { usingOddsApi: false, offers: [], count: 0 }); }).catch(() => {});
+    return () => { alive = false; };
+  }, [week]);
+
   const games = useMemo(() => getGamesForWeek(week), [week]);
-  const candidates = useMemo(() => tdEngine(games), [games]);
+  const candidates = useMemo(() => tdEngine(games, { offers: odds.offers || [] }), [games, odds.offers]);
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -44,6 +54,8 @@ export default function NFL() {
       <p className="text-sm opacity-70 mb-4">Using OddsAPI: no • data (last 3 yrs): ok</p>
 
       {/* Top candidates table (placeholder if engine returns empty) */}
+      <p className="text-sm opacity-70 mb-4">Using OddsAPI: {odds.usingOddsApi ? 'yes' : 'no'} • offers: {odds.count ?? (odds.offers?.length ?? 0)}{odds.error ? ` • ${odds.error}` : ''}</p>
+
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
