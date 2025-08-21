@@ -1,5 +1,5 @@
 // src/NFL.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import tdEngine from "./nfl/tdEngine-default-shim.js";
 import { getWeeksAvailable, getGamesForWeek } from "./utils/nflSchedule";
 import NflTdExplainer from "./components/NflTdExplainer";
@@ -13,21 +13,32 @@ function fmtPct(v) {
   return "-";
 }
 
+async function loadDemoForWeek(week) {
+  if (week !== 1) return [];
+  try {
+    const res = await fetch("/src/nfl/demoCandidates-week1.json");
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
+}
+
 export default function NFL() {
+  const weeksAvailable = getWeeksAvailable();
   const [week, setWeek] = useState(1);
   const [candidates, setCandidates] = useState([]);
   const [diagnostics, setDiagnostics] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const games = useMemo(() => getGamesForWeek(week), [week]);
+
   useEffect(() => {
     let alive = true;
     async function run() {
       setLoading(true);
-      const games = getGamesForWeek(week);
-
-      // 1) try normal engine
       let rows = [];
       let diag = {};
+
+      // 1) normal engine (model-only, no odds needed)
       try {
         const res = await tdEngine(games, { week, requireOdds: false });
         rows = Array.isArray(res?.candidates) ? res.candidates : Array.isArray(res) ? res : [];
@@ -36,7 +47,7 @@ export default function NFL() {
         diag = { error: String(e) };
       }
 
-      // 2) if empty, try relaxed pass (display-only)
+      // 2) relaxed pass if empty
       if (!rows.length) {
         try {
           const res2 = await tdEngine(games, { week, requireOdds: false, relax: true });
@@ -48,10 +59,27 @@ export default function NFL() {
         } catch {}
       }
 
+      // 3) final fallback: demo snapshot (Week 1 only) so public page never renders blank
+      if (!rows.length) {
+        const demo = await loadDemoForWeek(week);
+        if (demo.length) {
+          rows = demo.map(d => ({
+            player: d.player,
+            team: d.team,
+            game: d.game,
+            modelTdPct: d.modelTdPct,
+            rzPath: d.rzPath,
+            expPath: d.expPath,
+            why: d.why
+          }));
+          diag = { ...diag, demoFallback: true };
+        }
+      }
+
       if (alive) {
         setCandidates(rows);
         setDiagnostics({
-          weeksAvailable: getWeeksAvailable().length,
+          weeksAvailable: weeksAvailable.length,
           games: games.length,
           candidates: rows.length,
           ...(diag || {}),
@@ -61,7 +89,7 @@ export default function NFL() {
     }
     run();
     return () => { alive = false; };
-  }, [week]);
+  }, [week, games, weeksAvailable.length]);
 
   return (
     <div className="p-4">
@@ -75,7 +103,7 @@ export default function NFL() {
           onChange={(e) => setWeek(Number(e.target.value))}
           className="border p-1 text-sm"
         >
-          {getWeeksAvailable().map((w) => (
+          {weeksAvailable.map((w) => (
             <option key={w} value={w}>Week {w}</option>
           ))}
         </select>
@@ -84,7 +112,9 @@ export default function NFL() {
 
       {diagnostics && (
         <p className="mt-2 text-xs text-gray-600">
-          data (last 3 yrs): ok • diagnostics — weeks:{diagnostics.weeksAvailable} games:{diagnostics.games} candidates:{diagnostics.candidates}{diagnostics.retried ? " • retried" : ""}
+          data (last 3 yrs): ok • diagnostics — weeks:{diagnostics.weeksAvailable} games:{diagnostics.games} candidates:{diagnostics.candidates}
+          {diagnostics.retried ? " • retried" : ""}
+          {diagnostics.demoFallback ? " • demo" : ""}
         </p>
       )}
 
