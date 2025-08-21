@@ -1,0 +1,6 @@
+// HINT for src/NFL.jsx integration:
+// import { fetchNflOdds } from "./nfl/oddsClient.js";
+// const [odds, setOdds] = useState({ usingOddsApi: false, offers: [] });
+// useEffect(() => { let alive = true; fetchNflOdds({ week }).then(d => { if (alive) setOdds(d); }); return () => { alive = false; }; }, [week]);
+// Status line: Using OddsAPI: {odds.usingOddsApi ? 'yes' : 'no'} • offers: {odds.count ?? odds.offers?.length ?? 0} {odds.error ? `• ${odds.error}` : ''}
+// Pass optional offers to engine: const candidates = useMemo(() => tdEngine(games, { offers: odds.offers || [] }), [games, odds.offers]);
