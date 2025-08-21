@@ -1,0 +1,98 @@
+{
+  "DAL": {
+    "allow_rz_td_rate": {
+      "RB": 0.45,
+      "WR": 0.28,
+      "TE": 0.22,
+      "QB": 0.05
+    },
+    "exp_allow": {
+      "rush": 0.11,
+      "rec": 0.12
+    }
+  },
+  "PHI": {
+    "allow_rz_td_rate": {
+      "RB": 0.48,
+      "WR": 0.27,
+      "TE": 0.23,
+      "QB": 0.02
+    },
+    "exp_allow": {
+      "rush": 0.12,
+      "rec": 0.13
+    }
+  },
+  "LAC": {
+    "allow_rz_td_rate": {
+      "RB": 0.5,
+      "WR": 0.26,
+      "TE": 0.2,
+      "QB": 0.04
+    },
+    "exp_allow": {
+      "rush": 0.12,
+      "rec": 0.14
+    }
+  },
+  "KC": {
+    "allow_rz_td_rate": {
+      "RB": 0.44,
+      "WR": 0.29,
+      "TE": 0.22,
+      "QB": 0.05
+    },
+    "exp_allow": {
+      "rush": 0.1,
+      "rec": 0.12
+    }
+  },
+  "BUF": {
+    "allow_rz_td_rate": {
+      "RB": 0.46,
+      "WR": 0.28,
+      "TE": 0.22,
+      "QB": 0.04
+    },
+    "exp_allow": {
+      "rush": 0.1,
+      "rec": 0.13
+    }
+  },
+  "BAL": {
+    "allow_rz_td_rate": {
+      "RB": 0.43,
+      "WR": 0.27,
+      "TE": 0.24,
+      "QB": 0.06
+    },
+    "exp_allow": {
+      "rush": 0.09,
+      "rec": 0.12
+    }
+  },
+  "CHI": {
+    "allow_rz_td_rate": {
+      "RB": 0.47,
+      "WR": 0.27,
+      "TE": 0.22,
+      "QB": 0.04
+    },
+    "exp_allow": {
+      "rush": 0.11,
+      "rec": 0.12
+    }
+  },
+  "MIN": {
+    "allow_rz_td_rate": {
+      "RB": 0.49,
+      "WR": 0.26,
+      "TE": 0.21,
+      "QB": 0.04
+    },
+    "exp_allow": {
+      "rush": 0.12,
+      "rec": 0.13
+    }
+  }
+}
