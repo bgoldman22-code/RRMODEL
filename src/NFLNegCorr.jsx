@@ -1,7 +1,7 @@
 
 // Unified NegCorr page (white shell). Overwrites any old "RRs" page.
 import React, { useEffect, useMemo, useState } from 'react';
-import { scoreNegCorr, suggestLines } from '../nfl/negcorr/negCorrEngine';
+import { scoreNegCorr, suggestLines } from './nfl/negcorr/negCorrEngine';
 
 export default function NFLNegCorr(){
   const [rows, setRows] = useState([]);
