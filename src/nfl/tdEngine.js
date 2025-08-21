@@ -1,24 +1,14 @@
 // src/nfl/tdEngine.js
+// NOTE: Preseason snap weighting is disabled by default to avoid build-time missing-file errors.
+// If you later want to enable preseason adjustments, wire them via usageAdjuster and fetch
+// preseason data at runtime (not a static import).
+
 import agg from '../../data/nfl-td/pbp-aggregates-2022-2024.json';
 import tendencies from '../../data/nfl-td/team-tendencies.json';
 import oppDef from '../../data/nfl-td/opponent-defense.json';
-import baseDepthCharts from '../../data/nfl-td/depth-charts.json';
+import depth from '../../data/nfl-td/depth-charts.json';
 import explosive from '../../data/nfl-td/player-explosive.json';
 import calibration from '../../data/nfl-td/calibration.json';
-
-// Optional preseason context (if file missing, we fall back gracefully)
-let preseasonSnaps = [];
-try {
-  preseasonSnaps = (await import('../../data/nfl-td/preseason-snaps.json')).default;
-} catch (_e) {
-  try {
-    preseasonSnaps = (await import('../../data/nfl-td/preseason-snaps.sample.json')).default;
-  } catch (_e2) {
-    preseasonSnaps = [];
-  }
-}
-
-import { computeStarterRepWeights, applyPreseasonWeights } from './usageAdjuster.js';
 
 const POS_FROM_ROLE = { RB1:'RB', WR1:'WR', WR2:'WR', TE1:'TE', QB1:'QB' };
 const ROLE_SHARE = { RB1:0.70, WR1:0.50, WR2:0.30, TE1:0.70, QB1:1.00 };
@@ -32,6 +22,7 @@ function calibrateProb(pRaw){
   if (!calibration || calibration.method !== 'platt') return clamp(pRaw, 0, 0.95);
   const a = calibration.a ?? 0;
   const b = calibration.b ?? 1;
+  // Map raw p -> calibrated via Platt scaling on logit space
   const z = a + b * logit(clamp(pRaw, 1e-6, 1-1e-6));
   return clamp(logistic(z), 0, 0.95);
 }
@@ -52,17 +43,6 @@ function makeWhy(team, pos, name, tAgg, tTen, def, expIdx){
 export function tdEngine(games, opts = {}){
   const offers = opts.offers || [];
   const candidates = [];
-  const preseasonAlpha = 0.6; // blend strength for preseason starter-rep
-
-  // Adjust depth charts with preseason starter-rep weights (if any)
-  let depth = baseDepthCharts;
-  try {
-    const weights = computeStarterRepWeights(preseasonSnaps);
-    depth = applyPreseasonWeights(baseDepthCharts, weights, preseasonAlpha);
-  } catch (_e) {
-    depth = baseDepthCharts;
-  }
-
   // Build a quick name->odds map for convenience
   const oddsMap = new Map();
   for (const o of offers){
@@ -70,7 +50,7 @@ export function tdEngine(games, opts = {}){
     oddsMap.set(o.player.toLowerCase(), o.american ?? null);
   }
 
-  for (const g of games || []){
+  for (const g of (games || [])){
     const home = g.home, away = g.away;
     if (!home || !away) continue;
     for (const side of [away, home]){
@@ -89,15 +69,15 @@ export function tdEngine(games, opts = {}){
 
         const expIdx = playerExplosiveIdx(name);
 
-        // RZ lambda
+        // RZ lambda (expected TDs by this player in RZ): trips * teamPosShare * playerShare * oppAllow[pos] * scale
         const lambdaRZ = (tAgg.rz_trips_pg || 3.0) * posShareTeam * playerShare * (def.rz_allow[pos] || 0.28) * 0.55;
         const pRZ = clamp(1 - Math.exp(-lambdaRZ), 0, PATH_CAP);
 
-        // Explosive path
+        // Explosive path: opponent allowance * player explosive, mild scale
         const expAllow = pos === 'RB' ? (def.exp_allow.rush || 0.27) : (def.exp_allow.rec || 0.30);
         const pEXP = clamp(expAllow * expIdx * 0.40, 0, PATH_CAP);
 
-        // Vulture penalty
+        // Vulture penalty for RBs
         const vult = (pos === 'RB') ? (tAgg.vulture_prob || 0.08) * 0.20 : 0;
 
         const w = tTen.weights || { w_rz:0.65, w_exp:0.30, w_vult:0.05 };
