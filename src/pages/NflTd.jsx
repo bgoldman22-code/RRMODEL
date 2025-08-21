@@ -1,5 +1,4 @@
-// src/pages/NflTd.jsx
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ENABLE_NFL_TD } from '../config/features';
 import { getGamesInWindow, nextThursdayISO } from '../utils/nflSchedule';
 
@@ -15,16 +14,12 @@ export default function NflTd() {
 
   const [date, setDate] = useState(nextThursdayISO());
   const games = useMemo(() => getGamesInWindow(date), [date]);
-
-  // derive count
   const count = games.length;
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-1">NFL Anytime TD — Weekly Window (Thu–Mon)</h1>
-      <p className="text-sm opacity-70 mb-4">
-        Pick date (defaults to next Thursday):
-      </p>
+      <p className="text-sm opacity-70 mb-4">Pick date (defaults to next Thursday):</p>
       <div className="flex items-center gap-3 mb-4">
         <input
           type="date"
