@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NFL Negative Correlation Builder</title>
+  <style>
+    :root { --bg:#0b0d12; --card:#111420; --muted:#96a0b5; --text:#e7ecf7; --accent:#5bb0ff; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
+    .card{background:var(--card);border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,.35);padding:16px;border:1px solid #1a2030}
+    h1{font-size:24px;margin:0 0 8px}
+    p.hint{color:var(--muted);margin:0 0 16px}
+    table{width:100%;border-collapse:collapse}
+    thead th{font-size:12px;color:#b7c2d8;text-transform:uppercase;letter-spacing:.04em;text-align:left;padding:10px 8px;border-bottom:1px solid #22304a}
+    tbody td{padding:10px 8px;border-bottom:1px dashed #1f2a44;vertical-align:top}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#16223a;color:#d2ddf5;font-size:12px;border:1px solid #233355}
+    .meta{color:#9db0cf;font-size:12px}
+    .score{font-variant-numeric:tabular-nums}
+    .ok{color:#7be28a}
+    .warn{color:#ffd166}
+    .err{color:#ff6b6b}
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>NFL Negative Correlation Builder</h1>
+      <p class="hint">Standalone static page. Reads last-3y metrics from <code>/data/nfl/negcorr-players.json</code>. Odds are optional via Netlify function <code>/.netlify/functions/odds-nfl-negcorr</code>.</p>
+      <div id="status" class="meta"></div>
+      <div id="table"></div>
+    </div>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
