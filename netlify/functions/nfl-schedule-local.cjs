@@ -1,19 +1,23 @@
 
 // netlify/functions/nfl-schedule-local.cjs
-const { readFile } = require('fs/promises');
+const fs = require('fs');
 const path = require('path');
 
 exports.handler = async (event) => {
   try{
-    const date = (new URLSearchParams(event.queryStringParameters||{}).get('date')) || new Date().toISOString().slice(0,10);
-    const jsonPath = path.join(process.cwd(), 'public', 'data', 'nfl', 'schedule-2025.sample.json');
-    const raw = await readFile(jsonPath, 'utf8');
-    const sched = JSON.parse(raw);
+    const q = event.queryStringParameters || {};
+    const d = q.date || new Date().toISOString().substring(0,10);
 
-    const d = new Date(date);
-    const week = (sched.weeks || []).find(w => new Date(w.start) <= d && d <= new Date(w.end)) || sched.weeks[0];
-    return { statusCode:200, body: JSON.stringify({ ok:true, week, games: week.games }) };
+    const p = path.join(process.cwd(), 'public', 'data', 'nfl', 'schedule-2025.sample.json');
+    const raw = fs.readFileSync(p, 'utf8');
+    const obj = JSON.parse(raw);
+    const weeks = obj.weeks || [];
+    const hit = weeks.find(w => d >= w.start && d <= w.end) || weeks[0];
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ week: hit.week, start: hit.start, end: hit.end, games: hit.games })
+    };
   }catch(e){
-    return { statusCode:200, body: JSON.stringify({ ok:false, error: String(e) }) };
+    return { statusCode: 200, body: JSON.stringify({ week: 1, start: d, end: d, games: 0, error: String(e) }) };
   }
-}
+};
