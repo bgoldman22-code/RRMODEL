@@ -4,6 +4,83 @@ import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
 
+// --- Optional: refresh odds snapshot before building ---
+async function refreshOddsSnapshotIfNeeded(){
+  try{
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("norefresh") === "1") return; // allow bypass via URL
+    const today = new Date().toLocaleDateString("en-CA", { timeZone:"America/New_York" });
+    const key = "odds_refreshed_ET";
+    const last = localStorage.getItem(key);
+    if(last === today) return; // already refreshed today in this browser
+
+    // Fire the refresh; cap wait to ~3s so UI stays snappy
+    const controller = new AbortController();
+    const t = setTimeout(()=>controller.abort(), 3000);
+    try{
+      const res = await fetch("/.netlify/functions/odds-refresh-multi?source=generate", { signal: controller.signal });
+      clearTimeout(t);
+      if(res.ok){
+        localStorage.setItem(key, today);
+      }
+    }catch(_e){
+      // ignore timeouts/errors; we'll proceed with whatever snapshot exists
+    }
+  }catch{ /* no-op */}
+}
+
+
+// === Variance Controls (no UI/odds changes) ===
+const ANCHOR_CAP = 3;                 // Max anchors allowed per slate
+const MIDRANGE_MIN_REQUIRED = 3;      // At least this many mid-range variance picks
+const MIDRANGE_P_MIN = 0.13;          // ~ +650
+const MIDRANGE_P_MAX = 0.25;          // ~ +300
+const REPEAT_DAY_WINDOW = 3;          // Look back days for repeats
+const MAX_CONSECUTIVE_REPEATS = 2;    // No 3+ consecutive days for same player
+
+function loadRecentPicks(){
+  try{
+    const j = JSON.parse(localStorage.getItem("mlb_hr_recent_picks")||"{}");
+    return j && typeof j==='object' ? j : {};
+  }catch{ return {}; }
+}
+function saveTodayPicks(dateStr, names){
+  try{
+    const rec = loadRecentPicks();
+    rec[dateStr] = names;
+    // keep only last 7 entries
+    const keys = Object.keys(rec).sort().slice(-7);
+    const pruned = {};
+    for(const k of keys) pruned[k] = rec[k];
+    localStorage.setItem("mlb_hr_recent_picks", JSON.stringify(pruned));
+  }catch{/* ignore */}
+}
+function consecutiveRepeatCount(recentMap, targetName){
+  // Count consecutive days (most recent backwards) that include targetName
+  const dates = Object.keys(recentMap).sort().reverse();
+  let count = 0;
+  for(const d of dates){
+    const arr = Array.isArray(recentMap[d]) ? recentMap[d] : [];
+    if(arr.some(n => n === targetName)) count++;
+    else break;
+    if(count >= 99) break;
+  }
+  return count;
+}
+
+function tagVariance(row){
+  const p = Number(row.p_model||0);
+  const mid = (p >= MIDRANGE_P_MIN && p <= MIDRANGE_P_MAX);
+  const park = Number(row.parkHR||0);
+  const hasPitchEdge = /pitch edge|pitch-type/i.test(String(row.why||""));
+  const weakPitcher = (park >= 0.20) || hasPitchEdge; // proxy for exploitable
+  const tagList = [];
+  if(mid) tagList.push("mid-range");
+  if(weakPitcher) tagList.push("exploitable-pitcher");
+  return { mid, weakPitcher, variance: (mid || weakPitcher), tagList };
+}
+
+
 
 // --- Straight HR Bets helpers ---
 const _fmtPct = (p) => (p != null ? `${(p*100).toFixed(1)}%` : "—");
@@ -194,6 +271,7 @@ async function getOddsMap(){
     try{
       const [cals, baseCandidates] = await Promise.all([ getCalibration(), getSlate() ]);
       const ids = baseCandidates.map(x => x.batterId).filter(Boolean);
+      await refreshOddsSnapshotIfNeeded();
       const [hotMap, oddsMap] = await Promise.all([ getHotColdBulk(ids), getOddsMap() ]);
 
       
@@ -286,6 +364,94 @@ async function getOddsMap(){
         });
       }
 rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
+
+      // === Variance-aware selection (anchors cap, mid-range quota, repeat cap) ===
+      const recent = loadRecentPicks();
+      const byName = (r) => String(r.name||"");
+
+      // Compute tags
+      const rowsWithTags = rows.map(r => {
+        const t = tagVariance(r);
+        return { ...r, __var: t };
+      });
+
+      // Identify anchors: highest baseline probabilities
+      const anchorsPool = [...rowsWithTags].sort((a,b)=> (b.p_model||0)-(a.p_model||0));
+      const chosenAnchors = [];
+      for(const r of anchorsPool){
+        if(chosenAnchors.length >= ANCHOR_CAP) break;
+        // respect per-game cap later; here just mark potential anchors
+        chosenAnchors.push({ ...r, why: r.why ? (r.why + " • Anchor rule") : "Anchor rule" });
+      }
+      const anchorNames = new Set(chosenAnchors.map(x=>byName(x)));
+
+      // Build mid-range pool
+      const midPool = rowsWithTags.filter(r => r.__var.mid);
+
+      // Helper to check repeat constraint
+      function canUse(r){
+        const cnt = consecutiveRepeatCount(recent, byName(r));
+        return cnt < MAX_CONSECUTIVE_REPEATS;
+      }
+
+      // Assemble 'out' honoring per-game cap, anchor cap, mid-range minimum, and repeats
+      const out = [];
+      const perGame = new Map();
+      let midCount = 0;
+      let anchorsUsed = 0;
+
+      // First pass: prioritize anchors & top EV while skipping repeats
+      for(const r of rowsWithTags){
+        const g = r.game || "UNK";
+        const n = perGame.get(g)||0;
+        if(n >= MAX_PER_GAME) continue;
+
+        const isAnchor = anchorNames.has(byName(r));
+        if(isAnchor && anchorsUsed >= ANCHOR_CAP) continue;
+        if(!canUse(r)) continue;
+
+        out.push(r);
+        perGame.set(g, n+1);
+        if(isAnchor) anchorsUsed++;
+        if(r.__var.mid) midCount++;
+
+        if(out.length >= MIN_PICKS) break;
+      }
+
+      // Ensure mid-range minimum by swapping in mid-range candidates not already picked
+      if(midCount < MIDRANGE_MIN_REQUIRED){
+        const need = MIDRANGE_MIN_REQUIRED - midCount;
+        const pickedKey = new Set(out.map(x => byName(x)+"|"+(x.game||"")));
+        const replaceableIdx = out
+          .map((r,i)=>({r,i}))
+          .filter(o => !o.r.__var.mid)  // replace non-mid
+          .map(o => o.i);
+
+        let irep = 0;
+        for(const m of midPool){
+          if(irep >= need) break;
+          const key = byName(m)+"|"+(m.game||"");
+          if(pickedKey.has(key)) continue;
+          if(!canUse(m)) continue;
+          // find a slot to replace that doesn't violate per-game cap
+          while(irep < replaceableIdx.length){
+            const idx = replaceableIdx[irep++];
+            const g = m.game || "UNK";
+            const countInGame = out.filter(x => (x.game||"")===g).length;
+            if(countInGame >= MAX_PER_GAME) continue;
+            out[idx] = m;
+            midCount++;
+            break;
+          }
+        }
+      }
+
+      // Trim to MIN_PICKS if somehow overfilled
+      if(out.length > MIN_PICKS) out.length = MIN_PICKS;
+
+      // Save today's names for repeat logic
+      try { saveTodayPicks(fmtET(), out.map(x => byName(x))); try{ window.__variance_meta = { anchorsUsed, midCount, minPicks: MIN_PICKS }; }catch{} } catch {}
+
 
       const out = [];
       const perGame = new Map();
