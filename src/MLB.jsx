@@ -88,7 +88,7 @@ function fmtET(date=new Date()){
 }
 
 async function getBvPMap(pairs){
-  out = new Map();
+  let out = new Map();
   const uniq = [];
   const seen = new Set();
   for(const p of pairs){
@@ -198,7 +198,7 @@ const [meta, setMeta]   = useState({});
       const beg = new Intl.DateTimeFormat("en-CA", { timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
       const url = `https://statsapi.mlb.com/api/v1/people?personIds=${ids.join(",")}&hydrate=stats(group=hitting,type=byDateRange,beginDate=${beg},endDate=${end})`;
       const j = await fetchJSON(url);
-      out = new Map();
+      let out = new Map();
       for(const p of (j.people||[])){
         const sid = p?.id;
         let hr14=0, pa14=0;
@@ -242,8 +242,8 @@ async function getOddsMap(){
   
   async function build(){
   // Canonical selections and maps
-  out = [];
-  perGame = new Map();
+  let out = [];
+  let perGame = new Map();
 
   // Canonical selections and maps
   out = [];
