@@ -1,50 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./utils/ev.js";
-
-// Lightweight UI logger to surface runtime errors visibly
-function __logUI(msg){
-  try{
-    console.log("[MLB]", msg);
-    const el = document.getElementById("mlb-debug");
-    if(el){
-      const p = document.createElement("div");
-      p.style.fontSize = "12px";
-      p.style.opacity = "0.85";
-      p.textContent = (typeof msg === "string") ? msg : JSON.stringify(msg);
-      el.prepend(p);
-    }
-  }catch(_e){ /* no-op */}
-}
-window.__logUI = __logUI;
 import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
-
-// --- Optional: refresh odds snapshot before building ---
-async function refreshOddsSnapshotIfNeeded(){
-  try{
-    const params = new URLSearchParams(window.location.search);
-    if(params.get("norefresh") === "1") return; // allow bypass via URL
-    const today = new Date().toLocaleDateString("en-CA", { timeZone:"America/New_York" });
-    const key = "odds_refreshed_ET";
-    const last = localStorage.getItem(key);
-    if(last === today) return; // already refreshed today in this browser
-
-    // Fire the refresh; cap wait to ~3s so UI stays snappy
-    const controller = new AbortController();
-    const t = setTimeout(()=>controller.abort(), 3000);
-    try{
-      const res = await fetch("/.netlify/functions/odds-refresh-multi?source=generate", { signal: controller.signal });
-      clearTimeout(t);
-      if(res.ok){
-        localStorage.setItem(key, today);
-      }
-    }catch(_e){
-      // ignore timeouts/errors; we'll proceed with whatever snapshot exists
-    }
-  }catch{ /* no-op */}
-}
-
 
 // === Variance Controls (no UI/odds changes) ===
 const ANCHOR_CAP = 3;                 // Max anchors allowed per slate
@@ -283,16 +241,14 @@ async function getOddsMap(){
 
   
   async function build(){
+  // Canonical bindings
   out = [];
   perGame = new Map();
-  const __BUILD_WRAPPED__ = true;
-  try{
 
     setLoading(true); setMessage(""); setPicks([]);
     try{
       const [cals, baseCandidates] = await Promise.all([ getCalibration(), getSlate() ]);
       const ids = baseCandidates.map(x => x.batterId).filter(Boolean);
-      await refreshOddsSnapshotIfNeeded();
       const [hotMap, oddsMap] = await Promise.all([ getHotColdBulk(ids), getOddsMap() ]);
 
       
@@ -386,9 +342,6 @@ async function getOddsMap(){
       }
 rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
-      // Initialize selection array for this slate
-      out = [];
-
       // === Variance-aware selection (anchors cap, mid-range quota, repeat cap) ===
       const recent = loadRecentPicks();
       const byName = (r) => String(r.name||"");
@@ -419,7 +372,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       }
 
       // Assemble 'out' honoring per-game cap, anchor cap, mid-range minimum, and repeats
-      // using existing 'out' from variance selection
+      out = [];
       perGame = new Map();
       let midCount = 0;
       let anchorsUsed = 0;
@@ -477,7 +430,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       try { saveTodayPicks(fmtET(), out.map(x => byName(x))); try{ window.__variance_meta = { anchorsUsed, midCount, minPicks: MIN_PICKS }; }catch{} } catch {}
 
 
-      // using existing 'out' from variance selection
+      out = [];
       perGame = new Map();
       for(const r of rows){
         const g = r.game || "UNK";
@@ -694,26 +647,3 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
     </div>
   );
 }
-
-// Ensure Generate button triggers build()
-(function __BIND_GENERATE__(){
-  try{
-    function bind(){
-      const btn = document.querySelector('button, #generate, [data-action="generate"]');
-      if(!btn) return false;
-      if(btn.__mlbBound) return true;
-      btn.__mlbBound = true;
-      btn.addEventListener('click', async ()=>{
-        __logUI("▶️ Generate clicked");
-        const picks = await build();
-        __logUI("✅ Build completed: " + (Array.isArray(picks) ? picks.length : 0) + " picks");
-      });
-      return true;
-    }
-    if(document.readyState === "loading"){
-      document.addEventListener("DOMContentLoaded", ()=>{ bind(); setTimeout(bind, 250); });
-    }else{
-      bind(); setTimeout(bind, 250);
-    }
-  }catch(e){ console.warn("Bind Generate failed", e); }
-})();
