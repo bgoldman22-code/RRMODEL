@@ -652,6 +652,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
           </div>
         </div>
       
+    )}
       {/* --- Pure EV (Model p ≥ 19%) --- */}
       {Array.isArray(pureEV) && pureEV.length>0 && (
         <div className="mt-8">
