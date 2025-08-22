@@ -241,8 +241,9 @@ async function getOddsMap(){
 
   
   async function build(){
-  // Canonical selection array to avoid redeclare issues
+  // Canonical bindings to avoid redeclarations across passes
   out = [];
+  perGame = new Map();
 
     setLoading(true); setMessage(""); setPicks([]);
     try{
@@ -372,7 +373,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
       // Assemble 'out' honoring per-game cap, anchor cap, mid-range minimum, and repeats
       out = [];
-      const perGame = new Map();
+      perGame = new Map();
       let midCount = 0;
       let anchorsUsed = 0;
 
@@ -430,7 +431,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
 
       out = [];
-      const perGame = new Map();
+      perGame = new Map();
       for(const r of rows){
         const g = r.game || "UNK";
         const n = perGame.get(g)||0;
