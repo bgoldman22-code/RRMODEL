@@ -4,32 +4,6 @@ import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
 
-// --- Optional: refresh odds snapshot before building ---
-async function refreshOddsSnapshotIfNeeded(){
-  try{
-    const params = new URLSearchParams(window.location.search);
-    if(params.get("norefresh") === "1") return; // allow bypass via URL
-    const today = new Date().toLocaleDateString("en-CA", { timeZone:"America/New_York" });
-    const key = "odds_refreshed_ET";
-    const last = localStorage.getItem(key);
-    if(last === today) return; // already refreshed today in this browser
-
-    // Fire the refresh; cap wait to ~3s so UI stays snappy
-    const controller = new AbortController();
-    const t = setTimeout(()=>controller.abort(), 3000);
-    try{
-      const res = await fetch("/.netlify/functions/odds-refresh-multi?source=generate", { signal: controller.signal });
-      clearTimeout(t);
-      if(res.ok){
-        localStorage.setItem(key, today);
-      }
-    }catch(_e){
-      // ignore timeouts/errors; we'll proceed with whatever snapshot exists
-    }
-  }catch{ /* no-op */}
-}
-
-
 // === Variance Controls (no UI/odds changes) ===
 const ANCHOR_CAP = 3;                 // Max anchors allowed per slate
 const MIDRANGE_MIN_REQUIRED = 3;      // At least this many mid-range variance picks
@@ -267,11 +241,13 @@ async function getOddsMap(){
 
   
   async function build(){
+  // Single function-scoped map to avoid redeclare/runtime issues
+  perGame = new Map();
+
     setLoading(true); setMessage(""); setPicks([]);
     try{
       const [cals, baseCandidates] = await Promise.all([ getCalibration(), getSlate() ]);
       const ids = baseCandidates.map(x => x.batterId).filter(Boolean);
-      await refreshOddsSnapshotIfNeeded();
       const [hotMap, oddsMap] = await Promise.all([ getHotColdBulk(ids), getOddsMap() ]);
 
       
@@ -364,11 +340,6 @@ async function getOddsMap(){
         });
       }
 rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
-perGame = new Map();
-// canonical perGame binding for selection section
-
-      // Initialize selection array for this slate
-      let out = [];
 
       // === Variance-aware selection (anchors cap, mid-range quota, repeat cap) ===
       const recent = loadRecentPicks();
@@ -400,7 +371,7 @@ perGame = new Map();
       }
 
       // Assemble 'out' honoring per-game cap, anchor cap, mid-range minimum, and repeats
-      // using existing 'out' from variance selection
+      const out = [];
       perGame = new Map();
       let midCount = 0;
       let anchorsUsed = 0;
@@ -458,7 +429,7 @@ perGame = new Map();
       try { saveTodayPicks(fmtET(), out.map(x => byName(x))); try{ window.__variance_meta = { anchorsUsed, midCount, minPicks: MIN_PICKS }; }catch{} } catch {}
 
 
-      // using existing 'out' from variance selection
+      const out = [];
       perGame = new Map();
       for(const r of rows){
         const g = r.game || "UNK";
