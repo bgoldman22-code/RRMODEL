@@ -159,6 +159,7 @@ export default function MLB(){
   const [rawTop, setRawTop] = useState([]);
     const [anchor, setAnchor] = useState(null);
 const [meta, setMeta]   = useState({});
+  const [pureEV, setPureEV] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -345,6 +346,15 @@ async function getOddsMap(){
         });
       }
 rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
+
+      // Build Pure EV table source (p_model >= 19%)
+      try {
+        const ev19 = rows
+          .filter(r => (Number(r.p_model)||0) >= 0.19 && r.american != null && isFinite(Number(r.ev)))
+          .sort((a,b)=> Number(b.ev) - Number(a.ev));
+        setPureEV(ev19);
+      } catch(_) { setPureEV([]); }
+
 
       // === Variance-aware selection (anchors cap, mid-range quota, repeat cap) ===
       const recent = loadRecentPicks();
@@ -641,7 +651,43 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
             </p>
           </div>
         </div>
+      
+      {/* --- Pure EV (Model p ≥ 19%) --- */}
+      {Array.isArray(pureEV) && pureEV.length>0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold">Pure EV (Model p ≥ 19%)</h2>
+          <div className="mt-2 overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="px-3 py-2 text-left">Player</th>
+                  <th className="px-3 py-2 text-left">Game</th>
+                  <th className="px-3 py-2 text-right">Model HR%</th>
+                  <th className="px-3 py-2 text-right">Actual Odds</th>
+                  <th className="px-3 py-2 text-right">EV (1u)</th>
+                  <th className="px-3 py-2 text-left">Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pureEV.map((r,i)=> (
+                  <tr key={`pureev-${i}`} className="border-b">
+                    <td className="px-3 py-2">{r.name}</td>
+                    <td className="px-3 py-2">{r.game || "—"}</td>
+                    <td className="px-3 py-2 text-right">{_fmtPct(r.p_model)}</td>
+                    <td className="px-3 py-2 text-right">{_fmtAmerican(r.american)}</td>
+                    <td className="px-3 py-2 text-right">{Number(r.ev).toFixed(3)}</td>
+                    <td className="px-3 py-2">{r.why || ""}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="text-xs text-gray-500 mt-2">
+              EV computed from model probability and current book odds; filtered by model p ≥ 19% to avoid pure longshots.
+            </p>
+          </div>
+        </div>
       )}
+)}
 
           </div>
         </div>
