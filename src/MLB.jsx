@@ -365,6 +365,9 @@ async function getOddsMap(){
       }
 rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
+      // Initialize selection array for this slate
+      let out = [];
+
       // === Variance-aware selection (anchors cap, mid-range quota, repeat cap) ===
       const recent = loadRecentPicks();
       const byName = (r) => String(r.name||"");
@@ -395,15 +398,15 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       }
 
       // Assemble 'out' honoring per-game cap, anchor cap, mid-range minimum, and repeats
-      const out = [];
-      const perGame = new Map();
+      // using existing 'out' from variance selection
+      const perGame2 = new Map();
       let midCount = 0;
       let anchorsUsed = 0;
 
       // First pass: prioritize anchors & top EV while skipping repeats
       for(const r of rowsWithTags){
         const g = r.game || "UNK";
-        const n = perGame.get(g)||0;
+        const n = perGame2.get(g)||0;
         if(n >= MAX_PER_GAME) continue;
 
         const isAnchor = anchorNames.has(byName(r));
@@ -411,7 +414,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
         if(!canUse(r)) continue;
 
         out.push(r);
-        perGame.set(g, n+1);
+        perGame2.set(g, n+1);
         if(isAnchor) anchorsUsed++;
         if(r.__var.mid) midCount++;
 
@@ -453,8 +456,8 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       try { saveTodayPicks(fmtET(), out.map(x => byName(x))); try{ window.__variance_meta = { anchorsUsed, midCount, minPicks: MIN_PICKS }; }catch{} } catch {}
 
 
-      const out = [];
-      const perGame = new Map();
+      // using existing 'out' from variance selection
+      const perGame2 = new Map();
       for(const r of rows){
         const g = r.game || "UNK";
         const n = perGame.get(g)||0;
