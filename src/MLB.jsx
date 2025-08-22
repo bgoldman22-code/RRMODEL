@@ -364,7 +364,6 @@ async function getOddsMap(){
         });
       }
 rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
-      let perGame2;
 
       // Initialize selection array for this slate
       let out = [];
@@ -400,7 +399,8 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
       // Assemble 'out' honoring per-game cap, anchor cap, mid-range minimum, and repeats
       // using existing 'out' from variance selection
-      perGame2 = new Map();
+      const perGame2 = new Map();
+      const perGame = perGame2;
       let midCount = 0;
       let anchorsUsed = 0;
 
@@ -458,7 +458,8 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
 
       // using existing 'out' from variance selection
-      perGame2 = new Map();
+      const perGame2 = new Map();
+      const perGame = perGame2;
       for(const r of rows){
         const g = r.game || "UNK";
         const n = perGame.get(g)||0;
