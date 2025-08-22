@@ -267,8 +267,6 @@ async function getOddsMap(){
 
   
   async function build(){
-      perGame = new Map();
-
     setLoading(true); setMessage(""); setPicks([]);
     try{
       const [cals, baseCandidates] = await Promise.all([ getCalibration(), getSlate() ]);
@@ -366,6 +364,8 @@ async function getOddsMap(){
         });
       }
 rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
+perGame = new Map();
+// canonical perGame binding for selection section
 
       // Initialize selection array for this slate
       let out = [];
@@ -401,14 +401,14 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
       // Assemble 'out' honoring per-game cap, anchor cap, mid-range minimum, and repeats
       // using existing 'out' from variance selection
-      const perGame2 = new Map();
+      perGame = new Map();
       let midCount = 0;
       let anchorsUsed = 0;
 
       // First pass: prioritize anchors & top EV while skipping repeats
       for(const r of rowsWithTags){
         const g = r.game || "UNK";
-        const n = perGame2.get(g)||0;
+        const n = perGame.get(g)||0;
         if(n >= MAX_PER_GAME) continue;
 
         const isAnchor = anchorNames.has(byName(r));
@@ -416,7 +416,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
         if(!canUse(r)) continue;
 
         out.push(r);
-        perGame2.set(g, n+1);
+        perGame.set(g, n+1);
         if(isAnchor) anchorsUsed++;
         if(r.__var.mid) midCount++;
 
@@ -459,7 +459,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
 
 
       // using existing 'out' from variance selection
-      const perGame2 = new Map();
+      perGame = new Map();
       for(const r of rows){
         const g = r.game || "UNK";
         const n = perGame.get(g)||0;
