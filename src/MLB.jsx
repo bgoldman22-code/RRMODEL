@@ -241,8 +241,8 @@ async function getOddsMap(){
 
   
   async function build(){
-  // Single function-scoped map to avoid redeclare/runtime issues
-  perGame = new Map();
+  // Canonical selection array to avoid redeclare issues
+  out = [];
 
     setLoading(true); setMessage(""); setPicks([]);
     try{
@@ -371,8 +371,8 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       }
 
       // Assemble 'out' honoring per-game cap, anchor cap, mid-range minimum, and repeats
-      const out = [];
-      perGame = new Map();
+      out = [];
+      const perGame = new Map();
       let midCount = 0;
       let anchorsUsed = 0;
 
@@ -429,8 +429,8 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       try { saveTodayPicks(fmtET(), out.map(x => byName(x))); try{ window.__variance_meta = { anchorsUsed, midCount, minPicks: MIN_PICKS }; }catch{} } catch {}
 
 
-      const out = [];
-      perGame = new Map();
+      out = [];
+      const perGame = new Map();
       for(const r of rows){
         const g = r.game || "UNK";
         const n = perGame.get(g)||0;
