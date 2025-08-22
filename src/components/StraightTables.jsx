@@ -102,3 +102,9 @@ export default function StraightTables({ picks, titleRaw='Straight HR Bets (Top 
     </div>
   );
 }
+
+StraightTables.propTypes = {
+  picks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  titleRaw: PropTypes.string,
+  titleEV: PropTypes.string,
+};
