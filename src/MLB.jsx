@@ -1,16 +1,143 @@
 import React, { useEffect, useState } from "react";
 import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./utils/ev.js";
 import { hotColdMultiplier } from "./utils/hotcold.js";
-import { normName, buildWhy, explainRow } from "./utils/why.js";
-import { pitchTypeEdgeMultiplier, rookieBlendBaseline } from "./utils/model_scalers.js";
+import { normName, buildWhy } from "./utils/why.js";
+import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
 
+// === Variance Controls (no UI/odds changes) ===
+const ANCHOR_CAP = 3;                 // Max anchors allowed per slate
+const MIDRANGE_MIN_REQUIRED = 3;      // At least this many mid-range variance picks
+const MIDRANGE_P_MIN = 0.13;          // ~ +650
+const MIDRANGE_P_MAX = 0.25;          // ~ +300
+const REPEAT_DAY_WINDOW = 3;          // Look back days for repeats
+const MAX_CONSECUTIVE_REPEATS = 2;    // No 3+ consecutive days for same player
+
+function loadRecentPicks(){
+  try{
+    const j = JSON.parse(localStorage.getItem("mlb_hr_recent_picks")||"{}");
+    return j && typeof j==='object' ? j : {};
+  }catch{ return {}; }
+}
+function saveTodayPicks(dateStr, names){
+  try{
+    const rec = loadRecentPicks();
+    rec[dateStr] = names;
+    // keep only last 7 entries
+    const keys = Object.keys(rec).sort().slice(-7);
+    const pruned = {};
+    for(const k of keys) pruned[k] = rec[k];
+    localStorage.setItem("mlb_hr_recent_picks", JSON.stringify(pruned));
+  }catch{/* ignore */}
+}
+function consecutiveRepeatCount(recentMap, targetName){
+  // Count consecutive days (most recent backwards) that include targetName
+  const dates = Object.keys(recentMap).sort().reverse();
+  let count = 0;
+  for(const d of dates){
+    const arr = Array.isArray(recentMap[d]) ? recentMap[d] : [];
+    if(arr.some(n => n === targetName)) count++;
+    else break;
+    if(count >= 99) break;
+  }
+  return count;
+}
+
+function tagVariance(row){
+  const p = Number(row.p_model||0);
+  const mid = (p >= MIDRANGE_P_MIN && p <= MIDRANGE_P_MAX);
+  const park = Number(row.parkHR||0);
+  const hasPitchEdge = /pitch edge|pitch-type/i.test(String(row.why||""));
+  const weakPitcher = (park >= 0.20) || hasPitchEdge; // proxy for exploitable
+  const tagList = [];
+  if(mid) tagList.push("mid-range");
+  if(weakPitcher) tagList.push("exploitable-pitcher");
+  return { mid, weakPitcher, variance: (mid || weakPitcher), tagList };
+}
+
+
+
+// --- Straight HR Bets helpers ---
+const _fmtPct = (p) => (p != null ? `${(p*100).toFixed(1)}%` : "—");
+const _fmtAmerican = (a) => (a == null ? "—" : (a > 0 ? `+${a}` : `${a}`));
+
+
+const RANK_ODDS_WEIGHT = Number(import.meta.env.VITE_RANK_ODDS_WEIGHT || process.env.RANK_ODDS_WEIGHT || 0.3);
+const BVP_MIN_AB = 10; // >9 AB threshold
+const BVP_MAX_BOOST = 0.06; // ±6%
+const PROTECTION_MAX = 0.05; // +5% cap
 const CAL_LAMBDA = 0.25;
 const HOTCOLD_CAP = 0.06;
 const MIN_PICKS = 12;
+const BONUS_COUNT = parseInt(import.meta.env.VITE_BONUS_COUNT||process.env.BONUS_COUNT||8,10);
+// Fallback Why explainer
+function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null }){
+  const pts = [];
+  if (typeof baseProb==='number') pts.push(`model ${(baseProb*100).toFixed(1)}%`);
+  if (typeof hotBoost==='number' && hotBoost!==1){ const sign=hotBoost>1?'+':'−'; pts.push(`hot/cold ${sign}${Math.abs((hotBoost-1)*100).toFixed(0)}%`); }
+  if (typeof calScale==='number' && calScale!==1){ const sign=calScale>1?'+':'−'; pts.push(`calibration ${sign}${Math.abs((calScale-1)*100).toFixed(0)}%`); }
+  if (pitcherName){ pts.push(`vs ${pitcherName}${pitcherHand?` (${String(pitcherHand).toUpperCase()})`:''}`); }
+  if (typeof parkHR==='number' && parkHR!==1){ const sign=parkHR>1?'+':'−'; pts.push(`park HR ${sign}${Math.abs((parkHR-1)*100).toFixed(0)}%`); }
+  if (typeof weatherHR==='number' && weatherHR!==1){ const sign=weatherHR>1?'+':'−'; pts.push(`weather HR ${sign}${Math.abs((weatherHR-1)*100).toFixed(0)}%`); }
+  if (oddsAmerican!=null){ pts.push(`odds ${oddsAmerican>=0?'+':''}${Math.round(oddsAmerican)}`); }
+  return pts.join(' • ');
+}
 const MAX_PER_GAME = 2;
 
 function fmtET(date=new Date()){
   return new Intl.DateTimeFormat("en-US", { timeZone:"America/New_York", month:"short", day:"2-digit", year:"numeric"}).format(date);
+}
+
+async function getBvPMap(pairs){
+  let out = new Map();
+  const uniq = [];
+  const seen = new Set();
+  for(const p of pairs){
+    if(!p || !p.batterId || !p.pitcherId) continue;
+    const key = `${p.batterId}|${p.pitcherId}`;
+    if(seen.has(key)) continue;
+    seen.add(key); uniq.push(p);
+  }
+  for(const {batterId, pitcherId} of uniq){
+    const key = `${batterId}|${pitcherId}`;
+    try{
+      const url = `https://statsapi.mlb.com/api/v1/people/${batterId}/stats?stats=vsPlayer&opposingPlayerId=${pitcherId}`;
+      const r = await fetch(url);
+      if(!r.ok) { out.set(key,{ab:0,hr:0,pa:0}); continue; }
+      const j = await r.json();
+      const splits = j?.stats?.[0]?.splits || [];
+      const stat = splits[0]?.stat || {};
+      const ab = Number(stat?.atBats||0);
+      const hr = Number(stat?.homeRuns||0);
+      const pa = Number(stat?.plateAppearances||ab||0);
+      out.set(key, {ab, hr, pa});
+    }catch(e){
+      out.set(key,{ab:0,hr:0,pa:0});
+    }
+  }
+  return out;
+}
+
+function bvpModifier(p_game, ab, hr){
+  const baseline_pa = 4.0;
+  const base_rate = Math.max(0, Math.min(0.5, Number(p_game||0)/baseline_pa));
+  if(!ab || ab < BVP_MIN_AB) return 0;
+  const hr_rate = Math.max(0, Math.min(0.5, hr/ab));
+  const delta = hr_rate - base_rate;
+  const weight = Math.min(1, ab / 40);
+  let mod = delta * weight * 100;
+  if (mod > BVP_MAX_BOOST*100) mod = BVP_MAX_BOOST*100;
+  if (mod < -BVP_MAX_BOOST*100) mod = -BVP_MAX_BOOST*100;
+  return mod/100;
+}
+
+function protectionModifier(p_self, teamPeers){
+  if(!Array.isArray(teamPeers) || teamPeers.length===0) return 0;
+  const sorted = teamPeers.slice().sort((a,b)=>b-a);
+  const sumTop2 = (sorted[0]||0) + (sorted[1]||0);
+  let mod = 0.08 * sumTop2;
+  if (mod > PROTECTION_MAX) mod = PROTECTION_MAX;
+  if (mod < 0) mod = 0;
+  return mod;
 }
 function dateISO_ET(offsetDays=0){
   const d = new Date();
@@ -27,7 +154,11 @@ async function fetchJSON(url){
 
 export default function MLB(){
   const [picks, setPicks] = useState([]);
-  const [meta, setMeta]   = useState({});
+  const [bonus, setBonus] = useState([]);
+
+  const [rawTop, setRawTop] = useState([]);
+    const [anchor, setAnchor] = useState(null);
+const [meta, setMeta]   = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -67,7 +198,7 @@ export default function MLB(){
       const beg = new Intl.DateTimeFormat("en-CA", { timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);
       const url = `https://statsapi.mlb.com/api/v1/people?personIds=${ids.join(",")}&hydrate=stats(group=hitting,type=byDateRange,beginDate=${beg},endDate=${end})`;
       const j = await fetchJSON(url);
-      const out = new Map();
+      let out = new Map();
       for(const p of (j.people||[])){
         const sid = p?.id;
         let hr14=0, pa14=0;
@@ -83,18 +214,24 @@ export default function MLB(){
     }catch{ return new Map(); }
   }
 
-  async function getOddsMap(){
+  
+async function getOddsMap(){
     try{
-      const j = await fetchJSON("/.netlify/functions/prewarm-odds-v2?market=player_home_run");
+      const res = await fetch("/.netlify/functions/odds-get", { cache: "no-store" });
+      if(!res.ok) return new Map();
+      const snap = await res.json();
+      const players = snap?.players || {};
       const map = new Map();
-      const arr = j?.data || j?.rows || [];
-      for(const r of arr){
-        if(r?.player && r?.best_american){
-          map.set(String(r.player).toLowerCase(), { american:r.best_american, book:r.book||"best" });
+      const normalize = (str) => String(str||"").toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/[.]/g,'').replace(/[’']/g,"'").trim();
+      for(const [raw, rec] of Object.entries(players)){
+        if(rec && rec.median_american!=null){
+          map.set(normalize(raw), { american: rec.median_american, books: rec.count_books, by_book: rec.by_book });
         }
       }
       return map;
-    }catch{ return new Map(); }
+    }catch(e){ return new Map(); }
   }
 
   function applyCalibration(p, scale){
@@ -104,75 +241,201 @@ export default function MLB(){
 
   
   async function build(){
+  // Canonical selections and maps
+  let out = [];
+  let perGame = new Map();
+
+  // Canonical selections and maps
+  out = [];
+  perGame = new Map();
+
     setLoading(true); setMessage(""); setPicks([]);
     try{
       const [cals, baseCandidates] = await Promise.all([ getCalibration(), getSlate() ]);
       const ids = baseCandidates.map(x => x.batterId).filter(Boolean);
       const [hotMap, oddsMap] = await Promise.all([ getHotColdBulk(ids), getOddsMap() ]);
 
-      const rows = [];
+      
+      const temp = [];
+      const teamToPpre = new Map();
+      const bvpPairs = [];
+
+      // Pass 1: compute calibrated p_pre (before new modifiers), collect team pools && BvP pairs
       for(const c of baseCandidates){
         let p = Number(c.baseProb||c.prob||0);
-        
-        // Rookie blend baseline adjust (safe, bounded)
-        try {
-          const hrpa_mlb = (Number(c.seasonHR||0) && Number(c.seasonPA||0)) ? Number(c.seasonHR)/Number(c.seasonPA) : null;
-          const hrpa_aaa = (c.hr_per_pa_aaa ?? c.hrpaAAA ?? null);
-          const blended = rookieBlendBaseline({ mlb_pa: Number(c.seasonPA||0), hrpa_mlb, hrpa_aaa });
-          if (blended && (hrpa_mlb ?? 0) > 0) {
-            const rel = Math.max(0.80, Math.min(1.20, blended / hrpa_mlb));
-            p = p * rel;
-          } else if (blended && !(hrpa_mlb ?? 0)) {
-            // no MLB baseline; allow small nudge only
-            p = p * 1.00;
-          }
-        } catch (e) { /* keep p unchanged */ }
-    if(!p || p<=0) continue;
+        if(!p || p<=0) continue;
         const hc = hotMap.get(String(c.batterId)) || { hr14:0, pa14:0 };
         const hcMul = hotColdMultiplier({ hr14:hc.hr14, pa14:hc.pa14, seasonHR:Number(c.seasonHR||0), seasonPA:Number(c.seasonPA||0) }, HOTCOLD_CAP);
         p = p * hcMul;
         const calScale = Number(cals?.global?.scale || 1.0);
         p = applyCalibration(p, calScale);
 
-        // Pitch-type edge multiplier (safe)
+        // Pitch-type edge
         try {
-          const pitchMul = pitchTypeEdgeMultiplier({
-            hitter_vs_pitch: c.hitter_vs_pitch,
-            pitcher: c.pitcher,
-          });
-          p = p * pitchMul;
-        } catch (e) { /* keep p */ }
+          const pitchMul = pitchTypeEdgeMultiplier ? pitchTypeEdgeMultiplier({
+            hitter_vs_pitch: c.hitter_vs_pitch || c.hvp || [],
+            pitcher: c.pitcher || { primary_pitches: c.primary_pitches || [] },
+          }) : 1.00;
+          if (typeof p === "number" && isFinite(p)) p *= pitchMul;
+        } catch {}
 
-
-        const key = String(c.name||"").toLowerCase();
-        const found = oddsMap.get(key);
-        const american = found?.american ?? americanFromProb(p);
-        const ev = evFromProbAndOdds(p, american);
-
-        rows.push({
-          name: c.name,
-          team: c.team,
-          game: c.gameId || c.game || c.opp || "",
-          batterId: c.batterId,
-          p_model: p,
-          american,
-          ev,
-          why: explainRow({
-            baseProb: Number(c.baseProb ?? c.prob ?? 0),
-            hotBoost: hcMul,
-            calScale,
-            oddsAmerican: american,
-            pitcherName: (c.pitcher && c.pitcher.name) ? c.pitcher.name : (c.pitcherName || ""),
-            parkHR: (c.parkHR ?? 1),
-            weatherHR: (c.weatherHR ?? 1)
-          }),
-        });
+        temp.push({ c, p_pre: p, hcMul, calScale });
+        if (c.team){
+          const arr = teamToPpre.get(c.team) || [];
+          arr.push(p);
+          teamToPpre.set(c.team, arr);
+        }
+        if (c.batterId && c.pitcherId){
+          bvpPairs.push({ batterId: c.batterId, pitcherId: c.pitcherId });
+        }
       }
 
-      rows.sort((a,b)=> b.ev - a.ev);
+      // Fetch BvP
+      let bvpMap = new Map();
+      try { bvpMap = await getBvPMap(bvpPairs); } catch(e){ bvpMap = new Map(); }
 
-      const out = [];
-      const perGame = new Map();
+      // Pass 2: apply modifiers && build rows
+      const rows = [];
+      for (const t of temp){
+        const c = t.c;
+        let p = t.p_pre;
+        let bvp_mod = 0, protection_mod = 0;
+
+        // BvP (>=10 AB)
+        if (c.batterId && c.pitcherId){
+          const key = `${c.batterId}|${c.pitcherId}`;
+          const rec = bvpMap.get(key);
+          if (rec && rec.ab >= BVP_MIN_AB){
+            bvp_mod = bvpModifier(p, rec.ab, rec.hr);
+            p = p * (1 + bvp_mod);
+          }
+        }
+
+        // Protection
+        if (c.team){
+          const peers = (teamToPpre.get(c.team)||[]).filter(val => val !== t.p_pre);
+          protection_mod = protectionModifier(p, peers);
+          if (protection_mod > 0) p = p * (1 + protection_mod);
+        }
+
+        // Odds & EV
+        const keyName = String(c.name||"").toLowerCase();
+        const found = oddsMap.get(keyName);
+        const modelAmerican = americanFromProb(p);
+        const american = (found?.american!=null) ? found.american : modelAmerican;
+        const ev = evFromProbAndOdds(p, american);
+
+        // Rank score with odds weight suppressed
+        const implied = impliedFromAmerican(american);
+        const edge = (implied!=null) ? Math.max(0, p - implied) : 0;
+        const rankScore = p + (RANK_ODDS_WEIGHT * edge);
+
+        rows.push({
+          name: c.name, team: c.team, game: c.gameId || c.game || c.opp || "",
+          batterId: c.batterId,
+          p_model: p, modelAmerican, american, ev, rankScore,
+          bvp_mod, protection_mod, parkHR: (c.parkHR ?? null),
+          why: explainRow({
+            baseProb: Number(c.baseProb ?? c.prob ?? 0),
+            hotBoost: t.hcMul, calScale: t.calScale,
+            oddsAmerican: american,
+            pitcherName: c.pitcherName ?? null, pitcherHand: c.pitcherHand ?? null,
+            parkHR: c.parkHR ?? null, weatherHR: c.weatherHR ?? null
+          })
+        });
+      }
+rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
+
+      // === Variance-aware selection (anchors cap, mid-range quota, repeat cap) ===
+      const recent = loadRecentPicks();
+      const byName = (r) => String(r.name||"");
+
+      // Compute tags
+      const rowsWithTags = rows.map(r => {
+        const t = tagVariance(r);
+        return { ...r, __var: t };
+      });
+
+      // Identify anchors: highest baseline probabilities
+      const anchorsPool = [...rowsWithTags].sort((a,b)=> (b.p_model||0)-(a.p_model||0));
+      const chosenAnchors = [];
+      for(const r of anchorsPool){
+        if(chosenAnchors.length >= ANCHOR_CAP) break;
+        // respect per-game cap later; here just mark potential anchors
+        chosenAnchors.push({ ...r, why: r.why ? (r.why + " • Anchor rule") : "Anchor rule" });
+      }
+      const anchorNames = new Set(chosenAnchors.map(x=>byName(x)));
+
+      // Build mid-range pool
+      const midPool = rowsWithTags.filter(r => r.__var.mid);
+
+      // Helper to check repeat constraint
+      function canUse(r){
+        const cnt = consecutiveRepeatCount(recent, byName(r));
+        return cnt < MAX_CONSECUTIVE_REPEATS;
+      }
+
+      // Assemble 'out' honoring per-game cap, anchor cap, mid-range minimum, and repeats
+      out = [];
+      perGame = new Map();
+      let midCount = 0;
+      let anchorsUsed = 0;
+
+      // First pass: prioritize anchors & top EV while skipping repeats
+      for(const r of rowsWithTags){
+        const g = r.game || "UNK";
+        const n = perGame.get(g)||0;
+        if(n >= MAX_PER_GAME) continue;
+
+        const isAnchor = anchorNames.has(byName(r));
+        if(isAnchor && anchorsUsed >= ANCHOR_CAP) continue;
+        if(!canUse(r)) continue;
+
+        out.push(r);
+        perGame.set(g, n+1);
+        if(isAnchor) anchorsUsed++;
+        if(r.__var.mid) midCount++;
+
+        if(out.length >= MIN_PICKS) break;
+      }
+
+      // Ensure mid-range minimum by swapping in mid-range candidates not already picked
+      if(midCount < MIDRANGE_MIN_REQUIRED){
+        const need = MIDRANGE_MIN_REQUIRED - midCount;
+        const pickedKey = new Set(out.map(x => byName(x)+"|"+(x.game||"")));
+        const replaceableIdx = out
+          .map((r,i)=>({r,i}))
+          .filter(o => !o.r.__var.mid)  // replace non-mid
+          .map(o => o.i);
+
+        let irep = 0;
+        for(const m of midPool){
+          if(irep >= need) break;
+          const key = byName(m)+"|"+(m.game||"");
+          if(pickedKey.has(key)) continue;
+          if(!canUse(m)) continue;
+          // find a slot to replace that doesn't violate per-game cap
+          while(irep < replaceableIdx.length){
+            const idx = replaceableIdx[irep++];
+            const g = m.game || "UNK";
+            const countInGame = out.filter(x => (x.game||"")===g).length;
+            if(countInGame >= MAX_PER_GAME) continue;
+            out[idx] = m;
+            midCount++;
+            break;
+          }
+        }
+      }
+
+      // Trim to MIN_PICKS if somehow overfilled
+      if(out.length > MIN_PICKS) out.length = MIN_PICKS;
+
+      // Save today's names for repeat logic
+      try { saveTodayPicks(fmtET(), out.map(x => byName(x))); try{ window.__variance_meta = { anchorsUsed, midCount, minPicks: MIN_PICKS }; }catch{} } catch {}
+
+
+      out = [];
+      perGame = new Map();
       for(const r of rows){
         const g = r.game || "UNK";
         const n = perGame.get(g)||0;
@@ -182,7 +445,52 @@ export default function MLB(){
         if(out.length>=MIN_PICKS) break;
       }
 
+      // Build bonus picks (next best by EV not in top MIN_PICKS), respecting per-game cap
+      const picked = new Set(out.map(x => `${x.name}|${x.game}`));
+      const bonusOut = [];
+      for (const r of rows){
+        const key = `${r.name}|${r.game}`;
+        if (picked.has(key)) continue;
+        const n = (perGame.get(r.game||"UNK")||0);
+        if (n >= MAX_PER_GAME) continue;
+        bonusOut.push(r);
+        perGame.set(r.game||"UNK", n+1);
+        if (bonusOut.length >= BONUS_COUNT) break;
+      // Anchor pick (context override): surface elite short-odds bat in big-HR park
+      try {
+        const already = new Set([...out.map(r=>String(r.name).toLowerCase()), ...bonusOut.map(r=>String(r.name).toLowerCase())]);
+        const pcts = rows.map(r=>r.p_model).filter(x=>typeof x==='number' && x>0).sort((a,b)=>a-b);
+        const q = pcts.length ? pcts[Math.floor(0.75*(pcts.length-1))] : 0.30; // top quartile or 30%
+        let best = null;
+        for (const r of rows){
+          const key = String(r.name||'').toLowerCase();
+          if (already.has(key)) continue;
+          const odds = Number(r.american);
+          const park = (typeof r.parkHR==='number') ? r.parkHR : 0;
+          if (!Number.isFinite(odds) || odds < 120 || odds > 240) continue;   // short-to-mid
+          if (!(park >= 0.15)) continue;                                      // needs big park boost (e.g., Coors ~0.25)
+          if (!(typeof r.p_model==='number' && r.p_model >= Math.max(q, 0.30))) continue;
+          const score = (r.p_model||0)*100 + (240-(odds||240)) + (park*100);
+          if (!best || score > best.anchorScore){
+            best = { ...r, anchorScore: score, anchorWhy: (r.why ? (r.why + ' • Anchor rule') : 'Anchor rule') };
+          }
+        }
+        setAnchor(best||null);
+      } catch { setAnchor(null); }
+
+      }
+
       setPicks(out);
+      setBonus(bonusOut);
+      try{
+        const raw = rows
+          .filter(r=> typeof r.p_model === 'number')
+          .sort((a,b)=> b.p_model - a.p_model)
+          .slice(0,13)
+          .map(r => ({ name: r.name, game: r.game, p_model: r.p_model, american: r.american, why: r.why }));
+        setRawTop(raw);
+      }catch{ setRawTop([]); }
+    
       setMeta({
         date: fmtET(),
         totalCandidates: baseCandidates.length,
@@ -214,6 +522,37 @@ export default function MLB(){
       <div className="mt-2 text-sm text-gray-600">
         Date (ET): {meta.date} • Candidates: {meta.totalCandidates||0} • Using OddsAPI: {meta.usedOdds ? "yes":"no"} • Calibration scale: {meta.calibrationScale?.toFixed(2)}
       </div>
+      
+      {anchor && (
+        <div className="mt-6">
+          <div className="text-sm font-semibold mb-2">Anchor pick (context override)</div>
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="bg-blue-50">
+                <th className="px-3 py-2 text-left">Player</th>
+                <th className="px-3 py-2 text-left">Game</th>
+                <th className="px-3 py-2 text-right">Model HR%</th>
+                <th className="px-3 py-2 text-right">Model Odds</th>
+                <th className="px-3 py-2 text-right">Actual Odds</th>
+                <th className="px-3 py-2 text-right">EV (1u)</th>
+                <th className="px-3 py-2 text-left">Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b">
+                <td className="px-3 py-2">{anchor.name} <span className="ml-2 text-xs rounded border border-blue-200 bg-blue-50 text-blue-700 px-2 py-0.5">Anchor</span></td>
+                <td className="px-3 py-2">{anchor.game}</td>
+                <td className="px-3 py-2 text-right">{(anchor.p_model*100).toFixed(1)}%</td>
+                <td className="px-3 py-2 text-right">{anchor.modelAmerican>0?`+${anchor.modelAmerican}`:anchor.modelAmerican}</td>
+                <td className="px-3 py-2 text-right">{anchor.american>0?`+${anchor.american}`:anchor.american}</td>
+                <td className="px-3 py-2 text-right">{anchor.ev.toFixed(3)}</td>
+                <td className="px-3 py-2">{anchor.anchorWhy || anchor.why}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
       <div className="mt-4 overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
@@ -221,7 +560,8 @@ export default function MLB(){
               <th className="px-3 py-2 text-left">Player</th>
               <th className="px-3 py-2 text-left">Game</th>
               <th className="px-3 py-2 text-right">Model HR%</th>
-              <th className="px-3 py-2 text-right">American</th>
+              <th className="px-3 py-2 text-right">Model Odds</th>
+              <th className="px-3 py-2 text-right">Actual Odds</th>
               <th className="px-3 py-2 text-right">EV (1u)</th>
               <th className="px-3 py-2 text-left">Why</th>
             </tr>
@@ -232,6 +572,7 @@ export default function MLB(){
                 <td className="px-3 py-2">{r.name}</td>
                 <td className="px-3 py-2">{r.game}</td>
                 <td className="px-3 py-2 text-right">{(r.p_model*100).toFixed(1)}%</td>
+                <td className="px-3 py-2 text-right">{r.modelAmerican>0?`+${r.modelAmerican}`:r.modelAmerican}</td>
                 <td className="px-3 py-2 text-right">{r.american>0?`+${r.american}`:r.american}</td>
                 <td className="px-3 py-2 text-right">{r.ev.toFixed(3)}</td>
                 <td className="px-3 py-2">{r.why}</td>
@@ -239,6 +580,73 @@ export default function MLB(){
             ))}
           </tbody>
         </table>
+      {bonus.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold">Bonus picks (near threshold)</h2>
+          <div className="mt-2 overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="px-3 py-2 text-left">Player</th>
+                  <th className="px-3 py-2 text-left">Game</th>
+                  <th className="px-3 py-2 text-right">Model HR%</th>
+                  <th className="px-3 py-2 text-right">Model Odds</th>
+                  <th className="px-3 py-2 text-right">Actual Odds</th>
+                  <th className="px-3 py-2 text-right">EV (1u)</th>
+                  <th className="px-3 py-2 text-left">Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bonus.map((r,i)=> (
+                  <tr key={i} className="border-b">
+                    <td className="px-3 py-2">{r.name}</td>
+                    <td className="px-3 py-2">{r.game}</td>
+                    <td className="px-3 py-2 text-right">{(r.p_model*100).toFixed(1)}%</td>
+                    <td className="px-3 py-2 text-right">{r.american>0?`+${r.american}`:r.american}</td>
+                    <td className="px-3 py-2 text-right">{r.ev.toFixed(3)}</td>
+                    <td className="px-3 py-2">{r.why}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+      {/* --- Straight HR Bets (Top 13 Raw Probability) --- */}
+      {Array.isArray(rawTop) && rawTop.length>0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold">Straight HR Bets (Top 13 Raw Probability)</h2>
+          <div className="mt-2 overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="px-3 py-2 text-left">Player</th>
+                  <th className="px-3 py-2 text-left">Game</th>
+                  <th className="px-3 py-2 text-right">Model HR%</th>
+                  <th className="px-3 py-2 text-right">Actual Odds</th>
+                  <th className="px-3 py-2 text-left">Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rawTop.map((r,i)=>(
+                  <tr key={`rawprob-${i}`} className="border-b">
+                    <td className="px-3 py-2">{r.name}</td>
+                    <td className="px-3 py-2">{r.game || "—"}</td>
+                    <td className="px-3 py-2 text-right">{_fmtPct(r.p_model)}</td>
+                    <td className="px-3 py-2 text-right">{_fmtAmerican(r.american)}</td>
+                    <td className="px-3 py-2">{r.why || ""}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="text-xs text-gray-500 mt-2">
+              This list ignores EV && shows the highest raw HR probabilities so you don’t miss marquee bats or extreme park spots even when books price them tightly.
+            </p>
+          </div>
+        </div>
+      )}
+
+          </div>
+        </div>
+      )}
+
       </div>
     </div>
   );
