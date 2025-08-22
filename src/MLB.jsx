@@ -670,7 +670,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
                 </tr>
               </thead>
               <tbody>
-                {pureEV.map((r,i)=> (
+                {pureEV.slice(0, 25).map((r,i)=> (
                   <tr key={`pureev-${i}`} className="border-b">
                     <td className="px-3 py-2">{r.name}</td>
                     <td className="px-3 py-2">{r.game || "—"}</td>
