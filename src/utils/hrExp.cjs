@@ -1,5 +1,3 @@
-// Minimal shim so this patch is self-contained if hrExp.cjs isn't present yet.
-// If you already have src/utils/hrExp.cjs from earlier, keep that one—this is compatible.
 const { createBlob } = require('@netlify/blobs');
 const SLUGGERS = new Set([
   'Aaron Judge','Shohei Ohtani','Juan Soto','Kyle Schwarber','Yordan Alvarez',
