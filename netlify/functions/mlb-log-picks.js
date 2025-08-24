@@ -1,4 +1,6 @@
 import { getStore } from '@netlify/blobs';
+import { parkAdjust } from '../../src/utils/parkAdjust.js';
+import { getTeamAlt } from '../../src/utils/teamAlt.js';
 import { parkHRFactorForAbbrev } from './lib/parkFactors.js';
 import { weatherHRMultiplier } from './lib/weatherMultiplier.js';
 
