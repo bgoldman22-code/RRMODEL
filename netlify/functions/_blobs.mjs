@@ -1,33 +1,28 @@
-import { getEnv } from "./_env.mjs";
+// Safe shim around @netlify/blobs so Functions don't crash when Blobs is not configured.
+// Exports:
+//   - getBlobsStore(name): returns {getJSON,setJSON,list} or null-store if unavailable
+//   - createStore(name): alias of getBlobsStore for compatibility
+import { getStore } from '@netlify/blobs';
 
-export async function getBlobsStoreSafe(name, opts = {}) {
-  // honor explicit skip
-  if (opts.noblobs) return { store: null, context: { reason: "noblobs flag" } };
+const hasBlobsContext = !!(process.env.NETLIFY && process.env.NETLIFY_SITE_ID);
+const NFL_STORE_NAME = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "nfl-td";
 
-  // Try to import client
-  let blobs;
+function makeNullStore() {
+  return {
+    async getJSON(_key){ return null; },
+    async setJSON(_key,_val){ return; },
+    async list(){ return { blobs:[], directories:[] }; },
+  };
+}
+
+export function getBlobsStore(name = NFL_STORE_NAME) {
+  if (!hasBlobsContext) return makeNullStore();
   try {
-    ({ getStore: blobs } = await import("@netlify/blobs"));
+    return getStore({ name });
   } catch (e) {
-    return { store: null, context: { reason: "blobs package not found" } };
-  }
-
-  const env = getEnv();
-  const siteID = process.env.NETLIFY_SITE_ID || env.NETLIFY_SITE_ID || null;
-  const token = process.env.NETLIFY_AUTH_TOKEN || env.NETLIFY_AUTH_TOKEN || null;
-
-  // If running on Netlify, context should be auto-injected. If not, require siteID+token.
-  const hasRuntimeCtx = !!process.env.NETLIFY || !!process.env.NETLIFY_IMAGES_CDN_DOMAIN || !!process.env.NETLIFY_DEV;
-
-  try {
-    const store = blobs({
-      name: name || env.NFL_STORE_NAME,
-      siteID: hasRuntimeCtx ? undefined : siteID,
-      token: hasRuntimeCtx ? undefined : token,
-    });
-    // Probe capability (no-op list)
-    return { store, context: { hasRuntimeCtx, siteID: !!siteID } };
-  } catch (err) {
-    return { store: null, context: { error: String(err) } };
+    // If Blobs lib throws missing env/site token, use null-store to avoid hard-crash.
+    return makeNullStore();
   }
 }
+
+export const createStore = getBlobsStore;

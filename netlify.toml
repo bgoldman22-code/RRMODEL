@@ -1,7 +1,14 @@
 [build]
-  command = "bash netlify/build-debug.sh || echo 'no build script, deploying functions only'"
-  publish = "dist"
+command = "bash netlify/build-debug.sh || echo 'no build script, deploying functions only'"
+publish = "build"
 
 [functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["@netlify/blobs"]
+directory = "netlify/functions"
+node_bundler = "esbuild"
+external_node_modules = ["@netlify/blobs"]
+
+# Keep your SPA routing
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

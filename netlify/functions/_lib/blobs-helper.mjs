@@ -1,2 +1,5 @@
-// netlify/functions/_lib/blobs-helper.mjs
-export { parseQuery, hasNetlifyContext, blobsEnabled, resolveStoreName, blobsDiag, maybeGetStore } from "../_blobs.mjs";
+import { getBlobsStore } from "../_blobs.mjs";
+
+export function makeStore(name) {
+  return getBlobsStore(name);
+}

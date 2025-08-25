@@ -1,18 +1,15 @@
-import { getEnv } from "./_env.mjs";
-import { getBlobsStoreSafe } from "./_blobs.mjs";
+import { makeStore } from "./_lib/blobs-helper.mjs";
 
-export const handler = async (event) => {
+export async function handler(event) {
+  const noblobs = event.queryStringParameters?.noblobs === '1';
+  let store = noblobs ? null : makeStore();
   try {
-    const qs = new URLSearchParams(event.rawQuery || event.queryStringParameters || "");
-    const noblobs = (qs.get("noblobs") === "1" || qs.get("noblobs") === "true");
-    const env = getEnv();
-    const { store } = await getBlobsStoreSafe(env.NFL_STORE_NAME, { noblobs });
     if (!store) {
-      return { statusCode: 200, headers: { "content-type": "application/json" }, body: JSON.stringify({ ok: true, keys: { blobs: [], directories: [] } }) };
+      return new Response(JSON.stringify({ ok:true, keys:{ blobs:[], directories:[] }, note:"noblobs" }), { status:200 });
     }
     const keys = await store.list();
-    return { statusCode: 200, headers: { "content-type": "application/json" }, body: JSON.stringify({ ok: true, keys }) };
+    return new Response(JSON.stringify({ ok:true, keys }), { status:200 });
   } catch (err) {
-    return { statusCode: 200, headers: { "content-type": "application/json" }, body: JSON.stringify({ ok: false, error: String(err) }) };
+    return new Response(JSON.stringify({ ok:false, error:String(err) }), { status:500 });
   }
-};
+}
