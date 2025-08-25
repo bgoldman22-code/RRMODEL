@@ -1,11 +1,5 @@
-# NFL Odds Debug Patch (2025-08-21)
+This patch adds a minimal depth-charts.json in two places:
+1) data/nfl-td/depth-charts.json      (used by serverless function fallback)
+2) public/data/nfl-td/depth-charts.json (served at /data/nfl-td/depth-charts.json for quick verification)
 
-Files:
-- netlify/functions/nfl-odds.cjs  → Adds verbose logging and returns `offers[]` (not `props[]`). Use `?debug=1`.
-- src/nfl/oddsClient.js           → Consumes `offers[]`, tolerates legacy `props[]`.
-
-How to test:
-1) Deploy, then hit:
-   /.netlify/functions/nfl-odds?book=draftkings&market=player_anytime_td&debug=1
-2) Check Netlify → Functions → nfl-odds → Logs for lines beginning with [nfl-odds].
-3) You should see either a raw sample and offers populated, or a clear http error.
+Replace this file with your full depth charts when ready.
