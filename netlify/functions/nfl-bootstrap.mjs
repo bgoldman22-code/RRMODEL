@@ -1,95 +1,95 @@
+
 // netlify/functions/nfl-bootstrap.mjs
-// Fetches schedule (ESPN) and returns normalized schedule JSON.
-// Minimal, no blobs write by default. Use &noblobs=1 to guarantee no blobs.
+// Fetch week schedule from ESPN and optionally persist to Blobs if available.
+// Blobs are OPTIONAL. Use ?noblobs=1 to hard-bypass.
+export const config = { path: "/.netlify/functions/nfl-bootstrap" };
 
-/** ESPN scoreboard for date range or week */
-async function fetchEspnScheduleByDates(startYmd, endYmd) {
-  const u = new URL("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard");
-  u.searchParams.set("dates", `${startYmd}-${endYmd}`);
-  const res = await fetch(u.toString());
-  if (!res.ok) {
-    const t = await res.text().catch(() => "");
-    return { ok: false, status: res.status, error: "ESPN by dates failed", body: t };
-  }
-  const j = await res.json();
-  return parseEspnScoreboard(j);
-}
+const ESPN_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
 
-function parseEspnScoreboard(j) {
-  try {
-    const events = j?.events || [];
-    const games = events.map(ev => {
-      const id = ev?.id;
-      const date = ev?.date;
-      const comps = ev?.competitions?.[0];
-      const home = comps?.competitors?.find(c => c.homeAway === "home");
-      const away = comps?.competitors?.find(c => c.homeAway === "away");
-      const mk = t => (t ? {
-        id: t.team?.id ? Number(t.team.id) : null,
-        abbrev: t.team?.abbreviation || null,
-        displayName: t.team?.displayName || t.team?.shortDisplayName || null
-      } : null);
-      return {
-        id,
-        date,
-        home: mk(home),
-        away: mk(away)
-      };
-    }).filter(g => g.home && g.away);
-    return { ok: true, schedule: { games } };
-  } catch (e) {
-    return { ok: false, error: "parse error: " + (e?.message || String(e)) };
-  }
+import { getStoreOrNull, hasBlobsEnv, putJSONIfStore } from "./_lib/blobs-optional.mjs";
+
+function jsonResponse(body, status=200) {
+  return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
 }
 
 function yyyymmdd(d) {
-  const yyyy = d.getUTCFullYear();
-  const mm = String(d.getUTCMonth()+1).padStart(2,"0");
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth()+1).padStart(2,"0");
   const dd = String(d.getUTCDate()).padStart(2,"0");
-  return `${yyyy}${mm}${dd}`;
+  return `${y}${m}${dd}`;
 }
 
-export const handler = async (event) => {
+async function fetchJson(url) {
+  const res = await fetch(url, { headers: { "accept": "application/json" } });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+function windowForWeek1() {
+  // Week 1 typical window (Thu to Wed) — adjust if needed
+  const start = "20250904";
+  const end = "20250910";
+  return { start, end };
+}
+
+function toGame(g) {
+  return {
+    id: String(g?.id ?? g?.uid ?? ""),
+    date: g?.date ? new Date(g.date).toISOString().replace(".000","") : null,
+    home: {
+      id: g?.competitions?.[0]?.competitors?.find(c=>c.homeAway==="home")?.team?.id ?? null,
+      abbrev: g?.competitions?.[0]?.competitors?.find(c=>c.homeAway==="home")?.team?.abbreviation ?? null,
+      displayName: g?.competitions?.[0]?.competitors?.find(c=>c.homeAway==="home")?.team?.displayName ?? null,
+    },
+    away: {
+      id: g?.competitions?.[0]?.competitors?.find(c=>c.homeAway==="away")?.team?.id ?? null,
+      abbrev: g?.competitions?.[0]?.competitors?.find(c=>c.homeAway==="away")?.team?.abbreviation ?? null,
+      displayName: g?.competitions?.[0]?.competitors?.find(c=>c.homeAway==="away")?.team?.displayName ?? null,
+    },
+  };
+}
+
+export async function handler(event) {
+  const url = new URL(event.rawUrl || `https://x/?${event.rawQuery}`);
+  const debug = url.searchParams.get("debug") !== null;
+  const noblobs = url.searchParams.get("noblobs") === "1";
+  const mode = url.searchParams.get("mode") || "auto";
+
+  const diag = { HAS_NETLIFY: !!process.env.NETLIFY, HAS_BLOBS_ENV: hasBlobsEnv(), noblobs, mode };
+
   try {
-    const debug = event.queryStringParameters?.debug ? true : false;
-    const mode = event.queryStringParameters?.mode || "auto";
-    // Week 1 2025 known window (Thu-Mon): 20250904-20250910
-    // We'll default to that if auto.
-    const start = event.queryStringParameters?.start || "20250904";
-    const end = event.queryStringParameters?.end || "20250910";
+    const { start, end } = windowForWeek1();
+    const api = `${ESPN_SCOREBOARD}?dates=${start}-${end}`;
+    const data = await fetchJson(api);
+    const gamesRaw = Array.isArray(data?.events) ? data.events : [];
+    const games = gamesRaw.map(toGame).filter(g => g.id && g.home?.id && g.away?.id);
 
-    let scheduleResp;
-    if (mode === "auto") {
-      scheduleResp = await fetchEspnScheduleByDates(start, end);
+    const body = {
+      ok: true,
+      season: 2025,
+      week: 1,
+      games: games.length,
+      schedule: { season: 2025, week: 1, games },
+      used: { mode: "auto→preseason-week1" },
+    };
+
+    // Optional: persist to blobs if available and not bypassed
+    if (!noblobs) {
+      const store = await getStoreOrNull(["BLOBS_STORE_NFL"]);
+      if (store) {
+        await putJSONIfStore(store, `weeks/2025/1/schedule.json`, body.schedule);
+      } else {
+        body.blobs = { skipped: true, reason: "no-store" };
+      }
     } else {
-      scheduleResp = await fetchEspnScheduleByDates(start, end);
+      body.blobs = { skipped: true, reason: "noblobs=1" };
     }
 
-    if (!scheduleResp.ok) {
-      return {
-        statusCode: 500,
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ok:false, error: scheduleResp.error || "schedule fetch failed", detail: scheduleResp })
-      };
-    }
-
-    return {
-      statusCode: 200,
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        ok: true,
-        season: 2025,
-        week: 1,
-        games: scheduleResp.schedule.games.length,
-        schedule: scheduleResp.schedule,
-        used: { mode, start, end }
-      })
-    };
-  } catch (e) {
-    return {
-      statusCode: 500,
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ok:false, error: String(e?.message || e) })
-    };
+    if (debug) body.diag = diag;
+    return jsonResponse(body);
+  } catch (err) {
+    const e = String(err && err.message ? err.message : err);
+    const body = { ok: false, error: e, diag };
+    return jsonResponse(body, 200);
   }
-};
+}
