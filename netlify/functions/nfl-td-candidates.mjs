@@ -1,131 +1,111 @@
 // netlify/functions/nfl-td-candidates.mjs
-import { getStore } from "@netlify/blobs";
+import { getStore } from '@netlify/blobs';
 
-const STORE = () => getStore({ name: process.env.NFL_TD_BLOBS || "nfl-td" });
+export const handler = async (event) => {
+  try {
+    const origin = new URL(event.rawUrl || `https://${event.headers.host}`).origin;
 
-const POS_PRIOR = { RB: 0.26, WR: 0.17, TE: 0.14, QB: 0.06 };
-const DEPTH_DELTA = [0.10, -0.04, -0.07, -0.10];
-const FPOS = ["RB","WR","TE","QB"];
-const clamp = (p, min=0.005, max=0.75)=> Math.max(min, Math.min(max, p));
-const splitRzExp = (pos)=> pos==="RB"?{rz:0.68,exp:0.32}:pos==="TE"?{rz:0.58,exp:0.42}:pos==="WR"?{rz:0.44,exp:0.56}:{rz:0.35,exp:0.65};
-
-export default async function handler(req) {
-  const url = new URL(req.url);
-  const origin = url.origin || process.env.URL || process.env.DEPLOY_PRIME_URL || "";
-  const season = Number(url.searchParams.get("season") || new Date().getFullYear());
-  let week = url.searchParams.get("week") ? Number(url.searchParams.get("week")) : undefined;
-  const debug = url.searchParams.get("debug") === "1";
-
-  const store = STORE();
-  const diag = [];
-
-  // 1) Try schedule from cache first
-  let schedule = await loadFromStore(store, season, week, "schedule.json");
-  diag.push({ step: "load schedule cache", ok: !!schedule, season, week });
-
-  // 2) If not cached, call bootstrap and USE ITS SCHEDULE DIRECTLY
-  let bootstrap = null;
-  if (!schedule) {
-    const qs = new URLSearchParams();
-    qs.set("refresh", "1");
-    qs.set("mode", "auto"); // weekly roll-forward
-    if (season) qs.set("season", String(season));
-    if (typeof week === "number") qs.set("week", String(week));
-    const bUrl = `${origin}/.netlify/functions/nfl-bootstrap?${qs.toString()}`;
-    bootstrap = await safeJSON(bUrl, "bootstrap");
-    diag.push({ step: "bootstrap", ok: bootstrap.ok, status: bootstrap.status, called: bUrl });
-
-    const b = bootstrap.json || {};
-    if (b.schedule && Array.isArray(b.schedule.games) && b.schedule.games.length) {
-      schedule = b.schedule;
+    // 1) Ensure schedule & depth via bootstrap (auto week with roll-forward)
+    const bootUrl = `${origin}/.netlify/functions/nfl-bootstrap?mode=auto`;
+    const bootRes = await fetch(bootUrl);
+    const boot = await bootRes.json().catch(() => null);
+    if (!boot?.schedule?.games?.length) {
+      return json({ ok: false, error: 'schedule unavailable', diag: [{ step: 'bootstrap', ok: !!boot }] }, 503);
     }
-    if (!schedule) {
-      schedule = await loadFromStore(store, season, week, "schedule.json");
-      diag.push({ step: "re-read schedule cache", ok: !!schedule });
+    const { season, week } = boot;
+    const games = boot.schedule.games;
+
+    // 2) Build opponent maps
+    const oppByTeamId = new Map();
+    for (const g of games) {
+      oppByTeamId.set(String(g.home.id), g.away.abbrev);
+      oppByTeamId.set(String(g.away.id), g.home.abbrev);
     }
-  }
 
-  if (!schedule || !Array.isArray(schedule.games) || schedule.games.length === 0) {
-    const body = { ok:false, error:"schedule unavailable" };
-    if (debug) body.diag = diag, body.bootstrap = bootstrap?.json || null;
-    return J(body, 424);
-  }
-
-  week = schedule.week;
-
-  // 3) Load per-team depth; if missing fabricate minimal so the UI renders
-  const teamIds = [...new Set(schedule.games.flatMap(g => [g.home?.id, g.away?.id]).filter(Boolean))];
-  const depths = {};
-  for (const id of teamIds) {
-    const key = `weeks/${schedule.season}/${schedule.week}/depth/${id}.json`;
-    let chart = null;
-    try { chart = await store.getJSON(key); } catch {}
-    if (!isValidChart(chart)) {
-      chart = fallbackChart(id);
+    // 3) Pull rosters from Blobs
+    const store = getStore({ name: 'nfl' });
+    async function loadTeamRoster(teamId) {
+      const key = `weeks/${season}/${week}/depth/${teamId}.json`;
+      return await store.get(key, { type: 'json' });
     }
-    depths[id] = chart;
+
+    // 4) Utility: flatten ESPN roster JSON
+    function flattenRoster(rjson) {
+      const flat = [];
+      const groups = rjson?.athletes || [];
+      for (const grp of groups) {
+        for (const it of (grp.items || [])) flat.push(it);
+      }
+      return flat;
+    }
+
+    // 5) Starter heuristics by pos
+    function starters(rosterFlat) {
+      const out = { RB: [], WR: [], TE: [] };
+      for (const p of rosterFlat) {
+        const pos = p?.position?.abbreviation || p?.position?.name || p?.position || '';
+        if (out[pos]) out[pos].push(p);
+      }
+      // no perfect ordering flag; leave as-rostered
+      return {
+        RB1: out.RB[0] || null,
+        WR1: out.WR[0] || null,
+        WR2: out.WR[1] || null,
+        TE1: out.TE[0] || null,
+      };
+    }
+
+    const baseTD = { RB: 0.32, WR: 0.22, TE: 0.18 };
+    const tdPct = (pos) => (baseTD[pos] ?? 0.15);
+
+    const candidates = [];
+    // Pull once per team
+    const teamIds = new Set();
+    for (const g of games) { teamIds.add(String(g.home.id)); teamIds.add(String(g.away.id)); }
+    const rosterByTeamId = new Map();
+    await Promise.all(Array.from(teamIds).map(async (tid) => {
+      const r = await loadTeamRoster(tid);
+      rosterByTeamId.set(tid, flattenRoster(r || {}));
+    }));
+
+    for (const tid of teamIds) {
+      const opp = oppByTeamId.get(tid) || '?';
+      const rosterFlat = rosterByTeamId.get(tid) || [];
+      const s = starters(rosterFlat);
+
+      const picks = [
+        { p: s.RB1, pos: 'RB' },
+        { p: s.WR1, pos: 'WR' },
+        { p: s.TE1, pos: 'TE' },
+      ];
+      for (const pick of picks) {
+        if (!pick.p) continue;
+        const name = pick.p.displayName || pick.p.fullName || [pick.p.firstName, pick.p.lastName].filter(Boolean).join(' ') || 'Unknown';
+        const pos = pick.pos;
+        const model = tdPct(pos);
+        candidates.push({
+          player: name,
+          pos,
+          teamId: tid,
+          modelTD: Number((model * 100).toFixed(1)),
+          rzPath: Number((model * 0.68 * 100).toFixed(1)),
+          expPath: Number((model * 0.32 * 100).toFixed(1)),
+          why: `${name} (${pos}) vs ${opp}`,
+        });
+      }
+    }
+
+    candidates.sort((a,b) => b.modelTD - a.modelTD);
+    const out = candidates.slice(0, 100);
+
+    return json({ ok: true, season, week, games: games.length, candidates: out });
+  } catch (e) {
+    return json({ ok: false, error: String(e) }, 500);
   }
+};
 
-  // 4) Build candidates
-  const rows = [];
-  for (const g of schedule.games) {
-    const H = depths[g.home?.id] || {};
-    const A = depths[g.away?.id] || {};
-    add(rows, g.home?.id, H, g.away?.abbrev);
-    add(rows, g.away?.id, A, g.home?.abbrev);
-  }
-  rows.sort((a,b)=> b.modelTdPct - a.modelTdPct);
-
-  const out = { ok:true, season: schedule.season, week: schedule.week, games: schedule.games.length, candidates: rows };
-  if (debug) out.diag = diag;
-  return J(out, 200);
-}
-
-function add(out, teamId, charts, opp) {
-  for (const pos of FPOS) {
-    (charts[pos] || []).forEach((name, idx) => {
-      let p = (POS_PRIOR[pos] ?? 0.05) + (DEPTH_DELTA[idx] ?? -0.1*idx);
-      p = clamp(p + (((opp?.charCodeAt?.(0) ?? 65) % 7)/1000));
-      const { rz, exp } = splitRzExp(pos);
-      out.push({
-        player: name, teamId, pos,
-        modelTdPct: +(p*100).toFixed(1),
-        rzPath: +(p*rz*100).toFixed(1),
-        expPath: +(p*exp*100).toFixed(1),
-        why: `${pos} • depth ${idx+1} • vs ${opp||"?"}`
-      });
-    });
-  }
-}
-
-function isValidChart(c){ return c && typeof c==="object" && ["RB","WR","TE","QB"].some(k => Array.isArray(c[k]) && c[k].length); }
-function fallbackChart(id){ return { QB:[`QB1-${id}`], RB:[`RB1-${id}`,`RB2-${id}`], WR:[`WR1-${id}`,`WR2-${id}`,`WR3-${id}`], TE:[`TE1-${id}`] }; }
-
-async function loadFromStore(store, season, week, leaf) {
-  let w = week;
-  if (!w) {
-    try {
-      const { objects } = await store.list();
-      const keys = objects?.map(o=>o.key) || [];
-      const weeks = keys.filter(k=>k.startsWith(`weeks/${season}/`) && k.endsWith("/schedule.json"))
-                        .map(k=>+k.split("/")[2]).filter(Number.isFinite).sort((a,b)=>b-a);
-      if (weeks.length) w = weeks[0];
-    } catch {}
-  }
-  if (!w) return null;
-  try { return await store.getJSON(`weeks/${season}/${w}/${leaf}`); } catch { return null; }
-}
-
-async function safeJSON(url, label){
-  try{
-    const r = await fetch(url, { headers: { accept: "application/json" } });
-    const json = await r.json().catch(()=>null);
-    return { ok:r.ok, status:r.status, json, label };
-  }catch(e){
-    return { ok:false, status:0, json:null, label, error:String(e) };
-  }
-}
-
-function J(body, status=200){
-  return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
-}
+const json = (body, statusCode = 200) => ({
+  statusCode,
+  headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+  body: JSON.stringify(body),
+});
