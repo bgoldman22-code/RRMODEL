@@ -1,44 +1,49 @@
 // netlify/functions/_blobs.mjs
-import { getStore } from '@netlify/blobs';
+// Resilient Blobs helpers. Never hard-fail when blobs are unavailable.
+import { getStore as netlifyGetStore } from "@netlify/blobs";
 
-// Create a store by name. Falls back to env defaults.
-export function makeStore(opts = {}) {
-  const storeName =
-    opts.name ||
-    process.env.BLOBS_STORE_NFL ||
-    process.env.BLOBS_STORE ||
-    'nfl-td';
+export function parseQuery(event) {
+  const url = new URL(event.rawUrl || `https://x.example${event.rawQuery ? ("?"+event.rawQuery) : ""}`);
+  const q = Object.fromEntries(url.searchParams.entries());
+  return q;
+}
 
-  const siteID = opts.siteID || process.env.NETLIFY_SITE_ID;
-  const token = opts.token || process.env.NETLIFY_AUTH_TOKEN;
+export function hasNetlifyContext(event) {
+  // Netlify Functions Runtime v2 exposes event.context.blobs
+  return Boolean(event?.context?.blobs);
+}
 
-  // Attempt to create a store. If Netlify Blobs is not configured, return null.
+export function blobsEnabled() {
+  // Feature flag via env; accept either BLOBS_STORE_NFL or BLOBS_STORE presence as signal
+  const hasStoreName = !!(process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE);
+  const hasSite = !!process.env.NETLIFY_SITE_ID;
+  return hasStoreName && hasSite;
+}
+
+export function resolveStoreName(event, fallbackName="nfl-td") {
+  const q = parseQuery(event);
+  // Allow overriding via query for quick tests: ?store=foo
+  return q.store || process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || fallbackName;
+}
+
+export function blobsDiag(event) {
+  return {
+    NFL_STORE_NAME: resolveStoreName(event),
+    HAS_NETLIFY_BLOBS_CONTEXT: hasNetlifyContext(event),
+    HAS_NETLIFY_SITE_ID: !!process.env.NETLIFY_SITE_ID
+  };
+}
+
+export async function maybeGetStore(event, opts={}) {
+  const q = parseQuery(event);
+  if (q.noblobs === "1" || q.noblobs === "true") return null;
+  if (!blobsEnabled()) return null;
   try {
-    const store = getStore({ name: storeName, siteID, token });
-    return store;
+    const name = resolveStoreName(event, opts.fallbackName || "nfl-td");
+    // When running on Netlify, we don't need to pass siteID/token—runtime injects them.
+    return netlifyGetStore({ name });
   } catch (err) {
-    // return null so callers can gracefully skip blobs
+    // Return null so callers can use in-memory fallbacks
     return null;
   }
-}
-
-// Helper used inside functions. Honors ?noblobs=1 and BLOBS_DISABLED=1
-export function getBlobsStore(event, { allowFallback = true } = {}) {
-  try {
-    const rawUrl = event?.rawUrl ||
-      (event?.headers?.host ? `https://${event.headers.host}${event.path || ''}${event.rawQuery ? '?' + event.rawQuery : ''}` : 'https://example.com');
-    const url = new URL(rawUrl);
-
-    if (url.searchParams.get('noblobs') === '1' || process.env.BLOBS_DISABLED === '1') {
-      return null;
-    }
-  } catch (_) {
-    // If URL parsing fails, continue and attempt to use blobs
-  }
-  return makeStore();
-}
-
-// Back-compat for files importing { createStore } specifically
-export function createStore(name) {
-  return makeStore({ name });
 }

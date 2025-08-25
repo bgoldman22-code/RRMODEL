@@ -1,19 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
-echo "=== Ensure minimal dist/ so Netlify can publish ==="
+echo "=== Ensuring dist/ exists ==="
 mkdir -p dist
-if [ ! -f dist/index.html ]; then
-  cat > dist/index.html <<'HTML'
-<!doctype html>
-<html>
-  <head><meta charset="utf-8"><title>RR Model</title></head>
-  <body>
-    <h1>RR Model — Functions-only deploy</h1>
-    <p>This is a placeholder. The app UI will replace this when ready.</p>
-  </body>
-</html>
-HTML
-fi
-
-echo "Done."
+echo "<!doctype html><meta charset=\"utf-8\"><title>RRModel NFL</title><h1>Functions only</h1>" > dist/index.html
+echo "=== PACKAGE.JSON (name, version, scripts) ==="
+if [[ -f package.json ]]; then cat package.json; else echo "{ \"name\": \"rrmodel-nfl-patch\", \"version\": \"0.1.0\", \"type\": \"module\", \"dependencies\": { \"@netlify/blobs\": \"^6.4.0\" } }"; fi
+echo "=== Done ==="

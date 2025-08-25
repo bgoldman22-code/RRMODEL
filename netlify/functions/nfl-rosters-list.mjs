@@ -1,19 +1,28 @@
-import { createStore } from "./_blobs.mjs";
+// netlify/functions/nfl-rosters-list.mjs
+import { maybeGetStore, parseQuery } from "./_blobs.mjs";
 
-function resp(statusCode, body) {
-  return {
-    statusCode,
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(body),
-  };
-}
-
-export const handler = async () => {
+export const handler = async (event) => {
+  const q = parseQuery(event);
+  const store = await maybeGetStore(event, { fallbackName: "nfl-td" });
+  if (!store) {
+    return {
+      statusCode: 200,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ok: true, keys: { blobs: [], directories: [] }, note: "blobs disabled or unavailable" })
+    };
+  }
   try {
-    const store = createStore();
     const list = await store.list();
-    return resp(200, { ok: true, keys: list });
-  } catch (err) {
-    return resp(err?.statusCode || 500, { ok: false, error: err?.message || "unhandled error" });
+    return {
+      statusCode: 200,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ok: true, keys: list })
+    };
+  } catch (e) {
+    return {
+      statusCode: 200,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ok: false, error: String(e) })
+    };
   }
 };
