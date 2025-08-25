@@ -11,6 +11,7 @@ const splitRzExp = (pos)=> pos==="RB"?{rz:0.68,exp:0.32}:pos==="TE"?{rz:0.58,exp
 
 export default async function handler(req) {
   const url = new URL(req.url);
+  const origin = url.origin || process.env.URL || process.env.DEPLOY_PRIME_URL || "";
   const season = Number(url.searchParams.get("season") || new Date().getFullYear());
   let week = url.searchParams.get("week") ? Number(url.searchParams.get("week")) : undefined;
   const debug = url.searchParams.get("debug") === "1";
@@ -30,9 +31,9 @@ export default async function handler(req) {
     qs.set("mode", "auto"); // weekly roll-forward
     if (season) qs.set("season", String(season));
     if (typeof week === "number") qs.set("week", String(week));
-    const bUrl = `/.netlify/functions/nfl-bootstrap?${qs.toString()}`;
+    const bUrl = `${origin}/.netlify/functions/nfl-bootstrap?${qs.toString()}`;
     bootstrap = await safeJSON(bUrl, "bootstrap");
-    diag.push({ step: "bootstrap", ok: bootstrap.ok, status: bootstrap.status });
+    diag.push({ step: "bootstrap", ok: bootstrap.ok, status: bootstrap.status, called: bUrl });
 
     const b = bootstrap.json || {};
     if (b.schedule && Array.isArray(b.schedule.games) && b.schedule.games.length) {
@@ -104,7 +105,8 @@ async function loadFromStore(store, season, week, leaf) {
   let w = week;
   if (!w) {
     try {
-      const keys = await store.list();
+      const { objects } = await store.list();
+      const keys = objects?.map(o=>o.key) || [];
       const weeks = keys.filter(k=>k.startsWith(`weeks/${season}/`) && k.endsWith("/schedule.json"))
                         .map(k=>+k.split("/")[2]).filter(Number.isFinite).sort((a,b)=>b-a);
       if (weeks.length) w = weeks[0];
