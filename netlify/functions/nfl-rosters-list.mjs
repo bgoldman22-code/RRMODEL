@@ -1,11 +1,9 @@
 // netlify/functions/nfl-rosters-list.mjs
-import { getStore } from "@netlify/blobs";
-export default async function handler(req) {
-  try {
-    const store = getStore({ name: process.env.NFL_TD_BLOBS || "nfl-td" });
-    const keys = await store.list();
-    return new Response(JSON.stringify({ ok:true, keys }), { headers: { "content-type":"application/json" } });
-  } catch (e) {
-    return new Response(JSON.stringify({ ok:false, error:String(e) }), { status:500, headers: { "content-type":"application/json" } });
-  }
-}
+import { openStore } from "./_lib/blobs-helper.mjs";
+import { ok } from "./_lib/respond.js";
+
+export const handler = async () => {
+  const store = openStore("nfl");
+  const blobs = await (await store).list();
+  return ok({ keys: { blobs, directories: [] } });
+};
