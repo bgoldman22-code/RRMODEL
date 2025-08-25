@@ -1,24 +1,26 @@
-// netlify/functions/nfl-data.mjs
-import { openStore } from "./_lib/blobs-helper.mjs";
-import { ok, err } from "./_lib/respond.js";
+import { createStore } from "./_blobs.mjs";
+
+function resp(statusCode, body) {
+  return {
+    statusCode,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  };
+}
 
 export const handler = async (event) => {
-  const type = event.queryStringParameters?.type;
+  try {
+    const type = event.queryStringParameters?.type || "schedule";
+    const store = createStore();
 
-  const store = openStore("nfl");
-
-  if (type === "schedule") {
-    // Try pointer then week1 fallback
-    const pointer = await (await store).get("schedule.json", { type: "json" });
-    if (pointer?.ref) {
-      const doc = await (await store).get(pointer.ref, { type: "json" });
-      if (doc) return ok({ type, doc });
+    if (type === "schedule") {
+      const json = await store.getJSON("weeks/2025/1/schedule.json");
+      if (!json) return resp(404, { ok: false, error: "no data" });
+      return resp(200, { ok: true, data: json });
     }
-    // Fallback attempt: week1 2025
-    const doc = await (await store).get("weeks/2025/1/schedule.json", { type: "json" });
-    if (doc) return ok({ type, doc, fallback: true });
-    return err("no data");
-  }
 
-  return err("unknown type");
+    return resp(400, { ok: false, error: "unknown type" });
+  } catch (err) {
+    return resp(err?.statusCode || 500, { ok: false, error: err?.message || "unhandled error" });
+  }
 };
