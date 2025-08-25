@@ -1,73 +1,82 @@
-
 // netlify/functions/nfl-td-candidates.mjs
-import { getNFLStore, blobsJson } from './_blobs.mjs';
+// Build Anytime TD candidate list with real player names using SportsData roster.
+// No Blobs dependency; pure fetch each call. Supports debug.
 
-/**
- * Produces placeholder TD candidates from cached blobs so the UI renders.
- * Later, replace scoring logic with your model + TheOddsAPI.
- */
+import { getTeamRoster, ESPN_ID_TO_KEY, pickStarters } from "./_lib/sd.mjs";
+
+async function getSchedule() {
+  // Call the local bootstrap with no blobs use
+  const u = new URL(process.env.SELF_BOOTSTRAP_URL || "http://localhost/.netlify/functions/nfl-bootstrap");
+  u.searchParams.set("mode","auto");
+  u.searchParams.set("start", "20250904");
+  u.searchParams.set("end", "20250910");
+  const res = await fetch(u.toString());
+  if (!res.ok) {
+    const t = await res.text().catch(()=> "");
+    return { ok:false, error: "bootstrap failed", status: res.status, body: t };
+  }
+  const j = await res.json();
+  return j.ok ? { ok:true, schedule: j.schedule } : { ok:false, error: j.error || "unknown schedule error", detail: j };
+}
+
+function simpleModelProb(pos) {
+  // Very basic starting priors per position; real model to replace later.
+  if (pos === "RB") return 0.35;
+  if (pos === "WR") return 0.27;
+  if (pos === "TE") return 0.18;
+  return 0.10;
+}
+
 export const handler = async (event) => {
+  const debug = !!event.queryStringParameters?.debug;
   try {
-    const url = new URL(event.rawUrl || `https://x${event.path}`);
-    const params = url.searchParams;
-    const season = Number(params.get('season') || 2025);
-    const week = Number(params.get('week') || 1);
-
-    const store = getNFLStore();
-    const schedule = await blobsJson.get(store, `weeks/${season}/${week}/schedule.json`);
-    if (!schedule) {
-      return json(500, { ok: false, error: 'schedule unavailable' });
+    const scheduleRes = await getSchedule();
+    if (!scheduleRes.ok) {
+      return { statusCode: 500, headers: {"content-type":"application/json"}, body: JSON.stringify({ ok:false, error: scheduleRes.error, bootstrap: scheduleRes.detail || null }) };
     }
+    const games = scheduleRes.schedule.games || [];
+    const out = [];
+    const diag = [];
 
-    // Pull a tiny bit of player data from cached rosters to show real names.
-    const byTeam = {};
-    for (const g of schedule.games) {
-      for (const side of ['home', 'away']) {
-        const t = g[side];
-        const roster = await blobsJson.get(store, `weeks/${season}/${week}/depth/${t.id}.json`, { athletes: [] });
-        const players = (roster.athletes || []).flatMap(grp => (grp.items || []));
-        // Find top RB + WR + TE as placeholders
-        const rb = players.find(p => p.position?.abbreviation === 'RB');
-        const wr = players.find(p => p.position?.abbreviation === 'WR');
-        const te = players.find(p => p.position?.abbreviation === 'TE');
-        byTeam[t.id] = { team: t, rb, wr, te, opp: (side === 'home' ? g.away : g.home) };
-      }
-    }
+    for (const g of games) {
+      const homeKey = ESPN_ID_TO_KEY[g.home?.id] || g.home?.abbrev;
+      const awayKey = ESPN_ID_TO_KEY[g.away?.id] || g.away?.abbrev;
+      // Fetch rosters for both sides
+      const [homeR, awayR] = await Promise.all([
+        getTeamRoster(homeKey),
+        getTeamRoster(awayKey)
+      ]);
 
-    // Make simple candidate rows
-    const rows = [];
-    for (const teamId of Object.keys(byTeam)) {
-      const { team, opp, rb, wr, te } = byTeam[teamId];
-      const push = (pl, pos, base = 0.32) => {
-        if (!pl) return;
-        rows.push({
-          player: pl.displayName || pl.fullName || pl.name || `${pos} ${team.abbrev}`,
-          team: team.abbrev,
-          game: `${team.abbrev} vs ${opp.abbrev}`,
-          pos,
-          model: Number((base + Math.random() * 0.08).toFixed(3)),
-          rz: Number((base * 0.68).toFixed(3)),
-          exp: Number((base * 0.32).toFixed(3)),
-          why: `${pos} • depth 1 • vs ${opp.abbrev}`
-        });
+      diag.push({ game: g.id, homeKey, awayKey, homeRosterOk: !!homeR.ok, awayRosterOk: !!awayR.ok });
+
+      const homeStarters = homeR.ok ? pickStarters(homeR.data) : [];
+      const awayStarters = awayR.ok ? pickStarters(awayR.data) : [];
+
+      const addCands = (arr, oppKey) => {
+        for (const p of arr) {
+          const prob = simpleModelProb(p.Position);
+          out.push({
+            player: p.Name,
+            pos: p.Position,
+            team: p.Team,
+            opp: oppKey,
+            model_td: Number((prob*100).toFixed(1)),
+            why: `${p.Position} • depth ${p.DepthChartOrder ?? "?"} • vs ${oppKey}`
+          });
+        }
       };
-      push(rb, 'RB');
-      push(wr, 'WR', 0.25);
-      push(te, 'TE', 0.22);
+      addCands(homeStarters, awayKey);
+      addCands(awayStarters, homeKey);
     }
 
-    rows.sort((a, b) => b.model - a.model);
-    // Return a trimmed table
-    return json(200, { ok: true, season, week, count: rows.length, rows: rows.slice(0, 60) });
-  } catch (err) {
-    return json(500, { ok: false, error: String(err) });
+    // sort by model_td desc then name
+    out.sort((a,b) => b.model_td - a.model_td || a.player.localeCompare(b.player));
+
+    const body = { ok:true, season: 2025, week: 1, count: out.length, candidates: out };
+    if (debug) body.diag = diag;
+
+    return { statusCode: 200, headers: {"content-type":"application/json"}, body: JSON.stringify(body) };
+  } catch (e) {
+    return { statusCode: 500, headers: {"content-type":"application/json"}, body: JSON.stringify({ ok:false, error: String(e?.message || e) }) };
   }
 };
-
-function json(status, obj) {
-  return {
-    statusCode: status,
-    headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
-    body: JSON.stringify(obj)
-  };
-}
