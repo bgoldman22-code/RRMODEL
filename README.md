@@ -1,26 +1,19 @@
-# NFL TD Patch — Step 3 & Candidates Fix
+# NFL Patch (SportsDataIO-powered)
 
-This patch does two things:
+What’s inside:
+- `nfl-bootstrap.mjs`: pulls the week schedule from ESPN (dates window), writes to Blobs **if available**, but works without Blobs too.
+- `nfl-td-candidates.mjs`: merges schedule + SportsDataIO depth charts to produce named Anytime TD candidates (RB/WR/TE priority).
+- `nfl-weekly-roll.mjs`: scheduled function to roll forward weekly schedule each Tuesday 1am ET (approx, via cron at 06:00 UTC).
 
-1. **Fixes** `netlify/functions/nfl-td-candidates.mjs` (template string typo + robust schedule consumption).
-2. **Makes Step 3 changes** so CommonJS Netlify functions are valid under `"type": "module"`:
-   - Renames `netlify/functions/mlb-preds-get.js` -> `.cjs` (if present)
-   - Renames `netlify/functions/odds-diag.js` -> `.cjs` (if present)
-   - Prints any other `exports.handler` files so you can rename them too
+## Env Vars
+- `SPORTSDATA_API_KEY` (required for player names/depth)
+- `BLOBS_STORE_NFL` = `nfl-td` (optional, enables caching)
+- `BLOBS_STORE` (optional fallback)
 
-## Apply
+## Test URLs
+- `/.netlify/functions/nfl-bootstrap?season=2025&week=1&mode=auto`
+- `/.netlify/functions/nfl-td-candidates?season=2025&week=1`
 
-```bash
-# From your repo root
-unzip patch-step3-and-candidates-fix-2025-08-25.zip -d .
-bash scripts/apply-patch.sh
-git push
-```
+Add `&noblobs=1` to bypass Blobs if your site doesn’t have it enabled.
 
-## Verify
-
-- `/.netlify/functions/nfl-bootstrap?refresh=1&mode=auto&debug=1` returns a schedule.
-- `/.netlify/functions/nfl-td-candidates?debug=1` returns `{ ok:true, candidates:[...] }`.
-- `/nfl` renders candidates (even if Blobs writes are still in-flight).
-
-If Netlify logs still show CommonJS/ESM warnings for other files, either rename them to `.cjs` or convert to ESM (`export default async function handler(...) {}`).
+Netlify Node 18+ exposes global `fetch` so no `node-fetch` is required.

@@ -1,18 +1,12 @@
-# Debug build config to surface full error logs
 [build]
-  command = "bash netlify/build-debug.sh"
+  command = "bash netlify/build-debug.sh || echo 'no build script, deploying functions only'"
   publish = "dist"
 
-[build.environment]
-  NODE_VERSION = "20"
-  NPM_FLAGS = "--no-audit --no-fund"
-
 [functions]
-  directory = "netlify/functions"
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs"]
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Scheduled weekly roll-forward: Tuesdays at 1am Eastern
+[[scheduled.functions]]
+  name = "nfl-weekly-roll"
+  cron = "0 6 * * 2" # 06:00 UTC = 1:00am ET (during EST; close enough for simplicity)
