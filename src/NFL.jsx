@@ -1,85 +1,72 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-async function getJSON(url) {
-  try {
-    const res = await fetch(url, { headers: { accept: "application/json" } });
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-    return await res.json();
-  } catch (err) {
-    console.error("GET", url, "failed:", err);
-    return null;
-  }
-}
-
-async function fetchDepthCharts() {
-  // Try Blobs via nfl-data
-  let j = await getJSON("/.netlify/functions/nfl-data?type=depth-charts");
-  if (j && !j.ok) {
-    // debug path provides diagnostic object
-    const dbg = await getJSON("/.netlify/functions/nfl-data?type=depth-charts&debug=1");
-    console.log("nfl-data debug:", dbg);
-  }
-  if (j) {
-    const payload = j.data ?? j;
-    if (payload && typeof payload === "object" && Object.keys(payload).length) return payload;
-  }
-  // Force repo as fallback
-  const repoOnly = await getJSON("/.netlify/functions/nfl-data?type=depth-charts&source=repo");
-  const repoPayload = repoOnly?.data ?? repoOnly;
-  if (repoPayload && typeof repoPayload === "object" && Object.keys(repoPayload).length) return repoPayload;
-  return null;
-}
+function pct(n){ return `${n.toFixed(1)}%`; }
 
 export default function NFL() {
-  const [depthCharts, setDepthCharts] = useState(null);
-  const [status, setStatus] = useState({ rosters: "loading", hint: "" });
+  const [data, setData] = useState(null);
+  const [err, setErr] = useState("");
 
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      const charts = await fetchDepthCharts();
-      if (!alive) return;
-      setDepthCharts(charts);
-      setStatus((s) => ({
-        ...s,
-        rosters: charts ? "ok" : "missing",
-        hint: charts ? "" : "Use /data/nfl-td/depth-charts.json and seed Blobs via /.netlify/functions/nfl-rosters-run?source=repo",
-      }));
+  useEffect(()=>{
+    (async ()=>{
+      try {
+        const res = await fetch('/.netlify/functions/nfl-td-candidates?week=1');
+        const j = await res.json();
+        if (!j.ok) throw new Error(j.error || 'failed');
+        setData(j);
+      } catch(e){
+        setErr(String(e));
+      }
     })();
-    return () => { alive = false; };
-  }, []);
+  },[]);
 
-  const rosterCount = useMemo(() => {
-    if (!depthCharts || typeof depthCharts !== "object") return 0;
-    return Object.keys(depthCharts).length;
-  }, [depthCharts]);
+  if (err) {
+    return (
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-2">NFL — Anytime TD</h1>
+        <div className="rounded border p-3 text-sm">
+          Error: {err}. Make sure <code>data/nfl-td/depth-charts.json</code> and <code>data/nfl-td/schedule-week1-2025.json</code> exist in the repo.
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) return <div className="p-4">Loading…</div>;
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
+    <div className="p-4">
       <h1 className="text-2xl font-bold mb-2">NFL — Anytime TD</h1>
       <div className="text-sm text-gray-600 mb-4">
-        rosters:{status.rosters}{rosterCount ? ` • teams:${rosterCount}` : ""}
+        week:{data.week} • games:{data.games} • candidates:{data.candidates.length}
       </div>
-      {!depthCharts && (
-        <div className="rounded-lg border p-3 text-sm space-y-2">
-          <div>No depth charts available yet.</div>
-          <div className="text-xs">
-            Quick checks:
-            <ol className="list-decimal ml-5">
-              <li>Open <code>/data/nfl-td/depth-charts.json</code> to confirm it exists in this deploy.</li>
-              <li>Open <code>/.netlify/functions/nfl-rosters-run?source=repo</code> once to seed Blobs.</li>
-              <li>Open <code>/.netlify/functions/nfl-rosters-list</code> to confirm keys.</li>
-              <li>Open <code>/.netlify/functions/nfl-data?type=depth-charts</code> (should return JSON).</li>
-            </ol>
-          </div>
-          {status.hint && <div className="text-xs text-gray-500">{status.hint}</div>}
-        </div>
-      )}
-      {depthCharts && (
-        <pre className="text-xs overflow-auto max-h-[55vh] border rounded p-2 bg-gray-50">
-{JSON.stringify(depthCharts, null, 2)}
-        </pre>
-      )}
+
+      <div className="overflow-auto">
+        <table className="min-w-full text-sm">
+          <thead className="sticky top-0 bg-white">
+            <tr className="text-left border-b">
+              <th className="py-2 pr-4">Player</th>
+              <th className="py-2 pr-4">Team</th>
+              <th className="py-2 pr-4">Pos</th>
+              <th className="py-2 pr-4">Model TD%</th>
+              <th className="py-2 pr-4">RZ path</th>
+              <th className="py-2 pr-4">EXP path</th>
+              <th className="py-2 pr-4">Why</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.candidates.map((r, i)=>(
+              <tr key={i} className="border-b">
+                <td className="py-1 pr-4">{r.player}</td>
+                <td className="py-1 pr-4">{r.team}</td>
+                <td className="py-1 pr-4">{r.position}</td>
+                <td className="py-1 pr-4">{pct(r.modelTdPct)}</td>
+                <td className="py-1 pr-4">{pct(r.rzPath)}</td>
+                <td className="py-1 pr-4">{pct(r.expPath)}</td>
+                <td className="py-1 pr-4">{r.why}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
