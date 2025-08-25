@@ -1,39 +1,38 @@
-// netlify/functions/nfl-td-candidates.mjs
-// Minimal version that reads schedule + depth and emits dummy candidates with real team names from schedule.
-import { getStore } from '@netlify/blobs';
+import { getNFLStore } from "./_blobs.js";
 
-const NFL_STORE_NAME = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td';
-
-export async function handler(event) {
+export const handler = async (event) => {
   try {
-    const store = getStore({ name: NFL_STORE_NAME });
-    const sched = await store.get('weeks/2025/1/schedule.json', { type: 'json' });
-    const depth = await store.get('depth-charts.json', { type: 'json' });
-    if (!sched) {
-      return json(400, { ok: false, error: 'schedule unavailable' });
-    }
-    // If depth is present, attempt to pick a few placeholders per game.
-    const candidates = [];
-    for (const g of (sched.games || [])) {
-      // placeholder player labels using team abbrevs; real naming handled in later patch
-      candidates.push({
-        id: `RB1-${g.home.id}`,
-        player: `RB1 ${g.home.abbrev}`,
-        pos: 'RB',
-        why: `RB • depth 1 • vs ${g.away.abbrev}`,
-        modelTdPct: 0.366
-      });
-    }
-    return json(200, { ok: true, season: sched.season, week: sched.week, games: (sched.games||[]).length, candidates });
-  } catch (err) {
-    return json(500, { ok: false, error: String(err), store: NFL_STORE_NAME });
-  }
-}
+    const store = getNFLStore();
+    const schedKey = "weeks/2025/1/schedule.json";
+    const depthKey = "weeks/2025/1/depth/21.json"; // sample key just to sanity check presence
 
-function json(statusCode, body) {
-  return {
-    statusCode,
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(body)
-  };
-}
+    const schedule = await store.get(schedKey, { type: "json" }).catch(() => null);
+    const depth = await store.get(depthKey, { type: "json" }).catch(() => null);
+
+    return {
+      statusCode: 200,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        ok: true,
+        diag: {
+          store: process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "site:nfl-td",
+          hasSchedule: !!schedule,
+          hasDepthSample: !!depth,
+          schedKey,
+          depthKey,
+        },
+        candidates: [],
+      }),
+    };
+  } catch (e) {
+    return {
+      statusCode: 500,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        ok: false,
+        error: String(e),
+        blobs: e?.cause?.diag || null,
+      }),
+    };
+  }
+};
