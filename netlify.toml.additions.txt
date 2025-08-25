@@ -1,0 +1,8 @@
+# netlify.toml (merge these settings if not present)
+[build]
+  command = "bash netlify/build-debug.sh"
+  publish = "dist"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["@netlify/blobs"]
