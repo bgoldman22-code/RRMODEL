@@ -14,11 +14,21 @@ function fmtPct(v) {
 }
 
 async function fetchDepthCharts() {
+  // Try consolidated data function which falls back to repo /data if Blobs are empty.
   try {
-    const res = await fetch("/.netlify/functions/nfl-rosters-get");
+    const res = await fetch("/.netlify/functions/nfl-data");
     const j = await res.json();
-    if (j?.ok && j.depthCharts) return j.depthCharts;
+    const charts = j?.data?.["depth-charts.json"];
+    if (charts && typeof charts === "object") return charts;
   } catch {}
+  // Fallback to the old endpoint that only reads Blobs (may be empty if not yet populated)
+  try {
+    const res2 = await fetch("/.netlify/functions/nfl-rosters-get");
+    const j2 = await res2.json();
+    if (j2?.ok && j2.depthCharts) return j2.depthCharts;
+  } catch {}
+  return null;
+} catch {}
   return null;
 }
 
