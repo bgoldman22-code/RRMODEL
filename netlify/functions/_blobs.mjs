@@ -1,38 +1,44 @@
-
 // netlify/functions/_blobs.mjs
 import { getStore } from '@netlify/blobs';
 
-/**
- * Returns a Netlify Blobs store for NFL.
- * Falls back to manual auth using NETLIFY_API_TOKEN (+ NETLIFY_SITE_ID) if runtime context is missing.
- */
-export function getNFLStore() {
-  const name = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td';
+// Create a store by name. Falls back to env defaults.
+export function makeStore(opts = {}) {
+  const storeName =
+    opts.name ||
+    process.env.BLOBS_STORE_NFL ||
+    process.env.BLOBS_STORE ||
+    'nfl-td';
 
+  const siteID = opts.siteID || process.env.NETLIFY_SITE_ID;
+  const token = opts.token || process.env.NETLIFY_AUTH_TOKEN;
+
+  // Attempt to create a store. If Netlify Blobs is not configured, return null.
   try {
-    // Prefer implicit runtime context on Netlify Functions
-    return getStore({ name });
+    const store = getStore({ name: storeName, siteID, token });
+    return store;
   } catch (err) {
-    const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
-    const token = process.env.NETLIFY_API_TOKEN || process.env.NETLIFY_AUTH_TOKEN;
-    if (!siteID || !token) {
-      const details = `HAS_NETLIFY_BLOBS_CONTEXT=false, HAS_NETLIFY_SITE_ID=${!!siteID}, HAS_NETLIFY_API_TOKEN=${!!token}`;
-      const e = new Error(`Blobs unavailable. Enable Netlify Blobs and set NETLIFY_API_TOKEN (and ensure NETLIFY_SITE_ID is available). Detail: ${err?.name||''} ${err?.message||err} • ${details}`);
-      e.original = err;
-      throw e;
-    }
-    return getStore({ name, siteID, token });
+    // return null so callers can gracefully skip blobs
+    return null;
   }
 }
 
-/** Small helper for JSON get/set */
-export const blobsJson = {
-  async get(store, key, def = null) {
-    const raw = await store.get(key, { type: 'json' });
-    return raw ?? def;
-  },
-  async set(store, key, value) {
-    await store.setJSON(key, value);
-    return true;
+// Helper used inside functions. Honors ?noblobs=1 and BLOBS_DISABLED=1
+export function getBlobsStore(event, { allowFallback = true } = {}) {
+  try {
+    const rawUrl = event?.rawUrl ||
+      (event?.headers?.host ? `https://${event.headers.host}${event.path || ''}${event.rawQuery ? '?' + event.rawQuery : ''}` : 'https://example.com');
+    const url = new URL(rawUrl);
+
+    if (url.searchParams.get('noblobs') === '1' || process.env.BLOBS_DISABLED === '1') {
+      return null;
+    }
+  } catch (_) {
+    // If URL parsing fails, continue and attempt to use blobs
   }
-};
+  return makeStore();
+}
+
+// Back-compat for files importing { createStore } specifically
+export function createStore(name) {
+  return makeStore({ name });
+}

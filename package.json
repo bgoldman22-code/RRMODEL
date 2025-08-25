@@ -1,9 +1,12 @@
 {
   "name": "rrmodel-nfl-patch",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "private": true,
   "dependencies": {
-    "@netlify/blobs": "^6.4.0"
+    "@netlify/blobs": "^6.5.0"
+  },
+  "scripts": {
+    "build": "bash netlify/build-debug.sh"
   }
 }
