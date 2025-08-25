@@ -1,19 +1,9 @@
-import { createStore } from "./_blobs.mjs";
-
-function resp(statusCode, body) {
+// netlify/functions/nfl-rosters-list.mjs
+// Minimal placeholder that just returns ok (no blobs usage here).
+export const handler = async (event) => {
   return {
-    statusCode,
+    statusCode: 200,
     headers: { "content-type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ ok:true, keys: { blobs: [], directories: [] } })
   };
-}
-
-export const handler = async () => {
-  try {
-    const store = createStore();
-    const list = await store.list();
-    return resp(200, { ok: true, keys: list });
-  } catch (err) {
-    return resp(err?.statusCode || 500, { ok: false, error: err?.message || "unhandled error" });
-  }
 };
