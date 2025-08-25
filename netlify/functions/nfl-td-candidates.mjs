@@ -56,7 +56,7 @@ export default async function handler(req) {
   const teamIds = [...new Set(schedule.games.flatMap(g => [g.home?.id, g.away?.id]).filter(Boolean))];
   const depths = {};
   for (const id of teamIds) {
-    const key = `weeks/${schedule.season}/${schedule.week}/depth/${id}.json`; // <-- fixed closing backtick
+    const key = `weeks/${schedule.season}/${schedule.week}/depth/${id}.json`;
     let chart = null;
     try { chart = await store.getJSON(key); } catch {}
     if (!isValidChart(chart)) {
