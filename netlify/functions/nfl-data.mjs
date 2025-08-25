@@ -1,60 +1,42 @@
-import { getStore } from "@netlify/blobs";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+// netlify/functions/nfl-data.mjs
+import { getStore } from '@netlify/blobs';
 
-const REPO_PATHS = {
-  "depth-charts": "data/nfl-td/depth-charts.json",
+export const handler = async (event) => {
+  try {
+    const store = getStore({ name: 'nfl' });
+    const params = event.queryStringParameters || {};
+    const type = params.type;
+
+    if (type === 'schedule') {
+      const season = Number(params.season || 2025);
+      const week = Number(params.week || 1);
+      const key = `weeks/${season}/${week}/schedule.json`;
+      const json = await store.get(key, { type: 'json' });
+      if (!json) return resp({ ok: false, error: 'no data' }, 404);
+      return resp({ ok: true, data: json });
+    }
+
+    if (type === 'depth-charts') {
+      const season = Number(params.season || 2025);
+      const week = Number(params.week || 1);
+      const teamId = params.teamId;
+      const prefix = `weeks/${season}/${week}/depth/`;
+      if (teamId) {
+        const json = await store.get(`${prefix}${teamId}.json`, { type: 'json' });
+        return resp({ ok: !!json, data: json || null, teamId });
+      }
+      const list = await store.list({ prefix });
+      return resp({ ok: true, keys: list.blobs.map(b => b.key) });
+    }
+
+    return resp({ ok: false, error: 'unknown type' }, 400);
+  } catch (e) {
+    return resp({ ok: false, error: String(e) }, 500);
+  }
 };
 
-async function readRepoJSON(key) {
-  const rel = REPO_PATHS[key];
-  if (!rel) return null;
-  try {
-    const full = join(process.cwd(), rel);
-    const txt = await readFile(full, "utf-8");
-    return JSON.parse(txt);
-  } catch (e) {
-    return { __error: "repo_read_failed", message: String(e) };
-  }
-}
-
-export default async function handler(req) {
-  const url = new URL(req.url);
-  const type = url.searchParams.get("type");       // e.g., "depth-charts"
-  const source = url.searchParams.get("source");   // optional: "repo"
-  const debug = url.searchParams.get("debug") === "1";
-  const storeName = process.env.NFL_TD_BLOBS || "nfl-td";
-
-  if (!type) {
-    return new Response(JSON.stringify({ ok: false, error: "missing `type`" }), {
-      status: 400, headers: { "content-type": "application/json" },
-    });
-  }
-
-  if (source === "repo") {
-    const repo = await readRepoJSON(type);
-    const ok = repo && !repo.__error && Object.keys(repo).length > 0;
-    return new Response(JSON.stringify(ok ? repo : { ok: false, error: repo?.__error || "repo empty" }), {
-      status: ok ? 200 : 404, headers: { "content-type": "application/json" },
-    });
-  }
-
-  let blobsErr = null;
-  try {
-    const store = getStore({ name: storeName });
-    const data = await store.getJSON(`${type}.json`);
-    if (data && Object.keys(data).length) {
-      return new Response(JSON.stringify(data), { headers: { "content-type": "application/json" } });
-    }
-  } catch (e) {
-    blobsErr = String(e);
-  }
-
-  const repo = await readRepoJSON(type);
-  const payload = repo && !repo.__error ? repo : null;
-  const body = debug
-    ? { ok: false, from: "fallback-repo", storeName, blobsErr, repoError: repo?.__error || null }
-    : (payload || { ok: false, error: "no data" });
-  const status = payload ? 200 : 404;
-  return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
-}
+const resp = (body, statusCode = 200) => ({
+  statusCode,
+  headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+  body: JSON.stringify(body),
+});
