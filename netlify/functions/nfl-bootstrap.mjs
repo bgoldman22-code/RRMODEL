@@ -1,104 +1,48 @@
-// netlify/functions/nfl-bootstrap.mjs
-import { maybeGetStore, parseQuery, blobsDiag } from "./_blobs.mjs";
-
-const ESPN_WEB = "https://site.web.api.espn.com/apis/v2/sports/football/nfl/scoreboard";
-const ESPN_SITE = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
-
-// Helper: fetch JSON with retries across ESPN endpoints
-async function fetchJson(urls, retries=1) {
-  let lastErr;
-  for (const url of urls) {
-    try {
-      const res = await fetch(url, { timeout: 10000 });
-      if (res.ok) return await res.json();
-      lastErr = new Error(`HTTP ${res.status}`);
-    } catch (e) {
-      lastErr = e;
-    }
-  }
-  if (retries > 0) return fetchJson(urls, retries - 1);
-  throw lastErr || new Error("fetch failed");
-}
-
-function seasonWeekFromToday() {
-  // Simple heuristic for preseason Week 1 fallback window if not given
-  // Sep 4-10, 2025 based on your earlier logs
-  return { season: 2025, week: 1, start: "20250904", end: "20250910" };
-}
-
-function makeSchedulePayload(scoreboard) {
-  // Map ESPN scoreboard format into the structure your UI expects
-  const games = (scoreboard?.events || []).map(evt => {
-    const comp = evt?.competitions?.[0];
-    const [home, away] = (comp?.competitors || []).sort((a,b)=> (a?.homeAway === "home" ? -1 : 1));
-    const toTeam = t => ({
-      id: String(t?.team?.id || ""),
-      abbrev: t?.team?.abbreviation || "",
-      displayName: t?.team?.displayName || t?.team?.name || ""
-    });
-    return {
-      id: String(evt?.id || comp?.id || ""),
-      date: evt?.date || comp?.date || null,
-      home: toTeam(home || {}),
-      away: toTeam(away || {})
-    };
-  });
-  return games;
-}
+import { getEnv } from "./_env.mjs";
+import { getBlobsStoreSafe } from "./_blobs.mjs";
+import { getWeekSchedule, getRoster } from "./_lib/espn-helpers.mjs";
 
 export const handler = async (event) => {
-  const q = parseQuery(event);
-  const season = q.season ? Number(q.season) : 2025;
-  const week = q.week ? Number(q.week) : 1;
-
-  // Try read from blobs cache if available
-  const store = await maybeGetStore(event, { fallbackName: "nfl-td" });
-  const cacheKey = `weeks/${season}/${week}/schedule.json`;
-  if (store) {
-    try {
-      const cached = await store.get(cacheKey, { type: "json" });
-      if (cached) {
-        return {
-          statusCode: 200,
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ ok: true, season, week, games: cached?.games?.length || 0, schedule: cached, used: { mode: "cache" } })
-        };
-      }
-    } catch {}
-  }
-
-  // Build URLs and fetch fresh from ESPN
-  const { start, end } = seasonWeekFromToday();
-  const urls = [
-    `${ESPN_WEB}?dates=${start}-${end}`,
-    `${ESPN_SITE}?dates=${start}-${end}`
-  ];
-
   try {
-    const data = await fetchJson(urls, 1);
-    const games = makeSchedulePayload(data);
-    const schedule = { season, week, games };
+    const qs = new URLSearchParams(event.rawQuery || event.queryStringParameters || "");
+    const season = Number(qs.get("season") || 2025);
+    const week = Number(qs.get("week") || 1);
+    const noblobs = (qs.get("noblobs") === "1" || qs.get("noblobs") === "true");
+    const debug = (qs.get("debug") === "1" || qs.get("debug") === "true");
+    const refresh = (qs.get("refresh") === "1" || qs.get("refresh") === "true");
+    const env = getEnv();
 
-    // Write-through to blobs if available
-    if (store) {
-      try { await store.set(cacheKey, JSON.stringify(schedule), { contentType: "application/json" }); } catch {}
+    // blobs (optional)
+    const { store, context } = await getBlobsStoreSafe(env.NFL_STORE_NAME, { noblobs });
+
+    // Fetch schedule
+    const sched = await getWeekSchedule({ season, week });
+
+    // Optionally cache schedule
+    if (store && (refresh || qs.get("cache") === "1")) {
+      await store.setJSON(`weeks/${season}/${week}/schedule.json`, sched);
     }
 
-    return {
-      statusCode: 200,
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ok: true, season, week, games: games.length, schedule, used: { mode: "live" } })
+    // Optionally prefetch and cache rosters (best-effort)
+    const rosterKeys = [];
+    if (store && (refresh || qs.get("rosters") === "1")) {
+      for (const g of sched.games) {
+        for (const tid of [g.home.id, g.away.id]) {
+          if (!tid) continue;
+          const players = await getRoster(tid, season).catch(() => []);
+          await store.setJSON(`weeks/${season}/${week}/depth/${tid}.json`, players);
+          rosterKeys.push(tid);
+        }
+      }
+    }
+
+    const body = {
+      ok: true, season, week, games: sched.games.length, schedule: sched,
+      blobs: { used: !!store, context, rosterKeys }
     };
+    if (debug) body.debug = { env };
+    return { statusCode: 200, headers: { "content-type": "application/json" }, body: JSON.stringify(body) };
   } catch (err) {
-    // Return a helpful diagnostic that does NOT hard-require blobs
-    return {
-      statusCode: 200,
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        ok: false,
-        error: String(err),
-        blobs: blobsDiag(event)
-      })
-    };
+    return { statusCode: 200, headers: { "content-type": "application/json" }, body: JSON.stringify({ ok: false, error: String(err) }) };
   }
 };

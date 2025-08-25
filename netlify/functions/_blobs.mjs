@@ -1,49 +1,33 @@
-// netlify/functions/_blobs.mjs
-// Resilient Blobs helpers. Never hard-fail when blobs are unavailable.
-import { getStore as netlifyGetStore } from "@netlify/blobs";
+import { getEnv } from "./_env.mjs";
 
-export function parseQuery(event) {
-  const url = new URL(event.rawUrl || `https://x.example${event.rawQuery ? ("?"+event.rawQuery) : ""}`);
-  const q = Object.fromEntries(url.searchParams.entries());
-  return q;
-}
+export async function getBlobsStoreSafe(name, opts = {}) {
+  // honor explicit skip
+  if (opts.noblobs) return { store: null, context: { reason: "noblobs flag" } };
 
-export function hasNetlifyContext(event) {
-  // Netlify Functions Runtime v2 exposes event.context.blobs
-  return Boolean(event?.context?.blobs);
-}
-
-export function blobsEnabled() {
-  // Feature flag via env; accept either BLOBS_STORE_NFL or BLOBS_STORE presence as signal
-  const hasStoreName = !!(process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE);
-  const hasSite = !!process.env.NETLIFY_SITE_ID;
-  return hasStoreName && hasSite;
-}
-
-export function resolveStoreName(event, fallbackName="nfl-td") {
-  const q = parseQuery(event);
-  // Allow overriding via query for quick tests: ?store=foo
-  return q.store || process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || fallbackName;
-}
-
-export function blobsDiag(event) {
-  return {
-    NFL_STORE_NAME: resolveStoreName(event),
-    HAS_NETLIFY_BLOBS_CONTEXT: hasNetlifyContext(event),
-    HAS_NETLIFY_SITE_ID: !!process.env.NETLIFY_SITE_ID
-  };
-}
-
-export async function maybeGetStore(event, opts={}) {
-  const q = parseQuery(event);
-  if (q.noblobs === "1" || q.noblobs === "true") return null;
-  if (!blobsEnabled()) return null;
+  // Try to import client
+  let blobs;
   try {
-    const name = resolveStoreName(event, opts.fallbackName || "nfl-td");
-    // When running on Netlify, we don't need to pass siteID/token—runtime injects them.
-    return netlifyGetStore({ name });
+    ({ getStore: blobs } = await import("@netlify/blobs"));
+  } catch (e) {
+    return { store: null, context: { reason: "blobs package not found" } };
+  }
+
+  const env = getEnv();
+  const siteID = process.env.NETLIFY_SITE_ID || env.NETLIFY_SITE_ID || null;
+  const token = process.env.NETLIFY_AUTH_TOKEN || env.NETLIFY_AUTH_TOKEN || null;
+
+  // If running on Netlify, context should be auto-injected. If not, require siteID+token.
+  const hasRuntimeCtx = !!process.env.NETLIFY || !!process.env.NETLIFY_IMAGES_CDN_DOMAIN || !!process.env.NETLIFY_DEV;
+
+  try {
+    const store = blobs({
+      name: name || env.NFL_STORE_NAME,
+      siteID: hasRuntimeCtx ? undefined : siteID,
+      token: hasRuntimeCtx ? undefined : token,
+    });
+    // Probe capability (no-op list)
+    return { store, context: { hasRuntimeCtx, siteID: !!siteID } };
   } catch (err) {
-    // Return null so callers can use in-memory fallbacks
-    return null;
+    return { store: null, context: { error: String(err) } };
   }
 }

@@ -5,8 +5,3 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs"]
-
-# Scheduled weekly roll-forward: Tuesdays at 1am Eastern
-[[scheduled.functions]]
-  name = "nfl-weekly-roll"
-  cron = "0 6 * * 2" # 06:00 UTC = 1:00am ET (during EST; close enough for simplicity)
