@@ -1,76 +1,73 @@
-// src/NFL.jsx
-import React, { useEffect, useState } from "react";
 
-function pct(x){ return `${Number(x).toFixed(1)}%`; }
+// src/NFL.jsx
+import { useEffect, useState } from "react";
 
 export default function NFL() {
-  const [stage, setStage] = useState("bootstrapping");
-  const [error, setError] = useState("");
-  const [diag, setDiag] = useState(null);
-  const [data, setData] = useState(null);
+  const [status, setStatus] = useState("bootstrapping");
+  const [info, setInfo] = useState(null);
+  const [rows, setRows] = useState([]);
+  const [err, setErr] = useState("");
 
-  useEffect(()=>{
-    (async ()=>{
+  useEffect(() => {
+    (async () => {
       try {
-        setStage("bootstrapping");
-        // light-touch bootstrap to ensure schedule present; we don't depend on its side effects
-        const b = await (await fetch("/.netlify/functions/nfl-bootstrap?season=2025&week=1")).json().catch(()=>null);
-        setDiag({ bootstrap: b });
-        // now build candidates (it will self-heal if cache missing)
-        const c = await (await fetch("/.netlify/functions/nfl-td-candidates?debug=1")).json();
-        if (!c.ok) throw new Error(c.error || "candidates failed");
-        setData(c);
-        setStage("done");
+        // 1) Bootstrap with weekly roll-forward
+        await fetch("/.netlify/functions/nfl-bootstrap?refresh=1&mode=auto", {
+          headers: { accept: "application/json" }
+        }).then(r => r.json()).catch(()=>null);
+
+        // 2) Get candidates (debug helps us surface any schedule issues)
+        const c = await fetch("/.netlify/functions/nfl-td-candidates?debug=1", {
+          headers: { accept: "application/json" }
+        }).then(r => r.json());
+        if (!c?.ok) {
+          setStatus("error");
+          setErr(c?.error || "unknown error");
+          setInfo(c?.diag || null);
+          return;
+        }
+        setRows(c.candidates || []);
+        setInfo({ season: c.season, week: c.week, games: c.games });
+        setStatus("done");
       } catch (e) {
-        setError(String(e));
-        setStage("error");
+        setStatus("error");
+        setErr(String(e));
       }
     })();
   }, []);
 
-  if (stage !== "done") {
-    return (
-      <div className="p-4 max-w-6xl mx-auto">
-        <h1 className="text-2xl font-bold">NFL — Anytime TD</h1>
-        <div className="text-sm text-gray-600">status: {stage}</div>
-        {error && <div className="mt-2 p-3 border bg-red-50 text-sm">Error: {error}</div>}
-        {diag && <pre className="mt-3 text-xs max-h-[50vh] overflow-auto bg-gray-50 border p-2">{JSON.stringify(diag, null, 2)}</pre>}
-      </div>
-    );
-  }
-
   return (
-    <div className="p-4 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold mb-2">NFL — Anytime TD</h1>
-      <div className="text-sm text-gray-600 mb-3">
-        season:{data.season} • week:{data.week} • games:{data.games} • candidates:{data.candidates.length}
-      </div>
-      <div className="overflow-auto">
-        <table className="min-w-full text-sm">
-          <thead><tr className="text-left border-b">
-            <th className="py-2 pr-4">Player</th>
-            <th className="py-2 pr-4">Team</th>
-            <th className="py-2 pr-4">Pos</th>
-            <th className="py-2 pr-4">Model TD%</th>
-            <th className="py-2 pr-4">RZ path</th>
-            <th className="py-2 pr-4">EXP path</th>
-            <th className="py-2 pr-4">Why</th>
-          </tr></thead>
+    <div className="container" style={{padding:"1rem"}}>
+      <h1>NFL — Anytime TD</h1>
+      <p>Status: {status}{info ? ` • Season ${info.season ?? ""} Week ${info.week ?? ""} • Games ${info.games ?? ""}` : ""}</p>
+      {err && <pre style={{background:"#fee", padding:"0.5rem", border:"1px solid #f99"}}>{err}</pre>}
+      {status === "done" && rows.length === 0 && <p>No candidates yet.</p>}
+      {rows.length > 0 && (
+        <table border="1" cellPadding="6" cellSpacing="0">
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Pos</th>
+              <th>Model TD%</th>
+              <th>RZ path</th>
+              <th>EXP path</th>
+              <th>Why</th>
+            </tr>
+          </thead>
           <tbody>
-            {data.candidates.map((r, i)=> (
-              <tr key={i} className="border-b">
-                <td className="py-1 pr-4">{r.player}</td>
-                <td className="py-1 pr-4">{r.teamId}</td>
-                <td className="py-1 pr-4">{r.pos}</td>
-                <td className="py-1 pr-4">{pct(r.modelTdPct)}</td>
-                <td className="py-1 pr-4">{pct(r.rzPath)}</td>
-                <td className="py-1 pr-4">{pct(r.expPath)}</td>
-                <td className="py-1 pr-4">{r.why}</td>
+            {rows.map((r, i) => (
+              <tr key={i}>
+                <td>{r.player}</td>
+                <td>{r.pos}</td>
+                <td>{r.modelTdPct}%</td>
+                <td>{r.rzPath}%</td>
+                <td>{r.expPath}%</td>
+                <td>{r.why}</td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
+      )}
     </div>
   );
 }
