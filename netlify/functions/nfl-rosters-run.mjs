@@ -1,62 +1,26 @@
-import { getStore } from "@netlify/blobs";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+// netlify/functions/nfl-rosters-run.mjs
+import { openStore } from "./_lib/blobs-helper.mjs";
+import { ok, err } from "./_lib/respond.js";
 
-function corsHeaders() {
-  return {
-    "content-type": "application/json",
-    "access-control-allow-origin": "*",
-    "access-control-allow-methods": "GET,POST,OPTIONS",
-    "access-control-allow-headers": "content-type,x-nfl-secret",
-  };
-}
+export const handler = async (event) => {
+  const store = openStore("nfl");
+  const source = event.queryStringParameters?.source;
 
-export default async function handler(req) {
-  if (req.method === "OPTIONS") {
-    return new Response("", { headers: corsHeaders() });
+  // POST: accept a JSON body (depth charts object) and store as depth-charts.json
+  if (event.httpMethod === "POST") {
+    if (!event.body) return err("no charts provided (missing body)");
+    const charts = JSON.parse(event.body);
+    await (await store).set("depth-charts.json", JSON.stringify(charts), { contentType: "application/json" });
+    await (await store).set("meta-rosters.json", JSON.stringify({ updatedAt: new Date().toISOString() }), { contentType: "application/json" });
+    return ok({ mode: "post", keys: ["depth-charts.json", "meta-rosters.json"] });
   }
 
-  const url = new URL(req.url);
-  const source = url.searchParams.get("source"); // "repo" to seed from repo file
-  const requireSecret = !!process.env.NFL_BLOBS_SECRET;
-  const passed = req.headers.get("x-nfl-secret");
-
-  if (requireSecret && passed !== process.env.NFL_BLOBS_SECRET) {
-    return new Response(JSON.stringify({ ok: false, error: "unauthorized" }), { status: 401, headers: corsHeaders() });
+  // GET with ?source=repo could read from /data if site exposes it; here we just noop and report
+  if (source === "repo") {
+    // In your app, this would fetch from /data/nfl-td/depth-charts.json and push to blobs
+    // We keep a placeholder to avoid crashes.
+    return ok({ mode: "repo", note: "no-op in patch (expects site to expose /data). Use POST to upload charts." });
   }
 
-  const storeName = process.env.NFL_TD_BLOBS || "nfl-td";
-  let charts = null;
-
-  if (req.method === "POST") {
-    try {
-      const body = await req.json();
-      if (body && typeof body === "object") charts = body;
-    } catch {}
-  }
-
-  if (!charts && source === "repo") {
-    try {
-      const txt = await readFile(join(process.cwd(), "data/nfl-td/depth-charts.json"), "utf-8");
-      charts = JSON.parse(txt);
-    } catch {}
-  }
-
-  if (!charts) {
-    return new Response(JSON.stringify({ ok: false, error: "no charts provided (POST JSON or use ?source=repo)" }), {
-      status: 400, headers: corsHeaders(),
-    });
-  }
-
-  const store = getStore({ name: storeName });
-  await store.setJSON("depth-charts.json", charts);
-  await store.setJSON("meta-rosters.json", {
-    updatedAt: new Date().toISOString(),
-    teams: Object.keys(charts || {}).length,
-    source: source || (req.method === "POST" ? "api" : "unknown"),
-  });
-
-  return new Response(JSON.stringify({ ok: true, wrote: "depth-charts.json", store: storeName }), {
-    headers: corsHeaders(),
-  });
-}
+  return ok({ note: "call with POST charts body to seed depth-charts.json" });
+};

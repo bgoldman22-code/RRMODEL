@@ -1,13 +1,10 @@
 // netlify/functions/_lib/respond.js
-export function ok(body = {}, status = 200, headers = {}) {
-  return new Response(JSON.stringify(body), {
+export const json = (status, data) =>
+  new Response(JSON.stringify(data), {
     status,
-    headers: { 'content-type': 'application/json; charset=utf-8', ...headers },
+    headers: { "content-type": "application/json" },
   });
-}
-export function err(message = 'error', status = 500, extra = {}) {
-  return ok({ ok: false, error: message, ...extra }, status);
-}
-export function json(body, status = 200, headers = {}) {
-  return ok(body, status, headers);
-}
+
+export const ok = (data = {}) => json(200, { ok: true, ...data });
+export const err = (message, extra = {}) =>
+  json(200, { ok: false, error: message, ...extra });
