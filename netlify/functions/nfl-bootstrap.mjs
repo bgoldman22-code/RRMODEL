@@ -1,56 +1,40 @@
-import { createStore } from "./_blobs.mjs";
+// netlify/functions/nfl-bootstrap.mjs
+// ESM function. No node-fetch needed.
+import { getStore } from '@netlify/blobs';
 
-function resp(statusCode, body) {
-  return {
-    statusCode,
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(body),
-  };
-}
+const NFL_STORE_NAME = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td';
 
-async function fetchJSON(url) {
-  const r = await fetch(url, { redirect: "follow" });
-  return { ok: r.ok, status: r.status, json: r.ok ? await r.json() : null };
-}
-
-function week1Fallback() {
-  return {
-    season: 2025,
-    week: 1,
-    games: [
-      { id: "401772510", date: "2025-09-05T00:20Z", home: { id: "21", abbrev: "PHI", displayName: "Philadelphia Eagles" }, away: { id: "6", abbrev: "DAL", displayName: "Dallas Cowboys" } },
-      { id: "401772714", date: "2025-09-06T00:00Z", home: { id: "24", abbrev: "LAC", displayName: "Los Angeles Chargers" }, away: { id: "12", abbrev: "KC", displayName: "Kansas City Chiefs" } }
-      // ... keep rest of fallback schedule truncated for brevity ...
-    ],
-  };
-}
-
-export const handler = async (event) => {
+export async function handler(event) {
+  const debug = new URLSearchParams(event.rawQuery || event.queryStringParameters || {}).get('debug');
   try {
-    const mode = event.queryStringParameters?.mode || "auto";
-    const refresh = event.queryStringParameters?.refresh === "1";
-    const debug = event.queryStringParameters?.debug === "1";
-
-    const schedule = week1Fallback();
-
-    const store = createStore();
-    if (refresh) {
-      await store.setJSON("weeks/2025/1/schedule.json", schedule);
-    } else {
-      const existing = await store.getJSON("weeks/2025/1/schedule.json");
-      if (!existing) await store.setJSON("weeks/2025/1/schedule.json", schedule);
-    }
-
-    return resp(200, {
+    const store = getStore({ name: NFL_STORE_NAME });
+    // quick sanity ping
+    const meta = await store.get('meta-rosters.json', { type: 'json' });
+    const sched = await store.get('weeks/2025/1/schedule.json', { type: 'json' });
+    const depth = await store.get('depth-charts.json', { type: 'json' });
+    const resp = {
       ok: true,
-      season: 2025,
-      week: 1,
-      games: schedule.games.length,
-      schedule,
-      used: { mode: `${mode}→preseason-week1` },
-      ...(debug ? { note: "fallback used" } : {}),
-    });
+      store: NFL_STORE_NAME,
+      hasMeta: !!meta,
+      hasSchedule: !!sched,
+      hasDepth: !!depth,
+      schedule: sched || null
+    };
+    return {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(resp)
+    };
   } catch (err) {
-    return resp(err?.statusCode || 500, { ok: false, error: err?.message || "unhandled error" });
+    return {
+      statusCode: 500,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        ok: false,
+        error: String(err),
+        store: NFL_STORE_NAME,
+        hint: 'Ensure Netlify Blobs add-on is enabled and BLOBS_STORE_NFL is set to the store name.'
+      })
+    };
   }
-};
+}
