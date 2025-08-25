@@ -1,133 +1,117 @@
-// ESM version
-import fetch from 'node-fetch';
-import { getJSON, setJSON } from './_lib/blobs.js';
+// netlify/functions/nfl-bootstrap.js
+// ESM + Node >=18 (global fetch). No node-fetch import required.
+import { nflStore } from './_lib/blobs.js'
 
-export const handler = async (event) => {
+const ESPN_SCOREBOARD_DATES = '20250904-20250910'
+const SEASON = 2025
+const WEEK = 1
+
+async function fetchJson(url) {
+  const res = await fetch(url, { headers: { 'accept': 'application/json' } })
+  if (!res.ok) {
+    return { ok: false, status: res.status, url }
+  }
+  const data = await res.json()
+  return { ok: true, status: res.status, url, data }
+}
+
+function uniqueTeamIds(schedule) {
+  const ids = new Set()
+  schedule.games.forEach(g => {
+    ids.add(g.home.id)
+    ids.add(g.away.id)
+  })
+  return Array.from(ids)
+}
+
+export async function handler(event) {
   try {
-    const url = new URL(event.rawUrl || `https://dummy.local${event.path}${event.queryString || ''}`);
-    const refresh = url.searchParams.get('refresh') === '1';
-    const mode = url.searchParams.get('mode') || 'auto';
-    const debug = url.searchParams.get('debug') === '1';
+    const store = nflStore()
 
-    const season = 2025;
-    const week = 1;
+    // Detect/force refresh via querystring
+    const url = new URL(event.rawUrl || `http://localhost${event.path}?${event.queryStringParameters ?? ''}`)
+    const doRefresh = (url.searchParams.get('refresh') === '1' || url.searchParams.get('refresh') === 'true')
+    const mode = url.searchParams.get('mode') || 'auto'
 
-    // cache keys under nfl-td store
-    const schedKey = `weeks/${season}/${week}/schedule.json`;
+    // Try known ESPN endpoints (web first then site), but we already know "site" works for dates range.
+    const tried = []
+    let schedule = null
 
-    if (!refresh) {
-      const cached = await getJSON(schedKey);
-      if (cached) {
-        return json({ ok: true, ...cached, used: { mode: 'cache' } });
-      }
-    }
-
-    // fallback: ESPN weekly date window for wk1
-    const dates = '20250904-20250910';
-    const espn = [
-      `https://site.web.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${dates}`,
-      `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${dates}`,
-    ];
-
-    let schedule = null;
-    const fetchLog = [];
-    for (const u of espn) {
-      const r = await safeFetch(u);
-      fetchLog.push({ url: u, ok: r.ok, status: r.status });
-      if (r.ok) {
-        const j = await r.json();
-        // shape into what the UI expects:
-        const games = (j.events || []).map(ev => {
-          const comp = (ev.competitions && ev.competitions[0]) || {};
-          const home = comp.competitors?.find(c => c.homeAway === 'home') || {};
-          const away = comp.competitors?.find(c => c.homeAway === 'away') || {};
+    // dates window (works in preseason transition)
+    for (const base of [
+      'https://site.web.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=',
+      'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='
+    ]) {
+      const res = await fetchJson(base + ESPN_SCOREBOARD_DATES)
+      tried.push({ url: res.url, ok: res.ok, status: res.status })
+      if (res.ok) {
+        const games = (res.data?.events || []).map(ev => {
+          const comp = ev.competitions?.[0]
+          const home = comp?.competitors?.find(c => c.homeAway === 'home')?.team
+          const away = comp?.competitors?.find(c => c.homeAway === 'away')?.team
           return {
             id: ev.id,
             date: ev.date,
-            home: {
-              id: home.team?.id,
-              abbrev: home.team?.abbreviation,
-              displayName: home.team?.displayName
-            },
-            away: {
-              id: away.team?.id,
-              abbrev: away.team?.abbreviation,
-              displayName: away.team?.displayName
-            }
-          };
-        });
-        schedule = { season, week, games };
-        break;
+            home: { id: home?.id, abbrev: home?.abbreviation, displayName: home?.displayName },
+            away: { id: away?.id, abbrev: away?.abbreviation, displayName: away?.displayName },
+          }
+        }).filter(g => g.home?.id && g.away?.id)
+        schedule = { season: SEASON, week: WEEK, games }
+        break
       }
     }
 
     if (!schedule) {
-      return json({ ok: false, error: 'Could not fetch schedule from ESPN', fetchLog }, 500);
-    }
-
-    // persist in nfl-td store
-    await setJSON(schedKey, { season, week, games: schedule.games });
-
-    // also persist per-team rosters (best-effort) to nfl-td store
-    const teamIds = Array.from(
-      new Set(
-        schedule.games.flatMap(g => [g.home?.id, g.away?.id]).filter(Boolean)
-      )
-    );
-
-    const depthLog = [];
-    for (const id of teamIds) {
-      // depthchart endpoint 404s often; fallback to /roster
-      const dc = await safeFetch(
-        `https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/teams/${id}/depthchart?season=${season}`
-      );
-      depthLog.push({ url: dc.url, ok: dc.ok, status: dc.status });
-
-      if (!dc.ok) {
-        const roster = await safeFetch(
-          `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${id}/roster?season=${season}`
-        );
-        depthLog.push({ url: roster.url, ok: roster.ok, status: roster.status });
-        if (roster.ok) {
-          const rj = await roster.json();
-          await setJSON(`weeks/${season}/${week}/depth/${id}.json`, rj);
-        }
-      } else {
-        const dj = await dc.json();
-        await setJSON(`weeks/${season}/${week}/depth/${id}.json`, dj);
+      return {
+        statusCode: 200,
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ok: false, error: 'Could not fetch schedule from ESPN', tried })
       }
     }
 
-    const body = {
-      ok: true,
-      season,
-      week,
-      games: schedule.games?.length || 0,
-      schedule,
-      used: { mode: `${mode}→preseason-week1` }
-    };
+    // Write schedule to Blobs
+    const scheduleKey = `weeks/${SEASON}/${WEEK}/schedule.json`
+    await store.setJSON(scheduleKey, schedule)
 
-    if (debug) { body.fetchLog = fetchLog; body.depthLog = depthLog; }
-    return json(body);
+    // Optionally refresh team rosters (we use roster endpoint since depthchart 404s preseason)
+    const teamIds = uniqueTeamIds(schedule)
+    const depthLog = []
+    for (const id of teamIds) {
+      // ESPN roster fallback
+      const rosterUrl = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${id}/roster?season=${SEASON}`
+      const r = await fetchJson(rosterUrl)
+      depthLog.push({ url: r.url, ok: r.ok, status: r.status })
+      if (r.ok) {
+        // Normalize minimal structure we need
+        const players = []
+        for (const grp of (r.data?.athletes || [])) {
+          const pos = grp?.position?.abbreviation || grp?.position?.name || 'UNK'
+          for (const p of (grp?.items || [])) {
+            players.push({
+              id: p.id,
+              fullName: p.fullName || p.displayName,
+              position: pos,
+              jersey: p.jersey || null,
+            })
+          }
+        }
+        await store.setJSON(`weeks/${SEASON}/${WEEK}/depth/${id}.json`, { teamId: id, season: SEASON, week: WEEK, players })
+      }
+    }
+
+    // Write meta marker (helps your list check)
+    await store.setJSON('meta-rosters.json', { season: SEASON, week: WEEK, seededAt: new Date().toISOString() })
+
+    return {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok: true, season: SEASON, week: WEEK, games: schedule.games.length, schedule, used: { mode }, tried, depthLog })
+    }
   } catch (err) {
-    return json({ ok: false, error: String(err) }, 500);
+    return {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok: false, error: String(err) })
+    }
   }
-};
-
-async function safeFetch(url) {
-  try {
-    const res = await fetch(url, { timeout: 15000 });
-    res.url = url; // remember for logs
-    return res;
-  } catch {
-    return { ok: false, status: 0, url };
-  }
-}
-
-function json(obj, status = 200) {
-  return {
-    statusCode: status,
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(obj)
-  };
 }
