@@ -1,117 +1,103 @@
 // netlify/functions/nfl-bootstrap.js
-// ESM + Node >=18 (global fetch). No node-fetch import required.
-import { nflStore } from './_lib/blobs.js'
+// Seeds schedule (week 1 fallback) + writes rosters per team to Blobs.
+// No node-fetch import; uses global fetch.
 
-const ESPN_SCOREBOARD_DATES = '20250904-20250910'
-const SEASON = 2025
-const WEEK = 1
+import { nflStore, diagBlobsEnv } from './_lib/blobs.js';
 
-async function fetchJson(url) {
-  const res = await fetch(url, { headers: { 'accept': 'application/json' } })
-  if (!res.ok) {
-    return { ok: false, status: res.status, url }
-  }
-  const data = await res.json()
-  return { ok: true, status: res.status, url, data }
-}
+const WEEK1_START = '20250904';
+const WEEK1_END = '20250910';
 
-function uniqueTeamIds(schedule) {
-  const ids = new Set()
-  schedule.games.forEach(g => {
-    ids.add(g.home.id)
-    ids.add(g.away.id)
-  })
-  return Array.from(ids)
-}
+export const handler = async (event) => {
+  const debug = (event.queryStringParameters && (event.queryStringParameters.debug === '1'));
 
-export async function handler(event) {
   try {
-    const store = nflStore()
+    const store = await nflStore();
 
-    // Detect/force refresh via querystring
-    const url = new URL(event.rawUrl || `http://localhost${event.path}?${event.queryStringParameters ?? ''}`)
-    const doRefresh = (url.searchParams.get('refresh') === '1' || url.searchParams.get('refresh') === 'true')
-    const mode = url.searchParams.get('mode') || 'auto'
+    // Figure schedule: ESPN "dates" scoreboard works pre-regular-season.
+    const urlWeb = `https://site.web.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${WEEK1_START}-${WEEK1_END}`;
+    const urlSite = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${WEEK1_START}-${WEEK1_END}`;
 
-    // Try known ESPN endpoints (web first then site), but we already know "site" works for dates range.
-    const tried = []
-    let schedule = null
-
-    // dates window (works in preseason transition)
-    for (const base of [
-      'https://site.web.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=',
-      'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='
-    ]) {
-      const res = await fetchJson(base + ESPN_SCOREBOARD_DATES)
-      tried.push({ url: res.url, ok: res.ok, status: res.status })
-      if (res.ok) {
-        const games = (res.data?.events || []).map(ev => {
-          const comp = ev.competitions?.[0]
-          const home = comp?.competitors?.find(c => c.homeAway === 'home')?.team
-          const away = comp?.competitors?.find(c => c.homeAway === 'away')?.team
-          return {
-            id: ev.id,
-            date: ev.date,
-            home: { id: home?.id, abbrev: home?.abbreviation, displayName: home?.displayName },
-            away: { id: away?.id, abbrev: away?.abbreviation, displayName: away?.displayName },
-          }
-        }).filter(g => g.home?.id && g.away?.id)
-        schedule = { season: SEASON, week: WEEK, games }
-        break
+    let schedule = null;
+    const fetchLog = [];
+    for (const url of [urlWeb, urlSite]) {
+      try {
+        const r = await fetch(url);
+        fetchLog.push({ url, ok: r.ok, status: r.status });
+        if (r.ok) {
+          const j = await r.json();
+          // translate ESPN response into schedule format used by app
+          const games = (j?.events || []).map(ev => ({
+            id: ev?.id,
+            date: ev?.date,
+            home: {
+              id: ev?.competitions?.[0]?.competitors?.find(c => c?.homeAway === 'home')?.team?.id,
+              abbrev: ev?.competitions?.[0]?.competitors?.find(c => c?.homeAway === 'home')?.team?.abbreviation,
+              displayName: ev?.competitions?.[0]?.competitors?.find(c => c?.homeAway === 'home')?.team?.displayName,
+            },
+            away: {
+              id: ev?.competitions?.[0]?.competitors?.find(c => c?.homeAway === 'away')?.team?.id,
+              abbrev: ev?.competitions?.[0]?.competitors?.find(c => c?.homeAway === 'away')?.team?.abbreviation,
+              displayName: ev?.competitions?.[0]?.competitors?.find(c => c?.homeAway === 'away')?.team?.displayName,
+            }
+          }));
+          schedule = { season: 2025, week: 1, games };
+          break;
+        }
+      } catch (e) {
+        fetchLog.push({ url, ok: false, status: 0, error: String(e) });
       }
     }
 
     if (!schedule) {
-      return {
-        statusCode: 200,
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ok: false, error: 'Could not fetch schedule from ESPN', tried })
-      }
+      return json(500, { ok: false, error: 'Could not fetch schedule from ESPN', fetchLog, blobs: diagBlobsEnv() });
     }
 
     // Write schedule to Blobs
-    const scheduleKey = `weeks/${SEASON}/${WEEK}/schedule.json`
-    await store.setJSON(scheduleKey, schedule)
+    await store.set(`weeks/2025/1/schedule.json`, JSON.stringify(schedule), { contentType: 'application/json' });
 
-    // Optionally refresh team rosters (we use roster endpoint since depthchart 404s preseason)
-    const teamIds = uniqueTeamIds(schedule)
-    const depthLog = []
+    // For preseason, ESPN depthchart often 404. Use roster endpoint instead.
+    const teamIds = [...new Set(schedule.games.flatMap(g => [g.home.id, g.away.id]))].filter(Boolean);
+
+    const depthLog = [];
+    const rosterByTeam = {};
     for (const id of teamIds) {
-      // ESPN roster fallback
-      const rosterUrl = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${id}/roster?season=${SEASON}`
-      const r = await fetchJson(rosterUrl)
-      depthLog.push({ url: r.url, ok: r.ok, status: r.status })
-      if (r.ok) {
-        // Normalize minimal structure we need
-        const players = []
-        for (const grp of (r.data?.athletes || [])) {
-          const pos = grp?.position?.abbreviation || grp?.position?.name || 'UNK'
-          for (const p of (grp?.items || [])) {
-            players.push({
-              id: p.id,
-              fullName: p.fullName || p.displayName,
-              position: pos,
-              jersey: p.jersey || null,
-            })
-          }
+      const rosterURL = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${id}/roster?season=2025`;
+      try {
+        const r = await fetch(rosterURL);
+        depthLog.push({ url: rosterURL, ok: r.ok, status: r.status });
+        if (r.ok) {
+          const j = await r.json();
+          rosterByTeam[id] = j;
+          await store.set(`weeks/2025/1/depth/${id}.json`, JSON.stringify(j), { contentType: 'application/json' });
+        } else {
+          // still write an empty file to mark attempted
+          await store.set(`weeks/2025/1/depth/${id}.json`, JSON.stringify({ ok:false }), { contentType: 'application/json' });
         }
-        await store.setJSON(`weeks/${SEASON}/${WEEK}/depth/${id}.json`, { teamId: id, season: SEASON, week: WEEK, players })
+      } catch (e) {
+        depthLog.push({ url: rosterURL, ok: false, status: 0, error: String(e) });
       }
     }
 
-    // Write meta marker (helps your list check)
-    await store.setJSON('meta-rosters.json', { season: SEASON, week: WEEK, seededAt: new Date().toISOString() })
+    const body = {
+      ok: true,
+      season: 2025, week: 1, games: schedule.games.length,
+      schedule,
+      used: { mode: 'auto→preseason-week1' },
+      fetchLog, depthLog,
+      blobs: debug ? diagBlobsEnv() : undefined,
+    };
 
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: true, season: SEASON, week: WEEK, games: schedule.games.length, schedule, used: { mode }, tried, depthLog })
-    }
+    return json(200, body);
+
   } catch (err) {
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: false, error: String(err) })
-    }
+    return json(500, { ok: false, error: String(err), blobs: diagBlobsEnv() });
   }
+};
+
+function json(statusCode, obj) {
+  return {
+    statusCode,
+    headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+    body: JSON.stringify(obj),
+  };
 }

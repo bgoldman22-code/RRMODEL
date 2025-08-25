@@ -1,65 +1,70 @@
 // netlify/functions/nfl-td-candidates.mjs
-import { nflStore } from './_lib/blobs.js'
+// Builds a quick candidate list with real names from rosters
+import { nflStore } from './_lib/blobs.js';
 
-const SEASON = 2025
-const WEEK = 1
-
-function pickStarters(players) {
-  // crude starters: first RB/WR/TE per position group
-  const want = ['RB', 'WR', 'TE']
-  const starters = []
-  for (const pos of want) {
-    const p = players.find(pl => (pl.position || '').toUpperCase().startsWith(pos))
-    if (p) starters.push(p)
-  }
-  return starters
-}
-
-function pct(n) {
-  return `${(n * 100).toFixed(1)}%`
-}
-
-export async function handler() {
+export const handler = async () => {
   try {
-    const store = nflStore()
-    const schedule = await store.getJSON(`weeks/${SEASON}/${WEEK}/schedule.json`)
-    if (!schedule) {
-      return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: false, error: 'schedule unavailable' }) }
+    const store = await nflStore();
+    const schedule = await store.get('weeks/2025/1/schedule.json', { type: 'json' });
+    if (!schedule) return json(400, { ok:false, error:'schedule unavailable' });
+
+    const teamIds = [...new Set(schedule.games.flatMap(g => [g.home.id, g.away.id]))].filter(Boolean);
+
+    // Load rosters we wrote in bootstrap
+    const rosterByTeam = {};
+    for (const id of teamIds) {
+      const r = await store.get(`weeks/2025/1/depth/${id}.json`, { type: 'json' });
+      rosterByTeam[id] = r;
     }
 
-    const rows = []
+    const oppByTeam = {};
     for (const g of schedule.games) {
-      for (const side of ['home', 'away']) {
-        const t = g[side]
-        const opp = side === 'home' ? g.away : g.home
-        const depth = await store.getJSON(`weeks/${SEASON}/${WEEK}/depth/${t.id}.json`)
-        if (!depth?.players?.length) continue
-        const starters = pickStarters(depth.players)
+      oppByTeam[g.home.id] = g.away.abbrev;
+      oppByTeam[g.away.id] = g.home.abbrev;
+    }
 
-        for (const s of starters) {
-          // dumb model seed: RB > WR > TE baseline
-          const base = s.position.startsWith('RB') ? 0.36 : s.position.startsWith('WR') ? 0.28 : 0.22
-          const rz = base * 0.68
-          const exp = base - rz
-          rows.push({
-            player: s.fullName,
-            team: t.abbrev,
-            game: `${schedule.season} W${schedule.week} ${g.away.abbrev}@${g.home.abbrev}`,
-            pos: s.position,
-            modelTdPct: pct(base),
-            rzPath: pct(rz),
-            expPath: pct(exp),
-            why: `${s.position} • starter • vs ${opp.abbrev}`
-          })
+    // Dumb model: pick top RB/WR/TE per team if found
+    const pickPositions = new Set(['RB', 'WR', 'TE']);
+    const candidates = [];
+
+    for (const id of teamIds) {
+      const roster = rosterByTeam[id];
+      const athletes = roster?.athletes?.flatMap(g => g?.items || []) || [];
+      // prioritise RB>WR>TE
+      for (const pos of ['RB','WR','TE']) {
+        const player = athletes.find(a => a?.position?.abbreviation === pos);
+        if (player) {
+          const why = `${player?.position?.abbreviation} • ${player?.jersey||'#?'} • vs ${oppByTeam[id]||'?'}`;
+          candidates.push({
+            player: player?.fullName || player?.displayName || 'Unknown',
+            pos,
+            modelTD: pos === 'RB' ? 0.365 : pos === 'WR' ? 0.28 : 0.22,
+            rz: pos === 'RB' ? 0.248 : pos === 'WR' ? 0.19 : 0.16,
+            exp: pos === 'RB' ? 0.117 : pos === 'WR' ? 0.09 : 0.06,
+            why,
+          });
+          break;
         }
       }
     }
 
-    // Write to blobs for UI
-    await store.setJSON(`weeks/${SEASON}/${WEEK}/candidates.json`, { season: SEASON, week: WEEK, rows })
+    // Sort by modelTD desc, take top N
+    candidates.sort((a,b)=>b.modelTD - a.modelTD);
+    const top = candidates.slice(0, 50);
 
-    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: true, count: rows.length, season: SEASON, week: WEEK }) }
+    await store.set('weeks/2025/1/candidates.json', JSON.stringify({ ok:true, season:2025, week:1, candidates: top }), { contentType: 'application/json' });
+
+    return json(200, { ok:true, season:2025, week:1, count: top.length });
+
   } catch (err) {
-    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: false, error: String(err) }) }
+    return json(500, { ok:false, error: String(err) });
   }
+};
+
+function json(statusCode, obj) {
+  return {
+    statusCode,
+    headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+    body: JSON.stringify(obj),
+  };
 }

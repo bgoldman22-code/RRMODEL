@@ -1,25 +1,33 @@
 // netlify/functions/nfl-data.js
-import { nflStore } from './_lib/blobs.js'
+// Simple reader for blobs keys written by bootstrap/candidates
 
-export async function handler(event) {
+import { nflStore } from './_lib/blobs.js';
+
+export const handler = async (event) => {
   try {
-    const store = nflStore()
-    const qs = new URL(event.rawUrl || `http://localhost${event.path}?${event.queryStringParameters ?? ''}`)
-    const type = qs.searchParams.get('type') || 'schedule'
-    const season = qs.searchParams.get('season') || '2025'
-    const week = qs.searchParams.get('week') || '1'
-
-    let key
-    if (type === 'schedule') key = `weeks/${season}/${week}/schedule.json`
-    else if (type === 'candidates') key = `weeks/${season}/${week}/candidates.json`
-    else key = type
-
-    const json = await store.getJSON(key)
-    if (!json) {
-      return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: false, error: 'no data' }) }
+    const type = event.queryStringParameters?.type || 'schedule';
+    const store = await nflStore();
+    let key;
+    if (type === 'schedule') key = 'weeks/2025/1/schedule.json';
+    else if (type === 'candidates') key = 'weeks/2025/1/candidates.json';
+    else if (type === 'list') {
+      const keys = await store.list({ prefix: 'weeks/2025/1/' });
+      return json(200, { ok: true, keys });
+    } else {
+      return json(400, { ok: false, error: 'unknown type' });
     }
-    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: true, data: json }) }
+    const res = await store.get(key, { type: 'json' });
+    if (!res) return json(404, { ok: false, error: 'no data' });
+    return json(200, { ok: true, data: res });
   } catch (err) {
-    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: false, error: String(err) }) }
+    return json(500, { ok: false, error: String(err) });
   }
+};
+
+function json(statusCode, obj) {
+  return {
+    statusCode,
+    headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+    body: JSON.stringify(obj),
+  };
 }
