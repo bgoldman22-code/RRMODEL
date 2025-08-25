@@ -1,0 +1,6 @@
+Ensure your package.json has:
+{
+  "type": "module",
+  ...
+}
+Convert any CommonJS lambda using `exports.handler` to ESM (`export const handler = ...`) or rename to .cjs.
