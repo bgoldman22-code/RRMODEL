@@ -11,26 +11,17 @@ async function getJSON(url) {
   }
 }
 
-// Depth charts loader that avoids Netlify Blobs; prefers repo fallback.
 async function fetchDepthCharts() {
-  // Try generic handler (which should fall back to repo if blobs empty)
+  // Prefer Blobs via nfl-data
   let j = await getJSON("/.netlify/functions/nfl-data?type=depth-charts");
   if (j) {
     const payload = j.data ?? j;
     if (payload && typeof payload === "object" && Object.keys(payload).length) return payload;
-    if (j.error && String(j.error).includes("MissingBlobsEnvironmentError")) {
-      // Force repo if we detect a blobs error shape
-      j = await getJSON("/.netlify/functions/nfl-data?type=depth-charts&source=repo");
-      const forced = j?.data ?? j;
-      if (forced && Object.keys(forced).length) return forced;
-    }
   }
-
-  // Force repo regardless, as a safe fallback
+  // Force repo if blobs are empty/unavailable
   const repoOnly = await getJSON("/.netlify/functions/nfl-data?type=depth-charts&source=repo");
   const repoPayload = repoOnly?.data ?? repoOnly;
   if (repoPayload && typeof repoPayload === "object" && Object.keys(repoPayload).length) return repoPayload;
-
   return null;
 }
 
@@ -41,16 +32,10 @@ export default function NFL() {
   useEffect(() => {
     let alive = true;
     (async () => {
-      try {
-        const charts = await fetchDepthCharts();
-        if (!alive) return;
-        setDepthCharts(charts);
-        setStatus((s) => ({ ...s, rosters: charts ? "ok" : "missing" }));
-      } catch (e) {
-        if (!alive) return;
-        console.error("fetchDepthCharts fatal", e);
-        setStatus((s) => ({ ...s, rosters: "missing" }));
-      }
+      const charts = await fetchDepthCharts();
+      if (!alive) return;
+      setDepthCharts(charts);
+      setStatus((s) => ({ ...s, rosters: charts ? "ok" : "missing" }));
     })();
     return () => { alive = false; };
   }, []);
@@ -66,15 +51,13 @@ export default function NFL() {
       <div className="text-sm text-gray-600 mb-4">
         rosters:{status.rosters}{rosterCount ? ` • teams:${rosterCount}` : ""}
       </div>
-
       {!depthCharts && (
         <div className="rounded-lg border p-3 text-sm">
-          Couldn&apos;t load depth charts via repo fallback.
-          Make sure <code>data/nfl-td/depth-charts.json</code> exists in the repo and that
-          <code>/.netlify/functions/nfl-data</code> can read it (supports <code>?source=repo</code>).
+          No depth charts available yet. Seed Blobs by visiting{" "}
+          <code>/.netlify/functions/nfl-rosters-run?source=repo</code> once after deploy,
+          or POST charts to <code>/.netlify/functions/nfl-rosters-run</code>.
         </div>
       )}
-
       {depthCharts && (
         <pre className="text-xs overflow-auto max-h-[55vh] border rounded p-2 bg-gray-50">
 {JSON.stringify(depthCharts, null, 2)}
