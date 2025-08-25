@@ -1,54 +1,56 @@
-// netlify/functions/nfl-td-candidates.mjs
-import { openStore } from "./_lib/blobs-helper.mjs";
-import { ok, err } from "./_lib/respond.js";
+import { createStore } from "./_blobs.mjs";
 
-function fakeModelForRB(teamId, oppAbbrev) {
-  // Dummy model numbers as placeholders
+function resp(statusCode, body) {
   return {
-    modelTD: 0.366,
-    rz: 0.249,
-    exp: 0.117,
-    why: `RB • depth 1 • vs ${oppAbbrev || "?"}`,
+    statusCode,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
   };
 }
 
+function pct(n) { return `${(n * 100).toFixed(1)}%`; }
+
+function simpleModelForRB1() {
+  const total = 0.366;
+  const rz = 0.249;
+  const exp = total - rz;
+  return { total, rz, exp };
+}
+
 export const handler = async (event) => {
-  const debug = event.queryStringParameters?.debug === "1";
-  const store = openStore("nfl");
+  try {
+    const debug = event.queryStringParameters?.debug === "1";
+    const store = createStore();
 
-  // Load schedule
-  const pointer = await (await store).get("schedule.json", { type: "json" });
-  if (!pointer?.ref) {
-    return err("schedule unavailable", { diag: [{ step: "load schedule pointer", ok: false }] });
-  }
-  const sched = await (await store).get(pointer.ref, { type: "json" });
-  if (!sched?.games?.length) {
-    return err("schedule unavailable", { diag: [{ step: "load schedule doc", ok: false }, { pointer }] });
-  }
+    const schedule = await store.getJSON("weeks/2025/1/schedule.json");
+    if (!schedule) {
+      return resp(200, { ok: false, error: "schedule unavailable" });
+    }
 
-  // Try depth charts (optional)
-  const depth = await (await store).get("depth-charts.json", { type: "json" }).catch(()=>null);
+    const candidates = [];
 
-  const candidates = [];
-  for (const g of sched.games) {
-    const home = g.home?.abbrev, away = g.away?.abbrev;
-    // Add one RB starter per team as placeholder
-    candidates.push({
-      player: `RB1-${g.home?.id}`,
-      pos: "RB",
-      ...fakeModelForRB(g.home?.id, away),
+    for (const g of schedule.games) {
+      // mock candidate per game for now
+      const m = simpleModelForRB1();
+      candidates.push({
+        player: "RB1-" + g.home.id,
+        pos: "RB",
+        modelTD: pct(m.total),
+        rzPath: pct(m.rz),
+        expPath: pct(m.exp),
+        why: `RB • depth 1 • vs ${g.away.abbrev}`,
+      });
+    }
+
+    return resp(200, {
+      ok: true,
+      season: schedule.season,
+      week: schedule.week,
+      games: schedule.games?.length || 0,
+      candidates,
+      ...(debug ? { candidateCount: candidates.length } : {}),
     });
-    candidates.push({
-      player: `RB1-${g.away?.id}`,
-      pos: "RB",
-      ...fakeModelForRB(g.away?.id, home),
-    });
+  } catch (err) {
+    return resp(err?.statusCode || 500, { ok: false, error: err?.message || "unhandled error" });
   }
-
-  return ok({
-    season: sched.season, week: sched.week,
-    games: sched.games.length,
-    candidates,
-    debug: debug ? { used: { scheduleKey: pointer.ref }, hasDepth: !!depth } : undefined
-  });
 };
