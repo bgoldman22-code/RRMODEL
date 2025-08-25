@@ -15,21 +15,28 @@ export async function fetchJSON(url, desc = "fetch") {
   }
 }
 
-// ESPN endpoints we will try (multiple fallbacks)
-export function buildScoreboardUrls({ season, week }) {
+// ESPN endpoints
+export function buildScoreboardByWeek({ season, week }) {
   return [
-    // site.web.api (commonly used)
     `https://site.web.api.espn.com/apis/v2/sports/football/nfl/scoreboard?season=${season}&week=${week}&seasontype=2`,
-    // site.api legacy
     `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?season=${season}&week=${week}&seasontype=2`,
   ];
 }
 
-export function buildTeamDepthUrl({ teamId, season }) {
-  return `https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/teams/${teamId}/depthchart?season=${season}`;
+export function buildScoreboardByDates({ start, end }) {
+  // accepts YYYYMMDD or YYYY-MM-DD
+  const range = end ? `${start}-${end}` : start;
+  return [
+    `https://site.web.api.espn.com/apis/v2/sports/football/nfl/scoreboard?dates=${range}`,
+    `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${range}`,
+  ];
 }
 
-// Extract simplified schedule (home/away team ids + abbreviations) from ESPN scoreboard payloads
+export function calendarUrl(season) {
+  // ESPN NFL calendar (core api)
+  return `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/calendar?season=${season}`;
+}
+
 export function parseSchedule(scoreboard) {
   const events = scoreboard?.events ?? [];
   const games = [];
@@ -43,13 +50,11 @@ export function parseSchedule(scoreboard) {
       date: ev.date,
       home: {
         id: home.team?.id,
-        uid: home.team?.uid,
         abbrev: home.team?.abbreviation,
         displayName: home.team?.displayName,
       },
       away: {
         id: away.team?.id,
-        uid: away.team?.uid,
         abbrev: away.team?.abbreviation,
         displayName: away.team?.displayName,
       },
@@ -58,19 +63,34 @@ export function parseSchedule(scoreboard) {
   return games;
 }
 
-// Extract depth charts: QB/RB/WR/TE lists from ESPN depth chart payload
 export function parseDepthChart(depthPayload) {
   const positions = depthPayload?.items ?? depthPayload?.positions ?? [];
   const out = { QB: [], RB: [], WR: [], TE: [] };
   for (const pos of positions) {
     const key = (pos.abbrev || pos.position || pos.name || "").toUpperCase();
-    const targets = out[key] ? out : null;
-    if (!targets) continue;
+    if (!out[key]) continue;
     const athletes = pos?.athletes || pos?.items || [];
     for (const a of athletes) {
       const name = a?.athlete?.displayName || a?.athlete?.fullName || a?.displayName || a?.name;
-      if (name) targets[key].push(name);
+      if (name) out[key].push(name);
     }
   }
   return out;
+}
+
+export function buildTeamDepthUrl({ teamId, season }) {
+  return `https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/teams/${teamId}/depthchart?season=${season}`;
+}
+
+// helpers
+export function yyyymmdd(d) {
+  const pad = (n)=> String(n).padStart(2, "0");
+  return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+}
+
+export function firstNFLThursday(season) {
+  // First Thursday on/after Sep 1 of given season
+  const d = new Date(season, 8, 1); // months 0-based; 8=Sep
+  while (d.getDay() !== 4) d.setDate(d.getDate()+1); // 4 = Thursday
+  return d;
 }
