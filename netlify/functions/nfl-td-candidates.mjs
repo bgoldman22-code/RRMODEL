@@ -1,116 +1,65 @@
-import { getJSON, setJSON } from './_lib/blobs.js';
+// netlify/functions/nfl-td-candidates.mjs
+import { nflStore } from './_lib/blobs.js'
 
-export const handler = async (event) => {
-  try {
-    const season = 2025;
-    const week = 1;
+const SEASON = 2025
+const WEEK = 1
 
-    const schedule = await getJSON(`weeks/${season}/${week}/schedule.json`);
-    if (!schedule?.games?.length) {
-      return json({
-        ok: false,
-        error: 'schedule unavailable',
-        diag: [{ step: 'load schedule cache', ok: false, season }],
-        bootstrap: null
-      }, 500);
-    }
-
-    // Load team rosters we cached during bootstrap
-    const teamIds = Array.from(
-      new Set(schedule.games.flatMap(g => [g.home?.id, g.away?.id]).filter(Boolean))
-    );
-
-    const teamMap = {};   // teamId -> { abbrev, displayName }
-    const oppMap = {};    // teamId -> opponent teamId in week 1
-    for (const g of schedule.games) {
-      if (g.home?.id) teamMap[g.home.id] = { abbrev: g.home.abbrev, displayName: g.home.displayName };
-      if (g.away?.id) teamMap[g.away.id] = { abbrev: g.away.abbrev, displayName: g.away.displayName };
-      if (g.home?.id && g.away?.id) {
-        oppMap[g.home.id] = g.away.id;
-        oppMap[g.away.id] = g.home.id;
-      }
-    }
-
-    // Build naive candidates from roster data (RB/WR/TE starters if present)
-    const candidates = [];
-    for (const id of teamIds) {
-      const depthOrRoster = await getJSON(`weeks/${season}/${week}/depth/${id}.json`);
-      if (!depthOrRoster) continue;
-
-      // Normalize: ESPN roster payload has "athletes" grouped by position
-      const normalized = normalizeRoster(depthOrRoster);
-      // crude starter picks
-      const starters = pickStarters(normalized);
-
-      // Attach matchup + fake model % (until we wire the real model)
-      const oppId = oppMap[id];
-      const oppAbbrev = teamMap[oppId]?.abbrev || '?';
-
-      for (const s of starters) {
-        candidates.push({
-          player: s.name,
-          team: teamMap[id]?.abbrev || id,
-          pos: s.pos,
-          modelTD: s.modelTD,      // %
-          rz: s.rz,                // %
-          exp: s.exp,              // %
-          why: `${s.pos} • depth ${s.depth} • vs ${oppAbbrev}`
-        });
-      }
-    }
-
-    // Sort by model TD
-    candidates.sort((a, b) => b.modelTD - a.modelTD);
-
-    // cache
-    await setJSON(`weeks/${season}/${week}/candidates.json`, { season, week, candidates });
-
-    return json({ ok: true, season, week, candidates });
-  } catch (err) {
-    return json({ ok: false, error: String(err) }, 500);
-  }
-};
-
-function normalizeRoster(payload) {
-  // ESPN /roster format -> flatten to { pos, name }[]
-  const out = [];
-  const groups = payload?.athletes || [];
-  for (const g of groups) {
-    const pos = g?.position?.abbreviation || g?.position || '?';
-    for (const a of g?.items || []) {
-      const name = a?.fullName || a?.displayName || a?.name || '—';
-      out.push({ pos, name });
-    }
-  }
-  return out;
-}
-
-function pickStarters(roster) {
-  // Extremely naive: take first of RB/WR/TE as "starter"
-  const starters = [];
-  const want = ['RB', 'WR', 'TE'];
+function pickStarters(players) {
+  // crude starters: first RB/WR/TE per position group
+  const want = ['RB', 'WR', 'TE']
+  const starters = []
   for (const pos of want) {
-    const list = roster.filter(p => (p.pos || '').toUpperCase() === pos);
-    if (list.length) {
-      const p = list[0];
-      starters.push({
-        pos,
-        name: p.name,
-        depth: 1,
-        // placeholder percentages — wire in your model when ready
-        modelTD: 0.365,
-        rz: 0.248,
-        exp: 0.117
-      });
-    }
+    const p = players.find(pl => (pl.position || '').toUpperCase().startsWith(pos))
+    if (p) starters.push(p)
   }
-  return starters;
+  return starters
 }
 
-function json(obj, status = 200) {
-  return {
-    statusCode: status,
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(obj)
-  };
+function pct(n) {
+  return `${(n * 100).toFixed(1)}%`
+}
+
+export async function handler() {
+  try {
+    const store = nflStore()
+    const schedule = await store.getJSON(`weeks/${SEASON}/${WEEK}/schedule.json`)
+    if (!schedule) {
+      return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: false, error: 'schedule unavailable' }) }
+    }
+
+    const rows = []
+    for (const g of schedule.games) {
+      for (const side of ['home', 'away']) {
+        const t = g[side]
+        const opp = side === 'home' ? g.away : g.home
+        const depth = await store.getJSON(`weeks/${SEASON}/${WEEK}/depth/${t.id}.json`)
+        if (!depth?.players?.length) continue
+        const starters = pickStarters(depth.players)
+
+        for (const s of starters) {
+          // dumb model seed: RB > WR > TE baseline
+          const base = s.position.startsWith('RB') ? 0.36 : s.position.startsWith('WR') ? 0.28 : 0.22
+          const rz = base * 0.68
+          const exp = base - rz
+          rows.push({
+            player: s.fullName,
+            team: t.abbrev,
+            game: `${schedule.season} W${schedule.week} ${g.away.abbrev}@${g.home.abbrev}`,
+            pos: s.position,
+            modelTdPct: pct(base),
+            rzPath: pct(rz),
+            expPath: pct(exp),
+            why: `${s.position} • starter • vs ${opp.abbrev}`
+          })
+        }
+      }
+    }
+
+    // Write to blobs for UI
+    await store.setJSON(`weeks/${SEASON}/${WEEK}/candidates.json`, { season: SEASON, week: WEEK, rows })
+
+    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: true, count: rows.length, season: SEASON, week: WEEK }) }
+  } catch (err) {
+    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: false, error: String(err) }) }
+  }
 }

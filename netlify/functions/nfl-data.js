@@ -1,31 +1,25 @@
-import { getJSON } from './_lib/blobs.js';
+// netlify/functions/nfl-data.js
+import { nflStore } from './_lib/blobs.js'
 
-export const handler = async (event) => {
+export async function handler(event) {
   try {
-    const url = new URL(event.rawUrl || `https://dummy.local${event.path}${event.queryString || ''}`);
-    const type = url.searchParams.get('type') || 'schedule';
-    const season = Number(url.searchParams.get('season') || 2025);
-    const week = Number(url.searchParams.get('week') || 1);
+    const store = nflStore()
+    const qs = new URL(event.rawUrl || `http://localhost${event.path}?${event.queryStringParameters ?? ''}`)
+    const type = qs.searchParams.get('type') || 'schedule'
+    const season = qs.searchParams.get('season') || '2025'
+    const week = qs.searchParams.get('week') || '1'
 
-    let key;
-    if (type === 'schedule') key = `weeks/${season}/${week}/schedule.json`;
-    else if (type === 'candidates') key = `weeks/${season}/${week}/candidates.json`;
-    else if (type === 'depth-charts') key = `weeks/${season}/${week}/depth/*`; // placeholder (no glob here)
-    else return json({ ok: false, error: 'unknown type' }, 400);
+    let key
+    if (type === 'schedule') key = `weeks/${season}/${week}/schedule.json`
+    else if (type === 'candidates') key = `weeks/${season}/${week}/candidates.json`
+    else key = type
 
-    const data = await getJSON(key);
-    if (!data) return json({ ok: false, error: 'no data' }, 404);
-
-    return json({ ok: true, data });
+    const json = await store.getJSON(key)
+    if (!json) {
+      return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: false, error: 'no data' }) }
+    }
+    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: true, data: json }) }
   } catch (err) {
-    return json({ ok: false, error: String(err) }, 500);
+    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok: false, error: String(err) }) }
   }
-};
-
-function json(obj, status = 200) {
-  return {
-    statusCode: status,
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(obj)
-  };
 }
