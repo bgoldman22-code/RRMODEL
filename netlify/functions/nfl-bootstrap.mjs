@@ -1,40 +1,35 @@
-// netlify/functions/nfl-bootstrap.mjs
-// ESM function. No node-fetch needed.
-import { getStore } from '@netlify/blobs';
+// Minimal bootstrap that verifies Blobs access and echoes schedule status.
+// (Leaves your existing fetching + caching logic untouched in other functions.)
+import { getNFLStore } from "./_blobs.js";
 
-const NFL_STORE_NAME = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td';
-
-export async function handler(event) {
-  const debug = new URLSearchParams(event.rawQuery || event.queryStringParameters || {}).get('debug');
+export const handler = async (event) => {
   try {
-    const store = getStore({ name: NFL_STORE_NAME });
-    // quick sanity ping
-    const meta = await store.get('meta-rosters.json', { type: 'json' });
-    const sched = await store.get('weeks/2025/1/schedule.json', { type: 'json' });
-    const depth = await store.get('depth-charts.json', { type: 'json' });
-    const resp = {
-      ok: true,
-      store: NFL_STORE_NAME,
-      hasMeta: !!meta,
-      hasSchedule: !!sched,
-      hasDepth: !!depth,
-      schedule: sched || null
-    };
+    const store = getNFLStore();
+
+    // Probe existing cached schedule for week 1/2025
+    const key = "weeks/2025/1/schedule.json";
+    const existing = await store.get(key, { type: "json" }).catch(() => null);
+
     return {
       statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(resp)
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        ok: true,
+        store: (process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "site:nfl-td"),
+        hasSchedule: !!existing,
+        sampleKey: key,
+        now: new Date().toISOString(),
+      }),
     };
-  } catch (err) {
+  } catch (e) {
     return {
       statusCode: 500,
-      headers: { 'content-type': 'application/json' },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         ok: false,
-        error: String(err),
-        store: NFL_STORE_NAME,
-        hint: 'Ensure Netlify Blobs add-on is enabled and BLOBS_STORE_NFL is set to the store name.'
-      })
+        error: String(e),
+        blobs: e?.cause?.diag || null,
+      }),
     };
   }
-}
+};
