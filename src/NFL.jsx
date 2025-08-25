@@ -1,84 +1,88 @@
+// src/NFL.jsx
 import React, { useEffect, useState } from "react";
 
-function pct(n){ return `${n.toFixed(1)}%`; }
+function pct(n){ return `${Number(n).toFixed(1)}%`; }
 
 export default function NFL() {
-  const [boot, setBoot] = useState(null);
-  const [rows, setRows] = useState(null);
+  const [stage, setStage] = useState("bootstrapping");
+  const [diag, setDiag] = useState(null);
+  const [data, setData] = useState(null);
   const [err, setErr] = useState("");
 
   useEffect(()=>{
     (async ()=>{
       try {
-        // 1) bootstrap pulls current week schedule + depth charts and caches them
-        const bootRes = await fetch('/.netlify/functions/nfl-bootstrap');
-        const bootJ = await bootRes.json();
-        if (!bootJ.ok) throw new Error(bootJ.error || 'bootstrap failed');
-        setBoot(bootJ);
+        // 1) Bootstrap (detect week, fetch schedule + depth, cache)
+        setStage("bootstrapping");
+        const b = await (await fetch("/.netlify/functions/nfl-bootstrap?refresh=1")).json();
+        setDiag(b);
+        if (!b.ok) throw new Error(b.error || "bootstrap failed");
 
-        // 2) now build candidates from cached data
-        const candRes = await fetch('/.netlify/functions/nfl-td-candidates');
-        const candJ = await candRes.json();
-        if (!candJ.ok) throw new Error(candJ.error || 'candidates failed');
-        setRows(candJ);
-      } catch(e){
+        // 2) Build candidates from cache
+        setStage("building");
+        const c = await (await fetch(`/.netlify/functions/nfl-td-candidates?season=${b.season}&week=${b.week}`)).json();
+        if (!c.ok) throw new Error(c.error || "candidates failed");
+        setData(c);
+        setStage("done");
+      } catch (e) {
         setErr(String(e));
+        setStage("error");
       }
     })();
-  },[]);
+  }, []);
 
-  if (err) {
+  if (stage !== "done") {
     return (
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-2">NFL — Anytime TD</h1>
-        <div className="rounded border p-3 text-sm">
-          Error: {err}
-        </div>
+      <div className="p-4 max-w-6xl mx-auto space-y-3">
+        <h1 className="text-2xl font-bold">NFL — Anytime TD</h1>
+        <div className="text-sm text-gray-600">status: {stage}</div>
+        {err && (
+          <div className="rounded border p-3 text-sm bg-red-50">
+            Error: {err}
+            {diag && <pre className="mt-2 text-xs overflow-auto max-h-[40vh] border p-2 bg-white">{JSON.stringify(diag, null, 2)}</pre>}
+          </div>
+        )}
+        {!err && diag && (
+          <pre className="text-xs overflow-auto max-h-[40vh] border p-2 bg-gray-50">{JSON.stringify(diag, null, 2)}</pre>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold mb-2">NFL — Anytime TD</h1>
-      {boot && (
-        <div className="text-sm text-gray-600 mb-4">
-          season:{boot.season} • week:{boot.week} • games:{boot.games}
-        </div>
-      )}
-
-      {!rows && <div>Loading… (bootstrapping week data)</div>}
-
-      {rows && (
-        <div className="overflow-auto">
-          <table className="min-w-full text-sm">
-            <thead className="sticky top-0 bg-white">
-              <tr className="text-left border-b">
-                <th className="py-2 pr-4">Player</th>
-                <th className="py-2 pr-4">Team</th>
-                <th className="py-2 pr-4">Pos</th>
-                <th className="py-2 pr-4">Model TD%</th>
-                <th className="py-2 pr-4">RZ path</th>
-                <th className="py-2 pr-4">EXP path</th>
-                <th className="py-2 pr-4">Why</th>
+      <div className="text-sm text-gray-600 mb-4">
+        season:{data.season} • week:{data.week} • games:{data.games} • candidates:{data.candidates.length}
+      </div>
+      <div className="overflow-auto">
+        <table className="min-w-full text-sm">
+          <thead>
+            <tr className="text-left border-b">
+              <th className="py-2 pr-4">Player</th>
+              <th className="py-2 pr-4">TeamId</th>
+              <th className="py-2 pr-4">Pos</th>
+              <th className="py-2 pr-4">Model TD%</th>
+              <th className="py-2 pr-4">RZ path</th>
+              <th className="py-2 pr-4">EXP path</th>
+              <th className="py-2 pr-4">Why</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.candidates.map((r, i)=>(
+              <tr key={i} className="border-b">
+                <td className="py-1 pr-4">{r.player}</td>
+                <td className="py-1 pr-4">{r.teamId}</td>
+                <td className="py-1 pr-4">{r.pos}</td>
+                <td className="py-1 pr-4">{pct(r.modelTdPct)}</td>
+                <td className="py-1 pr-4">{pct(r.rzPath)}</td>
+                <td className="py-1 pr-4">{pct(r.expPath)}</td>
+                <td className="py-1 pr-4">{r.why}</td>
               </tr>
-            </thead>
-            <tbody>
-              {rows.candidates.map((r, i)=>(
-                <tr key={i} className="border-b">
-                  <td className="py-1 pr-4">{r.player}</td>
-                  <td className="py-1 pr-4">{r.team}</td>
-                  <td className="py-1 pr-4">{r.pos}</td>
-                  <td className="py-1 pr-4">{pct(r.modelTdPct)}</td>
-                  <td className="py-1 pr-4">{pct(r.rzPath)}</td>
-                  <td className="py-1 pr-4">{pct(r.expPath)}</td>
-                  <td className="py-1 pr-4">{r.why}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
