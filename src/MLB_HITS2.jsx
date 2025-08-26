@@ -29,6 +29,20 @@ function americanFromProb(p, k = 1.0) {
 }
 
 // Binomial P(>=2 hits) with n AB and per-AB p (hit rate)
+
+// Odds helpers
+function americanToDecimal(a){
+  a = Number(a);
+  if(!isFinite(a)) return null;
+  if(a>0) return 1 + (a/100);
+  if(a<0) return 1 + (100/Math.abs(a));
+  return 1.0;
+}
+function evFromProbAndAmerican(p, american){
+  const dec = americanToDecimal(american);
+  if(!dec) return null;
+  return (p * (dec - 1)) - (1 - p);
+}
 function pAtLeast2(n, p) {
   n = Math.max(1, Math.round(n));
   p = clamp(p, 0.01, 0.6);
@@ -41,6 +55,21 @@ function pAtLeast2(n, p) {
 // Safe access to FGB helpers if you’ve added them
 const enhanceCandidates = FGB?.enhanceCandidates || (async (arr) => arr);
 const applyCalibration = FGB?.applyCalibration || ((arr, _settings) => arr);
+
+
+async function fetchGameContextBulk(gamePks){
+  const unique = Array.from(new Set(gamePks.map(x=>String(x))));
+  const out = new Map();
+  for(const pk of unique){
+    try{
+      const r = await fetch(`/.netlify/functions/mlb-game-context?gamePk=${encodeURIComponent(pk)}`);
+      if(!r.ok) continue;
+      const j = await r.json();
+      out.set(String(pk), j || {});
+    }catch{}
+  }
+  return out;
+}
 
 // ---------- Component ----------
 function MLB_HITS2() {
@@ -107,6 +136,7 @@ function MLB_HITS2() {
 
       const year = new Date().getUTCFullYear();
       const stats = await bulkHitting(ids, year); // Map id -> stat summary
+      const hitIndex = stats;
 
       // 6) Build candidate pool
       const pool = [];
@@ -174,16 +204,77 @@ function MLB_HITS2() {
         }
       }
 
-      // 9) Odds via your proxy (best-effort)
+      
+      // 9) Enrich with recent form and game context (platoon, SP, bullpen)
+      try{
+        const idsAll = selected.map(x => x.id);
+        const recents = await bulkHittingRecent(idsAll, season);
+        const ctxByGame = await fetchGameContextBulk(selected.map(x => x.gameId));
+        for(const row of selected){
+          const recent = recents.get(row.id) || {};
+          const ctx = ctxByGame.get(String(row.gameId)) || {};
+          const side = (hitIndex.get(row.id)?.bat || '').toUpperCase(); // from bulkHitting
+          // opponent SP + bullpen (we need which team they face)
+          const homeAway = row.gameCode.split('@'); // away@home
+          let oppCtx = null;
+          if (homeAway.length===2){
+            const awayAb = homeAway[0].toUpperCase();
+            const homeAb = homeAway[1].toUpperCase();
+            // row.team is player's team abbr; determine opponent side
+            const playerIsAway = (row.team||'').toUpperCase() === awayAb;
+            oppCtx = playerIsAway ? (ctx?.home || null) : (ctx?.away || null);
+          }
+          // Build descriptive "why"
+          const sp = oppCtx?.starter || {};
+          const pen = oppCtx?.bullpen || {};
+          const throws = sp?.throws || '?';
+          const baa = (sp?.baa != null) ? (sp.baa).toFixed(3) : (sp?.avgAllowed != null ? sp.avgAllowed.toFixed(3) : null);
+          const ipPerStart = sp?.ipPerStart ? sp.ipPerStart.toFixed(1) : null;
+          const recAvg = (recent?.avg15 != null) ? (recent.avg15*100).toFixed(0) + '%' : null;
+          const platoon = (side && throws) ? `${side} vs ${throws}` : (side || throws || '');
+          const fatiguePct = typeof pen?.fatigueAdj === 'number' ? Math.round((pen.fatigueAdj-1)*100) : 0;
+
+          // Adjust probability with small multipliers based on context (capped to keep model stable)
+          let m = 1.0;
+          if(baa && !isNaN(baa)){ // lower BAA reduces prob slightly; 0.200 -> -6%, 0.280 -> +6%
+            const baaNum = parseFloat(baa);
+            m *= (1 + clamp(((0.260 - baaNum) * 0.75), -0.08, 0.08));
+          }
+          if(typeof pen?.fatigueAdj === 'number') m *= clamp(pen.fatigueAdj, 0.92, 1.10);
+          // batting side vs throws (mild)
+          if(platoon.includes('L') && throws==='R') m *= 1.03;
+          else if(platoon.includes('R') && throws==='L') m *= 1.02;
+
+          const adjProb = clamp(row.prob * m, 0.05, 0.65);
+          row.prob = adjProb;
+
+          // Construct WHY string
+          const whyBits = [];
+          whyBits.push(`season AVG ${( (hitIndex.get(row.id)?.avg||0)*100 ).toFixed(0)}%`);
+          if(recAvg) whyBits.push(`L15 AVG ${recAvg}`);
+          whyBits.push(`expAB ~${Math.round(Math.max(3, Math.min(5, (hitIndex.get(row.id)?.pa || 0)/Math.max(1,hitIndex.get(row.id)?.games || 1))))}`);
+          if(platoon) whyBits.push(`platoon ${platoon}`);
+          if(sp?.name) whyBits.push(`vs ${throws} ${sp.name}${baa?` (BAA ${baa})`:''}${ipPerStart?` • IP/start ${ipPerStart}`:''}`);
+          if(pen?.ip3d != null) whyBits.push(`opp BP last3d ${pen.ip3d.toFixed(1)} IP${fatiguePct?` • fatigue ${fatiguePct>=0?'+':''}${fatiguePct}%`:''}`);
+
+          row.why = whyBits.join(' • ');
+        }
+      }catch{}
+// 9) Odds via your proxy (best-effort)
       let oddsNote = "odds: estimator only";
       try {
-        const rr = await fetch("/.netlify/functions/odds-props?league=mlb&markets=player_total_hits,batter_hits_over_under,player_2+_hits&regions=us&limit=40");
+        const rr = await fetch("/.netlify/functions/odds-hits2?league=mlb&markets=player_total_hits,batter_hits_over_under,player_2+_hits&regions=us&limit=40");
         if (rr.ok) {
           const data = await rr.json();
           const idx = buildHitsIndex(data);
+          oddsNote = data?.usingOddsApi ? `odds: TheOddsAPI (quota left ${data?.quota?.remaining ?? '?'})` : oddsNote;
           selected.forEach(row => {
             const key = `${row.gameCode}|${row.name}`.toLowerCase();
             const american = idx.get(key);
+            if (typeof american === 'number') {
+              row.apiAmerican = american;
+              row.ev1u = evFromProbAndAmerican(row.prob, american);
+            }
             if (typeof american === "number") row.apiAmerican = american;
           });
           oddsNote = data?.source ? `odds: The Odds API (${data.source})` : "odds: The Odds API";
@@ -240,7 +331,7 @@ function MLB_HITS2() {
                   <th className="px-4 py-2 text-left font-medium text-gray-500">Team</th>
                   <th className="px-4 py-2 text-left font-medium text-gray-500">Game</th>
                   <th className="px-4 py-2 text-left font-medium text-gray-500">Model 2+ Hits Prob</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-500">Est. Odds</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500">Model Fair</th>
                   <th className="px-4 py-2 text-left font-medium text-gray-500">Why</th>
                 </tr>
               </thead>
@@ -255,6 +346,8 @@ function MLB_HITS2() {
                       <td className="px-4 py-2">{p.gameCode}</td>
                       <td className="px-4 py-2">{(p.prob * 100).toFixed(1)}%</td>
                       <td className="px-4 py-2">{lineTxt}</td>
+                      <td className="px-4 py-2">{typeof p.apiAmerican==='number' ? (p.apiAmerican>0?`+${p.apiAmerican}`:`${p.apiAmerican}`) : '—'}</td>
+                      <td className="px-4 py-2">{(typeof p.ev1u==='number') ? (p.ev1u>=0?`+${(p.ev1u).toFixed(2)}`:`${(p.ev1u).toFixed(2)}`) : '—'}</td>
                       <td className="px-4 py-2 text-gray-600">{p.why}</td>
                     </tr>
                   );
@@ -286,13 +379,36 @@ async function bulkHitting(ids, season) {
         out.set(p?.id, {
           avg: Number(s?.avg || s?.battingAverage || 0),
           pa: Number(s?.plateAppearances || 0),
-          games: Number(s?.gamesPlayed || 0)
+          games: Number(s?.gamesPlayed || 0),
+          bat: (p?.batSide?.code || p?.batSide?.description || '').toUpperCase().slice(0,1)
         });
       }
     } catch { /* ignore chunk errors */ }
   }
   return out;
 }
+
+
+async function bulkHittingRecent(ids, season){
+  const out = new Map();
+  if(!ids.length) return out;
+  const chunk = 35;
+  for (let i = 0; i < ids.length; i += chunk) {
+    const part = ids.slice(i, i + chunk);
+    const u = `https://statsapi.mlb.com/api/v1/people?personIds=${part.join(",")}&hydrate=stats(group=[hitting],type=[lastXGames],limit=15)`;
+    try{
+      const j = await jget(u);
+      for(const p of (j?.people||[])){
+        // lastXGames returns an entry with stat over last N games
+        const sp = (p?.stats||[]).find(s => (s?.group?.displayName||"").toLowerCase().includes("hitting"));
+        const stat = sp?.splits?.[0]?.stat || {};
+        out.set(p?.id, { avg15: Number(stat?.avg || stat?.battingAverage || 0) });
+      }
+    }catch{ /* ignore chunk errors */ }
+  }
+  return out;
+}
+
 
 // Build index { "AWY@HOM|Player Name" -> american price } from Odds API payload
 function buildHitsIndex(data) {
