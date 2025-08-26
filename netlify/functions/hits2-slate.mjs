@@ -1,15 +1,27 @@
 // netlify/functions/hits2-slate.mjs
-// Join priced players from odds-hits2 with MLB StatsAPI features; compute model Prob(2+ hits), fair odds, and EV.
+// Build 2+ hits slate from odds + StatsAPI; compute model probability and EV.
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 const americanToDecimal = (a) => { if(a==null) return null; const n=Number(a); if(!isFinite(n)) return null; return n>0?1+n/100:1+100/Math.abs(n); };
 function binomAtLeast2(ab, p){ const q=1-p; return clamp(1 - (Math.pow(q,ab) + ab*p*Math.pow(q,ab-1)), 0, 1); }
 
+function absoluteFunctionUrl(event, path) {
+  const h = event?.headers || {};
+  const proto = h['x-forwarded-proto'] || h['x-forwarded-protocol'] || 'https';
+  const host = h['x-forwarded-host'] || h['host'];
+  if (host) return `${proto}://${host}${path}`;
+  // fallback for local or unit tests
+  return path;
+}
+
 async function fetchJson(url, headers={}) {
-  const r = await fetch(url, { headers: { "User-Agent":"hits2/1.0", ...headers }, cache:"no-store" });
+  const r = await fetch(url, { headers: { "User-Agent":"hits2/2.1", ...headers }, cache:"no-store" });
   if (!r.ok) throw new Error(`HTTP ${r.status} ${url}`);
   return await r.json();
 }
-async function getOdds(date) { return await fetchJson(`/.netlify/functions/odds-hits2?date=${date}`); }
+async function getOdds(event, date) {
+  const url = absoluteFunctionUrl(event, `/.netlify/functions/odds-hits2?date=${date}`);
+  return await fetchJson(url);
+}
 
 async function lookupMLBId(name) {
   const part = encodeURIComponent(name.split(" ").slice(-1)[0]);
@@ -46,7 +58,7 @@ export const handler = async (event) => {
     const params = new URLSearchParams(event.queryStringParameters || {});
     const date = params.get("date") || new Date().toISOString().slice(0,10);
 
-    const odds = await getOdds(date);
+    const odds = await getOdds(event, date);
     const offers = (odds?.offers || []);
     if (!offers.length) {
       return { statusCode: 200, headers: { "content-type":"application/json" }, body: JSON.stringify({ ok:false, reason:"no_offers", date, count:0, players:[] }) };
