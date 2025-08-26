@@ -1,34 +1,18 @@
-// netlify/functions/_lib/http.mjs
-export async function fetchJSON(url, { headers = {}, timeoutMs = 12000, retries = 1, method = "GET", body } = {}) {
-  const ctrl = new AbortController();
-  const id = setTimeout(() => ctrl.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, { method, headers, body, signal: ctrl.signal });
-    if (!res.ok) {
-      const txt = await res.text().catch(() => "");
-      throw new Error(`HTTP ${res.status} for ${url} :: ${txt.slice(0,200)}`);
-    }
-    return await res.json();
-  } catch (err) {
-    if (retries > 0) {
-      return await fetchJSON(url, { headers, timeoutMs, retries: retries - 1, method, body });
-    }
-    throw err;
-  } finally {
-    clearTimeout(id);
+// Simple fetch wrapper that works on Netlify (Node 18+ has global fetch)
+export async function getJSON(url, opts = {}) {
+  const res = await fetch(url, { ...opts, redirect: 'follow' });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    throw new Error(`HTTP ${res.status} for ${url} :: ${txt?.slice(0,200)}`);
   }
+  return res.json();
 }
 
-export function jsonResponse(obj, status = 200) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-cache" }
-  });
+export function ok(data) {
+  return new Response(JSON.stringify(data), { status: 200, headers: { 'content-type': 'application/json' }});
 }
 
-export function getInt(qs, key, def) {
-  const v = qs.get(key);
-  if (v == null) return def;
-  const n = parseInt(v, 10);
-  return Number.isFinite(n) ? n : def;
+export function bad(err, extra = {}) {
+  const body = { ok:false, error: String(err instanceof Error ? err.stack || err.message : err), ...extra };
+  return new Response(JSON.stringify(body), { status: 500, headers: { 'content-type': 'application/json' }});
 }

@@ -1,124 +1,72 @@
-// netlify/functions/nfl-rosters.mjs
-import { fetchJSON, jsonResponse, getInt } from "./_lib/http.mjs";
+import { getJSON, ok, bad } from "./_lib/http.mjs";
 
-const SD_BASE = process.env.SPORTSDATA_API_BASE || "https://api.sportsdata.io/v3/nfl/scores/json";
-const SD_KEY = process.env.SPORTSDATA_API_KEY || process.env.FANTASYDATA_API_KEY || process.env.SPORTS_DATA_KEY;
+const TEAM_IDS = {
+  "ARI":22,"ATL":1,"BAL":33,"BUF":2,"CAR":29,"CHI":3,"CIN":4,"CLE":5,"DAL":6,
+  "DEN":7,"DET":8,"GB":9,"HOU":34,"IND":11,"JAX":30,"KC":12,"LAC":24,"LAR":14,
+  "LV":13,"MIA":15,"MIN":16,"NE":17,"NO":18,"NYG":19,"NYJ":20,"PHI":21,"PIT":23,
+  "SEA":26,"SF":25,"TB":27,"TEN":10,"WSH":28
+};
 
-async function getSchedule({ season, week, origin }) {
-  const u = `${origin}/.netlify/functions/nfl-bootstrap?season=${season}&week=${week}&debug=0`;
-  try {
-    const j = await fetchJSON(u, { timeoutMs: 12000 });
-    if (j?.schedule?.games?.length) return j.schedule.games;
-  } catch {}
-  return [];
-}
-
-export default async function handler(req) {
-  const url = new URL(req.url);
-  const qs = url.searchParams;
-  const debug = qs.get("debug") === "1";
-  const season = getInt(qs, "season", 2025);
-  const week = getInt(qs, "week", 1);
-  const origin = process.env.URL || `${url.protocol}//${url.host}`;
-
-  try {
-    const schedule = await getSchedule({ season, week, origin });
-
-    let used = "placeholder";
-    let rosters = {};
-
-    if (SD_KEY) {
-      try {
-        const dc = await fetchJSON(`${SD_BASE}/DepthCharts`, {
-          headers: { "Ocp-Apim-Subscription-Key": SD_KEY },
-          timeoutMs: 15000
-        });
-
-        const teamSet = new Set();
-        for (const g of schedule) {
-          if (g.home?.abbrev) teamSet.add(g.home.abbrev);
-          if (g.away?.abbrev) teamSet.add(g.away.abbrev);
-        }
-
-        for (const item of dc || []) {
-          const team = item.Team || item.TeamKey || item.TeamID || item.TeamName;
-          const teamAbbr = (typeof team === "string" ? team : item.Team)?.toUpperCase?.() || null;
-          if (!teamAbbr || (teamSet.size && !teamSet.has(teamAbbr))) continue;
-
-          const positions = item.DepthChartPositions || item.Positions || [
-            item.QB, item.RB, item.WR, item.TE
-          ].filter(Boolean);
-
-          const players = [];
-          const pushPlayer = (p, posOverride) => {
-            if (!p) return;
-            const pos = (posOverride || p.Position || p.position || p.DepthChartPosition || p.Pos || "").toString().toUpperCase();
-            const name = p.Name || p.PlayerName || p.FullName || p.ShortName;
-            const playerId = p.PlayerID || p.PlayerId || p.Id;
-            if (!name || !pos) return;
-            if (!["RB", "WR", "TE", "QB"].includes(pos)) return;
-            const depth = p.Depth || p.DepthOrder || p.Order || p.DepthChartOrder || 1;
-            players.push({ playerId, name, pos, depth: Number(depth) || 1 });
-          };
-
-          if (Array.isArray(positions)) {
-            for (const posGroup of positions) {
-              if (!posGroup) continue;
-              const posName = posGroup.Position || posGroup.Pos || posGroup.PositionName;
-              const arrs = [
-                posGroup.Players, posGroup.PlayerList, posGroup.DepthChart || [],
-                posGroup.FirstTeam || [], posGroup.SecondTeam || []
-              ].filter(Boolean);
-              if (arrs.length) {
-                for (const arr of arrs) {
-                  for (const p of arr || []) pushPlayer(p, posName);
-                }
-              } else {
-                for (const k of Object.keys(posGroup)) {
-                  if (Array.isArray(posGroup[k])) {
-                    for (const p of posGroup[k]) pushPlayer(p, k);
-                  }
-                }
-              }
-            }
-          }
-
-          for (const k of ["QB", "RB", "WR", "TE"]) {
-            const v = item[k];
-            if (Array.isArray(v)) for (const p of v) pushPlayer(p, k);
-          }
-
-          rosters[teamAbbr] = {
-            team: teamAbbr,
-            players
-          };
-        }
-
-        used = "sportsdata-depthcharts";
-      } catch (e) {
-        if (debug) console.error("SportsData depth charts failed:", e);
-      }
-    }
-
-    if (!Object.keys(rosters).length) {
-      for (const g of schedule) {
-        for (const side of ["home","away"]) {
-          const t = g[side];
-          if (!t?.abbrev) continue;
-          rosters[t.abbrev] = {
-            team: t.abbrev,
-            players: [
-              { playerId: `RB1-${t.abbrev}`, name: `RB1 ${t.abbrev}`, pos: "RB", depth: 1 },
-              { playerId: `WR1-${t.abbrev}`, name: `WR1 ${t.abbrev}`, pos: "WR", depth: 1 },
-              { playerId: `TE1-${t.abbrev}`, name: `TE1 ${t.abbrev}`, pos: "TE", depth: 1 }
-            ]
-          };
-        }
-      }
-    }
-
-    return jsonResponse({ ok: true, season, week, teams: Object.keys(rosters).length, used, rosters });
-  } catch (err) {
-    return jsonResponse({ ok: false, error: String(err) }, 500);
+function pickPositions(entries) {
+  // keep RB/WR/TE/QB, annotate depth if present
+  const out = [];
+  for (const e of entries || []) {
+    const pos = e?.Position || e?.position || "";
+    if (!["RB","WR","TE","QB","FB"].includes(pos)) continue;
+    out.push({
+      playerId: e?.PlayerID || e?.playerId,
+      name: [e?.FirstName, e?.LastName].filter(Boolean).join(" ") || e?.Name || e?.name,
+      position: pos === "FB" ? "RB" : pos,
+      depth: e?.DepthOrder || e?.Depth || e?.depth || null,
+      team: e?.Team || e?.team
+    });
   }
+  return out;
 }
+
+async function fetchSportsDataDepth(season, apiKey) {
+  const url = `https://api.sportsdata.io/v3/nfl/scores/json/DepthCharts/${season}`;
+  const res = await fetch(url, { headers: { 'Ocp-Apim-Subscription-Key': apiKey }});
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(`SportsData depth charts failed ${res.status}: ${t?.slice(0,160)}`);
+  }
+  const data = await res.json();
+  // Map to { [abbr]: [players...] }
+  const byTeam = {};
+  for (const team of data || []) {
+    const abbr = team?.Team || team?.TeamID || team?.Key;
+    const entries = pickPositions(team?.DepthChart || team?.Players || team?.DepthChartPlayers || []);
+    if (abbr && entries?.length) {
+      byTeam[abbr] = entries;
+    }
+  }
+  return byTeam;
+}
+
+export default async (event) => {
+  try {
+    const u = new URL(event.rawUrl || `https://x.invalid${event.rawQuery ? "?"+event.rawQuery : ""}`);
+    const season = Number(u.searchParams.get("season") || 2025);
+    const week = Number(u.searchParams.get("week") || 1);
+    const debug = u.searchParams.get("debug") === "1";
+    const keyOverride = u.searchParams.get("key");
+    const apiKey = keyOverride || process.env.SPORTSDATA_API_KEY || process.env.FANTASYDATA_API_KEY;
+
+    if (!apiKey) {
+      // return empty but ok so front-end can still render
+      return ok({ ok:true, season, week, teams: 0, used: "placeholder", rosters: {} });
+    }
+
+    const teams = await fetchSportsDataDepth(season, apiKey);
+    // also index by numeric team id to match ESPN schedule join
+    const rostersById = {};
+    for (const [abbr, list] of Object.entries(teams)) {
+      const id = TEAM_IDS[abbr];
+      if (id) rostersById[id] = list;
+    }
+    return ok({ ok:true, season, week, teams: Object.keys(teams).length, used: "sportsdata", rosters: rostersById, rostersByAbbrev: teams, debug });
+  } catch (err) {
+    return bad(err);
+  }
+};
