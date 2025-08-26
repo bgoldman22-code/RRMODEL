@@ -1,4 +1,6 @@
-// netlify/functions/hits2-slate.mjs
+// netlify/functions_live_ball/hits2-slate.mjs
+// Odds-first MLB 2+ hits slate: pulls TheOddsAPI player_hits (Over @ point>=1.5), maps to MLB IDs, StatsAPI features,
+// computes P(2+ hits), fair odds, EV, and a concise Why column.
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 const americanToDecimal = (a) => { if(a==null) return null; const n=Number(a); if(!isFinite(n)) return null; return n>0?1+n/100:1+100/Math.abs(n); };
 function binomAtLeast2(ab, p){ const q=1-p; return clamp(1 - (Math.pow(q,ab) + ab*p*Math.pow(q,ab-1)), 0, 1); }
@@ -9,7 +11,13 @@ async function fetchJson(url, headers={}) {
   if (!r.ok) throw new Error(`HTTP ${r.status} ${url}`);
   return await r.json();
 }
-async function getOdds(date) { return await fetchJson(`/.netlify/functions/odds-hits2?date=${date}`); }
+
+// internal: call our odds endpoint so it shares env/auth
+async function getOdds(date) {
+  return await fetchJson(`/.netlify/functions/odds-hits2?date=${date}`);
+}
+
+// Map "First Last" -> MLBAM id
 async function lookupMLBId(name) {
   const part = encodeURIComponent(name.split(" ").slice(-1)[0]);
   const url = `https://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&active_sw=%27Y%27&name_part=%27${part}%25%27`;
@@ -24,6 +32,7 @@ async function lookupMLBId(name) {
   const id = Number((best||rows[0])?.player_id || 0) || null;
   return id;
 }
+
 async function getBatterStats(ids) {
   if (!ids.length) return {};
   const hydrate = encodeURIComponent("stats(type=season,group=hitting),stats(type=lastXGames,group=hitting,gameLog=false,gamesPlayed=15)");
@@ -39,18 +48,21 @@ async function getBatterStats(ids) {
   }
   return out;
 }
+
 export const handler = async (event) => {
   try {
     const params = new URLSearchParams(event.queryStringParameters || {});
     const date = params.get("date") || new Date().toISOString().slice(0,10);
     const limit = Math.max(10, parseInt(params.get("limit") || "80", 10));
 
+    // 1) Get priced players from odds
     const odds = await getOdds(date);
     const offers = (odds?.offers || []).slice(0, limit);
     if (!offers.length) {
       return { statusCode: 200, headers: { "content-type":"application/json" }, body: JSON.stringify({ ok:false, reason:"no_offers", date, count:0, players:[] }) };
     }
 
+    // 2) Map names -> ids
     const mapNameToId = new Map();
     for (const o of offers) {
       if (mapNameToId.has(o.player)) continue;
@@ -60,19 +72,20 @@ export const handler = async (event) => {
     const ids = Array.from(mapNameToId.values());
     const statsByName = await getBatterStats(ids);
 
+    // 3) Build slate rows with model + EV
     const rows = [];
     for (const o of offers) {
       const lower = o.player.toLowerCase();
       const st = statsByName[lower];
       if (!st) continue;
       const pAB = Math.max(0.15, Math.min(0.45, 0.6*(st.seasonAVG||0.24) + 0.4*(st.last15AVG||st.seasonAVG||0.24)));
-      const expAB = Math.round(Math.max(3.5, Math.min(5.0, 3.9 + Math.min(0.5, (st.seasonPA||0)/700)))));
+      const expAB = Math.round(clamp(3.9 + Math.min(0.5, (st.seasonPA || 0) / 700), 3.5, 5.0));
       const prob = binomAtLeast2(expAB, pAB);
-      const fair = prob>0 ? (prob>=0.5 ? Math.round(-100/(1/prob - 1)) : Math.round((1/prob - 1)*100)) : null;
+      const modelOdds = prob>0 ? Math.round(prob>=0.5 ? -100/(1/prob - 1) : (1/prob - 1)*100) : null;
       const dec = o.decimal || americanToDecimal(o.american);
       const ev = dec ? prob*(dec-1)-(1-prob) : null;
       const why = `season AVG ${(st.seasonAVG||0).toFixed(3)} • L15 ${(st.last15AVG||0).toFixed(3)} • expAB ${expAB}`;
-      rows.push({ player: o.player, team: "", game: "", modelProb: prob, modelOdds: fair, realOdds: o.american ?? null, ev, why });
+      rows.push({ player: o.player, team: "", game: "", modelProb: prob, modelOdds, realOdds: o.american ?? null, ev, why });
     }
 
     rows.sort((a,b)=> (b.ev??-1) - (a.ev??-1));
