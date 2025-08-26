@@ -1,80 +1,69 @@
-
 // netlify/functions/nfl-td-candidates.mjs
-export const config = { path: "/.netlify/functions/nfl-td-candidates" };
+import { fetchJSON, jsonResponse, getInt } from "./_lib/http.mjs";
 
-function jsonResponse(body, status=200) {
-  return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
+async function getSchedule(origin, season, week) {
+  const u = `${origin}/.netlify/functions/nfl-bootstrap?season=${season}&week=${week}&debug=0`;
+  const j = await fetchJSON(u, { timeoutMs: 12000 });
+  return j?.schedule?.games || [];
 }
 
-const SD_KEY = process.env.SPORTSDATA_API_KEY_NFL || process.env.FANTASYDATA_API_KEY_NFL || "";
-
-async function fetchJson(url) {
-  const res = await fetch(url, { headers: { "accept": "application/json" } });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json();
+async function getRosters(origin, season, week) {
+  const u = `${origin}/.netlify/functions/nfl-rosters?season=${season}&week=${week}&debug=0`;
+  const j = await fetchJSON(u, { timeoutMs: 15000 });
+  return j?.rosters || {};
 }
 
-export async function handler(event) {
-  const url = new URL(event.rawUrl || `https://x/?${event.rawQuery}`);
-  const debug = url.searchParams.get("debug") !== null;
-
-  // quick schedule pull (stateless) from bootstrap endpoint to get matchups
-  // if bootstrap is failing, return clear error
-  const base = `${url.origin || ""}`;
-  let schedule;
+export default async function handler(req) {
   try {
-    const bootUrl = `${base}/.netlify/functions/nfl-bootstrap?mode=auto&debug=0&noblobs=1`;
-    const bootRes = await fetch(bootUrl);
-    const boot = await bootRes.json();
-    if (!boot.ok) throw new Error(boot.error || "bootstrap failed");
-    schedule = boot.schedule;
-  } catch (e) {
-    return jsonResponse({ ok: false, error: `schedule fetch failed: ${String(e)}` }, 200);
-  }
+    const url = new URL(req.url);
+    const qs = url.searchParams;
+    const debug = qs.get("debug") === "1";
+    const season = getInt(qs, "season", 2025);
+    const week = getInt(qs, "week", 1);
+    const origin = process.env.URL || `${url.protocol}//${url.host}`;
 
-  // SportsData.io is optional but recommended for real names & depth
-  let playersByTeam = {};
-  if (SD_KEY) {
-    try {
-      // free depth-like: use players endpoint (season=2025, json)
-      const players = await fetchJson(`https://api.sportsdata.io/v3/nfl/scores/json/Players?key=${encodeURIComponent(SD_KEY)}`);
-      for (const p of players) {
-        const tid = String(p.TeamID || p.TeamId || p.Team || "").trim();
-        if (!tid) continue;
-        if (!playersByTeam[tid]) playersByTeam[tid] = [];
-        playersByTeam[tid].push(p);
-      }
-    } catch (e) {
-      // keep going with placeholders
-      if (debug) console.log("sportsdata fetch failed", e);
+    const [games, rosters] = await Promise.all([
+      getSchedule(origin, season, week),
+      getRosters(origin, season, week)
+    ]);
+
+    const opponentOf = {};
+    for (const g of games) {
+      const h = g.home?.abbrev, a = g.away?.abbrev;
+      if (h && a) { opponentOf[h] = a; opponentOf[a] = h; }
     }
-  }
 
-  // build simple RB1 candidate list for each team in schedule
-  const candidates = [];
-  for (const g of schedule.games) {
-    for (const side of ["home","away"]) {
-      const team = g[side];
-      const opp = side === "home" ? g.away : g.home;
-      let name = `RB1-${team.id}`;
-      let why = `RB • depth 1 • vs ${opp.abbrev}`;
-      // if sportsdata present, try to pick the first RB starter-ish
-      const teamPlayers = playersByTeam[team.id] || [];
-      const rb = teamPlayers.find(p => (p.Position || p.FantasyPosition) === "RB");
-      if (rb) {
-        name = `${rb.FirstName || ""} ${rb.LastName || ""}`.trim() || name;
-        why = `RB • likely starter • vs ${opp.abbrev}`;
+    const baseByPos = { RB: 0.20, WR: 0.12, TE: 0.09, QB: 0.05 };
+    const depthPenalty = [0, 0.0, -0.06, -0.12, -0.18];
+    const clamp = (x,min=0,max=0.95)=>Math.max(min,Math.min(max,x));
+
+    const rows = [];
+    for (const team of Object.keys(rosters)) {
+      const opp = opponentOf[team] || "?";
+      for (const p of rosters[team].players || []) {
+        const base = baseByPos[p.pos] ?? 0.05;
+        const depthIdx = Math.min((p.depth||1), 4);
+        const td = clamp(base + depthPenalty[depthIdx-1]);
+        rows.push({
+          player: p.name,
+          team,
+          pos: p.pos,
+          opponent: opp,
+          modelTdProb: Number((td*100).toFixed(1)),
+          why: `${p.pos} • depth ${p.depth||1} • vs ${opp}`
+        });
       }
-      candidates.push({
-        player: name,
-        pos: "RB",
-        model_td: 0.365,
-        rz_path: 0.248,
-        exp_path: 0.117,
-        why
-      });
     }
-  }
 
-  return jsonResponse({ ok: true, season: 2025, week: 1, count: candidates.length, candidates });
+    rows.sort((a,b) => (b.modelTdProb - a.modelTdProb) || (a.pos.localeCompare(b.pos)));
+
+    return jsonResponse({
+      ok: true,
+      season, week,
+      games: games.length,
+      candidates: rows.slice(0, 200)
+    });
+  } catch (err) {
+    return jsonResponse({ ok: false, error: String(err) }, 500);
+  }
 }
