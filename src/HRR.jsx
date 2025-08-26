@@ -1,5 +1,5 @@
 // src/HRR.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function HRR() {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0,10));
@@ -29,7 +29,6 @@ export default function HRR() {
         date: {date} • data: {meta.data} • odds: {meta.odds} — provider: {meta.provider} — UsingOddsApi: {String(meta.usingOddsApi)}
       </div>
 
-      {/* Picks / Parlay tables */}
       <ParlayTable title="Parlay — 2-leg (EV-first)" parlay={parlays.twoLeg} />
       <ParlayTable title="Parlay — 3-leg (EV-first)" parlay={parlays.threeLeg} />
 

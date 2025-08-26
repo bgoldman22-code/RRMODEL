@@ -1,17 +1,17 @@
 // src/App.jsx
 import React from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import MLB_HR from "./MLB_HR";
-import MLB_HITS2 from "./MLB_HITS2";
-import NFL_TD from "./NFL_TD";
-import NegCorr from "./NegCorr";
-import HRR from "./HRR";
+import MLB_HR from "./MLB_HR.jsx";
+import MLB_HITS2 from "./MLB_HITS2.jsx";
+import NFL_TD from "./NFL_TD.jsx";
+import NegCorr from "./NegCorr.jsx";
+import HRR from "./HRR.jsx";
 
 export default function App() {
   return (
     <BrowserRouter>
       <div className="w-full border-b bg-white">
-        <div className="container mx-auto px-4 py-3 flex gap-4">
+        <div className="container mx-auto px-4 py-3 flex flex-wrap gap-4">
           <Link to="/">Home</Link>
           <Link to="/mlb-hr">MLB HR</Link>
           <Link to="/mlb-hits2">MLB 2+ Hits</Link>
