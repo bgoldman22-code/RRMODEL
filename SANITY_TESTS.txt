@@ -1,0 +1,27 @@
+SANITY TESTS CHECKLIST
+
+Odds API up:
+- /.netlify/functions/odds-diag               → ok:true (general)
+- /.netlify/functions/odds-list-markets       → list includes batter_hits, batter_hits_alternate, batter_hits_runs_rbis
+
+2+ HITS (use the same YYYY-MM-DD you’re testing):
+- /.netlify/functions/odds-hits2?date=2025-08-26     → ok:true, count > 0 (offers present)
+- /.netlify/functions/hits2-preview?date=2025-08-26  → ok:true, sample shows player names
+- /.netlify/functions/hits2-slate?date=2025-08-26    → ok:true, count > 0, players[] w/ modelProb, modelOdds, realOdds, ev, why
+
+HRR (Over 1.5 Hits+Runs+RBIs):
+- /.netlify/functions/odds-hrr?date=2025-08-26       → ok:true, count >= 0 (offers if books posted)
+- /.netlify/functions/hrr-slate?date=2025-08-26      → ok:true, returns players when odds exist
+
+Game context (used by models):
+- /.netlify/functions/mlb-game-context?date=2025-08-26 → ok:true, count == number of MLB games
+
+Learning/diagnostics (optional):
+- /.netlify/functions/hits2-diag                      → ok:true (env/status snapshot)
+- /.netlify/functions/hrr-diag                        → ok:true (env/status snapshot)
+
+Frontend routes:
+- Header shows: Home | MLB HR | MLB 2+ Hits | HRR | NFL TD | NFL NegCorr
+- Click HRR → your HRR page renders fine (reuses existing table layout)
+
+If any endpoint returns HTML ("<!doctype") instead of JSON, it usually means a bad internal URL. Make sure internal function calls use absolute URLs with protocol + host from headers.

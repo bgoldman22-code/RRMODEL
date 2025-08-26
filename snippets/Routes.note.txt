@@ -1,0 +1,7 @@
+// snippets/Routes.note.txt
+// Ensure your router has a route for HRR:
+//
+// <Route path="/hrr" element={<HRRPage/>} />
+//
+// If you reuse your HR Round Robin page component, import and wire it here.
+// No styling/layout changes are required.
