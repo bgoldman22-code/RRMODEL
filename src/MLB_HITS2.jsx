@@ -15,7 +15,7 @@ export default function MLB_HITS2(){
   useEffect(()=>{ (async()=>{
     setStatus(s=>({...s, loading:true}));
     const [modelRes, oddsRes] = await Promise.all([
-      fetch(`/.netlify/functions/hits2-model?date=${date}`, { cache:"no-store" }).then(r=>r.json()).catch(()=>({ ok:false })),
+      fetch(`/.netlify/functions/hits2-slate?date=${date}`, { cache:"no-store" }).then(r=>r.json()).catch(()=>({ ok:false })),
       fetch(`/.netlify/functions/odds-hits2?date=${date}`, { cache:"no-store" }).then(r=>r.json()).catch(()=>({ ok:false }))
     ]);
     setRows(modelRes?.players || []);
