@@ -1,5 +1,5 @@
 // netlify/functions/hits2-slate.mjs
-// Build 2+ hits slate from odds + StatsAPI; compute model probability and EV.
+// 2+ Hits slate with robust player matching & fallbacks.
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 const americanToDecimal = (a) => { if(a==null) return null; const n=Number(a); if(!isFinite(n)) return null; return n>0?1+n/100:1+100/Math.abs(n); };
 function binomAtLeast2(ab, p){ const q=1-p; return clamp(1 - (Math.pow(q,ab) + ab*p*Math.pow(q,ab-1)), 0, 1); }
@@ -9,12 +9,11 @@ function absoluteFunctionUrl(event, path) {
   const proto = h['x-forwarded-proto'] || h['x-forwarded-protocol'] || 'https';
   const host = h['x-forwarded-host'] || h['host'];
   if (host) return `${proto}://${host}${path}`;
-  // fallback for local or unit tests
   return path;
 }
 
 async function fetchJson(url, headers={}) {
-  const r = await fetch(url, { headers: { "User-Agent":"hits2/2.1", ...headers }, cache:"no-store" });
+  const r = await fetch(url, { headers: { "User-Agent":"hits2/2.2", ...headers }, cache:"no-store" });
   if (!r.ok) throw new Error(`HTTP ${r.status} ${url}`);
   return await r.json();
 }
@@ -23,16 +22,22 @@ async function getOdds(event, date) {
   return await fetchJson(url);
 }
 
+function normName(name){
+  return (name||"").replace(/\b(Jr\.|Jr|Sr\.|Sr|II|III|IV)\b/gi,"").replace(/\s+/g," ").trim();
+}
+
 async function lookupMLBId(name) {
-  const part = encodeURIComponent(name.split(" ").slice(-1)[0]);
+  const clean = normName(name);
+  const part = encodeURIComponent(clean.split(" ").slice(-1)[0]);
   const url = `https://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&active_sw=%27Y%27&name_part=%27${part}%25%27`;
   const json = await fetchJson(url).catch(()=>null);
   if (!json) return null;
   const row = json?.search_player_all?.queryResults?.row;
   const rows = Array.isArray(row) ? row : (row? [row] : []);
-  const lower = name.toLowerCase();
+  const lower = clean.toLowerCase();
   const exact = rows.find(r => (r?.name_display_first_last||"").toLowerCase() === lower);
-  const best = exact || rows[0];
+  const contains = rows.find(r => (r?.name_display_first_last||"").toLowerCase().includes(lower));
+  const best = exact || contains || rows[0];
   const id = Number(best?.player_id || 0) || null;
   return id;
 }
@@ -64,26 +69,38 @@ export const handler = async (event) => {
       return { statusCode: 200, headers: { "content-type":"application/json" }, body: JSON.stringify({ ok:false, reason:"no_offers", date, count:0, players:[] }) };
     }
 
+    // Resolve known players
     const nameToId = new Map();
     for (const o of offers) {
-      if (nameToId.has(o.player)) continue;
-      const id = await lookupMLBId(o.player);
-      if (id) nameToId.set(o.player, id);
+      const n = o.player;
+      if (nameToId.has(n)) continue;
+      const id = await lookupMLBId(n);
+      if (id) nameToId.set(n, id);
+      else nameToId.set(n, null); // mark tried for fallback later
     }
-    const ids = Array.from(nameToId.values());
+    const ids = Array.from(nameToId.values()).filter(Boolean);
     const stats = await getBatterStats(ids);
 
     const rows = [];
     for (const o of offers) {
-      const st = stats[o.player.toLowerCase()];
-      if (!st) continue;
-      const pAB = Math.max(0.15, Math.min(0.45, 0.6*(st.seasonAVG||0.24) + 0.4*(st.last15AVG||st.seasonAVG||0.24)));
-      const expAB = Math.round(clamp(3.9 + Math.min(0.5, (st.seasonPA || 0) / 700), 3.5, 5.0));
+      const key = (o.player||"").toLowerCase();
+      let st = stats[key];
+
+      // Fallback when ID not found or stats missing -> use league-ish rates
+      let seasonAVG = 0.245, last15AVG = 0.250, seasonPA = 450;
+      if (st) {
+        seasonAVG = st.seasonAVG ?? seasonAVG;
+        last15AVG = st.last15AVG ?? seasonAVG;
+        seasonPA = st.seasonPA ?? seasonPA;
+      }
+
+      const pAB = Math.max(0.15, Math.min(0.45, 0.6*(seasonAVG||0.24) + 0.4*(last15AVG||seasonAVG||0.24)));
+      const expAB = Math.round(clamp(3.9 + Math.min(0.5, (seasonPA || 0) / 700), 3.5, 5.0));
       const prob = binomAtLeast2(expAB, pAB);
       const modelOdds = prob>0 ? Math.round(prob>=0.5 ? -100/(1/prob - 1) : (1/prob - 1)*100) : null;
       const dec = o.decimal || americanToDecimal(o.american);
       const ev = dec ? prob*(dec-1)-(1-prob) : null;
-      const why = `season AVG ${(st.seasonAVG||0).toFixed(3)} • L15 ${(st.last15AVG||0).toFixed(3)} • expAB ${expAB}`;
+      const why = `season AVG ${seasonAVG.toFixed(3)} • L15 ${last15AVG.toFixed(3)} • expAB ${expAB}`;
       rows.push({ player: o.player, team: "", game: o.game || "", modelProb: prob, modelOdds, realOdds: o.american ?? null, ev, why });
     }
 
