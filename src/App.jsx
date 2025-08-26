@@ -39,6 +39,7 @@ export default function App() {
             <Route path="/mlb" element={<MLB />} />
             <Route path="/mlb-sb" element={<MLB_SB />} />
             <Route path="/mlb-hits2" element={<MLB_HITS2 />} />
+            <Route path="/hrr" element={<MLB_HITS2 />}/>
             <Route path="/nfl" element={<NFL />} />
             <Route path="/nfl-negcorr" element={<NFL_NegCorr />} />
             <Route path="/soccer" element={<Soccer />} />
