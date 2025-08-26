@@ -1,69 +1,67 @@
-// netlify/functions/nfl-td-candidates.mjs
-import { fetchJSON, jsonResponse, getInt } from "./_lib/http.mjs";
+import { getJSON, ok, bad } from "./_lib/http.mjs";
 
-async function getSchedule(origin, season, week) {
-  const u = `${origin}/.netlify/functions/nfl-bootstrap?season=${season}&week=${week}&debug=0`;
-  const j = await fetchJSON(u, { timeoutMs: 12000 });
-  return j?.schedule?.games || [];
+// Simple priors by position & depth slot (to be replaced with your learned model)
+const POS_PRIOR = { RB: 0.24, WR: 0.17, TE: 0.11, QB: 0.06 };
+const DEPTH_PENALTY = [1.00, 0.55, 0.25, 0.15]; // depth 1..4
+
+function scoreFor(p, oppAbbrev) {
+  const base = POS_PRIOR[p.position] || 0.05;
+  const depthIdx = Math.min(Math.max((p.depth||1)-1, 0), DEPTH_PENALTY.length-1);
+  const depthMult = DEPTH_PENALTY[depthIdx];
+  const td = base * depthMult;
+  return {
+    tdProb: td,
+    rzPath: td * 0.68,
+    expPath: td * 0.32,
+    why: `${p.position} • depth ${p.depth || 1}${oppAbbrev ? ` • vs ${oppAbbrev}` : ""}`
+  };
 }
 
-async function getRosters(origin, season, week) {
-  const u = `${origin}/.netlify/functions/nfl-rosters?season=${season}&week=${week}&debug=0`;
-  const j = await fetchJSON(u, { timeoutMs: 15000 });
-  return j?.rosters || {};
-}
-
-export default async function handler(req) {
+export default async (event) => {
   try {
-    const url = new URL(req.url);
-    const qs = url.searchParams;
-    const debug = qs.get("debug") === "1";
-    const season = getInt(qs, "season", 2025);
-    const week = getInt(qs, "week", 1);
-    const origin = process.env.URL || `${url.protocol}//${url.host}`;
+    const u = new URL(event.rawUrl || `https://x.invalid${event.rawQuery ? "?"+event.rawQuery : ""}`);
+    const season = Number(u.searchParams.get("season") || 2025);
+    const week = Number(u.searchParams.get("week") || 1);
+    const debug = u.searchParams.get("debug") === "1";
+    const host = event.headers?.["x-forwarded-host"];
+    const proto = (event.headers?.["x-forwarded-proto"] || "https");
+    const base = `${proto}://${host}`;
 
-    const [games, rosters] = await Promise.all([
-      getSchedule(origin, season, week),
-      getRosters(origin, season, week)
-    ]);
+    // Get schedule (no blobs bootstrap)
+    const schedUrl = `${base}/.netlify/functions/nfl-bootstrap?season=${season}&week=${week}`;
+    const schedRes = await getJSON(schedUrl);
+    if (!schedRes?.ok) throw new Error(`Failed to load schedule: ${JSON.stringify(schedRes).slice(0,160)}`);
+    const games = schedRes?.schedule?.games || [];
 
-    const opponentOf = {};
+    // Get rosters
+    const rostUrl = `${base}/.netlify/functions/nfl-rosters?season=${season}&week=${week}`;
+    const rostRes = await getJSON(rostUrl);
+    const rosters = rostRes?.rosters || {};
+
+    // Build candidates
+    const out = [];
     for (const g of games) {
-      const h = g.home?.abbrev, a = g.away?.abbrev;
-      if (h && a) { opponentOf[h] = a; opponentOf[a] = h; }
-    }
+      const home = g?.home?.id, away = g?.away?.id;
+      const homeAbbr = g?.home?.abbrev, awayAbbr = g?.away?.abbrev;
+      const homeList = rosters[Number(home)] || [];
+      const awayList = rosters[Number(away)] || [];
 
-    const baseByPos = { RB: 0.20, WR: 0.12, TE: 0.09, QB: 0.05 };
-    const depthPenalty = [0, 0.0, -0.06, -0.12, -0.18];
-    const clamp = (x,min=0,max=0.95)=>Math.max(min,Math.min(max,x));
-
-    const rows = [];
-    for (const team of Object.keys(rosters)) {
-      const opp = opponentOf[team] || "?";
-      for (const p of rosters[team].players || []) {
-        const base = baseByPos[p.pos] ?? 0.05;
-        const depthIdx = Math.min((p.depth||1), 4);
-        const td = clamp(base + depthPenalty[depthIdx-1]);
-        rows.push({
-          player: p.name,
-          team,
-          pos: p.pos,
-          opponent: opp,
-          modelTdProb: Number((td*100).toFixed(1)),
-          why: `${p.pos} • depth ${p.depth||1} • vs ${opp}`
-        });
+      for (const p of homeList) {
+        const s = scoreFor(p, awayAbbr);
+        out.push({ player: p.name, pos: p.position, team: homeAbbr, opp: awayAbbr, modelTD: s.tdProb, rzPath: s.rzPath, expPath: s.expPath, why: s.why });
+      }
+      for (const p of awayList) {
+        const s = scoreFor(p, homeAbbr);
+        out.push({ player: p.name, pos: p.position, team: awayAbbr, opp: homeAbbr, modelTD: s.tdProb, rzPath: s.rzPath, expPath: s.expPath, why: s.why });
       }
     }
 
-    rows.sort((a,b) => (b.modelTdProb - a.modelTdProb) || (a.pos.localeCompare(b.pos)));
+    // sort desc by modelTD and cap
+    out.sort((a,b)=> b.modelTD - a.modelTD);
+    const top = out.slice(0, 150);
 
-    return jsonResponse({
-      ok: true,
-      season, week,
-      games: games.length,
-      candidates: rows.slice(0, 200)
-    });
+    return ok({ ok:true, season, week, games: games.length, candidates: top, note: rostRes?.used || 'unknown', debug });
   } catch (err) {
-    return jsonResponse({ ok: false, error: String(err) }, 500);
+    return bad(err);
   }
-}
+};
