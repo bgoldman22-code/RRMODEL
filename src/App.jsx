@@ -1,5 +1,6 @@
 // src/App.jsx
 import React from "react";
+import HRR from "./HRR";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
 // Existing pages in your repo
@@ -23,12 +24,9 @@ export default function App() {
           <div className="max-w-6xl mx-auto px-4 py-3 flex gap-4 text-sm">
             <Link to="/" className="font-semibold">Home</Link>
             <Link to="/mlb">MLB HR</Link>
-            <Link to="/mlb-sb">MLB SB</Link>
             <Link to="/mlb-hits2">MLB 2+ Hits</Link>
             <Link to="/nfl">NFL TD</Link>
             <Link to="/nfl-negcorr">NFL NegCorr</Link>
-            <Link to="/soccer">Soccer AGS</Link>
-            <Link to="/parlays">Parlays</Link>
           </div>
         </nav>
 
