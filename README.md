@@ -1,29 +1,26 @@
-# Round Robin Picks (Odds‑Free)
+# NFL TD Patch — Step 3 & Candidates Fix
 
-Three pages, no sportsbook odds:
+This patch does two things:
 
-- **MLB HR** — StatsAPI model (no key).
-- **NFL Anytime TD** — ESPN schedule + roster; heuristic baselines (RB/WR/TE).
-- **Soccer Anytime Goal** — football-data.org top scorers + fixtures (requires free API key).
+1. **Fixes** `netlify/functions/nfl-td-candidates.mjs` (template string typo + robust schedule consumption).
+2. **Makes Step 3 changes** so CommonJS Netlify functions are valid under `"type": "module"`:
+   - Renames `netlify/functions/mlb-preds-get.js` -> `.cjs` (if present)
+   - Renames `netlify/functions/odds-diag.js` -> `.cjs` (if present)
+   - Prints any other `exports.handler` files so you can rename them too
 
-## Quick Deploy (Netlify + GitHub)
+## Apply
 
-1. **Upload to GitHub** (repo root should have `package.json`, `index.html`, `netlify.toml`, `src/`).
-2. On Netlify: **Import from Git** → set Build `npm run build`, Publish `dist`.
-3. Set env var (only for Soccer page):  
-   - `VITE_FOOTBALL_DATA_KEY` = your football-data.org API key.
-4. Deploy. App uses **HashRouter** so `/mlb`, `/nfl`, `/soccer` work without custom redirects.
+```bash
+# From your repo root
+unzip patch-step3-and-candidates-fix-2025-08-25.zip -d .
+bash scripts/apply-patch.sh
+git push
+```
 
-## Data Sources (free)
+## Verify
 
-- MLB: https://statsapi.mlb.com/ (schedule, rosters, people, stats)
-- NFL: ESPN public scoreboard & team rosters (no key): `site.api.espn.com` (unofficial, public JSON)
-- Soccer: https://www.football-data.org/ (free key; v4 endpoints)
+- `/.netlify/functions/nfl-bootstrap?refresh=1&mode=auto&debug=1` returns a schedule.
+- `/.netlify/functions/nfl-td-candidates?debug=1` returns `{ ok:true, candidates:[...] }`.
+- `/nfl` renders candidates (even if Blobs writes are still in-flight).
 
-## Notes
-
-- Picks enforce **12 total**, **≥ 8 different games**, **≤ 2 per game**.
-- MLB model blends: season + last-15 HR rates, pitcher HR allowed, platoon, and a coarse park factor table.
-- NFL model is heuristic until we add richer public stats (TD share, red-zone). It still yields stable candidates daily.
-- Soccer uses each league’s **Top Scorers** endpoint as a proxy for goal likelihood on matchdays.
-- Non‑commercial use only.
+If Netlify logs still show CommonJS/ESM warnings for other files, either rename them to `.cjs` or convert to ESM (`export default async function handler(...) {}`).
