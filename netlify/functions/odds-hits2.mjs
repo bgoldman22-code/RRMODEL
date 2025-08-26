@@ -1,23 +1,17 @@
 // netlify/functions/odds-hits2.mjs
-// Fetch MLB player hits odds (Over 1.5+) from The Odds API and normalize to unified offers.
+// Odds: MLB batter hits using The Odds API v4 (events + per-event odds).
+// Markets: batter_hits, batter_hits_alternate (filter for Over @ point >= 1.5).
 const ODDS_KEY = process.env.THEODDSAPI_KEY || process.env.ODDS_API_KEY;
-const REGIONS = process.env.ODDS_REGIONS || "us";
+const REGIONS = process.env.ODDS_REGIONS || "us,us2";
 const BOOKS = (process.env.BOOKMAKERS || "").split(",").map(s=>s.trim()).filter(Boolean);
-const MARKET = process.env.ODDSMARKET_HITS || "player_hits";
 const API_BASE = process.env.THEODDSAPI_BASE || "https://api.the-odds-api.com/v4";
+const SPORT = "baseball_mlb";
+const MARKETS = (process.env.ODDSMARKET_HITS_MULTI || "batter_hits,batter_hits_alternate")
+  .split(",").map(s=>s.trim()).filter(Boolean);
 
 const json = (status, body) => ({ statusCode: status, headers: { "content-type":"application/json" }, body: JSON.stringify(body) });
 const ok = (body) => json(200, body);
-const fail = (msg, extra={}) => json(200, { ok:false, error: String(msg), ...extra });
-
-async function fetchJson(url) {
-  const r = await fetch(url, { headers: { "User-Agent": "odds-hits2/1.0" }, redirect: "follow", cache: "no-store" });
-  if (!r.ok) {
-    const text = await r.text().catch(()=> "");
-    throw new Error(`HTTP ${r.status} for ${url} :: ${text?.slice(0,240)}`);
-  }
-  return await r.json();
-}
+const fail = (msg, extra={}) => json(200, { ok:false, error: String(msg), provider:"theoddsapi", usingOddsApi: !!ODDS_KEY, ...extra });
 
 function americanFromDecimal(d) {
   const x = Number(d);
@@ -25,47 +19,65 @@ function americanFromDecimal(d) {
   return x >= 2 ? Math.round((x-1)*100) : Math.round(-100/(x-1));
 }
 
+async function fetchJson(url) {
+  const r = await fetch(url, { headers: { "User-Agent": "odds-hits2/2.1" }, redirect: "follow", cache: "no-store" });
+  if (!r.ok) {
+    const text = await r.text().catch(()=> "");
+    throw new Error(`HTTP ${r.status} for ${url} :: ${text?.slice(0,240)}`);
+  }
+  return await r.json();
+}
+
 export const handler = async (event) => {
   try {
     const qs = new URLSearchParams(event.queryStringParameters||{});
     const date = qs.get("date") || new Date().toISOString().slice(0,10);
+    if (!ODDS_KEY) return fail("missing THEODDSAPI_KEY", { date, count:0, offers:[] });
 
-    if (!ODDS_KEY) return fail("missing THEODDSAPI_KEY", { provider:"theoddsapi", usingOddsApi:false, date, count:0, offers:[] });
+    // 1) List today's events
+    const eventsUrl = `${API_BASE}/sports/${SPORT}/events?apiKey=${encodeURIComponent(ODDS_KEY)}`;
+    const events = await fetchJson(eventsUrl);
+    if (!Array.isArray(events) || !events.length) return ok({ ok:true, provider:"theoddsapi", usingOddsApi:true, date, count:0, offers:[] });
 
-    const url = `${API_BASE}/sports/baseball_mlb/odds/?apiKey=${encodeURIComponent(ODDS_KEY)}&regions=${encodeURIComponent(REGIONS)}&markets=${encodeURIComponent(MARKET)}&oddsFormat=decimal`;
-    const data = await fetchJson(url);
-
+    // 2) For each event, fetch props odds for our markets
     const offers = [];
-    for (const game of data || []) {
-      const commence = game.commence_time;
-      const home = game.home_team;
-      const away = game.away_team;
-      const books = game.bookmakers || [];
-      for (const bm of books) {
+    const marketsParam = encodeURIComponent(MARKETS.join(","));
+    for (const ev of events) {
+      const evId = ev?.id || ev?.event_id;
+      if (!evId) continue;
+      const evOddsUrl = `${API_BASE}/sports/${SPORT}/events/${evId}/odds?apiKey=${encodeURIComponent(ODDS_KEY)}&regions=${encodeURIComponent(REGIONS)}&markets=${marketsParam}&oddsFormat=decimal`;
+      let data;
+      try {
+        data = await fetchJson(evOddsUrl);
+      } catch (e) {
+        // some events/books may not have props; skip quietly
+        continue;
+      }
+      const bookmakers = data?.bookmakers || [];
+      const home = data?.home_team || ev?.home_team || "";
+      const away = data?.away_team || ev?.away_team || "";
+      const game = `${away}@${home}`;
+      for (const bm of bookmakers) {
         if (BOOKS.length && !BOOKS.includes(bm.key)) continue;
-        const mk = (bm.markets || []).find(m => m.key === MARKET);
-        if (!mk) continue;
-        for (const o of mk.outcomes || []) {
-          // We want Over on 1.5 (or higher if book only posts 2.5 etc.)
-          if ((o.name || "").toLowerCase() !== "over") continue;
-          const point = Number(o.point);
-          if (!(point >= 1.5)) continue;
-          const dec = Number(o.price);
-          const american = americanFromDecimal(dec);
-          // description may contain player name; some books put it in 'description'
-          const player = o.description || o.player || o.participant || null;
-          if (!player) continue;
-          offers.push({
-            player,
-            team: "", game: `${away}@${home}`,
-            bookmaker: bm.key,
-            point, decimal: dec, american, commence
-          });
+        for (const mk of (bm.markets||[])) {
+          if (!MARKETS.includes(mk.key)) continue;
+          for (const o of (mk.outcomes||[])) {
+            // Expect Over/Under outcomes with player in description/participant fields
+            const side = (o.name||"").toLowerCase();
+            if (side !== "over") continue;
+            const point = Number(o.point);
+            if (!(point >= 1.5)) continue;
+            const dec = Number(o.price);
+            const american = americanFromDecimal(dec);
+            const player = o.description || o.player || o.participant || null;
+            if (!player) continue;
+            offers.push({ player, team:"", game, bookmaker: bm.key, point, decimal: dec, american });
+          }
         }
       }
     }
 
-    // Deduplicate by (player, best price)
+    // Best price per player
     const best = new Map();
     for (const x of offers) {
       const k = x.player.toLowerCase();
