@@ -1,38 +1,19 @@
 // netlify/functions/odds-list-markets.mjs
-// Lists available MLB odds markets from TheOddsAPI (v4).
-// Returns the full list and highlights HRR and Hits markets support.
-const SPORT = 'baseball_mlb';
-
-function jsonResponse(obj, status=200) {
-  return { statusCode: status, headers: { 'content-type': 'application/json' }, body: JSON.stringify(obj) };
-}
-
-async function fetchJson(url) {
-  const r = await fetch(url, { cache: 'no-store', headers: { 'User-Agent': 'odds-list-markets/1.0' } });
-  if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
-  return await r.json();
-}
-
-export const handler = async (event) => {
+export const handler = async () => {
   try {
-    const key = process.env.THEODDSAPI_KEY;
-    if (!key) return jsonResponse({ ok:false, error:'missing THEODDSAPI_KEY' });
-    const regions = process.env.ODDS_REGIONS || 'us,us2';
-
-    const url = `https://api.the-odds-api.com/v4/sports/${SPORT}/odds-markets?apiKey=${encodeURIComponent(key)}&regions=${encodeURIComponent(regions)}`;
-    const data = await fetchJson(url); // array of market keys
-
-    const want = [
-      'batter_hits',
-      'batter_hits_alternate',
-      'batter_hits_runs_rbis',
-      'batter_hits_runs_rbis_alternate',
-      'batter_home_runs',
-    ];
-
-    const present = want.filter(k => data.includes(k));
-    return jsonResponse({ ok:true, sport: SPORT, regions, count: data.length, markets: data, present });
+    // Return configured markets from env to avoid provider 404s
+    const env = (name, def="") => (process.env[name] ?? def);
+    const out = {
+      ok: true,
+      source: "env",
+      markets: {
+        hr: env("ODDS_HR_MARKETS", "batter_home_runs,batter_home_runs_alternate").split(',').filter(Boolean),
+        hits: env("ODDSMARKET_HITS", "batter_hits_alternate").split(',').filter(Boolean),
+        hrr: env("ODDSMARKET_HRR_MULTI", "batter_hits_runs_rbis,batter_hits_runs_rbis_alternate").split(',').filter(Boolean),
+      }
+    };
+    return new Response(JSON.stringify(out), { status: 200, headers: { "content-type": "application/json" } });
   } catch (e) {
-    return jsonResponse({ ok:false, step:'odds-markets', error: String(e) });
+    return new Response(JSON.stringify({ ok:false, error:String(e) }), { status: 500, headers: { "content-type": "application/json" } });
   }
 };
