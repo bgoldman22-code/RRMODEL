@@ -1,126 +1,112 @@
 // netlify/functions/hrr-slate.mjs
-import { jsonResponse } from "./_lib/http.mjs";
+export const handler = async (event) => {
+  try {
+    const url = new URL(event.rawUrl || `http://localhost`);
+    const date = (url.searchParams.get('date') || '').trim() || new Date().toISOString().slice(0,10);
 
-const MARKET_KEYS = ["batter_hits_runs_rbis", "batter_hits_runs_rbis_alternate"];
-const ACCEPT_OVER_NAMES = new Set(["Over","over","OVER"]);
-const EPS = 1e-6;
+    // Pull odds from internal odds endpoint
+    const oddsUrl = new URL('/.netlify/functions/odds-hrr', 'http://localhost');
+    oddsUrl.searchParams.set('date', date);
 
-const decToProb = (d) => (d && d > 1 ? 1 / d : null);
-const probToDec = (p) => (p && p > 0 ? 1 / p : null);
-const decToAmerican = (d) => {
-  if (!d || d <= 1) return null;
-  const p = 1 / d;
-  if (p <= 0.5) return Math.round(((1 - p) / p) * 100);
-  return Math.round(-100 * p / (1 - p));
-};
-
-function normStr(x){ return (x ?? "").toString().trim().replace(/\s+/g," "); }
-
-function* outcomeWalk(offer) {
-  if (offer?.outcomes?.length) yield* offer.outcomes.map(oc => ({ oc, src:"root", bookmaker: offer.bookmaker }));
-  if (offer?.markets?.length) {
-    for (const m of offer.markets) {
-      if (m?.outcomes?.length) yield* m.outcomes.map(oc => ({ oc, src:"markets", bookmaker: m.bookmaker || offer.bookmaker }));
+    const res = await fetch(oddsUrl.pathname + '?' + oddsUrl.searchParams.toString(), { method: 'GET' });
+    if (!res.ok) {
+      throw new Error(`odds-hrr HTTP ${res.status}`);
     }
-  }
-  if (offer?.bookmakers?.length) {
-    for (const bk of offer.bookmakers) {
-      for (const m of bk.markets || []) {
-        if (m?.outcomes?.length) yield* m.outcomes.map(oc => ({ oc, src:"bookmakers", bookmaker: bk.title || bk.key || bk.name }));
+    const data = await res.json();
+
+    const offers = Array.isArray(data.offers) ? data.offers : [];
+    const playersMap = new Map();
+
+    const pushOffer = (o) => {
+      if (!o) return;
+      const market = o.market || o.key || '';
+      const player = o.player || (o.description || '').trim();
+      const game = o.game || o.event || '';
+      const bookmaker = o.bookmaker || o.book || (o.bookmakers && o.bookmakers[0] && o.bookmakers[0].title) || '';
+      const point = Number(o.point ?? o.line ?? o.handicap ?? NaN);
+      const name = (o.name || '').toLowerCase();
+      const priceDec = Number(o.decimal || o.price || o.oddsDecimal || NaN);
+      const priceAm = o.american || o.oddsAmerican || null;
+
+      // Only Over 1.5 (aka 2+) for HRR
+      const isOver = name.includes('over');
+      const isRightPoint = Math.abs(point - 1.5) < 1e-9;
+
+      const isHRR = (market || '').includes('hits_runs_rbis');
+      if (!isHRR) return;
+
+      if (!player || !isOver || !isRightPoint || !isFinite(priceDec) || priceDec <= 1) return;
+
+      const key = `${player}__${game}`;
+      const existing = playersMap.get(key);
+      if (!existing || priceDec > existing.priceDec) {
+        playersMap.set(key, { player, game, bookmaker: String(bookmaker || '').toLowerCase(), priceDec, priceAm, point, market });
+      }
+    };
+
+    // Flatten shapes
+    for (const g of offers) {
+      if (!g) continue;
+
+      if (Array.isArray(g.outcomes)) {
+        for (const o of g.outcomes) pushOffer({ ...o, market: g.market, game: g.game, bookmaker: g.bookmaker });
+      }
+
+      if (Array.isArray(g.markets)) {
+        for (const m of g.markets) {
+          if (Array.isArray(m.outcomes)) {
+            for (const o of m.outcomes) pushOffer({ ...o, market: m.key || m.market, game: g.game, bookmaker: g.bookmaker });
+          }
+        }
+      }
+
+      if (Array.isArray(g.bookmakers)) {
+        for (const b of g.bookmakers) {
+          if (Array.isArray(b.markets)) {
+            for (const m of b.markets) {
+              if (Array.isArray(m.outcomes)) {
+                for (const o of m.outcomes) pushOffer({ ...o, market: m.key || m.market, game: g.game, bookmaker: b.title || b.key });
+              }
+            }
+          }
+        }
       }
     }
-  }
-}
 
-function collectOffers(raw){
-  const rows = [];
-  for (const o of (raw.offers || [])) {
-    const market = o.market || o.key || o.market_key || "";
-    if (!MARKET_KEYS.includes(market)) continue;
-
-    const candidates = [];
-    for (const { oc, bookmaker } of outcomeWalk(o)) {
-      const side = oc.name || oc.label || oc.outcome;
-      if (!ACCEPT_OVER_NAMES.has(String(side))) continue;
-
-      const name = normStr(oc.description || oc.player || o.player);
-      if (!name) continue;
-
-      const game = normStr(o.game || oc.game || "");
-      const pointRaw = oc.point ?? o.point;
-      const point = Number(pointRaw);
-      if (!Number.isFinite(point)) continue;
-
-      // STRICT: only Over 1.5 HRR
-      if (Math.abs(point - 1.5) > EPS) continue;
-
-      const decimal = Number(oc.decimal ?? oc.price ?? oc.odds_decimal);
-      if (!(decimal > 1)) continue;
-      const american = Number(oc.american ?? oc.odds_american) || decToAmerican(decimal);
-
-      candidates.push({
-        player: name,
+    const players = [];
+    for (const { player, game, bookmaker, priceDec, priceAm, point } of playersMap.values()) {
+      const implied = 1 / priceDec;
+      players.push({
+        player,
+        team: '',
         game,
-        bookmaker: normStr(bookmaker || o.bookmaker),
-        point,
-        decimal,
-        american,
-        market
+        modelProb: implied,
+        modelOdds: (1/implied - 1) > 0 ? `+${Math.round((1/implied - 1)*100)}` : `${Math.round((1/implied - 1)*100)}`,
+        realOdds: priceAm || `~${priceDec.toFixed(2)}d`,
+        ev: (implied * (priceDec - 1) - (1 - implied)).toFixed(3),
+        why: `HRR Over 1.5 (2+) • ${bookmaker}`
       });
     }
 
-    // best (highest decimal) per player+game
-    const best = new Map();
-    for (const it of candidates) {
-      const key = `${it.player}::${it.game}`;
-      const prev = best.get(key);
-      if (!prev || it.decimal > prev.decimal) best.set(key, it);
-    }
-    for (const v of best.values()) rows.push(v);
-  }
-  return rows;
-}
-
-export const handler = async (event) => {
-  try {
-    const date = (event.queryStringParameters?.date || "").trim() || new Date().toISOString().slice(0,10);
-    const base = `${event.headers["x-forwarded-proto"] || "https"}://${event.headers.host}`;
-    const oddsUrl = `${base}/.netlify/functions/odds-hrr?date=${encodeURIComponent(date)}`;
-
-    const res = await fetch(oddsUrl);
-    if (!res.ok) throw new Error(`odds fetch ${res.status}`);
-    const odds = await res.json();
-
-    const rows = collectOffers(odds);
-
-    const players = rows.map(r => {
-      const modelProb = decToProb(r.decimal); // fallback until model plugged
-      const modelOddsDec = probToDec(modelProb);
-      const ev = (modelProb ?? 0) - (decToProb(r.decimal) ?? 0);
-      const why = `Over 1.5 (2+) • ${r.bookmaker || "book"}`;
-      return {
-        player: r.player,
-        team: "",
-        game: r.game,
-        modelProb: modelProb != null ? Number(modelProb.toFixed(4)) : null,
-        modelOdds: modelOddsDec ? `+${decToAmerican(modelOddsDec)}` : null,
-        realOdds: r.american != null ? (r.american > 0 ? `+${r.american}` : `${r.american}`) : null,
-        ev: Number(ev.toFixed(3)),
-        why
-      };
-    });
-
-    players.sort((a,b)=>(b.modelProb||0)-(a.modelProb||0));
-
-    return jsonResponse({
-      ok:true,
-      market:"batter_hits_runs_rbis(Over 1.5 only)",
+    const body = {
+      ok: true,
+      market: 'batter_hits_runs_rbis',
       date,
-      meta:{ provider: odds.provider, usingOddsApi: odds.usingOddsApi },
+      meta: { provider: data.provider || 'theoddsapi', usingOddsApi: !!data.usingOddsApi },
       count: players.length,
       players
-    });
+    };
+
+    return {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
+      body: JSON.stringify(body)
+    };
   } catch (err) {
-    return jsonResponse({ ok:false, error:String(err), count:0, players:[] }, 200);
+    return {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
+      body: JSON.stringify({ ok: false, error: String(err), count: 0, players: [] })
+    };
   }
 };
