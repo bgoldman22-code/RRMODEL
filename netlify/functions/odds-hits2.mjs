@@ -1,117 +1,82 @@
 // netlify/functions/odds-hits2.mjs
-// MLB 2+ Hits odds via TheOddsAPI: market=player_hits (Over @ point >= 1.5), regions=us, oddsFormat=american.
-// Optional ALT fallback via ALT_ODDS_URL + ALT_ODDS_HEADER + ALT_ODDS_API_KEY.
-const norm = s => (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\./g,"").replace(/\s+/g," ").trim().toLowerCase();
-const americanToDecimal = a => { if(a==null) return null; const n=Number(a); if(!isFinite(n)) return null; return n>0?1+n/100:1+100/Math.abs(n); };
-const decToAmerican = d => { if(!d||d<=1) return null; return d>=2? Math.round((d-1)*100): Math.round(-100/(d-1)); };
+// Fetch MLB player hits odds (Over 1.5+) from The Odds API and normalize to unified offers.
+const ODDS_KEY = process.env.THEODDSAPI_KEY || process.env.ODDS_API_KEY;
+const REGIONS = process.env.ODDS_REGIONS || "us";
+const BOOKS = (process.env.BOOKMAKERS || "").split(",").map(s=>s.trim()).filter(Boolean);
+const MARKET = process.env.ODDSMARKET_HITS || "player_hits";
+const API_BASE = process.env.THEODDSAPI_BASE || "https://api.the-odds-api.com/v4";
 
-async function fetchJson(url, headers={}) {
-  const r = await fetch(url, { headers: { "User-Agent":"hits2/1.0", ...headers }, cache:"no-store" });
-  if (!r.ok) throw new Error(`HTTP ${r.status} ${url}`);
+const json = (status, body) => ({ statusCode: status, headers: { "content-type":"application/json" }, body: JSON.stringify(body) });
+const ok = (body) => json(200, body);
+const fail = (msg, extra={}) => json(200, { ok:false, error: String(msg), ...extra });
+
+async function fetchJson(url) {
+  const r = await fetch(url, { headers: { "User-Agent": "odds-hits2/1.0" }, redirect: "follow", cache: "no-store" });
+  if (!r.ok) {
+    const text = await r.text().catch(()=> "");
+    throw new Error(`HTTP ${r.status} for ${url} :: ${text?.slice(0,240)}`);
+  }
   return await r.json();
 }
 
-function pickBestByPlayer(candidates) {
-  const best = new Map();
-  for (const o of candidates) {
-    const prev = best.get(o.playerKey);
-    if (!prev || o.decimal > prev.decimal) best.set(o.playerKey, o);
-  }
-  return Array.from(best.values());
-}
-
-// 1) Primary: /odds endpoint with market=player_hits
-async function fromTOAOdds(apiKey, date) {
-  const markets = (process.env.ODDS_MARKET_HITS || "player_hits").split(",").map(s=>s.trim()).filter(Boolean);
-  const url = `https://api.the-odds-api.com/v4/sports/baseball_mlb/odds?apiKey=${apiKey}&regions=us&oddsFormat=american&markets=${encodeURIComponent(markets.join(","))}&dateFormat=iso${date?`&date=${date}`:""}`;
-  const arr = await fetchJson(url).catch(()=>null);
-  if (!Array.isArray(arr)) return { offers: [], path: "toa:odds-error" };
-
-  const offers = [];
-  for (const ev of arr) {
-    const eventId = ev.id;
-    for (const bk of (ev.bookmakers||[])) {
-      for (const mkt of (bk.markets||[])) {
-        // The market is already player_hits
-        const point = mkt.point; // may be undefined; outcomes can still have point
-        for (const oc of (mkt.outcomes||[])) {
-          const name = (oc.name || "").toLowerCase();
-          const desc = oc.description || oc.participant || oc.player || "";
-          const player = desc || ""; // TheOddsAPI uses description as player name here
-          const outcomePoint = oc.point ?? point;
-          const isOver = name === "over" || /over/.test(name);
-          const ok15 = outcomePoint!=null ? Number(outcomePoint) >= 1.5 : /1\.5/.test(name);
-          if (!isOver || !ok15 || !player) continue;
-
-          const key = norm(player);
-          const am = typeof oc.price === "number" ? oc.price : (typeof oc.american === "number" ? oc.american : null);
-          const dec = americanToDecimal(am) ?? (typeof oc.decimal === "number" ? oc.decimal : null);
-          if (!dec || dec <= 1) continue;
-
-          offers.push({
-            player, playerKey: key, american: am ?? decToAmerican(dec), decimal: dec,
-            book: bk.key, source: "theoddsapi/odds", eventId
-          });
-        }
-      }
-    }
-  }
-  return { offers: pickBestByPlayer(offers), path: "toa:odds" };
-}
-
-// 2) Fallback: ALT provider (optional)
-async function fromAlt(date) {
-  const base = process.env.ALT_ODDS_URL;
-  if (!base) return { offers: [], path: "alt:none" };
-  const hdrName = process.env.ALT_ODDS_HEADER || "";
-  const key = process.env.ALT_ODDS_API_KEY || "";
-  const headers = hdrName && key ? { [hdrName]: key } : {};
-  const q = new URLSearchParams({ sport: "mlb", market: "player_hits", date }).toString();
-  const j = await fetchJson(`${base}${base.includes("?")?"&":"?"}${q}`, headers).catch(()=>null);
-  if (!j) return { offers: [], path: "alt:error" };
-
-  const offers = [];
-  const visit = (node) => {
-    if (!node || typeof node !== "object") return;
-    if (Array.isArray(node.outcomes)) {
-      for (const oc of node.outcomes) {
-        const name = (oc.name || "").toLowerCase();
-        const desc = oc.description || oc.participant || oc.player || "";
-        const isOver = name === "over" || /over/.test(name);
-        const point = oc.point ?? node.point;
-        if (!isOver || !(point!=null && Number(point) >= 1.5) || !desc) continue;
-        const am = oc.american ?? oc.price ?? oc.odds;
-        const dec = americanToDecimal(am) ?? oc.decimal;
-        if (!dec || dec <= 1) continue;
-        offers.push({ player: desc, playerKey: norm(desc), american: am ?? decToAmerican(dec), decimal: dec, book: node.bookmaker || node.book || "alt", source: "alt" });
-      }
-    }
-    for (const k of Object.keys(node)) {
-      const v = node[k];
-      if (v && typeof v === "object") visit(v);
-      if (Array.isArray(v)) for (const it of v) visit(it);
-    }
-  };
-  visit(j);
-  return { offers: pickBestByPlayer(offers), path: "alt" };
+function americanFromDecimal(d) {
+  const x = Number(d);
+  if (!isFinite(x) || x <= 1) return null;
+  return x >= 2 ? Math.round((x-1)*100) : Math.round(-100/(x-1));
 }
 
 export const handler = async (event) => {
   try {
-    const params = new URLSearchParams(event.queryStringParameters || {});
-    const date = params.get("date") || new Date().toISOString().slice(0,10);
-    const apiKey = process.env.ODDS_API_KEY || process.env.VITE_ODDS_API_KEY;
+    const qs = new URLSearchParams(event.queryStringParameters||{});
+    const date = qs.get("date") || new Date().toISOString().slice(0,10);
 
-    let res = { offers: [], path: "none" };
-    if (apiKey) res = await fromTOAOdds(apiKey, date);
-    if (!res.offers.length) res = await fromAlt(date);
+    if (!ODDS_KEY) return fail("missing THEODDSAPI_KEY", { provider:"theoddsapi", usingOddsApi:false, date, count:0, offers:[] });
 
-    return {
-      statusCode: 200,
-      headers: { "content-type":"application/json" },
-      body: JSON.stringify({ ok:true, provider: res.offers.length ? res.offers[0]?.source || "unknown" : "none", usingOddsApi: !!apiKey, path: res.path, count: res.offers.length, offers: res.offers })
-    };
+    const url = `${API_BASE}/sports/baseball_mlb/odds/?apiKey=${encodeURIComponent(ODDS_KEY)}&regions=${encodeURIComponent(REGIONS)}&markets=${encodeURIComponent(MARKET)}&oddsFormat=decimal`;
+    const data = await fetchJson(url);
+
+    const offers = [];
+    for (const game of data || []) {
+      const commence = game.commence_time;
+      const home = game.home_team;
+      const away = game.away_team;
+      const books = game.bookmakers || [];
+      for (const bm of books) {
+        if (BOOKS.length && !BOOKS.includes(bm.key)) continue;
+        const mk = (bm.markets || []).find(m => m.key === MARKET);
+        if (!mk) continue;
+        for (const o of mk.outcomes || []) {
+          // We want Over on 1.5 (or higher if book only posts 2.5 etc.)
+          if ((o.name || "").toLowerCase() !== "over") continue;
+          const point = Number(o.point);
+          if (!(point >= 1.5)) continue;
+          const dec = Number(o.price);
+          const american = americanFromDecimal(dec);
+          // description may contain player name; some books put it in 'description'
+          const player = o.description || o.player || o.participant || null;
+          if (!player) continue;
+          offers.push({
+            player,
+            team: "", game: `${away}@${home}`,
+            bookmaker: bm.key,
+            point, decimal: dec, american, commence
+          });
+        }
+      }
+    }
+
+    // Deduplicate by (player, best price)
+    const best = new Map();
+    for (const x of offers) {
+      const k = x.player.toLowerCase();
+      const prev = best.get(k);
+      if (!prev || (Number(x.decimal||0) > Number(prev.decimal||0))) best.set(k, x);
+    }
+    const out = Array.from(best.values());
+    out.sort((a,b)=> (b.decimal||0) - (a.decimal||0));
+
+    return ok({ ok:true, provider:"theoddsapi", usingOddsApi:true, date, count: out.length, offers: out });
   } catch (err) {
-    return { statusCode: 200, headers: { "content-type":"application/json" }, body: JSON.stringify({ ok:false, error:String(err), count:0, offers:[] }) };
+    return fail(err);
   }
 };
