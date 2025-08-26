@@ -1,5 +1,5 @@
 // snippets/HeaderNav.links.example.js
-// Use this if your header builds from a `links` array.
+// Replace your header links array with this one (labels only changed).
 export const LINKS = [
   { key:'home',     label:'Home',        href:'/' },
   { key:'mlb_hr',   label:'MLB HR',      href:'/mlb-hr' },
