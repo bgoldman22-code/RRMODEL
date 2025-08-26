@@ -1,12 +1,14 @@
 // netlify/functions/hrr-slate.mjs
-// Build MLB Over 1.5 Hits+Runs+RBIs slate from odds + StatsAPI + game context; compute model probability and EV.
-// Approach: Poisson for total events with lambda = E[hits] + E[runs] + E[rbi]. Adjust with SP strength, bullpen fatigue, H/A.
+// MLB Over 1.5 Hits+Runs+RBIs model with matchup & park context.
+// - Uses TheOddsAPI via odds-hrr (events → per-event props)
+// - StatsAPI: season + last15 + batter handedness
+// - Game context: opposing SP (name/hand), bullpen last 3d IP
+// - Park factors: small built-in map by HOME team
 // Output: player | game | modelProb | modelOdds | realOdds | EV | Why
 
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 const americanToDecimal = (a) => { if(a==null) return null; const n=Number(a); if(!isFinite(n)) return null; return n>0?1+n/100:1+100/Math.abs(n); };
 const decFromAm = americanToDecimal;
-const expm1 = Math.expm1 || ((z)=>Math.exp(z)-1);
 
 // Poisson P(X>=2) = 1 - (e^-λ * (1 + λ))
 function poissonAtLeast2(lambda){
@@ -24,7 +26,7 @@ function absoluteFunctionUrl(event, path) {
 }
 
 async function fetchJson(url, headers={}) {
-  const r = await fetch(url, { headers: { "User-Agent":"hrr/1.0", ...headers }, cache:"no-store" });
+  const r = await fetch(url, { headers: { "User-Agent":"hrr/1.1", ...headers }, cache:"no-store" });
   if (!r.ok) throw new Error(`HTTP ${r.status} ${url}`);
   return await r.json();
 }
@@ -41,15 +43,37 @@ async function getGameContext(event, date) {
     const map = new Map();
     for (const g of (ctx?.context||[])) {
       map.set(g.gamePk, g);
-      // Also map by teams for convenience
-      const keyA = `${g.away?.name||""}@${g.home?.name||""}`.toLowerCase();
-      map.set(keyA, g);
+      const keyTeams = `${g.away?.name||""}@${g.home?.name||""}`.toLowerCase();
+      map.set(keyTeams, g);
     }
     return map;
   } catch { return new Map(); }
 }
 
-// MLB People: season + last15 for batters
+// Park factor map (very light-weight, tweak as needed; 1.00 = neutral)
+const PARK_FACTOR = {
+  "Colorado Rockies": 1.08,
+  "Cincinnati Reds": 1.05,
+  "Texas Rangers": 1.04,
+  "Boston Red Sox": 1.04,
+  "Atlanta Braves": 1.03,
+  "New York Yankees": 1.03,
+  "Los Angeles Dodgers": 1.02,
+  "Chicago White Sox": 1.02,
+  "Arizona Diamondbacks": 1.02,
+  "Chicago Cubs": 1.02,
+  "Philadelphia Phillies": 1.02,
+  "Kansas City Royals": 1.02,
+  // slight pitchers' parks
+  "San Diego Padres": 0.98,
+  "Seattle Mariners": 0.98,
+  "Tampa Bay Rays": 0.98,
+  "Miami Marlins": 0.97,
+  "Detroit Tigers": 0.97,
+  "Cleveland Guardians": 0.97,
+};
+
+// MLB People hydrate incl. handedness + stats (season, last15)
 async function getBatterStats(ids) {
   if (!ids.length) return {};
   const hydrate = encodeURIComponent("stats(type=season,group=hitting),stats(type=lastXGames,group=hitting,gameLog=false,gamesPlayed=15)");
@@ -80,8 +104,9 @@ async function getBatterStats(ids) {
       rbi_per_pa: lPA>0 ? lRBI/lPA : seasonRates.rbi_per_pa,
       ab_per_pa: lPA>0 ? lAB/lPA : seasonRates.ab_per_pa,
     };
+    const batHand = p?.batSide?.code || p?.batSide?.description || null; // 'L','R','S'
     out[p.fullName?.toLowerCase()] = {
-      id: p.id, fullName: p.fullName,
+      id: p.id, fullName: p.fullName, batHand,
       seasonRates, last15Rates,
       seasonPA: sPA, last15PA: lPA
     };
@@ -104,20 +129,36 @@ async function lookupMLBId(name) {
   return id;
 }
 
-// Opposing SP helper (from mlb-game-context)
-function extractOpponentInfo(gameCtx, gameStr, playerTeamGuess) {
-  // gameStr like "Away@Home"
-  const g = gameCtx.get((gameStr||"").toLowerCase()) || null;
-  if (!g) return { oppName:null, oppHand:null, bullpenIP3d:0 };
-  const opp = (playerTeamGuess && g.home?.name && g.away?.name)
-    ? (playerTeamGuess.toLowerCase() === (g.home.name||"").toLowerCase() ? g.away : g.home)
-    : g.away; // default
-  const sp = opp?.starter || {};
-  return { oppName: sp.name || null, oppHand: sp.hand || null, bullpenIP3d: Number(opp?.bullpenLast3dIP||0) || 0 };
+async function fetchJson(url, headers={}) {
+  const r = await fetch(url, { headers: { "User-Agent":"hrr/1.1", ...headers }, cache:"no-store" });
+  if (!r.ok) throw new Error(`HTTP ${r.status} ${url}`);
+  return await r.json();
 }
 
-// Model
-function blend(a, b, w=0.4){ return (1-w)*a + w*b; }
+// Opposing SP helper (from mlb-game-context)
+function extractOpponentInfo(gameCtx, gameStr, playerTeamGuess) {
+  const g = gameCtx.get((gameStr||"").toLowerCase()) || null;
+  if (!g) return { oppName:null, oppHand:null, bullpenIP3d:0, homeTeam:null };
+  const homeTeam = g.home?.name || null;
+  const opp = (playerTeamGuess && g.home?.name && g.away?.name)
+    ? (playerTeamGuess.toLowerCase() === (g.home.name||"").toLowerCase() ? g.away : g.home)
+    : g.away;
+  const sp = opp?.starter || {};
+  return { oppName: sp.name || null, oppHand: sp.hand || null, bullpenIP3d: Number(opp?.bullpenLast3dIP||0) || 0, homeTeam };
+}
+
+// Handedness multipliers (coarse priors)
+function handednessAdj(batHand, oppHand){
+  if (!batHand || !oppHand) return 1.0;
+  const b = batHand[0].toUpperCase(); // 'L','R','S'
+  const p = oppHand[0].toUpperCase(); // 'L','R'
+  if (b === 'S') return 1.02; // slight bump for switch
+  if (b === 'R' && p === 'L') return 1.03;
+  if (b === 'L' && p === 'R') return 1.03;
+  if (b === 'R' && p === 'R') return 0.99;
+  if (b === 'L' && p === 'L') return 0.99;
+  return 1.0;
+}
 
 export const handler = async (event) => {
   try {
@@ -142,7 +183,7 @@ export const handler = async (event) => {
     const ids = Array.from(nameToId.values());
     const stats = await getBatterStats(ids);
 
-    // 3) Game context (opposing SP, bullpen fatigue)
+    // 3) Game context (opposing SP, bullpen fatigue, home team for park)
     const gameCtx = await getGameContext(event, date);
 
     const rows = [];
@@ -150,29 +191,28 @@ export const handler = async (event) => {
       const key = o.player.toLowerCase();
       const st = stats[key];
       if (!st) continue;
+      const { oppName, oppHand, bullpenIP3d, homeTeam } = extractOpponentInfo(gameCtx, o.game, o.team);
 
-      // Rates (season/last15 blend)
+      // Season/last15 rates
       const rS = st.seasonRates, rL = st.last15Rates;
-      const h_pa = blend(rS.h_per_pa, rL.h_per_pa, 0.4);
-      const r_pa = blend(rS.r_per_pa, rL.r_per_pa, 0.4);
-      const rbi_pa = blend(rS.rbi_per_pa, rL.rbi_per_pa, 0.4);
-      const ab_pa = blend(rS.ab_per_pa, rL.ab_per_pa, 0.3);
+      let h_pa = 0.6*rS.h_per_pa + 0.4*rL.h_per_pa;
+      let r_pa = 0.6*rS.r_per_pa + 0.4*rL.r_per_pa;
+      let rbi_pa = 0.6*rS.rbi_per_pa + 0.4*rL.rbi_per_pa;
 
-      // Expected PA: baseline 4.3 with tiny adjustment via season PA (playing time proxy)
+      // Handedness bump
+      const hMult = handednessAdj(st.batHand, oppHand);
+      h_pa *= hMult; r_pa *= hMult; rbi_pa *= hMult;
+
+      // Expected PA with tiny playing-time proxy
       let expPA = clamp(3.6 + Math.min(0.7, (st.seasonPA||0)/650 * 0.7), 3.2, 5.2);
 
-      // Opponent adjustment
-      const { oppName, oppHand, bullpenIP3d } = extractOpponentInfo(gameCtx, o.game, o.team);
+      // Bullpen fatigue bump
       let adj = 1.0;
-      if (bullpenIP3d && bullpenIP3d > 9) adj += 0.04;         // tired pen -> small bump
-      if (oppHand === "L" || oppHand === "R") adj += 0.0;       // placeholder; could use splits
+      if (bullpenIP3d && bullpenIP3d > 9) adj += 0.04;
 
-      // Home vs away (approx)
-      if (o.game && o.game.includes("@")) {
-        const [away, home] = o.game.split("@");
-        // crude home boost
-        // if player's team known, we could detect; absent that, tiny neutral +0
-      }
+      // Park factor (home team's park)
+      const pf = homeTeam ? (PARK_FACTOR[homeTeam] || 1.00) : 1.00;
+      adj *= pf;
 
       // Expected components
       const expHits = expPA * h_pa;
@@ -186,10 +226,11 @@ export const handler = async (event) => {
       const ev = dec ? prob*(dec-1)-(1-prob) : null;
 
       const why = [
-        `rates h:${h_pa.toFixed(3)} r:${r_pa.toFixed(3)} rbi:${rbi_pa.toFixed(3)} per PA`,
+        `rates/PA h:${h_pa.toFixed(3)} r:${r_pa.toFixed(3)} rbi:${rbi_pa.toFixed(3)}`,
         `expPA ${expPA.toFixed(1)}`,
         oppName ? `oppSP ${oppName}${oppHand?("/"+oppHand):""}` : null,
         bullpenIP3d ? `pen3d ${bullpenIP3d.toFixed(1)} IP` : null,
+        pf!==1 ? `park ${homeTeam||"?"} x${pf.toFixed(2)}` : null,
       ].filter(Boolean).join(" • ");
 
       rows.push({ player: o.player, team: o.team||"", game: o.game||"", line: o.point, modelProb: prob, modelOdds, realOdds: o.american ?? null, ev, why });
