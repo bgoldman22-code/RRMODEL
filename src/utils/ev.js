@@ -1,18 +1,42 @@
 // src/utils/ev.js
-export function americanFromProb(p){
-  const q = Math.min(0.999, Math.max(0.001, Number(p)||0));
-  const dec = 1 / q;
-  if(dec >= 2){ return Math.round((dec - 1) * 100); }
-  return Math.round(-100 / (dec - 1));
+export function impliedFromAmerican(american) {
+  if (american == null) return null;
+  const A = Number(american);
+  if (!Number.isFinite(A)) return null;
+  if (A >= 0) return 100 / (A + 100);
+  const abs = Math.abs(A);
+  return abs / (abs + 100);
 }
-export function impliedFromAmerican(american){
-  const a = Number(american);
-  if(isNaN(a)) return null;
-  if(a > 0) return 100 / (a + 100);
-  return -a / (-a + 100);
+
+export function americanFromProb(p) {
+  const P = Number(p);
+  if (!Number.isFinite(P) || P <= 0 || P >= 1) return null;
+  if (P <= 0.5) return Math.round(((1 - P) / P) * 100);
+  return -Math.round((P / (1 - P)) * 100);
 }
-export function evFromProbAndOdds(p, american){
-  const q = Math.min(0.999, Math.max(0.001, Number(p)||0));
-  const dec = (a => a>0 ? (1 + a/100) : (1 + 100/(-a)))(american);
-  return (q * dec) - (1 - q);
+
+export function americanToDecimal(american) {
+  if (american == null) return null;
+  const A = Number(american);
+  if (!Number.isFinite(A)) return null;
+  return A > 0 ? 1 + A / 100 : 1 + 100 / Math.abs(A);
 }
+
+export function evFromProbAndOdds(p, american, stake = 1) {
+  const dec = americanToDecimal(american);
+  if (dec == null) return null;
+  const profit = (dec - 1) * stake;
+  return p * profit - (1 - p) * stake;
+}
+
+export function expectedValue1U(p, american) {
+  return evFromProbAndOdds(p, american, 1);
+}
+
+export default {
+  impliedFromAmerican,
+  americanFromProb,
+  americanToDecimal,
+  evFromProbAndOdds,
+  expectedValue1U,
+};

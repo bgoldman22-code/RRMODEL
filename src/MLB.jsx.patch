@@ -1,0 +1,89 @@
+*** PATCH FOR src/MLB.jsx ***
+--- FIND & REPLACE (syntax fixes) ---
+1) Replace BOTH occurrences:
+   " and "
+   with
+   " && "
+   ONLY on the two lines in the new helper where they appear as:
+   - if (typeof usage === 'number' and usage > 1) ...
+   - const onePitch = typeof usage === 'number' and usage >= 0.45;
+   - const crushes = typeof damage === 'number' and damage >= 0.50;
+   After replacement they must read:
+   - if (typeof usage === 'number' && usage > 1) ...
+   - const onePitch = typeof usage === 'number' && usage >= 0.45;
+   - const crushes = typeof damage === 'number' && damage >= 0.50;
+
+2) Fix stray paren near where you spread candidate diagnostics. Find the object literal
+   that currently looks like:
+     , mpex: !!c._mpex })    <-- (there is an extra ')')
+   and change it to:
+     , mpex: !!c._mpex }
+
+--- INSERT (helper) ---
+Place the following helper near your other multipliers, at top-level in src/MLB.jsx:
+
+// === Moderate-power exploitable micro-boost helper ===
+function moderatePowerExploitableMultiplier(candidate, pModelPre) {
+  try {
+    // Expecting these optional fields if you already have them on candidate:
+    // candidate.pitcherTopPitch { type: '4-Seam Fastball' | 'Slider' | ... , usage: 0..1 or 0..100 }
+    // candidate.hitterDamageVsPitch: { '4-Seam Fastball': 0..1, 'Slider': 0..1, ... }  // xwOBA-like scale
+    // If they're missing, no adjustment.
+    const pt = candidate?.pitcherTopPitch;
+    const dmg = candidate?.hitterDamageVsPitch;
+    if (!pt || !pt.type) return 1;
+
+    let usage = pt.usage;
+    if (typeof usage === 'string') {
+      const m = usage.strip?.().replace('%','');
+      const v = Number(m);
+      if (!Number.isFinite(v)) return 1;
+      usage = v;
+    }
+    // normalize to 0..1 if given in percent
+    if (typeof usage === 'number' && usage > 1) usage = usage / 100;
+
+    const onePitch = typeof usage === 'number' && usage >= 0.45; // "predictable" threshold
+
+    // Damage metric for hitter vs that pitch
+    let damage = null;
+    if (dmg && typeof dmg === 'object') {
+      const key = String(pt.type || '').trim();
+      if (key && key in dmg) damage = dmg[key];
+    }
+    // "crushes" if xwOBA-like >= .500 or a rate-like metric suggests strong platoon/pitch fit
+    const crushes = typeof damage === 'number' && damage >= 0.50;
+
+    // Base micro-boost only for moderate-power band
+    const isModerate = pModelPre >= 0.20 && pModelPre <= 0.30;
+
+    let mult = 1;
+    if (isModerate && onePitch && crushes) {
+      mult *= 1.03; // +3%
+    } else if (isModerate && crushes) {
+      mult *= 1.015; // +1.5% if fit but pitcher isn’t extremely predictable
+    } else if (isModerate && onePitch) {
+      mult *= 1.01; // +1% if pitcher predictable but hitter only neutral
+    }
+    return mult;
+  } catch {
+    return 1;
+  }
+}
+// === end helper ===
+
+--- INSERT (call-site) ---
+After you finish your park / hot-cold / weather adjustments (i.e., once you have pModel),
+but before EV is computed and BEFORE pushing the row to any table, add this guarded call:
+
+// Moderate-power exploitable micro-boost (guarded to avoid double-apply)
+if (!candidate._mpex_applied) {
+  const mpex = moderatePowerExploitableMultiplier(candidate, pModel);
+  if (mpex > 1) {
+    pModel = Math.min(pModel * mpex, 0.60); // safety cap
+    if (Array.isArray(why)) why.push('mod-power exploitable +3%');
+  }
+  candidate._mpex_applied = true;
+}
+
+*** END PATCH ***

@@ -12,6 +12,8 @@ import MLB_SB from "./MLB_SB.jsx";
 import MLB_HITS2 from "./MLB_HITS2.jsx";
 import NFL_NegCorr from "./NFL_NegCorr.jsx";
 import FooterDiagnostics from "./components/FooterDiagnostics.jsx";
+import Parlays from "./Parlays.jsx";
+import { ENABLE_NFL_TD } from './config/features.js';
 
 export default function App() {
   return (
@@ -26,12 +28,14 @@ export default function App() {
             <Link to="/nfl">NFL TD</Link>
             <Link to="/nfl-negcorr">NFL NegCorr</Link>
             <Link to="/soccer">Soccer AGS</Link>
+            <Link to="/parlays">Parlays</Link>
           </div>
         </nav>
 
         <div className="max-w-6xl mx-auto p-4">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/parlays" element={<Parlays />} />
             <Route path="/mlb" element={<MLB />} />
             <Route path="/mlb-sb" element={<MLB_SB />} />
             <Route path="/mlb-hits2" element={<MLB_HITS2 />} />

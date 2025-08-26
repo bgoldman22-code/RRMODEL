@@ -1,0 +1,10 @@
+// src/MLB.jsx (partial) — inject pitcher sanity before rendering rows
+// NOTE: only the relevant fragment is shown. Replace your mapping that builds each table row
+// and add the `ensureOpponentPitcher` guard.
+
+import { ensureOpponentPitcher } from "./utils/pitcher_guard.js";
+
+// ... inside your component where you map `rows` or `picks`:
+const safeRows = rows.map(r => ensureOpponentPitcher(r));
+
+// Use `safeRows` instead of `rows` when rendering and when passing to buildWhy(...).
