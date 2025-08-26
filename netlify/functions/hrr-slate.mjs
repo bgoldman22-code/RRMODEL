@@ -1,53 +1,73 @@
 /**
- * MLB HRR (Hits+Runs+RBIs) slate — robust parser + odds-implied fallback
- * - Reads odds from /.netlify/functions/odds-hrr
- * - Accepts Over at points 1.5 and 2.5 (primary + alternate)
- * - Populates rows even if model feed is disconnected
- * - Always returns HTTP 200 + JSON
+ * MLB HRR slate — ultra-robust
+ * Traverses OddsAPI shapes and filters markets:
+ *   batter_hits_runs_rbis, batter_hits_runs_rbis_alternate
+ * Accepts Over @ 1.5 or 2.5. Uses odds-implied p as fallback model.
  */
-const CORS = {
-  "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, OPTIONS",
-  "content-type": "application/json"
-};
-
+const CORS = { "access-control-allow-origin":"*", "access-control-allow-methods":"GET, OPTIONS", "content-type":"application/json" };
 const siteFallback = "https://bgroundrobin.com";
+const HRR_MARKETS = new Set(["batter_hits_runs_rbis","batter_hits_runs_rbis_alternate"]);
+
 function baseOrigin(event) {
   if (process.env.URL && /^https?:\/\//.test(process.env.URL)) return process.env.URL.replace(/\/+$/,"");
   const host = event?.headers?.host;
   if (host) return `https://${host}`;
   return siteFallback;
 }
-
 const toAmerican = (dec) => (!dec || dec <= 1) ? 0 : (dec >= 2 ? Math.round((dec-1)*100) : Math.round(-100/(dec-1)));
 const clamp = (x, a=0, b=1) => Math.max(a, Math.min(b, x));
 const evDecimal = (p, dec) => (p * (dec - 1)) - (1 - p);
 const title = (s) => (s||"").replace(/\s+/g," ").trim().replace(/\b\w/g, c=>c.toUpperCase());
 
-function parsePointFromText(txt) {
-  if (!txt) return null;
-  const m = String(txt).toLowerCase().match(/over\s*([0-9]+(?:\.[0-9]+)?)/);
-  if (m) return Number(m[1]);
-  return null;
-}
 function asDecimal(o) {
   if (!o) return null;
   const dec = Number(o.price ?? o.odds ?? o.decimal ?? o.decimalOdds);
   return (isFinite(dec) && dec > 1) ? dec : null;
 }
+function parsePointFromText(txt) {
+  if (!txt) return null;
+  const m = String(txt).toLowerCase().match(/([0-9]+(?:\.[0-9]+)?)/);
+  return m ? Number(m[1]) : null;
+}
 function outcomeIsOverHRR(o) {
   const name = (o?.name||"").toLowerCase();
   const desc = (o?.description||"").toLowerCase();
-  const pt = (o?.point!=null && !isNaN(Number(o.point))) ? Number(o.point) : (parsePointFromText(name) ?? parsePointFromText(desc));
-  const isOverWord = name === "over" || name.startsWith("over") || desc.startsWith("over");
-  if (!isOverWord || pt == null) return { ok:false };
-  if (Math.abs(pt - 1.5) < 1e-6 || Math.abs(pt - 2.5) < 1e-6) return { ok:true, point: pt };
+  const label = (o?.label||"").toLowerCase();
+  const any = `${name} ${desc} ${label}`;
+  let pt = (o?.point!=null && !isNaN(Number(o.point))) ? Number(o.point) : parsePointFromText(any);
+  const isOver = name==="over" || name.startsWith("over") || /(^|\s)over(\s|$)/.test(any);
+  if (!isOver || pt==null) return { ok:false };
+  if (Math.abs(pt-1.5)<1e-6 || Math.abs(pt-2.5)<1e-6) return { ok:true, point: pt };
   return { ok:false };
 }
-function pickPlayerLabel(o, off) {
-  return title(
-    o?.description || o?.player || off?.player || off?.participant || off?.participant_name || off?.athlete || off?.label || ""
-  );
+function pickPlayerLabel(o, ctx) {
+  return title(o?.description || o?.player || ctx?.player || ctx?.participant || ctx?.participant_name || ctx?.athlete || ctx?.label || "");
+}
+function* iterOutcomes(offer) {
+  if (Array.isArray(offer?.outcomes)) {
+    const key = offer?.market || offer?.key;
+    if (HRR_MARKETS.has(String(key||""))) {
+      for (const o of offer.outcomes) yield { o, book:(offer?.bookmaker||offer?.book||"book"), game:(offer?.game||offer?.matchup||""), market:key };
+    }
+  }
+  if (Array.isArray(offer?.markets)) {
+    for (const m of offer.markets) {
+      const key = m?.key || m?.market;
+      if (!HRR_MARKETS.has(String(key||""))) continue;
+      for (const o of (m?.outcomes||[])) yield { o, book:(offer?.bookmaker||offer?.book||"book"), game:(offer?.game||offer?.matchup||""), market:key };
+    }
+  }
+  if (Array.isArray(offer?.bookmakers)) {
+    const game = offer?.game || offer?.matchup || "";
+    for (const b of offer.bookmakers) {
+      const bm = b?.title || b?.key || b?.bookmaker || "book";
+      for (const m of (b?.markets||[])) {
+        const key = m?.key || m?.market;
+        if (!HRR_MARKETS.has(String(key||""))) continue;
+        for (const o of (m?.outcomes||[])) yield { o, book: bm, game, market:key };
+      }
+    }
+  }
 }
 
 export const handler = async (event) => {
@@ -64,19 +84,13 @@ export const handler = async (event) => {
 
     const best = new Map();
     for (const off of offers) {
-      const bm = off?.bookmaker || off?.book || "book";
-      const game = off?.game || off?.matchup || "";
-      const outcomes = Array.isArray(off?.outcomes) ? off.outcomes : [];
-      for (const o of outcomes) {
-        const dec = asDecimal(o);
-        if (!dec) continue;
-        const chk = outcomeIsOverHRR(o);
-        if (!chk.ok) continue;
-        const player = pickPlayerLabel(o, off);
-        if (!player) continue;
+      for (const {o, book, game} of iterOutcomes(off)) {
+        const dec = asDecimal(o); if (!dec) continue;
+        const chk = outcomeIsOverHRR(o); if (!chk.ok) continue;
+        const player = pickPlayerLabel(o, off); if (!player) continue;
         const key = player.toLowerCase();
         const prev = best.get(key);
-        if (!prev || dec > prev.dec) best.set(key, { player, dec, book: bm, game, point: chk.point });
+        if (!prev || dec > prev.dec) best.set(key, { player, dec, book, game, point: chk.point });
       }
     }
 
@@ -89,17 +103,14 @@ export const handler = async (event) => {
       let p = 1/dec;
       p = clamp(p * 1.02, 0.02, 0.95);
       players.push({
-        player,
-        team: "",
-        game,
+        player, team:"", game,
         modelProb: p,
         modelOdds: toAmerican(1/Math.max(p, 1e-9)),
         realOdds: toAmerican(dec),
         ev: evDecimal(p, dec),
-        why: `Odds-implied model • Over ${point?.toFixed(1)} HRR • best ${dec.toFixed(2)} @ ${book}`
+        why: `Odds-implied • Over ${point?.toFixed(1)} HRR • ${dec.toFixed(2)} @ ${book}`
       });
     }
-
     players.sort((a,b)=> b.ev - a.ev);
 
     return { statusCode: 200, headers: CORS, body: JSON.stringify({ ok:true, market: odds?.market ?? null, date, meta, count: players.length, players }) };
