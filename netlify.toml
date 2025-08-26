@@ -1,5 +1,5 @@
 [build]
-command = ""
+command = "npm run build"
 publish = "dist"
 
 [functions]
@@ -10,3 +10,5 @@ included_files = []
 
 [build.environment]
 NODE_VERSION = "18"
+# If your project needs a specific pnpm/yarn, uncomment:
+# NPM_FLAGS = "--legacy-peer-deps"
