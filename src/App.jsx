@@ -1,11 +1,11 @@
 // src/App.jsx
 import React from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import MLB_HR from "./MLB_HR.jsx";
-import MLB_HITS2 from "./MLB_HITS2.jsx";
-import NFL_TD from "./NFL_TD.jsx";
-import NegCorr from "./NegCorr.jsx";
-import HRR from "./HRR.jsx";
+import MLB_HR from "./MLB_HR";
+import MLB_HITS2 from "./MLB_HITS2";
+import NFL_TD from "./NFL_TD";
+import NegCorr from "./NegCorr";
+import HRR from "./HRR";
 
 export default function App() {
   return (
