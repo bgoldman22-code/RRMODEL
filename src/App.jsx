@@ -6,6 +6,7 @@ import MLB_HITS2 from "./MLB_HITS2";
 import NFL_TD from "./NFL_TD";
 import NegCorr from "./NegCorr";
 import HRR from "./HRR";
+import SiteFooter from "./components/SiteFooter.jsx";
 
 export default function App() {
   return (
@@ -29,7 +30,9 @@ export default function App() {
           <Route path="/nfl-td" element={<NFL_TD />} />
           <Route path="/nfl-negcorr" element={<NegCorr />} />
         </Routes>
-      </div>
+      
+        <SiteFooter />
+</div>
     </BrowserRouter>
   );
 }

@@ -621,7 +621,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       <LearningDiagnostics />
 {message && <div className="mt-3 text-red-700">{message}</div>}
       <div className="mt-2 text-sm text-gray-600">
-        Date (ET): {meta.date} • Candidates: {meta.totalCandidates||0} • Using OddsAPI: {meta.usedOdds ? "yes":"no"} • Calibration scale: {meta.calibrationScale?.toFixed(2)}
+        Date (ET): {meta.date} • Candidates: {meta.totalCandidates} • used odds: {meta.usedOdds ? "yes" : "no"} • Calibration scale: {meta.calibrationScale?.toFixed(2)}
       </div>
       
       {anchor && (
