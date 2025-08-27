@@ -1,20 +1,22 @@
-PATCH: Header label swap + odds markets endpoint
+# Netlify functions patch (safe blobs + BvP helper)
 
-Includes:
-- netlify/functions/odds-list-markets.mjs
-    * Calls TheOddsAPI /v4/sports/baseball_mlb/odds-markets
-    * Returns all markets & a 'present' subset for HRR/Hits/HomeRuns
+Files to drop into your repo:
 
-- snippets/HeaderNav.links.example.js
-- snippets/HeaderNav.inline.example.jsx
+- netlify/functions/lib/blobs.js      (NEW)
+- netlify/functions/lib/bvp.js        (NEW)
 
-How to apply:
-1) Copy the file in netlify/functions/ into your repo (merge/replace same path).
-2) Update your header nav using one of the snippets (array or inline version).
-   - Remove MLB SB, Soccer AGS, Parlays
-   - Add HRR -> '/hrr'
-3) Ensure you have a route for '/hrr' pointing to your HRR page component.
-4) Commit & deploy a full build (not just Functions) so the header updates.
+Edit **netlify/functions/mlb-preds-get.js**:
+1) Replace the import:
+   from:
+     import { getStore } from '@netlify/blobs';
+   to:
+     import { getSafeStore } from './lib/blobs.js';
 
-Sanity:
-- /.netlify/functions/odds-list-markets  → ok:true, 'present' includes batter_hits_runs_rbis* when supported by your regions/books.
+2) Replace the store creation:
+     const store = getStore(process.env.BLOBS_STORE || 'mlb-odds');
+   with:
+     const store = getSafeStore();
+
+3) Guard usages (if not already guarded):
+     const raw = store ? await store.get('mlb_preds:' + date) : null;
+     if (store) { await store.set('mlb_preds:' + date, JSON.stringify(resp), { ttl: 3600 }); }
