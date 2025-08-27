@@ -1,5 +1,4 @@
 
-// src/components/SiteFooter.jsx
 import React from "react";
 import DiagnosticsBar from "./DiagnosticsBar.jsx";
 import LearningDiagnostics from "./LearningDiagnostics.jsx";

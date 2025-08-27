@@ -4,9 +4,6 @@ import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
 
-import LearningDiagnostics from "./components/LearningDiagnostics.jsx";
-import DiagnosticsBar from "./components/DiagnosticsBar.jsx";
-
 import YesterdayDemo from "./components/YesterdayDemo.jsx";
 
 // === Variance Controls (no UI/odds changes) ===
@@ -87,79 +84,6 @@ function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pit
   return pts.join(' • ');
 }
 const MAX_PER_GAME = 2;
-
-
-// WHY v2: richer scouting-style rationale (no odds)
-function explainRowV2({ baseProb=0, hotBoost=1, calScale=1, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null, ctx={} }){
-  // ctx may contain: lineupSlot, spIP, hitterPitchHR=[], pitcherMix=[], bvp={ab,hr}, form={barrels7, hr7}
-  const parts = [];
-  if (typeof baseProb==='number' && isFinite(baseProb)) {
-    parts.push(`model ${(baseProb*100).toFixed(1)}%`);
-  }
-  // Starter info
-  if (pitcherName) {
-    const hand = pitcherHand ? ` (${String(pitcherHand).toUpperCase()})` : "";
-    parts.push(`vs ${pitcherName}${hand}`);
-  }
-  // Pitch-type fit (if present in ctx)
-  try{
-    const hvp = Array.isArray(ctx.hitterPitchHR) ? ctx.hitterPitchHR : (Array.isArray(ctx.hvp)?ctx.hvp:[]);
-    const top = (hvp||[]).slice().sort((a,b)=> (Number(b.hr_per_pa||0)) - (Number(a.hr_per_pa||0))).slice(0,2);
-    if (top.length){
-      const desc = top.map(x => `${String(x.pitch||x.type||'').toUpperCase()}:${(100*Number(x.hr_per_pa||0)).toFixed(1)}%`).join(", ");
-      parts.push(`HR vs pitch: ${desc}`);
-    }
-  }catch{}
-  // Recent form (prefer barrels/HR last 7-10d if available)
-  if (ctx.form){
-    const bb = Number(ctx.form.barrels7||ctx.form.barrels10||0);
-    const hr7 = Number(ctx.form.hr7||ctx.form.hr10||0);
-    if (bb>0 || hr7>0) parts.push(`recent: ${bb} barrels, ${hr7} HR (last 7–10d)`);
-  } else if (typeof hotBoost==='number' && hotBoost!==1) {
-    const sign = hotBoost>1?'+':'−';
-    parts.push(`hot/cold ${sign}${Math.abs((hotBoost-1)*100).toFixed(0)}%`);
-  }
-  // Player-specific park adjustment if provided (parkHR is a multiplier)
-  if (typeof parkHR==='number' && parkHR!==1){
-    const sign = parkHR>1?'+':'−';
-    parts.push(`park HR ${sign}${Math.abs((parkHR-1)*100).toFixed(0)}%`);
-  }
-  // Weather (still informative)
-  if (typeof weatherHR==='number' && weatherHR!==1){
-    const sign = weatherHR>1?'+':'−';
-    parts.push(`weather HR ${sign}${Math.abs((weatherHR-1)*100).toFixed(0)}%`);
-  }
-  // Lineup-aware PA split heuristic
-  try{
-    const slot = Number(ctx.lineupSlot||0);
-    const spIP = Math.max(4.2, Math.min(7.2, Number(ctx.spIP||5.6)));
-    // Approx PA split by slot
-    let spShare = spIP/9;
-    if (slot>=1 && slot<=3) spShare = Math.min(0.80, spShare + 0.05);
-    if (slot>=7 && slot<=9) spShare = Math.max(0.20, spShare - 0.05);
-    const bpShare = Math.max(0, Math.min(1, 1 - spShare));
-    parts.push(`PA split ≈ ${Math.round(spShare*100)}% SP / ${Math.round(bpShare*100)}% BP`);
-  }catch{}
-  // BvP only if meaningful sample
-  if (ctx.bvp && Number(ctx.bvp.ab)>=10){
-    const ab = Number(ctx.bvp.ab), hr = Number(ctx.bvp.hr||0);
-    const avg = Number(ctx.bvp.h||0) / ab;
-    if (hr>0 || avg>0){
-      const avgTxt = isFinite(avg) ? avg.toFixed(3).slice(1) : null;
-      const seg = [`H2H ${ab} AB`];
-      if (avgTxt) seg.push(avgTxt);
-      if (hr>0) seg.push(`${hr} HR`);
-      parts.push(seg.join(" "));
-    }
-  }
-  // Calibration note if applied
-  if (typeof calScale==='number' && calScale!==1){
-    const sign = calScale>1?'+':'−';
-    parts.push(`calibration ${sign}${Math.abs((calScale-1)*100).toFixed(0)}%`);
-  }
-  return parts.join(" • ");
-}
-
 
 function fmtET(date=new Date()){
   return new Intl.DateTimeFormat("en-US", { timeZone:"America/New_York", month:"short", day:"2-digit", year:"numeric"}).format(date);
@@ -414,7 +338,7 @@ async function getOddsMap(){
           batterId: c.batterId,
           p_model: p, modelAmerican, american, ev, rankScore,
           bvp_mod, protection_mod, parkHR: (c.parkHR ?? null),
-          why: explainRowV2({
+          why: explainRow({
             baseProb: Number(c.baseProb ?? c.prob ?? 0),
             hotBoost: t.hcMul, calScale: t.calScale,
             oddsAmerican: american,
@@ -606,22 +530,9 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
           {loading ? "Working..." : "Generate"}
         </button>
       </div>
-      
-      {/* Diagnostics & Learning status */}
-      <DiagnosticsBar />
-      <div className="mt-3 text-xs text-gray-700">
-        <span className="font-semibold">Learning diagnostics • 2025-08-27 (ET)</span>
-        <span className="ml-2">MLB HR</span>
-        <span className="ml-2">picks today: no</span>
-        <span className="ml-2">samples: 1095</span>
-        <span className="ml-2">days: 18</span>
-        <span className="ml-2">last run: 8/26/2025, 10:40:45 AM</span>
-        <span className="ml-2">fn ok</span>
-      </div>
-      <LearningDiagnostics />
-{message && <div className="mt-3 text-red-700">{message}</div>}
+      {message && <div className="mt-3 text-red-700">{message}</div>}
       <div className="mt-2 text-sm text-gray-600">
-        Date (ET): {meta.date} • Candidates: {meta.totalCandidates} • used odds: {meta.usedOdds ? "yes" : "no"} • Calibration scale: {meta.calibrationScale?.toFixed(2)}
+        Date (ET): {meta.date} • Candidates: {meta.totalCandidates||0} • Using OddsAPI: {meta.usedOdds ? "yes":"no"} • Calibration scale: {meta.calibrationScale?.toFixed(2)}
       </div>
       
       {anchor && (
@@ -773,9 +684,6 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
                 ))}
               </tbody>
             </table>
-
-      <YesterdayDemo />
-
             <p className="text-xs text-gray-500 mt-2">
               EV computed from model probability and current book odds; filtered by model p ≥ 19% to avoid pure longshots.
             </p>

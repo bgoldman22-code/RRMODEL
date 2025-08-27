@@ -30,9 +30,7 @@ export default function App() {
           <Route path="/nfl-td" element={<NFL_TD />} />
           <Route path="/nfl-negcorr" element={<NegCorr />} />
         </Routes>
-      
-        <SiteFooter />
-</div>
+      </div>
     </BrowserRouter>
   );
 }
@@ -42,6 +40,8 @@ function Home() {
     <div>
       <h1 className="text-2xl font-bold mb-2">Round Robin Sports Props</h1>
       <div className="text-gray-600">Pick a page above to generate model-based picks and round-robin suggestions.</div>
-    </div>
+    
+        <SiteFooter />
+</div>
   );
 }
