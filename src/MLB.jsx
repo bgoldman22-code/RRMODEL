@@ -365,7 +365,7 @@ async function getOddsMap(){
             pitcher: c.pitcher || { primary_pitches: c.primary_pitches || [] },
           }) : 1.00;
           if (typeof p === "number" && isFinite(p)) p *= pitchMul;
-        } catch (e) {}
+        } catch {}
 
         temp.push({ c, p_pre: p, hcMul, calScale, p_model: p });
         if (c.team){
@@ -401,7 +401,7 @@ async function getOddsMap(){
           const seasonRate = seasonHR / Math.max(1, seasonPA);
           let cap = (hr7 >= 2 || barrels7 >= 4) ? Math.max(0.30, seasonRate * 3) : (seasonRate * 2);
           if (isFinite(cap) && cap > 0) p = Math.min(p, cap);
-        } catch (e) {}
+        } catch {}
         let bvp_mod = 0, protection_mod = 0;
 
         // BvP (>=10 AB)
@@ -422,7 +422,7 @@ async function getOddsMap(){
         }
 // === Bullpen weighting (blend SP vs bullpen) ===
 try {
-if (USE_BP_BLEND) {
+  if (USE_BP_BLEND) {
 
   const spShare = (typeof c.__spShare === 'number' && isFinite(c.__spShare))
     ? Math.max(0, Math.min(1, c.__spShare))
@@ -438,9 +438,7 @@ if (USE_BP_BLEND) {
   let p_bp = p * bpFit;
   p_bp = Math.max(0.0005, Math.min(0.95, p_bp));
   p = (spShare * p_sp) + (bpShare * p_bp);
-} catch (e) {}
-
-}
+  }
 } catch (e) {}
 // Odds & EV
         const keyName = String(c.name||"").toLowerCase();
@@ -564,7 +562,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       if(out.length > MIN_PICKS) out.length = MIN_PICKS;
 
       // Save today's names for repeat logic
-      try { saveTodayPicks(fmtET(), out.map(x => byName(x))); try{ window.__variance_meta = { anchorsUsed, midCount, minPicks: MIN_PICKS }; }catch{} } catch (e) {}
+      try { saveTodayPicks(fmtET(), out.map(x => byName(x))); try{ window.__variance_meta = { anchorsUsed, midCount, minPicks: MIN_PICKS }; }catch{} } catch {}
 
 
       out = [];
