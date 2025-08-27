@@ -4,6 +4,33 @@ import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
 
+
+// === Targeted adjustments (safe, heuristic) ===
+// Slight extra reward when hitter's HR vs primary pitches aligns with pitcher's mix.
+function targetedLeakBumpMul({ pitchMul=1.0 }){
+  // pitchMul is the existing multiplier from pitchTypeEdgeMultiplier (baseline 1.0).
+  // We convert part of that signal into an *additional* modest bump, capped.
+  const extra = Math.max(-0.10, Math.min(0.10, (pitchMul - 1.0) * 0.4));
+  return 1.0 + extra;
+}
+// Lineup-aware exposure tweak: early-order hitters get a touch more SP exposure when SP goes deep.
+// This is a tiny scalar (±4%) so it won't blow up projections without bullpen data.
+function lineupExposureTweak({ lineupSlot=null, spIP=null }){
+  const slot = Number(lineupSlot||0);
+  const ip = Math.max(0, Math.min(9, Number(spIP||0)));
+  if (!slot || !isFinite(slot) || !isFinite(ip)) return 1.0;
+  let adj = 0;
+  if (ip >= 5.2){
+    if (slot>=1 && slot<=3) adj += 0.03;       // +3% for top order vs deeper SP
+    if (slot>=7 && slot<=9) adj -= 0.02;       // -2% for bottom order
+  } else if (ip <= 4.2){
+    if (slot>=1 && slot<=3) adj -= 0.02;       // more pen exposure earlier
+  }
+  // Bound total effect
+  adj = Math.max(-0.04, Math.min(0.04, adj));
+  return 1.0 + adj;
+}
+
 // === Variance Controls (no UI/odds changes) ===
 const ANCHOR_CAP = 3;                 // Max anchors allowed per slate
 const MIDRANGE_MIN_REQUIRED = 3;      // At least this many mid-range variance picks

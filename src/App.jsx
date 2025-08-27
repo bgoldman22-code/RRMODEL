@@ -6,6 +6,7 @@ import MLB_HITS2 from "./MLB_HITS2";
 import NFL_TD from "./NFL_TD";
 import NegCorr from "./NegCorr";
 import HRR from "./HRR";
+import SiteFooter from "./components/SiteFooter.jsx";
 
 export default function App() {
   return (
@@ -39,6 +40,8 @@ function Home() {
     <div>
       <h1 className="text-2xl font-bold mb-2">Round Robin Sports Props</h1>
       <div className="text-gray-600">Pick a page above to generate model-based picks and round-robin suggestions.</div>
-    </div>
+    
+        <SiteFooter />
+</div>
   );
 }
