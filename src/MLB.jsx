@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+const USE_BP_BLEND = false; // disable bullpen blend in p_model to match (1)
 import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./utils/ev.js";
 import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
@@ -421,6 +422,8 @@ async function getOddsMap(){
         }
 // === Bullpen weighting (blend SP vs bullpen) ===
 try {
+if (USE_BP_BLEND) {
+
   const spShare = (typeof c.__spShare === 'number' && isFinite(c.__spShare))
     ? Math.max(0, Math.min(1, c.__spShare))
     : (() => {
@@ -437,8 +440,9 @@ try {
   p = (spShare * p_sp) + (bpShare * p_bp);
 } catch {}
 
-
-        // Odds & EV
+}
+} catch {}
+// Odds & EV
         const keyName = String(c.name||"").toLowerCase();
         const found = oddsMap.get(keyName);
         const modelAmerican = americanFromProb(p);
