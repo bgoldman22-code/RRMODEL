@@ -2,7 +2,8 @@ import { getSafeStore } from './lib/blobs.js';
 
 async function j(url){
   const r = await fetch(url);
-  if(!r.ok) return {};
+  if(!r.ok) rows = await Promise.all(rows.map(enrichRow));
+  return {};
   return r.json();
 }
 function ymdUTC(d){ return d.toISOString().slice(0,10); }
@@ -41,7 +42,6 @@ async function getHRSetForDate(date){
 function grade(picks, hrSet){
   const rows = picks.map(p => {
     const id = (typeof p.mlbId === 'number' || typeof p.mlbId === 'string') ? Number(p.mlbId) : null;
-    rows = await Promise.all(rows.map(enrichRow));
 
     const prob = Number(p.prob || 0);
     const y = id && hrSet.has(Number(id)) ? 1 : 0;

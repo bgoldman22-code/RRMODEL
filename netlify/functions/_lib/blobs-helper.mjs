@@ -12,3 +12,5 @@ export function makeStore(name = 'mlb-odds') {
   if (siteID && token) return blobs.connect({ siteID, token, name });
   return null;
 }
+
+export function openStore(name='mlb-odds'){ return makeStore(name); }
