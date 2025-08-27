@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
+const USE_BP_BLEND = false; // disable bullpen blend in p_model to match (1)
 import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./utils/ev.js";
 import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
-
-import YesterdayDemo from "./components/YesterdayDemo.jsx";
 
 // === Variance Controls (no UI/odds changes) ===
 const ANCHOR_CAP = 3;                 // Max anchors allowed per slate
@@ -72,17 +71,103 @@ const HOTCOLD_CAP = 0.06;
 const MIN_PICKS = 12;
 const BONUS_COUNT = parseInt(import.meta.env.VITE_BONUS_COUNT||process.env.BONUS_COUNT||8,10);
 // Fallback Why explainer
-function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null }){
-  const pts = [];
-  if (typeof baseProb==='number') pts.push(`model ${(baseProb*100).toFixed(1)}%`);
-  if (typeof hotBoost==='number' && hotBoost!==1){ const sign=hotBoost>1?'+':'−'; pts.push(`hot/cold ${sign}${Math.abs((hotBoost-1)*100).toFixed(0)}%`); }
-  if (typeof calScale==='number' && calScale!==1){ const sign=calScale>1?'+':'−'; pts.push(`calibration ${sign}${Math.abs((calScale-1)*100).toFixed(0)}%`); }
-  if (pitcherName){ pts.push(`vs ${pitcherName}${pitcherHand?` (${String(pitcherHand).toUpperCase()})`:''}`); }
-  if (typeof parkHR==='number' && parkHR!==1){ const sign=parkHR>1?'+':'−'; pts.push(`park HR ${sign}${Math.abs((parkHR-1)*100).toFixed(0)}%`); }
-  if (typeof weatherHR==='number' && weatherHR!==1){ const sign=weatherHR>1?'+':'−'; pts.push(`weather HR ${sign}${Math.abs((weatherHR-1)*100).toFixed(0)}%`); }
-  if (oddsAmerican!=null){ pts.push(`odds ${oddsAmerican>=0?'+':''}${Math.round(oddsAmerican)}`); }
-  return pts.join(' • ');
+
+// WHY+ (causal): build reasons and bold the biggest factor
+
+// Build Pure EV list (p >= 19% and EV > 0)
+function buildPureEV(rows){
+  try{
+    const out = rows
+      .filter(r => Number(r.modelProb) >= 0.19 && Number(r.ev) > 0)
+      .sort((a,b)=> (b.ev ?? 0) - (a.ev ?? 0));
+    return out.slice(0, 40);
+  }catch{ return []; }
 }
+// WHY+ (causal): build reasons and bold/star the biggest positive factor
+function explainRow({ baseProb=0, hotBoost=1, calScale=1, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null, spShare=null, c=null }){
+  const reasons = [];
+  const add = (text, score, positive=true) => { if (text) reasons.push({ text, score: Number(score)||0, positive }); };
+
+  // 1) BIG H2H
+  const bvp = c?.bvp;
+  if (bvp && Number(bvp.ab)>=8 && Number(bvp.hr)>=2){
+    add(`${bvp.hr} HR in ${bvp.ab} PA vs ${pitcherName||'SP'}`, 1.00, true);
+  }
+
+  // 2) Pitch-type micro edge (if provided)
+  const mul = Number(c?.pitchMicroMul ?? c?.pitchMul ?? 1.0);
+  if (isFinite(mul) && Math.abs(mul-1) >= 0.03){
+    const sign = mul>1?'+':'−';
+    const pct = Math.round(Math.abs((mul-1)*100));
+    const hand = (pitcherHand?` (${String(pitcherHand).toUpperCase()})`:'');
+    add(`Punishes SP pitch mix${hand} ${sign}${pct}%`, 0.85 + Math.min(0.15, Math.abs(mul-1)), mul>1);
+  }
+
+  // 3) Bullpen exposure
+  if (typeof spShare==='number'){
+    const bpShare = Math.max(0, Math.min(1, 1-spShare));
+    const bpFit = Number(c?.bp_hr_fit ?? c?.bp_hr_mult ?? 1.0);
+    const fitPct = isFinite(bpFit) ? Math.round((bpFit-1)*100) : 0;
+    if (bpShare>0.25 || Math.abs(fitPct)>=2){
+      if (fitPct>0){
+        add(`Likely ${Math.round(bpShare*100)}% PA vs HR‑prone pen (+${fitPct}%)`, 0.70 + Math.min(0.20, (bpFit-1)), true);
+      }else{
+        add(`Likely ${Math.round(bpShare*100)}% PA vs bullpen`, 0.45, false);
+      }
+    }
+  }
+
+  // 4) Park/spray fit
+  const parkMul = Number.isFinite(Number(c?.playerParkHR)) ? Number(c.playerParkHR) : (Number.isFinite(Number(parkHR)) ? Number(parkHR) : 1.0);
+  if (isFinite(parkMul) && Math.abs(parkMul-1) >= 0.03){
+    const sign = parkMul>1 ? '+' : '−';
+    const pct = Math.round(Math.abs(parkMul-1)*100);
+    add(`Spray × park fit ${sign}${pct}%`, 0.55 + Math.min(0.20, Math.abs(parkMul-1)), parkMul>1);
+  }
+
+  // 5) Weather (if available)
+  const wMul = Number(c?.playerWeatherHR ?? weatherHR ?? 1.0);
+  if (isFinite(wMul) && Math.abs(wMul-1) >= 0.03){
+    const sign = wMul>1 ? '+' : '−';
+    const pct = Math.round(Math.abs(wMul-1)*100);
+    add(`Weather HR ${sign}${pct}%`, 0.45 + Math.min(0.15, Math.abs(wMul-1)), wMul>1);
+  }
+
+  // 6) Recent form
+  const hr7 = Number(c?.form?.hr7 ?? 0);
+  const barrels = Number(c?.form?.barrels7 ?? 0);
+  if (hr7>0 || barrels>0){
+    add(`Hot: ${hr7} HR, ${barrels} barrels (7–10d)`, 0.40 + Math.min(0.15, hr7*0.03 + barrels*0.01), true);
+  }
+
+  // 7) Model
+  if (typeof baseProb==='number' && isFinite(baseProb)) add(`Model ${(baseProb*100).toFixed(1)}%`, 0.30, true);
+  if (typeof calScale==='number' && calScale!==1){
+    const sign = calScale>1?'+':'−';
+    const pct = Math.round(Math.abs((calScale-1)*100));
+    add(`Calibration ${sign}${pct}%`, 0.20, calScale>1);
+  }
+  if (pitcherName){
+    const hand = pitcherHand ? ` (${String(pitcherHand).toUpperCase()})` : "";
+    add(`vs ${pitcherName}${hand}`, 0.10, false);
+  }
+
+  if (!reasons.length) return "";
+  let maxIdx = -1, maxScore = -1;
+  for (let i=0;i<reasons.length;i++){
+    const r = reasons[i];
+    if (r.positive && r.score > maxScore){ maxScore = r.score; maxIdx = i; }
+  }
+  if (maxIdx === -1){
+    for (let i=0;i<reasons.length;i++){
+      if (reasons[i].score > maxScore){ maxScore = reasons[i].score; maxIdx = i; }
+    }
+  }
+  const out = reasons.map((r,idx)=> idx===maxIdx ? `★ **${r.text}**` : r.text);
+  return out.join(' • ');
+}
+
+
 const MAX_PER_GAME = 2;
 
 function fmtET(date=new Date()){
@@ -282,7 +367,7 @@ async function getOddsMap(){
           if (typeof p === "number" && isFinite(p)) p *= pitchMul;
         } catch {}
 
-        temp.push({ c, p_pre: p, hcMul, calScale });
+        temp.push({ c, p_pre: p, hcMul, calScale, p_model: p });
         if (c.team){
           const arr = teamToPpre.get(c.team) || [];
           arr.push(p);
@@ -302,6 +387,21 @@ async function getOddsMap(){
       for (const t of temp){
         const c = t.c;
         let p = t.p_pre;
+
+        // === Cold-bat suppression & season baseline cap ===
+        try {
+          const hr7 = Number(c?.form?.hr7 ?? 0);
+          const hr15 = Number(c?.form?.hr15 ?? 0);
+          const barrels7 = Number(c?.form?.barrels7 ?? 0);
+          if (hr7 === 0) p *= 0.70;
+          if (hr15 <= 1) p *= 0.80;
+          if (barrels7 === 0) p *= 0.85;
+          const seasonHR = Number(c?.seasonHR ?? c?.hr ?? 0);
+          const seasonPA = Number(c?.seasonPA ?? c?.pa ?? 0);
+          const seasonRate = seasonHR / Math.max(1, seasonPA);
+          let cap = (hr7 >= 2 || barrels7 >= 4) ? Math.max(0.30, seasonRate * 3) : (seasonRate * 2);
+          if (isFinite(cap) && cap > 0) p = Math.min(p, cap);
+        } catch {}
         let bvp_mod = 0, protection_mod = 0;
 
         // BvP (>=10 AB)
@@ -320,8 +420,29 @@ async function getOddsMap(){
           protection_mod = protectionModifier(p, peers);
           if (protection_mod > 0) p = p * (1 + protection_mod);
         }
+// === Bullpen weighting (blend SP vs bullpen) ===
+try {
+if (USE_BP_BLEND) {
 
-        // Odds & EV
+  const spShare = (typeof c.__spShare === 'number' && isFinite(c.__spShare))
+    ? Math.max(0, Math.min(1, c.__spShare))
+    : (() => {
+        const ip = Number(c?.spIpProj ?? c?.spIP ?? 5.6);
+        const s  = Math.max(0, Math.min(9, (isFinite(ip)?ip:5.6))) / 9;
+        return s;
+      })();
+  const bpShare = Math.max(0, Math.min(1, 1 - spShare));
+  const bpFitRaw = (c?.bp_hr_fit ?? c?.bp_hr_mult);
+  const bpFit = (isFinite(Number(bpFitRaw)) ? Number(bpFitRaw) : 1.0);
+  const p_sp = p;
+  let p_bp = p * bpFit;
+  p_bp = Math.max(0.0005, Math.min(0.95, p_bp));
+  p = (spShare * p_sp) + (bpShare * p_bp);
+} catch {}
+
+}
+} catch {}
+// Odds & EV
         const keyName = String(c.name||"").toLowerCase();
         const found = oddsMap.get(keyName);
         const modelAmerican = americanFromProb(p);
@@ -338,7 +459,7 @@ async function getOddsMap(){
           batterId: c.batterId,
           p_model: p, modelAmerican, american, ev, rankScore,
           bvp_mod, protection_mod, parkHR: (c.parkHR ?? null),
-          why: explainRow({
+          why: explainRow({ c, spShare: (typeof c.__spShare==='number'?c.__spShare:null),
             baseProb: Number(c.baseProb ?? c.prob ?? 0),
             hotBoost: t.hcMul, calScale: t.calScale,
             oddsAmerican: american,
@@ -689,9 +810,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
             </p>
           </div>
         </div>
-      )}
-)}
-<HRDiagnosticsFooter />
+  )}
           </div>
         </div>
       )}
