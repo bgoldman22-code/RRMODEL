@@ -1,5 +1,5 @@
 // Read-only Player Profile (Netlify Function)
-exports.handler = async (event) => {
+export const handler = async (event) => {
   try {
     const params = event.queryStringParameters || {};
     const player = (params.player || "").trim();

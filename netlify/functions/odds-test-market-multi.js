@@ -15,7 +15,7 @@ async function withTimeoutFetch(url, opts, ms=6000){
   }
 }
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   const apiKey = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
   if (!apiKey) return { statusCode: 400, body: JSON.stringify({ ok:false, error:'Missing THEODDS_API_KEY' }) };
   const sport  = process.env.ODDSAPI_SPORT_KEY || 'baseball_mlb';

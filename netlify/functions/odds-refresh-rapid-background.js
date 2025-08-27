@@ -100,6 +100,6 @@ function median(arr){
   return a.length%2 ? a[mid] : Math.round((a[mid-1]+a[mid])/2);
 }
 
-exports.handler = async (event, context) => {
+export const handler = async (event, context) => {
   return { statusCode: 202, body: JSON.stringify({ ok:true, note:'Background job concept stub. Use non-background function for actual fetch.' }) };
 };

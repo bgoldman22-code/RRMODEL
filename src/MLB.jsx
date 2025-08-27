@@ -788,8 +788,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
             </p>
           </div>
         </div>
-      )}
-)}
+  )}
           </div>
         </div>
       )}

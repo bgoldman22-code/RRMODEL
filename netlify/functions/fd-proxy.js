@@ -2,7 +2,7 @@
 // Simple proxy for football-data.org so the browser doesn't expose your token.
 const BASE = 'https://api.football-data.org';
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   try {
     const url = new URL(event.rawUrl || ('https://host'+event.path));
     const path = url.searchParams.get('path') || '/v4/matches';

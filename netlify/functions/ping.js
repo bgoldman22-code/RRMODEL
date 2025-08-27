@@ -1,5 +1,5 @@
 // netlify/functions/ping.js
-exports.handler = async (event) => {
+export const handler = async (event) => {
   return {
     statusCode: 200,
     headers: { "content-type": "application/json" },

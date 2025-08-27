@@ -86,7 +86,7 @@ function isOverOutcome(o){
   return false;
 }
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   const BOOKS = (process.env.BOOKS||'').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
   const date = (event.queryStringParameters && event.queryStringParameters.date) || dateETISO();
   const debug = !!(event.queryStringParameters && event.queryStringParameters.debug);

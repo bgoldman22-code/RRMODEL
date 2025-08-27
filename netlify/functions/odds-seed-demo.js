@@ -11,7 +11,7 @@ function initStore(){
   return getStore(name);
 }
 
-exports.handler = async () => {
+export const handler = async () => {
   try {
     const store = initStore();
     const demo = [

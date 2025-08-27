@@ -1,6 +1,6 @@
 // netlify/functions/preds-diag.js
 const { getStore } = require('@netlify/blobs');
-exports.handler = async (event) => {
+export const handler = async (event) => {
   try {
     const params = event.queryStringParameters || {};
     const date = (params.date || '').trim();

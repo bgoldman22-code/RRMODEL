@@ -124,3 +124,6 @@ function envSummary(input){
   if(input.weather?.wind_dir==="in" && input.weather?.wind_mph>=8){ weather_blurb="wind in"; env_boost="minus"; }
   return { park_dir, park_idx, hand, weather_blurb, env_boost };
 }
+
+
+export function normName(s){ try{ return String(s||'').trim(); }catch{ return s; } }

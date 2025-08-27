@@ -15,7 +15,7 @@ async function withTimeoutFetch(url, opts, ms=5000){
   }
 }
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   const q = event.queryStringParameters || {};
   const apiKey = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
   if (!apiKey){
