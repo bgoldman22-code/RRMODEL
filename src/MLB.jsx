@@ -4,26 +4,6 @@ import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName, buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
 
-
-// === Matchup helpers: SP/BP share & targeted bumps ===
-function computeSpShare(c){
-  try{
-    const ip = Number(c?.sp_ip ?? c?.spIP);
-    if (!Number.isFinite(ip)) return null;
-    let share = Math.max(0.20, Math.min(0.85, ip/9));
-    const slot = Number(c?.lineupSlot||0);
-    if (slot>=1 && slot<=3) share = Math.min(0.85, share+0.05);
-    if (slot>=7 && slot<=9) share = Math.max(0.15, share-0.05);
-    return share;
-  }catch{ return null; }
-}
-function targetedLeakBumpMul(pitchMul){
-  const x = Number(pitchMul);
-  if (!Number.isFinite(x)) return 1.0;
-  const extra = Math.max(-0.10, Math.min(0.10, (x - 1.0) * 0.4));
-  return 1.0 + extra;
-}
-
 // === Variance Controls (no UI/odds changes) ===
 const ANCHOR_CAP = 3;                 // Max anchors allowed per slate
 const MIDRANGE_MIN_REQUIRED = 3;      // At least this many mid-range variance picks
@@ -90,18 +70,107 @@ const HOTCOLD_CAP = 0.06;
 const MIN_PICKS = 12;
 const BONUS_COUNT = parseInt(import.meta.env.VITE_BONUS_COUNT||process.env.BONUS_COUNT||8,10);
 // Fallback Why explainer
-function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null, spShare=null }){
-  const pts = [];
-  if (typeof baseProb==='number') pts.push(`model ${(baseProb*100).toFixed(1)}%`);
-  if (typeof hotBoost==='number' && hotBoost!==1){ const sign=hotBoost>1?'+':'−'; pts.push(`hot/cold ${sign}${Math.abs((hotBoost-1)*100).toFixed(0)}%`); }
-  if (typeof calScale==='number' && calScale!==1){ const sign=calScale>1?'+':'−'; pts.push(`calibration ${sign}${Math.abs((calScale-1)*100).toFixed(0)}%`); }
-  if (pitcherName){ pts.push(`vs ${pitcherName}${pitcherHand?` (${String(pitcherHand).toUpperCase()})`:''}`); }
-  if (typeof parkHR==='number' && parkHR!==1){ const sign=parkHR>1?'+':'−'; pts.push(`park HR ${sign}${Math.abs((parkHR-1)*100).toFixed(0)}%`); }
-  if (typeof weatherHR==='number' && weatherHR!==1){ const sign=weatherHR>1?'+':'−'; pts.push(`weather HR ${sign}${Math.abs((weatherHR-1)*100).toFixed(0)}%`); }
-  if (typeof spShare==='number'){ const bp = 1-spShare; pts.push(`PA split ≈ ${Math.round(spShare*100)}% SP / ${Math.round(bp*100)}% BP`); }
-  return pts.join(' • ');
-});
+
+// WHY+ (causal): build reasons and bold the biggest factor
+function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pitcherName=null, pitcherHand=null, parkHR=null, weatherHR=null, spShare=null, c=null }){
+  const reasons = [];
+  const add = (text, score) => {
+    if (!text) return;
+    reasons.push({ text, score: Number(score)||0 });
+  };
+
+  // 1) BIG H2H if sample meaningful
+  try{
+    const bvp = c?.bvp;
+    if (bvp && Number(bvp.ab)>=8 && Number(bvp.hr)>=2){
+      add(`${bvp.hr} HR in ${bvp.ab} PA vs ${pitcherName||'SP'}`, 1.0);
+    }
+  }catch{}
+
+  // 2) Pitcher Weakness × Hitter Strength (derived from pitchTypeEdgeMultiplier if available)
+  try{
+    const mul = Number(c?.pitchMul ?? (typeof pitchTypeEdgeMultiplier==='function'? pitchTypeEdgeMultiplier(c) : 1.0));
+    // If we have a strong positive multiplier, call it out
+    if (isFinite(mul) && mul>1.03){
+      const pct = Math.round((mul-1)*100);
+      const hand = (pitcherHand?` (${String(pitcherHand).toUpperCase()})`:'');
+      add(`Punishes SP pitch mix${hand} (+${pct}% fit)`, 0.8 + Math.min(0.2, (mul-1))); // 0.8..1.0
+    }
+  }catch{}
+
+  // 3) Bullpen exposure (if we have spShare & bp fit)
+  try{
+    if (typeof spShare==='number'){
+      const bpShare = Math.max(0, Math.min(1, 1-spShare));
+      const bpFit = Number(c?.bp_hr_fit ?? c?.bp_hr_mult ?? 1.0);
+      if (isFinite(bpFit) && (bpShare>0.25 || bpFit>1.02)){
+        const bpPct = Math.round(bpShare*100);
+        const fitPct = Math.max(0, Math.round((bpFit-1)*100));
+        if (fitPct>0){
+          add(`Likely ${bpPct}% PA vs HR‑prone pen (+${fitPct}%)`, 0.6 + Math.min(0.2, (bpFit-1)));
+        }else{
+          add(`Likely ${bpPct}% PA vs bullpen`, 0.45);
+        }
+      }
+    }
+  }catch{}
+
+  // 4) Player‑specific park / spray fit
+  try{
+    const parkMul = Number.isFinite(Number(c?.playerParkHR)) ? Number(c?.playerParkHR) : (Number.isFinite(Number(parkHR)) ? Number(parkHR) : 1.0);
+    if (isFinite(parkMul) && Math.abs(parkMul-1) >= 0.03){
+      const sign = parkMul>1 ? '+' : '−';
+      const pct = Math.round(Math.abs(parkMul-1)*100);
+      add(`Spray × park fit ${sign}${pct}%`, 0.4 + Math.min(0.2, Math.abs(parkMul-1)));
+    }
+  }catch{}
+
+  // 5) Recent form
+  try{
+    const hr7 = Number(c?.form?.hr7 ?? c?.form?.hr10 ?? 0);
+    const barrels = Number(c?.form?.barrels7 ?? c?.form?.barrels10 ?? 0);
+    if (hr7>0 || barrels>0){
+      add(`Hot: ${hr7} HR, ${barrels} barrels (7–10d)`, 0.35 + Math.min(0.15, hr7*0.03 + barrels*0.01));
+    }else if (typeof hotBoost==='number' && hotBoost!==1){
+      const sign = hotBoost>1?'+':'−';
+      const pct = Math.round(Math.abs((hotBoost-1)*100));
+      add(`Hot/cold ${sign}${pct}%`, 0.25 + Math.min(0.1, Math.abs(hotBoost-1)));
+    }
+  }catch{}
+
+  // 6) Weather nudge (small)
+  try{
+    if (typeof weatherHR==='number' && weatherHR!==1){
+      const sign = weatherHR>1?'+':'−';
+      const pct = Math.round(Math.abs((weatherHR-1)*100));
+      add(`Weather HR ${sign}${pct}%`, 0.2 + Math.min(0.1, Math.abs(weatherHR-1)));
+    }
+  }catch{}
+
+  // 7) Base/Calibration (kept compact)
+  if (typeof baseProb==='number' && isFinite(baseProb)){
+    add(`Model ${(baseProb*100).toFixed(1)}%`, 0.3);
+  }
+  if (typeof calScale==='number' && calScale!==1){
+    const sign = calScale>1?'+':'−';
+    const pct = Math.round(Math.abs((calScale-1)*100));
+    add(`Calibration ${sign}${pct}%`, 0.2);
+  }
+  if (pitcherName){
+    const hand = pitcherHand ? ` (${String(pitcherHand).toUpperCase()})` : "";
+    add(`vs ${pitcherName}${hand}`, 0.15);
+  }
+
+  // Choose biggest factor and bold it (markdown **text**)
+  if (reasons.length===0) return "";
+  let maxIdx = 0;
+  for (let i=1;i<reasons.length;i++){
+    if (reasons[i].score > reasons[maxIdx].score) maxIdx = i;
+  }
+  const out = reasons.map((r,idx)=> idx===maxIdx ? `**${r.text}**` : r.text);
+  return out.join(" • ");
 }
+
 const MAX_PER_GAME = 2;
 
 function fmtET(date=new Date()){
@@ -322,35 +391,6 @@ async function getOddsMap(){
         const c = t.c;
         let p = t.p_pre;
         let bvp_mod = 0, protection_mod = 0;
-        // Player-specific park adjustment (prefer playerParkHR over generic parkHR if present)
-        try{
-          const parkMul = Number.isFinite(Number(c.playerParkHR)) ? Number(c.playerParkHR) : (Number.isFinite(Number(c.parkHR)) ? Number(c.parkHR) : 1.0);
-          if (Number.isFinite(parkMul) && parkMul > 0) p = p * parkMul;
-        }catch{}
-
-        // Pitch-type edge (existing) + targeted leak bump
-        try {
-          const pitchMul = Number(pitchTypeEdgeMultiplier?.(c) ?? 1.0);
-          if (Number.isFinite(pitchMul) && pitchMul > 0) {
-            p *= pitchMul;
-            const tgt = targetedLeakBumpMul(pitchMul);
-            if (Number.isFinite(tgt) && tgt > 0) p *= tgt;
-          }
-        } catch {}
-
-        // Starter/Bullpen blending (heuristic if inputs available)
-        try {
-          const spShare = computeSpShare(c);
-          if (spShare!=null){
-            // crude bullpen fit knob from slate if present (otherwise neutral)
-            const bpFit = Number(c.bp_hr_fit ?? c.bp_hr_mult ?? 1.0);
-            const p_bp = (Number.isFinite(bpFit) && bpFit>0) ? (p * bpFit) : p;
-            p = (p * spShare) + (p_bp * (1 - spShare));
-            // stash for WHY text
-            c.__spShare = spShare;
-          }
-        } catch {}
-
 
         // BvP (>=10 AB)
         if (c.batterId && c.pitcherId){
@@ -386,7 +426,7 @@ async function getOddsMap(){
           batterId: c.batterId,
           p_model: p, modelAmerican, american, ev, rankScore,
           bvp_mod, protection_mod, parkHR: (c.parkHR ?? null),
-          why: explainRow({ spShare: (typeof c.__spShare==='number'?c.__spShare:null),
+          why: explainRow({
             baseProb: Number(c.baseProb ?? c.prob ?? 0),
             hotBoost: t.hcMul, calScale: t.calScale,
             oddsAmerican: american,
