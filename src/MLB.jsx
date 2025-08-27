@@ -779,7 +779,6 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
         </div>
       )}
 )}
-<HRDiagnosticsFooter />
           </div>
         </div>
       )}
