@@ -419,6 +419,24 @@ async function getOddsMap(){
           protection_mod = protectionModifier(p, peers);
           if (protection_mod > 0) p = p * (1 + protection_mod);
         }
+// === Bullpen weighting (blend SP vs bullpen) ===
+try {
+  const spShare = (typeof c.__spShare === 'number' && isFinite(c.__spShare))
+    ? Math.max(0, Math.min(1, c.__spShare))
+    : (() => {
+        const ip = Number(c?.spIpProj ?? c?.spIP ?? 5.6);
+        const s  = Math.max(0, Math.min(9, (isFinite(ip)?ip:5.6))) / 9;
+        return s;
+      })();
+  const bpShare = Math.max(0, Math.min(1, 1 - spShare));
+  const bpFitRaw = (c?.bp_hr_fit ?? c?.bp_hr_mult);
+  const bpFit = (isFinite(Number(bpFitRaw)) ? Number(bpFitRaw) : 1.0);
+  const p_sp = p;
+  let p_bp = p * bpFit;
+  p_bp = Math.max(0.0005, Math.min(0.95, p_bp));
+  p = (spShare * p_sp) + (bpShare * p_bp);
+} catch {}
+
 
         // Odds & EV
         const keyName = String(c.name||"").toLowerCase();
