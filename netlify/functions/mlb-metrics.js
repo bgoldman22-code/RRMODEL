@@ -124,3 +124,21 @@ export default async (req, context) => {
     return new Response(JSON.stringify({ error:'metrics-failed', message: String(e) }), { status: 500, headers: { 'content-type': 'application/json' } });
   }
 };
+// Enrich a slate row with BvP and simple form fields (if not already present)
+async function enrichRow(row) {
+  try {
+    // BvP (only if batter/pitcher IDs exist)
+    if (row?.batterId && row?.pitcherId) {
+      const bvp = await fetchBvP(row.batterId, row.pitcherId);
+      if (bvp && (bvp.ab>=1)) row.bvp = bvp;
+    }
+    // Simple placeholders for form fields if upstream isn't providing them
+    if (!row.form) row.form = {};
+    if (typeof row.form.hr7 === 'undefined') row.form.hr7 = row.form.hr7 ?? 0;
+    if (typeof row.form.hr15 === 'undefined') row.form.hr15 = row.form.hr15 ?? 0;
+    if (typeof row.form.barrels7 === 'undefined') row.form.barrels7 = row.form.barrels7 ?? 0;
+    return row;
+  } catch {
+    return row;
+  }
+}
