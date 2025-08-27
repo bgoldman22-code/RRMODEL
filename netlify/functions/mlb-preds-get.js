@@ -1,32 +1,49 @@
 // netlify/functions/mlb-preds-get.js
-// FAIL-SAFE version that uses getSafeStore and never throws if Blobs is unavailable
+// Proxy to mlb-metrics with safe Blobs caching.
+// Expects a sibling function mlb-metrics that returns the full slate JSON.
 import fetch from 'node-fetch';
 import { getSafeStore } from './lib/blobs.js';
 
 export const handler = async (event) => {
+  const qs = new URLSearchParams(event.queryStringParameters || {});
+  const date = qs.get('date') || new Date().toISOString().slice(0,10);
+  const store = getSafeStore();
+  const key = 'mlb_preds:' + date;
+
   try {
-    const date = (new URLSearchParams(event.queryStringParameters || {})).get('date') || new Date().toISOString().slice(0,10);
-    const store = getSafeStore();
-
-    // Try cache first
-    let raw = null;
+    // 1) Cache hit?
     if (store) {
-      try { raw = await store.get('mlb_preds:' + date); } catch {}
-    }
-    if (raw) {
-      return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: raw };
+      try {
+        const cached = await store.get(key);
+        if (cached) {
+          return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: cached };
+        }
+      } catch {}
     }
 
-    // TODO: replace with your real slate builder/fetcher
-    const resp = { ok: true, date, note: 'stub response - wire your real slate here', items: [] };
+    // 2) Proxy to local metrics function
+    const proto = event.headers['x-forwarded-proto'] || 'https';
+    const host  = event.headers.host;
+    const base  = `${proto}://${host}`;
+    const url   = `${base}/.netlify/functions/mlb-metrics?date=${encodeURIComponent(date)}`;
 
-    // Cache (best-effort)
+    let slate = null;
+    try {
+      const r = await fetch(url, { headers: { 'User-Agent': 'roundrobin-proxy' }, timeout: 20000 });
+      const txt = await r.text();
+      slate = JSON.parse(txt);
+    } catch (e) {
+      // If metrics fails, return a soft error not to crash the app
+      return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok:false, error:'metrics-unavailable', detail:String(e) }) };
+    }
+
+    // 3) Cache best-effort
     if (store) {
-      try { await store.set('mlb_preds:' + date, JSON.stringify(resp), { ttl: 3600 }); } catch {}
+      try { await store.set(key, JSON.stringify(slate), { ttl: 600 }); } catch {}
     }
 
-    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify(resp) };
+    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify(slate) };
   } catch (e) {
-    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok:false, error: String(e && e.message || e) }) };
+    return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok:false, error:String(e && e.message || e) }) };
   }
 };
