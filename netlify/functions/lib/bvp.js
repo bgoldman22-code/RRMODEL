@@ -1,6 +1,5 @@
 // netlify/functions/lib/bvp.js
 import fetch from 'node-fetch';
-
 const MLB_STATS_BASE = 'https://statsapi.mlb.com/api/v1';
 
 /** Fetch simple BvP totals. Returns {ab,h,hr} or null. */
@@ -14,12 +13,6 @@ export async function fetchBvP(batterId, pitcherId) {
     const vs = (j?.stats || []).find(s => s?.type?.displayName === 'vsPlayer');
     const stat = vs?.splits?.[0]?.stat;
     if (!stat) return null;
-    return {
-      ab: Number(stat.atBats || 0),
-      h:  Number(stat.hits   || 0),
-      hr: Number(stat.homeRuns || 0),
-    };
-  } catch {
-    return null;
-  }
+    return { ab: Number(stat.atBats||0), h: Number(stat.hits||0), hr: Number(stat.homeRuns||0) };
+  } catch { return null; }
 }
