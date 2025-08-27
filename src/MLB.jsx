@@ -366,7 +366,7 @@ async function getOddsMap(){
           if (typeof p === "number" && isFinite(p)) p *= pitchMul;
         } catch {}
 
-        temp.push({ c, p_pre: p, hcMul, calScale  p_model: p });
+        temp.push({ c, p_pre: p, hcMul, calScale, p_model: p });
         if (c.team){
           const arr = teamToPpre.get(c.team) || [];
           arr.push(p);
