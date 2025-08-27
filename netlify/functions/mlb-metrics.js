@@ -77,16 +77,16 @@ export const handler = async (event) => {
       rows = await Promise.all(rows.map(enrichRowNoop));
     }
 
-    return {
+    return { statusCode: 200, headers: {'content-type':'application/json'}, body: JSON.stringify({
       ok: true,
       date: base.date,
       items: rows
-    };
+    }) };
   } catch (e) {
     // Never 500 — return a JSON error payload
-    return {
+    return { statusCode: 200, headers: {'content-type':'application/json'}, body: JSON.stringify({
       ok: false,
       error: String(e && e.message || e)
-    };
+    }) };
   }
 };
