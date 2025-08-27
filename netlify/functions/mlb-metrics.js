@@ -41,6 +41,8 @@ async function getHRSetForDate(date){
 function grade(picks, hrSet){
   const rows = picks.map(p => {
     const id = (typeof p.mlbId === 'number' || typeof p.mlbId === 'string') ? Number(p.mlbId) : null;
+    rows = await Promise.all(rows.map(enrichRow));
+
     const prob = Number(p.prob || 0);
     const y = id && hrSet.has(Number(id)) ? 1 : 0;
     const brier = (prob - y)*(prob - y);
@@ -124,21 +126,33 @@ export default async (req, context) => {
     return new Response(JSON.stringify({ error:'metrics-failed', message: String(e) }), { status: 500, headers: { 'content-type': 'application/json' } });
   }
 };
-// Enrich a slate row with BvP and simple form fields (if not already present)
-async function enrichRow(row) {
-  try {
-    // BvP (only if batter/pitcher IDs exist)
-    if (row?.batterId && row?.pitcherId) {
-      const bvp = await fetchBvP(row.batterId, row.pitcherId);
-      if (bvp && (bvp.ab>=1)) row.bvp = bvp;
-    }
-    // Simple placeholders for form fields if upstream isn't providing them
-    if (!row.form) row.form = {};
-    if (typeof row.form.hr7 === 'undefined') row.form.hr7 = row.form.hr7 ?? 0;
-    if (typeof row.form.hr15 === 'undefined') row.form.hr15 = row.form.hr15 ?? 0;
-    if (typeof row.form.barrels7 === 'undefined') row.form.barrels7 = row.form.barrels7 ?? 0;
-    return row;
-  } catch {
-    return row;
+// Compute a simple bullpen HR fit multiplier if inputs exist on row or context
+function computeBullpenFit(row){
+  // Expect normalized to league = 1.0
+  const s21 = Number(row?.oppBullpenHR9_21d);
+  const ssn = Number(row?.oppBullpenHR9_season);
+  const lg  = Number(row?.lgHR9 || 1.2); // fallback league HR/9 approx; tune later
+  if (Number.isFinite(s21) && Number.isFinite(ssn) && s21>0 && ssn>0 && lg>0){
+    const blend = 0.6*(s21/lg) + 0.4*(ssn/lg);
+    return Math.max(0.7, Math.min(1.5, blend)); // bound 0.7..1.5
   }
+  return 1.0;
+}
+
+// Enrich each slate row with BvP and add a bullpen fit hint
+async function enrichRow(row){
+  try{
+    if (row?.batterId && row?.pitcherId && !row.bvp){
+      const bvp = await fetchBvP(row.batterId, row.pitcherId);
+      if (bvp && bvp.ab >= 1) row.bvp = bvp;
+    }
+    if (typeof row.bp_hr_fit === 'undefined'){
+      row.bp_hr_fit = computeBullpenFit(row);
+    }
+    if (!row.form) row.form = {};
+    row.form.hr7 = Number(row.form.hr7 || 0);
+    row.form.hr15 = Number(row.form.hr15 || 0);
+    row.form.barrels7 = Number(row.form.barrels7 || 0);
+  }catch{}
+  return row;
 }

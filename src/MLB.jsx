@@ -117,7 +117,7 @@ function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pit
 
   // 4) Player‑specific park / spray fit
   try{
-    const parkMul = Number.isFinite(Number(c?.playerParkHR)) ? Number(c.playerParkHR) : (Number.isFinite(Number(parkHR)) ? Number(parkHR) : 1.0);
+    const parkMul = Number.isFinite(Number(c?.playerParkHR)) ? Number(c?.playerParkHR) : (Number.isFinite(Number(parkHR)) ? Number(parkHR) : 1.0);
     if (isFinite(parkMul) && Math.abs(parkMul-1) >= 0.03){
       const sign = parkMul>1 ? '+' : '−';
       const pct = Math.round(Math.abs(parkMul-1)*100);
@@ -167,7 +167,7 @@ function explainRow({ baseProb=0, hotBoost=1, calScale=1, oddsAmerican=null, pit
   for (let i=1;i<reasons.length;i++){
     if (reasons[i].score > reasons[maxIdx].score) maxIdx = i;
   }
-  const out = reasons.map((r,idx)=> idx===maxIdx ? `★ **${r.text}**` : r.text);
+  const out = reasons.map((r,idx)=> idx===maxIdx ? `**${r.text}**` : r.text);
   return out.join(" • ");
 }
 
@@ -779,6 +779,7 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
         </div>
       )}
 )}
+<HRDiagnosticsFooter />
           </div>
         </div>
       )}

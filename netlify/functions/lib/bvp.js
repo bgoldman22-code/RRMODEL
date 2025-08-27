@@ -1,10 +1,7 @@
-// netlify/functions/lib/bvp.js
 import fetch from 'node-fetch';
-
 const MLB_STATS_BASE = 'https://statsapi.mlb.com/api/v1';
 
-// Fetch BvP stats using the correct parameter: opposingPlayerId
-// Returns {ab, h, hr} or null
+// Returns {ab, h, hr} or null. Uses opposingPlayerId per MLB API.
 export async function fetchBvP(batterId, pitcherId) {
   if (!batterId || !pitcherId) return null;
   const url = `${MLB_STATS_BASE}/people/${batterId}/stats?stats=vsPlayer&group=hitting&gameType=R&opposingPlayerId=${pitcherId}`;

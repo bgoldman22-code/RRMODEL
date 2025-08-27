@@ -1,7 +1,5 @@
-// netlify/functions/lib/blobs.js
 import { getStore, blobs } from '@netlify/blobs';
 
-// Prefer bound store. If unavailable, fall back to manual env-configured store.
 export function getSafeStore(nameEnv = 'BLOBS_STORE') {
   const name = process.env[nameEnv] || 'mlb-odds';
   try {
@@ -15,5 +13,5 @@ export function getSafeStore(nameEnv = 'BLOBS_STORE') {
       return blobs.connect({ siteID, token, name });
     }
   } catch {}
-  return null; // caller must handle null (skip blobs gracefully)
+  return null;
 }

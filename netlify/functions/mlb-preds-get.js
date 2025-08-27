@@ -8,7 +8,7 @@ exports.handler = async (event) => {
     const date = (params.date || "").trim();
     if (!date) return json(400, { ok:false, error:"Missing date=YYYY-MM-DD" });
 
-    const store = getStore("mlb-logs");
+    const store = getSafeStore();
     const keys = [
       `predictions-with-ctx/${date}.json`,
       `predictions/${date}.json`,
