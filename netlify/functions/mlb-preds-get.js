@@ -1,6 +1,6 @@
 // netlify/functions/mlb-preds-get.js
 // Proxy to mlb-metrics with safe Blobs caching.
-// Expects a sibling function mlb-metrics that returns the full slate JSON.
+// Returns whatever mlb-metrics returns (real slate), not a stub.
 import fetch from 'node-fetch';
 import { getSafeStore } from './lib/blobs.js';
 
@@ -33,7 +33,6 @@ export const handler = async (event) => {
       const txt = await r.text();
       slate = JSON.parse(txt);
     } catch (e) {
-      // If metrics fails, return a soft error not to crash the app
       return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok:false, error:'metrics-unavailable', detail:String(e) }) };
     }
 

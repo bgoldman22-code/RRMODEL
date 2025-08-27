@@ -1,4 +1,4 @@
-import { getStore } from '@netlify/blobs';
+import { getSafeStore } from './lib/blobs.js';
 
 async function j(url){
   const r = await fetch(url);

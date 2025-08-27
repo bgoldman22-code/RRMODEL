@@ -1,7 +1,7 @@
 // netlify/functions/lib/blobs.js
 import { getStore, blobs } from '@netlify/blobs';
 
-/** Safe store getter: bound → env-manual → null */
+/** Safe store getter: bound → env-manual → null (no-throw) */
 export function getSafeStore(nameEnv = 'BLOBS_STORE') {
   const name = process.env[nameEnv] || 'mlb-odds';
   try {
