@@ -1,37 +1,23 @@
-// Always ON version: applies Weather + BvP by default.
-import { applyWeatherLite } from "./weather-lite-core.mjs";
-import { applyBvp } from "./bvp-core.mjs";
-
-function clamp(x, lo, hi){ return Math.max(lo, Math.min(hi, x)); }
-
-export async function applyExtensions({ row, context }){
-  try{
-    let p = Number(row.p_model ?? row.p ?? 0);
-    if (!Number.isFinite(p) || p <= 0) return { prob: row.p_model, meta: row.meta };
-
-    // Weather (inline wx from row.meta.weatherInline if present)
-    let meta = { ...(row.meta||{}) };
-    const wx = meta.weatherInline || null;
-    const W = await applyWeatherLite({ wx, baseProb: p });
-    if (W?.applied && Number.isFinite(W.wMul)){
-      p *= W.wMul;
-      meta.weather = { applied:true, wMul:W.wMul, explain:W.explain };
-    }
-
-    // BvP (requires ids on row)
-    const batterId = row.batterId || row.batterID || row.batter_id;
-    const pitcherId = row.pitcherId || row.pitcherID || row.pitcher_id;
-    if (batterId && pitcherId){
-      const B = await applyBvp({ batterId, pitcherId, baseProb:p });
-      if (B?.applied && Number.isFinite(B.bvpMul)){
-        p *= B.bvpMul;
-        meta.bvp = { applied:true, bvpMul:B.bvpMul, explain:B.explain, pa:B.pa, hr:B.hr };
-      }
-    }
-
-    p = clamp(p, 0.005, 0.95);
-    return { prob: p, meta };
-  }catch{
-    return { prob: row.p_model, meta: row.meta };
+// netlify/functions/_lib/extensions-apply.mjs
+import { bvpMultiplier } from './extensions-bvp.mjs';
+import { weatherMultiplier } from './extensions-weather.mjs';
+function clampProb(p, lo=0.005, hi=0.95){ p=Number(p||0); if(!Number.isFinite(p)) return lo; return Math.max(lo, Math.min(hi, p)); }
+export async function applyExtensions(rows,{date}={}){
+  if(!Array.isArray(rows)) return rows;
+  const out = [];
+  for(const row of rows){
+    const copy = { ...row };
+    const p0 = Number(copy.p_model ?? copy.p ?? copy.hr ?? 0);
+    const wMeta = await weatherMultiplier(copy);
+    let p1 = clampProb(p0 * (wMeta.mul ?? 1.0));
+    const bMeta = await bvpMultiplier(copy);
+    let p2 = clampProb(p1 * (bMeta.mul ?? 1.0));
+    copy.meta = { ...(copy.meta || {}) };
+    copy.meta.weather = wMeta;
+    copy.meta.bvp = bMeta;
+    copy.meta.adjustments = { p_before: p0, weatherMul: wMeta.mul ?? 1.0, bvpMul: bMeta.mul ?? 1.0, p_after: p2 };
+    copy.p_model = p2;
+    out.push(copy);
   }
+  return out;
 }
