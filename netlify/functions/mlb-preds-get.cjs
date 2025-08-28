@@ -2,7 +2,7 @@
 // Usage: /.netlify/functions/mlb-preds-get?date=YYYY-MM-DD
 const { getStore } = require('./_blobs.js');
 
-exports.handler = async (event) => {
+async function handler(event) { ... } exports.handler = handler;
   try {
     const params = event.queryStringParameters || {};
     const date = (params.date || "").trim();
