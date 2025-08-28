@@ -1,5 +1,17 @@
+import { getBlobsStore } from "./_blobs.js";
+
+const createStore = (name) => getBlobsStore(name);
+
+async function readJSON(store, key, fallback = null) {
+  try {
+    const val = await store.get(key, { type: "json" });
+    return (val === undefined || val === null) ? fallback : val;
+  } catch (e) {
+    return fallback;
+  }
+}
+
 // netlify/functions/mlb-learn-status.mjs
-import { createStore, readJSON } from "./_blobs-helper.mjs";
 
 export async function handler(event, context) {
   try {

@@ -53,3 +53,23 @@ export const makeStore = getBlobsStore;
 // Netlify/rollup will convert ESM default, but we expose common properties too.
 const cjs = { getStore, getBlobsStore, openStore, makeStore };
 export default cjs;
+
+
+// unified helper (safe across runtimes)
+function _getStoreImpl(arg) {
+  const DEFAULT_MLB = process.env.BLOBS_STORE || 'mlb-odds';
+  const name   = (typeof arg === 'string') ? arg : (arg && arg.name) || DEFAULT_MLB;
+  const siteID = (arg && arg.siteID) || process.env.NETLIFY_SITE_ID;
+  const token  = (arg && arg.token)  || process.env.NETLIFY_BLOBS_TOKEN;
+
+  if (real && typeof real.getStore === 'function') {
+    return real.getStore({ name, siteID, token });
+  }
+  if (real && typeof real.createClient === 'function') {
+    const client = real.createClient({ siteID, token });
+    return client.store(name);
+  }
+  throw new Error('Netlify Blobs API not available at runtime.');
+}
+
+export const getStore = getBlobsStore;
