@@ -1,3 +1,4 @@
+import { getBlobsStore, openStore, getSafeStore, makeStore } from './_blobs.js';
 import { getStore } from '@netlify/blobs';
 
 async function j(url){

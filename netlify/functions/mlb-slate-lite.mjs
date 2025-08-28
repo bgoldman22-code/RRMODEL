@@ -1,3 +1,4 @@
+import { getBlobsStore, openStore, getSafeStore, makeStore } from './_blobs.js';
 import { getStore } from '@netlify/blobs';
 import { pitcherHRMultiplier } from './lib/hrPitcherMultiplier.js';
 import { parkHRFactorForAbbrev } from './lib/parkFactors.js';

@@ -1,3 +1,4 @@
+import { getBlobsStore, openStore, getSafeStore, makeStore } from './_blobs.js';
 // netlify/functions/mlb-backfill-pitchers.mjs
 // Backfill pitcher profiles (mlb-learning/profiles/pitcher/{id}.json) using MLB StatsAPI.
 // Collects HR allowed and batters faced per pitcher from the MLB feeds for a date range.
@@ -45,7 +46,7 @@ export default async (req) => {
     const end   = clampDate(url.searchParams.get('end') || start);
     if(!/^\d{4}-\d{2}-\d{2}$/.test(start)) return ok({ ok:false, error:'bad-start' });
     if(!/^\d{4}-\d{2}-\d{2}$/.test(end))   return ok({ ok:false, error:'bad-end' });
-    const store = getStore('mlb-learning');
+    const store = getBlobsStore();
 
     let days = eachDate(start, end);
     let updatedPitchers = new Set();

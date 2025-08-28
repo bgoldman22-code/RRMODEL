@@ -1,10 +1,11 @@
+import { getBlobsStore, openStore, getSafeStore, makeStore } from './_blobs.js';
 // netlify/functions/hits2-submit-picks.mjs
 import { getStore } from '@netlify/blobs';
 
 export async function handler(event) {
   if((event.httpMethod||'GET') !== 'POST') return json(405, { ok:false, message:'method-not-allowed' });
   try {
-    const store = getStore('hits2-learn');
+    const store = getBlobsStore();
     const body = JSON.parse(event.body||'{}');
     const date = body.date || (new Date().toISOString().slice(0,10));
     const picks = Array.isArray(body.picks)? body.picks : [];

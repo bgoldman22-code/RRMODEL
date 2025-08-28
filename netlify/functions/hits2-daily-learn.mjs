@@ -1,10 +1,11 @@
+import { getBlobsStore, openStore, getSafeStore, makeStore } from './_blobs.js';
 // netlify/functions/hits2-daily-learn.mjs
 import { getStore } from '@netlify/blobs';
 
 export const config = { schedule: '@daily' };
 
 export async function handler(event) {
-  const store = getStore('hits2-learn');
+  const store = getBlobsStore();
   const date = new Date(); date.setUTCDate(date.getUTCDate()-1);
   const ymd = date.toISOString().slice(0,10);
   try {

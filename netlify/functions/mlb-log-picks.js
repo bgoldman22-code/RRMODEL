@@ -1,3 +1,4 @@
+import { getBlobsStore, openStore, getSafeStore, makeStore } from './_blobs.js';
 import { getStore } from '@netlify/blobs';
 import { parkHRFactorForAbbrev } from './lib/parkFactors.js';
 import { weatherHRMultiplier } from './lib/weatherMultiplier.js';
@@ -63,7 +64,7 @@ export default async (req, context) => {
       prob: Number(p?.hr_prob_fgb || p?.prob || 0)
     }));
 
-    const store = getStore('mlb-logs');
+    const store = getBlobsStore();
     const key = `predictions/${date}.json`;
     const payload = { date, picks: clean, ts: Date.now() };
     await store.set(key, JSON.stringify(payload));

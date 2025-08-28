@@ -1,3 +1,4 @@
+import { getBlobsStore, openStore, getSafeStore, makeStore } from './_blobs.js';
 // netlify/functions/sb-submit-picks.mjs
 // Stores daily SB picks to Netlify Blobs for learning.
 // Requires functions bundler to include "@netlify/blobs" (netlify.toml).
@@ -14,7 +15,7 @@ export default async function handler(request) {
     const date = (body && body.date) || new Date().toISOString().slice(0,10);
     const picks = (body && Array.isArray(body.picks)) ? body.picks : [];
 
-    const store = getStore('sb-learn'); // site-wide store
+    const store = getBlobsStore(); // site-wide store
     const key = `picks:${date}`;
     await store.setJSON(key, { date, picks, ts: Date.now() });
 

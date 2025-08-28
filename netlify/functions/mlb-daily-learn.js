@@ -1,3 +1,4 @@
+import { getBlobsStore, openStore, getSafeStore, makeStore } from './_blobs.js';
 import { getStore } from '@netlify/blobs';
 
 // Scheduled: daily ~3:05am ET (07:05 UTC)
@@ -93,7 +94,7 @@ export default async (req, context) => {
       }
     }
 
-    const store = getStore('mlb');
+    const store = getBlobsStore();
     const KEY = 'model.json';
     let model = {};
     const raw = await store.get(KEY);

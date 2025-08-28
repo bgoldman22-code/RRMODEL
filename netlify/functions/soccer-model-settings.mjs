@@ -1,8 +1,9 @@
+import { getBlobsStore, openStore, getSafeStore, makeStore } from './_blobs.js';
 // netlify/functions/soccer-model-settings.mjs
 import { getStore } from '@netlify/blobs';
 
 export async function handler(event) {
-  const store = getStore('soccer-learn');
+  const store = getBlobsStore();
   const method = event.httpMethod || 'GET';
   if(method === 'GET') {
     const cal = (await store.get('calibration', { type: 'json' })) || {};
