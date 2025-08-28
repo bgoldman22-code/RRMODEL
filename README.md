@@ -1,26 +1,37 @@
-# NFL TD Patch — Step 3 & Candidates Fix
+# Blobs Helper + Props Codemod Patch
 
-This patch does two things:
+This patch gives you:
+- A robust Netlify Blobs helper at `netlify/functions/_blobs.js` (ESM).
+- A diagnostic function `netlify/functions/env-dump.mjs` to verify env + blobs.
+- A codemod script `patch/patch-props-blobs.js` that injects safe blobs usage into:
+  - props-get.mjs
+  - props-get-raw.mjs
+  - props-prob.mjs
+  - props-refresh.mjs
+  - props-stats.mjs
+  - (optionally) props-diagnostics.mjs
 
-1. **Fixes** `netlify/functions/nfl-td-candidates.mjs` (template string typo + robust schedule consumption).
-2. **Makes Step 3 changes** so CommonJS Netlify functions are valid under `"type": "module"`:
-   - Renames `netlify/functions/mlb-preds-get.js` -> `.cjs` (if present)
-   - Renames `netlify/functions/odds-diag.js` -> `.cjs` (if present)
-   - Prints any other `exports.handler` files so you can rename them too
+## How to apply
 
-## Apply
+1. Copy the files into your repo, preserving paths:
+   - `netlify/functions/_blobs.js`
+   - `netlify/functions/env-dump.mjs`
+   - `patch/patch-props-blobs.js`
 
-```bash
-# From your repo root
-unzip patch-step3-and-candidates-fix-2025-08-25.zip -d .
-bash scripts/apply-patch.sh
-git push
-```
+2. Run the codemod from the repo root:
+   ```bash
+   node patch/patch-props-blobs.js
+   git add netlify/functions/*.mjs netlify/functions/_blobs.js
+   git commit -m "Use shared _blobs helper in props functions + add env-dump"
+   git push
+   ```
 
-## Verify
+3. Sanity test (after deploy):
+   - Env probe:
+     `https://<yoursite>/.netlify/functions/env-dump`
+   - Props diagnostics (should *not* say “environment not configured”):
+     `https://<yoursite>/.netlify/functions/props-diagnostics?model=mlb_hits2&date=2025-08-27`
+   - Predictions endpoint:
+     `https://<yoursite>/.netlify/functions/mlb-preds-get?date=2025-08-27`
 
-- `/.netlify/functions/nfl-bootstrap?refresh=1&mode=auto&debug=1` returns a schedule.
-- `/.netlify/functions/nfl-td-candidates?debug=1` returns `{ ok:true, candidates:[...] }`.
-- `/nfl` renders candidates (even if Blobs writes are still in-flight).
-
-If Netlify logs still show CommonJS/ESM warnings for other files, either rename them to `.cjs` or convert to ESM (`export default async function handler(...) {}`).
+If any of the props functions still initialize their own Blobs client, re-run the codemod. It's idempotent.
