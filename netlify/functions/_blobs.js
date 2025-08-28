@@ -1,17 +1,28 @@
 // netlify/functions/_blobs.js
-// Single source of truth for all blob store access (ESM & CJS friendly)
+// Single source of truth for ALL blob access (ESM & CJS consumers).
+// Works with modern getStore() and falls back to createClient(). Also exposes
+// a few optional/legacy helpers so older files keep working.
+
 import * as real from '@netlify/blobs';
 
 const DEFAULT_MLB = process.env.BLOBS_STORE || 'mlb-odds';
+const DEFAULT_NFL = process.env.BLOBS_STORE_NFL || 'nfl-td';
+
+function _resolveName(arg, fallback = DEFAULT_MLB) {
+  if (!arg) return fallback;
+  if (typeof arg === 'string') return arg;
+  if (arg && typeof arg === 'object') return arg.name || fallback;
+  return fallback;
+}
 
 export function getStore(arg) {
-  const name   = (typeof arg === 'string') ? arg : (arg && arg.name) || DEFAULT_MLB;
+  const name   = _resolveName(arg, DEFAULT_MLB);
   const siteID = (arg && arg.siteID) || process.env.NETLIFY_SITE_ID;
   const token  = (arg && arg.token)  || process.env.NETLIFY_BLOBS_TOKEN;
 
-  // Prefer modern API if present (your env shows hasGetStore: true)
+  // Prefer modern API if present
   if (real && typeof real.getStore === 'function') {
-    // Pass explicit creds in case the env context isn’t injected
+    // Pass explicit creds to avoid “environment not configured” in some runtimes
     return real.getStore({ name, siteID, token });
   }
 
@@ -24,15 +35,64 @@ export function getStore(arg) {
   throw new Error('Netlify Blobs API not available at runtime.');
 }
 
-// Back-compat aliases for any code still importing other names
+// Canonical “use this everywhere”
 export const getBlobsStore = getStore;
-export const openStore     = getStore;
-export const makeStore     = getStore;
 
-// Default export so CommonJS `require('./_blobs.js')` can grab methods
-export default {
-  getStore,
-  getBlobsStore: getStore,
-  openStore: getStore,
-  makeStore: getStore,
-};
+// Aliases for old code paths
+export const openStore = getBlobsStore;
+export const makeStore = getBlobsStore;
+
+// Optional helper: return null instead of throwing (used by *-optional.mjs callers)
+export async function getStoreOrNull(arg) {
+  try {
+    return getBlobsStore(arg);
+  } catch {
+    return null;
+  }
+}
+
+// Optional helper: list keys in a store (used by nfl-rosters-list.mjs)
+export async function listKeys(name = DEFAULT_MLB, opts = {}) {
+  const store = getBlobsStore(name);
+  // Netlify SDK exposes .list() async iterator
+  const out = [];
+  if (typeof store.list === 'function') {
+    for await (const entry of store.list(opts)) {
+      // entry.key is the blob key
+      out.push(entry.key || entry?.id || entry);
+    }
+  }
+  return out;
+}
+
+// Small env diag so imports that expect this don’t fail (used by nfl-bootstrap.js)
+export function diagBlobsEnv() {
+  const hasCreateClient = !!(real && typeof real.createClient === 'function');
+  const hasGetStore     = !!(real && typeof real.getStore === 'function');
+  const exportKeys      = Object.keys(real || {});
+  return {
+    ok: true,
+    DEFAULT_MLB,
+    DEFAULT_NFL,
+    hasCreateClient,
+    hasGetStore,
+    exportKeys
+  };
+}
+
+// ---------- CJS interop for .cjs functions ----------
+try {
+  // @ts-ignore
+  if (typeof module !== 'undefined' && module.exports) {
+    // @ts-ignore
+    module.exports = {
+      getStore,
+      getBlobsStore,
+      openStore,
+      makeStore,
+      getStoreOrNull,
+      listKeys,
+      diagBlobsEnv
+    };
+  }
+} catch {}
