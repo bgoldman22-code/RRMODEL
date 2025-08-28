@@ -1,30 +1,26 @@
-// Returns the raw saved predictions JSON for a given date from Netlify Blobs.
-// Usage: /.netlify/functions/mlb-preds-get?date=YYYY-MM-DD
-const { getBlobsStore } = require('./_blobs.js');
+// netlify/functions/mlb-preds-get.cjs
+const { getBlobsStore } = require('./_blobs.js'); // <- use the unified helper
 
-exports.handler = async (event) => {
+async function handler(event) {
+  const qs = event && event.queryStringParameters || {};
+  const date = qs.date || new Date().toISOString().slice(0,10);
+  const debug = qs.debug === '1' || qs.debug === 'true';
+
   try {
-    const params = event.queryStringParameters || {};
-    const date = (params.date || "").trim();
-    if (!date) return json(400, { ok:false, error:"Missing date=YYYY-MM-DD" });
+    // EXAMPLE skeleton — keep your existing logic here.
+    // Make sure any blobs access goes through getBlobsStore('mlb-odds') or your chosen store name.
+    const store = getBlobsStore(process.env.BLOBS_STORE || 'mlb-odds');
 
-    const store = getBlobsStore("mlb-logs");
-    const keys = [
-      `predictions-with-ctx/${date}.json`,
-      `predictions/${date}.json`,
-    ];
-    for (const key of keys){
-      const val = await store.get(key);
-      if (val) {
-        return json(200, { ok:true, key, data: JSON.parse(val) });
-      }
-    }
-    return json(404, { ok:false, error:"No predictions file for that date." });
+    // ... your current code that builds rows, attaches meta.weather & meta.bvp, etc.
+
+    // Return the same shape your frontend expects:
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: true, date /*, rows, info, etc. */ })
+    };
   } catch (e) {
-    return json(500, { ok:false, error: e?.message || "Server error" });
+    return { statusCode: 200, body: JSON.stringify({ ok: false, error: String(e) }) };
   }
-};
-
-function json(statusCode, body){
-  return { statusCode, headers: { "content-type":"application/json" }, body: JSON.stringify(body) };
 }
+
+exports.handler = handler;
