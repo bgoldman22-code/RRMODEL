@@ -1,7 +1,7 @@
 // ESM
 import { getBlobsStore } from "./_blobs.js";
 
-export const handler = async (event) => {
+export async function handler(event) => {
   try {
     const params = new URLSearchParams(event.rawQuery || event.queryStringParameters || {});
     const model = params.get("model") || "mlb_hits2";
