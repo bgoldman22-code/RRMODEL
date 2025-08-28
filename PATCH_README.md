@@ -1,18 +1,26 @@
-# Patch: realistic per-game HR% + proper EV + richer WHY (no UI edits)
+# Turned-ON Patch (Weather + BvP) — 2025-08-28
 
-This patch updates **only**:
-- `src/models/hr_scoring.js` — returns `{ prob_pp, model_odds, why, ev_1u }` with realistic probabilities and proper EV(1u).
-- `src/server/learn/weights.js` — training-time production weighting helper.
+## What this does
+Adds Weather and Batter-vs-Pitcher multipliers **on by default** via a safe *post* wrapper endpoint:
+`/.netlify/functions/mlb-preds-get-post`
 
-## How to apply
-1) Unzip into your project root (overwrites the two files above).
-2) Commit & deploy.
+It calls your existing `mlb-preds-get`, applies small capped adjustments, and returns the same shape.
 
-If your UI already calls `scoreHRPick(cand)` for each candidate, the table will immediately show:
-- Realistic **Model HR%**
-- Correct **EV (1u)** (no longer mirrors probability)
-- Varied, human **WHY**
+## Install
+Copy folder contents into your repo at the same paths:
+- `netlify/functions/_lib/*.mjs`
+- `netlify/functions/mlb-preds-get-post.mjs`
 
-### Notes
-- Probabilities use per-PA → per-game conversion with soft contextual multipliers and a temporary calibration shrink (0.65×) to avoid 20–30% spikes until your full calibrator is re-enabled.
-- If your candidate object includes `live_odds`, EV uses that; otherwise it falls back to the model-implied odds.
+## How to use (no backend edits needed)
+Change the frontend fetch URL from:
+```
+/.netlify/functions/mlb-preds-get?date=YYYY-MM-DD
+```
+to:
+```
+/.netlify/functions/mlb-preds-get-post?date=YYYY-MM-DD
+```
+
+## Notes
+- Effects are modest and clamped; if any helper fails, it no-ops and returns your original numbers.
+- Later, if you prefer in-model integration, call `_lib/extensions-apply.mjs` inside your existing function and delete the wrapper.
