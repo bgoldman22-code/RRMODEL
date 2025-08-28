@@ -1,33 +1,37 @@
-// netlify/functions/props-diagnostics.mjs
-import { getBlobsStore } from './_blobs.js';
+// ESM
+import { getBlobsStore } from "./_blobs.js";
 
 export const handler = async (event) => {
   try {
-    const { model = 'mlb_hits2', date = '' } = Object.fromEntries(new URLSearchParams(event.queryStringParameters || {}));
-    const storeName = process.env.BLOBS_STORE || 'mlb-odds';
+    const params = new URLSearchParams(event.rawQuery || event.queryStringParameters || {});
+    const model = params.get("model") || "mlb_hits2";
+    const date  = params.get("date")  || ""; // optional
+
+    const storeName = process.env.BLOBS_STORE || "mlb-odds";
     const store = getBlobsStore(storeName);
 
-    // round-trip test
-    const key = `diag/ping-${Date.now()}`;
-    await store.setJSON(key, { ok: true, t: Date.now(), model, date });
-    const snap = await store.getJSON(key);
+    // what we try to read (same keys you were checking)
+    const tbKey   = "props/latest_tb.json";
+    const hrrbiKey= "props/latest_hrrbi.json";
 
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        ok: true,
-        store: storeName,
-        wroteKey: key,
-        roundTripOK: !!snap,
-        sample: snap || null
-      })
-    };
+    const [tb, hrrbi] = await Promise.all([
+      store.getJSON(tbKey).catch(e => `ERR: ${e?.message || e}`),
+      store.getJSON(hrrbiKey).catch(e => `ERR: ${e?.message || e}`),
+    ]);
+
+    return resp({ ok: true, model, date, store: storeName, snapshots: {
+      [tbKey]:   tb,
+      [hrrbiKey]:hrrbi
+    }});
   } catch (e) {
-    return {
-      statusCode: 500,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: false, error: String(e && e.message || e) })
-    };
+    return resp({ ok:false, error: e?.message || String(e) }, 500);
   }
 };
+
+function resp(body, statusCode = 200) {
+  return {
+    statusCode,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  };
+}
