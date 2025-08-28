@@ -1,51 +1,44 @@
-// netlify/functions/_blobs.js  (ESM, compat wrapper)
-import * as api from '@netlify/blobs';
+// netlify/functions/_blobs.js  (ESM shim that supports both modern & legacy Netlify Blobs APIs)
+/*
+  Provides a single, stable interface for your functions:
+    import { getBlobsStore } from "./_blobs.js";
+  and back-compat aliases:
+    import { getSafeStore, openStore, makeStore } from "./_blobs.js";
 
-/**
- * Returns a client that can create per-store handles.
- * Prefers `createClient` (new API). Falls back to `getStore` (older API).
- */
-function _client() {
-  const siteID = process.env.NETLIFY_SITE_ID;
-  const token  = process.env.NETLIFY_BLOBS_TOKEN;
+  It prefers explicit creds (NETLIFY_SITE_ID, NETLIFY_BLOBS_TOKEN), else
+  falls back to runtime-injected credentials on Netlify.
+*/
+import * as Blobs from '@netlify/blobs';
 
-  // Prefer modern API if available
-  if (typeof api.createClient === 'function') {
-    try {
-      if (siteID && token) {
-        return api.createClient({ siteID, token });
-      }
-      return api.createClient();
-    } catch (e) {
-      // fall through to legacy path
-      console.warn('[blobs] createClient failed, falling back to getStore:', e?.message);
-    }
+function createClientCompat() {
+  // Try modern API first (createClient)
+  if (typeof Blobs.createClient === 'function') {
+    const siteID = process.env.NETLIFY_SITE_ID;
+    const token  = process.env.NETLIFY_BLOBS_TOKEN;
+    if (siteID && token) return Blobs.createClient({ siteID, token });
+    return Blobs.createClient();
   }
-
-  // Legacy shim: expose a minimal shape with .store(name) -> { getJSON, setJSON, get, set }
-  if (typeof api.getStore === 'function') {
+  // Legacy API shape (getStore / createStore)
+  if (typeof Blobs.getStore === 'function' || typeof Blobs.createStore === 'function') {
     return {
       store(name) {
-        return api.getStore({ name });
+        if (typeof Blobs.getStore === 'function') return Blobs.getStore(name);
+        return Blobs.createStore(name);
       }
     };
   }
-
-  // As a last resort, provide a dummy that throws a helpful error
-  return {
-    store() {
-      throw new Error('No compatible Netlify Blobs API found. Ensure @netlify/blobs is up to date (or set NETLIFY_SITE_ID and NETLIFY_BLOBS_TOKEN).');
-    }
-  };
+  throw new Error('No compatible Netlify Blobs client found in @netlify/blobs');
 }
 
-/** Primary helper used across functions */
+function _client() {
+  return createClientCompat();
+}
+
 export function getBlobsStore(name = process.env.BLOBS_STORE || 'mlb-odds') {
-  const client = _client();
-  return client.store(name);
+  return _client().store(name);
 }
 
-// --- Back-compat aliases some functions reference ---
+// --- Back-compat aliases your code referenced elsewhere ---
 export const getSafeStore = getBlobsStore;
 export const openStore   = getBlobsStore;
 export function makeStore(name) { return getBlobsStore(name); }
