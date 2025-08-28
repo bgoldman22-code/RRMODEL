@@ -1,2 +1,2 @@
-// passthrough shim => keep old imports working
-export { getBlobsStore, getSafeStore, openStore, makeStore } from './_blobs.js';
+// netlify/functions/_blobs-helper.js
+export * from './_blobs.js';
