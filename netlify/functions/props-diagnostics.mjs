@@ -1,37 +1,42 @@
-// ESM
-import { getBlobsStore } from "./_blobs.js";
+// netlify/functions/props-diagnostics.mjs
+import { getBlobsStore, diagBlobsEnv } from './_blobs.js';
 
-export async function handler(event) => {
+export async function handler(event) {
+  const qs = event?.queryStringParameters || {};
+  // Accept either ?store= or ?model= (model kept for backward-compat)
+  const storeName =
+    qs.store ||
+    (qs.model === 'mlb_hits2' ? (process.env.BLOBS_STORE || 'mlb-odds') : (process.env.BLOBS_STORE || 'mlb-odds'));
+
   try {
-    const params = new URLSearchParams(event.rawQuery || event.queryStringParameters || {});
-    const model = params.get("model") || "mlb_hits2";
-    const date  = params.get("date")  || ""; // optional
-
-    const storeName = process.env.BLOBS_STORE || "mlb-odds";
     const store = getBlobsStore(storeName);
 
-    // what we try to read (same keys you were checking)
-    const tbKey   = "props/latest_tb.json";
-    const hrrbiKey= "props/latest_hrrbi.json";
+    // Try listing a few keys as a connectivity probe
+    const keysSample = [];
+    if (store?.list && store.list()[Symbol.asyncIterator]) {
+      let i = 0;
+      for await (const entry of store.list()) {
+        keysSample.push({ key: entry.key, size: entry.size, uploadedAt: entry.uploadedAt });
+        if (++i >= 5) break;
+      }
+    }
 
-    const [tb, hrrbi] = await Promise.all([
-      store.getJSON(tbKey).catch(e => `ERR: ${e?.message || e}`),
-      store.getJSON(hrrbiKey).catch(e => `ERR: ${e?.message || e}`),
-    ]);
+    // Optional environment probe from _blobs.js (if present)
+    const envProbe = typeof diagBlobsEnv === 'function' ? diagBlobsEnv() : null;
 
-    return resp({ ok: true, model, date, store: storeName, snapshots: {
-      [tbKey]:   tb,
-      [hrrbiKey]:hrrbi
-    }});
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        ok: true,
+        store: storeName,
+        keysSample,
+        envProbe
+      })
+    };
   } catch (e) {
-    return resp({ ok:false, error: e?.message || String(e) }, 500);
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: false, error: String(e) })
+    };
   }
-};
-
-function resp(body, statusCode = 200) {
-  return {
-    statusCode,
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(body),
-  };
 }
