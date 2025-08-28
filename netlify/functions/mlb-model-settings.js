@@ -2,7 +2,7 @@ import { getStore } from '@netlify/blobs';
 
 export default async (req, context) => {
   try {
-    const store = getStore('mlb');
+    const store = getBlobsStore('mlb');
     const KEY = 'model.json';
     let raw = await store.get(KEY);
     if (!raw) {

@@ -93,7 +93,7 @@ export default async (req, context) => {
       }
     }
 
-    const store = getStore('mlb');
+    const store = getBlobsStore('mlb');
     const KEY = 'model.json';
     let model = {};
     const raw = await store.get(KEY);
@@ -137,7 +137,7 @@ export default async (req, context) => {
     }
 
     // 2) Optional: auto-calibrate from predictions logged for that date
-    const logs = getStore('mlb-logs');
+    const logs = getBlobsStore('mlb-logs');
     const predRaw = await logs.get(`predictions/${date}.json`);
     if(predRaw){
       const preds = JSON.parse(predRaw)?.picks || [];
