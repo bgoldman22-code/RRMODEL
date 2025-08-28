@@ -1,6 +1,6 @@
 // netlify/functions/odds-status.mjs
 // Optional status endpoint: shows how many FanDuel HR odds were matched for a given date
-import { makeStore } from "./_lib/blobs-helper.mjs";
+import { makeStore } from "./_blobs.js";
 
 export const handler = async (event) => {
   try {
