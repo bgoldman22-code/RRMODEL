@@ -1,5 +1,5 @@
 // netlify/functions/odds-scan-missing.mjs
-import { getStore } from "@netlify/blobs";
+import { getStore } from './_blobs.js';
 const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
 const CANDIDATE_KEYS = [
   process.env.ODDS_SNAPSHOT_KEY || "latest.json",

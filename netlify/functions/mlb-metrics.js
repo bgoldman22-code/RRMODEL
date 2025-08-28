@@ -1,4 +1,4 @@
-import { getStore } from '@netlify/blobs';
+import { getStore } from './_blobs.js';
 
 async function j(url){
   const r = await fetch(url);
@@ -88,7 +88,7 @@ export default async (req, context) => {
     const date = url.searchParams.get('date') || yesterday();
     const window = Math.max(1, Math.min(30, Number(url.searchParams.get('window')||7)));
 
-    const logs = getBlobsStore('mlb-logs');
+    const logs = getStore('mlb-logs');
     const todayPred = await logs.get(`predictions/${date}.json`);
     const predObj = todayPred ? JSON.parse(todayPred) : null;
     const picks = predObj?.picks || [];

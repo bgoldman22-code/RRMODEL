@@ -1,4 +1,4 @@
-import { getStore } from '@netlify/blobs';
+import { getStore } from './_blobs.js';
 import { pitcherHRMultiplier } from './lib/hrPitcherMultiplier.js';
 import { parkHRFactorForAbbrev } from './lib/parkFactors.js';
 import { weatherHRMultiplier } from './lib/weatherMultiplier.js';

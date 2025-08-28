@@ -1,5 +1,5 @@
 // netlify/functions/nfl-diag.cjs
-const { getStore } = require("@netlify/blobs");
+const { getStore } = require('./_blobs.js');
 
 async function readJson(store, key) {
   try {

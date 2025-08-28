@@ -1,5 +1,5 @@
 // netlify/functions/mlb-learn-diagnostics.mjs
-import { getStore } from "@netlify/blobs";
+import { getStore } from './_blobs.js';
 function dualGetStore(getStore){
   const STORE = process.env.BLOBS_STORE || "rrmodelblobs";
   // First try ambient Netlify runtime

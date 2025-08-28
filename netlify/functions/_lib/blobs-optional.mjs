@@ -2,7 +2,7 @@
 // netlify/functions/_lib/blobs-optional.mjs
 // Helpers that make Netlify Blobs strictly optional.
 // We only write to blobs if a store can be created; otherwise we continue in "stateless" mode.
-import { getStore } from "@netlify/blobs";
+import { getStore } from './_blobs.js';
 
 export function hasBlobsEnv() {
   return !!(process.env.NETLIFY && (process.env.NETLIFY_SITE_ID || process.env.SITE_ID));

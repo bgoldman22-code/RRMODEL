@@ -1,5 +1,5 @@
 // netlify/functions/soccer-submit-picks.mjs
-import { getStore } from '@netlify/blobs';
+import { getStore } from './_blobs.js';
 
 export async function handler(event) {
   if((event.httpMethod||'GET') !== 'POST') return json(405, { ok:false, message:'method-not-allowed' });

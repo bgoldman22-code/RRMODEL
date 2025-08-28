@@ -1,4 +1,4 @@
-import { getStore } from '@netlify/blobs';
+import { getStore } from './_blobs.js';
 import { parkAdjust } from '../../src/utils/parkAdjust.js';
 import { getTeamAlt } from '../../src/utils/teamAlt.js';
 import { parkHRFactorForAbbrev } from './lib/parkFactors.js';
@@ -65,7 +65,7 @@ export default async (req, context) => {
       prob: Number(p?.hr_prob_fgb || p?.prob || 0)
     }));
 
-    const store = getBlobsStore('mlb-logs');
+    const store = getStore('mlb-logs');
     const key = `predictions/${date}.json`;
     const payload = { date, picks: clean, ts: Date.now() };
     await store.set(key, JSON.stringify(payload));

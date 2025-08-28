@@ -1,6 +1,6 @@
 
 // netlify/functions/_blobs.mjs
-import { getStore } from '@netlify/blobs';
+import { getStore } from './_blobs.js';
 
 /**
  * Returns a Netlify Blobs store for NFL.

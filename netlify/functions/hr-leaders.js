@@ -1,7 +1,7 @@
 // netlify/functions/hr-leaders.js
 // ESM version (package.json has "type":"module")
 // Uses built-in global `fetch` (Node 18+ on Netlify) — no node-fetch needed.
-import { getStore } from "@netlify/blobs";
+import { getStore } from './_blobs.js';
 
 const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
 const CACHE_KEY = "leaders_hr_top50.json";

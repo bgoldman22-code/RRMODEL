@@ -4,7 +4,7 @@
 // 1) Netlify Blobs (multiple keys)
 // 2) Internal functions: odds-get; if empty -> odds-refresh-rapid?quick=1 then odds-get
 // 3) Direct TheOddsAPI call (if THEODDS_API_KEY present)
-import { getStore } from "@netlify/blobs";
+import { getStore } from './_blobs.js';
 
 const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
 const CANDIDATE_KEYS = [

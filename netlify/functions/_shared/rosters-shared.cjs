@@ -6,7 +6,7 @@ function log(debug, ...args){ if (debug) console.log("[rosters]", ...args); }
 
 function getStoreSafe(STORE, debug=false){
   try {
-    const { getStore } = require("@netlify/blobs");
+    const { getStore } = require('./_blobs.js');
     try {
       const store = getStore(STORE);
       log(debug, "Blobs store (managed):", STORE);

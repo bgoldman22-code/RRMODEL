@@ -1,5 +1,5 @@
 // netlify/functions/odds-refresh-rapid.js (multi-region Over 0.5 HR via TheOddsAPI)
-const { getStore } = require('@netlify/blobs');
+const { getStore } = require('./_blobs.js');
 
 function initStore(){
   const name = process.env.BLOBS_STORE || 'mlb-odds';

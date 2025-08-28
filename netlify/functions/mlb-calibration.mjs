@@ -1,7 +1,7 @@
 /** netlify/functions/mlb-calibration.mjs
  * Reads recent picks to compute a global calibration scale and per-probability-bin hit rates.
  */
-import { getStore } from "@netlify/blobs";
+import { getStore } from './_blobs.js';
 function ok(data){ return new Response(JSON.stringify(data), { headers: { "content-type": "application/json" }}); }
 function fmtET(d=new Date()){
   return new Intl.DateTimeFormat("en-CA", { timeZone:"America/New_York", year:"numeric", month:"2-digit", day:"2-digit" }).format(d);

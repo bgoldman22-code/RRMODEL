@@ -15,7 +15,7 @@
 // - Result fields updated per pitcher profile: samples (batters faced), hr (home runs allowed).
 // - Adds `lastUpdated` and `backfill:{ from, to }` markers.
 
-import { getStore } from '@netlify/blobs';
+import { getStore } from './_blobs.js';
 
 function ok(data){ return new Response(JSON.stringify(data), { headers:{ 'content-type':'application/json' }}); }
 function ymd(d){ return new Date(d).toISOString().slice(0,10); }

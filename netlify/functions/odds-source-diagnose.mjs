@@ -1,6 +1,6 @@
 // netlify/functions/odds-source-diagnose.mjs
 // Quick probe to see what sources are reachable right now.
-import { getStore } from "@netlify/blobs";
+import { getStore } from './_blobs.js';
 
 const STORE_NAME = process.env.BLOBS_STORE || "rrmodelblobs";
 const CANDIDATE_KEYS = [

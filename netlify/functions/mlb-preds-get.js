@@ -1,6 +1,6 @@
 // Returns the raw saved predictions JSON for a given date from Netlify Blobs.
 // Usage: /.netlify/functions/mlb-preds-get?date=YYYY-MM-DD
-const { getBlobsStore } = require('./_blobs.cjs');
+const { getStore } = require('./_blobs.js');
 
 exports.handler = async (event) => {
   try {
@@ -8,7 +8,7 @@ exports.handler = async (event) => {
     const date = (params.date || "").trim();
     if (!date) return json(400, { ok:false, error:"Missing date=YYYY-MM-DD" });
 
-    const store = getBlobsStore("mlb-logs");
+    const store = getStore("mlb-logs");
     const keys = [
       `predictions-with-ctx/${date}.json`,
       `predictions/${date}.json`,

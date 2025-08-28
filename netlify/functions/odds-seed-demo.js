@@ -1,7 +1,7 @@
 // netlify/functions/odds-seed-demo.js
 // Seeds a small demo odds snapshot to your blobs store as latest.json
 // Use this only for testing the Parlays page when live odds aren't ready.
-const { getStore } = require('@netlify/blobs');
+const { getStore } = require('./_blobs.js');
 
 function initStore(){
   const name = process.env.BLOBS_STORE || 'mlb-odds'; // must match odds-get/odds-refresh

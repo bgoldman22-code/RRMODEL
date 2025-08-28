@@ -1,6 +1,6 @@
 // netlify/functions/learn-status.mjs
 // Utility to create a Blobs store that works both on Netlify and locally
-import { getStore } from "@netlify/blobs";
+import { getStore } from './_blobs.js';
 
 export function makeStore(name = "rrmodel") {
   const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID || process.env.siteID;

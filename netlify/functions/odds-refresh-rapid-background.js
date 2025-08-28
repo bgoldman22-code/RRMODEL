@@ -1,5 +1,5 @@
 
-const { getStore } = require('@netlify/blobs');
+const { getStore } = require('./_blobs.js');
 
 function initStore(){
   const name = process.env.BLOBS_STORE || 'mlb-odds';

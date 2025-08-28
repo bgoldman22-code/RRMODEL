@@ -1,5 +1,5 @@
 // netlify/functions/sb-model-settings.mjs
-import { getStore } from '@netlify/blobs';
+import { getStore } from './_blobs.js';
 
 export async function handler(event) {
   const store = getStore('sb-learn');

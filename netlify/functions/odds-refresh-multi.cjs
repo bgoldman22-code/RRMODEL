@@ -2,7 +2,7 @@
 // MLB HR props fetcher (FanDuel batter_home_runs Over 0.5) with legacy-compatible 'provider' field.
 // CommonJS, Node 18+ (global fetch), Netlify Blobs.
 
-const { getStore } = require("@netlify/blobs");
+const { getStore } = require('./_blobs.js');
 
 const SITE_ID = process.env.NETLIFY_SITE_ID || "967be648-eddc-4cc5-a7cc-e2ab7db8ac75";
 const BLOBS_TOKEN = process.env.NETLIFY_BLOBS_TOKEN || "nfp_UhqxsS88iqAnWCKbegv2w3PApVrYws6K6263";

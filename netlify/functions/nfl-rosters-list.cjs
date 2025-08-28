@@ -1,5 +1,5 @@
 // netlify/functions/nfl-rosters-list.cjs
-const { getStore } = require("@netlify/blobs");
+const { getStore } = require('./_blobs.js');
 
 exports.handler = async () => {
   try {

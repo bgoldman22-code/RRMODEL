@@ -1,5 +1,5 @@
 // netlify/functions/preds-diag.js
-const { getStore } = require('@netlify/blobs');
+const { getStore } = require('./_blobs.js');
 exports.handler = async (event) => {
   try {
     const params = event.queryStringParameters || {};

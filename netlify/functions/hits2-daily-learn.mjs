@@ -1,5 +1,5 @@
 // netlify/functions/hits2-daily-learn.mjs
-import { getStore } from '@netlify/blobs';
+import { getStore } from './_blobs.js';
 
 export const config = { schedule: '@daily' };
 

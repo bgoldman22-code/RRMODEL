@@ -2,7 +2,7 @@
 // Unified Blobs helper for NFL. Falls back to readable error if Blobs isn't enabled.
 // Usage: const store = await nflStore(); await store.set(...)
 
-import { getStore } from '@netlify/blobs';
+import { getStore } from '../_blobs.js';
 
 const NFL_STORE_NAME = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td';
 
@@ -10,7 +10,7 @@ export async function nflStore() {
   try {
     // If BLOBS_STORE_NFL is configured as an existing store id or a name,
     // Netlify Figures it out. Do NOT pass siteID/token unless you really need manual client.
-    const store = getStore({ name: NFL_STORE_NAME });
+    const store = getStore({ name: NFL_STORE_NAME, siteID: process.env.NETLIFY_SITE_ID, token: process.env.NETLIFY_BLOBS_TOKEN });
     // cheap smoke test: try list with empty prefix (does not throw if context OK)
     // Some older runtimes throw here; wrap just in case.
     try {

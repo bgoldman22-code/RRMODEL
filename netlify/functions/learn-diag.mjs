@@ -5,7 +5,7 @@
  *   2) legacy top-level keys: { mlb_hr: {...}, mlb_hits2: {...}, ... }
  * Safe: never 5xx. If something is missing, returns sensible defaults.
  */
-import { getStore } from "@netlify/blobs";
+import { getStore } from './_blobs.js';
 
 function ok(data){ return new Response(JSON.stringify(data), { headers: { "content-type": "application/json" }}); }
 function fmtET(d=new Date()){

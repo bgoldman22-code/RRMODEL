@@ -1,10 +1,10 @@
-const { getBlobsStore } = require('./_blobs.cjs');
+const { getStore } = require('./_blobs.js');
 
 exports.handler = async (event) => {
   try {
     const qs = event.queryStringParameters || {};
     const days = Math.max(1, Math.min(31, parseInt(qs.days || '7', 10)));
-    const store = getBlobsStore();
+    const store = getStore();
     const prefix = 'mlb-hr/experiments/';
     const listing = await store.list({ prefix });
     const blobs = (listing?.blobs || []).map(b => ({

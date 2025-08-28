@@ -1,6 +1,6 @@
 // netlify/functions/nfl-data.cjs
 // Returns the latest NFL TD data files. Prefers Netlify Blobs; falls back to repo /data.
-const { getStore } = require("@netlify/blobs");
+const { getStore } = require('./_blobs.js');
 const fs = require("fs");
 const path = require("path");
 const STORE = process.env.NFL_TD_BLOBS || "nfl-td";

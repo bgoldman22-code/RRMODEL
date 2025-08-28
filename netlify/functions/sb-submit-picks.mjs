@@ -2,7 +2,7 @@
 // Stores daily SB picks to Netlify Blobs for learning.
 // Requires functions bundler to include "@netlify/blobs" (netlify.toml).
 
-import { getStore } from '@netlify/blobs';
+import { getStore } from './_blobs.js';
 
 export default async function handler(request) {
   try{

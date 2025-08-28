@@ -1,6 +1,6 @@
 // EXAMPLE drop-in logger that computes p_ctx (context-boosted prob) alongside your existing p_base.
 // This does NOT modify the WHY column and does NOT replace your live logger. Safe to keep side-by-side.
-const { getStore } = require("@netlify/blobs");
+const { getStore } = require('./_blobs.js');
 const { computeContextBoosts, applyBoosts } = require("../lib/contextBoosts");
 
 exports.handler = async (event) => {

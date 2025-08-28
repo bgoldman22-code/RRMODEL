@@ -1,5 +1,5 @@
 // netlify/functions/nfl-rosters-get.cjs
-const { getStore } = require("@netlify/blobs");
+const { getStore } = require('./_blobs.js');
 
 const CANDIDATE_KEYS = [
   "depth-charts.json",

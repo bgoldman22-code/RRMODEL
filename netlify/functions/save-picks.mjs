@@ -1,4 +1,4 @@
-import { getStore } from "@netlify/blobs";
+import { getStore } from './_blobs.js';
 
 export default async (req) => {
   try{

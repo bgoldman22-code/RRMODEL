@@ -1,4 +1,4 @@
-import { getStore } from '@netlify/blobs';
+import { getStore } from './_blobs.js';
 
 // Scheduled: daily ~3:05am ET (07:05 UTC)
 export const config = { schedule: "5 7 * * *" };
@@ -93,7 +93,7 @@ export default async (req, context) => {
       }
     }
 
-    const store = getBlobsStore('mlb');
+    const store = getStore('mlb');
     const KEY = 'model.json';
     let model = {};
     const raw = await store.get(KEY);
@@ -137,7 +137,7 @@ export default async (req, context) => {
     }
 
     // 2) Optional: auto-calibrate from predictions logged for that date
-    const logs = getBlobsStore('mlb-logs');
+    const logs = getStore('mlb-logs');
     const predRaw = await logs.get(`predictions/${date}.json`);
     if(predRaw){
       const preds = JSON.parse(predRaw)?.picks || [];

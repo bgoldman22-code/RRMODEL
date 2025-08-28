@@ -1,7 +1,7 @@
 // netlify/functions/odds-get-hits.cjs
 // Backward-compatible odds getter for MLB **2+ Hits** props, mirroring hr odds-get.cjs style.
 // Reads Netlify Blobs snapshots and returns a simple players map with best price per player.
-const { getStore } = require("@netlify/blobs");
+const { getStore } = require('./_blobs.js');
 
 const STORE = process.env.BLOBS_STORE || "rrmodelblobs";
 const SITE_ID = process.env.NETLIFY_SITE_ID;
