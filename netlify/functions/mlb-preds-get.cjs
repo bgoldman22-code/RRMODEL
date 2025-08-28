@@ -1,26 +1,19 @@
 // netlify/functions/mlb-preds-get.cjs
-const { getBlobsStore } = require('./_blobs.js'); // <- use the unified helper
+const { getStore, getJSON } = require('./_blobs.js');
 
-async function handler(event) {
-  const qs = event && event.queryStringParameters || {};
-  const date = qs.date || new Date().toISOString().slice(0,10);
-  const debug = qs.debug === '1' || qs.debug === 'true';
-
+exports.handler = async (event) => {
   try {
-    // EXAMPLE skeleton — keep your existing logic here.
-    // Make sure any blobs access goes through getBlobsStore('mlb-odds') or your chosen store name.
-    const store = getBlobsStore(process.env.BLOBS_STORE || 'mlb-odds');
+    const params = event?.queryStringParameters || {};
+    const date = params.date || new Date().toISOString().slice(0,10);
+    const store = getStore(process.env.BLOBS_STORE || 'mlb-odds');
 
-    // ... your current code that builds rows, attaches meta.weather & meta.bvp, etc.
+    const slate = await getJSON(store, `mlb:preds:${date}.json`);
 
-    // Return the same shape your frontend expects:
     return {
       statusCode: 200,
-      body: JSON.stringify({ ok: true, date /*, rows, info, etc. */ })
+      body: JSON.stringify({ ok: true, date, slate })
     };
   } catch (e) {
     return { statusCode: 200, body: JSON.stringify({ ok: false, error: String(e) }) };
   }
-}
-
-exports.handler = handler;
+};
