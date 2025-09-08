@@ -1,15 +1,6 @@
 'use strict';
 
-// INLINE minimal data
-const SCHEDULE = {
-  season: 2025, week: 1,
-  games: [
-    { game_id: "2025-W1-NE-MIA", away: "NE",  home: "MIA" },
-    { game_id: "2025-W1-NYJ-BUF", away: "NYJ", home: "BUF" },
-    { game_id: "2025-W1-DAL-PHI", away: "DAL", home: "PHI" }
-  ]
-};
-
+// Keep inline depth charts for Step-1c (we can externalize later)
 const DEPTH = {
   NE: { RB: [{ name: "Rhamondre Stevenson", role: "RB1" }, { name: "Antonio Gibson", role: "RB2" }],
         WR: [{ name: "Demario Douglas", role: "WR1" }, { name: "Ja'Lynn Polk", role: "WR2" }],
@@ -31,22 +22,31 @@ const DEPTH = {
         TE: [{ name: "Dallas Goedert", role: "TE1" }] }
 };
 
-exports.handler = async () => {
+const fs = require('fs');
+const path = require('path');
+function readSchedule() {
+  const p = path.resolve(__dirname, './_data/nfl/2025/schedule.json');
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+exports.handler = async (event) => {
   try {
+    const sched = readSchedule();
+    const query = event && event.queryStringParameters ? event.queryStringParameters : {};
+    const week = query.week ? String(parseInt(query.week, 10)) : '1';
+    const games = sched.weeks[week] || [];
+
+    // Build a set of teams playing that week to filter candidates
+    const teams = new Set();
+    for (const g of games) { teams.add(g.away); teams.add(g.home); }
+
     const players = [];
     for (const [team, groups] of Object.entries(DEPTH)) {
+      if (!teams.has(team)) continue; // only players from teams in the target week
       for (const pos of ['RB', 'WR', 'TE']) {
         if (groups[pos]) {
           for (const pl of groups[pos].slice(0, 2)) {
-            players.push({
-              team,
-              pos,
-              player: pl.name,
-              role: pl.role || null,
-              td_prob: null,
-              fair_odds: null,
-              notes: 'scaffold-inline'
-            });
+            players.push({ team, pos, player: pl.name, role: pl.role || null, td_prob: null, fair_odds: null, notes: `scaffold-inline (week ${week})` });
           }
         }
       }
@@ -55,19 +55,9 @@ exports.handler = async () => {
     return {
       statusCode: 200,
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        ok: true,
-        season: SCHEDULE.season,
-        week: SCHEDULE.week,
-        games: SCHEDULE.games.length,
-        candidates: players.slice(0, 24)
-      })
+      body: JSON.stringify({ ok: true, season: sched.season, week: parseInt(week,10), games: games.length, candidates: players })
     };
   } catch (err) {
-    return {
-      statusCode: 500,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: false, error: String(err && err.message ? err.message : err) })
-    };
+    return { statusCode: 500, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok:false, error:String(err && err.message ? err.message : err) }) };
   }
 };
