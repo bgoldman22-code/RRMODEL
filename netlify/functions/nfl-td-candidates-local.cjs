@@ -2,12 +2,9 @@
 const fs = require('fs');
 const path = require('path');
 
-function readSchedule() {
-  const p = path.resolve(__dirname, './_data/schedule.json');
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
+function dataPath() { return path.resolve(__dirname, './_data/schedule.json'); }
+function readSchedule() { return JSON.parse(fs.readFileSync(dataPath(), 'utf8')); }
 
-// Inline scaffold depth chart (kept minimal for now)
 const DEPTH = {
   NE: { RB: [{ name: "Rhamondre Stevenson", role: "RB1" }, { name: "Antonio Gibson", role: "RB2" }],
         WR: [{ name: "Demario Douglas", role: "WR1" }, { name: "Ja'Lynn Polk", role: "WR2" }],
@@ -57,9 +54,13 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: true, season: sched.season, week: parseInt(weekStr,10), games: games.length, candidates: players })
+      body: JSON.stringify({
+        ok: true, season: sched.season, week: parseInt(weekStr,10),
+        games: games.length, candidates: players, meta: { dataPath: dataPath(), dirname: __dirname }
+      })
     };
   } catch (err) {
-    return { statusCode: 500, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok:false, error:String(err && err.message ? err.message : err) }) };
+    return { statusCode: 500, headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok:false, error:String(err && err.message ? err.message : err), meta: { dataPath: dataPath(), dirname: __dirname } }) };
   }
 };
