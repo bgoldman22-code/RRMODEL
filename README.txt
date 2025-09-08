@@ -1,22 +1,18 @@
-# patch-step3r-sportradar-weekly-importer
+# patch-step3u-dynamic-depthcharts
 
-Adds a Netlify function to import weekly depth charts from Sportradar official API and normalize
-into RB/WR/TE/QB arrays, saving to your NFL blobs.
+Creates dynamic, usage-based depth charts from your nfl-data-py history blobs.
 
-## File
-- netlify/functions/nfl-depthcharts-import-sportradar-weekly/index.cjs
+## Files
+- netlify/functions/nfl-depthcharts-build-dynamic/index.cjs
 
-## Env
-- SPORTRADAR_API_KEY (required)
-- SPORTRADAR_ACCESS_LEVEL=trial (default)
-- SPORTRADAR_LANG=en (default)
-- BLOBS_STORE_NFL (defaults to nfl-td), SITE_ID, NETLIFY_API_TOKEN or BLOBS_TOKEN
+## Requires blobs (populated by your Mon/Tue GitHub Action):
+- history/{SEASON}/weekly-last3.json
+- history/{SEASON}/pbp-last3.json
 
-## Use
-```
-/.netlify/functions/nfl-depthcharts-import-sportradar-weekly?season=2025&week=1&stype=REG
-```
-Then run your model:
-```
-/.netlify/functions/nfl-td-model?season=2025&week=1
-```
+## Run
+/.netlify/functions/nfl-depthcharts-build-dynamic?season=2025&week=2&lookback=5
+
+Writes to:
+depth/{SEASON}/week{WEEK}/depth-charts.json
+
+Then your TD model can read that path.
