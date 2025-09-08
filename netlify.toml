@@ -1,4 +1,4 @@
-# netlify.toml - patched to include function data files
+# netlify.toml (adds included_files for function data + shared data)
 [build]
   command = "bash netlify/build-debug.sh"
   publish = "dist"
@@ -6,7 +6,10 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs"]
-  included_files = ["netlify/functions/**/_data/**"]
+  included_files = [
+    "netlify/functions/**/_data/**",
+    "netlify/data/**"
+  ]
 
 [[redirects]]
   from = "/*"
