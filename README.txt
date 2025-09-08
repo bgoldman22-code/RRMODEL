@@ -1,16 +1,34 @@
-# patch-step2a-schedule-refresh
+# patch-step2c-import-sportsblaze
 
-Adds a new Netlify Function: **nfl-schedule-refresh**
+Adds a Netlify Function that imports the **full NFL season** from SportsBlaze and stores it in **Netlify Blobs** where your readers already look.
 
-- Endpoint: `/.netlify/functions/nfl-schedule-refresh?season=2025&commit=true`
-- It builds a combined `schedule.full.json` under `netlify/data/nfl/{season}/schedule.full.json`
-- Right now the fetch is a stub (2 games per week). Replace `fetchStubSchedule()` with live NFL.com/NFL API calls.
+## Files
+- netlify/functions/nfl-schedule-import-sportsblaze/index.cjs
 
-## Usage
-- Deploy and then hit:
-  ```
-  https://YOUR-SITE.netlify.app/.netlify/functions/nfl-schedule-refresh?season=2025&commit=true
-  ```
-- This will create/update `netlify/data/nfl/2025/schedule.full.json` in the build artifact (and because of included_files, it will be bundled).
+## Prereqs
+- Netlify env var: `SPORTS_BLAZE_KEY`
 
-Your existing functions (nfl-schedule-local, nfl-week-local, nfl-td-candidates-local) already prefer this override file if present.
+## Use
+1) Commit this patch to your repo.
+2) Trigger **Clear cache and deploy** on Netlify.
+3) Hit:
+   /.netlify/functions/nfl-schedule-import-sportsblaze?season=2025
+
+Expected response:
+```json
+{ "ok": true, "season": 2025, "blobKey": "2025/full.json", "counts": { "1": 16, "2": 16, ... } }
+```
+
+Your existing endpoints:
+- /.netlify/functions/nfl-schedule-local?week=2
+- /.netlify/functions/nfl-week-local?week=auto
+- /.netlify/functions/nfl-td-candidates-local?week=2
+will now serve from the imported season (Blobs) without code changes.
+
+## Optional (cron refresh)
+If your plan supports scheduled functions, add to `netlify.toml`:
+```
+[[scheduled.functions]]
+name = "nfl-schedule-import-sportsblaze"
+cron = "0 14 * * 2" # Tuesdays 10:00 ET
+```
