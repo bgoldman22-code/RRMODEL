@@ -1,36 +1,44 @@
-# patch-step2e-use-nfl-td-store
+# patch-step3a-td-model-infra
 
-**NFL is fully isolated from MLB.** All schedule reads/writes use the dedicated store:
-- Env var: `BLOBS_STORE_NFL` (you already set this to `nfl-td`)
-- Key: `schedules/2025/full.json`
+Adds:
+1) **nfl-history-refresh** — pulls prior week's *final* games from SportsBlaze and saves to NFL Blobs store at `history/<season>/weekN.json`.
+2) **nfl-td-model** — v1 Anytime TD model that uses:
+   - Team baseline TD rates from saved history
+   - Player red-zone/goal-line/deep threat shares from depth charts
+   - Hooks to add weather, defensive matchup, pace (placeholders for now)
+   - Fair odds + EV (if you pass offered odds)
 
 ## Files
-- netlify/functions/nfl-schedule-import-sportsblaze/index.cjs
-- netlify/functions/nfl-schedule-local/index.cjs
-- netlify/functions/nfl-week-local/index.cjs
-- netlify/functions/nfl-td-candidates-local/index.cjs
+- netlify/functions/_lib/common.cjs
+- netlify/functions/nfl-history-refresh/index.cjs
+- netlify/functions/nfl-td-model/index.cjs
 
-## How it works
-- Importer fetches the full season from SportsBlaze and writes to Blobs:
-  store = getStore({ name: process.env.BLOBS_STORE_NFL || 'nfl-td', siteID: process.env.SITE_ID, token: process.env.NETLIFY_API_TOKEN || process.env.BLOBS_TOKEN })
-  key   = `schedules/${season}/full.json`
+## Env vars used
+- BLOBS_STORE_NFL = nfl-td (already set)
+- SPORTS_BLAZE_KEY = <your key> (used by history-refresh)
 
-- Readers load from the same store/key, then fall back to:
-  1) repo override: netlify/data/nfl/<season>/schedule.full.json
-  2) function-local _data/schedule.json
+## Scheduled refresh (Mon & Tue @ 10:00 ET)
+Add to `netlify.toml` if your plan supports scheduled functions:
+```
+[[scheduled.functions]]
+name = "nfl-history-refresh"
+cron = "0 14 * * 1,2"  # 10:00 ET on Monday & Tuesday
+```
+(14:00 UTC = 10:00 ET)
 
-## Deploy
-1) Drop this folder into your repo root and commit.
-2) Clear cache and deploy on Netlify.
-3) Ensure env vars exist:
-   - BLOBS_STORE_NFL = nfl-td   (already set)
-   - SPORTS_BLAZE_KEY = <your key>
-   - (optional) SITE_ID and NETLIFY_API_TOKEN if Blobs require manual auth
+## APIs
+- Import history (auto picks latest Final week):
+  /.netlify/functions/nfl-history-refresh?season=2025
+  Optional: &week=2 to force a specific week
 
-## Import once
-/.netlify/functions/nfl-schedule-import-sportsblaze?season=2025
+- Run Anytime TD model (returns candidates with prob & fair odds):
+  /.netlify/functions/nfl-td-model?season=2025&week=2
 
-## Sanity tests
-/.netlify/functions/nfl-schedule-local?week=1
-/.netlify/functions/nfl-week-local?week=auto
-/.netlify/functions/nfl-td-candidates-local?week=2
+- Optional EV: pass a small JSON of offered odds (American):
+  Example:
+  /.netlify/functions/nfl-td-model?season=2025&week=2&odds={"NE:Rhamondre%20Stevenson":130,"MIA:Tyreek%20Hill":-110}
+```
+
+## Next steps (when ready)
+- Plug in weather (Open-Meteo) and defensive matchup (EPA/allowed RZ rates) into `estimateGameFeatures()`.
+- Replace team TD baselines with market-implied team totals when you wire in TheOddsAPI.
