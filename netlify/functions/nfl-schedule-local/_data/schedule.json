@@ -3,54 +3,132 @@
   "weeks": {
     "1": [
       {
-        "game_id": "2025-W1-LV-NE",
+        "game_id": "2025-W01-DAL-PHI",
+        "week": 1,
+        "kickoff_et": "2025-09-04T13:00:00-04:00",
+        "away": "DAL",
+        "home": "PHI",
+        "venue": ""
+      },
+      {
+        "game_id": "2025-W01-KC-LAC",
+        "week": 1,
+        "kickoff_et": "2025-09-05T13:00:00-04:00",
+        "away": "KC",
+        "home": "LAC",
+        "venue": "S\u00e3o Paulo, Brazil"
+      },
+      {
+        "game_id": "2025-W01-TB-ATL",
         "week": 1,
         "kickoff_et": "2025-09-07T13:00:00-04:00",
-        "away": "LV",
-        "home": "NE",
-        "venue": "Gillette Stadium"
+        "away": "TB",
+        "home": "ATL",
+        "venue": ""
       },
       {
-        "game_id": "2025-W1-PIT-NYJ",
+        "game_id": "2025-W01-CIN-CLE",
         "week": 1,
         "kickoff_et": "2025-09-07T13:00:00-04:00",
-        "away": "PIT",
-        "home": "NYJ",
-        "venue": "MetLife Stadium"
+        "away": "CIN",
+        "home": "CLE",
+        "venue": ""
       },
       {
-        "game_id": "2025-W1-BAL-BUF",
-        "week": 1,
-        "kickoff_et": "2025-09-07T16:25:00-04:00",
-        "away": "BAL",
-        "home": "BUF",
-        "venue": "Highmark Stadium"
-      },
-      {
-        "game_id": "2025-W1-MIA-IND",
+        "game_id": "2025-W01-MIA-IND",
         "week": 1,
         "kickoff_et": "2025-09-07T13:00:00-04:00",
         "away": "MIA",
         "home": "IND",
-        "venue": "Lucas Oil Stadium"
-      }
-    ],
-    "2": [
-      {
-        "game_id": "2025-W2-NE-MIA",
-        "week": 2,
-        "kickoff_et": "2025-09-14T13:00:00-04:00",
-        "away": "NE",
-        "home": "MIA",
-        "venue": "Hard Rock Stadium"
+        "venue": ""
       },
       {
-        "game_id": "2025-W2-NYJ-BUF",
-        "week": 2,
-        "kickoff_et": "2025-09-14T16:25:00-04:00",
-        "away": "NYJ",
+        "game_id": "2025-W01-LV-NE",
+        "week": 1,
+        "kickoff_et": "2025-09-07T13:00:00-04:00",
+        "away": "LV",
+        "home": "NE",
+        "venue": ""
+      },
+      {
+        "game_id": "2025-W01-ARI-NO",
+        "week": 1,
+        "kickoff_et": "2025-09-07T13:00:00-04:00",
+        "away": "ARI",
+        "home": "NO",
+        "venue": ""
+      },
+      {
+        "game_id": "2025-W01-PIT-NYJ",
+        "week": 1,
+        "kickoff_et": "2025-09-07T13:00:00-04:00",
+        "away": "PIT",
+        "home": "NYJ",
+        "venue": ""
+      },
+      {
+        "game_id": "2025-W01-NYG-WSH",
+        "week": 1,
+        "kickoff_et": "2025-09-07T13:00:00-04:00",
+        "away": "NYG",
+        "home": "WSH",
+        "venue": ""
+      },
+      {
+        "game_id": "2025-W01-CAR-JAX",
+        "week": 1,
+        "kickoff_et": "2025-09-07T13:00:00-04:00",
+        "away": "CAR",
+        "home": "JAX",
+        "venue": ""
+      },
+      {
+        "game_id": "2025-W01-TEN-DEN",
+        "week": 1,
+        "kickoff_et": "2025-09-07T13:00:00-04:00",
+        "away": "TEN",
+        "home": "DEN",
+        "venue": ""
+      },
+      {
+        "game_id": "2025-W01-SF-SEA",
+        "week": 1,
+        "kickoff_et": "2025-09-07T13:00:00-04:00",
+        "away": "SF",
+        "home": "SEA",
+        "venue": ""
+      },
+      {
+        "game_id": "2025-W01-DET-GB",
+        "week": 1,
+        "kickoff_et": "2025-09-07T13:00:00-04:00",
+        "away": "DET",
+        "home": "GB",
+        "venue": ""
+      },
+      {
+        "game_id": "2025-W01-HOU-LAR",
+        "week": 1,
+        "kickoff_et": "2025-09-07T13:00:00-04:00",
+        "away": "HOU",
+        "home": "LAR",
+        "venue": ""
+      },
+      {
+        "game_id": "2025-W01-BAL-BUF",
+        "week": 1,
+        "kickoff_et": "2025-09-07T13:00:00-04:00",
+        "away": "BAL",
         "home": "BUF",
-        "venue": "Highmark Stadium"
+        "venue": ""
+      },
+      {
+        "game_id": "2025-W01-MIN-CHI",
+        "week": 1,
+        "kickoff_et": "2025-09-08T13:00:00-04:00",
+        "away": "MIN",
+        "home": "CHI",
+        "venue": ""
       }
     ]
   }
