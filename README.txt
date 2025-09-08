@@ -1,34 +1,36 @@
-# patch-step2c-import-sportsblaze
+# patch-step2e-use-nfl-td-store
 
-Adds a Netlify Function that imports the **full NFL season** from SportsBlaze and stores it in **Netlify Blobs** where your readers already look.
+**NFL is fully isolated from MLB.** All schedule reads/writes use the dedicated store:
+- Env var: `BLOBS_STORE_NFL` (you already set this to `nfl-td`)
+- Key: `schedules/2025/full.json`
 
 ## Files
 - netlify/functions/nfl-schedule-import-sportsblaze/index.cjs
+- netlify/functions/nfl-schedule-local/index.cjs
+- netlify/functions/nfl-week-local/index.cjs
+- netlify/functions/nfl-td-candidates-local/index.cjs
 
-## Prereqs
-- Netlify env var: `SPORTS_BLAZE_KEY`
+## How it works
+- Importer fetches the full season from SportsBlaze and writes to Blobs:
+  store = getStore({ name: process.env.BLOBS_STORE_NFL || 'nfl-td', siteID: process.env.SITE_ID, token: process.env.NETLIFY_API_TOKEN || process.env.BLOBS_TOKEN })
+  key   = `schedules/${season}/full.json`
 
-## Use
-1) Commit this patch to your repo.
-2) Trigger **Clear cache and deploy** on Netlify.
-3) Hit:
-   /.netlify/functions/nfl-schedule-import-sportsblaze?season=2025
+- Readers load from the same store/key, then fall back to:
+  1) repo override: netlify/data/nfl/<season>/schedule.full.json
+  2) function-local _data/schedule.json
 
-Expected response:
-```json
-{ "ok": true, "season": 2025, "blobKey": "2025/full.json", "counts": { "1": 16, "2": 16, ... } }
-```
+## Deploy
+1) Drop this folder into your repo root and commit.
+2) Clear cache and deploy on Netlify.
+3) Ensure env vars exist:
+   - BLOBS_STORE_NFL = nfl-td   (already set)
+   - SPORTS_BLAZE_KEY = <your key>
+   - (optional) SITE_ID and NETLIFY_API_TOKEN if Blobs require manual auth
 
-Your existing endpoints:
-- /.netlify/functions/nfl-schedule-local?week=2
-- /.netlify/functions/nfl-week-local?week=auto
-- /.netlify/functions/nfl-td-candidates-local?week=2
-will now serve from the imported season (Blobs) without code changes.
+## Import once
+/.netlify/functions/nfl-schedule-import-sportsblaze?season=2025
 
-## Optional (cron refresh)
-If your plan supports scheduled functions, add to `netlify.toml`:
-```
-[[scheduled.functions]]
-name = "nfl-schedule-import-sportsblaze"
-cron = "0 14 * * 2" # Tuesdays 10:00 ET
-```
+## Sanity tests
+/.netlify/functions/nfl-schedule-local?week=1
+/.netlify/functions/nfl-week-local?week=auto
+/.netlify/functions/nfl-td-candidates-local?week=2
