@@ -1,10 +1,8 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-
 function dataPath() { return path.resolve(__dirname, './_data/schedule.json'); }
 function readSchedule() { return JSON.parse(fs.readFileSync(dataPath(), 'utf8')); }
-
 const DEPTH = {
   NE: { RB: [{ name: "Rhamondre Stevenson", role: "RB1" }, { name: "Antonio Gibson", role: "RB2" }],
         WR: [{ name: "Demario Douglas", role: "WR1" }, { name: "Ja'Lynn Polk", role: "WR2" }],
@@ -25,37 +23,26 @@ const DEPTH = {
         WR: [{ name: "A.J. Brown", role: "WR1" }, { name: "DeVonta Smith", role: "WR2" }],
         TE: [{ name: "Dallas Goedert", role: "TE1" }] }
 };
-
 exports.handler = async (event) => {
   try {
     const sched = readSchedule();
     const qs = (event && event.queryStringParameters) || {};
     const weekStr = qs.week ? String(parseInt(qs.week, 10)) : '1';
     const games = sched.weeks[weekStr] || [];
-
-    const teams = new Set();
-    for (const g of games) { teams.add(g.away); teams.add(g.home); }
-
+    const teams = new Set(); for (const g of games) { teams.add(g.away); teams.add(g.home); }
     const players = [];
     for (const [team, groups] of Object.entries(DEPTH)) {
       if (!teams.has(team)) continue;
       for (const pos of ['RB', 'WR', 'TE']) {
         if (groups[pos]) {
           for (const pl of groups[pos].slice(0, 2)) {
-            players.push({
-              team, pos, player: pl.name, role: pl.role || null,
-              td_prob: null, fair_odds: null, notes: `scaffold-inline (week ${weekStr})`
-            });
+            players.push({ team, pos, player: pl.name, role: pl.role || null, td_prob: null, fair_odds: null, notes: `scaffold-inline (week ${weekStr})` });
           }
         }
       }
     }
-
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: true, season: sched.season, week: parseInt(weekStr,10), games: games.length, candidates: players, meta: { dataPath: dataPath(), dirname: __dirname } })
-    };
+    return { statusCode: 200, headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok: true, season: sched.season, week: parseInt(weekStr,10), games: games.length, candidates: players, meta: { dataPath: dataPath(), dirname: __dirname } }) };
   } catch (err) {
     return { statusCode: 500, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok:false, error:String(err && err.message ? err.message : err), meta: { dataPath: dataPath(), dirname: __dirname } }) };
   }
