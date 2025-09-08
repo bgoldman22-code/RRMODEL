@@ -1,38 +1,29 @@
-# patch-step3g-depthcharts-unified
+# patch-step3m-fantasypros-importer
 
-Adds a single importer that supports either **Sportradar** (trial) or **RapidAPI Rolling Insights** depth charts and saves to your NFL Blobs store so the TD model can consume them.
+Adds a Netlify function that scrapes FantasyPros NFL depth charts and saves normalized charts to your NFL blob store.
 
 ## Files
-- netlify/functions/_lib/common.cjs
-- netlify/functions/nfl-depthcharts-import/index.cjs
-
-## Env
-- SPORTRADAR_API_KEY       = <your Sportradar key>
-- SPORTRADAR_ACCESS_LEVEL  = trial   (default)
-- SPORTRADAR_LANG          = en      (default)
-- RAPIDAPI_KEY             = <your RapidAPI key>
-- RAPIDAPI_HOST            = football-datafeeds-by-rolling-insights1.p.rapidapi.com
+- netlify/functions/nfl-depthcharts-import-fantasypros/index.cjs
 
 ## Usage
-Sportradar (REG Week 2):
 ```
-/.netlify/functions/nfl-depthcharts-import?source=sportradar&season=2025&week=2
-```
-RapidAPI (single team):
-```
-/.netlify/functions/nfl-depthcharts-import?source=rapidapi&season=2025&week=2&team_id=28
-```
-RapidAPI (try many team ids 1..40 until they return data):
-```
-/.netlify/functions/nfl-depthcharts-import?source=rapidapi&season=2025&week=2
+/.netlify/functions/nfl-depthcharts-import-fantasypros?season=2025&week=2
 ```
 
-Saved to:
+This writes:
 ```
 depth/{season}/week{week}/depth-charts.json
 ```
 
-Then run the model:
+Then run your model:
 ```
 /.netlify/functions/nfl-td-model?season=2025&week=2
+```
+
+## Scheduling
+Add this to `netlify.toml` (UTC: 15:30 = 11:30 ET):
+```
+[[scheduled.functions]]
+name = "nfl-depthcharts-import-fantasypros"
+cron = "30 15 * * *"
 ```
