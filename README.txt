@@ -1,28 +1,26 @@
-# patch-step1j-permanent-deps-fix
+# patch-step1k-packagejson-override
 
-This patch makes the **permanent** fix for the bad `debug` package version:
+This patch makes the **permanent fix** for the bad `debug` package version:
 
-- Adds `scripts/preinstall-fix.js` which:
-  - Ensures `package.json` has `"overrides": { "debug": "4.3.4" }`
-  - Normalizes any direct `"debug"` dep to `"4.3.4"`
-  - Ensures `"scripts.preinstall"` runs this fixer each build
+- Updates `package.json` to include:
+  ```json
+  "overrides": {
+    "debug": "4.3.4"
+  }
+  ```
+  and ensures no dependency is pinned to 4.4.2.
 
-- Replaces `netlify/build-debug.sh` with a lean script that:
-  - Forces the npm registry
-  - Clears npm cache and removes `package-lock.json` + `node_modules`
-  - Runs `npm install` (which triggers the preinstall hook)
-  - Builds your site
+- Adds `scripts/preinstall-fix.js` as a safety net to keep it pinned.
+
+- Provides `netlify/build-debug.sh` to clean cache, reinstall, and build.
 
 ## How to apply
-1) Upload this entire folder to your repo root and commit:
-   - `patch-step1j-permanent-deps-fix/scripts/preinstall-fix.js`
-   - `patch-step1j-permanent-deps-fix/netlify/build-debug.sh`
-
-2) **Delete** `package-lock.json` from the repo (in GitHub UI, remove the file and commit).
-
-3) Ensure Netlify settings:
+1) Apply this patch to your repo root. Commit the new files and the edited `package.json`.
+2) Verify your `package.json` now shows `"overrides": { "debug": "4.3.4" }` near the top-level.
+3) Update Netlify build settings:
    - Build command: `bash netlify/build-debug.sh`
    - Functions directory: `netlify/functions`
    - Publish directory: `dist`
+4) Trigger "Clear cache and deploy site" on Netlify.
 
-This is permanent because the preinstall hook runs on every install and keeps `overrides.debug = "4.3.4"` in `package.json` (and fixes any accidental reintroduction).
+This combination is clean (override visible in repo) and robust (preinstall keeps it sane).
