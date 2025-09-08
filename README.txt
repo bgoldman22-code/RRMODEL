@@ -1,33 +1,38 @@
-# patch-step3d-depthcharts-sportsdataio
+# patch-step3g-depthcharts-unified
 
-Adds an importer to pull NFL depth charts from **SportsDataIO Discovery Lab** and save them to your NFL Blobs store so the TD model can use them automatically.
+Adds a single importer that supports either **Sportradar** (trial) or **RapidAPI Rolling Insights** depth charts and saves to your NFL Blobs store so the TD model can consume them.
 
 ## Files
-- netlify/functions/_lib/common.cjs                         (shim if not already present)
-- netlify/functions/nfl-depthcharts-import-sportsdataio/index.cjs
+- netlify/functions/_lib/common.cjs
+- netlify/functions/nfl-depthcharts-import/index.cjs
 
 ## Env
-- SPORTSDATAIO_KEY = <your Discovery Lab key>
-- BLOBS_STORE_NFL  = nfl-td   (already set)
+- SPORTRADAR_API_KEY       = <your Sportradar key>
+- SPORTRADAR_ACCESS_LEVEL  = trial   (default)
+- SPORTRADAR_LANG          = en      (default)
+- RAPIDAPI_KEY             = <your RapidAPI key>
+- RAPIDAPI_HOST            = football-datafeeds-by-rolling-insights1.p.rapidapi.com
 
 ## Usage
-Import for a given week:
+Sportradar (REG Week 2):
 ```
-/.netlify/functions/nfl-depthcharts-import-sportsdataio?season=2025&week=2
+/.netlify/functions/nfl-depthcharts-import?source=sportradar&season=2025&week=2
 ```
-If Discovery Lab provides a specific endpoint for your plan, pass it explicitly:
+RapidAPI (single team):
 ```
-/.netlify/functions/nfl-depthcharts-import-sportsdataio?season=2025&week=2&url=https://your.discovery.lab/endpoint
+/.netlify/functions/nfl-depthcharts-import?source=rapidapi&season=2025&week=2&team_id=28
 ```
-The function saves to:
+RapidAPI (try many team ids 1..40 until they return data):
+```
+/.netlify/functions/nfl-depthcharts-import?source=rapidapi&season=2025&week=2
+```
+
+Saved to:
 ```
 depth/{season}/week{week}/depth-charts.json
 ```
 
-## Notes
-- The importer is **defensive** and supports several common SportsDataIO shapes (flat array of players, or nested under Teams/Players). It converts depth order to sensible default shares when explicit usage fields are missing.
-- If the payload contains usage stats (GoalLineCarries, RedZoneTargets, DeepTargets, QBRushTDs…), we convert those to **shares** automatically.
-- After import, run your model:
+Then run the model:
 ```
 /.netlify/functions/nfl-td-model?season=2025&week=2
 ```
