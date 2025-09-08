@@ -1,92 +1,57 @@
 #!/usr/bin/env bash
-# Robust Netlify build script for Vite + Netlify Functions
-# - Detects package manager
-# - Installs deps
-# - Runs web build (expects `npm run build` / `yarn build` / `pnpm build` or falls back to `npx vite build`)
-# - Prints helpful diagnostics on failure
-
+# Netlify build script with auto-fix for bad debug@4.4.2 reference
 set -euo pipefail
 
-echo "=== Netlify Build Debug ==="
-echo "CWD: $(pwd)"
+echo "=== Netlify Build (with deps hot-fix) ==="
 echo "Node: $(node -v || true)"
 echo "NPM:  $(npm -v || true)"
-echo "Yarn: $(yarn -v || true)"
-echo "PNPM: $(pnpm -v || true)"
-echo "--------------------------------"
+echo "PWD:  $(pwd)"
 
-# Ensure functions dir exists (avoid path detection issues)
-if [ ! -d "netlify/functions" ]; then
-  echo "Creating netlify/functions directory (was missing)"
-  mkdir -p netlify/functions
+# --- Hot-fix: replace debug@4.4.2 with 4.3.4 in package.json & lockfile if present ---
+if [ -f package.json ]; then
+  echo "[hot-fix] Checking package.json for debug@4.4.2..."
+  if grep -q '"debug"[[:space:]]*:[[:space:]]*"4\.4\.2"' package.json || grep -q '"debug":[[:space:]]*"https://registry\.npmjs\.org/debug/-/debug-4\.4\.2\.tgz"' package.json; then
+    echo "[hot-fix] Rewriting package.json debug version to 4.3.4"
+    sed -i 's#"debug"[[:space:]]*:[[:space:]]*"4\.4\.2"#"debug": "4.3.4"#g' package.json || true
+    sed -i 's#"debug":[[:space:]]*"https://registry\.npmjs\.org/debug/-/debug-4\.4\.2\.tgz"#"debug": "4.3.4"#g' package.json || true
+  fi
+
+  echo "[hot-fix] Ensuring npm overrides force debug@4.3.4"
+  # Insert or update overrides using a tiny Node script (safer than sed for JSON)
+  node - <<'NODE'
+  const fs = require('fs');
+  const path = 'package.json';
+  const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+  pkg.overrides = Object.assign({}, pkg.overrides, { debug: "4.3.4" });
+  if (!pkg.scripts) pkg.scripts = {};
+  fs.writeFileSync(path, JSON.stringify(pkg, null, 2));
+  console.log("[hot-fix] package.json overrides set to force debug@4.3.4");
+NODE
 fi
 
+if [ -f package-lock.json ]; then
+  echo "[hot-fix] Rewriting package-lock.json debug 4.4.2 → 4.3.4 (if present)"
+  sed -i 's#debug-4\.4\.2\.tgz#debug-4.3.4.tgz#g' package-lock.json || true
+  sed -i 's#"debug":[[:space:]]*"4\.4\.2"#"debug": "4.3.4"#g' package-lock.json || true
+  sed -i 's#"version":[[:space:]]*"4\.4\.2"#"version": "4.3.4"#g' package-lock.json || true
+fi
+
+echo "--------------------------------"
 echo "Listing netlify/functions:"
 find netlify/functions -maxdepth 3 -type f -print || true
 echo "--------------------------------"
 
-# Choose package manager
-PKG_MGR="npm"
-if [ -f "pnpm-lock.yaml" ]; then
-  PKG_MGR="pnpm"
-elif [ -f "yarn.lock" ]; then
-  PKG_MGR="yarn"
-elif [ -f "package-lock.json" ]; then
-  PKG_MGR="npm"
-fi
-echo "Using package manager: $PKG_MGR"
-echo "--------------------------------"
-
-# Install deps
-if [ "$PKG_MGR" = "pnpm" ]; then
-  corepack enable || true
-  pnpm install --frozen-lockfile || pnpm install
-elif [ "$PKG_MGR" = "yarn" ]; then
-  yarn install --frozen-lockfile || yarn install
-else
-  npm ci || npm install
-fi
+# Choose package manager (npm)
+echo "Using npm…"
+npm ci || npm install
 
 echo "Dependencies installed."
 echo "--------------------------------"
+npm run build || npx vite build
 
-# Run build
-set +e
-if [ "$PKG_MGR" = "pnpm" ]; then
-  pnpm run build || npx vite build
-elif [ "$PKG_MGR" = "yarn" ]; then
-  yarn build || npx vite build
+echo "Build complete."
+if [ -d dist ]; then
+  echo "Publish dir: dist"
 else
-  npm run build || npx vite build
+  echo "WARNING: dist/ not found. Check Vite config or netlify.toml publish path."
 fi
-STATUS=$?
-set -e
-
-if [ $STATUS -ne 0 ]; then
-  echo "Build failed (exit $STATUS). Showing vite config & package.json scripts:"
-  echo "------ package.json (scripts) ------"
-  if [ -f package.json ]; then
-    cat package.json | sed -n '1,200p'
-  else
-    echo "No package.json found."
-  fi
-  echo "------ repo root ------"
-  ls -la
-  echo "------ src ------"
-  [ -d src ] && ls -la src || echo "no src dir"
-  echo "------ netlify/functions ------"
-  ls -la netlify/functions || true
-  exit $STATUS
-fi
-
-echo "Build succeeded."
-echo "--------------------------------"
-
-# Confirm dist exists
-if [ -d "dist" ]; then
-  echo "dist/ exists (publish dir likely OK)."
-else
-  echo "WARNING: dist/ not found. If using Vite, ensure output is dist or set [build].publish in netlify.toml"
-fi
-
-echo "=== End Build Debug ==="
