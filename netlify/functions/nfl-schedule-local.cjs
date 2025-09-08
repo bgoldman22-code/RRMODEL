@@ -1,27 +1,24 @@
 'use strict';
+const fs = require('fs');
+const path = require('path');
 
-// INLINE test data to avoid file packaging issues
-const SCHEDULE = {
-  season: 2025, week: 1,
-  games: [
-    { game_id: "2025-W1-NE-MIA", kickoff_et: "2025-09-07T13:00:00-04:00", away: "NE",  home: "MIA", venue: "Hard Rock Stadium" },
-    { game_id: "2025-W1-NYJ-BUF", kickoff_et: "2025-09-07T16:25:00-04:00", away: "NYJ", home: "BUF", venue: "Highmark Stadium" },
-    { game_id: "2025-W1-DAL-PHI", kickoff_et: "2025-09-07T20:20:00-04:00", away: "DAL", home: "PHI", venue: "Lincoln Financial Field" }
-  ]
-};
+function readSchedule() {
+  const p = path.resolve(__dirname, './_data/nfl/2025/schedule.json');
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
 
-exports.handler = async () => {
+exports.handler = async (event) => {
   try {
+    const sched = readSchedule();
+    const query = event && event.queryStringParameters ? event.queryStringParameters : {};
+    let week = query.week ? parseInt(query.week, 10) : 1;
+    const games = sched.weeks[String(week)] || [];
     return {
       statusCode: 200,
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: true, season: SCHEDULE.season, week: SCHEDULE.week, games: SCHEDULE.games })
+      body: JSON.stringify({ ok: true, season: sched.season, week, games })
     };
   } catch (err) {
-    return {
-      statusCode: 500,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: false, error: String(err && err.message ? err.message : err) })
-    };
+    return { statusCode: 500, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok:false, error:String(err && err.message ? err.message : err) }) };
   }
 };
