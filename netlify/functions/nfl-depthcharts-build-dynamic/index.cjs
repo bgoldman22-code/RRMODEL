@@ -1,5 +1,5 @@
 'use strict';
-const { getBlobsStore } = require('../_blobs.js');
+const { getBlobsStore } = require('../_blobs.cjs');
 
 function pickNames(arr, key) {
   return arr.map(o => o[key || 'player']).filter(Boolean);
@@ -9,14 +9,13 @@ exports.handler = async (event) => {
   const qs = event.queryStringParameters || {};
   const season = String(qs.season || '2025');
   const week = parseInt(String(qs.week || '1'), 10);
-  const lookback = parseInt(String(qs.lookback || '5'), 10);
 
   const store = getBlobsStore(process.env.BLOBS_STORE_NFL || 'nfl-td');
   const priorsKey = `history/${season}/pbp-priors.json`;
   let priors = null;
   try {
     const raw = await store.get(priorsKey);
-    if (raw) priors = JSON.parse(raw.body);
+    if (raw && raw.body) priors = JSON.parse(raw.body);
   } catch (_) {}
 
   if (!priors || !priors.byTeam) {

@@ -2,7 +2,7 @@
 const https = require('https');
 const zlib = require('zlib');
 const { parse } = require('csv-parse/sync');
-const { getBlobsStore } = require('../_blobs.js');
+const { getBlobsStore } = require('../_blobs.cjs');
 
 const NFLVERSE_BASE = 'https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/seasons';
 
@@ -33,10 +33,6 @@ function toInt(x, def=0) {
   const n = parseInt(x, 10);
   return Number.isFinite(n) ? n : def;
 }
-function toFloat(x, def=0) {
-  const n = parseFloat(x);
-  return Number.isFinite(n) ? n : def;
-}
 
 function aggregatePriors(pbpRows) {
   const byPlayer = new Map();
@@ -50,7 +46,7 @@ function aggregatePriors(pbpRows) {
     const rush = r.rush == '1' || r.play_type == 'run';
     const pass = r.pass == '1' || r.play_type == 'pass';
     const target = pass && !!r.receiver_player_name;
-    const gl = ydline_100 > 0 && ydline_100 <= 5; // inside 5 as GL proxy
+    const gl = ydline_100 > 0 && ydline_100 <= 5;
 
     const o = byPlayer.get(pid) || { team: posteam, player, pos: ppos, rush_att:0, gl_carries:0, targets:0, pass_att:0 };
     if (rush && ppos === 'RB') {
@@ -105,9 +101,9 @@ exports.handler = async (event) => {
     out.tried.push(pbpPrevURL);
     try {
       const csv = await fetchCSVMaybeGzip(pbpPrevURL);
-      const rows = parse(csv, { columns:true, skip_empty_lines:true });
+      const rows = require('csv-parse/sync').parse(csv, { columns:true, skip_empty_lines:true });
       const byTeam = aggregatePriors(rows);
-      const key = `history/${season}/pbp-priors.json`; // write priors for current season bootstrapping
+      const key = `history/${season}/pbp-priors.json`;
       await store.set(key, JSON.stringify({ season, fromSeason: fallbackSeason, byTeam }, null, 2), { contentType:'application/json; charset=utf-8' });
       out.saved.push(key);
     } catch (e) {
