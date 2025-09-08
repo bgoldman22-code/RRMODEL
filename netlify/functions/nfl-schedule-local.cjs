@@ -2,10 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
-function readSchedule() {
-  const p = path.resolve(__dirname, './_data/schedule.json');
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
+function dataPath() { return path.resolve(__dirname, './_data/schedule.json'); }
+function readSchedule() { return JSON.parse(fs.readFileSync(dataPath(), 'utf8')); }
 
 exports.handler = async (event) => {
   try {
@@ -16,9 +14,13 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: true, season: sched.season, week: parseInt(weekStr,10), games })
+      body: JSON.stringify({
+        ok: true, season: sched.season, week: parseInt(weekStr,10), games,
+        meta: { dataPath: dataPath(), dirname: __dirname }
+      })
     };
   } catch (err) {
-    return { statusCode: 500, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok:false, error:String(err && err.message ? err.message : err) }) };
+    return { statusCode: 500, headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok:false, error:String(err && err.message ? err.message : err), meta: { dataPath: dataPath(), dirname: __dirname } }) };
   }
 };

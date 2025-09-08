@@ -2,10 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
-function readSchedule() {
-  const p = path.resolve(__dirname, './_data/schedule.json');
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
+function dataPath() { return path.resolve(__dirname, './_data/schedule.json'); }
+function readSchedule() { return JSON.parse(fs.readFileSync(dataPath(), 'utf8')); }
 
 function nowInETISO() {
   const fmt = new Intl.DateTimeFormat('en-US', {
@@ -40,16 +38,18 @@ exports.handler = async (event) => {
     } else {
       week = parseInt(week, 10);
       if (!sched.weeks[String(week)]) {
-        return { statusCode: 400, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok:false, error:`Unknown week ${week}` }) };
+        return { statusCode: 400, headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ ok:false, error:`Unknown week ${week}`, meta: { dataPath: dataPath(), dirname: __dirname } }) };
       }
     }
     const games = sched.weeks[String(week)] || [];
     return {
       statusCode: 200,
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok:true, season: sched.season, week, gameCount: games.length, games })
+      body: JSON.stringify({ ok:true, season: sched.season, week, gameCount: games.length, games, meta: { dataPath: dataPath(), dirname: __dirname } })
     };
   } catch (err) {
-    return { statusCode: 500, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ok:false, error:String(err && err.message ? err.message : err) }) };
+    return { statusCode: 500, headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok:false, error:String(err && err.message ? err.message : err), meta: { dataPath: dataPath(), dirname: __dirname } }) };
   }
 };
