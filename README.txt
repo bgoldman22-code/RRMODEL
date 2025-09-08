@@ -1,26 +1,16 @@
-# patch-step1k-packagejson-override
+# patch-step2a-schedule-refresh
 
-This patch makes the **permanent fix** for the bad `debug` package version:
+Adds a new Netlify Function: **nfl-schedule-refresh**
 
-- Updates `package.json` to include:
-  ```json
-  "overrides": {
-    "debug": "4.3.4"
-  }
+- Endpoint: `/.netlify/functions/nfl-schedule-refresh?season=2025&commit=true`
+- It builds a combined `schedule.full.json` under `netlify/data/nfl/{season}/schedule.full.json`
+- Right now the fetch is a stub (2 games per week). Replace `fetchStubSchedule()` with live NFL.com/NFL API calls.
+
+## Usage
+- Deploy and then hit:
   ```
-  and ensures no dependency is pinned to 4.4.2.
+  https://YOUR-SITE.netlify.app/.netlify/functions/nfl-schedule-refresh?season=2025&commit=true
+  ```
+- This will create/update `netlify/data/nfl/2025/schedule.full.json` in the build artifact (and because of included_files, it will be bundled).
 
-- Adds `scripts/preinstall-fix.js` as a safety net to keep it pinned.
-
-- Provides `netlify/build-debug.sh` to clean cache, reinstall, and build.
-
-## How to apply
-1) Apply this patch to your repo root. Commit the new files and the edited `package.json`.
-2) Verify your `package.json` now shows `"overrides": { "debug": "4.3.4" }` near the top-level.
-3) Update Netlify build settings:
-   - Build command: `bash netlify/build-debug.sh`
-   - Functions directory: `netlify/functions`
-   - Publish directory: `dist`
-4) Trigger "Clear cache and deploy site" on Netlify.
-
-This combination is clean (override visible in repo) and robust (preinstall keeps it sane).
+Your existing functions (nfl-schedule-local, nfl-week-local, nfl-td-candidates-local) already prefer this override file if present.
