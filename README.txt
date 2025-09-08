@@ -1,44 +1,33 @@
-# patch-step3a-td-model-infra
+# patch-step3d-depthcharts-sportsdataio
 
-Adds:
-1) **nfl-history-refresh** — pulls prior week's *final* games from SportsBlaze and saves to NFL Blobs store at `history/<season>/weekN.json`.
-2) **nfl-td-model** — v1 Anytime TD model that uses:
-   - Team baseline TD rates from saved history
-   - Player red-zone/goal-line/deep threat shares from depth charts
-   - Hooks to add weather, defensive matchup, pace (placeholders for now)
-   - Fair odds + EV (if you pass offered odds)
+Adds an importer to pull NFL depth charts from **SportsDataIO Discovery Lab** and save them to your NFL Blobs store so the TD model can use them automatically.
 
 ## Files
-- netlify/functions/_lib/common.cjs
-- netlify/functions/nfl-history-refresh/index.cjs
-- netlify/functions/nfl-td-model/index.cjs
+- netlify/functions/_lib/common.cjs                         (shim if not already present)
+- netlify/functions/nfl-depthcharts-import-sportsdataio/index.cjs
 
-## Env vars used
-- BLOBS_STORE_NFL = nfl-td (already set)
-- SPORTS_BLAZE_KEY = <your key> (used by history-refresh)
+## Env
+- SPORTSDATAIO_KEY = <your Discovery Lab key>
+- BLOBS_STORE_NFL  = nfl-td   (already set)
 
-## Scheduled refresh (Mon & Tue @ 10:00 ET)
-Add to `netlify.toml` if your plan supports scheduled functions:
+## Usage
+Import for a given week:
 ```
-[[scheduled.functions]]
-name = "nfl-history-refresh"
-cron = "0 14 * * 1,2"  # 10:00 ET on Monday & Tuesday
+/.netlify/functions/nfl-depthcharts-import-sportsdataio?season=2025&week=2
 ```
-(14:00 UTC = 10:00 ET)
-
-## APIs
-- Import history (auto picks latest Final week):
-  /.netlify/functions/nfl-history-refresh?season=2025
-  Optional: &week=2 to force a specific week
-
-- Run Anytime TD model (returns candidates with prob & fair odds):
-  /.netlify/functions/nfl-td-model?season=2025&week=2
-
-- Optional EV: pass a small JSON of offered odds (American):
-  Example:
-  /.netlify/functions/nfl-td-model?season=2025&week=2&odds={"NE:Rhamondre%20Stevenson":130,"MIA:Tyreek%20Hill":-110}
+If Discovery Lab provides a specific endpoint for your plan, pass it explicitly:
+```
+/.netlify/functions/nfl-depthcharts-import-sportsdataio?season=2025&week=2&url=https://your.discovery.lab/endpoint
+```
+The function saves to:
+```
+depth/{season}/week{week}/depth-charts.json
 ```
 
-## Next steps (when ready)
-- Plug in weather (Open-Meteo) and defensive matchup (EPA/allowed RZ rates) into `estimateGameFeatures()`.
-- Replace team TD baselines with market-implied team totals when you wire in TheOddsAPI.
+## Notes
+- The importer is **defensive** and supports several common SportsDataIO shapes (flat array of players, or nested under Teams/Players). It converts depth order to sensible default shares when explicit usage fields are missing.
+- If the payload contains usage stats (GoalLineCarries, RedZoneTargets, DeepTargets, QBRushTDs…), we convert those to **shares** automatically.
+- After import, run your model:
+```
+/.netlify/functions/nfl-td-model?season=2025&week=2
+```
