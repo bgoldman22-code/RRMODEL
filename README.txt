@@ -1,16 +1,18 @@
-# patch-step3w-footballguys-import
+# patch-step3u-dynamic-depthcharts
 
-Temporary importer that scrapes the Footballguys public depth chart page into the same
-QB/RB/WR/TE JSON your TD model expects.
+Creates dynamic, usage-based depth charts from your nfl-data-py history blobs.
 
 ## Files
-- netlify/functions/nfl-depthcharts-import-footballguys/index.cjs
+- netlify/functions/nfl-depthcharts-build-dynamic/index.cjs
 
-## Use
-- /.netlify/functions/nfl-depthcharts-import-footballguys?season=2025&week=2
-  => writes depth/{season}/week{week}/depth-charts.json in your blobs store
+## Requires blobs (populated by your Mon/Tue GitHub Action):
+- history/{SEASON}/weekly-last3.json
+- history/{SEASON}/pbp-last3.json
 
-Then run the model:
-- /.netlify/functions/nfl-td-model?season=2025&week=2
+## Run
+/.netlify/functions/nfl-depthcharts-build-dynamic?season=2025&week=2&lookback=5
 
-This is a stopgap until dynamic usage-based depth charts are available.
+Writes to:
+depth/{SEASON}/week{WEEK}/depth-charts.json
+
+Then your TD model can read that path.
