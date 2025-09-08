@@ -1,57 +1,102 @@
 #!/usr/bin/env bash
-# Netlify build script with auto-fix for bad debug@4.4.2 reference
+# Netlify build script with dependency hard-fix for debug tarball/integrity issues
 set -euo pipefail
 
-echo "=== Netlify Build (with deps hot-fix) ==="
+echo "=== Netlify Build (deps hard-fix) ==="
 echo "Node: $(node -v || true)"
 echo "NPM:  $(npm -v || true)"
 echo "PWD:  $(pwd)"
+echo "--------------------------------"
 
-# --- Hot-fix: replace debug@4.4.2 with 4.3.4 in package.json & lockfile if present ---
+# Ensure functions dir exists (harmless if present)
+mkdir -p netlify/functions
+
+echo "Listing netlify/functions (top 2 levels):"
+find netlify/functions -maxdepth 2 -type f -print || true
+echo "--------------------------------"
+
+# Force npm to use the public registry explicitly
+export npm_config_registry="https://registry.npmjs.org/"
+npm config set registry "https://registry.npmjs.org/"
+
+echo "[hard-fix] Cleaning npm cache..."
+npm cache clean --force || true
+
+echo "[hard-fix] Removing lockfile and node_modules to avoid stale integrity..."
+rm -f package-lock.json || true
+rm -rf node_modules || true
+
+# If package.json exists, enforce overrides: debug@4.3.4 (stable)
 if [ -f package.json ]; then
-  echo "[hot-fix] Checking package.json for debug@4.4.2..."
-  if grep -q '"debug"[[:space:]]*:[[:space:]]*"4\.4\.2"' package.json || grep -q '"debug":[[:space:]]*"https://registry\.npmjs\.org/debug/-/debug-4\.4\.2\.tgz"' package.json; then
-    echo "[hot-fix] Rewriting package.json debug version to 4.3.4"
-    sed -i 's#"debug"[[:space:]]*:[[:space:]]*"4\.4\.2"#"debug": "4.3.4"#g' package.json || true
-    sed -i 's#"debug":[[:space:]]*"https://registry\.npmjs\.org/debug/-/debug-4\.4\.2\.tgz"#"debug": "4.3.4"#g' package.json || true
-  fi
-
-  echo "[hot-fix] Ensuring npm overrides force debug@4.3.4"
-  # Insert or update overrides using a tiny Node script (safer than sed for JSON)
   node - <<'NODE'
   const fs = require('fs');
   const path = 'package.json';
+  if (!fs.existsSync(path)) process.exit(0);
   const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+  // normalize scripts
+  pkg.scripts = Object.assign({ build: pkg.scripts && pkg.scripts.build ? pkg.scripts.build : "vite build" }, pkg.scripts);
+  // force overrides
   pkg.overrides = Object.assign({}, pkg.overrides, { debug: "4.3.4" });
-  if (!pkg.scripts) pkg.scripts = {};
+  // if direct dep points to weird URL or bad version, normalize
+  for (const sec of ["dependencies","devDependencies"]) {
+    if (pkg[sec] && pkg[sec].debug) {
+      pkg[sec].debug = "4.3.4";
+    }
+  }
   fs.writeFileSync(path, JSON.stringify(pkg, null, 2));
-  console.log("[hot-fix] package.json overrides set to force debug@4.3.4");
+  console.log("[hard-fix] package.json normalized with overrides.debug=4.3.4");
 NODE
 fi
 
-if [ -f package-lock.json ]; then
-  echo "[hot-fix] Rewriting package-lock.json debug 4.4.2 → 4.3.4 (if present)"
-  sed -i 's#debug-4\.4\.2\.tgz#debug-4.3.4.tgz#g' package-lock.json || true
-  sed -i 's#"debug":[[:space:]]*"4\.4\.2"#"debug": "4.3.4"#g' package-lock.json || true
-  sed -i 's#"version":[[:space:]]*"4\.4\.2"#"version": "4.3.4"#g' package-lock.json || true
+echo "[hard-fix] Prefetching debug@4.3.4 to warm npm cache..."
+# This downloads the tarball into the working dir (and cache) to dodge EINTEGRITY races
+npm pack debug@4.3.4 || true
+
+echo "--------------------------------"
+echo "Installing dependencies (prefer online, no audit)..."
+# Retry logic to be extra safe
+ATTEMPTS=0
+until [ $ATTEMPTS -ge 3 ]
+do
+  ATTEMPTS=$((ATTEMPTS+1))
+  echo "npm install attempt $ATTEMPTS ..."
+  if npm install --no-audit --no-fund --prefer-online; then
+    INST_OK=1
+    break
+  else
+    echo "npm install failed (attempt $ATTEMPTS). Cleaning cache + retry..."
+    npm cache clean --force || true
+    sleep 1
+  fi
+done
+
+if [ "${INST_OK:-0}" != "1" ]; then
+  echo "FATAL: npm install failed after retries."
+  exit 1
 fi
-
-echo "--------------------------------"
-echo "Listing netlify/functions:"
-find netlify/functions -maxdepth 3 -type f -print || true
-echo "--------------------------------"
-
-# Choose package manager (npm)
-echo "Using npm…"
-npm ci || npm install
 
 echo "Dependencies installed."
 echo "--------------------------------"
-npm run build || npx vite build
+
+# Build the site (Vite)
+if [ -f package.json ]; then
+  if npm run -s | grep -q "^  build$"; then
+    echo "Running npm run build ..."
+    npm run build
+  else
+    echo "No build script found; running npx vite build ..."
+    npx vite build
+  fi
+else
+  echo "No package.json found; attempting npx vite build ..."
+  npx vite build
+fi
 
 echo "Build complete."
 if [ -d dist ]; then
   echo "Publish dir: dist"
 else
-  echo "WARNING: dist/ not found. Check Vite config or netlify.toml publish path."
+  echo "WARNING: dist/ not found. Check your Vite config or netlify.toml publish path."
 fi
+
+echo "=== End Netlify Build (deps hard-fix) ==="
