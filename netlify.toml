@@ -1,17 +1,19 @@
-# netlify.toml (schedule refresh + blobs)
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+
 [build]
-  command = "bash netlify/build-debug.sh"
-  publish = "dist"
+command = "bash netlify/build-debug.sh"
+publish = "dist"
 
 [functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["@netlify/blobs"]
-  included_files = [
-    "netlify/functions/**/_data/**",
-    "netlify/data/**"
-  ]
+node_bundler = "esbuild"
+external_node_modules = [ "@netlify/blobs",]
+included_files = [ "netlify/functions/**/_data/**", "netlify/data/**",]
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[scheduled]
+[[scheduled.functions]]
+name = "nfl-history-refresh"
+cron = "0 14 * * 1,2"
+
