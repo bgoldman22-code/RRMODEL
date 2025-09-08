@@ -1,121 +1,125 @@
 'use strict';
-// Fetch history from nflverse public CSVs and write blobs for dynamic depth charts.
-// GET /.netlify/functions/nfl-history-fetch-nflverse?season=2025&weeks=1-2 (weeks optional; we store whole-season trimmed to last 3 by default)
-//
-// Writes:
-//   history/{season}/pbp-last3.json
-//   history/{season}/weekly-last3.json
-//
-const { getStore } = require('@netlify/blobs');
+const https = require('https');
 const zlib = require('zlib');
 const { parse } = require('csv-parse/sync');
+const { getBlobsStore } = require('../_blobs.js');
 
-function blobsStoreNFL() {
-  const name = process.env.BLOBS_STORE_NFL || 'nfl-td';
-  const siteID = process.env.SITE_ID;
-  const token  = process.env.NETLIFY_API_TOKEN || process.env.BLOBS_TOKEN;
-  return getStore({ name, siteID, token });
+const NFLVERSE_BASE = 'https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/seasons';
+
+function fetchRaw(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, res => {
+      if (res.statusCode !== 200) {
+        reject(Object.assign(new Error(`HTTP ${res.statusCode}`), { statusCode: res.statusCode }));
+        res.resume();
+        return;
+      }
+      const chunks = [];
+      res.on('data', d => chunks.push(d));
+      res.on('end', () => resolve(Buffer.concat(chunks)));
+    }).on('error', reject);
+  });
 }
 
-function parseWeeksParam(s) {
-  if (!s) return null;
-  // formats: "1-3", "1,2,3", "2"
-  if (s.includes('-')) {
-    const [a,b] = s.split('-').map(x=>parseInt(x,10));
-    if (a && b) return Array.from({length: b-a+1}, (_,i)=>a+i);
+async function fetchCSVMaybeGzip(url) {
+  const buf = await fetchRaw(url);
+  if (url.endsWith('.gz')) {
+    return zlib.gunzipSync(buf).toString('utf8');
   }
-  const arr = s.split(',').map(x=>parseInt(x,10)).filter(Boolean);
-  return arr.length ? arr : null;
+  return buf.toString('utf8');
+}
+
+function toInt(x, def=0) {
+  const n = parseInt(x, 10);
+  return Number.isFinite(n) ? n : def;
+}
+function toFloat(x, def=0) {
+  const n = parseFloat(x);
+  return Number.isFinite(n) ? n : def;
+}
+
+function aggregatePriors(pbpRows) {
+  const byPlayer = new Map();
+  for (const r of pbpRows) {
+    const posteam = r.posteam || r.offense_team || r.possession_team || '';
+    const player = r.rusher_player_name || r.receiver_player_name || r.passer_player_name || '';
+    const ppos = r.rusher_player_name ? 'RB' : (r.receiver_player_name ? 'WR' : (r.passer_player_name ? 'QB' : null));
+    if (!ppos || !player || !posteam) continue;
+    const pid = `${posteam}|${player}|${ppos}`;
+    const ydline_100 = toInt(r.yardline_100);
+    const rush = r.rush == '1' || r.play_type == 'run';
+    const pass = r.pass == '1' || r.play_type == 'pass';
+    const target = pass && !!r.receiver_player_name;
+    const gl = ydline_100 > 0 && ydline_100 <= 5; // inside 5 as GL proxy
+
+    const o = byPlayer.get(pid) || { team: posteam, player, pos: ppos, rush_att:0, gl_carries:0, targets:0, pass_att:0 };
+    if (rush && ppos === 'RB') {
+      o.rush_att += 1;
+      if (gl) o.gl_carries += 1;
+    }
+    if (target && (ppos === 'WR' || ppos === 'TE')) {
+      o.targets += 1;
+    }
+    if (pass && ppos === 'QB') {
+      o.pass_att += 1;
+    }
+    byPlayer.set(pid, o);
+  }
+  const byTeam = {};
+  for (const o of byPlayer.values()) {
+    const t = o.team;
+    if (!byTeam[t]) byTeam[t] = { QB:[], RB:[], WR:[], TE:[] };
+    byTeam[t][o.pos].push(o);
+  }
+  for (const t of Object.keys(byTeam)) {
+    byTeam[t].QB.sort((a,b)=>b.pass_att - a.pass_att);
+    byTeam[t].RB.sort((a,b)=> (b.gl_carries*3 + b.rush_att) - (a.gl_carries*3 + a.rush_att));
+    byTeam[t].WR.sort((a,b)=>b.targets - a.targets);
+    byTeam[t].TE.sort((a,b)=>b.targets - a.targets);
+    for (const k of ['QB','RB','WR','TE']) {
+      byTeam[t][k] = byTeam[t][k].slice(0, 4);
+    }
+  }
+  return byTeam;
 }
 
 exports.handler = async (event) => {
+  const qs = event.queryStringParameters || {};
+  const season = String(qs.season || '2025');
+  const fallbackSeason = String(parseInt(season, 10)-1);
+
+  const store = getBlobsStore(process.env.BLOBS_STORE_NFL || 'nfl-td');
+  const out = { ok:true, season, tried:[], saved:[] };
+
+  const pbpURL = `${NFLVERSE_BASE}/play_by_play_${season}.csv.gz`;
+  out.tried.push(pbpURL);
+  let pbpCSV;
   try {
-    const qs = event.queryStringParameters || {};
-    const season = String(qs.season || '2025');
-    const weeksParam = parseWeeksParam(qs.weeks || '');
-    const wantWeeks = weeksParam && weeksParam.length ? new Set(weeksParam) : null;
-
-    const store = blobsStoreNFL();
-
-    // URLs (csv.gz for pbp, csv for weekly player stats)
-    const pbpUrl = `https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/seasons/play_by_play_${season}.csv.gz`;
-    const wkUrl  = `https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/player_stats/player_stats_${season}.csv`;
-
-    // Download PBP gz
-    const r1 = await fetch(pbpUrl);
-    if (!r1.ok) {
-      return { statusCode: 200, headers:{'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:`Failed to fetch pbp CSV (${r1.status})`, url: pbpUrl }) };
-    }
-    const gzBuf = Buffer.from(await r1.arrayBuffer());
-    const csvBuf = zlib.gunzipSync(gzBuf);
-    const pbpCsv = csvBuf.toString('utf8');
-    const pbpRows = parse(pbpCsv, { columns:true, skip_empty_lines:true });
-
-    // Filter/trim pbp to the weeks we want or last 3 completed weeks
-    let pbpSeason = pbpRows.filter(r => String(r.season||'') === season);
-    // Some files already scoped; keep all and rely on 'week'
-    const weeksAvail = Array.from(new Set(pbpSeason.map(r => parseInt(r.week||r.week_fixed||r.weekly,10)).filter(Boolean))).sort((a,b)=>a-b);
-    let weeksPick;
-    if (wantWeeks) {
-      weeksPick = Array.from(new Set(Array.from(wantWeeks).filter(w => weeksAvail.includes(w))));
-    } else {
-      // last 3 weeks available
-      weeksPick = weeksAvail.slice(-3);
-    }
-    const pbpOut = pbpSeason.filter(r => weeksPick.includes(parseInt(r.week,10))).map(r => ({
-      season: Number(r.season)||Number(season),
-      week: Number(r.week)||null,
-      posteam: r.posteam || r.offense_team || r.team || r.pos_team,
-      yardline_100: r.yardline_100 || r.yardline || '',
-      ydstogo: r.ydstogo || r.yards_to_go || '',
-      play_type: r.play_type || r.play_type_nfl || '',
-      rusher_player_name: r.rusher_player_name || r.rusher || '',
-      receiver_player_name: r.receiver_player_name || r.receiver || '',
-      air_yards: r.air_yards || '',
-      touchdown: r.touchdown || r.td || '0'
-    }));
-
-    // Download weekly stats
-    const r2 = await fetch(wkUrl);
-    if (!r2.ok) {
-      return { statusCode: 200, headers:{'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:`Failed to fetch weekly stats CSV (${r2.status})`, url: wkUrl }) };
-    }
-    const wkCsv = await r2.text();
-    const wkRows = parse(wkCsv, { columns:true, skip_empty_lines:true });
-    const wkSeason = wkRows.filter(r => String(r.season||'') === season);
-    // columns vary; map flexibly
-    const wkOut = wkSeason.filter(r => weeksPick.includes(parseInt(r.week||r.gsis_week||r.weekly,10))).map(r => ({
-      season: Number(r.season)||Number(season),
-      week: Number(r.week)||null,
-      team: r.recent_team || r.team || r.team_abbr || r.player_team || '',
-      player: r.player || r.player_name || r.full_name || r.name || '',
-      position: r.position || r.pos || '',
-      offense_snaps: r.offense_snaps || r.offense_snaps_played || r.snaps || '',
-      rush_att: r.rush_att || r.rushing_attempts || r.carries || '',
-      targets: r.targets || r.tgt || '',
-      rushing_tds: r.rushing_tds || r.rush_tds || '',
-      receiving_tds: r.receiving_tds || r.rec_tds || ''
-    }));
-
-    // Save blobs
-    const pbpKey = `history/${season}/pbp-last3.json`;
-    const weeklyKey = `history/${season}/weekly-last3.json`;
-    await store.set(pbpKey, JSON.stringify(pbpOut), { contentType: 'application/json; charset=utf-8' });
-    await store.set(weeklyKey, JSON.stringify(wkOut), { contentType: 'application/json; charset=utf-8' });
-
-    return {
-      statusCode: 200,
-      headers:{'content-type':'application/json'},
-      body: JSON.stringify({
-        ok:true,
-        season,
-        weeks: weeksPick,
-        wrote: { pbpKey, weeklyKey },
-        counts: { pbp: pbpOut.length, weekly: wkOut.length },
-        urls: { pbpUrl, wkUrl }
-      })
-    };
-  } catch (err) {
-    return { statusCode: 500, headers:{'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:String(err && err.message ? err.message : err) }) };
+    pbpCSV = await fetchCSVMaybeGzip(pbpURL);
+  } catch (e) {
+    out.pbp404 = true;
   }
+
+  if (!pbpCSV) {
+    const pbpPrevURL = `${NFLVERSE_BASE}/play_by_play_${fallbackSeason}.csv.gz`;
+    out.tried.push(pbpPrevURL);
+    try {
+      const csv = await fetchCSVMaybeGzip(pbpPrevURL);
+      const rows = parse(csv, { columns:true, skip_empty_lines:true });
+      const byTeam = aggregatePriors(rows);
+      const key = `history/${season}/pbp-priors.json`; // write priors for current season bootstrapping
+      await store.set(key, JSON.stringify({ season, fromSeason: fallbackSeason, byTeam }, null, 2), { contentType:'application/json; charset=utf-8' });
+      out.saved.push(key);
+    } catch (e) {
+      return { statusCode: 200, headers: {'content-type':'application/json'},
+        body: JSON.stringify({ ok:false, error:'Failed to fetch pbp CSV (and priors fallback)', tried: out.tried }) };
+    }
+  } else {
+    const key = `history/${season}/pbp-raw.csv.gz`;
+    await store.set(key, Buffer.from(pbpCSV, 'utf8'), { contentType:'application/gzip' });
+    out.saved.push(key);
+  }
+
+  return { statusCode: 200, headers: {'content-type':'application/json'},
+    body: JSON.stringify(out) };
 };
