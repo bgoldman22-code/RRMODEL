@@ -1,21 +1,22 @@
-# patch-step3o-depthcharts-public
+# patch-step3r-sportradar-weekly-importer
 
-Adds a public-source importer that tries **FantasyPros** first, then **ESPN** as a fallback.
-Saves normalized RB/WR/TE/QB groups with inferred shares into your NFL blobs.
+Adds a Netlify function to import weekly depth charts from Sportradar official API and normalize
+into RB/WR/TE/QB arrays, saving to your NFL blobs.
 
 ## File
-- netlify/functions/nfl-depthcharts-import-public/index.cjs
+- netlify/functions/nfl-depthcharts-import-sportradar-weekly/index.cjs
+
+## Env
+- SPORTRADAR_API_KEY (required)
+- SPORTRADAR_ACCESS_LEVEL=trial (default)
+- SPORTRADAR_LANG=en (default)
+- BLOBS_STORE_NFL (defaults to nfl-td), SITE_ID, NETLIFY_API_TOKEN or BLOBS_TOKEN
 
 ## Use
 ```
-/.netlify/functions/nfl-depthcharts-import-public?season=2025&week=2
+/.netlify/functions/nfl-depthcharts-import-sportradar-weekly?season=2025&week=1&stype=REG
 ```
-Output includes the source used (`FantasyPros` or `ESPN`) and a sample team.
-
-## Tip
-You can keep your 11:30 AM ET cron and simply change the scheduled function name to:
+Then run your model:
 ```
-[[scheduled.functions]]
-name = "nfl-depthcharts-import-public"
-cron = "30 15 * * *"
+/.netlify/functions/nfl-td-model?season=2025&week=1
 ```
