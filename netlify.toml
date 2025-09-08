@@ -1,4 +1,4 @@
-# netlify.toml (adds included_files for function data + shared data)
+# netlify.toml (schedule refresh + blobs)
 [build]
   command = "bash netlify/build-debug.sh"
   publish = "dist"
