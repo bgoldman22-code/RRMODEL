@@ -1,10 +1,9 @@
 const { getStore } = require('@netlify/blobs');
 
-const NFL_STORE_NAME = 'nfl-td'; // explicit, isolated store for NFL TD
+// Explicit, isolated store for NFL TD data.
+const NFL_STORE_NAME = 'nfl-td';
 
 function getNFLStore() {
-  // In Netlify prod, getStore(name) auto-configures creds.
-  // If running elsewhere, the SDK will throw MissingBlobsEnvironmentError.
   return getStore(NFL_STORE_NAME);
 }
 
