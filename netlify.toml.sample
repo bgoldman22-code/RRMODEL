@@ -1,0 +1,21 @@
+# Sample netlify.toml block for Blobs + Functions
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["@netlify/blobs", "csv-parse"]
+  included_files = ["netlify/functions/_data/**"]
+
+[[scheduled.functions]]
+  name = "prewarm-odds"
+  cron = "0 13 * * *"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
