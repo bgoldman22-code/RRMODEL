@@ -1,4 +1,5 @@
-const { getStore } = require('@netlify/blobs');
+// netlify/functions/health-blobs/index.cjs
+const { getBlobsStore } = require('../_blobs.js');
 
 exports.handler = async () => {
   const info = {
@@ -7,25 +8,37 @@ exports.handler = async () => {
       HAS_SITE_ID: Boolean(process.env.NETLIFY_SITE_ID),
       HAS_TOKEN: Boolean(process.env.NETLIFY_BLOBS_TOKEN),
     },
-    attempt: null,
-    error: null
+    tests: [],
   };
 
   try {
-    // Explicit credentials path (bulletproof)
-    const store = getStore('nfl-td', {
-      siteID: process.env.NETLIFY_SITE_ID,
-      token: process.env.NETLIFY_BLOBS_TOKEN
+    // use the same store name you’re using elsewhere for NFL
+    const store = getBlobsStore('nfl-td');
+
+    const key = `diagnostics/selftest-${Date.now()}.json`;
+    const payload = { ok: true, ts: new Date().toISOString() };
+
+    // WRITE
+    await store.set(key, JSON.stringify(payload), {
+      contentType: 'application/json',
     });
 
-    const key = `diagnostics/min-${Date.now()}.txt`;
-    await store.set(key, 'ok', { contentType: 'text/plain' });
-    const got = await store.get(key);
-    info.attempt = { wrote: key, readOk: Boolean(got) };
+    // READ
+    const res = await store.get(key);
 
-    return { statusCode: 200, body: JSON.stringify({ ok: true, info }) };
+    info.tests.push({ step: 'write-read', key, ok: Boolean(res) });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: true, info }),
+      headers: { 'content-type': 'application/json' },
+    };
   } catch (e) {
-    info.error = String(e);
-    return { statusCode: 200, body: JSON.stringify({ ok: false, info }) };
+    info.tests.push({ step: 'error', error: String(e) });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: false, info }),
+      headers: { 'content-type': 'application/json' },
+    };
   }
 };
