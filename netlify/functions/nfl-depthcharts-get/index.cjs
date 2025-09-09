@@ -1,15 +1,9 @@
-
 const fs = require('fs');
 const path = require('path');
 const { NetlifyBlobs } = require('@netlify/blobs');
 
-// Helper: read JSON safely
 function readJSON(fp) {
-  try {
-    return JSON.parse(fs.readFileSync(fp, 'utf8'));
-  } catch (e) {
-    return null;
-  }
+  try { return JSON.parse(fs.readFileSync(fp, 'utf8')); } catch (_) { return null; }
 }
 
 async function readFromBlobs(storeName, key) {
@@ -20,9 +14,7 @@ async function readFromBlobs(storeName, key) {
     if (!res) return null;
     const text = await res.text();
     return JSON.parse(text);
-  } catch (e) {
-    return null;
-  }
+  } catch (_) { return null; }
 }
 
 exports.handler = async (event) => {
@@ -31,12 +23,11 @@ exports.handler = async (event) => {
     const season = parseInt(q.season || '2025', 10);
     const week = parseInt(q.week || '1', 10);
 
-    // 1) Try blobs (BLOBS_STORE_NFL or BLOBS_STORE)
+    // 1) Try blobs
     const store = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE;
-    let data = null;
     if (store) {
       const blobKey = `depth/${season}/week${week}/depth-charts.json`;
-      data = await readFromBlobs(store, blobKey);
+      const data = await readFromBlobs(store, blobKey);
       if (data) {
         return {
           statusCode: 200,
@@ -46,22 +37,21 @@ exports.handler = async (event) => {
       }
     }
 
-    // 2) Fallback to local file baked with the repo
-    // Prior functions used: /var/task/netlify/functions/_data/nfl/{season}/week{week}/depth-charts.json
-    const localPath = path.join(__dirname, '..', '_data', 'nfl', String(season), `week${week}`, 'depth-charts.json');
+    // 2) Fallback to local bundled file (included_files copies _data/** to function dir)
+    const localPath = path.join(__dirname, '_data', 'nfl', String(season), `week${week}`, 'depth-charts.json');
     const local = readJSON(localPath);
     if (local) {
       return {
         statusCode: 200,
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ok:true, source:'local', season, week, teams: Object.keys(local.charts||{}).length, charts: local.charts || local })
+        body: JSON.stringify({ ok:true, source:'local', localPath, season, week, teams: Object.keys(local.charts||{}).length, charts: local.charts || local })
       };
     }
 
     return {
       statusCode: 404,
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok:false, error:'No depth charts found in blobs or local data', season, week, tried: {store, localPath}})
+      body: JSON.stringify({ ok:false, error:'No depth charts found in blobs or local data', season, week, tried: {store, localPath} })
     };
   } catch (err) {
     return {
