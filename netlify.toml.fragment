@@ -1,0 +1,10 @@
+# netlify.toml.fragment — merge this into your real netlify.toml (ensure only ONE [functions] block total)
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["@netlify/blobs","csv-parse"]
+  included_files = ["netlify/functions/**/_data/**"]
+
+# (Optional) sanity schedule examples (safe to keep or delete)
+# [[scheduled.functions]]
+#   name = "nfl-depthcharts-seed"
+#   cron = "30 15 * * *"  # 11:30 AM America/New_York
