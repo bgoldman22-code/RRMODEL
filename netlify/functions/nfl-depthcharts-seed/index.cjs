@@ -1,34 +1,27 @@
-const { getNFLStore, NFL_STORE_NAME } = require('../_blobs.js');
+// netlify/functions/nfl-depthcharts-seed/index.cjs
+const path = require('path');
+const fs = require('fs');
+const { getBlobsStore } = require('../_blobs.js');
 
-const TEAMS = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET","GB","HOU","IND","JAX","KC","LAR","LAC","LV","MIA","MIN","NE","NO","NYG","NYJ","PHI","PIT","SEA","SF","TB","TEN","WAS"];
-
-function emptyCharts() {
-  const charts = {};
-  for (const t of TEAMS) charts[t] = { QB: [], RB: [], WR: [], TE: [] };
-  return charts;
+function readLocalScaffold() {
+  const here = __dirname;
+  const local = path.join(here, '_data', 'nfl', 'current.json');
+  if (fs.existsSync(local)) {
+    return JSON.parse(fs.readFileSync(local, 'utf8'));
+  }
+  return { ok: true, teams: {}, note: 'empty scaffold (no local file found)' };
 }
 
-exports.handler = async (event) => {
+exports.handler = async () => {
   try {
-    const q = event.queryStringParameters || {};
-    const season = parseInt(q.season || '2025', 10);
-    const week = parseInt(q.week || '1', 10);
-    const store = getNFLStore(); // explicit 'nfl-td'
-
-    const payload = { season, week, charts: emptyCharts() };
-
-    const currentKey = 'depth/current.json';
-    const weeklyKey = `depth/${season}/week${week}/depth-charts.json`;
-
-    await store.set(currentKey, JSON.stringify(payload), { contentType: 'application/json; charset=utf-8' });
-    await store.set(weeklyKey, JSON.stringify(payload), { contentType: 'application/json; charset=utf-8' });
-
-    return {
-      statusCode: 200,
-      headers: {'content-type':'application/json'},
-      body: JSON.stringify({ ok:true, store:NFL_STORE_NAME, wrote:[currentKey, weeklyKey] })
-    };
-  } catch (err) {
-    return { statusCode: 500, headers:{'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:String(err && err.stack || err) }) };
+    const store = getBlobsStore('nfl-td'); // sync helper
+    const seed = readLocalScaffold();
+    const key = 'depth/current.json';
+    await store.set(key, JSON.stringify(seed), { contentType: 'application/json' });
+    const check = await store.get(key);
+    const size = check ? (await check.blob()).size : 0;
+    return { statusCode: 200, body: JSON.stringify({ ok: true, wrote: key, bytes: size }) };
+  } catch (e) {
+    return { statusCode: 200, body: JSON.stringify({ ok: false, error: String(e) }) };
   }
 };

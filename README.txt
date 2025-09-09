@@ -1,34 +1,26 @@
-NFL Blobs Async Patch — 2025-09-09T15:40:48.375268Z
+Blobs Simple Patch — 2025-09-09T15:49:29.044167Z
 
-What’s included:
-- netlify/functions/_blobs.js
-  Async, cross-version helper for Netlify Blobs. Uses dynamic import and
-  supports both createClient(...).getStore(name) and getStore(name, opts).
+This patch replaces helper code to always use:
+  getStore(name, { siteID: NETLIFY_SITE_ID, token: NETLIFY_BLOBS_TOKEN })
+when creds exist, else falls back to getStore(name).
 
-- netlify/functions/health-blobs/index.cjs
-  Diagnostic function that uses the shared helper and performs a write-read
-  cycle in the 'nfl-td' store.
+Files:
+- netlify/functions/_blobs.js                (CJS helper)
+- netlify/functions/_lib/blobs-helper.mjs    (ESM helper)
+- netlify/functions/health-blobs/index.cjs   (diagnostic, write+read self test)
+- netlify/functions/nfl-depthcharts-seed/index.cjs (writes depth/current.json)
 
-HOW TO APPLY
-1) Unzip these files into your repo root, preserving paths.
-2) Ensure netlify.toml has:
+After deploying:
+1) Open /.netlify/functions/health-blobs  -> expect ok:true
+2) Open /.netlify/functions/nfl-depthcharts-seed -> expect ok:true
 
-   [functions]
-     directory = "netlify/functions"
-     node_bundler = "esbuild"
-     external_node_modules = ["@netlify/blobs","csv-parse"]
-     included_files = ["netlify/functions/**/_data/**"]
+Ensure netlify.toml has:
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["@netlify/blobs","csv-parse"]
+  included_files = ["netlify/functions/**/_data/**"]
 
-3) Confirm env vars are set at the Site level:
-   - NETLIFY_SITE_ID
-   - NETLIFY_BLOBS_TOKEN
-
-4) Redeploy, then sanity-check:
-   - /.netlify/functions/health-blobs
-     Expect ok:true and a write-read test = true.
-
-IMPORTANT
-- Do NOT hardcode sensitive tokens into source files. Keep them in Netlify
-  environment variables.
-- Any function calling getBlobsStore(...) must now await it:
-    const store = await getBlobsStore('nfl-td')
+Env vars present:
+- NETLIFY_SITE_ID
+- NETLIFY_BLOBS_TOKEN
