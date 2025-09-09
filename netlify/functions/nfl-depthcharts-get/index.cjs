@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { NetlifyBlobs } = require('@netlify/blobs');
+const { createClient } = require('@netlify/blobs');
 
 function readJSON(fp) {
   try { return JSON.parse(fs.readFileSync(fp, 'utf8')); } catch (_) { return null; }
@@ -8,7 +8,7 @@ function readJSON(fp) {
 
 async function readFromBlobs(storeName, key) {
   try {
-    const client = new NetlifyBlobs();
+    const client = createClient();
     const store = client.getStore(storeName);
     const res = await store.get(key);
     if (!res) return null;
@@ -27,7 +27,6 @@ exports.handler = async (event) => {
     const weeklyKey = week ? `depth/${season}/week${week}/depth-charts.json` : null;
     const currentKey = `depth/current.json`;
 
-    // 1) Try weekly snapshot if week provided
     if (store && weeklyKey) {
       const weekly = await readFromBlobs(store, weeklyKey);
       if (weekly) {
@@ -38,7 +37,6 @@ exports.handler = async (event) => {
         };
       }
     }
-    // 2) Try current
     if (store) {
       const current = await readFromBlobs(store, currentKey);
       if (current) {
@@ -50,7 +48,7 @@ exports.handler = async (event) => {
       }
     }
 
-    // 3) Local fallback: weekly file baked into bundle via included_files
+    // Local fallback
     if (week) {
       const localPath = path.join(__dirname, '_data', 'nfl', String(season), `week${week}`, 'depth-charts.json');
       const local = readJSON(localPath);
@@ -62,8 +60,6 @@ exports.handler = async (event) => {
         };
       }
     }
-
-    // 4) Local fallback: current
     const localCurrent = path.join(__dirname, '_data', 'nfl', 'current.json');
     const currLocal = readJSON(localCurrent);
     if (currLocal) {

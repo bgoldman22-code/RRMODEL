@@ -1,9 +1,9 @@
-const { NetlifyBlobs } = require('@netlify/blobs');
+const { createClient } = require('@netlify/blobs');
 
 function getBlobsStore(preferred) {
   const name = preferred || process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE;
   if (!name) return null;
-  const client = new NetlifyBlobs();
+  const client = createClient();
   return client.getStore(name);
 }
 

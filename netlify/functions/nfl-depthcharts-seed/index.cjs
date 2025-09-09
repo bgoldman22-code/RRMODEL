@@ -1,4 +1,4 @@
-const { NetlifyBlobs } = require('@netlify/blobs');
+const { createClient } = require('@netlify/blobs');
 
 const TEAMS = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET","GB","HOU","IND","JAX","KC","LAR","LAC","LV","MIA","MIN","NE","NO","NYG","NYJ","PHI","PIT","SEA","SF","TB","TEN","WAS"];
 
@@ -19,7 +19,7 @@ exports.handler = async (event) => {
     }
 
     const payload = { season, week, charts: emptyCharts() };
-    const client = new NetlifyBlobs();
+    const client = createClient();
     const store = client.getStore(storeName);
 
     const currentKey = 'depth/current.json';
