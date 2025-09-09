@@ -1,26 +1,35 @@
-Blobs Simple Patch — 2025-09-09T15:49:29.044167Z
+NFL Blobs Bulletproof Patch
+===========================
 
-This patch replaces helper code to always use:
-  getStore(name, { siteID: NETLIFY_SITE_ID, token: NETLIFY_BLOBS_TOKEN })
-when creds exist, else falls back to getStore(name).
+What this patch does
+--------------------
+1) Provides a robust helper for Netlify Blobs that always passes credentials when available:
+   - netlify/functions/_blobs.js      (CJS)
+   - netlify/functions/_lib/blobs-helper.mjs  (ESM)
 
-Files:
-- netlify/functions/_blobs.js                (CJS helper)
-- netlify/functions/_lib/blobs-helper.mjs    (ESM helper)
-- netlify/functions/health-blobs/index.cjs   (diagnostic, write+read self test)
-- netlify/functions/nfl-depthcharts-seed/index.cjs (writes depth/current.json)
+2) Adds two diagnostics functions:
+   - /.netlify/functions/blobs-introspect  -> shows what @netlify/blobs exports at runtime
+   - /.netlify/functions/health-blobs      -> attempts a write+read in store 'nfl-td'
 
-After deploying:
-1) Open /.netlify/functions/health-blobs  -> expect ok:true
-2) Open /.netlify/functions/nfl-depthcharts-seed -> expect ok:true
+3) Adds package.json.addon.json with a pinned @netlify/blobs version:
+   { "dependencies": { "@netlify/blobs": "7.3.0" } }
 
-Ensure netlify.toml has:
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
-  external_node_modules = ["@netlify/blobs","csv-parse"]
-  included_files = ["netlify/functions/**/_data/**"]
+How to apply
+------------
+1. Unzip into your repo root (preserve folders).
+2. Merge dependencies from package.json.addon.json into your root package.json:
+   - Ensure "@netlify/blobs": "7.3.0" (pinned, no caret).
+   - Commit package-lock.json too.
+3. Confirm netlify.toml includes:
+   [functions]
+     directory = "netlify/functions"
+     node_bundler = "esbuild"
+     external_node_modules = ["@netlify/blobs","csv-parse"]
+     included_files = ["netlify/functions/_data/**"]
+4. In Netlify, trigger **Clear cache and deploy site**.
 
-Env vars present:
-- NETLIFY_SITE_ID
-- NETLIFY_BLOBS_TOKEN
+Sanity checks
+-------------
+- /.netlify/functions/blobs-introspect
+- /.netlify/functions/health-blobs
+- (then) your depth charts functions as needed.
