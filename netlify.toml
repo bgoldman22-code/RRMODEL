@@ -5,11 +5,12 @@
   publish = "dist"
 
 [functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
-  external_node_modules = ["@netlify/blobs"]
-
+directory = "netlify/functions"
+node_bundler = "esbuild"
+external_node_modules = ["@netlify/blobs"]
 # If you already have redirects, keep them; this preserves the SPA catch-all.
+included_files = ["netlify/functions/_data/**"]
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
