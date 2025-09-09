@@ -1,77 +1,68 @@
-const fs = require('fs');
+// netlify/functions/nfl-depthcharts-get/index.cjs
+// Fetch depth charts from Blobs 'nfl-td' store, fallback to local _data scaffold.
 const path = require('path');
-const { getNFLStore } = require('../_blobs.js');
+const fs = require('fs');
+const { getBlobsStore } = require('../_blobs.js');
 
-function readJSON(fp) {
-  try { return JSON.parse(fs.readFileSync(fp, 'utf8')); } catch (_) { return null; }
-}
+const STORE_NAME = 'nfl-td';
 
-async function readFromBlobs(store, key) {
-  try {
-    const res = await store.get(key);
-    if (!res) return null;
-    const text = await res.text();
-    return JSON.parse(text);
-  } catch (_) { return null; }
+function parseIntOr(val, def) {
+  const n = parseInt(val, 10);
+  return Number.isFinite(n) ? n : def;
 }
 
 exports.handler = async (event) => {
+  const params = event.queryStringParameters || {};
+  const season = parseIntOr(params.season, 2025);
+  const week   = parseIntOr(params.week, 1);
+
+  const localDir = path.join(__dirname, '_data', 'nfl');
+  const localCurrent = path.join(localDir, 'current.json');
+  const localWeek = path.join(localDir, String(season), `week${week}`, 'depth-charts.json');
+
+  const tried = { localPath: localWeek };
+  let charts = null;
+  let source = null;
+
+  // Try Blobs (nfl-td) first
   try {
-    const q = event.queryStringParameters || {};
-    const season = parseInt(q.season || '2025', 10);
-    const week = q.week ? parseInt(q.week, 10) : null;
-
-    let store = null;
-    try { store = getNFLStore(); } catch (e) { /* fall back to local */ }
-
-    const weeklyKey = week ? `depth/${season}/week${week}/depth-charts.json` : null;
-    const currentKey = `depth/current.json`;
-
-    if (store && weeklyKey) {
-      const weekly = await readFromBlobs(store, weeklyKey);
-      if (weekly) {
-        return {
-          statusCode: 200,
-          headers: {'content-type':'application/json'},
-          body: JSON.stringify({ ok:true, source:'blobs:weekly', blobKey:weeklyKey, season, week, teams:Object.keys(weekly.charts||{}).length, charts:weekly.charts||weekly })
-        };
-      }
+    const store = getBlobsStore(STORE_NAME);
+    const key = `depth/current.json`; // current pointer (we don't version weeks here)
+    const res = await store.get(key);
+    if (res) {
+      const txt = await res.text();
+      charts = JSON.parse(txt);
+      source = `blobs:${STORE_NAME}:${key}`;
     }
-    if (store) {
-      const current = await readFromBlobs(store, currentKey);
-      if (current) {
-        return {
-          statusCode: 200,
-          headers: {'content-type':'application/json'},
-          body: JSON.stringify({ ok:true, source:'blobs:current', blobKey:currentKey, season, week, teams:Object.keys(current.charts||{}).length, charts:current.charts||current })
-        };
-      }
-    }
-
-    // Local fallback
-    if (week) {
-      const localPath = path.join(__dirname, '_data', 'nfl', String(season), `week${week}`, 'depth-charts.json');
-      const local = readJSON(localPath);
-      if (local) {
-        return {
-          statusCode: 200,
-          headers: {'content-type':'application/json'},
-          body: JSON.stringify({ ok:true, source:'local', localPath, season, week, teams:Object.keys(local.charts||{}).length, charts:local.charts||local })
-        };
-      }
-    }
-    const localCurrent = path.join(__dirname, '_data', 'nfl', 'current.json');
-    const currLocal = readJSON(localCurrent);
-    if (currLocal) {
-      return {
-        statusCode: 200,
-        headers: {'content-type':'application/json'},
-        body: JSON.stringify({ ok:true, source:'local:current', localPath:localCurrent, season, week, teams:Object.keys(currLocal.charts||{}).length, charts:currLocal.charts||currLocal })
-      };
-    }
-
-    return { statusCode: 404, headers:{'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:'No depth charts found in blobs or local data', season, week, tried: { localPath: path.join(__dirname, '_data', 'nfl', String(season), `week${week||'?'}`, 'depth-charts.json') } }) };
-  } catch (err) {
-    return { statusCode: 500, headers:{'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:String(err && err.stack || err) }) };
+  } catch (e) {
+    // Ignore here, we will try local fallback
   }
+
+  // Fallback to local file if needed
+  if (!charts) {
+    const candidates = [localWeek, localCurrent];
+    for (const p of candidates) {
+      try {
+        if (fs.existsSync(p)) {
+          const raw = fs.readFileSync(p, 'utf8');
+          charts = JSON.parse(raw);
+          source = `local:${p.replace(__dirname, '')}`;
+          break;
+        }
+      } catch {}
+    }
+  }
+
+  if (!charts) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: false, error: 'No depth charts found in blobs or local data', season, week, tried })
+    };
+  }
+
+  const teams = Object.keys(charts || {}).length;
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ ok: true, season, week, teams, charts, meta: { source } })
+  };
 };
