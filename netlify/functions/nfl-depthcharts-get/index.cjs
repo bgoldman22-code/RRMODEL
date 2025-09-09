@@ -8,7 +8,7 @@ function readJSON(fp) {
 
 async function readFromBlobs(storeName, key) {
   try {
-    const client = new NetlifyBlobs({ siteID: process.env.SITE_ID || undefined });
+    const client = new NetlifyBlobs();
     const store = client.getStore(storeName);
     const res = await store.get(key);
     if (!res) return null;
@@ -21,43 +21,61 @@ exports.handler = async (event) => {
   try {
     const q = event.queryStringParameters || {};
     const season = parseInt(q.season || '2025', 10);
-    const week = parseInt(q.week || '1', 10);
+    const week = q.week ? parseInt(q.week, 10) : null;
 
-    // 1) Try blobs
     const store = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE;
-    if (store) {
-      const blobKey = `depth/${season}/week${week}/depth-charts.json`;
-      const data = await readFromBlobs(store, blobKey);
-      if (data) {
+    const weeklyKey = week ? `depth/${season}/week${week}/depth-charts.json` : null;
+    const currentKey = `depth/current.json`;
+
+    // 1) Try weekly snapshot if week provided
+    if (store && weeklyKey) {
+      const weekly = await readFromBlobs(store, weeklyKey);
+      if (weekly) {
         return {
           statusCode: 200,
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ ok:true, source:'blobs', store, blobKey, season, week, teams: Object.keys(data.charts||{}).length, charts: data.charts || data })
+          headers: {'content-type':'application/json'},
+          body: JSON.stringify({ ok:true, source:'blobs:weekly', store, blobKey:weeklyKey, season, week, teams:Object.keys(weekly.charts||{}).length, charts:weekly.charts||weekly })
+        };
+      }
+    }
+    // 2) Try current
+    if (store) {
+      const current = await readFromBlobs(store, currentKey);
+      if (current) {
+        return {
+          statusCode: 200,
+          headers: {'content-type':'application/json'},
+          body: JSON.stringify({ ok:true, source:'blobs:current', store, blobKey:currentKey, season, week, teams:Object.keys(current.charts||{}).length, charts:current.charts||current })
         };
       }
     }
 
-    // 2) Fallback to local bundled file (included_files copies _data/** to function dir)
-    const localPath = path.join(__dirname, '_data', 'nfl', String(season), `week${week}`, 'depth-charts.json');
-    const local = readJSON(localPath);
-    if (local) {
+    // 3) Local fallback: weekly file baked into bundle via included_files
+    if (week) {
+      const localPath = path.join(__dirname, '_data', 'nfl', String(season), `week${week}`, 'depth-charts.json');
+      const local = readJSON(localPath);
+      if (local) {
+        return {
+          statusCode: 200,
+          headers: {'content-type':'application/json'},
+          body: JSON.stringify({ ok:true, source:'local', localPath, season, week, teams:Object.keys(local.charts||{}).length, charts:local.charts||local })
+        };
+      }
+    }
+
+    // 4) Local fallback: current
+    const localCurrent = path.join(__dirname, '_data', 'nfl', 'current.json');
+    const currLocal = readJSON(localCurrent);
+    if (currLocal) {
       return {
         statusCode: 200,
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ok:true, source:'local', localPath, season, week, teams: Object.keys(local.charts||{}).length, charts: local.charts || local })
+        headers: {'content-type':'application/json'},
+        body: JSON.stringify({ ok:true, source:'local:current', localPath:localCurrent, season, week, teams:Object.keys(currLocal.charts||{}).length, charts:currLocal.charts||currLocal })
       };
     }
 
-    return {
-      statusCode: 404,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok:false, error:'No depth charts found in blobs or local data', season, week, tried: {store, localPath} })
-    };
+    return { statusCode: 404, headers:{'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:'No depth charts found in blobs or local data', season, week, tried: { store, localPath: path.join(__dirname, '_data', 'nfl', String(season), `week${week||'?'}`, 'depth-charts.json') } }) };
   } catch (err) {
-    return {
-      statusCode: 500,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok:false, error: String(err && err.stack || err) })
-    };
+    return { statusCode: 500, headers:{'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:String(err && err.stack || err) }) };
   }
 };
