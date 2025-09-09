@@ -1,6 +1,6 @@
-import { NetlifyBlobs } from '@netlify/blobs';
+import { createClient } from '@netlify/blobs';
 
 export function makeStore(name) {
-  const client = new NetlifyBlobs();
+  const client = createClient();
   return client.getStore(name);
 }
