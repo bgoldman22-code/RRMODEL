@@ -1,31 +1,34 @@
-Patch: Blobs self-test + netlify.toml fragment
-=============================================
-Generated: 2025-09-09T15:18:39.848833Z
+NFL Blobs Async Patch — 2025-09-09T15:40:48.375268Z
 
-What this adds
---------------
-1) netlify/functions/health-blobs/index.cjs
-   - Tiny function that writes & reads a JSON blob to the 'nfl-td' store.
-   - Returns { ok:true } if credentials are properly injected / passed.
-   - Also reports whether NETLIFY_SITE_ID and NETLIFY_BLOBS_TOKEN are present.
+What’s included:
+- netlify/functions/_blobs.js
+  Async, cross-version helper for Netlify Blobs. Uses dynamic import and
+  supports both createClient(...).getStore(name) and getStore(name, opts).
 
-2) netlify.toml.fragment
-   - Canonical [functions] block. Ensure your real netlify.toml contains **one** block like this.
-   - Avoid duplicate [functions] sections or duplicate external_node_modules keys.
+- netlify/functions/health-blobs/index.cjs
+  Diagnostic function that uses the shared helper and performs a write-read
+  cycle in the 'nfl-td' store.
 
-How to apply
-------------
-1) Drop the 'netlify/functions/health-blobs' folder into your repo.
-2) Merge 'netlify.toml.fragment' into your real netlify.toml, keeping a single [functions] block.
-3) Commit + deploy.
-4) Hit: /.netlify/functions/health-blobs
-   - Expect: { ok: true, info: ... }
-   - If { ok:false }, the 'info.tests[0].error' will show the exact thrown error.
+HOW TO APPLY
+1) Unzip these files into your repo root, preserving paths.
+2) Ensure netlify.toml has:
 
-If ok:false: checklist
-----------------------
-- Verify your site runs **Functions** (not Edge) and uses node_bundler="esbuild".
-- Confirm @netlify/blobs is in package.json dependencies (not just devDependencies).
-- Ensure NETLIFY_SITE_ID and NETLIFY_BLOBS_TOKEN are set in Site > Settings > Environment.
-- Remove duplicate [functions] blocks in netlify.toml.
-- Redeploy with cache cleared if needed (Deploys > Trigger deploy > Clear cache and deploy).
+   [functions]
+     directory = "netlify/functions"
+     node_bundler = "esbuild"
+     external_node_modules = ["@netlify/blobs","csv-parse"]
+     included_files = ["netlify/functions/**/_data/**"]
+
+3) Confirm env vars are set at the Site level:
+   - NETLIFY_SITE_ID
+   - NETLIFY_BLOBS_TOKEN
+
+4) Redeploy, then sanity-check:
+   - /.netlify/functions/health-blobs
+     Expect ok:true and a write-read test = true.
+
+IMPORTANT
+- Do NOT hardcode sensitive tokens into source files. Keep them in Netlify
+  environment variables.
+- Any function calling getBlobsStore(...) must now await it:
+    const store = await getBlobsStore('nfl-td')

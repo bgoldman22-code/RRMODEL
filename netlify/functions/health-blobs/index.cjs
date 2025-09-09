@@ -12,16 +12,16 @@ exports.handler = async () => {
   };
 
   try {
-    // Use the shared helper only (no ad-hoc blob logic here).
-    const store = getBlobsStore('nfl-td');
+    // IMPORTANT: helper is async
+    const store = await getBlobsStore('nfl-td');
 
     const key = `diagnostics/selftest-${Date.now()}.json`;
     const payload = { ok: true, ts: new Date().toISOString() };
 
     await store.set(key, JSON.stringify(payload), { contentType: 'application/json' });
     const res = await store.get(key);
-
     info.tests.push({ step: 'write-read', key, ok: Boolean(res) });
+
     return { statusCode: 200, body: JSON.stringify({ ok: true, info }) };
   } catch (e) {
     info.tests.push({ step: 'error', error: String(e) });
