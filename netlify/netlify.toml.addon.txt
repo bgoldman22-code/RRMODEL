@@ -1,0 +1,5 @@
+
+# Append this to your netlify.toml to run rollover daily at 11:30 AM ET (15:30 UTC during DST)
+[[scheduled.functions]]
+name = "nfl-depthcharts-rollover"
+cron = "30 15 * * *"
