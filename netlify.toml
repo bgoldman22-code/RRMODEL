@@ -1,27 +1,14 @@
-# netlify.toml — patched to add daily FantasyPros depth-chart refresh at 11:30 AM ET (15:30 UTC)
-
 [build]
   command = "bash netlify/build-debug.sh"
   publish = "dist"
 
 [functions]
-directory = "netlify/functions"
-node_bundler = "esbuild"
-external_node_modules = ["@netlify/blobs"]
-# If you already have redirects, keep them; this preserves the SPA catch-all.
-included_files = ["netlify/functions/_data/**"]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["@netlify/blobs","csv-parse"]
+  included_files = ["netlify/functions/_data/**"]
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-# ────────────────────────────────────────────────────────────────────────────────
-# Scheduled Functions
-# ────────────────────────────────────────────────────────────────────────────────
-
-# Daily FantasyPros scrape → writes depth/{season}/week{week}/depth-charts.json
-# 15:30 UTC = 11:30 AM Eastern
-[[scheduled.functions]]
-  name = "nfl-depthcharts-import-fantasypros"
-  cron = "30 15 * * *"
