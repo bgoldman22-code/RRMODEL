@@ -1,0 +1,6 @@
+# Merge into your existing netlify.toml
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["@netlify/blobs","csv-parse"]
+  included_files = ["netlify/functions/_data/**"]
