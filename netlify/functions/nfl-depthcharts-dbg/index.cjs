@@ -1,71 +1,45 @@
 // netlify/functions/nfl-depthcharts-dbg/index.cjs
-// Deep diagnostics for Netlify Blobs connectivity and local fallbacks.
 const path = require('path');
-const fs = require('fs');
-const { getStore } = require('@netlify/blobs');
-
-function short(s) {
-  if (!s) return null;
-  return s.slice(0, 4) + "…" + s.slice(-4);
-}
-
-async function tryStore(name, opts, keyBase) {
-  const out = { method: opts ? "getStore(name, {siteID, token})" : "getStore(name)", ok: false };
-  try {
-    const store = opts ? getStore(name, opts) : getStore(name);
-    const key = `diagnostics/${keyBase}-${Date.now()}.json`;
-    const payload = { ping: true, ts: new Date().toISOString(), method: out.method };
-    await store.set(key, JSON.stringify(payload), { contentType: 'application/json' });
-    const got = await store.get(key);
-    out.ok = Boolean(got);
-    out.key = key;
-    if (got) {
-      out.bytes = (await got.blob()).size;
-    }
-  } catch (e) {
-    out.error = String(e);
-  }
-  return out;
-}
+const fs = require('fs/promises');
+const { getBlobsStore } = require('../_blobs.js');
 
 exports.handler = async () => {
-  const siteID = process.env.NETLIFY_SITE_ID;
-  const token  = process.env.NETLIFY_BLOBS_TOKEN;
-
   const info = {
     node: process.version,
     env: {
-      HAS_SITE_ID: Boolean(siteID),
-      HAS_TOKEN: Boolean(token),
-      SITE_ID_PREVIEW: short(siteID),
-      TOKEN_PREVIEW: short(token)
+      HAS_SITE_ID: !!process.env.NETLIFY_SITE_ID,
+      HAS_TOKEN: !!process.env.NETLIFY_BLOBS_TOKEN
     },
     attempts: [],
     local: {}
   };
 
-  // Attempt A: explicit credentials
-  info.attempts.push(await tryStore("nfl-td", siteID && token ? { siteID, token } : null, "explicit"));
+  try {
+    const store = getBlobsStore('nfl-td');
+    const probeKey = 'diagnostics/dbg-probe.json';
+    await store.set(probeKey, JSON.stringify({ ok: true, ts: Date.now() }), { contentType: 'application/json' });
+    const v = await store.get(probeKey);
+    info.attempts.push({ method: 'helper:getStore(name,{siteID,token})', ok: !!v });
+  } catch (e) {
+    info.attempts.push({ method: 'helper:getStore(name,{siteID,token})', ok: false, error: String(e) });
+  }
 
-  // Attempt B: implicit (platform-provided)
-  info.attempts.push(await tryStore("nfl-td", null, "implicit"));
+  const base = path.join(__dirname, '..', 'nfl-depthcharts-get', '_data', 'nfl');
+  const curr = path.join(base, 'current.json');
+  const wk1  = path.join(base, '2025', 'week1', 'depth-charts.json');
 
-  // Local paths that depthcharts-get would use
-  const here = __dirname;
-  const localCurrent = path.join(here, "..", "nfl-depthcharts-get", "_data", "nfl", "current.json");
-  const localWeek1   = path.join(here, "..", "nfl-depthcharts-get", "_data", "nfl", "2025", "week1", "depth-charts.json");
+  const currExists = !!(await fs.readFile(curr, 'utf8').catch(() => null));
+  const wk1Exists  = !!(await fs.readFile(wk1, 'utf8').catch(() => null));
+
   info.local = {
-    here,
-    exists: {
-      current: fs.existsSync(localCurrent),
-      week1: fs.existsSync(localWeek1)
-    },
-    paths: {
-      current: localCurrent,
-      week1: localWeek1
-    }
+    here: __dirname,
+    exists: { current: currExists, week1: wk1Exists },
+    paths: { current: curr, week1: wk1 }
   };
 
-  const ok = info.attempts.some(a => a.ok);
-  return { statusCode: 200, body: JSON.stringify({ ok, info }) };
+  return {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ ok: true, info })
+  };
 };

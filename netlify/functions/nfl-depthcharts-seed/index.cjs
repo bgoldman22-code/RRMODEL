@@ -1,54 +1,60 @@
 // netlify/functions/nfl-depthcharts-seed/index.cjs
 const { getBlobsStore } = require('../_blobs.js');
 
-const TEAM_ALIASES = [
-  "ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE",
-  "DAL","DEN","DET","GB","HOU","IND","JAX","KC",
-  "LAR","LAC","LV","MIA","MIN","NE","NO","NYG",
-  "NYJ","PHI","PIT","SEA","SF","TB","TEN","WAS"
+const EMPTY_32 = [
+  'ARI','ATL','BAL','BUF','CAR','CHI','CIN','CLE','DAL','DEN','DET','GB',
+  'HOU','IND','JAX','KC','LAR','LAC','LV','MIA','MIN','NE','NO','NYG','NYJ',
+  'PHI','PIT','SEA','SF','TB','TEN','WAS'
 ];
 
-function makeEmptyCharts() {
+function scaffoldCharts() {
   const charts = {};
-  for (const t of TEAM_ALIASES) {
-    charts[t] = { RB: [], WR: [], TE: [], QB: [] };
-  }
+  for (const t of EMPTY_32) charts[t] = { RB: [], WR: [], TE: [], QB: [] };
   return charts;
 }
 
 exports.handler = async (event) => {
-  try {
-    const season = Number(new URLSearchParams(event.queryStringParameters || {}).get('season')) || 2025;
-    const week   = Number(new URLSearchParams(event.queryStringParameters || {}).get('week'))   || 1;
+  const season = Number(event.queryStringParameters?.season || 2025);
+  const week   = Number(event.queryStringParameters?.week   || 1);
 
+  try {
     const store = getBlobsStore('nfl-td');
 
-    const payload = {
+    const weekPayload = {
       ok: true,
       season,
       week,
-      generated_at: new Date().toISOString(),
-      charts: makeEmptyCharts(),
+      charts: scaffoldCharts(),
+      meta: { seededAt: new Date().toISOString(), source: 'seed' }
     };
 
-    const weeklyKey  = `depth/${season}/week${week}/depth-charts.json`;
-    const currentKey = `depth/current.json`;
+    const currentPayload = {
+      ok: true,
+      season,
+      week,
+      charts: scaffoldCharts(),
+      meta: { seededAt: new Date().toISOString(), source: 'seed-current' }
+    };
 
-    await store.set(weeklyKey, JSON.stringify(payload), { contentType: 'application/json' });
-    await store.set(currentKey, JSON.stringify(payload), { contentType: 'application/json' });
+    const weekKey = `depth/season/${season}/week${week}.json`;
+    const currKey = `depth/season/${season}/current.json`;
 
-    const probe = await store.get(weeklyKey);
-    const okRead = Boolean(probe);
+    await store.set(weekKey, JSON.stringify(weekPayload), { contentType: 'application/json' });
+    await store.set(currKey, JSON.stringify(currentPayload), { contentType: 'application/json' });
+
+    const probeStr = await store.get(currKey);
+    const okWrite = !!probeStr;
 
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        ok: okRead,
-        wrote: [weeklyKey, currentKey],
-        sampleExists: okRead
-      })
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok: okWrite, season, week, wrote: { weekKey, currKey } })
     };
   } catch (e) {
-    return { statusCode: 200, body: JSON.stringify({ ok:false, error: String(e) }) };
+    return {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok: false, error: String(e) })
+    };
   }
 };
