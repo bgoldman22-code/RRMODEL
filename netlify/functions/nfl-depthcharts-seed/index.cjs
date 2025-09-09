@@ -1,4 +1,4 @@
-const { getStore } = require('@netlify/blobs');
+const { getNFLStore, NFL_STORE_NAME } = require('../_blobs.js');
 
 const TEAMS = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET","GB","HOU","IND","JAX","KC","LAR","LAC","LV","MIA","MIN","NE","NO","NYG","NYJ","PHI","PIT","SEA","SF","TB","TEN","WAS"];
 
@@ -13,13 +13,9 @@ exports.handler = async (event) => {
     const q = event.queryStringParameters || {};
     const season = parseInt(q.season || '2025', 10);
     const week = parseInt(q.week || '1', 10);
-    const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE;
-    if (!storeName) {
-      return { statusCode: 400, headers:{'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:'BLOBS_STORE_NFL (or BLOBS_STORE) not set' }) };
-    }
+    const store = getNFLStore(); // explicit 'nfl-td'
 
     const payload = { season, week, charts: emptyCharts() };
-    const store = getStore(storeName);
 
     const currentKey = 'depth/current.json';
     const weeklyKey = `depth/${season}/week${week}/depth-charts.json`;
@@ -30,7 +26,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: {'content-type':'application/json'},
-      body: JSON.stringify({ ok:true, store:storeName, wrote:[currentKey, weeklyKey] })
+      body: JSON.stringify({ ok:true, store:NFL_STORE_NAME, wrote:[currentKey, weeklyKey] })
     };
   } catch (err) {
     return { statusCode: 500, headers:{'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:String(err && err.stack || err) }) };

@@ -1,18 +1,9 @@
-# patch-step3u-dynamic-depthcharts
+# Patch: Explicit Blobs store per NFL (no env vars)
 
-Creates dynamic, usage-based depth charts from your nfl-data-py history blobs.
+- Uses `getStore('nfl-td')` explicitly in NFL functions.
+- Does not read BLOBS_STORE / BLOBS_STORE_NFL, so MLB store remains untouched.
+- Works in Netlify prod without tokens. (If running locally, you'd need `BLOBS_SITE_ID` and `BLOBS_TOKEN`.)
 
-## Files
-- netlify/functions/nfl-depthcharts-build-dynamic/index.cjs
-
-## Requires blobs (populated by your Mon/Tue GitHub Action):
-- history/{SEASON}/weekly-last3.json
-- history/{SEASON}/pbp-last3.json
-
-## Run
-/.netlify/functions/nfl-depthcharts-build-dynamic?season=2025&week=2&lookback=5
-
-Writes to:
-depth/{SEASON}/week{WEEK}/depth-charts.json
-
-Then your TD model can read that path.
+Endpoints to test after deploy:
+- /.netlify/functions/nfl-depthcharts-seed?season=2025&week=1
+- /.netlify/functions/nfl-depthcharts-get?season=2025&week=1

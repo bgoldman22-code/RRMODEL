@@ -1,5 +1,5 @@
 import { getStore } from '@netlify/blobs';
-
-export function makeStore(name) {
-  return getStore(name);
+export const NFL_STORE_NAME = 'nfl-td';
+export function makeNFLStore() {
+  return getStore(NFL_STORE_NAME);
 }
