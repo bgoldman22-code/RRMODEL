@@ -1,10 +1,21 @@
-const { getStore } = require('@netlify/blobs');
+// netlify/functions/_blobs.js
+const { getStore, createClient } = require('@netlify/blobs');
 
-// Explicit, isolated store for NFL TD data.
-const NFL_STORE_NAME = 'nfl-td';
+/**
+ * Returns a named Netlify Blobs store.
+ * If NETLIFY_SITE_ID and NETLIFY_BLOBS_TOKEN exist, we build an explicit client
+ * (bulletproof in prod) and get the store from that client.
+ * Otherwise, fall back to auto-injected getStore(name) (OK for local dev).
+ */
+function getBlobsStore(name) {
+  const siteID = process.env.NETLIFY_SITE_ID;
+  const token  = process.env.NETLIFY_BLOBS_TOKEN;
 
-function getNFLStore() {
-  return getStore(NFL_STORE_NAME);
+  if (siteID && token) {
+    const client = createClient({ siteID, token });
+    return client.getStore(name);
+  }
+  return getStore(name);
 }
 
-module.exports = { getNFLStore, NFL_STORE_NAME };
+module.exports = { getBlobsStore };
