@@ -3,9 +3,17 @@
   publish = "dist"
 
 [functions]
+  directory = "netlify/functions"
   node_bundler = "esbuild"
-  external_node_modules = ["@netlify/blobs", "csv-parse"]
-  included_files = ["netlify/functions/**/_data/**"]
+  # Ensure blobs SDK is bundled in functions
+  external_node_modules = ["@netlify/blobs","csv-parse"]
+  # Ship local data scaffolds with functions (fallbacks)
+  included_files = ["netlify/functions/_data/**"]
+
+# Optional daily prewarm (kept commented until you’re ready)
+# [[scheduled.functions]]
+#   name = "prewarm-odds"
+#   cron = "0 13 * * *"
 
 [[redirects]]
   from = "/*"
