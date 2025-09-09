@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { createClient } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
 
 function readJSON(fp) {
   try { return JSON.parse(fs.readFileSync(fp, 'utf8')); } catch (_) { return null; }
@@ -8,8 +8,7 @@ function readJSON(fp) {
 
 async function readFromBlobs(storeName, key) {
   try {
-    const client = createClient();
-    const store = client.getStore(storeName);
+    const store = getStore(storeName);
     const res = await store.get(key);
     if (!res) return null;
     const text = await res.text();
