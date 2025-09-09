@@ -1,5 +1,12 @@
+// netlify/functions/_lib/blobs-helper.mjs
+// ESM twin of getBlobsStore()
 import { getStore } from '@netlify/blobs';
-export const NFL_STORE_NAME = 'nfl-td';
-export function makeNFLStore() {
-  return getStore(NFL_STORE_NAME);
+
+export function makeStore(name) {
+  const siteID = process.env.NETLIFY_SITE_ID;
+  const token  = process.env.NETLIFY_BLOBS_TOKEN;
+  if (siteID && token) {
+    return getStore(name, { siteID, token });
+  }
+  return getStore(name);
 }

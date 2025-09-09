@@ -8,13 +8,11 @@ exports.handler = async () => {
       HAS_SITE_ID: Boolean(process.env.NETLIFY_SITE_ID),
       HAS_TOKEN: Boolean(process.env.NETLIFY_BLOBS_TOKEN),
     },
-    tests: [],
+    tests: []
   };
 
   try {
-    // IMPORTANT: helper is async
-    const store = await getBlobsStore('nfl-td');
-
+    const store = getBlobsStore('nfl-td'); // sync helper
     const key = `diagnostics/selftest-${Date.now()}.json`;
     const payload = { ok: true, ts: new Date().toISOString() };
 
