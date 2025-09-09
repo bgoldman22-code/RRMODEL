@@ -1,18 +1,25 @@
 // netlify/functions/_blobs.js
-// Robust helper for Netlify Blobs with explicit credentials pass-through.
-const { getStore } = require('@netlify/blobs');
+const { getStore, createClient } = require('@netlify/blobs');
 
-/**
- * Returns a named Netlify Blobs store.
- * If NETLIFY_SITE_ID and NETLIFY_BLOBS_TOKEN are set (Netlify dashboard),
- * we pass them explicitly. Otherwise we fall back to the implicit env wiring.
- */
 function getBlobsStore(name) {
   const siteID = process.env.NETLIFY_SITE_ID;
-  const token  = process.env.NETLIFY_BLOBS_TOKEN;
-  if (siteID && token) {
-    return getStore(name, { siteID, token });
-  }
+  const token = process.env.NETLIFY_BLOBS_TOKEN;
+
+  try {
+    if (siteID && token && createClient) {
+      const client = createClient({ siteID, token });
+      if (client && client.getStore) return client.getStore(name);
+    }
+  } catch {}
+
+  try {
+    if (siteID && token) return getStore(name, { siteID, token });
+  } catch {}
+
+  try {
+    if (siteID && token) return getStore({ name, siteID, token });
+  } catch {}
+
   return getStore(name);
 }
 

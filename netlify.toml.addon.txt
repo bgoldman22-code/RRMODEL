@@ -1,6 +1,14 @@
-# Merge into your existing netlify.toml
+[build]
+  command = "bash netlify/build-debug.sh"
+  publish = "dist"
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
-  external_node_modules = ["@netlify/blobs","csv-parse"]
+  external_node_modules = ["csv-parse"]
   included_files = ["netlify/functions/_data/**"]
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
