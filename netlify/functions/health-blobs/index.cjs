@@ -1,6 +1,4 @@
-// netlify/functions/health-blobs/index.cjs
-// Simple end-to-end sanity check for Blobs using the central helper.
-const { getBlobsStore } = require('../_blobs.js');
+const { getStore } = require('@netlify/blobs');
 
 exports.handler = async () => {
   const info = {
@@ -9,21 +7,25 @@ exports.handler = async () => {
       HAS_SITE_ID: Boolean(process.env.NETLIFY_SITE_ID),
       HAS_TOKEN: Boolean(process.env.NETLIFY_BLOBS_TOKEN),
     },
-    tests: []
+    attempt: null,
+    error: null
   };
 
   try {
-    const store = getBlobsStore('nfl-td');
-    const key = `diagnostics/selftest-${Date.now()}.json`;
-    const payload = { ok: true, ts: new Date().toISOString() };
+    // Explicit credentials path (bulletproof)
+    const store = getStore('nfl-td', {
+      siteID: process.env.NETLIFY_SITE_ID,
+      token: process.env.NETLIFY_BLOBS_TOKEN
+    });
 
-    await store.set(key, JSON.stringify(payload), { contentType: 'application/json' });
-    const res = await store.get(key);
-    info.tests.push({ step: 'write-read', key, ok: Boolean(res) });
+    const key = `diagnostics/min-${Date.now()}.txt`;
+    await store.set(key, 'ok', { contentType: 'text/plain' });
+    const got = await store.get(key);
+    info.attempt = { wrote: key, readOk: Boolean(got) };
 
     return { statusCode: 200, body: JSON.stringify({ ok: true, info }) };
   } catch (e) {
-    info.tests.push({ step: 'error', error: String(e) });
+    info.error = String(e);
     return { statusCode: 200, body: JSON.stringify({ ok: false, info }) };
   }
 };
