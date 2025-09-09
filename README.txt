@@ -1,19 +1,16 @@
+# Patch: nfl-depthcharts-seed writes full depth charts
 
-# Depth Charts Patch (Auto Rollover)
+- Replaces `netlify/functions/nfl-depthcharts-seed/index.cjs`
+- When invoked, it writes the **full** depth charts JSON you provided to:
+  - depth/season/{season}/week{week}.json
+  - depth/season/{season}/current.json
 
-This patch contains:
-- `netlify/functions/_data/nfl/2025/week1/depth-charts.json`
-- `netlify/functions/_data/nfl/2025/week2/depth-charts.json`
-- `netlify/functions/_data/nfl/2025/depth-charts.json` (master copy)
-- `netlify/functions/_data/nfl/2025/current.json` (descriptor that points to current week path)
-- `netlify/functions/nfl-depthcharts-rollover.cjs` (scheduled function that updates current.json to the highest available week in Blobs)
+## Deploy
+Commit and deploy to Netlify.
 
-## Where to place
-Merge the `netlify/` folder at the repo root (keep existing files).
+## Run
+Seed week 2 and current for 2025:
+https://YOUR_SITE/.netlify/functions/nfl-depthcharts-seed?season=2025&week=2
 
-## Notes
-- Your existing `nfl-depthcharts-get` should read:
-  - Blobs: `depth/season/2025/current.json` (to auto-target latest) OR explicit `weekN.json`
-  - Local fallback: `netlify/functions/_data/nfl/2025/weekN/depth-charts.json`
-- The JSON files contain only the `{ TEAM: {QB:[], RB:[], WR:[], TE:[]} }` mapping (no wrapper).
-
+Then verify:
+https://YOUR_SITE/.netlify/functions/nfl-depthcharts-get?season=2025&week=2
