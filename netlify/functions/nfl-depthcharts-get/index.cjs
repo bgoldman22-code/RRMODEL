@@ -7,7 +7,7 @@ exports.handler = async (event) => {
 
     const store = getStore('nfl-td');
 
-    // blob keys we’ll try in order
+    // try these keys in order
     const keys = [
       `depth/season/${season}/week${week}.json`,                 // new style
       `depth/season/${season}/week${week}/depth-charts.json`,    // legacy
@@ -30,7 +30,7 @@ exports.handler = async (event) => {
       return { statusCode: 404, body: JSON.stringify({ ok: false, error: 'No depth chart found' }) };
     }
 
-    // slice each team to standard roster lengths
+    // normalize lengths
     const sliced = {};
     for (const [team, pos] of Object.entries(data)) {
       sliced[team] = {
