@@ -1,3 +1,5 @@
+// forces a fresh deploy/artifact
+const BUNDLE_VERSION = "2025-09-10-2";
 // netlify/functions/nfl-depthcharts-get/index.cjs
 const path = require('path');
 const fs = require('fs/promises');
