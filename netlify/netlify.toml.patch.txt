@@ -1,0 +1,14 @@
+# netlify/netlify.toml.patch.txt
+# Apply these changes in your netlify.toml:
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  # IMPORTANT: Let esbuild bundle @netlify/blobs to avoid env detection issues.
+  # Remove '@netlify/blobs' from external_node_modules.
+  external_node_modules = ["csv-parse"]
+  included_files = ["netlify/functions/_data/**"]
+
+# (Optional) If you want to keep the old file for reference, search for:
+# external_node_modules = ["@netlify/blobs","csv-parse"]
+# …and change it to just ["csv-parse"] as above.
