@@ -1,27 +1,47 @@
-# NFL Predictions Patch
+# Patch: SPA Fallback + Cache Headers + Stale Predictions Cleanup
 
-This patch adds:
-- `netlify/functions/nfl-odds-get` — Odds proxy/normalizer for The Odds API.
-- `netlify/functions/nfl-predictions-get` — Builds transparent picks + a 3–5 leg parlay.
-- UI: `site/src/pages/NFL_Predictions.jsx` (React) and a static fallback at `site/public/nfl/predictions/index.html` with a **Generate Latest** button.
+## What this does
+- Adds `public/_redirects` so Netlify serves your SPA for all deep links (`/* -> /index.html 200`).
+- Adds `public/_headers` to **never cache** `index.html` (so new bundles load after deploy) and to **long-cache** `/assets/*`.
+- Removes legacy static `public/predictions*.html` files that can shadow the React route when you open `/predictions` directly.
 
-## Env vars
-Add these in Netlify → Site settings → Environment variables:
+## Files included
+```
+public/_redirects
+public/_headers
+scripts/apply_patch.sh
+```
 
-- `ODDS_API_KEY` **(required)** — your The Odds API key.
+## How to apply
 
-You DO NOT need `ODDSAPI_MARKET_NFL` for these functions.
+**Option A — one-liner with the helper script**
+1. Unzip this patch at the **repo root** (you should end up with `public/_redirects`, `public/_headers`, and `scripts/apply_patch.sh`).
+2. Run:
+   ```bash
+   bash scripts/apply_patch.sh
+   ```
+3. Commit & push:
+   ```bash
+   git add public/_redirects public/_headers
+   git commit -m "fix: SPA fallback + cache headers; remove stale predictions html"
+   git push
+   ```
 
-## Deploy
-1. Unzip this at the root of your repo (it contains the `netlify/` and `site/` subfolders).
-2. Commit and deploy.
-3. Test endpoints:
-   - `/.netlify/functions/nfl-odds-get`
-   - `/.netlify/functions/nfl-predictions-get`
-4. UI:
-   - If your React router auto-mounts `site/src/pages`, add a route to `NFL_Predictions`.
-   - Otherwise, you can hit the static page at `/nfl/predictions/`.
+**Option B — manual copy**
+- Copy `public/_redirects` and `public/_headers` into your repo.
+- Delete any stale `public/predictions*.html` manually if you see them.
+- Commit & push.
 
-## Notes
-- The model is rule-based and uses consensus pricing across books. It's designed to be explainable and fast.
-- Upgrade later with injuries/weather by extending `nfl-predictions-get` (left as TODO hooks).
+## Sanity checks after deploy
+1. Open **/predictions** directly in a fresh tab/window (not via the nav). You should see the table with green confidence bars.
+2. In the console, verify the function returns rows:
+   ```js
+   fetch('/.netlify/functions/nfl-predictions-get')
+     .then(r=>r.json())
+     .then(j => console.log('rows:', j.rows?.length, 'updated:', j.updated));
+   ```
+3. Confirm headers:
+   - `index.html` has `Cache-Control: no-cache, no-store`.
+   - `assets/*.js` have long `Cache-Control` with `immutable`.
+
+If anything looks off, hard refresh or clear cache once; after this patch, future deploys will swap bundles reliably without cache issues.
