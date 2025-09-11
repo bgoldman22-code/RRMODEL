@@ -1,69 +1,48 @@
-// netlify/functions/nfl-depthcharts-get/index.cjs
-
-// ✅ Make Netlify include the local JSONs in the function bundle (CJS syntax!)
+// Ensure Netlify bundles your local JSONs with the function (CJS syntax)
 exports.config = {
   includedFiles: ["netlify/functions/nfl-depthcharts-get/_data/**"]
 };
 
-// Bump to force a fresh build artifact when needed
-const BUNDLE_VERSION = "2025-09-10-3";
+// bump when you want to force a new artifact
+const BUNDLE_VERSION = "2025-09-11-1";
 
 const path = require("path");
 const fs = require("fs/promises");
-const { getBlobsStore } = require("../_blobs.js");
 
 const LOCAL_BASE = path.join(__dirname, "_data", "nfl");
 
-/**
- * Normalize either shape:
- *  - { charts: { ARI:{...}, ... } }
- *  - { ARI:{...}, ... } // raw map
- */
+// Accept either { charts: {...} } or raw {...team map...}
 function normalizeToCharts(obj) {
   if (!obj || typeof obj !== "object") return null;
   if (obj.charts && typeof obj.charts === "object") return obj.charts;
-  return obj; // assume raw team map
+  return obj;
 }
 
-/**
- * Load local bundled JSON:
- *  - season/week file first
- *  - else current.json
- * Returns { charts } or null
- */
 async function loadLocal(season, week) {
-  // 1) season/weekN/depth-charts.json
+  // 1) season/week/depth-charts.json
   const weekPath = path.join(LOCAL_BASE, String(season), `week${week}`, "depth-charts.json");
   const buf = await fs.readFile(weekPath, "utf8").catch(() => null);
   if (buf) {
-    const parsed = JSON.parse(buf);
-    const charts = normalizeToCharts(parsed);
-    if (charts) return { charts, source: `local:${weekPath}` };
+    const charts = normalizeToCharts(JSON.parse(buf));
+    if (charts) return { charts, source: `local:${path.relative(process.cwd(), weekPath)}` };
   }
-
   // 2) current.json
   const currPath = path.join(LOCAL_BASE, "current.json");
   const buf2 = await fs.readFile(currPath, "utf8").catch(() => null);
   if (buf2) {
-    const parsed = JSON.parse(buf2);
-    const charts = normalizeToCharts(parsed);
-    if (charts) return { charts, source: `local:${currPath}` };
+    const charts = normalizeToCharts(JSON.parse(buf2));
+    if (charts) return { charts, source: `local:${path.relative(process.cwd(), currPath)}` };
   }
-
   return null;
 }
 
 exports.handler = async (event) => {
-  const season = Number(event.queryStringParameters?.season || 2025);
-  const week   = Number(event.queryStringParameters?.week   || 2);
-  const sourcePref = (event.queryStringParameters?.source || "").toLowerCase(); // e.g. "local" for sanity checks
-
-  const store = getBlobsStore("nfl-td");
-  const currKey = `depth/season/${season}/current.json`;
-  const wkKey   = `depth/season/${season}/week${week}.json`;
-
   try {
-    // 🧪 If explicitly forcing local (sanity/debug), skip blobs entirely
+    const season = Number(event.queryStringParameters?.season || 2025);
+    const week   = Number(event.queryStringParameters?.week   || 2);
+    const sourcePref = String(event.queryStringParameters?.source || "").toLowerCase(); // "local" to bypass blobs
+
+    // 1) If explicitly forcing local, DO NOT touch blobs at all.
     if (sourcePref === "local") {
       const local = await loadLocal(season, week);
       if (local?.charts) {
@@ -73,45 +52,50 @@ exports.handler = async (event) => {
           body: JSON.stringify({ ok: true, season, week, charts: local.charts, source: local.source })
         };
       }
-      // fall through to normal path if local not found
+      // fall through if local missing
     }
 
-    // 1) blobs: current
-    const currStr = await store.get(currKey);
-    if (currStr) {
-      const currObj = JSON.parse(currStr);
-      const charts = normalizeToCharts(currObj);
-      if (charts) {
-        return {
-          statusCode: 200,
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ ok: true, season, week, charts, source: "blobs:current" })
-        };
+    // 2) Try blobs (require lazily so missing config doesn't crash function)
+    let chartsFromBlobs = null;
+    let blobsSource     = null;
+    try {
+      const { getBlobsStore } = require("../_blobs.js"); // <-- lazy require
+      const store  = getBlobsStore("nfl-td");
+      const currKey = `depth/season/${season}/current.json`;
+      const wkKey   = `depth/season/${season}/week${week}.json`;
+
+      const currStr = await store.get(currKey);
+      if (currStr) {
+        const charts = normalizeToCharts(JSON.parse(currStr));
+        if (charts) {
+          chartsFromBlobs = charts;
+          blobsSource = "blobs:current";
+        }
       }
+      if (!chartsFromBlobs) {
+        const wkStr = await store.get(wkKey);
+        if (wkStr) {
+          const charts = normalizeToCharts(JSON.parse(wkStr));
+          if (charts) {
+            chartsFromBlobs = charts;
+            blobsSource = "blobs:week";
+          }
+        }
+      }
+    } catch (e) {
+      // No blobs config or network issue — just fall back to local.
+      console.error("Blobs unavailable, falling back to local:", e?.message || e);
     }
 
-    // 2) blobs: weekN
-    const wkStr = await store.get(wkKey);
-    if (wkStr) {
-      // wkStr may already be the final shape; normalize anyway
-      const wkObj = JSON.parse(wkStr);
-      const charts = normalizeToCharts(wkObj);
-      if (charts) {
-        return {
-          statusCode: 200,
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ ok: true, season, week, charts, source: "blobs:week" })
-        };
-      }
-      // if it's already a stringified {ok,season,week,charts} just return it
+    if (chartsFromBlobs) {
       return {
         statusCode: 200,
         headers: { "content-type": "application/json" },
-        body: wkStr
+        body: JSON.stringify({ ok: true, season, week, charts: chartsFromBlobs, source: blobsSource })
       };
     }
 
-    // 3) local bundled (fallback)
+    // 3) Local bundled fallback
     const local = await loadLocal(season, week);
     if (local?.charts) {
       return {
@@ -121,23 +105,22 @@ exports.handler = async (event) => {
       };
     }
 
-    // nothing found
+    // 4) Nothing found
     return {
       statusCode: 200,
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         ok: false,
         error: "No depth charts found in blobs or local data",
-        season,
-        week,
-        tried: { blobsCurrent: currKey, blobsWeek: wkKey, localBase: LOCAL_BASE }
+        season, week, BUNDLE_VERSION
       })
     };
-  } catch (e) {
+  } catch (err) {
+    // Return the error so you can see it in the browser (helps avoid 502 mystery)
     return {
       statusCode: 200,
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ok: false, error: String(e) })
+      body: JSON.stringify({ ok: false, error: String(err), BUNDLE_VERSION })
     };
   }
 };
