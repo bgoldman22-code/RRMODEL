@@ -1,3 +1,7 @@
+// Ensure Netlify includes our depth chart JSONs
+export const config = {
+  includedFiles: ["netlify/functions/nfl-depthcharts-get/_data/**"]
+};
 // forces a fresh deploy/artifact
 const BUNDLE_VERSION = "2025-09-10-2";
 // netlify/functions/nfl-depthcharts-get/index.cjs
