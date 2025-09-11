@@ -1,47 +1,56 @@
-// src/App.jsx
 import React from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import MLB_HR from "./MLB_HR";
-import MLB_HITS2 from "./MLB_HITS2";
-import NFL_TD from "./NFL_TD";
-import NegCorr from "./NegCorr";
-import HRR from "./HRR";
-import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
 
-export default function App() {
+// Existing pages
+import MLBHR from "./pages/MLBHR";
+import MLBHRR from "./pages/MLBHRR";
+import MLBTwoHits from "./pages/MLBTwoHits";
+import NFLTD from "./pages/NFLTD";
+
+// New page
+import Predictions from "./pages/Predictions";
+
+function Nav() {
+  const link = "px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100";
   return (
-    <BrowserRouter>
-      <div className="w-full border-b bg-white">
-        <div className="container mx-auto px-4 py-3 flex flex-wrap gap-4">
-          <Link to="/">Home</Link>
-          <Link to="/mlb-hr">MLB HR</Link>
-          <Link to="/mlb-hits2">MLB 2+ Hits</Link>
-          <Link to="/hrr">HRR</Link>
-          <Link to="/nfl-td">NFL TD</Link>
-          <Link to="/nfl-negcorr">NFL NegCorr</Link>
+    <nav className="border-b">
+      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 h-12">
+        <div className="flex items-center gap-2">
+          <Link to="/" className={link}>Home</Link>
+          <Link to="/mlb-hr" className={link}>MLB HR</Link>
+          <Link to="/mlb-2hits" className={link}>MLB 2+ Hits</Link>
+          <Link to="/hrr" className={link}>HRR</Link>
+          <Link to="/nfl-td" className={link}>NFL TD</Link>
+          <Link to="/predictions" className={link}>Predictions</Link>
         </div>
       </div>
-      <div className="container mx-auto px-4 py-6">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/mlb-hr" element={<MLB_HR />} />
-          <Route path="/mlb-hits2" element={<MLB_HITS2 />} />
-          <Route path="/hrr" element={<HRR />} />
-          <Route path="/nfl-td" element={<NFL_TD />} />
-          <Route path="/nfl-negcorr" element={<NegCorr />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    </nav>
   );
 }
 
 function Home() {
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-2">Round Robin Sports Props</h1>
-      <div className="text-gray-600">Pick a page above to generate model-based picks and round-robin suggestions.</div>
-    
-        <HRDiagnosticsFooter />
-</div>
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-2">Home</h1>
+      <p className="text-gray-600">Choose a model from the navigation bar.</p>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <Nav />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/mlb-hr" element={<MLBHR />} />
+        <Route path="/mlb-2hits" element={<MLBTwoHits />} />
+        <Route path="/hrr" element={<MLBHRR />} />
+        <Route path="/nfl-td" element={<NFLTD />} />
+        <Route path="/predictions" element={<Predictions />} />
+        {/* Back-compat redirects */}
+        <Route path="/NFL_NegCorr" element={<Navigate to="/predictions" replace />} />
+      </Routes>
+    </Router>
   );
 }
