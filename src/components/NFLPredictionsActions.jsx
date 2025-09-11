@@ -1,142 +1,102 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-/**
- * Lightweight "green buttons" control surface for NFL Predictions page.
- *
- * - Prompts once for TRAIN_SECRET (stored in localStorage as nfl.trainSecret).
- * - POSTs to /.netlify/functions/nfl-predictions-train and nfl-predictions-score
- *   with header `x-train-secret` to authorize.
- * - Shows last updated timestamps + small diagnostics.
- * - Non-invasive: drop this anywhere in your NFL predictions page.
- */
-export default function NFLPredictionsActions({ className = "" }) {
-  const [secret, setSecret] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState("");
-  const [error, setError] = useState("");
-  const [lastScoredAt, setLastScoredAt] = useState(null);
-  const [lastTrainedAt, setLastTrainedAt] = useState(null);
-  const [sampleSize, setSampleSize] = useState(null);
+const STORAGE_KEY = "rr.train.secret";
 
-  // Load any cached secret
-  useEffect(() => {
-    const s = localStorage.getItem("nfl.trainSecret") || "";
-    if (s) setSecret(s);
-  }, []);
-
-  // Pull current diagnostics from GET endpoint
-  async function refreshDiagnostics() {
-    try {
-      const r = await fetch("/.netlify/functions/nfl-predictions-get", { cache: "no-store" });
-      const j = await r.json();
-      if (j?.ok) {
-        // updated = last score time from scorer
-        setLastScoredAt(j.updated || null);
-        // Optional trainer metadata if provided
-        if (j.trainer?.last_trained_at) setLastTrainedAt(j.trainer.last_trained_at);
-        if (j.trainer?.sampleSize) setSampleSize(j.trainer.sampleSize);
-      }
-    } catch (e) {
-      // ignore
-    }
+function fmtDate(v) {
+  if (!v) return "—";
+  try {
+    const d = new Date(v);
+    return d.toLocaleString();
+  } catch {
+    return String(v);
   }
+}
+
+export default function NFLPredictionsActions() {
+  const [secret, setSecret] = useState(() => localStorage.getItem(STORAGE_KEY) || "");
+  const [meta, setMeta]   = useState({ trained_at: null, updated: null, sampleSize: null });
+  const [busy, setBusy]   = useState({ learn: false, score: false });
 
   useEffect(() => {
-    refreshDiagnostics();
+    // hydrate diagnostics from GET endpoint on mount
+    (async () => {
+      try {
+        const r = await fetch("/.netlify/functions/nfl-predictions-get");
+        const j = await r.json();
+        const sample = Array.isArray(j?.rows) ? j.rows.length : (j?.count ?? null);
+        setMeta(m => ({ ...m, updated: j?.updated || m.updated, sampleSize: sample }));
+      } catch {}
+    })();
   }, []);
 
-  function promptForSecret() {
-    const s = window.prompt("Enter TRAIN_SECRET to authorize:", secret || "");
-    if (!s) return null;
-    localStorage.setItem("nfl.trainSecret", s);
-    setSecret(s);
+  const header = useMemo(() => ({
+    "content-type": "application/json",
+    ...(secret ? { "x-train-secret": secret } : {}),
+  }), [secret]);
+
+  async function ensureSecret() {
+    let s = secret;
+    if (!s) {
+      s = prompt("Enter TRAIN_SECRET to run this action:");
+      if (!s) return null;
+      localStorage.setItem(STORAGE_KEY, s);
+      setSecret(s);
+    }
     return s;
   }
 
-  async function postWithSecret(fnPath) {
-    setError("");
-    setMsg("");
-    const s = secret || promptForSecret();
+  async function run(path, which) {
+    const s = await ensureSecret();
     if (!s) return;
-    setBusy(true);
+    setBusy(b => ({ ...b, [which]: true }));
     try {
-      const res = await fetch(`/.netlify/functions/${fnPath}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-train-secret": s
-        },
-        body: JSON.stringify({ trigger: "manual" })
-      });
-      const out = await res.json().catch(() => ({}));
-      if (!res.ok || out?.ok === false) {
-        throw new Error(out?.error || `Request failed: ${res.status}`);
-      }
-      setMsg(out?.message || `OK: ${fnPath} completed`);
-      // If endpoints return updated timestamps, surface them
-      if (out.updated) setLastScoredAt(out.updated);
-      if (out.trained_at) setLastTrainedAt(out.trained_at);
-      if (typeof out.sampleSize === "number") setSampleSize(out.sampleSize);
+      const res = await fetch(path, { method: "POST", headers: header });
+      const text = await res.text();
+      let j;
+      try { j = JSON.parse(text); } catch { j = { ok: false, error: "Non-JSON response", raw: text }; }
+      setMeta(m => ({
+        trained_at: j?.trained_at ?? m.trained_at,
+        updated: j?.updated ?? m.updated,
+        sampleSize: typeof j?.sampleSize === "number" ? j.sampleSize : m.sampleSize,
+      }));
+      alert(j?.ok ? "✅ Success" : `⚠️ Check logs — ${j?.error || "ok=false"}`);
+      if (!j?.ok) console.error("Action error payload:", j);
     } catch (e) {
-      setError(String(e?.message || e));
+      console.error(e);
+      alert("Action failed — see console for details.");
     } finally {
-      setBusy(false);
-      refreshDiagnostics();
+      setBusy(b => ({ ...b, [which]: false }));
     }
   }
 
-  const nice = (iso) => {
-    if (!iso) return "—";
-    try {
-      const d = new Date(iso);
-      return d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
-    } catch {
-      return iso;
-    }
-  };
-
   return (
-    <div className={`mt-4 rounded-2xl border p-4 shadow-sm bg-white ${className}`}>
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          className="px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white font-semibold"
-          disabled={busy}
-          onClick={() => postWithSecret("nfl-predictions-train")}
-          title="Ingest latest data + retrain feature weights with recency bias"
-        >
-          {busy ? "Running…" : "Run Learn Now"}
-        </button>
-        <button
-          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-300 text-white font-semibold"
-          disabled={busy}
-          onClick={() => postWithSecret("nfl-predictions-score")}
-          title="Recompute weekly game picks + parlays from current model + odds"
-        >
-          {busy ? "Scoring…" : "Rescore Now"}
-        </button>
+    <div className="w-full">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            className="px-3 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 disabled:opacity-60"
+            disabled={busy.learn}
+            onClick={() => run("/.netlify/functions/nfl-predictions-train", "learn")}
+          >
+            {busy.learn ? "Learning…" : "Run Learn Now"}
+          </button>
+          <button
+            className="px-3 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 disabled:opacity-60"
+            disabled={busy.score}
+            onClick={() => run("/.netlify/functions/nfl-predictions-score", "score")}
+          >
+            {busy.score ? "Rescoring…" : "Rescore Now"}
+          </button>
+        </div>
 
-        <button
-          className="px-3 py-2 rounded-xl border text-sm hover:bg-gray-50"
-          disabled={busy}
-          onClick={refreshDiagnostics}
-          title="Refresh diagnostics"
-        >
-          Refresh
-        </button>
-
-        <div className="ml-auto text-sm text-gray-600 flex flex-wrap gap-x-6 gap-y-1">
-          <span><span className="font-semibold">Last Trained:</span> {nice(lastTrainedAt)}</span>
-          <span><span className="font-semibold">Last Scored:</span> {nice(lastScoredAt)}</span>
-          <span><span className="font-semibold">Sample Size:</span> {sampleSize ?? "—"}</span>
+        <div className="text-sm grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div><span className="text-gray-500">Last Trained:</span> <span className="font-medium">{fmtDate(meta.trained_at)}</span></div>
+          <div><span className="text-gray-500">Last Scored:</span> <span className="font-medium">{fmtDate(meta.updated)}</span></div>
+          <div><span className="text-gray-500">Sample Size:</span> <span className="font-medium">{meta.sampleSize ?? "—"}</span></div>
         </div>
       </div>
 
-      {(msg || error) && (
-        <div className="mt-3 text-sm">
-          {msg && <div className="text-green-700">{msg}</div>}
-          {error && <div className="text-red-600">{error}</div>}
-        </div>
-      )}
+      <hr className="my-4 border-gray-200" />
     </div>
   );
 }
