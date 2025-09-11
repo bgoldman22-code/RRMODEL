@@ -13,3 +13,13 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[functions."nfl-predictions-train"]
+  included_files = ["netlify/functions/nfl-predictions-train/**"]
+  schedule = "0 10 * * 2" # every Tuesday 10am ET
+
+[functions."nfl-predictions-score"]
+  included_files = ["netlify/functions/nfl-predictions-score/**"]
+
+[build.environment]
+  TRAIN_SECRET = "bgroundrobin_train_secret_25c7e8b0c9" # random strong token
