@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NFL Predictions</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold">NFL Predictions & Odds</h1>
+      <button id="btn" class="px-4 py-2 rounded bg-black text-white">Generate Latest</button>
+    </div>
+    <div id="err" class="hidden p-3 bg-red-100 text-red-800 rounded mb-4"></div>
+    <p id="updated" class="text-sm text-gray-600 mb-2"></p>
+    <div class="overflow-x-auto border rounded">
+      <table class="min-w-full text-sm" id="tbl">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="p-2 text-left">Kickoff</th>
+            <th class="p-2 text-left">Matchup</th>
+            <th class="p-2 text-right">Home ML</th>
+            <th class="p-2 text-right">Away ML</th>
+            <th class="p-2 text-right">Home Imp.</th>
+            <th class="p-2 text-right">Away Imp.</th>
+            <th class="p-2 text-right">Spread</th>
+            <th class="p-2 text-right">Total</th>
+            <th class="p-2 text-left">Our Pick</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div id="parlay" class="mt-6 hidden">
+      <h2 class="text-xl font-semibold mb-2">Suggested Parlay (3–5 legs)</h2>
+      <ul id="legs" class="space-y-2"></ul>
+    </div>
+  </div>
+<script>
+function pct(x){return x==null?"—":(x*100).toFixed(1)+"%";}
+function odd(x){return x==null?"—":(x>0?("+"+x):x);}
+function when(iso){try{return new Date(iso).toLocaleString();}catch{return iso;}}
+async function load(){
+  const btn=document.getElementById('btn'); btn.disabled=true; btn.textContent="Generating…";
+  const err=document.getElementById('err'); err.classList.add('hidden'); err.textContent="";
+  try{
+    const res = await fetch("/.netlify/functions/nfl-predictions-get");
+    const json = await res.json();
+    if(!json.ok) throw new Error(json.error||"Unknown error");
+    document.getElementById('updated').textContent = "Updated: "+when(json.updated);
+    const tbody = document.querySelector('#tbl tbody');
+    tbody.innerHTML = "";
+    (json.rows||[]).forEach(r=>{
+      const tr = document.createElement('tr'); tr.className="border-t";
+      tr.innerHTML = `
+        <td class="p-2">${when(r.kickoff)}</td>
+        <td class="p-2">${r.matchup}</td>
+        <td class="p-2 text-right">${odd(r.ml_home_best)}</td>
+        <td class="p-2 text-right">${odd(r.ml_away_best)}</td>
+        <td class="p-2 text-right">${pct(r.ml_home_imp)}</td>
+        <td class="p-2 text-right">${pct(r.ml_away_imp)}</td>
+        <td class="p-2 text-right">${r.spread_team ? r.spread_team+" "+(r.spread_line>0?"+":"")+r.spread_line : "—"}</td>
+        <td class="p-2 text-right">${r.total_side ? r.total_side+" "+r.total_line : "—"}</td>
+        <td class="p-2">${r.pick ? (r.pick.type==="moneyline" ? r.pick.team+" ML ("+pct(r.pick.confidence)+")" : (r.pick.type==="spread" ? r.pick.team+" "+(r.pick.line>0?"+":"")+r.pick.line+" ("+pct(r.pick.confidence)+")" : r.pick.side+" "+r.pick.line+" ("+pct(r.pick.confidence)+")")) : "—"}</td>`;
+      tbody.appendChild(tr);
+    });
+    const legs = document.getElementById('legs'); legs.innerHTML="";
+    (json.parlay?.legs||[]).forEach(l=>{
+      const li=document.createElement('li'); li.className="p-3 rounded border";
+      li.innerHTML = `<div class="font-medium">${l.leg}</div><div class="text-xs text-gray-600">${l.matchup}</div><div class="text-xs text-gray-600">Confidence: ${pct(l.confidence)}</div>`;
+      legs.appendChild(li);
+    });
+    document.getElementById('parlay').classList.toggle('hidden', !(json.parlay?.legs?.length));
+  }catch(e){
+    err.textContent=String(e); err.classList.remove('hidden');
+  }finally{
+    btn.disabled=false; btn.textContent="Generate Latest";
+  }
+}
+document.getElementById('btn').addEventListener('click', load);
+load();
+</script>
+</body>
+</html>
