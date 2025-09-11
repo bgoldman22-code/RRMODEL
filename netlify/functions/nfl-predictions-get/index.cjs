@@ -1,83 +1,122 @@
 // netlify/functions/nfl-predictions-get/index.cjs
-// Simple rule-based picks + parlay suggestions sourced from nfl-odds-get.
-// This is intentionally transparent and reproducible (no hidden ML).
-// Env: none (reads from sibling function).
+// Augmented to blend a learned model (Elo) with market probabilities.
+// If the model blob is missing, falls back to your existing market-only logic.
 
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+exports.config = { path: "/.netlify/functions/nfl-predictions-get" };
 
-function pctToStr(p) {
-  if (p == null) return null;
-  return (p*100).toFixed(1) + "%";
+const { getBlobsStore } = require("../_blobs.js");
+const { eloWinProb } = require("../lib/elo.js");
+const https = require("https");
+
+const STORE = process.env.BLOBS_STORE_NFL || "nfl-td";
+const MODEL_BLEND_ALPHA = 0.6; // 60% model, 40% market
+
+function httpJson(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      let data = "";
+      res.on("data", (d) => (data += d));
+      res.on("end", () => {
+        try { resolve(JSON.parse(data)); } catch (e) { reject(e); }
+      });
+      res.on("error", reject);
+    }).on("error", reject);
+  });
 }
 
-function choosePick(g) {
-  const c = g.consensus || {};
-  const picks = [];
-  if (c.h2h?.home_implied_avg != null && c.h2h?.away_implied_avg != null) {
-    const fav = c.h2h.home_implied_avg > c.h2h.away_implied_avg ? g.home_team : g.away_team;
-    const favPct = Math.max(c.h2h.home_implied_avg, c.h2h.away_implied_avg);
-    picks.push({ type: "moneyline", team: fav, confidence: favPct });
-  }
-  if (c.spreads) {
-    const conf = 0.55 - 0.02 * Math.min(7, Math.abs(c.spreads.line || 0)); // smaller spread -> slightly higher confidence
-    picks.push({ type: "spread", team: c.spreads.team, line: c.spreads.line, confidence: Math.max(0.5, conf) });
-  }
-  if (c.totals) {
-    const conf = 0.54;
-    picks.push({ type: "total", side: c.totals.side, line: c.totals.line, confidence: conf });
-  }
-  // choose highest confidence
-  picks.sort((a,b)=> (b.confidence||0) - (a.confidence||0));
-  return picks[0] || null;
+function implied(american) {
+  if (american == null) return null;
+  const a = Number(american);
+  if (Number.isNaN(a)) return null;
+  if (a < 0) return (-a) / ((-a) + 100);
+  return 100 / (a + 100);
 }
 
-function toRow(g) {
-  const pick = choosePick(g);
-  return {
-    id: g.id,
-    kickoff: g.commence_time,
-    matchup: `${g.away_team} @ ${g.home_team}`,
-    ml_home_best: g.consensus?.h2h?.home_best?.price ?? null,
-    ml_away_best: g.consensus?.h2h?.away_best?.price ?? null,
-    ml_home_imp: g.consensus?.h2h?.home_implied_avg ?? null,
-    ml_away_imp: g.consensus?.h2h?.away_implied_avg ?? null,
-    spread_team: g.consensus?.spreads?.team ?? null,
-    spread_line: g.consensus?.spreads?.line ?? null,
-    total_side: g.consensus?.totals?.side ?? null,
-    total_line: g.consensus?.totals?.line ?? null,
-    pick
-  };
-}
-
-function buildParlay(rows) {
-  const cand = rows.filter(r => r.pick && r.pick.confidence >= 0.55);
-  cand.sort((a,b)=> (b.pick.confidence||0) - (a.pick.confidence||0));
-  const legs = cand.slice(0, 5); // up to 5
-  return {
-    legs: legs.map(r => ({
-      gameId: r.id,
-      matchup: r.matchup,
-      leg: r.pick.type === "moneyline"
-        ? `${r.pick.team} ML`
-        : r.pick.type === "spread"
-          ? `${r.pick.team} ${r.pick.line>0?'+':''}${r.pick.line}`
-          : `${r.pick.side} ${r.pick.line}`,
-      confidence: r.pick.confidence
-    }))
-  };
-}
-
-exports.handler = async () => {
+exports.handler = async (event) => {
   try {
-    const resp = await fetch(`${process.env.URL || ""}/.netlify/functions/nfl-odds-get`);
-    const data = await resp.json();
-    if (!data?.ok) {
-      return { statusCode: 200, headers: {'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:"odds fetch failed", data }) };
-    }
-    const rows = data.games.map(toRow);
-    const parlay = buildParlay(rows);
-    return { statusCode: 200, headers: {'content-type':'application/json', 'cache-control':'no-store'}, body: JSON.stringify({ ok:true, updated: new Date().toISOString(), rows, parlay }) };
-  } catch (err) {
-    return { statusCode: 200, headers: {'content-type':'application/json'}, body: JSON.stringify({ ok:false, error:String(err) }) };
+    const season = Number(event.queryStringParameters?.season || new Date().getFullYear());
+    const week = event.queryStringParameters?.week;
+
+    // 1) Load model (may be null)
+    const store = getBlobsStore(STORE);
+    let model = null;
+    try {
+      const raw = await store.get(`models/nfl/${season}/elo.json`);
+      if (raw) model = JSON.parse(raw);
+    } catch {}
+
+    // 2) Pull odds+consensus (existing helper endpoint already built in your site)
+    //    We also pull schedule to get home/away for mapping.
+    const oddsUrl = `https://${event.headers.host}/.netlify/functions/nfl-odds-get`;
+    const schedUrl = `https://${event.headers.host}/.netlify/functions/nfl-schedule-get${week ? `?week=${week}&season=${season}` : ""}`;
+
+    const [odds, sched] = await Promise.all([httpJson(oddsUrl), httpJson(schedUrl)]);
+
+    const rows = (odds.games || []).map(g => {
+      const id = g.id;
+      const home = g.home_team;
+      const away = g.away_team;
+
+      // market implied
+      const bestHome = g.consensus?.h2h?.home_best?.price ?? null;
+      const bestAway = g.consensus?.h2h?.away_best?.price ?? null;
+      const mlHomeImp = implied(bestHome);
+      const mlAwayImp = implied(bestAway);
+
+      // model win prob
+      let modelHome = null, modelAway = null, blendHome = mlHomeImp, blendAway = mlAwayImp, modelSource = "market-only";
+      if (model?.elo?.ratings && model?.elo?.hfa != null) {
+        const Rh = model.elo.ratings[home] ?? 1500;
+        const Ra = model.elo.ratings[away] ?? 1500;
+        modelHome = eloWinProb(Rh, Ra, model.elo.hfa);
+        modelAway = 1 - modelHome;
+        // blend
+        if (mlHomeImp != null) {
+          blendHome = MODEL_BLEND_ALPHA * modelHome + (1 - MODEL_BLEND_ALPHA) * mlHomeImp;
+          blendAway = 1 - blendHome;
+          modelSource = "blend(model+market)";
+        } else {
+          blendHome = modelHome; blendAway = modelAway;
+          modelSource = "model-only";
+        }
+      }
+
+      const spreadTeam = g.consensus?.spreads?.team ?? null;
+      const spreadLine = g.consensus?.spreads?.line ?? null;
+      const totalSide = g.consensus?.totals?.side ?? null;
+      const totalLine = g.consensus?.totals?.line ?? null;
+
+      const pickType = "moneyline";
+      const pickTeam = (blendHome ?? mlHomeImp ?? 0.5) >= (blendAway ?? mlAwayImp ?? 0.5) ? home : away;
+      const confidence = (pickTeam === home ? (blendHome ?? mlHomeImp ?? 0.5) : (blendAway ?? mlAwayImp ?? 0.5));
+
+      return {
+        id,
+        kickoff: g.commence_time,
+        matchup: `${away} @ ${home}`,
+        ml_home_best: bestHome,
+        ml_away_best: bestAway,
+        ml_home_imp: mlHomeImp,
+        ml_away_imp: mlAwayImp,
+        model_home: modelHome,
+        model_away: modelAway,
+        blend_home: blendHome,
+        blend_away: blendAway,
+        spread_team: spreadTeam,
+        spread_line: spreadLine,
+        total_side: totalSide,
+        total_line: totalLine,
+        pick: { type: pickType, team: pickTeam, confidence },
+        source: model ? modelSource : "market-only",
+      };
+    });
+
+    return {
+      statusCode: 200,
+      headers: { "content-type": "application/json", "cache-control": "no-store" },
+      body: JSON.stringify({ ok: true, season, updated: new Date().toISOString(), rows }),
+    };
+  } catch (e) {
+    return { statusCode: 200, headers: { "content-type": "application/json" }, body: JSON.stringify({ ok: false, error: String(e) }) };
   }
 };
