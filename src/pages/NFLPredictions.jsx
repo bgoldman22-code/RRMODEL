@@ -1,216 +1,148 @@
+// src/pages/NFLPredictions.jsx
 import React, { useEffect, useMemo, useState } from "react";
 
-/**
- * NFL Predictions
- * - Reads aggregated weekly predictions from your Netlify function:
- *     /.netlify/functions/nfl-predictions-get
- * - Expects the payload shape you showed:
- *   { ok: true, updated: ISO, rows: [...], parlay: { legs: [...] } }
- *
- * UI goals:
- *  - Simple, confidence-inspiring table
- *  - Sort by kickoff (default), Moneyline edge, or confidence
- *  - 3–5 leg suggested parlay (from the API) in a tidy card
- */
+const fmtPct = (x) => x == null ? "—" : (x*100).toFixed(1) + "%";
+const localTime = (iso) => new Date(iso).toLocaleString();
+
 export default function NFLPredictions() {
-  const [data, setData] = useState({ ok: false, updated: null, rows: [], parlay: null });
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState(null);
-  const [sortKey, setSortKey] = useState("kickoff"); // kickoff | confidence | edge
-  const [query, setQuery] = useState("");
+  const [rows, setRows] = useState([]);
+  const [updated, setUpdated] = useState(null);
+  const [meta, setMeta] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const secret = ""; // you can leave blank; page buttons will prompt
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        setLoading(true);
-        const res = await fetch("/.netlify/functions/nfl-predictions-get");
-        const json = await res.json();
-        if (!cancelled) setData(json);
-      } catch (e) {
-        if (!cancelled) setErr(String(e));
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, []);
+  async function load() {
+    const r = await fetch("/.netlify/functions/nfl-predictions-get").then(r=>r.json());
+    setRows(r?.rows || []);
+    setUpdated(r?.updated || null);
+    const m = await fetch("/.netlify/functions/nfl-predictions-meta").then(r=>r.json()).catch(()=>null);
+    setMeta(m?.meta || null);
+  }
 
-  const rows = useMemo(() => {
-    const list = Array.isArray(data?.rows) ? data.rows : [];
-    const filtered = list.filter(r => {
-      if (!query) return true;
-      const q = query.toLowerCase();
-      return String(r.matchup || "").toLowerCase().includes(q);
-    });
-    const withEdge = filtered.map(r => {
-      // implied favorite based on best ML
-      const homeEdge = (r.ml_home_imp || 0) - (r.ml_away_imp || 0);
-      const edge = Math.abs(homeEdge);
-      return { ...r, _edge: edge };
-    });
-    const by = {
-      kickoff: (a,b) => (new Date(a.kickoff) - new Date(b.kickoff)),
-      confidence: (a,b) => (b?.pick?.confidence ?? 0) - (a?.pick?.confidence ?? 0),
-      edge: (a,b) => (b?._edge ?? 0) - (a?._edge ?? 0),
-    }[sortKey] || ((a,b)=>0);
-    return withEdge.sort(by);
-  }, [data, sortKey, query]);
+  useEffect(() => { load(); }, []);
+
+  async function postAction(fn) {
+    const key = secret || window.prompt("Enter TRAIN_SECRET to run:") || "";
+    if (!key) return;
+    setBusy(true);
+    try {
+      const u = `/.netlify/functions/${fn}?key=${encodeURIComponent(key)}`;
+      const res = await fetch(u).then(r=>r.json());
+      if (!res?.ok) throw new Error(res?.error || "failed");
+      await load();
+      alert(`${fn} ok`);
+    } catch (e) {
+      alert(`Error: ${String(e)}`);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold">NFL Predictions</h1>
-        <p className="text-sm text-gray-500">
-          Updated {data?.updated ? new Date(data.updated).toLocaleString() : "—"}
-        </p>
-      </header>
+    <div className="max-w-7xl mx-auto p-4 space-y-4">
+      <h1 className="text-2xl font-bold">NFL Predictions</h1>
+      <p className="text-sm opacity-70">
+        Updated: {updated ? localTime(updated) : "—"}
+      </p>
 
-      <Controls
-        sortKey={sortKey}
-        setSortKey={setSortKey}
-        query={query}
-        setQuery={setQuery}
-        loading={loading}
-      />
-
-      {err && <div className="p-3 rounded bg-red-100 text-red-700 text-sm mb-4">Error: {err}</div>}
-      {!err && loading && <div className="p-3 rounded bg-gray-100 text-gray-600 text-sm mb-4">Loading predictions…</div>}
-
-      {!loading && rows.length === 0 && (
-        <div className="p-3 rounded bg-amber-100 text-amber-800 text-sm mb-4">No predictions available.</div>
-      )}
-
-      {rows.length > 0 && (
-        <div className="overflow-x-auto border rounded-lg">
-          <table className="min-w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr className="text-left">
-                <Th>Kickoff (local)</Th>
-                <Th>Matchup</Th>
-                <Th>Best ML</Th>
-                <Th>Spread</Th>
-                <Th>Total</Th>
-                <Th>Pick</Th>
-                <Th>Confidence</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.id} className="border-t hover:bg-gray-50">
-                  <Td title={r.kickoff}>{new Date(r.kickoff).toLocaleString()}</Td>
-                  <Td className="font-medium">{r.matchup}</Td>
-                  <Td>
-                    <div className="flex gap-3">
-                      <span title="Away implied">
-                        Away: <b>{fmtImp(r.ml_away_imp)}</b> <span className="text-gray-500">({fmtPrice(r.ml_away_best)})</span>
-                      </span>
-                      <span title="Home implied">
-                        Home: <b>{fmtImp(r.ml_home_imp)}</b> <span className="text-gray-500">({fmtPrice(r.ml_home_best)})</span>
-                      </span>
-                    </div>
-                  </Td>
-                  <Td>
-                    {r.spread_team ? (
-                      <span>{r.spread_team} {r.spread_line > 0 ? `+${r.spread_line}` : r.spread_line}</span>
-                    ) : "—"}
-                  </Td>
-                  <Td>
-                    {r.total_side ? (<span>{r.total_side} {r.total_line}</span>) : "—"}
-                  </Td>
-                  <Td>
-                    {r.pick?.type === "moneyline" && (
-                      <span>ML — <b>{r.pick.team}</b></span>
-                    )}
-                    {r.pick?.type === "total" && (
-                      <span>Total — <b>{r.pick.side} {r.pick.line}</b></span>
-                    )}
-                    {!r.pick && "—"}
-                  </Td>
-                  <Td>
-                    <ConfidenceBar value={r.pick?.confidence ?? 0} />
-                  </Td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full border border-gray-200 text-sm">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="p-2 text-left">Kickoff (Local)</th>
+              <th className="p-2 text-left">Matchup</th>
+              <th className="p-2 text-left">Moneyline, Spread, Total Lines</th>
+              <th className="p-2 text-left">Moneyline Pick</th>
+              <th className="p-2 text-left">Spread Pick</th>
+              <th className="p-2 text-left">O/U Pick</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((g) => {
+              const ml = `Home ${g.ml_home_best ?? "—"} / Away ${g.ml_away_best ?? "—"}`;
+              const sp = `${g.spread_team ?? "—"} ${g.spread_line ?? "—"}`;
+              const tot = `${g.total_side ?? "—"} ${g.total_line ?? "—"}`;
+              const pickML = g.pick?.type==="moneyline" ? `${g.pick.team} (${fmtPct(g.pick.confidence)})` : "—";
+              const pickSP = g.pick?.type==="spread"    ? `${g.pick.team} ${g.pick.line ?? ""} (${fmtPct(g.pick.confidence)})` : "—";
+              const pickOU = g.pick?.type==="total"     ? `${g.pick.side} ${g.pick.line} (${fmtPct(g.pick.confidence)})` : "—";
+              return (
+                <tr key={g.id} className="border-t">
+                  <td className="p-2 whitespace-nowrap">{localTime(g.kickoff)}</td>
+                  <td className="p-2">{g.matchup}</td>
+                  <td className="p-2">
+                    <div>ML: {ml}</div>
+                    <div>Spread: {sp}</div>
+                    <div>Total: {tot}</div>
+                  </td>
+                  <td className="p-2">{pickML}</td>
+                  <td className="p-2">{pickSP}</td>
+                  <td className="p-2">{pickOU}</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {data?.parlay?.legs?.length > 0 && (
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-2">Suggested 5-Leg Parlay</h2>
-          <div className="border rounded-lg p-4 space-y-2">
-            {data.parlay.legs.map((leg) => (
-              <div key={leg.gameId} className="flex items-center justify-between">
-                <div className="text-sm">{leg.matchup}</div>
-                <div className="text-sm font-medium">{leg.leg}</div>
-                <div className="w-40"><ConfidenceBar value={leg.confidence ?? 0} /></div>
-              </div>
-            ))}
-            <p className="text-xs text-gray-500 pt-1">
-              Parlays are illustrative, built from highest-confidence moneyline edges.
-            </p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Controls({ sortKey, setSortKey, query, setQuery, loading }) {
-  return (
-    <div className="flex flex-col md:flex-row md:items-center gap-3 mb-4">
-      <div className="inline-flex items-center gap-2">
-        <label className="text-sm text-gray-600">Sort by</label>
-        <select
-          className="border rounded px-2 py-1 text-sm"
-          value={sortKey}
-          onChange={(e) => setSortKey(e.target.value)}
-          disabled={loading}
-        >
-          <option value="kickoff">Kickoff</option>
-          <option value="confidence">Confidence</option>
-          <option value="edge">Moneyline edge</option>
-        </select>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
-      <input
-        type="search"
-        placeholder="Filter by matchup…"
-        className="border rounded px-3 py-1 text-sm md:ml-auto w-full md:w-80"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        disabled={loading}
-      />
-    </div>
-  );
-}
 
-function Th({ children }) {
-  return <th className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-gray-600">{children}</th>;
-}
-function Td({ children, className = "", title }) {
-  return <td className={`px-3 py-2 align-top ${className}`} title={title}>{children}</td>;
-}
+      {/* Parlay recommendations (simple groups derived from current picks) */}
+      <Parlays rows={rows} />
 
-function ConfidenceBar({ value = 0 }) {
-  const pct = Math.max(0, Math.min(1, Number(value) || 0));
-  const display = (pct * 100).toFixed(1) + "%";
-  return (
-    <div className="flex items-center gap-2">
-      <div className="h-2 bg-gray-200 rounded w-28 overflow-hidden">
-        <div className="h-2 bg-green-500" style={{ width: `${pct * 100}%` }} />
+      {/* Actions + Diagnostics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <button disabled={busy} onClick={() => postAction("nfl-predictions-train")} className="bg-green-600 text-white rounded px-3 py-2 font-semibold">
+          {busy ? "Working…" : "Train Now"}
+        </button>
+        <button disabled={busy} onClick={() => postAction("nfl-predictions-score")} className="bg-green-600 text-white rounded px-3 py-2 font-semibold">
+          {busy ? "Working…" : "Score Now"}
+        </button>
+        <div className="border rounded p-3">
+          <div className="font-semibold mb-1">Model Diagnostics</div>
+          <div className="text-sm">Last Train: {meta?.train?.ts ? localTime(meta.train.ts) : "—"}</div>
+          <div className="text-sm">Samples: {meta?.train?.samples ?? "—"}</div>
+          <div className="text-sm">Last Score: {meta?.score?.ts ? localTime(meta.score.ts) : "—"}</div>
+        </div>
       </div>
-      <div className="text-xs text-gray-600 w-12 tabular-nums">{display}</div>
     </div>
   );
 }
 
-function fmtPrice(v) {
-  if (v === null || v === undefined) return "—";
-  return v > 0 ? `+${v}` : String(v);
-}
-function fmtImp(v) {
-  if (!v && v !== 0) return "—";
-  return (v * 100).toFixed(1) + "%";
+function Parlays({ rows }) {
+  // Simple strategy: use top-confidence moneyline picks first, then O/U
+  const ml = rows.filter(r => r.pick?.type === "moneyline").sort((a,b) => (b.pick.confidence||0) - (a.pick.confidence||0));
+  const ou = rows.filter(r => r.pick?.type === "total").sort((a,b) => (b.pick.confidence||0) - (a.pick.confidence||0));
+
+  const threeLegs = [...ml.slice(0,2), ...ou.slice(0,1)].slice(0,3);
+  const fiveLegs  = [...ml.slice(0,3), ...ou.slice(0,2)].slice(0,5);
+
+  const render = (legs) => (
+    <ul className="list-disc ml-5">
+      {legs.map(g => (
+        <li key={g.id}>
+          {g.matchup}: {g.pick?.type === "moneyline" ? `${g.pick.team} ML` :
+            g.pick?.type === "total" ? `${g.total_side} ${g.total_line}` :
+            `${g.spread_team} ${g.spread_line}`}{" "}
+          ({fmtPct(g.pick?.confidence)})
+        </li>
+      ))}
+    </ul>
+  );
+
+  return (
+    <div className="border rounded p-3">
+      <div className="font-semibold mb-1">Suggested Parlays</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <div className="font-semibold">3-Leg</div>
+          {render(threeLegs)}
+        </div>
+        <div>
+          <div className="font-semibold">5-Leg</div>
+          {render(fiveLegs)}
+        </div>
+      </div>
+      <div className="text-xs opacity-70 mt-2">
+        Note: these are derived from current picks; you can swap legs with alternate lines to adjust EV or confidence.
+      </div>
+    </div>
+  );
 }

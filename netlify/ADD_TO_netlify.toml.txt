@@ -1,0 +1,8 @@
+# netlify/ADD_TO_netlify.toml.txt
+# Paste these into your netlify.toml to schedule weekly train/score tasks
+
+[functions."nfl-predictions-train"]
+schedule = "0 9 * * 2"     # Tuesdays 09:00 UTC
+
+[functions."nfl-predictions-score"]
+schedule = "30 9 * * 2"    # Tuesdays 09:30 UTC
