@@ -1,0 +1,103 @@
+{
+  "season": 2025,
+  "week": 2,
+  "generated_at": "2025-09-11T16:39:30.917803Z",
+  "method": "gbm_v1_stub",
+  "games": [
+    {
+      "game_id": "2025_02_KC_BUF",
+      "away": "KC",
+      "home": "BUF",
+      "start_iso": "2025-09-14T20:25:00Z",
+      "win_prob_home": 0.57,
+      "proj_margin_home": 2.8,
+      "proj_total": 49.1,
+      "confidence": 0.66,
+      "injury_notes": {
+        "KC": "Kelce probable",
+        "BUF": "No major changes"
+      },
+      "weather": {
+        "temp_f": 68,
+        "wind_mph": 7,
+        "precip": 0.1
+      }
+    },
+    {
+      "game_id": "2025_02_PHI_DAL",
+      "away": "PHI",
+      "home": "DAL",
+      "start_iso": "2025-09-14T17:00:00Z",
+      "win_prob_home": 0.53,
+      "proj_margin_home": 1.1,
+      "proj_total": 47.4,
+      "confidence": 0.61,
+      "injury_notes": {
+        "PHI": "RB rotation stable",
+        "DAL": "LT questionable"
+      },
+      "weather": {
+        "temp_f": 84,
+        "wind_mph": 10,
+        "precip": 0.0
+      }
+    },
+    {
+      "game_id": "2025_02_SF_LAR",
+      "away": "SF",
+      "home": "LAR",
+      "start_iso": "2025-09-14T20:25:00Z",
+      "win_prob_home": 0.44,
+      "proj_margin_home": -2.3,
+      "proj_total": 46.2,
+      "confidence": 0.64,
+      "injury_notes": {
+        "SF": "WR2 limited",
+        "LAR": "CB1 out"
+      },
+      "weather": {
+        "temp_f": 77,
+        "wind_mph": 5,
+        "precip": 0.0
+      }
+    },
+    {
+      "game_id": "2025_02_NYJ_NE",
+      "away": "NYJ",
+      "home": "NE",
+      "start_iso": "2025-09-14T17:00:00Z",
+      "win_prob_home": 0.59,
+      "proj_margin_home": 3.2,
+      "proj_total": 42.5,
+      "confidence": 0.63,
+      "injury_notes": {
+        "NYJ": "QB healthy",
+        "NE": "WR1 questionable"
+      },
+      "weather": {
+        "temp_f": 71,
+        "wind_mph": 12,
+        "precip": 0.15
+      }
+    },
+    {
+      "game_id": "2025_02_CHI_MIN",
+      "away": "CHI",
+      "home": "MIN",
+      "start_iso": "2025-09-14T17:00:00Z",
+      "win_prob_home": 0.62,
+      "proj_margin_home": 3.9,
+      "proj_total": 45.3,
+      "confidence": 0.67,
+      "injury_notes": {
+        "CHI": "RT doubtful",
+        "MIN": "RB committee"
+      },
+      "weather": {
+        "temp_f": 70,
+        "wind_mph": 6,
+        "precip": 0.05
+      }
+    }
+  ]
+}
