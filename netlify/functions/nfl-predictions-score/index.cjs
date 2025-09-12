@@ -1,46 +1,76 @@
-const { getBlobsStore } = require('../_blobs.js');
-const BUNDLE_VERSION = "predictions-2025-09-12-v6";
+// netlify/functions/nfl-predictions-score/index.cjs
+exports.config = { schedule: null };
 
-async function fetchOddsAndSchedule() {
-  return { rows: [] };
-}
+const { getBlobsStore } = require('../_blobs.js');
+
+const BUNDLE_VERSION = "predictions-score-v6";
+const CURRENT_KEY = "nfl/predictions/current.json";
+const ARTIFACT_KEY = "nfl/predictions/artifacts/latest.json";
 
 exports.handler = async (event) => {
   try {
-    const qs = event.queryStringParameters || {};
-    if (!(qs.open === '1')) {
-      // optional secret enforcement here
+    const open = event.queryStringParameters && event.queryStringParameters.open === '1';
+    if (!open) {
+      const sent = (event.headers['x-train-secret'] || event.headers['X-Train-Secret'] || '').trim();
+      const need = (process.env.TRAIN_SECRET || '').trim();
+      if (!need || sent !== need) {
+        return json({ ok:false, error:"Unauthorized. Missing or bad TRAIN_SECRET." });
+      }
     }
 
-    const store = getBlobsStore('nfl-predictions');
+    const store = getBlobsStore();
 
-    const artTxt = await store.get('nfl/predictions/train/artifact.json');
-    const artifact = artTxt ? JSON.parse(artTxt) : null;
-
-    const { rows } = await fetchOddsAndSchedule();
-
-    let finalRows = rows;
-    const prevTxt = await store.get('nfl/predictions/current.json');
-    if ((!rows || rows.length === 0) && prevTxt) {
-      const prev = JSON.parse(prevTxt);
-      finalRows = prev.rows || [];
+    // 1) Load artifact
+    const artStr = await store.get(ARTIFACT_KEY);
+    if (!artStr) {
+      return json({
+        ok:true,
+        scored:true,
+        updated:new Date().toISOString(),
+        rows:[],
+        notes:"No artifact found (cold start)",
+        BUNDLE_VERSION
+      });
     }
+    let artifact;
+    try { artifact = JSON.parse(artStr); } catch { artifact = { raw: artStr }; }
+
+    // 2) TODO: replace with real scoring logic using Odds API, schedule, etc.
+    // For now, write a minimal, valid `rows` array so the UI can render.
+    const rows = [{
+      id: "sample_01",
+      kickoff: new Date().toISOString(),
+      matchup: "Sample Away @ Sample Home",
+      ml_home_best: -150,
+      ml_away_best: 130,
+      spread_team: "Sample Home",
+      spread_line: -3,
+      total_side: "Over",
+      total_line: 44.5,
+      pick: { type: "moneyline", team: "Sample Home", confidence: 0.62 }
+    }];
 
     const payload = {
+      ok: true,
       updated: new Date().toISOString(),
-      rows: finalRows,
-      notes: artifact ? `Using artifact trainedAt=${artifact.trainedAt}` : 'No artifact found (cold start)',
-      source: 'blobs'
+      rows,
+      source: "scorer",
+      artifact_version: artifact?.version || null,
+      BUNDLE_VERSION
     };
 
-    await store.set('nfl/predictions/current.json', JSON.stringify(payload), { contentType: 'application/json' });
+    await store.set(CURRENT_KEY, payload, { contentType: 'application/json' });
 
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok:true, scored:true, ...payload, BUNDLE_VERSION })
-    };
-  } catch (e) {
-    return { statusCode: 200, body: JSON.stringify({ ok:false, error:String(e), BUNDLE_VERSION }) };
+    return json({ ok:true, scored:true, updated: payload.updated, rows, BUNDLE_VERSION });
+  } catch (err) {
+    return json({ ok:false, error:String(err), BUNDLE_VERSION });
   }
 };
+
+function json(obj) {
+  return {
+    statusCode: 200,
+    headers: { "content-type": "application/json", "cache-control": "no-store" },
+    body: JSON.stringify(obj)
+  };
+}
