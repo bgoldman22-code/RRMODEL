@@ -2,22 +2,24 @@
 const { get } = require('../_blobs');
 
 const CURRENT_KEY = 'nfl/predictions/current.json';
-const BUNDLE_VERSION = 'predictions-2025-09-12-v9';
+const BUNDLE_VERSION = 'predictions-2025-09-12-live';
 
 exports.handler = async () => {
   try {
     const data = await get(CURRENT_KEY);
-    if (data && typeof data === 'object') {
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-        body: JSON.stringify(data)
-      };
+    if (data && data.rows) {
+      return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) };
     }
-    const fallback = { ok: true, updated: null, rows: [], parlay: { legs: [] }, source: 'empty', key: CURRENT_KEY, BUNDLE_VERSION };
-    return { statusCode: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: JSON.stringify(fallback) };
+    return {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok: true, updated: null, rows: [], source: 'empty', key: CURRENT_KEY, BUNDLE_VERSION })
+    };
   } catch (err) {
-    console.error('nfl-predictions-get error:', err);
-    return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ok:false, error:String(err), BUNDLE_VERSION }) };
+    return {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok: false, error: String(err), BUNDLE_VERSION })
+    };
   }
 };
