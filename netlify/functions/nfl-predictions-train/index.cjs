@@ -1,64 +1,46 @@
 // netlify/functions/nfl-predictions-train/index.cjs
-exports.config = {
-  includedFiles: []
-};
+const BUNDLE_VERSION = "predictions-2025-09-12-v7";
+const ARTIFACT_KEY   = "nfl/predictions/artifacts/latest.json";
 
-const { set } = require('../_blobs.js');
-
-const ARTIFACT_KEY   = 'nfl/predictions/artifacts/latest.json';
-const BUNDLE_VERSION = 'predictions-2025-09-12-v6';
-
-async function fetchAndProcessData() {
-  // TODO: replace this mock with real loader + feature engineering
-  return {
-    meta: {
-      lastUpdated: new Date().toISOString(),
-      sampleSize: 10,
-      notes: "Mock artifact to validate store write + JSON contract."
-    },
-    historicalData: [
-      { id: 'game-1', matchup: 'GB @ MIN', outcome: 'GB Win' },
-      { id: 'game-2', matchup: 'KC @ DEN', outcome: 'KC Win' }
-    ]
-  };
-}
+const json = (code, obj) => ({
+  statusCode: code,
+  headers: { "content-type": "application/json", "cache-control": "no-store" },
+  body: JSON.stringify(obj)
+});
 
 exports.handler = async (event) => {
   try {
-    const qs = event.queryStringParameters || {};
-    const open = String(qs.open || "") === "1";
-    const okAuth = open || (event.headers['x-secret-header'] && event.headers['x-secret-header'] === process.env.TRAIN_SECRET);
-
-    if (!okAuth) {
-      return {
-        statusCode: 401,
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ok: false, error: 'Unauthorized', BUNDLE_VERSION })
-      };
+    const open = String(event.queryStringParameters?.open || "") === "1";
+    if (!open) {
+      const supplied = event.headers["x-secret-header"];
+      if (!supplied || supplied !== process.env.TRAIN_SECRET) {
+        return json(401, { ok:false, error:"Unauthorized", hint:"use ?open=1 to test", BUNDLE_VERSION });
+      }
     }
 
-    const artifact = await fetchAndProcessData(); // never throws in mock
-    const wrote = await set(ARTIFACT_KEY, artifact);
-
-    if (!wrote) {
-      return {
-        statusCode: 200,
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ok: false, error: 'Failed to write artifact', key: ARTIFACT_KEY, BUNDLE_VERSION })
-      };
+    let blobs;
+    try {
+      blobs = require("../_blobs.js");
+    } catch (e) {
+      return json(500, { ok:false, error:`Blobs wrapper import failed: ${String(e)}`, BUNDLE_VERSION });
     }
 
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: true, wrote: ARTIFACT_KEY, BUNDLE_VERSION })
+    // Minimal mock artifact to prove end-to-end pipeline works
+    const artifact = {
+      meta: { lastUpdated: new Date().toISOString(), sampleSize: 10, notes: "Mock artifact for pipeline sanity." },
+      historicalData: [
+        { id: "game-1", matchup: "WAS @ GB", outcome: "GB Win" },
+        { id: "game-2", matchup: "KC @ DEN", outcome: "KC Win" }
+      ]
     };
+
+    const res = await blobs.set(ARTIFACT_KEY, artifact);
+    if (res === true) {
+      return json(200, { ok:true, wrote: ARTIFACT_KEY, BUNDLE_VERSION });
+    } else {
+      return json(500, { ok:false, error: res?.error || "Unknown set() failure", where: res?.where, key: ARTIFACT_KEY, BUNDLE_VERSION });
+    }
   } catch (err) {
-    console.error("[train] unhandled:", err && err.stack || err);
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: false, error: String(err), BUNDLE_VERSION })
-    };
+    return json(500, { ok:false, error:`Unhandled: ${String(err)}`, BUNDLE_VERSION });
   }
 };

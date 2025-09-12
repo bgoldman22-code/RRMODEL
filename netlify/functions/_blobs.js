@@ -1,53 +1,49 @@
 // netlify/functions/_blobs.js
-// Minimal, lazy-initialized wrapper around Netlify Blobs that NEVER throws at import time.
-let _store = null;
-
-function ensureStore() {
-  if (_store) return _store;
-  // Lazy require so failures don't crash the function before handler runs
-  const { getStore } = require('@netlify/blobs');
-  const name = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'rrmodelblobs';
-  _store = getStore({ name });
-  return _store;
-}
-
-function safeParse(txt) {
-  try { return JSON.parse(txt); } catch { return null; }
-}
-
-async function get(key) {
+// Thin wrapper around @netlify/blobs with lazy require and JSON helpers.
+// This guards against "Blobs is not a constructor" / missing dep causing HTML 500s.
+function getStoreLazy() {
   try {
-    const store = ensureStore();
+    const { getStore } = require('@netlify/blobs');
+    const name = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'rrmodelblobs';
+    // On Netlify Functions in production, credentials are auto-provisioned.
+    return getStore({ name });
+  } catch (e) {
+    const err = new Error(`[blobs] require('@netlify/blobs') failed: ${e && e.message}`);
+    err.code = 'BLOBS_IMPORT_FAIL';
+    throw err;
+  }
+}
+
+const safeParse = (s) => { try { return JSON.parse(s); } catch { return null; } };
+
+exports.get = async (key) => {
+  try {
+    const store = getStoreLazy();
     const raw = await store.get(key, { type: 'text' });
     if (!raw) return null;
-    const data = safeParse(raw);
-    return data;
+    return safeParse(raw);
   } catch (e) {
-    console.error("[_blobs.get] error:", e && e.message || e);
-    return null;
+    return { ok:false, error:String(e), where:'_blobs.get', key };
   }
-}
+};
 
-async function set(key, value) {
+exports.set = async (key, value) => {
   try {
-    const store = ensureStore();
-    await store.set(key, JSON.stringify(value));
+    const store = getStoreLazy();
+    const body = JSON.stringify(value);
+    await store.set(key, body);
     return true;
   } catch (e) {
-    console.error("[_blobs.set] error:", e && e.message || e);
-    return false;
+    return { ok:false, error:String(e), where:'_blobs.set', key };
   }
-}
+};
 
-async function del(key) {
+exports.del = async (key) => {
   try {
-    const store = ensureStore();
+    const store = getStoreLazy();
     await store.delete(key);
     return true;
   } catch (e) {
-    console.error("[_blobs.del] error:", e && e.message || e);
-    return false;
+    return { ok:false, error:String(e), where:'_blobs.del', key };
   }
-}
-
-module.exports = { get, set, del };
+};
