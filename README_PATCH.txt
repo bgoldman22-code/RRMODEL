@@ -1,29 +1,40 @@
+NFL Predictions — LIVE Autobuild Patch
+=====================================
 
-NFL Predictions — TRAIN/SCORE fix patch (v7)
+What this patch does
+--------------------
+- Replaces the TRAIN step with a harmless endpoint (no secrets, no failure).
+- Moves data ingestion + feature building into the SCORE endpoint so it can run on demand.
+- Writes predictions to Netlify Blobs at `nfl/predictions/current.json`.
+- GET endpoint reads the latest slate for your UI.
 
-What this does
---------------
-• Converts all functions to lazy-require the local _blobs helper so that any
-  dependency/env problem is reported as JSON instead of a Netlify HTML 500.
-• Ships a _blobs.cjs wrapper around @netlify/blobs (v7 API).
-• Adds a diagnostics function: /.netlify/functions/nfl-predictions-diag
+Files in this patch
+-------------------
+- netlify/functions/_blobs.js
+- netlify/functions/nfl-predictions-train/index.cjs
+- netlify/functions/nfl-predictions-score/index.cjs
+- netlify/functions/nfl-predictions-get/index.cjs
+- package.json (adds @netlify/blobs and node-fetch)
 
-Required env
-------------
-• BLOBS_STORE_NFL = your store name (e.g. nfl-td or rrmodelblobs)
-• NETLIFY_SITE_ID
-• NETLIFY_BLOBS_TOKEN
+Required Netlify env vars
+-------------------------
+- ODDS_API_KEY = <your TheOddsAPI key>
+- ODDSAPI_SPORT_NFL = americanfootball_nfl
+- ODDSAPI_REGION_NFL = us
+- ODDSAPI_BOOKMAKER_NFL = draftkings,betmgm,fanatics,fanduel,caesars   (optional)
+- BLOBS_STORE_NFL = nfl-td  (must match _blobs.js)
+- NETLIFY_BLOBS_TOKEN = <your token with Blobs RW>
+- NETLIFY_SITE_ID = <your site id>
 
-Test URLs (tokenless for now via ?open=1)
-----------------------------------------
-1) TRAIN:
-   https://YOUR_SITE/.netlify/functions/nfl-predictions-train?open=1
+How to use (after deploy)
+-------------------------
+1) Kick off a build of predictions and cache to blobs:
+   /.netlify/functions/nfl-predictions-score?open=1&autobuild=1
 
-2) SCORE:
-   https://YOUR_SITE/.netlify/functions/nfl-predictions-score?open=1
+2) UI reads from:
+   /.netlify/functions/nfl-predictions-get
 
-3) GET:
-   https://YOUR_SITE/.netlify/functions/nfl-predictions-get
-
-4) DIAG:
-   https://YOUR_SITE/.netlify/functions/nfl-predictions-diag
+Notes
+-----
+- NFLVerse/ESPN fetchers are stubbed with try/catch and won't break scoring if unavailable.
+- You can iterate feature engineering inside `nfl-predictions-score/index.cjs` (decide()).

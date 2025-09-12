@@ -2,8 +2,12 @@
   "name": "rrmodel-main28",
   "version": "1.0.0",
   "private": true,
-  "engines": { "node": ">=20.0.0" },
-  "overrides": { "debug": "4.3.4" },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "overrides": {
+    "debug": "4.3.4"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,6 +16,7 @@
   "dependencies": {
     "@netlify/blobs": "^7.3.0",
     "csv-parse": "^5.5.6",
+    "node-fetch": "^3.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1"
