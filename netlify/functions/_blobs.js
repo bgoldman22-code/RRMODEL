@@ -1,45 +1,41 @@
-// netlify/functions/_blobs.js
-// Thin wrapper around @netlify/blobs with JSON helpers
-
 const { getStore } = require('@netlify/blobs');
 
-const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'rrmodelblobs';
-
+const storeName = process.env.BLOBS_STORE_NFL || 'rrmodelblobs';
 const store = getStore({
   name: storeName,
   siteID: process.env.NETLIFY_SITE_ID,
   token: process.env.NETLIFY_BLOBS_TOKEN
 });
 
-async function get(key) {
+const safeJSONParse = (s, d=null)=>{ try { return JSON.parse(s); } catch { return d; } };
+
+exports.get = async (key) => {
   try {
     const raw = await store.get(key, { type: 'text' });
     if (!raw) return null;
-    try { return JSON.parse(raw); } catch { return null; }
-  } catch (e) {
-    console.error('blobs.get error', e);
+    return safeJSONParse(raw, null);
+  } catch (err) {
+    console.error('[blobs.get]', key, err.message);
     return null;
   }
-}
+};
 
-async function set(key, obj) {
+exports.set = async (key, value) => {
   try {
-    await store.set(key, JSON.stringify(obj));
+    await store.set(key, JSON.stringify(value));
     return true;
-  } catch (e) {
-    console.error('blobs.set error', e);
+  } catch (err) {
+    console.error('[blobs.set]', key, err.message);
     return false;
   }
-}
+};
 
-async function del(key) {
+exports.del = async (key) => {
   try {
     await store.delete(key);
     return true;
-  } catch (e) {
-    console.error('blobs.delete error', e);
+  } catch (err) {
+    console.error('[blobs.del]', key, err.message);
     return false;
   }
-}
-
-module.exports = { get, set, del, storeName };
+};
