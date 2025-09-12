@@ -1,39 +1,24 @@
 // netlify/functions/_blobs.js
-// Minimal helper to read/write JSON blobs using Netlify Blobs.
-// Prefers Netlify runtime context; falls back to explicit SITE_ID + TOKEN if provided.
-const { Blobs } = require('@netlify/blobs');
+// Compatible helper for Netlify Blobs in Node functions.
+// Works both on Netlify runtime (auto creds) and with manual creds via env:
+//   NETLIFY_SITE_ID and NETLIFY_BLOBS_TOKEN
+//
+// Usage:
+//   const { getBlobsStore } = require('../_blobs.js');
+//   const store = getBlobsStore('nfl-predictions'); await store.set('key', 'value');
 
-function getEnv(name, dflt = undefined) {
-  return process.env[name] ?? dflt;
-}
+const { getStore } = require('@netlify/blobs');
 
-function getBlobsStore(namespaceDefault = 'rrmodelblobs') {
-  const siteID = getEnv('NETLIFY_SITE_ID');
-  const token  = getEnv('NETLIFY_BLOBS_TOKEN') || getEnv('NETLIFY_AUTH_TOKEN') || getEnv('NETLIFY_API_TOKEN');
-  const store  = getEnv('BLOBS_STORE', namespaceDefault);
+function getBlobsStore(name) {
+  const siteID = process.env.NETLIFY_SITE_ID;
+  const token  = process.env.NETLIFY_BLOBS_TOKEN;
 
-  const opts = {};
+  // If manual credentials are present, pass them into getStore (no need to use `new Blobs()`).
   if (siteID && token) {
-    opts.siteID = siteID;
-    opts.token  = token;
+    return getStore({ name, siteID, token });
   }
-  const client = new Blobs(opts);
-  return {
-    async get(key) {
-      const res = await client.get(key, { consistency: 'strong' });
-      if (!res) return null;
-      return typeof res === 'string' ? res : await res.text();
-    },
-    async put(key, value) {
-      const body = typeof value === 'string' ? value : JSON.stringify(value);
-      await client.set(key, body, { contentType: 'application/json' });
-      return { key, bytes: Buffer.byteLength(body) };
-    },
-    async del(key) {
-      await client.delete(key);
-    },
-    store,
-  };
+  // Otherwise let Netlify provide credentials automatically in production.
+  return getStore({ name });
 }
 
 module.exports = { getBlobsStore };
