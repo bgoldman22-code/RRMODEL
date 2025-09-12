@@ -1,41 +1,51 @@
+// netlify/functions/_blobs.js
+// Thin wrapper around @netlify/blobs for JSON get/set/del with consistent error handling.
 const { getStore } = require('@netlify/blobs');
 
-const storeName = process.env.BLOBS_STORE_NFL || 'rrmodelblobs';
-const store = getStore({
-  name: storeName,
-  siteID: process.env.NETLIFY_SITE_ID,
-  token: process.env.NETLIFY_BLOBS_TOKEN
-});
+const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'rrmodelblobs';
 
-const safeJSONParse = (s, d=null)=>{ try { return JSON.parse(s); } catch { return d; } };
+let store;
+function getStoreSafe() {
+  if (store) return store;
+  store = getStore({
+    name: storeName,
+    siteID: process.env.NETLIFY_SITE_ID,
+    token: process.env.NETLIFY_BLOBS_TOKEN
+  });
+  return store;
+}
+
+function safeParse(input, fallback = null) {
+  try { return JSON.parse(input); } catch { return fallback; }
+}
 
 exports.get = async (key) => {
   try {
-    const raw = await store.get(key, { type: 'text' });
-    if (!raw) return null;
-    return safeJSONParse(raw, null);
-  } catch (err) {
-    console.error('[blobs.get]', key, err.message);
+    const s = await getStoreSafe().get(key, { type: 'text' });
+    return s ? safeParse(s, null) : null;
+  } catch (e) {
+    console.error('[blobs.get] key=%s err=%s', key, e?.message || e);
     return null;
   }
 };
 
 exports.set = async (key, value) => {
   try {
-    await store.set(key, JSON.stringify(value));
+    const s = JSON.stringify(value);
+    await getStoreSafe().set(key, s);
     return true;
-  } catch (err) {
-    console.error('[blobs.set]', key, err.message);
+  } catch (e) {
+    console.error('[blobs.set] key=%s err=%s', key, e?.message || e);
     return false;
   }
 };
 
 exports.del = async (key) => {
   try {
-    await store.delete(key);
+    await getStoreSafe().delete(key);
     return true;
-  } catch (err) {
-    console.error('[blobs.del]', key, err.message);
+  } catch (e) {
+    console.error('[blobs.del] key=%s err=%s', key, e?.message || e);
     return false;
   }
 };
