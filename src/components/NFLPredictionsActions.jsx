@@ -1,102 +1,89 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 
-const STORAGE_KEY = "rr.train.secret";
+/**
+ * Small action panel with "Train now" and "Rescore now" buttons.
+ * Calls Netlify Functions and shows JSON (or raw text) results.
+ * Training allows an open trigger via `?open=1` so you can run it without a secret.
+ */
+export default function NFLPredictionsActions({ className = "" }) {
+  const [trainStatus, setTrainStatus] = useState(null);
+  const [scoreStatus, setScoreStatus] = useState(null);
+  const [busy, setBusy] = useState(false);
 
-function fmtDate(v) {
-  if (!v) return "—";
-  try {
-    const d = new Date(v);
-    return d.toLocaleString();
-  } catch {
-    return String(v);
-  }
-}
-
-export default function NFLPredictionsActions() {
-  const [secret, setSecret] = useState(() => localStorage.getItem(STORAGE_KEY) || "");
-  const [meta, setMeta]   = useState({ trained_at: null, updated: null, sampleSize: null });
-  const [busy, setBusy]   = useState({ learn: false, score: false });
-
-  useEffect(() => {
-    // hydrate diagnostics from GET endpoint on mount
-    (async () => {
-      try {
-        const r = await fetch("/.netlify/functions/nfl-predictions-get");
-        const j = await r.json();
-        const sample = Array.isArray(j?.rows) ? j.rows.length : (j?.count ?? null);
-        setMeta(m => ({ ...m, updated: j?.updated || m.updated, sampleSize: sample }));
-      } catch {}
-    })();
-  }, []);
-
-  const header = useMemo(() => ({
-    "content-type": "application/json",
-    ...(secret ? { "x-train-secret": secret } : {}),
-  }), [secret]);
-
-  async function ensureSecret() {
-    let s = secret;
-    if (!s) {
-      s = prompt("Enter TRAIN_SECRET to run this action:");
-      if (!s) return null;
-      localStorage.setItem(STORAGE_KEY, s);
-      setSecret(s);
-    }
-    return s;
-  }
-
-  async function run(path, which) {
-    const s = await ensureSecret();
-    if (!s) return;
-    setBusy(b => ({ ...b, [which]: true }));
+  async function callFn(path) {
+    setBusy(true);
     try {
-      const res = await fetch(path, { method: "POST", headers: header });
+      const res = await fetch(path, { method: "POST" }); // POST so it can't be pre-rendered/cached
       const text = await res.text();
-      let j;
-      try { j = JSON.parse(text); } catch { j = { ok: false, error: "Non-JSON response", raw: text }; }
-      setMeta(m => ({
-        trained_at: j?.trained_at ?? m.trained_at,
-        updated: j?.updated ?? m.updated,
-        sampleSize: typeof j?.sampleSize === "number" ? j.sampleSize : m.sampleSize,
-      }));
-      alert(j?.ok ? "✅ Success" : `⚠️ Check logs — ${j?.error || "ok=false"}`);
-      if (!j?.ok) console.error("Action error payload:", j);
+      try {
+        const json = JSON.parse(text);
+        return json;
+      } catch {
+        return { ok: false, raw: text, note: "Non-JSON response" };
+      }
     } catch (e) {
-      console.error(e);
-      alert("Action failed — see console for details.");
+      return { ok: false, error: String(e) };
     } finally {
-      setBusy(b => ({ ...b, [which]: false }));
+      setBusy(false);
     }
   }
+
+  const onTrain = async () => {
+    setTrainStatus({ working: true });
+    const out = await callFn("/.netlify/functions/nfl-predictions-train?open=1");
+    setTrainStatus(out);
+  };
+
+  const onScore = async () => {
+    setScoreStatus({ working: true });
+    const out = await callFn("/.netlify/functions/nfl-predictions-score");
+    setScoreStatus(out);
+  };
 
   return (
-    <div className="w-full">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div className="flex items-center gap-2">
+    <div className={["rounded-xl border p-3 md:p-4 bg-white/50", className].join(" ")}>
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="font-semibold">Maintenance</div>
+        <div className="flex gap-2">
           <button
-            className="px-3 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 disabled:opacity-60"
-            disabled={busy.learn}
-            onClick={() => run("/.netlify/functions/nfl-predictions-train", "learn")}
+            onClick={onTrain}
+            disabled={busy}
+            className="px-3 py-1.5 rounded-md bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
+            title="Backfill & learn from NFLVerse/ESPN caches (server-side)."
           >
-            {busy.learn ? "Learning…" : "Run Learn Now"}
+            Train now
           </button>
           <button
-            className="px-3 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 disabled:opacity-60"
-            disabled={busy.score}
-            onClick={() => run("/.netlify/functions/nfl-predictions-score", "score")}
+            onClick={onScore}
+            disabled={busy}
+            className="px-3 py-1.5 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
+            title="Recompute picks from the latest odds snapshot."
           >
-            {busy.score ? "Rescoring…" : "Rescore Now"}
+            Rescore now
           </button>
-        </div>
-
-        <div className="text-sm grid grid-cols-1 md:grid-cols-3 gap-2">
-          <div><span className="text-gray-500">Last Trained:</span> <span className="font-medium">{fmtDate(meta.trained_at)}</span></div>
-          <div><span className="text-gray-500">Last Scored:</span> <span className="font-medium">{fmtDate(meta.updated)}</span></div>
-          <div><span className="text-gray-500">Sample Size:</span> <span className="font-medium">{meta.sampleSize ?? "—"}</span></div>
         </div>
       </div>
 
-      <hr className="my-4 border-gray-200" />
+      <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+        <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2">
+          <div className="font-medium text-emerald-800">Train status</div>
+          <pre className="mt-1 overflow-x-auto text-xs text-emerald-900">
+{trainStatus ? JSON.stringify(trainStatus, null, 2) : "—"}
+          </pre>
+        </div>
+        <div className="rounded-lg bg-indigo-50 border border-indigo-200 p-2">
+          <div className="font-medium text-indigo-800">Score status</div>
+          <pre className="mt-1 overflow-x-auto text-xs text-indigo-900">
+{scoreStatus ? JSON.stringify(scoreStatus, null, 2) : "—"}
+          </pre>
+        </div>
+      </div>
+
+      <div className="mt-2 text-xs text-gray-500">
+        Tip: these actions hit Netlify Functions. If you prefer a URL trigger instead of buttons,
+        call: <code>/.netlify/functions/nfl-predictions-train?open=1</code> and
+        <code>/.netlify/functions/nfl-predictions-score</code> directly.
+      </div>
     </div>
   );
 }
