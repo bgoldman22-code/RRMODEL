@@ -1,51 +1,54 @@
 // netlify/functions/_blobs.js
-// Thin wrapper around @netlify/blobs for JSON get/set/del with consistent error handling.
+// Minimal helper around @netlify/blobs v7 style API.
 const { getStore } = require('@netlify/blobs');
 
 const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'rrmodelblobs';
 
-let store;
-function getStoreSafe() {
-  if (store) return store;
-  store = getStore({
-    name: storeName,
-    siteID: process.env.NETLIFY_SITE_ID,
-    token: process.env.NETLIFY_BLOBS_TOKEN
-  });
-  return store;
+let _store;
+function store() {
+  if (!_store) {
+    _store = getStore({
+      name: storeName,
+      siteID: process.env.NETLIFY_SITE_ID,
+      token: process.env.NETLIFY_BLOBS_TOKEN,
+    });
+  }
+  return _store;
 }
 
-function safeParse(input, fallback = null) {
-  try { return JSON.parse(input); } catch { return fallback; }
-}
+const safeJSON = (s) => {
+  if (!s) return null;
+  try { return JSON.parse(s); } catch { return null; }
+};
 
 exports.get = async (key) => {
   try {
-    const s = await getStoreSafe().get(key, { type: 'text' });
-    return s ? safeParse(s, null) : null;
+    const txt = await store().get(key, { type: 'text' });
+    return safeJSON(txt);
   } catch (e) {
-    console.error('[blobs.get] key=%s err=%s', key, e?.message || e);
+    console.error('[_blobs.get] error', e);
     return null;
   }
 };
 
-exports.set = async (key, value) => {
+exports.set = async (key, obj) => {
   try {
-    const s = JSON.stringify(value);
-    await getStoreSafe().set(key, s);
+    await store().set(key, JSON.stringify(obj));
     return true;
   } catch (e) {
-    console.error('[blobs.set] key=%s err=%s', key, e?.message || e);
+    console.error('[_blobs.set] error', e);
     return false;
   }
 };
 
 exports.del = async (key) => {
   try {
-    await getStoreSafe().delete(key);
+    await store().delete(key);
     return true;
   } catch (e) {
-    console.error('[blobs.del] key=%s err=%s', key, e?.message || e);
+    console.error('[_blobs.del] error', e);
     return false;
   }
 };
+
+exports.storeInfo = () => ({ name: storeName });
