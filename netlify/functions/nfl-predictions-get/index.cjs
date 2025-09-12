@@ -1,25 +1,18 @@
-// netlify/functions/nfl-predictions-get/index.cjs
-const { get } = require('../_blobs');
-
-const CURRENT_KEY = 'nfl/predictions/current.json';
-const BUNDLE_VERSION = 'predictions-2025-09-12-live';
+'use strict';
+const { getStore } = require("@netlify/blobs");
 
 exports.handler = async () => {
   try {
-    const data = await get(CURRENT_KEY);
-    if (data && data.rows) {
-      return { statusCode: 200, headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) };
+    const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "nfl-td";
+    const store = getStore(storeName);
+    const predictionData = await store.get("predictions/current.json", { type: "json" });
+
+    if (!predictionData) {
+      return { statusCode: 404, body: JSON.stringify({ ok: false, message: "Prediction data not found." }) };
     }
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: true, updated: null, rows: [], source: 'empty', key: CURRENT_KEY, BUNDLE_VERSION })
-    };
-  } catch (err) {
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: false, error: String(err), BUNDLE_VERSION })
-    };
+
+    return { statusCode: 200, body: JSON.stringify(predictionData) };
+  } catch (error) {
+    return { statusCode: 500, body: JSON.stringify({ ok: false, error: "Failed to retrieve predictions.", details: error.message }) };
   }
 };
