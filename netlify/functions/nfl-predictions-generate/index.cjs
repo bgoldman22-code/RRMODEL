@@ -1,9 +1,9 @@
 'use strict';
 /**
  * Generates predictions using team form JSON + schedule + odds.
- * - Uses global fetch (Node 18). No node-fetch import.
- * - Calls other Netlify functions via INTERNAL_FUNCTIONS_URL in prod, or http://localhost:8888 in dev.
- * - Diagnostics: append ?diag=1 to see non-secret env availability booleans.
+ * - Diagnostics:
+ *   ?diag=1     -> shows env booleans (no secrets)
+ *   ?diag=fetch -> test-fetches schedule/odds/teamform and returns statuses
  */
 const { getStore } = require("@netlify/blobs");
 
@@ -11,7 +11,6 @@ function getNflStore() {
   const name = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "nfl-td";
   const siteID = process.env.NETLIFY_SITE_ID;
   const token = process.env.NETLIFY_API_TOKEN;
-  // Prefer manual credentials if present; avoids missing injected context
   if (siteID && token) return getStore(name, { siteID, token });
   return getStore(name);
 }
@@ -36,24 +35,30 @@ function baseUrl() {
   return new URL("/.netlify/functions", site).toString().replace(/\/$/, "");
 }
 
-async function safeJsonFetch(url) {
+async function tryFetchJson(url) {
+  try {
+    const res = await fetch(url, { redirect: "follow" });
+    const text = await res.text();
+    let json = null;
+    try { json = JSON.parse(text); } catch {}
+    return { ok: res.ok, status: res.status, url, json, text: json ? undefined : text.slice(0, 300) };
+  } catch (e) {
+    return { ok: false, status: 0, url, error: e.message };
+  }
+}
+
+async function safeJsonFetch(url, allowEmpty=false) {
   const res = await fetch(url, { redirect: "follow" });
   if (!res.ok) throw new Error(`Fetch failed ${res.status} ${res.statusText} for ${url}`);
-  return res.json();
+  const j = await res.json();
+  if (!allowEmpty && (j == null || (Array.isArray(j) && j.length === 0))) {
+    throw new Error(`Empty JSON from ${url}`);
+  }
+  return j;
 }
 
 exports.handler = async (event) => {
   try {
-    // Diagnostics mode (no secrets)
-    if ((event?.queryStringParameters || {}).diag) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ ok: true, diag: storeDiag() })
-      };
-    }
-
-    const store = getNflStore();
-
     const fnBase = baseUrl();
     const scheduleUrl = process.env.NFL_SCHEDULE_URL?.startsWith("http")
       ? process.env.NFL_SCHEDULE_URL
@@ -61,18 +66,30 @@ exports.handler = async (event) => {
 
     const oddsUrl = process.env.NFL_ODDS_BRIDGE_URL?.startsWith("http")
       ? process.env.NFL_ODDS_BRIDGE_URL
-      : `${fnBase}/${(process.env.NFL_ODDS_BRIDGE_URL || "odds-get").replace(/^\//, "")}`;
+      : `${fnBase}/${(process.env.NFL_ODDS_BRIDGE_URL || "nfl-odds-placeholder").replace(/^\//, "")}`;
 
     const teamFormUrl = process.env.NFLVERSE_TEAM_FORM_URL?.startsWith("http")
       ? process.env.NFLVERSE_TEAM_FORM_URL
       : new URL(process.env.NFLVERSE_TEAM_FORM_URL || "/nflverse-team-form.json", process.env.URL || "http://localhost:8888").toString();
 
+    // Diagnostics
+    const qp = event?.queryStringParameters || {};
+    if (qp.diag === "1") {
+      return { statusCode: 200, body: JSON.stringify({ ok: true, diag: storeDiag() }) };
+    }
+    if (qp.diag === "fetch") {
+      const [s, o, t] = await Promise.all([tryFetchJson(scheduleUrl), tryFetchJson(oddsUrl), tryFetchJson(teamFormUrl)]);
+      return { statusCode: 200, body: JSON.stringify({ ok: true, endpoints: { scheduleUrl, oddsUrl, teamFormUrl }, fetch: { schedule: s, odds: o, teamForm: t } }) };
+    }
+
+    // Real generate
     const [schedule, odds, teamForm] = await Promise.all([
       safeJsonFetch(scheduleUrl),
-      safeJsonFetch(oddsUrl),
+      safeJsonFetch(oddsUrl, /*allowEmpty*/ true),
       safeJsonFetch(teamFormUrl)
     ]);
 
+    const store = getNflStore();
     const out = { ok: true, updated: new Date().toISOString(), rows: [] };
 
     // Normalize schedule
@@ -81,7 +98,7 @@ exports.handler = async (event) => {
       : Array.isArray(schedule) ? schedule
       : [];
 
-    // Normalize odds into a map
+    // Normalize odds into a map (may be empty)
     const byMatchupOdds = new Map();
     const addOdds = (o) => {
       const key = o.matchup || o.id || `${o.away || o.a}@${o.home || o.h}`;
@@ -107,8 +124,6 @@ exports.handler = async (event) => {
         const awayDef = awayM?.defense?.epa_allowed_per_play ?? 0;
         const awayOff = awayM?.decayed_data?.off_epa_decayed ?? awayM?.offense?.epa_per_play ?? 0;
         const homeDef = homeM?.defense?.epa_allowed_per_play ?? 0;
-
-        // Positive favors HOME
         const totalEdge = (homeOff - awayDef) - (awayOff - homeDef);
 
         if (totalEdge > 0.05) { pickType = "spread"; pickTeam = home; confidence = 0.68; }
