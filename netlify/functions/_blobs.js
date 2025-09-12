@@ -1,26 +1,39 @@
 // netlify/functions/_blobs.js
-const { getStore, createClient } = require('@netlify/blobs');
+// Minimal helper to read/write JSON blobs using Netlify Blobs.
+// Prefers Netlify runtime context; falls back to explicit SITE_ID + TOKEN if provided.
+const { Blobs } = require('@netlify/blobs');
 
-function getBlobsStore(name) {
-  const siteID = process.env.NETLIFY_SITE_ID;
-  const token = process.env.NETLIFY_BLOBS_TOKEN;
+function getEnv(name, dflt = undefined) {
+  return process.env[name] ?? dflt;
+}
 
-  try {
-    if (siteID && token && createClient) {
-      const client = createClient({ siteID, token });
-      if (client && client.getStore) return client.getStore(name);
-    }
-  } catch {}
+function getBlobsStore(namespaceDefault = 'rrmodelblobs') {
+  const siteID = getEnv('NETLIFY_SITE_ID');
+  const token  = getEnv('NETLIFY_BLOBS_TOKEN') || getEnv('NETLIFY_AUTH_TOKEN') || getEnv('NETLIFY_API_TOKEN');
+  const store  = getEnv('BLOBS_STORE', namespaceDefault);
 
-  try {
-    if (siteID && token) return getStore(name, { siteID, token });
-  } catch {}
-
-  try {
-    if (siteID && token) return getStore({ name, siteID, token });
-  } catch {}
-
-  return getStore(name);
+  const opts = {};
+  if (siteID && token) {
+    opts.siteID = siteID;
+    opts.token  = token;
+  }
+  const client = new Blobs(opts);
+  return {
+    async get(key) {
+      const res = await client.get(key, { consistency: 'strong' });
+      if (!res) return null;
+      return typeof res === 'string' ? res : await res.text();
+    },
+    async put(key, value) {
+      const body = typeof value === 'string' ? value : JSON.stringify(value);
+      await client.set(key, body, { contentType: 'application/json' });
+      return { key, bytes: Buffer.byteLength(body) };
+    },
+    async del(key) {
+      await client.delete(key);
+    },
+    store,
+  };
 }
 
 module.exports = { getBlobsStore };
