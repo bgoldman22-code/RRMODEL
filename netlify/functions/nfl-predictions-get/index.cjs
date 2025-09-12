@@ -1,35 +1,44 @@
 // netlify/functions/nfl-predictions-get/index.cjs
-exports.config = { schedule: null };
+const { get } = require('../_blobs');
 
-const { getBlobsStore } = require('../_blobs.js');
-const BUNDLE_VERSION = "predictions-get-v6";
-const CURRENT_KEY = "nfl/predictions/current.json";
+const CURRENT_KEY = 'nfl/predictions/current.json';
+const BUNDLE_VERSION = 'predictions-2025-09-12-v5';
 
 exports.handler = async () => {
   try {
-    const store = getBlobsStore();
-    const str = await store.get(CURRENT_KEY);
-    if (str) {
-      try {
-        const obj = JSON.parse(str);
-        // normalize shape (always return rows array)
-        const rows = Array.isArray(obj.rows) ? obj.rows : [];
-        return json({ ok:true, updated: obj.updated || null, rows, source:"blobs", key: CURRENT_KEY, BUNDLE_VERSION });
-      } catch {
-        // legacy payload might be raw rows
-        return json({ ok:true, updated:null, rows:[], source:"blobs(raw)", key: CURRENT_KEY, BUNDLE_VERSION });
-      }
+    const data = await get(CURRENT_KEY);
+    if (data) {
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      };
     }
-    return json({ ok:true, updated:null, rows:[], source:"empty", key: CURRENT_KEY, BUNDLE_VERSION });
+    // Cold/empty fallback
+    const fallback = {
+      ok: true,
+      updated: null,
+      rows: [],
+      source: 'empty',
+      key: CURRENT_KEY,
+      BUNDLE_VERSION
+    };
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fallback)
+    };
   } catch (err) {
-    return json({ ok:false, error:String(err), BUNDLE_VERSION });
+    console.error('Unhandled error in nfl-predictions-get:', err);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ok: false,
+        error: `Unhandled exception: ${String(err)}`,
+        BUNDLE_VERSION,
+        source: 'error'
+      })
+    };
   }
 };
-
-function json(obj) {
-  return {
-    statusCode: 200,
-    headers: { "content-type": "application/json", "cache-control": "no-store" },
-    body: JSON.stringify(obj)
-  };
-}

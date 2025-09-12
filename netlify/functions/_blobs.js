@@ -1,48 +1,80 @@
 // netlify/functions/_blobs.js
-// Single helper for Netlify Blobs across all functions.
+// Minimal helper around @netlify/blobs using the stable getStore() API.
+// This replaces any previous custom Blobs wrappers that used `new Blobs(...)`
+// or store.put().
 
-// CJS import (Netlify Node functions allow this)
 const { getStore } = require('@netlify/blobs');
 
-const STORE_DEFAULT = process.env.BLOBS_STORE_NFL || 'rrmodelblobs';
+const storeName = process.env.BLOBS_STORE_NFL || 'rrmodelblobs';
+const store = getStore({
+  name: storeName,
+  siteID: process.env.NETLIFY_SITE_ID,
+  token: process.env.NETLIFY_BLOBS_TOKEN
+});
+
+const safeJSONParse = (input, defaultValue = null) => {
+  try {
+    return JSON.parse(input);
+  } catch (err) {
+    console.error(`Failed to parse JSON: ${err && err.message ? err.message : err}`);
+    return defaultValue;
+  }
+};
 
 /**
- * Return a store bound to our site context.
- * If Netlify's implicit context is not available, pass siteID/token explicitly via env.
+ * Reads a JSON object from the Netlify Blobs store.
+ * @param {string} key The key of the blob to retrieve.
+ * @returns {object|null} The parsed JSON object, or null if not found or an error occurs.
  */
-function getBlobsStore(name = STORE_DEFAULT) {
-  const opts = { name };
-  const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
-  const token  = process.env.NETLIFY_BLOBS_TOKEN || process.env.NETLIFY_AUTH_TOKEN;
-
-  // Only attach credentials when the runtime doesn't inject context.
-  if (siteID && token) {
-    opts.siteID = siteID;
-    opts.token  = token;
+exports.get = async (key) => {
+  try {
+    const rawData = await store.get(key, { type: 'text' });
+    if (!rawData) {
+      console.log(`Blob key "${key}" not found.`);
+      return null;
+    }
+    const data = safeJSONParse(rawData);
+    if (!data) {
+      console.warn(`Data for key "${key}" was corrupted.`);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.error(`Error getting blob "${key}":`, err && err.message ? err.message : err);
+    return null;
   }
-  const store = getStore(opts);
+};
 
-  // Convenience wrappers (always strings)
-  return {
-    async get(key) {
-      const v = await store.get(key);
-      if (!v) return null;
-      // v may be string or object w/ body; normalize
-      if (typeof v === 'string') return v;
-      if (v && typeof v.text === 'function') return await v.text();
-      try { return JSON.stringify(v); } catch { return String(v); }
-    },
-    async set(key, val, meta = {}) {
-      const value = typeof val === 'string' ? val : JSON.stringify(val);
-      return store.set(key, value, meta);
-    },
-    async del(key) {
-      return store.delete(key);
-    },
-    // for troubleshooting
-    _raw: store,
-    name
-  };
-}
+/**
+ * Writes a JSON object to the Netlify Blobs store.
+ * @param {string} key The key to store the blob under.
+ * @param {object} value The JSON object to store.
+ * @returns {boolean} True if the write was successful, false otherwise.
+ */
+exports.set = async (key, value) => {
+  try {
+    const serializedData = JSON.stringify(value);
+    await store.set(key, serializedData);
+    console.log(`Successfully wrote blob to key "${key}".`);
+    return true;
+  } catch (err) {
+    console.error(`Error setting blob "${key}":`, err && err.message ? err.message : err);
+    return false;
+  }
+};
 
-module.exports = { getBlobsStore };
+/**
+ * Deletes a blob from the Netlify Blobs store.
+ * @param {string} key The key of the blob to delete.
+ * @returns {boolean} True if the delete was successful, false otherwise.
+ */
+exports.del = async (key) => {
+  try {
+    await store.delete(key);
+    console.log(`Successfully deleted blob for key "${key}".`);
+    return true;
+  } catch (err) {
+    console.error(`Error deleting blob "${key}":`, err && err.message ? err.message : err);
+    return false;
+  }
+};
