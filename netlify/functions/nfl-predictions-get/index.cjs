@@ -8,37 +8,21 @@ exports.handler = async () => {
   try {
     const data = await get(CURRENT_KEY);
     if (data) {
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+      return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) };
+    } else {
+      const fallback = {
+        ok: true,
+        updated: null,
+        rows: [],
+        source: "empty",
+        key: CURRENT_KEY,
+        BUNDLE_VERSION,
       };
+      return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fallback) };
     }
-    // Cold/empty fallback
-    const fallback = {
-      ok: true,
-      updated: null,
-      rows: [],
-      source: 'empty',
-      key: CURRENT_KEY,
-      BUNDLE_VERSION
-    };
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(fallback)
-    };
   } catch (err) {
     console.error('Unhandled error in nfl-predictions-get:', err);
-    return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ok: false,
-        error: `Unhandled exception: ${String(err)}`,
-        BUNDLE_VERSION,
-        source: 'error'
-      })
-    };
+    return { statusCode: 500, headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ok: false, error: `Unhandled exception: ${String(err)}`, BUNDLE_VERSION, source: "error" }) };
   }
 };
