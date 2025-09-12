@@ -1,3 +1,4 @@
+# If you haven't added these yet, ensure they exist in your real netlify.toml
 [build]
   functions = "netlify/functions"
   publish = "dist"
@@ -5,16 +6,8 @@
 [functions]
   node_bundler = "esbuild"
 
-# Optional pretty route for a predictions page if you have one
-[[redirects]]
-  from = "/predictions"
-  to = "/predictions.html"
-  status = 200
-
 [build.environment]
   BLOBS_STORE_NFL = "nfl-td"
-  # Prefer INTERNAL_FUNCTIONS_URL at runtime; these fallbacks help locally
   NFL_SCHEDULE_URL = "nfl-schedule-get"
   NFL_ODDS_BRIDGE_URL = "odds-get"
-  # Served from /public by the build script
   NFLVERSE_TEAM_FORM_URL = "/nflverse-team-form.json"
