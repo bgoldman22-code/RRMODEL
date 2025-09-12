@@ -1,51 +1,42 @@
-// netlify/functions/_blobs.cjs
-// Helper wrapper around @netlify/blobs with JSON convenience methods.
-// Uses environment variables: BLOBS_STORE_NFL (or rrmodelblobs), NETLIFY_SITE_ID, NETLIFY_BLOBS_TOKEN
+const { getStore } = require('@netlify/blobs');
 
-let store;
-function getStore() {
-  if (store) return store;
-  try {
-    const { getStore } = require("@netlify/blobs");
-    const name  = process.env.BLOBS_STORE_NFL || "rrmodelblobs";
-    const siteID = process.env.NETLIFY_SITE_ID;
-    const token  = process.env.NETLIFY_BLOBS_TOKEN;
-    store = getStore({ name, siteID, token });
-    return store;
-  } catch (e) {
-    throw new Error("Failed to load @netlify/blobs: " + String(e));
-  }
-}
+const storeName = process.env.BLOBS_STORE_NFL || process.env.NFL_TD_BLOBS || "nfl-td";
+const store = getStore({
+  name: storeName,
+  siteID: process.env.NETLIFY_SITE_ID,
+  token: process.env.NETLIFY_BLOBS_TOKEN,
+});
 
-async function get(key) {
+const safeJSONParse = (input, fallback=null) => {
+  try { return JSON.parse(input); } catch { return fallback; }
+};
+
+exports.get = async (key) => {
   try {
-    const s = getStore();
-    const raw = await s.get(key, { type: "text" });
-    if (!raw) return null;
-    try { return JSON.parse(raw); } catch { return null; }
-  } catch (e) {
+    const raw = await store.get(key, { type: "text" });
+    return raw ? safeJSONParse(raw) : null;
+  } catch (err) {
+    console.error("Blobs get error:", err);
     return null;
   }
-}
+};
 
-async function set(key, val) {
+exports.set = async (key, value) => {
   try {
-    const s = getStore();
-    await s.set(key, JSON.stringify(val));
+    await store.set(key, JSON.stringify(value));
     return true;
-  } catch (e) {
+  } catch (err) {
+    console.error("Blobs set error:", err);
     return false;
   }
-}
+};
 
-async function del(key) {
+exports.del = async (key) => {
   try {
-    const s = getStore();
-    await s.delete(key);
+    await store.delete(key);
     return true;
-  } catch (e) {
+  } catch (err) {
+    console.error("Blobs del error:", err);
     return false;
   }
-}
-
-module.exports = { get, set, del, getStore };
+};
