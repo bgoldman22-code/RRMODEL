@@ -6,12 +6,29 @@
  */
 const { getStore } = require("@netlify/blobs");
 
+function getNflStore() {
+  const name = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "nfl-td";
+  try {
+    // Works when Netlify injects Blobs context (Production, most contexts)
+    return getStore(name);
+  } catch (e) {
+    // Manual fallback for contexts where Blobs isn't injected (some previews/local)
+    const siteID = process.env.NETLIFY_SITE_ID;
+    const token = process.env.NETLIFY_API_TOKEN;
+    if (!siteID || !token) {
+      const msg = "Blobs context missing and no manual credentials provided. Set NETLIFY_SITE_ID and NETLIFY_API_TOKEN.";
+      const err = new Error(msg);
+      err.code = "MISSING_BLOBS_CREDS";
+      throw err;
+    }
+    return getStore(name, { siteID, token });
+  }
+}
+
+
 function baseUrl() {
-  // Prefer INTERNAL_FUNCTIONS_URL (available in Netlify runtime) for server→server calls
   if (process.env.INTERNAL_FUNCTIONS_URL) return process.env.INTERNAL_FUNCTIONS_URL;
-  // Netlify dev default
   if (process.env.NETLIFY_DEV === "true") return "http://localhost:8888/.netlify/functions";
-  // Fallback to public URL + functions path
   const site = process.env.URL || process.env.DEPLOY_URL || "http://localhost:8888";
   return new URL("/.netlify/functions", site).toString().replace(/\/$/, "");
 }
@@ -24,8 +41,7 @@ async function safeJsonFetch(url) {
 
 exports.handler = async () => {
   try {
-    const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "nfl-td";
-    const store = getStore(storeName);
+    const store = getNflStore();
 
     const fnBase = baseUrl();
     const scheduleUrl = process.env.NFL_SCHEDULE_URL?.startsWith("http")
@@ -40,7 +56,6 @@ exports.handler = async () => {
       ? process.env.NFLVERSE_TEAM_FORM_URL
       : new URL(process.env.NFLVERSE_TEAM_FORM_URL || "/nflverse-team-form.json", process.env.URL || "http://localhost:8888").toString();
 
-    // Pull inputs
     const [schedule, odds, teamForm] = await Promise.all([
       safeJsonFetch(scheduleUrl),
       safeJsonFetch(oddsUrl),
@@ -49,26 +64,22 @@ exports.handler = async () => {
 
     const out = { ok: true, updated: new Date().toISOString(), rows: [] };
 
-    // Normalize schedule <- allow different shapes
-    const matchups = Array.isArray(schedule.matchups) ? schedule.matchups
-      : Array.isArray(schedule.rows) ? schedule.rows
+    // Normalize schedule
+    const matchups = Array.isArray(schedule?.matchups) ? schedule.matchups
+      : Array.isArray(schedule?.rows) ? schedule.rows
       : Array.isArray(schedule) ? schedule
       : [];
 
+    // Normalize odds into a map
     const byMatchupOdds = new Map();
-    if (Array.isArray(odds)) {
-      for (const o of odds) {
-        const key = o.matchup || o.id || `${o.away}@${o.home}`;
-        byMatchupOdds.set(key, o);
-      }
-    } else if (Array.isArray(odds.rows)) {
-      for (const o of odds.rows) {
-        const key = o.matchup || o.id || `${o.away}@${o.home}`;
-        byMatchupOdds.set(key, o);
-      }
-    }
+    const addOdds = (o) => {
+      const key = o.matchup || o.id || `${o.away || o.a}@${o.home || o.h}`;
+      if (key) byMatchupOdds.set(key, o);
+    };
+    if (Array.isArray(odds)) odds.forEach(addOdds);
+    else if (Array.isArray(odds?.rows)) odds.rows.forEach(addOdds);
 
-    const td = teamForm.team_data || {};
+    const td = teamForm?.team_data || {};
 
     for (const m of matchups) {
       const home = m.homeTeam || m.home || m.h || m.home_abbr;
@@ -81,21 +92,20 @@ exports.handler = async () => {
       let pickType = "moneyline", pickTeam = home, confidence = 0.5;
 
       if (homeM && awayM) {
-        const offEdge = (homeM.decayed_data?.off_epa_decayed ?? homeM.offense?.epa_per_play ?? 0) -
-                        (awayM.defense?.epa_allowed_per_play ?? 0);
-        const defEdge = (awayM.decayed_data?.off_epa_decayed ?? awayM.offense?.epa_per_play ?? 0) -
-                        (homeM.defense?.epa_allowed_per_play ?? 0);
+        const homeOff = homeM?.decayed_data?.off_epa_decayed ?? homeM?.offense?.epa_per_play ?? 0;
+        const awayDef = awayM?.defense?.epa_allowed_per_play ?? 0;
+        const awayOff = awayM?.decayed_data?.off_epa_decayed ?? awayM?.offense?.epa_per_play ?? 0;
+        const homeDef = homeM?.defense?.epa_allowed_per_play ?? 0;
 
-        // Translate edges to a pseudo-spread delta (very rough)
-        const totalEdge = offEdge - defEdge; // >0 favors home
+        // Positive favors HOME
+        const totalEdge = (homeOff - awayDef) - (awayOff - homeDef);
+
         if (totalEdge > 0.05) { pickType = "spread"; pickTeam = home; confidence = 0.68; }
         else if (totalEdge < -0.05) { pickType = "spread"; pickTeam = away; confidence = 0.68; }
         else {
-          // use odds if available
           const key1 = m.matchup || `${away}@${home}`;
           const oddsRec = byMatchupOdds.get(key1);
           if (oddsRec && (oddsRec.ml_home || oddsRec.ml_away)) {
-            // If odds imply home favorite, slight lean
             pickType = "moneyline";
             if (Number(oddsRec.ml_home || 0) < Number(oddsRec.ml_away || 0)) {
               pickTeam = home; confidence = 0.58;
@@ -103,12 +113,10 @@ exports.handler = async () => {
               pickTeam = away; confidence = 0.58;
             }
           } else {
-            // slight lean to the home team in toss-ups
             pickType = "moneyline"; pickTeam = home; confidence = 0.53;
           }
         }
       } else {
-        // Missing team metrics → odds or home lean
         pickType = "moneyline"; pickTeam = home; confidence = 0.54;
       }
 
@@ -120,7 +128,7 @@ exports.handler = async () => {
       });
     }
 
-    await store.setJSON("predictions/current.json", out);
+    await getNflStore().setJSON("predictions/current.json", out);
     return { statusCode: 200, body: JSON.stringify({ message: "Predictions generated successfully.", data: out }) };
   } catch (error) {
     return { statusCode: 500, body: JSON.stringify({ ok: false, error: "Failed to generate predictions.", details: error.message }) };
