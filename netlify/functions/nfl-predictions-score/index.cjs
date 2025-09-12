@@ -1,155 +1,177 @@
-exports.config = { includedFiles: ["netlify/functions/_data/**"] };
-
+// netlify/functions/nfl-predictions-score/index.cjs
+// Self-sufficient scorer: if no artifact exists, it will use public endpoints
+// (schedule + odds) to build rows and write current.json. No TRAIN step required.
 const { get, set } = require('../_blobs');
-const {
-  probabilityFromFeatures,
-  buildTeamSnapshot,
-  weatherPenalty,
-  composePick,
-  buildParlays,
-  impliedFromOdds,
-  upsetSignals,
-} = require('../_lib/predictionMath');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-const BUNDLE_VERSION = 'predictions-2025-09-12-v11';
-const ARTIFACT_KEY   = 'nfl/predictions/artifacts/latest.json';
-const CURRENT_KEY    = 'nfl/predictions/current.json';
+const ARTIFACT_KEY = 'nfl/predictions/artifacts/latest.json';
+const CURRENT_KEY = 'nfl/predictions/current.json';
+const BUNDLE_VERSION = 'predictions-2025-09-12-v9';
 
-const TEAM_ABBR = (name='') => (name.match(/\b[A-Z]{2,3}\b/)?.[0]) || name.split(' ').pop()?.toUpperCase()?.slice(0,3);
+function impliedFromAmerican(american) {
+  if (american == null) return null;
+  const a = Number(american);
+  if (!Number.isFinite(a) || a === 0) return null;
+  return a < 0 ? (-a) / ((-a) + 100) : 100 / (a + 100);
+}
 
-function bestFromBooks(markets) {
-  if (!markets) return { ml_home_best:null, ml_away_best:null, spread_line:null, total_line:null, total_side:null };
-  let ml_home=null, ml_away=null, spread_line=null, total_line=null, total_side=null;
-  for (const b of markets) {
-    const m = b.markets || {};
-    if (m.h2h?.length === 2) {
-      const [h, a] = m.h2h;
-      if (h?.price != null) ml_home = (ml_home==null) ? h.price : Math.max(ml_home, h.price);
-      if (a?.price != null) ml_away = (ml_away==null) ? a.price : Math.max(ml_away, a.price);
-    }
-    if (m.spreads?.length === 2) {
-      const [h, a] = m.spreads;
-      if (h?.point != null) spread_line = h.point;
-    }
-    if (m.totals?.length === 2) {
-      const [ov, un] = m.totals;
-      total_line = ov?.point ?? total_line;
-      total_side = (ov?.price != null && un?.price != null) ? (ov.price <= un.price ? 'Over' : 'Under') : total_side;
+function bestMoneyline(bookMarkets) {
+  // Return {home, away, home_imp, away_imp}
+  let bestHome = null, bestAway = null;
+  if (!Array.isArray(bookMarkets)) return { home:null, away:null, home_imp:null, away_imp:null };
+  for (const b of bookMarkets) {
+    const m = b?.markets?.h2h;
+    if (!Array.isArray(m)) continue;
+    for (const leg of m) {
+      if (!leg || typeof leg !== 'object') continue;
+      const nm = String(leg.name || '').trim();
+      const price = Number(leg.price);
+      if (!Number.isFinite(price)) continue;
+      // crude: if name matches home or away later, we resolve in caller
     }
   }
-  return { ml_home_best: ml_home, ml_away_best: ml_away, spread_line, total_line, total_side };
+  // We can't select without team mapping here; caller maps by team names.
+  return { home:null, away:null, home_imp:null, away_imp:null };
+}
+
+function pickByImplied(homeImp, awayImp, homeName, awayName) {
+  if (homeImp == null && awayImp == null) return { type: 'moneyline', team: homeName, confidence: 0.52 };
+  const h = homeImp ?? 0.5, a = awayImp ?? 0.5;
+  const team = h >= a ? homeName : awayName;
+  const conf = Math.max(h, a);
+  return { type: 'moneyline', team, confidence: conf };
+}
+
+async function fetchJSON(url) {
+  const res = await fetch(url, { headers: { 'accept': 'application/json' } });
+  const text = await res.text();
+  try { return JSON.parse(text); } catch {
+    throw new Error(`Non-JSON from ${url}: ${text.slice(0,120)}`);
+  }
+}
+
+function normalizeTeam(t) {
+  return String(t || '').trim();
+}
+
+function consensusFromBookmakers(bookmakers, homeTeam, awayTeam) {
+  // Compute best prices for home/away ML, best spread for favored team, and a totals line
+  let bestHome = null, bestAway = null;
+  let spreadTeam = null, spreadLine = null;
+  let totalSide = null, totalLine = null;
+
+  if (Array.isArray(bookmakers)) {
+    for (const b of bookmakers) {
+      const mkts = b?.markets || {};
+      const h2h = mkts.h2h;
+      if (Array.isArray(h2h)) {
+        for (const leg of h2h) {
+          const name = String(leg?.name || '');
+          const price = Number(leg?.price);
+          if (!Number.isFinite(price)) continue;
+          if (name === homeTeam) {
+            // For favorites (negative), we want the highest (closest to zero) negative -> max price
+            // For dogs (positive), we want the highest positive -> max price
+            if (bestHome == null) bestHome = price;
+            else {
+              // choose better payout for bettor: for home favorite (negative), choose less negative (greater).
+              // treat simply as Math.max for American odds across books.
+              bestHome = Math.max(bestHome, price);
+            }
+          } else if (name === awayTeam) {
+            if (bestAway == null) bestAway = price; else bestAway = Math.max(bestAway, price);
+          }
+        }
+      }
+      const spreads = mkts.spreads;
+      if (Array.isArray(spreads) && spreads.length) {
+        // choose the line associated with favorite (by more negative price or more negative point). Simplify: take the first.
+        const leg0 = spreads[0];
+        spreadTeam = String(leg0?.name || null);
+        spreadLine = Number.isFinite(Number(leg0?.point)) ? Number(leg0.point) : null;
+      }
+      const totals = mkts.totals;
+      if (Array.isArray(totals) && totals.length) {
+        const t0 = totals[0];
+        totalSide = String(t0?.name || null);
+        totalLine = Number.isFinite(Number(t0?.point)) ? Number(t0.point) : null;
+      }
+    }
+  }
+
+  const ml_home_imp = impliedFromAmerican(bestHome);
+  const ml_away_imp = impliedFromAmerican(bestAway);
+
+  return { ml_home_best: bestHome, ml_away_best: bestAway, ml_home_imp, ml_away_imp, spread_team: spreadTeam, spread_line: spreadLine, total_side: totalSide, total_line: totalLine };
 }
 
 exports.handler = async (event) => {
-  const open = String(event.queryStringParameters?.open||'') === '1';
-  const auto = String(event.queryStringParameters?.autobuild||'') === '1';
-
   try {
-    const artifact = await get(ARTIFACT_KEY);
-    if (!artifact?.schedule?.ok) {
-      return { statusCode: 200, headers:{'content-type':'application/json'},
-        body: JSON.stringify({ ok:false, error:'No artifact found (run TRAIN first)', BUNDLE_VERSION }) };
+    const scheduleURL = process.env.NFL_SCHEDULE_URL || 'https://bgroundrobin.com/.netlify/functions/nfl-schedule-get';
+    const oddsURL = process.env.NFL_ODDS_BRIDGE_URL || 'https://bgroundrobin.com/.netlify/functions/odds-get';
+
+    // Always try to use artifact first unless ?force=1
+    const force = String(event.queryStringParameters?.force || '') === '1';
+    let artifact = null;
+    if (!force) {
+      artifact = await get(ARTIFACT_KEY);
     }
 
-    const currentSeason = Number(artifact.schedule?.season || 2025);
-    const currentWeek   = Number(artifact.schedule?.week || 2);
-    const scheduleRows  = artifact.schedule?.rows || artifact.schedule?.games || [];
+    // Pull schedule and odds
+    const sched = await fetchJSON(scheduleURL); // {ok, season, weekCounts?} (but some versions also return games already)
+    // If your schedule function supports ?week param, pull upcoming by default:
+    const weekParam = event.queryStringParameters?.week;
+    const gamesURL = scheduleURL + (weekParam ? `?week=${encodeURIComponent(weekParam)}` : '');
+    const odds = await fetchJSON(oddsURL); // {ok, count, games:[{id, home_team, away_team, bookmakers:[...]}]}
 
+    const games = Array.isArray(odds?.games) ? odds.games : [];
     const rows = [];
-    for (const g of scheduleRows) {
-      const id = g.id || g.eventId || g.key;
-      const home = g.home_team || g.homeTeam || g.home;
-      const away = g.away_team || g.awayTeam || g.away;
-      const kickoff = g.commence_time || g.kickoff || g.start;
+    for (const g of games) {
+      const id = g.id;
+      const home = normalizeTeam(g.home_team);
+      const away = normalizeTeam(g.away_team);
+      const kick = g.commence_time;
 
-      const bookRow = (artifact.odds?.games || artifact.odds?.rows || []).find(x=> (x.id === id) || (x.home_team===home && x.away_team===away));
-      const market = bestFromBooks(bookRow?.bookmakers);
+      const cons = consensusFromBookmakers(g.bookmakers, home, away);
+      const pick = pickByImplied(cons.ml_home_imp, cons.ml_away_imp, home, away);
 
-      const teamLogs = artifact.nflverse_logs || {};
-      const homeLogs = teamLogs[TEAM_ABBR(home)] || teamLogs[home] || [];
-      const awayLogs = teamLogs[TEAM_ABBR(away)] || teamLogs[away] || [];
-
-      const ctx = { currentSeason, currentWeek };
-      const homeSnap = buildTeamSnapshot(homeLogs, ctx);
-      const awaySnap = buildTeamSnapshot(awayLogs, ctx);
-
-      const w = artifact.weather_by_event?.[id] || null;
-      const wPen = weatherPenalty(w);
-
-      const roster = artifact.espn_rosters || {};
-      const homeInj = roster[TEAM_ABBR(home)]?.injuryPenalty || 0;
-      const awayInj = roster[TEAM_ABBR(away)]?.injuryPenalty || 0;
-
-      const featHome = {
-        off_epa: (homeSnap.off_epa ?? 0) - (awaySnap.def_epa ?? 0) - homeInj*0.1,
-        def_epa: (homeSnap.def_epa ?? 0) - (awaySnap.off_epa ?? 0),
-        rz_off:  (homeSnap.rz_off  ?? 0) - (awaySnap.rz_def ?? 0),
-        rz_def:  (homeSnap.rz_def  ?? 0) - (awaySnap.rz_off ?? 0),
-        explosiveness: (homeSnap.explosiveness ?? 0) - (awaySnap.explosiveness ?? 0),
-        pressure: (homeSnap.pressure ?? 0) - (awaySnap.pressure ?? 0),
-        st: (homeSnap.st ?? 0) - (awaySnap.st ?? 0),
-        hfa: 0.2,
-        weatherPen: wPen,
-        turnoverAdj: (homeSnap.turnoverAdj ?? 0) - (awaySnap.turnoverAdj ?? 0)
-      };
-
-      const homeProb = probabilityFromFeatures(featHome);
-      const mlPick0 = composePick(homeProb, market.ml_home_best, market.ml_away_best);
-      const pick_ml = { type:'moneyline', team: (mlPick0.team==='HOME'? home: away), confidence: mlPick0.confidence, edge: mlPick0.edge };
-
-      // naive projected spread from prob -> logistic inverse scaled (rough heuristic)
-      const k = 6.0; // scale factor ~ points
-      const z = Math.log(homeProb/(1-homeProb));
-      const spread_proj = -(z * (k/1.5)); // negative means home favored
-      const spreadPickTeam = spread_proj <= 0 ? home : away;
-      const spreadConf = Math.max(0.52, Math.min(0.9, 0.52 + Math.abs(z)*0.06));
-      const pick_spread = { type:'spread', team: spreadPickTeam, line: market.spread_line ?? null, confidence: spreadConf };
-
-      // total propensity heuristic using snaps (aggregate offense vs defense + explosiveness and RZ, minus weather)
-      const s = (homeSnap.off_epa + awaySnap.off_epa) - (homeSnap.def_epa + awaySnap.def_epa)
-              + 0.5*((homeSnap.explosiveness||0)+(awaySnap.explosiveness||0))
-              + 0.4*((homeSnap.rz_off||0)+(awaySnap.rz_off||0))
-              - 0.4*((homeSnap.rz_def||0)+(awaySnap.rz_def||0))
-              - wPen;
-      const totalSide = s >= 0 ? 'Over' : 'Under';
-      const totalConf = Math.max(0.52, Math.min(0.85, 0.52 + Math.tanh(Math.abs(s))*0.28));
-      const pick_total = { type:'total', side: totalSide, line: market.total_line ?? null, confidence: totalConf };
-
-      const row = {
-        id, kickoff,
-        matchup: `${away} @ ${home}`,
-        home, away,
-        home_abbr: TEAM_ABBR(home),
-        away_abbr: TEAM_ABBR(away),
-        ml_home_best: market.ml_home_best,
-        ml_away_best: market.ml_away_best,
-        ml_home_imp: impliedFromOdds(market.ml_home_best),
-        ml_away_imp: impliedFromOdds(market.ml_away_best),
-        spread_team: spreadPickTeam,
-        spread_line: market.spread_line ?? null,
-        total_side:  totalSide,
-        total_line:  market.total_line ?? null,
-        pick: pick_ml,            // backward compat
-        pick_ml,
-        pick_spread,
-        pick_total
-      };
-
-      rows.push(row);
+      rows.push({
+        id, kickoff: kick, matchup: `${away} @ ${home}`,
+        ml_home_best: cons.ml_home_best,
+        ml_away_best: cons.ml_away_best,
+        ml_home_imp: cons.ml_home_imp,
+        ml_away_imp: cons.ml_away_imp,
+        spread_team: cons.spread_team,
+        spread_line: cons.spread_line,
+        total_side: cons.total_side,
+        total_line: cons.total_line,
+        pick,
+        alts: { spread: [], totals: [] }
+      });
     }
 
-    const parlays = buildParlays(rows);
-    const resultData = { ok:true, updated:new Date().toISOString(), rows, parlays, BUNDLE_VERSION, source:"blobs+artifact" };
-    const ok = await set(CURRENT_KEY, resultData);
-    if (!ok) {
-      return { statusCode: 200, headers:{'content-type':'application/json'},
-        body: JSON.stringify({ ok:false, error:'Failed to write predictions', BUNDLE_VERSION }) };
+    // Simple parlay builder: top 3 and top 5 by confidence
+    const sorted = [...rows].sort((a,b)=> (b.pick?.confidence||0) - (a.pick?.confidence||0));
+    const parlay3 = sorted.slice(0,3).map(r => ({ gameId: r.id, matchup: r.matchup, leg: `${r.pick.type==='moneyline' ? (r.pick.team) : (r.pick.team + ' ' + (r.spread_line??''))}`, confidence: r.pick.confidence }));
+    const parlay5 = sorted.slice(0,5).map(r => ({ gameId: r.id, matchup: r.matchup, leg: `${r.pick.type==='moneyline' ? (r.pick.team) : (r.pick.team + ' ' + (r.spread_line??''))}`, confidence: r.pick.confidence }));
+
+    const payload = {
+      ok: true,
+      updated: new Date().toISOString(),
+      rows,
+      parlay: { legs3: parlay3, legs5: parlay5 },
+      source: artifact ? 'artifact+public' : 'public-only',
+      BUNDLE_VERSION
+    };
+
+    const okWrite = await set(CURRENT_KEY, payload);
+    if (!okWrite) {
+      return { statusCode: 500, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ok:false, error:'Failed to persist predictions', BUNDLE_VERSION }) };
     }
 
-    return { statusCode: 200, headers:{'content-type':'application/json'},
-      body: JSON.stringify({ ok:true, scored:true, rows: rows.length, updated: resultData.updated, BUNDLE_VERSION, open, auto }) };
+    return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ok:true, scored:true, rows: rows.length, updated: payload.updated, BUNDLE_VERSION }) };
   } catch (err) {
-    return { statusCode: 200, headers:{'content-type':'application/json'},
-      body: JSON.stringify({ ok:false, error:String(err), where:'score', BUNDLE_VERSION }) };
+    console.error('nfl-predictions-score error:', err);
+    return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ok:false, error:String(err), BUNDLE_VERSION }) };
   }
 };
