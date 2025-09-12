@@ -3,21 +3,23 @@ const { getStore } = require("@netlify/blobs");
 
 function getNflStore() {
   const name = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "nfl-td";
-  try {
-    // Works when Netlify injects Blobs context (Production, most contexts)
-    return getStore(name);
-  } catch (e) {
-    // Manual fallback for contexts where Blobs isn't injected (some previews/local)
-    const siteID = process.env.NETLIFY_SITE_ID;
-    const token = process.env.NETLIFY_API_TOKEN;
-    if (!siteID || !token) {
-      const msg = "Blobs context missing and no manual credentials provided. Set NETLIFY_SITE_ID and NETLIFY_API_TOKEN.";
-      const err = new Error(msg);
-      err.code = "MISSING_BLOBS_CREDS";
-      throw err;
-    }
-    return getStore(name, { siteID, token });
-  }
+  const siteID = process.env.NETLIFY_SITE_ID;
+  const token = process.env.NETLIFY_API_TOKEN;
+  // Prefer manual credentials if present; avoids missing injected context
+  if (siteID && token) return getStore(name, { siteID, token });
+  return getStore(name);
+}
+
+function storeDiag() {
+  return {
+    storeName: process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "nfl-td",
+    hasSiteId: !!process.env.NETLIFY_SITE_ID,
+    hasToken: !!process.env.NETLIFY_API_TOKEN,
+    hasInternalFunctionsUrl: !!process.env.INTERNAL_FUNCTIONS_URL,
+    url: process.env.URL || null,
+    deployUrl: process.env.DEPLOY_URL || null,
+    node: process.version
+  };
 }
 
 exports.handler = async () => {
