@@ -1,34 +1,28 @@
 // netlify/functions/nfl-predictions-get/index.cjs
-exports.config = {
-  includedFiles: []
-};
+const BUNDLE_VERSION = "predictions-2025-09-12-v7";
+const CURRENT_KEY    = "nfl/predictions/current.json";
 
-const { get } = require('../_blobs.js');
-
-const CURRENT_KEY    = 'nfl/predictions/current.json';
-const BUNDLE_VERSION = 'predictions-2025-09-12-v6';
+const json = (code, obj) => ({
+  statusCode: code,
+  headers: { "content-type": "application/json", "cache-control": "no-store" },
+  body: JSON.stringify(obj)
+});
 
 exports.handler = async () => {
   try {
-    const data = await get(CURRENT_KEY);
-    if (data) {
-      return {
-        statusCode: 200,
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(data)
-      };
+    let blobs;
+    try {
+      blobs = require("../_blobs.js");
+    } catch (e) {
+      return json(500, { ok:false, error:`Blobs wrapper import failed: ${String(e)}`, BUNDLE_VERSION });
     }
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: true, updated: null, rows: [], source: 'empty', key: CURRENT_KEY, BUNDLE_VERSION })
-    };
+
+    const data = await blobs.get(CURRENT_KEY);
+    if (data && data.ok !== false) {
+      return json(200, data);
+    }
+    return json(200, { ok:true, updated:null, rows:[], source:"empty", key:CURRENT_KEY, BUNDLE_VERSION });
   } catch (err) {
-    console.error("[get] unhandled:", err && err.stack || err);
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: false, error: String(err), BUNDLE_VERSION, source: 'error' })
-    };
+    return json(500, { ok:false, error:`Unhandled: ${String(err)}`, BUNDLE_VERSION, source:"error" });
   }
 };
