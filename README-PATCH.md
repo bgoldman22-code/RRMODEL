@@ -1,13 +1,13 @@
-# Season-weighted Elo training patch
+# Patch: NFL frontend table (three markets)
 
-- Weights by season using `seasonWeight()`:
-  - current = 1.00
-  - last = 0.75
-  - -2 = 0.60
-  - -3 = 0.50
-  - older: 0.50 * exp(-(diff-3)/2), floor 0.25
-- Applies offseason regression toward mean (RETENTION = 0.80) before each new season.
-- Effective K is K_BASE * seasonWeight for each game update.
+Files included (drop into your repo root):
+- `src/components/NFLPredictionsTable.jsx`
+- `src/pages/NFL.jsx` (use if you don't already have an NFL page; otherwise copy the table component and integrate)
 
-Deploy then run:
-curl -sS "https://YOURSITE/.netlify/functions/nfl-train?season=2025&rebuild=1"
+Assumptions:
+- Tailwind (or similar utility classes). If not using Tailwind, classes are harmless.
+- Backend endpoint `/.netlify/functions/nfl-predictions-generate?mode=hybrid&v=2` returns either:
+  - `{ picks: [ { matchup, home, away, kickoff, markets: { moneyline:{pick, price, line, confidence}, spread:{...}, total:{...} } } ] }`
+  - or `{ rows: [ flat odds fields + pick_ml/conf_ml, pick_spread/conf_spread, pick_total/conf_total ] }`
+
+The component normalizes both shapes.
