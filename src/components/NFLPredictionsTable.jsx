@@ -1,53 +1,53 @@
 import React from "react";
+import "./predictions.css";
 
-function pct(x) {
-  if (x === null || x === undefined || Number.isNaN(x)) return "—";
-  return `${Math.round(Number(x) * 100)}%`;
-}
-
-export default function NFLPredictionsTable({ rows = [] }) {
-  if (!rows || rows.length === 0) {
-    return <div className="p-4 text-sm text-gray-500">No predictions yet. Click “Generate New Predictions”.</div>;
-  }
+export default function NFLPredictionsTable({ rows }) {
+  if (!rows || !rows.length) return <div className="predictions-empty">No predictions yet.</div>;
 
   return (
-    <div className="p-4">
-      <div className="overflow-x-auto rounded-xl shadow-sm border border-gray-200">
-        <table className="min-w-full text-sm">
-          <thead className="bg-gray-50">
-            <tr className="text-left">
-              <th className="px-3 py-2 font-semibold">Matchup</th>
-              <th className="px-3 py-2 font-semibold">Kickoff</th>
-              <th className="px-3 py-2 font-semibold">Moneyline</th>
-              <th className="px-3 py-2 font-semibold">Conf.</th>
-              <th className="px-3 py-2 font-semibold">Spread</th>
-              <th className="px-3 py-2 font-semibold">Conf.</th>
-              <th className="px-3 py-2 font-semibold">Total</th>
-              <th className="px-3 py-2 font-semibold">Conf.</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {rows.map((r) => {
-              const kickoff = r.kickoff ? new Date(r.kickoff).toLocaleString() : "—";
-              const ml = r.mlPick ? `moneyline: ${r.mlPick}` : "—";
-              const sp = r.spreadPick ?? "—";
-              const tot = r.totalPick ?? "—";
-              return (
-                <tr key={r.id || r.matchup}>
-                  <td className="px-3 py-2 whitespace-nowrap">{r.matchup}</td>
-                  <td className="px-3 py-2 whitespace-nowrap">{kickoff}</td>
-                  <td className="px-3 py-2">{ml}</td>
-                  <td className="px-3 py-2">{pct(r.mlConfidence)}</td>
-                  <td className="px-3 py-2">{sp}</td>
-                  <td className="px-3 py-2">{pct(r.spreadConfidence)}</td>
-                  <td className="px-3 py-2">{tot}</td>
-                  <td className="px-3 py-2">{pct(r.totalConfidence)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+    <div className="predictions-card">
+      <table className="predictions-table">
+        <thead>
+          <tr>
+            <th>Matchup</th>
+            <th>Kickoff</th>
+            <th>Moneyline Pick</th>
+            <th>Spread Pick</th>
+            <th>Total Pick</th>
+            <th>Confidence (ML / ATS / O‑U)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(r => {
+            const ml = r.moneyline || {};
+            const sp = r.spread || {};
+            const tot = r.total || {};
+            const mlTeam = ml.team || r.displayPick;
+            const spreadTeam = sp.team || (sp.side ? (sp.side === "home" ? r.homeTeam : r.awayTeam) : null);
+            const spreadLabel = sp.side ? `${spreadTeam} ${sp.side === "home" ? "" : ""}${r.odds?.spread_point != null ? ` (${sp.side === "home" ? "-" : "+"}${Math.abs(r.odds.spread_point)})` : ""}` : "—";
+            const totalLabel = tot.side ? `${tot.side.toUpperCase()} ${tot.total ?? ""}` : "—";
+            const kickoff = r.kickoff ? new Date(r.kickoff).toLocaleString() : "TBD";
+            return (
+              <tr key={r.id}>
+                <td className="matchup">{r.matchup}</td>
+                <td className="kickoff">{kickoff}</td>
+                <td className="ml-pick"><strong>{mlTeam}</strong>{ml.price != null ? ` (${ml.price})` : ""}</td>
+                <td className="spread-pick">{spreadLabel}</td>
+                <td className="total-pick">{totalLabel}</td>
+                <td className="conf">
+                  <div className="conf-badges">
+                    <span className="badge">{Math.round((ml.confidence || 0.5)*100)}%</span>
+                    <span className="sep">/</span>
+                    <span className="badge">{Math.round((sp.confidence || 0.5)*100)}%</span>
+                    <span className="sep">/</span>
+                    <span className="badge">{Math.round((tot.confidence || 0.5)*100)}%</span>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
