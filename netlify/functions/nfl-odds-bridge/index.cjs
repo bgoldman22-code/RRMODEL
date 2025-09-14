@@ -2,24 +2,25 @@
 /**
  * netlify/functions/nfl-odds-bridge/index.cjs
  *
- * NFL odds bridge using TheOddsAPI — SHARES the same env var as MLB:
+ * NFL odds bridge using TheOddsAPI — uses shared env var with MLB:
  *   ODDS_API_KEY = <your TheOddsAPI key>
  *
- * It normalizes moneyline, spreads, and totals for our generator and caches
- * responses in Netlify Blobs to reduce API calls.
+ * Pulls team markets: moneyline (h2h), spreads, totals.
+ * Caches to Netlify Blobs to reduce API calls.
  *
  * Optional env (defaults shown):
  *   ODDS_REGION=us
  *   ODDS_BOOKMAKER=fanduel
  *   ODDS_MARKETS=h2h,spreads,totals
+ *   ODDS_DAYS_FROM=7
  *   ODDS_TTL_SECONDS=120
  *   BLOBS_STORE_NFL=nfl-td
  *   NETLIFY_SITE_ID / NETLIFY_API_TOKEN (manual Blobs auth if needed)
  */
-
 const DEFAULT_REGION = process.env.ODDS_REGION || "us";
 const DEFAULT_BOOKMAKER = process.env.ODDS_BOOKMAKER || "fanduel";
 const DEFAULT_MARKETS = process.env.ODDS_MARKETS || "h2h,spreads,totals";
+const DEFAULT_DAYS_FROM = parseInt(process.env.ODDS_DAYS_FROM || "7", 10);
 const DEFAULT_TTL = parseInt(process.env.ODDS_TTL_SECONDS || "120", 10);
 
 const { getStore } = require("@netlify/blobs");
@@ -86,7 +87,7 @@ function normalize(theOddsApiPayload) {
 }
 
 async function fetchOdds() {
-  const key = process.env.ODDS_API_KEY; // shared with MLB
+  const key = process.env.ODDS_API_KEY;
   if (!key) {
     return { ok: true, fromCache: false, rows: [], warning: "Missing ODDS_API_KEY; returning empty rows." };
   }
@@ -97,38 +98,45 @@ async function fetchOdds() {
   url.searchParams.set("oddsFormat", "american");
   url.searchParams.set("bookmakers", DEFAULT_BOOKMAKER);
   url.searchParams.set("markets", DEFAULT_MARKETS);
+  url.searchParams.set("daysFrom", String(DEFAULT_DAYS_FROM));
+  url.searchParams.set("dateFormat", "iso");
 
   const res = await fetch(url.toString(), { redirect: "follow" });
   if (!res.ok) {
     const text = await res.text();
-    return { ok: false, status: res.status, error: text.slice(0, 300) };
+    return { ok: false, status: res.status, error: text.slice(0, 500), url: url.toString() };
   }
+  const remaining = res.headers.get("x-requests-remaining");
+  const used = res.headers.get("x-requests-used");
   const payload = await res.json();
-  return { ok: true, payload };
+  return { ok: true, payload, meta: { remaining, used } };
 }
 
-exports.handler = async () => {
+exports.handler = async (event) => {
   try {
+    const diag = event && event.queryStringParameters && event.queryStringParameters.diag != null;
     const store = getNflStore();
     const cacheKey = "nfl-odds/latest.json";
 
     // TTL cache
     const cached = await store.get(cacheKey, { type: "json" }).catch(() => null);
     const now = Date.now();
-    if (cached && cached.fetched_at && now - cached.fetched_at < DEFAULT_TTL * 1000) {
+    if (!diag && cached && cached.fetched_at && now - cached.fetched_at < DEFAULT_TTL * 1000) {
       return { statusCode: 200, body: JSON.stringify({ ok: true, provider: "theoddsapi", usingOddsApi: !!process.env.ODDS_API_KEY, fromCache: true, rows: cached.rows }) };
     }
 
     const result = await fetchOdds();
     if (!result.ok) {
-      return { statusCode: 200, body: JSON.stringify({ ok: true, provider: "theoddsapi", usingOddsApi: !!process.env.ODDS_API_KEY, fromCache: false, rows: [], warning: result.error || `HTTP ${result.status}` }) };
+      return { statusCode: 200, body: JSON.stringify({ ok: true, provider: "theoddsapi", usingOddsApi: !!process.env.ODDS_API_KEY, fromCache: false, rows: [], warning: result.error || `HTTP ${result.status}`, url: result.url }) };
     }
 
     const rows = normalize(result.payload);
     const toCache = { fetched_at: now, rows };
     await store.setJSON(cacheKey, toCache);
 
-    return { statusCode: 200, body: JSON.stringify({ ok: true, provider: "theoddsapi", usingOddsApi: !!process.env.ODDS_API_KEY, fromCache: false, rows }) };
+    const response = { ok: true, provider: "theoddsapi", usingOddsApi: !!process.env.ODDS_API_KEY, fromCache: false, rows };
+    if (diag) response.diag = { daysFrom: DEFAULT_DAYS_FROM, region: DEFAULT_REGION, bookmaker: DEFAULT_BOOKMAKER, markets: DEFAULT_MARKETS, meta: result.meta };
+    return { statusCode: 200, body: JSON.stringify(response) };
   } catch (error) {
     return { statusCode: 200, body: JSON.stringify({ ok: true, provider: "theoddsapi", usingOddsApi: !!process.env.ODDS_API_KEY, fromCache: false, rows: [], warning: error.message }) };
   }
