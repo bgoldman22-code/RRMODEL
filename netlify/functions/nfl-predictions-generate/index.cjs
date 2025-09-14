@@ -1,201 +1,160 @@
-// netlify/functions/nfl-predictions-generate/index.cjs
-'use strict';
+// PATCH: ensure pick text fields are included; keep confidence fixes and add debug logging.
+// This file is self-contained and safe to drop-in to replace the function bundle entry.
+/* eslint-disable */
+const fetch = globalThis.fetch || require("node:https").request; // Netlify provides fetch; fallback placeholder
 
-/**
- * Generates NFL predictions using team form (EPA-like) and schedule/odds as context.
- * Odds inform display/market selection only; model probabilities come from team form.
- */
-
-const fetch = globalThis.fetch || ((...args) => import('node-fetch').then(({default: f}) => f(...args)));
-
-const ENDPOINTS = {
-  scheduleUrl: process.env.SCHEDULE_URL || "https://bgroundrobin.com/.netlify/functions/nfl-schedule-get",
-  oddsUrl: process.env.ODDS_URL || "https://bgroundrobin.com/.netlify/functions/nfl-odds-bridge",
-  teamFormUrl: process.env.TEAM_FORM_URL || "https://bgroundrobin.com/nflverse-team-form.json"
+// Small utility: safe percentage
+const pct = (num) => {
+  if (num === null || num === undefined || Number.isNaN(num)) return null;
+  return Math.max(0, Math.min(100, Math.round(num * 100)));
 };
 
-function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
-function clamp(n, lo, hi){ return Math.max(lo, Math.min(hi, n)); }
-function impliedFromMoneyline(ml) {
-  if (ml == null) return null;
-  if (ml < 0) return (-ml) / ((-ml) + 100);
-  return 100 / (ml + 100);
-}
-function formatMoneyline(ml){
-  if (ml == null) return null;
-  return ml > 0 ? `(${ml})` : `(${ml})`;
-}
-function pct(n){ if (n==null) return null; return Math.round(n*100); }
-
-function pickFromEdge(probModel, probImplied, favoriteLabel, dogLabel){
-  // Choose side by model > 0.5
-  const side = probModel >= 0.5 ? favoriteLabel : dogLabel;
-  const edge = probImplied == null ? Math.abs(probModel - 0.5) : Math.abs(probModel - probImplied);
-  // Map edge to confidence 50%..85%
-  const conf = clamp(0.5 + edge, 0.5, 0.85);
-  return { side, confidence: conf };
+// Compose pretty labels
+function formatMoneyline(odds, sideTeam) {
+  if (!odds || (odds.ml_home == null && odds.ml_away == null)) return null;
+  if (!sideTeam) return null;
+  const isHome = odds.home?.toUpperCase?.() === sideTeam.toUpperCase?.();
+  const price = isHome ? odds.ml_home : odds.ml_away;
+  if (price == null) return sideTeam; // no price, show team
+  const priceStr = price > 0 ? `(${price})` : `(${price})`;
+  return `${sideTeam} ${priceStr}`;
 }
 
-function getTeamCodeMap(team_data){
-  // The form JSON uses 2–3 letter codes; build simple name->code fallback.
-  // We'll derive by initials of words, fallback to first 3 caps letters.
-  const codes = Object.keys(team_data || {});
-  return {
-    resolve(name){
-      if (!name) return null;
-      const key = name.toUpperCase();
-      // Try exact code
-      if (codes.includes(key)) return key;
-      // Try first letters e.g., New York Jets -> NYJ
-      const init = key.split(/\s+/).map(w=>w[0]).join('');
-      if (codes.includes(init)) return init;
-      // Try first 3 letters
-      const first3 = key.replace(/[^A-Z]/g,'').slice(0,3);
-      if (codes.includes(first3)) return first3;
-      // Last attempt: special cases
-      const map = { 'LAR':'LA', 'LA RAMS':'LA', 'SAN FRANCISCO 49ERS':'SF', 'SAN FRANCISCO':'SF',
-        'LOS ANGELES CHARGERS':'LAC', 'CHARGERS':'LAC', 'WASHINGTON COMMANDERS':'WAS',
-        'KANSAS CITY CHIEFS':'KC', 'GREEN BAY PACKERS':'GB', 'NEW ORLEANS SAINTS':'NO',
-        'TAMPA BAY BUCCANEERS':'TB', 'NEW ENGLAND PATRIOTS':'NE' };
-      if (map[key] && codes.includes(map[key])) return map[key];
-      return null;
-    }
-  };
+function formatSpread(odds, pick) {
+  if (!odds || odds.spread_point == null || !pick?.team) return null;
+  const line = odds.spread_point;
+  const isHome = odds.home?.toUpperCase?.() === pick.team.toUpperCase?.();
+  const team = pick.team;
+  const sideLine = isHome ? line : -line;
+  const price = isHome ? odds.spread_home_line : odds.spread_away_line;
+  const priceStr = price != null ? ` (${price})` : "";
+  return `${team} ${sideLine} ${priceStr}`;
 }
 
-exports.handler = async (event) => {
-  const q = event && event.queryStringParameters || {};
-  const force = q.force === 'true';
+function formatTotal(odds, pick) {
+  if (!odds || odds.total_points == null || !pick?.side) return null;
+  const label = pick.side?.toUpperCase?.().includes("OVER") ? "OVER" : "UNDER";
+  return `${label} ${odds.total_points}`;
+}
 
+// Fallback model: derive win prob from EPA form deltas (simple logistic transform)
+function simpleMoneylineModel(formHome, formAway, homeEdge = 0.03) {
+  // form ~ [-.3, +.3] ish. Add a tiny home advantage.
+  const x = (formHome ?? 0) - (formAway ?? 0) + homeEdge;
+  const p = 1 / (1 + Math.exp(-4.5 * x)); // steeper sigmoid
+  return Math.max(0.05, Math.min(0.95, p));
+}
+
+exports.handler = async (event, context) => {
+  const started = Date.now();
   try {
+    const FORCE = event?.queryStringParameters?.force === "true";
+    // Endpoints are preconfigured in your environment (from your current site)
+    const scheduleUrl = process.env.SCHEDULE_URL || "https://bgroundrobin.com/.netlify/functions/nfl-schedule-get";
+    const oddsUrl = process.env.ODDS_URL || "https://bgroundrobin.com/.netlify/functions/nfl-odds-bridge";
+    const formUrl = process.env.TEAM_FORM_URL || "https://bgroundrobin.com/nflverse-team-form.json";
+
     const [schedRes, oddsRes, formRes] = await Promise.all([
-      fetch(ENDPOINTS.scheduleUrl),
-      fetch(ENDPOINTS.oddsUrl),
-      fetch(ENDPOINTS.teamFormUrl)
+      fetch(scheduleUrl),
+      fetch(oddsUrl),
+      fetch(formUrl)
     ]);
-    const scheduleJson = await schedRes.json().catch(()=>({ ok:false }));
-    const oddsJson = await oddsRes.json().catch(()=>({ ok:false }));
-    const formJson = await formRes.json().catch(()=>({ ok:false }));
 
-    const matchups = (scheduleJson && scheduleJson.json && scheduleJson.json.matchups) || scheduleJson.matchups || [];
-    const oddsRows = (oddsJson && oddsJson.rows) || (oddsJson && oddsJson.json && oddsJson.json.rows) || [];
-    const teamData = (formJson && formJson.team_data) || (formJson && formJson.json && formJson.json.team_data) || {};
+    const schedule = await schedRes.json();
+    const oddsData = await oddsRes.json();
+    const formData = await formRes.json();
 
-    const codeMap = getTeamCodeMap(teamData);
+    const oddsById = new Map();
+    for (const r of (oddsData?.rows || [])) oddsById.set(r.id, r);
 
-    const oddsById = new Map(oddsRows.map(o => [o.id, o]));
+    const formByName = (abbr) => formData?.team_data?.[abbr]?.form ?? null;
 
-    const kStrength = 3.25; // scale for sigmoid
+    // very light team->abbr map from odds rows if possible
+    const guessAbbr = (team) => {
+      if (!team) return null;
+      const t = team.toUpperCase();
+      // use a hand-rolled minimal mapping consistent with your data feed
+      const map = {
+        "DETROIT LIONS":"DET","CHICAGO BEARS":"CHI","CINCINNATI BENGALS":"CIN","JACKSONVILLE JAGUARS":"JAX",
+        "DALLAS COWBOYS":"DAL","NEW YORK GIANTS":"NYG","MIAMI DOLPHINS":"MIA","NEW ENGLAND PATRIOTS":"NE",
+        "BALTIMORE RAVENS":"BAL","CLEVELAND BROWNS":"CLE","NEW YORK JETS":"NYJ","BUFFALO BILLS":"BUF",
+        "TENNESSEE TITANS":"TEN","LOS ANGELES RAMS":"LA","NEW ORLEANS SAINTS":"NO","SAN FRANCISCO 49ERS":"SF",
+        "PITTSBURGH STEELERS":"PIT","SEATTLE SEAHAWKS":"SEA","ARIZONA CARDINALS":"ARI","CAROLINA PANTHERS":"CAR",
+        "INDIANAPOLIS COLTS":"IND","DENVER BRONCOS":"DEN","KANSAS CITY CHIEFS":"KC","PHILADELPHIA EAGLES":"PHI",
+        "MINNESOTA VIKINGS":"MIN","ATLANTA FALCONS":"ATL","HOUSTON TEXANS":"HOU","TAMPA BAY BUCCANEERS":"TB",
+        "LAS VEGAS RAIDERS":"LV","LOS ANGELES CHARGERS":"LAC","GREEN BAY PACKERS":"GB","WASHINGTON COMMANDERS":"WAS",
+        "SF":"SF","LAC":"LAC","LA":"LA"
+      };
+      return map[t] || null;
+    };
+
     const rows = [];
+    for (const m of (schedule?.matchups || [])) {
+      const id = m.id;
+      const odds = oddsById.get(id);
+      const home = (m.homeTeam || odds?.home || "").toUpperCase();
+      const away = (m.awayTeam || odds?.away || "").toUpperCase();
 
-    for (const g of matchups) {
-      const o = oddsById.get(g.id) || {};
-      const homeName = (g.homeTeam || o.home || '').toUpperCase();
-      const awayName = (g.awayTeam || o.away || '').toUpperCase();
-
-      const homeCode = codeMap.resolve(homeName);
-      const awayCode = codeMap.resolve(awayName);
-
-      let reason = null;
-      if (!homeCode || !awayCode || !teamData[homeCode] || !teamData[awayCode]) {
-        reason = 'missing-team-form';
-      }
-
-      // Pull "form" (already decayed) from form JSON; fallback to 0
-      const formHome = teamData[homeCode]?.form ?? 0;
-      const formAway = teamData[awayCode]?.form ?? 0;
-      const delta = (formHome - formAway);
-
-      // Model probability (home win)
-      const pHome = sigmoid(kStrength * delta);
+      // Model moneyline via team form (independent of odds); odds only used to format strings
+      const fh = formByName(guessAbbr(home));
+      const fa = formByName(guessAbbr(away));
+      const pHome = simpleMoneylineModel(fh, fa, 0.03);
       const pAway = 1 - pHome;
+      const mlPickTeam = pHome >= 0.5 ? home : away;
+      const mlConf = pct(Math.max(pHome, pAway));
 
-      // Moneyline implieds
-      const pImpHome = impliedFromMoneyline(o.ml_home ?? null);
-      const pImpAway = impliedFromMoneyline(o.ml_away ?? null);
-
-      // Moneyline pick
-      const mlPick = pickFromEdge(
-        pHome,
-        pImpHome,
-        homeName,
-        awayName
-      );
-
-      // Spread: choose toward our model lean (positive delta favors home)
-      const spreadPoint = o.spread_point ?? null;
-      const spreadHomeLine = o.spread_home_line ?? null;
-      const spreadAwayLine = o.spread_away_line ?? null;
-
-      // Define a soft confidence from |delta| scaled (0..~0.25) -> 50..80%
-      const spreadEdge = clamp(Math.abs(delta), 0, 0.3);
-      const spreadConf = clamp(0.5 + spreadEdge, 0.5, 0.8);
-      const spreadSide = delta >= 0 ? `${homeName} ${spreadPoint}` : `${awayName} ${spreadPoint}`;
-
-      // Total: rough lean—if combined offensive form minus defensive form > 0 -> over, else under
-      const ho = teamData[homeCode]?.offense?.epa_per_play ?? 0;
-      const ao = teamData[awayCode]?.offense?.epa_per_play ?? 0;
-      const hd = teamData[homeCode]?.defense?.epa_allowed_per_play ?? 0; // negative is good D (suppresses points)
-      const ad = teamData[awayCode]?.defense?.epa_allowed_per_play ?? 0;
-
-      const totalLean = (ho + ao) - (Math.abs(hd) + Math.abs(ad)) * 0.5;
-      const totalSide = totalLean >= 0 ? 'OVER' : 'UNDER';
-      const totalEdge = clamp(Math.min(Math.abs(totalLean) * 8, 0.35), 0, 0.35); // scale
-      const totalConf = clamp(0.5 + totalEdge, 0.5, 0.85);
+      // Placeholder spread/total signals (still independent of book line)
+      // Use form diffs to lean under/over and favorite spread
+      const formDiff = (fh ?? 0) - (fa ?? 0);
+      const spreadPick = { team: mlPickTeam, side: "spread" };
+      const spreadConf = pct(0.5 + Math.min(0.35, Math.abs(formDiff) * 1.1));
+      const totalPick = { side: (fh ?? 0) + (fa ?? 0) > 0 ? "OVER" : "UNDER" };
+      const totalConf = pct(0.5 + Math.min(0.35, Math.abs((fh ?? 0) + (fa ?? 0))));
 
       const row = {
-        id: g.id,
-        matchup: g.matchup || `${awayName} @ ${homeName}`,
-        kickoff: g.kickoff,
-        reason,
-        homeTeam: homeName,
-        awayTeam: awayName,
-        moneyline: {
-          pick: mlPick.side,
-          price: o.ml_home!=null && o.ml_away!=null ? (mlPick.side === homeName ? o.ml_home : o.ml_away) : null,
-          confidence: mlPick.confidence
-        },
-        spread: {
-          pick: spreadSide,
-          price: spreadSide.startsWith(homeName) ? spreadHomeLine : spreadAwayLine,
-          confidence: spreadConf
-        },
-        total: {
-          pick: o.total_points != null ? `${totalSide} ${o.total_points}` : totalSide,
-          price: totalSide === 'OVER' ? o.over_price ?? null : o.under_price ?? null,
-          confidence: totalConf
+        id,
+        matchup: `${away} @ ${home}`,
+        kickoff: m.kickoff,
+        // display strings:
+        moneylineText: formatMoneyline(odds, mlPickTeam),
+        moneylineConf: mlConf,
+        spreadText: formatSpread(odds, spreadPick),
+        spreadConf: spreadConf,
+        totalText: formatTotal(odds, totalPick),
+        totalConf: totalConf,
+        // raw details for debugging
+        debug: {
+          home, away, fh, fa, pHome, pAway, formDiff,
+          odds: odds ? { ml_home: odds.ml_home, ml_away: odds.ml_away, spread_point: odds.spread_point, total_points: odds.total_points } : null
         }
       };
 
-      // Logging for debugging in Netlify function logs
-      console.log('[PREDICTION]', JSON.stringify({
-        id: row.id,
-        matchup: row.matchup,
-        pHome: Number(pHome.toFixed(4)),
-        moneyline: row.moneyline,
-        spread: row.spread,
-        total: row.total
-      }));
+      // Graceful fallbacks to "-" if we couldn't format with odds
+      if (!row.moneylineText) row.moneylineText = mlPickTeam || "-";
+      if (!row.spreadText) row.spreadText = "-";
+      if (!row.totalText) row.totalText = "-";
 
       rows.push(row);
+
+      // Runtime logging so you can inspect what the model generated
+      console.log(`[NFL MODEL] ${row.matchup} | ML pick=${mlPickTeam} (${row.moneylineConf}%)` +
+        ` | spread='${row.spreadText}' (${row.spreadConf}%) | total='${row.totalText}' (${row.totalConf}%)`);
     }
 
     return {
       statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        ok: true,
-        updated: new Date().toISOString(),
-        meta: { source: 'model-epa-v1', schedule_source: scheduleJson?.source || scheduleJson?.json?.source || 'unknown' },
-        rows
-      })
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ok: true, updated: new Date().toISOString(), meta: { source: "model-epa-sigmoid", schedule_source: schedule?.source || "unknown" }, rows })
     };
   } catch (err) {
-    console.error('GEN_CRASH', err);
+    console.error("nfl-predictions-generate crashed", err);
     return {
       statusCode: 500,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok:false, error:'Function crashed', details: { hint:'See function logs', code:'GEN_CRASH' } })
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ok: false, error: "Function crashed", details: { hint: "See function logs", code: "GEN_CRASH" } })
     };
+  } finally {
+    const ms = Date.now() - started;
+    console.log(`[NFL MODEL] handler finished in ${ms}ms`);
   }
 };
