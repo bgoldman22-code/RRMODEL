@@ -171,52 +171,76 @@ exports.handler = async (event) => {
     oddsMap.set(key, r);
   }
 
-  for (const m of matchups) {
-    const home = normTeam(m.homeTeam || m.home || m.home_team);
-    const away = normTeam(m.awayTeam || m.away || m.away_team);
-    const matchupKey = `${away} @ ${home}`;
-    const odds = oddsMap.get(matchupKey);
+  
+for (const m of matchups) {
+  const home = normTeam(m.homeTeam || m.home || m.home_team);
+  const away = normTeam(m.awayTeam || m.away || m.away_team);
+  const matchupKey = `${away} @ ${home}`;
+  const odds = oddsMap.get(matchupKey);
 
+  // -------- MODEL-FIRST PROBABILITIES --------
+  const h = teamMetrics[home] || {};
+  const a = teamMetrics[away] || {};
 
-    const picked = pickFromMetrics(home, away, teamMetrics) || { type: 'moneyline', team: home, confidence: 0.55 };
+  const offH = (h.off_epa_decayed ?? 0) - (a.def_epa_decayed ?? 0);
+  const offA = (a.off_epa_decayed ?? 0) - (h.def_epa_decayed ?? 0);
+  const delta = offH - offA;
 
-    // Build base row
-    const row = {
-      id: m.id || matchupKey,
-      matchup: matchupKey,
-      kickoff: m.kickoff || m.commence_time || null,
-      homeTeam: home,
-      awayTeam: away,
-      odds
-    };
+  // logistic to probability, scale tuned so delta≈0.1 => ~62%
+  const scale = 0.10;
+  const pHome = 1 / (1 + Math.exp(-(delta / scale)));
+  const pAway = 1 - pHome;
 
-    // Model choice derived from your picker
-    const market = (picked.type === 'spread' || picked.type === 'total') ? picked.type : 'moneyline';
-    const side = picked.team
-      ? (picked.team === home ? 'home' : (picked.team === away ? 'away' : (picked.side || 'home')))
-      : (picked.side || 'home');
+  // Expected margin (very rough)
+  const margin = delta * 14; // convert EPA-ish diff to points
 
-    row.model_choice = { market, side };
-    if (picked.model_probs) row.model_probs = picked.model_probs;
+  // -------- MONEYLINE PICK (model-only) --------
+  const mlTeam = pHome >= pAway ? home : away;
+  const mlConf = Math.max(pHome, pAway);
 
-    // Compute display + blended confidence
-    computeConfidenceAndDisplay(row, {
-      blendWeight: 0.60,
-      defaultClamp: [0.52, 0.68],
-      odds
-    });
-
-    // Back-compat for UI expecting pick + pickLabel
-    row.pick = {
-      type: market,
-      team: (side === 'home' ? home : away),
-      confidence: row.confidence,
-      pickLabel: `${market}: ${row.displayPick}`
-    };
-
-    out.rows.push(row);
-
+  // -------- SPREAD PICK (model vs market) --------
+  let spreadPick = null, spreadConfidence = null;
+  if (odds && typeof odds.spread_point === 'number') {
+    const marketSpreadHome = odds.spread_point; // negative means home favored
+    const modelEdge = margin - marketSpreadHome;
+    spreadPick = modelEdge >= 0 ? `${home} ${marketSpreadHome > 0 ? '+' : ''}${marketSpreadHome}` 
+                                : `${away} ${(-marketSpreadHome) > 0 ? '+' : ''}${-marketSpreadHome}`;
+    // confidence from edge magnitude
+    const edgeAbs = Math.abs(modelEdge);
+    spreadConfidence = Math.max(0.5, Math.min(0.95, 0.5 + edgeAbs / 14)); // cap
   }
+
+  // -------- TOTAL (O/U) PICK --------
+  let totalPick = null, totalConfidence = null;
+  if (odds && typeof odds.total_points === 'number') {
+    const offensive = (h.off_epa_decayed ?? 0) + (a.off_epa_decayed ?? 0);
+    const defensive = (-(h.def_epa_decayed ?? 0)) + (-(a.def_epa_decayed ?? 0));
+    const totalSignal = offensive + defensive; // higher -> more scoring
+    const modelTotal = 42 + totalSignal * 120; // baseline 42, scale to points
+    const edge = modelTotal - odds.total_points;
+    totalPick = edge >= 0 ? `Over ${odds.total_points}` : `Under ${odds.total_points}`;
+    const edgeAbs = Math.abs(edge);
+    totalConfidence = Math.max(0.5, Math.min(0.95, 0.5 + edgeAbs / 20));
+  }
+
+  const row = {
+    id: m.id || matchupKey,
+    matchup: matchupKey,
+    kickoff: m.kickoff || m.commence_time || null,
+    homeTeam: home,
+    awayTeam: away,
+    mlPick: mlTeam,
+    mlConfidence: Number(mlConf.toFixed(3)),
+    spreadPick: spreadPick,
+    spreadConfidence: spreadConfidence ? Number(spreadConfidence.toFixed(3)) : null,
+    totalPick: totalPick,
+    totalConfidence: totalConfidence ? Number(totalConfidence.toFixed(3)) : null,
+    odds
+  };
+
+  rows.push(row);
+}
+
 
   await store.setJSON('predictions/current.json', out);
   return { statusCode: 200, body: JSON.stringify({ ok: true, message: 'Predictions generated.', data: out }) };
