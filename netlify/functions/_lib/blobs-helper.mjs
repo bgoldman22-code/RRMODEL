@@ -1,24 +1,17 @@
-// netlify/functions/_lib/blobs-helper.mjs
-// Minimal helper wrapper around Netlify Blobs that works across @netlify/blobs versions.
-export async function openStore(storeNameEnvVar, fallbackName = "default") {
-  const storeName = process.env[storeNameEnvVar] || process.env["BLOBS_STORE"] || fallbackName;
-  // Use getStore when available; otherwise no-op shim with in-memory object
-  let getStore = null;
-  try {
-    ({ getStore } = await import('@netlify/blobs'));
-  } catch (e) {
-    // ignore
+// ESM helper for Netlify Blobs.
+// NOTE: We only use getStore; do NOT import createClient to avoid bundling errors.
+import { getStore } from '@netlify/blobs';
+
+/**
+ * Opens (or creates) a blobs store by name.
+ * @param {string} name store name (from env BLOBS_STORE_NFL or BLOBS_STORE)
+ * @returns {Promise<import('@netlify/blobs').BlobStore>}
+ */
+export async function openStore(name) {
+  if (!name || typeof name !== 'string') {
+    throw new Error('openStore(name) requires a non-empty string');
   }
-  if (getStore) {
-    return getStore({ name: storeName });
-  }
-  const mem = new Map();
-  return {
-    async get(key) { return mem.get(key) || null; },
-    async setJSON(key, val) { mem.set(key, JSON.stringify(val)); },
-    async getJSON(key) {
-      const v = mem.get(key);
-      try { return v ? JSON.parse(v) : null; } catch { return null; }
-    }
-  };
+  // Netlify automatically binds authentication; just return a store handle.
+  const store = getStore({ name });
+  return store;
 }
