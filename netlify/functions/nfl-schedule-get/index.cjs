@@ -28,6 +28,7 @@ const DEFAULT_TTL = parseInt(process.env.SCHEDULE_TTL_SECONDS || '300', 10);
 
 /** Blobs store */
 function getScheduleStore() {
+  try {
   const name =
     process.env.BLOBS_STORE_SCHEDULE ||
     process.env.BLOBS_STORE ||
@@ -36,6 +37,10 @@ function getScheduleStore() {
   const token = process.env.NETLIFY_API_TOKEN;
   if (siteID && token) return getStore(name, { siteID, token });
   return getStore(name);
+  } catch (err) {
+    // Fallback: no-op store when Blobs not configured
+    return null;
+  }
 }
 
 /** Small helpers */
