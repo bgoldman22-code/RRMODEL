@@ -14,7 +14,7 @@ ODDS_MARKETS=h2h,spreads,totals
 ODDS_TTL_SECONDS=120
 BLOBS_STORE_NFL=nfl-td
 NETLIFY_SITE_ID=<site id>      # if Blobs context isn't injected
-NETLIFY_API_TOKEN=<personal access token>
+NETLIFY_API_TOKEN=<c5d3fe15e6c5be83b2acd8695cff012b>
 ```
 
 Point your generator at it:
