@@ -1,61 +1,46 @@
 // netlify/functions/_lib/blobs-helper.mjs
-// Safer Blobs helper: use namespace import to avoid bundler errors for non-existent named exports.
-// Falls back to manual client via env (NETLIFY_SITE_ID, NETLIFY_AUTH_TOKEN) and, if unavailable,
-// to an in-memory ephemeral store (so the function never hard-crashes).
-
+// Safe helper for Netlify Blobs with graceful fallbacks and verbose logging.
 import * as blobs from '@netlify/blobs';
 
-const getStore = blobs.getStore;              // always present in supported versions
-const createClient = blobs.createClient;      // may be undefined on older versions
-
-function getStoreName() {
-  const name = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE;
-  if (!name) {
-    throw new Error('[BLOBS] Missing store name. Set BLOBS_STORE_NFL or BLOBS_STORE.');
-  }
-  return name;
+function log(...args) {
+  console.log('[blobs-helper]', ...args);
 }
 
-export async function openStore() {
-  const name = getStoreName();
-
-  // Try environment-configured getStore first
+export async function openStore(storeNameEnvKeys = ['BLOBS_STORE_NFL', 'BLOBS_STORE']) {
+  const storeName = process.env[storeNameEnvKeys[0]] || process.env[storeNameEnvKeys[1]] || 'rrmodel-nfl';
+  // Try auto-configured environment first
   try {
-    const store = await getStore({ name });
+    const store = await blobs.getStore(storeName);
+    log('Opened store via getStore()', { storeName });
     return store;
-  } catch (err) {
-    console.warn('[BLOBS] getStore failed, trying manual client…', err && (err.name || err.message));
+  } catch (e1) {
+    log('getStore() failed, trying manual client…', e1?.name || e1?.message || e1);
   }
-
-  // Try manual client when running outside Netlify’s fully-configured env
-  try {
-    if (typeof createClient === 'function') {
-      const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
-      const token = process.env.NETLIFY_AUTH_TOKEN || process.env.AUTH_TOKEN;
-      if (siteID && token) {
-        const client = createClient({ siteID, token });
-        const store = client.getStore({ name });
-        return store;
-      } else {
-        console.warn('[BLOBS] createClient available but NETLIFY_SITE_ID/NETLIFY_AUTH_TOKEN not set.');
-      }
-    } else {
-      console.warn('[BLOBS] createClient not available in @netlify/blobs version installed.');
+  // Fallback to manual client if siteID + token are provided
+  const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
+  const token = process.env.NETLIFY_AUTH_TOKEN || process.env.AUTH_TOKEN;
+  if (siteID && token) {
+    try {
+      const client = blobs.default?.createClient
+        ? blobs.default.createClient({ siteID, token })
+        : (blobs.createClient ? blobs.createClient({ siteID, token }) : null);
+      if (!client) throw new Error('createClient not available on @netlify/blobs export');
+      const store = client.getStore(storeName);
+      log('Opened store via createClient()', { storeName });
+      return store;
+    } catch (e2) {
+      log('createClient fallback failed:', e2?.name || e2?.message || e2);
     }
-  } catch (err) {
-    console.warn('[BLOBS] manual client fallback failed.', err && (err.name || err.message));
+  } else {
+    log('Missing NETLIFY_SITE_ID/NETLIFY_AUTH_TOKEN for manual client fallback');
   }
 
-  // Final fallback to in-memory store (non-persistent) to avoid crashes
-  console.warn('[BLOBS] Falling back to ephemeral in-memory store (not persisted).');
+  // Last resort: in-memory store (non-persistent)
   const mem = new Map();
+  log('Using in-memory store (NOT PERSISTED).');
   return {
-    async get(key) { return mem.has(key) ? mem.get(key) : null; },
-    async set(key, value, opts={}) {
-      mem.set(key, typeof value === 'string' ? value : JSON.stringify(value));
-      return { key };
-    },
-    async list() { return Array.from(mem.keys()); },
-    async delete(key){ mem.delete(key); }
+    async set(key, value, opts={}) { mem.set(key, typeof value === 'string' ? value : JSON.stringify(value)); },
+    async get(key) { return mem.get(key) || null; },
+    async list() { return Array.from(mem.keys()); }
   };
 }
