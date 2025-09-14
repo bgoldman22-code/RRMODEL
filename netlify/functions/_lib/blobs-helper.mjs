@@ -1,36 +1,40 @@
-// netlify/functions/_lib/blobs-helper.mjs
-// Compatible with @netlify/blobs that export getStore (no createClient needed)
-
+/**
+ * Thin helpers around @netlify/blobs that work both with and without
+ * explicit siteID/token envs. We only import getStore which exists in all
+ * current @netlify/blobs main builds. No createClient usage.
+ */
 import { getStore } from '@netlify/blobs';
 
 /**
- * Open a Netlify Blobs store in a way that works both on Netlify and locally.
- * - On Netlify: uses implicit auth/context.
- * - Locally / CI: can be provided via env or opts: siteID + token.
- * - Fallback: in-memory shim so functions don't crash when not configured.
+ * openStore(nameOrEnv: string): returns a BlobStore.
+ * - If nameOrEnv looks like an env var name (e.g., "BLOBS_STORE_NFL"),
+ *   we read process.env[nameOrEnv]; otherwise we treat it as the store name.
+ * - Optional siteID/token can be provided via env:
+ *   NETLIFY_BLOBS_SITE_ID, NETLIFY_BLOBS_TOKEN
  */
-export async function openStore(name, opts = {}) {
-  const strong = { consistency: 'strong' };
-
-  // On Netlify, context provides auth implicitly.
-  if (process.env.NETLIFY || process.env.NETLIFY_LOCAL) {
-    return getStore({ name, ...strong });
+export async function openStore(nameOrEnv) {
+  const envName = process.env[nameOrEnv];
+  const name = envName && envName.trim() ? envName.trim() : nameOrEnv;
+  const options = {};
+  if (process.env.NETLIFY_BLOBS_SITE_ID && process.env.NETLIFY_BLOBS_TOKEN) {
+    options.siteID = process.env.NETLIFY_BLOBS_SITE_ID;
+    options.token = process.env.NETLIFY_BLOBS_TOKEN;
   }
+  // getStore is sync but we keep async API to avoid breaking callers
+  return getStore({ name, ...options });
+}
 
-  // Manual mode (useful for local dev/CI)
-  const siteID = opts.siteID || process.env.NETLIFY_BLOBS_SITE_ID || process.env.SITE_ID;
-  const token  = opts.token  || process.env.NETLIFY_BLOBS_TOKEN   || process.env.BLOBS_TOKEN;
-
-  if (siteID && token) {
-    return getStore({ name, siteID, token, ...strong });
+export async function getJSON(store, key, fallback = null) {
+  try {
+    const txt = await store.get(key);
+    if (!txt) return fallback;
+    return JSON.parse(txt);
+  } catch (err) {
+    return fallback;
   }
+}
 
-  // Fallback shim (in-memory). Keeps API surface small but adequate for caching.
-  const mem = new Map();
-  return {
-    async get(key) { return mem.get(key) ?? null; },
-    async set(key, value) { mem.set(key, typeof value === 'string' ? value : JSON.stringify(value)); },
-    async list() { return Array.from(mem.keys()); },
-    async delete(key) { mem.delete(key); },
-  };
+export async function putJSON(store, key, obj) {
+  const body = JSON.stringify(obj);
+  return store.set(key, body, { contentType: 'application/json' });
 }
