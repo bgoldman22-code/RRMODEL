@@ -1,6 +1,8 @@
-'use strict';
-// CJS bridge into the ESM helper so CommonJS functions can call openStore(...)
-exports.openStore = async function openStore(opts) {
+// CJS proxy to call ESM openStore from CommonJS modules
+exports.openStore = async function(name, opts) {
   const mod = await import('./blobs-helper.mjs');
-  return mod.openStore(opts);
-};
+  if (!mod || typeof mod.openStore !== 'function') {
+    throw new Error('[blobs-helper.cjs] openStore not found');
+  }
+  return mod.openStore(name, opts);
+}
