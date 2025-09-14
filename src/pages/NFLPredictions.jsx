@@ -1,96 +1,103 @@
-// PATCH: Display picks + confidences for ML / Spread / Total with graceful fallbacks.
-import React from "react";
+import React, { useEffect, useState } from 'react';
 
-const fmtTime = (iso) => {
-  try {
-    return new Date(iso).toLocaleString();
-  } catch {
-    return iso || "-";
-  }
-};
+/**
+ * NFL Predictions Page
+ * Reads the function response and displays Moneyline / Spread / Total with confidences.
+ * Compatible with both new shape (moneylineText, spreadText, totalText) and
+ * older/alternate keys to avoid blanks.
+ */
 
-const Conf = ({ v }) => v == null ? <span>–</span> : <span>{typeof v === "string" ? v : `${v}%`}</span>;
-const Cell = ({ children }) => <td className="px-3 py-2 align-top">{children ?? "–"}</td>;
+const fmt = (v) => (v === null || v === undefined || v === '' ? '–' : v);
+const fmtPct = (p) => (typeof p === 'number' ? `${Math.round(p * 100)}%` : (typeof p === 'string' ? p : '–'));
+
+async function fetchPredictions(force = false) {
+  const url = `/ .netlify/functions/nfl-predictions-generate${force ? '?force=true' : ''}`.replace(' ', '');
+  const res = await fetch(url, { headers: { 'cache-control': 'no-cache' } });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
 
 export default function NFLPredictions() {
-  const [rows, setRows] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState("");
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const load = async () => {
-    setLoading(true); setError("");
+  const load = async (force=false) => {
+    setLoading(true); setError(null);
     try {
-      const resp = await fetch("/.netlify/functions/nfl-predictions-generate");
-      const data = await resp.json();
-      if (!data?.ok) throw new Error(data?.error || "Failed");
-      setRows(data.rows || []);
+      const data = await fetchPredictions(force);
+      setRows(Array.isArray(data.rows) ? data.rows : []);
     } catch (e) {
-      setError(e.message || String(e));
+      setError(e.message || 'Failed to load');
     } finally {
       setLoading(false);
     }
   };
 
-  React.useEffect(() => { load(); }, []);
-
-  const renderMoneyline = (r) => {
-    // Support both new (moneylineText) and legacy fields
-    return r.moneylineText || r.moneyline || r.moneylinePick || "–";
-  };
-  const renderSpread = (r) => r.spreadText || r.spread || r.spreadPick || "–";
-  const renderTotal = (r) => r.totalText || r.total || r.totalPick || "–";
-
-  const conf = (r, keyList) => {
-    for (const k of keyList) {
-      if (r[k] != null) return r[k];
-    }
-    return null;
-  };
+  useEffect(() => { load(false); }, []);
 
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-semibold">NFL Predictions</h1>
         <button
-          onClick={load}
-          disabled={loading}
-          className="rounded-xl px-4 py-2 border border-gray-300 hover:bg-gray-100 disabled:opacity-50"
+          className="px-3 py-2 rounded-xl bg-black text-white hover:opacity-90"
+          onClick={() => load(true)}
         >
-          {loading ? "Loading..." : "Generate New Predictions"}
+          Generate New Predictions
         </button>
       </div>
 
       {error && (
-        <div className="mb-3 text-red-600 text-sm">Error: {error}</div>
+        <div className="mb-4 text-red-600">Error: {error}</div>
       )}
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+      <div className="overflow-auto rounded-2xl border border-neutral-200">
         <table className="min-w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
+          <thead className="bg-neutral-50 text-neutral-700">
             <tr>
-              <th className="text-left px-3 py-2">Matchup</th>
-              <th className="text-left px-3 py-2">Kickoff</th>
-              <th className="text-left px-3 py-2">Moneyline</th>
-              <th className="text-left px-3 py-2">Conf</th>
-              <th className="text-left px-3 py-2">Spread</th>
-              <th className="text-left px-3 py-2">Conf</th>
-              <th className="text-left px-3 py-2">Total</th>
-              <th className="text-left px-3 py-2">Conf</th>
+              <th className="px-4 py-3 text-left font-medium">Matchup</th>
+              <th className="px-4 py-3 text-left font-medium">Kickoff</th>
+              <th className="px-4 py-3 text-left font-medium">Moneyline</th>
+              <th className="px-4 py-3 text-left font-medium">Conf</th>
+              <th className="px-4 py-3 text-left font-medium">Spread</th>
+              <th className="px-4 py-3 text-left font-medium">Conf</th>
+              <th className="px-4 py-3 text-left font-medium">Total</th>
+              <th className="px-4 py-3 text-left font-medium">Conf</th>
             </tr>
           </thead>
           <tbody>
-            {(rows || []).map((r) => (
-              <tr key={r.id || r.matchup} className="odd:bg-white even:bg-gray-50">
-                <Cell>{r.matchup}</Cell>
-                <Cell>{fmtTime(r.kickoff)}</Cell>
-                <Cell>{renderMoneyline(r)}</Cell>
-                <Cell><Conf v={conf(r, ["moneylineConf", "moneyline_conf", "ml_confidence", "moneylineConfidence"])} /></Cell>
-                <Cell>{renderSpread(r)}</Cell>
-                <Cell><Conf v={conf(r, ["spreadConf", "spread_conf", "spreadConfidence"])} /></Cell>
-                <Cell>{renderTotal(r)}</Cell>
-                <Cell><Conf v={conf(r, ["totalConf", "total_conf", "totalConfidence"])} /></Cell>
-              </tr>
-            ))}
+            {loading ? (
+              <tr><td className="px-4 py-6 text-neutral-500" colSpan={8}>Loading…</td></tr>
+            ) : rows.length === 0 ? (
+              <tr><td className="px-4 py-6 text-neutral-500" colSpan={8}>No predictions.</td></tr>
+            ) : (
+              rows.map((r) => {
+                const moneyline = r.moneylineText || r.displayPick || r.pick?.pickLabel || '–';
+                const mlConf = r.moneylineConf ?? r.pick?.confidence ?? null;
+
+                const spread = r.spreadText || r.spreadPick || '–';
+                const spConf = r.spreadConf ?? null;
+
+                const total = r.totalText || r.totalPick || '–';
+                const totConf = r.totalConf ?? null;
+
+                const kickoff = r.kickoff ? new Date(r.kickoff).toLocaleString() : '–';
+
+                return (
+                  <tr key={r.id} className="border-t border-neutral-200">
+                    <td className="px-4 py-3">{fmt(r.matchup)}</td>
+                    <td className="px-4 py-3">{fmt(kickoff)}</td>
+                    <td className="px-4 py-3">{fmt(moneyline)}</td>
+                    <td className="px-4 py-3">{fmtPct(mlConf)}</td>
+                    <td className="px-4 py-3">{fmt(spread)}</td>
+                    <td className="px-4 py-3">{fmtPct(spConf)}</td>
+                    <td className="px-4 py-3">{fmt(total)}</td>
+                    <td className="px-4 py-3">{fmtPct(totConf)}</td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
