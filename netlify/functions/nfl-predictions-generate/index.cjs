@@ -97,6 +97,8 @@ function pickFromMetrics(home, away, metrics) {
 
 // --- Handler ----------------------------------------------------------------
 exports.handler = async (event) => {
+  try {
+    let rows = [];
   const diagMode = (event?.queryStringParameters?.diag || '').toString();
 
   // Resolve endpoints robustly even if env vars are just bare names
@@ -117,6 +119,7 @@ exports.handler = async (event) => {
       }
     };
     if (diagMode === 'resolve') {
+    // Ensure rows is returned from handler
       return { statusCode: 200, body: JSON.stringify(info) };
     }
   }
@@ -160,6 +163,7 @@ exports.handler = async (event) => {
   if (!Array.isArray(matchups) || matchups.length === 0) {
     // Save empty-but-valid output so the UI doesn't 404
     await store.setJSON('predictions/current.json', out);
+    // Ensure rows is returned from handler
     return { statusCode: 200, body: JSON.stringify({ ok: true, message: 'No matchups found in schedule payload.', data: out }) };
   }
 
@@ -243,5 +247,6 @@ for (const m of matchups) {
 
 
   await store.setJSON('predictions/current.json', out);
+    // Ensure rows is returned from handler
   return { statusCode: 200, body: JSON.stringify({ ok: true, message: 'Predictions generated.', data: out }) };
 };
