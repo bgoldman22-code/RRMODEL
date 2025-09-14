@@ -1,244 +1,167 @@
 /**
- * netlify/functions/nfl-predictions-generate/index.cjs
- * - No dependency on "createClient"
- * - Uses _lib/blobs-helper.mjs: openStore()
- * - Robust, structured logging (LOG_LEVEL=debug for verbose)
+ * NFL Predictions Generator
+ * - tolerant to missing schedule
+ * - builds from odds-only when needed
+ * - logs internal state at debug level
  */
+const logger = require('../_lib/logger.cjs');
 
-const LOG_LEVEL = (process.env.LOG_LEVEL || "info").toLowerCase();
-const levels = { debug: 10, info: 20, warn: 30, error: 40 };
-const lvl = levels[LOG_LEVEL] ?? 20;
-
-function log(level, msg, meta) {
-  const val = levels[level] ?? 20;
-  if (val < lvl) return;
-  const entry = { ts: new Date().toISOString(), level, msg, ...(meta ? { meta } : {}) };
-  if (val >= 40) console.error(JSON.stringify(entry));
-  else if (val >= 30) console.warn(JSON.stringify(entry));
-  else console.log(JSON.stringify(entry));
-}
-
-const ENDPOINTS = {
-  scheduleUrl: process.env.SCHEDULE_URL,
-  oddsUrl: process.env.ODDS_URL,
-  teamFormUrl: process.env.TEAM_FORM_URL,
-};
-
-const DEFAULTS = {
-  scheduleUrl: null, // if not set, we'll fallback to building schedule from odds
-  oddsUrl: null,
-  teamFormUrl: null,
-};
-
-// ---- HTTP helpers ---------------------------------------------------------
-async function getJSON(url, label) {
-  if (!url) return { ok: false, error: "no-url" };
+const fetchJson = async (url) => {
+  const res = await fetch(url);
+  const ct = res.headers.get('content-type') || '';
+  const txt = await res.text();
   try {
-    const t0 = Date.now();
-    const res = await fetch(url, { method: "GET", headers: { "accept": "application/json" } });
-    const ms = Date.now() - t0;
-    let json = null; try { json = await res.json(); } catch (_) {}
-    log("info", `fetch ${label}`, { url, status: res.status, ms });
-    if (!res.ok) return { ok: false, status: res.status, json };
-    return { ok: true, status: res.status, json };
-  } catch (err) {
-    log("warn", `fetch error ${label}`, { url, error: String(err) });
-    return { ok: false, error: String(err) };
+    const json = ct.includes('application/json') ? JSON.parse(txt) : JSON.parse(txt);
+    return { ok: res.ok, status: res.status, json, url };
+  } catch {
+    return { ok: false, status: res.status, json: null, url, text: txt };
   }
-}
-
-// ---- Math / model helpers -------------------------------------------------
-function decToProb(dec) { return dec / (dec + 100); }        // for negative ML (e.g. -130 → 130/(130+100))
-function plusToProb(plus) { return 100 / (plus + 100); }     // for positive ML (e.g. +150 → 100/(150+100))
-function mlToProb(ml) {
-  if (ml == null) return null;
-  return ml < 0 ? decToProb(-ml) : plusToProb(ml);
-}
-function clamp(x, a=0.01, b=0.99){ return Math.max(a, Math.min(b, x)); }
-
-const TEAM_MAP = {
-  "SAN FRANCISCO 49ERS":"SF","NEW ORLEANS SAINTS":"NO","LOS ANGELES RAMS":"LA","LOS ANGELES CHARGERS":"LAC",
-  "GREEN BAY PACKERS":"GB","KANSAS CITY CHIEFS":"KC","NEW YORK JETS":"NYJ","NEW YORK GIANTS":"NYG",
-  "TAMPA BAY BUCCANEERS":"TB","WASHINGTON COMMANDERS":"WAS","NEW ENGLAND PATRIOTS":"NE",
-  "LAS VEGAS RAIDERS":"LV","JACKSONVILLE JAGUARS":"JAX","ARIZONA CARDINALS":"ARI","MINNESOTA VIKINGS":"MIN",
-  "SEATTLE SEAHAWKS":"SEA","INDIANAPOLIS COLTS":"IND","TENNESSEE TITANS":"TEN","CHICAGO BEARS":"CHI",
-  "DETROIT LIONS":"DET","BALTIMORE RAVENS":"BAL","BUFFALO BILLS":"BUF","MIAMI DOLPHINS":"MIA",
-  "DALLAS COWBOYS":"DAL","PITTSBURGH STEELERS":"PIT","CLEVELAND BROWNS":"CLE","ATLANTA FALCONS":"ATL",
-  "HOUSTON TEXANS":"HOU","CINCINNATI BENGALS":"CIN","CAROLINA PANTHERS":"CAR","PHILADELPHIA EAGLES":"PHI"
 };
-function abbr(name) { if (!name) return null; const key = name.toUpperCase(); return TEAM_MAP[key] || key.replace(/[^A-Z]/g,"").slice(0,3); }
 
-function formSignal(form, home, away) {
-  if (!form || !form.team_data) return 0;
-  const h = form.team_data[abbr(home)]?.form ?? 0;
-  const a = form.team_data[abbr(away)]?.form ?? 0;
-  return h - a; // >0 leans home
+function impliedProbFromMoneyline(ml) {
+  if (ml == null) return null;
+  return ml < 0 ? (-ml) / ((-ml) + 100) : 100 / (ml + 100);
+}
+function confidenceFromPrices({ ml_home, ml_away }) {
+  const pH = impliedProbFromMoneyline(ml_home);
+  const pA = impliedProbFromMoneyline(ml_away);
+  if (pH == null && pA == null) return { side: null, conf: null };
+  if (pH != null && (pA == null || pH >= pA)) return { side: "home", conf: pH };
+  if (pA != null) return { side: "away", conf: pA };
+  return { side: null, conf: null };
 }
 
-function buildRowFromOdds(match, odds, form) {
-  const home = match.homeTeam;
-  const away = match.awayTeam;
-
-  // Moneyline probs from odds with vig-normalization
-  const pHomeOdds = mlToProb(odds?.ml_home);
-  const pAwayOdds = mlToProb(odds?.ml_away);
-  let pHome = null, pAway = null;
-  if (pHomeOdds != null && pAwayOdds != null) {
-    const vig = pHomeOdds + pAwayOdds;
-    pHome = pHomeOdds / vig; pAway = pAwayOdds / vig;
-  } else if (pHomeOdds != null) { pHome = pHomeOdds; pAway = 1 - pHome; }
-  else if (pAwayOdds != null) { pAway = pAwayOdds; pHome = 1 - pAway; }
-
-  // Model lean from team form
-  const delta = formSignal(form, home, away); // roughly [-.3, .3]
-  const modelLean = 0.5 + clamp(delta * 0.4, -0.2, 0.2); // tilt
-
-  // Blend: heavier on model (independent of odds), odds as guidance
-  const blendedHome = clamp( (modelLean)*0.7 + (pHome ?? 0.5)*0.3 );
-  const blendedAway = 1 - blendedHome;
-
-  const moneylinePick = blendedHome >= blendedAway ? home : away;
-  const moneylineConf = Math.max(blendedHome, blendedAway);
-
-  // Spread stance
-  let spreadPick = null;
-  if (odds?.spread_point != null) {
-    const sp = odds.spread_point;
-    const homeFav = sp < 0;
-    if ((moneylinePick === home && homeFav) || (moneylinePick === away && !homeFav)) {
-      spreadPick = `${moneylinePick.toUpperCase()} ${homeFav ? sp : "+"+Math.abs(sp)}`;
-    } else {
-      spreadPick = `${(moneylinePick===home?away:home).toUpperCase()} ${homeFav ? "+"+Math.abs(sp) : sp}`;
-    }
-  }
-
-  // Totals stance
-  let ouPick = null;
-  if (odds?.total_points != null) {
-    const total = odds.total_points;
-    const edge = Math.abs(blendedHome - 0.5);
-    if (total >= 46 && edge > 0.08) ouPick = "OVER " + total;
-    else if (total <= 43 && edge > 0.08) ouPick = "UNDER " + total;
-    else ouPick = (edge >= 0.12 ? "OVER " : "UNDER ") + total;
-  }
-
-  return {
-    id: match.id,
-    matchup: `${away} @ ${home}`.toUpperCase(),
-    kickoff: match.kickoff,
-    homeTeam: home.toUpperCase(),
-    awayTeam: away.toUpperCase(),
-    odds,
-    model_choice: { market: "moneyline", side: moneylinePick === home ? "home" : "away" },
-    displayMarket: "moneyline",
-    displayPick: moneylinePick.toUpperCase(),
-    displayPrice: odds?.[moneylinePick === home ? "ml_home" : "ml_away"] ?? null,
-    displayLine: null,
-    confidence: Number(moneylineConf.toFixed(4)),
-    picks: {
-      moneyline: { team: moneylinePick.toUpperCase(), confidence: Number(moneylineConf.toFixed(4)) },
-      spread: spreadPick,
-      overUnder: ouPick
-    }
-  };
-}
-
-function toScheduleFromOdds(oddsRows = []) {
-  const seen = new Map();
-  const list = [];
+function buildFromOddsOnly(oddsRows = [], teamForm) {
+  const rows = [];
   for (const o of oddsRows) {
-    const id = o.id || `${o.away}-${o.home}-${o.commence_time}`;
-    if (seen.has(id)) continue;
-    seen.set(id, true);
-    list.push({
-      id,
-      homeTeam: String(o.home || "").toUpperCase(),
-      awayTeam: String(o.away || "").toUpperCase(),
-      kickoff: o.commence_time,
+    if (!o?.home || !o?.away) continue;
+    let side = null, conf = null;
+    const byPrice = confidenceFromPrices({ ml_home: o.ml_home, ml_away: o.ml_away });
+    side = byPrice.side; conf = byPrice.conf;
+
+    const displayPick = (side === "home" ? o.home : o.away) || null;
+    const displayPrice = side === "home" ? o.ml_home ?? null : o.ml_away ?? null;
+
+    rows.push({
+      id: o.id,
+      matchup: `${String(o.away).toUpperCase()} @ ${String(o.home).toUpperCase()}`,
+      kickoff: o.commence_time ?? null,
+      homeTeam: String(o.home).toUpperCase(),
+      awayTeam: String(o.away).toUpperCase(),
+      odds: o,
+      model_choice: { market: "moneyline", side },
+      displayMarket: "moneyline",
+      displayPick,
+      displayPrice: displayPrice == null ? null : String(displayPrice),
+      displayLine: null,
+      confidence: conf == null ? null : Number(conf),
+      pick: {
+        type: "moneyline",
+        team: displayPick,
+        confidence: conf == null ? null : Number(conf),
+        pickLabel: `moneyline: ${displayPick}`,
+      },
     });
   }
-  return list;
+  return rows;
 }
 
-// ---- Handler --------------------------------------------------------------
-exports.handler = async (event) => {
-  const tStart = Date.now();
-  const force = (event?.queryStringParameters?.force === "true");
-  const endpoints = { ...DEFAULTS, ...ENDPOINTS };
+// Optionally join schedule if available (simple mapper; keep robust)
+function buildByJoiningSchedule(matchups = [], oddsRows = []) {
+  const byId = new Map((oddsRows || []).map(o => [o.id, o]));
+  const rows = [];
+  for (const m of matchups) {
+    const o = byId.get(m.id);
+    if (!o) continue;
+    const byPrice = confidenceFromPrices({ ml_home: o.ml_home, ml_away: o.ml_away });
+    const side = byPrice.side;
+    const displayPick = (side === "home" ? o.home : o.away) || null;
+    const displayPrice = side === "home" ? o.ml_home ?? null : o.ml_away ?? null;
 
-  log("info", "start nfl-predictions-generate", {
-    force,
-    endpoints: {
-      scheduleUrl: endpoints.scheduleUrl ? "set" : null,
-      oddsUrl: endpoints.oddsUrl ? "set" : null,
-      teamFormUrl: endpoints.teamFormUrl ? "set" : null
-    }
-  });
-
-  let scheduleRes = { ok: false }, oddsRes = { ok: false }, formRes = { ok: false };
-  if (endpoints.oddsUrl) oddsRes = await getJSON(endpoints.oddsUrl, "odds");
-  if (endpoints.teamFormUrl) formRes = await getJSON(endpoints.teamFormUrl, "teamForm");
-  if (endpoints.scheduleUrl) scheduleRes = await getJSON(endpoints.scheduleUrl, "schedule");
-
-  // Build schedule
-  let schedule = [];
-  if (scheduleRes.ok && scheduleRes.json?.ok && Array.isArray(scheduleRes.json.matchups)) {
-    schedule = scheduleRes.json.matchups.map(m => ({
+    rows.push({
       id: m.id,
-      homeTeam: String(m.homeTeam || "").toUpperCase(),
-      awayTeam: String(m.awayTeam || "").toUpperCase(),
-      kickoff: m.kickoff,
-    }));
-    log("info", "using schedule endpoint", { count: schedule.length });
-  } else if (oddsRes.ok && Array.isArray(oddsRes.json?.rows)) {
-    schedule = toScheduleFromOdds(oddsRes.json.rows);
-    log("warn", "schedule fallback via odds", { count: schedule.length });
-  } else {
-    log("error", "no schedule available", { scheduleOk: scheduleRes.ok, oddsOk: oddsRes.ok });
+      matchup: `${String(m.awayTeam).toUpperCase()} @ ${String(m.homeTeam).toUpperCase()}`,
+      kickoff: m.kickoff ?? o.commence_time ?? null,
+      homeTeam: String(m.homeTeam).toUpperCase(),
+      awayTeam: String(m.awayTeam).toUpperCase(),
+      odds: o,
+      model_choice: { market: "moneyline", side },
+      displayMarket: "moneyline",
+      displayPick,
+      displayPrice: displayPrice == null ? null : String(displayPrice),
+      displayLine: null,
+      confidence: byPrice.conf == null ? null : Number(byPrice.conf),
+      pick: {
+        type: "moneyline",
+        team: displayPick,
+        confidence: byPrice.conf == null ? null : Number(byPrice.conf),
+        pickLabel: `moneyline: ${displayPick}`,
+      },
+    });
   }
+  return rows;
+}
 
-  // Index odds by id
-  const oddsById = new Map();
-  if (oddsRes.ok && Array.isArray(oddsRes.json?.rows)) {
-    for (const r of oddsRes.json.rows) oddsById.set(r.id, r);
-    log("info", "odds loaded", { count: oddsById.size });
-  }
+function json(body, init = {}) {
+  return new Response(JSON.stringify(body), {
+    headers: { 'content-type': 'application/json', ...(init.headers || {}) },
+    status: init.status || 200
+  });
+}
 
-  // Build rows
+exports.handler = async (event) => {
+  const url = new URL(event.rawUrl || `http://x.local${event.path}${event.queryStringParameters ? '?' + new URLSearchParams(event.queryStringParameters).toString() : ''}`);
+  const qp = Object.fromEntries(url.searchParams.entries());
+  if (qp.log) process.env.LOG_LEVEL = qp.log;
+
+  const scheduleUrl = process.env.SCHEDULE_URL || 'https://bgroundrobin.com/.netlify/functions/nfl-schedule-get';
+  const oddsUrl = process.env.ODDS_URL || 'https://bgroundrobin.com/.netlify/functions/nfl-odds-bridge';
+  const teamFormUrl = process.env.TEAM_FORM_URL || 'https://bgroundrobin.com/nflverse-team-form.json';
+
+  logger.info("fetching endpoints", { scheduleUrl, oddsUrl, teamFormUrl });
+
+  const [schedule, odds, teamForm] = await Promise.all([
+    fetchJson(scheduleUrl).catch(e => ({ ok:false, error:String(e) })),
+    fetchJson(oddsUrl).catch(e => ({ ok:false, error:String(e) })),
+    fetchJson(teamFormUrl).catch(e => ({ ok:false, error:String(e) })),
+  ]);
+
+  logger.debug("fetched", { schedule_ok: schedule.ok, odds_ok: odds.ok, team_ok: teamForm.ok });
+
+  const scheduleRows = schedule?.json?.matchups ?? [];
+  const oddsRows = odds?.json?.rows ?? [];
+
   let rows = [];
-  try {
-    rows = schedule.map(m => buildRowFromOdds(m, oddsById.get(m.id), formRes.json)).filter(Boolean);
-  } catch (err) {
-    log("error", "rows build error", { error: String(err) });
+  const prefer = (qp.source || '').toLowerCase(); // 'odds' to force
+  if (prefer === 'odds') {
+    rows = buildFromOddsOnly(oddsRows, teamForm?.json);
+  } else if (Array.isArray(scheduleRows) && scheduleRows.length) {
+    rows = buildByJoiningSchedule(scheduleRows, oddsRows);
+  } else if (Array.isArray(oddsRows) && oddsRows.length) {
+    rows = buildFromOddsOnly(oddsRows, teamForm?.json);
+  } else {
     rows = [];
   }
 
-  rows.sort((a,b) => (new Date(a.kickoff) - new Date(b.kickoff)));
-
-  // Logging: sample row + split
-  log("info", "rows built", { count: rows.length });
-  if (rows.length) {
-    log("debug", "sample row", { first: rows[0] });
-    const homePct = rows.filter(r => r.model_choice?.side === "home").length / rows.length;
-    log("info", "home/away split", { home_pct: Number((homePct*100).toFixed(1)) });
+  // limit
+  if (qp.limit) {
+    const n = Math.max(0, parseInt(qp.limit, 10) || 0);
+    if (n > 0) rows = rows.slice(0, n);
   }
 
-  const response = {
+  logger.debug("rows built", { count: rows.length, source: (prefer==='odds'?'odds':(scheduleRows?.length?'schedule':'odds-fallback')) });
+  if (rows[0]) {
+    const { matchup, displayPick, confidence } = rows[0];
+    logger.debug("sample row", { matchup, displayPick, confidence });
+  }
+
+  return json({
     ok: true,
     updated: new Date().toISOString(),
     meta: {
-      endpoints,
-      source: (scheduleRes.ok && scheduleRes.json?.ok) ? "schedule" : "odds-fallback",
+      endpoints: { scheduleUrl, oddsUrl, teamFormUrl },
+      source: (prefer==='odds'?'odds':(scheduleRows?.length?'schedule':'odds-fallback'))
     },
-    rows,
-  };
-
-  const ms = Date.now() - tStart;
-  log("info", "done nfl-predictions-generate", { ms, rows: rows.length });
-
-  return {
-    statusCode: 200,
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(response),
-  };
+    rows
+  });
 };
