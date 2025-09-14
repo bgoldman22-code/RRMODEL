@@ -1,53 +1,79 @@
-import React from "react";
-import "./predictions.css";
+import React from 'react';
 
-export default function NFLPredictionsTable({ rows }) {
-  if (!rows || !rows.length) return <div className="predictions-empty">No predictions yet.</div>;
-
+/**
+ * Renders a predictions table with the requested columns.
+ * Expects rows with fields:
+ * - matchup, kickoff (ISO)
+ * - moneyline: { team, price, confidence }
+ * - spread: { side, line, price, confidence }
+ * - total: { side: 'over'|'under', total, price, confidence }
+ * If fields are absent, it shows '-' gracefully.
+ */
+export default function NFLPredictionsTable({ rows = [] }) {
   return (
-    <div className="predictions-card">
-      <table className="predictions-table">
-        <thead>
+    <div className="overflow-x-auto">
+      <table className="min-w-full border border-gray-200 rounded-xl overflow-hidden">
+        <thead className="bg-gray-50">
           <tr>
-            <th>Matchup</th>
-            <th>Kickoff</th>
-            <th>Moneyline Pick</th>
-            <th>Spread Pick</th>
-            <th>Total Pick</th>
-            <th>Confidence (ML / ATS / O‑U)</th>
+            <Th>Matchup</Th>
+            <Th>Kickoff</Th>
+            <Th>Moneyline</Th>
+            <Th>Confidence</Th>
+            <Th>Spread</Th>
+            <Th>Confidence</Th>
+            <Th>Total</Th>
+            <Th>Confidence</Th>
           </tr>
         </thead>
         <tbody>
-          {rows.map(r => {
-            const ml = r.moneyline || {};
-            const sp = r.spread || {};
-            const tot = r.total || {};
-            const mlTeam = ml.team || r.displayPick;
-            const spreadTeam = sp.team || (sp.side ? (sp.side === "home" ? r.homeTeam : r.awayTeam) : null);
-            const spreadLabel = sp.side ? `${spreadTeam} ${sp.side === "home" ? "" : ""}${r.odds?.spread_point != null ? ` (${sp.side === "home" ? "-" : "+"}${Math.abs(r.odds.spread_point)})` : ""}` : "—";
-            const totalLabel = tot.side ? `${tot.side.toUpperCase()} ${tot.total ?? ""}` : "—";
-            const kickoff = r.kickoff ? new Date(r.kickoff).toLocaleString() : "TBD";
-            return (
-              <tr key={r.id}>
-                <td className="matchup">{r.matchup}</td>
-                <td className="kickoff">{kickoff}</td>
-                <td className="ml-pick"><strong>{mlTeam}</strong>{ml.price != null ? ` (${ml.price})` : ""}</td>
-                <td className="spread-pick">{spreadLabel}</td>
-                <td className="total-pick">{totalLabel}</td>
-                <td className="conf">
-                  <div className="conf-badges">
-                    <span className="badge">{Math.round((ml.confidence || 0.5)*100)}%</span>
-                    <span className="sep">/</span>
-                    <span className="badge">{Math.round((sp.confidence || 0.5)*100)}%</span>
-                    <span className="sep">/</span>
-                    <span className="badge">{Math.round((tot.confidence || 0.5)*100)}%</span>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+          {rows.length === 0 ? (
+            <tr>
+              <td colSpan={8} className="text-center py-6 text-gray-500">No predictions available.</td>
+            </tr>
+          ) : rows.map((r, i) => <Row key={r.id || i} r={r} />)}
         </tbody>
       </table>
     </div>
+  );
+}
+
+function Th({ children }) {
+  return <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{children}</th>;
+}
+
+function Td({ children }) {
+  return <td className="px-3 py-2 border-t border-gray-100 text-sm">{children}</td>;
+}
+
+function pc(x) {
+  if (typeof x !== 'number' || !isFinite(x)) return '-';
+  return Math.round(x * 100) + '%';
+}
+
+function Row({ r }) {
+  const ml = r.moneyline || r.pick || r.model_moneyline || {};
+  const sp = r.spread || r.model_spread || {};
+  const tt = r.total || r.model_total || {};
+
+  const mlLabel = ml.team ? `moneyline: ${ml.team}${ml.price ? ` (${ml.price})` : ''}` : (r.displayPick ? r.displayPick : '-');
+  const spLabel = sp.side != null
+    ? `${sp.side > 0 ? 'away' : 'home'} ${typeof sp.line === 'number' ? (sp.line > 0 ? '+' : '') + sp.line : ''}${sp.price ? ` (${sp.price})` : ''}`
+    : (r.displayLine ? r.displayLine : '-');
+  const ttLabel = tt.side ? `${tt.side}${tt.total ? ` ${tt.total}` : ''}${tt.price ? ` (${tt.price})` : ''}` : '-';
+
+  const kickoff = r.kickoff ? new Date(r.kickoff).toLocaleString() : (r.game_time || '-');
+  const matchup = r.matchup || `${r.awayTeam || '-'} @ ${r.homeTeam || '-'}`;
+
+  return (
+    <tr className="hover:bg-gray-50">
+      <Td>{matchup}</Td>
+      <Td>{kickoff}</Td>
+      <Td className="font-medium">{mlLabel}</Td>
+      <Td>{pc(ml.confidence ?? r.confidence)}</Td>
+      <Td>{spLabel}</Td>
+      <Td>{pc(sp.confidence)}</Td>
+      <Td>{ttLabel}</Td>
+      <Td>{pc(tt.confidence)}</Td>
+    </tr>
   );
 }
