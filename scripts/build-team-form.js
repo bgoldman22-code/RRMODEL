@@ -1,242 +1,260 @@
 #!/usr/bin/env node
+'use strict';
 /**
  * scripts/build-team-form.js
  *
- * Generates /public/nflverse-team-form.json with recency-weighted team EPA metrics.
- * - Uses global fetch (Node 18+) and zlib to stream-decompress the NFLVerse pbp CSV (.csv.gz).
- * - Computes offense/defense EPA per play (overall + pass + rush) and success rates.
- * - Applies exponential decay over the N most-recent weeks the TEAM actually played.
+ * Build a multi-season team form JSON from NFLVerse play-by-play CSV.gz files.
+ * - Streams CSVs for seasons you request (default: last 3 full seasons + current season YTD)
+ * - Computes per-team offense/defense EPA per play (overall, pass, rush), success rates (pass/rush),
+ *   and recency-decayed EPA (by game chronology).
  *
  * Usage:
- *   node scripts/build-team-form.js [--season=2024] [--weeks=6] [--pbpUrl=<override>]
+ *   node scripts/build-team-form.js
+ *   node scripts/build-team-form.js --seasons=2022,2023,2024,2025
+ *   node scripts/build-team-form.js --last=3   # last 3 full seasons + current YTD
+ *   node scripts/build-team-form.js --decay=0.7 --recentGames=6
+ *
+ * Output:
+ *   public/nflverse-team-form.json
  */
-const fs = require("fs");
-const path = require("path");
-const { createGunzip } = require("zlib");
-const { parse } = require("csv-parse");
-const { pipeline } = require("stream");
-const { argv } = require("process");
 
-const OUT_FILE = path.join(process.cwd(), "public", "nflverse-team-form.json");
+const { createGunzip } = require('zlib');
+const { parse } = require('csv-parse');
+const fs = require('fs');
+const path = require('path');
+const https = require('https');
+const http = require('http');
+const { URL } = require('url');
 
-const opts = Object.fromEntries(
-  argv.slice(2).map((a) => {
-    const [k, v=""] = a.replace(/^--/, "").split("=");
-    return [k, v === "" ? true : v];
-  })
-);
+// ---------------- Config & CLI ----------------
+const argv = Object.fromEntries(process.argv.slice(2).map(kv => {
+  const [k, v] = kv.split('=');
+  return [k.replace(/^--/, ''), v === undefined ? true : v];
+}));
 
-const season = Number(opts.season || process.env.NFL_SEASON || 2024);
-const lookbackWeeks = Number(opts.weeks || 6);
-const defaultPbpUrl = `https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_${season}.csv.gz`;
-const PBP_URL = opts.pbpUrl || process.env.NFLVERSE_PBP_CSV_GZ || defaultPbpUrl;
+const DECAY = parseFloat(argv.decay || '0.7');         // exponential weight per game back
+const RECENT_GAMES = parseInt(argv.recentGames || '6', 10);
+const OUTFILE = path.resolve(process.cwd(), 'public/nflverse-team-form.json');
 
-function asNum(x) {
-  if (x === null || x === undefined) return NaN;
-  if (x === "NA") return NaN;
-  const n = Number(x);
-  return Number.isFinite(n) ? n : NaN;
+// Determine seasons: default = last 3 completed seasons + current season (best-effort YTD)
+function computeSeasons() {
+  if (argv.seasons) {
+    return argv.seasons.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  // NFL seasons cross years, but pbp files use season label as the start year
+  // Heuristic: by September–February, current season = current year; by Mar–Aug, still previous season in offseason but pbp will exist per file naming.
+  const currentSeason = year;
+  return [currentSeason - 3, currentSeason - 2, currentSeason - 1, currentSeason].map(String);
 }
 
-// Trackers
-const teamWeeks = new Map(); // team -> Set(weeks played)
-const agg = {}; // team -> metrics accumulator
+const SEASONS = computeSeasons();
 
-function ensureTeam(team) {
-  if (!team) return;
-  if (!agg[team]) {
-    agg[team] = {
-      // Totals for overall/pass/rush, offense & defense
-      off: { epa: 0, plays: 0, succ: 0, pass: { epa: 0, plays: 0, succ: 0 }, rush: { epa: 0, plays: 0, succ: 0 } },
-      def: { epaAllowed: 0, plays: 0, succ: 0, pass: { epaAllowed: 0, plays: 0, succ: 0 }, rush: { epaAllowed: 0, plays: 0, succ: 0 } },
-      // Per-week buckets for decay
-      weeks: {} // week -> { off: {...}, def: {...} } (same shape as above but totals only)
-    };
-  }
-  if (!teamWeeks.has(team)) teamWeeks.set(team, new Set());
+// NFLVerse release URL pattern
+function pbpUrlFor(season) {
+  return `https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_${season}.csv.gz`;
 }
 
-function addOffense(team, week, playType, epa, success) {
-  ensureTeam(team);
-  teamWeeks.get(team).add(week);
-  const t = agg[team];
-  t.off.epa += epa;
-  t.off.plays += 1;
-  if (success) t.off.succ += 1;
-
-  const bucket = playType === "pass" ? t.off.pass : playType === "run" ? t.off.rush : null;
-  if (bucket) {
-    bucket.epa += epa;
-    bucket.plays += 1;
-    if (success) bucket.succ += 1;
-  }
-
-  // weekly
-  if (!t.weeks[week]) {
-    t.weeks[week] = {
-      off: { epa: 0, plays: 0, succ: 0, pass: { epa: 0, plays: 0, succ: 0 }, rush: { epa: 0, plays: 0, succ: 0 } },
-      def: { epaAllowed: 0, plays: 0, succ: 0, pass: { epaAllowed: 0, plays: 0, succ: 0 }, rush: { epaAllowed: 0, plays: 0, succ: 0 } }
-    };
-  }
-  const w = t.weeks[week];
-  w.off.epa += epa;
-  w.off.plays += 1;
-  if (success) w.off.succ += 1;
-  const wb = playType === "pass" ? w.off.pass : playType === "run" ? w.off.rush : null;
-  if (wb) {
-    wb.epa += epa;
-    wb.plays += 1;
-    if (success) wb.succ += 1;
-  }
-}
-
-function addDefense(team, week, playType, epa, success) {
-  ensureTeam(team);
-  teamWeeks.get(team).add(week);
-  const t = agg[team];
-  // For defense, positive opponent EPA is bad; we'll store as "allowed"
-  t.def.epaAllowed += epa;
-  t.def.plays += 1;
-  if (success) t.def.succ += 1;
-
-  const bucket = playType === "pass" ? t.def.pass : playType === "run" ? t.def.rush : null;
-  if (bucket) {
-    bucket.epaAllowed += epa;
-    bucket.plays += 1;
-    if (success) bucket.succ += 1;
-  }
-
-  if (!t.weeks[week]) {
-    t.weeks[week] = {
-      off: { epa: 0, plays: 0, succ: 0, pass: { epa: 0, plays: 0, succ: 0 }, rush: { epa: 0, plays: 0, succ: 0 } },
-      def: { epaAllowed: 0, plays: 0, succ: 0, pass: { epaAllowed: 0, plays: 0, succ: 0 }, rush: { epaAllowed: 0, plays: 0, succ: 0 } }
-    };
-  }
-  const w = t.weeks[week];
-  w.def.epaAllowed += epa;
-  w.def.plays += 1;
-  if (success) w.def.succ += 1;
-  const wb = playType === "pass" ? w.def.pass : playType === "run" ? w.def.rush : null;
-  if (wb) {
-    wb.epaAllowed += epa;
-    wb.plays += 1;
-    if (success) wb.succ += 1;
-  }
-}
-
-(async () => {
-  console.log(`[team-form] Fetching: ${PBP_URL}`);
-  const res = await fetch(PBP_URL, { redirect: "follow" });
-  if (!res.ok) {
-    console.error(`[team-form] Failed to fetch PBP ${res.status} ${res.statusText}`);
-    process.exit(1);
-  }
-
-  await new Promise((resolve, reject) => {
-    pipeline(
-      res.body,
-      createGunzip(),
-      parse({ columns: true }),
-      async function* (source) {
-        for await (const row of source) {
-          const week = Number(row.week);
-          const playType = (row.play_type || "").toLowerCase();
-          if (!(playType === "pass" || playType === "run")) continue;
-
-          const epa = asNum(row.epa);
-          if (!Number.isFinite(epa)) continue;
-
-          const posteam = row.posteam || row.pos_team || row.posteam_type === "posteam" ? row.posteam : null;
-          const defteam = row.defteam || row.def_team || null;
-          if (!posteam || !defteam) continue;
-
-          // success defined as epa > 0 by default
-          const success = epa > 0;
-
-          addOffense(posteam, week, playType, epa, success);
-          addDefense(defteam, week, playType, epa, success);
-        }
-        // empty
-      },
-      (err) => (err ? reject(err) : resolve())
-    );
-  });
-
-  // Build decayed metrics per team over the last N weeks they actually played
-  const DECAY = 0.7; // weight^index (most recent index=0)
-  const team_data = {};
-  for (const [team, weeksSet] of teamWeeks.entries()) {
-    const t = agg[team];
-    const weeks = Array.from(weeksSet).map(Number).sort((a,b) => b - a);
-    const recent = weeks.slice(0, lookbackWeeks);
-
-    let wsum = 0;
-    const initDec = () => ({
-      off: { epa: 0, plays: 0, succ: 0, pass: { epa: 0, plays: 0, succ: 0 }, rush: { epa: 0, plays: 0, succ: 0 } },
-      def: { epaAllowed: 0, plays: 0, succ: 0, pass: { epaAllowed: 0, plays: 0, succ: 0 }, rush: { epaAllowed: 0, plays: 0, succ: 0 } }
-    });
-    const dec = initDec();
-
-    recent.forEach((wk, idx) => {
-      const w = t.weeks[wk];
-      if (!w) return;
-      const weight = Math.pow(DECAY, idx);
-      wsum += weight;
-      // Offense
-      dec.off.epa += w.off.epa * weight;
-      dec.off.plays += w.off.plays * weight;
-      dec.off.succ += w.off.succ * weight;
-      dec.off.pass.epa += w.off.pass.epa * weight;
-      dec.off.pass.plays += w.off.pass.plays * weight;
-      dec.off.pass.succ += w.off.pass.succ * weight;
-      dec.off.rush.epa += w.off.rush.epa * weight;
-      dec.off.rush.plays += w.off.rush.plays * weight;
-      dec.off.rush.succ += w.off.rush.succ * weight;
-      // Defense
-      dec.def.epaAllowed += w.def.epaAllowed * weight;
-      dec.def.plays += w.def.plays * weight;
-      dec.def.succ += w.def.succ * weight;
-      dec.def.pass.epaAllowed += w.def.pass.epaAllowed * weight;
-      dec.def.pass.plays += w.def.pass.plays * weight;
-      dec.def.pass.succ += w.def.pass.succ * weight;
-      dec.def.rush.epaAllowed += w.def.rush.epaAllowed * weight;
-      dec.def.rush.plays += w.def.rush.plays * weight;
-      dec.def.rush.succ += w.def.rush.succ * weight;
-    });
-
-    const safeDiv = (a,b) => (b > 0 ? a/b : 0);
-    team_data[team] = {
-      form: 0, // keep placeholder/back-compat
-      offense: {
-        epa_per_play: safeDiv(t.off.epa, t.off.plays),
-        pass_epa: safeDiv(t.off.pass.epa, t.off.pass.plays),
-        rush_epa: safeDiv(t.off.rush.epa, t.off.rush.plays),
-        success_rate_pass: safeDiv(t.off.pass.succ, t.off.pass.plays),
-        success_rate_rush: safeDiv(t.off.rush.succ, t.off.rush.plays),
-      },
-      defense: {
-        epa_allowed_per_play: safeDiv(t.def.epaAllowed, t.def.plays),
-        pass_epa_allowed: safeDiv(t.def.pass.epaAllowed, t.def.pass.plays),
-        rush_epa_allowed: safeDiv(t.def.rush.epaAllowed, t.def.rush.plays),
-        success_rate_pass_allowed: safeDiv(t.def.pass.succ, t.def.pass.plays),
-        success_rate_rush_allowed: safeDiv(t.def.rush.succ, t.def.rush.plays),
-      },
-      decayed_data: {
-        off_epa_decayed: wsum ? dec.off.epa / wsum / safeDiv(dec.off.plays, wsum) : 0,
-        def_epa_decayed: wsum ? dec.def.epaAllowed / wsum / safeDiv(dec.def.plays, wsum) : 0,
-        off_pass_epa_decayed: wsum ? dec.off.pass.epa / wsum / safeDiv(dec.off.pass.plays, wsum) : 0,
-        off_rush_epa_decayed: wsum ? dec.off.rush.epa / wsum / safeDiv(dec.off.rush.plays, wsum) : 0,
-        def_pass_epa_decayed: wsum ? dec.def.pass.epaAllowed / wsum / safeDiv(dec.def.pass.plays, wsum) : 0,
-        def_rush_epa_decayed: wsum ? dec.def.rush.epaAllowed / wsum / safeDiv(dec.def.rush.plays, wsum) : 0,
+// ---------------- Helpers ----------------
+function fetchStream(urlStr) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(urlStr);
+    const lib = url.protocol === 'http:' ? http : https;
+    const req = lib.get(url, { headers: { 'User-Agent': 'team-form-builder/1.0' } }, res => {
+      // follow redirects
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        res.resume();
+        return resolve(fetchStream(res.headers.location));
       }
-    };
+      if (res.statusCode !== 200) {
+        return reject(new Error(`HTTP ${res.statusCode} for ${urlStr}`));
+      }
+      resolve(res);
+    });
+    req.on('error', reject);
+  });
+}
+
+function addPlay(acc, teamKey, weekKey, play) {
+  if (!acc[teamKey]) {
+    acc[teamKey] = { games: new Map(), offense: { all:{sum:0,cnt:0}, pass:{sum:0,cnt:0, succ:0}, rush:{sum:0,cnt:0, succ:0} },
+                     defense: { all:{sum:0,cnt:0}, pass:{sum:0,cnt:0, succ:0}, rush:{sum:0,cnt:0, succ:0} } };
+  }
+  // Store by game id for chronology/decay later
+  const gk = `${play.season}:${play.game_id}`;
+  if (!acc[teamKey].games.has(gk)) acc[teamKey].games.set(gk, { season: play.season, game_id: play.game_id, plays: [] , start: play.game_date || null});
+  acc[teamKey].games.get(gk).plays.push(play);
+
+  // rolling sums
+  const isPass = play.play_type === 'pass';
+  const isRush = play.play_type === 'run';
+  const epa = play.epa;
+
+  if (play.role === 'off') {
+    acc[teamKey].offense.all.sum += epa; acc[teamKey].offense.all.cnt++;
+    if (isPass) { acc[teamKey].offense.pass.sum += epa; acc[teamKey].offense.pass.cnt++; if (epa > 0) acc[teamKey].offense.pass.succ++; }
+    if (isRush) { acc[teamKey].offense.rush.sum += epa; acc[teamKey].offense.rush.cnt++; if (epa > 0) acc[teamKey].offense.rush.succ++; }
+  } else if (play.role === 'def') {
+    // defense "allowed": positive when offense gained EPA; negative is good defense
+    acc[teamKey].defense.all.sum += epa; acc[teamKey].defense.all.cnt++;
+    if (isPass) { acc[teamKey].defense.pass.sum += epa; acc[teamKey].defense.pass.cnt++; if (epa > 0) acc[teamKey].defense.pass.succ++; }
+    if (isRush) { acc[teamKey].defense.rush.sum += epa; acc[teamKey].defense.rush.cnt++; if (epa > 0) acc[teamKey].defense.rush.succ++; }
+  }
+}
+
+function finalizeTeam(teamRec) {
+  const out = {
+    offense: {
+      epa_per_play: teamRec.offense.all.cnt ? teamRec.offense.all.sum / teamRec.offense.all.cnt : 0,
+      pass_epa: teamRec.offense.pass.cnt ? teamRec.offense.pass.sum / teamRec.offense.pass.cnt : 0,
+      rush_epa: teamRec.offense.rush.cnt ? teamRec.offense.rush.sum / teamRec.offense.rush.cnt : 0,
+      success_rate_pass: teamRec.offense.pass.cnt ? teamRec.offense.pass.succ / teamRec.offense.pass.cnt : 0,
+      success_rate_rush: teamRec.offense.rush.cnt ? teamRec.offense.rush.succ / teamRec.offense.rush.cnt : 0,
+    },
+    defense: {
+      epa_allowed_per_play: teamRec.defense.all.cnt ? teamRec.defense.all.sum / teamRec.defense.all.cnt : 0,
+      pass_epa_allowed: teamRec.defense.pass.cnt ? teamRec.defense.pass.sum / teamRec.defense.pass.cnt : 0,
+      rush_epa_allowed: teamRec.defense.rush.cnt ? teamRec.defense.rush.sum / teamRec.defense.rush.cnt : 0,
+      success_rate_pass_allowed: teamRec.defense.pass.cnt ? teamRec.defense.pass.succ / teamRec.defense.pass.cnt : 0,
+      success_rate_rush_allowed: teamRec.defense.rush.cnt ? teamRec.defense.rush.succ / teamRec.defense.rush.cnt : 0,
+    },
+    decayed_data: {
+      off_epa_decayed: 0,
+      def_epa_decayed: 0,
+      off_pass_epa_decayed: 0,
+      off_rush_epa_decayed: 0,
+      def_pass_epa_decayed: 0,
+      def_rush_epa_decayed: 0
+    }
+  };
+
+  // Build game-level aggregates in chronological order for decay
+  const games = Array.from(teamRec.games.values())
+    .map(g => {
+      const off = { sum:0,cnt:0, pass:{sum:0,cnt:0}, rush:{sum:0,cnt:0} };
+      const def = { sum:0,cnt:0, pass:{sum:0,cnt:0}, rush:{sum:0,cnt:0} };
+      for (const p of g.plays) {
+        if (p.role === 'off') {
+          off.sum += p.epa; off.cnt++;
+          if (p.play_type === 'pass') { off.pass.sum += p.epa; off.pass.cnt++; }
+          if (p.play_type === 'run')  { off.rush.sum += p.epa; off.rush.cnt++; }
+        } else {
+          def.sum += p.epa; def.cnt++;
+          if (p.play_type === 'pass') { def.pass.sum += p.epa; def.pass.cnt++; }
+          if (p.play_type === 'run')  { def.rush.sum += p.epa; def.rush.cnt++; }
+        }
+      }
+      const offEpa = off.cnt ? off.sum/off.cnt : 0;
+      const defEpa = def.cnt ? def.sum/def.cnt : 0;
+      const offPass = off.pass.cnt ? off.pass.sum/off.pass.cnt : 0;
+      const offRush = off.rush.cnt ? off.rush.sum/off.rush.cnt : 0;
+      const defPass = def.pass.cnt ? def.pass.sum/def.pass.cnt : 0;
+      const defRush = def.rush.cnt ? def.rush.sum/def.rush.cnt : 0;
+      return { season: g.season, game_id: g.game_id, start: g.start, offEpa, defEpa, offPass, offRush, defPass, defRush };
+    })
+    .sort((a,b) => {
+      // sort by season then by game id (fallback); missing dates go last
+      if (a.start && b.start && a.start !== 'NA' && b.start !== 'NA') {
+        return (new Date(a.start) - new Date(b.start));
+      }
+      if (a.season !== b.season) return a.season - b.season;
+      return (''+a.game_id).localeCompare(''+b.game_id);
+    });
+
+  // Take last RECENT_GAMES and apply exponential decay (most recent weight=1.0, back *= DECAY)
+  const recent = games.slice(-RECENT_GAMES).reverse();
+  let wsum=0, off=0, def=0, offP=0, offR=0, defP=0, defR=0, w=1;
+  for (const g of recent) {
+    wsum += w;
+    off += g.offEpa * w;
+    def += g.defEpa * w;
+    offP += g.offPass * w;
+    offR += g.offRush * w;
+    defP += g.defPass * w;
+    defR += g.defRush * w;
+    w *= DECAY;
+  }
+  if (wsum > 0) {
+    out.decayed_data.off_epa_decayed = off / wsum;
+    out.decayed_data.def_epa_decayed = def / wsum;
+    out.decayed_data.off_pass_epa_decayed = offP / wsum;
+    out.decayed_data.off_rush_epa_decayed = offR / wsum;
+    out.decayed_data.def_pass_epa_decayed = defP / wsum;
+    out.decayed_data.def_rush_epa_decayed = defR / wsum;
   }
 
-  const out = { updated: new Date().toISOString(), season, lookbackWeeks, team_data };
-  fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
-  fs.writeFileSync(OUT_FILE, JSON.stringify(out, null, 2));
-  console.log(`[team-form] Wrote ${OUT_FILE}`);
-})().catch((e) => {
-  console.error(e);
+  return out;
+}
+
+// ---------------- Main ----------------
+(async () => {
+  console.log(`[team-form] Seasons: ${SEASONS.join(', ')}`);
+  const teams = {}; // team abbr -> accumulators
+
+  for (const season of SEASONS) {
+    const url = pbpUrlFor(season);
+    console.log(`[team-form] Fetching ${url}`);
+    try {
+      const stream = await fetchStream(url);
+      await new Promise((resolve, reject) => {
+        const gunzip = createGunzip();
+        const parser = parse({ columns: true, relax_column_count: true });
+        stream
+          .pipe(gunzip)
+          .pipe(parser)
+          .on('data', (row) => {
+            try {
+              const play_type = (row.play_type || '').toLowerCase();
+              if (!play_type || (play_type !== 'pass' && play_type !== 'run' && play_type !== 'no_play')) return;
+              // We restrict EPA to pass/run tags; ignore "no_play" for EPA sums (keeps alignment).
+              const epaStr = row.epa;
+              if (epaStr === undefined || epaStr === null || epaStr === '' || epaStr === 'NA') return;
+              const epa = parseFloat(epaStr);
+              if (!isFinite(epa)) return;
+
+              const posteam = row.posteam || row.pos_team || row.offense || '';
+              const defteam = row.defteam || row.defense || '';
+              if (!posteam || !defteam) return;
+
+              // Sometimes week is blank in preseason; we don't actually need it.
+              const game_id = row.game_id || row.gameid || row.gameId || `${row.season || season}_${row.old_game_id || ''}`;
+              const game_date = row.game_date || row.game_date_fixed || row.game_date_y || row.game_date_x || null;
+
+              // Offense perspective
+              addPlay(teams, posteam, row.week, { season: Number(row.season || season), game_id, game_date, play_type, epa, role: 'off' });
+              // Defense perspective (allowed)
+              addPlay(teams, defteam, row.week, { season: Number(row.season || season), game_id, game_date, play_type, epa, role: 'def' });
+            } catch {}
+          })
+          .on('end', resolve)
+          .on('error', reject);
+      });
+    } catch (e) {
+      console.error(`[team-form] Failed to fetch/parse ${season}: ${e.message}`);
+    }
+  }
+
+  // Finalize
+  const team_data = {};
+  for (const [abbr, rec] of Object.entries(teams)) {
+    team_data[abbr] = finalizeTeam(rec);
+    // Keep a simple "form" field for legacy (scaled offensive minus defensive EPA)
+    team_data[abbr].form = (team_data[abbr].decayed_data.off_epa_decayed - team_data[abbr].decayed_data.def_epa_decayed);
+  }
+
+  const output = {
+    updated: new Date().toISOString(),
+    seasons: SEASONS.map(Number),
+    recent_games_used: RECENT_GAMES,
+    decay: DECAY,
+    team_data
+  };
+
+  fs.mkdirSync(path.dirname(OUTFILE), { recursive: true });
+  fs.writeFileSync(OUTFILE, JSON.stringify(output, null, 2));
+  console.log(`[team-form] Wrote ${OUTFILE}`);
+})().catch(err => {
+  console.error(err);
   process.exit(1);
 });
