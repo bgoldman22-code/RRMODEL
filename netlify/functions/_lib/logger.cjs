@@ -1,29 +1,28 @@
-// Tiny structured logger (CommonJS)
-const MAX_PREVIEW = 1200;
 
-function preview(obj) {
+// Simple structured logger that never throws
+const LEVELS = { debug: 10, info: 20, warn: 30, error: 40 };
+const CURRENT = (process.env.LOG_LEVEL || 'info').toLowerCase();
+const THRESH = LEVELS[CURRENT] ?? LEVELS.info;
+
+function stamp() {
+  return new Date().toISOString();
+}
+
+function out(level, msg, meta) {
   try {
-    const s = JSON.stringify(obj);
-    if (!s) return s;
-    return s.length > MAX_PREVIEW ? s.slice(0, MAX_PREVIEW) + '…' : s;
-  } catch {
-    return String(obj).slice(0, MAX_PREVIEW);
+    if ((LEVELS[level] ?? 999) < THRESH) return;
+    const base = { ts: stamp(), level, msg };
+    const payload = meta ? { ...base, meta } : base;
+    // Netlify captures stdout; keep it single-line JSON
+    console.log(JSON.stringify(payload));
+  } catch (_) {
+    // never crash on logging
   }
 }
 
-function log(level, msg, meta) {
-  const entry = { level, msg, ts: new Date().toISOString(), ...(meta || {}) };
-  // Netlify captures console logs
-  console.log(JSON.stringify(entry));
-}
-
-function info(msg, meta) { log('info', msg, meta); }
-function warn(msg, meta) { log('warn', msg, meta); }
-function error(msg, meta) { log('error', msg, meta); }
-function debug(msg, meta) {
-  if ((process.env.LOG_LEVEL || '').toLowerCase() === 'debug') {
-    log('debug', msg, meta);
-  }
-}
-
-module.exports = { info, warn, error, debug, preview };
+module.exports = {
+  debug: (m, meta) => out('debug', m, meta),
+  info:  (m, meta) => out('info',  m, meta),
+  warn:  (m, meta) => out('warn',  m, meta),
+  error: (m, meta) => out('error', m, meta),
+};

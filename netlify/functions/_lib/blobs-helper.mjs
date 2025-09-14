@@ -1,41 +1,27 @@
-// Lightweight helper to open a Netlify Blobs store without using deprecated exports.
-// Works with @netlify/blobs >= 6.x
+
+// Wrapper around Netlify Blobs that works across versions (getStore only)
 import { getStore } from '@netlify/blobs';
 
 /**
- * Open a blobs store.
- * Tries explicit `name`, then BLOBS_STORE_NFL, then BLOBS_STORE, then "rrmodel".
+ * Open a blobs store by name. Works locally and on Netlify.
+ * @param {{ name: string }} param0
  */
-export function openStore({ name, fallbackEnv = 'BLOBS_STORE_NFL' } = {}) {
-  const storeName = name || process.env[fallbackEnv] || process.env.BLOBS_STORE || 'rrmodel';
-  const store = getStore({ name: storeName });
-  const api = {
-    /**
-     * Read JSON value; returns defaultValue on any error.
-     */
-    async getJSON(key, defaultValue = null) {
+export async function openStore({ name }) {
+  if (!name) throw new Error('openStore: missing store name');
+  const store = await getStore({ name });
+  return {
+    async getJSON(key, fallback = null) {
       try {
-        const val = await store.getJSON(key);
-        return (val == null ? defaultValue : val);
+        const raw = await store.get(key, { type: 'json' });
+        return raw ?? fallback;
       } catch (err) {
-        console.error('[blobs] getJSON error', { key, err: String(err) });
-        return defaultValue;
+        return fallback;
       }
     },
-    /**
-     * Write JSON value; returns true on success, false otherwise.
-     */
-    async setJSON(key, value, opts = {}) {
-      try {
-        await store.setJSON(key, value, opts);
-        return true;
-      } catch (err) {
-        console.error('[blobs] setJSON error', { key, err: String(err) });
-        return false;
-      }
+    async setJSON(key, value) {
+      const body = JSON.stringify(value ?? null);
+      await store.set(key, body, { contentType: 'application/json' });
+      return true;
     },
-    raw: store,
-    name: storeName
   };
-  return api;
 }

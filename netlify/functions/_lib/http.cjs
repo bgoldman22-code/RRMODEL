@@ -1,28 +1,26 @@
-// CommonJS helpers for Netlify function responses
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type'
-};
 
-function json(body, statusCode = 200, extraHeaders = {}) {
+function json(statusCode, bodyObj, headers = {}) {
   return {
-    statusCode,
-    headers: { 'Content-Type': 'application/json', ...CORS_HEADERS, ...extraHeaders },
-    body: JSON.stringify(body)
+    statusCode: statusCode || 200,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      ...headers,
+    },
+    body: JSON.stringify(bodyObj ?? {}, null, 2),
   };
 }
 
-function ok(payload = {}) {
-  return json({ ok: true, ...payload }, 200);
+function ok(payload) {
+  return json(200, { ok: true, ...(payload || {}) });
 }
 
-function badRequest(message = 'Bad Request', details) {
-  return json({ ok: false, error: message, details }, 400);
+function fail(statusCode, message, details) {
+  const code = statusCode >= 400 ? statusCode : 500;
+  const body = { ok: false, error: message || 'error', details: details || {} };
+  return json(code, body);
 }
 
-function internalError(message = 'Internal Server Error', details) {
-  return json({ ok: false, error: message, details }, 500);
-}
-
-module.exports = { ok, badRequest, internalError };
+module.exports = { json, ok, fail };
