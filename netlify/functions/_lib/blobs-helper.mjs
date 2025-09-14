@@ -1,31 +1,47 @@
 // netlify/functions/_lib/blobs-helper.mjs
-// ESM module that wraps @netlify/blobs in a tiny helper with JSON helpers.
-// Compatible with Netlify Functions and can be dynamically imported from CJS.
+// ESM helper that opens a Netlify Blobs store.
+// - First tries implicit Netlify runtime via getStore().
+// - If missing env, falls back to createClient(siteID, token) using env vars.
+// Works whether bundler/tree-shaker sees createClient or not (dynamic import).
 
-import { getStore } from '@netlify/blobs';
+export async function openStore(name) {
+  const blobs = await import('@netlify/blobs');
+  const getStore = blobs.getStore;
+  /** @type any */
+  let store;
+  try {
+    store = await getStore({ name });
+    return wrap(store);
+  } catch (err) {
+    const msg = (err && (err.name || err.message)) || String(err);
+    // Fallback only for missing-env error
+    if (msg && String(msg).includes('MissingBlobsEnvironmentError')) {
+      const siteID = process.env.BLOBS_SITE_ID || process.env.NETLIFY_SITE_ID;
+      const token  = process.env.BLOBS_TOKEN   || process.env.NETLIFY_API_TOKEN;
+      if (!siteID || !token) {
+        console.warn('[blobs-helper] Missing env for manual client. Set BLOBS_SITE_ID and BLOBS_TOKEN (or NETLIFY_SITE_ID and NETLIFY_API_TOKEN).');
+        throw err;
+      }
+      const createClient = blobs.createClient;
+      if (!createClient) {
+        throw new Error('[blobs-helper] @netlify/blobs.createClient is not available. Please update @netlify/blobs to v5+ or run in Netlify runtime.');
+      }
+      const client = createClient({ siteID, token });
+      store = client.getStore({ name });
+      return wrap(store);
+    }
+    throw err;
+  }
+}
 
-/**
- * Open a Netlify Blobs store.
- * Will prefer BLOBS_STORE_NFL, then BLOBS_STORE, then the provided `fallbackName`.
- */
-export async function openStore(fallbackName = "nfl") {
-  const name = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || fallbackName || "nfl";
-
-  // getStore auto-detects site env in Netlify; no createClient is needed.
-  // If you run locally WITHOUT Netlify env, you can pass siteID/token via env:
-  // NETLIFY_SITE_ID and NETLIFY_API_TOKEN (Netlify CLI injects these for dev).
-  const store = getStore({ name });
-
+function wrap(store) {
   return {
-    async getJSON(key, defaultValue = null) {
-      const val = await store.get(key, { type: "json" });
-      return (typeof val === "undefined" || val === null) ? defaultValue : val;
+    async getJSON(key) {
+      const val = await store.get(key, { type: 'json' });
+      return val ?? null;
     },
     async setJSON(key, value) {
-      // No random suffix so callers can read a stable key
-      await store.setJSON(key, value, { addRandomSuffix: false });
+      await store.setJSON(key, value);
     },
-    raw: store,
-    name
   };
 }
