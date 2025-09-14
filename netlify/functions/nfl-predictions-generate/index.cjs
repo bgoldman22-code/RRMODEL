@@ -1,62 +1,60 @@
-'use strict';
-
 /**
- * Netlify Function: nfl-predictions-generate
- * This version ensures we ALWAYS return a proper Lambda response
- * to avoid "invalid status code returned from lambda: 0".
- *
- * Query params:
- *  - force=true (existing)
- *  - source=odds|schedule (optional)
- *  - limit=<n> (optional)
- *  - log=debug|info (optional; overrides LOG_LEVEL)
+ * Robust handler wrapper for nfl-predictions-generate
+ * - Always returns a valid { statusCode, headers, body }
+ * - Fixes "rows is not defined" by scoping rows
+ * - Adds logging of counts and a preview row
+ * - No illegal 'finally' tokens
  */
-
 const { ok, badRequest, internalError } = require('../_lib/http.cjs');
-const { log } = require('../_lib/logger.cjs');
+const Log = require('../_lib/logger.cjs');
+const { openStore } = require('../_lib/blobs-helper.mjs'); // ESM re-export works in esbuild bundler
 
-// Dummy predict function; in your repo this will already be implemented.
-// We keep a safe fallback so the function never throws because of undefined variables.
-async function generatePredictions({ source = 'auto', limit }) {
-  try {
-    // IMPORTANT: Replace this stub with your actual logic.
-    // We just return an empty array to prove the function shape works.
-    const rows = [];
-    return { ok: true, source: 'stub', rows: Array.isArray(rows) ? rows.slice(0, limit || rows.length) : [] };
-  } catch (err) {
-    // Bubble up, caller will convert to 500
-    throw err;
-  }
-}
+// Optional: environment keys used by the model/generator
+const KEY_CACHE = 'nfl:predictions:latest';
 
 exports.handler = async (event) => {
-  // Preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return ok({ ok: true });
-  }
-
   try {
-    const q = event.queryStringParameters || {};
-    if (q.log) process.env.LOG_LEVEL = q.log;
-    const limit = q.limit ? parseInt(q.limit, 10) : undefined;
-    const source = q.source || 'auto';
+    if (event.httpMethod === 'OPTIONS') {
+      // CORS preflight
+      return ok({});
+    }
 
-    log.info('nfl-predictions-generate start', { source, limit });
+    const url = new URL(event.rawUrl || ('https://x.local' + (event.path || '')) + (event.rawQuery || ''));
+    const params = url.searchParams;
+    const limit = Math.max(0, Math.min(500, parseInt(params.get('limit') || '0', 10) || 0));
+    const force = params.get('force') === 'true';
+    const wantDebug = (params.get('log') === 'debug');
+    if (wantDebug) process.env.LOG_LEVEL = 'debug';
 
-    const result = await generatePredictions({ source, limit });
+    // Load from blobs (if present)
+    const store = openStore({});
+    let cached = await store.getJSON(KEY_CACHE, null);
+    if (force || !cached) {
+      // If your real generation runs here, ensure it ALWAYS produces an array.
+      // For now, keep stub structure and never crash.
+      const nowISO = new Date().toISOString();
+      cached = { ok: true, updated: nowISO, meta: { source: force ? 'force-stub' : 'stub' }, rows: [] };
+      await store.setJSON(KEY_CACHE, cached);
+    }
 
-    // Always defined shape
-    const rows = Array.isArray(result.rows) ? result.rows : [];
-    log.debug('rows_count', rows.length, 'sample', rows[0] || null);
+    // Ensure rows is always a scoped array
+    let rows = Array.isArray(cached.rows) ? cached.rows : [];
 
-    return ok({
-      ok: true,
-      updated: new Date().toISOString(),
-      meta: { source: result.source || source },
-      rows
-    });
+    // Optional limiting for sanity checks
+    if (limit > 0 && rows.length > limit) {
+      rows = rows.slice(0, limit);
+    }
+
+    // Logging
+    Log.info('nfl-predictions-generate result', { count: rows.length });
+    if (rows.length) {
+      Log.debug('first row preview', { row: Log.preview(rows[0]) });
+    }
+
+    return ok({ updated: cached.updated, meta: cached.meta || {}, rows });
   } catch (err) {
-    log.error('handler_error', err && err.stack || String(err));
-    return internalError(err);
+    // Last-resort guard: never return statusCode 0
+    Log.error('nfl-predictions-generate fatal', { err: String(err), stack: (err && err.stack) ? String(err.stack).slice(0, 2000) : undefined });
+    return internalError('Function crashed', { hint: 'See function logs', code: 'GEN_CRASH' });
   }
 };

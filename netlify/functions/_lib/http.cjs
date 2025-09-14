@@ -1,44 +1,28 @@
-'use strict';
-
-/**
- * Small helpers to always return a valid Netlify Lambda response.
- */
-
-const defaultHeaders = {
-  'Content-Type': 'application/json; charset=utf-8',
+// CommonJS helpers for Netlify function responses
+const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
 };
 
-function json(statusCode, data, extraHeaders = {}) {
-  let body;
-  try {
-    body = JSON.stringify(data);
-  } catch (err) {
-    // last resort: stringify a safe error
-    body = JSON.stringify({ ok: false, error: 'serialize_failed', details: String(err && err.message || err) });
-    statusCode = statusCode >= 400 ? statusCode : 500;
-  }
+function json(body, statusCode = 200, extraHeaders = {}) {
   return {
-    statusCode: Number.isInteger(statusCode) ? statusCode : 200,
-    headers: { ...defaultHeaders, ...extraHeaders },
-    body
+    statusCode,
+    headers: { 'Content-Type': 'application/json', ...CORS_HEADERS, ...extraHeaders },
+    body: JSON.stringify(body)
   };
 }
 
-function ok(data = { ok: true }, headers = {}) {
-  return json(200, data, headers);
+function ok(payload = {}) {
+  return json({ ok: true, ...payload }, 200);
 }
 
-function badRequest(message = 'bad_request', details = {}) {
-  return json(400, { ok: false, error: message, details });
+function badRequest(message = 'Bad Request', details) {
+  return json({ ok: false, error: message, details }, 400);
 }
 
-function internalError(err) {
-  const message = (err && err.message) || String(err);
-  const stack = (err && err.stack) || undefined;
-  return json(500, { ok: false, error: 'internal_error', message, stack });
+function internalError(message = 'Internal Server Error', details) {
+  return json({ ok: false, error: message, details }, 500);
 }
 
-module.exports = { json, ok, badRequest, internalError, defaultHeaders };
+module.exports = { ok, badRequest, internalError };
