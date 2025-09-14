@@ -8,6 +8,7 @@
 
 const { getStore } = require('@netlify/blobs');
 const fetch = global.fetch || require('node-fetch');
+const { computeConfidenceAndDisplay } = require('./confidence.cjs');
 
 // --- Blobs store helper ------------------------------------------------------
 function getNflStore() {
@@ -176,14 +177,45 @@ exports.handler = async (event) => {
     const matchupKey = `${away} @ ${home}`;
     const odds = oddsMap.get(matchupKey);
 
-    const pick = pickFromMetrics(home, away, teamMetrics) || { type: 'moneyline', team: home, confidence: 0.55 };
 
-    out.rows.push({
+    const picked = pickFromMetrics(home, away, teamMetrics) || { type: 'moneyline', team: home, confidence: 0.55 };
+
+    // Build base row
+    const row = {
       id: m.id || matchupKey,
       matchup: matchupKey,
       kickoff: m.kickoff || m.commence_time || null,
-      pick
+      homeTeam: home,
+      awayTeam: away,
+      odds
+    };
+
+    // Model choice derived from your picker
+    const market = (picked.type === 'spread' || picked.type === 'total') ? picked.type : 'moneyline';
+    const side = picked.team
+      ? (picked.team === home ? 'home' : (picked.team === away ? 'away' : (picked.side || 'home')))
+      : (picked.side || 'home');
+
+    row.model_choice = { market, side };
+    if (picked.model_probs) row.model_probs = picked.model_probs;
+
+    // Compute display + blended confidence
+    computeConfidenceAndDisplay(row, {
+      blendWeight: 0.60,
+      defaultClamp: [0.52, 0.68],
+      odds
     });
+
+    // Back-compat for UI expecting pick + pickLabel
+    row.pick = {
+      type: market,
+      team: (side === 'home' ? home : away),
+      confidence: row.confidence,
+      pickLabel: `${market}: ${row.displayPick}`
+    };
+
+    out.rows.push(row);
+
   }
 
   await store.setJSON('predictions/current.json', out);
