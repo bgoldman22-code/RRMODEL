@@ -1,60 +1,192 @@
-/**
- * Robust handler wrapper for nfl-predictions-generate
- * - Always returns a valid { statusCode, headers, body }
- * - Fixes "rows is not defined" by scoping rows
- * - Adds logging of counts and a preview row
- * - No illegal 'finally' tokens
- */
-const { ok, badRequest, internalError } = require('../_lib/http.cjs');
-const Log = require('../_lib/logger.cjs');
-const { openStore } = require('../_lib/blobs-helper.mjs'); // ESM re-export works in esbuild bundler
 
-// Optional: environment keys used by the model/generator
-const KEY_CACHE = 'nfl:predictions:latest';
+// Robust, fail-safe handler for NFL predictions.
+// - Never throws uncaught exceptions
+// - Always returns valid JSON with statusCode 200 or 500
+// - Provides debug logs and a health probe
+// - Uses odds fallback if model rows aren't present
 
-exports.handler = async (event) => {
+const { ok, fail } = require('../_lib/http.cjs');
+const log = require('../_lib/logger.cjs');
+
+// Node 18+ on Netlify has global fetch; make sure it exists
+const doFetch = (typeof fetch === 'function') ? fetch : (...args) => import('node-fetch').then(({default: f}) => f(...args));
+
+function qs(event) {
   try {
-    if (event.httpMethod === 'OPTIONS') {
-      // CORS preflight
-      return ok({});
+    const u = new URL(event.rawUrl || `https://dummy${event.path}${event.rawQuery ? '?' + event.rawQuery : ''}`);
+    return Object.fromEntries(u.searchParams.entries());
+  } catch {
+    return {};
+  }
+}
+
+function pct(x) {
+  if (typeof x !== 'number' || !isFinite(x)) return null;
+  if (x <= 1) return Math.round(x * 100) / 100;
+  return Math.round(x) / 100;
+}
+
+function normalizeMoneylineToProb(ml) {
+  if (ml == null || !isFinite(ml)) return null;
+  if (ml < 0) return (-ml) / ((-ml) + 100);
+  return 100 / (ml + 100);
+}
+
+function pickFromOdds(row) {
+  // moneyline
+  const mlHome = row.ml_home;
+  const mlAway = row.ml_away;
+  let moneyline = null;
+  if (mlHome != null && mlAway != null) {
+    const pHome = normalizeMoneylineToProb(mlHome);
+    const pAway = normalizeMoneylineToProb(mlAway);
+    if (pHome != null && pAway != null) {
+      if (pHome >= pAway) {
+        moneyline = { team: row.home, price: mlHome, confidence: pHome };
+      } else {
+        moneyline = { team: row.away, price: mlAway, confidence: pAway };
+      }
     }
+  }
 
-    const url = new URL(event.rawUrl || ('https://x.local' + (event.path || '')) + (event.rawQuery || ''));
-    const params = url.searchParams;
-    const limit = Math.max(0, Math.min(500, parseInt(params.get('limit') || '0', 10) || 0));
-    const force = params.get('force') === 'true';
-    const wantDebug = (params.get('log') === 'debug');
-    if (wantDebug) process.env.LOG_LEVEL = 'debug';
+  // spread
+  let spread = null;
+  if (row.spread_point != null) {
+    // negative means home favored
+    const side = row.spread_point <= 0 ? -1 : 1; // -1 home, 1 away
+    const price = side === -1 ? row.spread_home_line : row.spread_away_line;
+    spread = {
+      side,
+      line: row.spread_point,
+      price: price ?? null,
+      confidence: null, // model should fill; left null in fallback
+    };
+  }
 
-    // Load from blobs (if present)
-    const store = openStore({});
-    let cached = await store.getJSON(KEY_CACHE, null);
-    if (force || !cached) {
-      // If your real generation runs here, ensure it ALWAYS produces an array.
-      // For now, keep stub structure and never crash.
-      const nowISO = new Date().toISOString();
-      cached = { ok: true, updated: nowISO, meta: { source: force ? 'force-stub' : 'stub' }, rows: [] };
-      await store.setJSON(KEY_CACHE, cached);
+  // total
+  let total = null;
+  if (row.total_points != null) {
+    // if prices exist pick cheaper (closer to even) as naive fallback
+    let side = 'over';
+    if (row.over_price != null && row.under_price != null) {
+      side = Math.abs(row.over_price) <= Math.abs(row.under_price) ? 'over' : 'under';
     }
+    total = {
+      side,
+      total: row.total_points,
+      price: side === 'over' ? (row.over_price ?? null) : (row.under_price ?? null),
+      confidence: null, // model should fill; left null in fallback
+    };
+  }
 
-    // Ensure rows is always a scoped array
-    let rows = Array.isArray(cached.rows) ? cached.rows : [];
+  return { moneyline, spread, total };
+}
 
-    // Optional limiting for sanity checks
-    if (limit > 0 && rows.length > limit) {
-      rows = rows.slice(0, limit);
-    }
-
-    // Logging
-    Log.info('nfl-predictions-generate result', { count: rows.length });
-    if (rows.length) {
-      Log.debug('first row preview', { row: Log.preview(rows[0]) });
-    }
-
-    return ok({ updated: cached.updated, meta: cached.meta || {}, rows });
+async function safeJSON(url, label, timeoutMs = 8000) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), timeoutMs);
+  try {
+    const res = await doFetch(url, { signal: ctl.signal });
+    const status = res.status;
+    let json = null;
+    try { json = await res.json(); } catch { json = null; }
+    return { ok: res.ok, status, url, json };
   } catch (err) {
-    // Last-resort guard: never return statusCode 0
-    Log.error('nfl-predictions-generate fatal', { err: String(err), stack: (err && err.stack) ? String(err.stack).slice(0, 2000) : undefined });
-    return internalError('Function crashed', { hint: 'See function logs', code: 'GEN_CRASH' });
+    log.warn(`fetch failed: ${label}`, { url, err: String(err) });
+    return { ok: false, status: 0, url, json: null, error: String(err) };
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+exports.handler = async (event, context) => {
+  const start = Date.now();
+  try {
+    const params = qs(event);
+    const DEBUG = (params.log === 'debug');
+    if (DEBUG) process.env.LOG_LEVEL = 'debug';
+
+    if (params.health === '1' || params.health === 'true') {
+      return ok({ updated: new Date().toISOString(), meta: { health: 'ok' } });
+    }
+
+    const ENV = {
+      SCHEDULE_URL: process.env.SCHEDULE_URL || 'https://bgroundrobin.com/.netlify/functions/nfl-schedule-get',
+      ODDS_URL:     process.env.ODDS_URL     || 'https://bgroundrobin.com/.netlify/functions/nfl-odds-bridge',
+      TEAMFORM_URL: process.env.TEAMFORM_URL || 'https://bgroundrobin.com/nflverse-team-form.json',
+    };
+
+    log.info('nfl-predictions-generate:start', { params, ENV: { ...ENV, TEAMFORM_URL: !!ENV.TEAMFORM_URL ? 'set' : 'unset' } });
+
+    // Pull schedule & odds in parallel (best-effort)
+    const [sched, odds] = await Promise.all([
+      safeJSON(ENV.SCHEDULE_URL, 'schedule'),
+      safeJSON(ENV.ODDS_URL, 'odds')
+    ]);
+
+    let rows = [];
+    let source = 'model';
+
+    // If there was a model layer in your build that cached rows into blobs, you can read it here.
+    // For now, we build a fallback from odds if model fails to produce rows.
+    const oddsRows = Array.isArray(odds?.json?.rows) ? odds.json.rows : [];
+
+    if (oddsRows.length > 0) {
+      source = 'odds-fallback';
+      rows = oddsRows.map((r) => {
+        const derived = pickFromOdds(r);
+        return {
+          id: r.id || `${r.home}-${r.away}-${r.commence_time}`,
+          matchup: `${(r.away || '').toUpperCase()} @ ${(r.home || '').toUpperCase()}`.trim(),
+          kickoff: r.commence_time || null,
+          homeTeam: (r.home || '').toUpperCase(),
+          awayTeam: (r.away || '').toUpperCase(),
+          moneyline: derived.moneyline,
+          spread: derived.spread,
+          total: derived.total,
+          // Legacy display fields (keep for FE compatibility)
+          displayMarket: derived.moneyline ? 'moneyline' : (derived.spread ? 'spread' : (derived.total ? 'total' : null)),
+          displayPick: derived.moneyline ? (derived.moneyline.team || null) : null,
+          displayPrice: derived.moneyline ? String(derived.moneyline.price ?? '') : null,
+          displayLine: derived.spread ? String(derived.spread.line ?? '') : (derived.total ? String(derived.total.total ?? '') : null),
+          confidence: derived.moneyline?.confidence ?? null,
+          odds: r
+        };
+      });
+    }
+
+    const payload = {
+      ok: true,
+      updated: new Date().toISOString(),
+      meta: {
+        endpoints: { scheduleUrl: ENV.SCHEDULE_URL, oddsUrl: ENV.ODDS_URL, teamFormUrl: ENV.TEAMFORM_URL },
+        source,
+        schedule_status: { ok: !!sched?.ok, status: sched?.status ?? null },
+        odds_status: { ok: !!odds?.ok, status: odds?.status ?? null },
+        count: rows.length,
+      },
+      rows,
+    };
+
+    if (DEBUG) {
+      log.debug('nfl-predictions-generate:result', {
+        count: rows.length,
+        sample: rows[0] ? {
+          id: rows[0].id,
+          matchup: rows[0].matchup,
+          moneyline: rows[0].moneyline,
+          spread: rows[0].spread,
+          total: rows[0].total,
+        } : null
+      });
+    }
+
+    return ok(payload);
+  } catch (err) {
+    log.error('nfl-predictions-generate:crash', { err: String(err), stack: (err && err.stack) ? String(err.stack) : null });
+    return fail(500, 'Function crashed', { code: 'GEN_CRASH' });
+  } finally {
+    const ms = Date.now() - start;
+    log.info('nfl-predictions-generate:end', { ms });
   }
 };
