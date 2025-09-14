@@ -1,17 +1,29 @@
-# RRM Patch – 2025‑09‑14
+# Patch: Fix invalid lambda status code + safer responses & logging
 
-**What’s included (updated files only):**
-- `netlify/functions/_lib/blobs-helper.mjs` – removes `createClient` usage, adds `openStore()` compatible with current `@netlify/blobs`.
-- `netlify/functions/_lib/logger.cjs` – simple LOG_LEVEL logger (`error|warn|info|debug|trace`).
-- `netlify/functions/nfl-depthcharts-import-sportsdataio/index.cjs` – fixes duplicate `"NYG"` key.
-- `netlify/functions/nfl-predictions-generate/index.cjs` – defines `rows`, fixes `finally` syntax error, adds odds-fallback builder and debug logging, supports `?source=odds&limit=&log=`.
-- `netlify/functions/nfl-rosters-run.mjs` – imports `openStore` from the new helper and adds a heartbeat write.
+**Why you saw** `error decoding lambda response: invalid status code returned from lambda: 0`  
+Netlify reports status code 0 when your function throws *before* returning a valid object shaped like:
+`{ statusCode, headers, body }`. Common culprits:
+- Uncaught exception (e.g., `rows` not defined)
+- Returning a plain object/Response that esbuild didn't polyfill
+- Non-JSON body or non-string `body`
+- Large/circular logs crashing serialization
 
-**Sanity checks (copy/paste):**
-- Odds bridge: `/.netlify/functions/nfl-odds-bridge`
-- Force odds-only: `/.netlify/functions/nfl-predictions-generate?force=true&source=odds&limit=5&log=debug`
-- Default (schedule if present else odds): `/.netlify/functions/nfl-predictions-generate?force=true&log=debug`
+## What this patch adds
+1. `netlify/functions/_lib/http.cjs`  
+   Helpers to always return valid responses (`ok`, `badRequest`, `internalError`), with JSON serialization guards and CORS headers.
+2. `netlify/functions/_lib/logger.cjs`  
+   Small logger that truncates huge payloads and honors `LOG_LEVEL` (override with `?log=debug`).
+3. `netlify/functions/nfl-predictions-generate/index.cjs`  
+   Wrapped in `try/catch`, uses the helpers to **always** return `{statusCode, headers, body}`.  
+   It logs the row count and a sample but will not crash if rows are missing.
 
-**Env (optional):**
-- `NETLIFY_BLOBS_SITE_ID`, `NETLIFY_BLOBS_TOKEN` – only needed if your env requires explicit creds.
-- `SCHEDULE_URL`, `ODDS_URL`, `TEAM_FORM_URL` – override endpoints if desired.
+## Sanity checks (after deploy)
+- Basic ping:  
+  `/.netlify/functions/nfl-predictions-generate`
+- With debug logs:  
+  `/.netlify/functions/nfl-predictions-generate?log=debug`
+- Limit rows (without crashing):  
+  `/.netlify/functions/nfl-predictions-generate?limit=5&log=debug`
+
+> Integrate your actual generation logic inside `generatePredictions()` or keep your existing pipeline and only retain the **response pattern** and **try/catch** from this file.
+
