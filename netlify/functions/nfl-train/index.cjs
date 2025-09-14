@@ -1,131 +1,145 @@
-// CommonJS Netlify Function: nfl-train
-// Purpose: Train and write team_form.json while gracefully skipping missing seasons
-// and honoring env var TRAIN_YEARS and query param ?years=.
+// netlify/functions/nfl-train/index.cjs
+/* eslint-disable no-console */
+const { URL } = require('url');
 const zlib = require('zlib');
 
-// Simple response helpers
-const json = (statusCode, body) => ({
-  statusCode,
-  headers: { 'content-type': 'application/json' },
-  body: JSON.stringify(body),
-});
+const FASTR_BASE = 'https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/games';
+const MIN_YEAR = 2018;
 
-function parseQueryParams(event) {
-  const url = new URL(event.rawUrl || `https://dummy${event.path}${event.rawQuery ? '?' + event.rawQuery : ''}`);
-  const params = Object.fromEntries(url.searchParams.entries());
-  return params;
-}
+const { openStore } = require('../_lib/blobs-helper.mjs');
 
-function resolveYears(params) {
-  const clampMin = y => Math.max(2018, Number(y)); // clamp to 2018+ to avoid nflfastR old paths
-  // Accept hierarchy: query ?years=2022,2023 -> env TRAIN_YEARS -> default recent set
-  let list = [];
-  if (params.years) {
-    list = params.years.split(',').map(s => s.trim()).filter(Boolean);
-  } else if (process.env.TRAIN_YEARS) {
-    list = process.env.TRAIN_YEARS.split(',').map(s => s.trim()).filter(Boolean);
-  } else {
-    list = ['2022','2023','2024','2025'];
+function parseYears(event) {
+  const qs = event.queryStringParameters || {};
+  const paramYears = (qs.years || '').trim();
+  const envYears = (process.env.TRAIN_YEARS || '').trim();
+
+  let years = [];
+  if (paramYears) years = years.concat(paramYears.split(',').map(s => parseInt(s, 10)));
+  if (years.length === 0 && envYears) years = years.concat(envYears.split(',').map(s => parseInt(s, 10)));
+  if (years.length === 0) {
+    // default: last 3 completed seasons + current if given
+    const now = new Date();
+    const defaultYears = [now.getUTCFullYear()-3, now.getUTCFullYear()-2, now.getUTCFullYear()-1];
+    years = defaultYears;
   }
-  const years = Array.from(new Set(list.map(clampMin).filter(n => Number.isFinite(n)))).sort();
+  years = years
+    .filter(y => Number.isFinite(y))
+    .map(y => Math.max(y, MIN_YEAR)) // clamp to supported
+    .filter((y, i, a) => a.indexOf(y) === i) // dedupe
+    .sort((a,b)=>a-b);
+
   return years;
 }
 
-async function fetchSeasonCsv(year) {
-  const url = `https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/games/${year}.csv.gz`;
-  const res = await fetch(url);
-  if (!res.ok) {
-    console.warn(`[TRAIN] skip year ${year}: HTTP ${res.status} (${url})`);
-    return null;
-  }
-  const gz = Buffer.from(await res.arrayBuffer());
+async function fetchSeason(year) {
+  const url = `${FASTR_BASE}/${year}.csv.gz`;
   try {
-    const csv = zlib.gunzipSync(gz).toString('utf-8');
-    return csv;
-  } catch (e) {
-    console.warn(`[TRAIN] skip year ${year}: gunzip failed: ${e.message}`);
-    return null;
+    const resp = await fetch(url, { method: 'GET' });
+    if (!resp.ok) {
+      return { year, ok: false, status: resp.status, reason: `HTTP ${resp.status}` };
+    }
+    const buf = Buffer.from(await resp.arrayBuffer());
+    const csv = zlib.gunzipSync(buf).toString('utf-8');
+    return { year, ok: true, csv };
+  } catch (err) {
+    return { year, ok: false, status: 0, reason: err && (err.name || err.message) };
   }
 }
 
-// Extremely light "model": compute a per-team rolling average margin as a stand-in
-// (Keeps the function useful even if upstream logic isn't present.)
-function computeTeamForm(csvByYear) {
-  // Expect csv with columns incl. home_team, away_team, result (home_score - away_score), etc.
-  // We’ll be resilient to schema differences and just try a simple parse.
-  const form = {}; // {TEAM: {games: n, marginAvg: x}}
-  for (const { year, csv } of csvByYear) {
-    const lines = csv.split(/\r?\n/);
-    const header = lines.shift() || '';
-    const cols = header.split(',');
-    const idx = {
-      home_team: cols.indexOf('home_team'),
-      away_team: cols.indexOf('away_team'),
-      home_score: cols.indexOf('home_score'),
-      away_score: cols.indexOf('away_score'),
-    };
-    for (const req of Object.values(idx)) {
-      if (req < 0) { continue; } // tolerate missing columns
-    }
-    for (const line of lines) {
-      if (!line) continue;
-      const parts = line.split(',');
-      const H = parts[idx.home_team];
-      const A = parts[idx.away_team];
-      const hs = Number(parts[idx.home_score]);
-      const as = Number(parts[idx.away_score]);
-      if (!H || !A || !Number.isFinite(hs) || !Number.isFinite(as)) continue;
-      const hMargin = hs - as;
-      const aMargin = as - hs;
-      for (const [team, margin] of [[H, hMargin],[A, aMargin]]) {
-        if (!form[team]) form[team] = { games: 0, marginSum: 0 };
-        form[team].games += 1;
-        form[team].marginSum += margin;
-      }
-    }
+function parseCSV(csv) {
+  // very small CSV parser for columns we need
+  const lines = csv.split(/\r?\n/).filter(Boolean);
+  const header = lines.shift().split(',');
+  const idx = (name) => header.indexOf(name);
+  const gi = {
+    season: idx('season'),
+    week: idx('week'),
+    home: idx('home_team'),
+    away: idx('away_team'),
+    homePts: idx('result'), // result = home_score - away_score
+  };
+  const rows = [];
+  for (const line of lines) {
+    const cols = line.split(',');
+    if (gi.home === -1 || gi.away === -1 || gi.homePts === -1) continue;
+    const result = parseFloat(cols[gi.homePts] || '0');
+    const home = cols[gi.home];
+    const away = cols[gi.away];
+    if (!home || !away) continue;
+    rows.push({ home, away, margin: result });
   }
+  return rows;
+}
+
+function accumulateForm(seasonRows, agg = {}) {
+  for (const g of seasonRows) {
+    if (!agg[g.home]) agg[g.home] = { games: 0, margin: 0 };
+    if (!agg[g.away]) agg[g.away] = { games: 0, margin: 0 };
+    agg[g.home].games += 1;
+    agg[g.home].margin += g.margin;
+    agg[g.away].games += 1;
+    agg[g.away].margin -= g.margin;
+  }
+  return agg;
+}
+
+function toTeamForm(agg) {
   const out = {};
-  for (const [team, s] of Object.entries(form)) {
+  for (const [team, v] of Object.entries(agg)) {
     out[team] = {
-      games: s.games,
-      margin_avg: s.games ? s.marginSum / s.games : 0,
-      updated: new Date().toISOString(),
+      games: v.games,
+      avg_margin: v.games ? v.margin / v.games : 0,
     };
   }
   return out;
 }
 
 exports.handler = async (event) => {
-  const t0 = Date.now();
-  const params = parseQueryParams(event || {});
-  const years = resolveYears(params);
-  const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'rrmodel-nfl';
-  const { openStore } = await import('../_lib/blobs-helper.mjs');
-  const store = await openStore(storeName);
+  const started = Date.now();
+  const years = parseYears(event);
+  const meta = { years, store: process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || null };
+  console.log('[TRAIN] start', meta);
 
-  console.log('[TRAIN] start', { years, store: storeName });
-
-  const csvByYear = [];
+  let agg = {};
+  const seasonResults = [];
   for (const y of years) {
-    try {
-      const csv = await fetchSeasonCsv(y);
-      if (csv) csvByYear.push({ year: y, csv });
-    } catch (e) {
-      console.warn(`[TRAIN] skip year ${y}: ${e.message}`);
+    const got = await fetchSeason(y);
+    if (!got.ok) {
+      console.warn(`[TRAIN] skip year ${y}: ${got.reason}`);
+      seasonResults.push({ year: y, ok: false, reason: got.reason, status: got.status });
+      continue;
     }
-  }
-  if (csvByYear.length === 0) {
-    const body = { ok: false, error: 'No seasons fetched (check TRAIN_YEARS or ?years=)', years };
-    console.error('[TRAIN] abort', body);
-    return json(200, body);
+    const rows = parseCSV(got.csv);
+    accumulateForm(rows, agg);
+    seasonResults.push({ year: y, ok: true, games: rows.length });
   }
 
-  // Compute and write team form
-  const teamForm = computeTeamForm(csvByYear);
-  await store.setJSON('team_form.json', teamForm);
+  const team_form = toTeamForm(agg);
+  let wrote = null;
+  let persisted = false;
+  let persist_error = null;
+  try {
+    const store = await openStore();
+    await store.set('team_form.json', JSON.stringify({ years, team_form, updated: new Date().toISOString() }));
+    wrote = 'team_form.json';
+    persisted = true;
+  } catch (err) {
+    persist_error = err && (err.name || err.message);
+    console.warn('[TRAIN] persist failed:', persist_error);
+  }
 
-  const dt = ((Date.now() - t0) / 1000).toFixed(2);
-  const resp = { ok: true, updated: new Date().toISOString(), years, meta: { source: 'model-epa-v1', wrote:'team_form.json', seconds:+dt } };
-  console.log('[TRAIN] done', resp);
-  return json(200, resp);
+  const body = {
+    ok: true,
+    meta: { years, persisted, wrote, persist_error },
+    seasonResults,
+    summary: { teams: Object.keys(team_form).length },
+    updated: new Date().toISOString(),
+  };
+
+  console.log('[TRAIN] done', body.meta);
+  return {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  };
 };
