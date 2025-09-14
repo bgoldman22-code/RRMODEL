@@ -1,0 +1,30 @@
+name: Build nflverse-team-form.json
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 9 * * 2'
+
+permissions:
+  contents: write
+
+jobs:
+  build-team-form:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci || npm i
+      - name: Build multi-season team form
+        run: node scripts/build-team-form.js --decay=0.7 --recentGames=6
+      - name: Commit team form JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/nflverse-team-form.json
+          git diff --staged --quiet || git commit -m "chore: update nflverse-team-form.json"
+          git push
