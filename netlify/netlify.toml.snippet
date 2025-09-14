@@ -1,0 +1,16 @@
+# netlify.toml snippet (merge into your existing file)
+[functions]
+  node_bundler = "esbuild"
+
+[build.environment]
+  BLOBS_STORE_NFL = "nfl-td"
+  NFL_SCHEDULE_URL = "/.netlify/functions/nfl-schedule-get"
+  NFL_ODDS_BRIDGE_URL = "/.netlify/functions/nfl-odds-bridge"
+  NFLVERSE_PBP_URL = "/nflverse-team-form.json"
+  ODDS_REGION = "us"
+  ODDS_BOOKMAKER = "fanduel"
+  ODDS_MARKETS = "h2h,spreads,totals"
+  ODDS_DAYS_FROM = "7"
+  ODDS_TTL_SECONDS = "120"
+
+# Set ODDS_API_KEY, NETLIFY_SITE_ID, NETLIFY_API_TOKEN in the Netlify UI (not here).
