@@ -1,46 +1,68 @@
-// netlify/functions/_lib/blobs-helper.mjs
-// Safe helper for Netlify Blobs with graceful fallbacks and verbose logging.
-import * as blobs from '@netlify/blobs';
 
-function log(...args) {
-  console.log('[blobs-helper]', ...args);
+// netlify/functions/_lib/blobs-helper.mjs
+// Safe helper for Netlify Blobs with graceful fallbacks and loud logging.
+import { getStore as _getStore, createClient as _createClient } from "@netlify/blobs";
+
+export function envSummary() {
+  return {
+    siteID: process.env.NETLIFY_SITE_ID || null,
+    token: process.env.NETLIFY_AUTH_TOKEN ? `***${process.env.NETLIFY_AUTH_TOKEN.slice(-4)}` : null,
+    storeNFL: process.env.BLOBS_STORE_NFL || null,
+    store: process.env.BLOBS_STORE || null,
+  };
 }
 
-export async function openStore(storeNameEnvKeys = ['BLOBS_STORE_NFL', 'BLOBS_STORE']) {
-  const storeName = process.env[storeNameEnvKeys[0]] || process.env[storeNameEnvKeys[1]] || 'rrmodel-nfl';
+export async function openStore(nameEnv = "BLOBS_STORE_NFL") {
+  const storeName = process.env[nameEnv] || process.env.BLOBS_STORE || "rrmodel-nfl";
+  const env = envSummary();
+  console.log(`[blobs-helper] openStore("${storeName}") env=`, env);
+
   // Try auto-configured environment first
   try {
-    const store = await blobs.getStore(storeName);
-    log('Opened store via getStore()', { storeName });
-    return store;
-  } catch (e1) {
-    log('getStore() failed, trying manual client…', e1?.name || e1?.message || e1);
-  }
-  // Fallback to manual client if siteID + token are provided
-  const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
-  const token = process.env.NETLIFY_AUTH_TOKEN || process.env.AUTH_TOKEN;
-  if (siteID && token) {
-    try {
-      const client = blobs.default?.createClient
-        ? blobs.default.createClient({ siteID, token })
-        : (blobs.createClient ? blobs.createClient({ siteID, token }) : null);
-      if (!client) throw new Error('createClient not available on @netlify/blobs export');
-      const store = client.getStore(storeName);
-      log('Opened store via createClient()', { storeName });
-      return store;
-    } catch (e2) {
-      log('createClient fallback failed:', e2?.name || e2?.message || e2);
-    }
-  } else {
-    log('Missing NETLIFY_SITE_ID/NETLIFY_AUTH_TOKEN for manual client fallback');
+    const store = _getStore(storeName);
+    console.log("[blobs-helper] using auto-configured getStore");
+    return {
+      type: "blobs",
+      name: storeName,
+      putText: (...args) => store.setItem(...args),
+      getText: (...args) => store.getItem(...args),
+      del: (...args) => store.deleteItem(...args),
+    };
+  } catch (e) {
+    console.warn("[blobs-helper] getStore failed, attempting manual client", e?.message);
   }
 
-  // Last resort: in-memory store (non-persistent)
+  // Manual client if siteID/token provided
+  if (process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN) {
+    try {
+      const client = _createClient({
+        siteID: process.env.NETLIFY_SITE_ID,
+        token: process.env.NETLIFY_AUTH_TOKEN,
+      });
+      const store = client.getStore(storeName);
+      console.log("[blobs-helper] using manual createClient + getStore");
+      return {
+        type: "blobs-manual",
+        name: storeName,
+        putText: (...args) => store.setItem(...args),
+        getText: (...args) => store.getItem(...args),
+        del: (...args) => store.deleteItem(...args),
+      };
+    } catch (e) {
+      console.warn("[blobs-helper] manual client failed, falling back to memory store", e?.message);
+    }
+  } else {
+    console.warn("[blobs-helper] NETLIFY_SITE_ID/NETLIFY_AUTH_TOKEN not set; falling back to memory store");
+  }
+
+  // In-memory fallback (avoids hard crash during dev)
   const mem = new Map();
-  log('Using in-memory store (NOT PERSISTED).');
+  console.log("[blobs-helper] using in-memory store (not persisted)");
   return {
-    async set(key, value, opts={}) { mem.set(key, typeof value === 'string' ? value : JSON.stringify(value)); },
-    async get(key) { return mem.get(key) || null; },
-    async list() { return Array.from(mem.keys()); }
+    type: "memory",
+    name: storeName,
+    async putText(key, value) { mem.set(key, value); },
+    async getText(key) { return mem.get(key) ?? null; },
+    async del(key) { mem.delete(key); },
   };
 }
