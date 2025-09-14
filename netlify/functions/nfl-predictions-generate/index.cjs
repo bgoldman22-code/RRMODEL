@@ -1,162 +1,226 @@
-'use strict';
-/**
- * Generates predictions using team form JSON + schedule + odds.
- * - Diagnostics:
- *   ?diag=1     -> shows env booleans (no secrets)
- *   ?diag=fetch -> test-fetches schedule/odds/teamform and returns statuses
- */
+// Netlify Function: nfl-predictions-generate
+// - Forces Netlify Blobs to use manual credentials (NETLIFY_SITE_ID, NETLIFY_API_TOKEN)
+// - Normalizes team codes (e.g., LA -> LAR) to match your team_form keys
+// - Graceful fallbacks: if schedule has no matchups or odds empty, still writes a valid payload
+
 const { getStore } = require("@netlify/blobs");
 
-function getNflStore() {
-  const name = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "nfl-td";
-  const siteID = process.env.NETLIFY_SITE_ID;
-  const token = process.env.NETLIFY_API_TOKEN;
-  if (siteID && token) return getStore(name, { siteID, token });
-  return getStore(name);
+function getEnv(name, fallback = undefined) {
+  const v = process.env[name];
+  return (v === undefined || v === "") ? fallback : v;
 }
 
-function storeDiag() {
-  return {
-    storeName: process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "nfl-td",
-    hasSiteId: !!process.env.NETLIFY_SITE_ID,
-    hasToken: !!process.env.NETLIFY_API_TOKEN,
-    hasInternalFunctionsUrl: !!process.env.INTERNAL_FUNCTIONS_URL,
-    url: process.env.URL || null,
-    deployUrl: process.env.DEPLOY_URL || null,
-    node: process.version
+function makeStore() {
+  const name = getEnv("BLOBS_STORE_NFL", "nfl-td");
+  // Always use manual creds to avoid relying on implicit injection.
+  const siteID = getEnv("NETLIFY_SITE_ID");
+  const token  = getEnv("NETLIFY_API_TOKEN");
+
+  if (!siteID || !token) {
+    const err = new Error("Blobs context missing and no manual credentials provided. Set NETLIFY_SITE_ID and NETLIFY_API_TOKEN.");
+    err.code = "MISSING_BLOBS_CREDS";
+    throw err;
+  }
+  return getStore({ siteID, token, name });
+}
+
+function normalizeTeam(t) {
+  if (!t) return t;
+  const x = String(t).toUpperCase();
+  const MAP = {
+    "LA": "LAR",   // Rams old/alt
+    "STL": "LAR",
+    "SD": "LAC",
+    "WSH": "WAS",
+    "WFT": "WAS",
+    "JAX": "JAC",  // many feeds use JAC
+    "TAM": "TB",
+    "NOR": "NO",
+    "SFO": "SF",
+    "NWE": "NE",
+    "GNB": "GB",
+    "KAN": "KC",
+    "NWE": "NE",
+    "SJN": "NYJ", // just in case
+    "CLV": "CLE",
+    "ARZ": "ARI",
   };
+  return MAP[x] || x;
 }
 
+function pickFromEPA(home, away) {
+  // Minimal heuristic using decayed EPA if available
+  const out = { type: "moneyline", team: home ? home : null, confidence: 0.55 };
+  if (!home || !away) return out;
 
-function baseUrl() {
-  if (process.env.INTERNAL_FUNCTIONS_URL) return process.env.INTERNAL_FUNCTIONS_URL;
-  if (process.env.NETLIFY_DEV === "true") return "http://localhost:8888/.netlify/functions";
-  const site = process.env.URL || process.env.DEPLOY_URL || "http://localhost:8888";
-  return new URL("/.netlify/functions", site).toString().replace(/\/$/, "");
-}
+  const hOff = home?.decayed_data?.off_epa_decayed ?? home?.offense?.epa_per_play ?? 0;
+  const aDef = away?.defense?.epa_allowed_per_play ?? 0;
+  const aOff = away?.decayed_data?.off_epa_decayed ?? away?.offense?.epa_per_play ?? 0;
+  const hDef = home?.defense?.epa_allowed_per_play ?? 0;
 
-async function tryFetchJson(url) {
-  try {
-    const res = await fetch(url, { redirect: "follow" });
-    const text = await res.text();
-    let json = null;
-    try { json = JSON.parse(text); } catch {}
-    return { ok: res.ok, status: res.status, url, json, text: json ? undefined : text.slice(0, 300) };
-  } catch (e) {
-    return { ok: false, status: 0, url, error: e.message };
+  const offEdge = hOff - aDef; // positive favors home
+  const defEdge = ( -hDef ) - ( -aDef ); // simple relative
+
+  if (offEdge > 0.05) {
+    return { type: "spread", team: "HOME", confidence: 0.70 };
   }
-}
-
-async function safeJsonFetch(url, allowEmpty=false) {
-  const res = await fetch(url, { redirect: "follow" });
-  if (!res.ok) throw new Error(`Fetch failed ${res.status} ${res.statusText} for ${url}`);
-  const j = await res.json();
-  if (!allowEmpty && (j == null || (Array.isArray(j) && j.length === 0))) {
-    throw new Error(`Empty JSON from ${url}`);
+  if ((hDef - aOff) < -0.05) {
+    return { type: "moneyline", team: "HOME", confidence: 0.62 };
   }
-  return j;
+  // slight away lean if both are negative
+  if (offEdge < -0.05 && (aOff - hDef) > 0.02) {
+    return { type: "moneyline", team: "AWAY", confidence: 0.58 };
+  }
+  return out;
 }
 
 exports.handler = async (event) => {
-  try {
-    const fnBase = baseUrl();
-    const scheduleUrl = process.env.NFL_SCHEDULE_URL?.startsWith("http")
-      ? process.env.NFL_SCHEDULE_URL
-      : `${fnBase}/${(process.env.NFL_SCHEDULE_URL || "nfl-schedule-get").replace(/^\//, "")}`;
+  const storeName = getEnv("BLOBS_STORE_NFL", "nfl-td");
+  const siteID = getEnv("NETLIFY_SITE_ID");
+  const token  = getEnv("NETLIFY_API_TOKEN");
 
-    const oddsUrl = process.env.NFL_ODDS_BRIDGE_URL?.startsWith("http")
-      ? process.env.NFL_ODDS_BRIDGE_URL
-      : `${fnBase}/${(process.env.NFL_ODDS_BRIDGE_URL || "nfl-odds-placeholder").replace(/^\//, "")}`;
+  const BASE = getEnv("INTERNAL_FUNCTIONS_URL", "") || ""; // often empty on prod edge
 
-    const teamFormUrl = process.env.NFLVERSE_TEAM_FORM_URL?.startsWith("http")
-      ? process.env.NFLVERSE_TEAM_FORM_URL
-      : new URL(process.env.NFLVERSE_TEAM_FORM_URL || "/nflverse-team-form.json", process.env.URL || "http://localhost:8888").toString();
+  const scheduleUrl = getEnv("NFL_SCHEDULE_URL", "/.netlify/functions/nfl-schedule-get");
+  const oddsUrl     = getEnv("NFL_ODDS_BRIDGE_URL", "/.netlify/functions/nfl-odds-bridge");
+  const teamFormUrl = getEnv("NFLVERSE_PBP_URL", "/nflverse-team-form.json");
 
-    // Diagnostics
-    const qp = event?.queryStringParameters || {};
-    if (qp.diag === "1") {
-      return { statusCode: 200, body: JSON.stringify({ ok: true, diag: storeDiag() }) };
-    }
-    if (qp.diag === "fetch") {
-      const [s, o, t] = await Promise.all([tryFetchJson(scheduleUrl), tryFetchJson(oddsUrl), tryFetchJson(teamFormUrl)]);
-      return { statusCode: 200, body: JSON.stringify({ ok: true, endpoints: { scheduleUrl, oddsUrl, teamFormUrl }, fetch: { schedule: s, odds: o, teamForm: t } }) };
-    }
-
-    // Real generate
-    const [schedule, odds, teamForm] = await Promise.all([
-      safeJsonFetch(scheduleUrl),
-      safeJsonFetch(oddsUrl, /*allowEmpty*/ true),
-      safeJsonFetch(teamFormUrl)
-    ]);
-
-    const store = getNflStore();
-    const out = { ok: true, updated: new Date().toISOString(), rows: [] };
-
-    // Normalize schedule
-    const matchups = Array.isArray(schedule?.matchups) ? schedule.matchups
-      : Array.isArray(schedule?.rows) ? schedule.rows
-      : Array.isArray(schedule) ? schedule
-      : [];
-
-    // Normalize odds into a map (may be empty)
-    const byMatchupOdds = new Map();
-    const addOdds = (o) => {
-      const key = o.matchup || o.id || `${o.away || o.a}@${o.home || o.h}`;
-      if (key) byMatchupOdds.set(key, o);
+  // Diag modes
+  const qs = event.queryStringParameters || {};
+  if (qs.diag === "1") {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        ok: true,
+        diag: {
+          storeName,
+          hasSiteId: Boolean(siteID),
+          hasToken: Boolean(token),
+          hasInternalFunctionsUrl: Boolean(BASE),
+          url: process.env.URL || null,
+          deployUrl: process.env.DEPLOY_PRIME_URL || null,
+          node: process.version,
+        },
+      }),
+      headers: { "content-type": "application/json" }
     };
-    if (Array.isArray(odds)) odds.forEach(addOdds);
-    else if (Array.isArray(odds?.rows)) odds.rows.forEach(addOdds);
+  }
 
-    const td = teamForm?.team_data || {};
+  // Helper to fetch JSON with graceful errors
+  async function getJSON(url) {
+    const res = await fetch(url);
+    const ok = res.ok;
+    let json = null;
+    try { json = await res.json(); } catch (e) {}
+    return { ok, status: res.status, url, json };
+  }
+
+  if (qs.diag === "fetch") {
+    const schedule = await getJSON(scheduleUrl.startsWith("http") ? scheduleUrl : `${process.env.URL || ""}${scheduleUrl}`);
+    const odds     = await getJSON(oddsUrl.startsWith("http") ? oddsUrl : `${process.env.URL || ""}${oddsUrl}`);
+    const teamForm = await getJSON(teamFormUrl.startsWith("http") ? teamFormUrl : `${process.env.URL || ""}${teamFormUrl}`);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        ok: true,
+        endpoints: { scheduleUrl: schedule.url, oddsUrl: odds.url, teamFormUrl: teamForm.url },
+        fetch: { schedule, odds, teamForm }
+      }),
+      headers: { "content-type": "application/json" }
+    };
+  }
+
+  try {
+    const scheduleRes = await getJSON(scheduleUrl.startsWith("http") ? scheduleUrl : `${process.env.URL || ""}${scheduleUrl}`);
+    const oddsRes     = await getJSON(oddsUrl.startsWith("http") ? oddsUrl : `${process.env.URL || ""}${oddsUrl}`);
+    const teamFormRes = await getJSON(teamFormUrl.startsWith("http") ? teamFormUrl : `${process.env.URL || ""}${teamFormUrl}`);
+
+    if (!scheduleRes.ok || !teamFormRes.ok) {
+      const err = new Error("Failed to fetch schedule or team form.");
+      err.code = "FETCH_FAIL";
+      throw err;
+    }
+
+    const teamForm = teamFormRes.json;
+    const tmap = teamForm?.team_data || {};
+
+    const nowIso = new Date().toISOString();
+    const payload = {
+      ok: true,
+      updated: nowIso,
+      meta: {
+        scheduleStatus: scheduleRes.status,
+        oddsStatus: oddsRes.status,
+        provider: oddsRes?.json?.provider || "unknown",
+      },
+      rows: []
+    };
+
+    const matchups = scheduleRes.json?.matchups || [];
+    if (!Array.isArray(matchups) || matchups.length === 0) {
+      // Write an empty payload rather than throwing; UI can still show updated timestamp
+      const store = makeStore();
+      await store.setJSON("predictions/current.json", payload);
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "No matchups available; wrote empty payload.", data: payload }),
+        headers: { "content-type": "application/json" }
+      };
+    }
+
+    // Build an easy lookup for odds by matchup if provided
+    const oddsOffers = oddsRes?.json?.offers || oddsRes?.json?.rows || [];
+    const oddsByGame = new Map();
+    for (const o of oddsOffers) {
+      if (o?.gameId) {
+        if (!oddsByGame.has(o.gameId)) oddsByGame.set(o.gameId, []);
+        oddsByGame.get(o.gameId).push(o);
+      }
+    }
 
     for (const m of matchups) {
-      const home = m.homeTeam || m.home || m.h || m.home_abbr;
-      const away = m.awayTeam || m.away || m.a || m.away_abbr;
-      if (!home || !away) continue;
+      const homeRaw = m.homeTeam || m.home || m.home_code;
+      const awayRaw = m.awayTeam || m.away || m.away_code;
+      const home = normalizeTeam(homeRaw);
+      const away = normalizeTeam(awayRaw);
 
-      const homeM = td[home];
-      const awayM = td[away];
+      const hMetrics = tmap[home];
+      const aMetrics = tmap[away];
 
-      let pickType = "moneyline", pickTeam = home, confidence = 0.5;
+      // Use EPA-based fallback if odds are missing
+      let pick = { type: "moneyline", team: home, confidence: 0.55 };
 
-      if (homeM && awayM) {
-        const homeOff = homeM?.decayed_data?.off_epa_decayed ?? homeM?.offense?.epa_per_play ?? 0;
-        const awayDef = awayM?.defense?.epa_allowed_per_play ?? 0;
-        const awayOff = awayM?.decayed_data?.off_epa_decayed ?? awayM?.offense?.epa_per_play ?? 0;
-        const homeDef = homeM?.defense?.epa_allowed_per_play ?? 0;
-        const totalEdge = (homeOff - awayDef) - (awayOff - homeDef);
-
-        if (totalEdge > 0.05) { pickType = "spread"; pickTeam = home; confidence = 0.68; }
-        else if (totalEdge < -0.05) { pickType = "spread"; pickTeam = away; confidence = 0.68; }
-        else {
-          const key1 = m.matchup || `${away}@${home}`;
-          const oddsRec = byMatchupOdds.get(key1);
-          if (oddsRec && (oddsRec.ml_home || oddsRec.ml_away)) {
-            pickType = "moneyline";
-            if (Number(oddsRec.ml_home || 0) < Number(oddsRec.ml_away || 0)) {
-              pickTeam = home; confidence = 0.58;
-            } else {
-              pickTeam = away; confidence = 0.58;
-            }
-          } else {
-            pickType = "moneyline"; pickTeam = home; confidence = 0.53;
-          }
-        }
-      } else {
-        pickType = "moneyline"; pickTeam = home; confidence = 0.54;
+      if (hMetrics && aMetrics) {
+        const p = pickFromEPA(hMetrics, aMetrics);
+        pick = {
+          type: p.type,
+          team: p.team === "HOME" ? home : p.team === "AWAY" ? away : (p.team || home),
+          confidence: p.confidence
+        };
       }
 
-      out.rows.push({
-        id: m.id || `${away}@${home}`,
+      payload.rows.push({
+        id: m.id || `${away}@${home}:${m.kickoff || ""}`,
         matchup: `${away} @ ${home}`,
-        kickoff: m.kickoff || m.start || null,
-        pick: { type: pickType, team: pickTeam, confidence }
+        kickoff: m.kickoff || null,
+        pick
       });
     }
 
-    await store.setJSON("predictions/current.json", out);
-    return { statusCode: 200, body: JSON.stringify({ message: "Predictions generated successfully.", data: out }) };
+    const store = makeStore();
+    await store.setJSON("predictions/current.json", payload);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: true, message: "Predictions generated successfully.", data: payload }),
+      headers: { "content-type": "application/json" }
+    };
   } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ ok: false, error: "Failed to generate predictions.", details: error.message }) };
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ ok: false, error: "Failed to generate predictions.", details: error.message }),
+      headers: { "content-type": "application/json" }
+    };
   }
 };
