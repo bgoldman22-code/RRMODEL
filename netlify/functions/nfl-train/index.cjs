@@ -1,183 +1,161 @@
-
 // netlify/functions/nfl-train/index.cjs
-/* eslint-disable no-console */
-const zlib = require("zlib");
-const { promisify } = require("util");
-const gunzip = promisify(zlib.gunzip);
+// Trains/refreshes "team form" using nflverse games datasets.
+// Robust fetching (new path, legacy path, gz and plain), retries, and clear logs.
+// Persists to Netlify Blobs if configured, otherwise to memory (still returns OK so UI can test).
+
 const https = require("https");
-const http = require("http");
-const { openStore } = require("../_lib/blobs-helper.mjs");
+const zlib = require("zlib");
+const { URL } = require("url");
+const { openStore } = require("../_lib/blobs-helper.cjs");
 
-const DEFAULT_BASE = process.env.NFL_DATA_BASE || "https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/games";
+const DEFAULT_YEARS = [2022, 2023, 2024, 2025];
 
-function mkAgent(url) {
-  return url.startsWith("https://")
-    ? new https.Agent({ keepAlive: true })
-    : new http.Agent({ keepAlive: true });
-}
-
-async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-async function fetchWithRetries(url, tries = 3) {
-  let lastErr;
-  for (let i = 1; i <= tries; i++) {
-    try {
-      console.log(`[train] fetch try ${i}/${tries}: ${url}`);
-      const res = await fetch(url, {
-        // Node 18+ global fetch
-        method: "GET",
-        headers: { "Accept": "*/*" },
-        redirect: "follow",
-        // agent for keepAlive
-        dispatcher: mkAgent(url)
+// Simple fetch with retries and gzip handling
+function fetchBuffer(url, { retries = 2, timeout = 15000 } = {}) {
+  return new Promise((resolve, reject) => {
+    const attempt = (n) => {
+      const req = https.get(url, { timeout }, (res) => {
+        if (res.statusCode !== 200) {
+          const msg = `HTTP ${res.statusCode}`;
+          res.resume();
+          if (n > 0 && res.statusCode >= 500) {
+            console.log("[nfl-train] Retry due to", msg, "for", url);
+            return attempt(n - 1);
+          }
+          return reject(new Error(msg));
+        }
+        const chunks = [];
+        res.on("data", (d) => chunks.push(d));
+        res.on("end", () => resolve(Buffer.concat(chunks)));
       });
-      if (!res.ok) {
-        const txt = await res.text().catch(() => "");
-        throw new Error(`HTTP ${res.status} ${res.statusText} body="${txt.slice(0,200)}"`);
-      }
-      const buf = Buffer.from(await res.arrayBuffer());
-      console.log(`[train] fetched ${buf.length} bytes from ${url}`);
-      return buf;
-    } catch (e) {
-      console.warn(`[train] fetch error on ${url}: ${e.message}`);
-      lastErr = e;
-      await sleep(Math.min(250 * i, 1000));
-    }
-  }
-  throw lastErr;
+      req.on("error", (err) => {
+        if (n > 0) {
+          console.log("[nfl-train] Retry due to network error", err.message, "for", url);
+          return attempt(n - 1);
+        }
+        reject(err);
+      });
+      req.on("timeout", () => {
+        req.destroy(new Error("timeout"));
+      });
+    };
+    attempt(retries);
+  });
 }
 
-function parseYears(paramYears, season, week) {
-  // priority: years=..., else season (single), else derive from week (noop here)
-  if (paramYears) {
-    return paramYears.split(",").map(s => parseInt(s.trim(), 10)).filter(Boolean);
-  }
-  if (season) {
-    const y = parseInt(season, 10);
-    if (!isNaN(y)) return [y];
-  }
-  // default: a modest window
-  const yr = new Date().getUTCFullYear();
-  return [yr - 1, yr];
-}
-
-async function loadYearCSV(year, base = DEFAULT_BASE) {
-  // Try modern gz first, then csv, then legacy path.
-  const urls = [
-    `${base}/games_${year}.csv.gz`,
-    `${base}/games_${year}.csv`,
-    // legacy (very old docs referenced this)
-    `https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/games/${year}.csv.gz`,
+async function fetchCSVforYear(year, base) {
+  const baseURL = base || process.env.NFL_DATA_BASE || "https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/";
+  const candidates = [
+    `${baseURL.replace(/\/+$/, "")}/games_${year}.csv.gz`,
+    `${baseURL.replace(/\/+$/, "")}/games_${year}.csv`,
+    `${baseURL.replace(/\/+$/, "")}/games/${year}.csv.gz`,
+    `${baseURL.replace(/\/+$/, "")}/games/${year}.csv`,
   ];
-  let buf;
-  let usedUrl = null;
-  for (const url of urls) {
+  for (const u of candidates) {
     try {
-      buf = await fetchWithRetries(url, 3);
-      usedUrl = url;
-      break;
+      console.log("[nfl-train] Fetch try:", u);
+      const buf = await fetchBuffer(u);
+      let csv;
+      if (u.endsWith(".gz")) {
+        csv = zlib.gunzipSync(buf).toString("utf8");
+        console.log("[nfl-train] Decompressed gzip for", year, "bytes:", buf.length, "csvLen:", csv.length);
+      } else {
+        csv = buf.toString("utf8");
+        console.log("[nfl-train] Fetched plain csv for", year, "len:", csv.length);
+      }
+      if (!csv || csv.length < 1000) throw new Error("csv_too_small");
+      return { ok: true, year, csv };
     } catch (e) {
-      console.warn(`[train] failed ${url}: ${e.message}`);
+      console.log("[nfl-train] Fetch failed for candidate", u, "->", e.message);
     }
   }
-  if (!buf) throw new Error("fetch_failed");
-  // Decompress if needed
-  if (usedUrl.endsWith(".gz")) {
-    try {
-      const ungz = await gunzip(buf);
-      console.log(`[train] gunzipped year ${year}: ${buf.length} -> ${ungz.length}`);
-      return { csv: ungz.toString("utf8"), url: usedUrl, gz: true };
-    } catch (e) {
-      console.warn(`[train] gunzip failed for ${usedUrl}: ${e.message}`);
-      // try to treat as plain text anyway
-      return { csv: buf.toString("utf8"), url: usedUrl, gz: true, gunzipError: e.message };
+  return { ok: false, year, reason: "fetch_failed" };
+}
+
+// Super light "team form" builder: counts appearances by team as proxy placeholder.
+function buildTeamForm(allCSVs) {
+  const form = {};
+  for (const { csv } of allCSVs) {
+    const lines = csv.split(/\r?\n/);
+    const header = lines.shift();
+    if (!header) continue;
+    const cols = header.split(",");
+    const homeIdx = cols.findIndex(c => /home_team/i.test(c));
+    const awayIdx = cols.findIndex(c => /away_team/i.test(c));
+    for (const line of lines) {
+      if (!line) continue;
+      const parts = line.split(",");
+      const home = parts[homeIdx];
+      const away = parts[awayIdx];
+      if (home) form[home] = (form[home] || 0) + 1;
+      if (away) form[away] = (form[away] || 0) + 1;
     }
   }
-  return { csv: buf.toString("utf8"), url: usedUrl, gz: false };
-}
-
-function quickParseTeams(csv) {
-  // minimal parse: first line headers, subsequent rows split by comma
-  const lines = csv.split(/\r?\n/).filter(Boolean);
-  if (lines.length < 2) return { rows: 0, teams: [] };
-  const header = lines[0].split(",");
-  const homeIdx = header.findIndex(h => /home_?team/i.test(h));
-  const awayIdx = header.findIndex(h => /away_?team/i.test(h));
-  const teams = new Set();
-  for (let i = 1; i < lines.length; i++) {
-    const cols = lines[i].split(",");
-    if (homeIdx >= 0 && cols[homeIdx]) teams.add(cols[homeIdx]);
-    if (awayIdx >= 0 && cols[awayIdx]) teams.add(cols[awayIdx]);
-  }
-  return { rows: lines.length - 1, teams: Array.from(teams).sort() };
-}
-
-async function persistJSON(store, key, obj) {
-  try {
-    await store.putText(key, JSON.stringify(obj));
-    console.log(`[train] persisted ${key} to ${store.type} "${store.name}" (${Buffer.byteLength(JSON.stringify(obj))} bytes)`);
-    return { ok: true, key, store: store.type };
-  } catch (e) {
-    console.warn(`[train] persist failed for ${key}: ${e.message}`);
-    return { ok: false, error: e.message };
-  }
+  const teams = Object.fromEntries(Object.entries(form).map(([k, v]) => [k, { games: v }]));
+  return { teams };
 }
 
 exports.handler = async (event) => {
-  const t0 = Date.now();
-  console.log("[train] start", { query: event.queryStringParameters, envBase: DEFAULT_BASE });
-  const { years: paramYears, season, week, force } = event.queryStringParameters || {};
-  const years = parseYears(paramYears, season, week);
-
-  const seasonResults = [];
-  const allTeams = new Set();
-
-  for (const y of years) {
-    try {
-      const { csv, url, gz, gunzipError } = await loadYearCSV(y);
-      const meta = { url, gz, gunzipError: gunzipError || null };
-      const parsed = quickParseTeams(csv);
-      parsed.teams.forEach(t => allTeams.add(t));
-      console.log(`[train] year ${y}: ${parsed.rows} rows, ${parsed.teams.length} teams from ${url}`);
-      seasonResults.push({ year: y, ok: true, rows: parsed.rows, teams: parsed.teams.length, meta });
-    } catch (e) {
-      console.warn(`[train] year ${y} failed: ${e.message}`);
-      seasonResults.push({ year: y, ok: false, reason: e.message });
-    }
-  }
-
-  const summary = { teams: Array.from(allTeams).sort().length, years: years.length };
-  let persisted = false, wrote = null, persist_error = null;
-
   try {
-    const store = await openStore("BLOBS_STORE_NFL");
-    // Only persist if we actually parsed something
-    if (summary.teams > 0) {
-      const payload = { trained_at: new Date().toISOString(), years, summary, seasonResults };
-      const res = await persistJSON(store, "team_form.json", payload);
-      persisted = !!res.ok;
-      wrote = res.ok ? "team_form.json" : null;
-      persist_error = res.ok ? null : res.error;
-    } else {
-      console.log("[train] nothing to persist (no teams parsed)");
+    const url = new URL(event.rawUrl || `https://dummy.local${event.path || ""}${event.rawQuery ? "?" + event.rawQuery : ""}`);
+    const yearsParam = url.searchParams.get("years");
+    const seasonParam = url.searchParams.get("season");
+    const weekParam = url.searchParams.get("week");
+    const force = url.searchParams.get("force");
+    const years = yearsParam
+      ? yearsParam.split(",").map(s => parseInt(s.trim(), 10)).filter(Boolean)
+      : DEFAULT_YEARS;
+
+    console.log("[nfl-train] start", { years, seasonParam, weekParam, force });
+
+    const fetched = [];
+    for (const y of years) {
+      const res = await fetchCSVforYear(y);
+      fetched.push(res);
     }
-  } catch (e) {
-    console.warn("[train] openStore/persist error:", e?.message);
-    persist_error = e?.message || "persist_error";
+
+    const okCSV = fetched.filter(r => r.ok);
+    let summary = { teams: 0 };
+    let persisted = false;
+    let wrote = null;
+    let persist_error = null;
+
+    if (okCSV.length > 0) {
+      const form = buildTeamForm(okCSV);
+      summary.teams = Object.keys(form.teams).length;
+      try {
+        const store = await openStore();
+        await store.set("team_form.json", JSON.stringify(form));
+        persisted = true;
+        wrote = "team_form.json";
+        console.log("[nfl-train] persisted team_form.json with", summary.teams, "teams");
+      } catch (e) {
+        persist_error = e.message;
+        console.log("[nfl-train] persist failed:", e.message);
+      }
+    } else {
+      console.log("[nfl-train] No CSVs fetched; skipping persist");
+    }
+
+    const body = {
+      ok: true,
+      meta: { years, persisted, wrote, persist_error },
+      seasonResults: fetched.map(r => (r.ok ? { year: r.year, ok: true } : { year: r.year, ok: false, reason: r.reason })),
+      summary,
+      updated: new Date().toISOString()
+    };
+
+    return {
+      statusCode: 200,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body)
+    };
+  } catch (err) {
+    console.error("[nfl-train] crash:", err);
+    return {
+      statusCode: 500,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ok: false, error: String(err && err.message || err) })
+    };
   }
-
-  const resp = {
-    ok: true,
-    updated: new Date().toISOString(),
-    meta: { years, persisted, wrote, persist_error },
-    seasonResults,
-    summary,
-  };
-
-  console.log("[train] done in", Date.now() - t0, "ms");
-  return {
-    statusCode: 200,
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(resp),
-  };
 };
