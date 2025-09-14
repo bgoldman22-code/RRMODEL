@@ -1,68 +1,31 @@
-
 // netlify/functions/_lib/blobs-helper.mjs
-// Safe helper for Netlify Blobs with graceful fallbacks and loud logging.
-import { getStore as _getStore, createClient as _createClient } from "@netlify/blobs";
+// ESM module that wraps @netlify/blobs in a tiny helper with JSON helpers.
+// Compatible with Netlify Functions and can be dynamically imported from CJS.
 
-export function envSummary() {
+import { getStore } from '@netlify/blobs';
+
+/**
+ * Open a Netlify Blobs store.
+ * Will prefer BLOBS_STORE_NFL, then BLOBS_STORE, then the provided `fallbackName`.
+ */
+export async function openStore(fallbackName = "nfl") {
+  const name = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || fallbackName || "nfl";
+
+  // getStore auto-detects site env in Netlify; no createClient is needed.
+  // If you run locally WITHOUT Netlify env, you can pass siteID/token via env:
+  // NETLIFY_SITE_ID and NETLIFY_API_TOKEN (Netlify CLI injects these for dev).
+  const store = getStore({ name });
+
   return {
-    siteID: process.env.NETLIFY_SITE_ID || null,
-    token: process.env.NETLIFY_AUTH_TOKEN ? `***${process.env.NETLIFY_AUTH_TOKEN.slice(-4)}` : null,
-    storeNFL: process.env.BLOBS_STORE_NFL || null,
-    store: process.env.BLOBS_STORE || null,
-  };
-}
-
-export async function openStore(nameEnv = "BLOBS_STORE_NFL") {
-  const storeName = process.env[nameEnv] || process.env.BLOBS_STORE || "rrmodel-nfl";
-  const env = envSummary();
-  console.log(`[blobs-helper] openStore("${storeName}") env=`, env);
-
-  // Try auto-configured environment first
-  try {
-    const store = _getStore(storeName);
-    console.log("[blobs-helper] using auto-configured getStore");
-    return {
-      type: "blobs",
-      name: storeName,
-      putText: (...args) => store.setItem(...args),
-      getText: (...args) => store.getItem(...args),
-      del: (...args) => store.deleteItem(...args),
-    };
-  } catch (e) {
-    console.warn("[blobs-helper] getStore failed, attempting manual client", e?.message);
-  }
-
-  // Manual client if siteID/token provided
-  if (process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN) {
-    try {
-      const client = _createClient({
-        siteID: process.env.NETLIFY_SITE_ID,
-        token: process.env.NETLIFY_AUTH_TOKEN,
-      });
-      const store = client.getStore(storeName);
-      console.log("[blobs-helper] using manual createClient + getStore");
-      return {
-        type: "blobs-manual",
-        name: storeName,
-        putText: (...args) => store.setItem(...args),
-        getText: (...args) => store.getItem(...args),
-        del: (...args) => store.deleteItem(...args),
-      };
-    } catch (e) {
-      console.warn("[blobs-helper] manual client failed, falling back to memory store", e?.message);
-    }
-  } else {
-    console.warn("[blobs-helper] NETLIFY_SITE_ID/NETLIFY_AUTH_TOKEN not set; falling back to memory store");
-  }
-
-  // In-memory fallback (avoids hard crash during dev)
-  const mem = new Map();
-  console.log("[blobs-helper] using in-memory store (not persisted)");
-  return {
-    type: "memory",
-    name: storeName,
-    async putText(key, value) { mem.set(key, value); },
-    async getText(key) { return mem.get(key) ?? null; },
-    async del(key) { mem.delete(key); },
+    async getJSON(key, defaultValue = null) {
+      const val = await store.get(key, { type: "json" });
+      return (typeof val === "undefined" || val === null) ? defaultValue : val;
+    },
+    async setJSON(key, value) {
+      // No random suffix so callers can read a stable key
+      await store.setJSON(key, value, { addRandomSuffix: false });
+    },
+    raw: store,
+    name
   };
 }
