@@ -1,145 +1,211 @@
 // netlify/functions/nfl-train/index.cjs
 /* eslint-disable no-console */
 const { URL } = require('url');
-const zlib = require('zlib');
 
-const FASTR_BASE = 'https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/games';
-const MIN_YEAR = 2018;
-
-const { openStore } = require('../_lib/blobs-helper.mjs');
-
-function parseYears(event) {
-  const qs = event.queryStringParameters || {};
-  const paramYears = (qs.years || '').trim();
-  const envYears = (process.env.TRAIN_YEARS || '').trim();
-
-  let years = [];
-  if (paramYears) years = years.concat(paramYears.split(',').map(s => parseInt(s, 10)));
-  if (years.length === 0 && envYears) years = years.concat(envYears.split(',').map(s => parseInt(s, 10)));
-  if (years.length === 0) {
-    // default: last 3 completed seasons + current if given
-    const now = new Date();
-    const defaultYears = [now.getUTCFullYear()-3, now.getUTCFullYear()-2, now.getUTCFullYear()-1];
-    years = defaultYears;
-  }
-  years = years
-    .filter(y => Number.isFinite(y))
-    .map(y => Math.max(y, MIN_YEAR)) // clamp to supported
-    .filter((y, i, a) => a.indexOf(y) === i) // dedupe
-    .sort((a,b)=>a-b);
-
-  return years;
-}
-
-async function fetchSeason(year) {
-  const url = `${FASTR_BASE}/${year}.csv.gz`;
+// Helper: robust fetch with timeout
+async function fetchWithTimeout(url, ms = 20000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
   try {
-    const resp = await fetch(url, { method: 'GET' });
-    if (!resp.ok) {
-      return { year, ok: false, status: resp.status, reason: `HTTP ${resp.status}` };
+    const res = await fetch(url, { signal: ctrl.signal });
+    return res;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+// Build candidate URLs for nflfastR games CSV (historical repo layout)
+function buildYearUrls(year) {
+  const y = String(year).trim();
+  return [
+    // canonical (games/games_YYYY.csv.gz)
+    `https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/games/games_${y}.csv.gz`,
+    // sometimes mirrored under 'data/games' with uncompressed CSV
+    `https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/games/games_${y}.csv`,
+    // legacy path people sometimes used (missing 'games_' prefix) — keep as last resort
+    `https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/games/${y}.csv.gz`,
+  ];
+}
+
+// Minimal gunzip using node:zlib if needed
+const zlib = require('zlib');
+function maybeGunzip(buffer, contentType, url) {
+  const lc = (contentType || '').toLowerCase();
+  const gz = url.endsWith('.gz') || lc.includes('gzip');
+  if (!gz) return buffer;
+  try {
+    return zlib.gunzipSync(buffer);
+  } catch (e) {
+    console.warn('[nfl-train] gunzip failed, returning raw buffer', e?.message);
+    return buffer;
+  }
+}
+
+async function fetchSeasonCsv(year) {
+  const urls = buildYearUrls(year);
+  for (const u of urls) {
+    try {
+      const res = await fetchWithTimeout(u, 20000);
+      if (res.ok) {
+        const buf = Buffer.from(await res.arrayBuffer());
+        const data = maybeGunzip(buf, res.headers.get('content-type'), u).toString('utf8');
+        console.log('[nfl-train] fetched', u, 'bytes=', data.length);
+        return { ok: true, url: u, csv: data };
+      } else if (res.status === 404) {
+        console.warn('[nfl-train] 404', u);
+      } else {
+        console.warn('[nfl-train] non-OK', u, res.status, await res.text().catch(()=>''));
+      }
+    } catch (e) {
+      console.warn('[nfl-train] fetch error', u, e?.name || e?.message || e);
     }
-    const buf = Buffer.from(await resp.arrayBuffer());
-    const csv = zlib.gunzipSync(buf).toString('utf-8');
-    return { year, ok: true, csv };
-  } catch (err) {
-    return { year, ok: false, status: 0, reason: err && (err.name || err.message) };
+  }
+  return { ok: false, error: 'all_urls_failed' };
+}
+
+// Tiny CSV parser for our needs
+function parseCsv(text) {
+  const lines = text.split(/\r?\n/).filter(Boolean);
+  if (!lines.length) return { headers: [], rows: [] };
+  const headers = lines[0].split(',');
+  const rows = lines.slice(1).map(line => {
+    // split by commas not in quotes (basic)
+    const parts = [];
+    let cur = '', inQ = false;
+    for (let i=0;i<line.length;i++){
+      const ch = line[i];
+      if (ch === '"' ) {
+        inQ = !inQ;
+        continue;
+      }
+      if (ch === ',' && !inQ) {
+        parts.push(cur);
+        cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    parts.push(cur);
+    const obj = {};
+    headers.forEach((h, idx) => obj[h] = parts[idx]);
+    return obj;
+  });
+  return { headers, rows };
+}
+
+// Crude "team form" metric using point differential last N games (here, season aggregate as a placeholder)
+function computeTeamForm(rows) {
+  // nflfastR has 'home_team','away_team','home_score','away_score' in games
+  const map = new Map();
+  for (const r of rows) {
+    const h = r.home_team || r.home || r.homeabbr || r.h_team;
+    const a = r.away_team || r.away || r.awayabbr || r.a_team;
+    const hs = Number(r.home_score || r.total_home_score || r.h_score || 0);
+    const as = Number(r.away_score || r.total_away_score || r.a_score || 0);
+    if (!h || !a) continue;
+    const hpd = hs - as;
+    const apd = as - hs;
+    map.set(h, (map.get(h)||0) + hpd);
+    map.set(a, (map.get(a)||0) + apd);
+  }
+  // normalize to 0..1
+  const vals = Array.from(map.values());
+  const min = Math.min(0, ...vals);
+  const max = Math.max(1, ...vals);
+  const form = {};
+  for (const [team, v] of map.entries()) {
+    form[team] = (v - min) / (max - min || 1);
+  }
+  return form;
+}
+
+// Blobs
+const path = require('path');
+async function getStore() {
+  // dynamic import to keep .cjs happy
+  const helper = await import('../_lib/blobs-helper.mjs');
+  return helper.openStore(['BLOBS_STORE_NFL','BLOBS_STORE']);
+}
+
+async function persistJSON(key, obj) {
+  try {
+    const store = await getStore();
+    await store.set(key, JSON.stringify(obj));
+    return { ok: true };
+  } catch (e) {
+    console.warn('[nfl-train] persistJSON failed', e?.name || e?.message || e);
+    return { ok: false, error: e?.message || String(e) };
   }
 }
 
-function parseCSV(csv) {
-  // very small CSV parser for columns we need
-  const lines = csv.split(/\r?\n/).filter(Boolean);
-  const header = lines.shift().split(',');
-  const idx = (name) => header.indexOf(name);
-  const gi = {
-    season: idx('season'),
-    week: idx('week'),
-    home: idx('home_team'),
-    away: idx('away_team'),
-    homePts: idx('result'), // result = home_score - away_score
-  };
-  const rows = [];
-  for (const line of lines) {
-    const cols = line.split(',');
-    if (gi.home === -1 || gi.away === -1 || gi.homePts === -1) continue;
-    const result = parseFloat(cols[gi.homePts] || '0');
-    const home = cols[gi.home];
-    const away = cols[gi.away];
-    if (!home || !away) continue;
-    rows.push({ home, away, margin: result });
-  }
-  return rows;
-}
-
-function accumulateForm(seasonRows, agg = {}) {
-  for (const g of seasonRows) {
-    if (!agg[g.home]) agg[g.home] = { games: 0, margin: 0 };
-    if (!agg[g.away]) agg[g.away] = { games: 0, margin: 0 };
-    agg[g.home].games += 1;
-    agg[g.home].margin += g.margin;
-    agg[g.away].games += 1;
-    agg[g.away].margin -= g.margin;
-  }
-  return agg;
-}
-
-function toTeamForm(agg) {
-  const out = {};
-  for (const [team, v] of Object.entries(agg)) {
-    out[team] = {
-      games: v.games,
-      avg_margin: v.games ? v.margin / v.games : 0,
-    };
-  }
-  return out;
+function parseYearsParam(query) {
+  const q = query.get('years');
+  if (q) return q.split(',').map(s => Number(s.trim())).filter(Boolean);
+  const season = Number(query.get('season'));
+  if (season) return [season];
+  const envYears = process.env.TRAIN_YEARS;
+  if (envYears) return envYears.split(',').map(s => Number(s.trim())).filter(Boolean);
+  return [2024, 2023, 2022];
 }
 
 exports.handler = async (event) => {
-  const started = Date.now();
-  const years = parseYears(event);
-  const meta = { years, store: process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || null };
-  console.log('[TRAIN] start', meta);
-
-  let agg = {};
-  const seasonResults = [];
-  for (const y of years) {
-    const got = await fetchSeason(y);
-    if (!got.ok) {
-      console.warn(`[TRAIN] skip year ${y}: ${got.reason}`);
-      seasonResults.push({ year: y, ok: false, reason: got.reason, status: got.status });
-      continue;
-    }
-    const rows = parseCSV(got.csv);
-    accumulateForm(rows, agg);
-    seasonResults.push({ year: y, ok: true, games: rows.length });
-  }
-
-  const team_form = toTeamForm(agg);
-  let wrote = null;
-  let persisted = false;
-  let persist_error = null;
+  const start = Date.now();
   try {
-    const store = await openStore();
-    await store.set('team_form.json', JSON.stringify({ years, team_form, updated: new Date().toISOString() }));
-    wrote = 'team_form.json';
-    persisted = true;
-  } catch (err) {
-    persist_error = err && (err.name || err.message);
-    console.warn('[TRAIN] persist failed:', persist_error);
+    const url = new URL(event.rawUrl || `https://x.local${event.path}${event.queryStringParameters ? '?' + new URLSearchParams(event.queryStringParameters).toString() : ''}`);
+    const q = url.searchParams;
+    const years = parseYearsParam(q);
+    const force = q.get('force');
+
+    console.log('[nfl-train] start', { years, force });
+
+    const seasonResults = [];
+    const aggregateRows = [];
+
+    for (const y of years) {
+      const res = await fetchSeasonCsv(y);
+      if (!res.ok) {
+        seasonResults.push({ year: y, ok: false, reason: 'fetch_failed' });
+        continue;
+      }
+      const { rows } = parseCsv(res.csv);
+      console.log(`[nfl-train] parsed ${rows.length} rows for ${y}`);
+      aggregateRows.push(...rows);
+      seasonResults.push({ year: y, ok: true, url: res.url, rows: rows.length });
+    }
+
+    const team_form = computeTeamForm(aggregateRows);
+    const summary = { teams: Object.keys(team_form).length };
+
+    let persisted = false, wrote = null, persist_error = null;
+    if (Object.keys(team_form).length) {
+      const key = 'team_form.json';
+      const p = await persistJSON(key, { updated: new Date().toISOString(), team_form });
+      persisted = !!p.ok;
+      wrote = p.ok ? key : null;
+      persist_error = p.ok ? null : p.error;
+    }
+
+    const resp = {
+      ok: true,
+      meta: { years, persisted, wrote, persist_error },
+      seasonResults,
+      summary,
+      updated: new Date().toISOString(),
+    };
+
+    return {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(resp),
+    };
+  } catch (e) {
+    console.error('[nfl-train] CRASH', e?.stack || e?.message || e);
+    return {
+      statusCode: 500,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok: false, error: e?.message || String(e) }),
+    };
+  } finally {
+    console.log('[nfl-train] done in ms', Date.now() - start);
   }
-
-  const body = {
-    ok: true,
-    meta: { years, persisted, wrote, persist_error },
-    seasonResults,
-    summary: { teams: Object.keys(team_form).length },
-    updated: new Date().toISOString(),
-  };
-
-  console.log('[TRAIN] done', body.meta);
-  return {
-    statusCode: 200,
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(body),
-  };
 };
