@@ -1,212 +1,154 @@
-'use strict';
+// netlify/functions/nfl-predictions-generate/index.cjs
+// CJS file that dynamically imports ESM helpers
+const { URLSearchParams } = require("url");
 
-/**
- * NFL Predictions Generate
- * - Uses team-form model (EPA-like stub) to compute win probs
- * - Odds only used for labeling (line/price), not for confidence
- * - Always returns row fields the UI expects:
- *    moneylineText, moneylineConf
- *    spreadText,   spreadConf
- *    totalText,    totalConf
- * - Adds verbose logs you can see in Netlify function logs
- */
-
-const fetchJson = async (url) => {
-  const res = await fetch(url, { headers: { 'cache-control': 'no-cache' } });
-  if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
-  return res.json();
-};
-
-// Environment-provided endpoints; fallback to your deployed URLs
-const SCHEDULE_URL = process.env.SCHEDULE_URL || "https://bgroundrobin.com/.netlify/functions/nfl-schedule-get";
-const ODDS_URL     = process.env.ODDS_URL     || "https://bgroundrobin.com/.netlify/functions/nfl-odds-bridge";
-const FORM_URL     = process.env.TEAM_FORM_URL || "https://bgroundrobin.com/nflverse-team-form.json";
-
-// Utility: percent clamp
-const pct = (x) => Math.max(0, Math.min(100, Math.round(x * 100)));
-const fmtPct = (x) => `${pct(x)}%`;
-
-// Basic win prob from form numbers (EPA-ish). You can replace with your actual model quickly.
-function winProbFromForm(formHome, formAway) {
-  // If data missing, return coin flip
-  if (typeof formHome !== 'number' || typeof formAway !== 'number') return 0.5;
-  const diff = formHome - formAway;          // positive favors home
-  const k = 3.5;                              // scaling; tune later
-  const prob = 1 / (1 + Math.exp(-diff * k)); // logistic
-  return prob;
+async function importHelpers() {
+  const fe = await import("../_lib/feature-engineering.mjs");
+  const blobs = await import("../_lib/blobs-helper.mjs");
+  return { fe, blobs };
 }
 
-// Build one row with all display fields
-function buildRow(m, oddsMap, formMap) {
-  const key = m.id;
-  const odds = oddsMap.get(key) || null;
-  const home = (m.homeTeam || "").toUpperCase();
-  const away = (m.awayTeam || "").toUpperCase();
-
-  const homeAbbr = teamAbbr(home);
-  const awayAbbr = teamAbbr(away);
-
-  const formHome = formMap.get(homeAbbr);
-  const formAway = formMap.get(awayAbbr);
-
-  // Moneyline pick from model (independent of odds)
-  const pHome = winProbFromForm(formHome?.form ?? null, formAway?.form ?? null);
-  const pickHome = pHome >= 0.5;
-  const mlTeam = pickHome ? home : away;
-  const mlConf = pickHome ? pHome : 1 - pHome;
-
-  // Spread: determine favored side from odds if present, otherwise align with model
-  let spreadText = "–";
-  let spreadConf = null;
-  if (odds && typeof odds.spread_point === 'number') {
-    const fav = odds.spread_point < 0 ? home : away;
-    const line = Math.abs(odds.spread_point);
-    const price = fav === home ? odds.spread_home_line : odds.spread_away_line;
-    spreadText = `${fav.toUpperCase()} ${odds.spread_point < 0 ? '-' : ''}${line} (${price >= 0 ? '+'+price : price})`;
-    // crude transform from win prob to ATS confidence
-    spreadConf = Math.min(0.9, Math.max(0.5, (Math.abs(pHome - 0.5) * 2 * 0.6) + 0.5));
-  }
-
-  // Total: choose over/under using model pace proxy; fall back to neutral 0.54
-  let totalText = "–";
-  let totalConf = null;
-  if (odds && typeof odds.total_points === 'number') {
-    // proxy: if both offenses stronger than defenses -> over lean
-    const offH = formHome?.off_epa_decayed ?? 0;
-    const offA = formAway?.off_epa_decayed ?? 0;
-    const defH = formHome?.def_epa_decayed ?? 0;
-    const defA = formAway?.def_epa_decayed ?? 0;
-    const tilt = (offH + offA) - (defH + defA);
-    const chooseOver = tilt > 0;
-    totalText = `${chooseOver ? 'OVER' : 'UNDER'} ${odds.total_points}`;
-    totalConf = Math.min(0.9, Math.max(0.5, 0.5 + Math.tanh(Math.abs(tilt)) * 0.35));
-  }
-
-  // Moneyline label with odds price if available
-  let moneylineText = mlTeam;
-  if (odds && (typeof odds.ml_home === 'number' || typeof odds.ml_away === 'number')) {
-    const price = mlTeam === home ? odds.ml_home : odds.ml_away;
-    if (typeof price === 'number') {
-      moneylineText = `${mlTeam.toUpperCase()} (${price})`;
-    } else {
-      moneylineText = mlTeam.toUpperCase();
-    }
-  } else {
-    moneylineText = mlTeam.toUpperCase();
-  }
-
-  // Confidence formatting
-  const moneylineConf = mlConf;
-
-  const row = {
-    id: key,
-    matchup: `${away} @ ${home}`,
-    kickoff: m.kickoff,
-    moneylineText,
-    moneylineConf,
-    spreadText,
-    spreadConf,
-    totalText,
-    totalConf,
-  };
-
-  // Log each row for visibility
-  console.log("[PREDICTION]", JSON.stringify({
-    id: key, matchup: row.matchup,
-    moneylineText, moneylineConf: fmtPct(moneylineConf),
-    spreadText, spreadConf: spreadConf ? fmtPct(spreadConf) : "–",
-    totalText, totalConf: totalConf ? fmtPct(totalConf) : "–",
-    sources: { haveOdds: !!odds, haveForm: !!(formHome && formAway) }
-  }));
-
-  return row;
+function trPct(x){
+  if (x == null) return null;
+  const pct = Math.round(x*100);
+  return Math.max(0, Math.min(100, pct));
 }
 
-// Map helpers
-function mapOddsById(oddsRows) {
-  const map = new Map();
-  (oddsRows || []).forEach(r => map.set(r.id, r));
-  return map;
+// compose display strings
+function formatMoneyline(team, price) {
+  if (price == null) return team;
+  return `${team} (${price})`;
 }
-
-function teamAbbr(nameUpper) {
-  // crude mapping: use common three-letter if detected; otherwise first 3 letters
-  // The team-form JSON in your env uses NFL abbreviations like BUF, NYJ, etc.
-  // We'll keep a small map for special cases.
-  const map = {
-    "LOS ANGELES RAMS": "LA",
-    "LOS ANGELES CHARGERS": "LAC",
-    "SAN FRANCISCO 49ERS": "SF",
-    "NEW YORK JETS": "NYJ",
-    "NEW YORK GIANTS": "NYG",
-    "JACKSONVILLE JAGUARS": "JAX",
-    "TAMPA BAY BUCCANEERS": "TB",
-    "KANSAS CITY CHIEFS": "KC",
-    "GREEN BAY PACKERS": "GB",
-    "NEW ENGLAND PATRIOTS": "NE",
-    "ARIZONA CARDINALS": "ARI",
-    "LAS VEGAS RAIDERS": "LV",
-    "WASHINGTON COMMANDERS": "WAS"
-  };
-  return map[nameUpper] || nameUpper.split(' ').map(s=>s[0]).join('').slice(0,3);
+function formatSpread(team, point, price) {
+  if (point == null) return "–";
+  const sign = point > 0 ? "+" : "";
+  const priceStr = price != null ? ` (${price})` : "";
+  return `${team} ${sign}${point}${priceStr}`;
 }
 
 exports.handler = async (event) => {
+  const { fe, blobs } = await importHelpers();
+  const qs = new URLSearchParams(event.rawQuery || event.rawQueryString || "");
+  const force = !!qs.get("force");
+
+  const logs = [];
+
+  // Load team_form from blobs if available
+  let features = null;
   try {
-    const scheduleResp = await fetchJson(SCHEDULE_URL);
-    const matchups = scheduleResp.matchups || [];
+    const store = await blobs.openStore(process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "rrmodel");
+    features = await blobs.getJSONSafe(store, "team_form.json");
+    logs.push({ level:"info", msg:"features_loaded", rows: features ? Object.keys(features).length : 0 });
+  } catch (e) {
+    logs.push({ level:"warn", msg:"features_missing", error: String(e) });
+  }
 
-    // Fetch odds (optional) and team form (required for model)
-    let oddsRows = [];
+  // Load schedule w/ odds (your existing schedule source). Expect an upstream util to provide it.
+  // For resilience, accept payload passthrough via body for local tests.
+  let schedule = null;
+  try {
+    // existing upstream should have set precomputed schedule JSON in blobs as well
+    const store = await blobs.openStore(process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "rrmodel");
+    schedule = await blobs.getJSONSafe(store, "schedule.json");
+    if (!schedule || !Array.isArray(schedule)) throw new Error("no_schedule_in_blobs");
+    logs.push({ level:"info", msg:"schedule_loaded", games: schedule.length });
+  } catch (e) {
+    logs.push({ level:"warn", msg:"schedule_fallback", error: String(e) });
     try {
-      const oddsResp = await fetchJson(ODDS_URL);
-      oddsRows = (oddsResp && oddsResp.rows) || [];
-    } catch (e) {
-      console.warn("No odds available:", e.message);
-    }
+      schedule = JSON.parse(event.body || "[]");
+    } catch {}
+  }
 
-    let formMap = new Map();
-    try {
-      const formResp = await fetchJson(FORM_URL);
-      const teams = formResp?.team_data || {};
-      Object.entries(teams).forEach(([abbr, data]) => {
-        formMap.set(abbr, {
-          form: data?.form ?? 0,
-          off_epa_decayed: data?.decayed_data?.off_epa_decayed ?? 0,
-          def_epa_decayed: data?.decayed_data?.def_epa_decayed ?? 0,
-        });
-      });
-    } catch (e) {
-      console.warn("No team form available:", e.message);
-    }
-
-    const oddsMap = mapOddsById(oddsRows);
-
-    const rows = matchups.map(m => buildRow(m, oddsMap, formMap));
-
+  if (!schedule || !schedule.length) {
     return {
       statusCode: 200,
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        ok: true,
-        updated: new Date().toISOString(),
-        meta: {
-          source: "model-epa-stub",
-          schedule_source: scheduleResp?.source || "unknown"
-        },
-        rows
-      })
-    };
-  } catch (err) {
-    console.error("GEN_CRASH", err);
-    return {
-      statusCode: 500,
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        ok: false,
-        error: "Function crashed",
-        details: { hint: "See function logs", code: "GEN_CRASH", message: err.message }
-      })
+      body: JSON.stringify({ ok:false, error:"no_schedule", logs })
     };
   }
+
+  // Build picks
+  const rows = [];
+  for (const g of schedule) {
+    const {
+      id, matchup, kickoff, homeTeam, awayTeam, odds = {}
+    } = g;
+
+    // Lines (only for mapping sides / thresholds, not for confidence)
+    const ml_home = odds.ml_home ?? null;
+    const ml_away = odds.ml_away ?? null;
+    const spread_point = odds.spread_point ?? null;
+    const total_points = odds.total_points ?? null;
+    const over_price = odds.over_price ?? null;
+    const under_price = odds.under_price ?? null;
+
+    let moneylinePick = null, moneylineConf = null;
+    let spreadPick = null, spreadConf = null;
+    let totalPick = null, totalConf = null;
+
+    if (features) {
+      // Use latest features for each team within that season. Season guess from kickoff year.
+      const season = new Date(kickoff).getUTCFullYear();
+      const fh = fe.latestTeamWeek(features, season, homeTeam) || {};
+      const fa = fe.latestTeamWeek(features, season, awayTeam) || {};
+
+      const scored = fe.scoreMatchup(fh, fa, { spread: spread_point, total: total_points });
+
+      // Moneyline: choose side by model p_home vs 0.5
+      const p_home = scored.p_home ?? 0.5;
+      const sideTeam = p_home >= 0.5 ? homeTeam : awayTeam;
+      const sidePrice = p_home >= 0.5 ? ml_home : ml_away;
+      moneylinePick = formatMoneyline(sideTeam, sidePrice);
+      moneylineConf = trPct(Math.abs(p_home - 0.5)*2*0.85 + 0.5*0.0); // stretch around 50–85%
+
+      // Spread: pick favorite if p_home > 0.5, else dog + points (if spread exists)
+      if (spread_point != null) {
+        const takeHome = p_home >= 0.5;
+        const spreadTeam = takeHome ? homeTeam : awayTeam;
+        const spreadPoint = takeHome ? spread_point : -spread_point;
+        const spreadPrice = takeHome ? odds.spread_home_line : odds.spread_away_line;
+        spreadPick = formatSpread(spreadTeam, spreadPoint, spreadPrice);
+        spreadConf = trPct(0.5 + Math.min(0.35, Math.abs(p_home - 0.5)*1.6));
+      }
+
+      // Total: use p_over
+      if (total_points != null && scored.p_over != null) {
+        const isOver = scored.p_over >= 0.5;
+        totalPick = isOver ? `OVER ${total_points}` : `UNDER ${total_points}`;
+        totalConf = trPct(0.5 + Math.min(0.35, Math.abs(scored.p_over - 0.5)*1.7));
+      }
+    } else {
+      // Fallback: neutral 50s
+      moneylinePick = formatMoneyline(homeTeam, ml_home);
+      moneylineConf = 50;
+      if (spread_point != null) {
+        spreadPick = formatSpread(homeTeam, spread_point, odds.spread_home_line);
+        spreadConf = 50;
+      }
+      if (total_points != null) {
+        totalPick = `OVER ${total_points}`;
+        totalConf = 50;
+      }
+    }
+
+    rows.push({
+      id, matchup, kickoff,
+      moneylineText: moneylinePick, moneylineConf: (moneylineConf ?? 50)/100,
+      spreadText: spreadPick, spreadConf: (spreadConf ?? 50)/100,
+      totalText: totalPick, totalConf: (totalConf ?? 50)/100,
+    });
+  }
+
+  // Log a small sample for runtime visibility
+  const sample = rows.slice(0, 5).map(r => ({
+    matchup: r.matchup, ML: r.moneylineText, MLc: r.moneylineConf,
+    SP: r.spreadText, SPc: r.spreadConf, TOT: r.totalText, TOTc: r.totalConf
+  }));
+  logs.push({ level:"info", msg:"sample_rows", sample });
+
+  return {
+    statusCode: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ ok:true, rows, logs, meta: { source: "model-epa-lite" }, updated: new Date().toISOString() })
+  };
 };
