@@ -1,8 +1,11 @@
-# netlify.toml
 [build]
   command = "bash netlify/build-debug.sh"
   publish = "dist"
 
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["@netlify/blobs", "csv-parse"]
+  external_node_modules = ["@netlify/blobs","csv-parse"]
+
+[build.environment]
+  BLOBS_STORE = "rrmodelblobs"
+  BLOBS_STORE_NFL = "nfl-td"

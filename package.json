@@ -1,12 +1,14 @@
 {
-  "name": "rrmodel",
+  "name": "rrmodel-nfl",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node -e \"require('fs').mkdirSync('dist',{recursive:true}); require('fs').writeFileSync('dist/index.html','OK'); console.log('dist prepared')\""
+    "build": "bash netlify/build-debug.sh",
+    "postinstall": "echo 'postinstall ok'"
   },
   "dependencies": {
-    "@netlify/blobs": "^6.2.0",
+    "@netlify/blobs": "^5.3.0",
     "csv-parse": "^5.5.6"
   }
 }
