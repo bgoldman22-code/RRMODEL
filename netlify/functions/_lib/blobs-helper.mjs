@@ -1,58 +1,48 @@
-// Safe Netlify Blobs helper (ESM)
-let createClient = null;
-let getStore = null;
-try {
-  // Netlify esbuild will bundle this in functions runtime
-  const mod = await import('@netlify/blobs');
-  createClient = mod.createClient || null;
-  getStore = mod.getStore || null;
-} catch (e) {
-  // running outside Netlify or not installed
-}
+// netlify/functions/_lib/blobs-helper.mjs
+// Safe helper that works both in Netlify runtime and locally.
+// No top-level await; dynamic import only when called.
 
-export function makeStore(storeNameEnv = 'BLOBS_STORE_NFL', fallback = 'nfl-td') {
-  const storeName = process.env[storeNameEnv] || process.env.BLOBS_STORE || fallback;
-  const opts = {};
-  if (process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN) {
-    opts.siteID = process.env.NETLIFY_SITE_ID;
-    opts.token  = process.env.NETLIFY_AUTH_TOKEN;
-  }
-  if (createClient) {
-    try {
-      const client = createClient(opts);
-      return client.getStore(storeName);
-    } catch (err) {
-      return null; // fall back to memory/no-op
-    }
-  }
-  if (getStore) {
-    try {
-      return getStore({ name: storeName, ...opts });
-    } catch (err) {
-      return null;
-    }
-  }
-  return null;
-}
-
-export async function loadFromBlobs(key) {
-  const store = makeStore();
-  if (!store) return null;
+export async function openStore({ storeName, siteID, token } = {}) {
+  let createClient, getStore;
   try {
-    const r = await store.get(key, { type: 'json' });
-    return r || null;
+    // Dynamic import so it won't crash if the package/bundler isn't available at build time
+    ({ createClient, getStore } = await import('@netlify/blobs'));
+  } catch (err) {
+    return null; // not available in this environment
+  }
+
+  // If running on Netlify, these envs are injected automatically.
+  const opts = {};
+  if (siteID) opts.siteID = siteID;
+  if (token) opts.token = token;
+
+  try {
+    const client = createClient?.(opts);
+    if (!client) return null;
+
+    const store = await getStore?.({ name: storeName || process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td' }, opts);
+    return store || null;
   } catch (e) {
     return null;
   }
 }
 
-export async function saveToBlobs(key, value) {
-  const store = makeStore();
+export async function saveJSON(store, key, obj) {
   if (!store) return false;
   try {
-    await store.setJSON(key, value);
+    await store.set(key, JSON.stringify(obj), { contentType: 'application/json' });
     return true;
-  } catch (e) {
+  } catch {
     return false;
+  }
+}
+
+export async function loadJSON(store, key) {
+  if (!store) return null;
+  try {
+    const res = await store.get(key, { type: 'json' });
+    return res || null;
+  } catch {
+    return null;
   }
 }

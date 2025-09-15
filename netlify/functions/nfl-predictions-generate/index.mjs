@@ -1,64 +1,125 @@
-import { loadFromBlobs } from "../_lib/blobs-helper.mjs";
+// netlify/functions/nfl-predictions-generate/index.mjs
+import { openStore, loadJSON } from "../_lib/blobs-helper.mjs";
 
-const SCHEDULE_URL = null; // if not set, use odds fallback function
-const ODDS_SCHEDULE_FN = "/.netlify/functions/nfl-schedule-get";
+const BASE = "https://bgroundrobin.com"; // per user request: hardcode
+const GAMES_CSV = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv";
 
-async function getSchedule() {
-  // Try local function to avoid CORS
-  const base = process.env.URL || "";
-  const url = base + ODDS_SCHEDULE_FN + "?force=1";
-  const r = await fetch(url);
-  if (!r.ok) throw new Error("schedule_get_failed " + r.status);
-  const j = await r.json();
-  return j.matchups || [];
+// simple CSV parser (no external dep)
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  const header = lines.shift().split(",");
+  return lines.map(line => {
+    const cols = [];
+    let cur = "", inQ = false;
+    for (let i=0;i<line.length;i++){
+      const ch = line[i];
+      if (ch === '"'){
+        if (inQ && line[i+1] === '"'){ cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (ch === ',' && !inQ){
+        cols.push(cur); cur="";
+      } else cur += ch;
+    }
+    cols.push(cur);
+    const row = {};
+    header.forEach((h,idx)=> row[h] = cols[idx]);
+    return row;
+  });
 }
 
-function pickText(name, value, price) {
-  if (value == null) return "–";
-  return `${name} ${value} ${price ? '(' + price + ')' : ''}`.trim();
+function sigmoid(x){ return 1/(1+Math.exp(-x)); }
+
+function computeTeamForm(rows, maxGames=10){
+  // rows expected sorted by season, week ascending
+  const form = {}; const history = {};
+  for (const r of rows){
+    const home = r.home_team, away = r.away_team;
+    const hs = Number(r.home_score||0), as = Number(r.away_score||0);
+    if (!home || !away) continue;
+    const diffHome = hs - as;
+    const diffAway = as - hs;
+    history[home] = history[home] || [];
+    history[away] = history[away] || [];
+    history[home].push(diffHome);
+    history[away].push(diffAway);
+    if (history[home].length>maxGames) history[home].shift();
+    if (history[away].length>maxGames) history[away].shift();
+    const avg = arr => arr.length? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+    form[home] = avg(history[home]);
+    form[away] = avg(history[away]);
+  }
+  return form;
+}
+
+async function getSchedule(){
+  // rely on your existing lambda for schedule
+  const url = BASE + "/.netlify/functions/nfl-schedule-get";
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("schedule_fetch_failed");
+  const js = await res.json();
+  return (js.matchups||[]).map(m => ({
+    id: m.id,
+    home: m.homeTeam,
+    away: m.awayTeam,
+    kickoff: m.kickoff
+  }));
+}
+
+async function loadTeamFormFromBlobs(){
+  const store = await openStore({ storeName: process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td' });
+  if (!store) return null;
+  const tf = await loadJSON(store, "team_form.json");
+  return tf;
+}
+
+async function buildTeamFormEphemeral(){
+  const res = await fetch(GAMES_CSV, { headers: { "Cache-Control":"no-cache" }});
+  if (!res.ok) throw new Error("games_csv_fetch_failed");
+  const text = await res.text();
+  const rows = parseCSV(text)
+    .filter(r => r.season && Number(r.season) >= 2023) // recent seasons for speed
+    .sort((a,b)=> Number(a.season)-Number(b.season) || Number(a.week||0)-Number(b.week||0));
+  return computeTeamForm(rows, 10);
+}
+
+function pickRow(match, form){
+  const fh = form[match.home] ?? 0;
+  const fa = form[match.away] ?? 0;
+  const alpha = 0.12; // scaling
+  const pAway = sigmoid((fa - fh) * alpha);
+  const pHome = 1 - pAway;
+  const awayPct = Math.round(pAway*100);
+  const homePct = Math.round(pHome*100);
+  const pickTeam = (pAway>pHome) ? match.away : match.home;
+  const conf = (pAway>pHome) ? awayPct : homePct;
+  return {
+    id: match.id,
+    matchup: match.away.toUpperCase()+" @ "+match.home.toUpperCase(),
+    kickoff: match.kickoff,
+    moneylineText: pickTeam.toUpperCase(),
+    moneylineConf: conf,
+    spreadText: "–",
+    spreadConf: null,
+    totalText: "–",
+    totalConf: null,
+    debug: { fh, fa, pHome, pAway }
+  };
 }
 
 export const handler = async (event) => {
   try {
-    const qp = event.queryStringParameters || {};
-    const force = qp.force ? true : false;
-
-    const form = await loadFromBlobs("team_form.json");
-    if (!form) {
-      return { statusCode:200, body: JSON.stringify({ ok:true, updated:new Date().toISOString(), meta:{ source:"no-team-form" }, rows:[] }) };
+    const force = (event?.queryStringParameters?.force ?? "0") === "1" || event?.queryStringParameters?.force === "true";
+    let teamForm = await loadTeamFormFromBlobs();
+    if (!teamForm || force){
+      // Ephemeral rebuild (does NOT persist)
+      teamForm = await buildTeamFormEphemeral();
     }
 
     const sched = await getSchedule();
-    const rows = sched.map(m => {
-      const home = m.homeTeam, away = m.awayTeam;
-      const fh = form[home]?.net ?? 0, fa = form[away]?.net ?? 0;
-      const edge = (fa - fh); // positive -> away favored
-      const pAway = 1/(1+Math.exp(-edge)); // sigmoid on net diff
-      const pHome = 1 - pAway;
-      const mlPick = pHome > pAway ? home : away;
-      const mlConf = Math.round(Math.max(pHome, pAway)*100);
-
-      // cheap spread/total placeholders until model upgraded
-      const spreadPick = (pAway > 0.52) ? `${away} 1.5` : `${home} -1.5`;
-      const spreadConf = Math.round(Math.abs(0.5 - Math.max(pHome,pAway))*200 + 50);
-      const totalPick = (Math.max(form[home]?.off||0, form[away]?.off||0) > 22) ? "OVER 43.5" : "UNDER 43.5";
-      const totalConf = 60;
-
-      return {
-        id: m.id,
-        matchup: `${m.awayTeam} @ ${m.homeTeam}`,
-        kickoff: m.kickoff,
-        moneylineText: `${mlPick}`,
-        moneylineConf: mlConf,
-        spreadText: spreadPick,
-        spreadConf,
-        totalText: totalPick,
-        totalConf
-      };
-    });
-
-    return { statusCode:200, body: JSON.stringify({ ok:true, updated:new Date().toISOString(), meta:{ source:"model-epa-sigmoid" }, rows }) };
-  } catch (e) {
-    return { statusCode: 200, body: JSON.stringify({ ok:false, error: String(e) }) };
+    const rows = sched.map(m => pickRow(m, teamForm));
+    const body = { ok:true, updated:new Date().toISOString(), meta:{ source: teamForm ? "team-form" : "ephemeral" }, rows };
+    return { statusCode:200, headers: { "content-type":"application/json" }, body: JSON.stringify(body) };
+  } catch (e){
+    return { statusCode:500, headers: { "content-type":"application/json" }, body: JSON.stringify({ ok:false, error: String(e?.message||e) }) };
   }
 };
