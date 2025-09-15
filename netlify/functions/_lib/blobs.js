@@ -1,21 +1,14 @@
-// Netlify Blobs helper using modern client API.
-import { createClient } from '@netlify/blobs';
+// Blobs helper using ONLY Netlify Functions' `context.blobs` binding.
+// Do NOT import from '@netlify/blobs'. Always pass `context` into these helpers.
 
-function getClient() {
-  // createClient() auto-reads env in Netlify Functions
-  return createClient();
-}
-
-export async function blobsGetJSON(key, defaultValue = null) {
-  const client = getClient();
+export async function blobsGetJSON(context, key, defaultValue = null) {
   try {
-    const data = await client.getJSON(key);
+    const data = await context.blobs.getJSON(key);
     return (data === undefined || data === null) ? defaultValue : data;
   } catch (e) {
-    // Fallback to raw GET + JSON.parse
-    const res = await client.get(key);
-    if (!res) return defaultValue;
     try {
+      const res = await context.blobs.get(key);
+      if (!res) return defaultValue;
       const txt = await res.text();
       return JSON.parse(txt);
     } catch {
@@ -24,23 +17,20 @@ export async function blobsGetJSON(key, defaultValue = null) {
   }
 }
 
-export async function blobsPutJSON(key, obj) {
-  const client = getClient();
+export async function blobsPutJSON(context, key, obj) {
   const body = JSON.stringify(obj);
   try {
-    await client.setJSON(key, obj);
+    await context.blobs.setJSON(key, obj);
   } catch (e) {
-    await client.set(key, body, { contentType: 'application/json' });
+    await context.blobs.set(key, body, { contentType: 'application/json' });
   }
-  // Byte count via TextEncoder to avoid Buffer dependency in ESM
   const bytes = new TextEncoder().encode(body).length;
   return { key, bytes };
 }
 
-export async function blobsGetResponse(key) {
-  const client = getClient();
+export async function blobsGetResponse(context, key) {
   try {
-    const res = await client.get(key);
+    const res = await context.blobs.get(key);
     return res || null;
   } catch {
     return null;
