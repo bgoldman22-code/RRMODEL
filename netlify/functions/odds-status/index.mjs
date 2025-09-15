@@ -1,17 +1,19 @@
-import { blobsGetJSON, blobsGetResponse } from '../_lib/blobs.js';
+// odds-status (NFL) using nfl-specific blobs helper
+import { nflBlobsGetJSON } from '../_lib/blobs-nfl.js';
 
 export default async (req, context) => {
   try {
     const url = new URL(req.url);
     const week = Number(url.searchParams.get('week'));
 
-    const res = await blobsGetResponse(context, 'team_form.json');
-    const hasTeamForm = !!res;
-    const teamFormUpdatedAt = res ? (res.headers.get('Last-Modified') || null) : null;
+    // Optional: team_form status if stored in same NFL store
+    const tf = await nflBlobsGetJSON('team_form.json', null);
+    const hasTeamForm = !!tf;
+    const teamFormUpdatedAt = tf?.updatedAt || null;
 
     let hasOddsWeek = false, oddsUpdatedAt = null, oddsCount = 0;
     if (Number.isFinite(week)) {
-      const odds = await blobsGetJSON(context, `odds_week_${week}.json`, null);
+      const odds = await nflBlobsGetJSON(`odds_week_${week}.json`, null);
       if (odds) {
         hasOddsWeek = true;
         oddsUpdatedAt = odds.updatedAt || null;
