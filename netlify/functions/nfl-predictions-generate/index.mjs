@@ -1,12 +1,5 @@
-// Self-healing predictions endpoint:
-// - Reads team_form.json from Blobs
-// - If missing, computes ephemeral form (stubbed here) and writes it back to Blobs (self-heal)
-// - Joins cached odds when available; otherwise leaves odds null (no placeholders)
-// - Outputs calibrated confidence only when real odds exist
-
-import { blobsGetJSON, blobsPutJSON } from '../_lib/blobs.js';
-import { confidenceFromEdge, americanToImplied, impliedToAmerican } from '../_lib/pred-utils.mjs';
-import { getWeekSchedule } from '../_lib/schedule-source.mjs';
+import { nflBlobsGetJSON, nflBlobsPutJSON } from '../_lib/blobs-nfl.js';
+import { getWeekSchedule } from '../_lib/schedule-source.mjs'; // assumes this returns odds via blobs cache
 
 export default async (req, context) => {
   try {
@@ -15,33 +8,29 @@ export default async (req, context) => {
     const season = Number(url.searchParams.get('season')) || null;
     const force = url.searchParams.get('force') === '1';
 
-    // 1) Try to read team form from Blobs
-    let teamForm = await blobsGetJSON('team_form.json', null);
-    let meta = { teamForm: { source: 'blobs', persisted: !!teamForm } };
+    // 1) Load team_form.json from NFL store; self-heal if missing or force
+    let teamForm = await nflBlobsGetJSON('team_form.json', null);
+    const meta = { teamForm: { source: teamForm ? 'blobs' : 'missing' } };
 
-    // 2) If missing or force, compute ephemeral then write back
     if (!teamForm || force) {
       meta.teamForm.source = 'ephemeral';
-      teamForm = await computeEphemeralTeamForm({ season }); // stub demo
-      // write-back to Blobs
+      teamForm = await computeEphemeralTeamForm({ season });
       try {
-        await blobsPutJSON('team_form.json', teamForm);
+        await nflBlobsPutJSON('team_form.json', teamForm);
         meta.teamForm.persisted = true;
         meta.teamForm.persistedAt = new Date().toISOString();
-        meta.teamForm.source = force ? 'ephemeral->blobs(force)' : 'ephemeral->blobs';
+        meta.teamForm.source = 'ephemeral->blobs';
       } catch (err) {
         meta.teamForm.persistError = String(err?.message || err);
       }
     }
 
-    // 3) Build or load the week's schedule (assumes external code gathers the games list)
-    // For demo, we synthesize games from teamForm keys if a schedule isn't provided elsewhere.
+    // 2) Build schedule and join cached odds (from odds-refresh)
     const games = synthesizeGamesFromTeamForm(teamForm, { week, season });
     const schedule = await getWeekSchedule({ week, season, games });
 
-    // 4) Score each game with model-only probability (toy example) + price-calibrated confidence when odds exist
+    // 3) Score games (toy model) and compute price-calibrated fields when odds exist
     const rows = schedule.map(g => {
-      // toy model probability: higher teamForm.rating wins
       const homeStrength = teamForm?.teams?.[g.home]?.rating ?? 0.5;
       const awayStrength = teamForm?.teams?.[g.away]?.rating ?? 0.5;
       const modelHomeProb = clamp01(0.5 + (homeStrength - awayStrength) * 0.25);
@@ -50,40 +39,34 @@ export default async (req, context) => {
       let pick = modelHomeProb >= 0.5 ? g.home : g.away;
       let modelPickProb = modelHomeProb >= 0.5 ? modelHomeProb : modelAwayProb;
 
-      let confidence = null;
-      let marketProb = null;
-      let modelEdge = null;
-      let ml_home = null, ml_away = null;
-
+      let ml_home = null, ml_away = null, marketProb = null, modelEdge = null, confidence = null;
       if (g.odds?.ml_home != null && g.odds?.ml_away != null) {
         ml_home = g.odds.ml_home;
         ml_away = g.odds.ml_away;
         const marketHome = americanToImplied(ml_home);
         const marketAway = americanToImplied(ml_away);
-
         marketProb = pick === g.home ? marketHome : marketAway;
-        modelEdge = modelPickProb - marketProb;
-        confidence = confidenceFromEdge(modelPickProb, marketProb);
+        modelEdge  = modelPickProb - marketProb;
+        confidence = bucketConfidence(modelEdge);
       }
 
       return {
         gameId: g.gameId,
         matchup: `${g.away} @ ${g.home}`,
-        start: g.start,
+        start: g.start ?? null,
         pick,
         modelPickProb: round3(modelPickProb),
         marketProb: marketProb != null ? round3(marketProb) : null,
         modelEdge: modelEdge != null ? round3(modelEdge) : null,
         ml_home, ml_away,
         confidence,
-        oddsSource: g.oddsSource || 'none',
+        oddsSource: g.oddsSource || 'none'
       };
     });
 
-    const body = JSON.stringify({ meta, rows }, null, 2);
-    return new Response(body, { headers: { 'content-type': 'application/json' }});
+    return json({ meta, rows });
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err?.message || err) }, null, 2), { status: 500 });
+    return json({ error: String(err?.message || err) }, 500);
   }
 };
 
@@ -91,22 +74,39 @@ export default async (req, context) => {
 function clamp01(x){ return Math.max(0, Math.min(1, x)); }
 function round3(x){ return Math.round(x * 1000) / 1000; }
 
+function americanToImplied(american) {
+  const a = Number(american);
+  if (!Number.isFinite(a)) return null;
+  if (a > 0) return 100 / (a + 100);
+  return -a / (-a + 100);
+}
+
+function bucketConfidence(edge) {
+  if (edge == null) return null;
+  const e = Math.abs(edge);
+  if (e >= 0.15) return 9;
+  if (e >= 0.12) return 8;
+  if (e >= 0.09) return 7;
+  if (e >= 0.06) return 6;
+  if (e >= 0.04) return 5;
+  if (e >= 0.03) return 4;
+  if (e >= 0.02) return 3;
+  if (e >= 0.01) return 2;
+  return 1;
+}
+
 async function computeEphemeralTeamForm({ season }) {
-  // Replace with your real feature builder.
-  // Minimal shape: { teams: { [abbr]: { rating: 0..1 } } }
   const teams = [
     'ARI','ATL','BAL','BUF','CAR','CHI','CIN','CLE','DAL','DEN','DET','GB',
     'HOU','IND','JAX','KC','LA','LAC','LV','MIA','MIN','NE','NO','NYG','NYJ',
     'PHI','PIT','SEA','SF','TB','TEN','WAS'
   ];
   const obj = { teams: {} };
-  for (const t of teams) obj.teams[t] = { rating: 0.5 }; // neutral until your real builder fills this in
+  for (const t of teams) obj.teams[t] = { rating: 0.5 };
   return obj;
 }
 
 function synthesizeGamesFromTeamForm(teamForm, { week, season }) {
-  // If you already have a schedule pipeline, swap this out.
-  // Here we just pair teams deterministically to produce game stubs.
   const teams = Object.keys(teamForm?.teams || {});
   const pairs = [];
   for (let i=0; i<teams.length; i+=2) {
@@ -120,4 +120,11 @@ function synthesizeGamesFromTeamForm(teamForm, { week, season }) {
     away: p[1],
     start: null,
   }));
+}
+
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj, null, 2), {
+    status,
+    headers: { 'content-type': 'application/json' }
+  });
 }
