@@ -1,5 +1,3 @@
-
-# Drop-in netlify.toml (merge with yours if needed)
 [build]
   command = "node netlify/build-debug.js"
   publish = "dist"
