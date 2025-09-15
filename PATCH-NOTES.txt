@@ -1,0 +1,19 @@
+NFL Predictions — Self-Healing Patch
+Generated: 2025-09-15T18:55:18.283467Z
+
+What changed
+- Consolidated TRAIN logic into the PREDICTIONS endpoint.
+- /nfl-predictions-generate now computes features on-demand and persists to Blobs if available.
+- You no longer need to call /nfl-train manually.
+
+Updated files
+- netlify/functions/nfl-predictions-generate/index.mjs  (OVERWRITE THIS)
+- netlify/functions/nfl-train/README-DEPRECATED.txt      (OPTIONAL; indicates train is no longer required)
+
+Sanity links (copy/paste)
+- Predictions (self-healing): https://bgroundrobin.com/.netlify/functions/nfl-predictions-generate?force=1
+- Health:                     https://bgroundrobin.com/.netlify/functions/odds-status
+
+Notes
+- This does not touch your frontend (homepage, MLB HR, etc.).
+- Blobs are optional. If not configured, the endpoint still returns rows using ephemeral features.
