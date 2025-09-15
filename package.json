@@ -1,9 +1,10 @@
 {
   "name": "rrmodel-nfl",
+  "version": "1.0.0",
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "build": "mkdir -p dist && if [ -d public ]; then cp -R public/* dist/ || true; fi && echo 'Build placeholder complete (no frontend build needed)'"
+    "build": "node -e \"require('fs').mkdirSync('dist',{recursive:true});\""
   },
   "dependencies": {
     "@netlify/blobs": "^5.0.0"

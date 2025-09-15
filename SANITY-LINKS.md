@@ -1,20 +1,22 @@
 
-# Patch HOWTO (bgroundrobin.com)
+# RRModel NFL Predictions – Patch v3
 
-1) **Env (one time)**
-   - BLOBS_STORE_NFL=nfl-td  (fallback chain: BLOBS_STORE_NFL → BLOBS_STORE → nfl-td)
-   - Enable **Netlify Blobs** for the site.
+- CommonJS functions (avoid ESM require errors)
+- Blobs fallback: `BLOBS_STORE_NFL` -> `BLOBS_STORE` -> `nfl-td`
+- Build script guard: uses `npm ci` if `package-lock.json` exists, else `npm install`
+- Sanity links for **bgroundrobin.com**
 
-2) **Deploy** the repo with these patch files.
+## Sanity / Debug Links
 
-3) **Train** (default last 4 seasons):
-   https://bgroundrobin.com/.netlify/functions/nfl-train?force=1
+- Train (last 4 seasons):  
+  https://bgroundrobin.com/.netlify/functions/nfl-train?force=1
 
-   **Train specific years**:
-   https://bgroundrobin.com/.netlify/functions/nfl-train?years=2022,2023,2024,2025&force=1
+- Train specific years:  
+  https://bgroundrobin.com/.netlify/functions/nfl-train?years=2022,2023,2024,2025&force=1
 
-4) **Generate predictions** (uses team_form.json from Blobs):
-   https://bgroundrobin.com/.netlify/functions/nfl-predictions-generate
+- Generate predictions:  
+  https://bgroundrobin.com/.netlify/functions/nfl-predictions-generate
 
-   **Debug sample rows (no schedule wired)**:
-   https://bgroundrobin.com/.netlify/functions/nfl-predictions-generate?debug=1
+- Generate predictions (debug):  
+  https://bgroundrobin.com/.netlify/functions/nfl-predictions-generate?debug=1
+
