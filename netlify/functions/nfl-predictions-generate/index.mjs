@@ -1,76 +1,76 @@
-import { getQuery, ok, toMoneylineText } from '../_lib/util.mjs';
-import { blobsGetJSON } from '../_lib/blobs.mjs';
-import { loadGamesBySeasons } from '../_lib/nflverse.mjs';
-import { computeTeamForm, probFromFormDiff, confidenceFromEdge } from '../_lib/features.mjs';
+import { loadFromBlobs } from "../_lib/blobs-helper.mjs";
+import { fetchGamesCsv } from "../_lib/nflverse.mjs";
+import { buildTeamForm, winProb } from "../_lib/features.mjs";
+import { percent, formatMarket } from "../_lib/util.mjs";
 
-const KEY = 'team_form.json';
-
-function impliedFromMoneyline(ml) {
-  if (ml == null || ml === "" || isNaN(Number(ml))) return 0.5;
-  ml = Number(ml);
-  return ml < 0 ? (-ml) / ((-ml) + 100) : 100 / (ml + 100);
+function hostBase(event){
+  const h = event.headers?.host || "";
+  const proto = h.includes("localhost") ? "http" : "https";
+  return `${proto}://${h}`;
 }
 
-export const handler = async (event) => {
-  const q = getQuery(event);
-  const force = q.force == '1' || q.force === 'true';
+async function getSchedule(event){
+  const base = hostBase(event);
+  try{
+    const res = await fetch(`${base}/.netlify/functions/nfl-schedule-get?force=1`);
+    if (!res.ok) throw new Error(String(res.status));
+    const j = await res.json();
+    return j.matchups || [];
+  }catch{
+    return [];
+  }
+}
 
-  let formData = null;
-  let source = 'blobs';
-  if (!force) {
-    const blob = await blobsGetJSON(KEY);
-    if (blob.ok && blob.value && blob.value.teamForm) {
-      formData = blob.value.teamForm;
+export async function handler(event){
+  try{
+    let features = await loadFromBlobs("team_form.json");
+    let metaSource = "blobs";
+    if (!features){
+      // fallback: compute ephemeral
+      const now = new Date();
+      const seasons = [ now.getUTCFullYear() ];
+      const rows = await fetchGamesCsv({ seasons });
+      const form = buildTeamForm(rows);
+      features = Object.fromEntries(form.entries());
+      metaSource = "ephemeral";
     }
+
+    const schedule = await getSchedule(event);
+
+    const rows = schedule.map(g => {
+      const home = g.homeTeam;
+      const away = g.awayTeam;
+      const fh = Number(features[home] ?? 0);
+      const fa = Number(features[away] ?? 0);
+      const pHome = winProb(fh, fa);
+      const pAway = 1 - pHome;
+
+      const moneylinePick = pHome >= pAway ? home : away;
+      const moneylineProb = Math.max(pHome, pAway);
+      const moneylineConf = percent(moneylineProb);
+
+      const moneylineText = formatMarket({ team: moneylinePick, price: (moneylinePick===home ? -150 : 130), kind: 'ml' });
+
+      return {
+        id: g.id,
+        matchup: `${away.toUpperCase()} @ ${home.toUpperCase()}`,
+        kickoff: g.kickoff,
+        moneylineText,
+        moneylineConf,
+        spreadText: "–",
+        spreadConf: 0,
+        totalText: "–",
+        totalConf: 0,
+        debug: { home, away, fh, fa, pHome, pAway }
+      };
+    });
+
+    const body = { ok:true, updated:new Date().toISOString(), meta:{ source: metaSource, schedule_source:"odds" }, rows };
+    console.log("[PREDS]", JSON.stringify({ rows: rows.length, source: metaSource }));
+    return { statusCode: 200, body: JSON.stringify(body) };
+  }catch(err){
+    return { statusCode: 500, body: JSON.stringify({ ok:false, error:"Function crashed", details:{ hint:"See function logs", code:"GEN_CRASH", message:String(err) } }) };
   }
-  if (!formData) {
-    source = 'ephemeral';
-    const games = await loadGamesBySeasons([new Date().getFullYear()]);
-    formData = computeTeamForm(games);
-  }
+}
 
-  let schedule = [];
-  try {
-    const url = new URL('/.netlify/functions/nfl-schedule-get?force=1', 'https://bgroundrobin.com');
-    const res = await fetch(url, { redirect: 'follow' });
-    const json = res.ok ? await res.json() : null;
-    if (json && json.matchups) schedule = json.matchups;
-  } catch {}
-
-  if (!Array.isArray(schedule) || schedule.length === 0) {
-    return ok({ ok:true, updated: new Date().toISOString(), meta:{ source: 'no-schedule' }, rows: [] });
-  }
-
-  const rows = schedule.map(g => {
-    const home = g.homeTeam;
-    const away = g.awayTeam;
-    const fh = formData[home] ?? 0;
-    const fa = formData[away] ?? 0;
-    const pHome = probFromFormDiff(fh, fa);
-    const pAway = 1 - pHome;
-
-    const odds = g.odds || g;
-    const ml_home = odds.ml_home;
-    const ml_away = odds.ml_away;
-
-    const pickMoneyline = pHome >= pAway ? home : away;
-    const pickPrice = pHome >= pAway ? ml_home : ml_away;
-    const conf = confidenceFromEdge(pHome >= pAway ? pHome : pAway, impliedFromMoneyline(pickPrice));
-
-    return {
-      id: g.id,
-      matchup: `${away.toUpperCase()} @ ${home.toUpperCase()}`,
-      kickoff: g.kickoff,
-      moneylineText: toMoneylineText(pickMoneyline.toUpperCase(), pickPrice),
-      moneylineConf: conf,
-      spreadText: "–",
-      spreadConf: 0,
-      totalText: "–",
-      totalConf: 0,
-      debug: { home, away, fh, fa, pHome, pAway, odds: { ml_home, ml_away } }
-    };
-  });
-
-  console.log('[PREDS]', JSON.stringify({ source, sample: rows[0] }));
-  return ok({ ok:true, updated: new Date().toISOString(), meta:{ source }, rows });
-};
+export default { handler };

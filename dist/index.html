@@ -1,14 +1,36 @@
 <!doctype html>
-<html>
-<head><meta charset="utf-8"><title>RRModel — Debug</title></head>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RRModel · Status</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:2rem;line-height:1.5}
+    code{background:#f6f8fa;padding:2px 4px;border-radius:4px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:1rem}
+    .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px}
+    h1{margin:0 0 .25rem}
+    small{color:#6b7280}
+    ul{margin:.25rem 0 .5rem 1.25rem}
+    a.button{display:inline-block;padding:.5rem .75rem;border:1px solid #ddd;border-radius:8px;text-decoration:none}
+  </style>
+</head>
 <body>
-  <h1>RRModel — Debug</h1>
-  <ul>
-    <li><a href="/.netlify/functions/odds-status">odds-status</a></li>
-    <li><a href="/.netlify/functions/nfl-schedule-get?force=1">nfl-schedule-get?force=1</a></li>
-    <li><a href="/.netlify/functions/nfl-train?season=2025&force=1">nfl-train?season=2025&force=1</a></li>
-    <li><a href="/.netlify/functions/nfl-train?years=2022,2023,2024,2025&force=1">nfl-train?years=2022,2023,2024,2025&force=1</a></li>
-    <li><a href="/.netlify/functions/nfl-predictions-generate?force=1">nfl-predictions-generate?force=1</a></li>
-  </ul>
+  <h1>RRModel</h1>
+  <small>Quick actions for <code>bgroundrobin.com</code></small>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Diagnostics</h3>
+      <ul>
+        <li><a href="/.netlify/functions/odds-status">/odds-status</a></li>
+        <li><a href="/.netlify/functions/nfl-schedule-get?force=1">/nfl-schedule-get?force=1</a></li>
+        <li><a href="/.netlify/functions/nfl-train?season=2025&force=1">/nfl-train?season=2025&force=1</a></li>
+        <li><a href="/.netlify/functions/nfl-train?years=2022,2023,2024,2025&force=1">/nfl-train?years=2022,2023,2024,2025&force=1</a></li>
+        <li><a href="/.netlify/functions/nfl-predictions-generate?force=1">/nfl-predictions-generate?force=1</a></li>
+      </ul>
+      <a class="button" href="/">Home</a>
+    </div>
+  </div>
 </body>
 </html>

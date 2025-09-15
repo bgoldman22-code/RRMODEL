@@ -1,27 +1,36 @@
-import { getQuery, ok } from '../_lib/util.mjs';
-import { loadGamesBySeasons } from '../_lib/nflverse.mjs';
-import { computeTeamForm } from '../_lib/features.mjs';
-import { blobsPutJSON } from '../_lib/blobs.mjs';
+import { parseSeasons } from "../_lib/util.mjs";
+import { fetchGamesCsv } from "../_lib/nflverse.mjs";
+import { buildTeamForm } from "../_lib/features.mjs";
+import { saveToBlobs } from "../_lib/blobs-helper.mjs";
 
-const KEY = 'team_form.json';
+export async function handler(event){
+  try{
+    const qs = event.queryStringParameters || {};
+    const seasons = parseSeasons(qs);
+    const rows = await fetchGamesCsv({ seasons });
+    const formMap = buildTeamForm(rows);
+    // shape to JSON object { TEAM: value }
+    const team_form = Object.fromEntries(formMap.entries());
 
-export const handler = async (event) => {
-  const q = getQuery(event);
-  const years = q.years ? q.years.split(',').map(s=>Number(s.trim())) :
-               q.season ? [Number(q.season)] : [new Date().getFullYear()];
+    let persisted = false, wrote = null, persist_error = null;
+    try{
+      const res = await saveToBlobs("team_form.json", team_form);
+      persisted = !!res?.persisted;
+      wrote = persisted ? "team_form.json" : null;
+      if (!persisted) persist_error = res?.reason || "unknown";
+    }catch(e){
+      persist_error = String(e?.message || e);
+    }
 
-  const games = await loadGamesBySeasons(years);
-  const teamForm = computeTeamForm(games);
-  const summary = { teams: Object.keys(teamForm).length, totalRows: games.length };
+    const meta = { years: seasons, persisted, wrote, persist_error };
+    const summary = { teams: Object.keys(team_form).length, totalRows: rows.length };
+    const seasonResults = seasons.map(y => ({ year: y, ok: true, source: "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv", reason: null }));
+    const body = { ok: true, meta, summary, seasonResults, updated: new Date().toISOString() };
+    console.log("[TRAIN]", JSON.stringify({ ...meta, ...summary }));
+    return { statusCode: 200, body: JSON.stringify(body) };
+  }catch(err){
+    return { statusCode: 200, body: JSON.stringify({ ok:false, error:String(err) }) };
+  }
+}
 
-  const put = await blobsPutJSON(KEY, { teamForm, updated: new Date().toISOString(), seasons: years });
-  const meta = {
-    years,
-    persisted: !!put.ok,
-    wrote: put.ok ? KEY : null,
-    persist_error: put.ok ? null : put.error || null
-  };
-
-  console.log('[TRAIN]', JSON.stringify({ meta, summary }));
-  return ok({ ok: true, meta, summary, seasonResults: [], updated: new Date().toISOString() });
-};
+export default { handler };

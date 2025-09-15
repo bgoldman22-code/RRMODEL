@@ -1,48 +1,46 @@
-// netlify/functions/_lib/blobs-helper.mjs
-// Safe helper that works both in Netlify runtime and locally.
-// No top-level await; dynamic import only when called.
+/**
+ * Blobs helper with safe fallbacks.
+ * - If running on Netlify with Managed Blobs, createClient/getStore are injected.
+ * - If not available, operations return null/false and NEVER throw.
+ */
+let createClient, getStore;
+try {
+  ({ createClient, getStore } = await import('@netlify/blobs'));
+} catch (_e) {
+  createClient = null;
+  getStore = null;
+}
 
-export async function openStore({ storeName, siteID, token } = {}) {
-  let createClient, getStore;
+const DEFAULT_STORE = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td';
+
+/** Try to open a store. If not available, return null. */
+export async function openStore(name = DEFAULT_STORE) {
+  if (!createClient || !getStore) return null;
   try {
-    // Dynamic import so it won't crash if the package/bundler isn't available at build time
-    ({ createClient, getStore } = await import('@netlify/blobs'));
-  } catch (err) {
-    return null; // not available in this environment
-  }
-
-  // If running on Netlify, these envs are injected automatically.
-  const opts = {};
-  if (siteID) opts.siteID = siteID;
-  if (token) opts.token = token;
-
-  try {
-    const client = createClient?.(opts);
-    if (!client) return null;
-
-    const store = await getStore?.({ name: storeName || process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td' }, opts);
-    return store || null;
-  } catch (e) {
+    return getStore ? getStore({ name }) : (await createClient()).getStore({ name });
+  } catch (_e) {
     return null;
   }
 }
 
-export async function saveJSON(store, key, obj) {
-  if (!store) return false;
-  try {
-    await store.set(key, JSON.stringify(obj), { contentType: 'application/json' });
-    return true;
-  } catch {
-    return false;
-  }
+export async function saveToBlobs(key, data, storeName = DEFAULT_STORE) {
+  const store = await openStore(storeName);
+  if (!store) return { ok: false, persisted: false, reason: 'no_blobs' };
+  await store.set(key, JSON.stringify(data), { metadata: { contentType: 'application/json' } });
+  return { ok: true, persisted: true, store: storeName, key };
 }
 
-export async function loadJSON(store, key) {
+export async function loadFromBlobs(key, storeName = DEFAULT_STORE) {
+  const store = await openStore(storeName);
   if (!store) return null;
-  try {
-    const res = await store.get(key, { type: 'json' });
-    return res || null;
-  } catch {
-    return null;
-  }
+  const val = await store.get(key);
+  if (!val) return null;
+  try { return JSON.parse(val); } catch { return null; }
+}
+
+export async function hasKey(key, storeName = DEFAULT_STORE) {
+  const store = await openStore(storeName);
+  if (!store) return false;
+  const val = await store.get(key);
+  return !!val;
 }
