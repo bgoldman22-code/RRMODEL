@@ -1,19 +1,18 @@
-// odds-status (NFL) using nfl-specific blobs helper
-import { nflBlobsGetJSON } from '../_lib/blobs-nfl.js';
+// odds-status (NFL) using explicit createClient helper
+import { nflGetJSON } from '../_lib/blobs-explicit-nfl.js';
 
 export default async (req, context) => {
   try {
     const url = new URL(req.url);
     const week = Number(url.searchParams.get('week'));
 
-    // Optional: team_form status if stored in same NFL store
-    const tf = await nflBlobsGetJSON('team_form.json', null);
+    const tf = await nflGetJSON('team_form.json', null);
     const hasTeamForm = !!tf;
     const teamFormUpdatedAt = tf?.updatedAt || null;
 
     let hasOddsWeek = false, oddsUpdatedAt = null, oddsCount = 0;
     if (Number.isFinite(week)) {
-      const odds = await nflBlobsGetJSON(`odds_week_${week}.json`, null);
+      const odds = await nflGetJSON(`odds_week_${week}.json`, null);
       if (odds) {
         hasOddsWeek = true;
         oddsUpdatedAt = odds.updatedAt || null;

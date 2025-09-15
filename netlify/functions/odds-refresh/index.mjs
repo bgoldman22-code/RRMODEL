@@ -1,5 +1,5 @@
-// odds-refresh (NFL) using @netlify/blobs getStore() via nfl-specific helper
-import { nflBlobsPutJSON, nflBlobsGetJSON } from '../_lib/blobs-nfl.js';
+// odds-refresh using explicit createClient helper (no getStore/context.blobs)
+import { nflGetJSON, nflSetJSON } from '../_lib/blobs-explicit-nfl.js';
 
 const SPORT_KEY = 'americanfootball_nfl';
 
@@ -56,7 +56,7 @@ export default async (req, context) => {
 
     if (!Number.isFinite(week)) return json({ error: 'Missing or invalid ?week' }, 400);
 
-    const existing = await nflBlobsGetJSON(`odds_week_${week}.json`, null);
+    const existing = await nflGetJSON(`odds_week_${week}.json`, null);
     if (existing && !force) {
       return json({ ok: true, cached: true, key: `odds_week_${week}.json`, wrote: existing.rows?.length || 0 });
     }
@@ -80,7 +80,6 @@ export default async (req, context) => {
       const away = NAME_TO_ABBR[awayName];
       if (!home || !away) continue;
 
-      // preferred bookmaker
       let choice = null;
       for (const bk of evt.bookmakers || []) {
         const key = (bk.key || bk.title || '').toLowerCase();
@@ -129,7 +128,7 @@ async function writeWeekOdds(week, rows, meta = {}) {
       commence_time: r.commence_time ?? null
     })),
   };
-  await nflBlobsPutJSON(`odds_week_${week}.json`, data);
+  await nflSetJSON(`odds_week_${week}.json`, data);
   return { ok: true, wrote: data.rows.length, key: `odds_week_${week}.json`, meta: data.meta };
 }
 

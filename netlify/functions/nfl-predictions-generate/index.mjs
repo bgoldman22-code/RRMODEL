@@ -1,5 +1,6 @@
-import { nflBlobsGetJSON, nflBlobsPutJSON } from '../_lib/blobs-nfl.js';
-import { getWeekSchedule } from '../_lib/schedule-source.mjs'; // assumes this returns odds via blobs cache
+// nfl-predictions-generate using explicit createClient helper + self-heal team_form
+import { nflGetJSON, nflSetJSON } from '../_lib/blobs-explicit-nfl.js';
+import { getWeekSchedule } from '../_lib/schedule-source.mjs'; // assumes odds joined from cached blobs
 
 export default async (req, context) => {
   try {
@@ -8,15 +9,15 @@ export default async (req, context) => {
     const season = Number(url.searchParams.get('season')) || null;
     const force = url.searchParams.get('force') === '1';
 
-    // 1) Load team_form.json from NFL store; self-heal if missing or force
-    let teamForm = await nflBlobsGetJSON('team_form.json', null);
+    // 1) team form
+    let teamForm = await nflGetJSON('team_form.json', null);
     const meta = { teamForm: { source: teamForm ? 'blobs' : 'missing' } };
 
     if (!teamForm || force) {
       meta.teamForm.source = 'ephemeral';
       teamForm = await computeEphemeralTeamForm({ season });
       try {
-        await nflBlobsPutJSON('team_form.json', teamForm);
+        await nflSetJSON('team_form.json', teamForm);
         meta.teamForm.persisted = true;
         meta.teamForm.persistedAt = new Date().toISOString();
         meta.teamForm.source = 'ephemeral->blobs';
@@ -25,11 +26,11 @@ export default async (req, context) => {
       }
     }
 
-    // 2) Build schedule and join cached odds (from odds-refresh)
+    // 2) schedule + odds
     const games = synthesizeGamesFromTeamForm(teamForm, { week, season });
     const schedule = await getWeekSchedule({ week, season, games });
 
-    // 3) Score games (toy model) and compute price-calibrated fields when odds exist
+    // 3) score games
     const rows = schedule.map(g => {
       const homeStrength = teamForm?.teams?.[g.home]?.rating ?? 0.5;
       const awayStrength = teamForm?.teams?.[g.away]?.rating ?? 0.5;
@@ -70,17 +71,14 @@ export default async (req, context) => {
   }
 };
 
-// --- helpers ---
+// helpers
 function clamp01(x){ return Math.max(0, Math.min(1, x)); }
 function round3(x){ return Math.round(x * 1000) / 1000; }
-
-function americanToImplied(american) {
-  const a = Number(american);
-  if (!Number.isFinite(a)) return null;
-  if (a > 0) return 100 / (a + 100);
-  return -a / (-a + 100);
+function americanToImplied(a) {
+  const n = Number(a);
+  if (!Number.isFinite(n)) return null;
+  return n > 0 ? 100 / (n + 100) : -n / (-n + 100);
 }
-
 function bucketConfidence(edge) {
   if (edge == null) return null;
   const e = Math.abs(edge);
