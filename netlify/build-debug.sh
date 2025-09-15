@@ -1,15 +1,22 @@
 #!/usr/bin/env bash
-set -eo pipefail
+set -euo pipefail
 
 echo "Node: $(node -v)"
 echo "NPM:  $(npm -v)"
 
-# Install deps (avoid npm ci lockfile requirement)
-npm install --no-audit --no-fund
+if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+  echo "Running npm ci..."
+  npm ci
+else
+  echo "No lockfile found; running npm install as fallback..."
+  npm install
+fi
 
-# Build site
-npm run build
+echo "Running build (if present)..."
+if npm run | grep -qE '^  build'; then
+  npm run build
+else
+  echo "No build script; skipping."
+fi
 
-# List functions for visibility
-echo "---- Netlify Functions ----"
-ls -al netlify/functions || true
+echo "Done."
