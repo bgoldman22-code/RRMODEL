@@ -1,9 +1,13 @@
+# netlify.toml
+
 [build]
   functions = "netlify/functions"
   publish   = "dist"
 
 [functions]
   node_bundler = "esbuild"
+  # (Optional, but helpful to prevent bundling the Blobs client)
+  external_node_modules = ["@netlify/blobs"]
 
 [build.environment]
   BLOBS_STORE_NFL        = "nfl-td"
@@ -11,16 +15,3 @@
   NFL_ODDS_BRIDGE_URL    = "odds-get"
   NFLVERSE_TEAM_FORM_URL = "/nflverse-team-form.json"
   NODE_VERSION           = "20"
-
-# --- Blobs bindings (bind the nfl-td Blob store to your functions) ---
-[[functions.blobs]]
-  function = "odds-refresh"
-  name     = "nfl-td"
-
-[[functions.blobs]]
-  function = "nfl-predictions-generate"
-  name     = "nfl-td"
-
-[[functions.blobs]]
-  function = "odds-status"
-  name     = "nfl-td"
