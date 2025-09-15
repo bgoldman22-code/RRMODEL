@@ -1,12 +1,4 @@
-// odds-refresh (TheOddsAPI-backed)
-// - GET: fetches NFL H2H moneylines from TheOddsAPI and caches to Blobs as odds_week_<W>.json
-//        query: ?week=1[&force=1][&bookmaker=fanduel]
-// - POST: manual override remains supported, but you said you'll use TheOddsAPI.
-// Output rows are keyed by (home, away) abbreviations; if you also know your gameIds,
-// you can POST a mapping later to enrich them, but schedule-source will join by pair.
-//
-// Env: THEODDSAPI_KEY must be set in Netlify.
-
+// odds-refresh with TheOddsAPI, using blobs helper (no direct imports from '@netlify/blobs').
 import { blobsPutJSON, blobsGetJSON } from '../_lib/blobs.js';
 
 const SPORT_KEY = 'americanfootball_nfl';
@@ -51,7 +43,7 @@ export default async (req, context) => {
     if (req.method === 'POST') {
       const payload = await req.json();
       if (!payload?.week || !Array.isArray(payload?.rows)) {
-        return new Response(JSON.stringify({ error: 'POST requires { week, rows: [...] }' }), { status: 400 });
+        return json({ error: 'POST requires { week, rows: [...] }' }, 400);
       }
       const out = await writeWeekOdds(payload.week, payload.rows, { source: 'manual' });
       return json(out);
@@ -62,22 +54,16 @@ export default async (req, context) => {
     const force = url.searchParams.get('force') === '1';
     const bookmaker = (url.searchParams.get('bookmaker') || 'fanduel').toLowerCase();
 
-    if (!Number.isFinite(week)) {
-      return json({ error: 'Missing or invalid ?week' }, 400);
-    }
+    if (!Number.isFinite(week)) return json({ error: 'Missing or invalid ?week' }, 400);
 
-    // Avoid burning credits: if odds already exist and not forcing, exit.
     const existing = await blobsGetJSON(`odds_week_${week}.json`, null);
     if (existing && !force) {
       return json({ ok: true, cached: true, key: `odds_week_${week}.json`, wrote: existing.rows?.length || 0 });
     }
 
     const KEY = process.env.THEODDSAPI_KEY || process.env.ODDS_API_KEY;
-    if (!KEY) {
-      return json({ error: 'Missing THEODDSAPI_KEY env var' }, 400);
-    }
+    if (!KEY) return json({ error: 'Missing THEODDSAPI_KEY env var' }, 400);
 
-    // Fetch NFL H2H odds (single call). Filter to US region, american prices, ISO dates.
     const apiUrl = `https://api.the-odds-api.com/v4/sports/${SPORT_KEY}/odds?regions=us&markets=h2h&oddsFormat=american&dateFormat=iso&apiKey=${encodeURIComponent(KEY)}`;
     const res = await fetch(apiUrl);
     if (!res.ok) {
@@ -86,7 +72,6 @@ export default async (req, context) => {
     }
     const events = await res.json();
 
-    // Build pair-keyed odds
     const rows = [];
     for (const evt of events || []) {
       const homeName = evt.home_team;
@@ -95,22 +80,18 @@ export default async (req, context) => {
       const away = NAME_TO_ABBR[awayName];
       if (!home || !away) continue;
 
-      // Find preferred bookmaker
+      // preferred bookmaker
       let choice = null;
       for (const bk of evt.bookmakers || []) {
-        const name = (bk.key || bk.title || '').toLowerCase();
-        if (name.includes(bookmaker)) { choice = bk; break; }
+        const key = (bk.key || bk.title || '').toLowerCase();
+        if (key.includes(bookmaker)) { choice = bk; break; }
       }
-      if (!choice && (evt.bookmakers || []).length) {
-        choice = evt.bookmakers[0]; // fallback
-      }
+      if (!choice && (evt.bookmakers || []).length) choice = evt.bookmakers[0];
       if (!choice) continue;
 
-      // Extract H2H prices
       const h2h = (choice.markets || []).find(m => (m.key || '').toLowerCase() === 'h2h');
       if (!h2h) continue;
 
-      // Map outcomes to ml_home/ml_away by home/away teams
       let ml_home = null, ml_away = null;
       for (const o of h2h.outcomes || []) {
         if (o.name === homeName) ml_home = o.price;
@@ -119,7 +100,6 @@ export default async (req, context) => {
       if (ml_home == null || ml_away == null) continue;
 
       rows.push({
-        // No gameId: we key by pair for robust joining
         home, away,
         ml_home, ml_away,
         event_id: evt.id,

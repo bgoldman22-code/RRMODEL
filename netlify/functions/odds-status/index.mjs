@@ -1,23 +1,17 @@
-import { get } from '@netlify/blobs';
-import { blobsGetJSON } from '../_lib/blobs.js';
+// odds-status updated to use modern blobs client via helper
+import { blobsGetJSON, blobsGetResponse } from '../_lib/blobs.js';
 
 export default async (req, context) => {
   try {
     const url = new URL(req.url);
-    const week = Number(url.searchParams.get('week')) || null;
+    const week = Number(url.searchParams.get('week'));
 
-    const teamFormRes = await get('team_form.json');
-    const hasTeamForm = !!teamFormRes;
-    let teamFormUpdatedAt = null;
-    try {
-      if (teamFormRes) {
-        const hdr = teamFormRes.headers.get('Last-Modified');
-        teamFormUpdatedAt = hdr || null;
-      }
-    } catch {}
+    const res = await blobsGetResponse('team_form.json');
+    const hasTeamForm = !!res;
+    const teamFormUpdatedAt = res ? (res.headers.get('Last-Modified') || null) : null;
 
     let hasOddsWeek = false, oddsUpdatedAt = null, oddsCount = 0;
-    if (week || week === 0) {
+    if (Number.isFinite(week)) {
       const odds = await blobsGetJSON(`odds_week_${week}.json`, null);
       if (odds) {
         hasOddsWeek = true;
