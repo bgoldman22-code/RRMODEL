@@ -1,42 +1,29 @@
-const { getStore } = require('@netlify/blobs');
+// CommonJS shim around Netlify Blobs, for CJS handlers only.
+const { createClient } = require('@netlify/blobs');
 
-const storeName = process.env.BLOBS_STORE_NFL || process.env.NFL_TD_BLOBS || "nfl-td";
-const store = getStore({
-  name: storeName,
-  siteID: process.env.NETLIFY_SITE_ID,
-  token: process.env.NETLIFY_BLOBS_TOKEN,
-});
-
-const safeJSONParse = (input, fallback=null) => {
-  try { return JSON.parse(input); } catch { return fallback; }
-};
+function client() {
+  // Allow override of store via env; caller can also pass an explicit store.
+  const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
+  const token = process.env.NETLIFY_BLOBS_TOKEN || process.env.NETLIFY_API_TOKEN || process.env.TOKEN;
+  const store = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td';
+  const opts = {};
+  if (siteID && token) opts.siteID = siteID, opts.token = token;
+  return createClient({ ...opts, name: store });
+}
 
 exports.get = async (key) => {
+  const c = client();
   try {
-    const raw = await store.get(key, { type: "text" });
-    return raw ? safeJSONParse(raw) : null;
-  } catch (err) {
-    console.error("Blobs get error:", err);
+    const r = await c.get(key);
+    return r?.body ?? null;
+  } catch (e) {
     return null;
   }
 };
 
-exports.set = async (key, value) => {
-  try {
-    await store.set(key, JSON.stringify(value));
-    return true;
-  } catch (err) {
-    console.error("Blobs set error:", err);
-    return false;
-  }
-};
-
-exports.del = async (key) => {
-  try {
-    await store.delete(key);
-    return true;
-  } catch (err) {
-    console.error("Blobs del error:", err);
-    return false;
-  }
+exports.set = async (key, value, { contentType = 'application/json' } = {}) => {
+  const c = client();
+  const body = typeof value === 'string' ? value : JSON.stringify(value);
+  await c.set(key, body, { contentType });
+  return true;
 };

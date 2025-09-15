@@ -2,13 +2,13 @@
   "name": "rrmodel-nfl",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "echo \"skip web build\"",
-    "postinstall": "echo postinstall done"
+    "build": "bash netlify/build-debug.sh",
+    "postinstall": "echo 'postinstall ok'"
   },
   "dependencies": {
-    "@netlify/blobs": "^5.0.0",
-    "csv-parse": "^5.5.6",
-    "node-fetch": "^3.3.2"
+    "@netlify/blobs": "^5.3.0",
+    "csv-parse": "^5.5.6"
   }
 }

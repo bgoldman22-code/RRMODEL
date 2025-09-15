@@ -1,12 +1,23 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
+
 echo "Node: $(node -v)"
 echo "NPM:  $(npm -v)"
-# prefer ci if lock exists and is non-empty
-if [ -s package-lock.json ]; then
-  npm ci || (echo "npm ci failed, falling back to npm install" && npm install --no-audit --no-fund)
+
+# Netlify often runs npm ci; if there's no lockfile, fall back to install.
+if [ -f package-lock.json ]; then
+  npm ci
 else
-  npm install --no-audit --no-fund
+  echo "No package-lock.json present; running npm install to generate one..."
+  npm install
 fi
-npm run build || echo "no web build step required"
-echo "Build script complete."
+
+# Produce a tiny site so Netlify "publish" step doesn't fail.
+mkdir -p dist
+cat > dist/index.html <<'HTML'
+<!doctype html>
+<html><head><meta charset="utf-8"><title>RRModel</title></head>
+<body><h1>RRModel</h1><p>Build OK: $(date)</p></body></html>
+HTML
+
+echo "Build complete."
