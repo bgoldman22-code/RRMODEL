@@ -1,7 +1,11 @@
 {
-  "type": "module",
+  "name": "rrmodel-nfl",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "mkdir -p dist && if [ -d public ]; then cp -R public/* dist/ || true; fi && echo 'Build placeholder complete (no frontend build needed)'"
+  },
   "dependencies": {
-    "@netlify/blobs": "^6.0.0",
-    "node-fetch": "^3.3.2"
+    "@netlify/blobs": "^5.0.0"
   }
 }
