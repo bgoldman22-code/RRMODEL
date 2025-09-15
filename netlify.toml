@@ -1,11 +1,22 @@
+# Minimal, verbose build to surface errors clearly
 [build]
   command = "node netlify/build-debug.js"
   publish = "dist"
 
+[build.environment]
+  NODE_VERSION = "20"
+  NODE_OPTIONS = "--trace-warnings --unhandled-rejections=strict"
+  NPM_FLAGS = "--loglevel verbose"
+  LOG_LEVEL = "debug"
+  # Blobs store fallback name
+  BLOBS_STORE_NFL = "nfl-td"
+
+# Keep esbuild bundler and mark external modules as needed
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs", "csv-parse"]
 
+# Single-page-app style fallback if you use client routing; safe to keep
 [[redirects]]
   from = "/*"
   to = "/index.html"

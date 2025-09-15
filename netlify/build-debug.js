@@ -1,140 +1,87 @@
-import { writeFileSync, mkdirSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+// ESM build script (Node 20). No require().
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const log = (...args) => console.log('[BUILD]', ...args);
 
-const outDir = join(__dirname, '..', 'dist');
-mkdirSync(outDir, { recursive: true });
+log('Node', process.version);
+log('Platform', process.platform, process.arch);
+log('cwd', process.cwd());
+log('env keys', Object.keys(process.env).sort().join(', '));
 
-const now = new Date().toISOString();
+const dist = path.resolve('dist');
+fs.mkdirSync(dist, { recursive: true });
 
-function page(title, body) {
-  return `<!doctype html>
+const write = (file, html) => {
+  const out = path.join(dist, file);
+  fs.writeFileSync(out, html);
+  log('wrote', out);
+};
+
+const page = (title, body) => `<!doctype html>
 <html lang="en">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${title}</title>
 <style>
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;margin:20px;line-height:1.4}
-  header{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
-  header a{padding:8px 12px;border:1px solid #ddd;border-radius:10px;text-decoration:none;color:#222;background:#fafafa}
-  table{border-collapse:collapse;width:100%;margin-top:12px}
-  th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:14px}
-  th{background:#f5f5f5}
-  code{background:#f2f2f2;padding:2px 6px;border-radius:6px}
-  .muted{opacity:.7}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;padding:24px;max-width:900px;margin:auto}
+  code,kbd,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+  table{border-collapse:collapse}
+  td,th{border:1px solid #ddd;padding:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  .card{border:1px solid #ccd;padding:16px;border-radius:12px;background:#f9fbff}
+  a.button{display:inline-block;padding:10px 14px;border-radius:8px;border:1px solid #888;text-decoration:none}
 </style>
-<header>
-  <a href="/index.html">Home</a>
-  <a href="/nfl-predictions.html">NFL Predictions</a>
-  <a href="/tools.html">Tools</a>
-  <a href="/status.html">Status</a>
-</header>
-<div class="muted">Build OK: ${now}</div>
+<h1>${title}</h1>
 ${body}
+<hr/>
+<p><small>Build OK: ${new Date().toISOString()}</small></p>
 </html>`;
-}
 
-// index
-writeFileSync(join(outDir, 'index.html'), page('RRModel', `
-  <h1>RRModel</h1>
+write('index.html', page('RRModel', `
+  <div class="grid">
+    <div class="card">
+      <h2>Pages</h2>
+      <ul>
+        <li><a href="/status.html">Status</a></li>
+        <li><a href="/tools.html">Tools</a></li>
+        <li><a href="/nfl-predictions.html">NFL Predictions</a></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Build Diagnostics</h2>
+      <pre>${JSON.stringify({ node: process.version, platform: process.platform, arch: process.arch }, null, 2)}</pre>
+    </div>
+  </div>
+`));
+
+write('status.html', page('Status', `
   <p>Quick links:</p>
-  <ul>
-    <li><a href="/nfl-predictions.html">NFL Predictions</a></li>
-    <li><a href="/status.html">Status / Diag</a></li>
-    <li><a href="/tools.html">Training tools</a></li>
-  </ul>
-`));
-
-// status page
-writeFileSync(join(outDir, 'status.html'), page('Status', `
-  <h2>Status</h2>
-  <pre id="out">Loading…</pre>
-  <script type="module">
-    async function run() {
-      const resp = await fetch('/.netlify/functions/odds-status');
-      const json = await resp.json();
-      document.getElementById('out').textContent = JSON.stringify(json, null, 2);
-    }
-    run().catch(e => { document.getElementById('out').textContent = String(e) });
-  </script>
-`));
-
-// tools page (train triggers)
-writeFileSync(join(outDir, 'tools.html'), page('Tools', `
-  <h2>Training & Data Tools</h2>
-  <button id="train2025">Train 2025</button>
-  <button id="trainAll">Train 2022–2025</button>
-  <button id="gen">Generate Predictions</button>
-  <pre id="out">Ready.</pre>
-  <script type="module">
-    async function call(url) {
-      const r = await fetch(url);
-      const t = await r.text();
-      document.getElementById('out').textContent = t;
-    }
-    document.getElementById('train2025').onclick = () => call('/.netlify/functions/nfl-train?season=2025&force=1');
-    document.getElementById('trainAll').onclick = () => call('/.netlify/functions/nfl-train?years=2022,2023,2024,2025&force=1');
-    document.getElementById('gen').onclick = () => call('/.netlify/functions/nfl-predictions-generate?force=1');
-  </script>
-  <h3>Sanity check URLs</h3>
   <ul>
     <li><a href="/.netlify/functions/odds-status">/.netlify/functions/odds-status</a></li>
     <li><a href="/.netlify/functions/nfl-schedule-get?force=1">/.netlify/functions/nfl-schedule-get?force=1</a></li>
-    <li><a href="/.netlify/functions/nfl-train?season=2025&force=1">/.netlify/functions/nfl-train?season=2025&force=1</a></li>
-    <li><a href="/.netlify/functions/nfl-train?years=2022,2023,2024,2025&force=1">/.netlify/functions/nfl-train?years=2022,2023,2024,2025&force=1</a></li>
-    <li><a href="/.netlify/functions/nfl-predictions-generate?force=1">/.netlify/functions/nfl-predictions-generate?force=1</a></li>
+    <li><a href="/.netlify/functions/diag">/.netlify/functions/diag</a></li>
   </ul>
 `));
 
-// predictions page
-writeFileSync(join(outDir, 'nfl-predictions.html'), page('NFL Predictions', `
-  <h2>NFL Predictions</h2>
-  <div id="note" class="muted">Fetching…</div>
-  <table id="tbl" style="display:none">
-    <thead>
-      <tr>
-        <th>Matchup</th><th>Kickoff</th>
-        <th>Moneyline</th><th>Conf</th>
-        <th>Spread</th><th>Conf</th>
-        <th>Total</th><th>Conf</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <script type="module">
-    function td(v){ const el=document.createElement('td'); el.textContent=v; return el; }
-    function pct(n){ return (n==null||isNaN(n)) ? '–' : (Math.round(Number(n)) + '%'); }
-    async function load() {
-      const url = '/.netlify/functions/nfl-predictions-generate?force=1';
-      const r = await fetch(url);
-      const j = await r.json();
-      const note = document.getElementById('note');
-      if(!j.ok){ note.textContent = 'Error: '+(j.error||'unknown'); return; }
-      if(!j.rows || !j.rows.length){
-        note.textContent = 'No rows yet. Train, then Generate from Tools.';
-        return;
-      }
-      note.textContent = '';
-      const tb = document.querySelector('#tbl'); tb.style.display='table';
-      const bod = tb.querySelector('tbody');
-      j.rows.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.appendChild(td(row.matchup));
-        tr.appendChild(td(new Date(row.kickoff).toLocaleString()));
-        tr.appendChild(td(row.moneylineText ?? '–'));
-        tr.appendChild(td(pct(row.moneylineConf)));
-        tr.appendChild(td(row.spreadText ?? '–'));
-        tr.appendChild(td(pct(row.spreadConf)));
-        tr.appendChild(td(row.totalText ?? '–'));
-        tr.appendChild(td(pct(row.totalConf)));
-        bod.appendChild(tr);
-      });
-    }
-    load().catch(e => { document.getElementById('note').textContent = String(e); });
-  </script>
+write('tools.html', page('Tools', `
+  <p>Common actions:</p>
+  <p>
+    <a class="button" href="/.netlify/functions/nfl-train?season=2025&force=1">Train 2025</a>
+    <a class="button" href="/.netlify/functions/nfl-train?years=2022,2023,2024,2025&force=1">Train 2022–2025</a>
+    <a class="button" href="/.netlify/functions/nfl-predictions-generate?force=1">Generate Predictions</a>
+  </p>
+  <p>Sanity endpoints:</p>
+  <ul>
+    <li><a href="/.netlify/functions/odds-status">odds-status</a></li>
+    <li><a href="/.netlify/functions/nfl-schedule-get?force=1">nfl-schedule-get?force=1</a></li>
+    <li><a href="/.netlify/functions/diag">diag</a></li>
+  </ul>
 `));
 
-console.log("Built static pages into /dist at", now);
+write('nfl-predictions.html', page('NFL Predictions', `
+  <p>Use the Tools page to generate fresh predictions. This page is a placeholder for now.</p>
+`));
+
+log('done');
