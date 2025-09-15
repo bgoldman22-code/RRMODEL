@@ -1,3 +1,4 @@
+# netlify.toml
 [build]
   command = "bash netlify/build-debug.sh"
   publish = "dist"

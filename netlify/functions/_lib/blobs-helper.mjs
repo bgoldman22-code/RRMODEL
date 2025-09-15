@@ -1,73 +1,84 @@
 // netlify/functions/_lib/blobs-helper.mjs
-// Unified helper for Netlify Blobs with safe fallbacks.
-// - Prefers Netlify runtime getStore() when available.
-// - Falls back to createClient() when running locally, if provided.
-// - Env var priority: BLOBS_STORE_NFL -> BLOBS_STORE -> 'nfl-td'
+// ESM module with NO top-level await. Safe for esbuild CJS bundling.
+// Supports @netlify/blobs v5+ (createClient) and legacy getStore in Netlify runtime.
+// Store name fallback: BLOBS_STORE_NFL -> BLOBS_STORE -> 'nfl-td'
 
-let createClient, getStore;
-try {
-  // @netlify/blobs v5+ exports these in ESM env
-  ({ createClient, getStore } = await import('@netlify/blobs'));
-} catch (e) {
-  // Non-fatal: local or older envs may not have it, we'll guard below
+let _blobsMod = null;
+
+async function getBlobsModule() {
+  if (_blobsMod) return _blobsMod;
+  try {
+    // Dynamic import so esbuild can bundle for CJS output without top-level await
+    _blobsMod = await import('@netlify/blobs');
+  } catch (e) {
+    // Leave null; callers will throw a friendly message
+    _blobsMod = null;
+  }
+  return _blobsMod;
 }
 
-const STORE_FALLBACK = 'nfl-td';
-
-export function resolveStoreName() {
-  return process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || STORE_FALLBACK;
+export function resolveStoreName(name) {
+  return name || process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td';
 }
 
-// Returns a compatible store-like object with put/get/list.
-// If Netlify runtime getStore exists, we use that.
-// Else if createClient exists, we make a scoped client.
-// Else, we throw a descriptive error.
-export async function makeStore(name = resolveStoreName()) {
-  if (typeof getStore === 'function') {
-    const store = getStore({ name });
-    return { 
-      put: (key, body, opts={}) => store.set(key, body, opts),
-      get: (key) => store.get(key),
-      list: (opts={}) => store.list(opts),
-      meta: { name, mode: 'getStore' }
-    };
+export async function getClient() {
+  const mod = await getBlobsModule();
+  if (!mod) {
+    const err = new Error('[blobs-helper] @netlify/blobs is not available. Ensure it is installed and/or running in Netlify.');
+    err.code = 'NO_BLOBS_MODULE';
+    throw err;
   }
-  if (typeof createClient === 'function') {
-    const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
-    const token = process.env.NETLIFY_API_TOKEN || process.env.BLOBS_TOKEN || process.env.TOKEN;
-    if (!siteID || !token) {
-      const err = new Error('[blobs-helper] @netlify/blobs.createClient is available but missing siteID/token env.');
-      err.code = 'MissingBlobsEnvironmentError';
-      throw err;
-    }
-    const client = createClient({ siteID, token });
-    const store = client.store(name);
-    return {
-      put: (key, body, opts={}) => store.set(key, body, opts),
-      get: (key) => store.get(key),
-      list: (opts={}) => store.list(opts),
-      meta: { name, mode: 'createClient' }
-    };
+  // Prefer createClient when available (v5+). Fallback to null meaning "use getStore directly".
+  return typeof mod.createClient === 'function' ? mod.createClient() : null;
+}
+
+export async function makeStore(name) {
+  const storeName = resolveStoreName(name);
+  const mod = await getBlobsModule();
+  if (!mod) {
+    const err = new Error('[blobs-helper] @netlify/blobs is not available. Please add it to dependencies or run in Netlify.');
+    err.code = 'NO_BLOBS_MODULE';
+    throw err;
   }
-  const err = new Error('[blobs-helper] @netlify/blobs not available. Add as dependency or run in Netlify runtime.');
-  err.code = 'BlobsUnavailable';
+  const client = await getClient();
+  if (client && typeof client.getStore === 'function') {
+    return client.getStore(storeName);
+  }
+  // Legacy fallback: getStore(options) available in Netlify runtime
+  if (typeof mod.getStore === 'function') {
+    const opts = { name: storeName };
+    // Optional manual config via env for local dev
+    if (process.env.NETLIFY_SITE_ID) opts.siteID = process.env.NETLIFY_SITE_ID;
+    if (process.env.NETLIFY_AUTH_TOKEN) opts.token = process.env.NETLIFY_AUTH_TOKEN;
+    return mod.getStore(opts);
+  }
+  const err = new Error('[blobs-helper] Neither createClient().getStore nor getStore() is available.');
+  err.code = 'NO_GETSTORE';
   throw err;
 }
 
-export async function saveToBlobs(key, data, { name } = {}) {
-  const store = await makeStore(name);
-  const body = typeof data === 'string' ? data : JSON.stringify(data);
-  await store.put(key, body, { contentType: 'application/json; charset=utf-8' });
-  return { ok: true, store: store.meta.name, key };
+export async function openStore(name) {
+  return makeStore(name);
 }
 
-export async function loadFromBlobs(key, { name } = {}) {
-  const store = await makeStore(name);
-  const raw = await store.get(key);
-  if (!raw) return null;
+export async function saveToBlobs(key, data, { contentType = 'application/json', storeName } = {}) {
+  const store = await openStore(storeName);
+  const body = typeof data === 'string' ? data : JSON.stringify(data);
+  await store.set(key, body, { contentType });
+  return true;
+}
+
+export async function loadFromBlobs(key, { type = 'json', storeName } = {}) {
+  const store = await openStore(storeName);
+  return store.get(key, { type });
+}
+
+export async function existsInBlobs(key, { storeName } = {}) {
+  const store = await openStore(storeName);
   try {
-    return JSON.parse(raw);
+    const buf = await store.get(key, { type: 'stream' });
+    return !!buf;
   } catch {
-    return raw;
+    return false;
   }
 }

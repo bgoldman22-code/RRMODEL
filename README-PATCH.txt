@@ -1,39 +1,35 @@
-# Patch for main31 — odds-status ESM fix, Blobs helper, train wrapper, build script
+RRModel NFL Netlify Patch — CJS/ESM + Blobs + Build fixes
 
-## What this fixes
-1) **ERR_REQUIRE_ESM** on `odds-status.mjs` (Netlify was requiring an ESM file)
-2) Missing/legacy Blobs helper features (`makeStore`, env fallbacks incl. `BLOBS_STORE_NFL` → `BLOBS_STORE` → `nfl-td`)
-3) Similar ESM/CJS bootstrap for `nfl-train`
-4) Build pipeline resilience (no lockfile → falls back to `npm install`; missing build script won’t fail)
+What this fixes
+- CommonJS-in-ESM errors: renames/uses .cjs for CJS entry files.
+- Removes top-level await in blobs-helper.mjs (uses dynamic import inside functions).
+- Adds CJS wrappers for functions (odds-status, nfl-train) so esbuild bundles cleanly.
+- Adds build script + build-debug.sh; always creates dist/ to satisfy publish.
+- Blobs store fallback: BLOBS_STORE_NFL -> BLOBS_STORE -> nfl-td.
 
-## Files to drop in (preserve tree)
-```
-netlify/functions/odds-status/index.cjs          <-- CJS wrapper
-netlify/functions/odds-status/handler.mjs        <-- your ESM logic lives here
-netlify/functions/_lib/blobs-helper.mjs          <-- updated helper with makeStore + fallbacks
-netlify/functions/nfl-train/index.cjs            <-- CJS wrapper
-netlify/functions/nfl-train/handler.mjs          <-- lightweight trainer (writes team_form.json)
-netlify/build-debug.sh                           <-- tolerant build
-netlify.toml                                     <-- external_node_modules includes csv-parse
-package.json                                     <-- adds @netlify/blobs and csv-parse
-```
+Files in this patch
+- netlify/build-debug.sh
+- netlify/functions/_lib/blobs-helper.mjs
+- netlify/functions/_blobs.cjs
+- netlify/functions/odds-status/index.cjs
+- netlify/functions/odds-status/handler.mjs
+- netlify/functions/nfl-train/index.cjs
+- netlify/functions/nfl-train/handler.mjs
+- netlify/functions/odds-diag.cjs
+- netlify.toml
+- package.json
 
-> Replace/rename any existing `netlify/functions/odds-status.mjs` entry file. The wrapper now lives at `odds-status/index.cjs` and dynamically imports `handler.mjs`.
+Instructions
+1) Drop this entire folder into your repo, preserving paths. If a file already exists, overwrite it.
+   - Specifically replace any single-file odds-status.mjs with the new folder-based odds-status (index.cjs + handler.mjs).
+2) Commit & deploy.
 
-## Environment variable fallback
-- Uses **BLOBS_STORE_NFL** first
-- Then **BLOBS_STORE**
-- Then hard-defaults to **"nfl-td"**
+Post-deploy copy/paste sanity URLs (your domain hardcoded):
+- Odds status: https://bgroundrobin.com/.netlify/functions/odds-status
+- Train single year: https://bgroundrobin.com/.netlify/functions/nfl-train?years=2025&force=1
+- Train multi-year: https://bgroundrobin.com/.netlify/functions/nfl-train?years=2022,2023,2024,2025&force=1
+- Generate: https://bgroundrobin.com/.netlify/functions/nfl-predictions-generate?force=1
 
-## Sanity / debug URLs (copy & paste, your domain)
-- Schedule (odds fallback):
-  https://bgroundrobin.com/.netlify/functions/nfl-schedule-get?force=1
-- Generate predictions (uses model + form if present):
-  https://bgroundrobin.com/.netlify/functions/nfl-predictions-generate?force=1
-- Train (lightweight decay-only form; safe until full-history fetch is patched):
-  https://bgroundrobin.com/.netlify/functions/nfl-train?season=2025&force=1
-  https://bgroundrobin.com/.netlify/functions/nfl-train?years=2022,2023,2024,2025&force=1
-
-## Notes
-- This patch doesn’t change your UI. It just stabilizes function bootstrapping and Blobs usage.
-- The included `nfl-train/handler.mjs` writes a minimal **team_form.json** even without nflfastR URLs. You can swap it later for the full historical trainer.
+Notes
+- The trainer uses a lightweight nflverse CSV path: https://raw.githubusercontent.com/nflverse/nflverse-data/master/fastR/roster_games/games_<YEAR>.csv
+  Adjust in nfl-train/handler.mjs if you prefer a different source.
