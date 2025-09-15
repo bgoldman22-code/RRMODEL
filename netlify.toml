@@ -1,13 +1,5 @@
-# If you haven't added these yet, ensure they exist in your real netlify.toml
-[build]
-  functions = "netlify/functions"
-  publish = "dist"
-
 [functions]
   node_bundler = "esbuild"
-
-[build.environment]
-  BLOBS_STORE_NFL = "nfl-td"
-  NFL_SCHEDULE_URL = "nfl-schedule-get"
-  NFL_ODDS_BRIDGE_URL = "odds-get"
-  NFLVERSE_TEAM_FORM_URL = "/nflverse-team-form.json"
+  external_node_modules = ["@netlify/blobs"]
+[build]
+  environment = { NODE_VERSION = "20" }
