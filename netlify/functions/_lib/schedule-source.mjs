@@ -1,35 +1,41 @@
-// Schedule source with *no placeholder odds*.
-// Instead, we try to join cached odds from Blobs by matchup id (gameId).
-// If none are found, we leave odds null and mark oddsSource:'none'.
+// Schedule source that reads odds from Blobs using either gameId OR team pair key (HOME-AWAY).
+// This lets us join odds even if your schedule uses different gameIds than the odds cache.
 
 import { blobsGetJSON } from './blobs.js';
 
-// Expect an odds cache written by odds-refresh: odds_week_<W>.json
+function pairKey(home, away) {
+  return `${home}-${away}`;
+}
+
 async function loadWeekOdds(week) {
-  if (!week && week !== 0) return null;
+  if (week == null) return null;
   const key = `odds_week_${week}.json`;
   const data = await blobsGetJSON(key, null);
   if (!data) return null;
-  // Normalize to a map gameId -> { ml_home, ml_away }
-  const map = Object.create(null);
-  for (const row of data?.rows || []) {
-    if (!row?.gameId) continue;
-    map[row.gameId] = { ml_home: row.ml_home ?? null, ml_away: row.ml_away ?? null };
+  const byId = Object.create(null);
+  const byPair = Object.create(null);
+  for (const r of data.rows || []) {
+    const rec = { ml_home: r.ml_home ?? null, ml_away: r.ml_away ?? null };
+    if (r.gameId) byId[r.gameId] = rec;
+    if (r.home && r.away) byPair[pairKey(r.home, r.away)] = rec;
   }
-  return map;
+  return { byId, byPair, meta: data.meta || {} };
 }
 
-// Fake schedule builder for demonstration; in your app you likely already have this.
-// Keep the shape, but drop hard-coded odds.
 export async function getWeekSchedule({ week, season, games }) {
-  // `games` = incoming list you already build elsewhere with teams, ids, start times, etc.
-  const oddsMap = await loadWeekOdds(week);
+  const oddsIndex = await loadWeekOdds(week);
   return (games || []).map(g => {
-    const odds = oddsMap?.[g.gameId] || null;
-    return {
-      ...g,
-      odds,
-      oddsSource: odds ? 'blobs:week' : 'none',
-    };
+    let odds = null;
+    let src = 'none';
+    if (oddsIndex) {
+      if (g.gameId && oddsIndex.byId[g.gameId]) {
+        odds = oddsIndex.byId[g.gameId];
+        src = 'blobs:week:id';
+      } else if (g.home && g.away && oddsIndex.byPair[`${g.home}-${g.away}`]) {
+        odds = oddsIndex.byPair[`${g.home}-${g.away}`];
+        src = 'blobs:week:pair';
+      }
+    }
+    return { ...g, odds, oddsSource: src };
   });
 }
