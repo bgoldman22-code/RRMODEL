@@ -1,8 +1,13 @@
-// CJS -> ESM bridge in case the function directory is referenced directly by the bundler.
-exports.handler = async (event, context) => {
-  const mod = await import('./index.mjs');
-  if (!mod || typeof mod.handler !== 'function') {
-    throw new Error('nfl-train/index.cjs: index.mjs did not export a handler');
+// netlify/functions/nfl-train/index.cjs
+// CJS bridge -> ESM handler to avoid "require() of ES Module not supported" crashes.
+exports.handler = async function(event, context) {
+  const mod = await import('./index.mjs?' + Date.now());
+  if (typeof mod.handler !== 'function') {
+    return {
+      statusCode: 500,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ok: false, error: 'missing_handler_in_mjs' })
+    };
   }
-  return mod.handler(event, context);
+  return await mod.handler(event, context);
 };
