@@ -1,5 +1,10 @@
+[build]
+  command = "bash netlify/build-debug.sh"
+  publish = "dist"
+
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["@netlify/blobs"]
-[build]
-  environment = { NODE_VERSION = "20" }
+  external_node_modules = ["@netlify/blobs", "csv-parse"]
+
+[functions."*"]
+  node_bundler = "esbuild"

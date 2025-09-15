@@ -1,33 +1,29 @@
-
-import { gunzipSync } from 'node:zlib';
-
-const URL_PATTERNS = [
-  // historic nflfastR path
+/**
+ * nflverse fastR sources with multi-URL attempts
+ */
+import fetch from 'node-fetch';
+export const GAME_URL_PATTERNS = [
+  (y) => `https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/games/${y}.csv.gz`,
   (y) => `https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/games/games_${y}.csv.gz`,
-  (y) => `https://raw.githubusercontent.com/nflverse/nflfastR-data/master/data/games/games_${y}.csv`,
-  // newer nflverse-data paths
-  (y) => `https://raw.githubusercontent.com/nflverse/nflverse-data/master/data/games/games_${y}.csv.gz`,
-  (y) => `https://raw.githubusercontent.com/nflverse/nflverse-data/master/data/games/games_${y}.csv`,
-  // releases (content-redirected)
-  (y) => `https://github.com/nflverse/nflverse-data/releases/download/games/games_${y}.csv.gz`,
-  (y) => `https://github.com/nflverse/nflverse-data/releases/download/games/games_${y}.csv`,
+  (y) => `https://github.com/nflverse/nflfastR-data/raw/master/data/games/${y}.csv.gz`,
+  (y) => `https://github.com/nflverse/nflfastR-data/raw/master/data/games/games_${y}.csv.gz`,
 ];
 
-export async function fetchSeasonCSV(year, logs) {
-  const tried = [];
-  for (const pat of URL_PATTERNS) {
+export async function fetchSeasonCSVGz(year) {
+  const errors = [];
+  for (const pat of GAME_URL_PATTERNS) {
     const url = pat(year);
     try {
-      const r = await fetch(url, { redirect: 'follow' });
-      if (!r.ok) { tried.push({ url, status: r.status }); continue; }
-      const buf = Buffer.from(await r.arrayBuffer());
-      const text = url.endsWith('.gz') ? gunzipSync(buf).toString('utf8') : buf.toString('utf8');
-      logs.push({ level: 'info', msg: 'fetched', year, url, bytes: buf.length });
-      return text;
+      const res = await fetch(url);
+      if (!res.ok) {
+        errors.push({url, status: res.status});
+        continue;
+      }
+      const buf = Buffer.from(await res.arrayBuffer());
+      return { ok: true, url, buf };
     } catch (e) {
-      tried.push({ url, error: String(e) });
+      errors.push({url, error: e.message});
     }
   }
-  logs.push({ level: 'error', msg: 'season_fetch_failed', year, tried });
-  return null;
+  return { ok: false, errors };
 }

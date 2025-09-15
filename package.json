@@ -1,12 +1,14 @@
 {
   "name": "rrmodel-nfl",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
-  "type": "commonjs",
   "scripts": {
-    "build": "node -e \"require('fs').mkdirSync('dist',{recursive:true});\""
+    "build": "echo \"skip web build\"",
+    "postinstall": "echo postinstall done"
   },
   "dependencies": {
-    "@netlify/blobs": "^5.0.0"
+    "@netlify/blobs": "^5.0.0",
+    "csv-parse": "^5.5.6",
+    "node-fetch": "^3.3.2"
   }
 }

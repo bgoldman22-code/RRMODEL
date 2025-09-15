@@ -1,64 +1,86 @@
+/**
+ * nfl-train (CJS) — builds team_form.json into Netlify Blobs
+ */
+const zlib = require('zlib');
+const { parse } = require('csv-parse/sync');
+const { makeStore, saveToBlobs } = require('../_lib/blobs-helper.cjs');
 
-'use strict';
-
-const { saveToBlobs } = require('../_lib/blobs-helper.cjs');
-const { fetchSeasonCSV, parseCSVBasic, computeTeamForm } = require('../_lib/fastr-sources.cjs');
+async function dynamicImport(modulePath) {
+  return new Function('modulePath', 'return import(modulePath)')(modulePath);
+}
 
 exports.handler = async (event) => {
-  const started = new Date().toISOString();
-  const qs = event && event.queryStringParameters || {};
-  const yearsParam = qs.years;
-  const force = String(qs.force || '').trim();
-  const logs = [];
-
-  if (!force) {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ ok: false, error: "missing_force", msg: "Append ?force=1 to retrain.", updated: started })
-    };
-  }
-
-  let years = [];
-  if (yearsParam) {
-    years = yearsParam.split(',').map(s => Number(s.trim())).filter(Boolean);
-  } else {
-    const yr = new Date().getUTCFullYear();
-    years = [yr-3, yr-2, yr-1, yr];
-  }
-
-  const seasonResults = [];
-  let combined = [];
-  for (const y of years) {
-    try {
-      const txt = await fetchSeasonCSV(y);
-      logs.push({ level: "info", year: y, bytes: txt.length });
-      const rows = parseCSVBasic(txt);
-      seasonResults.push({ year: y, ok: true, status: 200, rowsProcessed: rows.length });
-      combined = combined.concat(rows);
-    } catch (e) {
-      seasonResults.push({ year: y, ok: false, reason: e.code || e.message, status: e.status || 500 });
-      logs.push({ level: "warn", year: y, err: e.message || String(e) });
-    }
-  }
-
-  const features = computeTeamForm(combined);
-  let persisted = false, wrote = null, persist_error = null;
   try {
-    await saveToBlobs("team_form.json", { updated: started, years, features });
-    persisted = true; wrote = "team_form.json";
-  } catch (e) {
-    persist_error = e.message || String(e);
-  }
+    const qs = event.queryStringParameters || {};
+    const years = (qs.years ? qs.years.split(',') : (qs.year ? [qs.year] : []))
+      .map(x => parseInt(x, 10))
+      .filter(Boolean);
+    const season = qs.season ? parseInt(qs.season, 10) : null;
+    const week = qs.week ? parseInt(qs.week, 10) : null;
+    const force = qs.force || qs.force === '1' ? true : false;
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
+    const { fetchSeasonCSVGz } = await dynamicImport('../_lib/fastr-sources.mjs');
+
+    const yrs = years.length ? years : (season ? [season] : []);
+    if (!yrs.length) {
+      return { statusCode: 200, body: JSON.stringify({ ok: false, error: 'no_years' }) };
+    }
+
+    const seasonResults = [];
+    const teamAgg = {};
+
+    for (const y of yrs) {
+      const res = await fetchSeasonCSVGz(y);
+      if (!res.ok) {
+        seasonResults.push({ year: y, ok: false, reason: 'fetch_failed', errors: res.errors });
+        continue;
+      }
+      const csvBuf = zlib.gunzipSync(res.buf);
+      const records = parse(csvBuf, { columns: true, skip_empty_lines: true });
+      // very light features: PF, PA last N games rolling would be better; here just totals for demo
+      for (const r of records) {
+        const home = r.home_team || r.home_team_name || r.home_team_abbr || r.home_team_id;
+        const away = r.away_team || r.away_team_name || r.away_team_abbr || r.away_team_id;
+        const hp = Number(r.home_score) || 0;
+        const ap = Number(r.away_score) || 0;
+        if (!home || !away) continue;
+        teamAgg[home] = teamAgg[home] || { games:0, pf:0, pa:0 };
+        teamAgg[away] = teamAgg[away] || { games:0, pf:0, pa:0 };
+        teamAgg[home].games++; teamAgg[home].pf+=hp; teamAgg[home].pa+=ap;
+        teamAgg[away].games++; teamAgg[away].pf+=ap; teamAgg[away].pa+=hp;
+      }
+      seasonResults.push({ year: y, ok: true, status: 200, rowsProcessed: records.length });
+    }
+
+    const teams = Object.keys(teamAgg).length;
+    const features = Object.fromEntries(
+      Object.entries(teamAgg).map(([k,v]) => {
+        const net = v.pf - v.pa;
+        const avgNet = v.games ? net / v.games : 0;
+        return [k, { games: v.games, pf: v.pf, pa: v.pa, net, avgNet }];
+      })
+    );
+
+    // persist
+    let persisted = false, wrote = null, persist_error = null;
+    try {
+      const store = makeStore(); // ensures env fallback to nfl-td
+      await saveToBlobs('team_form.json', features);
+      persisted = true;
+      wrote = 'team_form.json';
+    } catch (e) {
+      persist_error = e.message || String(e);
+    }
+
+    const body = {
       ok: true,
-      meta: { years, persisted, wrote, persist_error },
-      summary: { teams: Object.keys(features).length },
+      meta: { years: yrs, persisted, wrote, persist_error },
+      summary: { teams },
       seasonResults,
-      logs,
-      updated: started
-    })
-  };
+      updated: new Date().toISOString()
+    };
+    return { statusCode: 200, body: JSON.stringify(body) };
+  } catch (err) {
+    return { statusCode: 500, body: JSON.stringify({ ok:false, error: String(err) }) };
+  }
 };

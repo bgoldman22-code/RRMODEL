@@ -1,102 +1,74 @@
-
-'use strict';
-
 /**
- * Blobs helper with environment fallback:
- * - BLOBS_STORE_NFL
- * - BLOBS_STORE
- * - default "nfl-td"
- *
- * Works on Netlify runtime (no args needed) or locally by setting:
- *  NETLIFY_SITE_ID, NETLIFY_AUTH_TOKEN
+ * CJS wrapper that mirrors the ESM exports for CJS functions
  */
+const blobs = require('@netlify/blobs');
 
-let createClient = null;
-let getStore = null;
+const STORE_KEY_ENV_ORDER = ['BLOBS_STORE_NFL','BLOBS_STORE','rrmodelblobs'];
 
-try {
-  // @netlify/blobs v5
-  ({ createClient, getStore } = require('@netlify/blobs'));
-} catch (e) {
-  // Leave null; we'll error lazily in ensureClient()
+function pickStoreName() {
+  for (const k of STORE_KEY_ENV_ORDER) {
+    if (process.env[k]) return process.env[k];
+  }
+  return 'nfl-td';
 }
 
-const DEFAULT_STORE = 'nfl-td';
-
-function getStoreName() {
-  return process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || DEFAULT_STORE;
-}
-
-function ensureClient() {
-  if (createClient && getStore) {
-    // In Netlify runtime this will pick up context automatically
+function makeStore(storeName) {
+  const name = storeName || pickStoreName();
+  try {
+    const s = blobs.getStore({ name });
+    return s;
+  } catch (e) {
     try {
-      const client = createClient();
-      return client;
-    } catch (e) {
-      // In local mode, require siteID/token
-      const siteID = process.env.NETLIFY_SITE_ID;
-      const token = process.env.NETLIFY_AUTH_TOKEN;
-      if (!siteID || !token) {
-        const err = new Error("[blobs-helper] @netlify/blobs.createClient is not available or lacks credentials. Set NETLIFY_SITE_ID and NETLIFY_AUTH_TOKEN or run in Netlify runtime.");
-        err.code = "MISSING_BLOBS_ENV";
-        throw err;
+      const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
+      const token = process.env.NETLIFY_API_TOKEN || process.env.BLOBS_TOKEN;
+      if (!blobs.createClient || !siteID || !token) {
+        throw new Error('[blobs-helper] createClient not available or missing siteID/token');
       }
-      const client = createClient({ siteID, token });
-      return client;
+      const client = blobs.createClient({ siteID, token });
+      return client.getStore({ name });
+    } catch (e2) {
+      throw new Error(`[blobs-helper] Unable to open blobs store "${name}": ${e2.message}`);
     }
-  } else {
-    const err = new Error("[blobs-helper] @netlify/blobs.createClient is not available. Please update @netlify/blobs to v5+ or run in Netlify runtime.");
-    err.code = "NO_BLOBS_LIB";
-    throw err;
   }
 }
 
-async function openStore(name = getStoreName()) {
-  const client = ensureClient();
-  // Prefer getStore if available (v5)
-  if (getStore) {
-    return getStore({ name });
-  }
-  // Fallback: v4-style
-  if (client && client.store) {
-    return client.store(name);
-  }
-  throw new Error("[blobs-helper] Unable to open blobs store.");
+async function openStore(name) { return makeStore(name); }
+
+async function getBlobText(key, {storeName} = {}) {
+  const store = await openStore(storeName);
+  const res = await store.get(key);
+  if (!res) return null;
+  if (typeof res === 'string') return res;
+  return res.body ? await res.text() : null;
 }
 
-async function saveToBlobs(key, data, { contentType = 'application/json', encode = true } = {}) {
-  const store = await openStore();
-  const value = encode ? JSON.stringify(data) : data;
-  await store.set(key, value, { contentType });
+async function putBlobJSON(key, data, {storeName} = {}) {
+  const store = await openStore(storeName);
+  const body = JSON.stringify(data);
+  await store.set(key, body, { contentType: 'application/json' });
   return true;
 }
 
-async function loadFromBlobs(key, { parse = true } = {}) {
+async function loadFromBlobs(key, opts = {}) {
   try {
-    const store = await openStore();
-    const txt = await store.get(key);
+    const txt = await getBlobText(key, opts);
     if (!txt) return null;
-    return parse ? JSON.parse(txt) : txt;
+    return JSON.parse(txt);
   } catch (e) {
     return null;
   }
 }
 
-async function listKeys(prefix = '') {
-  const store = await openStore();
-  const items = [];
-  for await (const entry of store.list({ prefix })) {
-    items.push(entry.key || entry);
-  }
-  return items;
+async function saveToBlobs(key, data, opts = {}) {
+  return putBlobJSON(key, data, opts);
 }
 
 module.exports = {
-  DEFAULT_STORE,
-  getStoreName,
+  pickStoreName,
+  makeStore,
   openStore,
-  saveToBlobs,
+  getBlobText,
+  putBlobJSON,
   loadFromBlobs,
-  listKeys,
+  saveToBlobs,
 };
