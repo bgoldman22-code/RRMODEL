@@ -1,5 +1,4 @@
 // NFL-specific Blobs helper using Netlify's official API: getStore().
-// This DOES NOT affect MLB. It reads the store name from BLOBS_STORE_NFL (default 'nfl-td').
 import { getStore } from '@netlify/blobs';
 
 function nflStore() {
@@ -9,7 +8,6 @@ function nflStore() {
 
 export async function nflBlobsGetJSON(key, fallback = null) {
   const store = nflStore();
-  // Prefer getJSON if available; fall back to get + JSON.parse
   if (typeof store.getJSON === 'function') {
     const val = await store.getJSON(key);
     return (val === undefined || val === null) ? fallback : val;
