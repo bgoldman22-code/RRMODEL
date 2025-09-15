@@ -1,16 +1,17 @@
-// CommonJS Netlify Function: odds-status
-const blobs = require('../_blobs.cjs');
+
+const { loadFromBlobs, openStore } = await (async () => {
+  // dynamic import ESM helper from CJS file
+  const mod = await import('../_lib/blobs-helper.mjs');
+  return { loadFromBlobs: mod.loadFromBlobs, openStore: mod.openStore };
+})();
 
 exports.handler = async () => {
-  const store = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td';
-  let hasTeamForm = false;
-  try {
-    const tf = await blobs.get('team_form.json');
-    hasTeamForm = !!tf;
-  } catch {}
+  const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "nfl-td";
+  const store = await openStore(storeName);
+  const hasTeamForm = !!(await loadFromBlobs("team_form.json", { storeName }));
   return {
     statusCode: 200,
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ ok: true, store, hasTeamForm, now: new Date().toISOString() })
+    headers: { "content-type":"application/json" },
+    body: JSON.stringify({ ok: true, store: storeName, hasTeamForm, now: new Date().toISOString() })
   };
 };

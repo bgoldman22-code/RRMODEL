@@ -1,11 +1,9 @@
+
+# Drop-in netlify.toml (merge with yours if needed)
 [build]
-  command = "bash netlify/build-debug.sh"
+  command = "node netlify/build-debug.js"
   publish = "dist"
 
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["@netlify/blobs","csv-parse"]
-
-[build.environment]
-  BLOBS_STORE = "rrmodelblobs"
-  BLOBS_STORE_NFL = "nfl-td"
+  external_node_modules = ["@netlify/blobs", "csv-parse"]
