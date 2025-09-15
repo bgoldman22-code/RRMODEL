@@ -1,12 +1,13 @@
 {
-  "name": "rrmodel",
+  "name": "rrmodel-site",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node netlify/build-debug.js"
   },
   "dependencies": {
-    "@netlify/blobs": "^6.4.0",
+    "@netlify/blobs": "^5.2.0",
     "csv-parse": "^5.5.6"
   }
 }
