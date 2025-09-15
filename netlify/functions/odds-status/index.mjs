@@ -1,4 +1,3 @@
-// odds-status updated to use modern blobs client via helper
 import { blobsGetJSON, blobsGetResponse } from '../_lib/blobs.js';
 
 export default async (req, context) => {
@@ -6,13 +5,13 @@ export default async (req, context) => {
     const url = new URL(req.url);
     const week = Number(url.searchParams.get('week'));
 
-    const res = await blobsGetResponse('team_form.json');
+    const res = await blobsGetResponse(context, 'team_form.json');
     const hasTeamForm = !!res;
     const teamFormUpdatedAt = res ? (res.headers.get('Last-Modified') || null) : null;
 
     let hasOddsWeek = false, oddsUpdatedAt = null, oddsCount = 0;
     if (Number.isFinite(week)) {
-      const odds = await blobsGetJSON(`odds_week_${week}.json`, null);
+      const odds = await blobsGetJSON(context, `odds_week_${week}.json`, null);
       if (odds) {
         hasOddsWeek = true;
         oddsUpdatedAt = odds.updatedAt || null;

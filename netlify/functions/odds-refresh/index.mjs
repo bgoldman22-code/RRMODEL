@@ -1,4 +1,4 @@
-// odds-refresh with TheOddsAPI, using blobs helper (no direct imports from '@netlify/blobs').
+// odds-refresh with TheOddsAPI, using context-aware blobs helper (no '@netlify/blobs' imports).
 import { blobsPutJSON, blobsGetJSON } from '../_lib/blobs.js';
 
 const SPORT_KEY = 'americanfootball_nfl';
@@ -45,7 +45,7 @@ export default async (req, context) => {
       if (!payload?.week || !Array.isArray(payload?.rows)) {
         return json({ error: 'POST requires { week, rows: [...] }' }, 400);
       }
-      const out = await writeWeekOdds(payload.week, payload.rows, { source: 'manual' });
+      const out = await writeWeekOdds(context, payload.week, payload.rows, { source: 'manual' });
       return json(out);
     }
 
@@ -56,13 +56,13 @@ export default async (req, context) => {
 
     if (!Number.isFinite(week)) return json({ error: 'Missing or invalid ?week' }, 400);
 
-    const existing = await blobsGetJSON(`odds_week_${week}.json`, null);
+    const existing = await blobsGetJSON(context, `odds_week_${week}.json`, null);
     if (existing && !force) {
       return json({ ok: true, cached: true, key: `odds_week_${week}.json`, wrote: existing.rows?.length || 0 });
     }
 
-    const KEY = process.env.THEODDSAPI_KEY || process.env.ODDS_API_KEY;
-    if (!KEY) return json({ error: 'Missing THEODDSAPI_KEY env var' }, 400);
+    const KEY = process.env.ODDS_API_KEY || process.env.THEODDSAPI_KEY;
+    if (!KEY) return json({ error: 'Missing ODDS_API_KEY (or THEODDSAPI_KEY) env var' }, 400);
 
     const apiUrl = `https://api.the-odds-api.com/v4/sports/${SPORT_KEY}/odds?regions=us&markets=h2h&oddsFormat=american&dateFormat=iso&apiKey=${encodeURIComponent(KEY)}`;
     const res = await fetch(apiUrl);
@@ -107,14 +107,14 @@ export default async (req, context) => {
       });
     }
 
-    const out = await writeWeekOdds(week, rows, { source: 'theoddsapi', bookmaker });
+    const out = await writeWeekOdds(context, week, rows, { source: 'theoddsapi', bookmaker });
     return json(out);
   } catch (err) {
     return json({ error: String(err?.message || err) }, 500);
   }
 };
 
-async function writeWeekOdds(week, rows, meta = {}) {
+async function writeWeekOdds(context, week, rows, meta = {}) {
   const data = {
     week,
     updatedAt: new Date().toISOString(),
@@ -129,7 +129,7 @@ async function writeWeekOdds(week, rows, meta = {}) {
       commence_time: r.commence_time ?? null
     })),
   };
-  await blobsPutJSON(`odds_week_${week}.json`, data);
+  await blobsPutJSON(context, `odds_week_${week}.json`, data);
   return { ok: true, wrote: data.rows.length, key: `odds_week_${week}.json`, meta: data.meta };
 }
 
