@@ -1,22 +1,24 @@
-# OddsAPI Wiring Patch (NFL)
+# Fix: Netlify Blobs import error
 
-This patch wires **TheOddsAPI** into `odds-refresh` so you don't have to paste odds manually.
-It caches to **Blobs** and joins by team pair (HOME-AWAY), so your schedule gameIds don't have to match OddsAPI ids.
+This patch fixes the crash:
+> `SyntaxError: The requested module '@netlify/blobs' does not provide an export named 'get'`
 
-## Files
-- `netlify/functions/odds-refresh/index.mjs` — GET pulls NFL H2H moneylines from TheOddsAPI (US region, American format), writes `odds_week_<W>.json`. POST still supported.
-- `netlify/functions/_lib/schedule-source.mjs` — When building schedules, joins odds from Blobs by `gameId` **or** `HOME-AWAY` pair.
-- `netlify/functions/_lib/blobs.js` — JSON helpers.
+### What changed
+- Replaced direct `import { get, put } from '@netlify/blobs'` with a **modern helper** that uses `createClient()`.
+- Updated `odds-refresh` and `odds-status` to use the helper exclusively.
 
-## Usage
-1) Set env var on Netlify: `THEODDSAPI_KEY` (or `ODDS_API_KEY`).
-2) Cache odds for the week (single call, low credits):
+### Files
+- `netlify/functions/_lib/blobs.js` — new helper (getJSON/setJSON + fallback)
+- `netlify/functions/odds-refresh/index.mjs` — OddsAPI fetcher using helper
+- `netlify/functions/odds-status/index.mjs` — status endpoint using helper
+
+### Deploy & test
+1) Deploy these files.
+2) Seed odds (uses TheOddsAPI; set `THEODDSAPI_KEY` or `ODDS_API_KEY`):
 ```
 GET /.netlify/functions/odds-refresh?week=1&bookmaker=fanduel
 ```
-- Use `&force=1` to refresh the cache.
-3) Predictions will now pick up odds via the schedule source without placeholders.
-
-> Notes
-- If your schedule already has `gameId`s, they'll still join if you later add `gameId` fields to cached rows. For now, pair-based join ensures a clean match.
-- This fetch is **one** API call; keep it once per week to stay well under credit limits.
+3) Status:
+```
+GET /.netlify/functions/odds-status?week=1
+```
