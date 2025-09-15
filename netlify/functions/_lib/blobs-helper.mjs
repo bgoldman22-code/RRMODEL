@@ -1,77 +1,73 @@
+// ESM helper for Netlify Blobs across versions v4–v6, no top-level await.
+// Prefers BLOBS_STORE_NFL, then BLOBS_STORE, then 'nfl-td'.
+const STORE_ENV_KEYS = ["BLOBS_STORE_NFL", "BLOBS_STORE"];
+const DEFAULT_STORE = "nfl-td";
 
-// ESM helper with zero top-level await; compatible with Netlify esbuild.
-const STORE_DEFAULT = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || "nfl-td";
-
-async function loadClient() {
-  try {
-    const mod = await import('@netlify/blobs');
-    const { createClient, getStore } = mod;
-    return { createClient, getStore };
-  } catch (e) {
-    return { error: e };
+function getStoreName() {
+  for (const k of STORE_ENV_KEYS) {
+    if (process.env[k] && String(process.env[k]).trim()) return process.env[k];
   }
+  return DEFAULT_STORE;
 }
 
-export async function openStore(storeName = STORE_DEFAULT) {
-  const { createClient, getStore, error } = await loadClient();
-  if (error) {
-    return {
-      ok: false,
-      reason: "[blobs-helper] @netlify/blobs not available; ensure dependency ^6 is installed or provide siteID/token.",
-      get: async () => null,
-      set: async () => false,
-      list: async () => []
-    };
-  }
-  // Prefer Netlify's automatic env; allow explicit siteID/token if provided.
-  const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
-  const token = process.env.NETLIFY_API_TOKEN || process.env.NETLIFY_AUTH_TOKEN || process.env.TOKEN;
-  let store;
+// Lazy-load Netlify blobs client in a way that works across versions:
+async function getClients() {
+  let mod;
   try {
-    if (siteID && token) {
-      const client = createClient({ siteID, token });
-      store = client.getStore(storeName);
-    } else {
-      store = getStore(storeName);
-    }
-    return {
-      ok: true,
-      get: (key) => store.get(key),
-      set: (key, value, opts={}) => store.set(key, value, opts),
-      list: (...args) => store.list(...args),
-      name: storeName
-    };
+    mod = await import('@netlify/blobs');
   } catch (e) {
-    return {
-      ok: false,
-      reason: String(e),
-      get: async () => null,
-      set: async () => false,
-      list: async () => []
-    };
+    return { createClient: null, getStore: null, error: e };
   }
+  // Some versions export createClient, others export getStore
+  const createClient = mod.createClient || null;
+  const getStore = mod.getStore || null;
+  return { createClient, getStore, error: null };
 }
 
-export async function saveToBlobs(key, value, { contentType="application/json", storeName } = {}) {
-  const store = await openStore(storeName);
-  if (!store.ok) return { ok: false, reason: store.reason };
-  try {
-    const body = typeof value === "string" ? value : JSON.stringify(value);
-    await store.set(key, body, { contentType });
-    return { ok: true, store: store.name, key };
-  } catch (e) {
-    return { ok: false, reason: String(e) };
+// Unified openStore that works across v4–v6, or returns a fall-back store.
+async function openStore() {
+  const name = getStoreName();
+  const { createClient, getStore, error } = await getClients();
+
+  // In Netlify runtime v6+: createClient().store(name)
+  if (typeof createClient === 'function') {
+    const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
+    const token = process.env.NETLIFY_API_TOKEN || process.env.NETLIFY_TOKEN;
+    // The client works without siteID/token in runtime; if provided, use them for builds/local.
+    const client = siteID && token ? createClient({ siteID, token }) : createClient();
+    return client.store(name);
   }
+
+  // Older v4/v5: getStore({name})
+  if (typeof getStore === 'function') {
+    return getStore({ name });
+  }
+
+  // Fallback in dev: in-memory no-op store to avoid crashes
+  console.warn('[blobs-helper] @netlify/blobs not available; using in-memory store.');
+  const mem = new Map();
+  return {
+    async get(key) { return mem.get(key) ?? null; },
+    async set(key, value) { mem.set(key, value); },
+    async delete(key) { mem.delete(key); },
+    async list() { return Array.from(mem.keys()); }
+  };
 }
 
-export async function loadFromBlobs(key, { storeName } = {}) {
-  const store = await openStore(storeName);
-  if (!store.ok) return null;
-  try {
-    const v = await store.get(key);
-    if (!v) return null;
-    try { return JSON.parse(v); } catch { return v; }
-  } catch {
-    return null;
-  }
+export async function saveToBlobs(key, data) {
+  const store = await openStore();
+  const value = typeof data === 'string' ? data : JSON.stringify(data);
+  await store.set(key, value);
+  return { ok: true, key };
+}
+
+export async function loadFromBlobs(key) {
+  const store = await openStore();
+  const val = await store.get(key);
+  if (!val) return null;
+  try { return JSON.parse(val); } catch { return val; }
+}
+
+export function getStoreNameEffective() {
+  return getStoreName();
 }
