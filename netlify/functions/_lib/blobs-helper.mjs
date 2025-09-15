@@ -1,28 +1,29 @@
-import { getStore, createClient } from "@netlify/blobs";
 
-export async function saveToBlobs(name, data) {
+import { createClient } from '@netlify/blobs';
+
+export function getStoreName() {
+  return process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-model';
+}
+
+export async function openStore() {
+  // In Netlify runtime, createClient works without args. Locally, siteID/token required.
   try {
-    const store = getStore(process.env.BLOBS_STORE_NFL || "nfl-model");
-    await store.set(name, JSON.stringify(data));
+    return createClient({ name: getStoreName() });
   } catch (err) {
-    console.warn("[blobs-helper] fallback", err);
-    if (process.env.NETLIFY_SITE_ID && process.env.NETLIFY_API_TOKEN) {
-      const client = createClient({ siteID: process.env.NETLIFY_SITE_ID, token: process.env.NETLIFY_API_TOKEN });
-      const store = client.store(process.env.BLOBS_STORE_NFL || "nfl-model");
-      await store.set(name, JSON.stringify(data));
-    } else {
-      throw err;
-    }
+    const msg = `[blobs-helper] @netlify/blobs.createClient is not available. Please update @netlify/blobs to v5+ or run in Netlify runtime.`;
+    throw new Error(msg);
   }
 }
 
-export async function loadFromBlobs(name) {
-  try {
-    const store = getStore(process.env.BLOBS_STORE_NFL || "nfl-model");
-    const val = await store.get(name);
-    return val ? JSON.parse(val) : null;
-  } catch (err) {
-    console.warn("[blobs-helper] load fallback", err);
-    return null;
-  }
+export async function saveToBlobs(key, data) {
+  const client = await openStore();
+  const body = typeof data === 'string' ? data : JSON.stringify(data);
+  await client.set(key, body, { contentType: 'application/json' });
+  return true;
+}
+
+export async function loadFromBlobs(key) {
+  const client = await openStore();
+  const res = await client.get(key, { type: 'json' });
+  return res ?? null;
 }
