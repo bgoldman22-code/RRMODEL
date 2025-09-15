@@ -1,15 +1,10 @@
-// Lightweight wrappers around Netlify Blobs for JSON objects
 import { get, put } from '@netlify/blobs';
 
 export async function blobsGetJSON(key, defaultValue = null) {
   const res = await get(key);
   if (!res) return defaultValue;
   const text = await res.text();
-  try {
-    return JSON.parse(text);
-  } catch (e) {
-    return defaultValue;
-  }
+  try { return JSON.parse(text); } catch { return defaultValue; }
 }
 
 export async function blobsPutJSON(key, obj) {
