@@ -1,30 +1,45 @@
-# RRModel Depth Charts Patch (2025 Week 2)
+# Patch: Fix @netlify/blobs version ETARGET
 
-Files included:
-- `netlify/functions/nfl-depthcharts-get/_data/nfl/2025/week2/depth-charts.json`
-- `netlify/functions/nfl-depthcharts-get/_data/nfl/current.json`
+Your Netlify build failed because the repo depended on a non-existent version: `@netlify/blobs@^5.3.0`.
 
-## Sanity tests (paste in browser console after deploy)
-```js
-(async () => {
-  const urls = [
-    "https://bgroundrobin.com/.netlify/functions/nfl-depthcharts-get?season=2025&week=2",
-    "https://bgroundrobin.com/.netlify/functions/nfl-depthcharts-get"
-  ];
-  for (const u of urls) {
-    const data = await fetch(u).then(r => r.json());
-    const charts = data.charts ?? data; // support both shapes
-    console.log("\n===", u, "===");
-    console.log("SEA.WR:", charts.SEA?.WR);
-    console.log("PIT.WR:", charts.PIT?.WR);
-    console.log("NE.WR :", charts.NE?.WR);
-    // assertions
-    const has = (arr, name) => Array.isArray(arr) && arr.includes(name);
-    console.log("Expect SEA.WR has Cooper Kupp:", has(charts.SEA?.WR, "Cooper Kupp"));
-    console.log("Expect SEA.WR NOT have DK Metcalf:", !has(charts.SEA?.WR, "DK Metcalf"));
-    console.log("Expect PIT.WR has DK Metcalf:", has(charts.PIT?.WR, "DK Metcalf"));
-    console.log("Expect NE.WR has Stefon Diggs:", has(charts.NE?.WR, "Stefon Diggs"));
-  }
-})();
+## What this patch does
+- Provides a one-liner script that updates your `package.json` to use a **safe** version range: `^6`.
+- Gives you copy/paste instructions in case you prefer to edit manually.
+
+## Why `^6`?
+Netlify’s current runtime supports `@netlify/blobs` v6+. Using `^6` lets npm pick a published 6.x version and avoids pinning a non-existent 5.3.0.
+
+## How to apply
+
+### Option A — Quick edit (recommended)
+Open your repo’s **package.json** and change the dependency line for `@netlify/blobs` to:
+```json
+"@netlify/blobs": "^6"
 ```
-Generated: 2025-09-10T17:24:24.455629Z
+Then redeploy.
+
+### Option B — Run the helper script locally
+1) Save this repo patch in your project root.
+2) Run:
+```bash
+bash netlify/fix-blobs-version.sh
+```
+This uses `jq` if available, or falls back to `sed`, to replace the version in place.
+
+### Verify
+- Ensure `netlify.toml` includes:
+```toml
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["@netlify/blobs", "csv-parse"]
+```
+- Re-run your Netlify deploy.
+
+### Sanity check URLs (bgroundrobin.com)
+- Status: https://bgroundrobin.com/.netlify/functions/odds-status
+- Schedule: https://bgroundrobin.com/.netlify/functions/nfl-schedule-get?force=1
+- Train all years: https://bgroundrobin.com/.netlify/functions/nfl-train?years=2022,2023,2024,2025&force=1
+- Train 2025: https://bgroundrobin.com/.netlify/functions/nfl-train?season=2025&force=1
+- Generate: https://bgroundrobin.com/.netlify/functions/nfl-predictions-generate?force=1
+
+If you still see dependency errors after this, paste the new log and I’ll adjust. 
