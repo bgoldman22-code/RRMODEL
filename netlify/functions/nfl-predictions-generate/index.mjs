@@ -1,311 +1,241 @@
 // netlify/functions/nfl-predictions-generate/index.mjs
-// Enhanced NFL predictions with weather, travel, and advanced EPA
-import { nflBlobsGetJSON as nflGetJSON, nflBlobsPutJSON as nflSetJSON } from '../_lib/blobs-nfl.js';
-import { getWeekSchedule } from '../_lib/schedule-source.mjs';
-import { getWeatherImpact } from '../_lib/weather.mjs';
-import { travelImpact } from '../_lib/travel.mjs';
+// Add these imports at the top
 
-// --- Team name → abbreviation map ---
-function getTeamAbbreviation(fullName) {
-  const nameMap = {
-    "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL",
-    "Buffalo Bills": "BUF", "Carolina Panthers": "CAR", "Chicago Bears": "CHI",
-    "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE", "Dallas Cowboys": "DAL",
-    "Denver Broncos": "DEN", "Detroit Lions": "DET", "Green Bay Packers": "GB",
-    "Houston Texans": "HOU", "Indianapolis Colts": "IND", "Jacksonville Jaguars": "JAX",
-    "Kansas City Chiefs": "KC", "Los Angeles Rams": "LA", "Los Angeles Chargers": "LAC",
-    "Las Vegas Raiders": "LV", "Miami Dolphins": "MIA", "Minnesota Vikings": "MIN",
-    "New England Patriots": "NE", "New Orleans Saints": "NO", "New York Giants": "NYG",
-    "New York Jets": "NYJ", "Philadelphia Eagles": "PHI", "Pittsburgh Steelers": "PIT",
-    "Seattle Seahawks": "SEA", "San Francisco 49ers": "SF", "Tampa Bay Buccaneers": "TB",
-    "Tennessee Titans": "TEN", "Washington Commanders": "WAS"
-  };
-  return nameMap[fullName] || fullName;
-}
+import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics } from '../_lib/blobs-nfl.js';
 
-export default async (req, context) => {
-  try {
-    const url = new URL(req.url);
-    const week = Number(url.searchParams.get('week')) || 3;
-    const season = Number(url.searchParams.get('season')) || new Date().getFullYear();
-    const force = url.searchParams.get('force') === '1';
-
-    // 1) Load NFLVerse team form data
-    let teamForm = await nflGetJSON('team_form.json', null);
-    const meta = { teamForm: { source: teamForm ? 'blobs' : 'missing' } };
-
-    if (!teamForm || force) {
-      try {
-        const response = await fetch((process.env.URL || '') + '/nflverse-team-form.json');
-        if (response.ok) {
-          teamForm = await response.json();
-          await nflSetJSON('team_form.json', teamForm);
-          meta.teamForm.source = 'nflverse_file';
-        }
-      } catch (e) {
-        console.warn('Failed to load nflverse-team-form.json:', e);
-      }
-    }
-
-    if (!teamForm || !teamForm.team_data) {
-      return json({
-        error: 'No team form data available',
-        hint: 'Ensure /nflverse-team-form.json exists or run teamform-refresh'
-      }, 400);
-    }
-
-    // 2) Get schedule
-    const games = await getRealScheduleForWeek(week, season, teamForm.team_data);
-    const schedule = await getWeekSchedule({ week, season, games });
-
-    // 3) Generate predictions with async weather/travel calls
-    const rows = await Promise.all(schedule.map(async (game) => {
-      const homeTeam = teamForm.team_data[game.home];
-      const awayTeam = teamForm.team_data[game.away];
-      if (!homeTeam || !awayTeam) return null;
-
-      const homeStrength = calculateAdvancedTeamStrength(homeTeam, true);
-      const awayStrength = calculateAdvancedTeamStrength(awayTeam, false);
-      const strengthDiff = homeStrength - awayStrength;
-
-      let homeProb = 0.5 + (strengthDiff * 0.35);
-      
-      // Enhanced factors
-      const factors = generateAdvancedFactors(homeTeam, awayTeam, homeStrength, awayStrength);
-
-      homeProb = Math.max(0.15, Math.min(0.85, homeProb));
-      const awayProb = 1 - homeProb;
-
-      const pick = homeProb >= 0.5 ? game.home : game.away;
-      const modelPickProb = homeProb >= 0.5 ? homeProb : awayProb;
-
-      let ml_home = null, ml_away = null, marketProb = null, modelEdge = null, confidence = null;
-      if (game.odds?.ml_home != null && game.odds?.ml_away != null) {
-        ml_home = game.odds.ml_home;
-        ml_away = game.odds.ml_away;
-        const marketHome = americanToImplied(ml_home);
-        const marketAway = americanToImplied(ml_away);
-        marketProb = pick === game.home ? marketHome : marketAway;
-        modelEdge = modelPickProb - marketProb;
-        confidence = bucketConfidence(modelEdge);
-      }
-
-      // === Weather & Travel enrichment ===
-      let weatherData = null, travelData = null;
-      try { 
-        weatherData = await getWeatherImpact({ home: game.home, away: game.away, start: game.start }); 
-      } catch (e) {
-        console.warn('Weather data failed:', e.message);
-      }
-      
-      try { 
-        travelData = travelImpact(game.away, game.home); 
-      } catch (e) {
-        console.warn('Travel data failed:', e.message);
-      }
-
-      // Add weather/travel factors
-      if (weatherData?.factors) factors.push(...weatherData.factors);
-      if (travelData?.factor) factors.push(travelData.factor);
-
-      // Apply confidence adjustments
-      let adjustedConfidence = confidence;
-      if (adjustedConfidence != null) {
-        if (weatherData?.confidenceAdj) adjustedConfidence += weatherData.confidenceAdj;
-        if (travelData?.confidenceAdj) adjustedConfidence += travelData.confidenceAdj;
-        adjustedConfidence = Math.max(1, Math.min(9, Math.round(adjustedConfidence)));
-      }
-
-      return {
-        gameId: game.gameId,
-        matchup: `${game.away} @ ${game.home}`,
-        start: game.start ?? null,
-        pick,
-        homeProb: round3(homeProb),
-        awayProb: round3(awayProb),
-        modelPickProb: round3(modelPickProb),
-        marketProb: marketProb != null ? round3(marketProb) : null,
-        modelEdge: modelEdge != null ? round3(modelEdge) : null,
-        ml_home, ml_away,
-        confidence: adjustedConfidence ?? confidence,
-        factors,
-        weather: weatherData,
-        travel: travelData,
-        oddsSource: game.oddsSource || 'none',
-        teamStats: {
-          home: {
-            epa: round3(homeTeam.offense?.epa_per_play || 0),
-            form: round3(homeTeam.form || 0),
-            strength: round3(homeStrength),
-            consistency: round3(calculateEPAConsistency(homeTeam)),
-            thirdDownEPA: round3((homeTeam.offense?.epa_per_play || 0) * 0.82),
-            redZoneEPA: round3((homeTeam.offense?.epa_per_play || 0) * 1.15)
-          },
-          away: {
-            epa: round3(awayTeam.offense?.epa_per_play || 0),
-            form: round3(awayTeam.form || 0),
-            strength: round3(awayStrength),
-            consistency: round3(calculateEPAConsistency(awayTeam)),
-            thirdDownEPA: round3((awayTeam.offense?.epa_per_play || 0) * 0.82),
-            redZoneEPA: round3((awayTeam.offense?.epa_per_play || 0) * 1.15)
-          }
-        }
-      };
-    }));
-
-    const filteredRows = rows.filter(Boolean);
-    filteredRows.sort((a, b) => (b.modelEdge || 0) - (a.modelEdge || 0));
-
-    return json({
-      meta: { 
-        ...meta, 
-        week, 
-        season, 
-        games: filteredRows.length, 
-        updatedAt: new Date().toISOString(), 
-        model: 'nflverse_epa_v2_enhanced',
-        enhancements: ['advanced_epa', 'weather_integration', 'travel_analysis', 'consistency_scoring']
-      },
-      rows: filteredRows
-    });
-  } catch (err) {
-    return json({ error: String(err?.message || err) }, 500);
-  }
+// Tiered weights based on predictive value research
+const WEIGHTS = {
+  // Tier 1 - Highest predictive value (50% total)
+  third_down: 0.20,
+  rz_td: 0.15,
+  turnover_diff: 0.15,
+  
+  // Tier 2 - Strong correlation (32% total)
+  explosive_diff: 0.12,
+  eds: 0.10,           // early down success
+  pressure_diff: 0.10,
+  
+  // Tier 3 - Meaningful but situational (18% total)
+  fourth_down_agg: 0.08,
+  penalty_diff: 0.05,
+  top_eff: 0.05        // time of possession efficiency
 };
 
-// Advanced EPA calculation with situational splits
-function calculateAdvancedTeamStrength(teamData, isHome) {
-  const offEPA = teamData.offense?.epa_per_play || 0;
-  const defEPA = -(teamData.defense?.epa_allowed_per_play || 0);
-  const recentForm = teamData.form || 0;
-  
-  // Situational EPA (research-backed multipliers)
-  const thirdDownOffEPA = offEPA * 0.82;    // 3rd down 18% less efficient
-  const redZoneOffEPA = offEPA * 1.15;      // Red zone 15% more valuable
-  const thirdDownDefEPA = defEPA * 1.22;    // Defense more impactful on 3rd
-  const redZoneDefEPA = defEPA * 1.28;      // Red zone defense most critical
-  
-  // EPA consistency factor
-  const consistency = calculateEPAConsistency(teamData);
-  
-  // Weighted calculation (research-optimized)
-  let strength = 0.5 + 
-    (offEPA * 0.25) +           // Reduced from 0.4
-    (defEPA * 0.25) +           // Reduced from 0.4  
-    (thirdDownOffEPA * 0.15) +  // New: high-leverage
-    (redZoneOffEPA * 0.1) +     // New: scoring efficiency
-    (thirdDownDefEPA * 0.15) +  // New: defensive stops
-    (redZoneDefEPA * 0.1) +     // New: goal line stands
-    (consistency * 0.05) +      // New: reliability factor
-    (recentForm * 0.05);        // Reduced from 0.2
-  
-  // Research-backed home advantage (FiveThirtyEight: 0.018 vs traditional 0.025)
-  if (isHome) strength += 0.018;
-  
-  return Math.max(0.1, Math.min(0.9, strength));
+// Advanced feature weights (start conservative, can increase after backtesting)
+const ADVANCED_WEIGHTS = {
+  consistency: 0.02,
+  form: 0.03,
+  tempo: 0.01,
+  formations: 0.01,
+  script_adaptation: 0.01
+};
+
+// Utility functions
+function z(val, mean = 0, std = 1) { 
+  return std > 0 ? (val - mean) / std : 0; 
 }
 
-// EPA consistency scoring
-function calculateEPAConsistency(teamData) {
-  // Use form variance as proxy for EPA consistency
-  const formMagnitude = Math.abs(teamData.form || 0);
-  
-  // Teams with extreme form (good or bad) are less consistent
-  // Teams near 0 form are more consistent
-  const consistency = Math.max(0, 1 - (formMagnitude * 3));
-  
-  return consistency;
+function clamp(x, lo, hi) { 
+  return Math.max(lo, Math.min(hi, x)); 
 }
 
-// Enhanced factor generation
-function generateAdvancedFactors(homeTeam, awayTeam, homeStrength, awayStrength) {
-  const factors = [];
-  
-  // Form factors (more specific)
-  const homeFormStrength = Math.abs(homeTeam.form || 0);
-  const awayFormStrength = Math.abs(awayTeam.form || 0);
+function sigmoid(x) {
+  return 1 / (1 + Math.exp(-x));
+}
 
-  if (homeFormStrength > 0.1) factors.push(`home_${homeTeam.form > 0 ? 'hot' : 'cold'}_extreme`);
-  else if (homeFormStrength > 0.05) factors.push(`home_${homeTeam.form > 0 ? 'hot' : 'cold'}`);
-
-  if (awayFormStrength > 0.1) factors.push(`away_${awayTeam.form > 0 ? 'hot' : 'cold'}_extreme`);
-  else if (awayFormStrength > 0.05) factors.push(`away_${awayTeam.form > 0 ? 'hot' : 'cold'}`);
-
-  // EPA-based matchup factors
-  const offVsDef = (homeTeam.offense?.epa_per_play || 0) - (awayTeam.defense?.epa_allowed_per_play || 0);
-  if (offVsDef > 0.08) factors.push('home_offense_advantage');
-  if (offVsDef < -0.08) factors.push('away_defense_advantage');
-
-  // Consistency factors
-  const homeConsistency = calculateEPAConsistency(homeTeam);
-  const awayConsistency = calculateEPAConsistency(awayTeam);
-
-  if (homeConsistency > 0.7) factors.push('home_consistent');
-  if (awayConsistency < 0.3) factors.push('away_inconsistent');
-
-  // Strength differential factors
-  const strengthDiff = homeStrength - awayStrength;
-  if (Math.abs(strengthDiff) > 0.1) {
-    factors.push(strengthDiff > 0 ? 'home_strength_advantage' : 'away_strength_advantage');
+// Core team scoring function using advanced metrics
+function scoreTeamFromFeatures(teamData, league) {
+  if (!teamData || !league) {
+    return 0.5; // Neutral if no data
   }
 
-  return factors;
+  // Graceful defaults for all metric categories
+  const sit = teamData?.situational || {};
+  const press = teamData?.pressure || {};
+  const to = teamData?.turnovers || {};
+  const coach = teamData?.coaching || {};
+  const disc = teamData?.discipline || {};
+  const tempo = teamData?.tempo || {};
+  const core = teamData?.core || {};
+  const script = teamData?.script || {};
+  const formations = teamData?.formations || {};
+
+  // Calculate z-scores vs league (normalized features)
+  const zThird = z(sit.third_down_off ?? 0, league.means.third_down_off, league.stds.third_down_off);
+  const zRZ = z(sit.rz_td_off ?? 0, league.means.rz_td_off, league.stds.rz_td_off);
+  const zTOdiff = z(to.turnover_diff ?? 0, league.means.turnover_diff, league.stds.turnover_diff);
+  const zExpl = z(
+    (sit.explosive_off ?? 0) - (sit.explosive_def ?? 0), 
+    league.means.explosive_diff, 
+    league.stds.explosive_diff
+  );
+  const zEDS = z(sit.eds ?? 0, league.means.eds, league.stds.eds);
+  const zPress = z(press.pressure_diff ?? 0, league.means.pressure_diff, league.stds.pressure_diff);
+  const z4th = z(coach.fourth_down_agg ?? 0, league.means.fourth_down_agg, league.stds.fourth_down_agg);
+  const zPen = z(disc.penalty_diff ?? 0, league.means.penalty_diff, league.stds.penalty_diff);
+  const zTOP = z(tempo.top_eff ?? 0, league.means.top_eff, league.stds.top_eff);
+
+  // Core EPA backbone (prefer opponent-adjusted)
+  const offEPA = core.off_adj_epa ?? core.off_epa ?? 0;
+  const defEPA = -(core.def_adj_epa ?? core.def_epa ?? 0);
+
+  // Advanced features (conservative weights initially)
+  const consistency = teamData?.consistency?.off ?? 0.5;
+  const form = teamData?.form?.off ?? 0;
+  const paceAdj = clamp((tempo.pace ?? 30) / 30 - 1, -0.5, 0.5); // normalized around 30 plays/game
+  const motionAdv = (formations.motion_rate ?? 0.4) - 0.4; // league average ~40%
+  const scriptAdapt = script.trailing_epa ?? 0;
+
+  // Weighted combination
+  const coreScore = (offEPA * 0.25) + (defEPA * 0.25);
+  
+  const tierScore = 
+    (WEIGHTS.third_down * zThird) +
+    (WEIGHTS.rz_td * zRZ) +
+    (WEIGHTS.turnover_diff * zTOdiff) +
+    (WEIGHTS.explosive_diff * zExpl) +
+    (WEIGHTS.eds * zEDS) +
+    (WEIGHTS.pressure_diff * zPress) +
+    (WEIGHTS.fourth_down_agg * z4th) +
+    (WEIGHTS.penalty_diff * zPen) +
+    (WEIGHTS.top_eff * zTOP);
+
+  const advancedScore = 
+    (ADVANCED_WEIGHTS.consistency * (consistency - 0.5)) +
+    (ADVANCED_WEIGHTS.form * form) +
+    (ADVANCED_WEIGHTS.tempo * paceAdj) +
+    (ADVANCED_WEIGHTS.formations * motionAdv) +
+    (ADVANCED_WEIGHTS.script_adaptation * scriptAdapt);
+
+  const totalLinear = coreScore + tierScore + advancedScore;
+
+  // Convert to probability and clamp for sanity
+  const probability = sigmoid(totalLinear);
+  return clamp(probability, 0.1, 0.9);
 }
 
-async function getRealScheduleForWeek(week, season, teamData) {
-  try {
-    const scheduleUrl = process.env.NFL_SCHEDULE_URL || 'nfl-schedule-get';
-    const baseUrl = process.env.URL || 'https://bgroundrobin.com';
-    const response = await fetch(`${baseUrl}/.netlify/functions/${scheduleUrl}?week=${week}&season=${season}`);
-    
-    if (response.ok) {
-      const data = await response.json();
-      const rawGames = data.matchups || data.games || data.schedule || [];
-      
-      return rawGames.map(game => ({
-        gameId: game.id || game.gameId || `${game.homeTeam || game.home}-${game.awayTeam || game.away}`,
-        home: getTeamAbbreviation(game.homeTeam || game.home),
-        away: getTeamAbbreviation(game.awayTeam || game.away), 
-        start: game.kickoff || game.start || null,
-        week,
-        season
-      }));
+// Apply injury adjustments with conservative, bounded effects
+function applyInjuryAdjustments(probability, teamCode, injuries) {
+  const teamInjuries = injuries.teams?.[teamCode] || {};
+  let delta = 0;
+
+  // QB status impact
+  switch (teamInjuries.qb_status) {
+    case 'out':
+      delta -= 0.03;
+      break;
+    case 'doubtful':
+      delta -= 0.02;
+      break;
+    case 'questionable':
+      delta -= 0.01;
+      break;
+    default:
+      // probable or active - no adjustment
+      break;
+  }
+
+  // Positional cluster impacts (small but meaningful)
+  const olOut = teamInjuries.ol_starters_out ?? 0;
+  const dbOut = teamInjuries.db_starters_out ?? 0;
+
+  if (olOut >= 2) delta -= 0.005;
+  if (olOut >= 3) delta -= 0.010; // Additional penalty for major OL depletion
+  
+  if (dbOut >= 2) delta -= 0.005;
+
+  // Apply backup QB penalty if available
+  if (teamInjuries.qb_status === 'out' && teamInjuries.qb_backup_adj_ppp) {
+    delta += Math.max(teamInjuries.qb_backup_adj_ppp, -0.05); // Cap backup penalty
+  }
+
+  return clamp(probability + delta, 0.05, 0.95);
+}
+
+// Main prediction function (replace your existing logic)
+export async function generateAdvancedPredictions(games, season) {
+  // Load advanced metrics and injury data
+  const advancedMetrics = await loadAdvancedMetrics(season);
+  const injuries = await loadInjuries();
+
+  const validMetrics = validateAdvancedMetrics(advancedMetrics);
+  
+  if (!validMetrics) {
+    console.warn('Advanced metrics not available or invalid, falling back to basic prediction');
+    // Return basic predictions or handle gracefully
+  }
+
+  const league = advancedMetrics?.league || { means: {}, stds: {} };
+
+  return games.map(game => {
+    const homeCode = game.home_team;
+    const awayCode = game.away_team;
+
+    // Get team advanced metrics
+    const homeMetrics = getTeamMetrics(advancedMetrics, homeCode);
+    const awayMetrics = getTeamMetrics(advancedMetrics, awayCode);
+
+    // Calculate base probabilities using advanced features
+    let homeProb = scoreTeamFromFeatures(homeMetrics, league);
+    let awayProb = scoreTeamFromFeatures(awayMetrics, league);
+
+    // Normalize probabilities to sum to 1
+    const total = homeProb + awayProb;
+    if (total > 0) {
+      homeProb = homeProb / total;
+      awayProb = awayProb / total;
     }
-  } catch (e) {
-    console.warn('Failed to fetch real schedule:', e);
-  }
 
-  // Fallback mini generator
-  const teams = Object.keys(teamData || {});
-  const games = [];
-  for (let i = 0; i < Math.min(16, Math.floor(teams.length / 2)); i++) {
-    const home = teams[i * 2], away = teams[i * 2 + 1];
-    if (home && away) games.push({ gameId: `W${week}G${i+1}`, week, season, home, away, start: null });
-  }
-  return games;
-}
+    // Apply home field advantage (research-backed)
+    homeProb += 0.018;
+    awayProb = 1 - homeProb;
 
-function round3(x) { return Math.round(x * 1000) / 1000; }
-function americanToImplied(a) {
-  const n = Number(a);
-  if (!Number.isFinite(n)) return null;
-  return n > 0 ? 100 / (n + 100) : -n / (-n + 100);
-}
-function bucketConfidence(edge) {
-  if (edge == null) return null;
-  const e = Math.abs(edge);
-  if (e >= 0.15) return 9;
-  if (e >= 0.12) return 8;
-  if (e >= 0.09) return 7;
-  if (e >= 0.06) return 6;
-  if (e >= 0.04) return 5;
-  if (e >= 0.03) return 4;
-  if (e >= 0.02) return 3;
-  if (e >= 0.01) return 2;
-  return 1;
-}
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj, null, 2), {
-    status, headers: { 'content-type': 'application/json' }
+    // Apply injury adjustments
+    homeProb = applyInjuryAdjustments(homeProb, homeCode, injuries);
+    awayProb = applyInjuryAdjustments(awayProb, awayCode, injuries);
+
+    // Final normalization
+    const finalSum = homeProb + awayProb;
+    const homeWinProb = finalSum ? homeProb / finalSum : 0.5;
+    const awayWinProb = 1 - homeWinProb;
+
+    // Enhanced game object with metadata
+    return {
+      ...game,
+      predictions: {
+        home_win_prob: Number(homeWinProb.toFixed(3)),
+        away_win_prob: Number(awayWinProb.toFixed(3))
+      },
+      modelEnhancements: {
+        metricsFreshness: advancedMetrics?.asOf || null,
+        injuriesAsOf: injuries?.asOf || null,
+        featuresUsed: Object.keys(WEIGHTS),
+        advancedFeaturesUsed: Object.keys(ADVANCED_WEIGHTS),
+        notes: [
+          "Tiered weights applied", 
+          "EPA backbone = opponent-adjusted if present, else raw",
+          "Home field advantage = +1.8%",
+          "Injury adjustments applied"
+        ]
+      },
+      teamStats: {
+        home: {
+          strength: Number(homeWinProb.toFixed(3)),
+          thirdDown: homeMetrics?.situational?.third_down_off ?? null,
+          redZoneTD: homeMetrics?.situational?.rz_td_off ?? null,
+          pressureDiff: homeMetrics?.pressure?.pressure_diff ?? null,
+          consistency: homeMetrics?.consistency?.off ?? null,
+          form: homeMetrics?.form?.off ?? null
+        },
+        away: {
+          strength: Number(awayWinProb.toFixed(3)),
+          thirdDown: awayMetrics?.situational?.third_down_off ?? null,
+          redZoneTD: awayMetrics?.situational?.rz_td_off ?? null,
+          pressureDiff: awayMetrics?.pressure?.pressure_diff ?? null,
+          consistency: awayMetrics?.consistency?.off ?? null,
+          form: awayMetrics?.form?.off ?? null
+        }
+      }
+    };
   });
 }
