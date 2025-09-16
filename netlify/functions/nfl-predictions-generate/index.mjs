@@ -2,8 +2,6 @@
 // Adapted to use getStore-based helper (../_lib/blobs-nfl.js)
 import { nflBlobsGetJSON as nflGetJSON, nflBlobsPutJSON as nflSetJSON } from '../_lib/blobs-nfl.js';
 import { getWeekSchedule } from '../_lib/schedule-source.mjs';
-import { getWeatherImpact } from '../_lib/weather.mjs';
-import { travelImpact } from '../_lib/travel.mjs';
 
 // --- Team name → abbreviation map ---
 function getTeamAbbreviation(fullName) {
@@ -24,6 +22,16 @@ function getTeamAbbreviation(fullName) {
 }
 
 export default async (req, context) => {
+  // --- Debug hook: return teamForm data for a given team abbreviation ---
+  if (req.queryStringParameters?.debug) {
+    const { teamForm } = await loadTeamForm();
+    const teamKey = req.queryStringParameters.debug.toUpperCase();
+    return {
+      statusCode: 200,
+      body: JSON.stringify(teamForm.team_data?.[teamKey] || {}, null, 2)
+    };
+  }
+
   try {
     const url = new URL(req.url);
     const week = Number(url.searchParams.get('week')) || 3;   // default to week 3
@@ -92,22 +100,7 @@ export default async (req, context) => {
         confidence = bucketConfidence(modelEdge);
       }
 
-      
-      // === Weather & Travel enrichment ===
-      let weatherData = null, travelData = null;
-      try { weatherData = await getWeatherImpact({ home: game.home, away: game.away, start: game.start }); } catch {}
-      try { travelData = travelImpact(game.away, game.home); } catch {}
-
-      if (weatherData?.factors) factors.push(...weatherData.factors);
-      if (travelData?.factor) factors.push(travelData.factor);
-
-      let adjustedConfidence = confidence;
-      if (adjustedConfidence != null) {
-        if (weatherData?.confidenceAdj) adjustedConfidence += weatherData.confidenceAdj;
-        if (travelData?.confidenceAdj) adjustedConfidence += travelData.confidenceAdj;
-        adjustedConfidence = Math.max(1, Math.min(9, Math.round(adjustedConfidence)));
-      }
-return {
+      return {
         gameId: game.gameId,
         matchup: `${game.away} @ ${game.home}`,
         start: game.start ?? null,
@@ -118,10 +111,8 @@ return {
         marketProb: marketProb != null ? round3(marketProb) : null,
         modelEdge: modelEdge != null ? round3(modelEdge) : null,
         ml_home, ml_away,
-        confidence: (adjustedConfidence ?? confidence),
+        confidence,
         factors,
-        weather: weatherData,
-        travel: travelData,
         oddsSource: game.oddsSource || 'none',
         teamStats: {
           home: {
