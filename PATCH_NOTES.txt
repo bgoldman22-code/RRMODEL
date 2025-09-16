@@ -1,18 +1,11 @@
-Debug Logging Patch for Schedule Loader
+Rename Patch
 
-Modified:
-- netlify/functions/nfl-predictions-generate2/getRealScheduleForWeek.js
+- Removed: netlify/functions/nfl-predictions-generate (old broken version)
+- Renamed: netlify/functions/nfl-predictions-generate2 → netlify/functions/nfl-predictions-generate
 
-What it does:
-- Logs the schedule fetch URL, HTTP status, raw counts, and mapped counts.
-- Normalizes schedule from .matchups first, then falls back to .games/.schedule.
-- Uses getTeamAbbreviation() so team keys align with NFLVerse data.
-- Emits clear logs for fallback usage and errors.
-
-How to use:
-1) Unzip into your repo root.
-2) Commit & push.
-3) Clear cache & deploy in Netlify.
-4) Trigger:
-   /.netlify/functions/nfl-predictions-generate2?season=2025&week=3&force=1
-5) Check function logs in Netlify for lines starting with [sched].
+Deploy steps:
+1. Unzip into your repo root (RRMODEL-main33/).
+2. Commit and push changes.
+3. In Netlify, trigger "Clear cache and deploy site".
+4. Your working code will now be served at:
+   /.netlify/functions/nfl-predictions-generate
