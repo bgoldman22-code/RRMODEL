@@ -1,6 +1,9 @@
 // netlify/functions/_lib/blobs-nfl.js
-// Stable Netlify Blobs helper using getStore() — no context bindings required
+// getStore()-only helper (no context.blobs, no createClient)
 import { getStore } from '@netlify/blobs';
+
+export const HELPER_MODE = 'getStore';
+export const HELPER_VERSION = '2025-09-16T1'; // bump to invalidate cache & verify deploy
 
 const STORE_NAME = process.env.BLOBS_STORE_NFL || 'nfl-td';
 
@@ -13,7 +16,6 @@ export async function nflBlobsGetJSON(key, fallback = null) {
     const val = await nflStore().get(key, { type: 'json' });
     return (val === undefined || val === null) ? fallback : val;
   } catch (err) {
-    console.warn(`[blobs-nfl] getJSON failed for ${key}:`, err?.message || err);
     return fallback;
   }
 }
@@ -28,8 +30,7 @@ export async function nflBlobsGetText(key, fallback = null) {
   try {
     const val = await nflStore().get(key, { type: 'text' });
     return (val === undefined || val === null) ? fallback : val;
-  } catch (err) {
-    console.warn(`[blobs-nfl] getText failed for ${key}:`, err?.message || err);
+  } catch {
     return fallback;
   }
 }
