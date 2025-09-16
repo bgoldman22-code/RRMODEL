@@ -9,7 +9,16 @@ export const HELPER_VERSION = '1.0.0';
 // Get the appropriate blob store
 function getBlobStore() {
   const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-data';
-  return getStore(storeName);
+  const token = process.env.NETLIFY_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
+  
+  if (token) {
+    return getStore({
+      name: storeName,
+      token: token
+    });
+  } else {
+    return getStore(storeName);
+  }
 }
 
 // Legacy function names that your existing code expects
