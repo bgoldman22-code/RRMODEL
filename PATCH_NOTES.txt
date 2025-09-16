@@ -1,11 +1,21 @@
-Rename Patch
+Wire Weather/Travel Into Predictions
 
-- Removed: netlify/functions/nfl-predictions-generate (old broken version)
-- Renamed: netlify/functions/nfl-predictions-generate2 → netlify/functions/nfl-predictions-generate
+Updated:
+- netlify/functions/nfl-predictions-generate/index.mjs
 
-Deploy steps:
-1. Unzip into your repo root (RRMODEL-main33/).
-2. Commit and push changes.
-3. In Netlify, trigger "Clear cache and deploy site".
-4. Your working code will now be served at:
-   /.netlify/functions/nfl-predictions-generate
+Changes:
+- Import getWeatherImpact/travelImpact if missing
+- Enrich each row with:
+  * row.weather, row.travel
+  * factors += weather/travel tags
+  * confidence adjustments (supports moneylineConf 0..1 or confidence 1..9)
+
+Resilience:
+- Catches weather fetch errors/rate limits (returns null)
+- No crash if API key is missing; weatherData becomes null
+
+Deploy:
+1) Unzip into repo root.
+2) Commit & push.
+3) Netlify → Clear cache and deploy.
+4) Verify response rows include .weather/.travel/.factors and confidence updated.

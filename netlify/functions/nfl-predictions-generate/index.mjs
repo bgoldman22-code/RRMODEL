@@ -2,6 +2,8 @@
 // Adapted to use getStore-based helper (../_lib/blobs-nfl.js)
 import { nflBlobsGetJSON as nflGetJSON, nflBlobsPutJSON as nflSetJSON } from '../_lib/blobs-nfl.js';
 import { getWeekSchedule } from '../_lib/schedule-source.mjs';
+import { getWeatherImpact } from '../_lib/weather.mjs';
+import { travelImpact } from '../_lib/travel.mjs';
 
 // --- Team name → abbreviation map ---
 function getTeamAbbreviation(fullName) {
