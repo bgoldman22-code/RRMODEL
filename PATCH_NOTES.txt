@@ -1,16 +1,22 @@
-Build Error Fix Patch
+Combined Patch: Build Fix + Weather/Travel Integration
 
-1) Async map fix
-   - Converts `.map(game => { ... await ... })` to `await Promise.all(schedule.map(async (game) => { ... }))`
-   - Replaces trailing `.filter(Boolean)` with:
-       `}));`
-       `const filteredRows = rows.filter(Boolean);`
-   - Uses `filteredRows` for sorting and return.
-
-2) Missing exports in _lib/blobs.js
-   - Adds:
-       `export const nflStore = getStore({ name: process.env.BLOBS_STORE_NFL || 'nfl', siteID: process.env.NETLIFY_SITE_ID });`
-       `export function diagBlobsEnv() { return { BLOBS_STORE, BLOBS_STORE_NFL, NETLIFY_SITE_ID }; }`
+Updates:
+- netlify/functions/nfl-predictions-generate/index.mjs
+    * Ensures imports:
+        import { getWeatherImpact } from '../_lib/weather.mjs';
+        import { travelImpact } from '../_lib/travel.mjs';
+    * Converts sync map to:
+        const rows = await Promise.all(schedule.map(async (game) => { ... })));
+        const filteredRows = rows.filter(Boolean);
+    * Injects Weather & Travel enrichment inside the map callback
+        - calls getWeatherImpact(...) and travelImpact(...)
+        - pushes tags into factors
+        - computes adjustedConfidence (1..9 clamp)
+    * Returns { rows: filteredRows, ... }
+- netlify/functions/_lib/blobs.js
+    * Adds missing exports:
+        export const nflStore = getStore({...})
+        export function diagBlobsEnv() { ... }
 
 Deploy:
 1) Unzip into repo root.

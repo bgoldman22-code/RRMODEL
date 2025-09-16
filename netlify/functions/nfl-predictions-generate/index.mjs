@@ -2,6 +2,8 @@
 // Adapted to use getStore-based helper (../_lib/blobs-nfl.js)
 import { nflBlobsGetJSON as nflGetJSON, nflBlobsPutJSON as nflSetJSON } from '../_lib/blobs-nfl.js';
 import { getWeekSchedule } from '../_lib/schedule-source.mjs';
+import { getWeatherImpact } from '../_lib/weather.mjs';
+import { travelImpact } from '../_lib/travel.mjs';
 
 // --- Team name → abbreviation map ---
 function getTeamAbbreviation(fullName) {
@@ -90,7 +92,22 @@ export default async (req, context) => {
         confidence = bucketConfidence(modelEdge);
       }
 
-      return {
+      
+      // === Weather & Travel enrichment ===
+      let weatherData = null, travelData = null;
+      try { weatherData = await getWeatherImpact({ home: game.home, away: game.away, start: game.start }); } catch {}
+      try { travelData = travelImpact(game.away, game.home); } catch {}
+
+      if (Array.isArray(factors) && weatherData?.factors) factors.push(...weatherData.factors);
+      if (Array.isArray(factors) && travelData?.factor) factors.push(travelData.factor);
+
+      let adjustedConfidence = typeof confidence === 'number' ? confidence : null;
+      if (adjustedConfidence != null) {
+        if (weatherData?.confidenceAdj) adjustedConfidence += weatherData.confidenceAdj;
+        if (travelData?.confidenceAdj) adjustedConfidence += travelData.confidenceAdj;
+        adjustedConfidence = Math.max(1, Math.min(9, Math.round(adjustedConfidence)));
+      }
+return {
         gameId: game.gameId,
         matchup: `${game.away} @ ${game.home}`,
         start: game.start ?? null,
@@ -101,8 +118,10 @@ export default async (req, context) => {
         marketProb: marketProb != null ? round3(marketProb) : null,
         modelEdge: modelEdge != null ? round3(modelEdge) : null,
         ml_home, ml_away,
-        confidence,
+        confidence: (adjustedConfidence ?? confidence),
         factors,
+        weather: weatherData,
+        travel: travelData,
         oddsSource: game.oddsSource || 'none',
         teamStats: {
           home: {
