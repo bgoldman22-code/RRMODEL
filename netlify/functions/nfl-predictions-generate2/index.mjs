@@ -3,7 +3,7 @@
 import { nflBlobsGetJSON as nflGetJSON, nflBlobsPutJSON as nflSetJSON } from '../_lib/blobs-nfl.js';
 import { getWeekSchedule } from '../_lib/schedule-source.mjs';
 
-export const handler = async (req, context) => {
+export default async (req, context) => {
   try {
     const url = new URL(req.url);
     const week = Number(url.searchParams.get('week')) || 3;   // default to week 3
