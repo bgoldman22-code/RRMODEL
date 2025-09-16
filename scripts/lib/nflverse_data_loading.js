@@ -1,82 +1,64 @@
-// Standard NFLverse data loading implementation
-// Replace the generic import in etl-full.js
+// scripts/lib/nflverse_data_loading.js
+// Robust NFLverse loader with gzip handling, CSV parsing, retries, and timeouts.
 
-// Option 1: Using nfl-data-py equivalent (Python to JS)
-import fetch from 'node-fetch';
+import { setTimeout as sleep } from 'timers/promises';
+import zlib from 'zlib';
+import { parse } from 'csv-parse/sync';
 
-async function loadNFLversePBP(season) {
-  // NFLverse data is hosted on GitHub releases
-  const url = `https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_${season}.parquet`;
-  
+const DEFAULT_TIMEOUT_MS = 60_000;
+const MAX_RETRIES = 3;
+
+async function fetchWithTimeout(url, opts = {}, timeoutMs = DEFAULT_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    console.log(`Loading NFLverse PBP data for ${season}...`);
-    
-    // Option A: If you have parquet support
-    // const response = await fetch(url);
-    // const buffer = await response.arrayBuffer();
-    // const pbp = await readParquet(buffer);
-    
-    // Option B: Use CSV fallback (slower but more compatible)
-    const csvUrl = `https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_${season}.csv.gz`;
-    const response = await fetch(csvUrl);
-    const csvData = await response.text();
-    
-    // Parse CSV data
-    const pbp = parseNFLverseCSV(csvData);
-    
-    console.log(`Loaded ${pbp.length} plays for ${season}`);
-    return pbp;
-    
-  } catch (error) {
-    console.error(`Failed to load NFLverse data for ${season}:`, error);
-    throw error;
+    const res = await fetch(url, { ...opts, signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(id);
   }
 }
 
-function parseNFLverseCSV(csvData) {
-  // Using a CSV parser (you'd need to install csv-parser or similar)
-  const lines = csvData.split('\n');
-  const headers = lines[0].split(',');
-  
-  return lines.slice(1).map(line => {
-    const values = line.split(',');
-    const play = {};
-    
-    headers.forEach((header, index) => {
-      play[header.trim()] = values[index]?.trim();
-    });
-    
-    return play;
-  }).filter(play => play.play_id); // Remove empty rows
-}
-
-// Option 2: Local file loading (if you download files locally)
-import fs from 'fs';
-import path from 'path';
-
-async function loadLocalNFLversePBP(season) {
-  const filePath = path.join('./data', `nfl_pbp_${season}.csv`);
-  
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`PBP file not found: ${filePath}`);
+async function download(url, attempt = 1) {
+  try {
+    const res = await fetchWithTimeout(url, {}, DEFAULT_TIMEOUT_MS);
+    if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+    const buf = Buffer.from(await res.arrayBuffer());
+    return buf;
+  } catch (err) {
+    if (attempt >= MAX_RETRIES) throw err;
+    const backoff = 500 * (2 ** (attempt - 1));
+    console.warn(`[loader] Retry ${attempt} for ${url} after ${backoff}ms: ${err.message}`);
+    await sleep(backoff);
+    return download(url, attempt + 1);
   }
-  
-  const csvData = fs.readFileSync(filePath, 'utf8');
-  return parseNFLverseCSV(csvData);
 }
 
-// Option 3: DuckDB implementation (if you use DuckDB)
-async function loadDuckDBPBP(season) {
-  // Assumes you have DuckDB setup
-  const query = `
-    SELECT * FROM read_parquet('https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_${season}.parquet')
-    WHERE season = ${season}
-  `;
-  
-  // Execute query with your DuckDB connection
-  // const result = await duckdb.execute(query);
-  // return result;
+function parseCSV(buffer) {
+  // Handle gzip if needed
+  let raw;
+  try {
+    raw = zlib.gunzipSync(buffer);
+  } catch {
+    raw = buffer; // not gzipped
+  }
+  const text = raw.toString('utf8');
+  // Parse with csv-parse (handles quotes/commas/newlines robustly)
+  const records = parse(text, {
+    columns: true,
+    skip_empty_lines: true
+  });
+  return records;
 }
 
-// Export the appropriate loader for your setup
-export { loadNFLversePBP, loadLocalNFLversePBP, loadDuckDBPBP };
+export async function loadNFLversePBP(season) {
+  // Prefer CSV.gz path for widest compatibility
+  const csvUrl = `https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_${season}.csv.gz`;
+  console.log(`[loader] Downloading PBP CSV for ${season}`);
+  const buf = await download(csvUrl);
+  const pbp = parseCSV(buf);
+  console.log(`[loader] Parsed ${pbp.length} plays for ${season}`);
+  return pbp;
+}
+
+// Optional local/DuckDB loaders can be added similarly to earlier stubs if needed.
