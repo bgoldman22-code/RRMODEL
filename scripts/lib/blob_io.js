@@ -12,13 +12,16 @@ export async function writeToBlobStorage(blobPath, data) {
   
   if (token && siteID) {
     try {
+      // Use the same store name that your functions are configured to read from
+      const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td';
+      
       const store = getStore({
-        name: 'nfl-data',
+        name: storeName,
         siteID: siteID,
         token: token
       });
       await store.set(blobPath, json, { contentType: 'application/json' });
-      console.log(`[blob_io] Wrote to Netlify Blobs: ${blobPath}`);
+      console.log(`[blob_io] Wrote to Netlify Blobs (${storeName}): ${blobPath}`);
       return;
     } catch (error) {
       console.warn(`[blob_io] Blob write failed: ${error.message}`);
