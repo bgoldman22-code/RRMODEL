@@ -1,20 +1,16 @@
-Patch: Switch ESM export to default for Netlify
+Team Abbreviation Mapping Patch
 
-File modified:
+Modified files:
 - netlify/functions/nfl-predictions-generate2/index.mjs
+  - Ensured ESM default export (if needed)
+  - Added getTeamAbbreviation(fullName) mapping helper
 
-Change:
-- Replace `export const handler = async (...) =>` with `export default async (...) =>`
+- netlify/functions/nfl-predictions-generate2/getRealScheduleForWeek.js
+  - Normalizes schedule output: maps full team names to abbreviations using getTeamAbbreviation
+  - Prefers matchups mapping
 
-Why:
-- Your environment expects ESM default exports for functions.
-- This resolves "handler not found" errors where Netlify fails to detect the handler.
-
-Deploy steps:
-1) Unzip into repo root (preserving path).
-2) Commit and push.
-3) Trigger "Clear cache and deploy" on Netlify.
-4) Test:
-   /.netlify/functions/nfl-predictions-generate2?season=2025&week=3
-
-Changed: True
+Deploy:
+1) Unzip at repo root so paths match.
+2) Commit & push.
+3) Clear cache & deploy on Netlify.
+4) Test: /.netlify/functions/nfl-predictions-generate2?season=2025&week=3&force=1
