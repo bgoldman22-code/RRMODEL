@@ -96,6 +96,7 @@ jobs:
       - name: Run Full ETL Pipeline
         env:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
         run: |
           echo "Starting Full ETL Pipeline at $(date)"
@@ -136,6 +137,7 @@ jobs:
       - name: Run Injury ETL
         env:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
         run: |
           echo "Starting Injury ETL at $(date)"
