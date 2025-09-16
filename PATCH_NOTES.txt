@@ -1,21 +1,15 @@
-Wire Weather/Travel Into Predictions
+Wire Weather/Travel: actual calls + adjusted confidence
 
-Updated:
-- netlify/functions/nfl-predictions-generate/index.mjs
-
-Changes:
-- Import getWeatherImpact/travelImpact if missing
-- Enrich each row with:
-  * row.weather, row.travel
-  * factors += weather/travel tags
-  * confidence adjustments (supports moneylineConf 0..1 or confidence 1..9)
-
-Resilience:
-- Catches weather fetch errors/rate limits (returns null)
-- No crash if API key is missing; weatherData becomes null
+- Updated netlify/functions/nfl-predictions-generate/index.mjs
+  * Imports weather/travel modules
+  * Inside prediction generation (.map over schedule):
+      - Calls getWeatherImpact and travelImpact
+      - Pushes weather/travel tags into factors
+      - Computes adjustedConfidence (clamped 1..9)
+      - Returns weather/travel fields on each row
 
 Deploy:
-1) Unzip into repo root.
-2) Commit & push.
-3) Netlify → Clear cache and deploy.
-4) Verify response rows include .weather/.travel/.factors and confidence updated.
+1) Unzip into repo root
+2) Commit & push
+3) Netlify → Clear cache and deploy
+4) Verify rows now include factors+weather+travel and confidence reflects adjustments
