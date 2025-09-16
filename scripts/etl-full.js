@@ -1,14 +1,15 @@
 // scripts/etl-full.js
 // Skeleton showing where each advanced metric comes from NFLverse PBP data
 
-import nflverse from 'nflverse'; // or your NFLverse import
+import { loadNFLversePBP } from './lib/nflverse_data_loading.js';
+import { calculateUsageMetrics, calculateDefenseMetrics, calculateScriptMetrics, calculateEnvironmentalMetrics } from './lib/metrics_helpers.js';
 import { writeFileSync } from 'fs';
 
 async function generateAdvancedMetrics(season = 2024) {
   console.log(`Generating advanced metrics for ${season} season...`);
   
   // Load NFLverse play-by-play data
-  const pbp = await nflverse.loadPBP({ season });
+  const pbp = await loadNFLversePBP(season);
   const teams = [...new Set(pbp.map(play => play.posteam).filter(Boolean))];
   
   // Initialize output structure
