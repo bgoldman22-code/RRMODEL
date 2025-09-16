@@ -1,5 +1,169 @@
 // netlify/functions/nfl-predictions-generate/index.mjs
+// Adapted to use getStore-based helper (../_lib/blobs-nfl.js)
 import { nflBlobsGetJSON as nflGetJSON, nflBlobsPutJSON as nflSetJSON } from '../_lib/blobs-nfl.js';
 import { getWeekSchedule } from '../_lib/schedule-source.mjs';
 
-// ... rest of your nfl-predictions-generate code unchanged ...
+export const handler = async (req, context) => {
+  try {
+    const url = new URL(req.url);
+    const week = Number(url.searchParams.get('week')) || null;
+    const season = Number(url.searchParams.get('season')) || null;
+    const force = url.searchParams.get('force') === '1';
+
+    // 1) Load NFLVerse team form data (from blobs, else from static file then cache)
+    let teamForm = await nflGetJSON('team_form.json', null);
+    const meta = { teamForm: { source: teamForm ? 'blobs' : 'missing' } };
+
+    if (!teamForm || force) {
+      try {
+        const response = await fetch((process.env.URL || '') + '/nflverse-team-form.json');
+        if (response.ok) {
+          teamForm = await response.json();
+          await nflSetJSON('team_form.json', teamForm); // Cache to blobs
+          meta.teamForm.source = 'nflverse_file';
+        }
+      } catch (e) {
+        console.warn('Failed to load nflverse-team-form.json:', e);
+      }
+    }
+
+    if (!teamForm || !teamForm.team_data) {
+      return json({
+        error: 'No team form data available',
+        hint: 'Ensure /nflverse-team-form.json exists or run teamform-refresh'
+      }, 400);
+    }
+
+    // 2) Get real schedule data via your schedule bridge (falls back internally if needed)
+    const games = await getRealScheduleForWeek(week, season, teamForm.team_data);
+    const schedule = await getWeekSchedule({ week, season, games });
+
+    // 3) Generate predictions using EPA + form
+    const rows = schedule.map(game => {
+      const homeTeam = teamForm.team_data[game.home];
+      const awayTeam = teamForm.team_data[game.away];
+      if (!homeTeam || !awayTeam) return null;
+
+      const homeStrength = calculateTeamStrength(homeTeam, true);
+      const awayStrength = calculateTeamStrength(awayTeam, false);
+      const strengthDiff = homeStrength - awayStrength;
+
+      let homeProb = 0.5 + (strengthDiff * 0.35);
+      const factors = [];
+      if ((homeTeam.form || 0) > 0.05) factors.push('home_hot');
+      if ((awayTeam.form || 0) > 0.05) factors.push('away_hot');
+      if ((homeTeam.form || 0) < -0.05) factors.push('home_cold');
+      if ((awayTeam.form || 0) < -0.05) factors.push('away_cold');
+
+      homeProb = Math.max(0.15, Math.min(0.85, homeProb));
+      const awayProb = 1 - homeProb;
+
+      const pick = homeProb >= 0.5 ? game.home : game.away;
+      const modelPickProb = homeProb >= 0.5 ? homeProb : awayProb;
+
+      let ml_home = null, ml_away = null, marketProb = null, modelEdge = null, confidence = null;
+      if (game.odds?.ml_home != null && game.odds?.ml_away != null) {
+        ml_home = game.odds.ml_home;
+        ml_away = game.odds.ml_away;
+        const marketHome = americanToImplied(ml_home);
+        const marketAway = americanToImplied(ml_away);
+        marketProb = pick === game.home ? marketHome : marketAway;
+        modelEdge = modelPickProb - marketProb;
+        confidence = bucketConfidence(modelEdge);
+      }
+
+      return {
+        gameId: game.gameId,
+        matchup: `${game.away} @ ${game.home}`,
+        start: game.start ?? null,
+        pick,
+        homeProb: round3(homeProb),
+        awayProb: round3(awayProb),
+        modelPickProb: round3(modelPickProb),
+        marketProb: marketProb != null ? round3(marketProb) : null,
+        modelEdge: modelEdge != null ? round3(modelEdge) : null,
+        ml_home, ml_away,
+        confidence,
+        factors,
+        oddsSource: game.oddsSource || 'none',
+        teamStats: {
+          home: {
+            epa: round3(homeTeam.offense?.epa_per_play || 0),
+            form: round3(homeTeam.form || 0),
+            strength: round3(homeStrength)
+          },
+          away: {
+            epa: round3(awayTeam.offense?.epa_per_play || 0),
+            form: round3(awayTeam.form || 0),
+            strength: round3(awayStrength)
+          }
+        }
+      };
+    }).filter(Boolean);
+
+    rows.sort((a, b) => (b.modelEdge || 0) - (a.modelEdge || 0));
+
+    return json({
+      meta: { ...meta, week, season, games: rows.length, updatedAt: new Date().toISOString(), model: 'nflverse_epa_v1' },
+      rows
+    });
+  } catch (err) {
+    return json({ error: String(err?.message || err) }, 500);
+  }
+};
+
+function calculateTeamStrength(teamData, isHome) {
+  const offEPA = teamData.offense?.epa_per_play || 0;
+  const defEPA = -(teamData.defense?.epa_allowed_per_play || 0);
+  const recentForm = teamData.form || 0;
+  let strength = 0.5 + (offEPA * 0.4) + (defEPA * 0.4) + (recentForm * 0.2);
+  if (isHome) strength += 0.025;
+  return Math.max(0.1, Math.min(0.9, strength));
+}
+
+async function getRealScheduleForWeek(week, season, teamData) {
+  try {
+    const scheduleUrl = process.env.NFL_SCHEDULE_URL || 'nfl-schedule-get';
+    const response = await fetch(`/.netlify/functions/${scheduleUrl}?week=${week}&season=${season}`);
+    if (response.ok) {
+      const data = await response.json();
+      return data.games || data.schedule || data.matchups || [];
+    }
+  } catch (e) {
+    console.warn('Failed to fetch real schedule:', e);
+  }
+
+  // Fallback mini generator (kept minimal)
+  const teams = Object.keys(teamData || {});
+  const games = [];
+  for (let i = 0; i < Math.min(16, Math.floor(teams.length / 2)); i++) {
+    const home = teams[i * 2], away = teams[i * 2 + 1];
+    if (home && away) games.push({ gameId: `W${week}G${i+1}`, week, season, home, away, start: null });
+  }
+  return games;
+}
+
+function round3(x) { return Math.round(x * 1000) / 1000; }
+function americanToImplied(a) {
+  const n = Number(a);
+  if (!Number.isFinite(n)) return null;
+  return n > 0 ? 100 / (n + 100) : -n / (-n + 100);
+}
+function bucketConfidence(edge) {
+  if (edge == null) return null;
+  const e = Math.abs(edge);
+  if (e >= 0.15) return 9;
+  if (e >= 0.12) return 8;
+  if (e >= 0.09) return 7;
+  if (e >= 0.06) return 6;
+  if (e >= 0.04) return 5;
+  if (e >= 0.03) return 4;
+  if (e >= 0.02) return 3;
+  if (e >= 0.01) return 2;
+  return 1;
+}
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj, null, 2), {
+    status, headers: { 'content-type': 'application/json' }
+  });
+}
