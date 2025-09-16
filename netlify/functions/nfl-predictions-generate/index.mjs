@@ -153,13 +153,20 @@ function applyInjuryAdjustments(probability, teamCode, injuries) {
 
 // Main prediction function
 async function generateAdvancedPredictions(games, season) {
+  console.log('Attempting to load advanced metrics...');
+  
   // Load advanced metrics and injury data
   let advancedMetrics = null;
   let injuries = null;
   
   try {
     advancedMetrics = await loadAdvancedMetrics(season);
+    console.log('Raw advanced metrics result:', advancedMetrics);
+    console.log('Advanced metrics type:', typeof advancedMetrics);
+    console.log('Advanced metrics keys:', advancedMetrics ? Object.keys(advancedMetrics) : 'null');
+    
     injuries = await loadInjuries();
+    console.log('Injuries loaded:', !!injuries);
   } catch (error) {
     console.warn('Advanced metrics loading failed:', error);
     // Will fall back to basic prediction below
