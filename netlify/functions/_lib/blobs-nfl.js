@@ -6,17 +6,21 @@ import { getStore } from '@netlify/blobs';
 export const HELPER_MODE = 'production';
 export const HELPER_VERSION = '1.0.0';
 
-// Get the appropriate blob store
+// Get the appropriate blob store - FIXED to match ETL configuration
 function getBlobStore() {
   const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-data';
   const token = process.env.NETLIFY_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
+  const siteID = process.env.NETLIFY_SITE_ID;
   
-  if (token) {
+  // Use explicit configuration if we have both token and siteID (same as ETL)
+  if (token && siteID) {
     return getStore({
       name: storeName,
+      siteID: siteID,
       token: token
     });
   } else {
+    // Fallback to simple store name
     return getStore(storeName);
   }
 }
