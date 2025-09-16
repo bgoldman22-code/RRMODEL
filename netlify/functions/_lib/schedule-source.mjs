@@ -1,7 +1,7 @@
 // Schedule source that reads odds from Blobs using either gameId OR team pair key (HOME-AWAY).
 // This lets us join odds even if your schedule uses different gameIds than the odds cache.
 
-import { blobsGetJSON } from './blobs.js';
+import { nflBlobsGetJSON as blobsGetJSON } from './blobs-nfl.js';
 
 function pairKey(home, away) {
   return `${home}-${away}`;
