@@ -1,30 +1,49 @@
-// NFL Blobs helper using Netlify's official getStore() API.
-// Reads the store name from BLOBS_STORE_NFL (default 'nfl-td').
-// No context.blobs, no createClient.
+// netlify/functions/_lib/blobs-nfl.js
+// Stable Netlify Blobs helper using getStore() — no context bindings required
 import { getStore } from '@netlify/blobs';
 
+const STORE_NAME = process.env.BLOBS_STORE_NFL || 'nfl-td';
+
 function nflStore() {
-  const name = process.env.BLOBS_STORE_NFL || 'nfl-td';
-  return getStore(name);
+  return getStore(STORE_NAME);
 }
 
 export async function nflBlobsGetJSON(key, fallback = null) {
-  const store = nflStore();
-  if (typeof store.getJSON === 'function') {
-    const val = await store.getJSON(key);
+  try {
+    const val = await nflStore().get(key, { type: 'json' });
     return (val === undefined || val === null) ? fallback : val;
+  } catch (err) {
+    console.warn(`[blobs-nfl] getJSON failed for ${key}:`, err?.message || err);
+    return fallback;
   }
-  const raw = await store.get(key);
-  if (raw == null) return fallback;
-  try { return JSON.parse(raw); } catch { return fallback; }
 }
 
 export async function nflBlobsPutJSON(key, obj) {
-  const store = nflStore();
-  if (typeof store.setJSON === 'function') {
-    await store.setJSON(key, obj);
-  } else {
-    await store.set(key, JSON.stringify(obj), { contentType: 'application/json' });
+  const body = JSON.stringify(obj);
+  await nflStore().set(key, body, { contentType: 'application/json; charset=utf-8' });
+  return { key, bytes: body.length };
+}
+
+export async function nflBlobsGetText(key, fallback = null) {
+  try {
+    const val = await nflStore().get(key, { type: 'text' });
+    return (val === undefined || val === null) ? fallback : val;
+  } catch (err) {
+    console.warn(`[blobs-nfl] getText failed for ${key}:`, err?.message || err);
+    return fallback;
   }
-  return { key };
+}
+
+export async function nflBlobsPutText(key, text) {
+  await nflStore().set(key, text, { contentType: 'text/plain; charset=utf-8' });
+  return { key, bytes: text.length };
+}
+
+export async function nflBlobsDelete(key) {
+  try {
+    await nflStore().delete(key);
+    return { key, deleted: true };
+  } catch (err) {
+    return { key, deleted: false, error: String(err?.message || err) };
+  }
 }
