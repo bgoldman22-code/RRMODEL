@@ -89,14 +89,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # Removed cache line
+          cache: 'npm'
           
       - name: Install dependencies
-        run: npm install  # Changed from npm ci to npm install
+        run: npm ci
           
       - name: Run Full ETL Pipeline
         env:
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
           ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
         run: |
           echo "Starting Full ETL Pipeline at $(date)"
@@ -130,14 +130,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # Removed cache line
+          cache: 'npm'
           
       - name: Install dependencies
-        run: npm install  # Changed from npm ci to npm install
+        run: npm ci
           
       - name: Run Injury ETL
         env:
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
           ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
         run: |
           echo "Starting Injury ETL at $(date)"
