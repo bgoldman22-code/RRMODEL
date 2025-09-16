@@ -8,7 +8,7 @@ export async function getRealScheduleForWeek(week, season, teamData) {
     const response = await fetch(`${baseUrl}/.netlify/functions/${scheduleUrl}?week=${week}&season=${season}`);
     if (response.ok) {
       const data = await response.json();
-      return data.games || data.schedule || data.matchups || [];
+      return data.matchups || data.games || data.schedule || [];
     }
   } catch (e) {
     console.warn('[nfl-predictions] schedule bridge failed, using fallback:', e);

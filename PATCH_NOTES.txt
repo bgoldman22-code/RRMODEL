@@ -1,18 +1,22 @@
-PATCH NOTES - NFL Blobs Fix
+NFL Predictions Generate Fix Patch
 
-This patch does four things:
-1. Pins @netlify/blobs to 7.2.0 (known-good with Netlify Functions)
-2. Removes @netlify/blobs from external_node_modules so esbuild bundles it
-3. Adds version-agnostic helpers for Blobs (CJS + ESM)
-4. Adds a minimal health-blobs-min function for diagnostics
+Changes applied:
+- Removed netlify/functions/nfl-predictions-generate/index.cjs: True
+- Prioritized `data.matchups` in schedule resolution lines where found.
+  Modified files:
+{
+  "/mnt/data/repo_extract/RRMODEL-main33/netlify/functions/nfl-predictions-generate/getRealScheduleForWeek.js": {
+    "changed": true
+  },
+  "/mnt/data/repo_extract/RRMODEL-main33/netlify/functions/nfl-predictions-generate/schedule-source.mjs": {
+    "changed": false
+  },
+  "/mnt/data/repo_extract/RRMODEL-main33/netlify/functions/_lib/schedule-source.mjs": {
+    "changed": false
+  }
+}
 
-How to Apply:
-1. Unzip into your repo root (preserve paths)
-2. Commit changes to GitHub
-3. In Netlify, trigger a 'Clear cache and deploy site'
-4. Test at /.netlify/functions/health-blobs-min
-
-Sanity Check:
-- If working, you'll see {"ok":true,...,"tests":[{"step":"write-read","ok":true}]}.
-- If failing, it will show {"ok":false,...}.
-
+Deploy notes:
+1) Delete `netlify/functions/nfl-predictions-generate/index.cjs` from your repo if it still exists.
+2) Ensure `index.mjs` is the only entrypoint in that folder.
+3) Verify your schedule endpoint returns `matchups` (array). The code now prefers `matchups` > `games` > `schedule`.
