@@ -1,14 +1,43 @@
 // netlify/functions/_lib/blobs-nfl.js
 
-export async function readBlobJSON(path) {
-  // Replace with your existing blob get wrapper
+import { getStore } from '@netlify/blobs';
+
+// Get the appropriate blob store
+function getBlobStore() {
+  const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-data';
+  return getStore(storeName);
+}
+
+// Legacy function names that your existing code expects
+export async function nflBlobsGetJSON(path) {
   try {
-    const res = await nflBlobsGetJSON(path); // Your existing function
-    return res || null;
+    const store = getBlobStore();
+    const blob = await store.get(path);
+    if (!blob) return null;
+    
+    const text = await blob.text();
+    return JSON.parse(text);
   } catch (error) {
     console.warn(`Failed to read blob at ${path}:`, error);
     return null;
   }
+}
+
+export async function nflBlobsPutJSON(path, data) {
+  try {
+    const store = getBlobStore();
+    const json = JSON.stringify(data);
+    await store.set(path, json, { contentType: 'application/json' });
+    return true;
+  } catch (error) {
+    console.error(`Failed to write blob at ${path}:`, error);
+    throw error;
+  }
+}
+
+// New function names for the advanced metrics system
+export async function readBlobJSON(path) {
+  return await nflBlobsGetJSON(path);
 }
 
 export async function loadAdvancedMetrics(season) {
