@@ -1,4 +1,6 @@
-// NFL-specific Blobs helper using Netlify's official API: getStore().
+// NFL Blobs helper using Netlify's official getStore() API.
+// Reads the store name from BLOBS_STORE_NFL (default 'nfl-td').
+// No context.blobs, no createClient.
 import { getStore } from '@netlify/blobs';
 
 function nflStore() {
