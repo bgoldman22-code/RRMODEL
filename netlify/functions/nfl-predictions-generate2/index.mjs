@@ -1,4 +1,4 @@
-// netlify/functions/nfl-predictions-generate/index.mjs
+// netlify/functions/nfl-predictions-generate2/index.mjs
 // Adapted to use getStore-based helper (../_lib/blobs-nfl.js)
 import { nflBlobsGetJSON as nflGetJSON, nflBlobsPutJSON as nflSetJSON } from '../_lib/blobs-nfl.js';
 import { getWeekSchedule } from '../_lib/schedule-source.mjs';
@@ -142,11 +142,24 @@ function calculateTeamStrength(teamData, isHome) {
 async function getRealScheduleForWeek(week, season, teamData) {
   try {
     const scheduleUrl = process.env.NFL_SCHEDULE_URL || 'nfl-schedule-get';
-    const baseUrl = process.env.URL || 'https://bgroundrobin.com'; // absolute base
+    const baseUrl = process.env.URL || 'https://bgroundrobin.com';
     const response = await fetch(`${baseUrl}/.netlify/functions/${scheduleUrl}?week=${week}&season=${season}`);
+    
     if (response.ok) {
       const data = await response.json();
-      return data.games || data.schedule || data.matchups || [];
+      
+      // FIXED: Check data.matchups FIRST since that's what your endpoint returns
+      const rawGames = data.matchups || data.games || data.schedule || [];
+      
+      // Transform the raw games to match your expected format
+      return rawGames.map(game => ({
+        gameId: game.id || game.gameId || `${game.homeTeam || game.home}-${game.awayTeam || game.away}`,
+        home: getTeamAbbreviation(game.homeTeam || game.home),
+        away: getTeamAbbreviation(game.awayTeam || game.away), 
+        start: game.kickoff || game.start || null,
+        week,
+        season
+      }));
     }
   } catch (e) {
     console.warn('Failed to fetch real schedule:', e);
