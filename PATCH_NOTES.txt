@@ -1,16 +1,18 @@
-Team Abbreviation Mapping Patch
+Debug Logging Patch for Schedule Loader
 
-Modified files:
-- netlify/functions/nfl-predictions-generate2/index.mjs
-  - Ensured ESM default export (if needed)
-  - Added getTeamAbbreviation(fullName) mapping helper
-
+Modified:
 - netlify/functions/nfl-predictions-generate2/getRealScheduleForWeek.js
-  - Normalizes schedule output: maps full team names to abbreviations using getTeamAbbreviation
-  - Prefers matchups mapping
 
-Deploy:
-1) Unzip at repo root so paths match.
+What it does:
+- Logs the schedule fetch URL, HTTP status, raw counts, and mapped counts.
+- Normalizes schedule from .matchups first, then falls back to .games/.schedule.
+- Uses getTeamAbbreviation() so team keys align with NFLVerse data.
+- Emits clear logs for fallback usage and errors.
+
+How to use:
+1) Unzip into your repo root.
 2) Commit & push.
-3) Clear cache & deploy on Netlify.
-4) Test: /.netlify/functions/nfl-predictions-generate2?season=2025&week=3&force=1
+3) Clear cache & deploy in Netlify.
+4) Trigger:
+   /.netlify/functions/nfl-predictions-generate2?season=2025&week=3&force=1
+5) Check function logs in Netlify for lines starting with [sched].
