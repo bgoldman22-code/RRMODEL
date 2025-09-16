@@ -2,6 +2,10 @@
 
 import { getStore } from '@netlify/blobs';
 
+// Constants that some functions expect
+export const HELPER_MODE = 'production';
+export const HELPER_VERSION = '1.0.0';
+
 // Get the appropriate blob store
 function getBlobStore() {
   const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-data';
@@ -32,6 +36,17 @@ export async function nflBlobsPutJSON(path, data) {
   } catch (error) {
     console.error(`Failed to write blob at ${path}:`, error);
     throw error;
+  }
+}
+
+export async function nflBlobsDelete(path) {
+  try {
+    const store = getBlobStore();
+    await store.delete(path);
+    return true;
+  } catch (error) {
+    console.warn(`Failed to delete blob at ${path}:`, error);
+    return false;
   }
 }
 
