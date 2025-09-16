@@ -7,9 +7,16 @@ export async function writeToBlobStorage(blobPath, data) {
   const json = JSON.stringify(data);
   
   // Try Netlify Blobs if we have a token
-  if (process.env.NETLIFY_TOKEN || process.env.NETLIFY_BLOBS_TOKEN) {
+  const token = process.env.NETLIFY_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
+  const siteID = process.env.NETLIFY_SITE_ID;
+  
+  if (token && siteID) {
     try {
-      const store = getStore('nfl-data');
+      const store = getStore({
+        name: 'nfl-data',
+        siteID: siteID,
+        token: token
+      });
       await store.set(blobPath, json, { contentType: 'application/json' });
       console.log(`[blob_io] Wrote to Netlify Blobs: ${blobPath}`);
       return;
