@@ -1,14 +1,35 @@
 // netlify/functions/test-blobs/index.mjs
-import { nflBlobsGetJSON } from '../_lib/blobs-nfl.js';
+import { getStore } from '@netlify/blobs';
 
 export default async (request, context) => {
   try {
-    const data = await nflBlobsGetJSON('nfl/epa/latest.json');
+    const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-data';
+    const token = process.env.NETLIFY_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
+    const siteID = process.env.NETLIFY_SITE_ID;
+    
+    console.log('Debug info:', { storeName, hasToken: !!token, hasSiteID: !!siteID });
+    
+    let store;
+    if (token && siteID) {
+      store = getStore({
+        name: storeName,
+        siteID: siteID,
+        token: token
+      });
+    } else {
+      store = getStore(storeName);
+    }
+    
+    const data = await store.get('nfl/epa/latest.json');
+    
     return new Response(JSON.stringify({
       success: true,
       hasData: !!data,
-      dataKeys: data ? Object.keys(data) : null,
-      sampleData: data ? { version: data.version, asOf: data.asOf } : null
+      storeName: storeName,
+      hasToken: !!token,
+      hasSiteID: !!siteID,
+      configUsed: token && siteID ? 'explicit' : 'auto',
+      dataKeys: data ? Object.keys(JSON.parse(await data.text())) : null
     }), {
       headers: { 'Content-Type': 'application/json' }
     });
