@@ -1,5 +1,4 @@
 // netlify/functions/nfl-predictions-generate/index.mjs
-// Add these imports at the top
 
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics } from '../_lib/blobs-nfl.js';
 
@@ -152,17 +151,42 @@ function applyInjuryAdjustments(probability, teamCode, injuries) {
   return clamp(probability + delta, 0.05, 0.95);
 }
 
-// Main prediction function (replace your existing logic)
-export async function generateAdvancedPredictions(games, season) {
+// Main prediction function
+async function generateAdvancedPredictions(games, season) {
   // Load advanced metrics and injury data
-  const advancedMetrics = await loadAdvancedMetrics(season);
-  const injuries = await loadInjuries();
+  let advancedMetrics = null;
+  let injuries = null;
+  
+  try {
+    advancedMetrics = await loadAdvancedMetrics(season);
+    injuries = await loadInjuries();
+  } catch (error) {
+    console.warn('Advanced metrics loading failed:', error);
+    // Will fall back to basic prediction below
+  }
 
   const validMetrics = validateAdvancedMetrics(advancedMetrics);
   
   if (!validMetrics) {
     console.warn('Advanced metrics not available or invalid, falling back to basic prediction');
-    // Return basic predictions or handle gracefully
+    // Return basic predictions structure
+    return games.map(game => ({
+      ...game,
+      predictions: {
+        home_win_prob: 0.5,
+        away_win_prob: 0.5
+      },
+      modelEnhancements: {
+        metricsFreshness: null,
+        injuriesAsOf: null,
+        featuresUsed: [],
+        notes: ["Advanced metrics not available - using fallback"]
+      },
+      teamStats: {
+        home: { strength: 0.5 },
+        away: { strength: 0.5 }
+      }
+    }));
   }
 
   const league = advancedMetrics?.league || { means: {}, stds: {} };
@@ -190,9 +214,11 @@ export async function generateAdvancedPredictions(games, season) {
     homeProb += 0.018;
     awayProb = 1 - homeProb;
 
-    // Apply injury adjustments
-    homeProb = applyInjuryAdjustments(homeProb, homeCode, injuries);
-    awayProb = applyInjuryAdjustments(awayProb, awayCode, injuries);
+    // Apply injury adjustments if injury data is available
+    if (injuries) {
+      homeProb = applyInjuryAdjustments(homeProb, homeCode, injuries);
+      awayProb = applyInjuryAdjustments(awayProb, awayCode, injuries);
+    }
 
     // Final normalization
     const finalSum = homeProb + awayProb;
@@ -239,3 +265,65 @@ export async function generateAdvancedPredictions(games, season) {
     };
   });
 }
+
+// Netlify Function Handler
+export default async (request, context) => {
+  try {
+    // Handle CORS preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      });
+    }
+
+    // Parse request for games data
+    let games = [];
+    let season = '2024';
+    
+    if (request.method === 'POST') {
+      const body = await request.json();
+      games = body.games || [];
+      season = body.season || '2024';
+    } else if (request.method === 'GET') {
+      const url = new URL(request.url);
+      season = url.searchParams.get('season') || '2024';
+      
+      // For GET requests, you might need to load games from another source
+      // For now, return empty array or sample data
+      games = []; // You'll need to implement game loading for GET requests
+    }
+
+    console.log(`Processing ${games.length} games for season ${season}`);
+    
+    // Call your advanced prediction function
+    const predictions = await generateAdvancedPredictions(games, season);
+    
+    return new Response(JSON.stringify(predictions), {
+      status: 200,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
+    
+  } catch (error) {
+    console.error('Prediction function error:', error);
+    
+    return new Response(JSON.stringify({
+      error: 'Prediction generation failed',
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    }), {
+      status: 500,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
+  }
+};
