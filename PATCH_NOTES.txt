@@ -1,22 +1,19 @@
-NFL Predictions Generate Fix Patch
+Rename Test Patch: nfl-predictions-generate -> nfl-predictions-generate2
 
-Changes applied:
-- Removed netlify/functions/nfl-predictions-generate/index.cjs: True
-- Prioritized `data.matchups` in schedule resolution lines where found.
-  Modified files:
-{
-  "/mnt/data/repo_extract/RRMODEL-main33/netlify/functions/nfl-predictions-generate/getRealScheduleForWeek.js": {
-    "changed": true
-  },
-  "/mnt/data/repo_extract/RRMODEL-main33/netlify/functions/nfl-predictions-generate/schedule-source.mjs": {
-    "changed": false
-  },
-  "/mnt/data/repo_extract/RRMODEL-main33/netlify/functions/_lib/schedule-source.mjs": {
-    "changed": false
-  }
-}
+What this does:
+- Adds a new function folder: netlify/functions/nfl-predictions-generate2 (copied from your current nfl-predictions-generate)
 
-Deploy notes:
-1) Delete `netlify/functions/nfl-predictions-generate/index.cjs` from your repo if it still exists.
-2) Ensure `index.mjs` is the only entrypoint in that folder.
-3) Verify your schedule endpoint returns `matchups` (array). The code now prefers `matchups` > `games` > `schedule`.
+How to use:
+1) Unzip into your repo root so this exact path exists:
+   netlify/functions/nfl-predictions-generate2/index.mjs
+2) Commit and push.
+3) (Optional but recommended) Delete the old folder to avoid ambiguity:
+   netlify/functions/nfl-predictions-generate/
+4) Trigger a "Clear cache and deploy" build on Netlify.
+5) Test:
+   https://<your-site>/.netlify/functions/nfl-predictions-generate2?season=2025&week=3
+   (add &force=1 if you need to bypass any caching)
+6) If working, you can later rename back by reversing the process (or ask me for a "rename-back" patch).
+
+Notes:
+- The endpoint path is the folder name; renaming guarantees Netlify treats it as a fresh function.
