@@ -22,16 +22,6 @@ function getTeamAbbreviation(fullName) {
 }
 
 export default async (req, context) => {
-  // --- Debug hook: return teamForm data for a given team abbreviation ---
-  if (req.queryStringParameters?.debug) {
-    const { teamForm } = await loadTeamForm();
-    const teamKey = req.queryStringParameters.debug.toUpperCase();
-    return {
-      statusCode: 200,
-      body: JSON.stringify(teamForm.team_data?.[teamKey] || {}, null, 2)
-    };
-  }
-
   try {
     const url = new URL(req.url);
     const week = Number(url.searchParams.get('week')) || 3;   // default to week 3
@@ -67,7 +57,7 @@ export default async (req, context) => {
     const schedule = await getWeekSchedule({ week, season, games });
 
     // 3) Generate predictions
-    const rows = schedule.map(game => {
+    const rows = await Promise.all(schedule.map(async (game) => {
       const homeTeam = teamForm.team_data[game.home];
       const awayTeam = teamForm.team_data[game.away];
       if (!homeTeam || !awayTeam) return null;
@@ -127,9 +117,10 @@ export default async (req, context) => {
           }
         }
       };
-    }).filter(Boolean);
+    }));
+const filteredRows = rows.filter(Boolean);
 
-    rows.sort((a, b) => (b.modelEdge || 0) - (a.modelEdge || 0));
+    filteredRows.sort((a, b) => (b.modelEdge || 0) - (a.modelEdge || 0));
 
     return json({
       meta: { ...meta, week, season, games: rows.length, updatedAt: new Date().toISOString(), model: 'nflverse_epa_v1' },
