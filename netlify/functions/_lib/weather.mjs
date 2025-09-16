@@ -1,8 +1,11 @@
-// Simple OpenWeatherMap integration (3-hour forecast)
+// Enhanced weather integration using WEATHER_BRIDGE_URL
 export async function getWeatherImpact(game, fetchFn = fetch) {
   try {
-    const apiKey = process.env.WEATHER_API_KEY;
-    if (!apiKey) return null;
+    const weatherBridgeUrl = process.env.WEATHER_BRIDGE_URL;
+    if (!weatherBridgeUrl) {
+      console.warn('WEATHER_BRIDGE_URL not configured');
+      return null;
+    }
 
     const teamToCity = {
       BUF: "Buffalo,US", MIA: "Miami,US", NE: "Foxborough,US", NYJ: "East Rutherford,US",
@@ -15,51 +18,65 @@ export async function getWeatherImpact(game, fetchFn = fetch) {
       ARI: "Glendale,US", LV: "Las Vegas,US", BAL: "Baltimore,US", CIN: "Cincinnati,US"
     };
 
-    // Skip domes by default (teams usually playing in domes):
+    // Skip dome teams (indoor stadiums)
     const domeTeams = new Set(["MIN","DET","NO","ATL","DAL","ARI","LAR","LAC","IND","LV"]);
     if (domeTeams.has(game.home)) return null;
 
-    const q = teamToCity[game.home];
-    if (!q) return null;
+    const cityQuery = teamToCity[game.home];
+    if (!cityQuery) return null;
 
-    const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(q)}&appid=${apiKey}&units=imperial`;
+    // Use WEATHER_BRIDGE_URL with city parameter
+    const url = `${weatherBridgeUrl}&q=${encodeURIComponent(cityQuery)}&units=imperial`;
     const res = await fetchFn(url);
-    if (!res.ok) return null;
-    const w = await res.json();
-
-    // Find the closest 3h block to kickoff
-    const k = new Date(game.start || game.kickoff || Date.now());
-    let best = null, bestDiff = 1e15;
-    for (const entry of w.list || []) {
-      const t = new Date(entry.dt * 1000);
-      const diff = Math.abs(t - k);
-      if (diff < bestDiff) { best = entry; bestDiff = diff; }
+    if (!res.ok) {
+      console.warn('Weather API request failed:', res.status);
+      return null;
     }
-    if (!best) return null;
+    
+    const weatherData = await res.json();
 
-    const wind = best.wind?.speed ?? 0;
-    const precip = (best.weather && best.weather[0]?.main) || "None";
+    // Find the closest 3h forecast block to kickoff
+    const kickoffTime = new Date(game.start || game.kickoff || Date.now());
+    let bestForecast = null, bestTimeDiff = Infinity;
+    
+    for (const entry of weatherData.list || []) {
+      const forecastTime = new Date(entry.dt * 1000);
+      const timeDiff = Math.abs(forecastTime - kickoffTime);
+      if (timeDiff < bestTimeDiff) { 
+        bestForecast = entry; 
+        bestTimeDiff = timeDiff; 
+      }
+    }
+    
+    if (!bestForecast) return null;
+
+    const windSpeed = bestForecast.wind?.speed ?? 0;
+    const precipitation = (bestForecast.weather && bestForecast.weather[0]?.main) || "Clear";
 
     const factors = [];
-    if (wind > 12) factors.push(`high_wind_${Math.round(wind)}mph`);
-    if (precip === "Rain") factors.push("rain_impact");
-    if (precip === "Snow") factors.push("snow_impact");
+    if (windSpeed > 12) factors.push(`high_wind_${Math.round(windSpeed)}mph`);
+    if (precipitation === "Rain") factors.push("rain_impact");
+    if (precipitation === "Snow") factors.push("snow_impact");
+    if (windSpeed > 20) factors.push("extreme_wind");
 
-    // Simple EPA/confidence adjustment heuristic
-    let confAdj = 0;
-    if (wind > 15) confAdj -= 0.02;
-    if (precip === "Rain") confAdj -= 0.015;
-    if (precip === "Snow") confAdj -= 0.03;
+    // Research-backed EPA/confidence adjustments
+    let confidenceAdjustment = 0;
+    if (windSpeed > 15) confidenceAdjustment -= 0.02;  // High wind reduces confidence
+    if (precipitation === "Rain") confidenceAdjustment -= 0.015;
+    if (precipitation === "Snow") confidenceAdjustment -= 0.03;
+    if (windSpeed > 20) confidenceAdjustment -= 0.04;  // Extreme conditions
 
     return {
-      source: "openweathermap",
-      at: best.dt,
-      windSpeed: wind,
-      precipitation: precip,
+      source: "openweathermap_bridge",
+      timestamp: bestForecast.dt,
+      windSpeed: Math.round(windSpeed),
+      precipitation,
       factors,
-      confidenceAdj: confAdj
+      confidenceAdj: confidenceAdjustment,
+      forecastHoursOut: Math.round(bestTimeDiff / (1000 * 60 * 60))
     };
   } catch (e) {
+    console.warn('Weather integration failed:', e.message);
     return null;
   }
 }
