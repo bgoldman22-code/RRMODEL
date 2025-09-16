@@ -1,0 +1,178 @@
+# .github/workflows/nfl-etl.yml
+name: NFL ETL Pipeline
+
+on:
+  schedule:
+    # Nightly Full ETL (3:30 AM ET = 8:30 AM UTC)
+    - cron: '30 8 * * *'
+    # Daily injury refresh (9:00 AM ET = 2:00 PM UTC)  
+    - cron: '0 14 * * *'
+    # Friday gameday injuries (5:00 PM ET = 10:00 PM UTC)
+    - cron: '0 22 * * 5'
+    # Sunday gameday injuries (11:00 AM ET = 4:00 PM UTC)
+    - cron: '0 16 * * 0'
+    # Sunday gameday injuries (3:00 PM ET = 8:00 PM UTC)
+    - cron: '0 20 * * 0'
+    # Sunday gameday injuries (7:30 PM ET = 12:30 AM UTC Monday)
+    - cron: '30 0 * * 1'
+    # Monday gameday injuries (5:00 PM ET = 10:00 PM UTC)
+    - cron: '0 22 * * 1'
+  
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      etl_type:
+        description: 'ETL Type to run'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - full
+          - injuries
+          - both
+
+jobs:
+  determine-jobs:
+    runs-on: ubuntu-latest
+    outputs:
+      run_full: ${{ steps.determine.outputs.run_full }}
+      run_injuries: ${{ steps.determine.outputs.run_injuries }}
+    steps:
+      - name: Determine which jobs to run
+        id: determine
+        run: |
+          # Default values
+          RUN_FULL="false"
+          RUN_INJURIES="false"
+          
+          # Manual trigger
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            case "${{ github.event.inputs.etl_type }}" in
+              "full")
+                RUN_FULL="true"
+                ;;
+              "injuries")
+                RUN_INJURIES="true"
+                ;;
+              "both")
+                RUN_FULL="true"
+                RUN_INJURIES="true"
+                ;;
+            esac
+          else
+            # Scheduled triggers
+            if [ "${{ github.event.schedule }}" = "30 8 * * *" ]; then
+              # Nightly full ETL
+              RUN_FULL="true"
+              RUN_INJURIES="true"
+            else
+              # All other schedules are injury-only
+              RUN_INJURIES="true"
+            fi
+          fi
+          
+          echo "run_full=$RUN_FULL" >> $GITHUB_OUTPUT
+          echo "run_injuries=$RUN_INJURIES" >> $GITHUB_OUTPUT
+          echo "Will run - Full ETL: $RUN_FULL, Injuries: $RUN_INJURIES"
+
+  full-etl:
+    needs: determine-jobs
+    if: needs.determine-jobs.outputs.run_full == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+          
+      - name: Run Full ETL Pipeline
+        env:
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
+        run: |
+          echo "Starting Full ETL Pipeline at $(date)"
+          
+          if node scripts/etl-full.js; then
+            echo "✅ Full ETL completed successfully"
+          else
+            echo "❌ Full ETL failed"
+            exit 1
+          fi
+          
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: etl-logs-full
+          path: .artifacts/
+          retention-days: 7
+
+  injury-etl:
+    needs: determine-jobs
+    if: needs.determine-jobs.outputs.run_injuries == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+          
+      - name: Run Injury ETL
+        env:
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
+        run: |
+          echo "Starting Injury ETL at $(date)"
+          
+          if node scripts/etl-injuries.js; then
+            echo "✅ Injury ETL completed successfully"
+          else
+            echo "❌ Injury ETL failed"
+            exit 1
+          fi
+          
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: etl-logs-injuries
+          path: .artifacts/
+          retention-days: 7
+
+  post-etl-summary:
+    needs: [full-etl, injury-etl]
+    if: always() && (needs.full-etl.result != 'skipped' || needs.injury-etl.result != 'skipped')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## NFL ETL Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Full ETL:** ${{ needs.full-etl.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Injury ETL:** ${{ needs.injury-etl.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp:** $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.full-etl.result }}" = "failure" ] || [ "${{ needs.injury-etl.result }}" = "failure" ]; then
+            echo "⚠️ One or more ETL jobs failed. Check the logs above." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ All ETL jobs completed successfully." >> $GITHUB_STEP_SUMMARY
+          fi
