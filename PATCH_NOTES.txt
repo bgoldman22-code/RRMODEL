@@ -1,15 +1,15 @@
-Wire Weather/Travel: actual calls + adjusted confidence
+Debug Hook Added
 
-- Updated netlify/functions/nfl-predictions-generate/index.mjs
-  * Imports weather/travel modules
-  * Inside prediction generation (.map over schedule):
-      - Calls getWeatherImpact and travelImpact
-      - Pushes weather/travel tags into factors
-      - Computes adjustedConfidence (clamped 1..9)
-      - Returns weather/travel fields on each row
+File updated:
+- netlify/functions/nfl-predictions-generate/index.mjs
+
+Change:
+- Adds ?debug=TEAM query parameter.
+- Example: /.netlify/functions/nfl-predictions-generate?debug=BUF
+  Will return JSON for teamForm.team_data.BUF directly.
 
 Deploy:
-1) Unzip into repo root
-2) Commit & push
-3) Netlify → Clear cache and deploy
-4) Verify rows now include factors+weather+travel and confidence reflects adjustments
+1) Unzip into repo root.
+2) Commit & push.
+3) Netlify → Clear cache and deploy.
+4) Hit your function with ?debug=BUF (or any abbreviation) to inspect teamForm data.
