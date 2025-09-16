@@ -1,3 +1,4 @@
+import { getStore } from '@netlify/blobs';
 
 // Blobs helper using ONLY Netlify Functions' `context.blobs` binding.
 // Adds a guard that throws a clear error if the binding isn't present.
@@ -56,4 +57,16 @@ export async function blobsGetResponse(context, key) {
   } catch {
     return null;
   }
+}
+
+// Export nflStore for NFL functions expecting this symbol
+export const nflStore = getStore({ name: process.env.BLOBS_STORE_NFL || 'nfl', siteID: process.env.NETLIFY_SITE_ID });
+
+// Export diagBlobsEnv for diagnostics in bootstrap/data functions
+export function diagBlobsEnv() {
+  return {
+    BLOBS_STORE: process.env.BLOBS_STORE,
+    BLOBS_STORE_NFL: process.env.BLOBS_STORE_NFL,
+    NETLIFY_SITE_ID: process.env.NETLIFY_SITE_ID,
+  };
 }

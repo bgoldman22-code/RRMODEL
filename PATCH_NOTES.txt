@@ -1,15 +1,18 @@
-Debug Hook Added
+Build Error Fix Patch
 
-File updated:
-- netlify/functions/nfl-predictions-generate/index.mjs
+1) Async map fix
+   - Converts `.map(game => { ... await ... })` to `await Promise.all(schedule.map(async (game) => { ... }))`
+   - Replaces trailing `.filter(Boolean)` with:
+       `}));`
+       `const filteredRows = rows.filter(Boolean);`
+   - Uses `filteredRows` for sorting and return.
 
-Change:
-- Adds ?debug=TEAM query parameter.
-- Example: /.netlify/functions/nfl-predictions-generate?debug=BUF
-  Will return JSON for teamForm.team_data.BUF directly.
+2) Missing exports in _lib/blobs.js
+   - Adds:
+       `export const nflStore = getStore({ name: process.env.BLOBS_STORE_NFL || 'nfl', siteID: process.env.NETLIFY_SITE_ID });`
+       `export function diagBlobsEnv() { return { BLOBS_STORE, BLOBS_STORE_NFL, NETLIFY_SITE_ID }; }`
 
 Deploy:
 1) Unzip into repo root.
 2) Commit & push.
 3) Netlify → Clear cache and deploy.
-4) Hit your function with ?debug=BUF (or any abbreviation) to inspect teamForm data.
