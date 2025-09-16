@@ -1,19 +1,20 @@
-Rename Test Patch: nfl-predictions-generate -> nfl-predictions-generate2
+Patch: Switch ESM export to default for Netlify
 
-What this does:
-- Adds a new function folder: netlify/functions/nfl-predictions-generate2 (copied from your current nfl-predictions-generate)
+File modified:
+- netlify/functions/nfl-predictions-generate2/index.mjs
 
-How to use:
-1) Unzip into your repo root so this exact path exists:
-   netlify/functions/nfl-predictions-generate2/index.mjs
+Change:
+- Replace `export const handler = async (...) =>` with `export default async (...) =>`
+
+Why:
+- Your environment expects ESM default exports for functions.
+- This resolves "handler not found" errors where Netlify fails to detect the handler.
+
+Deploy steps:
+1) Unzip into repo root (preserving path).
 2) Commit and push.
-3) (Optional but recommended) Delete the old folder to avoid ambiguity:
-   netlify/functions/nfl-predictions-generate/
-4) Trigger a "Clear cache and deploy" build on Netlify.
-5) Test:
-   https://<your-site>/.netlify/functions/nfl-predictions-generate2?season=2025&week=3
-   (add &force=1 if you need to bypass any caching)
-6) If working, you can later rename back by reversing the process (or ask me for a "rename-back" patch).
+3) Trigger "Clear cache and deploy" on Netlify.
+4) Test:
+   /.netlify/functions/nfl-predictions-generate2?season=2025&week=3
 
-Notes:
-- The endpoint path is the folder name; renaming guarantees Netlify treats it as a fresh function.
+Changed: True
