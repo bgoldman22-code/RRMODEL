@@ -248,12 +248,25 @@ async function generateAdvancedPredictions(games, season) {
       predictions: {
         home_win_prob: 0.5,
         away_win_prob: 0.5,
-        moneyline_pick: null,
-        moneyline_confidence: 50,
-        spread_pick: null,
-        spread_confidence: 50,
-        total_pick: null,
-        total_confidence: 50
+        moneyline: {
+          pick: null,
+          confidence: 50,
+          edge: 0
+        },
+        spread: {
+          pick: null,
+          confidence: 50,
+          line: null,
+          predicted: null,
+          edge: 0
+        },
+        total: {
+          pick: null,
+          confidence: 50,
+          line: null,
+          predicted: null,
+          edge: 0
+        }
       },
       modelEnhancements: {
         metricsFreshness: null,
@@ -337,22 +350,30 @@ async function generateAdvancedPredictions(games, season) {
         home_win_prob: Number(homeWinProb.toFixed(3)),
         away_win_prob: Number(awayWinProb.toFixed(3)),
         
-        // Moneyline
-        moneyline_pick: mlPick,
-        moneyline_confidence: mlConfidence,
-        moneyline_edge: Number((mlEdge * 100).toFixed(1)),
+        // Moneyline - nested structure
+        moneyline: {
+          pick: mlPick,
+          confidence: mlConfidence,
+          edge: Number((mlEdge * 100).toFixed(1))
+        },
         
-        // Spread
-        spread_pick: spreadPick,
-        spread_confidence: spreadConfidence,
-        predicted_spread: Number(predictedSpread.toFixed(1)),
-        spread_edge: Number(spreadEdge.toFixed(1)),
+        // Spread - nested structure
+        spread: {
+          pick: spreadPick,
+          confidence: spreadConfidence,
+          line: marketSpread,
+          predicted: Number(predictedSpread.toFixed(1)),
+          edge: Number(spreadEdge.toFixed(1))
+        },
         
-        // Total
-        total_pick: totalPick,
-        total_confidence: totalConfidence,
-        predicted_total: Number(predictedTotal.toFixed(1)),
-        total_edge: Number(totalEdge.toFixed(1))
+        // Total - nested structure
+        total: {
+          pick: totalPick,
+          confidence: totalConfidence,
+          line: marketTotal,
+          predicted: Number(predictedTotal.toFixed(1)),
+          edge: Number(totalEdge.toFixed(1))
+        }
       },
       modelEnhancements: {
         metricsFreshness: advancedMetrics?.asOf || null,
