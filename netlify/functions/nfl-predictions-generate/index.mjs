@@ -278,13 +278,17 @@ async function loadLiveOdds() {
 
 // Find odds for a specific game
 function findGameOdds(allOdds, homeTeam, awayTeam) {
-  const homeTeamFull = TEAM_NAME_MAPPING[homeTeam];
-  const awayTeamFull = TEAM_NAME_MAPPING[awayTeam];
+  const homeTeamFull = TEAM_NAME_MAPPING[homeTeam] || homeTeam;
+  const awayTeamFull = TEAM_NAME_MAPPING[awayTeam] || awayTeam;
   
-  return allOdds.find(odds => 
-    (odds.home_team === homeTeamFull && odds.away_team === awayTeamFull) ||
-    (odds.home_team === homeTeam && odds.away_team === awayTeam)
+  console.log(`Searching for: ${awayTeamFull} @ ${homeTeamFull}`);
+  
+  const found = allOdds.find(odds => 
+    odds.home_team === homeTeamFull && odds.away_team === awayTeamFull
   );
+  
+  console.log(`Match found: ${!!found}`);
+  return found;
 }
 
 // Extract odds from bookmaker data
