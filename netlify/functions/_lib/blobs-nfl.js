@@ -32,7 +32,19 @@ export async function nflBlobsGetJSON(path) {
     const blob = await store.get(path);
     if (!blob) return null;
     
-    const text = await blob.text();
+    // Fix: Handle different blob response types
+    let text;
+    if (typeof blob === 'string') {
+      text = blob;
+    } else if (blob.text && typeof blob.text === 'function') {
+      text = await blob.text();
+    } else if (blob.body) {
+      text = blob.body;
+    } else {
+      console.warn('Unknown blob type:', typeof blob);
+      return null;
+    }
+    
     return JSON.parse(text);
   } catch (error) {
     console.warn(`Failed to read blob at ${path}:`, error);
