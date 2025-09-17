@@ -452,16 +452,16 @@ async function generateAdvancedPredictions(games, season) {
       // Model prediction is very close to market line - no strong edge
       spreadPick = 'push';
       spreadReasoning = 'Too close to market line';
-    } else if (spreadDifference > 1.5) {
-      // Model thinks home team will win by MORE than the market expects
-      // Example: Model +5, Market -2 (difference = +7) -> Take home team
+    } else if (predictedSpread > marketSpread) {
+      // Model thinks home team will do BETTER than market expects
+      // Example: Model: CAR -7, Market: CAR -3 -> Take CAR (they'll cover bigger spread)
       spreadPick = homeCode;
-      spreadReasoning = `Model: ${homeCode} by ${Math.abs(predictedSpread).toFixed(1)}, Market: ${Math.abs(marketSpread).toFixed(1)} - Take ${homeCode}`;
-    } else if (spreadDifference < -1.5) {
-      // Model thinks the spread difference favors the away team
-      // Example: Model +1.5, Market -12.5 (difference = +14) -> Take away team  
+      spreadReasoning = `Model thinks ${homeCode} covers - Model: ${predictedSpread.toFixed(1)}, Market: ${marketSpread.toFixed(1)}`;
+    } else {
+      // Model thinks home team will do WORSE than market expects  
+      // Example: Model: CAR -0.3, Market: CAR -5.5 -> Take ATL +5.5 (game closer than expected)
       spreadPick = awayCode;
-      spreadReasoning = `Model: ${homeCode} by ${Math.abs(predictedSpread).toFixed(1)}, Market: ${Math.abs(marketSpread).toFixed(1)} - Take ${awayCode}`;
+      spreadReasoning = `Model thinks game closer than market - Model: ${predictedSpread.toFixed(1)}, Market: ${marketSpread.toFixed(1)}`;
     }
     
     const spreadEdge = Math.abs(spreadDifference);
