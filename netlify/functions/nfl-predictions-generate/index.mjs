@@ -1,10 +1,10 @@
 // netlify/functions/nfl-predictions-generate/index.mjs
-// FIXED v8 - Corrected total calculations, spread compression, and team differentiation
+// FINAL CALIBRATED v8 - Fixed calculations with proper multipliers for NFL reality
 
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics, getCurrentWeek, getCurrentWeights, diagnoseMetricsData } from '../_lib/blobs-nfl.js';
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
 
-// FIXED: Properly balanced weights for realistic team differentiation
+// FINAL CALIBRATED: Proper weights for realistic team differentiation
 const BASE_WEIGHTS = {
   // Tier 1 - Process metrics (60% total weight)
   pressure_diff: 0.22,   // Pass rush advantage - highest predictive value
@@ -31,12 +31,12 @@ const ADVANCED_WEIGHTS = {
   script_adaptation: 0.01
 };
 
-// FIXED: Realistic scoring multipliers
+// FINAL CALIBRATED: Aggressive scoring multipliers for proper NFL differentiation
 const SCORING_MULTIPLIERS = {
-  CORE_EPA: 12,          // Reduced from 35 to realistic level
-  TIER_BASE: 4,          // Base tier multiplier
-  ADVANCED_BASE: 3,      // Advanced feature multiplier
-  MATCHUP_BASE: 2        // Matchup multiplier
+  CORE_EPA: 25,          // Increased from 12 to 25 for proper team separation
+  TIER_BASE: 8,          // Increased from 4 to 8 for elite vs weak distinction
+  ADVANCED_BASE: 6,      // Increased from 3 to 6 for meaningful differences
+  MATCHUP_BASE: 4        // Increased from 2 to 4 for opponent-specific advantages
 };
 
 // Roster continuity factors
@@ -105,10 +105,10 @@ function calculateRosterContinuity(teamMetrics, teamCode) {
 function calculateContextAwareWeights(currentWeek, homeMetrics, awayMetrics) {
   console.log('Calculating context-aware weights for week', currentWeek);
   
-  // FIXED: More balanced current season weighting
+  // Balanced current season weighting
   let baseCurrentWeight;
   if (currentWeek <= 3) {
-    baseCurrentWeight = 0.70; // Reduced from 0.75
+    baseCurrentWeight = 0.70;
   } else if (currentWeek <= 6) {
     baseCurrentWeight = 0.75;
   } else if (currentWeek <= 12) {
@@ -121,7 +121,7 @@ function calculateContextAwareWeights(currentWeek, homeMetrics, awayMetrics) {
   const awayContinuity = calculateRosterContinuity(awayMetrics, 'AWAY');
   const avgContinuity = (homeContinuity + awayContinuity) / 2;
   
-  const continuityAdjustment = (1 - avgContinuity) * 0.15; // Reduced from 0.2
+  const continuityAdjustment = (1 - avgContinuity) * 0.15;
   const adjustedCurrentWeight = clamp(baseCurrentWeight + continuityAdjustment, 0.6, 0.9);
   
   const weights = {
@@ -131,7 +131,7 @@ function calculateContextAwareWeights(currentWeek, homeMetrics, awayMetrics) {
     recent_4_weeks: currentWeek <= 4 ? 0.12 : 0.08
   };
   
-  console.log('FIXED: Balanced context-aware weights:', weights);
+  console.log('FINAL CALIBRATED: Context-aware weights:', weights);
   return weights;
 }
 
@@ -159,30 +159,30 @@ function calculateEvidenceStrength(teamMetrics, currentWeek) {
 
 // Bayesian updating with dynamic confidence
 function applyBayesianUpdating(historicalScore, currentScore, evidenceStrength, currentWeight) {
-  console.log('Applying FIXED Bayesian updating...');
+  console.log('Applying FINAL CALIBRATED Bayesian updating...');
   
   const prior = historicalScore;
   const evidence = currentScore;
   
-  // FIXED: More conservative update strength
-  const updateStrength = evidenceStrength * currentWeight * 1.2; // Reduced from 1.5
+  // Conservative update strength
+  const updateStrength = evidenceStrength * currentWeight * 1.2;
   
   const posteriorScore = prior + (evidence - prior) * updateStrength;
   
-  console.log('FIXED Bayesian update:', {
+  console.log('FINAL CALIBRATED Bayesian update:', {
     prior, evidence, updateStrength, posteriorScore
   });
   
   return posteriorScore;
 }
 
-// FIXED: Properly calibrated team scoring function
+// FINAL CALIBRATED: Aggressive team scoring for proper NFL differentiation
 function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = null, isHome = false, currentWeek = 3) {
   if (!teamData || !league) {
     return { score: 0, confidence: 0.5, evidenceStrength: 0.25 };
   }
 
-  console.log(`FIXED v8: Balanced scoring for ${isHome ? 'home' : 'away'} team (week ${currentWeek})`);
+  console.log(`FINAL CALIBRATED v8: Aggressive scoring for ${isHome ? 'home' : 'away'} team (week ${currentWeek})`);
   
   const hasHistoricalData = teamData._metadata?.hasHistoricalData || false;
 
@@ -208,16 +208,16 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
   const zPen = z(disc.penalty_diff ?? 0, league.means?.penalty_diff || 0, league.stds?.penalty_diff || 1);
   const zTOP = z(tempo.top_eff ?? 0, league.means?.top_eff || 0, league.stds?.top_eff || 1);
 
-  // FIXED: Core EPA with realistic multiplier
+  // FINAL CALIBRATED: Core EPA with aggressive multiplier
   const offEPA = core.off_adj_epa ?? core.off_epa ?? 0;
   const defEPA = -(core.def_adj_epa ?? core.def_epa ?? 0);
   
-  console.log(`FIXED v8: Raw EPA - Off: ${offEPA.toFixed(3)}, Def: ${defEPA.toFixed(3)}`);
+  console.log(`FINAL CALIBRATED v8: Raw EPA - Off: ${offEPA.toFixed(3)}, Def: ${defEPA.toFixed(3)}`);
 
-  // FIXED: Realistic core score calculation
+  // FINAL CALIBRATED: Aggressive core score calculation
   const coreScore = (offEPA + defEPA) * SCORING_MULTIPLIERS.CORE_EPA;
   
-  console.log(`FIXED v8: Core score: ${coreScore.toFixed(3)}`);
+  console.log(`FINAL CALIBRATED v8: Core score: ${coreScore.toFixed(3)}`);
 
   // Advanced features
   const consistency = teamData?.consistency?.off ?? 0.5;
@@ -232,7 +232,7 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
 
   const evidenceStrength = calculateEvidenceStrength(teamData, currentWeek);
 
-  // FIXED: Balanced tier calculation
+  // FINAL CALIBRATED: Aggressive tier calculation
   const tierScore = 
     (BASE_WEIGHTS.pressure_diff * zPress * SCORING_MULTIPLIERS.TIER_BASE) +
     (BASE_WEIGHTS.explosive_diff * zExpl * SCORING_MULTIPLIERS.TIER_BASE) +
@@ -244,9 +244,9 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
     (BASE_WEIGHTS.penalty_diff * zPen * SCORING_MULTIPLIERS.TIER_BASE) +
     (BASE_WEIGHTS.top_eff * zTOP * SCORING_MULTIPLIERS.TIER_BASE);
 
-  console.log(`FIXED v8: Tier score: ${tierScore.toFixed(3)}`);
+  console.log(`FINAL CALIBRATED v8: Tier score: ${tierScore.toFixed(3)}`);
 
-  // FIXED: Balanced advanced features
+  // FINAL CALIBRATED: Aggressive advanced features
   const advancedScore = 
     (ADVANCED_WEIGHTS.consistency * (consistency - 0.5) * SCORING_MULTIPLIERS.ADVANCED_BASE) +
     (ADVANCED_WEIGHTS.form * enhancedForm * SCORING_MULTIPLIERS.ADVANCED_BASE) +
@@ -254,11 +254,11 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
     (ADVANCED_WEIGHTS.formations * motionAdv * SCORING_MULTIPLIERS.ADVANCED_BASE) +
     (ADVANCED_WEIGHTS.script_adaptation * scriptAdapt * SCORING_MULTIPLIERS.ADVANCED_BASE);
 
-  // FIXED: Balanced matchup score
+  // FINAL CALIBRATED: Aggressive matchup score
   const matchupScore = calculateMatchupScore(matchupTerms) * SCORING_MULTIPLIERS.MATCHUP_BASE;
 
   const currentSeasonScore = coreScore + tierScore + advancedScore + matchupScore;
-  const historicalScore = currentSeasonScore * 0.85; // More conservative historical discount
+  const historicalScore = currentSeasonScore * 0.85;
   
   // Apply Bayesian updating
   const finalScore = applyBayesianUpdating(
@@ -270,11 +270,11 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
   
   // Calculate confidence
   const baseConfidence = 0.5;
-  const evidenceBoost = evidenceStrength * 0.25; // Reduced from 0.3
-  const sampleBoost = Math.min(currentWeek / 8, 0.15); // Reduced from 0.2
+  const evidenceBoost = evidenceStrength * 0.25;
+  const sampleBoost = Math.min(currentWeek / 8, 0.15);
   const finalConfidence = clamp(baseConfidence + evidenceBoost + sampleBoost, 0.35, 0.85);
   
-  console.log('FIXED v8: Scoring breakdown:', {
+  console.log('FINAL CALIBRATED v8: Scoring breakdown:', {
     coreScore: coreScore.toFixed(3), 
     tierScore: tierScore.toFixed(3), 
     advancedScore: advancedScore.toFixed(3), 
@@ -301,13 +301,13 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries) {
   // QB status impact
   switch (teamInjuries.qb_status) {
     case 'out':
-      delta -= 6; // Reduced from 8
+      delta -= 6;
       break;
     case 'doubtful':
-      delta -= 3; // Reduced from 4
+      delta -= 3;
       break;
     case 'questionable':
-      delta -= 1.5; // Reduced from 2
+      delta -= 1.5;
       break;
     default:
       break;
@@ -317,44 +317,44 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries) {
   const olOut = teamInjuries.ol_starters_out ?? 0;
   const dbOut = teamInjuries.db_starters_out ?? 0;
 
-  if (olOut >= 2) delta -= 2; // Reduced from 2.5
-  if (olOut >= 3) delta -= 4; // Reduced from 5
-  if (dbOut >= 2) delta -= 1.5; // Reduced from 2
+  if (olOut >= 2) delta -= 2;
+  if (olOut >= 3) delta -= 4;
+  if (dbOut >= 2) delta -= 1.5;
 
-  console.log('FIXED injury adjustment for', teamCode, ':', delta, 'points');
+  console.log('FINAL CALIBRATED injury adjustment for', teamCode, ':', delta, 'points');
   
   return {
     score: scoreData.score + delta,
-    confidence: scoreData.confidence * (1 - Math.abs(delta) * 0.02), // Reduced impact
+    confidence: scoreData.confidence * (1 - Math.abs(delta) * 0.02),
     evidenceStrength: scoreData.evidenceStrength
   };
 }
 
-// FIXED: Properly calibrated spread prediction
+// FINAL CALIBRATED: Aggressive spread prediction
 function calculateSpreadPrediction(homeScoreData, awayScoreData) {
-  console.log('=== FIXED v8 SPREAD PREDICTION ===');
+  console.log('=== FINAL CALIBRATED v8 SPREAD PREDICTION ===');
   console.log('Score data:', { 
     homeScore: homeScoreData.score.toFixed(3), 
     awayScore: awayScoreData.score.toFixed(3) 
   });
   
-  // FIXED: Balanced home field advantage
+  // Balanced home field advantage
   const avgConfidence = (homeScoreData.confidence + awayScoreData.confidence) / 2;
   const confidentHFA = 2.8;  // Standard NFL home field advantage
   const uncertainHFA = 1.5;  // Reduced HFA when uncertain
   
   const dynamicHFA = confidentHFA - (confidentHFA - uncertainHFA) * (1 - avgConfidence);
   
-  // FIXED: Proper score difference conversion
+  // FINAL CALIBRATED: Aggressive score difference conversion
   const scoreDifference = homeScoreData.score - awayScoreData.score;
   
-  // FIXED: Direct score-to-spread conversion with proper scaling
-  const spreadFromScores = scoreDifference * 2.5; // Calibrated multiplier
+  // FINAL CALIBRATED: Aggressive score-to-spread conversion
+  const spreadFromScores = scoreDifference * 4.0; // Increased from 2.5 to 4.0
   
   const predictedHomeMargin = dynamicHFA + spreadFromScores;
   const finalSpread = clamp(predictedHomeMargin, -21, 21);
   
-  console.log('FIXED spread calculation:', { 
+  console.log('FINAL CALIBRATED spread calculation:', { 
     avgConfidence: avgConfidence.toFixed(3), 
     dynamicHFA: dynamicHFA.toFixed(2), 
     scoreDifference: scoreDifference.toFixed(3), 
@@ -366,21 +366,21 @@ function calculateSpreadPrediction(homeScoreData, awayScoreData) {
   return finalSpread;
 }
 
-// FIXED: Completely rebuilt total prediction
+// FINAL CALIBRATED: Aggressive total prediction
 function calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread = 0) {
-  console.log('=== FIXED v8 TOTAL PREDICTION ===');
+  console.log('=== FINAL CALIBRATED v8 TOTAL PREDICTION ===');
   
-  // FIXED: Proper EPA-based team scoring rates
+  // Proper EPA-based team scoring rates
   const homeOffEPA = homeMetrics?.core?.off_epa || 0;
   const awayOffEPA = awayMetrics?.core?.off_epa || 0;
   const homeDefEPA = homeMetrics?.core?.def_epa || 0;
   const awayDefEPA = awayMetrics?.core?.def_epa || 0;
   
-  // FIXED: Form adjustments with proper scaling
+  // Form adjustments with proper scaling
   const homeForm = homeMetrics?.form?.off || 0;
   const awayForm = awayMetrics?.form?.off || 0;
   
-  console.log('FIXED total factors:', { 
+  console.log('FINAL CALIBRATED total factors:', { 
     homeOffEPA: homeOffEPA.toFixed(3), 
     awayOffEPA: awayOffEPA.toFixed(3), 
     homeDefEPA: homeDefEPA.toFixed(3), 
@@ -389,33 +389,32 @@ function calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread = 0) {
     awayForm: awayForm.toFixed(3)
   });
   
-  // FIXED: Realistic EPA-to-points conversion
-  // NFL average: ~22.5 points per team, EPA typically ranges -0.2 to +0.3
-  const homeBasePoints = 22.5 + (homeOffEPA * 45) + (homeForm * 8); // Realistic scaling
-  const awayBasePoints = 22.5 + (awayOffEPA * 45) + (awayForm * 8);
+  // FINAL CALIBRATED: Aggressive EPA-to-points conversion
+  const homeBasePoints = 22.5 + (homeOffEPA * 90) + (homeForm * 18); // Increased multipliers
+  const awayBasePoints = 22.5 + (awayOffEPA * 90) + (awayForm * 18); // Increased multipliers
   
-  // FIXED: Defensive adjustments (opposing defense affects scoring)
-  const homePointsVsDefense = homeBasePoints - (awayDefEPA * 25); // Away defense affects home scoring
-  const awayPointsVsDefense = awayBasePoints - (homeDefEPA * 25); // Home defense affects away scoring
+  // FINAL CALIBRATED: Aggressive defensive adjustments
+  const homePointsVsDefense = homeBasePoints - (awayDefEPA * 50); // Increased from 25 to 50
+  const awayPointsVsDefense = awayBasePoints - (homeDefEPA * 50); // Increased from 25 to 50
   
-  // FIXED: Pace adjustments
+  // Pace adjustments
   const homePace = Math.max(homeMetrics?.tempo?.pace || 65, 60);
   const awayPace = Math.max(awayMetrics?.tempo?.pace || 65, 60);
   const avgPace = (homePace + awayPace) / 2;
   const paceMultiplier = avgPace / 67; // NFL average pace
   
-  // FIXED: Game script adjustment based on expected margin
+  // Game script adjustment based on expected margin
   const expectedMargin = Math.abs(marketSpread || 0);
   const gameScriptFactor = expectedMargin > 7 ? 0.95 : 1.0; // Blowouts have slightly fewer plays
   
-  // FIXED: Final total calculation
-  const homeProjected = Math.max(10, homePointsVsDefense * paceMultiplier * gameScriptFactor);
-  const awayProjected = Math.max(10, awayPointsVsDefense * paceMultiplier * gameScriptFactor);
+  // FINAL CALIBRATED: Final total calculation
+  const homeProjected = Math.max(12, homePointsVsDefense * paceMultiplier * gameScriptFactor);
+  const awayProjected = Math.max(12, awayPointsVsDefense * paceMultiplier * gameScriptFactor);
   
   const rawTotal = homeProjected + awayProjected;
-  const finalTotal = clamp(rawTotal, 35, 65); // Realistic NFL total range
+  const finalTotal = clamp(rawTotal, 38, 68); // Realistic NFL total range
   
-  console.log('FIXED total calculation:', { 
+  console.log('FINAL CALIBRATED total calculation:', { 
     homeBasePoints: homeBasePoints.toFixed(1),
     awayBasePoints: awayBasePoints.toFixed(1),
     homePointsVsDefense: homePointsVsDefense.toFixed(1),
@@ -432,13 +431,13 @@ function calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread = 0) {
   return finalTotal;
 }
 
-// FIXED: Enhanced confidence calculation
+// Enhanced confidence calculation
 function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evidenceStrength, scoreDifference = 0) {
   const modelCertainty = Math.abs(modelProb - 0.5) * 2;
   const edgeComponent = edge ? Math.min(Math.abs(edge), 0.15) / 0.15 : 0;
   
-  // FIXED: Balanced differentiation boost
-  const differentiationBoost = Math.min(Math.abs(scoreDifference) / 12, 0.15); // Reduced from /8
+  // Balanced differentiation boost
+  const differentiationBoost = Math.min(Math.abs(scoreDifference) / 12, 0.15);
   
   // Context-aware confidence components
   const scoreConfidenceBoost = (scoreConfidence - 0.5) * 0.2;
@@ -447,7 +446,7 @@ function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evide
   const rawConfidence = (modelCertainty * 0.5) + (edgeComponent * 0.2) + 
                        scoreConfidenceBoost + evidenceBoost + differentiationBoost;
   
-  return Math.max(50, Math.round(rawConfidence * 50 + 55)); // Realistic confidence range
+  return Math.max(50, Math.round(rawConfidence * 50 + 55));
 }
 
 // Load live odds (unchanged)
@@ -538,10 +537,10 @@ function extractOddsData(gameOdds) {
   };
 }
 
-// MAIN FIXED PREDICTION FUNCTION
+// MAIN FINAL CALIBRATED PREDICTION FUNCTION
 async function generateAdvancedPredictions(games, season) {
-  console.log('=== FIXED v8 - CORRECTED CALCULATIONS ===');
-  console.log('Fixed total calculations, spread compression, and team differentiation...');
+  console.log('=== FINAL CALIBRATED v8 - AGGRESSIVE NFL DIFFERENTIATION ===');
+  console.log('Final calibrated calculations for proper NFL team separation...');
   
   let advancedMetrics = null;
   let injuries = null;
@@ -582,7 +581,7 @@ async function generateAdvancedPredictions(games, season) {
   const league = advancedMetrics?.league || { means: {}, stds: {} };
   const currentWeek = getCurrentWeek(advancedMetrics);
   
-  console.log(`FIXED: Current week: ${currentWeek}`);
+  console.log(`FINAL CALIBRATED: Current week: ${currentWeek}`);
   
   // Load live odds for all games
   const allOdds = await loadLiveOdds();
@@ -591,7 +590,7 @@ async function generateAdvancedPredictions(games, season) {
     const homeCode = game.home_team;
     const awayCode = game.away_team;
 
-    console.log(`\n=== FIXED PREDICTION: ${awayCode} @ ${homeCode} ===`);
+    console.log(`\n=== FINAL CALIBRATED PREDICTION: ${awayCode} @ ${homeCode} ===`);
 
     // Get team metrics
     const homeMetrics = getTeamMetrics(advancedMetrics, homeCode);
@@ -607,13 +606,13 @@ async function generateAdvancedPredictions(games, season) {
     const hasMatchupData = !!(matchups?.home && matchups?.away);
     const hasContextData = !!(contextWeights && currentWeek);
     
-    console.log('FIXED: Data availability:', { hasHistoricalData, hasMatchupData, hasContextData });
+    console.log('FINAL CALIBRATED: Data availability:', { hasHistoricalData, hasMatchupData, hasContextData });
 
-    // FIXED: Calculate properly scaled scores
+    // FINAL CALIBRATED: Calculate aggressively scaled scores
     let homeScoreData = scoreTeamFromFeatures(homeMetrics, league, contextWeights, matchups?.home, true, currentWeek);
     let awayScoreData = scoreTeamFromFeatures(awayMetrics, league, contextWeights, matchups?.away, false, currentWeek);
 
-    console.log('FIXED: Initial scores:', { 
+    console.log('FINAL CALIBRATED: Initial scores:', { 
       homeScore: homeScoreData.score.toFixed(3), 
       awayScore: awayScoreData.score.toFixed(3) 
     });
@@ -624,21 +623,21 @@ async function generateAdvancedPredictions(games, season) {
       awayScoreData = applyInjuryAdjustments(awayScoreData, awayCode, injuries);
     }
 
-    console.log('FIXED: Final scores after injuries:', { 
+    console.log('FINAL CALIBRATED: Final scores after injuries:', { 
       homeScore: homeScoreData.score.toFixed(3), 
       awayScore: awayScoreData.score.toFixed(3) 
     });
 
     // Calculate score difference for analysis
     const scoreDifference = homeScoreData.score - awayScoreData.score;
-    console.log(`FIXED: Score difference: ${scoreDifference.toFixed(2)}`);
+    console.log(`FINAL CALIBRATED: Score difference: ${scoreDifference.toFixed(2)}`);
 
-    // FIXED: Convert to win probabilities with corrected spread prediction
+    // FINAL CALIBRATED: Convert to win probabilities with aggressive spread prediction
     const predictedSpread = calculateSpreadPrediction(homeScoreData, awayScoreData);
     const homeWinProb = sigmoid(predictedSpread / 14);
     const awayWinProb = 1 - homeWinProb;
 
-    console.log('FIXED: Win probabilities:', { 
+    console.log('FINAL CALIBRATED: Win probabilities:', { 
       homeWinProb: homeWinProb.toFixed(3), 
       awayWinProb: awayWinProb.toFixed(3), 
       predictedSpread: predictedSpread.toFixed(2) 
@@ -654,7 +653,7 @@ async function generateAdvancedPredictions(games, season) {
     const mlPick = homeWinProb > awayWinProb ? homeCode : awayCode;
     const mlModelProb = Math.max(homeWinProb, awayWinProb);
     
-    console.log(`FIXED: Moneyline pick: ${mlPick} (${(mlModelProb * 100).toFixed(1)}% probability)`);
+    console.log(`FINAL CALIBRATED: Moneyline pick: ${mlPick} (${(mlModelProb * 100).toFixed(1)}% probability)`);
     
     // Calculate market edge
     const homeMarketProb = americanToImplied(realOdds.ml_home) || 0.5;
@@ -672,12 +671,12 @@ async function generateAdvancedPredictions(games, season) {
     const marketSpread = realOdds.spread_line || 0;
     const marketFavorite = realOdds.spread_favorite;
     
-    console.log('=== FIXED SPREAD LOGIC ===');
+    console.log('=== FINAL CALIBRATED SPREAD LOGIC ===');
     console.log('Model predicted spread (home margin):', predictedSpread.toFixed(2));
     console.log('Market spread (favorite):', marketSpread);
     console.log('Market favorite:', marketFavorite);
     
-    // FIXED: Balanced spread pick logic
+    // Balanced spread pick logic
     let modelHomeMargin = predictedSpread;
     let marketHomeMargin;
     
@@ -692,8 +691,8 @@ async function generateAdvancedPredictions(games, season) {
     const marginDifference = modelHomeMargin - marketHomeMargin;
     let spreadPick;
     
-    // FIXED: Realistic threshold
-    const spreadThreshold = 1.5; // Balanced threshold
+    // Realistic threshold
+    const spreadThreshold = 1.5;
     
     if (Math.abs(marginDifference) < spreadThreshold) {
       spreadPick = modelHomeMargin > marketHomeMargin ? homeCode : awayCode;
@@ -706,7 +705,7 @@ async function generateAdvancedPredictions(games, season) {
     const spreadEdge = Math.abs(marginDifference);
     const spreadConfidence = calculateConfidence(0.6, 0.52, spreadEdge / 14, avgConfidence, avgEvidence, scoreDifference);
 
-    // FIXED: Total prediction
+    // FINAL CALIBRATED: Total prediction
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread);
     const marketTotal = realOdds.total_line || 44;
     const totalDifference = predictedTotal - marketTotal;
@@ -715,7 +714,7 @@ async function generateAdvancedPredictions(games, season) {
     const totalEdge = Math.abs(totalDifference);
     const totalConfidence = calculateConfidence(0.6, 0.52, totalEdge / 10, avgConfidence, avgEvidence, 0);
 
-    console.log('FIXED total analysis:', { 
+    console.log('FINAL CALIBRATED total analysis:', { 
       predictedTotal: predictedTotal.toFixed(1), 
       marketTotal, 
       totalDifference: totalDifference.toFixed(1), 
@@ -771,11 +770,12 @@ async function generateAdvancedPredictions(games, season) {
       },
       
       modelEnhancements: {
-        version: 'fixed_v8_corrected_calculations',
+        version: 'final_calibrated_v8_aggressive',
         historicalDataUsed: hasHistoricalData,
         contextAwareWeighting: hasContextData,
         bayesianUpdating: true,
         fixedCalculations: true,
+        finalCalibration: true,
         currentWeek: currentWeek,
         contextWeights: contextWeights,
         homeScoreConfidence: Number(homeScoreData.confidence.toFixed(3)),
@@ -795,18 +795,20 @@ async function generateAdvancedPredictions(games, season) {
         advancedFeaturesUsed: Object.keys(ADVANCED_WEIGHTS),
         oddsIntegrated: !!gameOdds,
         notes: [
-          "FIXED v8: Corrected total calculations and spread compression",
-          "Realistic EPA-to-points conversion implemented",
-          "Balanced team differentiation scoring",
-          "Fixed spread-to-score conversion ratios",
+          "FINAL CALIBRATED v8: Aggressive multipliers for proper NFL differentiation",
+          "Elite vs weak team separation implemented",
+          "Realistic total predictions with enhanced EPA conversion",
+          "Aggressive spread conversion for meaningful differences",
           hasHistoricalData ? "Historical data integration active" : "Using current season data only",
           hasMatchupData ? "Opponent-specific matchup calculations active" : "Using base team metrics only",
           hasContextData ? "Context-aware weighting based on roster continuity" : "Using standard weights",
           `Week ${currentWeek} with ${(contextWeights.season_2025 * 100).toFixed(0)}% current season weight`,
           "Bayesian updating with evidence strength assessment",
-          "Realistic scoring multipliers applied",
+          "Aggressive scoring multipliers for proper team separation",
           `Score difference: ${scoreDifference.toFixed(2)}`,
           `Total prediction: ${predictedTotal.toFixed(1)} (vs market ${marketTotal})`,
+          `Core EPA multiplier: ${SCORING_MULTIPLIERS.CORE_EPA}x`,
+          `Tier multiplier: ${SCORING_MULTIPLIERS.TIER_BASE}x`,
           gameOdds ? "Live odds integrated" : "Using fallback odds"
         ]
       },
@@ -870,7 +872,7 @@ export default async (request, context) => {
       games = [];
     }
 
-    console.log(`FIXED: Processing ${games.length} games for corrected prediction with season ${season}`);
+    console.log(`FINAL CALIBRATED: Processing ${games.length} games for aggressive prediction with season ${season}`);
     
     const predictions = await generateAdvancedPredictions(games, season);
     
@@ -883,10 +885,10 @@ export default async (request, context) => {
     });
     
   } catch (error) {
-    console.error('Fixed prediction function error:', error);
+    console.error('Final calibrated prediction function error:', error);
     
     return new Response(JSON.stringify({
-      error: 'Fixed prediction generation failed',
+      error: 'Final calibrated prediction generation failed',
       message: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }), {
