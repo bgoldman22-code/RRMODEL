@@ -85,6 +85,37 @@ function getTeamAbbreviation(fullName) {
   return nameMap[fullName] || fullName;
 }
 
+// Helper function to format spread display based on pick
+function formatSpreadDisplay(spread, homeTeam, awayTeam) {
+  if (!spread || !spread.pick || spread.pick === 'push') {
+    return {
+      displayPick: spread?.pick || '—',
+      displayLine: spread?.line ? `${spread.line}` : '—'
+    };
+  }
+  
+  const marketLine = spread.line || 0;
+  
+  // If picking the home team, show the line as-is
+  // If picking the away team, flip the sign to show what they're getting
+  if (spread.pick === homeTeam) {
+    return {
+      displayPick: homeTeam,
+      displayLine: marketLine > 0 ? `+${marketLine}` : `${marketLine}`
+    };
+  } else if (spread.pick === awayTeam) {
+    return {
+      displayPick: awayTeam,
+      displayLine: marketLine > 0 ? `${-marketLine}` : `+${Math.abs(marketLine)}`
+    };
+  }
+  
+  return {
+    displayPick: spread.pick,
+    displayLine: `${marketLine}`
+  };
+}
+
 export default function NFLPredictions() {
   const [rows, setRows] = useState([]);
   const [meta, setMeta] = useState(null);
@@ -182,6 +213,9 @@ export default function NFLPredictions() {
                   total?.confidence > 60 ? (total.confidence - 50) : 0
                 );
 
+                // Format spread display to show correct team and line
+                const spreadDisplay = formatSpreadDisplay(spread, r.home_team, r.away_team);
+
                 const PickBadge = ({ pick, confidence, type, modelValue, marketValue }) => (
                   <div className="space-y-1">
                     <div className="font-medium text-sm">{pick}</div>
@@ -232,15 +266,15 @@ export default function NFLPredictions() {
                       ) : '—'}
                     </td>
                     
-                    {/* Spread Column */}
+                    {/* Spread Column - UPDATED with proper display */}
                     <td className="px-4 py-3">
                       {spread ? (
                         <PickBadge 
-                          pick={spread.pick}
+                          pick={spreadDisplay.displayPick}
                           confidence={spread.confidence}
                           type="spread"
                           modelValue={spread.predicted ? `${spread.predicted > 0 ? '+' : ''}${spread.predicted}` : null}
-                          marketValue={spread.line ? `${spread.line > 0 ? '+' : ''}${spread.line}` : null}
+                          marketValue={spreadDisplay.displayLine}
                         />
                       ) : '—'}
                     </td>
@@ -292,7 +326,7 @@ export default function NFLPredictions() {
       {rows.length > 0 && (
         <div className="mt-4 text-xs text-gray-500">
           <p><strong>Pick:</strong> Model's recommended bet with confidence percentage.</p>
-          <p><strong>Line:</strong> Current sportsbook line. <strong>Model:</strong> Model's prediction.</p>
+          <p><strong>Line:</strong> Displayed from the perspective of the picked team. <strong>Model:</strong> Model's prediction.</p>
           <p><strong>Edge:</strong> Model probability vs market probability difference.</p>
           <p><strong>Live odds ✓:</strong> Real sportsbook data integrated for this game.</p>
         </div>
