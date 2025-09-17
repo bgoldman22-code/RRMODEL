@@ -261,7 +261,8 @@ function calculateConfidence(modelProb, marketProb, edge) {
 async function loadLiveOdds() {
   try {
     console.log('Fetching live odds...');
-    const oddsRes = await fetch('/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals');
+    // Use your custom domain
+    const oddsRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals');
     if (!oddsRes.ok) {
       throw new Error(`Odds API failed: ${oddsRes.status}`);
     }
