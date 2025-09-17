@@ -198,7 +198,7 @@ function calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMe
   return finalSpread;
 }
 
-// Calculate total prediction (FIXED VERSION)
+// Calculate total prediction
 function calculateTotalPrediction(homeMetrics, awayMetrics) {
   console.log('=== TOTAL PREDICTION DEBUG ===');
   console.log('Home metrics core:', homeMetrics?.core);
@@ -305,13 +305,27 @@ function extractOddsData(gameOdds) {
   const homeMLOutcome = h2hMarket.find(o => o.name === gameOdds.home_team);
   const awayMLOutcome = h2hMarket.find(o => o.name === gameOdds.away_team);
   
-  // Extract spread odds - use the favorite's spread (negative number)
+  // Extract spread odds - find which team is favored
   const spreadsMarket = markets.spreads || [];
   const homeSpreadOutcome = spreadsMarket.find(o => o.name === gameOdds.home_team);
   const awaySpreadOutcome = spreadsMarket.find(o => o.name === gameOdds.away_team);
   
-  // Use the negative spread (favorite's side) for consistency
-  const favoriteSpread = homeSpreadOutcome?.point < 0 ? homeSpreadOutcome.point : awaySpreadOutcome?.point;
+  // Determine who is favored and the spread
+  let favoriteTeam = null;
+  let favoriteSpread = null;
+  let underdogSpread = null;
+  
+  if (homeSpreadOutcome && homeSpreadOutcome.point < 0) {
+    // Home team is favored
+    favoriteTeam = 'home';
+    favoriteSpread = homeSpreadOutcome.point; // Negative number
+    underdogSpread = awaySpreadOutcome?.point; // Positive number
+  } else if (awaySpreadOutcome && awaySpreadOutcome.point < 0) {
+    // Away team is favored
+    favoriteTeam = 'away';
+    favoriteSpread = awaySpreadOutcome.point; // Negative number
+    underdogSpread = homeSpreadOutcome?.point; // Positive number
+  }
   
   // Extract total odds
   const totalsMarket = markets.totals || [];
@@ -320,7 +334,8 @@ function extractOddsData(gameOdds) {
   return {
     ml_home: homeMLOutcome?.price,
     ml_away: awayMLOutcome?.price,
-    spread_line: favoriteSpread, // This will be negative (favorite's spread)
+    spread_line: favoriteSpread, // Always the negative number (favorite's spread)
+    spread_favorite: favoriteTeam, // 'home' or 'away'
     total_line: totalOutcome?.point
   };
 }
@@ -438,42 +453,63 @@ async function generateAdvancedPredictions(games, season) {
 
     console.log('Moneyline prediction:', { mlPick, mlConfidence, mlEdge });
 
-    // Spread predictions - Fixed logic based on predicted margin vs market line
+    // FIXED SPREAD PREDICTIONS LOGIC
     const predictedSpread = calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMetrics);
-    const marketSpread = realOdds.spread_line || 0;
+    const marketSpread = realOdds.spread_line || 0; // This is always the favorite's spread (negative)
+    const marketFavorite = realOdds.spread_favorite; // 'home' or 'away'
     
-    // Calculate the difference between model's prediction and market line
-    const spreadDifference = predictedSpread - marketSpread;
+    console.log('=== SPREAD LOGIC DEBUG ===');
+    console.log('Model predicted spread (home team margin):', predictedSpread);
+    console.log('Market spread (favorite):', marketSpread);
+    console.log('Market favorite:', marketFavorite);
+    
+    // Convert both to same reference point - margin by which home team wins
+    let modelHomeMargin = predictedSpread; // Already in home team perspective
+    let marketHomeMargin;
+    
+    if (marketFavorite === 'home') {
+      // Market has home team favored, so marketSpread is negative
+      // Convert to positive margin: if home is -7.5, they're expected to win by 7.5
+      marketHomeMargin = Math.abs(marketSpread);
+    } else if (marketFavorite === 'away') {
+      // Market has away team favored, so away team expected to win
+      // Convert to negative home margin: if away is -3.5, home expected to lose by 3.5
+      marketHomeMargin = -Math.abs(marketSpread);
+    } else {
+      // No clear favorite or missing data
+      marketHomeMargin = 0;
+    }
+    
+    console.log('Adjusted margins - Model home margin:', modelHomeMargin, 'Market home margin:', marketHomeMargin);
+    
+    // Calculate difference
+    const marginDifference = modelHomeMargin - marketHomeMargin;
+    console.log('Margin difference (model - market):', marginDifference);
     
     let spreadPick;
     let spreadReasoning;
+    let spreadEdge = Math.abs(marginDifference);
     
-    if (Math.abs(spreadDifference) < 1.5) {
-      // Model prediction is very close to market line - no strong edge
+    if (Math.abs(marginDifference) < 2.5) {
+      // Too close to call
       spreadPick = 'push';
-      spreadReasoning = 'Too close to market line';
-    } else if (predictedSpread > marketSpread) {
-      // Model thinks home team will do BETTER than market expects
-      // Example: Model: CAR -7, Market: CAR -3 -> Take CAR (they'll cover bigger spread)
+      spreadReasoning = `Model close to market`;
+    } else if (marginDifference > 0) {
+      // Model thinks home team does better than market expects
       spreadPick = homeCode;
-      spreadReasoning = `Model thinks ${homeCode} covers - Model: ${predictedSpread.toFixed(1)}, Market: ${marketSpread.toFixed(1)}`;
+      spreadReasoning = `Model likes ${homeCode} to cover`;
     } else {
-      // Model thinks home team will do WORSE than market expects  
-      // Example: Model: CAR -0.3, Market: CAR -5.5 -> Take ATL +5.5 (game closer than expected)
+      // Model thinks home team does worse than market expects  
       spreadPick = awayCode;
-      spreadReasoning = `Model thinks game closer than market - Model: ${predictedSpread.toFixed(1)}, Market: ${marketSpread.toFixed(1)}`;
+      spreadReasoning = `Model likes ${awayCode} to cover`;
     }
     
-    const spreadEdge = Math.abs(spreadDifference);
-    const spreadConfidence = Math.min(95, 50 + (spreadEdge * 8)); // Scale confidence based on edge
+    const spreadConfidence = Math.min(95, 50 + (spreadEdge * 6));
 
-    console.log('Spread prediction:', { 
-      predictedSpread, 
-      marketSpread, 
-      spreadDifference,
+    console.log('Spread prediction result:', { 
       spreadPick, 
-      spreadConfidence: Math.round(spreadConfidence), 
-      spreadEdge,
+      confidence: Math.round(spreadConfidence), 
+      edge: spreadEdge.toFixed(1),
       reasoning: spreadReasoning
     });
 
@@ -503,7 +539,7 @@ async function generateAdvancedPredictions(games, season) {
         // Spread - nested structure
         spread: {
           pick: spreadPick,
-          confidence: spreadConfidence,
+          confidence: Math.round(spreadConfidence),
           line: marketSpread,
           predicted: Number(predictedSpread.toFixed(1)),
           edge: Number(spreadEdge.toFixed(1))
@@ -527,13 +563,10 @@ async function generateAdvancedPredictions(games, season) {
         },
         spread: {
           line: realOdds.spread_line,
-          home: realOdds.spread_line ? -realOdds.spread_line : null,
-          away: realOdds.spread_line
+          favorite: realOdds.spread_favorite
         },
         total: {
-          line: realOdds.total_line,
-          over: realOdds.total_line,
-          under: realOdds.total_line
+          line: realOdds.total_line
         }
       },
       
