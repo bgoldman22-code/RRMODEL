@@ -29,6 +29,21 @@ const ADVANCED_WEIGHTS = {
   script_adaptation: 0.01
 };
 
+// Team name mapping for odds integration
+const TEAM_NAME_MAPPING = {
+  'ARI': 'Arizona Cardinals', 'ATL': 'Atlanta Falcons', 'BAL': 'Baltimore Ravens',
+  'BUF': 'Buffalo Bills', 'CAR': 'Carolina Panthers', 'CHI': 'Chicago Bears',
+  'CIN': 'Cincinnati Bengals', 'CLE': 'Cleveland Browns', 'DAL': 'Dallas Cowboys',
+  'DEN': 'Denver Broncos', 'DET': 'Detroit Lions', 'GB': 'Green Bay Packers',
+  'HOU': 'Houston Texans', 'IND': 'Indianapolis Colts', 'JAX': 'Jacksonville Jaguars',
+  'KC': 'Kansas City Chiefs', 'LV': 'Las Vegas Raiders', 'LAC': 'Los Angeles Chargers',
+  'LAR': 'Los Angeles Rams', 'MIA': 'Miami Dolphins', 'MIN': 'Minnesota Vikings',
+  'NE': 'New England Patriots', 'NO': 'New Orleans Saints', 'NYG': 'New York Giants',
+  'NYJ': 'New York Jets', 'PHI': 'Philadelphia Eagles', 'PIT': 'Pittsburgh Steelers',
+  'SF': 'San Francisco 49ers', 'SEA': 'Seattle Seahawks', 'TB': 'Tampa Bay Buccaneers',
+  'TEN': 'Tennessee Titans', 'WAS': 'Washington Commanders'
+};
+
 // Utility functions
 function z(val, mean = 0, std = 1) { 
   return std > 0 ? (val - mean) / std : 0; 
@@ -183,7 +198,7 @@ function calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMe
   return finalSpread;
 }
 
-// Calculate total prediction
+// Calculate total prediction (FIXED VERSION)
 function calculateTotalPrediction(homeMetrics, awayMetrics) {
   console.log('=== TOTAL PREDICTION DEBUG ===');
   console.log('Home metrics core:', homeMetrics?.core);
@@ -199,30 +214,30 @@ function calculateTotalPrediction(homeMetrics, awayMetrics) {
   
   console.log('EPA values for total:', { homeOffEPA, awayOffEPA, homeDefEPA, awayDefEPA });
   
-  // Convert EPA to points per play, then to game total
-  const homePointsPerPlay = (homeOffEPA * 0.8) + 0.3; // Rough conversion
-  const awayPointsPerPlay = (awayOffEPA * 0.8) + 0.3;
+  // IMPROVED: Better EPA to points conversion
+  const homePointsPerPlay = (homeOffEPA * 3) + 0.35; // More aggressive scaling
+  const awayPointsPerPlay = (awayOffEPA * 3) + 0.35;
   
-  console.log('Points per play:', { homePointsPerPlay, awayPointsPerPlay });
+  console.log('Points per play (improved):', { homePointsPerPlay, awayPointsPerPlay });
   
-  // Factor in pace (plays per game)
-  const homePace = homeMetrics?.tempo?.pace || 65;
-  const awayPace = awayMetrics?.tempo?.pace || 65;
+  // IMPROVED: More realistic pace handling
+  const homePace = Math.max(homeMetrics?.tempo?.pace || 65, 60); // Minimum 60 plays
+  const awayPace = Math.max(awayMetrics?.tempo?.pace || 65, 60);
   const avgPace = (homePace + awayPace) / 2;
   
-  console.log('Pace values:', { homePace, awayPace, avgPace });
+  console.log('Pace values (improved):', { homePace, awayPace, avgPace });
   
   // Defensive adjustments
   const homeDefAdj = (homeDefEPA * 0.4); // Defense reduces opponent scoring
   const awayDefAdj = (awayDefEPA * 0.4);
   
-  const homeProjected = Math.max(10, (homePointsPerPlay + awayDefAdj) * avgPace);
-  const awayProjected = Math.max(10, (awayPointsPerPlay + homeDefAdj) * avgPace);
+  const homeProjected = Math.max(14, (homePointsPerPlay + awayDefAdj) * avgPace);
+  const awayProjected = Math.max(14, (awayPointsPerPlay + homeDefAdj) * avgPace);
   
-  console.log('Projected scores:', { homeProjected, awayProjected });
+  console.log('Projected scores (improved):', { homeProjected, awayProjected });
   
-  const total = clamp(homeProjected + awayProjected, 30, 70); // Reasonable total bounds
-  console.log('Final calculated total:', total);
+  const total = clamp(homeProjected + awayProjected, 35, 65); // More realistic bounds
+  console.log('Final calculated total (improved):', total);
   
   return total;
 }
@@ -242,6 +257,53 @@ function calculateConfidence(modelProb, marketProb, edge) {
   return Math.max(50, Math.round(rawConfidence * 50 + 50));
 }
 
+// Load live odds data
+async function loadLiveOdds() {
+  try {
+    console.log('Fetching live odds...');
+    const oddsRes = await fetch('/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals');
+    if (!oddsRes.ok) {
+      throw new Error(`Odds API failed: ${oddsRes.status}`);
+    }
+    const oddsData = await oddsRes.json();
+    console.log(`Loaded odds for ${oddsData.length} games`);
+    return oddsData;
+  } catch (error) {
+    console.warn('Failed to load live odds:', error);
+    return [];
+  }
+}
+
+// Find odds for a specific game
+function findGameOdds(allOdds, homeTeam, awayTeam) {
+  const homeTeamFull = TEAM_NAME_MAPPING[homeTeam];
+  const awayTeamFull = TEAM_NAME_MAPPING[awayTeam];
+  
+  return allOdds.find(odds => 
+    (odds.home_team === homeTeamFull && odds.away_team === awayTeamFull) ||
+    (odds.home_team === homeTeam && odds.away_team === awayTeam)
+  );
+}
+
+// Extract odds from bookmaker data
+function extractOddsData(gameOdds) {
+  if (!gameOdds?.bookmakers?.[0]?.markets) {
+    return {};
+  }
+  
+  const markets = gameOdds.bookmakers[0].markets;
+  const h2hMarket = markets.find(m => m.key === 'h2h');
+  const spreadsMarket = markets.find(m => m.key === 'spreads');
+  const totalsMarket = markets.find(m => m.key === 'totals');
+  
+  return {
+    ml_home: h2hMarket?.outcomes?.find(o => o.name === gameOdds.home_team)?.price,
+    ml_away: h2hMarket?.outcomes?.find(o => o.name === gameOdds.away_team)?.price,
+    spread_line: spreadsMarket?.outcomes?.find(o => o.name === gameOdds.home_team)?.point,
+    total_line: totalsMarket?.outcomes?.[0]?.point
+  };
+}
+
 // Main prediction function
 async function generateAdvancedPredictions(games, season) {
   console.log('Attempting to load advanced metrics...');
@@ -252,9 +314,7 @@ async function generateAdvancedPredictions(games, season) {
   
   try {
     advancedMetrics = await loadAdvancedMetrics(season);
-    console.log('Raw advanced metrics result:', advancedMetrics);
-    console.log('Advanced metrics type:', typeof advancedMetrics);
-    console.log('Advanced metrics keys:', advancedMetrics ? Object.keys(advancedMetrics) : 'null');
+    console.log('Advanced metrics loaded for season:', season);
     
     injuries = await loadInjuries();
     console.log('Injuries loaded:', !!injuries);
@@ -273,25 +333,9 @@ async function generateAdvancedPredictions(games, season) {
       predictions: {
         home_win_prob: 0.5,
         away_win_prob: 0.5,
-        moneyline: {
-          pick: null,
-          confidence: 50,
-          edge: 0
-        },
-        spread: {
-          pick: null,
-          confidence: 50,
-          line: null,
-          predicted: null,
-          edge: 0
-        },
-        total: {
-          pick: null,
-          confidence: 50,
-          line: null,
-          predicted: null,
-          edge: 0
-        }
+        moneyline: { pick: null, confidence: 50, edge: 0 },
+        spread: { pick: null, confidence: 50, line: null, predicted: null, edge: 0 },
+        total: { pick: null, confidence: 50, line: null, predicted: null, edge: 0 }
       },
       modelEnhancements: {
         metricsFreshness: null,
@@ -307,6 +351,9 @@ async function generateAdvancedPredictions(games, season) {
   }
 
   const league = advancedMetrics?.league || { means: {}, stds: {} };
+  
+  // Load live odds for all games
+  const allOdds = await loadLiveOdds();
 
   return games.map(game => {
     const homeCode = game.home_team;
@@ -353,16 +400,18 @@ async function generateAdvancedPredictions(games, season) {
 
     console.log('Final win probabilities:', { homeWinProb, awayWinProb });
 
-    // Get odds data from game object (should be populated by frontend)
-    const oddsData = game.odds || {};
-    console.log(`Odds data for ${homeCode} vs ${awayCode}:`, oddsData);
+    // Get real odds for this game
+    const gameOdds = findGameOdds(allOdds, homeCode, awayCode);
+    const realOdds = gameOdds ? extractOddsData(gameOdds) : {};
+    
+    console.log(`Real odds for ${homeCode} vs ${awayCode}:`, realOdds);
     
     // Moneyline predictions
     const mlPick = homeWinProb > 0.5 ? homeCode : awayCode;
     const mlModelProb = Math.max(homeWinProb, awayWinProb);
     const mlMarketProb = homeWinProb > 0.5 ? 
-      americanToImplied(oddsData.ml_home) : 
-      americanToImplied(oddsData.ml_away);
+      americanToImplied(realOdds.ml_home) : 
+      americanToImplied(realOdds.ml_away);
     const mlEdge = mlMarketProb ? mlModelProb - mlMarketProb : 0;
     const mlConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge);
 
@@ -370,7 +419,7 @@ async function generateAdvancedPredictions(games, season) {
 
     // Spread predictions
     const predictedSpread = calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMetrics);
-    const marketSpread = oddsData.spread_line || 0;
+    const marketSpread = realOdds.spread_line || 0;
     const spreadPick = predictedSpread > marketSpread ? homeCode : awayCode;
     const spreadEdge = Math.abs(predictedSpread - marketSpread);
     const spreadConfidence = calculateConfidence(0.6, 0.5, spreadEdge / 14); // Normalize spread edge
@@ -379,7 +428,7 @@ async function generateAdvancedPredictions(games, season) {
 
     // Total predictions
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics);
-    const marketTotal = oddsData.total_line || 44;
+    const marketTotal = realOdds.total_line || 44;
     const totalPick = predictedTotal > marketTotal ? 'over' : 'under';
     const totalEdge = Math.abs(predictedTotal - marketTotal);
     const totalConfidence = calculateConfidence(0.6, 0.5, totalEdge / 10); // Normalize total edge
@@ -418,16 +467,37 @@ async function generateAdvancedPredictions(games, season) {
           edge: Number(totalEdge.toFixed(1))
         }
       },
+      
+      // Include real odds data for frontend display
+      odds: {
+        moneyline: {
+          home: realOdds.ml_home,
+          away: realOdds.ml_away
+        },
+        spread: {
+          line: realOdds.spread_line,
+          home: realOdds.spread_line ? -realOdds.spread_line : null,
+          away: realOdds.spread_line
+        },
+        total: {
+          line: realOdds.total_line,
+          over: realOdds.total_line,
+          under: realOdds.total_line
+        }
+      },
+      
       modelEnhancements: {
         metricsFreshness: advancedMetrics?.asOf || null,
         injuriesAsOf: injuries?.asOf || null,
         featuresUsed: Object.keys(WEIGHTS),
         advancedFeaturesUsed: Object.keys(ADVANCED_WEIGHTS),
+        oddsIntegrated: !!gameOdds,
         notes: [
           "Tiered weights applied", 
           "EPA backbone = opponent-adjusted if present, else raw",
           "Home field advantage = +1.8%",
-          "Injury adjustments applied"
+          "Injury adjustments applied",
+          gameOdds ? "Live odds integrated" : "Using fallback odds"
         ]
       },
       teamStats: {
@@ -469,15 +539,15 @@ export default async (request, context) => {
 
     // Parse request for games data
     let games = [];
-    let season = '2024';
+    let season = '2025';
     
     if (request.method === 'POST') {
       const body = await request.json();
       games = body.games || [];
-      season = body.season || '2024';
+      season = body.season || '2025';
     } else if (request.method === 'GET') {
       const url = new URL(request.url);
-      season = url.searchParams.get('season') || '2024';
+      season = url.searchParams.get('season') || '2025';
       
       // For GET requests, you might need to load games from another source
       games = []; // You'll need to implement game loading for GET requests
