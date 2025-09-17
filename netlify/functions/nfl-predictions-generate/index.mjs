@@ -42,6 +42,12 @@ function sigmoid(x) {
   return 1 / (1 + Math.exp(-x));
 }
 
+function americanToImplied(american) {
+  const odds = Number(american);
+  if (!odds || isNaN(odds)) return null;
+  return odds > 0 ? 100 / (odds + 100) : Math.abs(odds) / (Math.abs(odds) + 100);
+}
+
 // Core team scoring function using advanced metrics
 function scoreTeamFromFeatures(teamData, league) {
   if (!teamData || !league) {
@@ -151,6 +157,66 @@ function applyInjuryAdjustments(probability, teamCode, injuries) {
   return clamp(probability + delta, 0.05, 0.95);
 }
 
+// Calculate spread prediction
+function calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMetrics) {
+  // Convert win probability to point spread
+  const probDiff = homeWinProb - awayWinProb;
+  const predictedSpread = probDiff * 14; // Rough conversion: 50% prob diff ≈ 7 point spread
+  
+  // Factor in offensive/defensive efficiency
+  const homeOffEPA = homeMetrics?.core?.off_epa || 0;
+  const homeDefEPA = homeMetrics?.core?.def_epa || 0;
+  const awayOffEPA = awayMetrics?.core?.off_epa || 0;
+  const awayDefEPA = awayMetrics?.core?.def_epa || 0;
+  
+  const epaSpread = (homeOffEPA - homeDefEPA) - (awayOffEPA - awayDefEPA);
+  const adjustedSpread = predictedSpread + (epaSpread * 5); // Scale EPA to points
+  
+  return clamp(adjustedSpread, -21, 21); // Reasonable spread bounds
+}
+
+// Calculate total prediction
+function calculateTotalPrediction(homeMetrics, awayMetrics) {
+  // Base scoring rates from EPA and pace
+  const homeOffEPA = homeMetrics?.core?.off_epa || 0;
+  const awayOffEPA = awayMetrics?.core?.off_epa || 0;
+  const homeDefEPA = homeMetrics?.core?.def_epa || 0;
+  const awayDefEPA = awayMetrics?.core?.def_epa || 0;
+  
+  // Convert EPA to points per play, then to game total
+  const homePointsPerPlay = (homeOffEPA * 0.8) + 0.3; // Rough conversion
+  const awayPointsPerPlay = (awayOffEPA * 0.8) + 0.3;
+  
+  // Factor in pace (plays per game)
+  const homePace = homeMetrics?.tempo?.pace || 65;
+  const awayPace = awayMetrics?.tempo?.pace || 65;
+  const avgPace = (homePace + awayPace) / 2;
+  
+  // Defensive adjustments
+  const homeDefAdj = (homeDefEPA * 0.4); // Defense reduces opponent scoring
+  const awayDefAdj = (awayDefEPA * 0.4);
+  
+  const homeProjected = Math.max(10, (homePointsPerPlay + awayDefAdj) * avgPace);
+  const awayProjected = Math.max(10, (awayPointsPerPlay + homeDefAdj) * avgPace);
+  
+  return clamp(homeProjected + awayProjected, 30, 70); // Reasonable total bounds
+}
+
+// Calculate confidence rating (1-100)
+function calculateConfidence(modelProb, marketProb, edge) {
+  // Base confidence from model certainty
+  const modelCertainty = Math.abs(modelProb - 0.5) * 2; // 0 to 1 scale
+  
+  // Edge component (model vs market difference)
+  const edgeComponent = edge ? Math.min(Math.abs(edge), 0.15) / 0.15 : 0;
+  
+  // Combine factors
+  const rawConfidence = (modelCertainty * 0.7) + (edgeComponent * 0.3);
+  
+  // Convert to 1-100 scale, with minimum threshold
+  return Math.max(50, Math.round(rawConfidence * 50 + 50));
+}
+
 // Main prediction function
 async function generateAdvancedPredictions(games, season) {
   console.log('Attempting to load advanced metrics...');
@@ -181,7 +247,13 @@ async function generateAdvancedPredictions(games, season) {
       ...game,
       predictions: {
         home_win_prob: 0.5,
-        away_win_prob: 0.5
+        away_win_prob: 0.5,
+        moneyline_pick: null,
+        moneyline_confidence: 50,
+        spread_pick: null,
+        spread_confidence: 50,
+        total_pick: null,
+        total_confidence: 50
       },
       modelEnhancements: {
         metricsFreshness: null,
@@ -232,12 +304,55 @@ async function generateAdvancedPredictions(games, season) {
     const homeWinProb = finalSum ? homeProb / finalSum : 0.5;
     const awayWinProb = 1 - homeWinProb;
 
-    // Enhanced game object with metadata
+    // Get odds data from game object (should be populated by frontend)
+    const oddsData = game.odds || {};
+    
+    // Moneyline predictions
+    const mlPick = homeWinProb > 0.5 ? homeCode : awayCode;
+    const mlModelProb = Math.max(homeWinProb, awayWinProb);
+    const mlMarketProb = homeWinProb > 0.5 ? 
+      americanToImplied(oddsData.ml_home) : 
+      americanToImplied(oddsData.ml_away);
+    const mlEdge = mlMarketProb ? mlModelProb - mlMarketProb : 0;
+    const mlConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge);
+
+    // Spread predictions
+    const predictedSpread = calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMetrics);
+    const marketSpread = oddsData.spread_line || 0;
+    const spreadPick = predictedSpread > marketSpread ? homeCode : awayCode;
+    const spreadEdge = Math.abs(predictedSpread - marketSpread);
+    const spreadConfidence = calculateConfidence(0.6, 0.5, spreadEdge / 14); // Normalize spread edge
+
+    // Total predictions
+    const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics);
+    const marketTotal = oddsData.total_line || 44;
+    const totalPick = predictedTotal > marketTotal ? 'over' : 'under';
+    const totalEdge = Math.abs(predictedTotal - marketTotal);
+    const totalConfidence = calculateConfidence(0.6, 0.5, totalEdge / 10); // Normalize total edge
+
+    // Enhanced game object with all predictions
     return {
       ...game,
       predictions: {
         home_win_prob: Number(homeWinProb.toFixed(3)),
-        away_win_prob: Number(awayWinProb.toFixed(3))
+        away_win_prob: Number(awayWinProb.toFixed(3)),
+        
+        // Moneyline
+        moneyline_pick: mlPick,
+        moneyline_confidence: mlConfidence,
+        moneyline_edge: Number((mlEdge * 100).toFixed(1)),
+        
+        // Spread
+        spread_pick: spreadPick,
+        spread_confidence: spreadConfidence,
+        predicted_spread: Number(predictedSpread.toFixed(1)),
+        spread_edge: Number(spreadEdge.toFixed(1)),
+        
+        // Total
+        total_pick: totalPick,
+        total_confidence: totalConfidence,
+        predicted_total: Number(predictedTotal.toFixed(1)),
+        total_edge: Number(totalEdge.toFixed(1))
       },
       modelEnhancements: {
         metricsFreshness: advancedMetrics?.asOf || null,
@@ -301,7 +416,6 @@ export default async (request, context) => {
       season = url.searchParams.get('season') || '2024';
       
       // For GET requests, you might need to load games from another source
-      // For now, return empty array or sample data
       games = []; // You'll need to implement game loading for GET requests
     }
 
