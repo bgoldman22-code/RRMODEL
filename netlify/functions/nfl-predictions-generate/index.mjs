@@ -292,7 +292,7 @@ function findGameOdds(allOdds, homeTeam, awayTeam) {
   return found;
 }
 
-// Extract odds from bookmaker data
+// FIXED: Extract odds from bookmaker data
 function extractOddsData(gameOdds) {
   if (!gameOdds?.bookmakers?.[0]?.markets) {
     return {};
@@ -305,26 +305,35 @@ function extractOddsData(gameOdds) {
   const homeMLOutcome = h2hMarket.find(o => o.name === gameOdds.home_team);
   const awayMLOutcome = h2hMarket.find(o => o.name === gameOdds.away_team);
   
-  // Extract spread odds - find which team is favored
+  // FIXED: Extract spread odds with proper favorite identification
   const spreadsMarket = markets.spreads || [];
   const homeSpreadOutcome = spreadsMarket.find(o => o.name === gameOdds.home_team);
   const awaySpreadOutcome = spreadsMarket.find(o => o.name === gameOdds.away_team);
   
-  // Determine who is favored and the spread
+  // Determine who is favored and store complete spread information
   let favoriteTeam = null;
+  let favoriteTeamCode = null;
   let favoriteSpread = null;
+  let underdogTeamCode = null;
   let underdogSpread = null;
   
   if (homeSpreadOutcome && homeSpreadOutcome.point < 0) {
     // Home team is favored
     favoriteTeam = 'home';
+    favoriteTeamCode = gameOdds.home_team;
     favoriteSpread = homeSpreadOutcome.point; // Negative number
+    underdogTeamCode = gameOdds.away_team;
     underdogSpread = awaySpreadOutcome?.point; // Positive number
   } else if (awaySpreadOutcome && awaySpreadOutcome.point < 0) {
     // Away team is favored
     favoriteTeam = 'away';
+    favoriteTeamCode = gameOdds.away_team;
     favoriteSpread = awaySpreadOutcome.point; // Negative number
+    underdogTeamCode = gameOdds.home_team;
     underdogSpread = homeSpreadOutcome?.point; // Positive number
+  } else {
+    // Handle pick'em or missing data
+    favoriteSpread = homeSpreadOutcome?.point || awaySpreadOutcome?.point || 0;
   }
   
   // Extract total odds
@@ -336,6 +345,8 @@ function extractOddsData(gameOdds) {
     ml_away: awayMLOutcome?.price,
     spread_line: favoriteSpread, // Always the negative number (favorite's spread)
     spread_favorite: favoriteTeam, // 'home' or 'away'
+    spread_favorite_team: favoriteTeamCode, // Full team name
+    spread_underdog_team: underdogTeamCode, // Full team name
     total_line: totalOutcome?.point
   };
 }
@@ -457,11 +468,14 @@ async function generateAdvancedPredictions(games, season) {
     const predictedSpread = calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMetrics);
     const marketSpread = realOdds.spread_line || 0; // This is always the favorite's spread (negative)
     const marketFavorite = realOdds.spread_favorite; // 'home' or 'away'
+    const marketFavoriteTeam = realOdds.spread_favorite_team; // Full team name
+    const marketUnderdogTeam = realOdds.spread_underdog_team; // Full team name
     
     console.log('=== SPREAD LOGIC DEBUG ===');
     console.log('Model predicted spread (home team margin):', predictedSpread);
     console.log('Market spread (favorite):', marketSpread);
-    console.log('Market favorite:', marketFavorite);
+    console.log('Market favorite:', marketFavorite, marketFavoriteTeam);
+    console.log('Market underdog:', marketUnderdogTeam);
     
     // Convert both to same reference point - margin by which home team wins
     let modelHomeMargin = predictedSpread; // Already in home team perspective
@@ -555,7 +569,7 @@ async function generateAdvancedPredictions(games, season) {
         }
       },
       
-      // Include real odds data for frontend display
+      // Include real odds data for frontend display - ENHANCED with spread details
       odds: {
         moneyline: {
           home: realOdds.ml_home,
@@ -563,7 +577,9 @@ async function generateAdvancedPredictions(games, season) {
         },
         spread: {
           line: realOdds.spread_line,
-          favorite: realOdds.spread_favorite
+          favorite: realOdds.spread_favorite,
+          favorite_team: realOdds.spread_favorite_team,
+          underdog_team: realOdds.spread_underdog_team
         },
         total: {
           line: realOdds.total_line
