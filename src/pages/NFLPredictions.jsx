@@ -85,8 +85,8 @@ function getTeamAbbreviation(fullName) {
   return nameMap[fullName] || fullName;
 }
 
-// Helper function to format spread display based on pick
-function formatSpreadDisplay(spread, homeTeam, awayTeam) {
+// CORRECTED: Helper function to format spread display based on pick
+function formatSpreadDisplay(spread, homeTeam, awayTeam, odds) {
   if (!spread || !spread.pick || spread.pick === 'push') {
     return {
       displayPick: spread?.pick || '—',
@@ -94,26 +94,45 @@ function formatSpreadDisplay(spread, homeTeam, awayTeam) {
     };
   }
   
-  const marketLine = spread.line || 0;
+  const marketLine = spread.line || 0; // This is always the favorite's spread (negative)
   
-  // If picking the home team, show the line as-is
-  // If picking the away team, flip the sign to show what they're getting
-  if (spread.pick === homeTeam) {
+  // Get team name mapping for comparison with odds data
+  const TEAM_NAME_MAPPING = {
+    'ARI': 'Arizona Cardinals', 'ATL': 'Atlanta Falcons', 'BAL': 'Baltimore Ravens',
+    'BUF': 'Buffalo Bills', 'CAR': 'Carolina Panthers', 'CHI': 'Chicago Bears',
+    'CIN': 'Cincinnati Bengals', 'CLE': 'Cleveland Browns', 'DAL': 'Dallas Cowboys',
+    'DEN': 'Denver Broncos', 'DET': 'Detroit Lions', 'GB': 'Green Bay Packers',
+    'HOU': 'Houston Texans', 'IND': 'Indianapolis Colts', 'JAX': 'Jacksonville Jaguars',
+    'KC': 'Kansas City Chiefs', 'LV': 'Las Vegas Raiders', 'LAC': 'Los Angeles Chargers',
+    'LAR': 'Los Angeles Rams', 'MIA': 'Miami Dolphins', 'MIN': 'Minnesota Vikings',
+    'NE': 'New England Patriots', 'NO': 'New Orleans Saints', 'NYG': 'New York Giants',
+    'NYJ': 'New York Jets', 'PHI': 'Philadelphia Eagles', 'PIT': 'Pittsburgh Steelers',
+    'SF': 'San Francisco 49ers', 'SEA': 'Seattle Seahawks', 'TB': 'Tampa Bay Buccaneers',
+    'TEN': 'Tennessee Titans', 'WAS': 'Washington Commanders'
+  };
+  
+  // Convert team codes to full names for comparison
+  const homeTeamFull = TEAM_NAME_MAPPING[homeTeam] || homeTeam;
+  const awayTeamFull = TEAM_NAME_MAPPING[awayTeam] || awayTeam;
+  const pickedTeamFull = TEAM_NAME_MAPPING[spread.pick] || spread.pick;
+  
+  // Determine if the picked team is the market favorite
+  const favoriteTeamFull = odds?.spread?.favorite_team;
+  const isPickingFavorite = pickedTeamFull === favoriteTeamFull;
+  
+  if (isPickingFavorite) {
+    // Picking the favorite - show the negative spread as-is
     return {
-      displayPick: homeTeam,
-      displayLine: marketLine > 0 ? `+${marketLine}` : `${marketLine}`
+      displayPick: spread.pick,
+      displayLine: `${marketLine}` // e.g., "-5.5"
     };
-  } else if (spread.pick === awayTeam) {
+  } else {
+    // Picking the underdog - flip to positive spread
     return {
-      displayPick: awayTeam,
-      displayLine: marketLine > 0 ? `${-marketLine}` : `+${Math.abs(marketLine)}`
+      displayPick: spread.pick,
+      displayLine: `+${Math.abs(marketLine)}` // e.g., "+5.5"
     };
   }
-  
-  return {
-    displayPick: spread.pick,
-    displayLine: `${marketLine}`
-  };
 }
 
 export default function NFLPredictions() {
@@ -213,8 +232,8 @@ export default function NFLPredictions() {
                   total?.confidence > 60 ? (total.confidence - 50) : 0
                 );
 
-                // Format spread display to show correct team and line
-                const spreadDisplay = formatSpreadDisplay(spread, r.home_team, r.away_team);
+                // CORRECTED: Format spread display to show correct team and line
+                const spreadDisplay = formatSpreadDisplay(spread, r.home_team, r.away_team, odds);
 
                 const PickBadge = ({ pick, confidence, type, modelValue, marketValue }) => (
                   <div className="space-y-1">
@@ -266,7 +285,7 @@ export default function NFLPredictions() {
                       ) : '—'}
                     </td>
                     
-                    {/* Spread Column - UPDATED with proper display */}
+                    {/* Spread Column - CORRECTED with proper display logic */}
                     <td className="px-4 py-3">
                       {spread ? (
                         <PickBadge 
