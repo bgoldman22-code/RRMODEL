@@ -149,12 +149,12 @@ export async function loadAdvancedMetrics(season = '2025') {
   return integratedData;
 }
 
-// FIXED: Proper week detection for 2024 NFL season
+// FIXED: Proper week detection for 2025 NFL season
 function detectCurrentWeek() {
   const now = new Date();
   
-  // 2024 NFL Season started September 5, 2024 (Thursday Night Football - Chiefs vs Ravens)
-  const seasonStart = new Date('2024-09-05');
+  // 2025 NFL Season started September 4, 2025 (Thursday Night Football - Chiefs vs Ravens)
+  const seasonStart = new Date('2025-09-04');
   
   // Calculate days since season start
   const daysSinceStart = Math.floor((now - seasonStart) / (24 * 60 * 60 * 1000));
