@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 
 /**
  * NFL Predictions Page
- * Updated to work with nfl-predictions-generate2 which handles real schedule data
+ * Updated to work with nfl-predictions-generate and 2025 season
  */
 
 const fmt = (v) => (v === null || v === undefined || v === '' ? '—' : v);
 const fmtPct = (p) => (typeof p === 'number' ? `${Math.round(p * 100)}%` : (typeof p === 'string' ? p : '—'));
 const fmtOdds = (odds) => odds > 0 ? `+${odds}` : `${odds}`;
 
-async function fetchSchedule(week = 3, season = 2024) {
+async function fetchSchedule(week = 3, season = 2025) {
   // First get the schedule data
   const scheduleUrl = `/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`;
   const scheduleRes = await fetch(scheduleUrl);
@@ -21,13 +21,13 @@ async function fetchSchedule(week = 3, season = 2024) {
     home_team: getTeamAbbreviation(game.homeTeam),
     away_team: getTeamAbbreviation(game.awayTeam), 
     game_id: game.id || `${game.homeTeam}-${game.awayTeam}`,
-    kickoff: game.kickoff
+    start: game.kickoff
   }));
   
   return games;
 }
 
-async function fetchPredictions(week = 3, season = 2024, force = false) {
+async function fetchPredictions(week = 3, season = 2025, force = false) {
   // Get schedule first
   const games = await fetchSchedule(week, season);
   
@@ -57,16 +57,20 @@ async function fetchPredictions(week = 3, season = 2024, force = false) {
     rows: predictions.map(pred => ({
       gameId: pred.game_id,
       matchup: `${pred.away_team} @ ${pred.home_team}`,
-      start: pred.kickoff,
+      start: pred.start,
+      predictions: pred.predictions, // FIXED: Keep the predictions object
+      home_team: pred.home_team,
+      away_team: pred.away_team,
       pick: pred.predictions.home_win_prob > 0.5 ? pred.home_team : pred.away_team,
       modelPickProb: Math.max(pred.predictions.home_win_prob, pred.predictions.away_win_prob),
       homeProb: pred.predictions.home_win_prob,
       awayProb: pred.predictions.away_win_prob,
-      modelEdge: null, // Your function doesn't return this
-      confidence: null, // Your function doesn't return this  
+      modelEdge: null,
+      confidence: null,  
       ml_home: null,
       ml_away: null,
-      teamStats: pred.teamStats
+      teamStats: pred.teamStats,
+      odds: pred.odds // Include odds if available
     })),
     meta: {
       week: week,
@@ -101,7 +105,7 @@ export default function NFLPredictions() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [week, setWeek] = useState(3);
-  const [season, setSeason] = useState(2024);
+  const season = 2025; // Fixed to current season
 
   const load = async (force = false) => {
     setLoading(true); 
@@ -117,7 +121,7 @@ export default function NFLPredictions() {
     }
   };
 
-  useEffect(() => { load(false); }, [week, season]);
+  useEffect(() => { load(false); }, [week]);
 
   return (
     <div className="p-6">
@@ -141,17 +145,6 @@ export default function NFLPredictions() {
               {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18].map(w => (
                 <option key={w} value={w}>Week {w}</option>
               ))}
-            </select>
-          </div>
-          <div className="flex items-center gap-2">
-            <label className="text-sm">Season:</label>
-            <select 
-              value={season} 
-              onChange={(e) => setSeason(Number(e.target.value))}
-              className="px-2 py-1 border rounded"
-            >
-              <option value={2024}>2024</option>
-              <option value={2023}>2023</option>
             </select>
           </div>
           <button
@@ -235,8 +228,7 @@ export default function NFLPredictions() {
                     <td className="px-4 py-3">
                       {spread ? (
                         <PickBadge 
-                          pick={spread.pick === 'home' ? r.home_team : 
-                                spread.pick === 'away' ? r.away_team : 'Push'}
+                          pick={spread.pick}
                           confidence={spread.confidence}
                           odds={spread.line ? `${spread.line > 0 ? '+' : ''}${spread.line}` : null}
                           type="spread"
@@ -265,8 +257,8 @@ export default function NFLPredictions() {
                     </td>
                     <td className="px-4 py-3 text-xs">
                       <div className="space-y-1">
-                        <div>Home: EPA {r.teamStats?.home?.epa?.toFixed(3) || '—'}</div>
-                        <div>Away: EPA {r.teamStats?.away?.epa?.toFixed(3) || '—'}</div>
+                        <div>Home: EPA {r.teamStats?.home?.strength?.toFixed(3) || '—'}</div>
+                        <div>Away: EPA {r.teamStats?.away?.strength?.toFixed(3) || '—'}</div>
                         <div>Form: {r.teamStats?.home?.form?.toFixed(3) || '—'}</div>
                       </div>
                     </td>
