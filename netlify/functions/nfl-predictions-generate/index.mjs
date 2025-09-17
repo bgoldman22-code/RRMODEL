@@ -305,9 +305,13 @@ function extractOddsData(gameOdds) {
   const homeMLOutcome = h2hMarket.find(o => o.name === gameOdds.home_team);
   const awayMLOutcome = h2hMarket.find(o => o.name === gameOdds.away_team);
   
-  // Extract spread odds  
+  // Extract spread odds - use the favorite's spread (negative number)
   const spreadsMarket = markets.spreads || [];
   const homeSpreadOutcome = spreadsMarket.find(o => o.name === gameOdds.home_team);
+  const awaySpreadOutcome = spreadsMarket.find(o => o.name === gameOdds.away_team);
+  
+  // Use the negative spread (favorite's side) for consistency
+  const favoriteSpread = homeSpreadOutcome?.point < 0 ? homeSpreadOutcome.point : awaySpreadOutcome?.point;
   
   // Extract total odds
   const totalsMarket = markets.totals || [];
@@ -316,7 +320,7 @@ function extractOddsData(gameOdds) {
   return {
     ml_home: homeMLOutcome?.price,
     ml_away: awayMLOutcome?.price,
-    spread_line: homeSpreadOutcome?.point,
+    spread_line: favoriteSpread, // This will be negative (favorite's spread)
     total_line: totalOutcome?.point
   };
 }
@@ -437,11 +441,35 @@ async function generateAdvancedPredictions(games, season) {
     // Spread predictions
     const predictedSpread = calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMetrics);
     const marketSpread = realOdds.spread_line || 0;
-    const spreadPick = predictedSpread > marketSpread ? homeCode : awayCode;
+    
+    // Fix spread pick logic: if model spread > market spread, take the home team
+    // But also consider who the model actually favors
+    let spreadPick;
+    if (Math.abs(predictedSpread - marketSpread) < 1) {
+      spreadPick = 'push'; // Too close to call
+    } else if (homeWinProb > 0.55) {
+      // Model strongly favors home team
+      spreadPick = homeCode;
+    } else if (awayWinProb > 0.55) {
+      // Model strongly favors away team  
+      spreadPick = awayCode;
+    } else {
+      // Use spread differential as tiebreaker
+      spreadPick = predictedSpread > marketSpread ? homeCode : awayCode;
+    }
+    
     const spreadEdge = Math.abs(predictedSpread - marketSpread);
     const spreadConfidence = calculateConfidence(0.6, 0.5, spreadEdge / 14); // Normalize spread edge
 
-    console.log('Spread prediction:', { predictedSpread, marketSpread, spreadPick, spreadConfidence, spreadEdge });
+    console.log('Spread prediction:', { 
+      predictedSpread, 
+      marketSpread, 
+      spreadPick, 
+      spreadConfidence, 
+      spreadEdge,
+      homeWinProb,
+      modelFavorsHome: homeWinProb > 0.5
+    });
 
     // Total predictions
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics);
