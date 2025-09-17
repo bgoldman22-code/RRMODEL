@@ -1,34 +1,42 @@
 // netlify/functions/nfl-predictions-generate/index.mjs
-// HYBRID v7 - Context-aware historical integration with leading indicators
+// HYBRID v7 - EMERGENCY FIX: Massive team differentiation amplification
 
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics, getCurrentWeek, getCurrentWeights, diagnoseMetricsData } from '../_lib/blobs-nfl.js';
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
 
-// Base tiered weights - rebalanced for leading indicators
+// EMERGENCY: Dramatically increased weights for maximum differentiation
 const BASE_WEIGHTS = {
-  // Tier 1 - Process metrics that stabilize quickly (55% total)
-  pressure_diff: 0.18,   // Pass rush stabilizes in ~3 games
-  explosive_diff: 0.15,   // Explosive plays lead directly to TDs
-  turnover_diff: 0.12,    // Turnover creation rates stabilize faster
-  eds: 0.10,             // Early down success - process metric
+  // Tier 1 - Process metrics with MASSIVE amplification
+  pressure_diff: 0.25,   // Increased from 0.18 - highest weight
+  explosive_diff: 0.20,  // Increased from 0.15
+  turnover_diff: 0.15,   // Increased from 0.12
+  eds: 0.12,             // Increased from 0.10
   
-  // Tier 2 - Situational metrics (30% total)
-  rz_td: 0.15,           // Red zone efficiency
-  third_down: 0.10,      // Third down conversion
-  penalty_diff: 0.05,    // Discipline metrics
+  // Tier 2 - Reduced outcome metrics for early season
+  rz_td: 0.15,           // Keep at 0.15
+  third_down: 0.08,      // Reduced from 0.10
+  penalty_diff: 0.02,    // Reduced from 0.05
   
-  // Tier 3 - Outcome metrics (15% total) - reduced early season weight
-  fourth_down_agg: 0.08,
-  top_eff: 0.07
+  // Tier 3 - Minimal weight for noisy metrics
+  fourth_down_agg: 0.02, // Reduced from 0.08
+  top_eff: 0.01          // Reduced from 0.07
 };
 
 // Advanced feature weights with enhanced early season focus
 const ADVANCED_WEIGHTS = {
-  form: 0.06,            // Reduced - less reliable early season
-  consistency: 0.01,     // Reduced - requires larger sample
-  tempo: 0.015,          // Increased - pace stabilizes quickly  
-  formations: 0.015,     // Increased - process metric
+  form: 0.08,            // Increased recent form impact
+  consistency: 0.01,     // Minimal - unreliable early season
+  tempo: 0.02,           // Increased - stabilizes quickly  
+  formations: 0.02,      // Increased - process metric
   script_adaptation: 0.01
+};
+
+// EMERGENCY: Massive amplification factors
+const AMPLIFICATION_FACTORS = {
+  CORE_EPA: 35,          // Increased from 16 to 35
+  TIER_MULTIPLIER: 8,    // Increased from 3-5 to 8
+  ADVANCED_MULTIPLIER: 6, // Increased from 3 to 6
+  MATCHUP_MULTIPLIER: 4  // Increased from 3 to 4
 };
 
 // NEW: Roster continuity factors for context-aware weighting
@@ -100,12 +108,12 @@ function calculateRosterContinuity(teamMetrics, teamCode) {
 function calculateContextAwareWeights(currentWeek, homeMetrics, awayMetrics) {
   console.log('Calculating context-aware weights for week', currentWeek);
   
-  // Base weights by week (more aggressive early season current weighting)
+  // EMERGENCY: Even more aggressive current season weighting
   let baseCurrentWeight;
   if (currentWeek <= 3) {
-    baseCurrentWeight = 0.65; // Increased from 0.4 to 0.65
+    baseCurrentWeight = 0.75; // Increased from 0.65 to 0.75
   } else if (currentWeek <= 6) {
-    baseCurrentWeight = 0.75;
+    baseCurrentWeight = 0.80;
   } else if (currentWeek <= 12) {
     baseCurrentWeight = 0.85;
   } else {
@@ -119,7 +127,7 @@ function calculateContextAwareWeights(currentWeek, homeMetrics, awayMetrics) {
   
   // Lower continuity = higher current season weight
   const continuityAdjustment = (1 - avgContinuity) * 0.2; // Up to 20% boost to current season
-  const adjustedCurrentWeight = clamp(baseCurrentWeight + continuityAdjustment, 0.5, 0.95);
+  const adjustedCurrentWeight = clamp(baseCurrentWeight + continuityAdjustment, 0.6, 0.95);
   
   const weights = {
     season_2025: adjustedCurrentWeight,
@@ -128,7 +136,7 @@ function calculateContextAwareWeights(currentWeek, homeMetrics, awayMetrics) {
     recent_4_weeks: currentWeek <= 4 ? 0.15 : 0.1    // Boost recent form in early season
   };
   
-  console.log('Context-aware weights:', weights);
+  console.log('EMERGENCY: Enhanced context-aware weights:', weights);
   return weights;
 }
 
@@ -161,7 +169,7 @@ function calculateEvidenceStrength(teamMetrics, currentWeek) {
 
 // NEW: Bayesian updating with dynamic confidence
 function applyBayesianUpdating(historicalScore, currentScore, evidenceStrength, currentWeight) {
-  console.log('Applying Bayesian updating...');
+  console.log('Applying EMERGENCY Bayesian updating...');
   
   // Historical score is our prior belief
   const prior = historicalScore;
@@ -169,26 +177,26 @@ function applyBayesianUpdating(historicalScore, currentScore, evidenceStrength, 
   // Current score is our new evidence
   const evidence = currentScore;
   
-  // Evidence strength determines how much we update
-  const updateStrength = evidenceStrength * currentWeight;
+  // EMERGENCY: More aggressive evidence weighting
+  const updateStrength = evidenceStrength * currentWeight * 1.5; // 1.5x multiplier
   
   // Bayesian update: posterior = prior + (evidence - prior) * update_strength
   const posteriorScore = prior + (evidence - prior) * updateStrength;
   
-  console.log('Bayesian update:', {
+  console.log('EMERGENCY Bayesian update:', {
     prior, evidence, updateStrength, posteriorScore
   });
   
   return posteriorScore;
 }
 
-// ENHANCED: Core team scoring function with context-aware approach
+// EMERGENCY: Massively amplified team scoring function
 function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = null, isHome = false, currentWeek = 3) {
   if (!teamData || !league) {
-    return { score: 0, confidence: 0.5 }; // Return score and confidence
+    return { score: 0, confidence: 0.5, evidenceStrength: 0.25 };
   }
 
-  console.log(`Context-aware scoring for ${isHome ? 'home' : 'away'} team (week ${currentWeek})`);
+  console.log(`EMERGENCY v7: Massively amplified scoring for ${isHome ? 'home' : 'away'} team (week ${currentWeek})`);
   
   // Check if we have historical metadata
   const hasHistoricalData = teamData._metadata?.hasHistoricalData || false;
@@ -215,15 +223,22 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
   const zPen = z(disc.penalty_diff ?? 0, league.means?.penalty_diff || 0, league.stds?.penalty_diff || 1);
   const zTOP = z(tempo.top_eff ?? 0, league.means?.top_eff || 0, league.stds?.top_eff || 1);
 
-  // Core EPA backbone (prefer opponent-adjusted)
+  // EMERGENCY: Core EPA backbone with MASSIVE amplification
   const offEPA = core.off_adj_epa ?? core.off_epa ?? 0;
   const defEPA = -(core.def_adj_epa ?? core.def_epa ?? 0);
+  
+  console.log(`EMERGENCY v7: Raw EPA - Off: ${offEPA}, Def: ${defEPA}`);
 
-  // Advanced features with context-aware weighting
+  // EMERGENCY: MASSIVELY amplified core score
+  const coreScore = (offEPA + defEPA) * AMPLIFICATION_FACTORS.CORE_EPA;
+  
+  console.log(`EMERGENCY v7: Amplified core score: ${coreScore}`);
+
+  // Advanced features with historical context  
   const consistency = teamData?.consistency?.off ?? 0.5;
   const form = teamData?.form?.off ?? 0;
   
-  // Enhanced form calculation with recent games boost (early season focus)
+  // Enhanced form calculation with recent games boost
   const enhancedForm = hasHistoricalData && contextWeights?.recent_4_weeks > 0 ? 
     form * (1 + contextWeights.recent_4_weeks * 2) : form;
 
@@ -234,29 +249,30 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
   // Calculate evidence strength for this team
   const evidenceStrength = calculateEvidenceStrength(teamData, currentWeek);
 
-  // Weighted combination - prioritize leading indicators
-  const coreScore = (offEPA + defEPA) * 16; // Increased from 14 to 16 for more differentiation
-  
+  // EMERGENCY: Massively amplified tier calculation
   const tierScore = 
-    (BASE_WEIGHTS.pressure_diff * zPress * 3) +      // Increased weight for leading indicator
-    (BASE_WEIGHTS.explosive_diff * zExpl * 3) +      // Process metric
-    (BASE_WEIGHTS.turnover_diff * zTOdiff * 4) +     // Leading indicator
-    (BASE_WEIGHTS.eds * zEDS * 2.5) +                // Process metric
-    (BASE_WEIGHTS.rz_td * zRZ * 2.5) +               // Slightly reduced
-    (BASE_WEIGHTS.third_down * zThird * 2) +         // Outcome metric - reduced
-    (BASE_WEIGHTS.fourth_down_agg * z4th * 1) +
-    (BASE_WEIGHTS.penalty_diff * zPen * 1.5) +
-    (BASE_WEIGHTS.top_eff * zTOP * 1);
+    (BASE_WEIGHTS.pressure_diff * zPress * AMPLIFICATION_FACTORS.TIER_MULTIPLIER) +
+    (BASE_WEIGHTS.explosive_diff * zExpl * AMPLIFICATION_FACTORS.TIER_MULTIPLIER) +
+    (BASE_WEIGHTS.turnover_diff * zTOdiff * AMPLIFICATION_FACTORS.TIER_MULTIPLIER) +
+    (BASE_WEIGHTS.eds * zEDS * AMPLIFICATION_FACTORS.TIER_MULTIPLIER) +
+    (BASE_WEIGHTS.rz_td * zRZ * (AMPLIFICATION_FACTORS.TIER_MULTIPLIER * 0.8)) +
+    (BASE_WEIGHTS.third_down * zThird * (AMPLIFICATION_FACTORS.TIER_MULTIPLIER * 0.6)) +
+    (BASE_WEIGHTS.fourth_down_agg * z4th * (AMPLIFICATION_FACTORS.TIER_MULTIPLIER * 0.4)) +
+    (BASE_WEIGHTS.penalty_diff * zPen * (AMPLIFICATION_FACTORS.TIER_MULTIPLIER * 0.4)) +
+    (BASE_WEIGHTS.top_eff * zTOP * (AMPLIFICATION_FACTORS.TIER_MULTIPLIER * 0.4));
 
+  console.log(`EMERGENCY v7: Amplified tier score: ${tierScore}`);
+
+  // EMERGENCY: Amplified advanced features
   const advancedScore = 
-    (ADVANCED_WEIGHTS.consistency * (consistency - 0.5) * 3) +  // Reduced early season impact
-    (ADVANCED_WEIGHTS.form * enhancedForm * 4) +                // Increased recent form impact
-    (ADVANCED_WEIGHTS.tempo * paceAdj * 2.5) +                  // Increased - leading indicator
-    (ADVANCED_WEIGHTS.formations * motionAdv * 2.5) +           // Increased - process metric
-    (ADVANCED_WEIGHTS.script_adaptation * scriptAdapt * 2);
+    (ADVANCED_WEIGHTS.consistency * (consistency - 0.5) * AMPLIFICATION_FACTORS.ADVANCED_MULTIPLIER) +
+    (ADVANCED_WEIGHTS.form * enhancedForm * AMPLIFICATION_FACTORS.ADVANCED_MULTIPLIER) +
+    (ADVANCED_WEIGHTS.tempo * paceAdj * AMPLIFICATION_FACTORS.ADVANCED_MULTIPLIER) +
+    (ADVANCED_WEIGHTS.formations * motionAdv * AMPLIFICATION_FACTORS.ADVANCED_MULTIPLIER) +
+    (ADVANCED_WEIGHTS.script_adaptation * scriptAdapt * AMPLIFICATION_FACTORS.ADVANCED_MULTIPLIER);
 
-  // Matchup score component
-  const matchupScore = calculateMatchupScore(matchupTerms) * 12; // Increased from 10 to 12
+  // EMERGENCY: Amplified matchup score component
+  const matchupScore = calculateMatchupScore(matchupTerms) * AMPLIFICATION_FACTORS.MATCHUP_MULTIPLIER;
 
   // Historical vs current season score separation
   const currentSeasonScore = coreScore + tierScore + advancedScore + matchupScore;
@@ -276,7 +292,7 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
   const sampleBoost = Math.min(currentWeek / 8, 0.2); // Max 20% boost by week 8
   const finalConfidence = clamp(baseConfidence + evidenceBoost + sampleBoost, 0.3, 0.9);
   
-  console.log('Context-aware scoring breakdown:', {
+  console.log('EMERGENCY v7: Final scoring breakdown:', {
     coreScore, tierScore, advancedScore, matchupScore, 
     currentSeasonScore, historicalScore, finalScore,
     evidenceStrength, finalConfidence
@@ -289,21 +305,21 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
   };
 }
 
-// Enhanced injury adjustments
+// Enhanced injury adjustments with more impact
 function applyInjuryAdjustments(scoreData, teamCode, injuries) {
   const teamInjuries = injuries.teams?.[teamCode] || {};
   let delta = 0;
 
-  // QB status impact (in points)
+  // EMERGENCY: Increased QB status impact
   switch (teamInjuries.qb_status) {
     case 'out':
-      delta -= 5; // Increased impact for context awareness
+      delta -= 8; // Increased from 5
       break;
     case 'doubtful':
-      delta -= 2.5;
+      delta -= 4; // Increased from 2.5
       break;
     case 'questionable':
-      delta -= 1;
+      delta -= 2; // Increased from 1
       break;
     default:
       break;
@@ -313,46 +329,50 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries) {
   const olOut = teamInjuries.ol_starters_out ?? 0;
   const dbOut = teamInjuries.db_starters_out ?? 0;
 
-  if (olOut >= 2) delta -= 1.5; // Increased impact
-  if (olOut >= 3) delta -= 3;   // Increased impact
-  if (dbOut >= 2) delta -= 1;
+  if (olOut >= 2) delta -= 2.5; // Increased impact
+  if (olOut >= 3) delta -= 5;   // Increased impact
+  if (dbOut >= 2) delta -= 2;   // Increased impact
 
-  console.log('Enhanced injury adjustment for', teamCode, ':', delta, 'points');
+  console.log('EMERGENCY injury adjustment for', teamCode, ':', delta, 'points');
   
   return {
     score: scoreData.score + delta,
-    confidence: scoreData.confidence * (1 - Math.abs(delta) * 0.05), // Reduce confidence with injuries
+    confidence: scoreData.confidence * (1 - Math.abs(delta) * 0.03), // Reduce confidence with injuries
     evidenceStrength: scoreData.evidenceStrength
   };
 }
 
-// ENHANCED: Calculate spread prediction with context-aware confidence
+// EMERGENCY: Enhanced spread prediction with massive amplification
 function calculateSpreadPrediction(homeScoreData, awayScoreData) {
-  console.log('=== CONTEXT-AWARE SPREAD PREDICTION ===');
+  console.log('=== EMERGENCY v7 SPREAD PREDICTION ===');
   console.log('Score data:', { homeScoreData, awayScoreData });
   
-  // Context-aware home field advantage based on confidence
+  // EMERGENCY: Dynamic home field advantage based on confidence
   const avgConfidence = (homeScoreData.confidence + awayScoreData.confidence) / 2;
-  const confidentHFA = 1.2;  // High confidence in data
-  const uncertainHFA = 0.8;  // Lower confidence = smaller HFA
+  const confidentHFA = 1.5;  // Increased from 1.2
+  const uncertainHFA = 0.5;  // Decreased from 0.8
   
   const dynamicHFA = confidentHFA - (confidentHFA - uncertainHFA) * (1 - avgConfidence);
   
+  // EMERGENCY: Massively amplified score difference calculation
+  const scoreDifference = homeScoreData.score - awayScoreData.score;
+  const amplifiedDifference = scoreDifference * 0.8; // Direct score to spread conversion
+  
   // Calculate predicted home margin
-  const predictedHomeMargin = dynamicHFA + homeScoreData.score - awayScoreData.score;
+  const predictedHomeMargin = dynamicHFA + amplifiedDifference;
   
-  const finalSpread = clamp(predictedHomeMargin, -21, 21);
+  const finalSpread = clamp(predictedHomeMargin, -28, 28);
   
-  console.log('Context-aware spread calculation:', { 
-    avgConfidence, dynamicHFA, predictedHomeMargin, finalSpread 
+  console.log('EMERGENCY spread calculation:', { 
+    avgConfidence, dynamicHFA, scoreDifference, amplifiedDifference, predictedHomeMargin, finalSpread 
   });
   
   return finalSpread;
 }
 
-// Enhanced total prediction
+// EMERGENCY: Enhanced total prediction with amplification
 function calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread = 0) {
-  console.log('=== CONTEXT-AWARE TOTAL PREDICTION ===');
+  console.log('=== EMERGENCY v7 TOTAL PREDICTION ===');
   
   // Base team scoring rates from EPA
   const homeOffEPA = homeMetrics?.core?.off_epa || 0;
@@ -364,28 +384,28 @@ function calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread = 0) {
   const homeForm = homeMetrics?.form?.off || 0;
   const awayForm = awayMetrics?.form?.off || 0;
   
-  console.log('Total factors:', { 
+  console.log('EMERGENCY total factors:', { 
     homeOffEPA, awayOffEPA, homeDefEPA, awayDefEPA, homeForm, awayForm 
   });
   
-  // Enhanced EPA-to-points conversion for better differentiation
-  const homePointsPerPlay = (homeOffEPA * 6) + 0.45 + (homeForm * 0.2); // Increased multipliers
-  const awayPointsPerPlay = (awayOffEPA * 6) + 0.45 + (awayForm * 0.2);
+  // EMERGENCY: Massively amplified EPA-to-points conversion
+  const homePointsPerPlay = (homeOffEPA * 10) + 0.55 + (homeForm * 0.3); // Increased multipliers
+  const awayPointsPerPlay = (awayOffEPA * 10) + 0.55 + (awayForm * 0.3);
   
   // Use dynamic expected plays calculation
   const expectedPlays = calculateExpectedPlays(homeMetrics?.tempo, awayMetrics?.tempo, marketSpread);
   console.log('Expected plays (dynamic):', expectedPlays);
   
-  // Enhanced defensive adjustments
-  const homeDefAdj = (homeDefEPA * 0.7); // Increased impact
-  const awayDefAdj = (awayDefEPA * 0.7);
+  // EMERGENCY: Enhanced defensive adjustments
+  const homeDefAdj = (homeDefEPA * 0.8); // Increased from 0.7
+  const awayDefAdj = (awayDefEPA * 0.8);
   
-  const homeProjected = Math.max(12, (homePointsPerPlay + awayDefAdj) * (expectedPlays/2));
-  const awayProjected = Math.max(12, (awayPointsPerPlay + homeDefAdj) * (expectedPlays/2));
+  const homeProjected = Math.max(10, (homePointsPerPlay + awayDefAdj) * (expectedPlays/2));
+  const awayProjected = Math.max(10, (awayPointsPerPlay + homeDefAdj) * (expectedPlays/2));
   
-  const total = clamp(homeProjected + awayProjected, 32, 72);
+  const total = clamp(homeProjected + awayProjected, 30, 75);
   
-  console.log('Context-aware total calculation:', { 
+  console.log('EMERGENCY total calculation:', { 
     homePointsPerPlay, awayPointsPerPlay, expectedPlays,
     homeProjected, awayProjected, total 
   });
@@ -393,19 +413,22 @@ function calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread = 0) {
   return total;
 }
 
-// Enhanced confidence calculation with context awareness
-function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evidenceStrength) {
+// EMERGENCY: Enhanced confidence calculation with team differentiation boost
+function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evidenceStrength, scoreDifference = 0) {
   const modelCertainty = Math.abs(modelProb - 0.5) * 2;
-  const edgeComponent = edge ? Math.min(Math.abs(edge), 0.15) / 0.15 : 0;
+  const edgeComponent = edge ? Math.min(Math.abs(edge), 0.20) / 0.20 : 0;
+  
+  // EMERGENCY: Team differentiation confidence boost
+  const differentiationBoost = Math.min(Math.abs(scoreDifference) / 8, 0.2); // Up to 20% boost for large score differences
   
   // Context-aware confidence boosts
-  const scoreConfidenceBoost = (scoreConfidence - 0.5) * 0.2; // Max 8% boost
-  const evidenceBoost = evidenceStrength * 0.15; // Max 15% boost
+  const scoreConfidenceBoost = (scoreConfidence - 0.5) * 0.25; // Increased from 0.2
+  const evidenceBoost = evidenceStrength * 0.2; // Increased from 0.15
   
-  const rawConfidence = (modelCertainty * 0.6) + (edgeComponent * 0.25) + 
-                       scoreConfidenceBoost + evidenceBoost;
+  const rawConfidence = (modelCertainty * 0.5) + (edgeComponent * 0.2) + 
+                       scoreConfidenceBoost + evidenceBoost + differentiationBoost;
   
-  return Math.max(50, Math.round(rawConfidence * 50 + 50));
+  return Math.max(55, Math.round(rawConfidence * 50 + 60)); // Increased base from 50 to 60
 }
 
 // Load live odds (unchanged)
@@ -496,10 +519,10 @@ function extractOddsData(gameOdds) {
   };
 }
 
-// MAIN HYBRID PREDICTION FUNCTION
+// MAIN EMERGENCY HYBRID PREDICTION FUNCTION
 async function generateAdvancedPredictions(games, season) {
-  console.log('=== HYBRID v7 CONTEXT-AWARE PREDICTION ENGINE ===');
-  console.log('Context-aware historical integration with leading indicators...');
+  console.log('=== EMERGENCY HYBRID v7 - MAXIMUM TEAM DIFFERENTIATION ===');
+  console.log('Massively amplified scoring to force team separation...');
   
   let advancedMetrics = null;
   let injuries = null;
@@ -535,6 +558,7 @@ async function generateAdvancedPredictions(games, season) {
         historicalDataUsed: false,
         contextAwareWeighting: false,
         bayesianUpdating: false,
+        emergencyFix: true,
         notes: ["Enhanced metrics not available - using fallback"]
       }
     }));
@@ -543,7 +567,7 @@ async function generateAdvancedPredictions(games, season) {
   const league = advancedMetrics?.league || { means: {}, stds: {} };
   const currentWeek = getCurrentWeek(advancedMetrics);
   
-  console.log(`Current week: ${currentWeek}`);
+  console.log(`EMERGENCY: Current week: ${currentWeek}`);
   
   // Load live odds for all games
   const allOdds = await loadLiveOdds();
@@ -552,7 +576,7 @@ async function generateAdvancedPredictions(games, season) {
     const homeCode = game.home_team;
     const awayCode = game.away_team;
 
-    console.log(`\n=== HYBRID PREDICTION: ${awayCode} @ ${homeCode} ===`);
+    console.log(`\n=== EMERGENCY PREDICTION: ${awayCode} @ ${homeCode} ===`);
 
     // Get team enhanced metrics
     const homeMetrics = getTeamMetrics(advancedMetrics, homeCode);
@@ -568,13 +592,13 @@ async function generateAdvancedPredictions(games, season) {
     const hasMatchupData = !!(matchups?.home && matchups?.away);
     const hasContextData = !!(contextWeights && currentWeek);
     
-    console.log('Data availability:', { hasHistoricalData, hasMatchupData, hasContextData });
+    console.log('EMERGENCY: Data availability:', { hasHistoricalData, hasMatchupData, hasContextData });
 
-    // HYBRID: Calculate context-aware scores with confidence
+    // EMERGENCY: Calculate massively amplified scores
     let homeScoreData = scoreTeamFromFeatures(homeMetrics, league, contextWeights, matchups?.home, true, currentWeek);
     let awayScoreData = scoreTeamFromFeatures(awayMetrics, league, contextWeights, matchups?.away, false, currentWeek);
 
-    console.log('Initial context-aware scores:', { homeScoreData, awayScoreData });
+    console.log('EMERGENCY: Initial amplified scores:', { homeScoreData, awayScoreData });
 
     // Apply injury adjustments
     if (injuries) {
@@ -582,14 +606,18 @@ async function generateAdvancedPredictions(games, season) {
       awayScoreData = applyInjuryAdjustments(awayScoreData, awayCode, injuries);
     }
 
-    console.log('Final scores after injuries:', { homeScoreData, awayScoreData });
+    console.log('EMERGENCY: Final scores after injuries:', { homeScoreData, awayScoreData });
 
-    // Convert to win probabilities with context-aware home field advantage
+    // Calculate score difference for diagnostics
+    const scoreDifference = homeScoreData.score - awayScoreData.score;
+    console.log(`EMERGENCY: Score difference: ${scoreDifference.toFixed(2)} (target: >4)`);
+
+    // Convert to win probabilities with amplified spread prediction
     const predictedSpread = calculateSpreadPrediction(homeScoreData, awayScoreData);
     const homeWinProb = sigmoid(predictedSpread / 14);
     const awayWinProb = 1 - homeWinProb;
 
-    console.log('Context-aware win probabilities:', { homeWinProb, awayWinProb, predictedSpread });
+    console.log('EMERGENCY: Amplified win probabilities:', { homeWinProb, awayWinProb, predictedSpread });
 
     // Get real odds for this game
     const gameOdds = findGameOdds(allOdds, homeCode, awayCode);
@@ -597,9 +625,11 @@ async function generateAdvancedPredictions(games, season) {
     
     console.log(`Real odds for ${homeCode} vs ${awayCode}:`, realOdds);
     
-    // MONEYLINE: Pick who the model thinks will win
+    // MONEYLINE: Pick who the model thinks will win (should now properly pick strong away teams)
     const mlPick = homeWinProb > awayWinProb ? homeCode : awayCode;
     const mlModelProb = Math.max(homeWinProb, awayWinProb);
+    
+    console.log(`EMERGENCY: Moneyline pick: ${mlPick} (${(mlModelProb * 100).toFixed(1)}% probability)`);
     
     // Calculate market probabilities and edge for betting analysis
     const homeMarketProb = americanToImplied(realOdds.ml_home) || 0.5;
@@ -608,21 +638,21 @@ async function generateAdvancedPredictions(games, season) {
     const mlMarketProb = mlPick === homeCode ? homeMarketProb : awayMarketProb;
     const mlEdge = mlMarketProb ? mlModelProb - mlMarketProb : 0;
     
-    // Enhanced confidence calculation
+    // Enhanced confidence calculation with score difference
     const avgConfidence = (homeScoreData.confidence + awayScoreData.confidence) / 2;
     const avgEvidence = (homeScoreData.evidenceStrength + awayScoreData.evidenceStrength) / 2;
-    const mlConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge, avgConfidence, avgEvidence);
+    const mlConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge, avgConfidence, avgEvidence, scoreDifference);
 
     // SPREAD: Pick who model thinks will cover
     const marketSpread = realOdds.spread_line || 0;
     const marketFavorite = realOdds.spread_favorite;
     
-    console.log('=== CONTEXT-AWARE SPREAD LOGIC ===');
+    console.log('=== EMERGENCY SPREAD LOGIC ===');
     console.log('Model predicted spread (home margin):', predictedSpread);
     console.log('Market spread (favorite):', marketSpread);
     console.log('Market favorite:', marketFavorite);
     
-    // Determine spread pick with context awareness
+    // Determine spread pick with amplified confidence
     let modelHomeMargin = predictedSpread;
     let marketHomeMargin;
     
@@ -637,10 +667,8 @@ async function generateAdvancedPredictions(games, season) {
     const marginDifference = modelHomeMargin - marketHomeMargin;
     let spreadPick;
     
-    // Context-aware threshold based on confidence
-    const baseThreshold = 1.0;
-    const confidenceAdjustment = (1 - avgConfidence) * 1.0; // Lower confidence = higher threshold
-    const spreadThreshold = baseThreshold + confidenceAdjustment;
+    // EMERGENCY: Reduced threshold for more decisive picks
+    const spreadThreshold = 0.5; // Reduced from 1.0
     
     if (Math.abs(marginDifference) < spreadThreshold) {
       spreadPick = modelHomeMargin > marketHomeMargin ? homeCode : awayCode;
@@ -651,7 +679,7 @@ async function generateAdvancedPredictions(games, season) {
     }
     
     const spreadEdge = Math.abs(marginDifference);
-    const spreadConfidence = calculateConfidence(0.65, 0.52, spreadEdge / 14, avgConfidence, avgEvidence);
+    const spreadConfidence = calculateConfidence(0.65, 0.52, spreadEdge / 14, avgConfidence, avgEvidence, scoreDifference);
 
     // TOTAL: Pick what the model thinks will happen
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread);
@@ -660,13 +688,13 @@ async function generateAdvancedPredictions(games, season) {
     
     const totalPick = predictedTotal > marketTotal ? 'over' : 'under';
     const totalEdge = Math.abs(totalDifference);
-    const totalConfidence = calculateConfidence(0.6, 0.52, totalEdge / 10, avgConfidence, avgEvidence);
+    const totalConfidence = calculateConfidence(0.6, 0.52, totalEdge / 10, avgConfidence, avgEvidence, 0);
 
-    console.log('Context-aware total analysis:', { 
+    console.log('EMERGENCY total analysis:', { 
       predictedTotal, marketTotal, totalDifference, totalPick, totalEdge, totalConfidence 
     });
 
-    // Enhanced game object with context-aware analysis
+    // EMERGENCY: Enhanced game object with amplification metadata
     return {
       ...game,
       predictions: {
@@ -713,10 +741,11 @@ async function generateAdvancedPredictions(games, season) {
       },
       
       modelEnhancements: {
-        version: 'hybrid_v7_context_aware_bayesian',
+        version: 'emergency_v7_maximum_differentiation',
         historicalDataUsed: hasHistoricalData,
         contextAwareWeighting: hasContextData,
         bayesianUpdating: true,
+        emergencyFix: true,
         currentWeek: currentWeek,
         contextWeights: contextWeights,
         homeScoreConfidence: Number(homeScoreData.confidence.toFixed(3)),
@@ -725,7 +754,9 @@ async function generateAdvancedPredictions(games, season) {
         awayEvidenceStrength: Number(awayScoreData.evidenceStrength.toFixed(3)),
         homeScore: Number(homeScoreData.score.toFixed(2)),
         awayScore: Number(awayScoreData.score.toFixed(2)),
+        scoreDifference: Number(scoreDifference.toFixed(2)),
         predictedSpread: Number(predictedSpread.toFixed(2)),
+        amplificationFactors: AMPLIFICATION_FACTORS,
         homeMatchupAdvantage: matchups?.summary?.home_total_advantage || 0,
         awayMatchupAdvantage: matchups?.summary?.away_total_advantage || 0,
         metricsFreshness: advancedMetrics?.asOf || null,
@@ -734,6 +765,7 @@ async function generateAdvancedPredictions(games, season) {
         advancedFeaturesUsed: Object.keys(ADVANCED_WEIGHTS),
         oddsIntegrated: !!gameOdds,
         notes: [
+          "EMERGENCY FIX: Massively amplified team differentiation",
           hasHistoricalData ? "Historical data integration active" : "Using current season data only",
           hasMatchupData ? "Opponent-specific matchup calculations active" : "Using base team metrics only",
           hasContextData ? "Context-aware weighting based on roster continuity" : "Using standard weights",
@@ -742,6 +774,9 @@ async function generateAdvancedPredictions(games, season) {
           "Leading indicators prioritized for early season",
           "Dynamic home field advantage based on prediction confidence",
           "Process metrics weighted higher than outcome metrics",
+          `Score difference: ${scoreDifference.toFixed(2)} (target >4)`,
+          `Core EPA amplification: ${AMPLIFICATION_FACTORS.CORE_EPA}x`,
+          `Tier multiplier: ${AMPLIFICATION_FACTORS.TIER_MULTIPLIER}x`,
           gameOdds ? "Live odds integrated" : "Using fallback odds"
         ]
       },
@@ -805,7 +840,7 @@ export default async (request, context) => {
       games = [];
     }
 
-    console.log(`Processing ${games.length} games for hybrid context-aware prediction with season ${season}`);
+    console.log(`EMERGENCY: Processing ${games.length} games for maximum differentiation with season ${season}`);
     
     const predictions = await generateAdvancedPredictions(games, season);
     
@@ -818,10 +853,10 @@ export default async (request, context) => {
     });
     
   } catch (error) {
-    console.error('Hybrid prediction function error:', error);
+    console.error('Emergency prediction function error:', error);
     
     return new Response(JSON.stringify({
-      error: 'Hybrid prediction generation failed',
+      error: 'Emergency prediction generation failed',
       message: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }), {
