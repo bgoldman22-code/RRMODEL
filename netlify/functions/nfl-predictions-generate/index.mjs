@@ -1,5 +1,5 @@
 // netlify/functions/nfl-predictions-generate/index.mjs
-// COMPREHENSIVE version - Home/Away splits for ALL bet types (ML, Spread, Totals)
+// FIXED VERSION - Proper home field advantage without compounding bias
 
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics, getCurrentWeek, getCurrentWeights, diagnoseMetricsData } from '../_lib/blobs-nfl.js';
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
@@ -65,9 +65,9 @@ function americanToImplied(american) {
   return odds > 0 ? 100 / (odds + 100) : Math.abs(odds) / (Math.abs(odds) + 100);
 }
 
-// NEW: Comprehensive home/away offensive analysis
+// REDUCED: Home/away offensive analysis - smaller impact
 function calculateHomeAwayOffensiveAdvantage(teamMetrics, isHome, league) {
-  console.log('Calculating home/away offensive advantage for', isHome ? 'home' : 'away', 'team...');
+  console.log('Calculating reduced home/away offensive advantage for', isHome ? 'home' : 'away', 'team...');
   
   // Extract home vs away offensive splits
   const homeSplits = teamMetrics?.splits?.home || {};
@@ -77,16 +77,14 @@ function calculateHomeAwayOffensiveAdvantage(teamMetrics, isHome, league) {
     ppg: homeSplits.points_per_game || 0,
     yards_per_play: homeSplits.offensive_yards_per_play || 0,
     red_zone_td_pct: homeSplits.red_zone_td_rate || 0,
-    third_down_pct: homeSplits.third_down_conversion || 0,
-    turnover_rate: homeSplits.turnover_rate || 0
+    third_down_pct: homeSplits.third_down_conversion || 0
   };
   
   const awayOffensiveStats = {
     ppg: awaySplits.points_per_game || 0,
     yards_per_play: awaySplits.offensive_yards_per_play || 0,
     red_zone_td_pct: awaySplits.red_zone_td_rate || 0,
-    third_down_pct: awaySplits.third_down_conversion || 0,
-    turnover_rate: awaySplits.turnover_rate || 0
+    third_down_pct: awaySplits.third_down_conversion || 0
   };
   
   // Calculate location-specific advantages
@@ -95,14 +93,14 @@ function calculateHomeAwayOffensiveAdvantage(teamMetrics, isHome, league) {
   const rzAdvantage = homeOffensiveStats.red_zone_td_pct - awayOffensiveStats.red_zone_td_pct;
   const thirdDownAdvantage = homeOffensiveStats.third_down_pct - awayOffensiveStats.third_down_pct;
   
-  // Weighted offensive location advantage (in points)
+  // REDUCED: Weighted offensive location advantage (in points) - much smaller impact
   const offensiveLocationAdvantage = 
-    (ppgAdvantage * 1.0) +           // Direct PPG impact
-    (yppAdvantage * 8) +             // Yards per play to points conversion
-    (rzAdvantage * 0.15 * 21) +      // Red zone efficiency to points
-    (thirdDownAdvantage * 0.10 * 14); // Third down to points
+    (ppgAdvantage * 0.3) +           // Reduced from 1.0 to 0.3
+    (yppAdvantage * 2) +             // Reduced from 8 to 2
+    (rzAdvantage * 0.05 * 21) +      // Reduced from 0.15 to 0.05
+    (thirdDownAdvantage * 0.03 * 14); // Reduced from 0.10 to 0.03
   
-  console.log('Offensive location analysis:', {
+  console.log('Reduced offensive location analysis:', {
     ppgAdvantage, yppAdvantage, rzAdvantage, thirdDownAdvantage,
     offensiveLocationAdvantage,
     appliedAdvantage: isHome ? offensiveLocationAdvantage : -offensiveLocationAdvantage
@@ -111,9 +109,9 @@ function calculateHomeAwayOffensiveAdvantage(teamMetrics, isHome, league) {
   return isHome ? offensiveLocationAdvantage : -offensiveLocationAdvantage;
 }
 
-// NEW: Comprehensive home/away defensive analysis
+// REDUCED: Home/away defensive analysis - smaller impact
 function calculateHomeAwayDefensiveAdvantage(teamMetrics, isHome, league) {
-  console.log('Calculating home/away defensive advantage for', isHome ? 'home' : 'away', 'team...');
+  console.log('Calculating reduced home/away defensive advantage for', isHome ? 'home' : 'away', 'team...');
   
   // Extract home vs away defensive splits  
   const homeSplits = teamMetrics?.splits?.home || {};
@@ -123,7 +121,6 @@ function calculateHomeAwayDefensiveAdvantage(teamMetrics, isHome, league) {
     points_allowed: homeSplits.points_allowed_per_game || 0,
     yards_per_play_allowed: homeSplits.defensive_yards_per_play_allowed || 0,
     red_zone_td_allowed: homeSplits.red_zone_td_allowed_rate || 0,
-    third_down_allowed: homeSplits.third_down_allowed_rate || 0,
     takeaway_rate: homeSplits.takeaway_rate || 0
   };
   
@@ -131,7 +128,6 @@ function calculateHomeAwayDefensiveAdvantage(teamMetrics, isHome, league) {
     points_allowed: awaySplits.points_allowed_per_game || 0,
     yards_per_play_allowed: awaySplits.defensive_yards_per_play_allowed || 0,
     red_zone_td_allowed: awaySplits.red_zone_td_allowed_rate || 0,
-    third_down_allowed: awaySplits.third_down_allowed_rate || 0,
     takeaway_rate: awaySplits.takeaway_rate || 0
   };
   
@@ -141,14 +137,14 @@ function calculateHomeAwayDefensiveAdvantage(teamMetrics, isHome, league) {
   const rzAllowedAdvantage = awayDefensiveStats.red_zone_td_allowed - homeDefensiveStats.red_zone_td_allowed;
   const takeawayAdvantage = homeDefensiveStats.takeaway_rate - awayDefensiveStats.takeaway_rate;
   
-  // Weighted defensive location advantage (in points)
+  // REDUCED: Weighted defensive location advantage (in points) - much smaller impact
   const defensiveLocationAdvantage = 
-    (pointsAllowedAdvantage * 1.0) +        // Direct points allowed impact
-    (yppAllowedAdvantage * 8) +             // Yards allowed to points
-    (rzAllowedAdvantage * 0.15 * 21) +      // Red zone defense to points  
-    (takeawayAdvantage * 0.08 * 14);        // Takeaways to points
+    (pointsAllowedAdvantage * 0.3) +        // Reduced from 1.0 to 0.3
+    (yppAllowedAdvantage * 2) +             // Reduced from 8 to 2
+    (rzAllowedAdvantage * 0.05 * 21) +      // Reduced from 0.15 to 0.05
+    (takeawayAdvantage * 0.03 * 14);        // Reduced from 0.08 to 0.03
   
-  console.log('Defensive location analysis:', {
+  console.log('Reduced defensive location analysis:', {
     pointsAllowedAdvantage, yppAllowedAdvantage, rzAllowedAdvantage, takeawayAdvantage,
     defensiveLocationAdvantage,
     appliedAdvantage: isHome ? defensiveLocationAdvantage : -defensiveLocationAdvantage
@@ -157,9 +153,9 @@ function calculateHomeAwayDefensiveAdvantage(teamMetrics, isHome, league) {
   return isHome ? defensiveLocationAdvantage : -defensiveLocationAdvantage;
 }
 
-// NEW: Home/away spread tendency analysis
-function calculateHomeAwaySpreadTendencies(teamMetrics, isHome, league) {
-  console.log('Calculating spread tendencies for', isHome ? 'home' : 'away', 'team...');
+// VERY SMALL: ATS tendency analysis - ONLY for spread calculations, very minimal weight
+function calculateMinimalATSTendencies(teamMetrics, isHome, league) {
+  console.log('Calculating minimal ATS tendencies for', isHome ? 'home' : 'away', 'team (spread only)...');
   
   const homeSplits = teamMetrics?.splits?.home || {};
   const awaySplits = teamMetrics?.splits?.away || {};
@@ -184,73 +180,30 @@ function calculateHomeAwaySpreadTendencies(teamMetrics, isHome, league) {
   // Cover margin differential
   const coverMarginDiff = homeATS.avg_cover_margin - awayATS.avg_cover_margin;
   
-  // Location-specific spread advantage (in points)
-  const spreadLocationAdvantage = 
-    ((homeATSRate - awayATSRate) * 5) +     // ATS rate to points conversion
-    (coverMarginDiff * 0.3);                // Cover margin differential
+  // VERY MINIMAL: Location-specific spread advantage (much smaller impact)
+  const atsLocationAdvantage = 
+    ((homeATSRate - awayATSRate) * 1) +     // Reduced from 5 to 1
+    (coverMarginDiff * 0.1);                // Reduced from 0.3 to 0.1
   
-  console.log('Spread tendency analysis:', {
+  console.log('Minimal ATS tendency analysis:', {
     homeATSRate, awayATSRate, coverMarginDiff,
-    spreadLocationAdvantage,
-    appliedAdvantage: isHome ? spreadLocationAdvantage : -spreadLocationAdvantage
+    atsLocationAdvantage,
+    appliedAdvantage: isHome ? atsLocationAdvantage : -atsLocationAdvantage
   });
   
-  return isHome ? spreadLocationAdvantage : -spreadLocationAdvantage;
+  return isHome ? atsLocationAdvantage : -atsLocationAdvantage;
 }
 
-// NEW: Home/away total tendency analysis
-function calculateHomeAwayTotalTendencies(teamMetrics, isHome, league) {
-  console.log('Calculating total tendencies for', isHome ? 'home' : 'away', 'team...');
-  
-  const homeSplits = teamMetrics?.splits?.home || {};
-  const awaySplits = teamMetrics?.splits?.away || {};
-  
-  // Over/Under performance and factors
-  const homeTotalStats = {
-    over_rate: homeSplits.over_under_record?.over_rate || 0.5,
-    avg_total_points: homeSplits.avg_total_points || 0,
-    pace: homeSplits.offensive_pace || 0,
-    time_of_possession: homeSplits.time_of_possession || 30
-  };
-  
-  const awayTotalStats = {
-    over_rate: awaySplits.over_under_record?.over_rate || 0.5,
-    avg_total_points: awaySplits.avg_total_points || 0,
-    pace: awaySplits.offensive_pace || 0,
-    time_of_possession: awaySplits.time_of_possession || 30
-  };
-  
-  // Calculate total-specific advantages
-  const totalPointsDiff = homeTotalStats.avg_total_points - awayTotalStats.avg_total_points;
-  const overRateDiff = homeTotalStats.over_rate - awayTotalStats.over_rate;
-  const paceDiff = homeTotalStats.pace - awayTotalStats.pace;
-  
-  // Location-specific total advantage (in points) 
-  const totalLocationAdvantage = 
-    (totalPointsDiff * 0.5) +               // Direct total points impact
-    (overRateDiff * 8) +                     // Over rate tendency to points
-    (paceDiff * 0.15);                       // Pace impact on total
-  
-  console.log('Total tendency analysis:', {
-    totalPointsDiff, overRateDiff, paceDiff,
-    totalLocationAdvantage,
-    appliedAdvantage: isHome ? totalLocationAdvantage : -totalLocationAdvantage
-  });
-  
-  return isHome ? totalLocationAdvantage : -totalLocationAdvantage;
-}
-
-// ENHANCED: Core team scoring function with comprehensive home/away analysis
+// ENHANCED: Core team scoring function with REDUCED home/away bias
 function scoreTeamFromFeatures(teamData, league, historicalWeights, matchupTerms = null, isHome = false, prediction_type = 'moneyline') {
   if (!teamData || !league) {
     return 0; // Neutral point differential if no data
   }
 
-  console.log(`Scoring team (${isHome ? 'home' : 'away'}) for ${prediction_type} with historical weights:`, historicalWeights);
+  console.log(`Scoring team (${isHome ? 'home' : 'away'}) for ${prediction_type} with reduced home bias...`);
   
   // Check if we have historical metadata
   const hasHistoricalData = teamData._metadata?.hasHistoricalData || false;
-  console.log(`Team has historical data integration: ${hasHistoricalData}`);
 
   // Graceful defaults for all metric categories
   const sit = teamData?.situational || {};
@@ -297,26 +250,21 @@ function scoreTeamFromFeatures(teamData, league, historicalWeights, matchupTerms
   const motionAdv = (formations.motion_rate ?? 0.4) - 0.4;
   const scriptAdapt = script.trailing_epa ?? 0;
 
-  // NEW: Comprehensive location-specific advantages based on prediction type
+  // REDUCED: Location-specific advantages - much smaller impact
   let offensiveLocationAdv = 0;
   let defensiveLocationAdv = 0;
-  let specificLocationAdv = 0;
+  let atsLocationAdv = 0;
   
+  // Apply reduced home/away advantages
   if (prediction_type === 'moneyline' || prediction_type === 'all') {
     offensiveLocationAdv = calculateHomeAwayOffensiveAdvantage(teamData, isHome, league);
     defensiveLocationAdv = calculateHomeAwayDefensiveAdvantage(teamData, isHome, league);
   }
   
-  if (prediction_type === 'spread' || prediction_type === 'all') {
-    specificLocationAdv += calculateHomeAwaySpreadTendencies(teamData, isHome, league);
+  // ONLY apply minimal ATS for spread calculations
+  if (prediction_type === 'spread') {
+    atsLocationAdv = calculateMinimalATSTendencies(teamData, isHome, league);
   }
-  
-  if (prediction_type === 'total' || prediction_type === 'all') {
-    specificLocationAdv += calculateHomeAwayTotalTendencies(teamData, isHome, league);
-  }
-
-  // Base 1.5-point modern home field advantage
-  const baseHomeFieldAdv = isHome ? 1.5 : 0;
 
   // Weighted combination - convert to POINTS instead of probability
   const coreScore = (offEPA + defEPA) * 14; // Convert EPA to points (rough 14:1 ratio)
@@ -339,15 +287,16 @@ function scoreTeamFromFeatures(teamData, league, historicalWeights, matchupTerms
     (ADVANCED_WEIGHTS.formations * motionAdv * 2) +
     (ADVANCED_WEIGHTS.script_adaptation * scriptAdapt * 2);
 
-  // NEW: Add matchup score component and comprehensive location advantages
+  // Matchup score component
   const matchupScore = calculateMatchupScore(matchupTerms) * 10; // Scale matchup to points
   
+  // FIXED: Controlled total point differential - no compounding home advantages
   const totalPointDifferential = coreScore + tierScore + advancedScore + matchupScore + 
-    baseHomeFieldAdv + offensiveLocationAdv + defensiveLocationAdv + specificLocationAdv;
+    offensiveLocationAdv + defensiveLocationAdv + atsLocationAdv;
   
-  console.log('Comprehensive point differential breakdown:', {
+  console.log('Fixed point differential breakdown:', {
     coreScore, tierScore, advancedScore, matchupScore, 
-    baseHomeFieldAdv, offensiveLocationAdv, defensiveLocationAdv, specificLocationAdv,
+    offensiveLocationAdv, defensiveLocationAdv, atsLocationAdv,
     total: totalPointDifferential
   });
 
@@ -386,36 +335,30 @@ function applyInjuryAdjustments(pointDiff, teamCode, injuries) {
   return pointDiff + delta;
 }
 
-// ENHANCED: Calculate spread prediction with location-specific analysis
-function calculateSpreadPrediction(homePointDiff, awayPointDiff, homeMetrics, awayMetrics) {
-  console.log('=== ENHANCED SPREAD PREDICTION WITH HOME/AWAY ANALYSIS ===');
+// FIXED: Calculate spread prediction with proper modern home field advantage
+function calculateSpreadPrediction(homePointDiff, awayPointDiff) {
+  console.log('=== FIXED SPREAD PREDICTION ===');
   console.log('Base point differentials:', { homePointDiff, awayPointDiff });
   
-  // Calculate spread-specific home/away advantages
-  const homeSpreadAdv = calculateHomeAwaySpreadTendencies(homeMetrics, true, {});
-  const awaySpreadAdv = calculateHomeAwaySpreadTendencies(awayMetrics, false, {});
-  
-  console.log('Spread-specific advantages:', { homeSpreadAdv, awaySpreadAdv });
-  
-  // Modern home field advantage: 1.5 points + spread-specific adjustments
+  // Modern home field advantage: 1.5 points (applied here, not in team scoring)
   const MODERN_HOME_FIELD_ADVANTAGE = 1.5;
   
-  // Calculate predicted home margin with spread-specific factors
-  const predictedHomeMargin = MODERN_HOME_FIELD_ADVANTAGE + homePointDiff - awayPointDiff + homeSpreadAdv + awaySpreadAdv;
+  // Calculate predicted home margin
+  const predictedHomeMargin = MODERN_HOME_FIELD_ADVANTAGE + homePointDiff - awayPointDiff;
   
   const finalSpread = clamp(predictedHomeMargin, -21, 21);
   
-  console.log('Enhanced spread calculation:', { 
+  console.log('Fixed spread calculation:', { 
     homePointDiff, awayPointDiff, MODERN_HOME_FIELD_ADVANTAGE, 
-    homeSpreadAdv, awaySpreadAdv, predictedHomeMargin, finalSpread 
+    predictedHomeMargin, finalSpread 
   });
   
   return finalSpread;
 }
 
-// ENHANCED: Calculate total prediction with comprehensive home/away scoring analysis
+// ENHANCED: Calculate total prediction with home/away scoring analysis
 function calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread = 0) {
-  console.log('=== ENHANCED TOTAL PREDICTION WITH HOME/AWAY ANALYSIS ===');
+  console.log('=== ENHANCED TOTAL PREDICTION ===');
   
   // Base team scoring rates from EPA
   const homeOffEPA = homeMetrics?.core?.off_epa || 0;
@@ -423,51 +366,42 @@ function calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread = 0) {
   const homeDefEPA = homeMetrics?.core?.def_epa || 0;
   const awayDefEPA = awayMetrics?.core?.def_epa || 0;
   
-  // Home/away specific offensive and defensive adjustments
-  const homeOffensiveAdv = calculateHomeAwayOffensiveAdvantage(homeMetrics, true, {});
-  const homeDefensiveAdv = calculateHomeAwayDefensiveAdvantage(homeMetrics, true, {});
-  const awayOffensiveAdv = calculateHomeAwayOffensiveAdvantage(awayMetrics, false, {});
-  const awayDefensiveAdv = calculateHomeAwayDefensiveAdvantage(awayMetrics, false, {});
-  
-  // Total-specific tendencies
-  const homeTotalAdv = calculateHomeAwayTotalTendencies(homeMetrics, true, {});
-  const awayTotalAdv = calculateHomeAwayTotalTendencies(awayMetrics, false, {});
+  // REDUCED: Home/away specific adjustments (smaller impact)
+  const homeOffensiveAdv = calculateHomeAwayOffensiveAdvantage(homeMetrics, true, {}) * 0.5; // Reduced impact
+  const homeDefensiveAdv = calculateHomeAwayDefensiveAdvantage(homeMetrics, true, {}) * 0.5;
+  const awayOffensiveAdv = calculateHomeAwayOffensiveAdvantage(awayMetrics, false, {}) * 0.5;
+  const awayDefensiveAdv = calculateHomeAwayDefensiveAdvantage(awayMetrics, false, {}) * 0.5;
   
   // Historical form adjustments
   const homeForm = homeMetrics?.form?.off || 0;
   const awayForm = awayMetrics?.form?.off || 0;
   
-  console.log('Enhanced total factors:', { 
+  console.log('Total factors:', { 
     homeOffEPA, awayOffEPA, homeDefEPA, awayDefEPA, 
     homeOffensiveAdv, homeDefensiveAdv, awayOffensiveAdv, awayDefensiveAdv,
-    homeTotalAdv, awayTotalAdv, homeForm, awayForm 
+    homeForm, awayForm 
   });
   
-  // Enhanced EPA-to-points conversion with location factors
-  const homePointsPerPlay = (homeOffEPA * 5) + 0.45 + (homeForm * 0.15) + (homeOffensiveAdv * 0.02);
-  const awayPointsPerPlay = (awayOffEPA * 5) + 0.45 + (awayForm * 0.15) + (awayOffensiveAdv * 0.02);
+  // Enhanced EPA-to-points conversion with reduced location factors
+  const homePointsPerPlay = (homeOffEPA * 5) + 0.45 + (homeForm * 0.15) + (homeOffensiveAdv * 0.01);
+  const awayPointsPerPlay = (awayOffEPA * 5) + 0.45 + (awayForm * 0.15) + (awayOffensiveAdv * 0.01);
   
   // Use dynamic expected plays calculation
   const expectedPlays = calculateExpectedPlays(homeMetrics?.tempo, awayMetrics?.tempo, marketSpread);
   console.log('Expected plays (dynamic):', expectedPlays);
   
-  // Enhanced defensive adjustments with location factors
-  const homeDefAdj = (homeDefEPA * 0.6) + (homeDefensiveAdv * 0.02);
-  const awayDefAdj = (awayDefEPA * 0.6) + (awayDefensiveAdv * 0.02);
+  // Enhanced defensive adjustments with reduced location factors
+  const homeDefAdj = (homeDefEPA * 0.6) + (homeDefensiveAdv * 0.01);
+  const awayDefAdj = (awayDefEPA * 0.6) + (awayDefensiveAdv * 0.01);
   
   const homeProjected = Math.max(10, (homePointsPerPlay + awayDefAdj) * (expectedPlays/2));
   const awayProjected = Math.max(10, (awayPointsPerPlay + homeDefAdj) * (expectedPlays/2));
   
-  // Apply total-specific location tendencies
-  const baseTotalProjection = homeProjected + awayProjected;
-  const locationAdjustedTotal = baseTotalProjection + homeTotalAdv + awayTotalAdv;
+  const total = clamp(homeProjected + awayProjected, 30, 75);
   
-  const total = clamp(locationAdjustedTotal, 30, 75);
-  
-  console.log('Enhanced total calculation with location factors:', { 
+  console.log('Total calculation:', { 
     homePointsPerPlay, awayPointsPerPlay, expectedPlays,
-    homeProjected, awayProjected, baseTotalProjection,
-    homeTotalAdv, awayTotalAdv, locationAdjustedTotal, total 
+    homeProjected, awayProjected, total 
   });
   
   return total;
@@ -576,9 +510,9 @@ function extractOddsData(gameOdds) {
   };
 }
 
-// MAIN COMPREHENSIVE PREDICTION FUNCTION
+// MAIN FIXED PREDICTION FUNCTION
 async function generateAdvancedPredictions(games, season) {
-  console.log('=== COMPREHENSIVE PREDICTION ENGINE WITH HOME/AWAY ANALYSIS FOR ALL BET TYPES ===');
+  console.log('=== FIXED PREDICTION ENGINE - PROPER HOME FIELD ADVANTAGE ===');
   console.log('Attempting to load enhanced metrics with historical integration...');
   
   let advancedMetrics = null;
@@ -614,7 +548,7 @@ async function generateAdvancedPredictions(games, season) {
       modelEnhancements: {
         historicalDataUsed: false,
         matchupsCalculated: false,
-        comprehensiveHomeAwayAnalysis: false,
+        homeFieldBiasFixed: false,
         notes: ["Enhanced metrics not available - using fallback"]
       }
     }));
@@ -633,7 +567,7 @@ async function generateAdvancedPredictions(games, season) {
     const homeCode = game.home_team;
     const awayCode = game.away_team;
 
-    console.log(`\n=== COMPREHENSIVE PREDICTION WITH HOME/AWAY ANALYSIS: ${awayCode} @ ${homeCode} ===`);
+    console.log(`\n=== FIXED PREDICTION: ${awayCode} @ ${homeCode} ===`);
 
     // Get team enhanced metrics
     const homeMetrics = getTeamMetrics(advancedMetrics, homeCode);
@@ -641,26 +575,20 @@ async function generateAdvancedPredictions(games, season) {
 
     // Calculate opponent-specific matchups
     const matchups = calculateMatchups(homeMetrics, awayMetrics, league);
-    console.log('Calculated matchups:', {
-      home_advantages: matchups.home,
-      away_advantages: matchups.away,
-      home_total: matchups.summary?.home_total_advantage,
-      away_total: matchups.summary?.away_total_advantage
-    });
 
     const hasHistoricalData = homeMetrics?._metadata?.hasHistoricalData && awayMetrics?._metadata?.hasHistoricalData;
     const hasMatchupData = !!(matchups?.home && matchups?.away);
     const hasHomeAwayData = !!(homeMetrics?.splits && awayMetrics?.splits);
     console.log('Data availability:', { hasHistoricalData, hasMatchupData, hasHomeAwayData });
 
-    // COMPREHENSIVE: Calculate point differentials for different prediction types
+    // FIXED: Calculate point differentials without compounding home advantages
     let homeMoneylinePoints = scoreTeamFromFeatures(homeMetrics, league, historicalWeights, matchups?.home, true, 'moneyline');
     let awayMoneylinePoints = scoreTeamFromFeatures(awayMetrics, league, historicalWeights, matchups?.away, false, 'moneyline');
     
     let homeSpreadPoints = scoreTeamFromFeatures(homeMetrics, league, historicalWeights, matchups?.home, true, 'spread');
     let awaySpreadPoints = scoreTeamFromFeatures(awayMetrics, league, historicalWeights, matchups?.away, false, 'spread');
 
-    console.log('Initial comprehensive point differentials:', { 
+    console.log('Initial fixed point differentials:', { 
       homeMoneylinePoints, awayMoneylinePoints, homeSpreadPoints, awaySpreadPoints 
     });
 
@@ -676,12 +604,13 @@ async function generateAdvancedPredictions(games, season) {
       homeMoneylinePoints, awayMoneylinePoints, homeSpreadPoints, awaySpreadPoints 
     });
 
-    // Convert point differentials to win probabilities for moneyline
-    const expectedHomeMargin = homeMoneylinePoints - awayMoneylinePoints;
+    // FIXED: Convert point differentials to win probabilities with PROPER home field advantage
+    // Apply the 1.5-point home field advantage here (not in team scoring)
+    const expectedHomeMargin = homeMoneylinePoints - awayMoneylinePoints + 1.5; // Apply HFA here
     const homeWinProb = sigmoid(expectedHomeMargin / 14);
     const awayWinProb = 1 - homeWinProb;
 
-    console.log('Converted to win probabilities:', { homeWinProb, awayWinProb, expectedHomeMargin });
+    console.log('Fixed win probabilities with proper HFA:', { homeWinProb, awayWinProb, expectedHomeMargin });
 
     // Get real odds for this game
     const gameOdds = findGameOdds(allOdds, homeCode, awayCode);
@@ -700,19 +629,19 @@ async function generateAdvancedPredictions(games, season) {
     const mlMarketProb = mlPick === homeCode ? homeMarketProb : awayMarketProb;
     const mlEdge = mlMarketProb ? mlModelProb - mlMarketProb : 0;
     
-    console.log('Moneyline analysis:', {
+    console.log('Fixed moneyline analysis:', {
       homeWinProb, awayWinProb, mlPick,
       mlModelProb, mlMarketProb, mlEdge: mlEdge * 100 + '%'
     });
     
     const mlConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge, hasHistoricalData, hasMatchupData);
 
-    // SPREAD: Pick who model thinks will cover with comprehensive home/away analysis
-    const predictedSpread = calculateSpreadPrediction(homeSpreadPoints, awaySpreadPoints, homeMetrics, awayMetrics);
+    // SPREAD: Pick who model thinks will cover with fixed calculation
+    const predictedSpread = calculateSpreadPrediction(homeSpreadPoints, awaySpreadPoints);
     const marketSpread = realOdds.spread_line || 0;
     const marketFavorite = realOdds.spread_favorite;
     
-    console.log('=== COMPREHENSIVE SPREAD LOGIC ===');
+    console.log('=== FIXED SPREAD LOGIC ===');
     console.log('Model predicted spread (home margin):', predictedSpread);
     console.log('Market spread (favorite):', marketSpread);
     console.log('Market favorite:', marketFavorite);
@@ -747,11 +676,11 @@ async function generateAdvancedPredictions(games, season) {
     const spreadEdge = Math.abs(marginDifference);
     const spreadConfidence = calculateConfidence(0.6 + (spreadEdge / 20), 0.52, spreadEdge / 14, hasHistoricalData, hasMatchupData);
     
-    console.log('Model spread analysis:', { 
+    console.log('Fixed spread analysis:', { 
       modelHomeMargin, marketHomeMargin, marginDifference, spreadPick, spreadEdge 
     });
 
-    // TOTAL: Pick what the model thinks will happen with comprehensive home/away analysis
+    // TOTAL: Pick what the model thinks will happen
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread);
     const marketTotal = realOdds.total_line || 44;
     const totalDifference = predictedTotal - marketTotal;
@@ -763,11 +692,11 @@ async function generateAdvancedPredictions(games, season) {
     // Confidence based on how much model disagrees with market
     const totalConfidence = calculateConfidence(0.58 + (totalEdge / 25), 0.52, totalEdge / 10, hasHistoricalData, hasMatchupData);
 
-    console.log('Model total analysis:', { 
+    console.log('Fixed total analysis:', { 
       predictedTotal, marketTotal, totalDifference, totalPick, totalEdge, totalConfidence 
     });
 
-    // Comprehensive game object with all home/away analysis
+    // Fixed game object
     return {
       ...game,
       predictions: {
@@ -814,13 +743,13 @@ async function generateAdvancedPredictions(games, season) {
       },
       
       modelEnhancements: {
-        version: 'comprehensive_v5_home_away_all_bet_types',
+        version: 'fixed_v6_proper_home_field_advantage',
         historicalDataUsed: hasHistoricalData,
         matchupsCalculated: hasMatchupData,
-        comprehensiveHomeAwayAnalysis: hasHomeAwayData,
+        homeFieldBiasFixed: true,
         currentWeek: currentWeek,
         historicalWeights: historicalWeights,
-        homeFieldAdvantage: 1.5, // Modern HFA in points
+        homeFieldAdvantage: 1.5, // Modern HFA in points - applied once
         homeMoneylinePoints: Number(homeMoneylinePoints.toFixed(2)),
         awayMoneylinePoints: Number(awayMoneylinePoints.toFixed(2)),
         homeSpreadPoints: Number(homeSpreadPoints.toFixed(2)),
@@ -836,49 +765,16 @@ async function generateAdvancedPredictions(games, season) {
         notes: [
           hasHistoricalData ? "Historical data integration active" : "Using current season data only",
           hasMatchupData ? "Opponent-specific matchup calculations active" : "Using base team metrics only",
-          hasHomeAwayData ? "Comprehensive home/away splits for offense, defense, spread, and totals" : "Using season averages",
+          hasHomeAwayData ? "Reduced home/away location advantages applied" : "Using season averages",
           `Week ${currentWeek} dynamic weighting applied`,
-          "Modern 1.5-point home field advantage applied",
-          "Team-specific offensive home/away performance integrated",
-          "Team-specific defensive home/away performance integrated", 
-          "Spread tendencies analyzed by location",
-          "Total tendencies analyzed by location",
-          "Model picks based on comprehensive data-driven analysis",
+          "FIXED: Single 1.5-point home field advantage applied",
+          "FIXED: Reduced offensive/defensive location advantages", 
+          "FIXED: Minimal ATS impact on spread only",
+          "FIXED: Eliminated compounding home team bias",
+          "Model picks based on data-driven team strength analysis",
           "Edge calculations provided for betting analysis overlay",
           gameOdds ? "Live odds integrated" : "Using fallback odds"
         ]
-      },
-      
-      // Add detailed home/away analysis breakdown
-      homeAwayAnalysis: {
-        home_offensive_advantage: calculateHomeAwayOffensiveAdvantage(homeMetrics, true, league),
-        home_defensive_advantage: calculateHomeAwayDefensiveAdvantage(homeMetrics, true, league),
-        home_spread_advantage: calculateHomeAwaySpreadTendencies(homeMetrics, true, league),
-        home_total_advantage: calculateHomeAwayTotalTendencies(homeMetrics, true, league),
-        away_offensive_advantage: calculateHomeAwayOffensiveAdvantage(awayMetrics, false, league),
-        away_defensive_advantage: calculateHomeAwayDefensiveAdvantage(awayMetrics, false, league), 
-        away_spread_advantage: calculateHomeAwaySpreadTendencies(awayMetrics, false, league),
-        away_total_advantage: calculateHomeAwayTotalTendencies(awayMetrics, false, league)
-      },
-      
-      // Add detailed matchup breakdown
-      matchupAnalysis: {
-        home_advantages: matchups?.home || {},
-        away_advantages: matchups?.away || {},
-        key_matchups: {
-          home_passing: (matchups?.home?.pass || 0) > 0.05 ? 'significant advantage' : 
-                       (matchups?.home?.pass || 0) < -0.05 ? 'significant disadvantage' : 'neutral',
-          home_rushing: (matchups?.home?.rush || 0) > 0.05 ? 'significant advantage' : 
-                       (matchups?.home?.rush || 0) < -0.05 ? 'significant disadvantage' : 'neutral',
-          home_redzone: (matchups?.home?.rz || 0) > 0.05 ? 'significant advantage' : 
-                       (matchups?.home?.rz || 0) < -0.05 ? 'significant disadvantage' : 'neutral',
-          away_passing: (matchups?.away?.pass || 0) > 0.05 ? 'significant advantage' : 
-                       (matchups?.away?.pass || 0) < -0.05 ? 'significant disadvantage' : 'neutral',
-          away_rushing: (matchups?.away?.rush || 0) > 0.05 ? 'significant advantage' : 
-                       (matchups?.away?.rush || 0) < -0.05 ? 'significant disadvantage' : 'neutral',
-          away_redzone: (matchups?.away?.rz || 0) > 0.05 ? 'significant advantage' : 
-                       (matchups?.away?.rz || 0) < -0.05 ? 'significant disadvantage' : 'neutral'
-        }
       },
       
       teamStats: {
@@ -892,9 +788,7 @@ async function generateAdvancedPredictions(games, season) {
           consistency: homeMetrics?.consistency?.off ?? null,
           form: homeMetrics?.form?.off ?? null,
           historicalContext: homeMetrics?._metadata?.hasHistoricalData || false,
-          matchupAdvantage: matchups?.summary?.home_total_advantage || 0,
-          offensiveHomeAdvantage: calculateHomeAwayOffensiveAdvantage(homeMetrics, true, league),
-          defensiveHomeAdvantage: calculateHomeAwayDefensiveAdvantage(homeMetrics, true, league)
+          matchupAdvantage: matchups?.summary?.home_total_advantage || 0
         },
         away: {
           strength: Number(awayWinProb.toFixed(3)),
@@ -906,9 +800,7 @@ async function generateAdvancedPredictions(games, season) {
           consistency: awayMetrics?.consistency?.off ?? null,
           form: awayMetrics?.form?.off ?? null,
           historicalContext: awayMetrics?._metadata?.hasHistoricalData || false,
-          matchupAdvantage: matchups?.summary?.away_total_advantage || 0,
-          offensiveAwayDisadvantage: calculateHomeAwayOffensiveAdvantage(awayMetrics, false, league),
-          defensiveAwayDisadvantage: calculateHomeAwayDefensiveAdvantage(awayMetrics, false, league)
+          matchupAdvantage: matchups?.summary?.away_total_advantage || 0
         }
       }
     };
@@ -942,7 +834,7 @@ export default async (request, context) => {
       games = [];
     }
 
-    console.log(`Processing ${games.length} games for comprehensive prediction with season ${season}`);
+    console.log(`Processing ${games.length} games for fixed prediction with season ${season}`);
     
     const predictions = await generateAdvancedPredictions(games, season);
     
@@ -955,10 +847,10 @@ export default async (request, context) => {
     });
     
   } catch (error) {
-    console.error('Comprehensive prediction function error:', error);
+    console.error('Fixed prediction function error:', error);
     
     return new Response(JSON.stringify({
-      error: 'Comprehensive prediction generation failed',
+      error: 'Fixed prediction generation failed',
       message: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }), {
