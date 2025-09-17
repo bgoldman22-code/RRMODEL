@@ -159,6 +159,9 @@ function applyInjuryAdjustments(probability, teamCode, injuries) {
 
 // Calculate spread prediction
 function calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMetrics) {
+  console.log('=== SPREAD PREDICTION DEBUG ===');
+  console.log('Win probabilities:', { homeWinProb, awayWinProb });
+  
   // Convert win probability to point spread
   const probDiff = homeWinProb - awayWinProb;
   const predictedSpread = probDiff * 14; // Rough conversion: 50% prob diff ≈ 7 point spread
@@ -169,28 +172,45 @@ function calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMe
   const awayOffEPA = awayMetrics?.core?.off_epa || 0;
   const awayDefEPA = awayMetrics?.core?.def_epa || 0;
   
+  console.log('EPA values for spread:', { homeOffEPA, homeDefEPA, awayOffEPA, awayDefEPA });
+  
   const epaSpread = (homeOffEPA - homeDefEPA) - (awayOffEPA - awayDefEPA);
   const adjustedSpread = predictedSpread + (epaSpread * 5); // Scale EPA to points
   
-  return clamp(adjustedSpread, -21, 21); // Reasonable spread bounds
+  const finalSpread = clamp(adjustedSpread, -21, 21); // Reasonable spread bounds
+  console.log('Spread calculation:', { probDiff, predictedSpread, epaSpread, adjustedSpread, finalSpread });
+  
+  return finalSpread;
 }
 
 // Calculate total prediction
 function calculateTotalPrediction(homeMetrics, awayMetrics) {
+  console.log('=== TOTAL PREDICTION DEBUG ===');
+  console.log('Home metrics core:', homeMetrics?.core);
+  console.log('Away metrics core:', awayMetrics?.core);
+  console.log('Home tempo:', homeMetrics?.tempo);
+  console.log('Away tempo:', awayMetrics?.tempo);
+  
   // Base scoring rates from EPA and pace
   const homeOffEPA = homeMetrics?.core?.off_epa || 0;
   const awayOffEPA = awayMetrics?.core?.off_epa || 0;
   const homeDefEPA = homeMetrics?.core?.def_epa || 0;
   const awayDefEPA = awayMetrics?.core?.def_epa || 0;
   
+  console.log('EPA values for total:', { homeOffEPA, awayOffEPA, homeDefEPA, awayDefEPA });
+  
   // Convert EPA to points per play, then to game total
   const homePointsPerPlay = (homeOffEPA * 0.8) + 0.3; // Rough conversion
   const awayPointsPerPlay = (awayOffEPA * 0.8) + 0.3;
+  
+  console.log('Points per play:', { homePointsPerPlay, awayPointsPerPlay });
   
   // Factor in pace (plays per game)
   const homePace = homeMetrics?.tempo?.pace || 65;
   const awayPace = awayMetrics?.tempo?.pace || 65;
   const avgPace = (homePace + awayPace) / 2;
+  
+  console.log('Pace values:', { homePace, awayPace, avgPace });
   
   // Defensive adjustments
   const homeDefAdj = (homeDefEPA * 0.4); // Defense reduces opponent scoring
@@ -199,7 +219,12 @@ function calculateTotalPrediction(homeMetrics, awayMetrics) {
   const homeProjected = Math.max(10, (homePointsPerPlay + awayDefAdj) * avgPace);
   const awayProjected = Math.max(10, (awayPointsPerPlay + homeDefAdj) * avgPace);
   
-  return clamp(homeProjected + awayProjected, 30, 70); // Reasonable total bounds
+  console.log('Projected scores:', { homeProjected, awayProjected });
+  
+  const total = clamp(homeProjected + awayProjected, 30, 70); // Reasonable total bounds
+  console.log('Final calculated total:', total);
+  
+  return total;
 }
 
 // Calculate confidence rating (1-100)
@@ -287,13 +312,20 @@ async function generateAdvancedPredictions(games, season) {
     const homeCode = game.home_team;
     const awayCode = game.away_team;
 
+    console.log(`\n=== PREDICTING GAME: ${awayCode} @ ${homeCode} ===`);
+
     // Get team advanced metrics
     const homeMetrics = getTeamMetrics(advancedMetrics, homeCode);
     const awayMetrics = getTeamMetrics(advancedMetrics, awayCode);
 
+    console.log('Home metrics available:', !!homeMetrics);
+    console.log('Away metrics available:', !!awayMetrics);
+
     // Calculate base probabilities using advanced features
     let homeProb = scoreTeamFromFeatures(homeMetrics, league);
     let awayProb = scoreTeamFromFeatures(awayMetrics, league);
+
+    console.log('Initial team probabilities:', { homeProb, awayProb });
 
     // Normalize probabilities to sum to 1
     const total = homeProb + awayProb;
@@ -306,6 +338,8 @@ async function generateAdvancedPredictions(games, season) {
     homeProb += 0.018;
     awayProb = 1 - homeProb;
 
+    console.log('After home field advantage:', { homeProb, awayProb });
+
     // Apply injury adjustments if injury data is available
     if (injuries) {
       homeProb = applyInjuryAdjustments(homeProb, homeCode, injuries);
@@ -317,8 +351,11 @@ async function generateAdvancedPredictions(games, season) {
     const homeWinProb = finalSum ? homeProb / finalSum : 0.5;
     const awayWinProb = 1 - homeWinProb;
 
+    console.log('Final win probabilities:', { homeWinProb, awayWinProb });
+
     // Get odds data from game object (should be populated by frontend)
     const oddsData = game.odds || {};
+    console.log(`Odds data for ${homeCode} vs ${awayCode}:`, oddsData);
     
     // Moneyline predictions
     const mlPick = homeWinProb > 0.5 ? homeCode : awayCode;
@@ -329,6 +366,8 @@ async function generateAdvancedPredictions(games, season) {
     const mlEdge = mlMarketProb ? mlModelProb - mlMarketProb : 0;
     const mlConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge);
 
+    console.log('Moneyline prediction:', { mlPick, mlConfidence, mlEdge });
+
     // Spread predictions
     const predictedSpread = calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMetrics);
     const marketSpread = oddsData.spread_line || 0;
@@ -336,12 +375,16 @@ async function generateAdvancedPredictions(games, season) {
     const spreadEdge = Math.abs(predictedSpread - marketSpread);
     const spreadConfidence = calculateConfidence(0.6, 0.5, spreadEdge / 14); // Normalize spread edge
 
+    console.log('Spread prediction:', { predictedSpread, marketSpread, spreadPick, spreadConfidence, spreadEdge });
+
     // Total predictions
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics);
     const marketTotal = oddsData.total_line || 44;
     const totalPick = predictedTotal > marketTotal ? 'over' : 'under';
     const totalEdge = Math.abs(predictedTotal - marketTotal);
     const totalConfidence = calculateConfidence(0.6, 0.5, totalEdge / 10); // Normalize total edge
+
+    console.log('Total prediction:', { predictedTotal, marketTotal, totalPick, totalConfidence, totalEdge });
 
     // Enhanced game object with all predictions
     return {
