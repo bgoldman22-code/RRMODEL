@@ -294,15 +294,25 @@ function extractOddsData(gameOdds) {
   }
   
   const markets = gameOdds.bookmakers[0].markets;
-  const h2hMarket = markets.find(m => m.key === 'h2h');
-  const spreadsMarket = markets.find(m => m.key === 'spreads');
-  const totalsMarket = markets.find(m => m.key === 'totals');
+  
+  // Extract moneyline odds
+  const h2hMarket = markets.h2h || [];
+  const homeMLOutcome = h2hMarket.find(o => o.name === gameOdds.home_team);
+  const awayMLOutcome = h2hMarket.find(o => o.name === gameOdds.away_team);
+  
+  // Extract spread odds  
+  const spreadsMarket = markets.spreads || [];
+  const homeSpreadOutcome = spreadsMarket.find(o => o.name === gameOdds.home_team);
+  
+  // Extract total odds
+  const totalsMarket = markets.totals || [];
+  const totalOutcome = totalsMarket[0]; // Both Over/Under have same point
   
   return {
-    ml_home: h2hMarket?.outcomes?.find(o => o.name === gameOdds.home_team)?.price,
-    ml_away: h2hMarket?.outcomes?.find(o => o.name === gameOdds.away_team)?.price,
-    spread_line: spreadsMarket?.outcomes?.find(o => o.name === gameOdds.home_team)?.point,
-    total_line: totalsMarket?.outcomes?.[0]?.point
+    ml_home: homeMLOutcome?.price,
+    ml_away: awayMLOutcome?.price,
+    spread_line: homeSpreadOutcome?.point,
+    total_line: totalOutcome?.point
   };
 }
 
