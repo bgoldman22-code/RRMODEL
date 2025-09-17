@@ -1,274 +1,366 @@
 // netlify/functions/_lib/blobs-nfl.js
-// Enhanced version with historical data support
+// FIXED: Multi-season historical data integration
 
-import { getStore } from '@netlify/blobs';
-
-// Constants that some functions expect
-export const HELPER_MODE = 'production';
-export const HELPER_VERSION = '2.0.0'; // Updated for historical support
-
-// Get the appropriate blob store
-function getBlobStore() {
-  const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-data';
-  const token = process.env.NETLIFY_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
-  const siteID = process.env.NETLIFY_SITE_ID;
+// Multi-season data loading with proper historical integration
+export async function loadAdvancedMetrics(targetSeason = '2025') {
+  console.log(`=== LOADING MULTI-SEASON METRICS (Target: ${targetSeason}) ===`);
   
-  // Use explicit configuration if we have both token and siteID (same as ETL)
-  if (token && siteID) {
-    return getStore({
-      name: storeName,
-      siteID: siteID,
-      token: token
-    });
-  } else {
-    // Fallback to simple store name
-    return getStore(storeName);
+  const seasons = ['2025', '2024', '2023'];
+  let combinedData = {
+    teams: {},
+    league: { means: {}, stds: {} },
+    asOf: new Date().toISOString(),
+    seasons: {},
+    currentSeason: targetSeason
+  };
+  
+  // Load all available seasons
+  for (const season of seasons) {
+    try {
+      console.log(`Loading season ${season}...`);
+      const seasonData = await loadSeasonData(season);
+      
+      if (seasonData && seasonData.teams) {
+        combinedData.seasons[season] = seasonData;
+        console.log(`✓ Season ${season} loaded: ${Object.keys(seasonData.teams).length} teams`);
+        
+        // Use current season for league baseline
+        if (season === targetSeason) {
+          combinedData.league = seasonData.league || { means: {}, stds: {} };
+        }
+      } else {
+        console.warn(`⚠ Season ${season} data incomplete or missing`);
+      }
+    } catch (error) {
+      console.warn(`⚠ Failed to load season ${season}:`, error.message);
+    }
   }
+  
+  // Combine multi-season data for each team
+  const currentWeek = getCurrentWeekFromData(combinedData);
+  const historicalWeights = calculateHistoricalWeights(currentWeek);
+  
+  console.log(`Current week detected: ${currentWeek}`);
+  console.log(`Historical weights:`, historicalWeights);
+  
+  // Blend historical data for each team
+  for (const teamCode of getAllTeamCodes()) {
+    console.log(`Blending historical data for ${teamCode}...`);
+    combinedData.teams[teamCode] = blendTeamHistoricalData(
+      teamCode, 
+      combinedData.seasons, 
+      historicalWeights,
+      currentWeek
+    );
+  }
+  
+  // Add metadata
+  combinedData.currentWeek = currentWeek;
+  combinedData.historicalWeights = historicalWeights;
+  combinedData.hasHistoricalIntegration = true;
+  combinedData.seasonsLoaded = Object.keys(combinedData.seasons);
+  
+  console.log(`=== MULTI-SEASON INTEGRATION COMPLETE ===`);
+  console.log(`Teams processed: ${Object.keys(combinedData.teams).length}`);
+  console.log(`Seasons integrated: ${combinedData.seasonsLoaded.join(', ')}`);
+  
+  return combinedData;
 }
 
-// Legacy function names that your existing code expects
-export async function nflBlobsGetJSON(path) {
+// Load individual season data
+async function loadSeasonData(season) {
   try {
-    const store = getBlobStore();
-    const blob = await store.get(path);
-    if (!blob) return null;
+    const blobName = `nfl-advanced-${season}`;
+    console.log(`Fetching blob: ${blobName}`);
     
-    // Fix: Handle different blob response types
-    let text;
-    if (typeof blob === 'string') {
-      text = blob;
-    } else if (blob.text && typeof blob.text === 'function') {
-      text = await blob.text();
-    } else if (blob.body) {
-      text = blob.body;
-    } else {
-      console.warn('Unknown blob type:', typeof blob);
-      return null;
+    const response = await fetch(`${process.env.URL}/.netlify/blobs/${blobName}`, {
+      headers: {
+        'authorization': `Bearer ${process.env.NETLIFY_BLOBS_TOKEN}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Blob fetch failed: ${response.status}`);
     }
     
-    return JSON.parse(text);
-  } catch (error) {
-    console.warn(`Failed to read blob at ${path}:`, error);
-    return null;
-  }
-}
-
-export async function nflBlobsPutJSON(path, data) {
-  try {
-    const store = getBlobStore();
-    const json = JSON.stringify(data);
-    await store.set(path, json, { contentType: 'application/json' });
-    return true;
-  } catch (error) {
-    console.error(`Failed to write blob at ${path}:`, error);
-    throw error;
-  }
-}
-
-export async function nflBlobsDelete(path) {
-  try {
-    const store = getBlobStore();
-    await store.delete(path);
-    return true;
-  } catch (error) {
-    console.warn(`Failed to delete blob at ${path}:`, error);
-    return false;
-  }
-}
-
-// New function names for the advanced metrics system
-export async function readBlobJSON(path) {
-  return await nflBlobsGetJSON(path);
-}
-
-// ENHANCED: Load advanced metrics with historical context awareness
-export async function loadAdvancedMetrics(season) {
-  const data = await readBlobJSON(`nfl/epa/latest.json`);
-  
-  if (!data) {
-    console.warn('No advanced metrics found');
-    return null;
-  }
-  
-  // Validate that this data includes historical context
-  if (data.version === 'adv_v2_historical') {
-    console.log(`Loaded historical metrics - Week ${data.currentWeek}, Weights:`, data.weights);
-    return data;
-  } else {
-    console.warn('Loaded legacy metrics without historical integration');
-    return data;
-  }
-}
-
-// ENHANCED: Load historical metrics for specific season (new function)
-export async function loadHistoricalMetrics(season) {
-  try {
-    const data = await readBlobJSON(`nfl/epa/historical_${season}.json`);
-    return data;
-  } catch (error) {
-    console.warn(`No historical metrics found for ${season}:`, error);
-    return null;
-  }
-}
-
-// ENHANCED: Store historical metrics by season (new function)
-export async function storeHistoricalMetrics(season, data) {
-  try {
-    await nflBlobsPutJSON(`nfl/epa/historical_${season}.json`, {
-      ...data,
-      season: season,
-      archived_at: new Date().toISOString()
+    const data = await response.json();
+    console.log(`Season ${season} data structure:`, {
+      hasTeams: !!data?.teams,
+      teamCount: Object.keys(data?.teams || {}).length,
+      hasLeague: !!data?.league,
+      asOf: data?.asOf
     });
-    console.log(`Archived ${season} metrics for historical reference`);
-    return true;
+    
+    return data;
   } catch (error) {
-    console.error(`Failed to archive ${season} metrics:`, error);
-    return false;
+    console.warn(`Failed to load season ${season}:`, error);
+    return null;
   }
 }
 
-export async function loadInjuries() {
-  return (await readBlobJSON(`nfl/injuries/latest.json`)) || { teams: {}, asOf: null };
-}
-
-// ENHANCED: Helper function to validate blob data structure with historical support
-export function validateAdvancedMetrics(data) {
-  if (!data || !data.teams || !data.league) {
-    return false;
+// FIXED: Get current week from actual game data
+function getCurrentWeekFromData(combinedData) {
+  // Try to detect current week from 2025 season data
+  const currentSeasonData = combinedData.seasons?.['2025'];
+  
+  if (currentSeasonData?.currentWeek) {
+    return currentSeasonData.currentWeek;
   }
   
-  // Check if we have required league normalization data
-  const hasLeagueMeans = data.league.means && Object.keys(data.league.means).length > 0;
-  const hasLeagueStds = data.league.stds && Object.keys(data.league.stds).length > 0;
+  // Fallback: estimate based on date
+  const now = new Date();
+  const seasonStart = new Date('2024-09-05'); // NFL season start
+  const weeksSinceStart = Math.floor((now - seasonStart) / (7 * 24 * 60 * 60 * 1000));
   
-  // Enhanced validation for historical data
-  const hasValidWeights = data.weights && typeof data.weights === 'object';
-  const hasCurrentWeek = typeof data.currentWeek === 'number';
+  // Clamp to reasonable range
+  return Math.max(1, Math.min(18, weeksSinceStart + 1));
+}
+
+// FIXED: Calculate proper historical weights based on current week
+function calculateHistoricalWeights(currentWeek) {
+  console.log(`Calculating historical weights for week ${currentWeek}`);
   
-  // Basic validation passes
-  const basicValid = hasLeagueMeans && hasLeagueStds;
+  // Early season (Weeks 1-4): Heavy historical reliance
+  if (currentWeek <= 4) {
+    return {
+      season_2025: 0.4,
+      season_2024: 0.4,
+      season_2023: 0.2,
+      recent_4_weeks: 0.1,
+      early_season_boost: true
+    };
+  }
   
-  // Enhanced validation for v2 (historical) data
-  const enhancedValid = basicValid && hasValidWeights && hasCurrentWeek;
+  // Mid season (Weeks 5-12): Balanced approach
+  if (currentWeek <= 12) {
+    return {
+      season_2025: 0.6,
+      season_2024: 0.3,
+      season_2023: 0.1,
+      recent_4_weeks: 0.15,
+      mid_season: true
+    };
+  }
   
-  if (data.version === 'adv_v2_historical') {
-    return enhancedValid;
-  } else {
-    // Legacy data still valid but log warning
-    if (basicValid) {
-      console.warn('Using legacy metrics without historical integration');
+  // Late season (Weeks 13+): Current season emphasis
+  return {
+    season_2025: 0.8,
+    season_2024: 0.15,
+    season_2023: 0.05,
+    recent_4_weeks: 0.2,
+    late_season: true
+  };
+}
+
+// FIXED: Blend multi-season team data with proper weighting
+function blendTeamHistoricalData(teamCode, seasons, weights, currentWeek) {
+  console.log(`Blending data for ${teamCode} with weights:`, weights);
+  
+  const blendedTeam = {
+    _metadata: {
+      teamCode,
+      currentWeek,
+      hasHistoricalData: false,
+      seasonsUsed: [],
+      blendingWeights: weights
     }
-    return basicValid;
+  };
+  
+  // Initialize all metric categories
+  const categories = [
+    'situational', 'pressure', 'turnovers', 'coaching', 
+    'discipline', 'tempo', 'core', 'script', 'formations',
+    'consistency', 'form'
+  ];
+  
+  for (const category of categories) {
+    blendedTeam[category] = {};
   }
+  
+  // Blend data from available seasons
+  for (const [season, weight] of Object.entries(weights)) {
+    if (season.startsWith('season_') && weight > 0) {
+      const seasonYear = season.replace('season_', '');
+      const seasonData = seasons[seasonYear];
+      
+      if (seasonData?.teams?.[teamCode]) {
+        console.log(`Incorporating ${seasonYear} data for ${teamCode} (weight: ${weight})`);
+        
+        blendedTeam._metadata.hasHistoricalData = true;
+        blendedTeam._metadata.seasonsUsed.push(seasonYear);
+        
+        const teamData = seasonData.teams[teamCode];
+        
+        // Blend each category
+        for (const category of categories) {
+          if (teamData[category]) {
+            for (const [metric, value] of Object.entries(teamData[category])) {
+              if (typeof value === 'number') {
+                if (!blendedTeam[category][metric]) {
+                  blendedTeam[category][metric] = 0;
+                }
+                blendedTeam[category][metric] += value * weight;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // Add recent form boost if applicable
+  if (weights.recent_4_weeks > 0 && seasons['2025']?.teams?.[teamCode]?.form) {
+    const recentForm = seasons['2025'].teams[teamCode].form;
+    for (const [metric, value] of Object.entries(recentForm)) {
+      if (typeof value === 'number') {
+        if (!blendedTeam.form[metric]) {
+          blendedTeam.form[metric] = value;
+        } else {
+          blendedTeam.form[metric] += value * weights.recent_4_weeks;
+        }
+      }
+    }
+  }
+  
+  console.log(`✓ ${teamCode} blended from ${blendedTeam._metadata.seasonsUsed.length} seasons`);
+  return blendedTeam;
 }
 
-// ENHANCED: Helper to get team data with historical context awareness
-export function getTeamMetrics(data, teamCode) {
-  if (!data || !data.teams || !data.teams[teamCode]) {
+// Get all NFL team codes
+function getAllTeamCodes() {
+  return [
+    'ARI', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE',
+    'DAL', 'DEN', 'DET', 'GB', 'HOU', 'IND', 'JAX', 'KC',
+    'LV', 'LAC', 'LAR', 'MIA', 'MIN', 'NE', 'NO', 'NYG',
+    'NYJ', 'PHI', 'PIT', 'SF', 'SEA', 'TB', 'TEN', 'WAS'
+  ];
+}
+
+// FIXED: Enhanced team metrics retrieval
+export function getTeamMetrics(advancedMetrics, teamCode) {
+  if (!advancedMetrics?.teams?.[teamCode]) {
     console.warn(`No metrics found for team: ${teamCode}`);
     return null;
   }
   
-  const teamData = data.teams[teamCode];
+  const teamData = advancedMetrics.teams[teamCode];
   
-  // Add metadata about data quality for debugging
-  if (data.version === 'adv_v2_historical') {
-    return {
-      ...teamData,
-      _metadata: {
-        hasHistoricalData: true,
-        dataVintage: teamData.meta?.data_vintage,
-        currentWeek: data.currentWeek,
-        weights: data.weights
-      }
+  // Ensure metadata is present
+  if (!teamData._metadata) {
+    teamData._metadata = {
+      hasHistoricalData: false,
+      seasonsUsed: ['2025']
     };
   }
+  
+  console.log(`Retrieved metrics for ${teamCode}:`, {
+    hasHistoricalData: teamData._metadata.hasHistoricalData,
+    seasonsUsed: teamData._metadata.seasonsUsed,
+    categories: Object.keys(teamData).filter(k => k !== '_metadata')
+  });
   
   return teamData;
 }
 
-// NEW: Get current week from metrics data
-export function getCurrentWeek(data) {
-  return data?.currentWeek || 1;
+// FIXED: Get current week from loaded data
+export function getCurrentWeek(advancedMetrics) {
+  if (advancedMetrics?.currentWeek) {
+    return advancedMetrics.currentWeek;
+  }
+  
+  // Fallback calculation
+  const now = new Date();
+  const seasonStart = new Date('2024-09-05');
+  const weeksSinceStart = Math.floor((now - seasonStart) / (7 * 24 * 60 * 60 * 1000));
+  return Math.max(1, Math.min(18, weeksSinceStart + 1));
 }
 
-// NEW: Get current weights from metrics data  
-export function getCurrentWeights(data) {
-  return data?.weights || {
-    season_2025: 1.0,
-    season_2024: 0.0,
-    season_2023: 0.0,
-    recent_4_weeks: 0.0
-  };
-}
-
-// NEW: Diagnostic function to check data quality
-export function diagnoseMetricsData(data) {
-  if (!data) return { status: 'missing', issues: ['No data found'] };
-  
-  const issues = [];
-  const status = [];
-  
-  // Check version
-  if (data.version === 'adv_v2_historical') {
-    status.push('historical_integration_enabled');
-  } else {
-    issues.push('using_legacy_data_without_historical_integration');
+// FIXED: Get current weights from loaded data
+export function getCurrentWeights(advancedMetrics) {
+  if (advancedMetrics?.historicalWeights) {
+    return advancedMetrics.historicalWeights;
   }
   
-  // Check teams
-  const teamCount = Object.keys(data.teams || {}).length;
-  if (teamCount < 32) {
-    issues.push(`only_${teamCount}_teams_found_expected_32`);
-  } else {
-    status.push(`all_${teamCount}_teams_loaded`);
-  }
-  
-  // Check weights
-  if (data.weights) {
-    const totalWeight = Object.values(data.weights).reduce((sum, w) => sum + w, 0);
-    if (Math.abs(totalWeight - 1.0) > 0.01) {
-      issues.push(`weights_dont_sum_to_1_actual_${totalWeight.toFixed(3)}`);
-    } else {
-      status.push('weights_properly_normalized');
-    }
-  }
-  
-  // Check current week
-  if (data.currentWeek && data.currentWeek >= 4 && data.weights?.recent_4_weeks > 0) {
-    status.push('recent_form_weighting_active');
-  }
-  
+  // Fallback to mid-season weights
   return {
-    status: issues.length === 0 ? 'healthy' : 'issues_detected',
-    version: data.version || 'legacy',
-    currentWeek: data.currentWeek || 'unknown',
-    weights: data.weights || 'not_available',
-    issues: issues,
-    positives: status
+    season_2025: 0.6,
+    season_2024: 0.3,
+    season_2023: 0.1,
+    recent_4_weeks: 0.15
   };
 }
 
-// NEW: Migration helper to upgrade legacy data
-export async function migrateLegacyData() {
-  console.log('Checking for legacy data migration...');
-  
-  const currentData = await readBlobJSON('nfl/epa/latest.json');
-  
-  if (!currentData) {
-    console.log('No existing data to migrate');
+// Enhanced metrics validation
+export function validateAdvancedMetrics(advancedMetrics) {
+  if (!advancedMetrics) {
+    console.warn('No advanced metrics provided');
     return false;
   }
   
-  if (currentData.version === 'adv_v2_historical') {
-    console.log('Data already using historical integration');
-    return false;
+  const hasTeams = advancedMetrics.teams && Object.keys(advancedMetrics.teams).length > 0;
+  const hasLeague = advancedMetrics.league && advancedMetrics.league.means;
+  const hasHistoricalIntegration = advancedMetrics.hasHistoricalIntegration;
+  
+  console.log('Metrics validation:', {
+    hasTeams,
+    hasLeague,
+    hasHistoricalIntegration,
+    teamCount: Object.keys(advancedMetrics.teams || {}).length,
+    seasonsLoaded: advancedMetrics.seasonsLoaded || []
+  });
+  
+  return hasTeams && hasLeague;
+}
+
+// Enhanced diagnostics
+export function diagnoseMetricsData(advancedMetrics) {
+  if (!advancedMetrics) {
+    return { status: 'missing', details: 'No metrics data provided' };
   }
   
-  // Backup legacy data
-  const backupPath = `nfl/epa/legacy_backup_${Date.now()}.json`;
-  await nflBlobsPutJSON(backupPath, currentData);
-  console.log(`Legacy data backed up to: ${backupPath}`);
+  const diagnosis = {
+    status: 'loaded',
+    totalTeams: Object.keys(advancedMetrics.teams || {}).length,
+    hasLeagueData: !!advancedMetrics.league?.means,
+    hasHistoricalIntegration: !!advancedMetrics.hasHistoricalIntegration,
+    currentWeek: advancedMetrics.currentWeek,
+    seasonsLoaded: advancedMetrics.seasonsLoaded || [],
+    historicalWeights: advancedMetrics.historicalWeights || null,
+    sampleTeamData: null
+  };
   
-  return true;
+  // Sample team analysis
+  const sampleTeam = Object.keys(advancedMetrics.teams || {})[0];
+  if (sampleTeam) {
+    const teamData = advancedMetrics.teams[sampleTeam];
+    diagnosis.sampleTeamData = {
+      teamCode: sampleTeam,
+      hasMetadata: !!teamData._metadata,
+      hasHistoricalData: teamData._metadata?.hasHistoricalData || false,
+      seasonsUsed: teamData._metadata?.seasonsUsed || [],
+      categories: Object.keys(teamData).filter(k => k !== '_metadata')
+    };
+  }
+  
+  return diagnosis;
+}
+
+// Load injuries (unchanged)
+export async function loadInjuries() {
+  try {
+    const response = await fetch(`${process.env.URL}/.netlify/blobs/nfl-injuries`, {
+      headers: {
+        'authorization': `Bearer ${process.env.NETLIFY_BLOBS_TOKEN}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Injuries fetch failed: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.warn('Failed to load injuries:', error);
+    return null;
+  }
 }
