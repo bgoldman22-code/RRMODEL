@@ -1,22 +1,19 @@
 import React, { useEffect, useState } from 'react';
 
 /**
- * NFL Predictions Page
- * Updated to work with nfl-predictions-generate and 2025 season
+ * NFL Predictions Page with Live Odds Display
+ * Shows real sportsbook lines alongside model predictions
  */
 
 const fmt = (v) => (v === null || v === undefined || v === '' ? '—' : v);
-const fmtPct = (p) => (typeof p === 'number' ? `${Math.round(p * 100)}%` : (typeof p === 'string' ? p : '—'));
 const fmtOdds = (odds) => odds > 0 ? `+${odds}` : `${odds}`;
 
 async function fetchSchedule(week = 3, season = 2025) {
-  // First get the schedule data
   const scheduleUrl = `/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`;
   const scheduleRes = await fetch(scheduleUrl);
   if (!scheduleRes.ok) throw new Error(`Failed to get schedule: ${scheduleRes.status}`);
   const scheduleData = await scheduleRes.json();
   
-  // Transform schedule data to the format expected by predictions function
   const games = (scheduleData.matchups || []).map(game => ({
     home_team: getTeamAbbreviation(game.homeTeam),
     away_team: getTeamAbbreviation(game.awayTeam), 
@@ -28,14 +25,12 @@ async function fetchSchedule(week = 3, season = 2025) {
 }
 
 async function fetchPredictions(week = 3, season = 2025, force = false) {
-  // Get schedule first
   const games = await fetchSchedule(week, season);
   
   if (games.length === 0) {
     throw new Error(`No games found for Week ${week}, ${season}`);
   }
   
-  // Then get predictions for those games
   const url = `/.netlify/functions/nfl-predictions-generate`;
   const res = await fetch(url, {
     method: 'POST',
@@ -52,25 +47,17 @@ async function fetchPredictions(week = 3, season = 2025, force = false) {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const predictions = await res.json();
   
-  // Transform predictions back to the format expected by the UI
   return {
     rows: predictions.map(pred => ({
       gameId: pred.game_id,
       matchup: `${pred.away_team} @ ${pred.home_team}`,
       start: pred.start,
-      predictions: pred.predictions, // FIXED: Keep the predictions object
+      predictions: pred.predictions,
+      odds: pred.odds, // Include live odds
       home_team: pred.home_team,
       away_team: pred.away_team,
-      pick: pred.predictions.home_win_prob > 0.5 ? pred.home_team : pred.away_team,
-      modelPickProb: Math.max(pred.predictions.home_win_prob, pred.predictions.away_win_prob),
-      homeProb: pred.predictions.home_win_prob,
-      awayProb: pred.predictions.away_win_prob,
-      modelEdge: null,
-      confidence: null,  
-      ml_home: null,
-      ml_away: null,
       teamStats: pred.teamStats,
-      odds: pred.odds // Include odds if available
+      modelEnhancements: pred.modelEnhancements
     })),
     meta: {
       week: week,
@@ -81,7 +68,6 @@ async function fetchPredictions(week = 3, season = 2025, force = false) {
   };
 }
 
-// Helper function to convert team names to abbreviations
 function getTeamAbbreviation(fullName) {
   const nameMap = {
     "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL",
@@ -105,7 +91,7 @@ export default function NFLPredictions() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [week, setWeek] = useState(3);
-  const season = 2025; // Fixed to current season
+  const season = 2025;
 
   const load = async (force = false) => {
     setLoading(true); 
@@ -188,13 +174,15 @@ export default function NFLPredictions() {
                 const ml = r.predictions?.moneyline;
                 const spread = r.predictions?.spread;
                 const total = r.predictions?.total;
+                const odds = r.odds || {};
+                
                 const bestEdge = Math.max(
                   Math.abs(ml?.edge || 0),
                   spread?.confidence > 60 ? (spread.confidence - 50) : 0,
                   total?.confidence > 60 ? (total.confidence - 50) : 0
                 );
 
-                const PickBadge = ({ pick, confidence, odds, type }) => (
+                const PickBadge = ({ pick, confidence, type, modelValue, marketValue }) => (
                   <div className="space-y-1">
                     <div className="font-medium text-sm">{pick}</div>
                     <div className={`text-xs px-2 py-1 rounded ${
@@ -204,7 +192,18 @@ export default function NFLPredictions() {
                     }`}>
                       {confidence}%
                     </div>
-                    {odds && <div className="text-xs text-gray-500">{odds}</div>}
+                    {/* Display market line */}
+                    {marketValue && (
+                      <div className="text-xs text-gray-600">
+                        Line: {marketValue}
+                      </div>
+                    )}
+                    {/* Display model prediction vs market */}
+                    {modelValue && marketValue && (
+                      <div className="text-xs text-blue-600">
+                        Model: {modelValue}
+                      </div>
+                    )}
                   </div>
                 );
 
@@ -212,40 +211,54 @@ export default function NFLPredictions() {
                   <tr key={r.gameId || idx} className="border-t border-neutral-200 hover:bg-neutral-25">
                     <td className="px-4 py-3 font-medium">{fmt(r.matchup)}</td>
                     <td className="px-4 py-3">{kickoff}</td>
+                    
+                    {/* Moneyline Column */}
                     <td className="px-4 py-3">
                       {ml ? (
-                        <PickBadge 
-                          pick={ml.pick}
-                          confidence={ml.confidence}
-                          odds={r.odds?.h2h ? 
-                            `${r.odds.h2h.home_best?.price || '—'}/${r.odds.h2h.away_best?.price || '—'}` : 
-                            null
-                          }
-                          type="ml"
-                        />
+                        <div className="space-y-2">
+                          <PickBadge 
+                            pick={ml.pick}
+                            confidence={ml.confidence}
+                            type="ml"
+                          />
+                          {/* Display real moneyline odds */}
+                          {(odds.moneyline?.home || odds.moneyline?.away) && (
+                            <div className="text-xs text-gray-500">
+                              <div>{r.away_team}: {fmtOdds(odds.moneyline.away) || '—'}</div>
+                              <div>{r.home_team}: {fmtOdds(odds.moneyline.home) || '—'}</div>
+                            </div>
+                          )}
+                        </div>
                       ) : '—'}
                     </td>
+                    
+                    {/* Spread Column */}
                     <td className="px-4 py-3">
                       {spread ? (
                         <PickBadge 
                           pick={spread.pick}
                           confidence={spread.confidence}
-                          odds={spread.line ? `${spread.line > 0 ? '+' : ''}${spread.line}` : null}
                           type="spread"
+                          modelValue={spread.predicted ? `${spread.predicted > 0 ? '+' : ''}${spread.predicted}` : null}
+                          marketValue={spread.line ? `${spread.line > 0 ? '+' : ''}${spread.line}` : null}
                         />
                       ) : '—'}
                     </td>
+                    
+                    {/* Total Column */}
                     <td className="px-4 py-3">
                       {total ? (
                         <PickBadge 
-                          pick={total.pick === 'over' ? 'Over' : 
-                                total.pick === 'under' ? 'Under' : 'Push'}
+                          pick={total.pick === 'over' ? 'Over' : total.pick === 'under' ? 'Under' : 'Push'}
                           confidence={total.confidence}
-                          odds={total.line ? `${total.line}` : null}
                           type="total"
+                          modelValue={total.predicted ? `${total.predicted}` : null}
+                          marketValue={total.line ? `${total.line}` : null}
                         />
                       ) : '—'}
                     </td>
+                    
+                    {/* Best Edge Column */}
                     <td className="px-4 py-3">
                       <span className={`font-medium ${
                         bestEdge > 10 ? 'text-green-600' : 
@@ -255,11 +268,17 @@ export default function NFLPredictions() {
                         {bestEdge > 0 ? `${bestEdge.toFixed(1)}%` : '—'}
                       </span>
                     </td>
+                    
+                    {/* Team Stats Column */}
                     <td className="px-4 py-3 text-xs">
                       <div className="space-y-1">
                         <div>Home: EPA {r.teamStats?.home?.strength?.toFixed(3) || '—'}</div>
                         <div>Away: EPA {r.teamStats?.away?.strength?.toFixed(3) || '—'}</div>
                         <div>Form: {r.teamStats?.home?.form?.toFixed(3) || '—'}</div>
+                        {/* Show if live odds integrated */}
+                        {r.modelEnhancements?.oddsIntegrated && (
+                          <div className="text-green-600">Live odds ✓</div>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -272,9 +291,10 @@ export default function NFLPredictions() {
       
       {rows.length > 0 && (
         <div className="mt-4 text-xs text-gray-500">
-          <p><strong>Edge:</strong> Model probability vs market probability. Positive = model favors pick.</p>
-          <p><strong>Confidence:</strong> Based on edge magnitude and other factors. Higher = stronger conviction.</p>
-          <p><strong>EPA:</strong> Expected Points Added - offensive efficiency metric.</p>
+          <p><strong>Pick:</strong> Model's recommended bet with confidence percentage.</p>
+          <p><strong>Line:</strong> Current sportsbook line. <strong>Model:</strong> Model's prediction.</p>
+          <p><strong>Edge:</strong> Model probability vs market probability difference.</p>
+          <p><strong>Live odds ✓:</strong> Real sportsbook data integrated for this game.</p>
         </div>
       )}
     </div>
