@@ -4,26 +4,26 @@ import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetr
 
 // Tiered weights based on predictive value research
 const WEIGHTS = {
-  // Tier 1 - Highest predictive value (50% total)
-  third_down: 0.20,
-  rz_td: 0.15,
-  turnover_diff: 0.15,
+  // Tier 1 - Highest predictive value (50% total) - Scoring efficiency focus
+  rz_td: 0.22,           // Red zone TD rate - directly correlates with scoring
+  explosive_diff: 0.15,   // Explosive plays lead directly to TDs
+  turnover_diff: 0.13,    // Turnovers directly impact scoring opportunities
   
   // Tier 2 - Strong correlation (32% total)
-  explosive_diff: 0.12,
-  eds: 0.10,           // early down success
-  pressure_diff: 0.10,
+  third_down: 0.12,      // Reduced from 0.20 - sustaining drives matters but less than scoring
+  eds: 0.10,             // Early down success - sets up scoring opportunities
+  pressure_diff: 0.10,   // Pass rush affects all offensive efficiency
   
   // Tier 3 - Meaningful but situational (18% total)
   fourth_down_agg: 0.08,
   penalty_diff: 0.05,
-  top_eff: 0.05        // time of possession efficiency
+  top_eff: 0.05
 };
 
 // Advanced feature weights (start conservative, can increase after backtesting)
 const ADVANCED_WEIGHTS = {
+  form: 0.08,            // Increased from 0.03 - recent performance matters more
   consistency: 0.02,
-  form: 0.03,
   tempo: 0.01,
   formations: 0.01,
   script_adaptation: 0.01
