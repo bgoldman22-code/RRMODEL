@@ -1,5 +1,6 @@
 // netlify/functions/_lib/blobs-nfl.js
 // Complete version with fixed week detection and historical data integration
+// FIXED: Added missing storeBlob export for nfl-results-store compatibility
 
 import { getStore } from '@netlify/blobs';
 
@@ -70,6 +71,20 @@ export async function nflBlobsDelete(path) {
   } catch (error) {
     console.warn(`Failed to delete blob at ${path}:`, error);
     return false;
+  }
+}
+
+// ADDED: Missing storeBlob function for nfl-results-store compatibility
+export async function storeBlob(path, data) {
+  try {
+    const store = getBlobStore();
+    const json = JSON.stringify(data);
+    await store.set(path, json, { contentType: 'application/json' });
+    console.log(`[storeBlob] Successfully stored blob at: ${path}`);
+    return true;
+  } catch (error) {
+    console.error(`[storeBlob] Failed to store blob at ${path}:`, error);
+    throw error;
   }
 }
 
