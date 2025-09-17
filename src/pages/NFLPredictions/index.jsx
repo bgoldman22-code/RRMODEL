@@ -1,289 +1,201 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-/**
- * NFL Predictions Page
- * Updated to work with nfl-predictions-generate2 which handles real schedule data
- */
+const fmtLocal = (iso) => {
+  try {
+    const d = new Date(iso);
+    return new Intl.DateTimeFormat(undefined, {
+      month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'
+    }).format(d);
+  } catch { return iso; }
+};
 
-const fmt = (v) => (v === null || v === undefined || v === '' ? '—' : v);
-const fmtPct = (p) => (typeof p === 'number' ? `${Math.round(p * 100)}%` : (typeof p === 'string' ? p : '—'));
-const fmtOdds = (odds) => odds > 0 ? `+${odds}` : `${odds}`;
+const Cell = ({children}) => <td className="px-3 py-2 align-top">{children}</td>;
 
-async function fetchSchedule(week = 3, season = 2024) {
-  // First get the schedule data
-  const scheduleUrl = `/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`;
-  const scheduleRes = await fetch(scheduleUrl);
-  if (!scheduleRes.ok) throw new Error(`Failed to get schedule: ${scheduleRes.status}`);
-  const scheduleData = await scheduleRes.json();
-  
-  // Transform schedule data to the format expected by predictions function
-  const games = (scheduleData.matchups || []).map(game => ({
-    home_team: getTeamAbbreviation(game.homeTeam),
-    away_team: getTeamAbbreviation(game.awayTeam), 
-    game_id: game.id || `${game.homeTeam}-${game.awayTeam}`,
-    kickoff: game.kickoff
-  }));
-  
-  return games;
-}
+export default function NFLPredictionsPage() {
+  const [data, setData] = React.useState({ rows: [], updated: null });
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+  const [week, setWeek] = React.useState('3');
+  const [season, setSeason] = React.useState('2024');
 
-async function fetchPredictions(week = 3, season = 2024, force = false) {
-  // Get schedule first
-  const games = await fetchSchedule(week, season);
-  
-  if (games.length === 0) {
-    throw new Error(`No games found for Week ${week}, ${season}`);
-  }
-  
-  // Then get predictions for those games
-  const url = `/.netlify/functions/nfl-predictions-generate`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'cache-control': 'no-cache' 
-    },
-    body: JSON.stringify({
-      season: season.toString(),
-      games: games
-    })
-  });
-  
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const predictions = await res.json();
-  
-  // Transform predictions back to the format expected by the UI
-  return {
-    rows: predictions.map(pred => ({
-      gameId: pred.game_id,
-      matchup: `${pred.away_team} @ ${pred.home_team}`,
-      start: pred.kickoff,
-      pick: pred.predictions.home_win_prob > 0.5 ? pred.home_team : pred.away_team,
-      modelPickProb: Math.max(pred.predictions.home_win_prob, pred.predictions.away_win_prob),
-      homeProb: pred.predictions.home_win_prob,
-      awayProb: pred.predictions.away_win_prob,
-      modelEdge: null, // Your function doesn't return this
-      confidence: null, // Your function doesn't return this  
-      ml_home: null,
-      ml_away: null,
-      teamStats: pred.teamStats
-    })),
-    meta: {
-      week: week,
-      season: season,
-      games: predictions.length,
-      model: 'advanced_nfl_predictions'
-    }
-  };
-}
-
-// Helper function to convert team names to abbreviations
-function getTeamAbbreviation(fullName) {
-  const nameMap = {
-    "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL",
-    "Buffalo Bills": "BUF", "Carolina Panthers": "CAR", "Chicago Bears": "CHI",
-    "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE", "Dallas Cowboys": "DAL",
-    "Denver Broncos": "DEN", "Detroit Lions": "DET", "Green Bay Packers": "GB",
-    "Houston Texans": "HOU", "Indianapolis Colts": "IND", "Jacksonville Jaguars": "JAX",
-    "Kansas City Chiefs": "KC", "Los Angeles Rams": "LAR", "Los Angeles Chargers": "LAC",
-    "Las Vegas Raiders": "LV", "Miami Dolphins": "MIA", "Minnesota Vikings": "MIN",
-    "New England Patriots": "NE", "New Orleans Saints": "NO", "New York Giants": "NYG",
-    "New York Jets": "NYJ", "Philadelphia Eagles": "PHI", "Pittsburgh Steelers": "PIT",
-    "Seattle Seahawks": "SEA", "San Francisco 49ers": "SF", "Tampa Bay Buccaneers": "TB",
-    "Tennessee Titans": "TEN", "Washington Commanders": "WAS"
-  };
-  return nameMap[fullName] || fullName;
-}
-
-export default function NFLPredictions() {
-  const [rows, setRows] = useState([]);
-  const [meta, setMeta] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [week, setWeek] = useState(3);
-  const [season, setSeason] = useState(2024);
-
-  const load = async (force = false) => {
-    setLoading(true); 
+  const loadPredictions = React.useCallback(async () => {
+    setLoading(true);
     setError(null);
+    
     try {
-      const data = await fetchPredictions(week, season, force);
-      setRows(Array.isArray(data.rows) ? data.rows : []);
-      setMeta(data.meta || null);
+      // First get the schedule
+      const scheduleRes = await fetch(`/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`);
+      const scheduleData = await scheduleRes.json();
+      
+      if (!scheduleData.games || scheduleData.games.length === 0) {
+        setData({ rows: [], updated: null });
+        setLoading(false);
+        return;
+      }
+
+      // Then get predictions
+      const predictionsRes = await fetch('/.netlify/functions/nfl-predictions-generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          season: season,
+          games: scheduleData.games
+        })
+      });
+      
+      const predictions = await predictionsRes.json();
+      
+      // Transform data for display
+      const rows = predictions.map(game => ({
+        id: game.game_id,
+        kickoff: game.start,
+        matchup: `${game.away_team} @ ${game.home_team}`,
+        away_abbr: game.away_team,
+        home_abbr: game.home_team,
+        
+        // Predictions from nested structure
+        pick_ml: game.predictions?.moneyline ? {
+          team: game.predictions.moneyline.pick,
+          type: 'ML',
+          confidence: game.predictions.moneyline.confidence / 100
+        } : null,
+        
+        pick_spread: game.predictions?.spread ? {
+          team: game.predictions.spread.pick,
+          line: game.predictions.spread.line,
+          confidence: game.predictions.spread.confidence / 100
+        } : null,
+        
+        pick_total: game.predictions?.total ? {
+          side: game.predictions.total.pick,
+          line: game.predictions.total.line,
+          confidence: game.predictions.total.confidence / 100
+        } : null,
+        
+        // Odds lines (you may need to adjust based on your odds data structure)
+        ml_home_best: game.odds?.ml_home || null,
+        ml_away_best: game.odds?.ml_away || null,
+        spread_line: game.odds?.spread_line || game.predictions?.spread?.line || null,
+        spread_team: game.home_team, // Assuming spread is shown for home team
+        total_line: game.odds?.total_line || game.predictions?.total?.line || null,
+        total_side: 'O/U'
+      }));
+      
+      setData({ 
+        rows, 
+        updated: new Date().toISOString() 
+      });
+      
     } catch (e) {
-      setError(e.message || 'Failed to load');
+      setError(String(e));
     } finally {
       setLoading(false);
     }
-  };
+  }, [week, season]);
 
-  useEffect(() => { load(false); }, [week, season]);
+  React.useEffect(() => {
+    loadPredictions();
+  }, [loadPredictions]);
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-2xl font-semibold">NFL Predictions</h1>
-          {meta && (
-            <p className="text-sm text-gray-600">
-              Week {meta.week}, {meta.season} • {meta.games} games • Model: {meta.model}
-            </p>
-          )}
+    <div className="p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-2xl font-bold">NFL Predictions</h1>
+          {data.updated && <span className="text-sm text-gray-500">updated {fmtLocal(data.updated)}</span>}
         </div>
+        
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <label className="text-sm">Week:</label>
+            <label className="text-sm font-medium">Week:</label>
             <select 
               value={week} 
-              onChange={(e) => setWeek(Number(e.target.value))}
-              className="px-2 py-1 border rounded"
+              onChange={(e) => setWeek(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1 text-sm"
             >
-              {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18].map(w => (
-                <option key={w} value={w}>Week {w}</option>
+              {Array.from({length: 18}, (_, i) => (
+                <option key={i+1} value={i+1}>Week {i+1}</option>
               ))}
             </select>
           </div>
+          
           <div className="flex items-center gap-2">
-            <label className="text-sm">Season:</label>
+            <label className="text-sm font-medium">Season:</label>
             <select 
               value={season} 
-              onChange={(e) => setSeason(Number(e.target.value))}
-              className="px-2 py-1 border rounded"
+              onChange={(e) => setSeason(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1 text-sm"
             >
-              <option value={2024}>2024</option>
-              <option value={2023}>2023</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
             </select>
           </div>
-          <button
-            className="px-3 py-2 rounded-xl bg-black text-white hover:opacity-90"
-            onClick={() => load(true)}
-            disabled={loading}
+          
+          <button 
+            onClick={loadPredictions}
+            className="bg-black text-white px-4 py-2 rounded text-sm font-medium hover:bg-gray-800"
           >
-            {loading ? 'Loading...' : 'Refresh'}
+            Refresh
           </button>
         </div>
       </div>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg">Error: {error}</div>
+      {loading && <div>Loading…</div>}
+      {error && <div className="text-red-600">Error: {error}</div>}
+
+      {!loading && !error && data.rows.length === 0 && (
+        <div className="text-gray-500">No predictions available for Week {week}, {season}</div>
       )}
 
-      <div className="overflow-auto rounded-2xl border border-neutral-200">
-        <table className="min-w-full text-sm">
-          <thead className="bg-neutral-50 text-neutral-700">
-            <tr>
-              <th className="px-4 py-3 text-left font-medium">Matchup</th>
-              <th className="px-4 py-3 text-left font-medium">Kickoff</th>
-              <th className="px-4 py-3 text-left font-medium">Moneyline</th>
-              <th className="px-4 py-3 text-left font-medium">Spread</th>
-              <th className="px-4 py-3 text-left font-medium">Total</th>
-              <th className="px-4 py-3 text-left font-medium">Best Edge</th>
-              <th className="px-4 py-3 text-left font-medium">Team Stats</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td className="px-4 py-6 text-neutral-500" colSpan={7}>Loading…</td></tr>
-            ) : rows.length === 0 ? (
-              <tr><td className="px-4 py-6 text-neutral-500" colSpan={7}>No predictions available for Week {week}, {season}.</td></tr>
-            ) : (
-              rows.map((r, idx) => {
-                const kickoff = r.start ? new Date(r.start).toLocaleString('en-US', {
-                  month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
-                }) : '—';
-                
-                const ml = r.predictions?.moneyline;
-                const spread = r.predictions?.spread;
-                const total = r.predictions?.total;
-                const bestEdge = Math.max(
-                  Math.abs(ml?.edge || 0),
-                  spread?.confidence > 60 ? (spread.confidence - 50) : 0,
-                  total?.confidence > 60 ? (total.confidence - 50) : 0
-                );
+      {!loading && !error && data.rows.length > 0 && (
+        <div className="overflow-x-auto">
+          <table className="min-w-[900px] w-full border border-gray-200 rounded-lg overflow-hidden">
+            <thead className="bg-gray-50 text-xs uppercase text-gray-600">
+              <tr>
+                <th className="px-3 py-2 text-left">Kickoff (Local)</th>
+                <th className="px-3 py-2 text-left">Matchup</th>
+                <th className="px-3 py-2 text-left">Moneyline, Spread, Total Lines</th>
+                <th className="px-3 py-2 text-left">Moneyline Pick</th>
+                <th className="px-3 py-2 text-left">Spread Pick</th>
+                <th className="px-3 py-2 text-left">O/U Pick</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm">
+              {data.rows.map(r => {
+                const lines = [
+                  (r.ml_home_best!=null || r.ml_away_best!=null) ? `ML: ${r.away_abbr} ${r.ml_away_best ?? '—'} / ${r.home_abbr} ${r.ml_home_best ?? '—'}` : null,
+                  (r.spread_line!=null) ? `Spread: ${r.spread_team} ${r.spread_line}` : null,
+                  (r.total_line!=null) ? `Total: ${r.total_side||'—'} ${r.total_line}` : null,
+                ].filter(Boolean).join(' · ');
 
-                const PickBadge = ({ pick, confidence, odds, type }) => (
-                  <div className="space-y-1">
-                    <div className="font-medium text-sm">{pick}</div>
-                    <div className={`text-xs px-2 py-1 rounded ${
-                      confidence >= 70 ? 'bg-green-100 text-green-800' :
-                      confidence >= 60 ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {confidence}%
-                    </div>
-                    {odds && <div className="text-xs text-gray-500">{odds}</div>}
+                const ml = r.pick_ml;
+                const sp = r.pick_spread;
+                const to = r.pick_total;
+
+                const Badge = ({text, conf}) => (
+                  <div className="inline-flex items-center gap-2">
+                    <span className="font-medium">{text}</span>
+                    {conf!=null && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-800 border border-green-300">
+                        {(conf*100).toFixed(1)}%
+                      </span>
+                    )}
                   </div>
                 );
 
                 return (
-                  <tr key={r.gameId || idx} className="border-t border-neutral-200 hover:bg-neutral-25">
-                    <td className="px-4 py-3 font-medium">{fmt(r.matchup)}</td>
-                    <td className="px-4 py-3">{kickoff}</td>
-                    <td className="px-4 py-3">
-                      {ml ? (
-                        <PickBadge 
-                          pick={ml.pick}
-                          confidence={ml.confidence}
-                          odds={r.odds?.h2h ? 
-                            `${r.odds.h2h.home_best?.price || '—'}/${r.odds.h2h.away_best?.price || '—'}` : 
-                            null
-                          }
-                          type="ml"
-                        />
-                      ) : '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      {spread ? (
-                        <PickBadge 
-                          pick={spread.pick === 'home' ? r.home_team : 
-                                spread.pick === 'away' ? r.away_team : 'Push'}
-                          confidence={spread.confidence}
-                          odds={spread.line ? `${spread.line > 0 ? '+' : ''}${spread.line}` : null}
-                          type="spread"
-                        />
-                      ) : '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      {total ? (
-                        <PickBadge 
-                          pick={total.pick === 'over' ? 'Over' : 
-                                total.pick === 'under' ? 'Under' : 'Push'}
-                          confidence={total.confidence}
-                          odds={total.line ? `${total.line}` : null}
-                          type="total"
-                        />
-                      ) : '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`font-medium ${
-                        bestEdge > 10 ? 'text-green-600' : 
-                        bestEdge > 5 ? 'text-yellow-600' : 
-                        'text-gray-600'
-                      }`}>
-                        {bestEdge > 0 ? `${bestEdge.toFixed(1)}%` : '—'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-xs">
-                      <div className="space-y-1">
-                        <div>Home: EPA {r.teamStats?.home?.epa?.toFixed(3) || '—'}</div>
-                        <div>Away: EPA {r.teamStats?.away?.epa?.toFixed(3) || '—'}</div>
-                        <div>Form: {r.teamStats?.home?.form?.toFixed(3) || '—'}</div>
-                      </div>
-                    </td>
+                  <tr key={r.id} className="border-t border-gray-200">
+                    <Cell>{fmtLocal(r.kickoff)}</Cell>
+                    <Cell>{r.matchup}</Cell>
+                    <Cell>{lines || '—'}</Cell>
+                    <Cell>{ml ? <Badge text={`${ml.team} (${ml.type})`} conf={ml.confidence}/> : '—'}</Cell>
+                    <Cell>{sp ? <Badge text={`${sp.team} ${sp.line ?? ''}`} conf={sp.confidence}/> : '—'}</Cell>
+                    <Cell>{to ? <Badge text={`${to.side} ${to.line ?? ''}`} conf={to.confidence}/> : '—'}</Cell>
                   </tr>
                 );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
-      
-      {rows.length > 0 && (
-        <div className="mt-4 text-xs text-gray-500">
-          <p><strong>Moneyline:</strong> Pick the winner straight up. Confidence based on model probability vs market odds.</p>
-          <p><strong>Spread:</strong> Point spread pick with confidence (1-100). Higher confidence = bigger difference vs market line.</p>
-          <p><strong>Total:</strong> Over/Under pick with confidence. Based on predicted total points vs market line.</p>
-          <p><strong>Best Edge:</strong> Highest confidence pick for each game. Green = strong edge, Yellow = moderate edge.</p>
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
