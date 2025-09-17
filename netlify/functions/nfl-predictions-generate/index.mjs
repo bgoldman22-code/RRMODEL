@@ -610,7 +610,7 @@ async function generateAdvancedPredictions(games, season) {
   });
 }
 
-// Netlify Function Handler (unchanged)
+// Netlify Function Handler
 export default async (request, context) => {
   try {
     if (request.method === 'OPTIONS') {
