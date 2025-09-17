@@ -438,37 +438,43 @@ async function generateAdvancedPredictions(games, season) {
 
     console.log('Moneyline prediction:', { mlPick, mlConfidence, mlEdge });
 
-    // Spread predictions
+    // Spread predictions - Fixed logic based on predicted margin vs market line
     const predictedSpread = calculateSpreadPrediction(homeWinProb, awayWinProb, homeMetrics, awayMetrics);
     const marketSpread = realOdds.spread_line || 0;
     
-    // Fix spread pick logic: if model spread > market spread, take the home team
-    // But also consider who the model actually favors
+    // Calculate the difference between model's prediction and market line
+    const spreadDifference = predictedSpread - marketSpread;
+    
     let spreadPick;
-    if (Math.abs(predictedSpread - marketSpread) < 1) {
-      spreadPick = 'push'; // Too close to call
-    } else if (homeWinProb > 0.55) {
-      // Model strongly favors home team
+    let spreadReasoning;
+    
+    if (Math.abs(spreadDifference) < 1.5) {
+      // Model prediction is very close to market line - no strong edge
+      spreadPick = 'push';
+      spreadReasoning = 'Too close to market line';
+    } else if (spreadDifference > 1.5) {
+      // Model thinks home team will win by MORE than the market expects
+      // Take the home team (they'll cover the spread)
       spreadPick = homeCode;
-    } else if (awayWinProb > 0.55) {
-      // Model strongly favors away team  
-      spreadPick = awayCode;
+      spreadReasoning = `Model: ${homeCode} by ${Math.abs(predictedSpread).toFixed(1)}, Market: ${Math.abs(marketSpread).toFixed(1)}`;
     } else {
-      // Use spread differential as tiebreaker
-      spreadPick = predictedSpread > marketSpread ? homeCode : awayCode;
+      // Model thinks home team will win by LESS than market expects (or away team wins)
+      // Take the away team (they'll cover the spread)
+      spreadPick = awayCode;
+      spreadReasoning = `Model: ${homeCode} by ${Math.abs(predictedSpread).toFixed(1)}, Market: ${Math.abs(marketSpread).toFixed(1)}`;
     }
     
-    const spreadEdge = Math.abs(predictedSpread - marketSpread);
-    const spreadConfidence = calculateConfidence(0.6, 0.5, spreadEdge / 14); // Normalize spread edge
+    const spreadEdge = Math.abs(spreadDifference);
+    const spreadConfidence = Math.min(95, 50 + (spreadEdge * 8)); // Scale confidence based on edge
 
     console.log('Spread prediction:', { 
       predictedSpread, 
       marketSpread, 
+      spreadDifference,
       spreadPick, 
-      spreadConfidence, 
+      spreadConfidence: Math.round(spreadConfidence), 
       spreadEdge,
-      homeWinProb,
-      modelFavorsHome: homeWinProb > 0.5
+      reasoning: spreadReasoning
     });
 
     // Total predictions
