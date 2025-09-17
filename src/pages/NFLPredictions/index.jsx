@@ -16,7 +16,7 @@ export default function NFLPredictionsPage() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [week, setWeek] = React.useState('3');
-  const [season, setSeason] = React.useState('2024');
+  const [season, setSeason] = React.useState('2025');
 
   const loadPredictions = React.useCallback(async () => {
     setLoading(true);
@@ -126,6 +126,7 @@ export default function NFLPredictionsPage() {
               onChange={(e) => setSeason(e.target.value)}
               className="border border-gray-300 rounded px-2 py-1 text-sm"
             >
+              <option value="2025">2025</option>
               <option value="2024">2024</option>
               <option value="2023">2023</option>
             </select>
