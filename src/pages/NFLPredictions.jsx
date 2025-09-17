@@ -174,49 +174,93 @@ export default function NFLPredictions() {
             <tr>
               <th className="px-4 py-3 text-left font-medium">Matchup</th>
               <th className="px-4 py-3 text-left font-medium">Kickoff</th>
-              <th className="px-4 py-3 text-left font-medium">Pick</th>
-              <th className="px-4 py-3 text-left font-medium">Model Prob</th>
-              <th className="px-4 py-3 text-left font-medium">Market Odds</th>
-              <th className="px-4 py-3 text-left font-medium">Edge</th>
-              <th className="px-4 py-3 text-left font-medium">Confidence</th>
+              <th className="px-4 py-3 text-left font-medium">Moneyline</th>
+              <th className="px-4 py-3 text-left font-medium">Spread</th>
+              <th className="px-4 py-3 text-left font-medium">Total</th>
+              <th className="px-4 py-3 text-left font-medium">Best Edge</th>
               <th className="px-4 py-3 text-left font-medium">Team Stats</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td className="px-4 py-6 text-neutral-500" colSpan={8}>Loading…</td></tr>
+              <tr><td className="px-4 py-6 text-neutral-500" colSpan={7}>Loading…</td></tr>
             ) : rows.length === 0 ? (
-              <tr><td className="px-4 py-6 text-neutral-500" colSpan={8}>No predictions available for Week {week}, {season}.</td></tr>
+              <tr><td className="px-4 py-6 text-neutral-500" colSpan={7}>No predictions available for Week {week}, {season}.</td></tr>
             ) : (
               rows.map((r, idx) => {
                 const kickoff = r.start ? new Date(r.start).toLocaleString('en-US', {
                   month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
                 }) : '—';
                 
-                const edge = r.modelEdge;
-                const edgeColor = edge > 0 ? 'text-green-600' : edge < -0.05 ? 'text-red-600' : '';
+                const ml = r.predictions?.moneyline;
+                const spread = r.predictions?.spread;
+                const total = r.predictions?.total;
+                const bestEdge = Math.max(
+                  Math.abs(ml?.edge || 0),
+                  spread?.confidence > 60 ? (spread.confidence - 50) : 0,
+                  total?.confidence > 60 ? (total.confidence - 50) : 0
+                );
+
+                const PickBadge = ({ pick, confidence, odds, type }) => (
+                  <div className="space-y-1">
+                    <div className="font-medium text-sm">{pick}</div>
+                    <div className={`text-xs px-2 py-1 rounded ${
+                      confidence >= 70 ? 'bg-green-100 text-green-800' :
+                      confidence >= 60 ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {confidence}%
+                    </div>
+                    {odds && <div className="text-xs text-gray-500">{odds}</div>}
+                  </div>
+                );
 
                 return (
                   <tr key={r.gameId || idx} className="border-t border-neutral-200 hover:bg-neutral-25">
                     <td className="px-4 py-3 font-medium">{fmt(r.matchup)}</td>
                     <td className="px-4 py-3">{kickoff}</td>
-                    <td className="px-4 py-3 font-medium">{fmt(r.pick)}</td>
-                    <td className="px-4 py-3">{fmtPct(r.modelPickProb)}</td>
                     <td className="px-4 py-3">
-                      {r.ml_home && r.ml_away ? (
-                        `${r.ml_home}/${r.ml_away}`
+                      {ml ? (
+                        <PickBadge 
+                          pick={ml.pick}
+                          confidence={ml.confidence}
+                          odds={r.odds?.h2h ? 
+                            `${r.odds.h2h.home_best?.price || '—'}/${r.odds.h2h.away_best?.price || '—'}` : 
+                            null
+                          }
+                          type="ml"
+                        />
                       ) : '—'}
                     </td>
-                    <td className={`px-4 py-3 ${edgeColor}`}>
-                      {edge !== null && edge !== undefined ? `${edge > 0 ? '+' : ''}${(edge * 100).toFixed(1)}%` : '—'}
+                    <td className="px-4 py-3">
+                      {spread ? (
+                        <PickBadge 
+                          pick={spread.pick === 'home' ? r.home_team : 
+                                spread.pick === 'away' ? r.away_team : 'Push'}
+                          confidence={spread.confidence}
+                          odds={spread.line ? `${spread.line > 0 ? '+' : ''}${spread.line}` : null}
+                          type="spread"
+                        />
+                      ) : '—'}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded text-xs ${
-                        (r.confidence || 0) >= 7 ? 'bg-green-100 text-green-800' :
-                        (r.confidence || 0) >= 4 ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
+                      {total ? (
+                        <PickBadge 
+                          pick={total.pick === 'over' ? 'Over' : 
+                                total.pick === 'under' ? 'Under' : 'Push'}
+                          confidence={total.confidence}
+                          odds={total.line ? `${total.line}` : null}
+                          type="total"
+                        />
+                      ) : '—'}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`font-medium ${
+                        bestEdge > 10 ? 'text-green-600' : 
+                        bestEdge > 5 ? 'text-yellow-600' : 
+                        'text-gray-600'
                       }`}>
-                        {r.confidence || '—'}
+                        {bestEdge > 0 ? `${bestEdge.toFixed(1)}%` : '—'}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-xs">
