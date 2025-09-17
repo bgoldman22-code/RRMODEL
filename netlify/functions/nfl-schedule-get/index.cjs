@@ -2,8 +2,8 @@
 /**
  * netlify/functions/nfl-schedule-get/index.cjs
  *
- * Emits a normalized NFL schedule with a preferred real source and an odds-based fallback.
- *
+ * HYBRID VERSION: Static JSON for regular season (weeks 1-18), fallback logic for playoffs
+ * 
  * Response shape:
  * {
  *   ok: true,
@@ -13,7 +13,7 @@
  *   matchups: [
  *     { id, homeTeam, awayTeam, kickoff }
  *   ],
- *   source: "preferred|odds",
+ *   source: "static|preferred|odds",
  *   warning?: "..."
  * }
  */
@@ -23,20 +23,20 @@ const zlib = require('zlib');
 
 const DEFAULT_BASE = process.env.BASE_URL || 'https://bgroundrobin.com';
 const DEFAULT_ODDS_URL = process.env.ODDS_URL || `${DEFAULT_BASE}/.netlify/functions/nfl-odds-bridge`;
-const SCHEDULE_URL = process.env.SCHEDULE_URL; // preferred source
+const SCHEDULE_URL = process.env.SCHEDULE_URL; // preferred source (kept for playoffs)
 const DEFAULT_TTL = parseInt(process.env.SCHEDULE_TTL_SECONDS || '300', 10);
 
 /** Blobs store */
 function getScheduleStore() {
   try {
-  const name =
-    process.env.BLOBS_STORE_SCHEDULE ||
-    process.env.BLOBS_STORE ||
-    'nfl-td';
-  const siteID = process.env.NETLIFY_SITE_ID;
-  const token = process.env.NETLIFY_API_TOKEN;
-  if (siteID && token) return getStore(name, { siteID, token });
-  return getStore(name);
+    const name =
+      process.env.BLOBS_STORE_SCHEDULE ||
+      process.env.BLOBS_STORE ||
+      'nfl-td';
+    const siteID = process.env.NETLIFY_SITE_ID;
+    const token = process.env.NETLIFY_API_TOKEN;
+    if (siteID && token) return getStore(name, { siteID, token });
+    return getStore(name);
   } catch (err) {
     // Fallback: no-op store when Blobs not configured
     return null;
@@ -59,6 +59,44 @@ function onlyTruthy(obj) {
   const out = {};
   for (const [k, v] of Object.entries(obj)) if (v !== undefined && v !== null) out[k] = v;
   return out;
+}
+
+/** NEW: Fetch from static JSON (for regular season weeks 1-18) */
+async function fetchStaticSchedule(week, season) {
+  console.log(`Fetching static schedule for Week ${week}, Season ${season}`);
+  
+  const staticUrl = `${DEFAULT_BASE}/data/nfl-schedule-2025.json`;
+  const res = await fetch(staticUrl);
+  
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status} from static schedule at ${staticUrl}`);
+  }
+  
+  const schedule = await res.json();
+  const weekData = schedule.weeks[week.toString()];
+  
+  if (!weekData || !weekData.matchups) {
+    throw new Error(`No matchups found for Week ${week} in static schedule`);
+  }
+  
+  console.log(`✓ Static schedule loaded: ${weekData.matchups.length} games for Week ${week}`);
+  
+  // Convert to normalized format
+  const matchups = weekData.matchups.map(m => ({
+    id: m.id || toId(m.homeTeam, m.awayTeam, m.kickoff),
+    homeTeam: m.homeTeam,
+    awayTeam: m.awayTeam,
+    kickoff: m.kickoff
+  }));
+  
+  return {
+    matchups,
+    meta: {
+      season: parseInt(schedule.season),
+      week: week,
+      source: 'static'
+    }
+  };
 }
 
 /** Parse a JSON schedule payload into normalized matchups */
@@ -135,7 +173,7 @@ function normalizeFromCsv(rows) {
   return { matchups, meta: {} };
 }
 
-/** Preferred source fetcher (JSON or CSV/CSV.GZ) */
+/** Preferred source fetcher (JSON or CSV/CSV.GZ) - kept for playoffs */
 async function fetchPreferredSchedule(url) {
   const res = await fetch(url, { redirect: 'follow' });
   if (!res.ok) throw new Error(`HTTP ${res.status} from preferred schedule`);
@@ -185,6 +223,7 @@ async function readCache(store, key) {
     return null;
   }
 }
+
 async function writeCache(store, key, value) {
   try {
     await store.setJSON(key, value);
@@ -197,13 +236,31 @@ exports.handler = async (event) => {
     const params = new URLSearchParams(event.queryStringParameters || {});
     const wantWeek = params.get('week') ? parseInt(params.get('week'), 10) : undefined;
     const wantSeason = params.get('season') ? parseInt(params.get('season'), 10) : undefined;
-    const cacheKey = `schedule/latest.json`;
+    
+    console.log(`Schedule request: Week ${wantWeek}, Season ${wantSeason}`);
+    
+    // MODIFIED: Use different cache keys and TTL for regular season vs playoffs
+    const isRegularSeason = wantWeek && wantWeek <= 18;
+    const cacheKey = isRegularSeason 
+      ? `schedule/regular_w${wantWeek}_s${wantSeason}.json`
+      : `schedule/playoffs_latest.json`;
+    
     const now = Date.now();
     const cached = await readCache(store, cacheKey);
-    if (cached && cached.fetched_at && now - cached.fetched_at < DEFAULT_TTL * 1000) {
+    
+    // Use longer cache for static data (1 hour), shorter for dynamic (5 min)
+    const cacheTimeout = isRegularSeason ? 3600 * 1000 : DEFAULT_TTL * 1000;
+    
+    if (cached && cached.fetched_at && now - cached.fetched_at < cacheTimeout) {
+      console.log(`Cache hit for ${cacheKey}`);
       const filtered = filterByWeek(cached.matchups || [], wantWeek);
       return {
         statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        },
         body: JSON.stringify(
           onlyTruthy({
             ok: true,
@@ -222,31 +279,67 @@ exports.handler = async (event) => {
     let meta = {};
     let source = 'preferred';
     let warning;
-    if (SCHEDULE_URL) {
+
+    // HYBRID LOGIC: Static for regular season, existing logic for playoffs
+    if (wantWeek && wantWeek <= 18) {
+      // REGULAR SEASON: Try static JSON first
+      console.log(`Regular season Week ${wantWeek} - attempting static JSON`);
       try {
-        const pref = await fetchPreferredSchedule(SCHEDULE_URL);
-        matchups = pref.matchups || [];
-        meta = pref.meta || {};
+        const staticData = await fetchStaticSchedule(wantWeek, wantSeason);
+        matchups = staticData.matchups || [];
+        meta = staticData.meta || {};
+        source = 'static';
+        console.log(`✓ Static schedule success: ${matchups.length} games`);
       } catch (e) {
-        warning = `Preferred schedule failed: ${e.message}`;
+        console.warn(`Static schedule failed for Week ${wantWeek}:`, e.message);
+        warning = `Static schedule failed: ${e.message}`;
+        // Will fall through to existing fallback logic below
       }
     } else {
-      warning = 'No SCHEDULE_URL configured; using odds fallback.';
+      // PLAYOFFS: Skip static, go straight to existing preferred logic
+      console.log(`Playoff week ${wantWeek || 'unknown'} - using existing preferred + odds logic`);
     }
+
+    // If static failed OR we're in playoffs, use existing preferred + odds fallback logic
     if (!matchups.length) {
-      source = 'odds';
-      try {
-        const fb = await fetchFromOdds(DEFAULT_ODDS_URL);
-        matchups = fb.matchups || [];
-      } catch (e) {
-        warning = warning ? `${warning} | Fallback failed: ${e.message}` : `Fallback failed: ${e.message}`;
+      console.log('Falling back to existing preferred + odds logic');
+      
+      if (SCHEDULE_URL) {
+        try {
+          console.log(`Trying preferred schedule: ${SCHEDULE_URL}`);
+          const pref = await fetchPreferredSchedule(SCHEDULE_URL);
+          matchups = pref.matchups || [];
+          meta = pref.meta || {};
+          source = warning ? 'preferred_fallback' : 'preferred';
+          console.log(`✓ Preferred schedule: ${matchups.length} games`);
+        } catch (e) {
+          console.warn(`Preferred schedule failed:`, e.message);
+          warning = warning ? `${warning} | Preferred failed: ${e.message}` : `Preferred schedule failed: ${e.message}`;
+        }
+      } else {
+        warning = warning ? `${warning} | No SCHEDULE_URL configured` : 'No SCHEDULE_URL configured; using odds fallback.';
+      }
+
+      if (!matchups.length) {
+        console.log('Final fallback to odds bridge');
+        source = 'odds';
+        try {
+          const fb = await fetchFromOdds(DEFAULT_ODDS_URL);
+          matchups = fb.matchups || [];
+          console.log(`✓ Odds fallback: ${matchups.length} games`);
+        } catch (e) {
+          console.error(`Odds fallback failed:`, e.message);
+          warning = warning ? `${warning} | Odds fallback failed: ${e.message}` : `Odds fallback failed: ${e.message}`;
+        }
       }
     }
+
     let season = meta.season || wantSeason;
     if (!season && matchups.length) {
       season = inferSeasonFromISO(matchups[0].kickoff);
     }
     const week = meta.week || wantWeek;
+
     const payload = onlyTruthy({
       ok: true,
       season,
@@ -256,14 +349,35 @@ exports.handler = async (event) => {
       source,
       warning
     });
+
+    // Cache the result
     await writeCache(store, cacheKey, {
       ...payload,
       fetched_at: now
     });
-    return { statusCode: 200, body: JSON.stringify(payload) };
-  } catch (err) {
+
+    console.log(`✓ Response ready: ${matchups.length} games, source: ${source}`);
+
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      },
+      body: JSON.stringify(payload)
+    };
+    
+  } catch (err) {
+    console.error('Schedule handler error:', err);
+    
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 
+        'Access-Control-Allow-Headers': 'Content-Type'
+      },
       body: JSON.stringify({
         ok: false,
         error: 'Failed to build schedule',
