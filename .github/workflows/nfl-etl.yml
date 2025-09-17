@@ -3,7 +3,7 @@ name: NFL ETL Pipeline
 
 on:
   schedule:
-    # Nightly Full ETL (3:30 AM ET = 8:30 AM UTC)
+    # Nightly Current Season ETL (3:30 AM ET = 8:30 AM UTC)
     - cron: '30 8 * * *'
     # Daily injury refresh (9:00 AM ET = 2:00 PM UTC)  
     - cron: '0 14 * * *'
@@ -17,6 +17,8 @@ on:
     - cron: '30 0 * * 1'
     # Monday gameday injuries (5:00 PM ET = 10:00 PM UTC)
     - cron: '0 22 * * 1'
+    # Weekly historical refresh (Saturday 2:00 AM ET = 7:00 AM UTC)
+    - cron: '0 7 * * 6'
   
   # Allow manual triggering
   workflow_dispatch:
@@ -24,62 +26,100 @@ on:
       etl_type:
         description: 'ETL Type to run'
         required: true
-        default: 'both'
+        default: 'current'
         type: choice
         options:
-          - full
+          - current
           - injuries
           - both
+          - historical
+          - full_historical
+      force_historical:
+        description: 'Force complete historical reload (2023-2025)'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   determine-jobs:
     runs-on: ubuntu-latest
     outputs:
-      run_full: ${{ steps.determine.outputs.run_full }}
+      run_current: ${{ steps.determine.outputs.run_current }}
       run_injuries: ${{ steps.determine.outputs.run_injuries }}
+      run_historical: ${{ steps.determine.outputs.run_historical }}
+      seasons_to_load: ${{ steps.determine.outputs.seasons_to_load }}
     steps:
       - name: Determine which jobs to run
         id: determine
         run: |
           # Default values
-          RUN_FULL="false"
-          RUN_INJURIES="false"
+          RUN_CURRENT="false"
+          RUN_INJURIES="false" 
+          RUN_HISTORICAL="false"
+          SEASONS_TO_LOAD="2025"
           
           # Manual trigger
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             case "${{ github.event.inputs.etl_type }}" in
-              "full")
-                RUN_FULL="true"
+              "current")
+                RUN_CURRENT="true"
+                SEASONS_TO_LOAD="2025"
                 ;;
               "injuries")
                 RUN_INJURIES="true"
                 ;;
               "both")
-                RUN_FULL="true"
+                RUN_CURRENT="true"
+                RUN_INJURIES="true"
+                SEASONS_TO_LOAD="2025"
+                ;;
+              "historical")
+                RUN_HISTORICAL="true"
+                SEASONS_TO_LOAD="2023,2024"
+                ;;
+              "full_historical")
+                RUN_HISTORICAL="true"
+                SEASONS_TO_LOAD="2023,2024,2025"
+                ;;
+            esac
+            
+            if [ "${{ github.event.inputs.force_historical }}" = "true" ]; then
+              RUN_HISTORICAL="true"
+              SEASONS_TO_LOAD="2023,2024,2025"
+            fi
+          else
+            # Scheduled triggers
+            case "${{ github.event.schedule }}" in
+              "30 8 * * *")
+                # Nightly current season ETL (fast)
+                RUN_CURRENT="true"
+                RUN_INJURIES="true"
+                SEASONS_TO_LOAD="2025"
+                ;;
+              "0 7 * * 6")
+                # Weekly historical refresh (Saturday)
+                RUN_HISTORICAL="true"
+                SEASONS_TO_LOAD="2023,2024"
+                ;;
+              *)
+                # All other schedules are injury-only
                 RUN_INJURIES="true"
                 ;;
             esac
-          else
-            # Scheduled triggers
-            if [ "${{ github.event.schedule }}" = "30 8 * * *" ]; then
-              # Nightly full ETL
-              RUN_FULL="true"
-              RUN_INJURIES="true"
-            else
-              # All other schedules are injury-only
-              RUN_INJURIES="true"
-            fi
           fi
           
-          echo "run_full=$RUN_FULL" >> $GITHUB_OUTPUT
+          echo "run_current=$RUN_CURRENT" >> $GITHUB_OUTPUT
           echo "run_injuries=$RUN_INJURIES" >> $GITHUB_OUTPUT
-          echo "Will run - Full ETL: $RUN_FULL, Injuries: $RUN_INJURIES"
+          echo "run_historical=$RUN_HISTORICAL" >> $GITHUB_OUTPUT
+          echo "seasons_to_load=$SEASONS_TO_LOAD" >> $GITHUB_OUTPUT
+          echo "Will run - Current: $RUN_CURRENT, Injuries: $RUN_INJURIES, Historical: $RUN_HISTORICAL"
+          echo "Seasons to load: $SEASONS_TO_LOAD"
 
-  full-etl:
+  current-season-etl:
     needs: determine-jobs
-    if: needs.determine-jobs.outputs.run_full == 'true'
+    if: needs.determine-jobs.outputs.run_current == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20  # Fast - current season only
     
     steps:
       - name: Checkout code
@@ -93,18 +133,21 @@ jobs:
       - name: Install dependencies
         run: npm install
           
-      - name: Run Full ETL Pipeline
+      - name: Run Current Season ETL
         env:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
+          SEASONS: ${{ needs.determine-jobs.outputs.seasons_to_load }}
         run: |
-          echo "Starting Full ETL Pipeline at $(date)"
+          echo "Starting Current Season ETL at $(date)"
+          echo "Loading seasons: $SEASONS"
           
           if node scripts/etl-full.js; then
-            echo "✅ Full ETL completed successfully"
+            echo "✅ Current season ETL completed successfully"
+            echo "📊 Updated: 2025 season data with historical context"
           else
-            echo "❌ Full ETL failed"
+            echo "❌ Current season ETL failed"
             exit 1
           fi
           
@@ -112,7 +155,51 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: etl-logs-full
+          name: etl-logs-current
+          path: .artifacts/
+          retention-days: 7
+
+  historical-etl:
+    needs: determine-jobs
+    if: needs.determine-jobs.outputs.run_historical == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45  # Longer for historical data
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: npm install
+          
+      - name: Run Historical Data ETL
+        env:
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
+          SEASONS: ${{ needs.determine-jobs.outputs.seasons_to_load }}
+        run: |
+          echo "Starting Historical ETL at $(date)"
+          echo "Loading historical seasons: $SEASONS"
+          
+          if node scripts/etl-full.js; then
+            echo "✅ Historical ETL completed successfully"
+            echo "📚 Historical data foundation: UPDATED"
+          else
+            echo "❌ Historical ETL failed"
+            exit 1
+          fi
+          
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: etl-logs-historical
           path: .artifacts/
           retention-days: 7
 
@@ -158,21 +245,37 @@ jobs:
           retention-days: 7
 
   post-etl-summary:
-    needs: [full-etl, injury-etl]
-    if: always() && (needs.full-etl.result != 'skipped' || needs.injury-etl.result != 'skipped')
+    needs: [determine-jobs, current-season-etl, historical-etl, injury-etl]
+    if: always() && (needs.current-season-etl.result != 'skipped' || needs.historical-etl.result != 'skipped' || needs.injury-etl.result != 'skipped')
     runs-on: ubuntu-latest
     
     steps:
       - name: Generate summary
         run: |
           echo "## NFL ETL Pipeline Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Full ETL:** ${{ needs.full-etl.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Current Season ETL:** ${{ needs.current-season-etl.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Historical ETL:** ${{ needs.historical-etl.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Injury ETL:** ${{ needs.injury-etl.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Seasons Processed:** ${{ needs.determine-jobs.outputs.seasons_to_load }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Timestamp:** $(date)" >> $GITHUB_STEP_SUMMARY
           echo "- **Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
           
-          if [ "${{ needs.full-etl.result }}" = "failure" ] || [ "${{ needs.injury-etl.result }}" = "failure" ]; then
-            echo "⚠️ One or more ETL jobs failed. Check the logs above." >> $GITHUB_STEP_SUMMARY
+          # Determine efficiency
+          if [ "${{ needs.historical-etl.result }}" = "success" ]; then
+            echo "- **Mode:** Historical foundation updated" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.current-season-etl.result }}" = "success" ]; then
+            echo "- **Mode:** Efficient current season update" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Check for failures
+          FAILURES=0
+          if [ "${{ needs.current-season-etl.result }}" = "failure" ]; then FAILURES=$((FAILURES + 1)); fi
+          if [ "${{ needs.historical-etl.result }}" = "failure" ]; then FAILURES=$((FAILURES + 1)); fi
+          if [ "${{ needs.injury-etl.result }}" = "failure" ]; then FAILURES=$((FAILURES + 1)); fi
+          
+          if [ $FAILURES -gt 0 ]; then
+            echo "⚠️ $FAILURES ETL job(s) failed. Check the logs above." >> $GITHUB_STEP_SUMMARY
           else
             echo "✅ All ETL jobs completed successfully." >> $GITHUB_STEP_SUMMARY
+            echo "🎯 Model ready with historical data integration." >> $GITHUB_STEP_SUMMARY
           fi
