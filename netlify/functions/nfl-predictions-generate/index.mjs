@@ -265,8 +265,10 @@ async function loadLiveOdds() {
     if (!oddsRes.ok) {
       throw new Error(`Odds API failed: ${oddsRes.status}`);
     }
-    const oddsData = await oddsRes.json();
+    const oddsResponse = await oddsRes.json();
+    const oddsData = oddsResponse.games || oddsResponse || []; // Handle nested structure
     console.log(`Loaded odds for ${oddsData.length} games`);
+    console.log('Sample odds structure:', oddsData[0]);
     return oddsData;
   } catch (error) {
     console.warn('Failed to load live odds:', error);
