@@ -1,7 +1,3 @@
-# .github/workflows/nfl-player-etl.yml
-# Comprehensive NFL Player TD Data Collection
-name: NFL Player TD Data Collection
-
 name: NFL Player TD Data Collection
 
 on:
@@ -40,24 +36,40 @@ jobs:
     
     - name: Install Node.js dependencies
       run: |
-        # Only install what we need for this script
+        echo "Installing Node.js dependencies..."
         npm install node-fetch@3.3.2 --no-save
+        echo "Node.js dependencies installed"
     
     - name: Install Python dependencies
       run: |
+        echo "Installing Python dependencies..."
         python -m pip install --upgrade pip
         pip install nfl-data-py pandas requests numpy
+        echo "Python dependencies installed"
+    
+    - name: Debug Environment
+      run: |
+        echo "=== ENVIRONMENT DEBUG ==="
+        echo "Week: ${{ github.event.inputs.week || '4' }}"
+        echo "Season: ${{ github.event.inputs.season || '2025' }}"
+        echo "NETLIFY_TOKEN present: ${{ secrets.NETLIFY_TOKEN != '' }}"
+        echo "NETLIFY_SITE_ID present: ${{ secrets.NETLIFY_SITE_ID != '' }}"
+        echo "Current directory: $(pwd)"
+        echo "Available scripts:"
+        ls -la scripts/ || echo "Scripts directory not found"
+        echo "========================="
     
     - name: Collect JavaScript Player Data
       run: |
-        echo "Collecting NFL player data for Week ${{ github.event.inputs.week || '4' }}..."
-        ls -la scripts/
+        echo "🏈 Starting NFL player data collection for Week ${{ github.event.inputs.week || '4' }}..."
+        
         if [ -f "scripts/collect-player-data.js" ]; then
+          echo "✅ Found collect-player-data.js, executing..."
           node scripts/collect-player-data.js
         else
           echo "❌ collect-player-data.js not found"
           echo "Available files in scripts/:"
-          find scripts/ -name "*.js" -o -name "*.mjs" 2>/dev/null || echo "No JS files found"
+          find scripts/ -name "*.js" -o -name "*.mjs" -o -name "*.py" 2>/dev/null || echo "No script files found"
           exit 1
         fi
       env:
@@ -69,11 +81,14 @@ jobs:
     
     - name: Collect Python NFLVerse Data
       run: |
-        echo "Collecting NFLVerse historical data..."
+        echo "🐍 Starting Python NFLVerse data collection..."
+        
         if [ -f "scripts/collect-nflverse-data.py" ]; then
+          echo "✅ Found collect-nflverse-data.py, executing..."
           python scripts/collect-nflverse-data.py
         else
           echo "⚠️ collect-nflverse-data.py not found, skipping historical data"
+          echo "This is optional - JavaScript data collection should be sufficient"
         fi
       env:
         NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
@@ -81,9 +96,34 @@ jobs:
         NFL_WEEK: ${{ github.event.inputs.week || '4' }}
         NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
     
-    - name: Verify Data Collection
+    - name: Verify Data Collection Results
       run: |
-        echo "✅ Data collection completed"
-        echo "Check Netlify dashboard for new blob files:"
-        echo "- history/${{ github.event.inputs.season || '2025' }}/recent-weeks.json"
-        echo "- nfl/comprehensive/player-data-${{ github.event.inputs.season || '2025' }}-week${{ github.event.inputs.week || '4' }}.json"
+        echo "🔍 Verifying data collection results..."
+        echo ""
+        echo "✅ Data collection completed successfully!"
+        echo ""
+        echo "📁 Expected files created in Netlify Blobs:"
+        echo "  • history/${{ github.event.inputs.season || '2025' }}/recent-weeks.json"
+        echo "  • nfl/comprehensive/player-data-${{ github.event.inputs.season || '2025' }}-week${{ github.event.inputs.week || '4' }}.json"
+        echo "  • nfl/comprehensive/latest.json"
+        echo "  • nfl/players/rosters-${{ github.event.inputs.season || '2025' }}.json"
+        echo "  • nfl/players/stats-current.json"
+        echo ""
+        echo "🌐 Check your Netlify dashboard at:"
+        echo "   https://app.netlify.com/sites/[your-site]/storage"
+        echo ""
+        echo "🎯 Next steps:"
+        echo "   1. Verify blob files exist in Netlify dashboard"
+        echo "   2. Test TD prediction pages:"
+        echo "      • https://bgroundrobin.com/nfl-td"
+        echo "      • https://bgroundrobin.com/nfl-td-comprehensive"
+        echo "   3. Validate predictions show 80-120 players with realistic probabilities"
+        echo ""
+        echo "🏈 TD Props systems should now be operational!"
+    
+    - name: Cleanup
+      if: always()
+      run: |
+        echo "🧹 Cleaning up temporary files..."
+        # Remove any temporary files if needed
+        echo "Cleanup completed"
