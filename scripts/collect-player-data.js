@@ -1,8 +1,8 @@
 // scripts/collect-player-data.js
 // Comprehensive NFL Player Data Collection from Free APIs
 
-import { storeBlob } from './lib/blob_io.js';
-import fetch from 'node-fetch';
+// Use dynamic import instead of static import to avoid module issues
+const fetch = (await import('node-fetch')).default;
 
 const CURRENT_WEEK = process.env.NFL_WEEK || '4'; // Week to PREDICT
 const CURRENT_SEASON = process.env.NFL_SEASON || '2025';
@@ -10,6 +10,40 @@ const CURRENT_SEASON = process.env.NFL_SEASON || '2025';
 // Historical data collection spans (INPUT data for predictions)
 const HISTORICAL_SEASONS = [2022, 2023, 2024]; // 3 years of historical data
 const CURRENT_SEASON_WEEKS_COMPLETED = Math.max(1, parseInt(CURRENT_WEEK) - 1); // Weeks 1-3 for Week 4 predictions
+
+// Simple blob storage function (inline to avoid import issues)
+async function storeBlob(key, data) {
+  const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
+  const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
+  
+  if (!NETLIFY_TOKEN || !NETLIFY_SITE_ID) {
+    console.warn(`⚠️ Cannot store ${key}: Missing Netlify credentials`);
+    return false;
+  }
+  
+  try {
+    const url = `https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/blobs/${key}`;
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${NETLIFY_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    
+    if (response.ok) {
+      console.log(`✅ Stored blob: ${key}`);
+      return true;
+    } else {
+      console.error(`❌ Failed to store ${key}: ${response.status}`);
+      return false;
+    }
+  } catch (error) {
+    console.error(`❌ Error storing ${key}:`, error.message);
+    return false;
+  }
+}
 
 // Free API endpoints for NFL player data
 const API_ENDPOINTS = {
@@ -583,6 +617,7 @@ function generateTargetShareEstimates() {
   return {}; // Would contain target share estimates
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (typeof window === 'undefined') {
+  // Node.js environment - run main function
   main();
 }
