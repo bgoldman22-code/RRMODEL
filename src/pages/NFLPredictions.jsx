@@ -1,8 +1,9 @@
+// src/pages/NFLPredictions.jsx
 import React, { useEffect, useState } from 'react';
 
 /**
- * NFL Predictions Page with Live Odds Display
- * Shows real sportsbook lines alongside model predictions
+ * NFL Predictions Page with Live Odds Display and Parlay Suggestions
+ * Shows real sportsbook lines alongside model predictions and responsible parlay suggestions
  */
 
 const fmt = (v) => (v === null || v === undefined || v === '' ? '—' : v);
@@ -45,7 +46,12 @@ async function fetchPredictions(week = 3, season = 2025, force = false) {
   });
   
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const predictions = await res.json();
+  const response = await res.json();
+  
+  // FIXED: Handle the new response structure with predictions and parlay suggestions
+  const predictions = response.predictions || response; // Fallback if response is still the old format
+  const parlaySuggestions = response.parlaySuggestions || [];
+  const parlayMetadata = response.parlayMetadata || {};
   
   return {
     rows: predictions.map(pred => ({
@@ -53,17 +59,19 @@ async function fetchPredictions(week = 3, season = 2025, force = false) {
       matchup: `${pred.away_team} @ ${pred.home_team}`,
       start: pred.start,
       predictions: pred.predictions,
-      odds: pred.odds, // Include live odds
+      odds: pred.odds,
       home_team: pred.home_team,
       away_team: pred.away_team,
       teamStats: pred.teamStats,
       modelEnhancements: pred.modelEnhancements
     })),
+    parlaySuggestions: parlaySuggestions,
+    parlayMetadata: parlayMetadata,
     meta: {
       week: week,
       season: season,
       games: predictions.length,
-      model: 'advanced_nfl_predictions'
+      model: 'enhanced_v12_calibrated'
     }
   };
 }
@@ -85,7 +93,6 @@ function getTeamAbbreviation(fullName) {
   return nameMap[fullName] || fullName;
 }
 
-// CORRECTED: Helper function to format spread display based on pick
 function formatSpreadDisplay(spread, homeTeam, awayTeam, odds) {
   if (!spread || !spread.pick || spread.pick === 'push') {
     return {
@@ -94,9 +101,8 @@ function formatSpreadDisplay(spread, homeTeam, awayTeam, odds) {
     };
   }
   
-  const marketLine = spread.line || 0; // This is always the favorite's spread (negative)
+  const marketLine = spread.line || 0;
   
-  // Get team name mapping for comparison with odds data
   const TEAM_NAME_MAPPING = {
     'ARI': 'Arizona Cardinals', 'ATL': 'Atlanta Falcons', 'BAL': 'Baltimore Ravens',
     'BUF': 'Buffalo Bills', 'CAR': 'Carolina Panthers', 'CHI': 'Chicago Bears',
@@ -111,32 +117,135 @@ function formatSpreadDisplay(spread, homeTeam, awayTeam, odds) {
     'TEN': 'Tennessee Titans', 'WAS': 'Washington Commanders'
   };
   
-  // Convert team codes to full names for comparison
   const homeTeamFull = TEAM_NAME_MAPPING[homeTeam] || homeTeam;
   const awayTeamFull = TEAM_NAME_MAPPING[awayTeam] || awayTeam;
   const pickedTeamFull = TEAM_NAME_MAPPING[spread.pick] || spread.pick;
   
-  // Determine if the picked team is the market favorite
   const favoriteTeamFull = odds?.spread?.favorite_team;
   const isPickingFavorite = pickedTeamFull === favoriteTeamFull;
   
   if (isPickingFavorite) {
-    // Picking the favorite - show the negative spread as-is
     return {
       displayPick: spread.pick,
-      displayLine: `${marketLine}` // e.g., "-5.5"
+      displayLine: `${marketLine}`
     };
   } else {
-    // Picking the underdog - flip to positive spread
     return {
       displayPick: spread.pick,
-      displayLine: `+${Math.abs(marketLine)}` // e.g., "+5.5"
+      displayLine: `+${Math.abs(marketLine)}`
     };
   }
 }
 
+// Parlay suggestion component
+function ParlaySuggestions({ parlaySuggestions, parlayMetadata }) {
+  if (!parlaySuggestions || parlaySuggestions.length === 0) {
+    return (
+      <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+        <h3 className="text-lg font-semibold mb-2">Parlay Suggestions</h3>
+        <p className="text-gray-600">No qualifying picks for parlay suggestions this week.</p>
+      </div>
+    );
+  }
+
+  const getRiskColor = (riskLevel) => {
+    switch (riskLevel) {
+      case 'LOW': return 'bg-green-100 text-green-800';
+      case 'MODERATE': return 'bg-yellow-100 text-yellow-800';
+      case 'HIGH': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getEstimatedOdds = (legs) => {
+    // Rough odds estimation based on confidence levels
+    const avgConfidence = legs.reduce((sum, leg) => sum + leg.confidence, 0) / legs.length;
+    const legCount = legs.length;
+    
+    // Conservative odds estimation (lower than actual due to correlation)
+    if (legCount === 2) {
+      if (avgConfidence > 70) return "+180 to +220";
+      if (avgConfidence > 65) return "+200 to +250";
+      return "+220 to +280";
+    } else if (legCount === 3) {
+      if (avgConfidence > 70) return "+400 to +500";
+      if (avgConfidence > 65) return "+450 to +600";
+      return "+500 to +700";
+    } else {
+      return "+800 to +2000";
+    }
+  };
+
+  return (
+    <div className="mt-8 p-6 bg-white border border-gray-200 rounded-lg">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xl font-semibold">Parlay Suggestions</h3>
+        <div className="text-sm text-gray-600">
+          {parlayMetadata?.totalComponents || 0} qualifying components
+        </div>
+      </div>
+      
+      <div className="grid gap-4">
+        {parlaySuggestions.map((parlay, idx) => (
+          <div key={idx} className="border border-gray-200 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <h4 className="font-medium">{parlay.type.replace(/_/g, ' ').toUpperCase()}</h4>
+                <span className={`px-2 py-1 text-xs rounded-full ${getRiskColor(parlay.risk_level)}`}>
+                  {parlay.risk_level} RISK
+                </span>
+                <span className="text-sm text-gray-600">
+                  Suggested: {parlay.recommended_unit}U
+                </span>
+              </div>
+              <div className="text-right text-sm">
+                <div className="font-medium">Avg Confidence: {Math.round(parlay.avg_confidence)}%</div>
+                <div className="text-gray-600">Est Odds: {getEstimatedOdds(parlay.legs)}</div>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              {parlay.legs && parlay.legs.map((leg, legIdx) => (
+                <div key={legIdx} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <div className="flex-1">
+                    <div className="font-medium text-sm">{leg.matchup}</div>
+                    <div className="text-sm text-gray-600">{leg.description}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-medium">{leg.confidence}%</div>
+                    <div className="text-xs text-gray-500">{leg.edge.toFixed(1)}% edge</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {parlay.description && (
+              <div className="mt-2 text-sm text-gray-700 font-medium">
+                Combined: {parlay.description}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      
+      {/* Responsible gambling disclaimer */}
+      <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <h4 className="font-semibold text-yellow-800 mb-2">Responsible Parlay Guidelines</h4>
+        <div className="text-sm text-yellow-700 space-y-1">
+          <p>• {parlayMetadata?.responsibleGambling?.riskWarning}</p>
+          <p>• {parlayMetadata?.responsibleGambling?.bankrollManagement}</p>
+          <p>• Maximum recommended unit on any parlay: {parlayMetadata?.responsibleGambling?.maxRecommendedUnit || 0.5}U</p>
+          <p>• These suggestions are for entertainment and analysis purposes only</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function NFLPredictions() {
   const [rows, setRows] = useState([]);
+  const [parlaySuggestions, setParlaySuggestions] = useState([]);
+  const [parlayMetadata, setParlayMetadata] = useState({});
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -149,6 +258,8 @@ export default function NFLPredictions() {
     try {
       const data = await fetchPredictions(week, season, force);
       setRows(Array.isArray(data.rows) ? data.rows : []);
+      setParlaySuggestions(data.parlaySuggestions || []);
+      setParlayMetadata(data.parlayMetadata || {});
       setMeta(data.meta || null);
     } catch (e) {
       setError(e.message || 'Failed to load');
@@ -232,7 +343,6 @@ export default function NFLPredictions() {
                   total?.confidence > 60 ? (total.confidence - 50) : 0
                 );
 
-                // CORRECTED: Format spread display to show correct team and line
                 const spreadDisplay = formatSpreadDisplay(spread, r.home_team, r.away_team, odds);
 
                 const PickBadge = ({ pick, confidence, type, modelValue, marketValue }) => (
@@ -245,13 +355,11 @@ export default function NFLPredictions() {
                     }`}>
                       {confidence}%
                     </div>
-                    {/* Display market line */}
                     {marketValue && (
                       <div className="text-xs text-gray-600">
                         Line: {marketValue}
                       </div>
                     )}
-                    {/* Display model prediction vs market */}
                     {modelValue && marketValue && (
                       <div className="text-xs text-blue-600">
                         Model: {modelValue}
@@ -265,7 +373,6 @@ export default function NFLPredictions() {
                     <td className="px-4 py-3 font-medium">{fmt(r.matchup)}</td>
                     <td className="px-4 py-3">{kickoff}</td>
                     
-                    {/* Moneyline Column */}
                     <td className="px-4 py-3">
                       {ml ? (
                         <div className="space-y-2">
@@ -274,7 +381,6 @@ export default function NFLPredictions() {
                             confidence={ml.confidence}
                             type="ml"
                           />
-                          {/* Display real moneyline odds */}
                           {(odds.moneyline?.home || odds.moneyline?.away) && (
                             <div className="text-xs text-gray-500">
                               <div>{r.away_team}: {fmtOdds(odds.moneyline.away) || '—'}</div>
@@ -285,7 +391,6 @@ export default function NFLPredictions() {
                       ) : '—'}
                     </td>
                     
-                    {/* Spread Column - CORRECTED with proper display logic */}
                     <td className="px-4 py-3">
                       {spread ? (
                         <PickBadge 
@@ -298,7 +403,6 @@ export default function NFLPredictions() {
                       ) : '—'}
                     </td>
                     
-                    {/* Total Column */}
                     <td className="px-4 py-3">
                       {total ? (
                         <PickBadge 
@@ -311,7 +415,6 @@ export default function NFLPredictions() {
                       ) : '—'}
                     </td>
                     
-                    {/* Best Edge Column */}
                     <td className="px-4 py-3">
                       <span className={`font-medium ${
                         bestEdge > 10 ? 'text-green-600' : 
@@ -322,13 +425,11 @@ export default function NFLPredictions() {
                       </span>
                     </td>
                     
-                    {/* Team Stats Column */}
                     <td className="px-4 py-3 text-xs">
                       <div className="space-y-1">
                         <div>Home: EPA {r.teamStats?.home?.strength?.toFixed(3) || '—'}</div>
                         <div>Away: EPA {r.teamStats?.away?.strength?.toFixed(3) || '—'}</div>
                         <div>Form: {r.teamStats?.home?.form?.toFixed(3) || '—'}</div>
-                        {/* Show if live odds integrated */}
                         {r.modelEnhancements?.oddsIntegrated && (
                           <div className="text-green-600">Live odds ✓</div>
                         )}
@@ -341,6 +442,9 @@ export default function NFLPredictions() {
           </tbody>
         </table>
       </div>
+
+      {/* Parlay Suggestions Section */}
+      {!loading && <ParlaySuggestions parlaySuggestions={parlaySuggestions} parlayMetadata={parlayMetadata} />}
       
       {rows.length > 0 && (
         <div className="mt-4 text-xs text-gray-500">
@@ -350,6 +454,15 @@ export default function NFLPredictions() {
           <p><strong>Live odds ✓:</strong> Real sportsbook data integrated for this game.</p>
         </div>
       )}
+
+      {/* Entertainment disclaimer */}
+      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+        <p className="text-sm text-blue-700">
+          <strong>Disclaimer:</strong> This tool is for entertainment and educational purposes only. 
+          Sports betting involves risk and should only be done with money you can afford to lose. 
+          Please gamble responsibly.
+        </p>
+      </div>
     </div>
   );
 }
