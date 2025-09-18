@@ -128,7 +128,7 @@ function playerProbTD(player, context){
 function computeEV(prob, offeredAmerican){
   const fair = toAmerican(prob);
   const offeredP = fromAmerican(offeredAmerican);
-  const ev = (offeredP is null) ? null : (prob* (1/((offeredAmerican>0)?(offeredAmerican/100): (100/(-offeredAmerican)) )) - (1-prob));
+  const ev = (offeredP === null) ? null : (prob* (1/((offeredAmerican>0)?(offeredAmerican/100): (100/(-offeredAmerican)) )) - (1-prob));
   // We'll compute EV more directly in output step; keep placeholder for API symmetry
   return { fair, ev: null };
 }
