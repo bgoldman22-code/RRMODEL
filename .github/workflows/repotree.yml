@@ -1,15 +1,34 @@
 # .github/workflows/repo-tree.yml
 name: Repo Tree
-on: [push]
+
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
-  build:
+  tree:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: sudo apt-get install tree
-      - run: tree -I ".git|node_modules" > repo-structure.txt
-      - uses: actions/upload-artifact@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate repo structure
+        run: |
+          echo "# Repo structure generated on $(date -u)" > repo-structure.txt
+          echo >> repo-structure.txt
+          # Show directories first, then files, ignore .git
+          tree -a -I '.git' -F --noreport >> repo-structure.txt || true
+          # Fallback for minimal runners that may not have tree
+          if ! command -v tree >/dev/null; then
+            echo >> repo-structure.txt
+            echo "Note: 'tree' not found, using find(1) output:" >> repo-structure.txt
+            find . -not -path '*/\.git/*' | sort >> repo-structure.txt
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: repo-structure
           path: repo-structure.txt
+          if-no-files-found: error
+          retention-days: 14
