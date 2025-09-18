@@ -9,11 +9,11 @@ on:
   workflow_dispatch:
     inputs:
       week:
-        description: 'NFL Week to collect data for'
+        description: 'NFL Week to PREDICT (data collected for projection)'
         required: false
-        default: '3'
+        default: '4'
       season:
-        description: 'NFL Season'
+        description: 'NFL Season to PREDICT'
         required: false
         default: '2025'
 
@@ -29,7 +29,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'npm'
         
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -37,7 +36,15 @@ jobs:
         python-version: '3.11'
         
     - name: Install Node dependencies
-      run: npm ci
+      run: |
+        if [ -f "package-lock.json" ]; then
+          npm ci
+        elif [ -f "package.json" ]; then
+          npm install
+        else
+          echo "No package.json found, installing required packages globally"
+          npm install -g node-fetch
+        fi
       
     - name: Install Python dependencies
       run: |
