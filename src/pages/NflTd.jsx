@@ -1,72 +1,63 @@
 // src/pages/NflTd.jsx
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ENABLE_NFL_TD } from '../config/features';
 import { getWeeksAvailable, getGamesForWeek } from '../utils/nflSchedule';
+import NflTdTable from '../components/NflTdTable';
 
-export default function NflTd() {
-  if (!ENABLE_NFL_TD) {
-    return (
-      <div className="p-6 max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold mb-2">NFL — Anytime TD</h1>
-        <p className="text-sm opacity-70">This feature is currently disabled.</p>
-      </div>
-    );
-  }
+function qsWeek(){ const w = parseInt(new URLSearchParams(location.search).get('week')||'',10); return Number.isFinite(w)? w : null; }
 
+export default function NflTd(){
   const weeks = getWeeksAvailable();
-  const defaultWeek = weeks.includes(1) ? 1 : weeks[0] || 1;
-  const [week, setWeek] = useState(defaultWeek);
-  const games = useMemo(() => getGamesForWeek(week), [week]);
+  const [week, setWeek] = useState(qsWeek() || (weeks.includes(1)?1:weeks[0]||1));
+  const games = useMemo(()=> getGamesForWeek(week), [week]);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState(null);
 
-  useEffect(() => {
-    // if URL has ?week=, sync it
-    const params = new URLSearchParams(window.location.search);
-    const w = parseInt(params.get('week') || '', 10);
-    if (w && weeks.includes(w)) setWeek(w);
-  }, []);
-
-  useEffect(() => {
-    // push ?week= to URL (no reload)
-    const url = new URL(window.location.href);
-    url.searchParams.set('week', String(week));
-    window.history.replaceState({}, '', url.toString());
+  useEffect(()=>{
+    const params = new URLSearchParams(location.search);
+    params.set('week', String(week));
+    history.replaceState(null, '', `?${params.toString()}`);
   }, [week]);
 
+  useEffect(()=>{
+    if (!ENABLE_NFL_TD) return;
+    setLoading(true); setErr(null);
+    fetch(`/.netlify/functions/nfl-td-predictions?season=2025&week=${week}`)
+      .then(r=>r.json()).then(j=>{
+        if (!j || !j.rows) throw new Error('Bad TD response');
+        setRows(j.rows);
+      }).catch(e=> setErr(e.message || 'Error')).finally(()=> setLoading(false));
+  }, [week]);
+
+  if (!ENABLE_NFL_TD){
+    return <div className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-2">NFL — Anytime TD</h1>
+      <p className="text-sm opacity-70">This feature is currently disabled.</p>
+    </div>;
+  }
+
+  const topEV = useMemo(()=> rows.filter(r=> typeof r.value==='number').slice(0, 20), [rows]);
+  const highProb = useMemo(()=> rows.slice().sort((a,b)=> b.td_prob - a.td_prob).slice(0, 20), [rows]);
+  const longshots = useMemo(()=> rows.filter(r=> r.model_american >= 300).slice(0, 20), [rows]);
+
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex items-end justify-between mb-4">
+    <div className="p-6 max-w-6xl mx-auto">
+      <div className="flex items-center gap-3 mb-4">
         <h1 className="text-2xl font-bold">NFL — Anytime TD</h1>
-        <div className="flex items-center gap-2">
-          <label className="text-sm opacity-70">Week</label>
-          <select
-            className="border rounded px-2 py-2 text-sm"
-            value={week}
-            onChange={e => setWeek(parseInt(e.target.value, 10))}
-          >
-            {weeks.map(w => (
-              <option key={w} value={w}>Week {w}</option>
-            ))}
-          </select>
-        </div>
+        <select className="border rounded px-2 py-1" value={week} onChange={e=> setWeek(parseInt(e.target.value,10))}>
+          {weeks.map(w=> <option key={w} value={w}>Week {w}</option>)}
+        </select>
       </div>
 
-      <div className="mb-2 text-sm">Games this week: <b>{games.length}</b></div>
-      <div className="mb-6 text-sm opacity-70">Using OddsAPI: no</div>
+      {err && <div className="text-red-600 mb-3">{String(err)}</div>}
+      {loading && <div className="opacity-70">Loading…</div>}
 
-      {games.length === 0 ? (
-        <div className="text-sm opacity-70 border rounded p-4">
-          No regular season games scheduled in Week {week}.
-        </div>
-      ) : (
-        <div className="grid gap-2">
-          {games.map((g, idx) => (
-            <div key={idx} className="border rounded p-3">
-              <div className="font-medium">{g.away} @ {g.home}</div>
-              <div className="text-xs opacity-70">Date: {g.date}{g.site ? ` • ${g.site}` : ''}</div>
-            </div>
-          ))}
-        </div>
-      )}
+      {!loading && <>
+        <NflTdTable title="Top EV / Value" rows={topEV} emptyText="No EV edges yet (odds-agnostic mode)" />
+        <NflTdTable title="Highest Model Probability" rows={highProb} emptyText="No players" />
+        <NflTdTable title="Longshot Radar (≥ +300)" rows={longshots} emptyText="No longshots" />
+      </>}
     </div>
   );
 }
