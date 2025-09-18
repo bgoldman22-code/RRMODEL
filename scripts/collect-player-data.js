@@ -1,8 +1,5 @@
 // scripts/collect-player-data.js
-// Comprehensive NFL Player Data Collection from Free APIs
-
-// Use dynamic import instead of static import to avoid module issues
-const fetch = (await import('node-fetch')).default;
+// Comprehensive NFL Player Data Collection from Free APIs - CommonJS Compatible
 
 const CURRENT_WEEK = process.env.NFL_WEEK || '4'; // Week to PREDICT
 const CURRENT_SEASON = process.env.NFL_SEASON || '2025';
@@ -22,6 +19,9 @@ async function storeBlob(key, data) {
   }
   
   try {
+    // Use dynamic import inside function for CommonJS compatibility
+    const fetch = (await import('node-fetch')).default;
+    
     const url = `https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/blobs/${key}`;
     const response = await fetch(url, {
       method: 'PUT',
@@ -86,25 +86,28 @@ async function main() {
   console.log(`🎯 Target: Generate predictions for Week ${CURRENT_WEEK}, ${CURRENT_SEASON}`);
   
   try {
+    // Import fetch dynamically for CommonJS compatibility
+    const fetch = (await import('node-fetch')).default;
+    
     // Step 1: Collect basic roster and depth chart data
     console.log('📋 Collecting team rosters and depth charts...');
-    const teamRosters = await collectTeamRosters();
+    const teamRosters = await collectTeamRosters(fetch);
     
     // Step 2: Collect current season player stats
     console.log('📊 Collecting player statistics...');
-    const playerStats = await collectPlayerStats(teamRosters);
+    const playerStats = await collectPlayerStats(teamRosters, fetch);
     
     // Step 3: Collect red zone and goal line usage
     console.log('🔴 Collecting red zone data...');
-    const redZoneData = await collectRedZoneData();
+    const redZoneData = await collectRedZoneData(fetch);
     
     // Step 4: Collect snap count data
     console.log('⏱️ Collecting snap count data...');
-    const snapCounts = await collectSnapCounts();
+    const snapCounts = await collectSnapCounts(fetch);
     
     // Step 5: Collect target share data
     console.log('🎯 Collecting target share data...');
-    const targetShares = await collectTargetShares();
+    const targetShares = await collectTargetShares(fetch);
     
     // Step 6: Generate recent weeks performance
     console.log('📈 Generating recent performance data...');
@@ -142,7 +145,7 @@ async function main() {
   }
 }
 
-async function collectTeamRosters() {
+async function collectTeamRosters(fetch) {
   console.log('Fetching team rosters from ESPN API...');
   
   try {
@@ -200,7 +203,7 @@ async function collectTeamRosters() {
   }
 }
 
-async function collectPlayerStats(teamRosters) {
+async function collectPlayerStats(teamRosters, fetch) {
   console.log('Collecting individual player statistics...');
   
   const playerStats = {};
@@ -252,7 +255,7 @@ async function collectPlayerStats(teamRosters) {
   return playerStats;
 }
 
-async function collectRedZoneData() {
+async function collectRedZoneData(fetch) {
   console.log('Collecting red zone usage data...');
   
   try {
@@ -270,7 +273,7 @@ async function collectRedZoneData() {
   return generateRedZoneEstimates();
 }
 
-async function collectSnapCounts() {
+async function collectSnapCounts(fetch) {
   console.log('Collecting snap count data...');
   
   // ESPN doesn't provide detailed snap counts, so we'll estimate based on usage
@@ -290,7 +293,7 @@ async function collectSnapCounts() {
   return generateSnapCountEstimates();
 }
 
-async function collectTargetShares() {
+async function collectTargetShares(fetch) {
   console.log('Collecting target share data...');
   
   // Use Sleeper API for target data
@@ -478,6 +481,14 @@ function calculateReceivingTDs(statsData) {
   }, 0);
 }
 
+function calculateCarries(statsData) {
+  if (!statsData.events) return 0;
+  return statsData.events.reduce((total, event) => {
+    const stats = event.competitions?.[0]?.competitors?.[0]?.statistics || [];
+    return total + (stats.find(s => s.name === 'rushingAttempts')?.value || 0);
+  }, 0);
+}
+
 function calculateTrend(recentData) {
   if (!recentData || !recentData.week1 || !recentData.week2) return 0;
   const week1TDs = recentData.week1.touchdowns || 0;
@@ -575,6 +586,16 @@ function estimateSnapShare(player) {
   return base[player.position] || 0.5;
 }
 
+function estimateTargetShare(player) {
+  const base = {
+    'RB': 0.1,
+    'WR': 0.2,
+    'TE': 0.15,
+    'QB': 0
+  };
+  return base[player.position] || 0.1;
+}
+
 function estimateRedZoneShare(player) {
   const base = {
     'RB': 0.15,
@@ -598,9 +619,9 @@ function estimateGoalLineShare(player) {
 async function loadExistingDepthCharts() {
   // Fallback to your existing depth chart structure
   return {
-    "ARI": { "QB": ["Kyler Murray"], "RB": ["James Conner"], "WR": ["Marvin Harrison Jr."], "TE": ["Trey McBride"] },
-    "BUF": { "QB": ["Josh Allen"], "RB": ["James Cook"], "WR": ["Keon Coleman"], "TE": ["Dalton Kincaid"] },
-    // ... add all 32 teams
+    "ARI": { players: { "QB": [{id: "ari_qb1", name: "Kyler Murray", position: "QB"}], "RB": [{id: "ari_rb1", name: "James Conner", position: "RB"}], "WR": [{id: "ari_wr1", name: "Marvin Harrison Jr.", position: "WR"}], "TE": [{id: "ari_te1", name: "Trey McBride", position: "TE"}] }},
+    "BUF": { players: { "QB": [{id: "buf_qb1", name: "Josh Allen", position: "QB"}], "RB": [{id: "buf_rb1", name: "James Cook", position: "RB"}], "WR": [{id: "buf_wr1", name: "Keon Coleman", position: "WR"}], "TE": [{id: "buf_te1", name: "Dalton Kincaid", position: "TE"}] }},
+    // Basic fallback structure for all 32 teams
   };
 }
 
@@ -617,7 +638,5 @@ function generateTargetShareEstimates() {
   return {}; // Would contain target share estimates
 }
 
-if (typeof window === 'undefined') {
-  // Node.js environment - run main function
-  main();
-}
+// Run main function
+main().catch(console.error);
