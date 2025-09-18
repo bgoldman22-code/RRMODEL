@@ -430,7 +430,7 @@ export default function NFLPredictions() {
                         <div>Home: EPA {r.teamStats?.home?.strength?.toFixed(3) || '—'}</div>
                         <div>Away: EPA {r.teamStats?.away?.strength?.toFixed(3) || '—'}</div>
                         <div>Form: {r.teamStats?.home?.form?.toFixed(3) || '—'}</div>
-                        {r.modelEnhancements?.oddsIntegrated && (
+                        {(r.modelEnhancements?.oddsIntegrated || r.odds?.moneyline?.home ||
                           <div className="text-green-600">Live odds ✓</div>
                         )}
                       </div>
