@@ -32,6 +32,9 @@ export default function NflTd(){
 
   if (!ENABLE_NFL_TD){
     return <div className="p-6 max-w-3xl mx-auto">
+      <div className="mb-3 text-sm text-gray-500">
+        <a href="/nfl">NFL</a> / Anytime TD
+      </div>
       <h1 className="text-2xl font-bold mb-2">NFL — Anytime TD</h1>
       <p className="text-sm opacity-70">This feature is currently disabled.</p>
     </div>;
@@ -43,6 +46,9 @@ export default function NflTd(){
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
+      <div className="mb-3 text-sm text-gray-500">
+        <a href="/nfl">NFL</a> / Anytime TD
+      </div>
       <div className="flex items-center gap-3 mb-4">
         <h1 className="text-2xl font-bold">NFL — Anytime TD</h1>
         <select className="border rounded px-2 py-1" value={week} onChange={e=> setWeek(parseInt(e.target.value,10))}>
