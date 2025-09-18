@@ -1,0 +1,11 @@
+// src/App.jsx (merge instructions)
+// Add the import near your other page imports:
+import NflTd from './pages/NflTd';
+
+// Inside your <Routes> element, add:
+<Route path="/nfl-td" element={<NflTd />} />
+<Route path="/nfl" element={<NflTd />} />
+
+// Remove any old TD routes if they exist:
+// <Route path="/nfl-td" element={<NFL_TD />} />
+// <Route path="/nfl-touchdown-props" element={<NFLTouchdownProps />} />
