@@ -950,4 +950,166 @@ async function processComprehensiveData(allData) {
       dataQuality: 'complete_32_team_coverage'
     },
     players: {}
+for (const [playerId, player] of Object.entries(allData.playerStats)) {
+    comprehensive.players[playerId] = {
+      ...player,
+      
+      redZoneMetrics: {
+        targets: allData.redZoneData[playerId]?.targets || estimateRedZoneTargets(player),
+        carries: allData.redZoneData[playerId]?.carries || estimateRedZoneCarries(player),
+        touchdowns: allData.redZoneData[playerId]?.tds || 0,
+        efficiency: allData.redZoneData[playerId]?.efficiency || 0.3
+      },
+      
+      opportunityFactors: {
+        snapShare: allData.snapCounts[playerId] || estimateSnapShare(player),
+        targetShare: allData.targetShares[playerId] || estimateTargetShare(player),
+        redZoneShare: estimateRedZoneShare(player),
+        goalLineShare: estimateGoalLineShare(player)
+      },
+      
+      recentForm: {
+        lastTwoWeeks: allData.recentWeeks[playerId] || {},
+        trendDirection: calculateTrend(allData.recentWeeks[playerId]),
+        consistency: calculateConsistency(allData.recentWeeks[playerId])
+      },
+      
+      predictionFactors: {
+        baseRate: calculateBaseTDRate(player),
+        positionalMultiplier: getPositionalMultiplier(player.position),
+        teamOffensiveRating: getTeamOffensiveRating(player.team),
+        injuryOpportunity: calculateInjuryOpportunity(player, allData)
+      }
+    };
+  }
+  
+  return comprehensive;
+}
+
+async function storeAllData(allData) {
+  console.log('Storing all collected data in Netlify Blobs...');
+  
+  const storeResults = [];
+  
+  // Store data for Basic TD System
+  storeResults.push(await storeBlob(`history/${CURRENT_SEASON}/recent-weeks.json`, allData.recentWeeks));
+  
+  // Store data for Comprehensive TD System  
+  storeResults.push(await storeBlob(`nfl/comprehensive/player-data-${CURRENT_SEASON}-week${CURRENT_WEEK}.json`, allData.comprehensiveData));
+  storeResults.push(await storeBlob(`nfl/comprehensive/latest.json`, allData.comprehensiveData));
+  
+  // Store supporting data
+  storeResults.push(await storeBlob(`nfl/players/rosters-${CURRENT_SEASON}.json`, allData.teamRosters));
+  storeResults.push(await storeBlob(`nfl/players/stats-current.json`, allData.playerStats));
+  storeResults.push(await storeBlob(`nfl/players/redzone-${CURRENT_SEASON}-week${CURRENT_WEEK}.json`, allData.redZoneData));
+  storeResults.push(await storeBlob(`nfl/players/snapcounts-${CURRENT_SEASON}-week${CURRENT_WEEK}.json`, allData.snapCounts));
+  
+  console.log('All data stored successfully in Netlify Blobs');
+  return storeResults;
+}
+
+// Helper Functions
+function estimateRedZoneTargets(player) {
+  const base = {
+    'RB': 1.5,
+    'WR': 2.0,  
+    'TE': 1.8,
+    'QB': 0
   };
+  return base[player.position] || 0;
+}
+
+function estimateRedZoneCarries(player) {
+  return player.position === 'RB' ? 2.0 : player.position === 'QB' ? 0.3 : 0;
+}
+
+function estimateSnapShare(player) {
+  const base = {
+    'QB': 0.98,
+    'RB': 0.55,
+    'WR': 0.65,
+    'TE': 0.70
+  };
+  return base[player.position] || 0.5;
+}
+
+function estimateTargetShare(player) {
+  const base = {
+    'RB': 0.10,
+    'WR': 0.20,
+    'TE': 0.15,
+    'QB': 0
+  };
+  return base[player.position] || 0;
+}
+
+function estimateRedZoneShare(player) {
+  const base = {
+    'RB': 0.15,
+    'WR': 0.20,
+    'TE': 0.18,
+    'QB': 0.02
+  };
+  return base[player.position] || 0.1;
+}
+
+function estimateGoalLineShare(player) {
+  const base = {
+    'RB': 0.60,
+    'WR': 0.15,
+    'TE': 0.25,
+    'QB': 0.10
+  };
+  return base[player.position] || 0.1;
+}
+
+function calculateTrend(recentData) {
+  if (!recentData || !recentData.week1 || !recentData.week2) return 0;
+  const week1TDs = recentData.week1.touchdowns || 0;
+  const week2TDs = recentData.week2.touchdowns || 0;
+  return (week2TDs - week1TDs) * 0.1;
+}
+
+function calculateConsistency(recentData) {
+  if (!recentData || !recentData.week1 || !recentData.week2) return 0.5;
+  const week1TDs = recentData.week1.touchdowns || 0;
+  const week2TDs = recentData.week2.touchdowns || 0;
+  const variance = Math.abs(week1TDs - week2TDs);
+  return Math.max(0.1, 0.9 - (variance * 0.2));
+}
+
+function calculateBaseTDRate(player) {
+  const positionRates = {
+    'QB': 0.05,
+    'RB': 0.15,
+    'WR': 0.12,
+    'TE': 0.08
+  };
+  return positionRates[player.position] || 0.05;
+}
+
+function getPositionalMultiplier(position) {
+  const multipliers = {
+    'QB': 0.8,
+    'RB': 1.2,
+    'WR': 1.0,
+    'TE': 0.9
+  };
+  return multipliers[position] || 1.0;
+}
+
+function getTeamOffensiveRating(team) {
+  const ratings = {
+    'KC': 1.2, 'BUF': 1.15, 'SF': 1.1, 'PHI': 1.08, 'DAL': 1.05,
+    'MIA': 1.0, 'CIN': 1.0, 'BAL': 0.98, 'MIN': 0.95, 'LAC': 0.95
+  };
+  return ratings[team] || 1.0;
+}
+
+function calculateInjuryOpportunity(player, allData) {
+  return 0.05;
+}
+
+if (typeof window === 'undefined') {
+  main();
+}
