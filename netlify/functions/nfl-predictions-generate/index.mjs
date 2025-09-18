@@ -1,11 +1,10 @@
 // netlify/functions/nfl-predictions-generate/index.mjs
-// v13: Critical fixes for determinism, spread logic, and multiplier stability
-// PLUS: Live odds integration fixes for data structure and team name matching
+// v13 LOGIC + v8 WORKING ODDS: Best of both versions
 
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics, getCurrentWeek, getCurrentWeights, diagnoseMetricsData } from '../_lib/blobs-nfl.js';
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
 
-// FIXED: Toned down aggressive multipliers per ChatGPT analysis
+// v13 LOGIC: Fixed weights and multipliers
 const BASE_WEIGHTS = {
   pressure_diff: 0.22, explosive_diff: 0.20, turnover_diff: 0.12, eds: 0.08,
   rz_td: 0.15, third_down: 0.10, penalty_diff: 0.05, fourth_down_agg: 0.06, top_eff: 0.02
@@ -20,11 +19,11 @@ const SPECIAL_TEAMS_WEIGHTS = {
   field_goal_net: 0.025, punt_net: 0.015, return_advantage: 0.008, coverage_efficiency: 0.002
 };
 
-// FIXED: Reduced aggressive multipliers (ChatGPT: CORE_EPA 30→24, TIER_BASE 10→8)
+// v13 LOGIC: Reduced aggressive multipliers
 const SCORING_MULTIPLIERS = {
-  CORE_EPA: 24,        // Reduced from 30
-  TIER_BASE: 8,        // Reduced from 10  
-  ADVANCED_BASE: 6,    // Kept same
+  CORE_EPA: 24,        // v13: Reduced from 30
+  TIER_BASE: 8,        // v13: Reduced from 10  
+  ADVANCED_BASE: 6,    // v13: Kept same
   MATCHUP_BASE: 3.2,
   SPECIAL_TEAMS_BASE: 3
 };
@@ -33,6 +32,7 @@ const ROSTER_CONTINUITY_FACTORS = {
   qb_change: 0.3, coach_change: 0.2, coordinator_change: 0.15, major_trades: 0.1, draft_impact: 0.05
 };
 
+// v8 WORKING ODDS: Team name mapping that works
 const TEAM_NAME_MAPPING = {
   'ARI': 'Arizona Cardinals', 'ATL': 'Atlanta Falcons', 'BAL': 'Baltimore Ravens',
   'BUF': 'Buffalo Bills', 'CAR': 'Carolina Panthers', 'CHI': 'Chicago Bears',
@@ -45,21 +45,6 @@ const TEAM_NAME_MAPPING = {
   'NYJ': 'New York Jets', 'PHI': 'Philadelphia Eagles', 'PIT': 'Pittsburgh Steelers',
   'SF': 'San Francisco 49ers', 'SEA': 'Seattle Seahawks', 'TB': 'Tampa Bay Buccaneers',
   'TEN': 'Tennessee Titans', 'WAS': 'Washington Commanders'
-};
-
-// FIXED: Reverse mapping for odds matching
-const REVERSE_TEAM_MAPPING = {
-  'Arizona Cardinals': 'ARI', 'Atlanta Falcons': 'ATL', 'Baltimore Ravens': 'BAL',
-  'Buffalo Bills': 'BUF', 'Carolina Panthers': 'CAR', 'Chicago Bears': 'CHI',
-  'Cincinnati Bengals': 'CIN', 'Cleveland Browns': 'CLE', 'Dallas Cowboys': 'DAL',
-  'Denver Broncos': 'DEN', 'Detroit Lions': 'DET', 'Green Bay Packers': 'GB',
-  'Houston Texans': 'HOU', 'Indianapolis Colts': 'IND', 'Jacksonville Jaguars': 'JAX',
-  'Kansas City Chiefs': 'KC', 'Las Vegas Raiders': 'LV', 'Los Angeles Chargers': 'LAC',
-  'Los Angeles Rams': 'LAR', 'Miami Dolphins': 'MIA', 'Minnesota Vikings': 'MIN',
-  'New England Patriots': 'NE', 'New Orleans Saints': 'NO', 'New York Giants': 'NYG',
-  'New York Jets': 'NYJ', 'Philadelphia Eagles': 'PHI', 'Pittsburgh Steelers': 'PIT',
-  'San Francisco 49ers': 'SF', 'Seattle Seahawks': 'SEA', 'Tampa Bay Buccaneers': 'TB',
-  'Tennessee Titans': 'TEN', 'Washington Commanders': 'WAS'
 };
 
 const DIVISIONAL_CONTEXT = {
@@ -82,13 +67,13 @@ function isDivisionalGame(homeTeam, awayTeam) {
   return homeDivision === awayDivision;
 }
 
-// Utility functions with ChatGPT's NaN protection
+// v13 LOGIC: Utility functions with NaN protection
 function z(val, mean = 0, std = 1) { 
   if (isNaN(val) || isNaN(mean) || isNaN(std) || std <= 0) return 0;
   return (val - mean) / std; 
 }
 
-// FIXED: Clip z-scores to prevent extreme outliers (ChatGPT recommendation)
+// v13 LOGIC: Clip z-scores to prevent extreme outliers
 function clippedZ(val, mean = 0, std = 1) {
   const rawZ = z(val, mean, std);
   return Math.max(-2.5, Math.min(2.5, rawZ)); // Clip to ±2.5
@@ -102,20 +87,19 @@ function americanToImplied(american) {
   return odds > 0 ? 100 / (odds + 100) : Math.abs(odds) / (Math.abs(odds) + 100);
 }
 
-// FIXED: Deterministic special teams generation (no Math.random)
+// v13 LOGIC: Deterministic special teams generation (no Math.random)
 function generateSpecialTeamsFromBasics(teamCode, teamMetrics, league) {
   const offEPA = teamMetrics?.core?.off_epa || 0;
   const defEPA = teamMetrics?.core?.def_epa || 0;
   const teamQuality = (offEPA - defEPA) / 2;
   const stQualityFactor = teamQuality * 0.4;
   
-  // FIXED: Deterministic variation based on team code hash instead of Math.random()
+  // v13 LOGIC: Deterministic variation based on team code hash instead of Math.random()
   const teamHash = teamCode.split('').reduce((hash, char) => hash + char.charCodeAt(0), 0);
   const deterministicVariation = ((teamHash % 100) / 100 - 0.5) * 0.1; // -0.05 to +0.05
   
   const finalSTFactor = stQualityFactor + deterministicVariation;
   
-  // Return object instead of mutating input (ChatGPT recommendation)
   return {
     fg_accuracy_combined: clamp(0.84 + finalSTFactor, 0.70, 0.95),
     fg_attempts_per_game: clamp(2.1 + (teamQuality * 0.3), 1.5, 3.2),
@@ -242,13 +226,13 @@ function calculateCurrentSeasonMomentum(teamMetrics, currentWeek) {
   return momentum;
 }
 
-// FIXED: ChatGPT's NaN shield for league stats
+// v13 LOGIC: Main team scoring function with all fixes
 function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = null, isHome = false, currentWeek = 3, opponentData = null, teamCode = null) {
   if (!teamData || !league) {
     return { score: 0, confidence: 0.5, evidenceStrength: 0.25, specialTeams: null };
   }
 
-  // FIXED: Safe proxy for league means/stds (ChatGPT recommendation)
+  // v13 LOGIC: Safe proxy for league means/stds
   const means = new Proxy(league.means || {}, { get: (t, k) => (k in t ? t[k] : 0) });
   const stds = new Proxy(league.stds || {}, { get: (t, k) => (k in t ? t[k] : 1) });
 
@@ -263,7 +247,7 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
   const script = teamData?.script || {};
   const formations = teamData?.formations || {};
 
-  // FIXED: Use clippedZ to prevent extreme outliers
+  // v13 LOGIC: Use clippedZ to prevent extreme outliers
   const zPress = clippedZ(press.pressure_diff ?? 0, means.pressure_diff, stds.pressure_diff);
   const zExpl = clippedZ(sit.explosive_diff ?? 0, means.explosive_diff, stds.explosive_diff);
   const zTOdiff = clippedZ(to.turnover_diff ?? 0, means.turnover_diff, stds.turnover_diff);
@@ -310,7 +294,7 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
 
   const matchupScore = calculateMatchupScore(matchupTerms) * SCORING_MULTIPLIERS.MATCHUP_BASE;
 
-  // FIXED: Don't mutate teamData - generate ST separately
+  // v13 LOGIC: Special teams integration
   let specialTeamsScore = 0;
   let specialTeamsMetrics = null;
   
@@ -318,7 +302,6 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
     const teamST = teamData.special_teams || generateSpecialTeamsFromBasics(teamCode, teamData, league);
     const oppST = opponentData.special_teams || generateSpecialTeamsFromBasics('OPP', opponentData, league);
     
-    // Create temporary metrics objects instead of mutating
     const tempTeamMetrics = { ...teamData, special_teams: teamST };
     const tempOppMetrics = { ...opponentData, special_teams: oppST };
     
@@ -372,7 +355,7 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries) {
   };
 }
 
-// FIXED: Corrected spread calculation logic
+// v13 LOGIC: Fixed spread calculation
 function calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayCode) {
   const avgConfidence = (homeScoreData.confidence + awayScoreData.confidence) / 2;
   
@@ -388,9 +371,8 @@ function calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayC
   
   const adjustedHFA = dynamicHFA * divisionalAdjustment;
   
-  // FIXED: This was the core issue - spread calculation needs to be meaningful
   const scoreDifference = homeScoreData.score - awayScoreData.score;
-  const spreadFromScores = scoreDifference * 3.5; // Reduced multiplier for more realistic spreads
+  const spreadFromScores = scoreDifference * 3.5;
   
   let stSpreadAdjustment = 0;
   if (homeScoreData.specialTeams && awayScoreData.specialTeams) {
@@ -399,16 +381,7 @@ function calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayC
     stSpreadAdjustment = (homeSTValue - awaySTValue) * 0.5;
   }
   
-  // This is the model's pure prediction of home margin
   const predictedHomeMargin = adjustedHFA + spreadFromScores + stSpreadAdjustment;
-  
-  console.log('FIXED Spread calculation:', {
-    homeScore: homeScoreData.score.toFixed(2),
-    awayScore: awayScoreData.score.toFixed(2), 
-    scoreDiff: scoreDifference.toFixed(2),
-    HFA: adjustedHFA.toFixed(2),
-    modelMargin: predictedHomeMargin.toFixed(2)
-  });
   
   return clamp(predictedHomeMargin, -21, 21);
 }
@@ -501,133 +474,95 @@ function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evide
   return Math.round(baseConfidence);
 }
 
+// v8 WORKING ODDS: Load live odds (proven working)
 async function loadLiveOdds() {
   try {
-    console.log('=== LOADING LIVE ODDS v13 ===');
-    const oddsRes = await fetch('/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals');
-    
+    console.log('Fetching live odds...');
+    const oddsRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals');
     if (!oddsRes.ok) {
-      console.warn(`Odds function returned ${oddsRes.status}, continuing with fallback`);
-      return [];
+      throw new Error(`Odds API failed: ${oddsRes.status}`);
     }
-    
     const oddsResponse = await oddsRes.json();
-    
-    if (oddsResponse.error || oddsResponse.fallback) {
-      console.warn('Odds response indicates fallback mode:', oddsResponse.error);
-      return oddsResponse.games || [];
-    }
-    
-    const oddsData = oddsResponse.games || [];
-    console.log(`Successfully loaded odds for ${oddsData.length} games`);
+    const oddsData = oddsResponse.games || oddsResponse || [];
+    console.log(`Loaded odds for ${oddsData.length} games`);
     return oddsData;
-    
   } catch (error) {
-    console.warn('Failed to load live odds:', error.message);
+    console.warn('Failed to load live odds:', error);
     return [];
   }
 }
 
-// FIXED: Team name mapping and odds finding logic
+// v8 WORKING ODDS: Find odds for a specific game (proven working)
 function findGameOdds(allOdds, homeTeam, awayTeam) {
-  // Convert team codes to full names for matching
   const homeTeamFull = TEAM_NAME_MAPPING[homeTeam] || homeTeam;
   const awayTeamFull = TEAM_NAME_MAPPING[awayTeam] || awayTeam;
   
-  console.log(`Looking for odds: ${awayTeamFull} @ ${homeTeamFull}`);
+  console.log(`Searching for: ${awayTeamFull} @ ${homeTeamFull}`);
   
-  // Direct match first
-  let found = allOdds.find(odds => 
+  const found = allOdds.find(odds => 
     odds.home_team === homeTeamFull && odds.away_team === awayTeamFull
   );
   
-  if (found) {
-    console.log('Direct match found');
-    return found;
-  }
-  
-  // Partial match fallback
-  found = allOdds.find(odds => {
-    const homeMatch = odds.home_team.includes(homeTeamFull.split(' ').pop()) || 
-                     homeTeamFull.includes(odds.home_team.split(' ').pop());
-    const awayMatch = odds.away_team.includes(awayTeamFull.split(' ').pop()) ||
-                     awayTeamFull.includes(odds.away_team.split(' ').pop());
-    return homeMatch && awayMatch;
-  });
-  
-  if (found) {
-    console.log('Partial match found:', found.home_team, 'vs', found.away_team);
-  } else {
-    console.log('No odds found for game');
-    console.log('Available games:', allOdds.map(g => `${g.away_team} @ ${g.home_team}`).slice(0, 3));
-  }
-  
-  return found || null;
+  console.log(`Match found: ${!!found}`);
+  return found;
 }
 
-// FIXED: Extract odds from correct API structure
+// v8 WORKING ODDS: Extract odds from bookmaker data (proven working)
 function extractOddsData(gameOdds) {
-  if (!gameOdds) return {};
-  
-  // The API returns markets directly on the game object, not nested in bookmakers
-  let markets = {};
-  
-  if (gameOdds.markets) {
-    // Direct markets structure
-    markets = gameOdds.markets;
-  } else if (gameOdds.bookmakers?.[0]?.markets) {
-    // Fallback to bookmaker structure if exists
-    const primaryBook = gameOdds.bookmakers[0];
-    primaryBook.markets.forEach(market => {
-      markets[market.key] = market.outcomes || [];
-    });
-  } else {
-    console.warn('No markets found in odds data:', gameOdds);
+  if (!gameOdds?.bookmakers?.[0]?.markets) {
     return {};
   }
   
-  console.log('Processing markets:', Object.keys(markets));
+  const markets = gameOdds.bookmakers[0].markets;
   
-  // Extract moneyline
+  // Extract moneyline odds
   const h2hMarket = markets.h2h || [];
   const homeMLOutcome = h2hMarket.find(o => o.name === gameOdds.home_team);
   const awayMLOutcome = h2hMarket.find(o => o.name === gameOdds.away_team);
   
-  // Extract spread
+  // Extract spread odds
   const spreadsMarket = markets.spreads || [];
   const homeSpreadOutcome = spreadsMarket.find(o => o.name === gameOdds.home_team);
   const awaySpreadOutcome = spreadsMarket.find(o => o.name === gameOdds.away_team);
   
   let favoriteTeam = null;
+  let favoriteTeamCode = null;
   let favoriteSpread = null;
+  let underdogTeamCode = null;
+  let underdogSpread = null;
   
   if (homeSpreadOutcome && homeSpreadOutcome.point < 0) {
     favoriteTeam = 'home';
+    favoriteTeamCode = gameOdds.home_team;
     favoriteSpread = homeSpreadOutcome.point;
+    underdogTeamCode = gameOdds.away_team;
+    underdogSpread = awaySpreadOutcome?.point;
   } else if (awaySpreadOutcome && awaySpreadOutcome.point < 0) {
     favoriteTeam = 'away';
+    favoriteTeamCode = gameOdds.away_team;
     favoriteSpread = awaySpreadOutcome.point;
+    underdogTeamCode = gameOdds.home_team;
+    underdogSpread = homeSpreadOutcome?.point;
   } else {
     favoriteSpread = homeSpreadOutcome?.point || awaySpreadOutcome?.point || 0;
   }
   
-  // Extract total
+  // Extract total odds
   const totalsMarket = markets.totals || [];
   const totalOutcome = totalsMarket[0];
   
-  const result = {
+  return {
     ml_home: homeMLOutcome?.price,
     ml_away: awayMLOutcome?.price,
     spread_line: favoriteSpread,
     spread_favorite: favoriteTeam,
-    total_line: totalOutcome?.point,
-    _extraction_success: !!(homeMLOutcome && awayMLOutcome && favoriteSpread !== null && totalOutcome)
+    spread_favorite_team: favoriteTeamCode,
+    spread_underdog_team: underdogTeamCode,
+    total_line: totalOutcome?.point
   };
-  
-  console.log('Extracted odds:', result);
-  return result;
 }
 
+// v13 LOGIC: Generate parlay components
 function generateParlayComponents(games, predictions) {
   const components = [];
   
@@ -754,8 +689,9 @@ function generateResponsibleParlays(components) {
   return parlays.slice(0, 6);
 }
 
+// MAIN PREDICTION FUNCTION: v13 Logic + v8 Odds Integration
 async function generateAdvancedPredictions(games, season) {
-  console.log('=== NFL PREDICTION SYSTEM v13 - CRITICAL FIXES + LIVE ODDS ===');
+  console.log('=== v13 LOGIC + v8 WORKING ODDS INTEGRATION ===');
   
   let advancedMetrics = null;
   let injuries = null;
@@ -779,7 +715,7 @@ async function generateAdvancedPredictions(games, season) {
           spread: { pick: null, confidence: 50, line: null, predicted: null, edge: 0 },
           total: { pick: null, confidence: 50, line: null, predicted: null, edge: 0 }
         },
-        modelEnhancements: { version: 'v13_critical_fixes', notes: ["Metrics unavailable"] }
+        modelEnhancements: { version: 'v13_logic_v8_odds_hybrid', notes: ["Metrics unavailable"] }
       })),
       parlaySuggestions: [{
         type: "no_data",
@@ -793,22 +729,24 @@ async function generateAdvancedPredictions(games, season) {
 
   const league = advancedMetrics?.league || { means: {}, stds: {} };
   const currentWeek = getCurrentWeek(advancedMetrics);
+  
+  // v8 WORKING ODDS: Load live odds using proven working method
   const allOdds = await loadLiveOdds();
 
-  console.log(`v13 FIXES + LIVE ODDS: deterministic ST, reduced multipliers, clipped z-scores, fixed spread logic, FIXED odds extraction`);
+  console.log(`v13 logic + v8 odds: Processing ${games.length} games with working odds integration`);
 
   const predictions = games.map(game => {
     const homeCode = game.home_team;
     const awayCode = game.away_team;
 
-    console.log(`\n=== PROCESSING GAME: ${awayCode} @ ${homeCode} ===`);
+    console.log(`\n=== HYBRID PREDICTION: ${awayCode} @ ${homeCode} ===`);
 
     const homeMetrics = getTeamMetrics(advancedMetrics, homeCode);
     const awayMetrics = getTeamMetrics(advancedMetrics, awayCode);
     const contextWeights = calculateContextAwareWeights(currentWeek, homeMetrics, awayMetrics);
     const matchups = calculateMatchups(homeMetrics, awayMetrics, league);
 
-    // FIXED: Pass team codes for deterministic ST generation
+    // v13 LOGIC: Enhanced team scoring with all fixes
     let homeScoreData = scoreTeamFromFeatures(homeMetrics, league, contextWeights, matchups?.home, true, currentWeek, awayMetrics, homeCode);
     let awayScoreData = scoreTeamFromFeatures(awayMetrics, league, contextWeights, matchups?.away, false, currentWeek, homeMetrics, awayCode);
 
@@ -819,15 +757,15 @@ async function generateAdvancedPredictions(games, season) {
 
     const scoreDifference = homeScoreData.score - awayScoreData.score;
     
-    // FIXED: This should now produce meaningful spread differences
+    // v13 LOGIC: Fixed spread calculation
     const predictedSpread = calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayCode);
     const homeWinProb = sigmoid(predictedSpread / 14);
     const awayWinProb = 1 - homeWinProb;
 
-    // FIXED: Better odds matching and extraction
+    // v8 WORKING ODDS: Use proven working odds integration
     const gameOdds = findGameOdds(allOdds, homeCode, awayCode);
     const realOdds = gameOdds ? extractOddsData(gameOdds) : {};
-    const hasLiveOdds = gameOdds && realOdds._extraction_success;
+    const hasLiveOdds = gameOdds && realOdds.ml_home && realOdds.ml_away;
     
     console.log(`Live odds found: ${hasLiveOdds}, Spread: ${realOdds.spread_line}, Total: ${realOdds.total_line}`);
     
@@ -849,7 +787,7 @@ async function generateAdvancedPredictions(games, season) {
     const avgEvidence = (homeScoreData.evidenceStrength + awayScoreData.evidenceStrength) / 2;
     const mlConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge, avgConfidence, avgEvidence, scoreDifference, 'moneyline', gameContext);
 
-    // FIXED: Spread predictions should now work with real market data
+    // Spread predictions with live odds integration
     const marketSpread = hasLiveOdds ? (realOdds.spread_line || 0) : 0;
     const marketFavorite = realOdds.spread_favorite;
     
@@ -859,15 +797,13 @@ async function generateAdvancedPredictions(games, season) {
       marketHomeMargin = marketFavorite === 'home' ? Math.abs(marketSpread) : -Math.abs(marketSpread);
     }
     
-    // This difference should now be meaningful with real odds
     const marginDifference = modelHomeMargin - marketHomeMargin;
-    const spreadThreshold = hasLiveOdds ? 2.5 : 1.0; // Higher threshold when we have real market data
+    const spreadThreshold = hasLiveOdds ? 2.5 : 1.0;
     
     let spreadPick;
     let displayedSpread;
     
     if (!hasLiveOdds) {
-      // No market data - make model prediction
       if (modelHomeMargin > 1.5) {
         spreadPick = homeCode;
       } else if (modelHomeMargin < -1.5) {
@@ -877,13 +813,12 @@ async function generateAdvancedPredictions(games, season) {
       }
       displayedSpread = Math.abs(modelHomeMargin);
     } else {
-      // Have market data - compare model vs market
       if (Math.abs(marginDifference) < spreadThreshold) {
-        spreadPick = 'push'; // Model sees no clear edge
+        spreadPick = 'push';
       } else if (marginDifference > spreadThreshold) {
-        spreadPick = homeCode; // Model likes home team more than market
+        spreadPick = homeCode;
       } else {
-        spreadPick = awayCode; // Model likes away team more than market
+        spreadPick = awayCode;
       }
       displayedSpread = Math.abs(marketSpread);
     }
@@ -929,17 +864,17 @@ async function generateAdvancedPredictions(games, season) {
       },
       
       modelEnhancements: {
-        version: 'v13_critical_fixes_live_odds',
+        version: 'v13_logic_v8_odds_hybrid',
         fixesApplied: [
-          "Deterministic special teams (no Math.random)",
-          "Reduced multipliers (CORE_EPA 30→24, TIER_BASE 10→8)",
-          "Z-score clipping (±2.5 max)",
-          "NaN shield for league stats",
-          "Fixed spread calculation logic",
-          "No input mutation (pure functions)",
-          "FIXED odds data structure extraction",
-          "FIXED team name mapping for odds",
-          "Improved spread threshold logic"
+          "v13: Deterministic special teams (no Math.random)",
+          "v13: Reduced multipliers (CORE_EPA 30→24, TIER_BASE 10→8)",
+          "v13: Z-score clipping (±2.5 max)",
+          "v13: NaN shield for league stats",
+          "v13: Fixed spread calculation logic",
+          "v13: No input mutation (pure functions)",
+          "v8: Working odds data extraction",
+          "v8: Proven team name mapping",
+          "v8: Functional live odds integration"
         ],
         diagnostics: {
           homeScore: homeScoreData.score.toFixed(2),
@@ -1026,10 +961,10 @@ export default async (request, context) => {
     });
     
   } catch (error) {
-    console.error('Enhanced prediction v13 + live odds error:', error);
+    console.error('Hybrid v13+v8 prediction error:', error);
     
     return new Response(JSON.stringify({
-      error: 'Enhanced prediction generation failed',
+      error: 'Hybrid prediction generation failed',
       message: error.message
     }), {
       status: 500,
