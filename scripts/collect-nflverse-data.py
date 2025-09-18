@@ -9,13 +9,18 @@ import os
 from datetime import datetime
 
 # Configuration
-CURRENT_WEEK = int(os.getenv('NFL_WEEK', '3'))
+PREDICTION_WEEK = int(os.getenv('NFL_WEEK', '4'))  # Week to PREDICT
 CURRENT_SEASON = int(os.getenv('NFL_SEASON', '2025'))
+HISTORICAL_SEASONS = [2022, 2023, 2024]  # 3 years of INPUT data
+COMPLETED_WEEKS = max(1, PREDICTION_WEEK - 1)  # Weeks already played this season
 NETLIFY_TOKEN = os.getenv('NETLIFY_TOKEN')
 NETLIFY_SITE_ID = os.getenv('NETLIFY_SITE_ID')
 
 def main():
-    print(f"🏈 Starting NFLVerse data collection for Week {CURRENT_WEEK}, {CURRENT_SEASON}")
+    print(f"🏈 Collecting INPUT data for NFL Week {PREDICTION_WEEK} PREDICTIONS")
+    print(f"📊 Historical seasons: {HISTORICAL_SEASONS} (3 years of data)")
+    print(f"📈 Current season: Weeks 1-{COMPLETED_WEEKS} (games already played)")
+    print(f"🎯 Target: Generate predictions for Week {PREDICTION_WEEK}, {CURRENT_SEASON}")
     
     try:
         # Step 1: Collect historical player stats (2023-2024)
@@ -60,29 +65,28 @@ def main():
         raise
 
 def collect_historical_stats():
-    """Collect 2023-2024 historical player statistics"""
-    print("Downloading historical player stats from NFLVerse...")
+    """Collect 2022-2024 historical player statistics (3 years INPUT data)"""
+    print(f"Downloading {len(HISTORICAL_SEASONS)} years of historical player stats from NFLVerse...")
     
-    # Get 2023 and 2024 player stats
-    stats_2023 = nfl.import_seasonal_data([2023], 'players')
-    stats_2024 = nfl.import_seasonal_data([2024], 'players')
+    # Get 3 years of historical player stats
+    all_stats = nfl.import_seasonal_data(HISTORICAL_SEASONS, 'players')
     
-    # Combine and process
+    # Process and combine
     historical_stats = {}
     
-    for year, stats in [(2023, stats_2023), (2024, stats_2024)]:
-        for _, player in stats.iterrows():
-            player_id = f"{player.get('player_display_name', 'Unknown')}_{player.get('position', 'UNK')}"
-            
-            if player_id not in historical_stats:
-                historical_stats[player_id] = {
-                    'name': player.get('player_display_name', 'Unknown'),
-                    'position': player.get('position', 'UNK'),
-                    'team': player.get('recent_team', 'UNK'),
-                    'seasons': {}
-                }
-            
-            historical_stats[player_id]['seasons'][year] = {
+    for _, player in all_stats.iterrows():
+        player_id = f"{player.get('player_display_name', 'Unknown')}_{player.get('position', 'UNK')}"
+        
+        if player_id not in historical_stats:
+            historical_stats[player_id] = {
+                'name': player.get('player_display_name', 'Unknown'),
+                'position': player.get('position', 'UNK'),
+                'team': player.get('recent_team', 'UNK'),
+                'seasons': {}
+            }
+        
+        season = player.get('season', 2024)
+        historical_stats[player_id]['seasons'][season] = {
                 'games': player.get('games', 0),
                 'passing_tds': player.get('passing_tds', 0),
                 'rushing_tds': player.get('rushing_tds', 0),
