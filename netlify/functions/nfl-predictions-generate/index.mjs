@@ -507,59 +507,67 @@ function findGameOdds(allOdds, homeTeam, awayTeam) {
   return found;
 }
 
-// v8 WORKING ODDS: Extract odds from bookmaker data (proven working)
+// FIXED: Extract odds using v13 logic that actually works with your API
 function extractOddsData(gameOdds) {
-  if (!gameOdds?.bookmakers?.[0]?.markets) {
+  if (!gameOdds) return {};
+  
+  // Your API returns both structures - use the working one
+  let markets = {};
+  
+  if (gameOdds.markets) {
+    // Direct markets structure (this is what works)
+    markets = gameOdds.markets;
+    console.log('Using direct markets structure');
+  } else if (gameOdds.bookmakers?.[0]?.markets) {
+    // Fallback to bookmaker structure  
+    const primaryBook = gameOdds.bookmakers[0];
+    primaryBook.markets.forEach(market => {
+      markets[market.key] = market.outcomes || [];
+    });
+    console.log('Using bookmaker structure fallback');
+  } else {
+    console.warn('No markets found in odds data');
     return {};
   }
   
-  const markets = gameOdds.bookmakers[0].markets;
-  
-  // Extract moneyline odds
+  // Extract moneyline
   const h2hMarket = markets.h2h || [];
   const homeMLOutcome = h2hMarket.find(o => o.name === gameOdds.home_team);
   const awayMLOutcome = h2hMarket.find(o => o.name === gameOdds.away_team);
   
-  // Extract spread odds
+  // Extract spread
   const spreadsMarket = markets.spreads || [];
   const homeSpreadOutcome = spreadsMarket.find(o => o.name === gameOdds.home_team);
   const awaySpreadOutcome = spreadsMarket.find(o => o.name === gameOdds.away_team);
   
   let favoriteTeam = null;
-  let favoriteTeamCode = null;
   let favoriteSpread = null;
-  let underdogTeamCode = null;
-  let underdogSpread = null;
   
   if (homeSpreadOutcome && homeSpreadOutcome.point < 0) {
     favoriteTeam = 'home';
-    favoriteTeamCode = gameOdds.home_team;
     favoriteSpread = homeSpreadOutcome.point;
-    underdogTeamCode = gameOdds.away_team;
-    underdogSpread = awaySpreadOutcome?.point;
   } else if (awaySpreadOutcome && awaySpreadOutcome.point < 0) {
     favoriteTeam = 'away';
-    favoriteTeamCode = gameOdds.away_team;
     favoriteSpread = awaySpreadOutcome.point;
-    underdogTeamCode = gameOdds.home_team;
-    underdogSpread = homeSpreadOutcome?.point;
   } else {
     favoriteSpread = homeSpreadOutcome?.point || awaySpreadOutcome?.point || 0;
   }
   
-  // Extract total odds
+  // Extract total
   const totalsMarket = markets.totals || [];
   const totalOutcome = totalsMarket[0];
   
-  return {
+  const result = {
     ml_home: homeMLOutcome?.price,
     ml_away: awayMLOutcome?.price,
     spread_line: favoriteSpread,
     spread_favorite: favoriteTeam,
-    spread_favorite_team: favoriteTeamCode,
-    spread_underdog_team: underdogTeamCode,
-    total_line: totalOutcome?.point
+    total_line: totalOutcome?.point,
+    _extraction_success: !!(homeMLOutcome && awayMLOutcome && favoriteSpread !== null && totalOutcome)
   };
+  
+  console.log('Odds extraction result:', result);
+  return result;
 }
 
 // v13 LOGIC: Generate parlay components
