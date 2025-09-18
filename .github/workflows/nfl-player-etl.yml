@@ -52,8 +52,16 @@ jobs:
         
     - name: Run NFL Player Data Collection
       run: |
-        echo "Collecting NFL player data for Week ${{ github.event.inputs.week || '3' }}..."
-        node scripts/collect-player-data.js
+        echo "Collecting NFL player data for Week ${{ github.event.inputs.week || '4' }}..."
+        ls -la scripts/
+        if [ -f "scripts/collect-player-data.js" ]; then
+          node scripts/collect-player-data.js
+        else
+          echo "❌ collect-player-data.js not found"
+          echo "Available files in scripts/:"
+          find scripts/ -name "*.js" -o -name "*.mjs" 2>/dev/null || echo "No JS files found"
+          exit 1
+        fi
       env:
         NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
