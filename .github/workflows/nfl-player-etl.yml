@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+      NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
       NFL_WEEK: ${{ github.event.inputs.week || '4' }}
