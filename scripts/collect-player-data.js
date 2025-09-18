@@ -4,8 +4,12 @@
 import { storeBlob } from './lib/blob_io.js';
 import fetch from 'node-fetch';
 
-const CURRENT_WEEK = process.env.NFL_WEEK || '3';
+const CURRENT_WEEK = process.env.NFL_WEEK || '4'; // Week to PREDICT
 const CURRENT_SEASON = process.env.NFL_SEASON || '2025';
+
+// Historical data collection spans (INPUT data for predictions)
+const HISTORICAL_SEASONS = [2022, 2023, 2024]; // 3 years of historical data
+const CURRENT_SEASON_WEEKS_COMPLETED = Math.max(1, parseInt(CURRENT_WEEK) - 1); // Weeks 1-3 for Week 4 predictions
 
 // Free API endpoints for NFL player data
 const API_ENDPOINTS = {
@@ -42,7 +46,10 @@ const TEAM_MAPPING = {
 };
 
 async function main() {
-  console.log(`🏈 Starting NFL Player Data Collection for Week ${CURRENT_WEEK}, ${CURRENT_SEASON}`);
+  console.log(`🏈 Collecting INPUT data for NFL Week ${CURRENT_WEEK} PREDICTIONS`);
+  console.log(`📊 Historical data: ${HISTORICAL_SEASONS.join(', ')} (3 years)`);
+  console.log(`📈 Current season: Weeks 1-${CURRENT_SEASON_WEEKS_COMPLETED} (completed games)`);
+  console.log(`🎯 Target: Generate predictions for Week ${CURRENT_WEEK}, ${CURRENT_SEASON}`);
   
   try {
     // Step 1: Collect basic roster and depth chart data
@@ -257,7 +264,7 @@ async function collectTargetShares() {
     const response = await fetch(API_ENDPOINTS.sleeper);
     if (response.ok) {
       const data = await response.json();
-      return processSleeper TargetData(data);
+      return processSleeperTargetData(data);
     }
   } catch (error) {
     console.warn('Sleeper API unavailable, using estimates');
