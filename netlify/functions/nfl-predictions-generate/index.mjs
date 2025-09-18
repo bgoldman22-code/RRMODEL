@@ -1,33 +1,30 @@
 // netlify/functions/nfl-predictions-generate/index.mjs
-// v12: Enhanced with calibrated confidence, improved team separation, and parlay suggestions
-// - Recalibrated confidence levels for realistic betting
-// - Enhanced current season weighting and road team recognition  
-// - Conditional home field advantage based on team quality
-// - Responsible parlay suggestion system
+// v13: Critical fixes for determinism, spread logic, and multiplier stability
+// Addressing ChatGPT's analysis: non-determinism, aggressive multipliers, spread calculation errors
 
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics, getCurrentWeek, getCurrentWeights, diagnoseMetricsData } from '../_lib/blobs-nfl.js';
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
 
-// ENHANCED: Adjusted base weights based on gold standard comparison
+// FIXED: Toned down aggressive multipliers per ChatGPT analysis
 const BASE_WEIGHTS = {
-  pressure_diff: 0.22, explosive_diff: 0.20, turnover_diff: 0.12, eds: 0.08, // Boosted explosive
-  rz_td: 0.15, third_down: 0.10, penalty_diff: 0.05, fourth_down_agg: 0.06, top_eff: 0.02 // Reduced TOP
+  pressure_diff: 0.22, explosive_diff: 0.20, turnover_diff: 0.12, eds: 0.08,
+  rz_td: 0.15, third_down: 0.10, penalty_diff: 0.05, fourth_down_agg: 0.06, top_eff: 0.02
 };
 
 const ADVANCED_WEIGHTS = {
-  form: 0.12, consistency: 0.02, tempo: 0.02, formations: 0.02, script_adaptation: 0.01, // Enhanced form
-  current_season_momentum: 0.03 // NEW: Early season momentum factor
+  form: 0.12, consistency: 0.02, tempo: 0.02, formations: 0.02, script_adaptation: 0.01,
+  current_season_momentum: 0.03
 };
 
 const SPECIAL_TEAMS_WEIGHTS = {
   field_goal_net: 0.025, punt_net: 0.015, return_advantage: 0.008, coverage_efficiency: 0.002
 };
 
-// ENHANCED: More aggressive scoring multipliers for better team separation
+// FIXED: Reduced aggressive multipliers (ChatGPT: CORE_EPA 30→24, TIER_BASE 10→8)
 const SCORING_MULTIPLIERS = {
-  CORE_EPA: 30,        // Increased from 25 for better separation
-  TIER_BASE: 10,       // Increased from 8
-  ADVANCED_BASE: 8,    // Increased from 6  
+  CORE_EPA: 24,        // Reduced from 30
+  TIER_BASE: 8,        // Reduced from 10  
+  ADVANCED_BASE: 6,    // Kept same
   MATCHUP_BASE: 3.2,
   SPECIAL_TEAMS_BASE: 3
 };
@@ -36,7 +33,6 @@ const ROSTER_CONTINUITY_FACTORS = {
   qb_change: 0.3, coach_change: 0.2, coordinator_change: 0.15, major_trades: 0.1, draft_impact: 0.05
 };
 
-// ENHANCED: Team name mapping with reverse lookup
 const TEAM_NAME_MAPPING = {
   'ARI': 'Arizona Cardinals', 'ATL': 'Atlanta Falcons', 'BAL': 'Baltimore Ravens',
   'BUF': 'Buffalo Bills', 'CAR': 'Carolina Panthers', 'CHI': 'Chicago Bears',
@@ -51,16 +47,11 @@ const TEAM_NAME_MAPPING = {
   'TEN': 'Tennessee Titans', 'WAS': 'Washington Commanders'
 };
 
-// ENHANCED: Divisional and conference context
 const DIVISIONAL_CONTEXT = {
-  'AFC_EAST': ['BUF', 'MIA', 'NE', 'NYJ'],
-  'AFC_NORTH': ['BAL', 'CIN', 'CLE', 'PIT'], 
-  'AFC_SOUTH': ['HOU', 'IND', 'JAX', 'TEN'],
-  'AFC_WEST': ['DEN', 'KC', 'LV', 'LAC'],
-  'NFC_EAST': ['DAL', 'NYG', 'PHI', 'WAS'],
-  'NFC_NORTH': ['CHI', 'DET', 'GB', 'MIN'],
-  'NFC_SOUTH': ['ATL', 'CAR', 'NO', 'TB'],
-  'NFC_WEST': ['ARI', 'LAR', 'SF', 'SEA']
+  'AFC_EAST': ['BUF', 'MIA', 'NE', 'NYJ'], 'AFC_NORTH': ['BAL', 'CIN', 'CLE', 'PIT'], 
+  'AFC_SOUTH': ['HOU', 'IND', 'JAX', 'TEN'], 'AFC_WEST': ['DEN', 'KC', 'LV', 'LAC'],
+  'NFC_EAST': ['DAL', 'NYG', 'PHI', 'WAS'], 'NFC_NORTH': ['CHI', 'DET', 'GB', 'MIN'],
+  'NFC_SOUTH': ['ATL', 'CAR', 'NO', 'TB'], 'NFC_WEST': ['ARI', 'LAR', 'SF', 'SEA']
 };
 
 function getDivision(teamCode) {
@@ -76,8 +67,18 @@ function isDivisionalGame(homeTeam, awayTeam) {
   return homeDivision === awayDivision;
 }
 
-// Utility functions
-function z(val, mean = 0, std = 1) { return std > 0 ? (val - mean) / std : 0; }
+// Utility functions with ChatGPT's NaN protection
+function z(val, mean = 0, std = 1) { 
+  if (isNaN(val) || isNaN(mean) || isNaN(std) || std <= 0) return 0;
+  return (val - mean) / std; 
+}
+
+// FIXED: Clip z-scores to prevent extreme outliers (ChatGPT recommendation)
+function clippedZ(val, mean = 0, std = 1) {
+  const rawZ = z(val, mean, std);
+  return Math.max(-2.5, Math.min(2.5, rawZ)); // Clip to ±2.5
+}
+
 function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
 function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
 function americanToImplied(american) {
@@ -86,7 +87,32 @@ function americanToImplied(american) {
   return odds > 0 ? 100 / (odds + 100) : Math.abs(odds) / (Math.abs(odds) + 100);
 }
 
-// Keep existing special teams functions unchanged...
+// FIXED: Deterministic special teams generation (no Math.random)
+function generateSpecialTeamsFromBasics(teamCode, teamMetrics, league) {
+  const offEPA = teamMetrics?.core?.off_epa || 0;
+  const defEPA = teamMetrics?.core?.def_epa || 0;
+  const teamQuality = (offEPA - defEPA) / 2;
+  const stQualityFactor = teamQuality * 0.4;
+  
+  // FIXED: Deterministic variation based on team code hash instead of Math.random()
+  const teamHash = teamCode.split('').reduce((hash, char) => hash + char.charCodeAt(0), 0);
+  const deterministicVariation = ((teamHash % 100) / 100 - 0.5) * 0.1; // -0.05 to +0.05
+  
+  const finalSTFactor = stQualityFactor + deterministicVariation;
+  
+  // Return object instead of mutating input (ChatGPT recommendation)
+  return {
+    fg_accuracy_combined: clamp(0.84 + finalSTFactor, 0.70, 0.95),
+    fg_attempts_per_game: clamp(2.1 + (teamQuality * 0.3), 1.5, 3.2),
+    punt_net_average: clamp(42.0 + (finalSTFactor * 4), 36.0, 48.0),
+    punt_coverage_efficiency: clamp(0.80 + finalSTFactor, 0.65, 0.92),
+    kick_return_average: clamp(22.0 + (finalSTFactor * 2), 18.0, 26.0),
+    punt_return_average: clamp(8.5 + (finalSTFactor * 1.5), 6.0, 12.0),
+    kick_coverage_efficiency: clamp(0.80 + finalSTFactor, 0.65, 0.92),
+    _estimated: true
+  };
+}
+
 function calculateSpecialTeamsMetrics(teamMetrics, opponentMetrics, league) {
   const teamST = teamMetrics?.special_teams || {};
   const oppST = opponentMetrics?.special_teams || {};
@@ -136,26 +162,6 @@ function calculateSpecialTeamsMetrics(teamMetrics, opponentMetrics, league) {
   };
 }
 
-function generateSpecialTeamsFromBasics(teamMetrics, league) {
-  const offEPA = teamMetrics?.core?.off_epa || 0;
-  const defEPA = teamMetrics?.core?.def_epa || 0;
-  const teamQuality = (offEPA - defEPA) / 2;
-  const stQualityFactor = teamQuality * 0.4;
-  const randomVariation = (Math.random() - 0.5) * 0.1;
-  const finalSTFactor = stQualityFactor + randomVariation;
-  
-  return {
-    fg_accuracy_combined: clamp(0.84 + finalSTFactor, 0.70, 0.95),
-    fg_attempts_per_game: clamp(2.1 + (teamQuality * 0.3), 1.5, 3.2),
-    punt_net_average: clamp(42.0 + (finalSTFactor * 4), 36.0, 48.0),
-    punt_coverage_efficiency: clamp(0.80 + finalSTFactor, 0.65, 0.92),
-    kick_return_average: clamp(22.0 + (finalSTFactor * 2), 18.0, 26.0),
-    punt_return_average: clamp(8.5 + (finalSTFactor * 1.5), 6.0, 12.0),
-    kick_coverage_efficiency: clamp(0.80 + finalSTFactor, 0.65, 0.92),
-    _estimated: true
-  };
-}
-
 function calculateRosterContinuity(teamMetrics, teamCode) {
   const rosterData = teamMetrics?.roster_continuity || {};
   let continuityScore = 1.0;
@@ -169,14 +175,12 @@ function calculateRosterContinuity(teamMetrics, teamCode) {
   return clamp(continuityScore, 0.3, 1.0);
 }
 
-// ENHANCED: Context-aware weights with increased current season emphasis
 function calculateContextAwareWeights(currentWeek, homeMetrics, awayMetrics) {
-  // ENHANCED: Increased current season weighting based on gold standard comparison
   let baseCurrentWeight;
-  if (currentWeek <= 3) baseCurrentWeight = 0.80;      // Was 0.70
-  else if (currentWeek <= 6) baseCurrentWeight = 0.85; // Was 0.75
-  else if (currentWeek <= 12) baseCurrentWeight = 0.88; // Was 0.80
-  else baseCurrentWeight = 0.90;                        // Was 0.85
+  if (currentWeek <= 3) baseCurrentWeight = 0.80;
+  else if (currentWeek <= 6) baseCurrentWeight = 0.85;
+  else if (currentWeek <= 12) baseCurrentWeight = 0.88;
+  else baseCurrentWeight = 0.90;
   
   const homeContinuity = calculateRosterContinuity(homeMetrics, 'HOME');
   const awayContinuity = calculateRosterContinuity(awayMetrics, 'AWAY');
@@ -188,7 +192,7 @@ function calculateContextAwareWeights(currentWeek, homeMetrics, awayMetrics) {
     season_2025: adjustedCurrentWeight,
     season_2024: (1 - adjustedCurrentWeight) * 0.7,
     season_2023: (1 - adjustedCurrentWeight) * 0.3,
-    recent_4_weeks: currentWeek <= 4 ? 0.15 : 0.10 // Enhanced recent form weight
+    recent_4_weeks: currentWeek <= 4 ? 0.15 : 0.10
   };
 }
 
@@ -215,24 +219,23 @@ function applyBayesianUpdating(historicalScore, currentScore, evidenceStrength, 
   return prior + (evidence - prior) * updateStrength;
 }
 
-// ENHANCED: Current season momentum calculation
 function calculateCurrentSeasonMomentum(teamMetrics, currentWeek) {
-  if (currentWeek <= 2) return 0; // Not enough data
-  
-  // Recent performance vs season average (simplified)
+  if (currentWeek <= 2) return 0;
   const recentForm = teamMetrics?.form?.off || 0;
   const seasonPerformance = teamMetrics?.core?.off_epa || 0;
-  
-  // Momentum = recent outperformance
   const momentum = Math.max(-0.1, Math.min(0.1, recentForm * 2));
   return momentum;
 }
 
-// Enhanced team scoring with all improvements
-function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = null, isHome = false, currentWeek = 3, opponentData = null) {
+// FIXED: ChatGPT's NaN shield for league stats
+function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = null, isHome = false, currentWeek = 3, opponentData = null, teamCode = null) {
   if (!teamData || !league) {
     return { score: 0, confidence: 0.5, evidenceStrength: 0.25, specialTeams: null };
   }
+
+  // FIXED: Safe proxy for league means/stds (ChatGPT recommendation)
+  const means = new Proxy(league.means || {}, { get: (t, k) => (k in t ? t[k] : 0) });
+  const stds = new Proxy(league.stds || {}, { get: (t, k) => (k in t ? t[k] : 1) });
 
   const hasHistoricalData = teamData._metadata?.hasHistoricalData || false;
   const sit = teamData?.situational || {};
@@ -245,27 +248,25 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
   const script = teamData?.script || {};
   const formations = teamData?.formations || {};
 
-  // Calculate z-scores
-  const zPress = z(press.pressure_diff ?? 0, league.means?.pressure_diff || 0, league.stds?.pressure_diff || 1);
-  const zExpl = z(sit.explosive_diff ?? 0, league.means?.explosive_diff || 0, league.stds?.explosive_diff || 1);
-  const zTOdiff = z(to.turnover_diff ?? 0, league.means?.turnover_diff || 0, league.stds?.turnover_diff || 1);
-  const zEDS = z(sit.eds ?? 0, league.means?.eds || 0, league.stds?.eds || 1);
-  const zRZ = z(sit.rz_td_off ?? 0, league.means?.rz_td_off || 0, league.stds?.rz_td_off || 1);
-  const zThird = z(sit.third_down_off ?? 0, league.means?.third_down_off || 0, league.stds?.third_down_off || 1);
-  const z4th = z(coach.fourth_down_agg ?? 0, league.means?.fourth_down_agg || 0, league.stds?.fourth_down_agg || 1);
-  const zPen = z(disc.penalty_diff ?? 0, league.means?.penalty_diff || 0, league.stds?.penalty_diff || 1);
-  const zTOP = z(tempo.top_eff ?? 0, league.means?.top_eff || 0, league.stds?.top_eff || 1);
+  // FIXED: Use clippedZ to prevent extreme outliers
+  const zPress = clippedZ(press.pressure_diff ?? 0, means.pressure_diff, stds.pressure_diff);
+  const zExpl = clippedZ(sit.explosive_diff ?? 0, means.explosive_diff, stds.explosive_diff);
+  const zTOdiff = clippedZ(to.turnover_diff ?? 0, means.turnover_diff, stds.turnover_diff);
+  const zEDS = clippedZ(sit.eds ?? 0, means.eds, stds.eds);
+  const zRZ = clippedZ(sit.rz_td_off ?? 0, means.rz_td_off, stds.rz_td_off);
+  const zThird = clippedZ(sit.third_down_off ?? 0, means.third_down_off, stds.third_down_off);
+  const z4th = clippedZ(coach.fourth_down_agg ?? 0, means.fourth_down_agg, stds.fourth_down_agg);
+  const zPen = clippedZ(disc.penalty_diff ?? 0, means.penalty_diff, stds.penalty_diff);
+  const zTOP = clippedZ(tempo.top_eff ?? 0, means.top_eff, stds.top_eff);
 
-  // ENHANCED: Core calculation with better separation
   const offEPA = core.off_adj_epa ?? core.off_epa ?? 0;
   const defEPA = -(core.def_adj_epa ?? core.def_epa ?? 0);
   const coreScore = (offEPA + defEPA) * SCORING_MULTIPLIERS.CORE_EPA;
 
-  // ENHANCED: Advanced features with momentum
   const consistency = teamData?.consistency?.off ?? 0.5;
   const form = teamData?.form?.off ?? 0;
   const enhancedForm = hasHistoricalData && contextWeights?.recent_4_weeks > 0 ? 
-    form * (1 + contextWeights.recent_4_weeks * 2.5) : form; // Boosted form impact
+    form * (1 + contextWeights.recent_4_weeks * 2.5) : form;
 
   const currentMomentum = calculateCurrentSeasonMomentum(teamData, currentWeek);
   const paceAdj = clamp((tempo.pace ?? 30) / 30 - 1, -0.5, 0.5);
@@ -273,7 +274,6 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
   const scriptAdapt = script.trailing_epa ?? 0;
   const evidenceStrength = calculateEvidenceStrength(teamData, currentWeek);
 
-  // ENHANCED: Tier scoring with boosted explosive plays
   const tierScore = 
     (BASE_WEIGHTS.pressure_diff * zPress * SCORING_MULTIPLIERS.TIER_BASE) +
     (BASE_WEIGHTS.explosive_diff * zExpl * SCORING_MULTIPLIERS.TIER_BASE) +
@@ -295,15 +295,19 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
 
   const matchupScore = calculateMatchupScore(matchupTerms) * SCORING_MULTIPLIERS.MATCHUP_BASE;
 
-  // Special teams calculation (unchanged)
+  // FIXED: Don't mutate teamData - generate ST separately
   let specialTeamsScore = 0;
   let specialTeamsMetrics = null;
   
-  if (opponentData) {
-    if (!teamData.special_teams) teamData.special_teams = generateSpecialTeamsFromBasics(teamData, league);
-    if (!opponentData.special_teams) opponentData.special_teams = generateSpecialTeamsFromBasics(opponentData, league);
+  if (opponentData && teamCode) {
+    const teamST = teamData.special_teams || generateSpecialTeamsFromBasics(teamCode, teamData, league);
+    const oppST = opponentData.special_teams || generateSpecialTeamsFromBasics('OPP', opponentData, league);
     
-    specialTeamsMetrics = calculateSpecialTeamsMetrics(teamData, opponentData, league);
+    // Create temporary metrics objects instead of mutating
+    const tempTeamMetrics = { ...teamData, special_teams: teamST };
+    const tempOppMetrics = { ...opponentData, special_teams: oppST };
+    
+    specialTeamsMetrics = calculateSpecialTeamsMetrics(tempTeamMetrics, tempOppMetrics, league);
     specialTeamsScore = 
       (SPECIAL_TEAMS_WEIGHTS.field_goal_net * specialTeamsMetrics.field_goal_net * SCORING_MULTIPLIERS.SPECIAL_TEAMS_BASE) +
       (SPECIAL_TEAMS_WEIGHTS.punt_net * specialTeamsMetrics.punt_net * SCORING_MULTIPLIERS.SPECIAL_TEAMS_BASE) +
@@ -311,7 +315,6 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
       (SPECIAL_TEAMS_WEIGHTS.coverage_efficiency * specialTeamsMetrics.coverage_efficiency * SCORING_MULTIPLIERS.SPECIAL_TEAMS_BASE);
   }
 
-  // Combine and finalize
   const currentSeasonScore = coreScore + tierScore + advancedScore + matchupScore + specialTeamsScore;
   const historicalScore = currentSeasonScore * 0.85;
   const finalScore = applyBayesianUpdating(historicalScore, currentSeasonScore, evidenceStrength, contextWeights.season_2025);
@@ -354,36 +357,26 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries) {
   };
 }
 
-// ENHANCED: Conditional home field advantage based on team quality differential
+// FIXED: Corrected spread calculation logic
 function calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayCode) {
   const avgConfidence = (homeScoreData.confidence + awayScoreData.confidence) / 2;
   
-  // ENHANCED: Conditional HFA based on team quality differential
-  const qualityDifferential = awayScoreData.score - homeScoreData.score; // Away - Home
-  const qualityAdjustment = Math.max(0, qualityDifferential * 0.2); // Reduce HFA for strong road teams
+  const qualityDifferential = awayScoreData.score - homeScoreData.score;
+  const qualityAdjustment = Math.max(0, qualityDifferential * 0.2);
   
-  const confidentHFA = Math.max(1.5, 2.2 - qualityAdjustment);  // Dynamic HFA
-  const uncertainHFA = Math.max(1.0, 1.2 - qualityAdjustment);  
+  const confidentHFA = Math.max(1.5, 2.2 - qualityAdjustment);
+  const uncertainHFA = Math.max(1.0, 1.2 - qualityAdjustment);
   const dynamicHFA = confidentHFA - (confidentHFA - uncertainHFA) * (1 - avgConfidence);
   
-  // Check for divisional game (familiarity reduces HFA)
   const isDivisional = isDivisionalGame(homeCode, awayCode);
-  const divisionalAdjustment = isDivisional ? 0.8 : 1.0; // 20% HFA reduction for divisional
+  const divisionalAdjustment = isDivisional ? 0.8 : 1.0;
   
   const adjustedHFA = dynamicHFA * divisionalAdjustment;
   
-  console.log('Enhanced HFA calculation:', {
-    baseHFA: 2.2,
-    qualityDifferential: qualityDifferential.toFixed(2),
-    qualityAdjustment: qualityAdjustment.toFixed(2),
-    isDivisional: isDivisional,
-    finalHFA: adjustedHFA.toFixed(2)
-  });
-  
+  // FIXED: This was the core issue - spread calculation needs to be meaningful
   const scoreDifference = homeScoreData.score - awayScoreData.score;
-  const spreadFromScores = scoreDifference * 4.0;
+  const spreadFromScores = scoreDifference * 3.5; // Reduced multiplier for more realistic spreads
   
-  // Special teams adjustment
   let stSpreadAdjustment = 0;
   if (homeScoreData.specialTeams && awayScoreData.specialTeams) {
     const homeSTValue = homeScoreData.specialTeams.total_st_value;
@@ -391,11 +384,20 @@ function calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayC
     stSpreadAdjustment = (homeSTValue - awaySTValue) * 0.5;
   }
   
+  // This is the model's pure prediction of home margin
   const predictedHomeMargin = adjustedHFA + spreadFromScores + stSpreadAdjustment;
+  
+  console.log('FIXED Spread calculation:', {
+    homeScore: homeScoreData.score.toFixed(2),
+    awayScore: awayScoreData.score.toFixed(2), 
+    scoreDiff: scoreDifference.toFixed(2),
+    HFA: adjustedHFA.toFixed(2),
+    modelMargin: predictedHomeMargin.toFixed(2)
+  });
+  
   return clamp(predictedHomeMargin, -21, 21);
 }
 
-// Keep existing total prediction function
 function calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread = 0, homeSTData = null, awaySTData = null) {
   const homeOffEPA = homeMetrics?.core?.off_epa || 0;
   const awayOffEPA = awayMetrics?.core?.off_epa || 0;
@@ -442,7 +444,6 @@ function calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread = 0, ho
   return clamp(baseTotal + stTotalAdjustment, 38, 68);
 }
 
-// ENHANCED: Recalibrated confidence system with proper tiers
 function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evidenceStrength, scoreDifference = 0, betType = 'spread', gameContext = {}) {
   const modelCertainty = Math.abs(modelProb - 0.5) * 2;
   const edgeComponent = edge ? Math.min(Math.abs(edge), 0.15) / 0.15 : 0;
@@ -455,23 +456,20 @@ function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evide
   
   let baseConfidence = Math.max(50, Math.round(rawConfidence * 50 + 55));
   
-  // ENHANCED: Calibrated confidence tiers
-  baseConfidence = 50 + ((baseConfidence - 50) * 0.6); // Compress to realistic range
+  baseConfidence = 50 + ((baseConfidence - 50) * 0.6);
   
-  // Context-specific adjustments
   if (gameContext.week <= 4) {
-    baseConfidence = baseConfidence * 0.95; // Early season uncertainty
+    baseConfidence = baseConfidence * 0.95;
   }
   
   if (gameContext.divisional) {
-    baseConfidence = baseConfidence * 0.98; // Divisional games more unpredictable
+    baseConfidence = baseConfidence * 0.98;
   }
   
   if (gameContext.majorInjuries) {
-    baseConfidence = Math.max(baseConfidence, 65); // Injury edges are real
+    baseConfidence = Math.max(baseConfidence, 65);
   }
   
-  // Bet type specific caps
   if (betType === 'total') {
     const totalEdge = Math.abs(edge || 0);
     if (totalEdge < 3.0) {
@@ -483,13 +481,11 @@ function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evide
     }
   }
   
-  // Final tier enforcement
-  if (baseConfidence > 78) baseConfidence = Math.min(baseConfidence, 78); // Rare max confidence
+  if (baseConfidence > 78) baseConfidence = Math.min(baseConfidence, 78);
   
   return Math.round(baseConfidence);
 }
 
-// Keep existing odds loading functions...
 async function loadLiveOdds() {
   try {
     console.log('=== LOADING LIVE ODDS ===');
@@ -585,7 +581,6 @@ function extractOddsData(gameOdds) {
   };
 }
 
-// NEW: Responsible parlay suggestion system
 function generateParlayComponents(games, predictions) {
   const components = [];
   
@@ -593,12 +588,10 @@ function generateParlayComponents(games, predictions) {
     const game = games[i];
     const pred = predictions[i];
     
-    // Only include picks with reasonable confidence and edge
     const mlPick = pred.predictions.moneyline;
     const spreadPick = pred.predictions.spread;
     const totalPick = pred.predictions.total;
     
-    // Moneyline components (65%+ confidence, 10%+ edge)
     if (mlPick.confidence >= 65 && mlPick.edge >= 10) {
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
@@ -609,11 +602,10 @@ function generateParlayComponents(games, predictions) {
         edge: mlPick.edge,
         description: `${mlPick.pick} ML`,
         odds: pred.odds?.moneyline?.pick_odds,
-        ev_score: (mlPick.confidence - 50) * mlPick.edge // Combined EV metric
+        ev_score: (mlPick.confidence - 50) * mlPick.edge
       });
     }
     
-    // Spread components (62%+ confidence, 1.5+ edge)
     if (spreadPick.confidence >= 62 && spreadPick.edge >= 1.5) {
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
@@ -628,7 +620,6 @@ function generateParlayComponents(games, predictions) {
       });
     }
     
-    // Total components (60%+ confidence, 2.5+ edge)
     if (totalPick.confidence >= 60 && totalPick.edge >= 2.5) {
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
@@ -638,15 +629,13 @@ function generateParlayComponents(games, predictions) {
         confidence: totalPick.confidence,
         edge: totalPick.edge,
         description: `${totalPick.pick.toUpperCase()} ${totalPick.line}`,
-        odds: null, // Totals don't have pick_odds in current structure
-        ev_score: (totalPick.confidence - 50) * totalPick.edge * 0.8 // Totals slightly less reliable
+        odds: null,
+        ev_score: (totalPick.confidence - 50) * totalPick.edge * 0.8
       });
     }
   }
   
-  // Sort by EV score
   components.sort((a, b) => b.ev_score - a.ev_score);
-  
   return components;
 }
 
@@ -663,11 +652,10 @@ function generateResponsibleParlays(components) {
   
   const parlays = [];
   
-  // Conservative 2-leg parlays (highest confidence only)
   const topComponents = components.slice(0, 4);
   for (let i = 0; i < topComponents.length - 1; i++) {
     for (let j = i + 1; j < topComponents.length; j++) {
-      if (topComponents[i].gameId !== topComponents[j].gameId) { // Different games only
+      if (topComponents[i].gameId !== topComponents[j].gameId) {
         parlays.push({
           type: "conservative_2leg",
           legs: [topComponents[i], topComponents[j]],
@@ -681,12 +669,11 @@ function generateResponsibleParlays(components) {
     }
   }
   
-  // Moderate 3-leg parlays (top picks)
   if (components.length >= 3) {
     const top3 = components.slice(0, 3);
     const uniqueGames = new Set(top3.map(c => c.gameId));
     
-    if (uniqueGames.size === 3) { // All different games
+    if (uniqueGames.size === 3) {
       parlays.push({
         type: "moderate_3leg",
         legs: top3,
@@ -699,12 +686,11 @@ function generateResponsibleParlays(components) {
     }
   }
   
-  // Aggressive 4+ leg parlays (only if many high-confidence picks available)
   if (components.length >= 6) {
     const top4 = components.slice(0, 4);
     const uniqueGames = new Set(top4.map(c => c.gameId));
     
-    if (uniqueGames.size >= 3) { // At least 3 different games
+    if (uniqueGames.size >= 3) {
       parlays.push({
         type: "aggressive_4leg",
         legs: top4,
@@ -717,14 +703,12 @@ function generateResponsibleParlays(components) {
     }
   }
   
-  // Sort by combined EV and limit to top 6 suggestions
   parlays.sort((a, b) => b.combined_ev - a.combined_ev);
   return parlays.slice(0, 6);
 }
 
-// MAIN PREDICTION FUNCTION WITH ALL ENHANCEMENTS
 async function generateAdvancedPredictions(games, season) {
-  console.log('=== ENHANCED NFL PREDICTION SYSTEM v12 ===');
+  console.log('=== NFL PREDICTION SYSTEM v13 - CRITICAL FIXES ===');
   
   let advancedMetrics = null;
   let injuries = null;
@@ -748,7 +732,7 @@ async function generateAdvancedPredictions(games, season) {
           spread: { pick: null, confidence: 50, line: null, predicted: null, edge: 0 },
           total: { pick: null, confidence: 50, line: null, predicted: null, edge: 0 }
         },
-        modelEnhancements: { version: 'v12_enhanced', notes: ["Metrics unavailable"] }
+        modelEnhancements: { version: 'v13_critical_fixes', notes: ["Metrics unavailable"] }
       })),
       parlaySuggestions: [{
         type: "no_data",
@@ -764,7 +748,7 @@ async function generateAdvancedPredictions(games, season) {
   const currentWeek = getCurrentWeek(advancedMetrics);
   const allOdds = await loadLiveOdds();
 
-  console.log(`Enhanced system v12 - improved team separation, calibrated confidence, conditional HFA`);
+  console.log(`v13 fixes - deterministic ST, reduced multipliers, clipped z-scores, fixed spread logic`);
 
   const predictions = games.map(game => {
     const homeCode = game.home_team;
@@ -777,9 +761,9 @@ async function generateAdvancedPredictions(games, season) {
     const contextWeights = calculateContextAwareWeights(currentWeek, homeMetrics, awayMetrics);
     const matchups = calculateMatchups(homeMetrics, awayMetrics, league);
 
-    // Calculate scores with all enhancements
-    let homeScoreData = scoreTeamFromFeatures(homeMetrics, league, contextWeights, matchups?.home, true, currentWeek, awayMetrics);
-    let awayScoreData = scoreTeamFromFeatures(awayMetrics, league, contextWeights, matchups?.away, false, currentWeek, homeMetrics);
+    // FIXED: Pass team codes for deterministic ST generation
+    let homeScoreData = scoreTeamFromFeatures(homeMetrics, league, contextWeights, matchups?.home, true, currentWeek, awayMetrics, homeCode);
+    let awayScoreData = scoreTeamFromFeatures(awayMetrics, league, contextWeights, matchups?.away, false, currentWeek, homeMetrics, awayCode);
 
     if (injuries) {
       homeScoreData = applyInjuryAdjustments(homeScoreData, homeCode, injuries);
@@ -787,6 +771,8 @@ async function generateAdvancedPredictions(games, season) {
     }
 
     const scoreDifference = homeScoreData.score - awayScoreData.score;
+    
+    // FIXED: This should now produce meaningful spread differences
     const predictedSpread = calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayCode);
     const homeWinProb = sigmoid(predictedSpread / 14);
     const awayWinProb = 1 - homeWinProb;
@@ -795,14 +781,12 @@ async function generateAdvancedPredictions(games, season) {
     const realOdds = gameOdds ? extractOddsData(gameOdds) : {};
     const hasLiveOdds = gameOdds && realOdds._extraction_success;
     
-    // Game context for confidence calibration
     const gameContext = {
       week: currentWeek,
       divisional: isDivisionalGame(homeCode, awayCode),
       majorInjuries: (injuries?.teams?.[homeCode]?.qb_status === 'out') || (injuries?.teams?.[awayCode]?.qb_status === 'out')
     };
     
-    // Generate predictions with enhanced confidence
     const mlPick = homeWinProb > awayWinProb ? homeCode : awayCode;
     const mlModelProb = Math.max(homeWinProb, awayWinProb);
     
@@ -815,7 +799,7 @@ async function generateAdvancedPredictions(games, season) {
     const avgEvidence = (homeScoreData.evidenceStrength + awayScoreData.evidenceStrength) / 2;
     const mlConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge, avgConfidence, avgEvidence, scoreDifference, 'moneyline', gameContext);
 
-    // Spread predictions with enhanced logic
+    // FIXED: Spread predictions should now have actual logic
     const marketSpread = hasLiveOdds ? (realOdds.spread_line || 0) : 0;
     const marketFavorite = realOdds.spread_favorite;
     
@@ -825,33 +809,27 @@ async function generateAdvancedPredictions(games, season) {
       marketHomeMargin = marketFavorite === 'home' ? Math.abs(marketSpread) : -Math.abs(marketSpread);
     }
     
+    // This difference should now be meaningful
     const marginDifference = modelHomeMargin - marketHomeMargin;
-    const spreadThreshold = 1.5;
+    const spreadThreshold = 2.0; // Increased threshold for pickiness
     
     let spreadPick;
     let displayedSpread;
-    let displayedOdds = null;
     
     if (Math.abs(marginDifference) < spreadThreshold) {
-      spreadPick = marginDifference > 0 ? homeCode : awayCode;
+      spreadPick = 'push'; // Model sees no clear edge
     } else if (marginDifference > spreadThreshold) {
-      spreadPick = homeCode;
+      spreadPick = homeCode; // Model likes home team more than market
     } else {
-      spreadPick = awayCode;
+      spreadPick = awayCode; // Model likes away team more than market
     }
     
-    if (spreadPick === homeCode) {
-      displayedSpread = modelHomeMargin >= 0 ? modelHomeMargin : Math.abs(modelHomeMargin);
-      displayedOdds = hasLiveOdds ? realOdds.ml_home : null;
-    } else {
-      displayedSpread = modelHomeMargin <= 0 ? Math.abs(modelHomeMargin) : -modelHomeMargin;
-      displayedOdds = hasLiveOdds ? realOdds.ml_away : null;
-    }
+    // Clean display values
+    displayedSpread = Math.abs(marketSpread || predictedSpread);
     
     const spreadEdge = Math.abs(marginDifference);
     const spreadConfidence = calculateConfidence(0.6, 0.52, spreadEdge / 14, avgConfidence, avgEvidence, scoreDifference, 'spread', gameContext);
 
-    // Total predictions
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread, homeScoreData.specialTeams, awayScoreData.specialTeams);
     const marketTotal = hasLiveOdds ? (realOdds.total_line || 44) : 44;
     const totalDifference = predictedTotal - marketTotal;
@@ -869,7 +847,7 @@ async function generateAdvancedPredictions(games, season) {
           pick: spreadPick, 
           confidence: spreadConfidence, 
           line: displayedSpread,
-          predicted: Number(displayedSpread.toFixed(1)),
+          predicted: Number(Math.abs(predictedSpread).toFixed(1)),
           edge: Number(spreadEdge.toFixed(1)),
           model_home_margin: Number(modelHomeMargin.toFixed(1))
         },
@@ -879,40 +857,33 @@ async function generateAdvancedPredictions(games, season) {
       odds: {
         moneyline: { 
           home: realOdds.ml_home, 
-          away: realOdds.ml_away,
-          pick_odds: displayedOdds
+          away: realOdds.ml_away
         },
         spread: { 
           line: realOdds.spread_line, 
-          favorite: realOdds.spread_favorite,
-          pick_odds: displayedOdds
+          favorite: realOdds.spread_favorite
         },
         total: { line: realOdds.total_line },
         live_odds_available: hasLiveOdds
       },
       
       modelEnhancements: {
-        version: 'enhanced_v12_calibrated',
-        enhancementsApplied: [
-          "Recalibrated confidence tiers (50-78% realistic range)",
-          "Enhanced current season weighting (80% vs 70%)",
-          "Conditional HFA based on team quality differential",
-          "Boosted explosive plays and current momentum factors",
-          "Divisional game adjustments",
-          "Improved team separation with aggressive multipliers"
+        version: 'v13_critical_fixes',
+        fixesApplied: [
+          "Deterministic special teams (no Math.random)",
+          "Reduced multipliers (CORE_EPA 30→24, TIER_BASE 10→8)",
+          "Z-score clipping (±2.5 max)",
+          "NaN shield for league stats",
+          "Fixed spread calculation logic",
+          "No input mutation (pure functions)",
+          "Improved spread threshold (2.0 points)"
         ],
-        contextualFactors: {
-          currentSeasonWeight: contextWeights.season_2025,
-          isDivisionalGame: gameContext.divisional,
-          hasQBInjury: gameContext.majorInjuries,
-          dynamicHFA: `Adjusted based on quality differential`,
-        },
-        confidenceCalibration: {
-          originalRange: "60-83%",
-          calibratedRange: "50-78%",
-          mlConfidence: mlConfidence,
-          spreadConfidence: spreadConfidence,
-          totalConfidence: totalConfidence
+        diagnostics: {
+          homeScore: homeScoreData.score.toFixed(2),
+          awayScore: awayScoreData.score.toFixed(2),
+          scoreDiff: scoreDifference.toFixed(2),
+          marginDiff: marginDifference.toFixed(2),
+          spreadPick: spreadPick
         }
       },
       
@@ -933,7 +904,6 @@ async function generateAdvancedPredictions(games, season) {
     };
   });
 
-  // Generate responsible parlay suggestions
   const parlayComponents = generateParlayComponents(games, predictions);
   const parlaySuggestions = generateResponsibleParlays(parlayComponents);
   
@@ -992,7 +962,7 @@ export default async (request, context) => {
     });
     
   } catch (error) {
-    console.error('Enhanced prediction v12 error:', error);
+    console.error('Enhanced prediction v13 error:', error);
     
     return new Response(JSON.stringify({
       error: 'Enhanced prediction generation failed',
