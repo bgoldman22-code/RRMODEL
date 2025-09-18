@@ -1,0 +1,84 @@
+# .github/workflows/nfl-player-etl.yml
+# Comprehensive NFL Player TD Data Collection
+name: NFL Player TD Data Collection
+
+on:
+  schedule:
+    # Run daily at 7 AM EST (after team data ETL at 6 AM)
+    - cron: '0 12 * * *'  # 12 UTC = 7 AM EST
+  workflow_dispatch:
+    inputs:
+      week:
+        description: 'NFL Week to collect data for'
+        required: false
+        default: '3'
+      season:
+        description: 'NFL Season'
+        required: false
+        default: '2025'
+
+jobs:
+  collect-player-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install Node dependencies
+      run: npm ci
+      
+    - name: Install Python dependencies
+      run: |
+        pip install requests pandas nfl-data-py beautifulsoup4
+        
+    - name: Run NFL Player Data Collection
+      run: |
+        echo "Collecting NFL player data for Week ${{ github.event.inputs.week || '3' }}..."
+        node scripts/collect-player-data.js
+      env:
+        NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
+        NFL_WEEK: ${{ github.event.inputs.week || '3' }}
+        NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
+        
+    - name: Run Historical Data Collection (Python)
+      run: |
+        echo "Collecting historical player performance data..."
+        python scripts/collect-nflverse-data.py
+      env:
+        NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        NFL_WEEK: ${{ github.event.inputs.week || '3' }}
+        NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
+        
+    - name: Validate Data Collection
+      run: |
+        echo "Validating collected player data..."
+        node scripts/validate-player-data.js
+        
+    - name: Update Player Rankings
+      run: |
+        echo "Generating player opportunity rankings..."
+        node scripts/generate-player-rankings.js
+      env:
+        NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        
+    - name: Deployment Status
+      run: |
+        echo "✅ NFL Player data collection completed successfully"
+        echo "📊 Data available for TD prediction systems"
+        echo "🏈 Ready for Week ${{ github.event.inputs.week || '3' }} predictions"
