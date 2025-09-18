@@ -23,12 +23,53 @@ export default function NflTd(){
   useEffect(()=>{
     if (!ENABLE_NFL_TD) return;
     setLoading(true); setErr(null);
-    fetch(`/.netlify/functions/nfl-td-predictions?season=2025&week=${week}`)
-      .then(r=>r.json()).then(j=>{
+    
+    // Get schedule data first
+    fetch(`/.netlify/functions/nfl-schedule-get?week=${week}&season=2025`)
+      .then(r => r.json())
+      .then(scheduleData => {
+        if (!scheduleData.matchups) throw new Error('No schedule data');
+        
+        // Format games for TD prediction
+        const games = scheduleData.matchups.map(game => ({
+          game_id: game.id || `${game.homeTeam}-${game.awayTeam}`,
+          home_team: getTeamAbbreviation(game.homeTeam),
+          away_team: getTeamAbbreviation(game.awayTeam)
+        }));
+        
+        // Call TD predictions with corrected API format
+        return fetch(`/.netlify/functions/nfl-td-predictions?week=${week}&season=2025`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ games })
+        });
+      })
+      .then(r => r.json())
+      .then(j => {
         if (!j || !j.rows) throw new Error('Bad TD response');
         setRows(j.rows);
-      }).catch(e=> setErr(e.message || 'Error')).finally(()=> setLoading(false));
+      })
+      .catch(e => setErr(e.message || 'Error'))
+      .finally(() => setLoading(false));
   }, [week]);
+
+  // Helper function for team name mapping
+  function getTeamAbbreviation(fullName) {
+    const nameMap = {
+      "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL",
+      "Buffalo Bills": "BUF", "Carolina Panthers": "CAR", "Chicago Bears": "CHI",
+      "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE", "Dallas Cowboys": "DAL",
+      "Denver Broncos": "DEN", "Detroit Lions": "DET", "Green Bay Packers": "GB",
+      "Houston Texans": "HOU", "Indianapolis Colts": "IND", "Jacksonville Jaguars": "JAX",
+      "Kansas City Chiefs": "KC", "Las Vegas Raiders": "LV", "Los Angeles Chargers": "LAC",
+      "Los Angeles Rams": "LAR", "Miami Dolphins": "MIA", "Minnesota Vikings": "MIN",
+      "New England Patriots": "NE", "New Orleans Saints": "NO", "New York Giants": "NYG",
+      "New York Jets": "NYJ", "Philadelphia Eagles": "PHI", "Pittsburgh Steelers": "PIT",
+      "San Francisco 49ers": "SF", "Seattle Seahawks": "SEA", "Tampa Bay Buccaneers": "TB",
+      "Tennessee Titans": "TEN", "Washington Commanders": "WAS"
+    };
+    return nameMap[fullName] || fullName;
+  }
 
   if (!ENABLE_NFL_TD){
     return <div className="p-6 max-w-3xl mx-auto">
