@@ -3,7 +3,9 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import MLB_HR from "./MLB_HR";
 import MLB_HITS2 from "./MLB_HITS2";
-import NFL_TD from "./NFL_TD";
+// CHANGED: Use the components you actually have
+import NflTd from "./pages/NflTd";  // Simple TD system
+import NFLTouchdownPropsComprehensive from "./pages/NFLTouchdownPropsComprehensive";  // Advanced TD system
 import NFLPredictions from "./pages/NFLPredictions";
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
@@ -18,6 +20,7 @@ export default function App() {
           <Link to="/mlb-hits2">MLB 2+ Hits</Link>
           <Link to="/hrr">HRR</Link>
           <Link to="/nfl-td">NFL TD</Link>
+          <Link to="/nfl-td-comprehensive">NFL TD Advanced</Link>
           <Link to="/predictions">NFLPredictions</Link>
         </div>
       </div>
@@ -27,7 +30,9 @@ export default function App() {
           <Route path="/mlb-hr" element={<MLB_HR />} />
           <Route path="/mlb-hits2" element={<MLB_HITS2 />} />
           <Route path="/hrr" element={<HRR />} />
-          <Route path="/nfl-td" element={<NFL_TD />} />
+          {/* CHANGED: Use actual components */}
+          <Route path="/nfl-td" element={<NflTd />} />
+          <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/predictions" element={<NFLPredictions />} />
         </Routes>
       </div>
