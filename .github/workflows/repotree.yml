@@ -1,0 +1,15 @@
+# .github/workflows/repo-tree.yml
+name: Repo Tree
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo apt-get install tree
+      - run: tree -I ".git|node_modules" > repo-structure.txt
+      - uses: actions/upload-artifact@v3
+        with:
+          name: repo-structure
+          path: repo-structure.txt
