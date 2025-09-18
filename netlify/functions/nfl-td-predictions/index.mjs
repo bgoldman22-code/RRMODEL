@@ -2,7 +2,7 @@
 import { getStore } from '@netlify/blobs';
 import { buildPredictions } from '../nfl-td-model/index.cjs';
 import { nflBlobsGetJSON as nflGetJSON, nflBlobsPutJSON as nflSetJSON } from '../_lib/blobs-nfl.js';
-import localSchedule from '../../data/nfl-schedule-2025.json' assert { type: 'json' };
+import localSchedule from '../../public/data/nfl-schedule-2025.json' assert { type: 'json' };
 
 const STORE = process.env.BLOBS_STORE_NFL || 'nfl-td';
 
