@@ -29,20 +29,24 @@ const NFLTouchdownPropsComprehensive = () => {
         away_team: getTeamAbbreviation(game.awayTeam)
       }));
       
-      // Get comprehensive TD predictions
-      const predictionsRes = await fetch('/.netlify/functions/nfl-td-comprehensive-predictions', {
+      // Get comprehensive TD predictions with corrected API format
+      const predictionsRes = await fetch(`/.netlify/functions/nfl-td-comprehensive-predictions?week=${week}&season=${season}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ games, season, week })
+        body: JSON.stringify({ games })
       });
       
-      if (!predictionsRes.ok) throw new Error(`Predictions failed: ${predictionsRes.status}`);
+      if (!predictionsRes.ok) {
+        const errorText = await predictionsRes.text();
+        throw new Error(`Predictions failed: ${predictionsRes.status} - ${errorText}`);
+      }
+      
       const predictionsData = await predictionsRes.json();
       
       // Flatten player predictions for table display
       const allPlayers = [];
       for (const game of predictionsData.predictions || []) {
-        for (const player of game.players) {
+        for (const player of game.players || []) {
           allPlayers.push({
             ...player,
             game_matchup: `${game.away_team} @ ${game.home_team}`,
@@ -301,13 +305,13 @@ const NFLTouchdownPropsComprehensive = () => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
           <div className="bg-blue-50 p-2 rounded">
             <div className="font-semibold text-blue-800">
-              {processedPredictions.filter(p => p[`${selectedMarket}_td`].confidence >= 70).length}
+              {processedPredictions.filter(p => p[`${selectedMarket}_td`]?.confidence >= 70).length}
             </div>
             <div className="text-blue-600">High Confidence</div>
           </div>
           <div className="bg-green-50 p-2 rounded">
             <div className="font-semibold text-green-800">
-              {processedPredictions.filter(p => p[`${selectedMarket}_td`].probability >= 0.25).length}
+              {processedPredictions.filter(p => p[`${selectedMarket}_td`]?.probability >= 0.25).length}
             </div>
             <div className="text-green-600">25%+ Probability</div>
           </div>
@@ -426,18 +430,18 @@ const NFLTouchdownPropsComprehensive = () => {
                       
                       <td className="px-4 py-3">
                         <AdvancedConfidenceBadge 
-                          confidence={marketData.confidence} 
-                          probability={marketData.probability}
+                          confidence={marketData?.confidence || 0} 
+                          probability={marketData?.probability || 0}
                           dataReliability={metadata.data_reliability}
                         />
                       </td>
                       
                       <td className="px-4 py-3">
                         <OddsDisplay 
-                          impliedOdds={marketData.implied_odds}
-                          probability={marketData.probability}
-                          bestBook={marketData.best_book}
-                          value={marketData.value}
+                          impliedOdds={marketData?.implied_odds || 0}
+                          probability={marketData?.probability || 0.01}
+                          bestBook={marketData?.best_book}
+                          value={marketData?.value}
                         />
                       </td>
                       
@@ -448,16 +452,16 @@ const NFLTouchdownPropsComprehensive = () => {
                       <td className="px-4 py-3">
                         <div className="text-center">
                           <div className={`text-sm font-bold ${
-                            marketData.confidence >= 75 ? 'text-green-600' :
-                            marketData.confidence >= 65 ? 'text-yellow-600' :
-                            marketData.confidence >= 55 ? 'text-orange-600' : 'text-gray-600'
+                            (marketData?.confidence || 0) >= 75 ? 'text-green-600' :
+                            (marketData?.confidence || 0) >= 65 ? 'text-yellow-600' :
+                            (marketData?.confidence || 0) >= 55 ? 'text-orange-600' : 'text-gray-600'
                           }`}>
-                            {marketData.confidence >= 75 ? '🎯 BET' :
-                             marketData.confidence >= 65 ? '📈 VALUE' :
-                             marketData.confidence >= 55 ? '👀 WATCH' : '❌ PASS'}
+                            {(marketData?.confidence || 0) >= 75 ? '🎯 BET' :
+                             (marketData?.confidence || 0) >= 65 ? '📈 VALUE' :
+                             (marketData?.confidence || 0) >= 55 ? '👀 WATCH' : '❌ PASS'}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            {marketData.confidence}% conf
+                            {marketData?.confidence || 0}% conf
                           </div>
                         </div>
                       </td>
