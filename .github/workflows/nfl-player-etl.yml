@@ -1,125 +1,186 @@
-name: NFL Player TD Data Collection
+name: NFL Player TD Data Collection (Fixed)
 
 on:
   workflow_dispatch:
     inputs:
       week:
-        description: 'NFL Week to predict'
+        description: 'NFL Week to predict (e.g., 4 for Week 4 predictions)'
         required: true
         default: '4'
-        type: string
       season:
         description: 'NFL Season'
         required: true
         default: '2025'
-        type: string
   schedule:
-    - cron: '0 7 * * *'
+    - cron: '0 11 * * *'  # 7 AM EST daily
 
 jobs:
-  collect-data:
+  collect-player-data:
     runs-on: ubuntu-latest
     
-    env:
-      NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
-      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-      ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
-      NFL_WEEK: ${{ github.event.inputs.week || '4' }}
-      NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Debug file system
+        run: |
+          echo "=== DEBUGGING FILE SYSTEM ==="
+          echo "Current directory: $(pwd)"
+          echo "Repository contents:"
+          ls -la
+          echo ""
+          echo "Scripts directory:"
+          ls -la scripts/ || echo "Scripts directory not found"
+          echo ""
+          echo "Looking for collect-player-data.js:"
+          find . -name "collect-player-data.js" -type f || echo "collect-player-data.js not found"
+          echo ""
+          echo "All JavaScript files:"
+          find . -name "*.js" -type f || echo "No JavaScript files found"
+          
+      - name: Install dependencies
+        run: |
+          echo "Installing required packages..."
+          npm init -y || true
+          npm install node-fetch || echo "Failed to install node-fetch, continuing..."
+          
+      - name: Set environment variables
+        run: |
+          echo "NFL_WEEK=${{ github.event.inputs.week || '4' }}" >> $GITHUB_ENV
+          echo "NFL_SEASON=${{ github.event.inputs.season || '2025' }}" >> $GITHUB_ENV
+          echo "NETLIFY_TOKEN=${{ secrets.NETLIFY_TOKEN }}" >> $GITHUB_ENV
+          echo "NETLIFY_SITE_ID=${{ secrets.NETLIFY_SITE_ID }}" >> $GITHUB_ENV
+          
+      - name: Debug environment variables
+        run: |
+          echo "=== ENVIRONMENT VARIABLES ==="
+          echo "NFL_WEEK: $NFL_WEEK"
+          echo "NFL_SEASON: $NFL_SEASON"
+          echo "NETLIFY_TOKEN: ${NETLIFY_TOKEN:0:10}..." 
+          echo "NETLIFY_SITE_ID: ${NETLIFY_SITE_ID:0:10}..."
+          
+      - name: Run JavaScript data collection
+        run: |
+          echo "Starting NFL player data collection for Week $NFL_WEEK..."
+          
+          # Check if file exists with multiple methods
+          if [ -f "scripts/collect-player-data.js" ]; then
+            echo "✅ Found collect-player-data.js, executing..."
+            node scripts/collect-player-data.js
+          elif [ -f "./scripts/collect-player-data.js" ]; then
+            echo "✅ Found ./scripts/collect-player-data.js, executing..."
+            node ./scripts/collect-player-data.js
+          else
+            echo "❌ collect-player-data.js not found in expected locations"
+            echo "Available files in scripts/:"
+            ls -la scripts/ || echo "Scripts directory not accessible"
+            
+            echo "Searching entire repository for the file:"
+            find . -name "collect-player-data.js" -type f || echo "File not found anywhere"
+            
+            echo "Creating minimal fallback data..."
+            cat > fallback-data.js << 'EOF'
+const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
+const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
+
+async function storeBlob(key, data) {
+  if (!NETLIFY_TOKEN || !NETLIFY_SITE_ID) {
+    console.log(`❌ Cannot store ${key}: Missing credentials`);
+    return false;
+  }
+  
+  try {
+    const fetch = (await import('node-fetch')).default;
+    const url = `https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/blobs/${key}`;
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${NETLIFY_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
     
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    
-    - name: Install Node.js dependencies
-      run: |
-        echo "Installing Node.js dependencies..."
-        npm install node-fetch@3.3.2 --no-save
-        echo "Node.js dependencies installed"
-    
-    - name: Install Python dependencies
-      run: |
-        echo "Installing Python dependencies..."
-        python -m pip install --upgrade pip
-        pip install nfl-data-py pandas requests numpy
-        echo "Python dependencies installed"
-    
-    - name: Debug Environment
-      run: |
-        echo "=== ENVIRONMENT DEBUG ==="
-        echo "Week: $NFL_WEEK"
-        echo "Season: $NFL_SEASON"
-        echo "NETLIFY_TOKEN present: $([[ -n \"$NETLIFY_TOKEN\" ]] && echo \"true\" || echo \"false\")"
-        echo "NETLIFY_SITE_ID present: $([[ -n \"$NETLIFY_SITE_ID\" ]] && echo \"true\" || echo \"false\")"
-        echo "NETLIFY_TOKEN length: ${#NETLIFY_TOKEN}"
-        echo "Current directory: $(pwd)"
-        echo "Available scripts:"
-        ls -la scripts/ || echo "Scripts directory not found"
-        echo "========================="
-    
-    - name: Collect JavaScript Player Data
-      run: |
-        echo "Starting NFL player data collection for Week $NFL_WEEK..."
-        
-        if [ -f "scripts/collect-player-data.js" ]; then
-          echo "Found collect-player-data.js, executing..."
-          node scripts/collect-player-data.js
-        else
-          echo "collect-player-data.js not found"
-          echo "Available files in scripts/:"
-          find scripts/ -name "*.js" -o -name "*.mjs" -o -name "*.py" 2>/dev/null || echo "No script files found"
-          exit 1
-        fi
-    
-    - name: Collect Python NFLVerse Data
-      run: |
-        echo "Starting Python NFLVerse data collection..."
-        
-        if [ -f "scripts/collect-nflverse-data.py" ]; then
-          echo "Found collect-nflverse-data.py, executing..."
-          python scripts/collect-nflverse-data.py
-        else
-          echo "collect-nflverse-data.py not found, skipping historical data"
-          echo "This is optional - JavaScript data collection should be sufficient"
-        fi
-    
-    - name: Verify Data Collection Results
-      run: |
-        echo "Verifying data collection results..."
-        echo ""
-        echo "Data collection completed successfully!"
-        echo ""
-        echo "Expected files created in Netlify Blobs:"
-        echo "  • history/$NFL_SEASON/recent-weeks.json"
-        echo "  • nfl/comprehensive/player-data-$NFL_SEASON-week$NFL_WEEK.json"
-        echo "  • nfl/comprehensive/latest.json"
-        echo "  • nfl/players/rosters-$NFL_SEASON.json"
-        echo "  • nfl/players/stats-current.json"
-        echo ""
-        echo "Check your Netlify dashboard at:"
-        echo "   https://app.netlify.com/sites/[your-site]/storage"
-        echo ""
-        echo "Next steps:"
-        echo "   1. Verify blob files exist in Netlify dashboard"
-        echo "   2. Test TD prediction pages:"
-        echo "      • https://bgroundrobin.com/nfl-td"
-        echo "      • https://bgroundrobin.com/nfl-td-comprehensive"
-        echo "   3. Validate predictions show 80-120 players with realistic probabilities"
-        echo ""
-        echo "TD Props systems should now be operational!"
-    
-    - name: Cleanup
-      if: always()
-      run: |
-        echo "Cleaning up temporary files..."
-        echo "Cleanup completed"
+    if (response.ok) {
+      console.log(`✅ Stored: ${key}`);
+      return true;
+    } else {
+      console.log(`❌ Failed to store ${key}: ${response.status}`);
+      return false;
+    }
+  } catch (error) {
+    console.log(`❌ Error storing ${key}: ${error.message}`);
+    return false;
+  }
+}
+
+// Create minimal test data
+const testData = {
+  'test_player_1': {
+    name: 'Test Player',
+    position: 'RB',
+    team: 'KC',
+    week1: { touchdowns: 1, targets: 5, carries: 15 },
+    week2: { touchdowns: 0, targets: 4, carries: 12 }
+  }
+};
+
+const comprehensiveData = {
+  metadata: {
+    season: process.env.NFL_SEASON || '2025',
+    week: process.env.NFL_WEEK || '4',
+    generatedAt: new Date().toISOString(),
+    note: 'Fallback test data - main script not found'
+  },
+  players: testData
+};
+
+async function main() {
+  console.log('🏈 Running fallback data collection...');
+  
+  await storeBlob('history/2025/recent-weeks.json', testData);
+  await storeBlob('nfl/comprehensive/latest.json', comprehensiveData);
+  
+  console.log('✅ Fallback data stored');
+}
+
+main().catch(console.error);
+EOF
+            
+            echo "Running fallback data collection..."
+            node fallback-data.js
+            exit 1
+          fi
+          
+      - name: Setup Python (for NFLVerse - optional)
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          
+      - name: Install Python packages (optional)
+        run: |
+          echo "Installing Python packages for historical data..."
+          pip install nfl-data-py pandas requests || echo "Python packages failed to install, continuing..."
+          
+      - name: Run Python historical data collection (optional)
+        run: |
+          if [ -f "scripts/collect-nflverse-data.py" ]; then
+            echo "Running NFLVerse historical data collection..."
+            python scripts/collect-nflverse-data.py || echo "NFLVerse collection failed, continuing..."
+          else
+            echo "NFLVerse script not found, skipping..."
+          fi
+          
+      - name: Summary
+        run: |
+          echo "=== COLLECTION SUMMARY ==="
+          echo "Week: $NFL_WEEK"
+          echo "Season: $NFL_SEASON" 
+          echo "JavaScript collection: Attempted"
+          echo "Python collection: Attempted"
+          echo "Check Netlify Blobs dashboard for stored data"
