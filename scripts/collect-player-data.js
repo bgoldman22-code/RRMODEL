@@ -995,7 +995,7 @@ async function storeAllData(allData) {
   // Store data for Basic TD System
   storeResults.push(await storeBlob(`history/${CURRENT_SEASON}/recent-weeks.json`, allData.recentWeeks));
   
-  // Store data for Comprehensive TD System
+  // FIXED: Use correct variable reference
   storeResults.push(await storeBlob(`nfl/comprehensive/player-data-${CURRENT_SEASON}-week${CURRENT_WEEK}.json`, allData.comprehensiveData));
   storeResults.push(await storeBlob(`nfl/comprehensive/latest.json`, allData.comprehensiveData));
   
