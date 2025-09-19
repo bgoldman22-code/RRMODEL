@@ -74,6 +74,7 @@ export async function nflBlobsDelete(path) {
   }
 }
 
+
 // ADDED: Missing storeBlob function for nfl-results-store compatibility
 export async function storeBlob(path, data) {
   try {
@@ -86,6 +87,11 @@ export async function storeBlob(path, data) {
     console.error(`[storeBlob] Failed to store blob at ${path}:`, error);
     throw error;
   }
+}
+
+// ADDED: loadBlob export for compatibility with TD and predictions systems
+export async function loadBlob(path) {
+  return await nflBlobsGetJSON(path);
 }
 
 export async function readBlobJSON(path) {
