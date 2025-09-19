@@ -1,9 +1,8 @@
 // netlify/functions/nfl-td-predictions/index.mjs
 // Fixed version using Netlify Blobs (like NFL Predictions and MLB HR)
 
-import { getStore } from '@netlify/blobs';
 import { buildPredictions } from '../nfl-td-model/index.cjs';
-import { nflBlobsGetJSON as nflGetJSON, nflBlobsPutJSON as nflSetJSON } from '../_lib/blobs-nfl.js';
+import fs from 'fs/promises';
 
 // REMOVE this problematic line entirely:
 // import localSchedule from '../../public/data/nfl-schedule-2025.json' assert { type: 'json' };
@@ -12,29 +11,19 @@ const STORE = process.env.BLOBS_STORE_NFL || 'nfl-td';
 
 function parseIntOr(v, d){ const n = parseInt(v, 10); return Number.isFinite(n) ? n : d; }
 
-async function getOddsIndex({ season, week }){
-  // Conservative with API usage - use blobs cache
-  const cacheKey = `odds/anytime_td/${season}/week-${week}.json`;
-  const cached = await nflGetJSON(cacheKey, null);
-  if (cached && cached.index) return cached.index;
-  
-  // Fallback: no odds for now (odds-agnostic mode)
+// Odds index loading is not supported in local JSON mode (return null)
+async function getOddsIndex({ season, week }) {
   return null;
 }
 
-async function getScheduleFromBlobs(season, week) {
-  // Try to load schedule from blobs (following NFL Predictions pattern)
-  const scheduleKey = `schedule/${season}/week-${week}.json`;
-  const cached = await nflGetJSON(scheduleKey, null);
-  if (cached && cached.games) return cached.games;
-  
-  // Fallback to full season schedule if available
-  const fullScheduleKey = `schedule/${season}/full-schedule.json`;
-  const fullSchedule = await nflGetJSON(fullScheduleKey, null);
-  if (fullSchedule && fullSchedule.weeks && fullSchedule.weeks[week]) {
-    return fullSchedule.weeks[week].matchups || [];
-  }
-  
+async function getScheduleFromFile(season, week) {
+  try {
+    const raw = await fs.readFile('public/data/nfl-schedule-2025.json', 'utf8');
+    const data = JSON.parse(raw);
+    if (data && data.weeks && data.weeks[week]) {
+      return data.weeks[week].matchups || [];
+    }
+  } catch (e) {}
   return [];
 }
 
@@ -59,16 +48,10 @@ function candidatesFromDepthCharts(dc){
   return out;
 }
 
-// REPLACE the problematic localGamesForWeek function:
 async function getGamesForWeek(season, week) {
-  // First try to get from blobs (like your other systems)
-  const blobGames = await getScheduleFromBlobs(season, week);
-  if (blobGames.length > 0) {
-    return blobGames;
-  }
-  
-  // Fallback: return empty array (main schedule comes from nfl-schedule-get anyway)
-  console.log(`No schedule found in blobs for ${season} week ${week}`);
+  const games = await getScheduleFromFile(season, week);
+  if (games.length > 0) return games;
+  console.log(`No schedule found in public/data/nfl-schedule-2025.json for ${season} week ${week}`);
   return [];
 }
 
@@ -80,19 +63,32 @@ export async function handler(event){
     return { statusCode: 400, body: JSON.stringify({ ok:false, error: "Missing ?week=" }) };
   }
 
-  // Load depth charts + recent history from blobs (following your proven pattern)
-  const depthCharts = await nflGetJSON(`history/${season}/week${week}/depth-charts.json`, null)
-                    || await nflGetJSON(`_data/nfl/${season}/week${week}/depth-charts.json`, null)
-                    || await nflGetJSON(`depth-charts-complete.json`, null); // Fallback to complete depth charts
+  // Load player data from committed JSON
+  let playerData = null;
+  try {
+    const raw = await fs.readFile('public/nfl-anytime-td-player-data.json', 'utf8');
+    const data = JSON.parse(raw);
+    playerData = data.players || {};
+  } catch (e) {
+    playerData = {};
+  }
 
-  const historyRecent = await nflGetJSON(`history/${season}/recent-weeks.json`, null)
-                      || await nflGetJSON(`_data/history/${season}/weekly-last3.json`, null);
+  // Load schedule from committed JSON
+  const games = await getGamesForWeek(season, week);
+
+  // Build candidates from player data
+  const candidates = Object.values(playerData).map(p => ({
+    name: p.name,
+    pos: p.position,
+    team_abbr: p.team,
+    usage: {},
+    explosive_propensity: 0
+  }));
 
   const context = {
     season,
     week,
-    history_recent: historyRecent || [],
-    // Room for live feature hooks (filled by ETL):
+    history_recent: [],
     opp_rz_td_allowed_rate: null,
     opp_explosive_play_rate_allowed: null,
     rb_committee_rate: null,
@@ -102,14 +98,8 @@ export async function handler(event){
     game_plays_proj: null
   };
 
-  const candidates = candidatesFromDepthCharts(depthCharts || {});
   const oddsIndex = await getOddsIndex({ season, week });
-
   const pred = buildPredictions({ season, week, candidates, context, oddsIndex });
-
-  // Write to blobs for front-end consumption & auditing (like your other systems)
-  const outKey = `predictions/${season}/week-${week}.json`;
-  await nflSetJSON(outKey, pred);
 
   return {
     statusCode: 200,
