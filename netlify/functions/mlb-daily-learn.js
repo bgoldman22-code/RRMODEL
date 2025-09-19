@@ -1,5 +1,24 @@
 import { getStore } from '@netlify/blobs';
 
+// Helper: fetch candidate features for a date (from logs or Netlify function)
+async function getCandidateFeatures(date) {
+  // Try to fetch from logs first
+  const logs = getStore('mlb-logs');
+  const raw = await logs.get(`candidates/${date}.json`);
+  if (raw) {
+    try { return JSON.parse(raw)?.candidates || []; } catch {}
+  }
+  // Fallback: try Netlify function endpoint (if available)
+  try {
+    const r = await fetch(`/.netlify/functions/mlb-candidates?date=${date}`);
+    if (r.ok) {
+      const data = await r.json();
+      return data?.candidates || [];
+    }
+  } catch {}
+  return [];
+}
+
 // Scheduled: daily ~3:05am ET (07:05 UTC)
 export const config = { schedule: "5 7 * * *" };
 
@@ -136,46 +155,51 @@ export default async (req, context) => {
       }
     }
 
-    // 2) Optional: auto-calibrate from predictions logged for that date
+
+    // 2) Log and calibrate from ALL HR candidates (not just picks)
     const logs = getStore('mlb-logs');
-    const predRaw = await logs.get(`predictions/${date}.json`);
-    if(predRaw){
-      const preds = JSON.parse(predRaw)?.picks || [];
-      // Build HR set for outcomes
-      const hrSet = new Set();
-      const ids = await getGameIds(date);
-      for(const pk of ids){
-        const live = await j('https://statsapi.mlb.com/api/v1.1/game/' + pk + '/feed/live');
-        const plays = live?.liveData?.plays?.allPlays || [];
-        for(const pl of plays){
-          const isHR = (pl?.result?.eventType === 'home_run' || pl?.result?.event === 'Home Run');
-          if(!isHR) continue;
-          const batter = pl?.matchup?.batter?.id || null;
-          if(batter) hrSet.add(Number(batter));
-        }
+    // Fetch all candidate features for the date
+    const candidates = await getCandidateFeatures(date); // [{mlbId, prob, ...features}]
+    // Build HR set for outcomes
+    const hrSet = new Set();
+    const ids = await getGameIds(date);
+    for(const pk of ids){
+      const live = await j('https://statsapi.mlb.com/api/v1.1/game/' + pk + '/feed/live');
+      const plays = live?.liveData?.plays?.allPlays || [];
+      for(const pl of plays){
+        const isHR = (pl?.result?.eventType === 'home_run' || pl?.result?.event === 'Home Run');
+        if(!isHR) continue;
+        const batter = pl?.matchup?.batter?.id || null;
+        if(batter) hrSet.add(Number(batter));
       }
-      const rows = preds.map(p => {
-        const id = (typeof p.mlbId === 'number' || typeof p.mlbId === 'string') ? Number(p.mlbId) : null;
-        const prob = Number(p.prob || p.hr_prob_fgb || 0);
-        const y = id && hrSet.has(Number(id)) ? 1 : 0;
-        return { prob, y };
-      }).filter(r => r.prob>=0 && r.prob<=1);
+    }
+    // Build log rows for all candidates
+    const allRows = candidates.map(c => {
+      const id = (typeof c.mlbId === 'number' || typeof c.mlbId === 'string') ? Number(c.mlbId) : null;
+      const prob = Number(c.prob || c.hr_prob_fgb || 0);
+      const y = id && hrSet.has(Number(id)) ? 1 : 0;
+      // Include all model input features for audit/analysis
+      return { ...c, prob, y };
+    }).filter(r => r.prob>=0 && r.prob<=1 && r.mlbId);
 
-      if(rows.length >= 6){ // need enough points
-        const n = rows.length;
-        let sumP=0, sumY=0, sumPP=0, sumPY=0;
-        for(const r of rows){ sumP+=r.prob; sumY+=r.y; sumPP+=r.prob*r.prob; sumPY+=r.prob*r.y; }
-        const meanP = sumP/n, meanY = sumY/n;
-        const varP = Math.max(1e-6, (sumPP/n) - meanP*meanP);
-        const covPY = (sumPY/n) - meanP*meanY;
-        let aDay = clamp(covPY / varP, 0.5, 1.5);
-        let bDay = clamp(meanY - aDay*meanP, -0.1, 0.1);
+    // Store all candidate logs for this date
+    await logs.set(`all-candidates/${date}.json`, JSON.stringify({ date, candidates: allRows }));
 
-        const alpha = 0.2; // EWMA blend
-        model.calib.a = (1-alpha)*model.calib.a + alpha*aDay;
-        model.calib.b = (1-alpha)*model.calib.b + alpha*bDay;
-        model.calib.n = (model.calib.n||0) + 1;
-      }
+    // Calibrate using allRows (not just picks)
+    if(allRows.length >= 6){ // need enough points
+      const n = allRows.length;
+      let sumP=0, sumY=0, sumPP=0, sumPY=0;
+      for(const r of allRows){ sumP+=r.prob; sumY+=r.y; sumPP+=r.prob*r.prob; sumPY+=r.prob*r.y; }
+      const meanP = sumP/n, meanY = sumY/n;
+      const varP = Math.max(1e-6, (sumPP/n) - meanP*meanP);
+      const covPY = (sumPY/n) - meanP*meanY;
+      let aDay = clamp(covPY / varP, 0.5, 1.5);
+      let bDay = clamp(meanY - aDay*meanP, -0.1, 0.1);
+
+      const alpha = 0.2; // EWMA blend
+      model.calib.a = (1-alpha)*model.calib.a + alpha*aDay;
+      model.calib.b = (1-alpha)*model.calib.b + alpha*bDay;
+      model.calib.n = (model.calib.n||0) + 1;
     }
 
     await store.set(KEY, JSON.stringify(model));
