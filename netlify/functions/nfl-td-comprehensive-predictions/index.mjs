@@ -1,5 +1,5 @@
 // netlify/functions/nfl-td-comprehensive-predictions/index.mjs
-// WORKING FIX: Direct Netlify Blobs API access without intermediate function
+// COMPLETE CLEAN VERSION - No duplicates
 
 const QUICK_TD_WEIGHTS = {
   ANYTIME: {
@@ -13,7 +13,6 @@ const QUICK_TD_WEIGHTS = {
 
 async function loadPlayerDataDirect() {
   try {
-    // Direct Netlify Blobs API access
     const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
     const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
     
@@ -21,10 +20,8 @@ async function loadPlayerDataDirect() {
       throw new Error('Missing Netlify credentials');
     }
 
-    // Import fetch
     const fetch = (await import('node-fetch')).default;
     
-    // Try different blob keys in order of preference
     const blobKeys = [
       'nfl/comprehensive/latest.json',
       'nfl/players/stats-current.json',
@@ -35,7 +32,6 @@ async function loadPlayerDataDirect() {
       try {
         console.log(`Trying to load: ${key}`);
         
-        // Step 1: Get signed URL
         const blobUrl = `https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/blobs/${key}`;
         const urlResponse = await fetch(blobUrl, {
           method: 'GET',
@@ -56,7 +52,6 @@ async function loadPlayerDataDirect() {
           continue;
         }
         
-        // Step 2: Fetch actual data
         const dataResponse = await fetch(urlData.url);
         if (!dataResponse.ok) {
           console.log(`Failed to fetch data from ${key}: ${dataResponse.status}`);
@@ -86,14 +81,12 @@ function transformToExpectedFormat(data, source) {
   const players = {};
   
   if (source === 'nfl/comprehensive/latest.json') {
-    // Comprehensive format
     if (data.players) {
       return data.players;
     }
   }
   
   if (source === 'nfl/players/stats-current.json') {
-    // Direct player stats format
     for (const [playerId, player] of Object.entries(data)) {
       if (!player.team || !player.position) continue;
       
@@ -116,7 +109,6 @@ function transformToExpectedFormat(data, source) {
   }
   
   if (source === 'nfl/players/rosters-2025.json') {
-    // Roster format - create basic stats
     for (const [teamCode, teamData] of Object.entries(data)) {
       if (!teamData.players) continue;
       
