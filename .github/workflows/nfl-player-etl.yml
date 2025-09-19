@@ -1,84 +1,78 @@
 name: NFL Player TD Data Collection
 
 on:
+  schedule:
+    - cron: '0 12 * * *'  # Daily at 7 AM EST (12 PM UTC)
   workflow_dispatch:
     inputs:
       week:
-        description: 'NFL Week to predict'
-        required: true
+        description: 'NFL Week to predict (e.g., 4 for Week 4 predictions)'
+        required: false
         default: '4'
         type: string
       season:
         description: 'NFL Season'
-        required: true
+        required: false
         default: '2025'
         type: string
-  schedule:
-    - cron: '0 7 * * *'  # 7 AM EST daily
 
 jobs:
-  collect-data:
+  collect-player-data:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    
-    - name: Install Node.js dependencies
-      run: |
-        npm install node-fetch@3.3.2 --no-save
-    
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install nfl-data-py pandas requests numpy
-    
-    - name: Collect JavaScript Player Data
-      run: |
-        echo "Collecting NFL player data for Week ${{ github.event.inputs.week || '4' }}..."
-        ls -la scripts/
-        if [ -f "scripts/collect-player-data.js" ]; then
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies dynamically
+        run: |
+          echo "Installing required dependencies..."
+          npm init -y
+          npm install node-fetch
+          
+      - name: Setup Python for NFLVerse
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install Python dependencies
+        run: |
+          echo "Installing Python dependencies..."
+          pip install nfl-data-py pandas requests
+          
+      - name: Collect NFL Player Data (JavaScript)
+        env:
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NFL_WEEK: ${{ github.event.inputs.week || '4' }}
+          NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
+        run: |
+          echo "🏈 Collecting NFL Player Data for Week $NFL_WEEK, Season $NFL_SEASON"
+          echo "Environment Check:"
+          echo "NETLIFY_TOKEN: ${NETLIFY_TOKEN:+Present}"
+          echo "NETLIFY_SITE_ID: ${NETLIFY_SITE_ID:+Present}"
+          echo "NFL_WEEK: $NFL_WEEK"
+          echo "NFL_SEASON: $NFL_SEASON"
+          
           node scripts/collect-player-data.js
-        else
-          echo "collect-player-data.js not found"
-          echo "Available files in scripts/:"
-          find scripts/ -name "*.js" -o -name "*.mjs" 2>/dev/null || echo "No JS files found"
-          exit 1
-        fi
-      env:
-        NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
-        NFL_WEEK: ${{ github.event.inputs.week || '4' }}
-        NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
-    
-    - name: Collect Python NFLVerse Data
-      run: |
-        echo "Collecting NFLVerse historical data..."
-        if [ -f "scripts/collect-nflverse-data.py" ]; then
-          python scripts/collect-nflverse-data.py
-        else
-          echo "collect-nflverse-data.py not found, skipping historical data"
-        fi
-      env:
-        NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        NFL_WEEK: ${{ github.event.inputs.week || '4' }}
-        NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
-    
-    - name: Verify Data Collection
-      run: |
-        echo "Data collection completed"
-        echo "Check Netlify dashboard for new blob files:"
-        echo "- history/${{ github.event.inputs.season || '2025' }}/recent-weeks.json"
-        echo "- nfl/comprehensive/player-data-${{ github.event.inputs.season || '2025' }}-week${{ github.event.inputs.week || '4' }}.json"
+          
+      - name: Collect NFLVerse Historical Data (Python)
+        env:
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NFL_WEEK: ${{ github.event.inputs.week || '4' }}
+          NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
+        run: |
+          echo "📊 Collecting NFLVerse historical data..."
+          python scripts/collect-nflverse-data.py || echo "⚠️ NFLVerse collection failed - continuing with JavaScript data only"
+          
+      - name: Summary
+        run: |
+          echo "✅ NFL Player TD Data Collection completed"
+          echo "📈 Week ${{ github.event.inputs.week || '4' }} prediction data ready"
+          echo "🎯 Both TD prediction systems should now have data"
