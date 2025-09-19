@@ -22,7 +22,7 @@ class ErrorBoundary extends React.Component {
     }
     return this.props.children;
   }
-}
+// removed extra closing brace
 // Canonical version: fetches schedule and player data from committed JSON files
 import NflTdTable from '../components/NflTdTable';
 
@@ -30,14 +30,38 @@ function qsWeek(){ const w = parseInt(new URLSearchParams(location.search).get('
 
 function getTeamAbbreviation(fullName) {
   const nameMap = {
-    'Arizona Cardinals': 'ARI', 'Atlanta Falcons': 'ATL', 'Baltimore Ravens': 'BAL', 'Buffalo Bills': 'BUF',
-    'Carolina Panthers': 'CAR', 'Chicago Bears': 'CHI', 'Cincinnati Bengals': 'CIN', 'Cleveland Browns': 'CLE',
-    'Dallas Cowboys': 'DAL', 'Denver Broncos': 'DEN', 'Detroit Lions': 'DET', 'Green Bay Packers': 'GB',
-    'Houston Texans': 'HOU', 'Indianapolis Colts': 'IND', 'Jacksonville Jaguars': 'JAX', 'Kansas City Chiefs': 'KC',
-    'Las Vegas Raiders': 'LV', 'Los Angeles Chargers': 'LAC', 'Los Angeles Rams': 'LAR', 'Miami Dolphins': 'MIA',
-    'Minnesota Vikings': 'MIN', 'New England Patriots': 'NE', 'New Orleans Saints': 'NO', 'New York Giants': 'NYG',
-    'New York Jets': 'NYJ', 'Philadelphia Eagles': 'PHI', 'Pittsburgh Steelers': 'PIT', 'San Francisco 49ers': 'SF',
-    'Seattle Seahawks': 'SEA', 'Tampa Bay Buccaneers': 'TB', 'Tennessee Titans': 'TEN', 'Washington Commanders': 'WAS'
+    'Arizona Cardinals': 'ARI',
+    'Atlanta Falcons': 'ATL',
+    'Baltimore Ravens': 'BAL',
+    'Buffalo Bills': 'BUF',
+    'Carolina Panthers': 'CAR',
+    'Chicago Bears': 'CHI',
+    'Cincinnati Bengals': 'CIN',
+    'Cleveland Browns': 'CLE',
+    'Dallas Cowboys': 'DAL',
+    'Denver Broncos': 'DEN',
+    'Detroit Lions': 'DET',
+    'Green Bay Packers': 'GB',
+    'Houston Texans': 'HOU',
+    'Indianapolis Colts': 'IND',
+    'Jacksonville Jaguars': 'JAX',
+    'Kansas City Chiefs': 'KC',
+    'Las Vegas Raiders': 'LV',
+    'Los Angeles Chargers': 'LAC',
+    'Los Angeles Rams': 'LAR',
+    'Miami Dolphins': 'MIA',
+    'Minnesota Vikings': 'MIN',
+    'New England Patriots': 'NE',
+    'New Orleans Saints': 'NO',
+    'New York Giants': 'NYG',
+    'New York Jets': 'NYJ',
+    'Philadelphia Eagles': 'PHI',
+    'Pittsburgh Steelers': 'PIT',
+    'San Francisco 49ers': 'SF',
+    'Seattle Seahawks': 'SEA',
+    'Tampa Bay Buccaneers': 'TB',
+    'Tennessee Titans': 'TEN',
+    'Washington Commanders': 'WAS'
   };
   return nameMap[fullName] || fullName;
 }
@@ -112,65 +136,4 @@ function NflTdInner(){
 
 export default function NflTdPage() {
   return <ErrorBoundary><NflTdInner /></ErrorBoundary>;
-}
-      "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL",
-      "Buffalo Bills": "BUF", "Carolina Panthers": "CAR", "Chicago Bears": "CHI",
-      "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE", "Dallas Cowboys": "DAL",
-      "Denver Broncos": "DEN", "Detroit Lions": "DET", "Green Bay Packers": "GB",
-      "Houston Texans": "HOU", "Indianapolis Colts": "IND", "Jacksonville Jaguars": "JAX",
-      "Kansas City Chiefs": "KC", "Las Vegas Raiders": "LV", "Los Angeles Chargers": "LAC",
-      "Los Angeles Rams": "LAR", "Miami Dolphins": "MIA", "Minnesota Vikings": "MIN",
-      "New England Patriots": "NE", "New Orleans Saints": "NO", "New York Giants": "NYG",
-      "New York Jets": "NYJ", "Philadelphia Eagles": "PHI", "Pittsburgh Steelers": "PIT",
-      "San Francisco 49ers": "SF", "Seattle Seahawks": "SEA", "Tampa Bay Buccaneers": "TB",
-      "Tennessee Titans": "TEN", "Washington Commanders": "WAS"
-    };
-    return nameMap[fullName] || fullName;
-  }
-
-  if (!ENABLE_NFL_TD){
-    return <div className="p-6 max-w-3xl mx-auto">
-      <div className="mb-3 text-sm text-gray-500">
-        <a href="/nfl">NFL</a> / Anytime TD
-      </div>
-      <h1 className="text-2xl font-bold mb-2">NFL — Anytime TD</h1>
-      <p className="text-sm opacity-70">This feature is currently disabled.</p>
-    </div>;
-  }
-
-  const topEV = useMemo(()=> rows.filter(r=> typeof r.value==='number').slice(0, 20), [rows]);
-  const highProb = useMemo(()=> rows.slice().sort((a,b)=> b.td_prob - a.td_prob).slice(0, 20), [rows]);
-  const longshots = useMemo(()=> rows.filter(r=> r.model_american >= 300).slice(0, 20), [rows]);
-
-  return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="mb-3 text-sm text-gray-500">
-        <a href="/nfl">NFL</a> / Anytime TD
-      </div>
-      <div className="flex items-center gap-3 mb-4">
-        <h1 className="text-2xl font-bold">NFL — Anytime TD</h1>
-        <select className="border rounded px-2 py-1" value={week} onChange={e=> setWeek(parseInt(e.target.value,10))}>
-          {weeks.map(w=> <option key={w} value={w}>Week {w}</option>)}
-        </select>
-      </div>
-
-      {err && <div className="text-red-600 mb-3">{String(err)}</div>}
-      {loading && <div className="opacity-70">Loading…</div>}
-
-      {!loading && <>
-        <NflTdTable title="Top EV / Value" rows={topEV} emptyText="No EV edges yet (odds-agnostic mode)" />
-        <NflTdTable title="Highest Model Probability" rows={highProb} emptyText="No players" />
-        <NflTdTable title="Longshot Radar (≥ +300)" rows={longshots} emptyText="No longshots" />
-      </>}
-    </div>
-  );
-}
-
-
-export default function NflTd() {
-  return (
-    <ErrorBoundary>
-      <NflTdInner />
-    </ErrorBoundary>
-  );
 }
