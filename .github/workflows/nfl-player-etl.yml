@@ -47,7 +47,7 @@ jobs:
           
       - name: Collect NFL Player Data (JavaScript)
         env:
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NFL_WEEK: ${{ github.event.inputs.week || '4' }}
           NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
@@ -63,7 +63,7 @@ jobs:
           
       - name: Collect NFLVerse Historical Data (Python)
         env:
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN}}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NFL_WEEK: ${{ github.event.inputs.week || '4' }}
           NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
