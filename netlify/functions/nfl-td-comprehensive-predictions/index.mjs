@@ -13,7 +13,7 @@ const QUICK_TD_WEIGHTS = {
 
 async function loadPlayerDataDirect() {
   try {
-    const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
+    const NETLIFY_TOKEN = process.env.NETLIFY_BLOBS_TOKEN || process.env.NETLIFY_TOKEN;
     const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
     
     if (!NETLIFY_TOKEN || !NETLIFY_SITE_ID) {
