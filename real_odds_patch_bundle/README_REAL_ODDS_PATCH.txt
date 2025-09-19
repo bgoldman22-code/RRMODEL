@@ -1,1 +1,0 @@
-Drop src/MLB.jsx into your repo. Adds Actual Odds column using odds-get.

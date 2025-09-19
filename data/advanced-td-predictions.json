@@ -1,0 +1,197 @@
+{
+  "success": true,
+  "metadata": {
+    "model": "advanced-nflverse-v1",
+    "generated_at": "2025-09-19T19:40:16.997Z",
+    "games_processed": 4,
+    "total_players": 6,
+    "data_source": "nflverse_features",
+    "calibration": "market_odds"
+  },
+  "predictions": [
+    {
+      "game_id": "ARI_SF",
+      "home_team": "SF",
+      "away_team": "ARI",
+      "players": [
+        {
+          "player_id": "Christian McCaffrey_SF",
+          "name": "Christian McCaffrey",
+          "position": "RB",
+          "team": "SF",
+          "anytime_td": {
+            "probability": 0.566,
+            "confidence": 57,
+            "implied_odds": -77
+          },
+          "first_td": {
+            "probability": 0.112,
+            "implied_odds": 793
+          },
+          "multiple_td": {
+            "probability": 0.35,
+            "implied_odds": 186
+          },
+          "key_factors": {
+            "recent_td_rate": 2,
+            "red_zone_opportunities": 5.35,
+            "explosiveness": 0,
+            "consistency": 0,
+            "season_tds": 4
+          }
+        }
+      ]
+    },
+    {
+      "game_id": "MIA_BUF",
+      "home_team": "BUF",
+      "away_team": "MIA",
+      "players": [
+        {
+          "player_id": "Tyreek Hill_MIA",
+          "name": "Tyreek Hill",
+          "position": "WR",
+          "team": "MIA",
+          "anytime_td": {
+            "probability": 0.388,
+            "confidence": 39,
+            "implied_odds": 158
+          },
+          "first_td": {
+            "probability": 0.064,
+            "implied_odds": 1463
+          },
+          "multiple_td": {
+            "probability": 0.35,
+            "implied_odds": 186
+          },
+          "key_factors": {
+            "recent_td_rate": 1.5,
+            "red_zone_opportunities": 4.800000000000001,
+            "explosiveness": 0,
+            "consistency": 0.5,
+            "season_tds": 3
+          }
+        },
+        {
+          "player_id": "Josh Allen_BUF",
+          "name": "Josh Allen",
+          "position": "QB",
+          "team": "BUF",
+          "anytime_td": {
+            "probability": 0.277,
+            "confidence": 28,
+            "implied_odds": 261
+          },
+          "first_td": {
+            "probability": 0.052,
+            "implied_odds": 1829
+          },
+          "multiple_td": {
+            "probability": 0.242,
+            "implied_odds": 314
+          },
+          "key_factors": {
+            "recent_td_rate": 1.5,
+            "red_zone_opportunities": 3.75,
+            "explosiveness": 0,
+            "consistency": 0.5,
+            "season_tds": 3
+          }
+        }
+      ]
+    },
+    {
+      "game_id": "LAR_PHI",
+      "home_team": "PHI",
+      "away_team": "LAR",
+      "players": [
+        {
+          "player_id": "Saquon Barkley_PHI",
+          "name": "Saquon Barkley",
+          "position": "RB",
+          "team": "PHI",
+          "anytime_td": {
+            "probability": 0.618,
+            "confidence": 62,
+            "implied_odds": -62
+          },
+          "first_td": {
+            "probability": 0.122,
+            "implied_odds": 717
+          },
+          "multiple_td": {
+            "probability": 0.35,
+            "implied_odds": 186
+          },
+          "key_factors": {
+            "recent_td_rate": 2,
+            "red_zone_opportunities": 5.35,
+            "explosiveness": 0,
+            "consistency": 1,
+            "season_tds": 4
+          }
+        },
+        {
+          "player_id": "Davante Adams_LAR",
+          "name": "Davante Adams",
+          "position": "WR",
+          "team": "LAR",
+          "anytime_td": {
+            "probability": 0.37,
+            "confidence": 37,
+            "implied_odds": 170
+          },
+          "first_td": {
+            "probability": 0.061,
+            "implied_odds": 1536
+          },
+          "multiple_td": {
+            "probability": 0.35,
+            "implied_odds": 186
+          },
+          "key_factors": {
+            "recent_td_rate": 1.5,
+            "red_zone_opportunities": 4.800000000000001,
+            "explosiveness": 0,
+            "consistency": 0.5,
+            "season_tds": 3
+          }
+        }
+      ]
+    },
+    {
+      "game_id": "DET_BAL",
+      "home_team": "BAL",
+      "away_team": "DET",
+      "players": [
+        {
+          "player_id": "Derrick Henry_BAL",
+          "name": "Derrick Henry",
+          "position": "RB",
+          "team": "BAL",
+          "anytime_td": {
+            "probability": 0.618,
+            "confidence": 62,
+            "implied_odds": -62
+          },
+          "first_td": {
+            "probability": 0.122,
+            "implied_odds": 717
+          },
+          "multiple_td": {
+            "probability": 0.35,
+            "implied_odds": 186
+          },
+          "key_factors": {
+            "recent_td_rate": 2,
+            "red_zone_opportunities": 5.35,
+            "explosiveness": 0,
+            "consistency": 1,
+            "season_tds": 4
+          }
+        }
+      ]
+    }
+  ]
+}
