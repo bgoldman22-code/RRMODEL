@@ -2,6 +2,7 @@
 // FIXED VERSION: Uses same blob pattern as working NFL predictions + does actual TD predictions
 
 import fs from 'fs/promises';
+import { fetchPlayerPropOdds } from '../../../scripts/fetch-player-prop-odds.js';
 
 // Enhanced embedded player data (your full roster but organized)
 const EMBEDDED_PLAYER_DATA = {
@@ -175,6 +176,14 @@ function probabilityToAmericanOdds(probability) {
 
 // Main TD prediction generation
 async function generateTDPredictions(games, season = '2025') {
+  // Fetch live player prop odds for all 3 markets
+  let oddsByPlayer = {};
+  try {
+    oddsByPlayer = await fetchPlayerPropOdds();
+    console.log(`✅ Pulled player prop odds for ${Object.keys(oddsByPlayer).length} players`);
+  } catch (e) {
+    console.warn('⚠️ Could not fetch player prop odds:', e.message);
+  }
   console.log('=== NFL TD COMPREHENSIVE PREDICTIONS (FIXED VERSION) ===');
   
   // Try to load live data from blobs first
@@ -206,31 +215,52 @@ async function generateTDPredictions(games, season = '2025') {
       const firstProb = calculateQuickFirstTD(anytimeProb);
       const multipleProb = calculateQuickMultipleTD(anytimeProb);
       const confidence = calculateConfidence(anytimeProb);
-      
+
+      // Join odds by player name (case-insensitive)
+      const oddsEntry = oddsByPlayer[player.name] || oddsByPlayer[player.name.toUpperCase()] || oddsByPlayer[player.name.toLowerCase()] || null;
+      function impliedProbFromAmerican(american) {
+        if (american == null) return null;
+        if (american > 0) return 100 / (american + 100);
+        return (-american) / ((-american) + 100);
+      }
+      function blendConfidence(modelProb, offeredAmerican, blendWeight=0.6, clampRange=[0.05,0.85]) {
+        const implied = (offeredAmerican != null) ? impliedProbFromAmerican(offeredAmerican) : null;
+        let conf = null;
+        if (typeof modelProb === 'number' && typeof implied === 'number') {
+          conf = blendWeight * modelProb + (1-blendWeight) * implied;
+        } else if (typeof modelProb === 'number') {
+          conf = modelProb;
+        } else if (typeof implied === 'number') {
+          conf = implied;
+        } else {
+          conf = (clampRange[0] + clampRange[1]) / 2;
+        }
+        return Math.max(clampRange[0], Math.min(clampRange[1], conf));
+      }
+
+      function marketBlock(prob, oddsObj) {
+        let best = oddsObj?.best ?? null;
+        let implied = (best != null) ? impliedProbFromAmerican(best) : null;
+        let conf = blendConfidence(prob, best);
+        let edge = (typeof conf === 'number' && typeof implied === 'number') ? Number((conf - implied).toFixed(4)) : null;
+        return {
+          probability: Number(prob.toFixed(4)),
+          best_odds: best,
+          books: oddsObj?.books ?? {},
+          implied_prob: implied != null ? Number(implied.toFixed(4)) : null,
+          confidence: conf,
+          edge
+        };
+      }
+
       gamePlayerPredictions.push({
         player_id: playerId,
         name: player.name,
         position: player.position,
         team: player.team,
-        
-        anytime_td: {
-          probability: Number(anytimeProb.toFixed(4)),
-          confidence: confidence,
-          implied_odds: probabilityToAmericanOdds(anytimeProb)
-        },
-        
-        first_td: {
-          probability: Number(firstProb.toFixed(4)),
-          confidence: Math.round(confidence * 0.75),
-          implied_odds: probabilityToAmericanOdds(firstProb)
-        },
-        
-        multiple_td: {
-          probability: Number(multipleProb.toFixed(4)),
-          confidence: Math.round(confidence * 0.65),
-          implied_odds: probabilityToAmericanOdds(multipleProb)
-        },
-        
+        anytime_td: marketBlock(anytimeProb, oddsEntry?.player_anytime_td),
+        first_td: marketBlock(firstProb, oddsEntry?.player_1st_td),
+        multiple_td: marketBlock(multipleProb, oddsEntry?.player_tds_over),
         key_factors: {
           red_zone_targets: player.redZoneMetrics?.targets,
           red_zone_carries: player.redZoneMetrics?.carries,
