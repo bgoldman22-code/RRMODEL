@@ -1,125 +1,31 @@
-# .github/workflows/nfl-etl.yml
-name: NFL ETL Pipeline
+# .github/workflows/nfl-player-etl.yml
+# FIXED: Player data collection for TD props
+
+name: NFL Player TD Data Collection
 
 on:
   schedule:
-    # Nightly Current Season ETL (3:30 AM ET = 8:30 AM UTC)
-    - cron: '30 8 * * *'
-    # Daily injury refresh (9:00 AM ET = 2:00 PM UTC)  
-    - cron: '0 14 * * *'
-    # Friday gameday injuries (5:00 PM ET = 10:00 PM UTC)
-    - cron: '0 22 * * 5'
-    # Sunday gameday injuries (11:00 AM ET = 4:00 PM UTC)
-    - cron: '0 16 * * 0'
-    # Sunday gameday injuries (3:00 PM ET = 8:00 PM UTC)
-    - cron: '0 20 * * 0'
-    # Sunday gameday injuries (7:30 PM ET = 12:30 AM UTC Monday)
-    - cron: '30 0 * * 1'
-    # Monday gameday injuries (5:00 PM ET = 10:00 PM UTC)
-    - cron: '0 22 * * 1'
-    # Weekly historical refresh (Saturday 2:00 AM ET = 7:00 AM UTC)
-    - cron: '0 7 * * 6'
+    # Daily at 7 AM EST (12 PM UTC)
+    - cron: '0 12 * * *'
   
   # Allow manual triggering
   workflow_dispatch:
     inputs:
-      etl_type:
-        description: 'ETL Type to run'
+      week:
+        description: 'NFL Week to predict (e.g., 4 for Week 4 predictions)'
         required: true
-        default: 'current'
-        type: choice
-        options:
-          - current
-          - injuries
-          - both
-          - historical
-          - full_historical
-      force_historical:
-        description: 'Force complete historical reload (2023-2025)'
-        required: false
-        default: false
-        type: boolean
+        default: '4'
+        type: string
+      season:
+        description: 'NFL Season'
+        required: true
+        default: '2025'
+        type: string
 
 jobs:
-  determine-jobs:
+  collect-player-data:
     runs-on: ubuntu-latest
-    outputs:
-      run_current: ${{ steps.determine.outputs.run_current }}
-      run_injuries: ${{ steps.determine.outputs.run_injuries }}
-      run_historical: ${{ steps.determine.outputs.run_historical }}
-      seasons_to_load: ${{ steps.determine.outputs.seasons_to_load }}
-    steps:
-      - name: Determine which jobs to run
-        id: determine
-        run: |
-          # Default values
-          RUN_CURRENT="false"
-          RUN_INJURIES="false" 
-          RUN_HISTORICAL="false"
-          SEASONS_TO_LOAD="2025"
-          
-          # Manual trigger
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            case "${{ github.event.inputs.etl_type }}" in
-              "current")
-                RUN_CURRENT="true"
-                SEASONS_TO_LOAD="2025"
-                ;;
-              "injuries")
-                RUN_INJURIES="true"
-                ;;
-              "both")
-                RUN_CURRENT="true"
-                RUN_INJURIES="true"
-                SEASONS_TO_LOAD="2025"
-                ;;
-              "historical")
-                RUN_HISTORICAL="true"
-                SEASONS_TO_LOAD="2023,2024"
-                ;;
-              "full_historical")
-                RUN_HISTORICAL="true"
-                SEASONS_TO_LOAD="2023,2024,2025"
-                ;;
-            esac
-            
-            if [ "${{ github.event.inputs.force_historical }}" = "true" ]; then
-              RUN_HISTORICAL="true"
-              SEASONS_TO_LOAD="2023,2024,2025"
-            fi
-          else
-            # Scheduled triggers
-            case "${{ github.event.schedule }}" in
-              "30 8 * * *")
-                # Nightly current season ETL (fast)
-                RUN_CURRENT="true"
-                RUN_INJURIES="true"
-                SEASONS_TO_LOAD="2025"
-                ;;
-              "0 7 * * 6")
-                # Weekly historical refresh (Saturday)
-                RUN_HISTORICAL="true"
-                SEASONS_TO_LOAD="2023,2024"
-                ;;
-              *)
-                # All other schedules are injury-only
-                RUN_INJURIES="true"
-                ;;
-            esac
-          fi
-          
-          echo "run_current=$RUN_CURRENT" >> $GITHUB_OUTPUT
-          echo "run_injuries=$RUN_INJURIES" >> $GITHUB_OUTPUT
-          echo "run_historical=$RUN_HISTORICAL" >> $GITHUB_OUTPUT
-          echo "seasons_to_load=$SEASONS_TO_LOAD" >> $GITHUB_OUTPUT
-          echo "Will run - Current: $RUN_CURRENT, Injuries: $RUN_INJURIES, Historical: $RUN_HISTORICAL"
-          echo "Seasons to load: $SEASONS_TO_LOAD"
-
-  current-season-etl:
-    needs: determine-jobs
-    if: needs.determine-jobs.outputs.run_current == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20  # Fast - current season only
+    timeout-minutes: 20
     
     steps:
       - name: Checkout code
@@ -130,152 +36,46 @@ jobs:
         with:
           node-version: '20'
           
-      - name: Install dependencies
-        run: npm install
-          
-      - name: Run Current Season ETL
-        env:
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
-          SEASONS: ${{ needs.determine-jobs.outputs.seasons_to_load }}
+      - name: Install dependencies dynamically
         run: |
-          echo "Starting Current Season ETL at $(date)"
-          echo "Loading seasons: $SEASONS"
+          echo "Installing required dependencies..."
+          npm init -y
+          npm install node-fetch
           
-          if node scripts/etl-full.js; then
-            echo "✅ Current season ETL completed successfully"
-            echo "📊 Updated: 2025 season data with historical context"
+      - name: Collect NFL Player Data
+        env:
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NFL_WEEK: ${{ github.event.inputs.week || '4' }}
+          NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
+        run: |
+          echo "🏈 Starting NFL Player Data Collection"
+          echo "Week: $NFL_WEEK (predicting this week)"
+          echo "Season: $NFL_SEASON"
+          echo "NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN && 'Present' || 'Missing' }}"
+          echo "NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID && 'Present' || 'Missing' }}"
+          
+          if node scripts/collect-player-data.js; then
+            echo "✅ NFL Player Data Collection completed successfully"
+            echo "📊 Data stored in Netlify Blobs for TD predictions"
           else
-            echo "❌ Current season ETL failed"
+            echo "❌ NFL Player Data Collection failed"
             exit 1
           fi
           
-      - name: Upload artifacts on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: etl-logs-current
-          path: .artifacts/
-          retention-days: 7
-
-  historical-etl:
-    needs: determine-jobs
-    if: needs.determine-jobs.outputs.run_historical == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 45  # Longer for historical data
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          
-      - name: Install dependencies
-        run: npm install
-          
-      - name: Run Historical Data ETL
-        env:
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
-          SEASONS: ${{ needs.determine-jobs.outputs.seasons_to_load }}
+      - name: Summary
+        if: always()
         run: |
-          echo "Starting Historical ETL at $(date)"
-          echo "Loading historical seasons: $SEASONS"
+          echo "## NFL Player Data Collection Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Week**: ${{ github.event.inputs.week || '4' }} (target prediction week)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Season**: ${{ github.event.inputs.season || '2025' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Purpose**: Generate data for TD props predictions" >> $GITHUB_STEP_SUMMARY
           
-          if node scripts/etl-full.js; then
-            echo "✅ Historical ETL completed successfully"
-            echo "📚 Historical data foundation: UPDATED"
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ Player data ready for TD predictions" >> $GITHUB_STEP_SUMMARY
+            echo "🎯 Next: Test TD systems at bgroundrobin.com" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ Historical ETL failed"
-            exit 1
-          fi
-          
-      - name: Upload artifacts on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: etl-logs-historical
-          path: .artifacts/
-          retention-days: 7
-
-  injury-etl:
-    needs: determine-jobs
-    if: needs.determine-jobs.outputs.run_injuries == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          
-      - name: Install dependencies
-        run: npm install
-          
-      - name: Run Injury ETL
-        env:
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
-        run: |
-          echo "Starting Injury ETL at $(date)"
-          
-          if node scripts/etl-injuries.js; then
-            echo "✅ Injury ETL completed successfully"
-          else
-            echo "❌ Injury ETL failed"
-            exit 1
-          fi
-          
-      - name: Upload artifacts on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: etl-logs-injuries
-          path: .artifacts/
-          retention-days: 7
-
-  post-etl-summary:
-    needs: [determine-jobs, current-season-etl, historical-etl, injury-etl]
-    if: always() && (needs.current-season-etl.result != 'skipped' || needs.historical-etl.result != 'skipped' || needs.injury-etl.result != 'skipped')
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Generate summary
-        run: |
-          echo "## NFL ETL Pipeline Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Current Season ETL:** ${{ needs.current-season-etl.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Historical ETL:** ${{ needs.historical-etl.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Injury ETL:** ${{ needs.injury-etl.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Seasons Processed:** ${{ needs.determine-jobs.outputs.seasons_to_load }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Timestamp:** $(date)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
-          
-          # Determine efficiency
-          if [ "${{ needs.historical-etl.result }}" = "success" ]; then
-            echo "- **Mode:** Historical foundation updated" >> $GITHUB_STEP_SUMMARY
-          elif [ "${{ needs.current-season-etl.result }}" = "success" ]; then
-            echo "- **Mode:** Efficient current season update" >> $GITHUB_STEP_SUMMARY
-          fi
-          
-          # Check for failures
-          FAILURES=0
-          if [ "${{ needs.current-season-etl.result }}" = "failure" ]; then FAILURES=$((FAILURES + 1)); fi
-          if [ "${{ needs.historical-etl.result }}" = "failure" ]; then FAILURES=$((FAILURES + 1)); fi
-          if [ "${{ needs.injury-etl.result }}" = "failure" ]; then FAILURES=$((FAILURES + 1)); fi
-          
-          if [ $FAILURES -gt 0 ]; then
-            echo "⚠️ $FAILURES ETL job(s) failed. Check the logs above." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "✅ All ETL jobs completed successfully." >> $GITHUB_STEP_SUMMARY
-            echo "🎯 Model ready with historical data integration." >> $GITHUB_STEP_SUMMARY
+            echo "❌ Collection failed - check logs above" >> $GITHUB_STEP_SUMMARY
           fi
