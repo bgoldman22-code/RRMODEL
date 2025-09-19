@@ -2,34 +2,26 @@
 // FIXED VERSION: Uses same blob pattern as working NFL predictions + does actual TD predictions
 
 import fs from 'fs/promises';
+import { fetchPlayerPropOdds } from '../../../scripts/fetch-player-prop-odds.js';
 
-// Enhanced embedded player data (your full roster but organized)
-const EMBEDDED_PLAYER_DATA = {
-  'kc_qb1': { id: 'kc_qb1', name: 'Patrick Mahomes', position: 'QB', team: 'KC' },
-  'kc_rb1': { id: 'kc_rb1', name: 'Isiah Pacheco', position: 'RB', team: 'KC' },
-  'buf_qb1': { id: 'buf_qb1', name: 'Josh Allen', position: 'QB', team: 'BUF' },
-  'buf_rb1': { id: 'buf_rb1', name: 'James Cook', position: 'RB', team: 'BUF' },
-  'buf_wr1': { id: 'buf_wr1', name: 'Khalil Shakir', position: 'WR', team: 'BUF' },
-  'buf_te1': { id: 'buf_te1', name: 'Dalton Kincaid', position: 'TE', team: 'BUF' },
-  'nyg_qb1': { id: 'nyg_qb1', name: 'Daniel Jones', position: 'QB', team: 'NYG' },
-  'nyg_rb1': { id: 'nyg_rb1', name: 'Tyrone Tracy Jr.', position: 'RB', team: 'NYG' },
-  'nyg_wr1': { id: 'nyg_wr1', name: 'Malik Nabers', position: 'WR', team: 'NYG' },
-  'nyg_wr2': { id: 'nyg_wr2', name: 'Darius Slayton', position: 'WR', team: 'NYG' },
-  'nyg_te1': { id: 'nyg_te1', name: 'Daniel Bellinger', position: 'TE', team: 'NYG' },
-  'ari_qb1': { id: 'ari_qb1', name: 'Kyler Murray', position: 'QB', team: 'ARI' },
-  'ari_rb1': { id: 'ari_rb1', name: 'James Conner', position: 'RB', team: 'ARI' },
-  'ari_wr1': { id: 'ari_wr1', name: 'Marvin Harrison Jr.', position: 'WR', team: 'ARI' },
-  'ari_te1': { id: 'ari_te1', name: 'Trey McBride', position: 'TE', team: 'ARI' },
-  'gb_qb1': { id: 'gb_qb1', name: 'Jordan Love', position: 'QB', team: 'GB' },
-  'gb_rb1': { id: 'gb_rb1', name: 'Josh Jacobs', position: 'RB', team: 'GB' },
-  'chi_qb1': { id: 'chi_qb1', name: 'Caleb Williams', position: 'QB', team: 'CHI' },
-  'chi_rb1': { id: 'chi_rb1', name: "D'Andre Swift", position: 'RB', team: 'CHI' },
-  'chi_wr1': { id: 'chi_wr1', name: 'DJ Moore', position: 'WR', team: 'CHI' },
-  'hou_qb1': { id: 'hou_qb1', name: 'C.J. Stroud', position: 'QB', team: 'HOU' },
-  'hou_rb1': { id: 'hou_rb1', name: 'Joe Mixon', position: 'RB', team: 'HOU' },
-  'hou_wr1': { id: 'hou_wr1', name: 'Nico Collins', position: 'WR', team: 'HOU' },
-  'hou_wr2': { id: 'hou_wr2', name: 'Stefon Diggs', position: 'WR', team: 'HOU' }
-};
+// Team name mapping for schedule normalization (matches NFL predictions approach)
+function getTeamAbbreviation(fullName) {
+  const nameMap = {
+    "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL",
+    "Buffalo Bills": "BUF", "Carolina Panthers": "CAR", "Chicago Bears": "CHI",
+    "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE", "Dallas Cowboys": "DAL",
+    "Denver Broncos": "DEN", "Detroit Lions": "DET", "Green Bay Packers": "GB",
+    "Houston Texans": "HOU", "Indianapolis Colts": "IND", "Jacksonville Jaguars": "JAX",
+    "Kansas City Chiefs": "KC", "Las Vegas Raiders": "LV", "Los Angeles Chargers": "LAC",
+    "Los Angeles Rams": "LAR", "Miami Dolphins": "MIA", "Minnesota Vikings": "MIN",
+    "New England Patriots": "NE", "New Orleans Saints": "NO", "New York Giants": "NYG",
+    "New York Jets": "NYJ", "Philadelphia Eagles": "PHI", "Pittsburgh Steelers": "PIT",
+    "Seattle Seahawks": "SEA", "San Francisco 49ers": "SF", "Tampa Bay Buccaneers": "TB",
+    "Tennessee Titans": "TEN", "Washington Commanders": "WAS"
+  };
+  return nameMap[fullName] || fullName;
+}
+
 
 // TD prediction weights
 const QUICK_TD_WEIGHTS = {
@@ -175,30 +167,39 @@ function probabilityToAmericanOdds(probability) {
 
 // Main TD prediction generation
 async function generateTDPredictions(games, season = '2025') {
+  // Fetch live player prop odds for all 3 markets
+  let oddsByPlayer = {};
+  try {
+    oddsByPlayer = await fetchPlayerPropOdds();
+    console.log(`✅ Pulled player prop odds for ${Object.keys(oddsByPlayer).length} players`);
+  } catch (e) {
+    console.warn('⚠️ Could not fetch player prop odds:', e.message);
+  }
   console.log('=== NFL TD COMPREHENSIVE PREDICTIONS (FIXED VERSION) ===');
   
   // Try to load live data from blobs first
   const blobData = await loadPlayerData(season);
-  let playerData, dataSource;
-  
-  if (blobData && blobData.players) {
-    playerData = blobData.players;
-    dataSource = 'live_blobs';
-    console.log(`🎯 Using LIVE data: ${Object.keys(playerData).length} players`);
-  } else {
-    playerData = EMBEDDED_PLAYER_DATA;
-    dataSource = 'embedded_fallback';
-    console.log(`📦 Using embedded data: ${Object.keys(playerData).length} players`);
+  if (!blobData || !blobData.players) {
+    throw new Error('No valid player data found in public/nfl-anytime-td-player-data.json. Run the ETL to generate full player data.');
   }
+  const playerData = blobData.players;
+  const dataSource = 'live_blobs';
+  console.log(`🎯 Using LIVE data: ${Object.keys(playerData).length} players`);
   
   const allPredictions = [];
   
   for (const game of games) {
     const gamePlayerPredictions = [];
     
+    // Normalize team names from schedule (convert full names to abbreviations)
+    const homeTeamAbbr = getTeamAbbreviation(game.homeTeam || game.home_team) || game.homeTeam || game.home_team;
+    const awayTeamAbbr = getTeamAbbreviation(game.awayTeam || game.away_team) || game.awayTeam || game.away_team;
+    console.log(`🔄 Game: ${game.homeTeam || game.home_team}(${homeTeamAbbr}) vs ${game.awayTeam || game.away_team}(${awayTeamAbbr})`);
+    
     // Process all players for this game
     for (const [playerId, basePlayer] of Object.entries(playerData)) {
-      if (basePlayer.team !== game.home_team && basePlayer.team !== game.away_team) continue;
+      // Match using normalized team abbreviations
+      if (basePlayer.team !== homeTeamAbbr && basePlayer.team !== awayTeamAbbr) continue;
       
       const player = addPlayerMetrics(basePlayer);
       
@@ -206,31 +207,52 @@ async function generateTDPredictions(games, season = '2025') {
       const firstProb = calculateQuickFirstTD(anytimeProb);
       const multipleProb = calculateQuickMultipleTD(anytimeProb);
       const confidence = calculateConfidence(anytimeProb);
-      
+
+      // Join odds by player name (case-insensitive)
+      const oddsEntry = oddsByPlayer[player.name] || oddsByPlayer[player.name.toUpperCase()] || oddsByPlayer[player.name.toLowerCase()] || null;
+      function impliedProbFromAmerican(american) {
+        if (american == null) return null;
+        if (american > 0) return 100 / (american + 100);
+        return (-american) / ((-american) + 100);
+      }
+      function blendConfidence(modelProb, offeredAmerican, blendWeight=0.6, clampRange=[0.05,0.85]) {
+        const implied = (offeredAmerican != null) ? impliedProbFromAmerican(offeredAmerican) : null;
+        let conf = null;
+        if (typeof modelProb === 'number' && typeof implied === 'number') {
+          conf = blendWeight * modelProb + (1-blendWeight) * implied;
+        } else if (typeof modelProb === 'number') {
+          conf = modelProb;
+        } else if (typeof implied === 'number') {
+          conf = implied;
+        } else {
+          conf = (clampRange[0] + clampRange[1]) / 2;
+        }
+        return Math.max(clampRange[0], Math.min(clampRange[1], conf));
+      }
+
+      function marketBlock(prob, oddsObj) {
+        let best = oddsObj?.best ?? null;
+        let implied = (best != null) ? impliedProbFromAmerican(best) : null;
+        let conf = blendConfidence(prob, best);
+        let edge = (typeof conf === 'number' && typeof implied === 'number') ? Number((conf - implied).toFixed(4)) : null;
+        return {
+          probability: Number(prob.toFixed(4)),
+          best_odds: best,
+          books: oddsObj?.books ?? {},
+          implied_prob: implied != null ? Number(implied.toFixed(4)) : null,
+          confidence: conf,
+          edge
+        };
+      }
+
       gamePlayerPredictions.push({
         player_id: playerId,
         name: player.name,
         position: player.position,
         team: player.team,
-        
-        anytime_td: {
-          probability: Number(anytimeProb.toFixed(4)),
-          confidence: confidence,
-          implied_odds: probabilityToAmericanOdds(anytimeProb)
-        },
-        
-        first_td: {
-          probability: Number(firstProb.toFixed(4)),
-          confidence: Math.round(confidence * 0.75),
-          implied_odds: probabilityToAmericanOdds(firstProb)
-        },
-        
-        multiple_td: {
-          probability: Number(multipleProb.toFixed(4)),
-          confidence: Math.round(confidence * 0.65),
-          implied_odds: probabilityToAmericanOdds(multipleProb)
-        },
-        
+        anytime_td: marketBlock(anytimeProb, oddsEntry?.player_anytime_td),
+        first_td: marketBlock(firstProb, oddsEntry?.player_1st_td),
+        multiple_td: marketBlock(multipleProb, oddsEntry?.player_tds_over),
         key_factors: {
           red_zone_targets: player.redZoneMetrics?.targets,
           red_zone_carries: player.redZoneMetrics?.carries,
@@ -245,8 +267,8 @@ async function generateTDPredictions(games, season = '2025') {
     
     allPredictions.push({
       game_id: game.game_id,
-      home_team: game.home_team,
-      away_team: game.away_team,
+      home_team: homeTeamAbbr,
+      away_team: awayTeamAbbr,
       players: gamePlayerPredictions,
       metadata: {
         total_players: gamePlayerPredictions.length,
@@ -324,6 +346,17 @@ export default async (request, context) => {
 
     console.log(`🏈 Generating TD predictions for ${games.length} games`);
     const result = await generateTDPredictions(games, season);
+
+    // Write latest predictions to public/data/nfl-td-comprehensive-latest.json for frontend
+    try {
+      const outDir = 'public/data';
+      await fs.mkdir(outDir, { recursive: true });
+      const outFile = `${outDir}/nfl-td-comprehensive-latest.json`;
+      await fs.writeFile(outFile, JSON.stringify(result, null, 2));
+      console.log(`✅ Wrote latest comprehensive TD predictions to ${outFile}`);
+    } catch (e) {
+      console.warn('⚠️ Could not write latest comprehensive TD predictions:', e.message);
+    }
 
     return new Response(JSON.stringify(result), {
       status: 200,
