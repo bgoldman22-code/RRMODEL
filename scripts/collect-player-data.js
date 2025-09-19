@@ -1,116 +1,43 @@
 
+
 // scripts/collect-player-data.js
 // Unified ETL: NFLVerse + ESPN/injury data → public/nfl-anytime-td-player-data.json
 
-const fs = require('fs').promises;
-const path = require('path');
+// --- CONFIG ---
 const CURRENT_WEEK = process.env.NFL_WEEK || '4';
 const CURRENT_SEASON = process.env.NFL_SEASON || '2025';
-const OUTPUT_PATH = path.join(__dirname, '..', 'public', 'nfl-anytime-td-player-data.json');
-const INJURY_NEWS_PATH = path.join(__dirname, '..', 'public', 'nfl-injury-news.json');
 
-async function loadDepthCharts() {
-  try {
-    const weekDepthChartsPath = path.join(__dirname, '..', 'history', CURRENT_SEASON, `week${CURRENT_WEEK}`, 'depth-charts.json');
-    const rawData = await fs.readFile(weekDepthChartsPath, 'utf8');
-    return JSON.parse(rawData);
-  } catch (e) {
-    console.warn('❌ Failed to load depth charts, using fallback.');
-    return {};
-  }
-}
+const fs = require('fs');
+const path = require('path');
 
-async function loadNFLVerseData() {
-  try {
-    const nflversePath = path.join(__dirname, '..', 'public', 'nflverse-historical-player-data.json');
-    const raw = await fs.readFile(nflversePath, 'utf8');
-    return JSON.parse(raw);
-  } catch (e) {
-    console.warn('⚠️ No NFLVerse data found.');
-    return null;
-  }
-}
-
-async function loadInjuryNews() {
-  try {
-    const raw = await fs.readFile(INJURY_NEWS_PATH, 'utf8');
-    return JSON.parse(raw);
-  } catch (e) {
-    return {};
-  }
-}
-
-async function main() {
-  console.log(`🏈 Collecting NFL Anytime TD Player Data for Week ${CURRENT_WEEK}, ${CURRENT_SEASON}`);
-  const depthCharts = await loadDepthCharts();
-  const nflverse = await loadNFLVerseData();
-  const injuryNews = await loadInjuryNews();
-
-  // Merge logic: prefer NFLVerse for stats, supplement with depth charts and injury/news
-  const players = {};
-  if (nflverse && nflverse.players) {
-    for (const [playerId, pdata] of Object.entries(nflverse.players)) {
-      players[playerId] = {
-        ...pdata,
-        news: injuryNews[playerId] || {},
-        // Optionally merge depth chart info if needed
-      };
-    }
-  }
-
-  // Add any players from depth charts not in NFLVerse
-  for (const [team, positions] of Object.entries(depthCharts)) {
-    for (const pos of ['QB', 'RB', 'WR', 'TE']) {
-      for (const playerName of positions[pos] || []) {
-        const id = `${team.toLowerCase()}_${pos.toLowerCase()}_${playerName.replace(/\s+/g, '').toLowerCase()}`;
-        if (!players[id]) {
-          players[id] = {
-            name: playerName,
-            position: pos,
-            team,
-            news: injuryNews[id] || {}
-          };
-        }
-      }
-    }
-  }
-
-  const output = {
-    metadata: {
-      season: CURRENT_SEASON,
-      week: CURRENT_WEEK,
-      generated_at: new Date().toISOString(),
-      data_sources: ['nflverse', 'depth_charts', 'injury_news']
-    },
-    players
-  };
-
-  await fs.writeFile(OUTPUT_PATH, JSON.stringify(output, null, 2));
-  console.log(`✅ Wrote NFL Anytime TD player data to ${OUTPUT_PATH}`);
-}
-
-if (require.main === module) {
-  main();
-}
-  const qualityRatings = {
+// --- TEAM QUALITY ---
+function getTeamQuality(team) {
+  const ratings = {
     'KC': 1.5, 'BUF': 1.4, 'SF': 1.3, 'PHI': 1.2, 'DAL': 1.1, 'BAL': 1.1,
     'MIA': 1.0, 'CIN': 1.0, 'DET': 1.0, 'MIN': 0.9, 'LAC': 0.9, 'HOU': 0.9,
     'GB': 0.8, 'LAR': 0.8, 'ATL': 0.8, 'NYJ': 0.8, 'PIT': 0.8, 'SEA': 0.8,
     'IND': 0.7, 'TB': 0.7, 'JAX': 0.7, 'NO': 0.7, 'CLE': 0.7, 'TEN': 0.7,
     'LV': 0.6, 'DEN': 0.6, 'WAS': 0.6, 'CHI': 0.6, 'NE': 0.5, 'NYG': 0.5, 'CAR': 0.5, 'ARI': 0.5
   };
-  return qualityRatings[team] || 1.0;
+  return ratings[team] || 1.0;
 }
 
-async function generateAllPlayerStats(teamRosters) {
-  console.log('📊 Generating realistic player statistics...');
-  
+// --- LOAD ROSTERS ---
+async function loadWeekSpecificRosters() {
+  const filePath = path.join(__dirname, '..', 'history', CURRENT_SEASON, `week${CURRENT_WEEK}`, 'depth-charts.json');
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Depth charts not found: ${filePath}`);
+  }
+  const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  return data;
+}
+
+// --- PLAYER STATS GENERATION ---
+function generateAllPlayerStats(teamRosters) {
   const playerStats = {};
   let totalPlayers = 0;
-  
   for (const [teamAbbrev, teamData] of Object.entries(teamRosters)) {
     const teamQuality = getTeamQuality(teamAbbrev);
-    
     for (const position of ['QB', 'RB', 'WR', 'TE']) {
       for (const player of teamData.players[position] || []) {
         playerStats[player.id] = {
@@ -122,7 +49,6 @@ async function generateAllPlayerStats(teamRosters) {
       }
     }
   }
-  
   console.log(`✅ Generated stats for ${totalPlayers} players`);
   return playerStats;
 }
@@ -256,8 +182,7 @@ async function processComprehensiveData(allData) {
 }
 
 
-const fs = require('fs');
-const path = require('path');
+
 
 async function storeAllDataLocally(allData) {
   try {
@@ -280,8 +205,8 @@ async function main() {
   console.log(`📊 Reading from: history/${CURRENT_SEASON}/week${CURRENT_WEEK}/depth-charts.json`);
   
   try {
-    const teamRosters = await loadWeekSpecificRosters();
-    const playerStats = await generateAllPlayerStats(teamRosters);
+  const teamRosters = await loadWeekSpecificRosters();
+  const playerStats = generateAllPlayerStats(teamRosters);
     const redZoneData = generateRedZoneData(playerStats);
     const snapCounts = generateSnapCountData(playerStats);
     const targetShares = generateTargetShareData(playerStats);
@@ -307,6 +232,7 @@ async function main() {
   }
 }
 
-if (typeof window === 'undefined') {
+
+if (require.main === module) {
   main();
 }
