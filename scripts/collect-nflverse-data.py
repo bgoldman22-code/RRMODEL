@@ -36,8 +36,8 @@ CURRENT_SEASON = int(os.getenv('NFL_SEASON', '2025'))
 # Historical seasons for context (3 years)
 HISTORICAL_SEASONS = [2022, 2023, 2024]
 
-# Output path for committed JSON file
-OUTPUT_PATH = os.getenv('NFLVERSE_OUTPUT_PATH', 'public/nflverse-historical-player-data.json')
+# Output path for committed JSON file (now matches JS pipeline)
+OUTPUT_PATH = os.getenv('NFL_TD_PLAYER_DATA_PATH', 'public/nfl-anytime-td-player-data.json')
 
 # Path to existing injury/news pipeline output (if available)
 INJURY_NEWS_PATH = os.getenv('NFL_INJURY_NEWS_PATH', 'public/nfl-injury-news.json')
