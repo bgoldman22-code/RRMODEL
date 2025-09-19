@@ -33,21 +33,33 @@ const QUICK_TD_WEIGHTS = {
   }
 };
 
-// Load player data from committed JSON (public/nfl-anytime-td-player-data.json)
+// Load player data from committed JSON (correct paths for Netlify deployment)
 async function loadPlayerData() {
-  try {
-    const raw = await fs.readFile('public/nfl-anytime-td-player-data.json', 'utf8');
-    const data = JSON.parse(raw);
-    if (data && data.players) {
-      console.log(`✅ Loaded player data: ${Object.keys(data.players).length} players`);
-      return data;
+  const possiblePaths = [
+    'public/nfl-anytime-td-player-data.json',  // Local development
+    '/opt/buildhome/repo/public/nfl-anytime-td-player-data.json',  // Netlify build
+    '/var/task/public/nfl-anytime-td-player-data.json',  // Netlify function runtime
+    './public/nfl-anytime-td-player-data.json',  // Relative path
+    '../../public/nfl-anytime-td-player-data.json'  // Function relative path
+  ];
+  
+  for (const filePath of possiblePaths) {
+    try {
+      console.log(`🔍 Trying to load player data from: ${filePath}`);
+      const raw = await fs.readFile(filePath, 'utf8');
+      const data = JSON.parse(raw);
+      if (data && data.players) {
+        console.log(`✅ Loaded player data from ${filePath}: ${Object.keys(data.players).length} players`);
+        return data;
+      }
+    } catch (error) {
+      console.log(`❌ Failed to load from ${filePath}: ${error.message}`);
+      continue;
     }
-    throw new Error('No valid player data in file');
-  } catch (error) {
-    console.warn('⚠️ Player data file missing or invalid:', error.message);
-    console.log('📦 Using embedded player data as fallback');
-    return null;
   }
+  
+  console.warn('⚠️ Player data file not found in any location');
+  return null;
 }
 
 function getCurrentWeek() {
@@ -292,15 +304,32 @@ async function generateTDPredictions(games, season = '2025') {
   };
 }
 
-// Helper to load schedule from committed JSON
+// Helper to load schedule from committed JSON (correct paths for Netlify deployment)  
 async function getScheduleFromFile(season, week) {
-  try {
-    const raw = await fs.readFile('public/data/nfl-schedule-2025.json', 'utf8');
-    const data = JSON.parse(raw);
-    if (data && data.weeks && data.weeks[week]) {
-      return data.weeks[week].matchups || [];
+  const possiblePaths = [
+    'public/data/nfl-schedule-2025.json',  // Local development
+    '/opt/buildhome/repo/public/data/nfl-schedule-2025.json',  // Netlify build
+    '/var/task/public/data/nfl-schedule-2025.json',  // Netlify function runtime
+    './public/data/nfl-schedule-2025.json',  // Relative path
+    '../../public/data/nfl-schedule-2025.json'  // Function relative path
+  ];
+  
+  for (const filePath of possiblePaths) {
+    try {
+      console.log(`🔍 Trying to load schedule from: ${filePath}`);
+      const raw = await fs.readFile(filePath, 'utf8');
+      const data = JSON.parse(raw);
+      if (data && data.weeks && data.weeks[week]) {
+        console.log(`✅ Loaded schedule from ${filePath}: Week ${week} has ${data.weeks[week].matchups?.length || 0} games`);
+        return data.weeks[week].matchups || [];
+      }
+    } catch (error) {
+      console.log(`❌ Failed to load from ${filePath}: ${error.message}`);
+      continue;
     }
-  } catch (e) {}
+  }
+  
+  console.error('❌ Schedule file not found in any location');
   return [];
 }
 
