@@ -132,11 +132,11 @@ function NflTdInner(){
   );
 }
 
+
 export default function NflTd() {
   return (
     <ErrorBoundary>
       <NflTdInner />
     </ErrorBoundary>
   );
-}
 }
