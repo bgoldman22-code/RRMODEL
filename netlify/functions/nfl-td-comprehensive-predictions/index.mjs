@@ -323,6 +323,17 @@ export default async (request, context) => {
     console.log(`🏈 Generating TD predictions for ${games.length} games`);
     const result = await generateTDPredictions(games, season);
 
+    // Write latest predictions to public/data/nfl-td-comprehensive-latest.json for frontend
+    try {
+      const outDir = 'public/data';
+      await fs.mkdir(outDir, { recursive: true });
+      const outFile = `${outDir}/nfl-td-comprehensive-latest.json`;
+      await fs.writeFile(outFile, JSON.stringify(result, null, 2));
+      console.log(`✅ Wrote latest comprehensive TD predictions to ${outFile}`);
+    } catch (e) {
+      console.warn('⚠️ Could not write latest comprehensive TD predictions:', e.message);
+    }
+
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: {
