@@ -7,9 +7,14 @@ Fixed version - corrects API parameter errors
 import os
 import sys
 import json
-import requests
 import pandas as pd
 from datetime import datetime
+
+# Optional: import requests for ESPN or other APIs if needed
+try:
+    import requests
+except ImportError:
+    requests = None
 
 # Add current directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -23,14 +28,19 @@ except ImportError as e:
     os.system("pip install nfl_data_py")
     import nfl_data_py as nfl
 
+
 # Configuration from environment variables
 CURRENT_WEEK = int(os.getenv('NFL_WEEK', '4'))  # Week to PREDICT
 CURRENT_SEASON = int(os.getenv('NFL_SEASON', '2025'))
-NETLIFY_TOKEN = os.getenv('NETLIFY_BLOBS_TOKEN')
-NETLIFY_SITE_ID = os.getenv('NETLIFY_SITE_ID')
 
 # Historical seasons for context (3 years)
 HISTORICAL_SEASONS = [2022, 2023, 2024]
+
+# Output path for committed JSON file
+OUTPUT_PATH = os.getenv('NFLVERSE_OUTPUT_PATH', 'public/nflverse-historical-player-data.json')
+
+# Path to existing injury/news pipeline output (if available)
+INJURY_NEWS_PATH = os.getenv('NFL_INJURY_NEWS_PATH', 'public/nfl-injury-news.json')
 
 def main():
     """Main execution function"""
@@ -38,36 +48,36 @@ def main():
     print(f"📊 Historical seasons: {HISTORICAL_SEASONS} (3 years of data)")
     print(f"📈 Current season: Weeks 1-{CURRENT_WEEK-1} (games already played)")
     print(f"🎯 Target: Generate predictions for Week {CURRENT_WEEK}, {CURRENT_SEASON}")
-    
+
     try:
         # Collect historical player statistics
         print("📊 Collecting historical player statistics...")
         historical_stats = collect_historical_stats()
-        
+
         # Collect recent performance data
         print("📈 Collecting recent performance trends...")
         recent_performance = collect_recent_performance()
-        
+
         # Collect team data for context
         print("🏟️ Collecting team context data...")
         team_context = collect_team_context()
-        
+
+        # Load injury/news info from existing pipeline or ESPN (if available)
+        print("🩺 Loading injury/news info from supplemental sources...")
+        injury_news = load_injury_news()
+
         # Combine all data
         print("🔄 Processing comprehensive dataset...")
         comprehensive_data = process_comprehensive_data(
-            historical_stats, recent_performance, team_context
+            historical_stats, recent_performance, team_context, injury_news
         )
-        
-        # Store in Netlify Blobs
-        print("💾 Storing historical data in Netlify Blobs...")
-        store_results = store_nflverse_data(comprehensive_data)
-        
-        if store_results:
-            print("✅ NFLVerse historical data collection completed successfully!")
-            print(f"📊 Processed {len(comprehensive_data.get('players', {}))} players with historical context")
-        else:
-            print("⚠️ Data collected but storage failed - check Netlify credentials")
-            
+
+        # Write output to committed JSON file
+        print(f"💾 Writing output to {OUTPUT_PATH} ...")
+        with open(OUTPUT_PATH, 'w') as f:
+            json.dump(comprehensive_data, f, indent=2)
+        print(f"✅ NFLVerse + news data written to {OUTPUT_PATH}")
+
     except Exception as e:
         print(f"❌ NFLVerse data collection failed: {e}")
         print("This is optional - JavaScript data collection should be sufficient for TD props")
@@ -178,60 +188,65 @@ def collect_team_context():
             'offensive_rating': [1.0] * len(teams)
         })
 
-def process_comprehensive_data(historical_stats, recent_performance, team_context):
-    """Process and combine all collected data"""
-    print("Processing comprehensive player analysis with historical context...")
-    
+def process_comprehensive_data(historical_stats, recent_performance, team_context, injury_news):
+    """Process and combine all collected data, including injury/news info"""
+    print("Processing comprehensive player analysis with historical context and news...")
+
     # Create comprehensive dataset
     comprehensive = {
         'metadata': {
             'season': CURRENT_SEASON,
             'week': CURRENT_WEEK,
             'generated_at': datetime.now().isoformat(),
-            'data_source': 'nflverse_historical',
+            'data_source': 'nflverse_historical+news',
             'historical_seasons': HISTORICAL_SEASONS,
             'total_players': len(historical_stats)
         },
         'players': {},
         'team_context': team_context.to_dict('records') if not team_context.empty else []
     }
-    
+
     # Process each player's historical data
     if not historical_stats.empty:
         for idx, player in historical_stats.iterrows():
             player_id = str(player.get('player_id', f"player_{idx}"))
-            
+
             # Get recent performance for this player
             recent_data = recent_performance[
                 recent_performance['player_id'] == player.get('player_id')
             ] if not recent_performance.empty else pd.DataFrame()
-            
+
+            # Get injury/news info for this player (if available)
+            news = injury_news.get(player_id, {}) if injury_news else {}
+
             comprehensive['players'][player_id] = {
                 'name': player.get('player_name', 'Unknown'),
                 'position': player.get('position', 'UNK'),
                 'team': player.get('recent_team', player.get('team', 'UNK')),
-                
+
                 'historical_performance': {
                     'career_td_rate': float(player.get('td_rate', 0)),
                     'career_games': int(player.get('games', 0)),
                     'career_tds': int(player.get('rushing_tds', 0) + player.get('receiving_tds', 0)),
                     'seasons_analyzed': len(HISTORICAL_SEASONS)
                 },
-                
+
                 'recent_form': {
                     'recent_td_rate': float(recent_data['recent_td_rate'].iloc[0]) if not recent_data.empty else 0,
                     'recent_targets': float(recent_data['targets'].iloc[0]) if not recent_data.empty else 0,
                     'recent_carries': float(recent_data['carries'].iloc[0]) if not recent_data.empty else 0,
                     'games_analyzed': int(recent_data['week'].iloc[0]) if not recent_data.empty else 0
                 },
-                
+
                 'prediction_factors': {
                     'historical_consistency': calculate_consistency(player),
                     'position_modifier': get_position_modifier(player.get('position', 'UNK')),
                     'team_context': get_team_context(player.get('team'), team_context)
-                }
+                },
+
+                'news': news  # Add injury/news info if available
             }
-    
+
     print(f"✅ Processed comprehensive data for {len(comprehensive['players'])} players")
     return comprehensive
 
@@ -279,51 +294,25 @@ def get_team_context(team, team_context):
         'offensive_rating': 1.0  # Default
     }
 
-def store_nflverse_data(comprehensive_data):
-    """Store NFLVerse data in Netlify Blobs"""
-    if not NETLIFY_TOKEN or not NETLIFY_SITE_ID:
-        print("⚠️ Cannot store NFLVerse data: Missing Netlify credentials (NETLIFY_BLOBS_TOKEN or NETLIFY_SITE_ID)")
-        return False
-    
-    try:
-        # Store historical analysis data
-        blob_key = f"nfl/historical/nflverse-analysis-{CURRENT_SEASON}-week{CURRENT_WEEK}.json"
-        
-        response = requests.put(
-            f"https://api.netlify.com/api/v1/sites/{NETLIFY_SITE_ID}/blobs/{blob_key}",
-            headers={
-                'Authorization': f'Bearer {NETLIFY_TOKEN}',
-                'Content-Type': 'application/json'
-            },
-            json=comprehensive_data
-        )
-        
-        if response.status_code == 200:
-            print(f"✅ Stored NFLVerse data: {blob_key}")
-            
-            # Also store as latest for easy access
-            latest_response = requests.put(
-                f"https://api.netlify.com/api/v1/sites/{NETLIFY_SITE_ID}/blobs/nfl/historical/latest.json",
-                headers={
-                    'Authorization': f'Bearer {NETLIFY_TOKEN}',
-                    'Content-Type': 'application/json'
-                },
-                json=comprehensive_data
-            )
-            
-            if latest_response.status_code == 200:
-                print("✅ Stored latest NFLVerse data")
-                return True
-            else:
-                print(f"⚠️ Failed to store latest NFLVerse data: {latest_response.status_code}")
-                return False
-        else:
-            print(f"❌ Failed to store NFLVerse data: {response.status_code} - {response.text}")
-            return False
-            
-    except Exception as e:
-        print(f"❌ Error storing NFLVerse data: {e}")
-        return False
+
+# Remove Netlify Blobs storage logic; output is now written to a committed JSON file in main()
+def load_injury_news():
+    """Load injury/news info from existing pipeline output or ESPN (placeholder)"""
+    # Try to load from local file (output of NFL Predictions pipeline)
+    if os.path.exists(INJURY_NEWS_PATH):
+        try:
+            with open(INJURY_NEWS_PATH, 'r') as f:
+                news_data = json.load(f)
+            # Expecting a dict keyed by player_id
+            print(f"✅ Loaded injury/news info from {INJURY_NEWS_PATH}")
+            return news_data
+        except Exception as e:
+            print(f"⚠️ Failed to load injury/news info: {e}")
+            return {}
+    # Placeholder: Optionally fetch from ESPN or other free APIs here
+    # Example: requests.get('https://site/api/players/injuries')
+    print("ℹ️ No local injury/news info found; skipping supplemental news fetch.")
+    return {}
 
 if __name__ == "__main__":
     main()
