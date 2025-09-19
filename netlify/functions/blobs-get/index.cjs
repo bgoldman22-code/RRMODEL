@@ -1,9 +1,8 @@
 // netlify/functions/blobs-get/index.cjs
-// FINAL FIX: Fetch the actual data from the signed URL
+// FIXED: Proper error handling and fetch logic
 
 exports.handler = async (event, context) => {
   try {
-    // Handle CORS preflight
     if (event.httpMethod === 'OPTIONS') {
       return {
         statusCode: 200,
@@ -16,7 +15,6 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Get blob key from query parameters
     const key = event.queryStringParameters?.key;
     
     if (!key) {
@@ -35,7 +33,6 @@ exports.handler = async (event, context) => {
 
     console.log(`Fetching blob data: ${key}`);
 
-    // Get environment variables
     const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
     const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
     
@@ -47,25 +44,56 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          error: 'Missing Netlify credentials',
-          message: 'NETLIFY_TOKEN or NETLIFY_SITE_ID not configured'
+          error: 'Missing Netlify credentials'
         })
       };
     }
 
-    // Import fetch dynamically
-    const fetch = (await import('node-fetch')).default;
+    // Import fetch with better error handling
+    let fetch;
+    try {
+      fetch = (await import('node-fetch')).default;
+    } catch (importError) {
+      console.error('Failed to import node-fetch:', importError);
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          error: 'Server configuration error',
+          message: 'Failed to load fetch module'
+        })
+      };
+    }
     
-    // Step 1: Get signed URL from Netlify Blobs API
+    // Step 1: Get signed URL
     const blobUrl = `https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/blobs/${key}`;
     
-    const urlResponse = await fetch(blobUrl, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${NETLIFY_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    let urlResponse;
+    try {
+      urlResponse = await fetch(blobUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${NETLIFY_TOKEN}`,
+          'Content-Type': 'application/json'
+        }
+      });
+    } catch (fetchError) {
+      console.error('Failed to fetch signed URL:', fetchError);
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          error: 'Failed to connect to Netlify Blobs API',
+          message: fetchError.message
+        })
+      };
+    }
 
     if (!urlResponse.ok) {
       console.log(`Blob not found: ${key} (${urlResponse.status})`);
@@ -79,15 +107,28 @@ exports.handler = async (event, context) => {
           error: 'Blob not found',
           key: key,
           status: urlResponse.status,
-          message: 'Data may not have been collected yet. Run player data collection first.'
+          message: 'Data collection may not have run yet. Try running the GitHub Action first.'
         })
       };
     }
 
-    const urlData = await urlResponse.json();
-    console.log(`Got signed URL for: ${key}`);
+    let urlData;
+    try {
+      urlData = await urlResponse.json();
+    } catch (jsonError) {
+      console.error('Failed to parse URL response:', jsonError);
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          error: 'Invalid response from Netlify Blobs API'
+        })
+      };
+    }
 
-    // Step 2: Fetch actual data from the signed URL
     if (!urlData.url) {
       return {
         statusCode: 500,
@@ -96,15 +137,39 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          error: 'No signed URL returned',
-          key: key
+          error: 'No signed URL returned from Netlify Blobs API'
         })
       };
     }
 
-    const dataResponse = await fetch(urlData.url);
+    console.log(`Got signed URL for: ${key}`);
+
+    // Step 2: Fetch actual data with better error handling
+    let dataResponse;
+    try {
+      dataResponse = await fetch(urlData.url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+    } catch (dataFetchError) {
+      console.error('Failed to fetch from signed URL:', dataFetchError);
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          error: 'Failed to fetch data from storage',
+          message: dataFetchError.message
+        })
+      };
+    }
     
     if (!dataResponse.ok) {
+      console.error(`Data fetch failed: ${dataResponse.status} ${dataResponse.statusText}`);
       return {
         statusCode: 500,
         headers: {
@@ -113,12 +178,46 @@ exports.handler = async (event, context) => {
         },
         body: JSON.stringify({
           error: 'Failed to fetch data from signed URL',
-          status: dataResponse.status
+          status: dataResponse.status,
+          statusText: dataResponse.statusText
         })
       };
     }
 
-    const actualData = await dataResponse.json();
+    let actualData;
+    try {
+      actualData = await dataResponse.json();
+    } catch (dataJsonError) {
+      console.error('Failed to parse data as JSON:', dataJsonError);
+      // Try to get the raw text to see what we actually received
+      try {
+        const rawText = await dataResponse.text();
+        console.error('Raw response:', rawText.substring(0, 200));
+        return {
+          statusCode: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            error: 'Data is not valid JSON',
+            preview: rawText.substring(0, 100)
+          })
+        };
+      } catch (textError) {
+        return {
+          statusCode: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            error: 'Failed to parse data'
+          })
+        };
+      }
+    }
+
     console.log(`Successfully retrieved data for: ${key}`);
 
     return {
@@ -143,7 +242,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         error: 'Blob access failed',
         message: error.message,
-        key: event.queryStringParameters?.key || 'undefined'
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       })
     };
   }
