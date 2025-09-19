@@ -1,5 +1,5 @@
 // netlify/functions/blobs-get/index.cjs
-// Fixed version with proper error handling
+// Simple version using direct Netlify API calls
 
 exports.handler = async (event, context) => {
   try {
@@ -33,15 +33,13 @@ exports.handler = async (event, context) => {
       };
     }
 
-    console.log(`Attempting to fetch blob: ${key}`);
+    console.log(`Fetching blob via direct API: ${key}`);
 
-    // Try to import blobs - this might fail if package not available
-    let getStore;
-    try {
-      const blobsModule = require('@netlify/blobs');
-      getStore = blobsModule.getStore;
-    } catch (importError) {
-      console.error('Failed to import @netlify/blobs:', importError);
+    // Use direct Netlify API call (same as your working NFL predictions)
+    const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
+    const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
+    
+    if (!NETLIFY_TOKEN || !NETLIFY_SITE_ID) {
       return {
         statusCode: 500,
         headers: {
@@ -49,21 +47,26 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          error: 'Netlify Blobs package not available',
-          message: 'Need to add @netlify/blobs dependency',
-          key: key
+          error: 'Missing Netlify credentials',
+          message: 'NETLIFY_TOKEN or NETLIFY_SITE_ID not configured'
         })
       };
     }
 
-    // Initialize blob store
-    const store = getStore('nfl-data');
+    // Direct blob API call
+    const fetch = (await import('node-fetch')).default;
+    const blobUrl = `https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/blobs/${key}`;
     
-    // Try to get the blob
-    const data = await store.get(key, { type: 'json' });
-    
-    if (!data) {
-      console.log(`Blob not found: ${key}`);
+    const response = await fetch(blobUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${NETLIFY_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      console.log(`Blob not found: ${key} (${response.status})`);
       return {
         statusCode: 404,
         headers: {
@@ -73,11 +76,13 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           error: 'Blob not found',
           key: key,
+          status: response.status,
           message: 'Data may not have been collected yet. Run player data collection first.'
         })
       };
     }
 
+    const data = await response.json();
     console.log(`Successfully retrieved blob: ${key}`);
 
     return {
@@ -102,7 +107,6 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         error: 'Blob access failed',
         message: error.message,
-        stack: error.stack,
         key: event.queryStringParameters?.key || 'undefined'
       })
     };
