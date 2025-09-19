@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL TD Predictions Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a2e; color: white; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .controls { margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
+        select, input { padding: 8px; border-radius: 4px; border: 1px solid #555; background: #2a2a3e; color: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #555; }
+        th { background: #16213e; position: sticky; top: 0; }
+        .high-prob { background: rgba(0, 255, 0, 0.1); }
+        .med-prob { background: rgba(255, 255, 0, 0.1); }
+        .low-prob { background: rgba(255, 0, 0, 0.1); }
+        .position-rb { color: #4CAF50; }
+        .position-wr { color: #2196F3; }
+        .position-te { color: #FF9800; }
+        .position-qb { color: #E91E63; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏈 NFL TD Predictions</h1>
+            <p>Real-time touchdown probability predictions for all 448 players</p>
+        </div>
+        
+        <div class="controls">
+            <label>Filter by Team:</label>
+            <select id="teamFilter">
+                <option value="">All Teams</option>
+            </select>
+            
+            <label>Filter by Position:</label>
+            <select id="positionFilter">
+                <option value="">All Positions</option>
+                <option value="RB">RB</option>
+                <option value="WR">WR</option>
+                <option value="TE">TE</option>
+                <option value="QB">QB</option>
+            </select>
+            
+            <label>Min Anytime TD %:</label>
+            <input type="range" id="probFilter" min="0" max="100" value="0" oninput="updateFilter()">
+            <span id="probValue">0%</span>
+        </div>
+
+        <table id="predictionsTable">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Pos</th>
+                    <th>Team</th>
+                    <th>Anytime TD</th>
+                    <th>First TD</th>
+                    <th>Multiple TD</th>
+                    <th>Team Quality</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let allPlayers = [];
+        
+        async function loadData() {
+            try {
+                const response = await fetch('./public/data/nfl-td-comprehensive-latest.json');
+                const data = await response.json();
+                
+                // Flatten all players
+                allPlayers = [];
+                data.predictions.forEach(game => {
+                    game.players.forEach(player => {
+                        allPlayers.push(player);
+                    });
+                });
+                
+                // Sort by anytime TD probability
+                allPlayers.sort((a, b) => b.anytime_td.probability - a.anytime_td.probability);
+                
+                // Populate team filter
+                const teams = [...new Set(allPlayers.map(p => p.team))].sort();
+                const teamFilter = document.getElementById('teamFilter');
+                teams.forEach(team => {
+                    const option = document.createElement('option');
+                    option.value = team;
+                    option.textContent = team;
+                    teamFilter.appendChild(option);
+                });
+                
+                displayPlayers(allPlayers);
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('tableBody').innerHTML = 
+                    '<tr><td colspan="8">Error loading predictions data</td></tr>';
+            }
+        }
+        
+        function displayPlayers(players) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            players.forEach((player, index) => {
+                const row = document.createElement('tr');
+                
+                const anytimeProb = player.anytime_td.probability;
+                let probClass = 'low-prob';
+                if (anytimeProb > 0.5) probClass = 'high-prob';
+                else if (anytimeProb > 0.3) probClass = 'med-prob';
+                
+                row.className = probClass;
+                
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${player.name}</td>
+                    <td><span class="position-${player.position.toLowerCase()}">${player.position}</span></td>
+                    <td>${player.team}</td>
+                    <td><strong>${(anytimeProb * 100).toFixed(1)}%</strong></td>
+                    <td>${(player.first_td.probability * 100).toFixed(1)}%</td>
+                    <td>${(player.multiple_td.probability * 100).toFixed(1)}%</td>
+                    <td>${player.key_factors.team_quality}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        function updateFilter() {
+            const teamFilter = document.getElementById('teamFilter').value;
+            const positionFilter = document.getElementById('positionFilter').value;
+            const probFilter = document.getElementById('probFilter').value / 100;
+            
+            document.getElementById('probValue').textContent = `${probFilter * 100}%`;
+            
+            let filteredPlayers = allPlayers.filter(player => {
+                return (!teamFilter || player.team === teamFilter) &&
+                       (!positionFilter || player.position === positionFilter) &&
+                       (player.anytime_td.probability >= probFilter);
+            });
+            
+            displayPlayers(filteredPlayers);
+        }
+        
+        document.getElementById('teamFilter').addEventListener('change', updateFilter);
+        document.getElementById('positionFilter').addEventListener('change', updateFilter);
+        
+        loadData();
+    </script>
+</body>
+</html>

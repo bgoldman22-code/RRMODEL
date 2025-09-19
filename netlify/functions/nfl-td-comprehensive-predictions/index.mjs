@@ -86,8 +86,49 @@ function addPlayerMetrics(player) {
       targetShare: estimateTargetShare(player),
       redZoneShare: estimateRedZoneShare(player),
       goalLineShare: estimateGoalLineShare(player)
-    }
+    },
+    // Add individual talent rating
+    talentRating: calculatePlayerTalent(player)
   };
+}
+
+function calculatePlayerTalent(player) {
+  // Individual talent ratings (0.5 = backup, 1.0 = average starter, 1.5+ = elite)
+  const playerName = player.name.toLowerCase();
+  const position = player.position;
+  
+  // Elite superstars get major boost
+  if (playerName.includes('travis kelce') || playerName.includes('tyreek hill') ||
+      playerName.includes('davante adams') || playerName.includes('cooper kupp') ||
+      playerName.includes('christian mccaffrey') || playerName.includes('derrick henry') ||
+      playerName.includes('josh allen') || playerName.includes('lamar jackson') ||
+      playerName.includes('saquon barkley') || playerName.includes('nick chubb')) {
+    return 1.8; // Elite tier
+  }
+  
+  // Good starters
+  if (playerName.includes('james cook') || playerName.includes('dalton kincaid') ||
+      playerName.includes('keon coleman') || playerName.includes('a.j. brown') ||
+      playerName.includes('devonta smith') || playerName.includes('brandon aiyuk')) {
+    return 1.3; // Good starter
+  }
+  
+  // Position-based defaults with depth chart consideration
+  const depthPenalties = {
+    1: 1.0,    // Starter
+    2: 0.7,    // Backup
+    3: 0.4,    // 3rd string
+    4: 0.2     // Deep backup
+  };
+  
+  const depthPosition = parseInt(player.id?.split('_').pop()) || 1;
+  const depthPenalty = depthPenalties[Math.min(depthPosition, 4)] || 0.2;
+  
+  const positionBase = {
+    'RB': 1.1, 'WR': 1.0, 'TE': 0.9, 'QB': 1.2
+  }[position] || 1.0;
+  
+  return positionBase * depthPenalty;
 }
 
 function estimateRedZoneTargets(player) {
@@ -129,32 +170,36 @@ function estimateSeasonTDs(player) {
 function calculateQuickAnytimeTD(player) {
   const weights = QUICK_TD_WEIGHTS.ANYTIME;
   
-  // Realistic base probabilities by position
+  // Base probabilities by position
   const positionBase = {
-    'RB': 0.15, 'WR': 0.12, 'TE': 0.08, 'QB': 0.03
-  }[player.position] || 0.05;
+    'RB': 0.16, 'WR': 0.13, 'TE': 0.10, 'QB': 0.05
+  }[player.position] || 0.06;
   
-  // Reduced team quality impact (was too high)
-  const teamQuality = (getTeamQuality(player.team) - 1.0) * 0.5 + 1.0; // Normalize around 1.0
+  // Team quality impact (reduced to avoid total KC domination)
+  const teamQuality = getTeamQuality(player.team);
+  const teamMultiplier = 1.0 + ((teamQuality - 1.0) * 0.3); // Reduced from full impact
+  
   const snapShare = player.opportunityFactors?.snapShare || 0.5;
   const redZoneRole = player.opportunityFactors?.redZoneShare || 0.1;
+  
+  // Use individual talent rating instead of generic modifiers
+  const talentModifier = player.talentRating || 1.0;
   
   // Starter vs backup penalty for QBs
   let starterPenalty = 1.0;
   if (player.position === 'QB' && 
       (player.name.includes('II') || player.name.includes('Minshew') || 
        player.name.includes('Brissett') || player.name.includes('Mills'))) {
-    starterPenalty = 0.3; // Backup QBs much less likely
+    starterPenalty = 0.4;
   }
   
   const score = 
-    (positionBase * weights.position_base) +
-    ((teamQuality - 1.0) * weights.team_quality) +
+    (positionBase * weights.position_base * talentModifier * teamMultiplier) +
     (snapShare * weights.snap_share) +
     (redZoneRole * weights.red_zone_role);
   
   const finalScore = score * starterPenalty;
-  return Math.max(0.02, Math.min(0.45, finalScore)); // Reduced max from 0.75 to 0.45
+  return Math.max(0.03, Math.min(0.35, finalScore));
 }
 
 function calculateQuickFirstTD(anytimeProb) {
@@ -166,13 +211,13 @@ function calculateQuickMultipleTD(anytimeProb) {
 }
 
 function getTeamQuality(team) {
-  // More realistic team quality ratings (closer to 1.0, less extreme)
+  // More differentiated team quality ratings for better TD distribution
   const ratings = {
-    'KC': 1.25, 'BUF': 1.20, 'SF': 1.18, 'PHI': 1.15, 'DAL': 1.12, 'BAL': 1.12,
-    'MIA': 1.08, 'CIN': 1.05, 'DET': 1.05, 'MIN': 1.00, 'LAC': 1.00, 'HOU': 1.00,
-    'GB': 0.98, 'LAR': 0.98, 'ATL': 0.95, 'NYJ': 0.95, 'PIT': 0.95, 'SEA': 0.95,
-    'IND': 0.92, 'TB': 0.92, 'JAX': 0.90, 'NO': 0.90, 'CLE': 0.88, 'TEN': 0.88,
-    'LV': 0.85, 'DEN': 0.85, 'WAS': 0.85, 'CHI': 0.83, 'NE': 0.80, 'NYG': 0.80, 'CAR': 0.78, 'ARI': 0.75
+    'KC': 1.35, 'BUF': 1.30, 'SF': 1.25, 'PHI': 1.20, 'DAL': 1.18, 'BAL': 1.18,
+    'MIA': 1.15, 'CIN': 1.12, 'DET': 1.12, 'MIN': 1.08, 'LAC': 1.08, 'HOU': 1.05,
+    'GB': 1.02, 'LAR': 1.02, 'ATL': 0.98, 'NYJ': 0.95, 'PIT': 0.95, 'SEA': 0.95,
+    'IND': 0.90, 'TB': 0.90, 'JAX': 0.85, 'NO': 0.85, 'CLE': 0.82, 'TEN': 0.82,
+    'LV': 0.78, 'DEN': 0.78, 'WAS': 0.75, 'CHI': 0.72, 'NE': 0.70, 'NYG': 0.70, 'CAR': 0.65, 'ARI': 0.62
   };
   return ratings[team] || 1.0;
 }
