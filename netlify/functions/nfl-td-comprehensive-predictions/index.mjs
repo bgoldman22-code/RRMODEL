@@ -270,7 +270,19 @@ async function generateTDPredictions(games, season = '2025') {
   };
 }
 
-// Netlify Function Handler (FIXED - proper pattern)
+// Helper to load schedule from committed JSON
+async function getScheduleFromFile(season, week) {
+  try {
+    const raw = await fs.readFile('public/data/nfl-schedule-2025.json', 'utf8');
+    const data = JSON.parse(raw);
+    if (data && data.weeks && data.weeks[week]) {
+      return data.weeks[week].matchups || [];
+    }
+  } catch (e) {}
+  return [];
+}
+
+// Netlify Function Handler (FIXED - proper pattern, now loads schedule from correct path)
 export default async (request, context) => {
   try {
     if (request.method === 'OPTIONS') {
@@ -286,38 +298,51 @@ export default async (request, context) => {
 
     let games = [];
     let season = '2025';
-    
+    let week = null;
+
     if (request.method === 'POST') {
       const body = await request.json();
-      games = body.games || [];
       season = body.season || '2025';
+      week = body.week || null;
+      if (Array.isArray(body.games) && body.games.length > 0) {
+        games = body.games;
+      }
+    } else if (request.method === 'GET') {
+      const url = new URL(request.url);
+      season = url.searchParams.get('season') || '2025';
+      week = url.searchParams.get('week');
     }
 
-    if (games.length === 0) {
+    if ((!games || games.length === 0) && week) {
+      // Load games for the week from the correct schedule file
+      games = await getScheduleFromFile(season, week);
+    }
+
+    if (!games || games.length === 0) {
       throw new Error('No games provided for TD predictions');
     }
 
     console.log(`🏈 Generating TD predictions for ${games.length} games`);
     const result = await generateTDPredictions(games, season);
-    
+
     return new Response(JSON.stringify(result), {
       status: 200,
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       }
     });
-    
+
   } catch (error) {
     console.error('❌ TD prediction generation failed:', error);
-    
+
     return new Response(JSON.stringify({
       success: false,
       error: 'TD prediction generation failed',
       message: error.message
     }), {
       status: 500,
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       }
