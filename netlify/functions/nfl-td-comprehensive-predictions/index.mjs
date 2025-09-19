@@ -33,21 +33,33 @@ const QUICK_TD_WEIGHTS = {
   }
 };
 
-// Load player data from committed JSON (public/nfl-anytime-td-player-data.json)
+// Load player data from committed JSON (correct paths for Netlify deployment)
 async function loadPlayerData() {
-  try {
-    const raw = await fs.readFile('public/nfl-anytime-td-player-data.json', 'utf8');
-    const data = JSON.parse(raw);
-    if (data && data.players) {
-      console.log(`✅ Loaded player data: ${Object.keys(data.players).length} players`);
-      return data;
+  const possiblePaths = [
+    'public/nfl-anytime-td-player-data.json',  // Local development
+    '/opt/buildhome/repo/public/nfl-anytime-td-player-data.json',  // Netlify build
+    '/var/task/public/nfl-anytime-td-player-data.json',  // Netlify function runtime
+    './public/nfl-anytime-td-player-data.json',  // Relative path
+    '../../public/nfl-anytime-td-player-data.json'  // Function relative path
+  ];
+  
+  for (const filePath of possiblePaths) {
+    try {
+      console.log(`🔍 Trying to load player data from: ${filePath}`);
+      const raw = await fs.readFile(filePath, 'utf8');
+      const data = JSON.parse(raw);
+      if (data && data.players) {
+        console.log(`✅ Loaded player data from ${filePath}: ${Object.keys(data.players).length} players`);
+        return data;
+      }
+    } catch (error) {
+      console.log(`❌ Failed to load from ${filePath}: ${error.message}`);
+      continue;
     }
-    throw new Error('No valid player data in file');
-  } catch (error) {
-    console.warn('⚠️ Player data file missing or invalid:', error.message);
-    console.log('📦 Using embedded player data as fallback');
-    return null;
   }
+  
+  console.warn('⚠️ Player data file not found in any location');
+  return null;
 }
 
 function getCurrentWeek() {
@@ -117,21 +129,32 @@ function estimateSeasonTDs(player) {
 function calculateQuickAnytimeTD(player) {
   const weights = QUICK_TD_WEIGHTS.ANYTIME;
   
+  // Realistic base probabilities by position
   const positionBase = {
-    'RB': 0.25, 'WR': 0.20, 'TE': 0.15, 'QB': 0.08
-  }[player.position] || 0.10;
+    'RB': 0.15, 'WR': 0.12, 'TE': 0.08, 'QB': 0.03
+  }[player.position] || 0.05;
   
-  const teamQuality = getTeamQuality(player.team);
+  // Reduced team quality impact (was too high)
+  const teamQuality = (getTeamQuality(player.team) - 1.0) * 0.5 + 1.0; // Normalize around 1.0
   const snapShare = player.opportunityFactors?.snapShare || 0.5;
   const redZoneRole = player.opportunityFactors?.redZoneShare || 0.1;
   
+  // Starter vs backup penalty for QBs
+  let starterPenalty = 1.0;
+  if (player.position === 'QB' && 
+      (player.name.includes('II') || player.name.includes('Minshew') || 
+       player.name.includes('Brissett') || player.name.includes('Mills'))) {
+    starterPenalty = 0.3; // Backup QBs much less likely
+  }
+  
   const score = 
     (positionBase * weights.position_base) +
-    (teamQuality * weights.team_quality) +
+    ((teamQuality - 1.0) * weights.team_quality) +
     (snapShare * weights.snap_share) +
     (redZoneRole * weights.red_zone_role);
   
-  return Math.max(0.03, Math.min(0.75, score));
+  const finalScore = score * starterPenalty;
+  return Math.max(0.02, Math.min(0.45, finalScore)); // Reduced max from 0.75 to 0.45
 }
 
 function calculateQuickFirstTD(anytimeProb) {
@@ -143,12 +166,13 @@ function calculateQuickMultipleTD(anytimeProb) {
 }
 
 function getTeamQuality(team) {
+  // More realistic team quality ratings (closer to 1.0, less extreme)
   const ratings = {
-    'KC': 1.5, 'BUF': 1.4, 'SF': 1.3, 'PHI': 1.2, 'DAL': 1.1, 'BAL': 1.1,
-    'MIA': 1.0, 'CIN': 1.0, 'DET': 1.0, 'MIN': 0.9, 'LAC': 0.9, 'HOU': 0.9,
-    'GB': 0.8, 'LAR': 0.8, 'ATL': 0.8, 'NYJ': 0.8, 'PIT': 0.8, 'SEA': 0.8,
-    'IND': 0.7, 'TB': 0.7, 'JAX': 0.7, 'NO': 0.7, 'CLE': 0.7, 'TEN': 0.7,
-    'LV': 0.6, 'DEN': 0.6, 'WAS': 0.6, 'CHI': 0.6, 'NE': 0.5, 'NYG': 0.5, 'CAR': 0.5, 'ARI': 0.5
+    'KC': 1.25, 'BUF': 1.20, 'SF': 1.18, 'PHI': 1.15, 'DAL': 1.12, 'BAL': 1.12,
+    'MIA': 1.08, 'CIN': 1.05, 'DET': 1.05, 'MIN': 1.00, 'LAC': 1.00, 'HOU': 1.00,
+    'GB': 0.98, 'LAR': 0.98, 'ATL': 0.95, 'NYJ': 0.95, 'PIT': 0.95, 'SEA': 0.95,
+    'IND': 0.92, 'TB': 0.92, 'JAX': 0.90, 'NO': 0.90, 'CLE': 0.88, 'TEN': 0.88,
+    'LV': 0.85, 'DEN': 0.85, 'WAS': 0.85, 'CHI': 0.83, 'NE': 0.80, 'NYG': 0.80, 'CAR': 0.78, 'ARI': 0.75
   };
   return ratings[team] || 1.0;
 }
@@ -292,15 +316,32 @@ async function generateTDPredictions(games, season = '2025') {
   };
 }
 
-// Helper to load schedule from committed JSON
+// Helper to load schedule from committed JSON (correct paths for Netlify deployment)  
 async function getScheduleFromFile(season, week) {
-  try {
-    const raw = await fs.readFile('public/data/nfl-schedule-2025.json', 'utf8');
-    const data = JSON.parse(raw);
-    if (data && data.weeks && data.weeks[week]) {
-      return data.weeks[week].matchups || [];
+  const possiblePaths = [
+    'public/data/nfl-schedule-2025.json',  // Local development
+    '/opt/buildhome/repo/public/data/nfl-schedule-2025.json',  // Netlify build
+    '/var/task/public/data/nfl-schedule-2025.json',  // Netlify function runtime
+    './public/data/nfl-schedule-2025.json',  // Relative path
+    '../../public/data/nfl-schedule-2025.json'  // Function relative path
+  ];
+  
+  for (const filePath of possiblePaths) {
+    try {
+      console.log(`🔍 Trying to load schedule from: ${filePath}`);
+      const raw = await fs.readFile(filePath, 'utf8');
+      const data = JSON.parse(raw);
+      if (data && data.weeks && data.weeks[week]) {
+        console.log(`✅ Loaded schedule from ${filePath}: Week ${week} has ${data.weeks[week].matchups?.length || 0} games`);
+        return data.weeks[week].matchups || [];
+      }
+    } catch (error) {
+      console.log(`❌ Failed to load from ${filePath}: ${error.message}`);
+      continue;
     }
-  } catch (e) {}
+  }
+  
+  console.error('❌ Schedule file not found in any location');
   return [];
 }
 
