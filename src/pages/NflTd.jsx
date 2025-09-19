@@ -23,16 +23,27 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
-import { ENABLE_NFL_TD } from '../config/features';
-import { getWeeksAvailable, getGamesForWeek } from '../utils/nflSchedule';
+// Canonical version: fetches schedule and player data from committed JSON files
 import NflTdTable from '../components/NflTdTable';
 
 function qsWeek(){ const w = parseInt(new URLSearchParams(location.search).get('week')||'',10); return Number.isFinite(w)? w : null; }
 
+function getTeamAbbreviation(fullName) {
+  const nameMap = {
+    'Arizona Cardinals': 'ARI', 'Atlanta Falcons': 'ATL', 'Baltimore Ravens': 'BAL', 'Buffalo Bills': 'BUF',
+    'Carolina Panthers': 'CAR', 'Chicago Bears': 'CHI', 'Cincinnati Bengals': 'CIN', 'Cleveland Browns': 'CLE',
+    'Dallas Cowboys': 'DAL', 'Denver Broncos': 'DEN', 'Detroit Lions': 'DET', 'Green Bay Packers': 'GB',
+    'Houston Texans': 'HOU', 'Indianapolis Colts': 'IND', 'Jacksonville Jaguars': 'JAX', 'Kansas City Chiefs': 'KC',
+    'Las Vegas Raiders': 'LV', 'Los Angeles Chargers': 'LAC', 'Los Angeles Rams': 'LAR', 'Miami Dolphins': 'MIA',
+    'Minnesota Vikings': 'MIN', 'New England Patriots': 'NE', 'New Orleans Saints': 'NO', 'New York Giants': 'NYG',
+    'New York Jets': 'NYJ', 'Philadelphia Eagles': 'PHI', 'Pittsburgh Steelers': 'PIT', 'San Francisco 49ers': 'SF',
+    'Seattle Seahawks': 'SEA', 'Tampa Bay Buccaneers': 'TB', 'Tennessee Titans': 'TEN', 'Washington Commanders': 'WAS'
+  };
+  return nameMap[fullName] || fullName;
+}
+
 function NflTdInner(){
-  const weeks = getWeeksAvailable();
-  const [week, setWeek] = useState(qsWeek() || (weeks.includes(1)?1:weeks[0]||1));
-  const games = useMemo(()=> getGamesForWeek(week), [week]);
+  const [week, setWeek] = useState(qsWeek() || 1);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState(null);
@@ -44,41 +55,64 @@ function NflTdInner(){
   }, [week]);
 
   useEffect(()=>{
-    if (!ENABLE_NFL_TD) return;
     setLoading(true); setErr(null);
-    
-    // Get schedule data first
-    fetch(`/.netlify/functions/nfl-schedule-get?week=${week}&season=2025`)
+    // Load schedule from committed JSON
+    fetch('/public/data/nfl-schedule-2025.json')
       .then(r => r.json())
       .then(scheduleData => {
-        if (!scheduleData.matchups) throw new Error('No schedule data');
-        
+        if (!scheduleData.weeks || !scheduleData.weeks[week]) throw new Error('No schedule data');
+        const matchups = scheduleData.weeks[week].matchups || [];
         // Format games for TD prediction
-        const games = scheduleData.matchups.map(game => ({
+        const games = matchups.map(game => ({
           game_id: game.id || `${game.homeTeam}-${game.awayTeam}`,
           home_team: getTeamAbbreviation(game.homeTeam),
           away_team: getTeamAbbreviation(game.awayTeam)
         }));
-        
-        // Call TD predictions with corrected API format
-        return fetch(`/.netlify/functions/nfl-td-predictions?week=${week}&season=2025`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ games })
-        });
-      })
-      .then(r => r.json())
-      .then(j => {
-        if (!j || !j.rows) throw new Error('Bad TD response');
-        setRows(j.rows);
+        // Load player data from committed JSON
+        return fetch('/public/nfl-anytime-td-player-data.json')
+          .then(r => r.json())
+          .then(playerData => {
+            // Flatten player data for table
+            const players = Object.values(playerData.players || {});
+            // Build rows for each game/player
+            const rows = [];
+            for (const game of games) {
+              for (const player of players) {
+                if (player.team === game.home_team || player.team === game.away_team) {
+                  rows.push({
+                    ...player,
+                    game: `${game.away_team} @ ${game.home_team}`
+                  });
+                }
+              }
+            }
+            setRows(rows);
+          });
       })
       .catch(e => setErr(e.message || 'Error'))
       .finally(() => setLoading(false));
   }, [week]);
 
-  // Helper function for team name mapping
-  function getTeamAbbreviation(fullName) {
-    const nameMap = {
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-6">
+      <h1 className="text-2xl font-semibold mb-2">NFL — Anytime TD Candidates (from committed JSON)</h1>
+      <div className="mb-4 flex gap-2 items-center">
+        <label>Week:
+          <select value={week} onChange={e => setWeek(Number(e.target.value))} className="ml-2 border rounded px-2 py-1">
+            {[...Array(18)].map((_,i) => <option key={i+1} value={i+1}>{i+1}</option>)}
+          </select>
+        </label>
+        {loading && <span className="text-gray-500 ml-2">Loading…</span>}
+        {err && <span className="text-red-600 ml-2">{err}</span>}
+      </div>
+      <NflTdTable rows={rows} />
+    </div>
+  );
+}
+
+export default function NflTdPage() {
+  return <ErrorBoundary><NflTdInner /></ErrorBoundary>;
+}
       "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL",
       "Buffalo Bills": "BUF", "Carolina Panthers": "CAR", "Chicago Bears": "CHI",
       "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE", "Dallas Cowboys": "DAL",
