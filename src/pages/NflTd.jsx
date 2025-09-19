@@ -1,6 +1,9 @@
 // src/pages/NflTd.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 
+
+import NflTdTable from '../components/NflTdTable';
+
 // Simple error boundary for runtime errors
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -21,10 +24,9 @@ class ErrorBoundary extends React.Component {
       </div>;
     }
     return this.props.children;
+
   }
-// removed extra closing brace
-// Canonical version: fetches schedule and player data from committed JSON files
-import NflTdTable from '../components/NflTdTable';
+}
 
 function qsWeek(){ const w = parseInt(new URLSearchParams(location.search).get('week')||'',10); return Number.isFinite(w)? w : null; }
 
