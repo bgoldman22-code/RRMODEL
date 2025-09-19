@@ -770,7 +770,6 @@ async function main() {
       recentWeeks
     });
     
-    console.log('💾 Storing data in Netlify Blobs...');
     const storeResults = await storeAllData({
       teamRosters,
       playerStats,
@@ -778,7 +777,7 @@ async function main() {
       snapCounts,
       targetShares,
       recentWeeks,
-      comprehensiveData
+      comprehensiveData: comprehensiveData
     });
     
     console.log('\n✅ NFL Player Data Collection completed successfully!');
