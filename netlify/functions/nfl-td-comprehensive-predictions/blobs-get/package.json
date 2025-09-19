@@ -1,0 +1,12 @@
+{
+  "name": "blobs-get-function",
+  "version": "1.0.0",
+  "description": "Netlify function to access blob storage for TD props data",
+  "main": "index.cjs",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
