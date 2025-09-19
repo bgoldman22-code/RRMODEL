@@ -12,52 +12,42 @@ const NFLTouchdownPropsComprehensive = () => {
   const [sortBy, setSortBy] = useState('probability'); // probability, confidence, value
   const season = 2025;
 
-  // Load comprehensive TD predictions
+  // Load schedule and player data from committed JSON files
   const loadComprehensivePredictions = async () => {
     setLoading(true);
     setError(null);
-    
     try {
-      // Get schedule from existing system
-      const scheduleRes = await fetch(`/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`);
+      // Load schedule from committed JSON
+      const scheduleRes = await fetch('/public/data/nfl-schedule-2025.json');
       if (!scheduleRes.ok) throw new Error(`Schedule failed: ${scheduleRes.status}`);
       const scheduleData = await scheduleRes.json();
-      
-      const games = (scheduleData.matchups || []).map(game => ({
+      if (!scheduleData.weeks || !scheduleData.weeks[week]) throw new Error('No schedule data');
+      const matchups = scheduleData.weeks[week].matchups || [];
+      const games = matchups.map(game => ({
         game_id: game.id || `${game.homeTeam}-${game.awayTeam}`,
         home_team: getTeamAbbreviation(game.homeTeam),
         away_team: getTeamAbbreviation(game.awayTeam)
       }));
-      
-      // Get comprehensive TD predictions with corrected API format
-      const predictionsRes = await fetch(`/.netlify/functions/nfl-td-comprehensive-predictions?week=${week}&season=${season}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ games })
-      });
-      
-      if (!predictionsRes.ok) {
-        const errorText = await predictionsRes.text();
-        throw new Error(`Predictions failed: ${predictionsRes.status} - ${errorText}`);
-      }
-      
-      const predictionsData = await predictionsRes.json();
-      
-      // Flatten player predictions for table display
+      // Load player data from committed JSON
+      const playerRes = await fetch('/public/nfl-anytime-td-player-data.json');
+      if (!playerRes.ok) throw new Error(`Player data failed: ${playerRes.status}`);
+      const playerData = await playerRes.json();
+      const players = Object.values(playerData.players || {});
+      // Build predictions for each game/player
       const allPlayers = [];
-      for (const game of predictionsData.predictions || []) {
-        for (const player of game.players || []) {
-          allPlayers.push({
-            ...player,
-            game_matchup: `${game.away_team} @ ${game.home_team}`,
-            home_team: game.home_team,
-            away_team: game.away_team
-          });
+      for (const game of games) {
+        for (const player of players) {
+          if (player.team === game.home_team || player.team === game.away_team) {
+            allPlayers.push({
+              ...player,
+              game_matchup: `${game.away_team} @ ${game.home_team}`,
+              home_team: game.home_team,
+              away_team: game.away_team
+            });
+          }
         }
       }
-      
       setPredictions(allPlayers);
-      
     } catch (err) {
       setError(err.message);
       console.error('Comprehensive TD predictions error:', err);
