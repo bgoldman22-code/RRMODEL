@@ -26,7 +26,7 @@ except ImportError as e:
 # Configuration from environment variables
 CURRENT_WEEK = int(os.getenv('NFL_WEEK', '4'))  # Week to PREDICT
 CURRENT_SEASON = int(os.getenv('NFL_SEASON', '2025'))
-NETLIFY_TOKEN = os.getenv('NETLIFY_TOKEN')
+NETLIFY_TOKEN = os.getenv('NETLIFY_BLOBS_TOKEN')
 NETLIFY_SITE_ID = os.getenv('NETLIFY_SITE_ID')
 
 # Historical seasons for context (3 years)
@@ -282,7 +282,7 @@ def get_team_context(team, team_context):
 def store_nflverse_data(comprehensive_data):
     """Store NFLVerse data in Netlify Blobs"""
     if not NETLIFY_TOKEN or not NETLIFY_SITE_ID:
-        print("⚠️ Cannot store NFLVerse data: Missing Netlify credentials")
+        print("⚠️ Cannot store NFLVerse data: Missing Netlify credentials (NETLIFY_BLOBS_TOKEN or NETLIFY_SITE_ID)")
         return False
     
     try:
