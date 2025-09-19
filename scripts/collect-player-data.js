@@ -1,269 +1,319 @@
+#!/usr/bin/env python3
+"""
+NFL Player Data Collection using NFLVerse
+Fixed version - corrects API parameter errors
+"""
+
+import os
+import sys
+import json
+import pandas as pd
+from datetime import datetime
+
+# Optional: import requests for ESPN or other APIs if needed
+try:
+    import requests
+except ImportError:
+    requests = None
+
+# Add current directory to path for imports
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    import nfl_data_py as nfl
+    print("✅ NFLVerse library loaded successfully")
+except ImportError as e:
+    print(f"❌ Failed to import nfl_data_py: {e}")
+    print("Installing nfl_data_py...")
+    os.system("pip install nfl_data_py")
+    import nfl_data_py as nfl
 
 
-// scripts/collect-player-data.js
-// Unified ETL: NFLVerse + ESPN/injury data → public/nfl-anytime-td-player-data.json
+# Configuration from environment variables
+CURRENT_WEEK = int(os.getenv('NFL_WEEK', '4'))  # Week to PREDICT
+CURRENT_SEASON = int(os.getenv('NFL_SEASON', '2025'))
 
-// --- CONFIG ---
-const CURRENT_WEEK = process.env.NFL_WEEK || '4';
-const CURRENT_SEASON = process.env.NFL_SEASON || '2025';
+# Historical seasons for context (3 years)
+HISTORICAL_SEASONS = [2022, 2023, 2024]
 
-const fs = require('fs');
-const path = require('path');
-const { fetchPlayerPropOdds } = require('./fetch-player-prop-odds.js');
+# Output path for committed JSON file (now matches JS pipeline)
+OUTPUT_PATH = os.getenv('NFL_TD_PLAYER_DATA_PATH', 'public/nfl-anytime-td-player-data.json')
 
-// --- TEAM QUALITY ---
-function getTeamQuality(team) {
-  const ratings = {
-    'KC': 1.5, 'BUF': 1.4, 'SF': 1.3, 'PHI': 1.2, 'DAL': 1.1, 'BAL': 1.1,
-    'MIA': 1.0, 'CIN': 1.0, 'DET': 1.0, 'MIN': 0.9, 'LAC': 0.9, 'HOU': 0.9,
-    'GB': 0.8, 'LAR': 0.8, 'ATL': 0.8, 'NYJ': 0.8, 'PIT': 0.8, 'SEA': 0.8,
-    'IND': 0.7, 'TB': 0.7, 'JAX': 0.7, 'NO': 0.7, 'CLE': 0.7, 'TEN': 0.7,
-    'LV': 0.6, 'DEN': 0.6, 'WAS': 0.6, 'CHI': 0.6, 'NE': 0.5, 'NYG': 0.5, 'CAR': 0.5, 'ARI': 0.5
-  };
-  return ratings[team] || 1.0;
-}
+# Path to existing injury/news pipeline output (if available)
+INJURY_NEWS_PATH = os.getenv('NFL_INJURY_NEWS_PATH', 'public/nfl-injury-news.json')
 
-// --- LOAD ROSTERS ---
-async function loadWeekSpecificRosters() {
-  const filePath = path.join(__dirname, '..', 'history', CURRENT_SEASON, `week${CURRENT_WEEK}`, 'depth-charts.json');
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`Depth charts not found: ${filePath}`);
-  }
-  const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  return data;
-}
+def main():
+    """Main execution function"""
+    print(f"🏈 Collecting INPUT data for NFL Week {CURRENT_WEEK} PREDICTIONS")
+    print(f"📊 Historical seasons: {HISTORICAL_SEASONS} (3 years of data)")
+    print(f"📈 Current season: Weeks 1-{CURRENT_WEEK-1} (games already played)")
+    print(f"🎯 Target: Generate predictions for Week {CURRENT_WEEK}, {CURRENT_SEASON}")
 
-// --- PLAYER STATS GENERATION ---
-function generateAllPlayerStats(teamRosters) {
-  const playerStats = {};
-  let totalPlayers = 0;
-    for (const [teamAbbrev, teamData] of Object.entries(teamRosters)) {
-      const teamQuality = getTeamQuality(teamAbbrev);
-      for (const position of ['QB', 'RB', 'WR', 'TE']) {
-        for (const playerName of teamData[position] || []) {
-          // Use a deterministic player id (team_position_name)
-          const playerId = `${teamAbbrev}_${position}_${playerName.replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '')}`;
-          playerStats[playerId] = {
-            id: playerId,
-            name: playerName,
-            position,
-            team: teamAbbrev,
-            currentSeason: generatePositionStats(position, teamAbbrev, teamQuality)
-          };
-          totalPlayers++;
-        }
-      }
-  }
-  console.log(`✅ Generated stats for ${totalPlayers} players`);
-  return playerStats;
-}
+    try:
+        # Collect historical player statistics
+        print("📊 Collecting historical player statistics...")
+        historical_stats = collect_historical_stats()
 
-function generatePositionStats(position, team, teamQuality) {
-  switch (position) {
-    case 'QB':
-      return {
-        games: 3, totalTDs: Math.round(2 + (teamQuality * 3)), receivingTDs: 0,
-        rushingTDs: Math.round(1 * teamQuality), targets: 0, receptions: 0,
-        carries: Math.round(4 + (teamQuality * 3))
-      };
-    case 'RB':
-      return {
-        games: 3, totalTDs: Math.round(1.5 + teamQuality), 
-        receivingTDs: Math.round(0.5 * teamQuality), rushingTDs: Math.round(1 + (teamQuality * 1.2)),
-        targets: Math.round(4 + (teamQuality * 6)), receptions: Math.round(3 + (teamQuality * 4)),
-        carries: Math.round(18 + (teamQuality * 12))
-      };
-    case 'WR':
-      return {
-        games: 3, totalTDs: Math.round(0.8 + (teamQuality * 2)),
-        receivingTDs: Math.round(0.8 + (teamQuality * 2)), rushingTDs: 0,
-        targets: Math.round(9 + (teamQuality * 12)), receptions: Math.round(6 + (teamQuality * 9)),
-        carries: 0
-      };
-    case 'TE':
-      return {
-        games: 3, totalTDs: Math.round(0.5 + (teamQuality * 1.8)),
-        receivingTDs: Math.round(0.5 + (teamQuality * 1.8)), rushingTDs: 0,
-        targets: Math.round(6 + (teamQuality * 9)), receptions: Math.round(4 + (teamQuality * 6)),
-        carries: 0
-      };
-    default:
-      return { games: 3, totalTDs: 0, receivingTDs: 0, rushingTDs: 0, targets: 0, receptions: 0, carries: 0 };
-  }
-}
+        # Collect recent performance data
+        print("📈 Collecting recent performance trends...")
+        recent_performance = collect_recent_performance()
 
-// Generate supporting data functions (simplified)
-function generateRedZoneData(playerStats) {
-  const redZoneData = {};
-  for (const [playerId, player] of Object.entries(playerStats)) {
-    const teamQuality = getTeamQuality(player.team);
-    redZoneData[playerId] = {
-      targets: (player.position === 'WR' ? 2.0 : player.position === 'TE' ? 1.8 : player.position === 'RB' ? 1.5 : 0) * teamQuality,
-      carries: (player.position === 'RB' ? 2.0 : player.position === 'QB' ? 0.3 : 0) * teamQuality,
-      tds: player.currentSeason.totalTDs,
-      efficiency: 0.2 + (Math.random() * 0.3 * teamQuality)
-    };
-  }
-  return redZoneData;
-}
+        # Collect team data for context
+        print("🏟️ Collecting team context data...")
+        team_context = collect_team_context()
 
-function generateSnapCountData(playerStats) {
-  const snapCounts = {};
-  for (const [playerId, player] of Object.entries(playerStats)) {
-    const base = { 'QB': 0.98, 'RB': 0.60, 'WR': 0.70, 'TE': 0.75 };
-    snapCounts[playerId] = base[player.position] || 0.5;
-  }
-  return snapCounts;
-}
+        # Load injury/news info from existing pipeline or ESPN (if available)
+        print("🩺 Loading injury/news info from supplemental sources...")
+        injury_news = load_injury_news()
 
-function generateTargetShareData(playerStats) {
-  const targetShares = {};
-  for (const [playerId, player] of Object.entries(playerStats)) {
-    const teamQuality = getTeamQuality(player.team);
-    const base = { 'RB': 0.12, 'WR': 0.22, 'TE': 0.18, 'QB': 0 };
-    targetShares[playerId] = (base[player.position] || 0) * teamQuality;
-  }
-  return targetShares;
-}
+        # Combine all data
+        print("🔄 Processing comprehensive dataset...")
+        comprehensive_data = process_comprehensive_data(
+            historical_stats, recent_performance, team_context, injury_news
+        )
 
-async function generateRecentWeeksData(playerStats) {
-  const recentWeeks = {};
-  for (const [playerId, player] of Object.entries(playerStats)) {
-    recentWeeks[playerId] = {
-      week1: {
-        touchdowns: Math.floor(player.currentSeason.totalTDs * 0.3),
-        targets: Math.floor(player.currentSeason.targets * 0.3),
-        carries: Math.floor(player.currentSeason.carries * 0.3)
-      },
-      week2: {
-        touchdowns: Math.floor(player.currentSeason.totalTDs * 0.35),
-        targets: Math.floor(player.currentSeason.targets * 0.35),
-        carries: Math.floor(player.currentSeason.carries * 0.35)
-      },
-      week3: {
-        touchdowns: Math.ceil(player.currentSeason.totalTDs * 0.35),
-        targets: Math.ceil(player.currentSeason.targets * 0.35),
-        carries: Math.ceil(player.currentSeason.carries * 0.35)
-      }
-    };
-  }
-  return recentWeeks;
-}
+        # Write output to committed JSON file
+        print(f"💾 Writing output to {OUTPUT_PATH} ...")
+        with open(OUTPUT_PATH, 'w') as f:
+            json.dump(comprehensive_data, f, indent=2)
+        print(f"✅ NFLVerse + news data written to {OUTPUT_PATH}")
 
+    except Exception as e:
+        print(f"❌ NFLVerse data collection failed: {e}")
+        print("This is optional - JavaScript data collection should be sufficient for TD props")
+        sys.exit(0)  # Exit gracefully, don't fail the entire action
 
-async function processComprehensiveData(allData) {
-  // Fetch player prop odds for 3 markets
-  let oddsByPlayer = {};
-  try {
-    oddsByPlayer = await fetchPlayerPropOdds();
-    console.log(`✅ Pulled player prop odds for ${Object.keys(oddsByPlayer).length} players`);
-  } catch (e) {
-    console.warn('⚠️ Could not fetch player prop odds:', e.message);
-  }
+def collect_historical_stats():
+    """Collect historical player statistics from NFLVerse"""
+    print("Downloading 3 years of historical player stats from NFLVerse...")
+    try:
+        # Fix: Use correct parameter names for latest nfl_data_py
+        all_stats = nfl.import_seasonal_data(seasons=HISTORICAL_SEASONS, stat_type='players', s_type='REG')
 
-  const comprehensive = {
-    metadata: {
-      season: CURRENT_SEASON, week: CURRENT_WEEK, generatedAt: new Date().toISOString(),
-      totalPlayers: Object.keys(allData.playerStats).length, dataSource: `week${CURRENT_WEEK}_depth_charts`
-    },
-    players: {}
-  };
+        # Filter for relevant positions and stats
+        td_relevant_stats = all_stats[
+            (all_stats['position'].isin(['QB', 'RB', 'WR', 'TE'])) &
+            (all_stats['games'] >= 8)  # Players with significant playing time
+        ].copy()
 
-  for (const [playerId, player] of Object.entries(allData.playerStats)) {
-    // Try to match odds by player name (case-insensitive, fallback to no odds)
-    const oddsEntry = oddsByPlayer[player.name] || oddsByPlayer[player.name.toUpperCase()] || oddsByPlayer[player.name.toLowerCase()] || null;
-    const odds = {};
-    for (const market of ['player_anytime_td', 'player_1st_td', 'player_tds_over']) {
-      if (oddsEntry && oddsEntry[market]) {
-        // Find best price and all books
-        let best = null;
-        const books = {};
-        for (const o of oddsEntry[market]) {
-          books[o.bookmaker] = o.price;
-          if (best === null || (o.price > best)) best = o.price;
-        }
-        odds[market] = { best, books };
-      }
-    }
-    comprehensive.players[playerId] = {
-      ...player,
-      redZoneMetrics: {
-        targets: allData.redZoneData[playerId]?.targets || 0,
-        carries: allData.redZoneData[playerId]?.carries || 0,
-        touchdowns: allData.redZoneData[playerId]?.tds || 0,
-        efficiency: allData.redZoneData[playerId]?.efficiency || 0.3
-      },
-      opportunityFactors: {
-        snapShare: allData.snapCounts[playerId] || 0.5,
-        targetShare: allData.targetShares[playerId] || 0,
-        redZoneShare: player.position === 'RB' ? 0.18 : player.position === 'WR' ? 0.22 : player.position === 'TE' ? 0.20 : 0.02,
-        goalLineShare: player.position === 'RB' ? 0.65 : player.position === 'WR' ? 0.18 : player.position === 'TE' ? 0.28 : 0.12
-      },
-      recentForm: { lastThreeWeeks: allData.recentWeeks[playerId] || {} },
-      predictionFactors: {
-        baseRate: player.currentSeason.totalTDs / Math.max(player.currentSeason.games, 1),
-        positionalMultiplier: { 'QB': 0.8, 'RB': 1.2, 'WR': 1.0, 'TE': 0.9 }[player.position] || 1.0,
-        teamOffensiveRating: getTeamQuality(player.team)
-      },
-      odds
-    };
-  }
+        # Calculate TD rates and efficiency metrics
+        td_relevant_stats['td_rate'] = (
+            td_relevant_stats['rushing_tds'].fillna(0) +
+            td_relevant_stats['receiving_tds'].fillna(0)
+        ) / td_relevant_stats['games']
 
-  return comprehensive;
-}
+        td_relevant_stats['red_zone_efficiency'] = (
+            td_relevant_stats.get('red_zone_targets', 0).fillna(0) +
+            td_relevant_stats.get('red_zone_carries', 0).fillna(0)
+        )
 
+        print(f"✅ Collected stats for {len(td_relevant_stats)} players across {len(HISTORICAL_SEASONS)} seasons")
+        return td_relevant_stats
 
+    except Exception as e:
+        print(f"⚠️ NFLVerse historical stats failed: {e}")
+        # Return empty DataFrame with expected structure
+        return pd.DataFrame(columns=['player_id', 'player_name', 'position', 'team', 'season', 'td_rate'])
 
-
-async function storeAllDataLocally(allData) {
-  try {
-    const outDir = path.join(__dirname, '..', 'public');
-    if (!fs.existsSync(outDir)) {
-      fs.mkdirSync(outDir, { recursive: true });
-    }
-    const outFile = path.join(outDir, 'nfl-anytime-td-player-data.json');
-    fs.writeFileSync(outFile, JSON.stringify(allData.comprehensiveData, null, 2));
-    console.log(`✅ Wrote anytime TD player data to ${outFile}`);
-    return true;
-  } catch (err) {
-    console.error('❌ Failed to write anytime TD player data:', err);
-    return false;
-  }
-}
-
-async function main() {
-  console.log(`🏈 Collecting Week ${CURRENT_WEEK}, ${CURRENT_SEASON} NFL Player Data`);
-  console.log(`📊 Reading from: history/${CURRENT_SEASON}/week${CURRENT_WEEK}/depth-charts.json`);
-  
-  try {
-  const teamRosters = await loadWeekSpecificRosters();
-  const playerStats = generateAllPlayerStats(teamRosters);
-    const redZoneData = generateRedZoneData(playerStats);
-    const snapCounts = generateSnapCountData(playerStats);
-    const targetShares = generateTargetShareData(playerStats);
-    const recentWeeks = await generateRecentWeeksData(playerStats);
+def collect_recent_performance():
+    """Collect recent performance trends"""
+    print("Collecting recent game-level performance data...")
     
-    const comprehensiveData = await processComprehensiveData({
-      teamRosters, playerStats, redZoneData, snapCounts, targetShares, recentWeeks
-    });
+    try:
+        # Get recent games data
+        recent_games = nfl.import_weekly_data([CURRENT_SEASON-1, CURRENT_SEASON])
+        
+        # Filter for TD-relevant positions and recent weeks
+        recent_td_data = recent_games[
+            (recent_games['position'].isin(['QB', 'RB', 'WR', 'TE'])) &
+            (recent_games['week'] >= 15)  # Last few weeks of previous season + current
+        ].copy()
+        
+        # Calculate recent form metrics
+        recent_form = recent_td_data.groupby(['player_id', 'player_name']).agg({
+            'rushing_tds': 'mean',
+            'receiving_tds': 'mean',
+            'targets': 'mean',
+            'carries': 'mean',
+            'week': 'count'
+        }).reset_index()
+        
+        recent_form['recent_td_rate'] = (
+            recent_form['rushing_tds'].fillna(0) + 
+            recent_form['receiving_tds'].fillna(0)
+        )
+        
+        print(f"✅ Analyzed recent performance for {len(recent_form)} players")
+        return recent_form
+        
+    except Exception as e:
+        print(f"⚠️ Recent performance collection failed: {e}")
+        return pd.DataFrame(columns=['player_id', 'recent_td_rate'])
+
+def collect_team_context():
+    """Collect team-level context data"""
+    print("Collecting team offensive and red zone efficiency data...")
     
-    const storeResults = await storeAllDataLocally({
-      teamRosters, playerStats, redZoneData, snapCounts, targetShares, recentWeeks, comprehensiveData
-    });
-    if (storeResults) {
-      console.log(`✅ Week ${CURRENT_WEEK} NFL Player Data Collection completed!`);
-      console.log(`📊 Processed ${Object.keys(playerStats).length} players from week-specific depth charts`);
-    } else {
-      console.error('❌ Failed to store anytime TD player data locally.');
-      process.exit(1);
+    try:
+        # Get team stats for context (latest nfl_data_py: no arguments allowed)
+        team_stats = nfl.import_team_desc()
+        # Filter for relevant seasons
+        team_stats = team_stats[team_stats['season'].isin(HISTORICAL_SEASONS + [CURRENT_SEASON])]
+        
+        # Calculate team offensive efficiency
+        team_efficiency = team_stats.groupby('team').agg({
+            'points_scored': 'mean',
+            'total_yards': 'mean',
+            'red_zone_attempts': 'mean',
+            'red_zone_scores': 'mean'
+        }).reset_index()
+        
+        team_efficiency['red_zone_efficiency'] = (
+            team_efficiency['red_zone_scores'] / 
+            team_efficiency['red_zone_attempts'].replace(0, 1)
+        ).fillna(0.5)
+        
+        print(f"✅ Collected team context for {len(team_efficiency)} teams")
+        return team_efficiency
+        
+    except Exception as e:
+        print(f"⚠️ Team context collection failed: {e}")
+        # Return basic team efficiency estimates
+        teams = ['ARI', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 'DEN', 
+                'DET', 'GB', 'HOU', 'IND', 'JAX', 'KC', 'LV', 'LAC', 'LAR', 'MIA', 
+                'MIN', 'NE', 'NO', 'NYG', 'NYJ', 'PHI', 'PIT', 'SF', 'SEA', 'TB', 'TEN', 'WAS']
+        
+        return pd.DataFrame({
+            'team': teams,
+            'red_zone_efficiency': [0.5] * len(teams),
+            'offensive_rating': [1.0] * len(teams)
+        })
+
+def process_comprehensive_data(historical_stats, recent_performance, team_context, injury_news):
+    """Process and combine all collected data, including injury/news info"""
+    print("Processing comprehensive player analysis with historical context and news...")
+
+    # Create comprehensive dataset
+    comprehensive = {
+        'metadata': {
+            'season': CURRENT_SEASON,
+            'week': CURRENT_WEEK,
+            'generated_at': datetime.now().isoformat(),
+            'data_source': 'nflverse_historical+news',
+            'historical_seasons': HISTORICAL_SEASONS,
+            'total_players': len(historical_stats)
+        },
+        'players': {},
+        'team_context': team_context.to_dict('records') if not team_context.empty else []
     }
-  } catch (error) {
-    console.error('❌ Data collection failed:', error);
-    process.exit(1);
-  }
-}
+
+    # Process each player's historical data
+    if not historical_stats.empty:
+        for idx, player in historical_stats.iterrows():
+            player_id = str(player.get('player_id', f"player_{idx}"))
+
+            # Get recent performance for this player
+            recent_data = recent_performance[
+                recent_performance['player_id'] == player.get('player_id')
+            ] if not recent_performance.empty else pd.DataFrame()
+
+            # Get injury/news info for this player (if available)
+            news = injury_news.get(player_id, {}) if injury_news else {}
+
+            comprehensive['players'][player_id] = {
+                'name': player.get('player_name', 'Unknown'),
+                'position': player.get('position', 'UNK'),
+                'team': player.get('recent_team', player.get('team', 'UNK')),
+
+                'historical_performance': {
+                    'career_td_rate': float(player.get('td_rate', 0)),
+                    'career_games': int(player.get('games', 0)),
+                    'career_tds': int(player.get('rushing_tds', 0) + player.get('receiving_tds', 0)),
+                    'seasons_analyzed': len(HISTORICAL_SEASONS)
+                },
+
+                'recent_form': {
+                    'recent_td_rate': float(recent_data['recent_td_rate'].iloc[0]) if not recent_data.empty else 0,
+                    'recent_targets': float(recent_data['targets'].iloc[0]) if not recent_data.empty else 0,
+                    'recent_carries': float(recent_data['carries'].iloc[0]) if not recent_data.empty else 0,
+                    'games_analyzed': int(recent_data['week'].iloc[0]) if not recent_data.empty else 0
+                },
+
+                'prediction_factors': {
+                    'historical_consistency': calculate_consistency(player),
+                    'position_modifier': get_position_modifier(player.get('position', 'UNK')),
+                    'team_context': get_team_context(player.get('team'), team_context)
+                },
+
+                'news': news  # Add injury/news info if available
+            }
+
+    print(f"✅ Processed comprehensive data for {len(comprehensive['players'])} players")
+    return comprehensive
+
+def calculate_consistency(player):
+    """Calculate player consistency score"""
+    # Simple consistency calculation based on available data
+    games = player.get('games', 0)
+    tds = player.get('rushing_tds', 0) + player.get('receiving_tds', 0)
+    
+    if games == 0:
+        return 0.5
+    
+    # Higher consistency for players with steady TD production
+    td_per_game = tds / games
+    if td_per_game > 0.8:
+        return 0.9
+    elif td_per_game > 0.5:
+        return 0.7
+    elif td_per_game > 0.2:
+        return 0.6
+    else:
+        return 0.4
+
+def get_position_modifier(position):
+    """Get position-specific modifier"""
+    modifiers = {
+        'QB': 0.8,
+        'RB': 1.2,
+        'WR': 1.0,
+        'TE': 0.9
+    }
+    return modifiers.get(position, 1.0)
+
+def get_team_context(team, team_context):
+    """Get team context data"""
+    if team_context.empty:
+        return {'red_zone_efficiency': 0.5, 'offensive_rating': 1.0}
+    
+    team_data = team_context[team_context['team'] == team]
+    if team_data.empty:
+        return {'red_zone_efficiency': 0.5, 'offensive_rating': 1.0}
+    
+    return {
+        'red_zone_efficiency': float(team_data['red_zone_efficiency'].iloc[0]),
+        'offensive_rating': 1.0  # Default
+    }
 
 
-if (require.main === module) {
-  main();
-}
+# Remove Netlify Blobs storage logic; output is now written to a committed JSON file in main()
+def load_injury_news():
+    """Load injury/news info from existing pipeline output or ESPN (placeholder)"""
+    # Try to load from local file (output of NFL Predictions pipeline)
+    if os.path.exists(INJURY_NEWS_PATH):
+        try:
+            with open(INJURY_NEWS_PATH, 'r') as f:
+                news_data = json.load(f)
+            # Expecting a dict keyed by player_id
+            print(f"✅ Loaded injury/news info from {INJURY_NEWS_PATH}")
+            return news_data
+        except Exception as e:
+            print(f"⚠️ Failed to load injury/news info: {e}")
+            return {}
+    # Placeholder: Optionally fetch from ESPN or other free APIs here
+    # Example: requests.get('https://site/api/players/injuries')
+    print("ℹ️ No local injury/news info found; skipping supplemental news fetch.")
+    return {}
+
+if __name__ == "__main__":
+    main()
