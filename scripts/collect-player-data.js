@@ -1,3 +1,5 @@
+
+
 // scripts/collect-player-data.js
 // Unified ETL: NFLVerse + ESPN/injury data → public/nfl-anytime-td-player-data.json
 
@@ -34,165 +36,97 @@ async function loadWeekSpecificRosters() {
 function generateAllPlayerStats(teamRosters) {
   const playerStats = {};
   let totalPlayers = 0;
-  
-  for (const [teamAbbrev, teamData] of Object.entries(teamRosters)) {
-    const teamQuality = getTeamQuality(teamAbbrev);
-    
-    for (const position of ['QB', 'RB', 'WR', 'TE']) {
-      for (const player of teamData.players[position] || []) {
-        playerStats[player.id] = {
-          ...player,
-          team: teamAbbrev,
-          currentSeason: generatePositionStats(player.position, teamAbbrev, teamQuality)
-        };
-        totalPlayers++;
+    for (const [teamAbbrev, teamData] of Object.entries(teamRosters)) {
+      const teamQuality = getTeamQuality(teamAbbrev);
+      for (const position of ['QB', 'RB', 'WR', 'TE']) {
+        for (const playerName of teamData[position] || []) {
+          // Use a deterministic player id (team_position_name)
+          const playerId = `${teamAbbrev}_${position}_${playerName.replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '')}`;
+          playerStats[playerId] = {
+            id: playerId,
+            name: playerName,
+            position,
+            team: teamAbbrev,
+            currentSeason: generatePositionStats(position, teamAbbrev, teamQuality)
+          };
+          totalPlayers++;
+        }
       }
-    }
   }
-  
-  console.log(`Generated stats for ${totalPlayers} players`);
+  console.log(`✅ Generated stats for ${totalPlayers} players`);
   return playerStats;
 }
 
-// FIXED: Realistic team adjustments - only opportunity stats affected
 function generatePositionStats(position, team, teamQuality) {
-  // Team adjustment factor: much smaller range (0.8x to 1.2x instead of 0.5x to 1.5x)
-  const teamAdjustment = Math.max(0.8, Math.min(1.2, 0.8 + (teamQuality - 1.0) * 0.4));
-  
   switch (position) {
     case 'QB':
       return {
-        games: 3,
-        totalTDs: Math.round(2 + (teamQuality - 1.0) * 2), // +/- 1 TD range
-        receivingTDs: 0,
-        rushingTDs: Math.round(0.5 + (teamQuality - 1.0) * 0.8), // Small adjustment
-        targets: 0,
-        receptions: 0,
-        carries: Math.round(4 + (teamQuality - 1.0) * 2) // +/- 1 carry range
+        games: 3, totalTDs: Math.round(2 + (teamQuality * 3)), receivingTDs: 0,
+        rushingTDs: Math.round(1 * teamQuality), targets: 0, receptions: 0,
+        carries: Math.round(4 + (teamQuality * 3))
       };
-      
     case 'RB':
       return {
-        games: 3,
-        totalTDs: Math.round(1.5 + (teamQuality - 1.0) * 1.5), // +/- 0.75 TD range
-        receivingTDs: Math.round(0.3 + (teamQuality - 1.0) * 0.4), // Small range
-        rushingTDs: Math.round(1.2 + (teamQuality - 1.0) * 1.1), // Main TD source
-        targets: Math.round(6 + (teamQuality - 1.0) * 3), // +/- 1.5 target range
-        receptions: Math.round(4 + (teamQuality - 1.0) * 2), // Follows targets
-        carries: Math.round(20 + (teamQuality - 1.0) * 6) // +/- 3 carry range
+        games: 3, totalTDs: Math.round(1.5 + teamQuality), 
+        receivingTDs: Math.round(0.5 * teamQuality), rushingTDs: Math.round(1 + (teamQuality * 1.2)),
+        targets: Math.round(4 + (teamQuality * 6)), receptions: Math.round(3 + (teamQuality * 4)),
+        carries: Math.round(18 + (teamQuality * 12))
       };
-      
     case 'WR':
       return {
-        games: 3,
-        totalTDs: Math.round(1.0 + (teamQuality - 1.0) * 1.2), // +/- 0.6 TD range
-        receivingTDs: Math.round(1.0 + (teamQuality - 1.0) * 1.2), // Same as total
-        rushingTDs: 0,
-        targets: Math.round(12 + (teamQuality - 1.0) * 4), // +/- 2 target range
-        receptions: Math.round(8 + (teamQuality - 1.0) * 3), // Follows targets with catch rate
+        games: 3, totalTDs: Math.round(0.8 + (teamQuality * 2)),
+        receivingTDs: Math.round(0.8 + (teamQuality * 2)), rushingTDs: 0,
+        targets: Math.round(9 + (teamQuality * 12)), receptions: Math.round(6 + (teamQuality * 9)),
         carries: 0
       };
-      
     case 'TE':
       return {
-        games: 3,
-        totalTDs: Math.round(0.8 + (teamQuality - 1.0) * 1.0), // +/- 0.5 TD range
-        receivingTDs: Math.round(0.8 + (teamQuality - 1.0) * 1.0), // Same as total
-        rushingTDs: 0,
-        targets: Math.round(8 + (teamQuality - 1.0) * 3), // +/- 1.5 target range
-        receptions: Math.round(6 + (teamQuality - 1.0) * 2), // Follows targets
+        games: 3, totalTDs: Math.round(0.5 + (teamQuality * 1.8)),
+        receivingTDs: Math.round(0.5 + (teamQuality * 1.8)), rushingTDs: 0,
+        targets: Math.round(6 + (teamQuality * 9)), receptions: Math.round(4 + (teamQuality * 6)),
         carries: 0
       };
-      
     default:
-      return { 
-        games: 3, totalTDs: 0, receivingTDs: 0, rushingTDs: 0, 
-        targets: 0, receptions: 0, carries: 0 
-      };
+      return { games: 3, totalTDs: 0, receivingTDs: 0, rushingTDs: 0, targets: 0, receptions: 0, carries: 0 };
   }
 }
 
-// Generate supporting data functions
+// Generate supporting data functions (simplified)
 function generateRedZoneData(playerStats) {
   const redZoneData = {};
-  
   for (const [playerId, player] of Object.entries(playerStats)) {
     const teamQuality = getTeamQuality(player.team);
-    // Apply modest team adjustment to red zone opportunities only
-    const teamRZAdjustment = Math.max(0.85, Math.min(1.15, teamQuality));
-    
     redZoneData[playerId] = {
-      targets: getPositionRedZoneTargets(player.position) * teamRZAdjustment,
-      carries: getPositionRedZoneCarries(player.position) * teamRZAdjustment,
+      targets: (player.position === 'WR' ? 2.0 : player.position === 'TE' ? 1.8 : player.position === 'RB' ? 1.5 : 0) * teamQuality,
+      carries: (player.position === 'RB' ? 2.0 : player.position === 'QB' ? 0.3 : 0) * teamQuality,
       tds: player.currentSeason.totalTDs,
-      efficiency: 0.25 + (Math.random() * 0.2) // Individual skill-based, not team
+      efficiency: 0.2 + (Math.random() * 0.3 * teamQuality)
     };
   }
-  
   return redZoneData;
-}
-
-function getPositionRedZoneTargets(position) {
-  const base = {
-    'WR': 2.2,
-    'TE': 1.9,
-    'RB': 1.4,
-    'QB': 0
-  };
-  return base[position] || 0;
-}
-
-function getPositionRedZoneCarries(position) {
-  const base = {
-    'RB': 2.1,
-    'QB': 0.4,
-    'WR': 0,
-    'TE': 0
-  };
-  return base[position] || 0;
 }
 
 function generateSnapCountData(playerStats) {
   const snapCounts = {};
-  
   for (const [playerId, player] of Object.entries(playerStats)) {
-    // Snap counts are role-based, not heavily team-dependent
-    const base = {
-      'QB': 0.98,
-      'RB': 0.62,
-      'WR': 0.71,
-      'TE': 0.76
-    };
+    const base = { 'QB': 0.98, 'RB': 0.60, 'WR': 0.70, 'TE': 0.75 };
     snapCounts[playerId] = base[player.position] || 0.5;
   }
-  
   return snapCounts;
 }
 
 function generateTargetShareData(playerStats) {
   const targetShares = {};
-  
   for (const [playerId, player] of Object.entries(playerStats)) {
     const teamQuality = getTeamQuality(player.team);
-    // Small team adjustment to target share opportunity
-    const teamAdjustment = Math.max(0.9, Math.min(1.1, teamQuality));
-    
-    const base = {
-      'RB': 0.11,
-      'WR': 0.23,
-      'TE': 0.17,
-      'QB': 0
-    };
-    
-    targetShares[playerId] = (base[player.position] || 0) * teamAdjustment;
+    const base = { 'RB': 0.12, 'WR': 0.22, 'TE': 0.18, 'QB': 0 };
+    targetShares[playerId] = (base[player.position] || 0) * teamQuality;
   }
-  
   return targetShares;
 }
 
 async function generateRecentWeeksData(playerStats) {
   const recentWeeks = {};
-  
   for (const [playerId, player] of Object.entries(playerStats)) {
     recentWeeks[playerId] = {
       week1: {
@@ -212,19 +146,14 @@ async function generateRecentWeeksData(playerStats) {
       }
     };
   }
-  
   return recentWeeks;
 }
 
 async function processComprehensiveData(allData) {
   const comprehensive = {
     metadata: {
-      season: CURRENT_SEASON,
-      week: CURRENT_WEEK,
-      generatedAt: new Date().toISOString(),
-      totalPlayers: Object.keys(allData.playerStats).length,
-      dataSource: `week${CURRENT_WEEK}_depth_charts`,
-      teamMultiplierApproach: 'realistic_opportunity_based'
+      season: CURRENT_SEASON, week: CURRENT_WEEK, generatedAt: new Date().toISOString(),
+      totalPlayers: Object.keys(allData.playerStats).length, dataSource: `week${CURRENT_WEEK}_depth_charts`
     },
     players: {}
   };
@@ -236,20 +165,18 @@ async function processComprehensiveData(allData) {
         targets: allData.redZoneData[playerId]?.targets || 0,
         carries: allData.redZoneData[playerId]?.carries || 0,
         touchdowns: allData.redZoneData[playerId]?.tds || 0,
-        efficiency: allData.redZoneData[playerId]?.efficiency || 0.25
+        efficiency: allData.redZoneData[playerId]?.efficiency || 0.3
       },
       opportunityFactors: {
         snapShare: allData.snapCounts[playerId] || 0.5,
         targetShare: allData.targetShares[playerId] || 0,
-        redZoneShare: getPositionRedZoneShare(player.position),
-        goalLineShare: getPositionGoalLineShare(player.position)
+        redZoneShare: player.position === 'RB' ? 0.18 : player.position === 'WR' ? 0.22 : player.position === 'TE' ? 0.20 : 0.02,
+        goalLineShare: player.position === 'RB' ? 0.65 : player.position === 'WR' ? 0.18 : player.position === 'TE' ? 0.28 : 0.12
       },
-      recentForm: {
-        lastThreeWeeks: allData.recentWeeks[playerId] || {}
-      },
+      recentForm: { lastThreeWeeks: allData.recentWeeks[playerId] || {} },
       predictionFactors: {
         baseRate: player.currentSeason.totalTDs / Math.max(player.currentSeason.games, 1),
-        positionalMultiplier: getPositionalMultiplier(player.position),
+        positionalMultiplier: { 'QB': 0.8, 'RB': 1.2, 'WR': 1.0, 'TE': 0.9 }[player.position] || 1.0,
         teamOffensiveRating: getTeamQuality(player.team)
       }
     };
@@ -258,35 +185,8 @@ async function processComprehensiveData(allData) {
   return comprehensive;
 }
 
-function getPositionRedZoneShare(position) {
-  const shares = {
-    'RB': 0.19,
-    'WR': 0.24,
-    'TE': 0.21,
-    'QB': 0.03
-  };
-  return shares[position] || 0.1;
-}
 
-function getPositionGoalLineShare(position) {
-  const shares = {
-    'RB': 0.68,
-    'WR': 0.17,
-    'TE': 0.29,
-    'QB': 0.14
-  };
-  return shares[position] || 0.1;
-}
 
-function getPositionalMultiplier(position) {
-  const multipliers = {
-    'QB': 0.8,
-    'RB': 1.2,
-    'WR': 1.0,
-    'TE': 0.9
-  };
-  return multipliers[position] || 1.0;
-}
 
 async function storeAllDataLocally(allData) {
   try {
@@ -294,24 +194,23 @@ async function storeAllDataLocally(allData) {
     if (!fs.existsSync(outDir)) {
       fs.mkdirSync(outDir, { recursive: true });
     }
-    
     const outFile = path.join(outDir, 'nfl-anytime-td-player-data.json');
     fs.writeFileSync(outFile, JSON.stringify(allData.comprehensiveData, null, 2));
-    console.log(`Wrote anytime TD player data to ${outFile}`);
+    console.log(`✅ Wrote anytime TD player data to ${outFile}`);
     return true;
   } catch (err) {
-    console.error('Failed to write anytime TD player data:', err);
+    console.error('❌ Failed to write anytime TD player data:', err);
     return false;
   }
 }
 
 async function main() {
-  console.log(`Collecting Week ${CURRENT_WEEK}, ${CURRENT_SEASON} NFL Player Data`);
-  console.log(`Reading from: history/${CURRENT_SEASON}/week${CURRENT_WEEK}/depth-charts.json`);
+  console.log(`🏈 Collecting Week ${CURRENT_WEEK}, ${CURRENT_SEASON} NFL Player Data`);
+  console.log(`📊 Reading from: history/${CURRENT_SEASON}/week${CURRENT_WEEK}/depth-charts.json`);
   
   try {
-    const teamRosters = await loadWeekSpecificRosters();
-    const playerStats = generateAllPlayerStats(teamRosters);
+  const teamRosters = await loadWeekSpecificRosters();
+  const playerStats = generateAllPlayerStats(teamRosters);
     const redZoneData = generateRedZoneData(playerStats);
     const snapCounts = generateSnapCountData(playerStats);
     const targetShares = generateTargetShareData(playerStats);
@@ -324,19 +223,19 @@ async function main() {
     const storeResults = await storeAllDataLocally({
       teamRosters, playerStats, redZoneData, snapCounts, targetShares, recentWeeks, comprehensiveData
     });
-    
     if (storeResults) {
-      console.log(`Week ${CURRENT_WEEK} NFL Player Data Collection completed!`);
-      console.log(`Processed ${Object.keys(playerStats).length} players from week-specific depth charts`);
+      console.log(`✅ Week ${CURRENT_WEEK} NFL Player Data Collection completed!`);
+      console.log(`📊 Processed ${Object.keys(playerStats).length} players from week-specific depth charts`);
     } else {
-      console.error('Failed to store anytime TD player data locally.');
+      console.error('❌ Failed to store anytime TD player data locally.');
       process.exit(1);
     }
   } catch (error) {
-    console.error('Data collection failed:', error);
+    console.error('❌ Data collection failed:', error);
     process.exit(1);
   }
 }
+
 
 if (require.main === module) {
   main();
