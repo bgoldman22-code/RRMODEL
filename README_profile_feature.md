@@ -1,1 +1,0 @@
-# See /profiles?player=First%20Last — data comes from /.netlify/functions/profile
