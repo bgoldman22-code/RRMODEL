@@ -86,31 +86,30 @@ def main():
 def collect_historical_stats():
     """Collect historical player statistics from NFLVerse"""
     print("Downloading 3 years of historical player stats from NFLVerse...")
-    
     try:
-    # Fix: Use correct parameter names for latest nfl_data_py
-    all_stats = nfl.import_seasonal_data(seasons=HISTORICAL_SEASONS, stat_type='players', s_type='REG')
-        
+        # Fix: Use correct parameter names for latest nfl_data_py
+        all_stats = nfl.import_seasonal_data(seasons=HISTORICAL_SEASONS, stat_type='players', s_type='REG')
+
         # Filter for relevant positions and stats
         td_relevant_stats = all_stats[
             (all_stats['position'].isin(['QB', 'RB', 'WR', 'TE'])) &
             (all_stats['games'] >= 8)  # Players with significant playing time
         ].copy()
-        
+
         # Calculate TD rates and efficiency metrics
         td_relevant_stats['td_rate'] = (
-            td_relevant_stats['rushing_tds'].fillna(0) + 
+            td_relevant_stats['rushing_tds'].fillna(0) +
             td_relevant_stats['receiving_tds'].fillna(0)
         ) / td_relevant_stats['games']
-        
+
         td_relevant_stats['red_zone_efficiency'] = (
-            td_relevant_stats.get('red_zone_targets', 0).fillna(0) + 
+            td_relevant_stats.get('red_zone_targets', 0).fillna(0) +
             td_relevant_stats.get('red_zone_carries', 0).fillna(0)
         )
-        
+
         print(f"✅ Collected stats for {len(td_relevant_stats)} players across {len(HISTORICAL_SEASONS)} seasons")
         return td_relevant_stats
-        
+
     except Exception as e:
         print(f"⚠️ NFLVerse historical stats failed: {e}")
         # Return empty DataFrame with expected structure
