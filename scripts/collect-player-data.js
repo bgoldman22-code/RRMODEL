@@ -995,7 +995,7 @@ async function storeAllData(allData) {
   // Store data for Basic TD System
   storeResults.push(await storeBlob(`history/${CURRENT_SEASON}/recent-weeks.json`, allData.recentWeeks));
   
-  // FIXED: Use correct variable reference
+  // CRITICAL FIX: Pass the comprehensiveData variable directly, not allData.comprehensiveData
   storeResults.push(await storeBlob(`nfl/comprehensive/player-data-${CURRENT_SEASON}-week${CURRENT_WEEK}.json`, allData.comprehensiveData));
   storeResults.push(await storeBlob(`nfl/comprehensive/latest.json`, allData.comprehensiveData));
   
@@ -1005,7 +1005,6 @@ async function storeAllData(allData) {
   storeResults.push(await storeBlob(`nfl/players/redzone-${CURRENT_SEASON}-week${CURRENT_WEEK}.json`, allData.redZoneData));
   storeResults.push(await storeBlob(`nfl/players/snapcounts-${CURRENT_SEASON}-week${CURRENT_WEEK}.json`, allData.snapCounts));
   
-  console.log('All data stored successfully in Netlify Blobs');
   return storeResults;
 }
 
