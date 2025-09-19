@@ -1,186 +1,84 @@
-name: NFL Player TD Data Collection (Fixed)
+name: NFL Player TD Data Collection
 
 on:
   workflow_dispatch:
     inputs:
       week:
-        description: 'NFL Week to predict (e.g., 4 for Week 4 predictions)'
+        description: 'NFL Week to predict'
         required: true
         default: '4'
+        type: string
       season:
         description: 'NFL Season'
         required: true
         default: '2025'
+        type: string
   schedule:
-    - cron: '0 11 * * *'  # 7 AM EST daily
+    - cron: '0 7 * * *'  # 7 AM EST daily
 
 jobs:
-  collect-player-data:
+  collect-data:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          
-      - name: Debug file system
-        run: |
-          echo "=== DEBUGGING FILE SYSTEM ==="
-          echo "Current directory: $(pwd)"
-          echo "Repository contents:"
-          ls -la
-          echo ""
-          echo "Scripts directory:"
-          ls -la scripts/ || echo "Scripts directory not found"
-          echo ""
-          echo "Looking for collect-player-data.js:"
-          find . -name "collect-player-data.js" -type f || echo "collect-player-data.js not found"
-          echo ""
-          echo "All JavaScript files:"
-          find . -name "*.js" -type f || echo "No JavaScript files found"
-          
-      - name: Install dependencies
-        run: |
-          echo "Installing required packages..."
-          npm init -y || true
-          npm install node-fetch || echo "Failed to install node-fetch, continuing..."
-          
-      - name: Set environment variables
-        run: |
-          echo "NFL_WEEK=${{ github.event.inputs.week || '4' }}" >> $GITHUB_ENV
-          echo "NFL_SEASON=${{ github.event.inputs.season || '2025' }}" >> $GITHUB_ENV
-          echo "NETLIFY_TOKEN=${{ secrets.NETLIFY_TOKEN }}" >> $GITHUB_ENV
-          echo "NETLIFY_SITE_ID=${{ secrets.NETLIFY_SITE_ID }}" >> $GITHUB_ENV
-          
-      - name: Debug environment variables
-        run: |
-          echo "=== ENVIRONMENT VARIABLES ==="
-          echo "NFL_WEEK: $NFL_WEEK"
-          echo "NFL_SEASON: $NFL_SEASON"
-          echo "NETLIFY_TOKEN: ${NETLIFY_TOKEN:0:10}..." 
-          echo "NETLIFY_SITE_ID: ${NETLIFY_SITE_ID:0:10}..."
-          
-      - name: Run JavaScript data collection
-        run: |
-          echo "Starting NFL player data collection for Week $NFL_WEEK..."
-          
-          # Check if file exists with multiple methods
-          if [ -f "scripts/collect-player-data.js" ]; then
-            echo "✅ Found collect-player-data.js, executing..."
-            node scripts/collect-player-data.js
-          elif [ -f "./scripts/collect-player-data.js" ]; then
-            echo "✅ Found ./scripts/collect-player-data.js, executing..."
-            node ./scripts/collect-player-data.js
-          else
-            echo "❌ collect-player-data.js not found in expected locations"
-            echo "Available files in scripts/:"
-            ls -la scripts/ || echo "Scripts directory not accessible"
-            
-            echo "Searching entire repository for the file:"
-            find . -name "collect-player-data.js" -type f || echo "File not found anywhere"
-            
-            echo "Creating minimal fallback data..."
-            cat > fallback-data.js << 'EOF'
-const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
-const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
-
-async function storeBlob(key, data) {
-  if (!NETLIFY_TOKEN || !NETLIFY_SITE_ID) {
-    console.log(`❌ Cannot store ${key}: Missing credentials`);
-    return false;
-  }
-  
-  try {
-    const fetch = (await import('node-fetch')).default;
-    const url = `https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/blobs/${key}`;
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${NETLIFY_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
+    - name: Checkout repository
+      uses: actions/checkout@v4
     
-    if (response.ok) {
-      console.log(`✅ Stored: ${key}`);
-      return true;
-    } else {
-      console.log(`❌ Failed to store ${key}: ${response.status}`);
-      return false;
-    }
-  } catch (error) {
-    console.log(`❌ Error storing ${key}: ${error.message}`);
-    return false;
-  }
-}
-
-// Create minimal test data
-const testData = {
-  'test_player_1': {
-    name: 'Test Player',
-    position: 'RB',
-    team: 'KC',
-    week1: { touchdowns: 1, targets: 5, carries: 15 },
-    week2: { touchdowns: 0, targets: 4, carries: 12 }
-  }
-};
-
-const comprehensiveData = {
-  metadata: {
-    season: process.env.NFL_SEASON || '2025',
-    week: process.env.NFL_WEEK || '4',
-    generatedAt: new Date().toISOString(),
-    note: 'Fallback test data - main script not found'
-  },
-  players: testData
-};
-
-async function main() {
-  console.log('🏈 Running fallback data collection...');
-  
-  await storeBlob('history/2025/recent-weeks.json', testData);
-  await storeBlob('nfl/comprehensive/latest.json', comprehensiveData);
-  
-  console.log('✅ Fallback data stored');
-}
-
-main().catch(console.error);
-EOF
-            
-            echo "Running fallback data collection..."
-            node fallback-data.js
-            exit 1
-          fi
-          
-      - name: Setup Python (for NFLVerse - optional)
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          
-      - name: Install Python packages (optional)
-        run: |
-          echo "Installing Python packages for historical data..."
-          pip install nfl-data-py pandas requests || echo "Python packages failed to install, continuing..."
-          
-      - name: Run Python historical data collection (optional)
-        run: |
-          if [ -f "scripts/collect-nflverse-data.py" ]; then
-            echo "Running NFLVerse historical data collection..."
-            python scripts/collect-nflverse-data.py || echo "NFLVerse collection failed, continuing..."
-          else
-            echo "NFLVerse script not found, skipping..."
-          fi
-          
-      - name: Summary
-        run: |
-          echo "=== COLLECTION SUMMARY ==="
-          echo "Week: $NFL_WEEK"
-          echo "Season: $NFL_SEASON" 
-          echo "JavaScript collection: Attempted"
-          echo "Python collection: Attempted"
-          echo "Check Netlify Blobs dashboard for stored data"
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install Node.js dependencies
+      run: |
+        npm install node-fetch@3.3.2 --no-save
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install nfl-data-py pandas requests numpy
+    
+    - name: Collect JavaScript Player Data
+      run: |
+        echo "Collecting NFL player data for Week ${{ github.event.inputs.week || '4' }}..."
+        ls -la scripts/
+        if [ -f "scripts/collect-player-data.js" ]; then
+          node scripts/collect-player-data.js
+        else
+          echo "collect-player-data.js not found"
+          echo "Available files in scripts/:"
+          find scripts/ -name "*.js" -o -name "*.mjs" 2>/dev/null || echo "No JS files found"
+          exit 1
+        fi
+      env:
+        NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        ESPN_API_KEY: ${{ secrets.ESPN_API_KEY }}
+        NFL_WEEK: ${{ github.event.inputs.week || '4' }}
+        NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
+    
+    - name: Collect Python NFLVerse Data
+      run: |
+        echo "Collecting NFLVerse historical data..."
+        if [ -f "scripts/collect-nflverse-data.py" ]; then
+          python scripts/collect-nflverse-data.py
+        else
+          echo "collect-nflverse-data.py not found, skipping historical data"
+        fi
+      env:
+        NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        NFL_WEEK: ${{ github.event.inputs.week || '4' }}
+        NFL_SEASON: ${{ github.event.inputs.season || '2025' }}
+    
+    - name: Verify Data Collection
+      run: |
+        echo "Data collection completed"
+        echo "Check Netlify dashboard for new blob files:"
+        echo "- history/${{ github.event.inputs.season || '2025' }}/recent-weeks.json"
+        echo "- nfl/comprehensive/player-data-${{ github.event.inputs.season || '2025' }}-week${{ github.event.inputs.week || '4' }}.json"
