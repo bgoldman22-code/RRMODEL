@@ -1,5 +1,5 @@
 // netlify/functions/blobs-get/index.cjs
-// Simple version using direct Netlify API calls
+// FINAL FIX: Fetch the actual data from the signed URL
 
 exports.handler = async (event, context) => {
   try {
@@ -33,9 +33,9 @@ exports.handler = async (event, context) => {
       };
     }
 
-    console.log(`Fetching blob via direct API: ${key}`);
+    console.log(`Fetching blob data: ${key}`);
 
-    // Use direct Netlify API call (same as your working NFL predictions)
+    // Get environment variables
     const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
     const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
     
@@ -53,11 +53,13 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Direct blob API call
+    // Import fetch dynamically
     const fetch = (await import('node-fetch')).default;
+    
+    // Step 1: Get signed URL from Netlify Blobs API
     const blobUrl = `https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/blobs/${key}`;
     
-    const response = await fetch(blobUrl, {
+    const urlResponse = await fetch(blobUrl, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${NETLIFY_TOKEN}`,
@@ -65,8 +67,8 @@ exports.handler = async (event, context) => {
       }
     });
 
-    if (!response.ok) {
-      console.log(`Blob not found: ${key} (${response.status})`);
+    if (!urlResponse.ok) {
+      console.log(`Blob not found: ${key} (${urlResponse.status})`);
       return {
         statusCode: 404,
         headers: {
@@ -76,14 +78,48 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           error: 'Blob not found',
           key: key,
-          status: response.status,
+          status: urlResponse.status,
           message: 'Data may not have been collected yet. Run player data collection first.'
         })
       };
     }
 
-    const data = await response.json();
-    console.log(`Successfully retrieved blob: ${key}`);
+    const urlData = await urlResponse.json();
+    console.log(`Got signed URL for: ${key}`);
+
+    // Step 2: Fetch actual data from the signed URL
+    if (!urlData.url) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          error: 'No signed URL returned',
+          key: key
+        })
+      };
+    }
+
+    const dataResponse = await fetch(urlData.url);
+    
+    if (!dataResponse.ok) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          error: 'Failed to fetch data from signed URL',
+          status: dataResponse.status
+        })
+      };
+    }
+
+    const actualData = await dataResponse.json();
+    console.log(`Successfully retrieved data for: ${key}`);
 
     return {
       statusCode: 200,
@@ -92,7 +128,7 @@ exports.handler = async (event, context) => {
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=300'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(actualData)
     };
 
   } catch (error) {
