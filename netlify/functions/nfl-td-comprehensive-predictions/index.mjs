@@ -1,209 +1,291 @@
 // netlify/functions/nfl-td-comprehensive-predictions/index.mjs
-// OPTION 1: Self-contained with embedded player data
+// FIXED VERSION: Reads live data from Netlify Blobs (same pattern as working NFL predictions)
 
-// Embedded player data - no external dependencies
-const EMBEDDED_PLAYER_DATA = {
-  // Kansas City Chiefs
-  'kc_qb1': { id: 'kc_qb1', name: 'Patrick Mahomes', position: 'QB', team: 'KC' },
-  'kc_rb1': { id: 'kc_rb1', name: 'Isiah Pacheco', position: 'RB', team: 'KC' },
-  'kc_rb2': { id: 'kc_rb2', name: 'Kareem Hunt', position: 'RB', team: 'KC' },
-  'kc_wr1': { id: 'kc_wr1', name: 'DeAndre Hopkins', position: 'WR', team: 'KC' },
-  'kc_wr2': { id: 'kc_wr2', name: 'Xavier Worthy', position: 'WR', team: 'KC' },
-  'kc_te1': { id: 'kc_te1', name: 'Travis Kelce', position: 'TE', team: 'KC' },
-  
-  // Buffalo Bills  
-  'buf_qb1': { id: 'buf_qb1', name: 'Josh Allen', position: 'QB', team: 'BUF' },
-  'buf_rb1': { id: 'buf_rb1', name: 'James Cook', position: 'RB', team: 'BUF' },
-  'buf_wr1': { id: 'buf_wr1', name: 'Khalil Shakir', position: 'WR', team: 'BUF' },
-  'buf_wr2': { id: 'buf_wr2', name: 'Keon Coleman', position: 'WR', team: 'BUF' },
-  'buf_te1': { id: 'buf_te1', name: 'Dalton Kincaid', position: 'TE', team: 'BUF' },
-  
-  // Philadelphia Eagles
-  'phi_qb1': { id: 'phi_qb1', name: 'Jalen Hurts', position: 'QB', team: 'PHI' },
-  'phi_rb1': { id: 'phi_rb1', name: 'Saquon Barkley', position: 'RB', team: 'PHI' },
-  'phi_wr1': { id: 'phi_wr1', name: 'A.J. Brown', position: 'WR', team: 'PHI' },
-  'phi_wr2': { id: 'phi_wr2', name: 'DeVonta Smith', position: 'WR', team: 'PHI' },
-  'phi_te1': { id: 'phi_te1', name: 'Dallas Goedert', position: 'TE', team: 'PHI' },
-  
-  // San Francisco 49ers
-  'sf_qb1': { id: 'sf_qb1', name: 'Brock Purdy', position: 'QB', team: 'SF' },
-  'sf_rb1': { id: 'sf_rb1', name: 'Christian McCaffrey', position: 'RB', team: 'SF' },
-  'sf_wr1': { id: 'sf_wr1', name: 'Deebo Samuel', position: 'WR', team: 'SF' },
-  'sf_wr2': { id: 'sf_wr2', name: 'Brandon Aiyuk', position: 'WR', team: 'SF' },
-  'sf_te1': { id: 'sf_te1', name: 'George Kittle', position: 'TE', team: 'SF' },
-  
-  // Dallas Cowboys
-  'dal_qb1': { id: 'dal_qb1', name: 'Dak Prescott', position: 'QB', team: 'DAL' },
-  'dal_rb1': { id: 'dal_rb1', name: 'Rico Dowdle', position: 'RB', team: 'DAL' },
-  'dal_wr1': { id: 'dal_wr1', name: 'CeeDee Lamb', position: 'WR', team: 'DAL' },
-  'dal_wr2': { id: 'dal_wr2', name: 'Brandin Cooks', position: 'WR', team: 'DAL' },
-  'dal_te1': { id: 'dal_te1', name: 'Jake Ferguson', position: 'TE', team: 'DAL' },
-  
-  // Baltimore Ravens
-  'bal_qb1': { id: 'bal_qb1', name: 'Lamar Jackson', position: 'QB', team: 'BAL' },
-  'bal_rb1': { id: 'bal_rb1', name: 'Derrick Henry', position: 'RB', team: 'BAL' },
-  'bal_wr1': { id: 'bal_wr1', name: 'Zay Flowers', position: 'WR', team: 'BAL' },
-  'bal_te1': { id: 'bal_te1', name: 'Mark Andrews', position: 'TE', team: 'BAL' },
-  'bal_te2': { id: 'bal_te2', name: 'Isaiah Likely', position: 'TE', team: 'BAL' },
-  
-  // Miami Dolphins
-  'mia_qb1': { id: 'mia_qb1', name: 'Tua Tagovailoa', position: 'QB', team: 'MIA' },
-  'mia_rb1': { id: 'mia_rb1', name: "De'Von Achane", position: 'RB', team: 'MIA' },
-  'mia_wr1': { id: 'mia_wr1', name: 'Tyreek Hill', position: 'WR', team: 'MIA' },
-  'mia_wr2': { id: 'mia_wr2', name: 'Jaylen Waddle', position: 'WR', team: 'MIA' },
-  'mia_te1': { id: 'mia_te1', name: 'Jonnu Smith', position: 'TE', team: 'MIA' },
-  
-  // Cincinnati Bengals
-  'cin_qb1': { id: 'cin_qb1', name: 'Joe Burrow', position: 'QB', team: 'CIN' },
-  'cin_rb1': { id: 'cin_rb1', name: 'Zack Moss', position: 'RB', team: 'CIN' },
-  'cin_wr1': { id: 'cin_wr1', name: "Ja'Marr Chase", position: 'WR', team: 'CIN' },
-  'cin_wr2': { id: 'cin_wr2', name: 'Tee Higgins', position: 'WR', team: 'CIN' },
-  'cin_te1': { id: 'cin_te1', name: 'Mike Gesicki', position: 'TE', team: 'CIN' },
-  
-  // Detroit Lions
-  'det_qb1': { id: 'det_qb1', name: 'Jared Goff', position: 'QB', team: 'DET' },
-  'det_rb1': { id: 'det_rb1', name: 'Jahmyr Gibbs', position: 'RB', team: 'DET' },
-  'det_rb2': { id: 'det_rb2', name: 'David Montgomery', position: 'RB', team: 'DET' },
-  'det_wr1': { id: 'det_wr1', name: 'Amon-Ra St. Brown', position: 'WR', team: 'DET' },
-  'det_wr2': { id: 'det_wr2', name: 'Jameson Williams', position: 'WR', team: 'DET' },
-  'det_te1': { id: 'det_te1', name: 'Sam LaPorta', position: 'TE', team: 'DET' },
-  
-  // Minnesota Vikings
-  'min_qb1': { id: 'min_qb1', name: 'Sam Darnold', position: 'QB', team: 'MIN' },
-  'min_rb1': { id: 'min_rb1', name: 'Aaron Jones', position: 'RB', team: 'MIN' },
-  'min_wr1': { id: 'min_wr1', name: 'Justin Jefferson', position: 'WR', team: 'MIN' },
-  'min_wr2': { id: 'min_wr2', name: 'Jordan Addison', position: 'WR', team: 'MIN' },
-  'min_te1': { id: 'min_te1', name: 'T.J. Hockenson', position: 'TE', team: 'MIN' },
-  
-  // New York Giants
-  'nyg_qb1': { id: 'nyg_qb1', name: 'Daniel Jones', position: 'QB', team: 'NYG' },
-  'nyg_rb1': { id: 'nyg_rb1', name: 'Tyrone Tracy Jr.', position: 'RB', team: 'NYG' },
-  'nyg_wr1': { id: 'nyg_wr1', name: 'Malik Nabers', position: 'WR', team: 'NYG' },
-  'nyg_wr2': { id: 'nyg_wr2', name: 'Darius Slayton', position: 'WR', team: 'NYG' },
-  'nyg_te1': { id: 'nyg_te1', name: 'Daniel Bellinger', position: 'TE', team: 'NYG' },
-  
-  // Arizona Cardinals
-  'ari_qb1': { id: 'ari_qb1', name: 'Kyler Murray', position: 'QB', team: 'ARI' },
-  'ari_rb1': { id: 'ari_rb1', name: 'James Conner', position: 'RB', team: 'ARI' },
-  'ari_wr1': { id: 'ari_wr1', name: 'Marvin Harrison Jr.', position: 'WR', team: 'ARI' },
-  'ari_te1': { id: 'ari_te1', name: 'Trey McBride', position: 'TE', team: 'ARI' },
-  
-  // Add more key players from other teams...
-  'gb_qb1': { id: 'gb_qb1', name: 'Jordan Love', position: 'QB', team: 'GB' },
-  'gb_rb1': { id: 'gb_rb1', name: 'Josh Jacobs', position: 'RB', team: 'GB' },
-  'chi_qb1': { id: 'chi_qb1', name: 'Caleb Williams', position: 'QB', team: 'CHI' },
-  'chi_rb1': { id: 'chi_rb1', name: "D'Andre Swift", position: 'RB', team: 'CHI' },
-  'chi_wr1': { id: 'chi_wr1', name: 'DJ Moore', position: 'WR', team: 'CHI' },
-  'hou_qb1': { id: 'hou_qb1', name: 'C.J. Stroud', position: 'QB', team: 'HOU' },
-  'hou_rb1': { id: 'hou_rb1', name: 'Joe Mixon', position: 'RB', team: 'HOU' },
-  'hou_wr1': { id: 'hou_wr1', name: 'Nico Collins', position: 'WR', team: 'HOU' },
-  'hou_wr2': { id: 'hou_wr2', name: 'Stefon Diggs', position: 'WR', team: 'HOU' }
-};
+import { loadBlob } from '../_lib/blobs-nfl.js';
 
-const QUICK_TD_WEIGHTS = {
+// Remove the massive EMBEDDED_PLAYER_DATA object entirely
+// This function will now load live data from blobs
+
+// TD prediction weights
+const TD_MODEL_WEIGHTS = {
   ANYTIME: {
-    position_base: 0.40,
-    team_quality: 0.25,
-    snap_share: 0.20,
-    red_zone_role: 0.15
+    red_zone_targets: 0.30,
+    goal_line_usage: 0.25,
+    opponent_td_defense: 0.15,
+    snap_percentage: 0.12,
+    historical_vs_opponent: 0.08,
+    team_red_zone_trips: 0.05,
+    injury_opportunity_boost: 0.05
+  },
+  FIRST_TD: {
+    opening_drive_usage: 0.40,
+    team_opening_drive_rate: 0.30,
+    anytime_base_probability: 0.30
+  },
+  MULTIPLE_TD: {
+    anytime_base_probability: 0.60,
+    game_script_projection: 0.20,
+    historical_multi_td_rate: 0.15,
+    elite_player_bonus: 0.05
   }
 };
 
-function addPlayerMetrics(player) {
+// Load live player data from Netlify Blobs (same pattern as NFL predictions)
+async function loadPlayerData(season = '2025') {
+  console.log('Loading live player data from Netlify Blobs...');
+  
+  try {
+    // Try to load the latest comprehensive player data
+    const currentWeek = getCurrentWeek();
+    const playerData = await loadBlob(`nfl/comprehensive/player-data-${season}-week${currentWeek}.json`);
+    
+    if (playerData && playerData.players) {
+      console.log(`✅ Loaded live data: ${Object.keys(playerData.players).length} players from week ${currentWeek}`);
+      return playerData;
+    }
+    
+    // Fallback to latest
+    const fallbackData = await loadBlob(`nfl/comprehensive/latest.json`);
+    if (fallbackData && fallbackData.players) {
+      console.log(`✅ Loaded fallback data: ${Object.keys(fallbackData.players).length} players`);
+      return fallbackData;
+    }
+    
+    throw new Error('No player data found in blobs');
+    
+  } catch (error) {
+    console.error('❌ Failed to load player data from blobs:', error);
+    
+    // Emergency fallback: Use minimal realistic data instead of massive embedded object
+    console.log('⚠️ Using emergency fallback data');
+    return getEmergencyPlayerData();
+  }
+}
+
+// Get current NFL week (copy from working system)
+function getCurrentWeek() {
+  const now = new Date();
+  const seasonStart = new Date('2025-09-04'); // NFL 2025 season start
+  const diffTime = now.getTime() - seasonStart.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const week = Math.floor(diffDays / 7) + 1;
+  return Math.max(1, Math.min(18, week));
+}
+
+// Emergency fallback (much smaller than embedded data)
+function getEmergencyPlayerData() {
   return {
-    ...player,
-    redZoneMetrics: {
-      targets: estimateRedZoneTargets(player),
-      carries: estimateRedZoneCarries(player),
-      touchdowns: estimateSeasonTDs(player),
-      efficiency: 0.25
+    metadata: {
+      season: '2025',
+      week: getCurrentWeek(),
+      totalPlayers: 32, // Just top players
+      dataSource: 'emergency_fallback'
     },
-    opportunityFactors: {
-      snapShare: estimateSnapShare(player),
-      targetShare: estimateTargetShare(player),
-      redZoneShare: estimateRedZoneShare(player),
-      goalLineShare: estimateGoalLineShare(player)
+    players: {
+      'kc_qb1': {
+        name: 'Patrick Mahomes',
+        position: 'QB',
+        team: 'KC',
+        redZoneMetrics: { targets: 0, carries: 0.5, touchdowns: 2, efficiency: 0.4 },
+        opportunityFactors: { snapShare: 0.98, targetShare: 0, redZoneShare: 0.02, goalLineShare: 0.1 },
+        recentForm: { trendDirection: 0.1, consistency: 0.8 },
+        predictionFactors: { baseRate: 0.05, positionalMultiplier: 0.8, teamOffensiveRating: 1.2, injuryOpportunity: 0.05 }
+      },
+      'buf_qb1': {
+        name: 'Josh Allen',
+        position: 'QB', 
+        team: 'BUF',
+        redZoneMetrics: { targets: 0, carries: 1.2, touchdowns: 3, efficiency: 0.5 },
+        opportunityFactors: { snapShare: 0.98, targetShare: 0, redZoneShare: 0.03, goalLineShare: 0.15 },
+        recentForm: { trendDirection: 0.2, consistency: 0.7 },
+        predictionFactors: { baseRate: 0.06, positionalMultiplier: 0.8, teamOffensiveRating: 1.15, injuryOpportunity: 0.05 }
+      }
+      // Add a few more key players but keep it minimal
     }
   };
 }
 
-function estimateRedZoneTargets(player) {
-  const base = { 'RB': 1.5, 'WR': 2.0, 'TE': 1.8, 'QB': 0 };
-  return (base[player.position] || 0) * getTeamQuality(player.team);
-}
-
-function estimateRedZoneCarries(player) {
-  const base = player.position === 'RB' ? 2.0 : player.position === 'QB' ? 0.3 : 0;
-  return base * getTeamQuality(player.team);
-}
-
-function estimateSnapShare(player) {
-  const base = { 'QB': 0.98, 'RB': 0.60, 'WR': 0.70, 'TE': 0.75 };
-  return base[player.position] || 0.5;
-}
-
-function estimateTargetShare(player) {
-  const base = { 'RB': 0.12, 'WR': 0.22, 'TE': 0.18, 'QB': 0 };
-  return base[player.position] || 0;
-}
-
-function estimateRedZoneShare(player) {
-  const base = { 'RB': 0.18, 'WR': 0.22, 'TE': 0.20, 'QB': 0.02 };
-  return base[player.position] || 0.1;
-}
-
-function estimateGoalLineShare(player) {
-  const base = { 'RB': 0.65, 'WR': 0.18, 'TE': 0.28, 'QB': 0.12 };
-  return base[player.position] || 0.1;
-}
-
-function estimateSeasonTDs(player) {
-  const teamQuality = getTeamQuality(player.team);
-  const base = { 'RB': 8, 'WR': 6, 'TE': 4, 'QB': 3 };
-  return Math.round((base[player.position] || 2) * teamQuality);
-}
-
-function calculateQuickAnytimeTD(player) {
-  const weights = QUICK_TD_WEIGHTS.ANYTIME;
+// Main TD prediction function
+async function generateTDPredictions(games, season) {
+  console.log('=== NFL TD COMPREHENSIVE PREDICTIONS (LIVE DATA) ===');
   
-  const positionBase = {
-    'RB': 0.25, 'WR': 0.20, 'TE': 0.15, 'QB': 0.08
-  }[player.position] || 0.10;
+  // Load live player data from blobs
+  const playerData = await loadPlayerData(season);
   
-  const teamQuality = getTeamQuality(player.team);
-  const snapShare = player.opportunityFactors?.snapShare || 0.5;
-  const redZoneRole = player.opportunityFactors?.redZoneShare || 0.1;
+  if (!playerData || !playerData.players) {
+    throw new Error('No player data available');
+  }
   
-  const score = 
-    (positionBase * weights.position_base) +
-    (teamQuality * weights.team_quality) +
-    (snapShare * weights.snap_share) +
-    (redZoneRole * weights.red_zone_role);
+  console.log(`Processing ${Object.keys(playerData.players).length} players with live data`);
   
-  return Math.max(0.03, Math.min(0.75, score));
-}
-
-function calculateQuickFirstTD(anytimeProb) {
-  return Math.max(0.01, Math.min(0.20, anytimeProb * 0.18));
-}
-
-function calculateQuickMultipleTD(anytimeProb) {
-  return Math.max(0.01, Math.min(0.35, Math.pow(anytimeProb, 1.6)));
-}
-
-function getTeamQuality(team) {
-  const ratings = {
-    'KC': 1.5, 'BUF': 1.4, 'SF': 1.3, 'PHI': 1.2, 'DAL': 1.1, 'BAL': 1.1,
-    'MIA': 1.0, 'CIN': 1.0, 'DET': 1.0, 'MIN': 0.9, 'LAC': 0.9, 'HOU': 0.9,
-    'GB': 0.8, 'LAR': 0.8, 'ATL': 0.8, 'NYJ': 0.8, 'PIT': 0.8, 'SEA': 0.8,
-    'IND': 0.7, 'TB': 0.7, 'JAX': 0.7, 'NO': 0.7, 'CLE': 0.7, 'TEN': 0.7,
-    'LV': 0.6, 'DEN': 0.6, 'WAS': 0.6, 'CHI': 0.6, 'NE': 0.5, 'NYG': 0.5, 'CAR': 0.5, 'ARI': 0.5
+  const predictions = [];
+  
+  for (const game of games) {
+    console.log(`Processing ${game.away_team} @ ${game.home_team}`);
+    
+    // Get players for both teams
+    const homePlayers = getTeamPlayers(playerData.players, game.home_team);
+    const awayPlayers = getTeamPlayers(playerData.players, game.away_team);
+    
+    // Generate predictions for each player
+    const homePlayerPreds = generatePlayerPredictions(homePlayers, game);
+    const awayPlayerPreds = generatePlayerPredictions(awayPlayers, game);
+    
+    predictions.push({
+      game_id: game.game_id,
+      home_team: game.home_team,
+      away_team: game.away_team,
+      players: [...homePlayerPreds, ...awayPlayerPreds],
+      metadata: {
+        total_players: homePlayerPreds.length + awayPlayerPreds.length,
+        high_confidence_count: [...homePlayerPreds, ...awayPlayerPreds]
+          .filter(p => p.anytime_td.confidence > 65).length,
+        data_source: playerData.metadata.dataSource || 'live_blobs',
+        data_freshness: playerData.metadata.generatedAt || 'unknown'
+      }
+    });
+  }
+  
+  return {
+    predictions,
+    metadata: {
+      total_games: predictions.length,
+      total_players: predictions.reduce((sum, game) => sum + game.metadata.total_players, 0),
+      data_source: playerData.metadata.dataSource || 'live_blobs',
+      generated_at: new Date().toISOString(),
+      system_version: 'comprehensive_live_v1'
+    }
   };
-  return ratings[team] || 1.0;
 }
 
-function calculateConfidence(anytimeProb) {
-  return Math.round(Math.max(50, Math.min(85, 45 + (anytimeProb * 65))));
+// Get players for a specific team
+function getTeamPlayers(allPlayers, teamCode) {
+  const teamPlayers = [];
+  
+  for (const [playerId, player] of Object.entries(allPlayers)) {
+    if (player.team === teamCode && shouldIncludePlayer(player)) {
+      teamPlayers.push({ id: playerId, ...player });
+    }
+  }
+  
+  return teamPlayers;
+}
+
+// Filter players worth predicting
+function shouldIncludePlayer(player) {
+  return (
+    ['QB', 'RB', 'WR', 'TE'].includes(player.position) &&
+    (player.opportunityFactors?.snapShare > 0.2 || 
+     player.redZoneMetrics?.targets > 0.5 ||
+     player.redZoneMetrics?.carries > 0.3 ||
+     player.predictionFactors?.baseRate > 0.05)
+  );
+}
+
+// Generate predictions for a list of players
+function generatePlayerPredictions(players, game) {
+  const predictions = [];
+  
+  for (const player of players) {
+    // Calculate ANYTIME TD probability
+    const anytimeProbability = calculateAnytimeTDProbability(player, game);
+    
+    // Calculate FIRST TD probability
+    const firstTDProbability = calculateFirstTDProbability(player, anytimeProbability, game);
+    
+    // Calculate 2+ TD probability  
+    const multipleTDProbability = calculateMultipleTDProbability(player, anytimeProbability, game);
+    
+    // Calculate confidence levels
+    const anytimeConfidence = calculateTDConfidence(anytimeProbability, 'anytime');
+    const firstConfidence = calculateTDConfidence(firstTDProbability, 'first');
+    const multipleConfidence = calculateTDConfidence(multipleTDProbability, 'multiple');
+    
+    predictions.push({
+      player_id: player.id,
+      name: player.name,
+      position: player.position,
+      team: player.team,
+      
+      anytime_td: {
+        probability: Number(anytimeProbability.toFixed(3)),
+        confidence: anytimeConfidence,
+        implied_odds: probabilityToAmericanOdds(anytimeProbability)
+      },
+      
+      first_td: {
+        probability: Number(firstTDProbability.toFixed(3)),
+        confidence: firstConfidence,
+        implied_odds: probabilityToAmericanOdds(firstTDProbability)
+      },
+      
+      multiple_td: {
+        probability: Number(multipleTDProbability.toFixed(3)),
+        confidence: multipleConfidence,
+        implied_odds: probabilityToAmericanOdds(multipleTDProbability)
+      },
+      
+      key_factors: {
+        snap_share: player.opportunityFactors?.snapShare || 0,
+        red_zone_usage: (player.redZoneMetrics?.targets || 0) + (player.redZoneMetrics?.carries || 0),
+        team_offensive_rating: player.predictionFactors?.teamOffensiveRating || 1.0,
+        recent_form: player.recentForm?.trendDirection || 0,
+        base_td_rate: player.predictionFactors?.baseRate || 0.05
+      }
+    });
+  }
+  
+  return predictions.sort((a, b) => b.anytime_td.probability - a.anytime_td.probability);
+}
+
+// TD probability calculations
+function calculateAnytimeTDProbability(player, game) {
+  const weights = TD_MODEL_WEIGHTS.ANYTIME;
+  
+  const redZoneTargets = player.redZoneMetrics?.targets || 0;
+  const goalLineUsage = player.redZoneMetrics?.carries || 0;
+  const snapShare = player.opportunityFactors?.snapShare || 0.5;
+  const teamRating = player.predictionFactors?.teamOffensiveRating || 1.0;
+  const baseRate = player.predictionFactors?.baseRate || 0.05;
+  const recentForm = player.recentForm?.trendDirection || 0;
+  
+  // Weighted calculation
+  const probabilityScore = 
+    (redZoneTargets * weights.red_zone_targets) +
+    (goalLineUsage * weights.goal_line_usage) +
+    (snapShare * weights.snap_percentage) +
+    (teamRating * weights.team_red_zone_trips) +
+    (baseRate * 10) + // Scale base rate
+    (recentForm * 2); // Recent form bonus
+  
+  return Math.max(0.05, Math.min(0.35, probabilityScore));
+}
+
+function calculateFirstTDProbability(player, anytimeProbability, game) {
+  const expectedGameTDs = 6;
+  const firstTDBase = anytimeProbability / expectedGameTDs;
+  const positionBonus = player.position === 'RB' ? 1.2 : player.position === 'QB' ? 1.1 : 1.0;
+  
+  return Math.max(0.01, Math.min(0.15, firstTDBase * positionBonus));
+}
+
+function calculateMultipleTDProbability(player, anytimeProbability, game) {
+  const baseProbability = Math.pow(anytimeProbability, 1.7);
+  const eliteBonus = anytimeProbability > 0.25 ? 1.3 : 1.0;
+  
+  return Math.max(0.01, Math.min(0.25, baseProbability * eliteBonus));
+}
+
+function calculateTDConfidence(probability, type) {
+  const baseConfidence = Math.min(90, 50 + (probability * 120));
+  
+  const typeMultipliers = {
+    anytime: 1.0,
+    first: 0.7,
+    multiple: 0.6
+  };
+  
+  return Math.round(baseConfidence * typeMultipliers[type]);
 }
 
 function probabilityToAmericanOdds(probability) {
@@ -214,134 +296,57 @@ function probabilityToAmericanOdds(probability) {
   }
 }
 
-export async function handler(event) {
+// Netlify Function Handler
+export default async (request, context) => {
   try {
-    if (event.httpMethod === 'OPTIONS') {
-      return {
-        statusCode: 200,
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 200,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type'
-        },
-        body: ''
-      };
-    }
-
-    let games = [];
-    if (event.httpMethod === 'POST') {
-      const body = JSON.parse(event.body || '{}');
-      games = body.games || [];
-    }
-
-    if (games.length === 0) {
-      return {
-        statusCode: 400,
-        headers: { 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ error: 'No games provided' })
-      };
-    }
-
-    console.log('Using embedded player data - no external dependencies');
-    
-    const allPredictions = [];
-    
-    for (const game of games) {
-      const gamePlayerPredictions = [];
-      
-      // Process embedded players for this game
-      for (const [playerId, basePlayer] of Object.entries(EMBEDDED_PLAYER_DATA)) {
-        if (basePlayer.team !== game.home_team && basePlayer.team !== game.away_team) continue;
-        
-        const player = addPlayerMetrics(basePlayer);
-        
-        const anytimeProb = calculateQuickAnytimeTD(player);
-        const firstProb = calculateQuickFirstTD(anytimeProb);
-        const multipleProb = calculateQuickMultipleTD(anytimeProb);
-        const confidence = calculateConfidence(anytimeProb);
-        
-        gamePlayerPredictions.push({
-          player_id: playerId,
-          name: player.name,
-          position: player.position,
-          team: player.team,
-          
-          anytime_td: {
-            probability: Number(anytimeProb.toFixed(4)),
-            confidence: confidence,
-            implied_odds: probabilityToAmericanOdds(anytimeProb)
-          },
-          
-          first_td: {
-            probability: Number(firstProb.toFixed(4)),
-            confidence: Math.round(confidence * 0.75),
-            implied_odds: probabilityToAmericanOdds(firstProb)
-          },
-          
-          multiple_td: {
-            probability: Number(multipleProb.toFixed(4)),
-            confidence: Math.round(confidence * 0.65),
-            implied_odds: probabilityToAmericanOdds(multipleProb)
-          },
-          
-          key_factors: {
-            red_zone_targets: player.redZoneMetrics?.targets,
-            red_zone_carries: player.redZoneMetrics?.carries,
-            snap_share: player.opportunityFactors?.snapShare,
-            target_share: player.opportunityFactors?.targetShare,
-            team_quality: getTeamQuality(player.team)
-          }
-        });
-      }
-      
-      gamePlayerPredictions.sort((a, b) => b.anytime_td.probability - a.anytime_td.probability);
-      
-      allPredictions.push({
-        game_id: game.game_id,
-        home_team: game.home_team,
-        away_team: game.away_team,
-        players: gamePlayerPredictions,
-        metadata: {
-          total_players: gamePlayerPredictions.length,
-          high_confidence_count: gamePlayerPredictions.filter(p => p.anytime_td.confidence >= 70).length
         }
       });
     }
+
+    let games = [];
+    let season = '2025';
     
-    return {
-      statusCode: 200,
+    if (request.method === 'POST') {
+      const body = await request.json();
+      games = body.games || [];
+      season = body.season || '2025';
+    }
+
+    if (games.length === 0) {
+      throw new Error('No games provided for TD predictions');
+    }
+
+    console.log(`Generating live TD predictions for ${games.length} games`);
+    const result = await generateTDPredictions(games, season);
+    
+    return new Response(JSON.stringify(result), {
+      status: 200,
       headers: { 
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
-        success: true,
-        metadata: {
-          model: 'embedded-data-v1',
-          data_source: 'embedded_player_data',
-          generated_at: new Date().toISOString(),
-          games_processed: games.length,
-          total_players: allPredictions.reduce((sum, game) => sum + game.players.length, 0),
-          player_count_available: Object.keys(EMBEDDED_PLAYER_DATA).length
-        },
-        predictions: allPredictions
-      })
-    };
+      }
+    });
     
   } catch (error) {
-    console.error('Embedded TD prediction error:', error);
+    console.error('TD prediction generation failed:', error);
     
-    return {
-      statusCode: 500,
+    return new Response(JSON.stringify({
+      error: 'TD prediction generation failed',
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    }), {
+      status: 500,
       headers: { 
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
-        success: false,
-        error: 'Embedded TD prediction failed',
-        message: error.message
-      })
-    };
+      }
+    });
   }
-}
+};
