@@ -4,33 +4,6 @@
 import fs from 'fs/promises';
 import { fetchPlayerPropOdds } from '../../../scripts/fetch-player-prop-odds.js';
 
-// Enhanced embedded player data (your full roster but organized)
-const EMBEDDED_PLAYER_DATA = {
-  'kc_qb1': { id: 'kc_qb1', name: 'Patrick Mahomes', position: 'QB', team: 'KC' },
-  'kc_rb1': { id: 'kc_rb1', name: 'Isiah Pacheco', position: 'RB', team: 'KC' },
-  'buf_qb1': { id: 'buf_qb1', name: 'Josh Allen', position: 'QB', team: 'BUF' },
-  'buf_rb1': { id: 'buf_rb1', name: 'James Cook', position: 'RB', team: 'BUF' },
-  'buf_wr1': { id: 'buf_wr1', name: 'Khalil Shakir', position: 'WR', team: 'BUF' },
-  'buf_te1': { id: 'buf_te1', name: 'Dalton Kincaid', position: 'TE', team: 'BUF' },
-  'nyg_qb1': { id: 'nyg_qb1', name: 'Daniel Jones', position: 'QB', team: 'NYG' },
-  'nyg_rb1': { id: 'nyg_rb1', name: 'Tyrone Tracy Jr.', position: 'RB', team: 'NYG' },
-  'nyg_wr1': { id: 'nyg_wr1', name: 'Malik Nabers', position: 'WR', team: 'NYG' },
-  'nyg_wr2': { id: 'nyg_wr2', name: 'Darius Slayton', position: 'WR', team: 'NYG' },
-  'nyg_te1': { id: 'nyg_te1', name: 'Daniel Bellinger', position: 'TE', team: 'NYG' },
-  'ari_qb1': { id: 'ari_qb1', name: 'Kyler Murray', position: 'QB', team: 'ARI' },
-  'ari_rb1': { id: 'ari_rb1', name: 'James Conner', position: 'RB', team: 'ARI' },
-  'ari_wr1': { id: 'ari_wr1', name: 'Marvin Harrison Jr.', position: 'WR', team: 'ARI' },
-  'ari_te1': { id: 'ari_te1', name: 'Trey McBride', position: 'TE', team: 'ARI' },
-  'gb_qb1': { id: 'gb_qb1', name: 'Jordan Love', position: 'QB', team: 'GB' },
-  'gb_rb1': { id: 'gb_rb1', name: 'Josh Jacobs', position: 'RB', team: 'GB' },
-  'chi_qb1': { id: 'chi_qb1', name: 'Caleb Williams', position: 'QB', team: 'CHI' },
-  'chi_rb1': { id: 'chi_rb1', name: "D'Andre Swift", position: 'RB', team: 'CHI' },
-  'chi_wr1': { id: 'chi_wr1', name: 'DJ Moore', position: 'WR', team: 'CHI' },
-  'hou_qb1': { id: 'hou_qb1', name: 'C.J. Stroud', position: 'QB', team: 'HOU' },
-  'hou_rb1': { id: 'hou_rb1', name: 'Joe Mixon', position: 'RB', team: 'HOU' },
-  'hou_wr1': { id: 'hou_wr1', name: 'Nico Collins', position: 'WR', team: 'HOU' },
-  'hou_wr2': { id: 'hou_wr2', name: 'Stefon Diggs', position: 'WR', team: 'HOU' }
-};
 
 // TD prediction weights
 const QUICK_TD_WEIGHTS = {
@@ -188,17 +161,12 @@ async function generateTDPredictions(games, season = '2025') {
   
   // Try to load live data from blobs first
   const blobData = await loadPlayerData(season);
-  let playerData, dataSource;
-  
-  if (blobData && blobData.players) {
-    playerData = blobData.players;
-    dataSource = 'live_blobs';
-    console.log(`🎯 Using LIVE data: ${Object.keys(playerData).length} players`);
-  } else {
-    playerData = EMBEDDED_PLAYER_DATA;
-    dataSource = 'embedded_fallback';
-    console.log(`📦 Using embedded data: ${Object.keys(playerData).length} players`);
+  if (!blobData || !blobData.players) {
+    throw new Error('No valid player data found in public/nfl-anytime-td-player-data.json. Run the ETL to generate full player data.');
   }
+  const playerData = blobData.players;
+  const dataSource = 'live_blobs';
+  console.log(`🎯 Using LIVE data: ${Object.keys(playerData).length} players`);
   
   const allPredictions = [];
   
