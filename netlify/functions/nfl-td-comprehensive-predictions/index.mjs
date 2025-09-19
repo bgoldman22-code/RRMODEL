@@ -1,7 +1,7 @@
 // netlify/functions/nfl-td-comprehensive-predictions/index.mjs
 // FIXED VERSION: Uses same blob pattern as working NFL predictions + does actual TD predictions
 
-import { loadBlob } from '../_lib/blobs-nfl.js';
+import fs from 'fs/promises';
 
 // Enhanced embedded player data (your full roster but organized)
 const EMBEDDED_PLAYER_DATA = {
@@ -41,33 +41,18 @@ const QUICK_TD_WEIGHTS = {
   }
 };
 
-// Load player data from blobs (same pattern as working NFL predictions)
-async function loadPlayerData(season = '2025') {
-  console.log('🔍 Loading player data from Netlify Blobs (same as NFL predictions)...');
-  
+// Load player data from committed JSON (public/nfl-anytime-td-player-data.json)
+async function loadPlayerData() {
   try {
-    // Try current week data first
-    const currentWeek = getCurrentWeek();
-    console.log(`Looking for: nfl/comprehensive/player-data-${season}-week${currentWeek}.json`);
-    
-    const weeklyData = await loadBlob(`nfl/comprehensive/player-data-${season}-week${currentWeek}.json`);
-    if (weeklyData && weeklyData.players) {
-      console.log(`✅ Loaded weekly data: ${Object.keys(weeklyData.players).length} players`);
-      return weeklyData;
+    const raw = await fs.readFile('public/nfl-anytime-td-player-data.json', 'utf8');
+    const data = JSON.parse(raw);
+    if (data && data.players) {
+      console.log(`✅ Loaded player data: ${Object.keys(data.players).length} players`);
+      return data;
     }
-    
-    // Fallback to latest
-    console.log('Trying fallback: nfl/comprehensive/latest.json');
-    const latestData = await loadBlob('nfl/comprehensive/latest.json');
-    if (latestData && latestData.players) {
-      console.log(`✅ Loaded latest data: ${Object.keys(latestData.players).length} players`);
-      return latestData;
-    }
-    
-    throw new Error('No blob data found');
-    
+    throw new Error('No valid player data in file');
   } catch (error) {
-    console.warn('⚠️ Blob loading failed:', error.message);
+    console.warn('⚠️ Player data file missing or invalid:', error.message);
     console.log('📦 Using embedded player data as fallback');
     return null;
   }
