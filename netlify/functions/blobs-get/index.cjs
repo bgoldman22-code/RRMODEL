@@ -1,5 +1,5 @@
 // netlify/functions/blobs-get/index.cjs
-// FIXED: Proper error handling and fetch logic
+// FIXED: Uses correct NETLIFY_BLOBS_TOKEN
 
 exports.handler = async (event, context) => {
   try {
@@ -33,7 +33,8 @@ exports.handler = async (event, context) => {
 
     console.log(`Fetching blob data: ${key}`);
 
-    const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
+    // FIXED: Use correct token
+    const NETLIFY_TOKEN = process.env.NETLIFY_BLOBS_TOKEN || process.env.NETLIFY_TOKEN;
     const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
     
     if (!NETLIFY_TOKEN || !NETLIFY_SITE_ID) {
