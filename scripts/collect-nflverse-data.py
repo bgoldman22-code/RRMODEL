@@ -88,8 +88,8 @@ def collect_historical_stats():
     print("Downloading 3 years of historical player stats from NFLVerse...")
     
     try:
-        # Fix: Use correct parameter name and values
-        all_stats = nfl.import_seasonal_data(HISTORICAL_SEASONS, 'players', s_type='REG')
+    # Fix: Use correct parameter names for latest nfl_data_py
+    all_stats = nfl.import_seasonal_data(seasons=HISTORICAL_SEASONS, stat_type='players', s_type='REG')
         
         # Filter for relevant positions and stats
         td_relevant_stats = all_stats[
@@ -156,8 +156,10 @@ def collect_team_context():
     print("Collecting team offensive and red zone efficiency data...")
     
     try:
-        # Get team stats for context
-        team_stats = nfl.import_team_desc(HISTORICAL_SEASONS + [CURRENT_SEASON])
+    # Get team stats for context (latest nfl_data_py: no arguments allowed)
+    team_stats = nfl.import_team_desc()
+    # Filter for relevant seasons
+    team_stats = team_stats[team_stats['season'].isin(HISTORICAL_SEASONS + [CURRENT_SEASON])]
         
         # Calculate team offensive efficiency
         team_efficiency = team_stats.groupby('team').agg({
