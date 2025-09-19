@@ -155,10 +155,10 @@ def collect_team_context():
     print("Collecting team offensive and red zone efficiency data...")
     
     try:
-    # Get team stats for context (latest nfl_data_py: no arguments allowed)
-    team_stats = nfl.import_team_desc()
-    # Filter for relevant seasons
-    team_stats = team_stats[team_stats['season'].isin(HISTORICAL_SEASONS + [CURRENT_SEASON])]
+        # Get team stats for context (latest nfl_data_py: no arguments allowed)
+        team_stats = nfl.import_team_desc()
+        # Filter for relevant seasons
+        team_stats = team_stats[team_stats['season'].isin(HISTORICAL_SEASONS + [CURRENT_SEASON])]
         
         # Calculate team offensive efficiency
         team_efficiency = team_stats.groupby('team').agg({
