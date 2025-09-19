@@ -1,7 +1,5 @@
 // netlify/functions/blobs-get/index.cjs
-// CRITICAL: This function enables TD systems to access player data
-
-const { getStore } = require('@netlify/blobs');
+// Fixed version with proper error handling
 
 exports.handler = async (event, context) => {
   try {
@@ -35,9 +33,30 @@ exports.handler = async (event, context) => {
       };
     }
 
-    console.log(`Fetching blob: ${key}`);
+    console.log(`Attempting to fetch blob: ${key}`);
 
-    // Initialize blob store (SAME as NFL predictions system)
+    // Try to import blobs - this might fail if package not available
+    let getStore;
+    try {
+      const blobsModule = require('@netlify/blobs');
+      getStore = blobsModule.getStore;
+    } catch (importError) {
+      console.error('Failed to import @netlify/blobs:', importError);
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          error: 'Netlify Blobs package not available',
+          message: 'Need to add @netlify/blobs dependency',
+          key: key
+        })
+      };
+    }
+
+    // Initialize blob store
     const store = getStore('nfl-data');
     
     // Try to get the blob
@@ -83,6 +102,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         error: 'Blob access failed',
         message: error.message,
+        stack: error.stack,
         key: event.queryStringParameters?.key || 'undefined'
       })
     };
