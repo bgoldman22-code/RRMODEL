@@ -1,12 +1,12 @@
 // scripts/collect-player-data.js
-// FIXED: Corrected data passing and variable references
+// FIXED: All 32 teams + correct environment variable
 
-const CURRENT_WEEK = process.env.NFL_WEEK || '4';
+const CURRENT_WEEK = process.env.NFL_WEEK || '3';
 const CURRENT_SEASON = process.env.NFL_SEASON || '2025';
 
-// Simple blob storage function
+// FIXED: Use correct environment variable
 async function storeBlob(key, data) {
-  const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
+  const NETLIFY_TOKEN = process.env.NETLIFY_BLOBS_TOKEN || process.env.NETLIFY_TOKEN;
   const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
   
   if (!NETLIFY_TOKEN || !NETLIFY_SITE_ID) {
@@ -40,7 +40,7 @@ async function storeBlob(key, data) {
   }
 }
 
-// Complete roster data for all 32 teams (KEEP EXISTING - IT'S CORRECT)
+// COMPLETE NFL ROSTERS - ALL 32 TEAMS
 const COMPLETE_NFL_ROSTERS = {
   'ARI': {
     teamName: 'Arizona Cardinals',
@@ -232,7 +232,132 @@ const COMPLETE_NFL_ROSTERS = {
       ]
     }
   },
-  // Continue with remaining teams...
+  'DEN': {
+    teamName: 'Denver Broncos',
+    players: {
+      'QB': [
+        { id: 'den_qb1', name: 'Bo Nix', position: 'QB', jerseyNumber: '10', experience: 1 },
+        { id: 'den_qb2', name: 'Jarrett Stidham', position: 'QB', jerseyNumber: '4', experience: 6 }
+      ],
+      'RB': [
+        { id: 'den_rb1', name: 'Javonte Williams', position: 'RB', jerseyNumber: '33', experience: 4 },
+        { id: 'den_rb2', name: 'Jaleel McLaughlin', position: 'RB', jerseyNumber: '38', experience: 2 }
+      ],
+      'WR': [
+        { id: 'den_wr1', name: 'Courtland Sutton', position: 'WR', jerseyNumber: '14', experience: 7 },
+        { id: 'den_wr2', name: 'Jerry Jeudy', position: 'WR', jerseyNumber: '10', experience: 5 },
+        { id: 'den_wr3', name: 'Marvin Mims Jr.', position: 'WR', jerseyNumber: '19', experience: 2 }
+      ],
+      'TE': [
+        { id: 'den_te1', name: 'Greg Dulcich', position: 'TE', jerseyNumber: '80', experience: 3 }
+      ]
+    }
+  },
+  'DET': {
+    teamName: 'Detroit Lions',
+    players: {
+      'QB': [
+        { id: 'det_qb1', name: 'Jared Goff', position: 'QB', jerseyNumber: '16', experience: 9 },
+        { id: 'det_qb2', name: 'Hendon Hooker', position: 'QB', jerseyNumber: '2', experience: 2 }
+      ],
+      'RB': [
+        { id: 'det_rb1', name: 'Jahmyr Gibbs', position: 'RB', jerseyNumber: '26', experience: 2 },
+        { id: 'det_rb2', name: 'David Montgomery', position: 'RB', jerseyNumber: '5', experience: 6 }
+      ],
+      'WR': [
+        { id: 'det_wr1', name: 'Amon-Ra St. Brown', position: 'WR', jerseyNumber: '14', experience: 4 },
+        { id: 'det_wr2', name: 'Jameson Williams', position: 'WR', jerseyNumber: '9', experience: 3 },
+        { id: 'det_wr3', name: 'Tim Patrick', position: 'WR', jerseyNumber: '17', experience: 8 }
+      ],
+      'TE': [
+        { id: 'det_te1', name: 'Sam LaPorta', position: 'TE', jerseyNumber: '87', experience: 2 }
+      ]
+    }
+  },
+  'GB': {
+    teamName: 'Green Bay Packers',
+    players: {
+      'QB': [
+        { id: 'gb_qb1', name: 'Jordan Love', position: 'QB', jerseyNumber: '10', experience: 5 },
+        { id: 'gb_qb2', name: 'Malik Willis', position: 'QB', jerseyNumber: '2', experience: 3 }
+      ],
+      'RB': [
+        { id: 'gb_rb1', name: 'Josh Jacobs', position: 'RB', jerseyNumber: '8', experience: 6 },
+        { id: 'gb_rb2', name: 'Emanuel Wilson', position: 'RB', jerseyNumber: '31', experience: 2 }
+      ],
+      'WR': [
+        { id: 'gb_wr1', name: 'Jayden Reed', position: 'WR', jerseyNumber: '11', experience: 2 },
+        { id: 'gb_wr2', name: 'Romeo Doubs', position: 'WR', jerseyNumber: '87', experience: 3 },
+        { id: 'gb_wr3', name: 'Christian Watson', position: 'WR', jerseyNumber: '9', experience: 3 }
+      ],
+      'TE': [
+        { id: 'gb_te1', name: 'Tucker Kraft', position: 'TE', jerseyNumber: '85', experience: 2 }
+      ]
+    }
+  },
+  'HOU': {
+    teamName: 'Houston Texans',
+    players: {
+      'QB': [
+        { id: 'hou_qb1', name: 'C.J. Stroud', position: 'QB', jerseyNumber: '7', experience: 2 },
+        { id: 'hou_qb2', name: 'Davis Mills', position: 'QB', jerseyNumber: '10', experience: 4 }
+      ],
+      'RB': [
+        { id: 'hou_rb1', name: 'Joe Mixon', position: 'RB', jerseyNumber: '28', experience: 8 },
+        { id: 'hou_rb2', name: 'Cam Akers', position: 'RB', jerseyNumber: '3', experience: 5 }
+      ],
+      'WR': [
+        { id: 'hou_wr1', name: 'Nico Collins', position: 'WR', jerseyNumber: '12', experience: 4 },
+        { id: 'hou_wr2', name: 'Stefon Diggs', position: 'WR', jerseyNumber: '1', experience: 10 },
+        { id: 'hou_wr3', name: 'Tank Dell', position: 'WR', jerseyNumber: '3', experience: 2 }
+      ],
+      'TE': [
+        { id: 'hou_te1', name: 'Dalton Schultz', position: 'TE', jerseyNumber: '86', experience: 7 }
+      ]
+    }
+  },
+  'IND': {
+    teamName: 'Indianapolis Colts',
+    players: {
+      'QB': [
+        { id: 'ind_qb1', name: 'Anthony Richardson', position: 'QB', jerseyNumber: '5', experience: 2 },
+        { id: 'ind_qb2', name: 'Joe Flacco', position: 'QB', jerseyNumber: '15', experience: 17 }
+      ],
+      'RB': [
+        { id: 'ind_rb1', name: 'Jonathan Taylor', position: 'RB', jerseyNumber: '28', experience: 4 },
+        { id: 'ind_rb2', name: 'Trey Sermon', position: 'RB', jerseyNumber: '30', experience: 4 }
+      ],
+      'WR': [
+        { id: 'ind_wr1', name: 'Michael Pittman Jr.', position: 'WR', jerseyNumber: '11', experience: 5 },
+        { id: 'ind_wr2', name: 'Josh Downs', position: 'WR', jerseyNumber: '1', experience: 2 },
+        { id: 'ind_wr3', name: 'Alec Pierce', position: 'WR', jerseyNumber: '14', experience: 3 }
+      ],
+      'TE': [
+        { id: 'ind_te1', name: 'Mo Alie-Cox', position: 'TE', jerseyNumber: '81', experience: 8 }
+      ]
+    }
+  },
+  'JAX': {
+    teamName: 'Jacksonville Jaguars',
+    players: {
+      'QB': [
+        { id: 'jax_qb1', name: 'Trevor Lawrence', position: 'QB', jerseyNumber: '16', experience: 4 },
+        { id: 'jax_qb2', name: 'Mac Jones', position: 'QB', jerseyNumber: '10', experience: 4 }
+      ],
+      'RB': [
+        { id: 'jax_rb1', name: 'Travis Etienne', position: 'RB', jerseyNumber: '1', experience: 4 },
+        { id: 'jax_rb2', name: 'Tank Bigsby', position: 'RB', jerseyNumber: '4', experience: 2 }
+      ],
+      'WR': [
+        { id: 'jax_wr1', name: 'Brian Thomas Jr.', position: 'WR', jerseyNumber: '7', experience: 1 },
+        { id: 'jax_wr2', name: 'Christian Kirk', position: 'WR', jerseyNumber: '13', experience: 7 },
+        { id: 'jax_wr3', name: 'Gabe Davis', position: 'WR', jerseyNumber: '84', experience: 5 }
+      ],
+      'TE': [
+        { id: 'jax_te1', name: 'Evan Engram', position: 'TE', jerseyNumber: '17', experience: 8 }
+      ]
+    }
+  },
   'KC': {
     teamName: 'Kansas City Chiefs',
     players: {
@@ -254,8 +379,343 @@ const COMPLETE_NFL_ROSTERS = {
         { id: 'kc_te2', name: 'Noah Gray', position: 'TE', jerseyNumber: '83', experience: 4 }
       ]
     }
+  },
+  'LV': {
+    teamName: 'Las Vegas Raiders',
+    players: {
+      'QB': [
+        { id: 'lv_qb1', name: 'Gardner Minshew II', position: 'QB', jerseyNumber: '15', experience: 6 },
+        { id: 'lv_qb2', name: 'Aidan O\'Connell', position: 'QB', jerseyNumber: '12', experience: 2 }
+      ],
+      'RB': [
+        { id: 'lv_rb1', name: 'Alexander Mattison', position: 'RB', jerseyNumber: '22', experience: 6 },
+        { id: 'lv_rb2', name: 'Zamir White', position: 'RB', jerseyNumber: '35', experience: 3 }
+      ],
+      'WR': [
+        { id: 'lv_wr1', name: 'Davante Adams', position: 'WR', jerseyNumber: '17', experience: 11 },
+        { id: 'lv_wr2', name: 'Jakobi Meyers', position: 'WR', jerseyNumber: '16', experience: 6 },
+        { id: 'lv_wr3', name: 'Tre Tucker', position: 'WR', jerseyNumber: '11', experience: 2 }
+      ],
+      'TE': [
+        { id: 'lv_te1', name: 'Brock Bowers', position: 'TE', jerseyNumber: '89', experience: 1 }
+      ]
+    }
+  },
+  'LAC': {
+    teamName: 'Los Angeles Chargers',
+    players: {
+      'QB': [
+        { id: 'lac_qb1', name: 'Justin Herbert', position: 'QB', jerseyNumber: '10', experience: 5 },
+        { id: 'lac_qb2', name: 'Easton Stick', position: 'QB', jerseyNumber: '2', experience: 5 }
+      ],
+      'RB': [
+        { id: 'lac_rb1', name: 'J.K. Dobbins', position: 'RB', jerseyNumber: '27', experience: 5 },
+        { id: 'lac_rb2', name: 'Gus Edwards', position: 'RB', jerseyNumber: '4', experience: 7 }
+      ],
+      'WR': [
+        { id: 'lac_wr1', name: 'Ladd McConkey', position: 'WR', jerseyNumber: '15', experience: 1 },
+        { id: 'lac_wr2', name: 'Joshua Palmer', position: 'WR', jerseyNumber: '5', experience: 4 },
+        { id: 'lac_wr3', name: 'DJ Chark Jr.', position: 'WR', jerseyNumber: '7', experience: 7 }
+      ],
+      'TE': [
+        { id: 'lac_te1', name: 'Will Dissly', position: 'TE', jerseyNumber: '84', experience: 7 }
+      ]
+    }
+  },
+  'LAR': {
+    teamName: 'Los Angeles Rams',
+    players: {
+      'QB': [
+        { id: 'lar_qb1', name: 'Matthew Stafford', position: 'QB', jerseyNumber: '9', experience: 16 },
+        { id: 'lar_qb2', name: 'Jimmy Garoppolo', position: 'QB', jerseyNumber: '10', experience: 11 }
+      ],
+      'RB': [
+        { id: 'lar_rb1', name: 'Kyren Williams', position: 'RB', jerseyNumber: '23', experience: 3 },
+        { id: 'lar_rb2', name: 'Blake Corum', position: 'RB', jerseyNumber: '22', experience: 1 }
+      ],
+      'WR': [
+        { id: 'lar_wr1', name: 'Cooper Kupp', position: 'WR', jerseyNumber: '10', experience: 8 },
+        { id: 'lar_wr2', name: 'Puka Nacua', position: 'WR', jerseyNumber: '17', experience: 2 },
+        { id: 'lar_wr3', name: 'Demarcus Robinson', position: 'WR', jerseyNumber: '15', experience: 9 }
+      ],
+      'TE': [
+        { id: 'lar_te1', name: 'Tyler Higbee', position: 'TE', jerseyNumber: '89', experience: 9 }
+      ]
+    }
+  },
+  'MIA': {
+    teamName: 'Miami Dolphins',
+    players: {
+      'QB': [
+        { id: 'mia_qb1', name: 'Tua Tagovailoa', position: 'QB', jerseyNumber: '1', experience: 5 },
+        { id: 'mia_qb2', name: 'Tyler Huntley', position: 'QB', jerseyNumber: '18', experience: 5 }
+      ],
+      'RB': [
+        { id: 'mia_rb1', name: 'De\'Von Achane', position: 'RB', jerseyNumber: '28', experience: 2 },
+        { id: 'mia_rb2', name: 'Raheem Mostert', position: 'RB', jerseyNumber: '31', experience: 10 }
+      ],
+      'WR': [
+        { id: 'mia_wr1', name: 'Tyreek Hill', position: 'WR', jerseyNumber: '10', experience: 9 },
+        { id: 'mia_wr2', name: 'Jaylen Waddle', position: 'WR', jerseyNumber: '17', experience: 4 },
+        { id: 'mia_wr3', name: 'Odell Beckham Jr.', position: 'WR', jerseyNumber: '3', experience: 11 }
+      ],
+      'TE': [
+        { id: 'mia_te1', name: 'Jonnu Smith', position: 'TE', jerseyNumber: '9', experience: 9 }
+      ]
+    }
+  },
+  'MIN': {
+    teamName: 'Minnesota Vikings',
+    players: {
+      'QB': [
+        { id: 'min_qb1', name: 'Sam Darnold', position: 'QB', jerseyNumber: '14', experience: 7 },
+        { id: 'min_qb2', name: 'J.J. McCarthy', position: 'QB', jerseyNumber: '9', experience: 1 }
+      ],
+      'RB': [
+        { id: 'min_rb1', name: 'Aaron Jones', position: 'RB', jerseyNumber: '33', experience: 8 },
+        { id: 'min_rb2', name: 'Ty Chandler', position: 'RB', jerseyNumber: '32', experience: 3 }
+      ],
+      'WR': [
+        { id: 'min_wr1', name: 'Justin Jefferson', position: 'WR', jerseyNumber: '18', experience: 5 },
+        { id: 'min_wr2', name: 'Jordan Addison', position: 'WR', jerseyNumber: '3', experience: 2 },
+        { id: 'min_wr3', name: 'Jalen Nailor', position: 'WR', jerseyNumber: '83', experience: 3 }
+      ],
+      'TE': [
+        { id: 'min_te1', name: 'T.J. Hockenson', position: 'TE', jerseyNumber: '87', experience: 6 }
+      ]
+    }
+  },
+  'NE': {
+    teamName: 'New England Patriots',
+    players: {
+      'QB': [
+        { id: 'ne_qb1', name: 'Drake Maye', position: 'QB', jerseyNumber: '10', experience: 1 },
+        { id: 'ne_qb2', name: 'Jacoby Brissett', position: 'QB', jerseyNumber: '7', experience: 9 }
+      ],
+      'RB': [
+        { id: 'ne_rb1', name: 'Rhamondre Stevenson', position: 'RB', jerseyNumber: '38', experience: 4 },
+        { id: 'ne_rb2', name: 'Antonio Gibson', position: 'RB', jerseyNumber: '16', experience: 5 }
+      ],
+      'WR': [
+        { id: 'ne_wr1', name: 'DeMario Douglas', position: 'WR', jerseyNumber: '81', experience: 2 },
+        { id: 'ne_wr2', name: 'Kendrick Bourne', position: 'WR', jerseyNumber: '84', experience: 8 },
+        { id: 'ne_wr3', name: 'K.J. Osborn', position: 'WR', jerseyNumber: '17', experience: 5 }
+      ],
+      'TE': [
+        { id: 'ne_te1', name: 'Hunter Henry', position: 'TE', jerseyNumber: '85', experience: 9 }
+      ]
+    }
+  },
+  'NO': {
+    teamName: 'New Orleans Saints',
+    players: {
+      'QB': [
+        { id: 'no_qb1', name: 'Derek Carr', position: 'QB', jerseyNumber: '4', experience: 11 },
+        { id: 'no_qb2', name: 'Spencer Rattler', position: 'QB', jerseyNumber: '18', experience: 1 }
+      ],
+      'RB': [
+        { id: 'no_rb1', name: 'Alvin Kamara', position: 'RB', jerseyNumber: '41', experience: 8 },
+        { id: 'no_rb2', name: 'Jamaal Williams', position: 'RB', jerseyNumber: '1', experience: 8 }
+      ],
+      'WR': [
+        { id: 'no_wr1', name: 'Chris Olave', position: 'WR', jerseyNumber: '12', experience: 3 },
+        { id: 'no_wr2', name: 'Rashid Shaheed', position: 'WR', jerseyNumber: '22', experience: 3 },
+        { id: 'no_wr3', name: 'Cedrick Wilson Jr.', position: 'WR', jerseyNumber: '16', experience: 6 }
+      ],
+      'TE': [
+        { id: 'no_te1', name: 'Juwan Johnson', position: 'TE', jerseyNumber: '83', experience: 5 }
+      ]
+    }
+  },
+  'NYG': {
+    teamName: 'New York Giants',
+    players: {
+      'QB': [
+        { id: 'nyg_qb1', name: 'Daniel Jones', position: 'QB', jerseyNumber: '8', experience: 6 },
+        { id: 'nyg_qb2', name: 'Drew Lock', position: 'QB', jerseyNumber: '2', experience: 6 }
+      ],
+      'RB': [
+        { id: 'nyg_rb1', name: 'Tyrone Tracy Jr.', position: 'RB', jerseyNumber: '29', experience: 1 },
+        { id: 'nyg_rb2', name: 'Devin Singletary', position: 'RB', jerseyNumber: '26', experience: 6 }
+      ],
+      'WR': [
+        { id: 'nyg_wr1', name: 'Malik Nabers', position: 'WR', jerseyNumber: '1', experience: 1 },
+        { id: 'nyg_wr2', name: 'Darius Slayton', position: 'WR', jerseyNumber: '86', experience: 6 },
+        { id: 'nyg_wr3', name: 'Wan\'Dale Robinson', position: 'WR', jerseyNumber: '17', experience: 3 }
+      ],
+      'TE': [
+        { id: 'nyg_te1', name: 'Daniel Bellinger', position: 'TE', jerseyNumber: '82', experience: 3 }
+      ]
+    }
+  },
+  'NYJ': {
+    teamName: 'New York Jets',
+    players: {
+      'QB': [
+        { id: 'nyj_qb1', name: 'Aaron Rodgers', position: 'QB', jerseyNumber: '8', experience: 21 },
+        { id: 'nyj_qb2', name: 'Tyrod Taylor', position: 'QB', jerseyNumber: '2', experience: 14 }
+      ],
+      'RB': [
+        { id: 'nyj_rb1', name: 'Breece Hall', position: 'RB', jerseyNumber: '20', experience: 3 },
+        { id: 'nyj_rb2', name: 'Braelon Allen', position: 'RB', jerseyNumber: '29', experience: 1 }
+      ],
+      'WR': [
+        { id: 'nyj_wr1', name: 'Davante Adams', position: 'WR', jerseyNumber: '17', experience: 11 },
+        { id: 'nyj_wr2', name: 'Garrett Wilson', position: 'WR', jerseyNumber: '5', experience: 3 },
+        { id: 'nyj_wr3', name: 'Mike Williams', position: 'WR', jerseyNumber: '18', experience: 8 }
+      ],
+      'TE': [
+        { id: 'nyj_te1', name: 'Tyler Conklin', position: 'TE', jerseyNumber: '83', experience: 6 }
+      ]
+    }
+  },
+  'PHI': {
+    teamName: 'Philadelphia Eagles',
+    players: {
+      'QB': [
+        { id: 'phi_qb1', name: 'Jalen Hurts', position: 'QB', jerseyNumber: '1', experience: 4 },
+        { id: 'phi_qb2', name: 'Kenny Pickett', position: 'QB', jerseyNumber: '7', experience: 3 }
+      ],
+      'RB': [
+        { id: 'phi_rb1', name: 'Saquon Barkley', position: 'RB', jerseyNumber: '26', experience: 7 },
+        { id: 'phi_rb2', name: 'Kenneth Gainwell', position: 'RB', jerseyNumber: '14', experience: 4 }
+      ],
+      'WR': [
+        { id: 'phi_wr1', name: 'A.J. Brown', position: 'WR', jerseyNumber: '11', experience: 6 },
+        { id: 'phi_wr2', name: 'DeVonta Smith', position: 'WR', jerseyNumber: '6', experience: 4 },
+        { id: 'phi_wr3', name: 'Jahan Dotson', position: 'WR', jerseyNumber: '89', experience: 3 }
+      ],
+      'TE': [
+        { id: 'phi_te1', name: 'Dallas Goedert', position: 'TE', jerseyNumber: '88', experience: 7 }
+      ]
+    }
+  },
+  'PIT': {
+    teamName: 'Pittsburgh Steelers',
+    players: {
+      'QB': [
+        { id: 'pit_qb1', name: 'Russell Wilson', position: 'QB', jerseyNumber: '3', experience: 13 },
+        { id: 'pit_qb2', name: 'Justin Fields', position: 'QB', jerseyNumber: '2', experience: 4 }
+      ],
+      'RB': [
+        { id: 'pit_rb1', name: 'Najee Harris', position: 'RB', jerseyNumber: '22', experience: 4 },
+        { id: 'pit_rb2', name: 'Jaylen Warren', position: 'RB', jerseyNumber: '30', experience: 3 }
+      ],
+      'WR': [
+        { id: 'pit_wr1', name: 'George Pickens', position: 'WR', jerseyNumber: '14', experience: 3 },
+        { id: 'pit_wr2', name: 'Calvin Austin III', position: 'WR', jerseyNumber: '19', experience: 3 },
+        { id: 'pit_wr3', name: 'Mike Williams', position: 'WR', jerseyNumber: '18', experience: 8 }
+      ],
+      'TE': [
+        { id: 'pit_te1', name: 'Pat Freiermuth', position: 'TE', jerseyNumber: '88', experience: 4 }
+      ]
+    }
+  },
+  'SF': {
+    teamName: 'San Francisco 49ers',
+    players: {
+      'QB': [
+        { id: 'sf_qb1', name: 'Brock Purdy', position: 'QB', jerseyNumber: '13', experience: 3 },
+        { id: 'sf_qb2', name: 'Joshua Dobbs', position: 'QB', jerseyNumber: '5', experience: 8 }
+      ],
+      'RB': [
+        { id: 'sf_rb1', name: 'Christian McCaffrey', position: 'RB', jerseyNumber: '23', experience: 8 },
+        { id: 'sf_rb2', name: 'Jordan Mason', position: 'RB', jerseyNumber: '24', experience: 5 }
+      ],
+      'WR': [
+        { id: 'sf_wr1', name: 'Deebo Samuel', position: 'WR', jerseyNumber: '19', experience: 6 },
+        { id: 'sf_wr2', name: 'Brandon Aiyuk', position: 'WR', jerseyNumber: '11', experience: 5 },
+        { id: 'sf_wr3', name: 'Jauan Jennings', position: 'WR', jerseyNumber: '15', experience: 5 }
+      ],
+      'TE': [
+        { id: 'sf_te1', name: 'George Kittle', position: 'TE', jerseyNumber: '85', experience: 8 }
+      ]
+    }
+  },
+  'SEA': {
+    teamName: 'Seattle Seahawks',
+    players: {
+      'QB': [
+        { id: 'sea_qb1', name: 'Geno Smith', position: 'QB', jerseyNumber: '7', experience: 13 },
+        { id: 'sea_qb2', name: 'Sam Howell', position: 'QB', jerseyNumber: '6', experience: 3 }
+      ],
+      'RB': [
+        { id: 'sea_rb1', name: 'Kenneth Walker III', position: 'RB', jerseyNumber: '9', experience: 3 },
+        { id: 'sea_rb2', name: 'Zach Charbonnet', position: 'RB', jerseyNumber: '26', experience: 2 }
+      ],
+      'WR': [
+        { id: 'sea_wr1', name: 'DK Metcalf', position: 'WR', jerseyNumber: '14', experience: 6 },
+        { id: 'sea_wr2', name: 'Tyler Lockett', position: 'WR', jerseyNumber: '16', experience: 10 },
+        { id: 'sea_wr3', name: 'Jaxon Smith-Njigba', position: 'WR', jerseyNumber: '11', experience: 2 }
+      ],
+      'TE': [
+        { id: 'sea_te1', name: 'Noah Fant', position: 'TE', jerseyNumber: '87', experience: 6 }
+      ]
+    }
+  },
+  'TB': {
+    teamName: 'Tampa Bay Buccaneers',
+    players: {
+      'QB': [
+        { id: 'tb_qb1', name: 'Baker Mayfield', position: 'QB', jerseyNumber: '6', experience: 7 },
+        { id: 'tb_qb2', name: 'Kyle Trask', position: 'QB', jerseyNumber: '2', experience: 4 }
+      ],
+      'RB': [
+        { id: 'tb_rb1', name: 'Rachaad White', position: 'RB', jerseyNumber: '29', experience: 3 },
+        { id: 'tb_rb2', name: 'Bucky Irving', position: 'RB', jerseyNumber: '7', experience: 1 }
+      ],
+      'WR': [
+        { id: 'tb_wr1', name: 'Mike Evans', position: 'WR', jerseyNumber: '13', experience: 11 },
+        { id: 'tb_wr2', name: 'Chris Godwin', position: 'WR', jerseyNumber: '14', experience: 9 },
+        { id: 'tb_wr3', name: 'Sterling Shepard', position: 'WR', jerseyNumber: '3', experience: 9 }
+      ],
+      'TE': [
+        { id: 'tb_te1', name: 'Cade Otton', position: 'TE', jerseyNumber: '88', experience: 3 }
+      ]
+    }
+  },
+  'TEN': {
+    teamName: 'Tennessee Titans',
+    players: {
+      'QB': [
+        { id: 'ten_qb1', name: 'Will Levis', position: 'QB', jerseyNumber: '8', experience: 2 },
+        { id: 'ten_qb2', name: 'Mason Rudolph', position: 'QB', jerseyNumber: '11', experience: 7 }
+      ],
+      'RB': [
+        { id: 'ten_rb1', name: 'Tony Pollard', position: 'RB', jerseyNumber: '1', experience: 5 },
+        { id: 'ten_rb2', name: 'Tyjae Spears', position: 'RB', jerseyNumber: '2', experience: 2 }
+      ],
+      'WR': [
+        { id: 'ten_wr1', name: 'Calvin Ridley', position: 'WR', jerseyNumber: '0', experience: 8 },
+        { id: 'ten_wr2', name: 'DeAndre Hopkins', position: 'WR', jerseyNumber: '10', experience: 12 },
+        { id: 'ten_wr3', name: 'Tyler Boyd', position: 'WR', jerseyNumber: '83', experience: 9 }
+      ],
+      'TE': [
+        { id: 'ten_te1', name: 'Chig Okonkwo', position: 'TE', jerseyNumber: '85', experience: 3 }
+      ]
+    }
+  },
+  'WAS': {
+    teamName: 'Washington Commanders',
+    players: {
+      'QB': [
+        { id: 'was_qb1', name: 'Jayden Daniels', position: 'QB', jerseyNumber: '5', experience: 1 },
+        { id: 'was_qb2', name: 'Marcus Mariota', position: 'QB', jerseyNumber: '18', experience: 10 }
+      ],
+      'RB': [
+        { id: 'was_rb1', name: 'Brian Robinson Jr.', position: 'RB', jerseyNumber: '8', experience: 3 },
+        { id: 'was_rb2', name: 'Austin Ekeler', position: 'RB', jerseyNumber: '30', experience: 8 }
+      ],
+      'WR': [
+        { id: 'was_wr1', name: 'Terry McLaurin', position: 'WR', jerseyNumber: '17', experience: 6 },
+        { id: 'was_wr2', name: 'Noah Brown', position: 'WR', jerseyNumber: '85', experience: 8 },
+        { id: 'was_wr3', name: 'Olamide Zaccheaus', position: 'WR', jerseyNumber: '14', experience: 6 }
+      ],
+      'TE': [
+        { id: 'was_te1', name: 'Zach Ertz', position: 'TE', jerseyNumber: '86', experience: 12 }
+      ]
+    }
   }
-  // Add all 32 teams following this pattern...
 };
 
 // Team quality ratings for realistic stats
@@ -275,7 +735,7 @@ async function main() {
   console.log(`📊 Target: All 32 NFL teams with comprehensive player data`);
   
   console.log('\n🔍 Checking environment variables:');
-  console.log(`NETLIFY_TOKEN: ${process.env.NETLIFY_TOKEN ? '✅ Present' : '❌ Missing'}`);
+  console.log(`NETLIFY_TOKEN: ${process.env.NETLIFY_BLOBS_TOKEN || process.env.NETLIFY_TOKEN ? '✅ Present' : '❌ Missing'}`);
   console.log(`NETLIFY_SITE_ID: ${process.env.NETLIFY_SITE_ID ? '✅ Present' : '❌ Missing'}`);
   
   try {
@@ -311,7 +771,6 @@ async function main() {
     });
     
     console.log('💾 Storing data in Netlify Blobs...');
-    // CRITICAL FIX: Pass comprehensiveData correctly
     const storeResults = await storeAllData({
       teamRosters,
       playerStats,
@@ -337,8 +796,6 @@ async function main() {
     process.exit(1);
   }
 }
-
-// ... [Include all the helper functions from your existing script] ...
 
 async function generateAllPlayerStats(teamRosters) {
   console.log('Generating realistic statistics for all NFL players...');
@@ -530,7 +987,6 @@ async function processComprehensiveData(allData) {
   return comprehensive;
 }
 
-// CRITICAL FIX: Corrected storeAllData function
 async function storeAllData(allData) {
   console.log('Storing all collected data in Netlify Blobs...');
   
@@ -539,7 +995,7 @@ async function storeAllData(allData) {
   // Store data for Basic TD System
   storeResults.push(await storeBlob(`history/${CURRENT_SEASON}/recent-weeks.json`, allData.recentWeeks));
   
-  // FIXED: Store data for Comprehensive TD System using CORRECT variable reference
+  // Store data for Comprehensive TD System
   storeResults.push(await storeBlob(`nfl/comprehensive/player-data-${CURRENT_SEASON}-week${CURRENT_WEEK}.json`, allData.comprehensiveData));
   storeResults.push(await storeBlob(`nfl/comprehensive/latest.json`, allData.comprehensiveData));
   
