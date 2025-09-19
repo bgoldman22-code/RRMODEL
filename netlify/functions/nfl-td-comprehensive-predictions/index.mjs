@@ -35,12 +35,17 @@ const QUICK_TD_WEIGHTS = {
 
 // Load player data from committed JSON (correct paths for Netlify deployment)
 async function loadPlayerData() {
+  console.log(`🔍 DEBUG: Current working directory for player data: ${process.cwd()}`);
+  
   const possiblePaths = [
     'public/nfl-anytime-td-player-data.json',  // Local development
     '/opt/buildhome/repo/public/nfl-anytime-td-player-data.json',  // Netlify build
     '/var/task/public/nfl-anytime-td-player-data.json',  // Netlify function runtime
     './public/nfl-anytime-td-player-data.json',  // Relative path
-    '../../public/nfl-anytime-td-player-data.json'  // Function relative path
+    '../../public/nfl-anytime-td-player-data.json',  // Function relative path
+    '../../../public/nfl-anytime-td-player-data.json',  // Deep relative path
+    '/opt/build/repo/public/nfl-anytime-td-player-data.json',  // New Netlify build path
+    process.cwd() + '/public/nfl-anytime-td-player-data.json'  // Dynamic path
   ];
   
   for (const filePath of possiblePaths) {
@@ -363,12 +368,18 @@ async function generateTDPredictions(games, season = '2025') {
 
 // Helper to load schedule from committed JSON (correct paths for Netlify deployment)  
 async function getScheduleFromFile(season, week) {
+  console.log(`🔍 DEBUG: Current working directory: ${process.cwd()}`);
+  console.log(`🔍 DEBUG: Function __dirname equivalent: ${new URL('.', import.meta.url).pathname}`);
+  
   const possiblePaths = [
     'public/data/nfl-schedule-2025.json',  // Local development
     '/opt/buildhome/repo/public/data/nfl-schedule-2025.json',  // Netlify build
     '/var/task/public/data/nfl-schedule-2025.json',  // Netlify function runtime
     './public/data/nfl-schedule-2025.json',  // Relative path
-    '../../public/data/nfl-schedule-2025.json'  // Function relative path
+    '../../public/data/nfl-schedule-2025.json',  // Function relative path
+    '../../../public/data/nfl-schedule-2025.json',  // Deep relative path
+    '/opt/build/repo/public/data/nfl-schedule-2025.json',  // New Netlify build path
+    process.cwd() + '/public/data/nfl-schedule-2025.json'  // Dynamic path
   ];
   
   for (const filePath of possiblePaths) {
