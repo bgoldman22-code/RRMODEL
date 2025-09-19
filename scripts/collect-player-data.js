@@ -9,6 +9,7 @@ const CURRENT_SEASON = process.env.NFL_SEASON || '2025';
 
 const fs = require('fs');
 const path = require('path');
+const { fetchPlayerPropOdds } = require('./fetch-player-prop-odds.js');
 
 // --- TEAM QUALITY ---
 function getTeamQuality(team) {
@@ -149,7 +150,17 @@ async function generateRecentWeeksData(playerStats) {
   return recentWeeks;
 }
 
+
 async function processComprehensiveData(allData) {
+  // Fetch player prop odds for 3 markets
+  let oddsByPlayer = {};
+  try {
+    oddsByPlayer = await fetchPlayerPropOdds();
+    console.log(`✅ Pulled player prop odds for ${Object.keys(oddsByPlayer).length} players`);
+  } catch (e) {
+    console.warn('⚠️ Could not fetch player prop odds:', e.message);
+  }
+
   const comprehensive = {
     metadata: {
       season: CURRENT_SEASON, week: CURRENT_WEEK, generatedAt: new Date().toISOString(),
@@ -157,8 +168,23 @@ async function processComprehensiveData(allData) {
     },
     players: {}
   };
-  
+
   for (const [playerId, player] of Object.entries(allData.playerStats)) {
+    // Try to match odds by player name (case-insensitive, fallback to no odds)
+    const oddsEntry = oddsByPlayer[player.name] || oddsByPlayer[player.name.toUpperCase()] || oddsByPlayer[player.name.toLowerCase()] || null;
+    const odds = {};
+    for (const market of ['player_anytime_td', 'player_1st_td', 'player_tds_over']) {
+      if (oddsEntry && oddsEntry[market]) {
+        // Find best price and all books
+        let best = null;
+        const books = {};
+        for (const o of oddsEntry[market]) {
+          books[o.bookmaker] = o.price;
+          if (best === null || (o.price > best)) best = o.price;
+        }
+        odds[market] = { best, books };
+      }
+    }
     comprehensive.players[playerId] = {
       ...player,
       redZoneMetrics: {
@@ -178,10 +204,11 @@ async function processComprehensiveData(allData) {
         baseRate: player.currentSeason.totalTDs / Math.max(player.currentSeason.games, 1),
         positionalMultiplier: { 'QB': 0.8, 'RB': 1.2, 'WR': 1.0, 'TE': 0.9 }[player.position] || 1.0,
         teamOffensiveRating: getTeamQuality(player.team)
-      }
+      },
+      odds
     };
   }
-  
+
   return comprehensive;
 }
 
