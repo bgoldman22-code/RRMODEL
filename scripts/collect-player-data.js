@@ -6,7 +6,7 @@ const CURRENT_SEASON = process.env.NFL_SEASON || '2025';
 
 // Simple blob storage function
 async function storeBlob(key, data) {
-  const NETLIFY_TOKEN = process.env.NETLIFY_TOKEN;
+  const NETLIFY_TOKEN = process.env.NETLIFY_BLOBS_TOKEN || process.env.NETLIFY_TOKEN;
   const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID;
   
   if (!NETLIFY_TOKEN || !NETLIFY_SITE_ID) {
