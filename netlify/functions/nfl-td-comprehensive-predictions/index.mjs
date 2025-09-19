@@ -4,6 +4,24 @@
 import fs from 'fs/promises';
 import { fetchPlayerPropOdds } from '../../../scripts/fetch-player-prop-odds.js';
 
+// Team name mapping for schedule normalization (matches NFL predictions approach)
+function getTeamAbbreviation(fullName) {
+  const nameMap = {
+    "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL",
+    "Buffalo Bills": "BUF", "Carolina Panthers": "CAR", "Chicago Bears": "CHI",
+    "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE", "Dallas Cowboys": "DAL",
+    "Denver Broncos": "DEN", "Detroit Lions": "DET", "Green Bay Packers": "GB",
+    "Houston Texans": "HOU", "Indianapolis Colts": "IND", "Jacksonville Jaguars": "JAX",
+    "Kansas City Chiefs": "KC", "Las Vegas Raiders": "LV", "Los Angeles Chargers": "LAC",
+    "Los Angeles Rams": "LAR", "Miami Dolphins": "MIA", "Minnesota Vikings": "MIN",
+    "New England Patriots": "NE", "New Orleans Saints": "NO", "New York Giants": "NYG",
+    "New York Jets": "NYJ", "Philadelphia Eagles": "PHI", "Pittsburgh Steelers": "PIT",
+    "Seattle Seahawks": "SEA", "San Francisco 49ers": "SF", "Tampa Bay Buccaneers": "TB",
+    "Tennessee Titans": "TEN", "Washington Commanders": "WAS"
+  };
+  return nameMap[fullName] || fullName;
+}
+
 
 // TD prediction weights
 const QUICK_TD_WEIGHTS = {
@@ -173,9 +191,15 @@ async function generateTDPredictions(games, season = '2025') {
   for (const game of games) {
     const gamePlayerPredictions = [];
     
+    // Normalize team names from schedule (convert full names to abbreviations)
+    const homeTeamAbbr = getTeamAbbreviation(game.homeTeam || game.home_team) || game.homeTeam || game.home_team;
+    const awayTeamAbbr = getTeamAbbreviation(game.awayTeam || game.away_team) || game.awayTeam || game.away_team;
+    console.log(`🔄 Game: ${game.homeTeam || game.home_team}(${homeTeamAbbr}) vs ${game.awayTeam || game.away_team}(${awayTeamAbbr})`);
+    
     // Process all players for this game
     for (const [playerId, basePlayer] of Object.entries(playerData)) {
-      if (basePlayer.team !== game.home_team && basePlayer.team !== game.away_team) continue;
+      // Match using normalized team abbreviations
+      if (basePlayer.team !== homeTeamAbbr && basePlayer.team !== awayTeamAbbr) continue;
       
       const player = addPlayerMetrics(basePlayer);
       
@@ -243,8 +267,8 @@ async function generateTDPredictions(games, season = '2025') {
     
     allPredictions.push({
       game_id: game.game_id,
-      home_team: game.home_team,
-      away_team: game.away_team,
+      home_team: homeTeamAbbr,
+      away_team: awayTeamAbbr,
       players: gamePlayerPredictions,
       metadata: {
         total_players: gamePlayerPredictions.length,
