@@ -1,12 +1,35 @@
 // src/pages/NflTd.jsx
 import React, { useEffect, useMemo, useState } from 'react';
+
+// Simple error boundary for runtime errors
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    // You can log errorInfo here if needed
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{color:'red',padding:'2em'}}>
+        <h2>Something went wrong in NFL TD page.</h2>
+        <pre>{String(this.state.error)}</pre>
+      </div>;
+    }
+    return this.props.children;
+  }
+}
 import { ENABLE_NFL_TD } from '../config/features';
 import { getWeeksAvailable, getGamesForWeek } from '../utils/nflSchedule';
 import NflTdTable from '../components/NflTdTable';
 
 function qsWeek(){ const w = parseInt(new URLSearchParams(location.search).get('week')||'',10); return Number.isFinite(w)? w : null; }
 
-export default function NflTd(){
+function NflTdInner(){
   const weeks = getWeeksAvailable();
   const [week, setWeek] = useState(qsWeek() || (weeks.includes(1)?1:weeks[0]||1));
   const games = useMemo(()=> getGamesForWeek(week), [week]);
@@ -107,4 +130,13 @@ export default function NflTd(){
       </>}
     </div>
   );
+}
+
+export default function NflTd() {
+  return (
+    <ErrorBoundary>
+      <NflTdInner />
+    </ErrorBoundary>
+  );
+}
 }
