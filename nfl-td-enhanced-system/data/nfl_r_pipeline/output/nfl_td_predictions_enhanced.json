@@ -1,0 +1,29 @@
+{
+  "source": "demo",
+  "updated_at": "2025-09-21T04:51:00Z",
+  "payload": {
+    "meta": {
+      "season": 2025
+    },
+    "players": [
+      {
+        "player": "Demo Player A",
+        "team": "PHI",
+        "pos": "RB",
+        "td_prob": 0.43,
+        "red_zone_share": 0.28,
+        "recent_form": "1 TDs last 3 wks",
+        "note": "demo"
+      },
+      {
+        "player": "Demo Player B",
+        "team": "BUF",
+        "pos": "WR",
+        "td_prob": 0.36,
+        "red_zone_share": 0.22,
+        "recent_form": "0 TDs last 3 wks",
+        "note": "demo"
+      }
+    ]
+  }
+}

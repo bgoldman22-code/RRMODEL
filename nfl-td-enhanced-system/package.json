@@ -1,0 +1,12 @@
+{
+  "name": "nfl-td-enhanced",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "netlify dev",
+    "build:r": "Rscript scripts/nfl-td-r-pipeline/build_td_predictions.R --season 2025"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^6.5.0"
+  }
+}
