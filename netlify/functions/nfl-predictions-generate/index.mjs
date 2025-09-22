@@ -992,7 +992,7 @@ async function generateAdvancedPredictions(games, season) {
     // PHASE 3 ENHANCEMENT: Apply public bias detection
     const publicBiasAdjustment = detectPublicBias(mlPick, realOdds.spread_line, predictedSpread);
     const baseMLConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge, avgConfidence, avgEvidence, scoreDifference, 'moneyline', gameContext);
-    const mlConfidence = skipCheck.skip ? "—" : Math.round(baseMLConfidence * publicBiasAdjustment);
+    const mlConfidence = Math.round(baseMLConfidence * publicBiasAdjustment); // Always show actual confidence
 
     // Spread predictions with live odds integration
     const marketSpread = hasLiveOdds ? (realOdds.spread_line || 0) : 0;
@@ -1032,7 +1032,7 @@ async function generateAdvancedPredictions(games, season) {
     
     const spreadEdge = Math.abs(marginDifference);
     const baseSpreadConfidence = calculateConfidence(0.6, 0.52, spreadEdge / 14, avgConfidence, avgEvidence, scoreDifference, 'spread', gameContext);
-    const spreadConfidence = skipCheck.skip ? "—" : baseSpreadConfidence;
+    const spreadConfidence = baseSpreadConfidence; // Always show actual confidence
 
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread, homeScoreData.specialTeams, awayScoreData.specialTeams);
     const marketTotal = hasLiveOdds ? (realOdds.total_line || 44) : 44;
