@@ -340,7 +340,7 @@ const NFLTouchdownPropsComprehensive = () => {
         'multiple': 0.08  // At least 8% chance (was 12%)
       };
       
-      if (marketData.probability < minProbThresholds[selectedMarket]) {
+      if (false && marketData.probability < minProbThresholds[selectedMarket]) {
         console.log('Player filtered by probability:', player.name, marketData.probability, 'threshold:', minProbThresholds[selectedMarket]);
         return false;
       }
