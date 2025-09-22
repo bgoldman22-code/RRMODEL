@@ -31,11 +31,47 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+        sudo apt-get install -y \
+          libcurl4-openssl-dev \
+          libssl-dev \
+          libxml2-dev \
+          libfontconfig1-dev \
+          libharfbuzz-dev \
+          libfribidi-dev \
+          libfreetype6-dev \
+          libpng-dev \
+          libtiff5-dev \
+          libjpeg-dev
+
+    - name: Cache R packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.local/share/renv
+        key: ${{ runner.os }}-r-${{ hashFiles('**/renv.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-r-
 
     - name: Install R dependencies
       run: |
-        Rscript -e "install.packages(c('nflfastR', 'nflreadr', 'tidyverse', 'jsonlite', 'glue', 'lubridate'), repos='https://cran.rstudio.com/')"
+        echo "📦 Installing core R packages..."
+        Rscript -e "
+          # Install core packages first
+          install.packages(c('remotes', 'jsonlite', 'glue', 'lubridate'), repos='https://cran.rstudio.com/')
+          
+          # Install tidyverse (includes dplyr, ggplot2, etc)
+          install.packages('tidyverse', repos='https://cran.rstudio.com/')
+          
+          # Install NFLverse packages
+          install.packages(c('nflfastR', 'nflreadr'), repos='https://cran.rstudio.com/')
+          
+          # Verify installations
+          library(tidyverse)
+          library(nflfastR)
+          library(nflreadr)
+          library(jsonlite)
+          
+          cat('✅ All R packages installed successfully\n')
+        "
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -69,6 +105,9 @@ jobs:
         # Add all data files but exclude large .rds cache files
         git add data/*.json public/data/ src/data/ netlify/functions/_data/
         git add --force *.json *.csv # Force add any new JSON/CSV files
+        
+        # Exclude large cache files from commit
+        git reset HEAD data/nfl_r_pipeline/*.rds 2>/dev/null || true
         
         # Only commit if there are changes
         if git diff --staged --quiet; then
