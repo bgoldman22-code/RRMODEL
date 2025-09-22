@@ -328,13 +328,16 @@ const NFLTouchdownPropsComprehensive = () => {
         return false;
       }
       
+      console.log(`Player ${player.name}: confidence=${marketData.confidence}%, probability=${marketData.probability}`);
+      
+      
       // ENHANCED SELECTIVITY: Only show truly actionable picks
       
-      // Base probability thresholds by market (more restrictive)
+      // Base probability thresholds by market (more permissive for debugging)
       const minProbThresholds = {
-        'anytime': 0.25,  // At least 25% chance
-        'first': 0.08,    // At least 8% chance  
-        'multiple': 0.12  // At least 12% chance
+        'anytime': 0.15,  // At least 15% chance (was 25%)
+        'first': 0.05,    // At least 5% chance (was 8%)
+        'multiple': 0.08  // At least 8% chance (was 12%)
       };
       
       if (marketData.probability < minProbThresholds[selectedMarket]) {
