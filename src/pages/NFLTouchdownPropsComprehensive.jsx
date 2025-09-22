@@ -723,7 +723,7 @@ const NFLTouchdownPropsComprehensive = () => {
             >
               <option value="probability">Probability</option>
               <option value="confidence">Confidence</option>
-              <option value="value">Value vs Books</option>
+              <option value="value">EDGE</option>
             </select>
           </div>
         </div>
