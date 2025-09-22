@@ -81,21 +81,48 @@ const NFLTouchdownPropsComprehensive = () => {
       // FILTER TO CURRENT ACTIVE PLAYERS ONLY using depth charts
       const activePlayersOnly = [];
       
+      // Helper functions for name matching
+      const normalizePlayerName = (name) => {
+        return name?.toLowerCase()
+          .replace(/[^\w\s]/g, '') // Remove punctuation
+          .replace(/\s+/g, ' ')    // Normalize spaces
+          .trim();
+      };
+      
+      const fuzzyNameMatch = (name1, name2) => {
+        const n1 = normalizePlayerName(name1);
+        const n2 = normalizePlayerName(name2);
+        
+        // Check if one name contains the other (for nicknames)
+        if (n1.includes(n2) || n2.includes(n1)) return true;
+        
+        // Check first/last name matching
+        const parts1 = n1.split(' ');
+        const parts2 = n2.split(' ');
+        
+        return parts1.some(part1 => 
+          parts2.some(part2 => 
+            part1.length > 2 && part2.length > 2 && part1 === part2
+          )
+        );
+      };
+      
       // Only include players who are in current week depth charts
       for (const [team, positions] of Object.entries(depthCharts)) {
         for (const [position, playerNames] of Object.entries(positions)) {
           playerNames.forEach((playerName, index) => {
+            console.log(`🔍 Looking for: ${playerName} (${team} ${position})`);
             // Find matching player in our data by name similarity
-            const matchingPlayer = players.find(p => {
-              const nameSimilarity = (
-                p.name.toLowerCase().includes(playerName.toLowerCase().split(' ')[0]) ||
-                playerName.toLowerCase().includes(p.name.toLowerCase().split(' ')[0]) ||
-                p.name.toLowerCase().replace('.', '').includes(playerName.toLowerCase().replace('.', ''))
-              );
-              return nameSimilarity && p.team === team && p.position === position;
-            });
-            
+            const matchingPlayer = staticPlayers.find(p => 
+              p.team === team && 
+              p.position === position &&
+              (normalizePlayerName(p.name) === normalizePlayerName(playerName) ||
+               p.name === playerName ||
+               fuzzyNameMatch(p.name, playerName))
+            );
+          
             if (matchingPlayer) {
+              console.log(`✅ Matched: ${playerName} (${team} ${position}) -> ${matchingPlayer.name}`);
               activePlayersOnly.push({
                 ...matchingPlayer,
                 depth_chart_position: index + 1,
