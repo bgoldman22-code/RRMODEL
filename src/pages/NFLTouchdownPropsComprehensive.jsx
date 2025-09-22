@@ -113,7 +113,7 @@ const NFLTouchdownPropsComprehensive = () => {
           playerNames.forEach((playerName, index) => {
             console.log(`🔍 Looking for: ${playerName} (${team} ${position})`);
             // Find matching player in our data by name similarity
-            const matchingPlayer = staticPlayers.find(p => 
+            const matchingPlayer = players.find(p => 
               p.team === team && 
               p.position === position &&
               (normalizePlayerName(p.name) === normalizePlayerName(playerName) ||
