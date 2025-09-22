@@ -345,16 +345,28 @@ export default function NFLPredictions() {
 
                 const spreadDisplay = formatSpreadDisplay(spread, r.home_team, r.away_team, odds);
 
-                const PickBadge = ({ pick, confidence, type, modelValue, marketValue }) => (
+                const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge }) => (
                   <div className="space-y-1">
-                    <div className="font-medium text-sm">{pick}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium text-sm">{pick}</div>
+                      <span className={`text-xs px-2 py-1 rounded font-medium ${
+                        betRecommendation === 'BET' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {betRecommendation}
+                      </span>
+                    </div>
                     <div className={`text-xs px-2 py-1 rounded ${
-                      confidence >= 70 ? 'bg-green-100 text-green-800' :
+                      confidence >= 70 ? 'bg-blue-100 text-blue-800' :
                       confidence >= 60 ? 'bg-yellow-100 text-yellow-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
-                      {confidence}%
+                      {confidence}% conf
                     </div>
+                    {edge !== undefined && (
+                      <div className="text-xs text-purple-600 font-medium">
+                        {typeof edge === 'number' ? `${edge.toFixed(1)}% edge` : edge}
+                      </div>
+                    )}
                     {marketValue && (
                       <div className="text-xs text-gray-600">
                         Line: {marketValue}
@@ -379,6 +391,8 @@ export default function NFLPredictions() {
                           <PickBadge 
                             pick={ml.pick}
                             confidence={ml.confidence}
+                            betRecommendation={ml.betRecommendation || ml.displayNote || "BET"}
+                            edge={ml.edge}
                             type="ml"
                           />
                           {(odds.moneyline?.home || odds.moneyline?.away) && (
@@ -396,6 +410,8 @@ export default function NFLPredictions() {
                         <PickBadge 
                           pick={spreadDisplay.displayPick}
                           confidence={spread.confidence}
+                          betRecommendation={spread.betRecommendation || spread.displayNote || "BET"}
+                          edge={spread.edge}
                           type="spread"
                           modelValue={spread.predicted ? `${spread.predicted > 0 ? '+' : ''}${spread.predicted}` : null}
                           marketValue={spreadDisplay.displayLine}
@@ -408,6 +424,8 @@ export default function NFLPredictions() {
                         <PickBadge 
                           pick={total.pick === 'over' ? 'Over' : total.pick === 'under' ? 'Under' : 'Push'}
                           confidence={total.confidence}
+                          betRecommendation={total.betRecommendation || total.displayNote || "BET"}
+                          edge={total.edge}
                           type="total"
                           modelValue={total.predicted ? `${total.predicted}` : null}
                           marketValue={total.line ? `${total.line}` : null}

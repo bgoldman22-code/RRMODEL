@@ -105,6 +105,13 @@ jobs:
         
         # Update ESPN depth charts as backup
         node scripts/collect-espn-depth-charts.js
+        
+        # Optional: Validate Enhanced EPA system can read updated data
+        echo "🔍 Validating Enhanced EPA system data compatibility..."
+        curl -X POST "https://bgroundrobin.com/.netlify/functions/nfl-predictions-generate" \
+          -H "Content-Type: application/json" \
+          -d '{"season":"2025","games":[{"home_team":"KC","away_team":"ATL","game_id":"validation"}]}' \
+          --max-time 30 --silent || echo "⚠️ EPA validation failed (non-blocking)"
 
     - name: Commit and push changes
       run: |
