@@ -16,23 +16,54 @@ const NFLTouchdownPropsComprehensive = () => {
   const loadComprehensivePredictions = async () => {
     setLoading(true);
     setError(null);
+    
+    console.log('Starting data load...');
+    
     try {
-      // Load schedule from committed JSON
+      // Load player data first (this always works)
+      console.log('Loading player data...');
+      const playerRes = await fetch('/nfl-anytime-td-player-data.json');
+      if (!playerRes.ok) throw new Error(`Player data failed: ${playerRes.status}`);
+      const playerData = await playerRes.json();
+      const players = Object.values(playerData.players || {});
+      console.log(`Loaded ${players.length} players`);
+      
+      // Load schedule data
+      console.log('Loading schedule data...');
       const scheduleRes = await fetch('/data/nfl-schedule-2025.json');
-      if (!scheduleRes.ok) throw new Error(`Schedule failed: ${scheduleRes.status}`);
+      if (!scheduleRes.ok) {
+        console.warn(`Schedule API failed with ${scheduleRes.status}, using all players`);
+        // If schedule fails, just show all players without game filtering
+        setPredictions(players);
+        return;
+      }
+      
       const scheduleData = await scheduleRes.json();
-      if (!scheduleData.weeks || !scheduleData.weeks[week]) throw new Error('No schedule data');
+      console.log('Schedule data loaded:', scheduleData);
+      
+      // Check if we have data for this week
+      if (!scheduleData.weeks || !scheduleData.weeks[week]) {
+        console.warn(`No schedule data for week ${week}, using all players`);
+        setPredictions(players);
+        return;
+      }
+      
       const matchups = scheduleData.weeks[week].matchups || [];
+      console.log(`Found ${matchups.length} games for week ${week}`);
+      
+      if (matchups.length === 0) {
+        console.warn(`No games for week ${week}, using all players`);
+        setPredictions(players);
+        return;
+      }
+      
+      // Map games to our format
       const games = matchups.map(game => ({
         game_id: game.id || `${game.homeTeam}-${game.awayTeam}`,
         home_team: getTeamAbbreviation(game.homeTeam),
         away_team: getTeamAbbreviation(game.awayTeam)
       }));
-      // Load player data from committed JSON
-      const playerRes = await fetch('/nfl-anytime-td-player-data.json');
-      if (!playerRes.ok) throw new Error(`Player data failed: ${playerRes.status}`);
-      const playerData = await playerRes.json();
-      const players = Object.values(playerData.players || {});
+      
       // Build predictions for each game/player
       const allPlayers = [];
       for (const game of games) {
@@ -47,10 +78,13 @@ const NFLTouchdownPropsComprehensive = () => {
           }
         }
       }
+      
+      console.log(`Built predictions for ${allPlayers.length} players`);
       setPredictions(allPlayers);
+      
     } catch (err) {
-      setError(err.message);
-      console.error('Comprehensive TD predictions error:', err);
+      console.error('Error in loadComprehensivePredictions:', err);
+      setError(`Data loading error: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -205,6 +239,13 @@ const NFLTouchdownPropsComprehensive = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      {/* Debug Info */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mb-4 p-2 bg-gray-100 rounded text-xs">
+          Debug: Week {week}, Predictions: {predictions.length}, Loading: {loading.toString()}, Error: {error || 'none'}
+        </div>
+      )}
+      
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
