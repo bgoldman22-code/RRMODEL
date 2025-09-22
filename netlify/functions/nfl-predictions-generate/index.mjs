@@ -989,9 +989,6 @@ async function generateAdvancedPredictions(games, season) {
     const predictionData = { homeWinProb, awayWinProb };
     const skipCheck = shouldSkipBet(predictionData, gameContext, realOdds);
     
-    // Use spread-specific skip check that detects pushes
-    const spreadSkipCheck = shouldSkipSpreadBet(spreadPick, marginDifference, gameContext, realOdds);
-    
     const mlPick = homeWinProb > awayWinProb ? homeCode : awayCode;
     const mlModelProb = Math.max(homeWinProb, awayWinProb);
     
@@ -1045,6 +1042,10 @@ async function generateAdvancedPredictions(games, season) {
     }
     
     const spreadEdge = Math.abs(marginDifference);
+    
+    // Use spread-specific skip check that detects pushes
+    const spreadSkipCheck = shouldSkipSpreadBet(spreadPick, marginDifference, gameContext, realOdds);
+    
     const baseSpreadConfidence = calculateConfidence(0.6, 0.52, spreadEdge / 14, avgConfidence, avgEvidence, scoreDifference, 'spread', gameContext);
     const spreadConfidence = baseSpreadConfidence; // Always show actual confidence
 
