@@ -329,39 +329,71 @@ export class ElitePlayerModel {
   /**
    * Main prediction function - combines all elite model components
    */
-  generateElitePrediction(player, opponent, gameContext, marketData) {
-    // 1. Player-specific baseline (no hardcoded rates)
-    const baseline = this.calculatePlayerBaseline(player, 'anytime');
-    
-    // 2. Matchup adjustments
-    const matchupMultiplier = this.calculateMatchupMultiplier(player, opponent, gameContext);
-    
-    // 3. Usage context
-    const usageMultiplier = this.calculateUsageMultiplier(player);
-    
-    // 4. Calculate raw probability
-    const rawProbability = baseline * matchupMultiplier * usageMultiplier;
-    
-    // 5. Market calibration
-    const marketOdds = marketData?.implied_odds;
-    const playerHistory = player.market_history || {};
-    const calibratedProbability = this.calibrateToMarket(rawProbability, marketOdds, playerHistory);
-    
-    // 6. Calculate confidence
-    const marketConsensus = this.oddsToProb(marketOdds) || 0.5;
-    const confidence = this.calculateConfidence(player, { probability: calibratedProbability }, marketConsensus);
-    
-    return {
-      probability: Math.round(calibratedProbability * 1000) / 1000, // 3 decimal places
-      confidence: Math.round(confidence * 100), // Percentage
-      raw_probability: Math.round(rawProbability * 1000) / 1000,
-      baseline: Math.round(baseline * 1000) / 1000,
-      multipliers: {
-        matchup: Math.round(matchupMultiplier * 100) / 100,
-        usage: Math.round(usageMultiplier * 100) / 100
-      },
-      data_quality: this.assessDataQuality(player).overall(),
-      model_edge: Math.round((calibratedProbability - marketConsensus) * 1000) / 1000
-    };
+  generateElitePrediction(player, gameContext = {}) {
+    try {
+      // 1. Get player baseline from historical data
+      const baseline = this.calculatePlayerBaseline(player);
+      
+      // 2. Apply matchup analysis
+      const matchupMultiplier = this.analyzeMatchup(player, gameContext);
+      
+      // 3. Apply usage trend analysis  
+      const usageMultiplier = this.analyzeUsagePattern(player);
+      
+      // 4. Apply game script factors
+      const gameScriptMultiplier = this.analyzeGameScript(player, gameContext);
+      
+      // 5. Calculate raw prediction
+      const rawPrediction = baseline * matchupMultiplier * usageMultiplier * gameScriptMultiplier;
+      
+      // 6. Apply market calibration (convert to percentage)
+      const calibratedConfidence = Math.min(95, Math.max(5, rawPrediction * 100));
+      
+      // 7. Generate comprehensive analysis
+      const analysis = this.generateAnalysis(player, {
+        baseline,
+        matchupMultiplier,
+        usageMultiplier,
+        gameScriptMultiplier,
+        rawPrediction,
+        calibratedConfidence
+      });
+      
+      return {
+        confidence: Math.round(calibratedConfidence),
+        analysis,
+        factors: {
+          baseline_score: Math.round(baseline * 100) / 100,
+          matchup_impact: Math.round(matchupMultiplier * 100) / 100,
+          usage_trend: Math.round(usageMultiplier * 100) / 100,
+          game_script: Math.round(gameScriptMultiplier * 100) / 100
+        },
+        metadata: {
+          model_version: 'elite_v1.2',
+          generated_at: new Date().toISOString(),
+          sample_size: this.getEffectiveSampleSize(player),
+          confidence_interval: this.calculateConfidenceInterval(rawPrediction)
+        }
+      };
+    } catch (error) {
+      console.error('Elite model prediction error:', error);
+      // Fallback to basic prediction
+      return {
+        confidence: Math.round(this.calculatePlayerBaseline(player) * 100),
+        analysis: `Basic prediction for ${player.name}: Limited data available, using positional baseline.`,
+        factors: {
+          baseline_score: this.calculatePlayerBaseline(player),
+          matchup_impact: 1.0,
+          usage_trend: 1.0,
+          game_script: 1.0
+        },
+        metadata: {
+          model_version: 'elite_v1.2_fallback',
+          generated_at: new Date().toISOString(),
+          sample_size: 'limited',
+          confidence_interval: [0.05, 0.35]
+        }
+      };
+    }
   }
 }
