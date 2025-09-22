@@ -272,6 +272,16 @@ const NFLTouchdownPropsComprehensive = () => {
       const elitePredictions = await Promise.all(elitePredictionsPromises);
       console.log(`✅ Generated ${elitePredictions.length} elite predictions with real odds`);
       
+      // CRITICAL DEBUG: Log sample predictions to verify market data structure
+      if (elitePredictions.length > 0) {
+        console.log('Sample prediction structure:', elitePredictions[0]);
+        console.log('Market data check:', {
+          anytime_td: elitePredictions[0].anytime_td,
+          first_td: elitePredictions[0].first_td,
+          multiple_td: elitePredictions[0].multiple_td
+        });
+      }
+      
       setPredictions(elitePredictions);
       
     } catch (err) {
