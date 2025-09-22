@@ -18,7 +18,7 @@ const NFLTouchdownPropsComprehensive = () => {
     setError(null);
     try {
       // Load schedule from committed JSON
-      const scheduleRes = await fetch('/public/data/nfl-schedule-2025.json');
+      const scheduleRes = await fetch('/data/nfl-schedule-2025.json');
       if (!scheduleRes.ok) throw new Error(`Schedule failed: ${scheduleRes.status}`);
       const scheduleData = await scheduleRes.json();
       if (!scheduleData.weeks || !scheduleData.weeks[week]) throw new Error('No schedule data');
@@ -29,7 +29,7 @@ const NFLTouchdownPropsComprehensive = () => {
         away_team: getTeamAbbreviation(game.awayTeam)
       }));
       // Load player data from committed JSON
-      const playerRes = await fetch('/public/nfl-anytime-td-player-data.json');
+      const playerRes = await fetch('/nfl-anytime-td-player-data.json');
       if (!playerRes.ok) throw new Error(`Player data failed: ${playerRes.status}`);
       const playerData = await playerRes.json();
       const players = Object.values(playerData.players || {});
