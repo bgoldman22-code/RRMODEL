@@ -325,6 +325,67 @@ export class ElitePlayerModel {
   clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
   }
+
+  /**
+   * Analyze matchup factors - defensive rankings, pace, etc.
+   */
+  analyzeMatchup(player, gameContext) {
+    // Base matchup multiplier
+    let multiplier = 1.0;
+    
+    // Opponent defensive ranking (if available)
+    if (gameContext.opponent_def_rank) {
+      // Better matchup vs worse defenses
+      multiplier *= (33 - gameContext.opponent_def_rank) / 32 * 0.3 + 0.85;
+    }
+    
+    // Game total and pace factors
+    if (gameContext.game_total) {
+      const totalMultiplier = Math.max(0.9, Math.min(1.1, gameContext.game_total / 45));
+      multiplier *= totalMultiplier;
+    }
+    
+    return this.clamp(multiplier, 0.8, 1.25);
+  }
+
+  /**
+   * Analyze usage pattern trends
+   */
+  analyzeUsagePattern(player) {
+    let multiplier = 1.0;
+    
+    // Trending up/down in usage
+    if (player.usage_trend_4wk) {
+      multiplier *= this.clamp(player.usage_trend_4wk, 0.85, 1.15);
+    }
+    
+    // Red zone and goal line usage
+    if (player.rz_usage_rate > 0.3) multiplier *= 1.1;
+    if (player.gl_usage_rate > 0.4) multiplier *= 1.15;
+    
+    return this.clamp(multiplier, 0.9, 1.2);
+  }
+
+  /**
+   * Analyze game script factors
+   */
+  analyzeGameScript(player, gameContext) {
+    let multiplier = 1.0;
+    
+    // Game spread implications
+    if (gameContext.spread) {
+      // Favorites run more in red zone
+      if (gameContext.spread < -3 && player.position === 'RB') {
+        multiplier *= 1.05;
+      }
+      // Underdogs throw more
+      if (gameContext.spread > 3 && player.position === 'WR') {
+        multiplier *= 1.03;
+      }
+    }
+    
+    return this.clamp(multiplier, 0.95, 1.1);
+  }
   
   /**
    * Main prediction function - combines all elite model components
