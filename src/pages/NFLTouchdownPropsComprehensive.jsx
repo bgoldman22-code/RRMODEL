@@ -133,6 +133,11 @@ const NFLTouchdownPropsComprehensive = () => {
                 away_team: matchingPlayer.is_home ? matchingPlayer.opponent || 'TBD' : team,
                 is_active_current_week: true
               });
+            } else {
+              console.log(`❌ No match found for: ${playerName} (${team} ${position})`);
+              // Show some candidates to understand why matching fails
+              const candidates = players.filter(p => p.team === team && p.position === position);
+              console.log(`   Candidates with same team/pos:`, candidates.slice(0, 3).map(p => p.name));
             }
           });
         }
