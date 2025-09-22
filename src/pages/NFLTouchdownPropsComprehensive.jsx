@@ -181,6 +181,9 @@ const NFLTouchdownPropsComprehensive = () => {
             (elitePrediction.confidence * modelWeight) + (marketConsensus * 100 * (1 - modelWeight))
           );
           
+          // Create market data structure that the component expects
+          const probabilityBase = blendedConfidence / 100;
+          
           return {
             ...enrichedPlayer,
             elite_confidence: blendedConfidence,
@@ -193,21 +196,74 @@ const NFLTouchdownPropsComprehensive = () => {
             display_name: player.current_depth_name || player.name,
             matchup_display: `${player.home_team} vs ${player.away_team}`,
             depth_rank: `#${player.depth_chart_position}`,
-            odds_source: realOdds?.source || 'model_only'
+            odds_source: realOdds?.source || 'model_only',
+            // CRITICAL: Add market data structure that component filtering expects
+            anytime_td: {
+              confidence: blendedConfidence,
+              probability: probabilityBase,
+              value: realOdds ? Math.max(0, probabilityBase - marketConsensus) : 0,
+              odds: realOdds?.books?.[0]?.anytime_odds || Math.round(100 / probabilityBase),
+              bookmaker: realOdds?.books?.[0]?.bookmaker || 'Model',
+              data_reliability: elitePrediction.metadata?.confidence_interval ? 0.8 : 0.6
+            },
+            first_td: {
+              confidence: Math.round(blendedConfidence * 0.3), // First TD is ~30% of anytime
+              probability: probabilityBase * 0.3,
+              value: realOdds ? Math.max(0, (probabilityBase * 0.3) - (marketConsensus * 0.3)) : 0,
+              odds: realOdds?.books?.[0]?.first_td_odds || Math.round(100 / (probabilityBase * 0.3)),
+              bookmaker: realOdds?.books?.[0]?.bookmaker || 'Model',
+              data_reliability: elitePrediction.metadata?.confidence_interval ? 0.7 : 0.5
+            },
+            multiple_td: {
+              confidence: Math.round(blendedConfidence * 0.15), // Multiple TDs is ~15% of anytime
+              probability: probabilityBase * 0.15,
+              value: realOdds ? Math.max(0, (probabilityBase * 0.15) - (marketConsensus * 0.15)) : 0,
+              odds: Math.round(100 / (probabilityBase * 0.15)),
+              bookmaker: 'Model',
+              data_reliability: elitePrediction.metadata?.confidence_interval ? 0.6 : 0.4
+            }
           };
           
         } catch (error) {
           console.error(`Error processing ${player.name}:`, error);
-          // Fallback prediction
+          // Fallback prediction with proper market data structure
+          const fallbackConfidence = 18;
+          const fallbackProbability = fallbackConfidence / 100;
+          
           return {
             ...player,
-            elite_confidence: 18,
+            elite_confidence: fallbackConfidence,
             elite_analysis: `Limited prediction for ${player.name} - using position baseline`,
             model_factors: { baseline_score: 0.18 },
             real_odds: null,
             market_consensus: null,
             error: error.message,
-            display_name: player.current_depth_name || player.name
+            display_name: player.current_depth_name || player.name,
+            // CRITICAL: Add market data structure for fallback
+            anytime_td: {
+              confidence: fallbackConfidence,
+              probability: fallbackProbability,
+              value: 0,
+              odds: Math.round(100 / fallbackProbability),
+              bookmaker: 'Model Fallback',
+              data_reliability: 0.3
+            },
+            first_td: {
+              confidence: Math.round(fallbackConfidence * 0.3),
+              probability: fallbackProbability * 0.3,
+              value: 0,
+              odds: Math.round(100 / (fallbackProbability * 0.3)),
+              bookmaker: 'Model Fallback',
+              data_reliability: 0.3
+            },
+            multiple_td: {
+              confidence: Math.round(fallbackConfidence * 0.15),
+              probability: fallbackProbability * 0.15,
+              value: 0,
+              odds: Math.round(100 / (fallbackProbability * 0.15)),
+              bookmaker: 'Model Fallback',
+              data_reliability: 0.3
+            }
           };
         }
       });
