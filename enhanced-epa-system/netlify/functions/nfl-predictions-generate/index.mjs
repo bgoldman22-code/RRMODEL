@@ -1,153 +1,15 @@
-// netlify/functions/nfl-predictions-generate/index.mjs  
-// v13 LOGIC + v8 WORKING ODDS: Best of both versions - FIXED
+// netlify/functions/nfl-predictions-generate/index.mjs
+// CLEAN EPA CORE + v8 WORKING ODDS: Eliminates double counting and fake multipliers
 
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics, getCurrentWeek, getCurrentWeights, diagnoseMetricsData } from '../_lib/blobs-nfl.js';
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
-
-// PHASE 1: Enhanced EPA Features - Calibration Fix
-function applyCalibrationFix(confidencePercentage, recentResults = []) {
-  // Convert percentage to probability for internal calculations
-  const rawProb = confidencePercentage / 100.0;
-  
-  // Platt scaling on last 8 weeks only (if sufficient data available)
-  if (recentResults.length >= 20) {
-    const calibratedProb = plattCalibration(rawProb, recentResults.slice(-20));
-    return Math.round(calibratedProb * 100);
-  }
-  
-  // Critical fix: 55-65% confidence band drift (where overconfidence occurs)
-  if (confidencePercentage >= 55 && confidencePercentage <= 65) {
-    // More aggressive calibration than before - pull back by 8%
-    const driftAmount = 0.08;
-    const logOdds = Math.log(rawProb / (1 - rawProb));
-    const adjustedLogOdds = logOdds - driftAmount;
-    const calibratedProb = 1 / (1 + Math.exp(-adjustedLogOdds));
-    const boundedProb = Math.max(0.35, Math.min(0.85, calibratedProb));
-    return Math.round(boundedProb * 100);
-  }
-  
-  // Conservative adjustment for very high confidence (>75%) 
-  if (confidencePercentage > 75) {
-    const conservativeAdjustment = (confidencePercentage - 75) * 0.1;
-    return Math.round(Math.max(35, Math.min(85, confidencePercentage - conservativeAdjustment)));
-  }
-  
-  // Ensure bounds are maintained
-  return Math.round(Math.max(35, Math.min(85, confidencePercentage)));
-}
-
-// Platt calibration helper for probability recalibration
-function plattCalibration(probability, historicalResults) {
-  // Simplified Platt scaling - compares predicted vs actual outcomes
-  if (!historicalResults || historicalResults.length < 10) return probability;
-  
-  const avgActual = historicalResults.reduce((sum, r) => sum + (r.correct ? 1 : 0), 0) / historicalResults.length;
-  const avgPredicted = historicalResults.reduce((sum, r) => sum + r.confidence, 0) / historicalResults.length;
-  
-  // If there's systematic bias, apply calibration factor
-  if (avgPredicted > 0.5 && Math.abs(avgPredicted - avgActual) > 0.03) {
-    const calibrationFactor = avgActual / avgPredicted;
-    const calibrated = probability * calibrationFactor;
-    return Math.max(0.35, Math.min(0.85, calibrated));
-  }
-  
-  return probability;
-}
-
-// PHASE 2: Enhanced EPA Features - No-Bet Logic  
-function shouldSkipBet(prediction, gameContext = {}, marketOdds = null) {
-  if (!marketOdds || !prediction) return { skip: false, reason: null };
-  
-  // Use proper true edge calculation with vig removal
-  const modelProb = prediction.homeWinProb || (prediction > 0.5 ? prediction : 1 - prediction);
-  const trueEdgeData = calculateTrueEdge(modelProb, marketOdds);
-  const trueEdge = trueEdgeData.edge;
-  
-  // Enhanced no-bet conditions based on proper edge calculation
-  if (trueEdge < 0.02) { // Minimum 2% true edge (vig-removed)
-    return { skip: true, reason: "edge<2%" };
-  }
-  
-  if (gameContext.marginTooClose && trueEdge < 0.03) {
-    return { skip: true, reason: "margin<3pts+lowedge" };
-  }
-  
-  if (gameContext.highVariance && trueEdge < 0.035) {
-    return { skip: true, reason: "high_variance+lowedge" };
-  }
-  
-  return { skip: false, reason: null, trueEdgeData: trueEdgeData };
-}
-
-// PHASE 3: Enhanced EPA Features - Public Bias Detection
-function detectPublicBias(teamCode, marketLine, modelLine) {
-  // Popular teams that often get inflated lines
-  const publicTeams = ['DAL', 'GB', 'PIT', 'NE', 'KC', 'SF'];
-  
-  if (publicTeams.includes(teamCode)) {
-    const lineInflation = Math.abs(marketLine || 0) - Math.abs(modelLine || 0);
-    if (lineInflation > 1.5) {
-      return 0.95; // Reduce confidence by 5% for public team bias
-    }
-  }
-  
-  return 1.0; // No adjustment needed
-}
-
-// PHASE 4: Enhanced EPA Features - Variance Modeling
-function calculateEnhancedVariance(homeTeam, awayTeam) {
-  // Sophisticated variance modeling for proper tail calibration
-  // Base margin variance in points (not probability)
-  const baseVariance = 6.0; // Conservative NFL baseline
-  
-  // 1. Explosive play differential creates fat tails (more 10+ and 17+ results)
-  const homeExplosive = homeTeam?.situational?.explosive_rate || homeTeam?.explosive_diff || 0.15;
-  const awayExplosive = awayTeam?.situational?.explosive_rate || awayTeam?.explosive_diff || 0.15;
-  const explosiveDiff = Math.abs(homeExplosive - awayExplosive);
-  const explosiveVariance = 8.0 * Math.min(explosiveDiff, 1.0); // Cap at reasonable level
-  
-  // 2. Pressure differential widens outcome distribution  
-  const homePressure = homeTeam?.pressure?.pressure_diff || 0;
-  const awayPressure = awayTeam?.pressure?.pressure_diff || 0;
-  const pressureDiff = Math.abs(homePressure - awayPressure) / 10.0; // Normalize
-  const pressureVariance = 4.0 * Math.min(pressureDiff, 1.0);
-  
-  // 3. QB uncertainty increases variance (backup/limited status)
-  // TODO: Add QB status detection from injury reports
-  const qbUncertainty = 0; // Placeholder - would come from injury data
-  
-  // 4. Heavy run games have lower variance (more predictable outcomes)
-  const homeRunRate = homeTeam?.run_rate || 0.4;
-  const awayRunRate = awayTeam?.run_rate || 0.4;
-  const avgRunRate = (homeRunRate + awayRunRate) / 2;
-  const runReduction = Math.max(0, (avgRunRate - 0.35) * 2.0);
-  
-  // 5. High turnover volatility increases variance
-  const homeTurnover = homeTeam?.turnovers?.turnover_diff || 0;
-  const awayTurnover = awayTeam?.turnovers?.turnover_diff || 0;
-  const toVolatility = Math.abs(homeTurnover - awayTurnover);
-  const turnoverVariance = toVolatility * 0.5;
-  
-  // Total variance (points-based, not probability)
-  const totalVariance = Math.max(
-    4.0, // Minimum variance floor
-    baseVariance + explosiveVariance + pressureVariance + qbUncertainty + turnoverVariance - runReduction
-  );
-  
-  return {
-    total: totalVariance,
-    breakdown: {
-      base: baseVariance,
-      explosive: explosiveVariance,
-      pressure: pressureVariance,
-      qb: qbUncertainty,
-      turnover: turnoverVariance,
-      runReduction: runReduction
-    },
-    // Key insight: Use this variance for P(cover) and tail probabilities, not to add noise to point estimate
-    isHighVariance: totalVariance > 10.0
-  };
-}
+import { 
+  calculateCleanGameProbability, 
+  calculateCleanSpread, 
+  calculateCleanTotal,
+  detectPublicBias,
+  shouldSkipBet 
+} from '../_lib/clean-epa-core.mjs';
 
 // v13 LOGIC: Fixed weights and multipliers
 const BASE_WEIGHTS = {
@@ -230,38 +92,6 @@ function americanToImplied(american) {
   const odds = Number(american);
   if (!odds || isNaN(odds)) return null;
   return odds > 0 ? 100 / (odds + 100) : Math.abs(odds) / (Math.abs(odds) + 100);
-}
-
-// Calculate true edge with proper vig removal - critical missing piece
-function calculateTrueEdge(modelProb, marketOdds) {
-  if (!marketOdds || !marketOdds.ml_home || !marketOdds.ml_away) {
-    return { edge: 0, hasMinimumEdge: false, vigFreeProb: 0.5 };
-  }
-  
-  // Convert American odds to implied probabilities
-  const homeImplied = americanToImplied(marketOdds.ml_home);
-  const awayImplied = americanToImplied(marketOdds.ml_away);
-  
-  if (!homeImplied || !awayImplied) {
-    return { edge: 0, hasMinimumEdge: false, vigFreeProb: 0.5 };
-  }
-  
-  // Remove vig (overround) - this is the key fix
-  const totalImplied = homeImplied + awayImplied;
-  const vigFreeHome = homeImplied / totalImplied;  // True vig-removed market probability
-  const vigFreeAway = awayImplied / totalImplied;
-  
-  // True edge = |calibrated_model_prob - vig_free_market_prob|
-  const trueEdge = Math.abs(modelProb - vigFreeHome);
-  
-  return {
-    edge: trueEdge,
-    hasMinimumEdge: trueEdge >= 0.02, // 2% minimum edge threshold
-    vigFreeProb: vigFreeHome,
-    vigFreeAwayProb: vigFreeAway,
-    vigAmount: totalImplied - 1.0, // How much vig was removed
-    marketImplied: { home: homeImplied, away: awayImplied }
-  };
 }
 
 // v13 LOGIC: Deterministic special teams generation (no Math.random)
@@ -648,10 +478,7 @@ function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evide
   
   if (baseConfidence > 78) baseConfidence = Math.min(baseConfidence, 78);
   
-  // PHASE 1 ENHANCEMENT: Apply calibration fix for 55-65% band
-  const calibratedConfidence = applyCalibrationFix(baseConfidence);
-  
-  return Math.round(calibratedConfidence);
+  return Math.round(baseConfidence);
 }
 
 // v8 WORKING ODDS: Load live odds (proven working)
@@ -877,9 +704,10 @@ function generateResponsibleParlays(components) {
   return parlays.slice(0, 6);
 }
 
-// MAIN PREDICTION FUNCTION: v13 Logic + v8 Odds Integration
+// MAIN PREDICTION FUNCTION: Clean EPA Core + v8 Odds Integration
+
 async function generateAdvancedPredictions(games, season) {
-  console.log('=== v13 LOGIC + v8 WORKING ODDS INTEGRATION ===');
+  console.log('=== CLEAN EPA CORE + v8 WORKING ODDS INTEGRATION ===');
   
   let advancedMetrics = null;
   let injuries = null;
@@ -903,7 +731,7 @@ async function generateAdvancedPredictions(games, season) {
           spread: { pick: null, confidence: 50, line: null, predicted: null, edge: 0 },
           total: { pick: null, confidence: 50, line: null, predicted: null, edge: 0 }
         },
-        modelEnhancements: { version: 'v13_logic_v8_odds_hybrid', notes: ["Metrics unavailable"] }
+        modelEnhancements: { version: 'clean_epa_v8_odds_hybrid', notes: ["Metrics unavailable"] }
       })),
       parlaySuggestions: [{
         type: "no_data",
@@ -921,34 +749,43 @@ async function generateAdvancedPredictions(games, season) {
   // v8 WORKING ODDS: Load live odds using proven working method
   const allOdds = await loadLiveOdds();
 
-  console.log(`v13 logic + v8 odds: Processing ${games.length} games with working odds integration`);
+  console.log(`Clean EPA + v8 odds: Processing ${games.length} games with clean EPA core logic`);
 
   const predictions = games.map(game => {
     const homeCode = game.home_team;
     const awayCode = game.away_team;
 
-    console.log(`\n=== HYBRID PREDICTION: ${awayCode} @ ${homeCode} ===`);
+    console.log(`\n=== CLEAN EPA PREDICTION: ${awayCode} @ ${homeCode} ===`);
 
     const homeMetrics = getTeamMetrics(advancedMetrics, homeCode);
     const awayMetrics = getTeamMetrics(advancedMetrics, awayCode);
-    const contextWeights = calculateContextAwareWeights(currentWeek, homeMetrics, awayMetrics);
-    const matchups = calculateMatchups(homeMetrics, awayMetrics, league);
 
-    // v13 LOGIC: Enhanced team scoring with all fixes
-    let homeScoreData = scoreTeamFromFeatures(homeMetrics, league, contextWeights, matchups?.home, true, currentWeek, awayMetrics, homeCode);
-    let awayScoreData = scoreTeamFromFeatures(awayMetrics, league, contextWeights, matchups?.away, false, currentWeek, homeMetrics, awayCode);
+    // Build clean game context (no double-counting)
+    const gameContext = {
+      isHome: true,
+      injuries: {
+        home_qb_out: injuries?.teams?.[homeCode]?.qb_status === 'out',
+        away_qb_out: injuries?.teams?.[awayCode]?.qb_status === 'out',
+        home_key_players_out: injuries?.teams?.[homeCode]?.key_injuries || 0,
+        away_key_players_out: injuries?.teams?.[awayCode]?.key_injuries || 0
+      },
+      weather: game.weather || null,
+      week: currentWeek,
+      divisional: isDivisionalGame(homeCode, awayCode)
+    };
 
-    if (injuries) {
-      homeScoreData = applyInjuryAdjustments(homeScoreData, homeCode, injuries);
-      awayScoreData = applyInjuryAdjustments(awayScoreData, awayCode, injuries);
-    }
+    // CLEAN EPA CORE: No fake multipliers, no double counting
+    const gameProb = calculateCleanGameProbability(homeMetrics, awayMetrics, gameContext);
+    const spreadPred = calculateCleanSpread(gameProb);
+    const totalPred = calculateCleanTotal(homeMetrics, awayMetrics, gameContext);
 
-    const scoreDifference = homeScoreData.score - awayScoreData.score;
+    // Check for no-bet scenarios (from Week 3 insights) with TRUE EDGE calculation
+    const skipCheck = shouldSkipBet(gameProb, gameContext, realOdds);
     
-    // v13 LOGIC: Fixed spread calculation
-    const predictedSpread = calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayCode);
-    const homeWinProb = sigmoid(predictedSpread / 14);
+    const homeWinProb = gameProb.homeWinProb;
     const awayWinProb = 1 - homeWinProb;
+    const predictedSpread = spreadPred.predictedSpread;
+    const predictedTotal = totalPred.predictedTotal;
 
     // v8 WORKING ODDS: Use proven working odds integration
     const gameOdds = findGameOdds(allOdds, homeCode, awayCode);
@@ -957,115 +794,78 @@ async function generateAdvancedPredictions(games, season) {
     
     console.log(`Live odds found: ${hasLiveOdds}, Spread: ${realOdds.spread_line}, Total: ${realOdds.total_line}`);
     
-    // PHASE 4 ENHANCEMENT: Sophisticated variance modeling
-    const enhancedVarianceData = calculateEnhancedVariance(homeMetrics, awayMetrics);
-    const enhancedVariance = enhancedVarianceData.total || enhancedVarianceData; // Handle both old and new format
-    const isHighVariance = enhancedVarianceData.isHighVariance || enhancedVariance > 10.0;
-    const marginTooClose = Math.abs(predictedSpread) < 2.5;
-    
-    const gameContext = {
-      week: currentWeek,
-      divisional: isDivisionalGame(homeCode, awayCode),
-      majorInjuries: (injuries?.teams?.[homeCode]?.qb_status === 'out') || (injuries?.teams?.[awayCode]?.qb_status === 'out'),
-      // Enhanced context for no-bet logic
-      highVariance: isHighVariance,
-      marginTooClose: marginTooClose,
-      enhancedVariance: enhancedVariance,
-      varianceBreakdown: enhancedVarianceData.breakdown || null
-    };
-    
-    // PHASE 2 ENHANCEMENT: Check for no-bet scenarios with true edge calculation
-    const predictionData = { homeWinProb, awayWinProb };
-    const skipCheck = shouldSkipBet(predictionData, gameContext, realOdds);
-    
+    // Moneyline predictions with public bias detection
     const mlPick = homeWinProb > awayWinProb ? homeCode : awayCode;
     const mlModelProb = Math.max(homeWinProb, awayWinProb);
     
     const homeMarketProb = americanToImplied(realOdds.ml_home) || 0.5;
     const awayMarketProb = americanToImplied(realOdds.ml_away) || 0.5;
     const mlMarketProb = mlPick === homeCode ? homeMarketProb : awayMarketProb;
-    const mlEdge = mlMarketProb && hasLiveOdds ? mlModelProb - mlMarketProb : 0;
+    const mlEdge = mlMarketProb && hasLiveOdds ? Math.abs(mlModelProb - mlMarketProb) : 0;
     
-    const avgConfidence = (homeScoreData.confidence + awayScoreData.confidence) / 2;
-    const avgEvidence = (homeScoreData.evidenceStrength + awayScoreData.evidenceStrength) / 2;
-    
-    // PHASE 3 ENHANCEMENT: Apply public bias detection
-    const publicBiasAdjustment = detectPublicBias(mlPick, realOdds.spread_line, predictedSpread);
-    const baseMLConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge, avgConfidence, avgEvidence, scoreDifference, 'moneyline', gameContext);
-    const mlConfidence = skipCheck.skip ? "—" : Math.round(baseMLConfidence * publicBiasAdjustment);
+    // Apply public team bias adjustment (from Week 3 analysis)
+    const publicBiasAdj = detectPublicBias(mlPick, realOdds.spread_line || 0, predictedSpread);
+    const adjustedMLConfidence = Math.round((spreadPred.confidence * 100 * publicBiasAdj));
+    const mlConfidence = skipCheck.skip ? 50 : adjustedMLConfidence;
 
-    // Spread predictions with live odds integration
+    // Spread predictions with clean EPA logic
     const marketSpread = hasLiveOdds ? (realOdds.spread_line || 0) : 0;
     const marketFavorite = realOdds.spread_favorite;
     
-    const modelHomeMargin = predictedSpread;
     let marketHomeMargin = 0;
     if (hasLiveOdds && marketSpread !== 0) {
       marketHomeMargin = marketFavorite === 'home' ? Math.abs(marketSpread) : -Math.abs(marketSpread);
     }
     
-    const marginDifference = modelHomeMargin - marketHomeMargin;
-    const spreadThreshold = hasLiveOdds ? 2.5 : 1.0;
+    const marginDifference = predictedSpread - marketHomeMargin;
+    const spreadThreshold = 2.5; // From Week 3: be more selective
     
     let spreadPick;
     let displayedSpread;
     
-    if (!hasLiveOdds) {
-      if (modelHomeMargin > 1.5) {
-        spreadPick = homeCode;
-      } else if (modelHomeMargin < -1.5) {
-        spreadPick = awayCode;
-      } else {
-        spreadPick = 'push';
-      }
-      displayedSpread = Math.abs(modelHomeMargin);
+    // Apply no-bet logic for spreads
+    if (skipCheck.skip || Math.abs(marginDifference) < spreadThreshold) {
+      spreadPick = 'push';
+      displayedSpread = Math.abs(predictedSpread);
+    } else if (marginDifference > spreadThreshold) {
+      spreadPick = homeCode;
+      displayedSpread = Math.abs(predictedSpread);
     } else {
-      if (Math.abs(marginDifference) < spreadThreshold) {
-        spreadPick = 'push';
-      } else if (marginDifference > spreadThreshold) {
-        spreadPick = homeCode;
-      } else {
-        spreadPick = awayCode;
-      }
-      displayedSpread = Math.abs(marketSpread);
+      spreadPick = awayCode;
+      displayedSpread = Math.abs(predictedSpread);
     }
     
     const spreadEdge = Math.abs(marginDifference);
-    const baseSpreadConfidence = calculateConfidence(0.6, 0.52, spreadEdge / 14, avgConfidence, avgEvidence, scoreDifference, 'spread', gameContext);
-    const spreadConfidence = skipCheck.skip ? "—" : baseSpreadConfidence;
+    const spreadConfidence = skipCheck.skip ? 50 : Math.round(spreadPred.confidence * 100);
 
-    const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread, homeScoreData.specialTeams, awayScoreData.specialTeams);
+    // Totals with clean EPA (no artificial floors)
     const marketTotal = hasLiveOdds ? (realOdds.total_line || 44) : 44;
     const totalDifference = predictedTotal - marketTotal;
     const totalPick = predictedTotal > marketTotal ? 'over' : 'under';
     const totalEdge = Math.abs(totalDifference);
-    const totalConfidence = calculateConfidence(0.6, 0.52, totalEdge / 10, avgConfidence, avgEvidence, 0, 'total', gameContext);
+    const totalConfidence = Math.round(totalPred.confidence * 100);
 
     return {
       ...game,
       predictions: {
         home_win_prob: Number(homeWinProb.toFixed(3)),
         away_win_prob: Number(awayWinProb.toFixed(3)),
+        // CLEAN NO-BET FRONTEND INTEGRATION
         moneyline: { 
           pick: skipCheck.skip ? "—" : mlPick, 
-          confidence: skipCheck.skip ? "—" : mlConfidence,  // Blank confidence for no-bet
+          confidence: skipCheck.skip ? "—" : mlConfidence, 
           edge: skipCheck.skip ? "—" : Number((mlEdge * 100).toFixed(1)),
           noBet: skipCheck.skip,
-          skipReason: skipCheck.reason || null,
-          rawConfidence: mlConfidence, // Keep for analysis but don't display
-          displayNote: skipCheck.skip ? "NO BET" : "BET"
+          skipReason: skipCheck.reason
         },
         spread: { 
           pick: skipCheck.skip ? "—" : spreadPick, 
-          confidence: skipCheck.skip ? "—" : spreadConfidence, // Blank confidence for no-bet
+          confidence: skipCheck.skip ? "—" : spreadConfidence, 
           line: hasLiveOdds ? marketSpread : Number(displayedSpread.toFixed(1)),
           predicted: Number(Math.abs(predictedSpread).toFixed(1)),
           edge: skipCheck.skip ? "—" : Number(spreadEdge.toFixed(1)),
-          model_home_margin: Number(modelHomeMargin.toFixed(1)),
-          noBet: skipCheck.skip,
-          skipReason: skipCheck.reason || null,
-          rawConfidence: spreadConfidence, // Keep for analysis but don't display
-          displayNote: skipCheck.skip ? "NO BET" : "BET"
+          model_home_margin: Number(predictedSpread.toFixed(1)),
+          noBet: skipCheck.skip
         },
         total: { pick: totalPick, confidence: totalConfidence, line: marketTotal, predicted: Number(predictedTotal.toFixed(1)), edge: Number(totalEdge.toFixed(1)) }
       },
@@ -1084,76 +884,88 @@ async function generateAdvancedPredictions(games, season) {
       },
       
       modelEnhancements: {
-        version: 'v13_logic_v8_odds_enhanced_epa',
+        version: 'clean_epa_v8_odds_hybrid',
         fixesApplied: [
-          "v13: Deterministic special teams (no Math.random)",
-          "v13: Reduced multipliers (CORE_EPA 30→24, TIER_BASE 10→8)",
-          "v13: Z-score clipping (±2.5 max)",
-          "v13: NaN shield for league stats",
-          "v13: Fixed spread calculation logic",
-          "v13: No input mutation (pure functions)",
+          "Clean EPA: No double counting of EPA components",
+          "Clean EPA: Eliminated fake team strength multipliers", 
+          "Clean EPA: Natural variance modeling for blowouts",
+          "Clean EPA: No-bet zones for insufficient edges",
+          "Clean EPA: Removed artificial floors in totals",
+          "Clean EPA: Public team bias adjustment",
           "v8: Working odds data extraction",
-          "v8: Proven team name mapping",
-          "v8: Functional live odds integration",
-          "ENHANCED: 55-65% confidence band calibration fix",
-          "ENHANCED: True edge calculation with vig removal",
-          "ENHANCED: No-bet logic for insufficient edges",
-          "ENHANCED: Public team bias detection",
-          "ENHANCED: Sophisticated variance modeling"
+          "v8: Proven team name mapping"
         ],
-        enhancedFeatures: {
-          calibrationFix: "Applied to confidence band 55-65%",
-          noBetLogic: skipCheck.skip ? skipCheck.reason : "Sufficient edge",
-          publicBias: publicBiasAdjustment < 1.0 ? "Detected" : "None",
-          varianceLevel: isHighVariance ? "High" : "Normal",
-          enhancedVariance: enhancedVariance.toFixed(3)
-        },
-        diagnostics: {
-          homeScore: homeScoreData.score.toFixed(2),
-          awayScore: awayScoreData.score.toFixed(2),
-          scoreDiff: scoreDifference.toFixed(2),
-          marginDiff: marginDifference.toFixed(2),
-          spreadPick: spreadPick,
-          liveOddsWorking: hasLiveOdds
+        skipReason: skipCheck.skip ? skipCheck.reason : null,
+        epaComponents: gameProb.components,
+        varianceMetrics: {
+          gameVariance: gameProb.gameVariance,
+          isCloseGame: gameProb.isCloseGame,
+          blowoutRisk: spreadPred.blowoutRisk
         }
       },
       
       teamStats: {
         home: {
           strength: Number(homeWinProb.toFixed(3)),
-          score: Number(homeScoreData.score.toFixed(2)),
-          confidence: Number(homeScoreData.confidence.toFixed(3)),
-          specialTeamsValue: homeScoreData.specialTeams?.total_st_value || 0
+          epa_advantage: Number(gameProb.netEPAAdvantage.toFixed(3))
         },
         away: {
           strength: Number(awayWinProb.toFixed(3)),
-          score: Number(awayScoreData.score.toFixed(2)),
-          confidence: Number(awayScoreData.confidence.toFixed(3)),
-          specialTeamsValue: awayScoreData.specialTeams?.total_st_value || 0
+          epa_advantage: Number((-gameProb.netEPAAdvantage).toFixed(3))
         }
       }
     };
   });
 
-  const parlayComponents = generateParlayComponents(games, predictions);
-  const parlaySuggestions = generateResponsibleParlays(parlayComponents);
-  
-  console.log(`Generated ${parlaySuggestions.length} parlay suggestions from ${parlayComponents.length} qualifying components`);
+  // Generate parlay suggestions using clean predictions
+  const parlaySuggestions = generateCleanParlays(predictions);
 
-  return {
-    predictions: predictions,
-    parlaySuggestions: parlaySuggestions,
-    parlayMetadata: {
-      totalComponents: parlayComponents.length,
-      averageConfidence: parlayComponents.length > 0 ? 
-        parlayComponents.reduce((sum, c) => sum + c.confidence, 0) / parlayComponents.length : 0,
-      responsibleGambling: {
-        maxRecommendedUnit: Math.max(...parlaySuggestions.map(p => p.recommended_unit || 0)),
-        riskWarning: "Parlays have exponentially higher risk. Only bet what you can afford to lose.",
-        bankrollManagement: "Never exceed 5% of total bankroll on parlays combined."
+  return { predictions, parlaySuggestions };
+}
+
+// Clean parlay generation (simplified)
+function generateCleanParlays(predictions) {
+  const validPicks = predictions.filter(p => {
+    const ml = p.predictions.moneyline;
+    const spread = p.predictions.spread;
+    return (ml.confidence > 65 && ml.edge > 8) || (spread.confidence > 62 && spread.edge > 2);
+  });
+
+  if (validPicks.length < 2) {
+    return [{
+      type: "insufficient_data",
+      legs: [],
+      description: "Not enough high-confidence picks for responsible parlays",
+      risk_level: "N/A",
+      recommended_unit: 0
+    }];
+  }
+
+  // Generate conservative 2-leg parlays only
+  const parlays = [];
+  for (let i = 0; i < validPicks.length - 1; i++) {
+    for (let j = i + 1; j < validPicks.length; j++) {
+      const pick1 = validPicks[i];
+      const pick2 = validPicks[j];
+      
+      const avgConfidence = (pick1.predictions.moneyline.confidence + pick2.predictions.moneyline.confidence) / 2;
+      
+      if (avgConfidence > 70) {
+        parlays.push({
+          type: "conservative_2leg",
+          legs: [
+            `${pick1.away_team} @ ${pick1.home_team}: ${pick1.predictions.moneyline.pick} ML`,
+            `${pick2.away_team} @ ${pick2.home_team}: ${pick2.predictions.moneyline.pick} ML`
+          ],
+          description: `2-leg ML parlay (${avgConfidence.toFixed(0)}% avg confidence)`,
+          risk_level: "Medium",
+          recommended_unit: 0.25
+        });
       }
     }
-  };
+  }
+
+  return parlays.slice(0, 3); // Max 3 parlays
 }
 
 export default async (request, context) => {
@@ -1207,3 +1019,6 @@ export default async (request, context) => {
     });
   }
 };
+
+// Export internal function for testing
+export { generateAdvancedPredictions };

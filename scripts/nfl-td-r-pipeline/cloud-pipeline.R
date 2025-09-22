@@ -23,42 +23,102 @@ CLOUD_CONFIG <- list(
   )
 )
 
-# Fetch fresh NFL data from nflverse
+# Fetch fresh NFL data from nflverse with intelligent caching
 fetch_nfl_data <- function() {
-  cat("📡 Fetching fresh NFLverse data...\n")
+  cat("📡 Fetching NFLverse data with intelligent caching...\n")
   
-  # Get play-by-play data for recent seasons
-  pbp_data <- tryCatch({
-    load_pbp(seasons = 2023:CLOUD_CONFIG$current_season)
-  }, error = function(e) {
-    cat(glue("⚠️ PBP load failed, using cached data: {e$message}\n"))
-    return(NULL)
-  })
+  # Create cache directory
+  cache_dir <- "data/nfl_r_pipeline"
+  dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
   
-  # Get current season schedule
-  schedule <- tryCatch({
-    load_schedules(seasons = CLOUD_CONFIG$current_season)
-  }, error = function(e) {
-    cat(glue("⚠️ Schedule load failed: {e$message}\n"))
-    return(NULL)
-  })
+  # Cache file paths
+  pbp_cache <- file.path(cache_dir, glue("pbp_cache_{CLOUD_CONFIG$current_season}.rds"))
+  schedule_cache <- file.path(cache_dir, glue("schedule_cache_{CLOUD_CONFIG$current_season}.rds"))
+  stats_cache <- file.path(cache_dir, glue("stats_cache_{CLOUD_CONFIG$current_season}.rds"))
+  rosters_cache <- file.path(cache_dir, glue("rosters_cache_{CLOUD_CONFIG$current_season}.rds"))
   
-  # Get player stats
-  player_stats <- tryCatch({
-    load_player_stats(seasons = 2023:CLOUD_CONFIG$current_season)
-  }, error = function(e) {
-    cat(glue("⚠️ Player stats load failed: {e$message}\n"))
-    return(NULL)
-  })
+  # Check if we need fresh data (cache older than 6 hours or doesn't exist)
+  cache_age_hours <- 6
+  needs_refresh <- function(cache_file) {
+    if (!file.exists(cache_file)) return(TRUE)
+    file_age <- as.numeric(difftime(Sys.time(), file.mtime(cache_file), units = "hours"))
+    return(file_age > cache_age_hours)
+  }
   
-  # Get rosters for current teams
-  rosters <- tryCatch({
-    load_rosters(seasons = CLOUD_CONFIG$current_season)
-  }, error = function(e) {
-    cat(glue("⚠️ Roster load failed: {e$message}\n"))
-    return(NULL)
-  })
+  # Get play-by-play data (most expensive call)
+  pbp_data <- if (needs_refresh(pbp_cache)) {
+    cat("🔄 Downloading fresh play-by-play data...\n")
+    tryCatch({
+      data <- load_pbp(seasons = 2023:CLOUD_CONFIG$current_season)
+      saveRDS(data, pbp_cache)
+      cat(glue("✅ PBP data cached to {pbp_cache}\n"))
+      data
+    }, error = function(e) {
+      cat(glue("⚠️ PBP download failed: {e$message}\n"))
+      if (file.exists(pbp_cache)) {
+        cat("📦 Using existing cached PBP data\n")
+        readRDS(pbp_cache)
+      } else {
+        NULL
+      }
+    })
+  } else {
+    cat("📦 Using cached play-by-play data\n")
+    readRDS(pbp_cache)
+  }
   
+  # Get current season schedule (updates frequently during season)
+  schedule <- if (needs_refresh(schedule_cache)) {
+    cat("🔄 Downloading fresh schedule data...\n")
+    tryCatch({
+      data <- load_schedules(seasons = CLOUD_CONFIG$current_season)
+      saveRDS(data, schedule_cache)
+      cat(glue("✅ Schedule data cached to {schedule_cache}\n"))
+      data
+    }, error = function(e) {
+      cat(glue("⚠️ Schedule download failed: {e$message}\n"))
+      if (file.exists(schedule_cache)) readRDS(schedule_cache) else NULL
+    })
+  } else {
+    cat("📦 Using cached schedule data\n")
+    readRDS(schedule_cache)
+  }
+  
+  # Get player stats (updates after games)
+  player_stats <- if (needs_refresh(stats_cache)) {
+    cat("🔄 Downloading fresh player stats...\n")
+    tryCatch({
+      data <- load_player_stats(seasons = 2023:CLOUD_CONFIG$current_season)
+      saveRDS(data, stats_cache)
+      cat(glue("✅ Player stats cached to {stats_cache}\n"))
+      data
+    }, error = function(e) {
+      cat(glue("⚠️ Player stats download failed: {e$message}\n"))
+      if (file.exists(stats_cache)) readRDS(stats_cache) else NULL
+    })
+  } else {
+    cat("📦 Using cached player stats\n")
+    readRDS(stats_cache)
+  }
+  
+  # Get rosters for current teams (updates less frequently)
+  rosters <- if (needs_refresh(rosters_cache)) {
+    cat("🔄 Downloading fresh roster data...\n")
+    tryCatch({
+      data <- load_rosters(seasons = CLOUD_CONFIG$current_season)
+      saveRDS(data, rosters_cache)
+      cat(glue("✅ Roster data cached to {rosters_cache}\n"))
+      data
+    }, error = function(e) {
+      cat(glue("⚠️ Roster download failed: {e$message}\n"))
+      if (file.exists(rosters_cache)) readRDS(rosters_cache) else NULL
+    })
+  } else {
+    cat("📦 Using cached roster data\n")
+    readRDS(rosters_cache)
+  }
+  
+  # Return all data
   list(
     pbp = pbp_data,
     schedule = schedule,

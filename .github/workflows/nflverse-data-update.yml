@@ -44,7 +44,7 @@ jobs:
           libjpeg-dev
 
     - name: Cache R packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.local/share/renv
         key: ${{ runner.os }}-r-${{ hashFiles('**/renv.lock') }}
@@ -72,6 +72,15 @@ jobs:
           
           cat('✅ All R packages installed successfully\n')
         "
+
+    - name: Generate repo structure
+      run: |
+        echo "📋 Generating repository structure map..."
+        find . -type f \( -name "*.js" -o -name "*.mjs" -o -name "*.json" -o -name "*.R" -o -name "*.yml" \) | \
+        grep -v node_modules | \
+        grep -v .git | \
+        head -200 > repo-structure.txt
+        echo "Generated repo structure with $(wc -l < repo-structure.txt) files"
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -123,3 +132,10 @@ jobs:
         echo "🎯 R NFLverse data update completed"
         echo "📅 Run time: $(date)"
         echo "🏈 Week: $NFL_WEEK"
+        
+    - name: Upload repo structure artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: repo-structure
+        path: repo-structure.txt
+        retention-days: 30
