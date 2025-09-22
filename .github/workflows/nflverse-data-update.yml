@@ -53,24 +53,42 @@ jobs:
 
     - name: Install R dependencies
       run: |
-        echo "📦 Installing core R packages..."
+        echo "📦 Installing R packages with improved error handling..."
         Rscript -e "
-          # Install core packages first
-          install.packages(c('remotes', 'jsonlite', 'glue', 'lubridate'), repos='https://cran.rstudio.com/')
+          options(repos = 'https://cran.rstudio.com/')
           
-          # Install tidyverse (includes dplyr, ggplot2, etc)
-          install.packages('tidyverse', repos='https://cran.rstudio.com/')
+          # Install packages one by one with error handling
+          packages <- c('remotes', 'jsonlite', 'glue', 'lubridate', 'dplyr', 'tidyr', 'ggplot2')
+          
+          for(pkg in packages) {
+            if (!require(pkg, character.only = TRUE)) {
+              cat('Installing:', pkg, '\n')
+              install.packages(pkg, dependencies = TRUE)
+              if (!require(pkg, character.only = TRUE)) {
+                stop('Failed to install package: ', pkg)
+              }
+            }
+          }
+          
+          # Install tidyverse last (includes many dependencies we already have)
+          if (!require('tidyverse', character.only = TRUE)) {
+            cat('Installing tidyverse (comprehensive)...\n')
+            install.packages('tidyverse', dependencies = TRUE)
+            library(tidyverse)
+          }
           
           # Install NFLverse packages
-          install.packages(c('nflfastR', 'nflreadr'), repos='https://cran.rstudio.com/')
+          nflverse_packages <- c('nflfastR', 'nflreadr')
+          for(pkg in nflverse_packages) {
+            if (!require(pkg, character.only = TRUE)) {
+              cat('Installing NFLverse package:', pkg, '\n')
+              install.packages(pkg, dependencies = TRUE)
+              library(pkg, character.only = TRUE)
+            }
+          }
           
-          # Verify installations
-          library(tidyverse)
-          library(nflfastR)
-          library(nflreadr)
-          library(jsonlite)
-          
-          cat('✅ All R packages installed successfully\n')
+          cat('✅ All R packages installed and loaded successfully\n')
+          cat('tidyverse version:', as.character(packageVersion('tidyverse')), '\n')
         "
 
     - name: Generate repo structure

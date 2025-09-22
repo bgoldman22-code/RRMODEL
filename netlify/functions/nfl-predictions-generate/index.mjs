@@ -79,6 +79,17 @@ function shouldSkipBet(prediction, gameContext = {}, marketOdds = null) {
   return { skip: false, reason: null, trueEdgeData: trueEdgeData };
 }
 
+// Push detection logic for spread bets
+function shouldSkipSpreadBet(spreadPick, marginDiff, gameContext = {}, marketOdds = null) {
+  // Push predictions should always be no-bet
+  if (spreadPick === 'push' || Math.abs(marginDiff) < 0.5) {
+    return { skip: true, reason: "push_prediction" };
+  }
+  
+  // Use standard edge-based logic for non-push predictions
+  return shouldSkipBet({ homeWinProb: 0.6 }, gameContext, marketOdds);
+}
+
 // PHASE 3: Enhanced EPA Features - Public Bias Detection
 function detectPublicBias(teamCode, marketLine, modelLine) {
   // Popular teams that often get inflated lines
@@ -978,6 +989,9 @@ async function generateAdvancedPredictions(games, season) {
     const predictionData = { homeWinProb, awayWinProb };
     const skipCheck = shouldSkipBet(predictionData, gameContext, realOdds);
     
+    // Use spread-specific skip check that detects pushes
+    const spreadSkipCheck = shouldSkipSpreadBet(spreadPick, marginDifference, gameContext, realOdds);
+    
     const mlPick = homeWinProb > awayWinProb ? homeCode : awayCode;
     const mlModelProb = Math.max(homeWinProb, awayWinProb);
     
@@ -1068,10 +1082,10 @@ async function generateAdvancedPredictions(games, season) {
           predicted: Number(Math.abs(predictedSpread).toFixed(1)),
           edge: Number(spreadEdge.toFixed(1)),  // Always show edge
           model_home_margin: Number(modelHomeMargin.toFixed(1)),
-          bet: !skipCheck.skip,  // True = BET, False = NO BET
-          betRecommendation: skipCheck.skip ? "NO BET" : "BET",
-          skipReason: skipCheck.reason || null,
-          displayNote: skipCheck.skip ? "NO BET" : "BET"
+          bet: !spreadSkipCheck.skip,  // Use spread-specific skip check
+          betRecommendation: spreadSkipCheck.skip ? "NO BET" : "BET",
+          skipReason: spreadSkipCheck.reason || null,
+          displayNote: spreadSkipCheck.skip ? "NO BET" : "BET"
         },
         total: { 
           pick: totalPick, 
