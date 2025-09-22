@@ -185,8 +185,10 @@ const NFLTouchdownPropsComprehensive = () => {
   const PlayerInsights = ({ player, marketType }) => {
     const factors = player.key_factors || {};
     const metadata = player.model_metadata || {};
-    const upside = metadata.upside_factors || [];
-    const risks = metadata.risk_factors || [];
+    
+    // Ensure these are arrays, not other data types
+    const upside = Array.isArray(metadata.upside_factors) ? metadata.upside_factors : [];
+    const risks = Array.isArray(metadata.risk_factors) ? metadata.risk_factors : [];
     
     return (
       <div className="text-xs space-y-1">
@@ -392,7 +394,10 @@ const NFLTouchdownPropsComprehensive = () => {
           </div>
           <div className="bg-gray-50 p-2 rounded">
             <div className="font-semibold text-gray-800">
-              {processedPredictions.filter(p => p.model_metadata?.upside_factors?.length > 2).length}
+              {processedPredictions.filter(p => {
+                const factors = p.model_metadata?.upside_factors;
+                return Array.isArray(factors) && factors.length > 2;
+              }).length}
             </div>
             <div className="text-gray-600">High Upside</div>
           </div>
