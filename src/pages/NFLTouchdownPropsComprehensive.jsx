@@ -91,7 +91,19 @@ const NFLTouchdownPropsComprehensive = () => {
   };
 
   useEffect(() => {
-    loadComprehensivePredictions();
+    // Wrap in try-catch to prevent component crashes
+    const safeLoad = async () => {
+      try {
+        console.log('useEffect triggered, calling loadComprehensivePredictions...');
+        await loadComprehensivePredictions();
+      } catch (error) {
+        console.error('useEffect error:', error);
+        setError(`Component error: ${error.message}`);
+        setLoading(false);
+      }
+    };
+    
+    safeLoad();
   }, [week]);
 
   // Helper function for team name mapping
@@ -237,12 +249,32 @@ const NFLTouchdownPropsComprehensive = () => {
     </div>
   );
 
+  // Emergency fallback for critical errors
+  if (error && error.includes('Component error')) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h2 className="text-red-800 font-bold">Component Error</h2>
+          <p className="text-red-700 mt-2">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Debug Info */}
-      {process.env.NODE_ENV === 'development' && (
+      {(process.env.NODE_ENV === 'development' || true) && (
         <div className="mb-4 p-2 bg-gray-100 rounded text-xs">
           Debug: Week {week}, Predictions: {predictions.length}, Loading: {loading.toString()}, Error: {error || 'none'}
+          <br />
+          Component mounted at: {new Date().toISOString()}
         </div>
       )}
       
