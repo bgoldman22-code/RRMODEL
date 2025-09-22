@@ -96,10 +96,28 @@ const NFLTouchdownPropsComprehensive = () => {
         // Check if one name contains the other (for nicknames)
         if (n1.includes(n2) || n2.includes(n1)) return true;
         
-        // Check first/last name matching
+        // Enhanced: Handle first name abbreviations (J.Jefferson vs Justin Jefferson)
         const parts1 = n1.split(' ');
         const parts2 = n2.split(' ');
         
+        // Check if last names match
+        const lastName1 = parts1[parts1.length - 1];
+        const lastName2 = parts2[parts2.length - 1];
+        
+        if (lastName1 === lastName2 && lastName1.length > 2) {
+          // Last names match, check first names
+          const firstName1 = parts1[0];
+          const firstName2 = parts2[0];
+          
+          // Handle abbreviation patterns: "J" matches "Justin", "C" matches "Christian"
+          if (firstName1.length === 1 && firstName2.length > 1) {
+            return firstName2.toLowerCase().startsWith(firstName1.toLowerCase());
+          } else if (firstName2.length === 1 && firstName1.length > 1) {
+            return firstName1.toLowerCase().startsWith(firstName2.toLowerCase());
+          }
+        }
+        
+        // Original logic: Check for any matching name parts
         return parts1.some(part1 => 
           parts2.some(part2 => 
             part1.length > 2 && part2.length > 2 && part1 === part2
