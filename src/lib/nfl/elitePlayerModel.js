@@ -386,6 +386,43 @@ export class ElitePlayerModel {
     
     return this.clamp(multiplier, 0.95, 1.1);
   }
+
+  /**
+   * Generate detailed analysis for a player's TD prediction
+   */
+  generateAnalysis(player, factors) {
+    const { baseline, matchupMultiplier, usageMultiplier, gameScriptMultiplier, calibratedConfidence } = factors;
+    
+    let analysis = `${player.position} with ${Math.round(calibratedConfidence)}% TD probability. `;
+    
+    // Add specific insights based on factors
+    if (baseline > 0.4) {
+      analysis += `Strong historical rate (${Math.round(baseline * 100)}%). `;
+    } else if (baseline < 0.2) {
+      analysis += `Limited TD history (${Math.round(baseline * 100)}% rate). `;
+    }
+    
+    if (matchupMultiplier > 1.1) {
+      analysis += `Favorable matchup (+${Math.round((matchupMultiplier - 1) * 100)}%). `;
+    } else if (matchupMultiplier < 0.9) {
+      analysis += `Tough matchup (${Math.round((matchupMultiplier - 1) * 100)}%). `;
+    }
+    
+    if (usageMultiplier > 1.1) {
+      analysis += `Trending up in usage. `;
+    } else if (usageMultiplier < 0.9) {
+      analysis += `Declining usage trend. `;
+    }
+    
+    // Add position-specific insights
+    if (player.position === 'RB' && player.gl_usage_rate > 0.4) {
+      analysis += `Goal line role. `;
+    } else if (player.position === 'WR' && player.rz_usage_rate > 0.3) {
+      analysis += `Red zone target. `;
+    }
+    
+    return analysis.trim();
+  }
   
   /**
    * Main prediction function - combines all elite model components
