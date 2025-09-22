@@ -1,53 +1,71 @@
-# Convert CSV Exports to React Component Format
+# Convert R Pipeline Output to React Component Format
+# Updated for cloud processing - uses R pipeline JSON output instead of CSV
+
 library(dplyr)
 library(jsonlite)
 
-cat("Converting CSV exports to React-compatible JSON...\n")
+cat("🔄 Converting R pipeline output to React-compatible format...\n")
 
-# Load the exported CSV data
-weekly_stats <- read.csv("~/Downloads/nfl-td-weekly-stats-2025-09-22.csv")
-season_totals <- read.csv("~/Downloads/nfl-td-season-totals-2025-09-22.csv")
+# Check if comprehensive predictions exist from R pipeline
+comprehensive_file <- "data/nfl-td-comprehensive-latest.json"
 
-cat("Loaded", nrow(weekly_stats), "weekly records and", nrow(season_totals), "season records\n")
+if (!file.exists(comprehensive_file)) {
+  cat("❌ No comprehensive predictions found. Running R pipeline first...\n")
+  source("scripts/nfl-td-r-pipeline/cloud-pipeline.R")
+}
 
-# Create player data in the format your React component expects
-# Your component expects players with anytime_td, first_td, multiple_td objects
-player_data <- season_totals %>%
-  # Use all seasons since 2025 might have limited data
-  filter(season >= 2023) %>%  
-  # Get most recent season data per player
-  group_by(td_player_id) %>%
-  arrange(desc(season)) %>%
-  slice(1) %>%
-  ungroup() %>%
-  mutate(
-    # Create probability estimates based on historical TD rates
-    anytime_prob = pmin(total_tds / weeks_played * 0.6, 0.95),  # Scale down for single game
-    first_prob = anytime_prob * 0.15,  # First TD is ~15% of anytime probability
-    multiple_prob = pmax((total_tds / weeks_played - 1) * 0.3, 0.02),  # Multiple TDs
+if (file.exists(comprehensive_file)) {
+  cat("✅ Loading R pipeline output...\n")
+  
+  # The cloud pipeline already outputs in React-compatible format
+  # Just verify structure and copy to final locations
+  
+  comprehensive_data <- fromJSON(comprehensive_file)
+  
+  cat(glue("📊 Loaded {length(comprehensive_data$predictions)} player predictions\n"))
+  
+  # Copy to public data directory for web access
+  public_comprehensive <- "public/data/nfl-td-comprehensive-latest.json"
+  dir.create(dirname(public_comprehensive), showWarnings = FALSE, recursive = TRUE)
+  file.copy(comprehensive_file, public_comprehensive, overwrite = TRUE)
+  
+  # Copy to src data directory for component access
+  src_comprehensive <- "src/data/nfl-td-comprehensive-latest.json"
+  dir.create(dirname(src_comprehensive), showWarnings = FALSE, recursive = TRUE)
+  file.copy(comprehensive_file, src_comprehensive, overwrite = TRUE)
+  
+  # Copy to netlify functions directory
+  netlify_comprehensive <- "netlify/functions/_data/nfl-td-comprehensive-latest.json"
+  dir.create(dirname(netlify_comprehensive), showWarnings = FALSE, recursive = TRUE)
+  file.copy(comprehensive_file, netlify_comprehensive, overwrite = TRUE)
+  
+  cat("✅ Copied comprehensive predictions to all required locations\n")
+  
+  # Also ensure schedule data is in the right places
+  schedule_file <- "public/data/nfl-schedule-2025.json"
+  if (file.exists(schedule_file)) {
+    src_schedule <- "src/data/nfl-schedule-2025.json"
+    netlify_schedule <- "netlify/functions/_data/nfl-schedule-2025.json"
     
-    # Create confidence scores based on consistency
-    confidence_base = pmin(60 + (avg_tds_per_week * 15), 90),
+    dir.create(dirname(src_schedule), showWarnings = FALSE, recursive = TRUE)
+    dir.create(dirname(netlify_schedule), showWarnings = FALSE, recursive = TRUE)
     
-    # Add some variance based on position
-    position_adj = case_when(
-      position == "RB" ~ 5,
-      position == "WR" ~ 0,
-      position == "TE" ~ -3,
-      position == "QB" ~ -8,
-      TRUE ~ -5
-    )
-  ) %>%
-  select(
-    player_id = td_player_id,
-    name = td_player_name,
-    position,
-    # We'll need to map to team later since season totals don't have current team
-    total_tds, avg_tds_per_week, weeks_played,
-    anytime_prob, first_prob, multiple_prob, confidence_base, position_adj
-  )
-
-cat("Created player data for", nrow(player_data), "players\n")
+    file.copy(schedule_file, src_schedule, overwrite = TRUE)
+    file.copy(schedule_file, netlify_schedule, overwrite = TRUE)
+    
+    cat("✅ Copied schedule data to all required locations\n")
+  }
+  
+  cat("🎉 React conversion completed successfully!\n")
+  cat(glue("📄 Files ready:\n"))
+  cat(glue("  - {public_comprehensive}\n"))
+  cat(glue("  - {src_comprehensive}\n"))
+  cat(glue("  - {netlify_comprehensive}\n"))
+  
+} else {
+  cat("❌ Could not generate or find comprehensive predictions\n")
+  quit(status = 1)
+}
 
 # Get current team assignments from weekly data (most recent week, any season)
 current_teams <- weekly_stats %>%
