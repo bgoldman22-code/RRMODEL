@@ -1,0 +1,86 @@
+name: Update NFLverse Data
+
+on:
+  schedule:
+    # Monday 7am EST (12:00 UTC)
+    - cron: '0 12 * * 1'
+    # Tuesday-Thursday 11am EST (16:00 UTC) 
+    - cron: '0 16 * * 2,3,4'
+    # Saturday 9am EST (14:00 UTC)
+    - cron: '0 14 * * 6'
+    # Sunday 9am EST (14:00 UTC)
+    - cron: '0 14 * * 0'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        ref: main33
+
+    - name: Set up R
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: '4.3'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+
+    - name: Install R dependencies
+      run: |
+        Rscript -e "install.packages(c('nflfastR', 'nflreadr', 'tidyverse', 'jsonlite', 'glue', 'lubridate'), repos='https://cran.rstudio.com/')"
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Node dependencies
+      run: npm install
+
+    - name: Run R NFLverse data pipeline
+      env:
+        NFL_WEEK: ${{ github.event.inputs.week || '3' }}
+        NFL_SEASON: '2025'
+      run: |
+        echo "🏈 Running cloud-optimized R NFLverse pipeline for Week $NFL_WEEK..."
+        
+        # Run the cloud-optimized R pipeline that fetches fresh data
+        Rscript scripts/nfl-td-r-pipeline/cloud-pipeline.R
+        
+        # Convert R output for React component (copies to all locations)
+        Rscript convert_for_react.R
+        
+        # Update ESPN depth charts as backup
+        node scripts/collect-espn-depth-charts.js
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Add all data files but exclude large .rds cache files
+        git add data/*.json public/data/ src/data/ netlify/functions/_data/
+        git add --force *.json *.csv # Force add any new JSON/CSV files
+        
+        # Only commit if there are changes
+        if git diff --staged --quiet; then
+          echo "No data changes to commit"
+        else
+          git commit -m "Auto-update NFLverse data via R pipeline - $(date +'%Y-%m-%d %H:%M UTC')"
+          git push origin main33
+          echo "✅ Data updated and pushed"
+        fi
+
+    - name: Summary
+      run: |
+        echo "🎯 R NFLverse data update completed"
+        echo "📅 Run time: $(date)"
+        echo "🏈 Week: $NFL_WEEK"
