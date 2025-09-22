@@ -82,47 +82,50 @@ const NFLTouchdownPropsComprehensive = () => {
       const activePlayersOnly = [];
       
       // Helper functions for name matching
+      
+      // Insert a space after single-letter initials before punctuation removal.
+      // "C.Lamb" -> "C Lamb", "J.Jefferson" -> "J Jefferson"
+      const splitInitials = (name) => {
+        if (!name) return '';
+        return name
+          // single-letter dot attached to a word, make it "C Lamb" not "CLamb"
+          .replace(/\b([A-Za-z])\.(?=[A-Za-z])/g, '$1 ')
+          // handle multi-initials like "A.St. Brown" -> "A St Brown"
+          .replace(/\.(?=[A-Za-z])/g, ' ');
+      };
+
       const normalizePlayerName = (name) => {
-        return name?.toLowerCase()
-          .replace(/[^\w\s]/g, '') // Remove punctuation
-          .replace(/\s+/g, ' ')    // Normalize spaces
+        const s = splitInitials(name);
+        return s
+          .toLowerCase()
+          .replace(/[^\w\s]/g, '') // remove punctuation AFTER splitting initials
+          .replace(/\s+/g, ' ')
           .trim();
       };
-      
+
+      // More permissive fuzzy match:
+      // 1) exact normalized equality
+      // 2) same last name, and (first initials match OR one contains the other)
+      // 3) allow "ceedee" vs "c" initial when last names match
       const fuzzyNameMatch = (name1, name2) => {
         const n1 = normalizePlayerName(name1);
         const n2 = normalizePlayerName(name2);
-        
-        // Check if one name contains the other (for nicknames)
+        if (!n1 || !n2) return false;
+        if (n1 === n2) return true;
         if (n1.includes(n2) || n2.includes(n1)) return true;
-        
-        // Enhanced: Handle first name abbreviations (J.Jefferson vs Justin Jefferson)
-        const parts1 = n1.split(' ');
-        const parts2 = n2.split(' ');
-        
-        // Check if last names match
-        const lastName1 = parts1[parts1.length - 1];
-        const lastName2 = parts2[parts2.length - 1];
-        
-        if (lastName1 === lastName2 && lastName1.length > 2) {
-          // Last names match, check first names
-          const firstName1 = parts1[0];
-          const firstName2 = parts2[0];
-          
-          // Handle abbreviation patterns: "J" matches "Justin", "C" matches "Christian"
-          if (firstName1.length === 1 && firstName2.length > 1) {
-            return firstName2.toLowerCase().startsWith(firstName1.toLowerCase());
-          } else if (firstName2.length === 1 && firstName1.length > 1) {
-            return firstName1.toLowerCase().startsWith(firstName2.toLowerCase());
-          }
-        }
-        
-        // Original logic: Check for any matching name parts
-        return parts1.some(part1 => 
-          parts2.some(part2 => 
-            part1.length > 2 && part2.length > 2 && part1 === part2
-          )
-        );
+
+        const p1 = n1.split(' ');
+        const p2 = n2.split(' ');
+        const last1 = p1[p1.length - 1];
+        const last2 = p2[p2.length - 1];
+        if (last1 !== last2) return false;
+
+        const first1 = p1[0]?.[0] || '';
+        const first2 = p2[0]?.[0] || '';
+        if (first1 && first2 && first1 === first2) return true;
+
+        // permit "cee dee" vs "c"
+        return p1[0]?.startsWith(p2[0] || '') || p2[0]?.startsWith(p1[0] || '');
       };
       
       // Only include players who are in current week depth charts
@@ -155,7 +158,16 @@ const NFLTouchdownPropsComprehensive = () => {
               console.log(`❌ No match found for: ${playerName} (${team} ${position})`);
               // Show some candidates to understand why matching fails
               const candidates = players.filter(p => p.team === team && p.position === position);
-              console.log(`   Candidates with same team/pos:`, candidates.slice(0, 3).map(p => p.name));
+              console.log(`   Candidates with same team/pos:`, candidates.slice(0, 5).map(p => p.name));
+              
+              // CRITICAL DEBUG: Test the fuzzy match function directly
+              if (candidates.length > 0) {
+                console.log(`   Testing fuzzy match for "${playerName}":`);
+                candidates.slice(0, 3).forEach(candidate => {
+                  const match = fuzzyNameMatch(playerName, candidate.name);
+                  console.log(`     "${playerName}" vs "${candidate.name}" = ${match}`);
+                });
+              }
             }
           });
         }
