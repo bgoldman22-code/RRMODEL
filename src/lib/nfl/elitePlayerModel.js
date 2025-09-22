@@ -423,6 +423,35 @@ export class ElitePlayerModel {
     
     return analysis.trim();
   }
+
+  /**
+   * Get effective sample size for confidence intervals
+   */
+  getEffectiveSampleSize(player) {
+    // Base sample size on games played and usage
+    let sampleSize = 16; // Default season length
+    
+    if (player.games_played) {
+      sampleSize = Math.min(sampleSize, player.games_played);
+    }
+    
+    // Adjust for usage - higher usage = more reliable sample
+    if (player.snap_percentage > 0.7) sampleSize *= 1.2;
+    else if (player.snap_percentage < 0.3) sampleSize *= 0.7;
+    
+    return Math.round(sampleSize);
+  }
+
+  /**
+   * Calculate confidence interval for prediction
+   */
+  calculateConfidenceInterval(prediction) {
+    // Simple confidence interval based on sample size and prediction value
+    const sampleAdjustment = Math.max(0.05, 0.15 - (this.getEffectiveSampleSize({}) / 100));
+    const predictionAdjustment = Math.sqrt(prediction * (1 - prediction));
+    
+    return Math.min(0.25, sampleAdjustment * predictionAdjustment);
+  }
   
   /**
    * Main prediction function - combines all elite model components
