@@ -340,6 +340,12 @@ const NFLTouchdownPropsComprehensive = () => {
       
       console.log(`Player ${player.name}: confidence=${marketData.confidence}%, probability=${marketData.probability}`);
       
+      // EMERGENCY DEBUG: Log raw market data types
+      console.log(`  - typeof confidence: ${typeof marketData.confidence}`);
+      console.log(`  - typeof probability: ${typeof marketData.probability}`);
+      console.log(`  - probability value: ${marketData.probability}`);
+      
+      
       
       // ENHANCED SELECTIVITY: Only show truly actionable picks
       
