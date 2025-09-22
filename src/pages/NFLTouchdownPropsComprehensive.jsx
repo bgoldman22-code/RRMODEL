@@ -528,6 +528,18 @@ const NFLTouchdownPropsComprehensive = () => {
         <div className="mb-4 p-2 bg-gray-100 rounded text-xs">
           Debug: Week {week}, Predictions: {predictions.length}, Loading: {loading.toString()}, Error: {error || 'none'}
           <br />
+          Selected Market: {selectedMarket}, Filter Level: {filterLevel}, Processed: {processedPredictions.length}
+          {predictions.length > 0 && predictions[0] && (
+            <>
+              <br />
+              Sample Player: {predictions[0].name}
+              <br />
+              Market Data Keys: {Object.keys(predictions[0]).filter(k => k.includes('_td')).join(', ')}
+              <br />
+              Sample {selectedMarket}_td: {JSON.stringify(predictions[0][`${selectedMarket}_td`])}
+            </>
+          )}
+          <br />
           Component mounted at: {new Date().toISOString()}
         </div>
       )}
