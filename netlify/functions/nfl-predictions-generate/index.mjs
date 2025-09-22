@@ -978,6 +978,11 @@ async function generateAdvancedPredictions(games, season) {
     const predictionData = { homeWinProb, awayWinProb };
     const skipCheck = shouldSkipBet(predictionData, gameContext, realOdds);
     
+    // Separate skip check for totals (can have different thresholds)
+    const totalSkipCheck = shouldSkipBet({ 
+      homeWinProb: Math.abs(predictedTotal - marketTotal) > 2 ? 0.6 : 0.5 
+    }, gameContext, realOdds);
+    
     const mlPick = homeWinProb > awayWinProb ? homeCode : awayCode;
     const mlModelProb = Math.max(homeWinProb, awayWinProb);
     
@@ -1047,27 +1052,37 @@ async function generateAdvancedPredictions(games, season) {
         home_win_prob: Number(homeWinProb.toFixed(3)),
         away_win_prob: Number(awayWinProb.toFixed(3)),
         moneyline: { 
-          pick: skipCheck.skip ? "—" : mlPick, 
-          confidence: skipCheck.skip ? "—" : mlConfidence,  // Blank confidence for no-bet
-          edge: skipCheck.skip ? "—" : Number((mlEdge * 100).toFixed(1)),
-          noBet: skipCheck.skip,
+          pick: mlPick,  // Always show the pick
+          confidence: mlConfidence,  // Always show confidence
+          edge: Number((mlEdge * 100).toFixed(1)),  // Always show edge
+          bet: !skipCheck.skip,  // True = BET, False = NO BET
+          betRecommendation: skipCheck.skip ? "NO BET" : "BET",
           skipReason: skipCheck.reason || null,
-          rawConfidence: mlConfidence, // Keep for analysis but don't display
           displayNote: skipCheck.skip ? "NO BET" : "BET"
         },
         spread: { 
-          pick: skipCheck.skip ? "—" : spreadPick, 
-          confidence: skipCheck.skip ? "—" : spreadConfidence, // Blank confidence for no-bet
+          pick: spreadPick,  // Always show the pick
+          confidence: spreadConfidence,  // Always show confidence
           line: hasLiveOdds ? marketSpread : Number(displayedSpread.toFixed(1)),
           predicted: Number(Math.abs(predictedSpread).toFixed(1)),
-          edge: skipCheck.skip ? "—" : Number(spreadEdge.toFixed(1)),
+          edge: Number(spreadEdge.toFixed(1)),  // Always show edge
           model_home_margin: Number(modelHomeMargin.toFixed(1)),
-          noBet: skipCheck.skip,
+          bet: !skipCheck.skip,  // True = BET, False = NO BET
+          betRecommendation: skipCheck.skip ? "NO BET" : "BET",
           skipReason: skipCheck.reason || null,
-          rawConfidence: spreadConfidence, // Keep for analysis but don't display
           displayNote: skipCheck.skip ? "NO BET" : "BET"
         },
-        total: { pick: totalPick, confidence: totalConfidence, line: marketTotal, predicted: Number(predictedTotal.toFixed(1)), edge: Number(totalEdge.toFixed(1)) }
+        total: { 
+          pick: totalPick, 
+          confidence: totalConfidence, 
+          line: marketTotal, 
+          predicted: Number(predictedTotal.toFixed(1)), 
+          edge: Number(totalEdge.toFixed(1)),
+          bet: !totalSkipCheck.skip,  // True = BET, False = NO BET
+          betRecommendation: totalSkipCheck.skip ? "NO BET" : "BET",
+          skipReason: totalSkipCheck.reason || null,
+          displayNote: totalSkipCheck.skip ? "NO BET" : "BET"
+        }
       },
       
       odds: {
