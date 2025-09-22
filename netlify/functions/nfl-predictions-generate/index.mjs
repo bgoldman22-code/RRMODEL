@@ -978,11 +978,6 @@ async function generateAdvancedPredictions(games, season) {
     const predictionData = { homeWinProb, awayWinProb };
     const skipCheck = shouldSkipBet(predictionData, gameContext, realOdds);
     
-    // Separate skip check for totals (can have different thresholds)
-    const totalSkipCheck = shouldSkipBet({ 
-      homeWinProb: Math.abs(predictedTotal - marketTotal) > 2 ? 0.6 : 0.5 
-    }, gameContext, realOdds);
-    
     const mlPick = homeWinProb > awayWinProb ? homeCode : awayCode;
     const mlModelProb = Math.max(homeWinProb, awayWinProb);
     
@@ -1041,6 +1036,12 @@ async function generateAdvancedPredictions(games, season) {
 
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread, homeScoreData.specialTeams, awayScoreData.specialTeams);
     const marketTotal = hasLiveOdds ? (realOdds.total_line || 44) : 44;
+    
+    // Separate skip check for totals (can have different thresholds)
+    const totalSkipCheck = shouldSkipBet({ 
+      homeWinProb: Math.abs(predictedTotal - marketTotal) > 2 ? 0.6 : 0.5 
+    }, gameContext, realOdds);
+    
     const totalDifference = predictedTotal - marketTotal;
     const totalPick = predictedTotal > marketTotal ? 'over' : 'under';
     const totalEdge = Math.abs(totalDifference);
