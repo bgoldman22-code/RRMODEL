@@ -318,9 +318,15 @@ const NFLTouchdownPropsComprehensive = () => {
 
   // Advanced filtering and sorting logic with proper selectivity
   const processedPredictions = useMemo(() => {
+    console.log('Processing predictions:', predictions.length, 'total players');
+    console.log('Selected market:', selectedMarket, 'Filter level:', filterLevel);
+    
     let filtered = predictions.filter(player => {
       const marketData = player[`${selectedMarket}_td`];
-      if (!marketData) return false;
+      if (!marketData) {
+        console.log('No market data for player:', player.name);
+        return false;
+      }
       
       // ENHANCED SELECTIVITY: Only show truly actionable picks
       
@@ -331,7 +337,10 @@ const NFLTouchdownPropsComprehensive = () => {
         'multiple': 0.12  // At least 12% chance
       };
       
-      if (marketData.probability < minProbThresholds[selectedMarket]) return false;
+      if (marketData.probability < minProbThresholds[selectedMarket]) {
+        console.log('Player filtered by probability:', player.name, marketData.probability, 'threshold:', minProbThresholds[selectedMarket]);
+        return false;
+      }
       
       // Enhanced filter level logic
       if (filterLevel === 'high_confidence') {
@@ -359,6 +368,8 @@ const NFLTouchdownPropsComprehensive = () => {
       
       return true;
     });
+    
+    console.log('After filtering:', filtered.length, 'players remaining');
     
     // Sort by selected criteria with enhanced logic
     filtered.sort((a, b) => {
