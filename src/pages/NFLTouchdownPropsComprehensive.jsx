@@ -61,6 +61,35 @@ const NFLTouchdownPropsComprehensive = () => {
         console.log(`📁 Static fallback: Loaded ${players.length} players`);
       }
       
+      // Load current week schedule for proper matchup display
+      const scheduleUrl = `/data/nfl-schedule-2025.json`;
+      console.log('Loading schedule:', scheduleUrl);
+      
+      let schedule = {};
+      let teamMatchups = {};
+      try {
+        const scheduleRes = await fetch(scheduleUrl);
+        if (scheduleRes.ok) {
+          schedule = await scheduleRes.json();
+          const weekMatchups = schedule.weeks?.[week]?.matchups || [];
+          
+          // Create team-to-opponent and home/away mapping
+          weekMatchups.forEach(game => {
+            const homeTeam = getTeamAbbreviation(game.homeTeam);
+            const awayTeam = getTeamAbbreviation(game.awayTeam);
+            
+            teamMatchups[homeTeam] = { opponent: awayTeam, isHome: true };
+            teamMatchups[awayTeam] = { opponent: homeTeam, isHome: false };
+          });
+          
+          console.log('Schedule loaded successfully, matchups:', Object.keys(teamMatchups));
+        } else {
+          console.warn('Could not load schedule data');
+        }
+      } catch (err) {
+        console.warn('Schedule loading failed:', err.message);
+      }
+      
       // Enhance with current depth chart data
       const depthChartUrl = `/history/${season}/week${week}/depth-charts.json`;
       console.log('Loading depth charts:', depthChartUrl);
@@ -144,14 +173,21 @@ const NFLTouchdownPropsComprehensive = () => {
           
             if (matchingPlayer) {
               console.log(`✅ Matched: ${playerName} (${team} ${position}) -> ${matchingPlayer.name}`);
+              
+              // Get proper matchup info
+              const matchupInfo = teamMatchups[team] || { opponent: 'TBD', isHome: false };
+              
               activePlayersOnly.push({
                 ...matchingPlayer,
                 depth_chart_position: index + 1,
                 current_depth_name: playerName,
-                // Fix game matchup display
-                game_matchup: `${team} Week ${week}`,
-                home_team: matchingPlayer.is_home ? team : matchingPlayer.opponent || 'TBD',
-                away_team: matchingPlayer.is_home ? matchingPlayer.opponent || 'TBD' : team,
+                // Proper game matchup display
+                opponent: matchupInfo.opponent,
+                is_home: matchupInfo.isHome,
+                home_team: matchupInfo.isHome ? team : matchupInfo.opponent,
+                away_team: matchupInfo.isHome ? matchupInfo.opponent : team,
+                game_matchup: `${matchupInfo.isHome ? team : matchupInfo.opponent} vs ${matchupInfo.isHome ? matchupInfo.opponent : team}`,
+                matchup_display: `${matchupInfo.isHome ? team : matchupInfo.opponent} vs ${matchupInfo.isHome ? matchupInfo.opponent : team}`,
                 is_active_current_week: true
               });
             } else {
@@ -696,9 +732,9 @@ const NFLTouchdownPropsComprehensive = () => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
           <div className="bg-blue-50 p-2 rounded">
             <div className="font-semibold text-blue-800">
-              {processedPredictions.filter(p => p[`${selectedMarket}_td`]?.confidence >= 70).length}
+              {processedPredictions.filter(p => p[`${selectedMarket}_td`]?.confidence >= 35).length}
             </div>
-            <div className="text-blue-600">High Confidence</div>
+            <div className="text-blue-600">35%+ Confidence</div>
           </div>
           <div className="bg-green-50 p-2 rounded">
             <div className="font-semibold text-green-800">
@@ -878,15 +914,15 @@ const NFLTouchdownPropsComprehensive = () => {
                       <td className="px-4 py-3">
                         <div className="text-center">
                           <div className={`text-sm font-bold ${
-                            (marketData?.confidence || 0) >= 80 ? 'text-green-600' :
-                            (marketData?.confidence || 0) >= 70 ? 'text-blue-600' :
-                            (marketData?.confidence || 0) >= 60 ? 'text-yellow-600' :
-                            (marketData?.confidence || 0) >= 50 ? 'text-orange-600' : 'text-gray-600'
+                            (marketData?.confidence || 0) >= 45 ? 'text-green-600' :
+                            (marketData?.confidence || 0) >= 35 ? 'text-blue-600' :
+                            (marketData?.confidence || 0) >= 25 ? 'text-yellow-600' :
+                            (marketData?.confidence || 0) >= 18 ? 'text-orange-600' : 'text-gray-600'
                           }`}>
-                            {(marketData?.confidence || 0) >= 80 ? '🔥 STRONG BET' :
-                             (marketData?.confidence || 0) >= 70 ? '🎯 BET' :
-                             (marketData?.confidence || 0) >= 60 ? '📈 LEAN' :
-                             (marketData?.confidence || 0) >= 50 ? '👀 WATCH' : '❌ PASS'}
+                            {(marketData?.confidence || 0) >= 45 ? '🔥 STRONG BET' :
+                             (marketData?.confidence || 0) >= 35 ? '🎯 BET' :
+                             (marketData?.confidence || 0) >= 25 ? '📈 LEAN' :
+                             (marketData?.confidence || 0) >= 18 ? '👀 WATCH' : '❌ PASS'}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
                             {marketData?.confidence || 0}% conf
