@@ -265,14 +265,14 @@ async function fetchLiveFixtures(league, daysAhead = 7) {
       
       // If we got fixtures but none are from the right league, clear them to trigger fallback
       if (validFixtures.length === 0 && fixtures.length > 0) {
-        console.log(`API returned ${fixtures.length} fixtures from wrong league (${fixtures[0].api_league}), clearing to trigger fallback`);
-        fixtures = [];
+        console.log(`API returned ${fixtures.length} fixtures from wrong league (${fixtures[0].api_league}), using fallback fixtures instead`);
+        return getFallbackFixtures(league);
       } else {
         fixtures = validFixtures;
       }
     }
 
-    // If nothing in 7 days (common for UCL) OR wrong league data, relax to "next 15 events" regardless of day window
+    // If nothing in 7 days (common for UCL), relax to "next 15 events" regardless of day window  
     if (fixtures.length === 0 && events.length > 0) {
       console.log(`No valid fixtures in next ${daysAhead} days for ${league}, checking next 15 events fallback`);
       const fallbackFixtures = events.slice(0, 15).map(ev => {
@@ -300,9 +300,21 @@ async function fetchLiveFixtures(league, daysAhead = 7) {
           )
         );
         fixtures = validFallbackFixtures;
+        
+        // If still no valid fixtures after extended search, use mock fallback
+        if (fixtures.length === 0) {
+          console.log(`No valid fixtures found in extended API search, using mock fallback for ${league}`);
+          return getFallbackFixtures(league);
+        }
       } else {
         fixtures = fallbackFixtures;
       }
+    }
+
+    // Final check: if no fixtures found, use mock fallback
+    if (fixtures.length === 0) {
+      console.log(`No fixtures found via API for ${league}, using mock fallback`);
+      return getFallbackFixtures(league);
     }
 
     console.log(`Found ${fixtures.length} fixtures for ${league}`);
