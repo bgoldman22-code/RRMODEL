@@ -81,6 +81,11 @@ function shouldSkipBet(prediction, gameContext = {}, marketOdds = null) {
 
 // Moneyline bet skip logic 
 function shouldSkipMoneylineBet(mlPick, gameContext = {}, marketOdds = null, confidence = null, edge = null) {
+  // Check confidence threshold for moneyline bets (58% minimum - standard mode)
+  if (confidence !== null && confidence < 58) {
+    return { skip: true, reason: `confidence<58% (${confidence}%)` };
+  }
+  
   // Check for negative edge - always skip
   if (edge !== null && edge < 0) {
     return { skip: true, reason: `negative_edge (${edge.toFixed(1)}%)` };
@@ -97,14 +102,19 @@ function shouldSkipMoneylineBet(mlPick, gameContext = {}, marketOdds = null, con
 
 // Total bet skip logic 
 function shouldSkipTotalBet(totalPick, totalDiff, gameContext = {}, marketOdds = null, confidence = null, edge = null) {
-  // Check confidence threshold for total bets (60% minimum)
-  if (confidence !== null && confidence < 60) {
-    return { skip: true, reason: `confidence<60% (${confidence}%)` };
+  // Check confidence threshold for total bets (56% minimum - standard mode)
+  if (confidence !== null && confidence < 56) {
+    return { skip: true, reason: `confidence<56% (${confidence}%)` };
   }
   
-  // Check edge threshold for total bets (2.5% minimum) 
-  if (edge !== null && edge < 2.5) {
-    return { skip: true, reason: `edge<2.5% (${edge.toFixed(1)}%)` };
+  // Check point differential threshold (2.5 pts minimum)
+  if (Math.abs(totalDiff) < 2.5) {
+    return { skip: true, reason: `total_diff<2.5pts (${Math.abs(totalDiff).toFixed(1)}pts)` };
+  }
+  
+  // Check edge threshold for total bets (2% minimum) 
+  if (edge !== null && edge < 2.0) {
+    return { skip: true, reason: `edge<2.0% (${edge.toFixed(1)}%)` };
   }
   
   // Use standard edge-based logic for additional checks
@@ -118,14 +128,19 @@ function shouldSkipSpreadBet(spreadPick, marginDiff, gameContext = {}, marketOdd
     return { skip: true, reason: "push_prediction" };
   }
   
-  // Check confidence threshold for spread bets (62% minimum)
-  if (confidence !== null && confidence < 62) {
-    return { skip: true, reason: `confidence<62% (${confidence}%)` };
+  // Check confidence threshold for spread bets (58% minimum - standard mode)
+  if (confidence !== null && confidence < 58) {
+    return { skip: true, reason: `confidence<58% (${confidence}%)` };
   }
   
-  // Check edge threshold for spread bets (1.5% minimum) 
-  if (edge !== null && edge < 1.5) {
-    return { skip: true, reason: `edge<1.5% (${edge.toFixed(1)}%)` };
+  // Check point differential threshold (2.0 pts minimum)
+  if (Math.abs(marginDiff) < 2.0) {
+    return { skip: true, reason: `margin_diff<2.0pts (${Math.abs(marginDiff).toFixed(1)}pts)` };
+  }
+  
+  // Check edge threshold for spread bets (2% minimum) 
+  if (edge !== null && edge < 2.0) {
+    return { skip: true, reason: `edge<2.0% (${edge.toFixed(1)}%)` };
   }
   
   // Use standard edge-based logic for non-push predictions
