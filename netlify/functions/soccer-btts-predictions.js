@@ -238,7 +238,8 @@ async function fetchLiveFixtures(league, daysAhead = 7) {
           round: ev.intRound || ev.strRound || 'Unknown',
           season: ev.strSeason || '2024-25',
           fixture_source: 'api',
-          odds: null
+          odds: null,
+          api_league: ev.strLeague // Track actual league from API
         };
       })
       .filter(Boolean)
@@ -247,10 +248,34 @@ async function fetchLiveFixtures(league, daysAhead = 7) {
         return t >= now && t <= inN;
       });
 
-    // If nothing in 7 days (common for UCL), relax to "next 15 events" regardless of day window
+    // Validate fixtures are from correct league - reject if API returned wrong league
+    const expectedLeagues = {
+      'premier-league': ['English Premier League', 'Premier League'],
+      'champions-league': ['UEFA Champions League', 'Champions League'], 
+      'bundesliga': ['German Bundesliga', 'Bundesliga', '1. Bundesliga']
+    };
+    
+    const validLeagues = expectedLeagues[league] || [];
+    if (fixtures.length > 0 && validLeagues.length > 0) {
+      const validFixtures = fixtures.filter(f => 
+        validLeagues.some(validLeague => 
+          f.api_league && f.api_league.toLowerCase().includes(validLeague.toLowerCase())
+        )
+      );
+      
+      // If we got fixtures but none are from the right league, clear them to trigger fallback
+      if (validFixtures.length === 0 && fixtures.length > 0) {
+        console.log(`API returned ${fixtures.length} fixtures from wrong league (${fixtures[0].api_league}), clearing to trigger fallback`);
+        fixtures = [];
+      } else {
+        fixtures = validFixtures;
+      }
+    }
+
+    // If nothing in 7 days (common for UCL) OR wrong league data, relax to "next 15 events" regardless of day window
     if (fixtures.length === 0 && events.length > 0) {
-      console.log(`No fixtures in next ${daysAhead} days for ${league}, using next 15 events fallback`);
-      fixtures = events.slice(0, 15).map(ev => {
+      console.log(`No valid fixtures in next ${daysAhead} days for ${league}, checking next 15 events fallback`);
+      const fallbackFixtures = events.slice(0, 15).map(ev => {
         const ko = parseKickoff(ev) || now; // ensure a date
         return {
           id: `${league}-${ev.idEvent}`,
@@ -262,9 +287,22 @@ async function fetchLiveFixtures(league, daysAhead = 7) {
           round: ev.intRound || ev.strRound || 'Unknown',
           season: ev.strSeason || '2024-25',
           fixture_source: 'api',
-          odds: null
+          odds: null,
+          api_league: ev.strLeague
         };
       }).filter(f => f.home_team && f.away_team); // ensure valid teams
+      
+      // Apply same league validation to fallback
+      if (validLeagues.length > 0) {
+        const validFallbackFixtures = fallbackFixtures.filter(f => 
+          validLeagues.some(validLeague => 
+            f.api_league && f.api_league.toLowerCase().includes(validLeague.toLowerCase())
+          )
+        );
+        fixtures = validFallbackFixtures;
+      } else {
+        fixtures = fallbackFixtures;
+      }
     }
 
     console.log(`Found ${fixtures.length} fixtures for ${league}`);
