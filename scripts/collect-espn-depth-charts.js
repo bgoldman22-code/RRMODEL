@@ -97,7 +97,7 @@ async function fetchESPNDepthCharts(debug = true) {
 }
 
 async function saveDepthCharts(depthCharts) {
-  const outputDir = path.join('history', CURRENT_SEASON, `week${CURRENT_WEEK}`);
+  const outputDir = path.join('public', 'history', CURRENT_SEASON, `week${CURRENT_WEEK}`);
   await fs.mkdir(outputDir, { recursive: true });
 
   const outputFile = path.join(outputDir, 'depth-charts.json');

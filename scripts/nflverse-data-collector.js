@@ -111,7 +111,7 @@ class NFLVerseDataCollector {
         
         try {
             // Load depth charts
-            const depthChartsPath = path.join(__dirname, '..', 'history', '2025', 'week3', 'depth-charts.json');
+            const depthChartsPath = path.join(__dirname, '..', 'public', 'history', '2025', 'week3', 'depth-charts.json');
             const depthCharts = JSON.parse(await fs.readFile(depthChartsPath, 'utf8'));
             
             const mockPlayers = [];

@@ -23,7 +23,7 @@ function getTeamQuality(team) {
 
 // --- LOAD ROSTERS ---
 async function loadWeekSpecificRosters() {
-  const filePath = path.join(__dirname, '..', 'history', CURRENT_SEASON, `week${CURRENT_WEEK}`, 'depth-charts.json');
+  const filePath = path.join(__dirname, '..', 'public', 'history', CURRENT_SEASON, `week${CURRENT_WEEK}`, 'depth-charts.json');
   if (!fs.existsSync(filePath)) {
     throw new Error(`Depth charts not found: ${filePath}`);
   }
@@ -231,7 +231,7 @@ async function storeAllDataLocally(allData) {
 
 async function main() {
   console.log(`🏈 Collecting Week ${CURRENT_WEEK}, ${CURRENT_SEASON} NFL Player Data`);
-  console.log(`📊 Reading from: history/${CURRENT_SEASON}/week${CURRENT_WEEK}/depth-charts.json`);
+  console.log(`📊 Reading from: public/history/${CURRENT_SEASON}/week${CURRENT_WEEK}/depth-charts.json`);
   
   try {
   const teamRosters = await loadWeekSpecificRosters();
