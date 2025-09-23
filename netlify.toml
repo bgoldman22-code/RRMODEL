@@ -9,6 +9,16 @@
   # (Optional, but helpful to prevent bundling the Blobs client)
   external_node_modules = ["@netlify/blobs"]
 
+# Scheduled Functions for Pick Locking Safety Net - DST-safe approach
+# Run every 5 minutes during NFL game windows instead of hardcoded times
+[[functions]]
+  function = "nfl-picks-batch-lock"
+  schedule = "*/5 15-23 * * 0"  # Sunday 15:00-23:59 UTC (covers 1pm/4pm ET slates regardless of DST)
+
+[[functions]]
+  function = "nfl-picks-batch-lock"
+  schedule = "*/5 0-6 * * 1"    # Monday 00:00-06:59 UTC (SNF window + DST cushion)
+
 [build.environment]
   BLOBS_STORE_NFL        = "nfl-td"
   NFL_SCHEDULE_URL       = "nfl-schedule-get"
