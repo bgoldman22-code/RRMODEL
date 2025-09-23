@@ -80,45 +80,48 @@ function shouldSkipBet(prediction, gameContext = {}, marketOdds = null) {
 }
 
 // Moneyline bet skip logic 
-function shouldSkipMoneylineBet(mlPick, gameContext = {}, marketOdds = null, confidence = null, edge = null) {
-  // Check confidence threshold for moneyline bets (58% minimum - standard mode)
-  if (confidence !== null && confidence < 58) {
-    return { skip: true, reason: `confidence<58% (${confidence}%)` };
+function shouldSkipMoneylineBet(mlPick, gameContext = {}, marketOdds = null, confidence = null, edge = null, winProbability = null) {
+  // PRIMARY RULE: Bet if model win probability ≥ 58% OR vig-free edge ≥ 2%
+  
+  if (winProbability !== null && winProbability >= 58) {
+    return { skip: false, reason: `model_confidence_${winProbability}%` };
   }
   
-  // Check for negative edge - always skip
-  if (edge !== null && edge < 0) {
-    return { skip: true, reason: `negative_edge (${edge.toFixed(1)}%)` };
+  if (edge !== null && Math.abs(edge) >= 2.0) {
+    return { skip: false, reason: `edge_${Math.abs(edge).toFixed(1)}%` };
   }
   
-  // RELAXED: Allow 1% edge for ML (instead of 2%) - market is sharper
-  if (edge !== null && Math.abs(edge) < 1.0) {
-    return { skip: true, reason: `edge<1.0% (${Math.abs(edge).toFixed(1)}%)` };
+  // Skip extreme dogs unless edge ≥ 5%
+  if (winProbability !== null && winProbability < 35 && (edge === null || Math.abs(edge) < 5.0)) {
+    return { skip: true, reason: `extreme_dog_${winProbability}%_insufficient_edge` };
   }
   
-  // Use standard edge-based logic for additional checks
-  return shouldSkipBet({ homeWinProb: 0.6 }, gameContext, marketOdds);
+  // Skip if neither condition met
+  const reason = winProbability < 58 ? `confidence_${winProbability}%<58%` : `edge_${Math.abs(edge || 0).toFixed(1)}%<2%`;
+  return { skip: true, reason: reason };
 }
 
 // Total bet skip logic 
 function shouldSkipTotalBet(totalPick, totalDiff, gameContext = {}, marketOdds = null, confidence = null, edge = null) {
-  // Check confidence threshold for total bets (56% minimum - standard mode)
-  if (confidence !== null && confidence < 56) {
-    return { skip: true, reason: `confidence<56% (${confidence}%)` };
+  // PRIMARY RULE: Bet if model total vs line differs by ≥ 3 points
+  const pointDiff = Math.abs(totalDiff);
+  
+  if (pointDiff < 3.0) {
+    return { skip: true, reason: `total_diff_${pointDiff.toFixed(1)}pts<3.0pts` };
   }
   
-  // RELAXED: Reduce point differential to 2.0 pts (was 2.5)
-  if (Math.abs(totalDiff) < 2.0) {
-    return { skip: true, reason: `total_diff<2.0pts (${Math.abs(totalDiff).toFixed(1)}pts)` };
+  // Scale confidence by point differential:
+  // 3-4 pts → 56-59%, 4-6 pts → 60-63%, 6+ pts → 64%+
+  let scaledConfidence;
+  if (pointDiff >= 6.0) {
+    scaledConfidence = Math.min(64 + (pointDiff - 6.0) * 2, 72);
+  } else if (pointDiff >= 4.0) {
+    scaledConfidence = 60 + ((pointDiff - 4.0) / 2.0) * 3; // 60-63%
+  } else {
+    scaledConfidence = 56 + ((pointDiff - 3.0) / 1.0) * 3; // 56-59%
   }
   
-  // RELAXED: Allow 1.5% edge for totals (was 2.0%) - softer market
-  if (edge !== null && edge < 1.5) {
-    return { skip: true, reason: `edge<1.5% (${edge.toFixed(1)}%)` };
-  }
-  
-  // Use standard edge-based logic for additional checks
-  return shouldSkipBet({ homeWinProb: Math.abs(totalDiff) > 2 ? 0.6 : 0.5 }, gameContext, marketOdds);
+  return { skip: false, reason: `total_diff_${pointDiff.toFixed(1)}pts_conf_${Math.round(scaledConfidence)}%` };
 }
 
 // Push detection logic for spread bets
@@ -128,29 +131,25 @@ function shouldSkipSpreadBet(spreadPick, marginDiff, gameContext = {}, marketOdd
     return { skip: true, reason: "push_prediction" };
   }
   
-  // BALANCED: Use OR condition - bet if EITHER condition is met:
-  // Option 1: High confidence (≥60%) regardless of point differential  
-  // Option 2: Significant point differential (≥2.0 pts) with basic confidence (≥58%)
+  // PRIMARY RULE: Bet if model margin vs line differs by ≥ 2.5 points
+  const pointDiff = Math.abs(marginDiff);
   
-  const hasHighConfidence = confidence !== null && confidence >= 60;
-  const hasSignificantDiff = Math.abs(marginDiff) >= 2.0;
-  const hasBasicConfidence = confidence !== null && confidence >= 58;
-  
-  if (!hasHighConfidence && !(hasSignificantDiff && hasBasicConfidence)) {
-    if (confidence < 58) {
-      return { skip: true, reason: `confidence<58% (${confidence}%)` };
-    } else if (!hasSignificantDiff) {
-      return { skip: true, reason: `need ≥60% conf OR ≥2.0pt diff (${confidence}%, ${Math.abs(marginDiff).toFixed(1)}pts)` };
-    }
+  if (pointDiff < 2.5) {
+    return { skip: true, reason: `margin_diff_${pointDiff.toFixed(1)}pts<2.5pts` };
   }
   
-  // RELAXED: Allow 1.5% edge for spreads (was 2%)
-  if (edge !== null && edge < 1.5) {
-    return { skip: true, reason: `edge<1.5% (${edge.toFixed(1)}%)` };
+  // Scale confidence by point differential:
+  // 2.5-4.0 pts → 58-61%, 4.0-6.0 pts → 62-65%, 6.0+ pts → 66%+
+  let scaledConfidence;
+  if (pointDiff >= 6.0) {
+    scaledConfidence = Math.min(66 + (pointDiff - 6.0) * 2, 75);
+  } else if (pointDiff >= 4.0) {
+    scaledConfidence = 62 + ((pointDiff - 4.0) / 2.0) * 3; // 62-65%
+  } else {
+    scaledConfidence = 58 + ((pointDiff - 2.5) / 1.5) * 3; // 58-61%
   }
   
-  // Use standard edge-based logic for non-push predictions
-  return shouldSkipBet({ homeWinProb: 0.6 }, gameContext, marketOdds);
+  return { skip: false, reason: `spread_diff_${pointDiff.toFixed(1)}pts_conf_${Math.round(scaledConfidence)}%` };
 }
 
 // PHASE 3: Enhanced EPA Features - Public Bias Detection
