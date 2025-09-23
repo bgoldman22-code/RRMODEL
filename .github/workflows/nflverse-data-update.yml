@@ -148,6 +148,18 @@ jobs:
           echo "No data changes to commit"
         else
           git commit -m "Auto-update NFLverse data via R pipeline - $(date +'%Y-%m-%d %H:%M UTC')"
+          
+          # Pull any remote changes before pushing
+          echo "🔄 Pulling remote changes before push..."
+          git pull origin main33 --rebase || {
+            echo "⚠️ Rebase conflict detected, attempting merge strategy..."
+            git pull origin main33 --no-rebase -X ours || {
+              echo "❌ Cannot resolve conflicts automatically"
+              git status
+              exit 1
+            }
+          }
+          
           git push origin main33
           echo "✅ Data updated and pushed"
         fi
