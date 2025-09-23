@@ -1141,6 +1141,7 @@ function generateParlayComponents(games, predictions) {
     const totalPick = pred.predictions.total;
     
     if (mlPick.confidence >= 65 && mlPick.edge >= 10) {
+      const unitInfo = calculateRecommendedUnits(mlPick.confidence, mlPick.edge, 'straight');
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
         matchup: `${game.away_team} @ ${game.home_team}`,
@@ -1150,11 +1151,15 @@ function generateParlayComponents(games, predictions) {
         edge: mlPick.edge,
         description: `${mlPick.pick} ML`,
         odds: pred.odds?.moneyline?.pick_odds,
-        ev_score: (mlPick.confidence - 50) * mlPick.edge
+        ev_score: (mlPick.confidence - 50) * mlPick.edge,
+        recommended_units: unitInfo.units,
+        unit_tier: unitInfo.tier,
+        unit_reasoning: unitInfo.reasoning
       });
     }
     
     if (spreadPick.confidence >= 62 && spreadPick.edge >= 1.5 && spreadPick.pick !== 'push') {
+      const unitInfo = calculateRecommendedUnits(spreadPick.confidence, spreadPick.edge, 'straight');
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
         matchup: `${game.away_team} @ ${game.home_team}`,
@@ -1164,11 +1169,15 @@ function generateParlayComponents(games, predictions) {
         edge: spreadPick.edge,
         description: `${spreadPick.pick} ${spreadPick.line >= 0 ? '+' : ''}${spreadPick.line}`,
         odds: pred.odds?.spread?.pick_odds,
-        ev_score: (spreadPick.confidence - 50) * spreadPick.edge
+        ev_score: (spreadPick.confidence - 50) * spreadPick.edge,
+        recommended_units: unitInfo.units,
+        unit_tier: unitInfo.tier,
+        unit_reasoning: unitInfo.reasoning
       });
     }
     
     if (totalPick.confidence >= 60 && totalPick.edge >= 2.5) {
+      const unitInfo = calculateRecommendedUnits(totalPick.confidence, totalPick.edge, 'straight');
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
         matchup: `${game.away_team} @ ${game.home_team}`,
@@ -1178,13 +1187,35 @@ function generateParlayComponents(games, predictions) {
         edge: totalPick.edge,
         description: `${totalPick.pick.toUpperCase()} ${totalPick.line}`,
         odds: null,
-        ev_score: (totalPick.confidence - 50) * totalPick.edge * 0.8
+        ev_score: (totalPick.confidence - 50) * totalPick.edge * 0.8,
+        recommended_units: unitInfo.units,
+        unit_tier: unitInfo.tier,
+        unit_reasoning: unitInfo.reasoning
       });
     }
   }
   
   components.sort((a, b) => b.ev_score - a.ev_score);
   return components;
+}
+
+// Unit sizing based on confidence and edge tiers
+function calculateRecommendedUnits(confidence, edge, betType = 'straight') {
+  // For parlays, always use small units
+  if (betType === 'parlay') {
+    return edge >= 8 ? 0.5 : 0.25;
+  }
+  
+  // Straight bet unit sizing based on confidence and edge tiers
+  if (confidence >= 65 && edge >= 8) {
+    return { units: 1.5, tier: 'premium', reasoning: '65%+ conf, 8%+ edge' };
+  } else if (confidence >= 61 && edge >= 5) {
+    return { units: 1.0, tier: 'strong', reasoning: '61-64% conf, 5-7% edge' };
+  } else if (confidence >= 58 && edge >= 2) {
+    return { units: 0.5, tier: 'value', reasoning: '58-60% conf, 2-4% edge' };
+  } else {
+    return { units: 1.0, tier: 'standard', reasoning: 'flat unit (safe default)' };
+  }
 }
 
 function generateResponsibleParlays(components) {
@@ -1200,91 +1231,48 @@ function generateResponsibleParlays(components) {
   
   const parlays = [];
   
-  // Generate all possible 2-leg combinations from top 6 components
-  const topComponents = components.slice(0, Math.min(6, components.length));
-  for (let i = 0; i < topComponents.length - 1; i++) {
-    for (let j = i + 1; j < topComponents.length; j++) {
-      if (topComponents[i].gameId !== topComponents[j].gameId) {
-        const avgConf = (topComponents[i].confidence + topComponents[j].confidence) / 2;
+  // Only use premium picks: ≥60% confidence AND ≥5% edge for parlays
+  const premiumComponents = components.filter(c => 
+    c.confidence >= 60 && c.ev_score >= 5
+  );
+  
+  if (premiumComponents.length < 2) {
+    return [{
+      type: "insufficient_premium_data",
+      legs: [],
+      description: "No premium picks (≥60% conf + ≥5% edge) available for safe parlays",
+      risk_level: "N/A",
+      recommended_unit: 0,
+      note: "Stick to straight bets - parlay conditions not met"
+    }];
+  }
+  
+  // Generate ONLY 2-leg combinations from premium components (max 3 parlays)
+  const topPremium = premiumComponents.slice(0, Math.min(4, premiumComponents.length));
+  for (let i = 0; i < topPremium.length - 1 && parlays.length < 3; i++) {
+    for (let j = i + 1; j < topPremium.length && parlays.length < 3; j++) {
+      if (topPremium[i].gameId !== topPremium[j].gameId) {
+        const avgConf = (topPremium[i].confidence + topPremium[j].confidence) / 2;
+        const avgEdge = (topPremium[i].ev_score + topPremium[j].ev_score) / 2;
+        
         parlays.push({
-          type: "conservative_2leg",
-          legs: [topComponents[i], topComponents[j]],
+          type: "premium_2leg_only",
+          legs: [topPremium[i], topPremium[j]],
           avg_confidence: avgConf,
-          combined_ev: topComponents[i].ev_score + topComponents[j].ev_score,
-          risk_level: avgConf >= 67 ? "LOW" : "MODERATE",
-          recommended_unit: avgConf >= 67 ? 0.5 : 0.25,
-          description: `${topComponents[i].description} + ${topComponents[j].description}`
+          avg_edge: avgEdge,
+          combined_ev: topPremium[i].ev_score + topPremium[j].ev_score,
+          risk_level: "MODERATE",
+          recommended_unit: avgEdge >= 8 ? 0.5 : 0.25,
+          description: `${topPremium[i].description} + ${topPremium[j].description}`,
+          note: "Bonus exposure only - built from bets you'd place straight"
         });
       }
     }
   }
   
-  // Generate 3-leg combinations from top components
-  if (components.length >= 3) {
-    for (let i = 0; i < Math.min(4, components.length - 2); i++) {
-      for (let j = i + 1; j < Math.min(5, components.length - 1); j++) {
-        for (let k = j + 1; k < Math.min(6, components.length); k++) {
-          const legs = [components[i], components[j], components[k]];
-          const uniqueGames = new Set(legs.map(c => c.gameId));
-          
-          if (uniqueGames.size === 3) {
-            const avgConf = legs.reduce((sum, c) => sum + c.confidence, 0) / 3;
-            parlays.push({
-              type: "moderate_3leg",
-              legs: legs,
-              avg_confidence: avgConf,
-              combined_ev: legs.reduce((sum, c) => sum + c.ev_score, 0),
-              risk_level: avgConf >= 65 ? "MODERATE" : "HIGH",
-              recommended_unit: avgConf >= 65 ? 0.25 : 0.1,
-              description: legs.map(c => c.description).join(" + ")
-            });
-          }
-        }
-      }
-    }
-  }
-  
-  // Generate 4-leg combinations (more selective)
-  if (components.length >= 4) {
-    const top4 = components.slice(0, 4);
-    const uniqueGames = new Set(top4.map(c => c.gameId));
-    
-    if (uniqueGames.size >= 3) {
-      const avgConf = top4.reduce((sum, c) => sum + c.confidence, 0) / 4;
-      parlays.push({
-        type: "aggressive_4leg",
-        legs: top4,
-        avg_confidence: avgConf,
-        combined_ev: top4.reduce((sum, c) => sum + c.ev_score, 0),
-        risk_level: avgConf >= 63 ? "HIGH" : "VERY_HIGH",
-        recommended_unit: avgConf >= 63 ? 0.1 : 0.05,
-        description: top4.map(c => c.description).join(" + ")
-      });
-    }
-  }
-  
-  // Generate 5-leg combinations (very selective, only if many high-confidence picks)
-  if (components.length >= 6) {
-    const top5 = components.slice(0, 5);
-    const uniqueGames = new Set(top5.map(c => c.gameId));
-    
-    if (uniqueGames.size >= 4 && top5.every(c => c.confidence >= 62)) {
-      const avgConf = top5.reduce((sum, c) => sum + c.confidence, 0) / 5;
-      parlays.push({
-        type: "moonshot_5leg",
-        legs: top5,
-        avg_confidence: avgConf,
-        combined_ev: top5.reduce((sum, c) => sum + c.ev_score, 0),
-        risk_level: "VERY_HIGH",
-        recommended_unit: 0.05,
-        description: top5.map(c => c.description).join(" + ")
-      });
-    }
-  }
-  
-  // Sort parlays by combined EV and limit to top 8
+  // Sort by combined EV and return max 3 parlays
   parlays.sort((a, b) => b.combined_ev - a.combined_ev);
-  return parlays.slice(0, 8);
+  return parlays.slice(0, 3);
 }
 
 // MAIN PREDICTION FUNCTION: v13 Logic + v8 Odds Integration
