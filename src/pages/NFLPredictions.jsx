@@ -10,24 +10,8 @@ import { getCurrentNFLWeek } from '../utils/nflWeek.js';
 const fmt = (v) => (v === null || v === undefined || v === '' ? '—' : v);
 const fmtOdds = (odds) => odds > 0 ? `+${odds}` : `${odds}`;
 
-async function fetchSchedule(week = 4, season = 2025) {                              /* NEW: Show best-book information */
-                    {bestBook && betRecommendation === 'BET' && (
-                      <div className="text-xs text-green-600 font-medium">
-                        Best: {bestBook.bookmaker} {bestBook.price ? fmtOdds(bestBook.price) : ''}
-                        {Number.isFinite(bestBook.line) ? ` ${bestBook.line > 0 ? '+' : ''}${bestBook.line}` : ''}
-                        {bestBook.edge_pct ? ` (${bestBook.edge_pct}% edge)` : ''}
-                        {bestBook.edge_points ? ` (${bestBook.edge_points} pts)` : ''}
-                      </div>
-                    )} /* NEW: Show best-book information with improved formatting */
-                    {bestBook && betRecommendation === 'BET' && (
-                      <div className="text-xs text-green-600 font-medium">
-                        Best: {bestBook.bookmaker}
-                        {bestBook.price ? ` ${fmtOdds(bestBook.price)}` : ''}
-                        {Number.isFinite(bestBook.line) ? ` ${bestBook.line > 0 ? '+' : ''}${bestBook.line}` : ''}
-                        {bestBook.edge_pct ? ` (${bestBook.edge_pct}% edge)` : ''}
-                        {bestBook.edge_points ? ` (${bestBook.edge_points} pts)` : ''}
-                      </div>
-                    )}scheduleUrl = `/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`;
+async function fetchSchedule(week = 4, season = 2025) {
+  const scheduleUrl = `/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`;
   const scheduleRes = await fetch(scheduleUrl);
   if (!scheduleRes.ok) throw new Error(`Failed to get schedule: ${scheduleRes.status}`);
   const scheduleData = await scheduleRes.json();
@@ -522,13 +506,14 @@ export default function NFLPredictions() {
                         {modelValue}
                       </div>
                     )}
-                    {/* NEW: Show best-book information */}
+                    {/* Show best-book information safely */}
                     {bestBook && betRecommendation === 'BET' && (
                       <div className="text-xs text-green-600 font-medium">
-                        Best: {bestBook.bookmaker} {bestBook.price ? fmtOdds(bestBook.price) : ''}
+                        Best: {bestBook.bookmaker || 'N/A'}
+                        {bestBook.price !== undefined ? ` ${fmtOdds(bestBook.price)}` : ''}
                         {bestBook.line !== undefined ? ` ${bestBook.line > 0 ? '+' : ''}${bestBook.line}` : ''}
-                        {bestBook.edge_pct ? ` (${bestBook.edge_pct}% edge)` : ''}
-                        {bestBook.edge_points ? ` (${bestBook.edge_points} pts)` : ''}
+                        {bestBook.edge_pct !== undefined ? ` (${Number(bestBook.edge_pct).toFixed(1)}% edge)` : ''}
+                        {bestBook.edge_points !== undefined ? ` (${Number(bestBook.edge_points).toFixed(1)} pts)` : ''}
                       </div>
                     )}
                   </div>
