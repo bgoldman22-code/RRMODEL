@@ -64,7 +64,8 @@ async function fetchPredictions(week = 4, season = 2025, force = false) {
       home_team: pred.home_team,
       away_team: pred.away_team,
       teamStats: pred.teamStats,
-      modelEnhancements: pred.modelEnhancements
+      modelEnhancements: pred.modelEnhancements,
+      locked_picks: pred.locked_picks // Include locked picks data from backend
     })),
     parlaySuggestions: parlaySuggestions,
     parlayMetadata: parlayMetadata,
@@ -414,6 +415,7 @@ export default function NFLPredictions() {
           <caption className="px-4 py-2 text-xs text-gray-600 text-left">
             📊 Display prices shown from priority book selection (FanDuel, DraftKings, BetMGM, etc.). 
             Edges computed using the best available price across all supported books (line-shopped).
+            🔒 Picks are automatically locked at kickoff with closing odds for accurate performance tracking.
           </caption>
           <thead className="bg-neutral-50 text-neutral-700">
             <tr>
@@ -463,10 +465,16 @@ export default function NFLPredictions() {
                   TEAM_NAME
                 });
 
-                const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge, pickedTeam, unitInfo, bestBook }) => (
+                const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge, pickedTeam, unitInfo, bestBook, lockedPick }) => (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <div className="font-medium text-sm">{pick}</div>
+                      {/* Lock indicator - shows if pick is locked with closing odds */}
+                      {lockedPick && (
+                        <span className="text-xs px-2 py-1 rounded bg-gray-600 text-white font-medium">
+                          🔒 LOCKED
+                        </span>
+                      )}
                       <span className={`text-xs px-2 py-1 rounded font-medium ${
                         betRecommendation === 'BET' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       }`}>
@@ -506,14 +514,37 @@ export default function NFLPredictions() {
                         {modelValue}
                       </div>
                     )}
-                    {/* Show best-book information safely */}
-                    {bestBook && betRecommendation === 'BET' && (
+                    {/* Show best-book information ONLY if not locked */}
+                    {bestBook && betRecommendation === 'BET' && !lockedPick && (
                       <div className="text-xs text-green-600 font-medium">
                         Best: {bestBook.bookmaker || 'N/A'}
                         {bestBook.price !== undefined ? ` ${fmtOdds(bestBook.price)}` : ''}
                         {bestBook.line !== undefined ? ` ${bestBook.line > 0 ? '+' : ''}${bestBook.line}` : ''}
                         {bestBook.edge_pct !== undefined ? ` (${Number(bestBook.edge_pct).toFixed(1)}% edge)` : ''}
                         {bestBook.edge_points !== undefined ? ` (${Number(bestBook.edge_points).toFixed(1)} pts)` : ''}
+                      </div>
+                    )}
+                    {/* Show locked pick details when available */}
+                    {lockedPick && (
+                      <div className="text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded">
+                        <div className="font-medium">🔒 Locked at kickoff ({new Date(lockedPick.locked_at).toLocaleTimeString()})</div>
+                        {lockedPick.closing_book && (
+                          <div>Book: {lockedPick.closing_book}</div>
+                        )}
+                        {lockedPick.closing_line && (
+                          <div>Closing: {lockedPick.closing_line}</div>
+                        )}
+                        {lockedPick.closing_total !== undefined && (
+                          <div>Closing: {lockedPick.closing_total} {lockedPick.pick && lockedPick.pick.charAt(0).toUpperCase()}</div>
+                        )}
+                        {lockedPick.closing_odds !== undefined && (
+                          <div>Closing odds: {fmtOdds(lockedPick.closing_odds)}</div>
+                        )}
+                        {lockedPick.trigger_source && (
+                          <div className="text-[10px] text-gray-500">
+                            Source: {lockedPick.trigger_source === 'kickoff' ? 'Auto (kickoff)' : 'Batch safety'}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -534,6 +565,7 @@ export default function NFLPredictions() {
                             edge={ml.edge}
                             type="ml"
                             bestBook={ml.best_book}
+                            lockedPick={r.locked_picks?.moneyline}
                           />
                           {/* Show display book prices from structured odds */}
                           {(odds.display?.h2h || odds.moneyline) && (
@@ -561,6 +593,7 @@ export default function NFLPredictions() {
                         marketValue={spreadDisplay.bookText}   // ✅ always shown: pick POV or neutral POV
                         pickedTeam={spread?.pick}
                         bestBook={spread?.best_book}
+                        lockedPick={r.locked_picks?.spread}
                       />
                       {/* Show display book for transparency */}
                       {r.odds?.display_book && (
@@ -586,6 +619,7 @@ export default function NFLPredictions() {
                               return total.line ? `${total.line}` : null;
                             })()}
                             bestBook={total.best_book}
+                            lockedPick={r.locked_picks?.total}
                           />
                           {/* Show display book for transparency */}
                           {r.odds?.display_book && (

@@ -37,10 +37,19 @@ export const handler = async (event, context) => {
   }
 
   try {
-    const { gameId, action, source = 'kickoff' } = JSON.parse(event.body || '{}');
+    const { 
+      gameId, 
+      game_id, 
+      action, 
+      source = 'kickoff',
+      home_team,
+      away_team 
+    } = JSON.parse(event.body || '{}');
     
-    if (action === 'lock' && gameId) {
-      const result = await lockPicksForGame(gameId, source);
+    const resolvedGameId = gameId || game_id;
+    
+    if (action === 'lock' && resolvedGameId) {
+      const result = await lockPicksForGame(resolvedGameId, source, false, home_team, away_team);
       return {
         statusCode: 200,
         headers,
@@ -48,12 +57,12 @@ export const handler = async (event, context) => {
       };
     }
     
-    if (action === 'get' && gameId) {
-      const lockedPicks = await getLockedPicks(gameId);
+    if (action === 'get' && resolvedGameId) {
+      const lockedPicks = await getLockedPicks(resolvedGameId);
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ gameId, lockedPicks })
+        body: JSON.stringify({ gameId: resolvedGameId, lockedPicks })
       };
     }
     
@@ -86,7 +95,7 @@ export const handler = async (event, context) => {
  * Lock picks for a specific game at kickoff with closing odds
  * Idempotent - won't overwrite existing locks unless force=true
  */
-async function lockPicksForGame(gameId, source = 'kickoff', force = false) {
+async function lockPicksForGame(gameId, source = 'kickoff', force = false, homeTeam = null, awayTeam = null) {
   const store = getStore("locked-picks");
   const now = new Date();
   
@@ -131,7 +140,9 @@ async function lockPicksForGame(gameId, source = 'kickoff', force = false) {
       closingOdds: closingOdds?.spread,
       odds: currentPredictions.odds,
       source,
-      locked_at: now.toISOString()
+      locked_at: now.toISOString(),
+      homeTeam,
+      awayTeam
     });
     
     await store.set(`${gameId}-spread`, JSON.stringify(spreadLock));
@@ -147,7 +158,9 @@ async function lockPicksForGame(gameId, source = 'kickoff', force = false) {
       closingOdds: closingOdds?.total,
       odds: currentPredictions.odds,
       source,
-      locked_at: now.toISOString()
+      locked_at: now.toISOString(),
+      homeTeam,
+      awayTeam
     });
     
     await store.set(`${gameId}-total`, JSON.stringify(totalLock));
@@ -163,7 +176,9 @@ async function lockPicksForGame(gameId, source = 'kickoff', force = false) {
       closingOdds: closingOdds?.moneyline,
       odds: currentPredictions.odds,
       source,
-      locked_at: now.toISOString()
+      locked_at: now.toISOString(),
+      homeTeam,
+      awayTeam
     });
     
     await store.set(`${gameId}-moneyline`, JSON.stringify(mlLock));
@@ -183,47 +198,75 @@ async function lockPicksForGame(gameId, source = 'kickoff', force = false) {
 
 /**
  * Lock a specific market pick with closing line data
+ * Updated data contract for frontend integration
  */
-async function lockMarketPick({ gameId, market, prediction, closingOdds, odds, source, locked_at }) {
+async function lockMarketPick({ gameId, market, prediction, closingOdds, odds, source, locked_at, homeTeam, awayTeam }) {
   const lockData = {
-    gameId,
-    market,
     pick: prediction.pick,
     confidence: prediction.confidence,
-    model_line_homePOV: prediction.model_home_margin || prediction.predicted || null,
-    closing_line_homePOV: null,
-    best_book: prediction.best_book || null,
     locked_at,
-    source,
+    trigger_source: source,
+    closing_book: null,
+    closing_odds: null,
+    closing_line: null,        // For spreads - pick POV  
+    closing_total: null,       // For totals
+    model_home_margin: prediction.model_home_margin || null,
     closing_fallback: !closingOdds
   };
   
   // Add market-specific closing line data
   if (closingOdds) {
+    lockData.closing_book = closingOdds.display_book;
+    
     if (market === 'spread') {
-      lockData.closing_line_homePOV = closingOdds.home_line;
-      lockData.closing_odds_display = closingOdds.display_book;
+      // Store in home POV, will convert to pick POV later
+      const homeLinePOV = closingOdds.home_line;
+      // Convert to picked team POV for frontend display consistency
+      if (prediction.pick === homeTeam) {
+        lockData.closing_line = homeLinePOV > 0 ? `+${homeLinePOV.toFixed(1)}` : `${homeLinePOV.toFixed(1)}`;
+      } else if (prediction.pick === awayTeam) {
+        lockData.closing_line = (-homeLinePOV) > 0 ? `+${(-homeLinePOV).toFixed(1)}` : `${(-homeLinePOV).toFixed(1)}`;
+      }
+      lockData.closing_odds = closingOdds.home_price || closingOdds.away_price || -110;
+      
     } else if (market === 'total') {
-      lockData.closing_line_homePOV = closingOdds.over_line;
-      lockData.closing_odds_display = closingOdds.display_book;
+      lockData.closing_total = closingOdds.over_line;
+      lockData.closing_odds = closingOdds.over_price || closingOdds.under_price || -110;
+      
     } else if (market === 'moneyline') {
-      lockData.closing_odds_home = closingOdds.home_price;
-      lockData.closing_odds_away = closingOdds.away_price;
-      lockData.closing_odds_display = closingOdds.display_book;
+      // Store the odds for the picked team
+      if (prediction.pick === homeTeam) {
+        lockData.closing_odds = closingOdds.home_price;
+      } else if (prediction.pick === awayTeam) {
+        lockData.closing_odds = closingOdds.away_price;
+      }
     }
   } else {
     // Fallback to current odds structure
+    lockData.closing_book = odds?.display_book || 'Unknown';
+    
     if (odds?.display) {
       if (market === 'spread') {
-        lockData.closing_line_homePOV = odds.display.spread?.home_line;
-        lockData.closing_odds_display = odds.display_book;
+        const homeLinePOV = odds.display.spread?.home_line;
+        if (homeLinePOV !== undefined && prediction.pick) {
+          if (prediction.pick === homeTeam) {
+            lockData.closing_line = homeLinePOV > 0 ? `+${homeLinePOV.toFixed(1)}` : `${homeLinePOV.toFixed(1)}`;
+          } else if (prediction.pick === awayTeam) {
+            lockData.closing_line = (-homeLinePOV) > 0 ? `+${(-homeLinePOV).toFixed(1)}` : `${(-homeLinePOV).toFixed(1)}`;
+          }
+        }
+        lockData.closing_odds = odds.display.spread?.home_price || odds.display.spread?.away_price || -110;
+        
       } else if (market === 'total') {
-        lockData.closing_line_homePOV = odds.display.total?.over?.line;
-        lockData.closing_odds_display = odds.display_book;
+        lockData.closing_total = odds.display.total?.over?.line;
+        lockData.closing_odds = odds.display.total?.over?.price || odds.display.total?.under?.price || -110;
+        
       } else if (market === 'moneyline') {
-        lockData.closing_odds_home = odds.display.h2h?.home;
-        lockData.closing_odds_away = odds.display.h2h?.away;
-        lockData.closing_odds_display = odds.display_book;
+        if (prediction.pick === homeTeam) {
+          lockData.closing_odds = odds.display.h2h?.home;
+        } else if (prediction.pick === awayTeam) {
+          lockData.closing_odds = odds.display.h2h?.away;
+        }
       }
     }
   }
