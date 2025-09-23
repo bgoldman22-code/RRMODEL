@@ -1070,7 +1070,202 @@ function findGameOdds(allOdds, homeTeam, awayTeam) {
   return found;
 }
 
-// FIXED: Extract odds using v13 logic that actually works with your API
+// Book priority for display consistency  
+const BOOK_PRIORITY = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'PointsBet'];
+
+// NEW: Extract structured odds with display vs best separation
+function extractStructuredOdds(gameOdds, modelPicks) {
+  if (!gameOdds) return { display: null, best: {}, all_books: {} };
+  
+  const bookmakers = gameOdds.bookmakers || [];
+  if (bookmakers.length === 0) return { display: null, best: {}, all_books: {} };
+  
+  const timestamp = new Date().toISOString();
+  const all_books = {};
+  
+  // Extract all bookmaker data
+  bookmakers.forEach(book => {
+    const bookName = book.title;
+    const bookData = { bookmaker: bookName };
+    
+    if (book.markets) {
+      // Extract H2H (moneyline)
+      const h2hMarket = book.markets.find(m => m.key === 'h2h');
+      if (h2hMarket) {
+        const homeOutcome = h2hMarket.outcomes.find(o => o.name === gameOdds.home_team);
+        const awayOutcome = h2hMarket.outcomes.find(o => o.name === gameOdds.away_team);
+        bookData.h2h = {
+          home: homeOutcome?.price || null,
+          away: awayOutcome?.price || null,
+          ts: timestamp
+        };
+      }
+      
+      // Extract spreads
+      const spreadMarket = book.markets.find(m => m.key === 'spreads');
+      if (spreadMarket) {
+        const homeOutcome = spreadMarket.outcomes.find(o => o.name === gameOdds.home_team);
+        const awayOutcome = spreadMarket.outcomes.find(o => o.name === gameOdds.away_team);
+        bookData.spread = {
+          home_line: homeOutcome?.point || 0,
+          home_price: homeOutcome?.price || -110,
+          away_line: awayOutcome?.point || 0,
+          away_price: awayOutcome?.price || -110,
+          ts: timestamp
+        };
+      }
+      
+      // Extract totals
+      const totalMarket = book.markets.find(m => m.key === 'totals');
+      if (totalMarket) {
+        const overOutcome = totalMarket.outcomes.find(o => o.name === 'Over');
+        const underOutcome = totalMarket.outcomes.find(o => o.name === 'Under');
+        bookData.total = {
+          over: { line: overOutcome?.point || 0, price: overOutcome?.price || -110 },
+          under: { line: underOutcome?.point || 0, price: underOutcome?.price || -110 },
+          ts: timestamp
+        };
+      }
+    }
+    
+    all_books[bookName] = bookData;
+  });
+  
+  // Select display book (consistent UI)
+  let displayBook = null;
+  for (const priorityBook of BOOK_PRIORITY) {
+    if (all_books[priorityBook]) {
+      displayBook = all_books[priorityBook];
+      break;
+    }
+  }
+  
+  // Fallback to first available book
+  if (!displayBook && Object.keys(all_books).length > 0) {
+    displayBook = Object.values(all_books)[0];
+  }
+  
+  // Find best book for each market based on model picks
+  const best = {};
+  
+  // Best moneyline book
+  if (modelPicks.mlPick && modelPicks.mlPick !== 'push') {
+    const isHomePick = modelPicks.mlPick === 'home';
+    let bestMLBook = null;
+    let bestMLPrice = isHomePick ? -1000 : 0; // Worst possible starting point
+    
+    Object.entries(all_books).forEach(([bookName, book]) => {
+      if (book.h2h) {
+        const priceForPick = isHomePick ? book.h2h.home : book.h2h.away;
+        if (priceForPick !== null) {
+          const isBetter = isHomePick ? 
+            (priceForPick > bestMLPrice) : // For favorites, higher (less negative) is better
+            (priceForPick > bestMLPrice);   // For underdogs, higher (more positive) is better
+          
+          if (isBetter) {
+            bestMLPrice = priceForPick;
+            bestMLBook = bookName;
+          }
+        }
+      }
+    });
+    
+    if (bestMLBook) {
+      best.h2h = {
+        bookmaker: bestMLBook,
+        pick_side: isHomePick ? 'home' : 'away',
+        price: bestMLPrice,
+        ts: timestamp
+      };
+    }
+  }
+  
+  // Best spread book
+  if (modelPicks.spreadPick && modelPicks.spreadPick !== 'push') {
+    const teamPick = modelPicks.spreadPick; // Team abbreviation
+    const isHomePick = teamPick === gameOdds.home_team;
+    let bestSpreadBook = null;
+    let bestSpreadLine = isHomePick ? -50 : 50; // Worst possible starting point
+    let bestSpreadPrice = -200;
+    
+    Object.entries(all_books).forEach(([bookName, book]) => {
+      if (book.spread) {
+        const lineForPick = isHomePick ? book.spread.home_line : book.spread.away_line;
+        const priceForPick = isHomePick ? book.spread.home_price : book.spread.away_price;
+        
+        if (lineForPick !== null) {
+          // More favorable line logic: if backing favorite, want smaller spread; if backing dog, want bigger spread
+          const lineIsBetter = lineForPick > bestSpreadLine; // This works for both cases
+          const lineIsSame = Math.abs(lineForPick - bestSpreadLine) < 0.1;
+          const priceIsBetter = priceForPick > bestSpreadPrice;
+          
+          if (lineIsBetter || (lineIsSame && priceIsBetter)) {
+            bestSpreadLine = lineForPick;
+            bestSpreadPrice = priceForPick;
+            bestSpreadBook = bookName;
+          }
+        }
+      }
+    });
+    
+    if (bestSpreadBook) {
+      best.spread = {
+        bookmaker: bestSpreadBook,
+        pick_side: isHomePick ? 'home' : 'away',
+        line: bestSpreadLine,
+        price: bestSpreadPrice,
+        ts: timestamp
+      };
+    }
+  }
+  
+  // Best total book
+  if (modelPicks.totalPick && modelPicks.totalPick !== 'push') {
+    const isOverPick = modelPicks.totalPick === 'over';
+    let bestTotalBook = null;
+    let bestTotalLine = isOverPick ? 100 : 0; // Worst possible starting point
+    let bestTotalPrice = -200;
+    
+    Object.entries(all_books).forEach(([bookName, book]) => {
+      if (book.total) {
+        const targetOutcome = isOverPick ? book.total.over : book.total.under;
+        if (targetOutcome.line !== null) {
+          // For Over: want lowest line; For Under: want highest line
+          const lineIsBetter = isOverPick ? 
+            (targetOutcome.line < bestTotalLine) :
+            (targetOutcome.line > bestTotalLine);
+          const lineIsSame = Math.abs(targetOutcome.line - bestTotalLine) < 0.1;
+          const priceIsBetter = targetOutcome.price > bestTotalPrice;
+          
+          if (lineIsBetter || (lineIsSame && priceIsBetter)) {
+            bestTotalLine = targetOutcome.line;
+            bestTotalPrice = targetOutcome.price;
+            bestTotalBook = bookName;
+          }
+        }
+      }
+    });
+    
+    if (bestTotalBook) {
+      best.total = {
+        bookmaker: bestTotalBook,
+        pick_side: isOverPick ? 'over' : 'under',
+        line: bestTotalLine,
+        price: bestTotalPrice,
+        ts: timestamp
+      };
+    }
+  }
+  
+  return {
+    source_snapshot_at: timestamp,
+    display: displayBook,
+    best: best,
+    all_books: all_books
+  };
+}
+
+// LEGACY: Keep old function for backwards compatibility during transition
 function extractOddsData(gameOdds) {
   if (!gameOdds) return {};
   
@@ -1433,12 +1628,44 @@ async function generateAdvancedPredictions(games, season) {
     const homeWinProb = sigmoid(predictedSpread / 14);
     const awayWinProb = 1 - homeWinProb;
 
+    // Generate basic model picks for structured odds selection
+    const mlPick = homeWinProb > awayWinProb ? homeCode : awayCode;
+    const initialSpreadPick = predictedSpread > 1.5 ? homeCode : (predictedSpread < -1.5 ? awayCode : 'push');
+    
+    // Calculate basic predicted total for over/under (will be refined later)
+    const basicPredictedTotal = homeScoreData.score + awayScoreData.score;
+    let initialTotalPick = 'push';
+    
     // v8 WORKING ODDS: Use proven working odds integration
     const gameOdds = findGameOdds(allOdds, homeCode, awayCode);
-    const realOdds = gameOdds ? extractOddsData(gameOdds) : {};
+    
+    // NEW: Extract structured odds with display vs best separation
+    const modelPicks = {
+      mlPick: mlPick === homeCode ? 'home' : 'away',
+      spreadPick: initialSpreadPick,
+      totalPick: initialTotalPick // Will be updated below when we know the market total
+    };
+    
+    const structuredOdds = extractStructuredOdds(gameOdds, modelPicks);
+    const realOdds = gameOdds ? extractOddsData(gameOdds) : {};  // Keep legacy for now
     const hasLiveOdds = gameOdds && realOdds.ml_home && realOdds.ml_away;
     
+    // Update total pick now that we have market total
+    if (structuredOdds.display?.total?.over?.line) {
+      const marketTotal = structuredOdds.display.total.over.line;
+      initialTotalPick = basicPredictedTotal > marketTotal + 3 ? 'over' : 
+                  basicPredictedTotal < marketTotal - 3 ? 'under' : 'push';
+      modelPicks.totalPick = initialTotalPick;
+      
+      // Re-extract odds with updated total pick
+      if (initialTotalPick !== 'push') {
+        const updatedStructuredOdds = extractStructuredOdds(gameOdds, modelPicks);
+        Object.assign(structuredOdds, updatedStructuredOdds);
+      }
+    }
+    
     console.log(`Live odds found: ${hasLiveOdds}, Spread: ${realOdds.spread_line}, Total: ${realOdds.total_line}`);
+    console.log(`Structured odds display book: ${structuredOdds.display?.bookmaker || 'none'}`);
     
     // PHASE 4 ENHANCEMENT: Sophisticated variance modeling
     const enhancedVarianceData = calculateEnhancedVariance(homeMetrics, awayMetrics);
@@ -1461,14 +1688,39 @@ async function generateAdvancedPredictions(games, season) {
     const predictionData = { homeWinProb, awayWinProb };
     const skipCheck = shouldSkipBet(predictionData, gameContext, realOdds);
     
-    const mlPick = homeWinProb > awayWinProb ? homeCode : awayCode;
     const mlModelProb = Math.max(homeWinProb, awayWinProb);
     
-    const homeMarketProb = americanToImplied(realOdds.ml_home) || 0.5;
-    const awayMarketProb = americanToImplied(realOdds.ml_away) || 0.5;
-    const mlMarketProb = mlPick === homeCode ? homeMarketProb : awayMarketProb;
-    const rawMLEdge = mlMarketProb && hasLiveOdds ? mlModelProb - mlMarketProb : 0;
-    const mlEdge = Math.abs(rawMLEdge); // Always show positive edge for display
+    // NEW: Calculate edges using best-book pricing
+    let mlEdge = 0;
+    let mlMarketProb = 0.5;
+    let mlConfidence = Math.round(mlModelProb * 100);
+    
+    if (structuredOdds.best.h2h) {
+      const bestMLPrice = structuredOdds.best.h2h.price;
+      mlMarketProb = americanToImplied(bestMLPrice);
+      
+      // Remove vig using both sides from the same best book
+      const bestBook = structuredOdds.all_books[structuredOdds.best.h2h.bookmaker];
+      if (bestBook?.h2h?.home && bestBook?.h2h?.away) {
+        const homeImplied = americanToImplied(bestBook.h2h.home);
+        const awayImplied = americanToImplied(bestBook.h2h.away);
+        const totalImplied = homeImplied + awayImplied;
+        const vigFreeHome = homeImplied / totalImplied;
+        const vigFreeAway = awayImplied / totalImplied;
+        
+        mlMarketProb = structuredOdds.best.h2h.pick_side === 'home' ? vigFreeHome : vigFreeAway;
+      }
+      
+      const rawMLEdge = mlModelProb - mlMarketProb;
+      mlEdge = Math.abs(rawMLEdge);
+    } else {
+      // Fallback to legacy odds
+      const homeMarketProb = americanToImplied(realOdds.ml_home) || 0.5;
+      const awayMarketProb = americanToImplied(realOdds.ml_away) || 0.5;
+      mlMarketProb = mlPick === homeCode ? homeMarketProb : awayMarketProb;
+      const rawMLEdge = mlMarketProb && hasLiveOdds ? mlModelProb - mlMarketProb : 0;
+      mlEdge = Math.abs(rawMLEdge);
+    }
     
     const avgConfidence = (homeScoreData.confidence + awayScoreData.confidence) / 2;
     const avgEvidence = (homeScoreData.evidenceStrength + awayScoreData.evidenceStrength) / 2;
@@ -1476,12 +1728,12 @@ async function generateAdvancedPredictions(games, season) {
     // PHASE 3 ENHANCEMENT: Apply public bias detection
     const publicBiasAdjustment = detectPublicBias(mlPick, realOdds.spread_line, predictedSpread);
     const baseMLConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge, avgConfidence, avgEvidence, scoreDifference, 'moneyline', gameContext);
-    const mlConfidence = Math.round(baseMLConfidence * publicBiasAdjustment); // Always show actual confidence
+    mlConfidence = Math.round(baseMLConfidence * publicBiasAdjustment);
     
-    // Add moneyline skip check
-    const mlSkipCheck = shouldSkipMoneylineBet(mlPick, gameContext, realOdds, mlConfidence, rawMLEdge * 100);
+    // Add moneyline skip check using best-book edge
+    const mlSkipCheck = shouldSkipMoneylineBet(mlPick, gameContext, realOdds, mlConfidence, mlEdge * 100);
 
-    // Spread predictions with live odds integration
+    // Spread predictions with structured odds integration
     const marketSpread = hasLiveOdds ? (realOdds.spread_line || 0) : 0;
     const marketFavorite = realOdds.spread_favorite;
     
@@ -1494,7 +1746,7 @@ async function generateAdvancedPredictions(games, season) {
     const marginDifference = modelHomeMargin - marketHomeMargin;
     const spreadThreshold = hasLiveOdds ? 2.5 : 1.0;
     
-    let spreadPick;
+    let spreadPick = initialSpreadPick; // Start with initial pick
     let displayedSpread;
     
     if (!hasLiveOdds) {
@@ -1517,23 +1769,64 @@ async function generateAdvancedPredictions(games, season) {
       displayedSpread = Math.abs(marketSpread);
     }
     
-    const spreadEdge = Math.abs(marginDifference);
+    // Enhanced spread edge calculation using best-book data
+    let spreadEdge = Math.abs(marginDifference);
+    let bestSpreadInfo = null;
+    
+    if (structuredOdds.best.spread && spreadPick !== 'push') {
+      const bestSpread = structuredOdds.best.spread;
+      const bestBook = structuredOdds.all_books[bestSpread.bookmaker];
+      
+      if (bestBook?.spread) {
+        // Use best-book line for edge calculation
+        const bestLine = bestSpread.line;
+        const modelLineForPick = spreadPick === homeCode ? modelHomeMargin : -modelHomeMargin;
+        spreadEdge = Math.abs(modelLineForPick - bestLine);
+        
+        bestSpreadInfo = {
+          bookmaker: bestSpread.bookmaker,
+          line: bestLine,
+          price: bestSpread.price,
+          edge_points: spreadEdge
+        };
+      }
+    }
     
     const baseSpreadConfidence = calculateConfidence(0.6, 0.52, spreadEdge / 14, avgConfidence, avgEvidence, scoreDifference, 'spread', gameContext);
-    const spreadConfidence = baseSpreadConfidence; // Always show actual confidence
+    const spreadConfidence = baseSpreadConfidence;
     
-    // Use spread-specific skip check that detects pushes AND checks confidence/edge thresholds
+    // Use spread-specific skip check with enhanced edge
     const spreadSkipCheck = shouldSkipSpreadBet(spreadPick, marginDifference, gameContext, realOdds, spreadConfidence, spreadEdge);
 
+    // Enhanced total calculations
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread, homeScoreData.specialTeams, awayScoreData.specialTeams);
     const marketTotal = hasLiveOdds ? (realOdds.total_line || 44) : 44;
     
-    const totalDifference = predictedTotal - marketTotal;
+    let totalDifference = predictedTotal - marketTotal;
     const totalPick = predictedTotal > marketTotal ? 'over' : 'under';
-    const totalEdge = Math.abs(totalDifference);
+    let totalEdge = Math.abs(totalDifference);
+    let bestTotalInfo = null;
+    
+    // Enhanced total edge calculation using best-book data
+    if (structuredOdds.best.total && totalPick !== 'push') {
+      const bestTotal = structuredOdds.best.total;
+      const bestTotalLine = bestTotal.line;
+      
+      totalDifference = predictedTotal - bestTotalLine;
+      totalEdge = Math.abs(totalDifference);
+      
+      bestTotalInfo = {
+        bookmaker: bestTotal.bookmaker,
+        line: bestTotalLine,
+        price: bestTotal.price,
+        side: bestTotal.pick_side,
+        edge_points: totalEdge
+      };
+    }
+    
     const totalConfidence = calculateConfidence(0.6, 0.52, totalEdge / 10, avgConfidence, avgEvidence, 0, 'total', gameContext);
     
-    // Use proper totals skip check with confidence and edge thresholds
+    // Use proper totals skip check with enhanced edge
     const totalSkipCheck = shouldSkipTotalBet(totalPick, totalDifference, gameContext, realOdds, totalConfidence, totalEdge);
 
     return {
@@ -1542,25 +1835,33 @@ async function generateAdvancedPredictions(games, season) {
         home_win_prob: Number(homeWinProb.toFixed(3)),
         away_win_prob: Number(awayWinProb.toFixed(3)),
         moneyline: { 
-          pick: mlPick,  // Always show the pick
-          confidence: mlConfidence,  // Always show confidence
-          edge: Number((mlEdge * 100).toFixed(1)),  // Always show edge
-          bet: !mlSkipCheck.skip,  // True = BET, False = NO BET
+          pick: mlPick,
+          confidence: mlConfidence,
+          edge: Number((mlEdge * 100).toFixed(1)),
+          bet: !mlSkipCheck.skip,
           betRecommendation: mlSkipCheck.skip ? "NO BET" : "BET",
           skipReason: mlSkipCheck.reason || null,
-          displayNote: mlSkipCheck.skip ? "NO BET" : "BET"
+          displayNote: mlSkipCheck.skip ? "NO BET" : "BET",
+          // NEW: Best book info for moneyline
+          best_book: structuredOdds.best.h2h ? {
+            bookmaker: structuredOdds.best.h2h.bookmaker,
+            price: structuredOdds.best.h2h.price,
+            edge_pct: Number((mlEdge * 100).toFixed(1))
+          } : null
         },
         spread: { 
-          pick: spreadPick,  // Always show the pick
-          confidence: spreadConfidence,  // Always show confidence
+          pick: spreadPick,
+          confidence: spreadConfidence,
           line: hasLiveOdds ? marketSpread : Number(displayedSpread.toFixed(1)),
           predicted: Number(Math.abs(predictedSpread).toFixed(1)),
-          edge: Number(spreadEdge.toFixed(1)),  // Always show edge
+          edge: Number(spreadEdge.toFixed(1)),
           model_home_margin: Number(modelHomeMargin.toFixed(1)),
-          bet: !spreadSkipCheck.skip,  // Use spread-specific skip check
+          bet: !spreadSkipCheck.skip,
           betRecommendation: spreadSkipCheck.skip ? "NO BET" : "BET",
           skipReason: spreadSkipCheck.reason || null,
-          displayNote: spreadSkipCheck.skip ? "NO BET" : "BET"
+          displayNote: spreadSkipCheck.skip ? "NO BET" : "BET",
+          // NEW: Best book info for spread
+          best_book: bestSpreadInfo
         },
         total: { 
           pick: totalPick, 
@@ -1568,14 +1869,47 @@ async function generateAdvancedPredictions(games, season) {
           line: marketTotal, 
           predicted: Number(predictedTotal.toFixed(1)), 
           edge: Number(totalEdge.toFixed(1)),
-          bet: !totalSkipCheck.skip,  // True = BET, False = NO BET
+          bet: !totalSkipCheck.skip,
           betRecommendation: totalSkipCheck.skip ? "NO BET" : "BET",
           skipReason: totalSkipCheck.reason || null,
-          displayNote: totalSkipCheck.skip ? "NO BET" : "BET"
+          displayNote: totalSkipCheck.skip ? "NO BET" : "BET",
+          // NEW: Best book info for total
+          best_book: bestTotalInfo
         }
       },
       
-      odds: {
+      // NEW: Structured odds with display vs best separation
+      odds: structuredOdds.display ? {
+        // Display book for consistent UI
+        display: structuredOdds.display,
+        display_book: structuredOdds.display.bookmaker,
+        
+        // Best book info for edge calculations
+        best: structuredOdds.best,
+        
+        // Legacy format for backwards compatibility
+        moneyline: { 
+          home: structuredOdds.display.h2h?.home || realOdds.ml_home, 
+          away: structuredOdds.display.h2h?.away || realOdds.ml_away
+        },
+        spread: { 
+          line: structuredOdds.display.spread?.home_line || realOdds.spread_line, 
+          favorite: realOdds.spread_favorite,
+          home_line: structuredOdds.display.spread?.home_line,
+          away_line: structuredOdds.display.spread?.away_line
+        },
+        total: { 
+          line: structuredOdds.display.total?.over?.line || realOdds.total_line,
+          over_price: structuredOdds.display.total?.over?.price,
+          under_price: structuredOdds.display.total?.under?.price
+        },
+        
+        // Metadata
+        source_snapshot_at: structuredOdds.source_snapshot_at,
+        live_odds_available: hasLiveOdds,
+        books_available: Object.keys(structuredOdds.all_books || {})
+      } : {
+        // Fallback to legacy structure
         moneyline: { 
           home: realOdds.ml_home, 
           away: realOdds.ml_away
@@ -1689,7 +2023,13 @@ export default async (request, context) => {
 
     const result = await generateAdvancedPredictions(games, season);
     
-    return new Response(JSON.stringify(result), {
+    // PICK LOCKING: Check for kickoff events and trigger locks
+    await checkAndLockKickoffGames(result.predictions || result);
+    
+    // PICK RETRIEVAL: Replace live predictions with locked picks for started games
+    const finalResult = await integrateLockedPicks(result);
+    
+    return new Response(JSON.stringify(finalResult), {
       status: 200,
       headers: { 
         'Content-Type': 'application/json',
