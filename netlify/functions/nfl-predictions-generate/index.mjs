@@ -79,6 +79,22 @@ function shouldSkipBet(prediction, gameContext = {}, marketOdds = null) {
   return { skip: false, reason: null, trueEdgeData: trueEdgeData };
 }
 
+// Moneyline bet skip logic 
+function shouldSkipMoneylineBet(mlPick, gameContext = {}, marketOdds = null, confidence = null, edge = null) {
+  // Check for negative edge - always skip
+  if (edge !== null && edge < 0) {
+    return { skip: true, reason: `negative_edge (${edge.toFixed(1)}%)` };
+  }
+  
+  // Check minimum edge threshold (2% for moneylines after vig removal)
+  if (edge !== null && Math.abs(edge) < 2.0) {
+    return { skip: true, reason: `edge<2.0% (${Math.abs(edge).toFixed(1)}%)` };
+  }
+  
+  // Use standard edge-based logic for additional checks
+  return shouldSkipBet({ homeWinProb: 0.6 }, gameContext, marketOdds);
+}
+
 // Total bet skip logic 
 function shouldSkipTotalBet(totalPick, totalDiff, gameContext = {}, marketOdds = null, confidence = null, edge = null) {
   // Check confidence threshold for total bets (60% minimum)
@@ -1169,59 +1185,91 @@ function generateResponsibleParlays(components) {
   
   const parlays = [];
   
-  const topComponents = components.slice(0, 4);
+  // Generate all possible 2-leg combinations from top 6 components
+  const topComponents = components.slice(0, Math.min(6, components.length));
   for (let i = 0; i < topComponents.length - 1; i++) {
     for (let j = i + 1; j < topComponents.length; j++) {
       if (topComponents[i].gameId !== topComponents[j].gameId) {
+        const avgConf = (topComponents[i].confidence + topComponents[j].confidence) / 2;
         parlays.push({
           type: "conservative_2leg",
           legs: [topComponents[i], topComponents[j]],
-          avg_confidence: (topComponents[i].confidence + topComponents[j].confidence) / 2,
+          avg_confidence: avgConf,
           combined_ev: topComponents[i].ev_score + topComponents[j].ev_score,
-          risk_level: "LOW",
-          recommended_unit: 0.5,
+          risk_level: avgConf >= 67 ? "LOW" : "MODERATE",
+          recommended_unit: avgConf >= 67 ? 0.5 : 0.25,
           description: `${topComponents[i].description} + ${topComponents[j].description}`
         });
       }
     }
   }
   
+  // Generate 3-leg combinations from top components
   if (components.length >= 3) {
-    const top3 = components.slice(0, 3);
-    const uniqueGames = new Set(top3.map(c => c.gameId));
-    
-    if (uniqueGames.size === 3) {
-      parlays.push({
-        type: "moderate_3leg",
-        legs: top3,
-        avg_confidence: top3.reduce((sum, c) => sum + c.confidence, 0) / 3,
-        combined_ev: top3.reduce((sum, c) => sum + c.ev_score, 0),
-        risk_level: "MODERATE",
-        recommended_unit: 0.25,
-        description: top3.map(c => c.description).join(" + ")
-      });
+    for (let i = 0; i < Math.min(4, components.length - 2); i++) {
+      for (let j = i + 1; j < Math.min(5, components.length - 1); j++) {
+        for (let k = j + 1; k < Math.min(6, components.length); k++) {
+          const legs = [components[i], components[j], components[k]];
+          const uniqueGames = new Set(legs.map(c => c.gameId));
+          
+          if (uniqueGames.size === 3) {
+            const avgConf = legs.reduce((sum, c) => sum + c.confidence, 0) / 3;
+            parlays.push({
+              type: "moderate_3leg",
+              legs: legs,
+              avg_confidence: avgConf,
+              combined_ev: legs.reduce((sum, c) => sum + c.ev_score, 0),
+              risk_level: avgConf >= 65 ? "MODERATE" : "HIGH",
+              recommended_unit: avgConf >= 65 ? 0.25 : 0.1,
+              description: legs.map(c => c.description).join(" + ")
+            });
+          }
+        }
+      }
     }
   }
   
-  if (components.length >= 6) {
+  // Generate 4-leg combinations (more selective)
+  if (components.length >= 4) {
     const top4 = components.slice(0, 4);
     const uniqueGames = new Set(top4.map(c => c.gameId));
     
     if (uniqueGames.size >= 3) {
+      const avgConf = top4.reduce((sum, c) => sum + c.confidence, 0) / 4;
       parlays.push({
         type: "aggressive_4leg",
         legs: top4,
-        avg_confidence: top4.reduce((sum, c) => sum + c.confidence, 0) / 4,
+        avg_confidence: avgConf,
         combined_ev: top4.reduce((sum, c) => sum + c.ev_score, 0),
-        risk_level: "HIGH",
-        recommended_unit: 0.1,
+        risk_level: avgConf >= 63 ? "HIGH" : "VERY_HIGH",
+        recommended_unit: avgConf >= 63 ? 0.1 : 0.05,
         description: top4.map(c => c.description).join(" + ")
       });
     }
   }
   
+  // Generate 5-leg combinations (very selective, only if many high-confidence picks)
+  if (components.length >= 6) {
+    const top5 = components.slice(0, 5);
+    const uniqueGames = new Set(top5.map(c => c.gameId));
+    
+    if (uniqueGames.size >= 4 && top5.every(c => c.confidence >= 62)) {
+      const avgConf = top5.reduce((sum, c) => sum + c.confidence, 0) / 5;
+      parlays.push({
+        type: "moonshot_5leg",
+        legs: top5,
+        avg_confidence: avgConf,
+        combined_ev: top5.reduce((sum, c) => sum + c.ev_score, 0),
+        risk_level: "VERY_HIGH",
+        recommended_unit: 0.05,
+        description: top5.map(c => c.description).join(" + ")
+      });
+    }
+  }
+  
+  // Sort parlays by combined EV and limit to top 8
   parlays.sort((a, b) => b.combined_ev - a.combined_ev);
-  return parlays.slice(0, 6);
+  return parlays.slice(0, 8);
 }
 
 // MAIN PREDICTION FUNCTION: v13 Logic + v8 Odds Integration
@@ -1342,7 +1390,8 @@ async function generateAdvancedPredictions(games, season) {
     const homeMarketProb = americanToImplied(realOdds.ml_home) || 0.5;
     const awayMarketProb = americanToImplied(realOdds.ml_away) || 0.5;
     const mlMarketProb = mlPick === homeCode ? homeMarketProb : awayMarketProb;
-    const mlEdge = mlMarketProb && hasLiveOdds ? mlModelProb - mlMarketProb : 0;
+    const rawMLEdge = mlMarketProb && hasLiveOdds ? mlModelProb - mlMarketProb : 0;
+    const mlEdge = Math.abs(rawMLEdge); // Always show positive edge for display
     
     const avgConfidence = (homeScoreData.confidence + awayScoreData.confidence) / 2;
     const avgEvidence = (homeScoreData.evidenceStrength + awayScoreData.evidenceStrength) / 2;
@@ -1351,6 +1400,9 @@ async function generateAdvancedPredictions(games, season) {
     const publicBiasAdjustment = detectPublicBias(mlPick, realOdds.spread_line, predictedSpread);
     const baseMLConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge, avgConfidence, avgEvidence, scoreDifference, 'moneyline', gameContext);
     const mlConfidence = Math.round(baseMLConfidence * publicBiasAdjustment); // Always show actual confidence
+    
+    // Add moneyline skip check
+    const mlSkipCheck = shouldSkipMoneylineBet(mlPick, gameContext, realOdds, mlConfidence, rawMLEdge * 100);
 
     // Spread predictions with live odds integration
     const marketSpread = hasLiveOdds ? (realOdds.spread_line || 0) : 0;
@@ -1416,10 +1468,10 @@ async function generateAdvancedPredictions(games, season) {
           pick: mlPick,  // Always show the pick
           confidence: mlConfidence,  // Always show confidence
           edge: Number((mlEdge * 100).toFixed(1)),  // Always show edge
-          bet: !skipCheck.skip,  // True = BET, False = NO BET
-          betRecommendation: skipCheck.skip ? "NO BET" : "BET",
-          skipReason: skipCheck.reason || null,
-          displayNote: skipCheck.skip ? "NO BET" : "BET"
+          bet: !mlSkipCheck.skip,  // True = BET, False = NO BET
+          betRecommendation: mlSkipCheck.skip ? "NO BET" : "BET",
+          skipReason: mlSkipCheck.reason || null,
+          displayNote: mlSkipCheck.skip ? "NO BET" : "BET"
         },
         spread: { 
           pick: spreadPick,  // Always show the pick
