@@ -390,14 +390,20 @@ export default function NFLPredictions() {
                           if (type === 'spread') {
                             // For spreads, show which team the model actually favors
                             if (spread?.model_home_margin !== undefined) {
-                              const favoredTeam = spread.model_home_margin > 0 ? r.home_team : r.away_team;
-                              const margin = Math.abs(spread.model_home_margin);
-                              return `${favoredTeam} ${spread.model_home_margin >= 0 ? '+' : ''}${spread.model_home_margin.toFixed(1)}`;
+                              const margin = spread.model_home_margin;
+                              if (Math.abs(margin) < 0.5) {
+                                return 'Pick \'em';
+                              }
+                              const favoredTeam = margin > 0 ? r.home_team : r.away_team;
+                              return `${favoredTeam} -${Math.abs(margin).toFixed(1)}`;
                             } else if (spread?.predicted !== undefined) {
                               // Use predicted spread to determine favored team
-                              const favoredTeam = spread.predicted > 0 ? r.home_team : r.away_team;
-                              const margin = Math.abs(spread.predicted);
-                              return `${favoredTeam} ${spread.predicted >= 0 ? '+' : ''}${spread.predicted.toFixed(1)}`;
+                              const margin = spread.predicted;
+                              if (Math.abs(margin) < 0.5) {
+                                return 'Pick \'em';
+                              }
+                              const favoredTeam = margin > 0 ? r.home_team : r.away_team;
+                              return `${favoredTeam} -${Math.abs(margin).toFixed(1)}`;
                             } else {
                               return `${modelValue}`;
                             }
