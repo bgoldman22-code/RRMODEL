@@ -1252,16 +1252,16 @@ function generateResponsibleParlays(components) {
     }];
   }
   
-  // Generate ONLY 2-leg combinations from premium components (max 3 parlays)
-  const topPremium = premiumComponents.slice(0, Math.min(4, premiumComponents.length));
-  for (let i = 0; i < topPremium.length - 1 && parlays.length < 3; i++) {
-    for (let j = i + 1; j < topPremium.length && parlays.length < 3; j++) {
+  // FIRST: Generate 2 x 2-leg parlays (fixed)
+  const topPremium = premiumComponents.slice(0, Math.min(6, premiumComponents.length));
+  for (let i = 0; i < topPremium.length - 1 && parlays.length < 2; i++) {
+    for (let j = i + 1; j < topPremium.length && parlays.length < 2; j++) {
       if (topPremium[i].gameId !== topPremium[j].gameId) {
         const avgConf = (topPremium[i].confidence + topPremium[j].confidence) / 2;
         const avgEdge = (topPremium[i].ev_score + topPremium[j].ev_score) / 2;
         
         parlays.push({
-          type: "premium_2leg_only",
+          type: "premium_2leg",
           legs: [topPremium[i], topPremium[j]],
           avg_confidence: avgConf,
           avg_edge: avgEdge,
@@ -1269,15 +1269,84 @@ function generateResponsibleParlays(components) {
           risk_level: "MODERATE",
           recommended_unit: avgEdge >= 8 ? 0.5 : 0.25,
           description: `${topPremium[i].description} + ${topPremium[j].description}`,
-          note: "Bonus exposure only - built from bets you'd place straight"
+          note: "2-leg parlay (mix of ML/spread/total)"
         });
       }
     }
   }
   
-  // Sort by combined EV and return max 3 parlays
+  // SECOND: Generate 3 x smart logic parlays (variable legs)
+  if (premiumComponents.length >= 3) {
+    let smartParlayCount = 0;
+    
+    // 3-leg parlay if we have 4-6 premium picks
+    if (premiumComponents.length >= 4 && smartParlayCount < 3) {
+      const legs = premiumComponents.slice(0, 3).filter((c, idx, arr) => 
+        arr.findIndex(x => x.gameId === c.gameId) === idx // unique games only
+      );
+      
+      if (legs.length === 3) {
+        const avgConf = legs.reduce((sum, c) => sum + c.confidence, 0) / 3;
+        const avgEdge = legs.reduce((sum, c) => sum + c.ev_score, 0) / 3;
+        
+        parlays.push({
+          type: "smart_3leg",
+          legs: legs,
+          avg_confidence: avgConf,
+          avg_edge: avgEdge,
+          combined_ev: legs.reduce((sum, c) => sum + c.ev_score, 0),
+          risk_level: "HIGH",
+          recommended_unit: 0.2,
+          description: legs.map(c => c.description).join(" + "),
+          note: "Smart 3-leg (auto-selected)"
+        });
+        smartParlayCount++;
+      }
+    }
+    
+    // Fill remaining smart slots with additional combinations
+    while (smartParlayCount < 3 && premiumComponents.length >= 3) {
+      const startIdx = smartParlayCount;
+      let legs;
+      
+      if (premiumComponents.length >= 6 && smartParlayCount === 1) {
+        // 4-leg parlay for second smart slot if enough picks
+        legs = premiumComponents.slice(0, 4).filter((c, idx, arr) => 
+          arr.findIndex(x => x.gameId === c.gameId) === idx
+        ).slice(0, 4);
+      } else {
+        // 3-leg variations for remaining slots
+        legs = premiumComponents.slice(startIdx, startIdx + 3).filter((c, idx, arr) => 
+          arr.findIndex(x => x.gameId === c.gameId) === idx
+        );
+      }
+      
+      if (legs.length >= 2) {
+        const finalLegs = legs.slice(0, Math.min(legs.length, 4));
+        const avgConf = finalLegs.reduce((sum, c) => sum + c.confidence, 0) / finalLegs.length;
+        const avgEdge = finalLegs.reduce((sum, c) => sum + c.ev_score, 0) / finalLegs.length;
+        
+        parlays.push({
+          type: `smart_${finalLegs.length}leg`,
+          legs: finalLegs,
+          avg_confidence: avgConf,
+          avg_edge: avgEdge,
+          combined_ev: finalLegs.reduce((sum, c) => sum + c.ev_score, 0),
+          risk_level: finalLegs.length >= 3 ? "HIGH" : "MODERATE",
+          recommended_unit: finalLegs.length >= 4 ? 0.1 : (finalLegs.length === 3 ? 0.15 : 0.2),
+          description: finalLegs.map(c => c.description).join(" + "),
+          note: `Smart ${finalLegs.length}-leg (ML/spread/total mix)`
+        });
+        smartParlayCount++;
+      } else {
+        break;
+      }
+    }
+  }
+  
+  // Sort by combined EV and return max 5 parlays (2 fixed 2-leg + 3 smart)
   parlays.sort((a, b) => b.combined_ev - a.combined_ev);
-  return parlays.slice(0, 3);
+  return parlays.slice(0, 5);
 }
 
 // MAIN PREDICTION FUNCTION: v13 Logic + v8 Odds Integration
