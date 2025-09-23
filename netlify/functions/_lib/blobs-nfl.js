@@ -1,12 +1,110 @@
 // netlify/functions/_lib/blobs-nfl.js
 // Complete version with fixed week detection and historical data integration
 // FIXED: Added missing storeBlob export for nfl-results-store compatibility
+// ENHANCED: R Pipeline integration for fresh NFLverse data
 
 import { getStore } from '@netlify/blobs';
+import fs from 'fs';
+import path from 'path';
 
 // Constants
 export const HELPER_MODE = 'production';
-export const HELPER_VERSION = '2.0.0';
+export const HELPER_VERSION = '2.1.0'; // Updated for R pipeline integration
+
+// Helper function to read local files (for R pipeline data)
+async function readFileAsJSON(filePath) {
+  try {
+    // Try different path resolutions for Netlify functions
+    const possiblePaths = [
+      filePath,
+      path.join(process.cwd(), filePath),
+      path.join(process.cwd(), '..', '..', '..', filePath), // Netlify functions are nested
+      path.join(__dirname, '..', '..', '..', filePath)
+    ];
+    
+    for (const tryPath of possiblePaths) {
+      if (fs.existsSync(tryPath)) {
+        const content = fs.readFileSync(tryPath, 'utf8');
+        return JSON.parse(content);
+      }
+    }
+    throw new Error(`File not found at any of: ${possiblePaths.join(', ')}`);
+  } catch (error) {
+    throw new Error(`Failed to read ${filePath}: ${error.message}`);
+  }
+}
+
+// Convert R pipeline player predictions to team-level EPA metrics
+function aggregatePlayerDataToTeams(rPipelineData) {
+  console.log('🔄 Converting R pipeline player data to team EPA metrics...');
+  
+  const { predictions } = rPipelineData;
+  const teams = {};
+  const league = { means: {}, stds: {} };
+  
+  // Group players by team
+  const teamGroups = {};
+  predictions.forEach(player => {
+    if (!teamGroups[player.team]) {
+      teamGroups[player.team] = [];
+    }
+    teamGroups[player.team].push(player);
+  });
+  
+  // Convert team player data to EPA-style metrics
+  Object.entries(teamGroups).forEach(([teamCode, players]) => {
+    // Aggregate offensive EPA from skill position players
+    const skillPlayers = players.filter(p => ['RB', 'WR', 'TE', 'QB'].includes(p.position));
+    const avgTDProb = skillPlayers.reduce((sum, p) => sum + (p.anytime_td?.probability || 0), 0) / skillPlayers.length;
+    
+    // Convert TD probability to EPA-style offensive rating
+    // Higher TD probability = better offensive EPA
+    const offensiveEPA = (avgTDProb - 0.15) * 2; // Scale around league average of 15% TD rate
+    
+    // Estimate defensive EPA (inverse relationship - teams that allow fewer TDs have better defense)
+    // This is approximate since we don't have opponent TD data directly
+    const estimatedDefEPA = -offensiveEPA * 0.3; // Rough estimate
+    
+    teams[teamCode] = {
+      core: {
+        off_epa: Math.max(-0.2, Math.min(0.2, offensiveEPA)), // Bound to reasonable EPA range
+        def_epa: Math.max(-0.2, Math.min(0.2, estimatedDefEPA)),
+        pass_epa: offensiveEPA * 0.7, // Passing typically 70% of offensive EPA
+        rush_epa: offensiveEPA * 0.3,
+        plays: 65 * players.filter(p => p.position !== 'QB').length // Estimate plays based on skill players
+      },
+      variance: {
+        off_epa: Math.abs(offensiveEPA) * 0.5, // Variance scales with performance
+        def_epa: Math.abs(estimatedDefEPA) * 0.5,
+        pass_epa: Math.abs(offensiveEPA) * 0.6,
+        rush_epa: Math.abs(offensiveEPA) * 0.4
+      },
+      playerCount: players.length,
+      avgTDProb: avgTDProb
+    };
+  });
+  
+  // Calculate league averages for normalization
+  const teamValues = Object.values(teams);
+  league.means = {
+    off_epa: teamValues.reduce((sum, t) => sum + t.core.off_epa, 0) / teamValues.length,
+    def_epa: teamValues.reduce((sum, t) => sum + t.core.def_epa, 0) / teamValues.length,
+    pass_epa: teamValues.reduce((sum, t) => sum + t.core.pass_epa, 0) / teamValues.length,
+    rush_epa: teamValues.reduce((sum, t) => sum + t.core.rush_epa, 0) / teamValues.length
+  };
+  
+  league.stds = {
+    off_epa: Math.sqrt(teamValues.reduce((sum, t) => sum + Math.pow(t.core.off_epa - league.means.off_epa, 2), 0) / teamValues.length),
+    def_epa: Math.sqrt(teamValues.reduce((sum, t) => sum + Math.pow(t.core.def_epa - league.means.def_epa, 2), 0) / teamValues.length),
+    pass_epa: Math.sqrt(teamValues.reduce((sum, t) => sum + Math.pow(t.core.pass_epa - league.means.pass_epa, 2), 0) / teamValues.length),
+    rush_epa: Math.sqrt(teamValues.reduce((sum, t) => sum + Math.pow(t.core.rush_epa - league.means.rush_epa, 2), 0) / teamValues.length)
+  };
+  
+  console.log(`✅ Converted ${Object.keys(teams).length} teams from R pipeline data`);
+  console.log('Sample team metrics:', Object.keys(teams).slice(0, 3).map(t => `${t}: ${teams[t].core.off_epa.toFixed(3)} EPA`));
+  
+  return { teams, league };
+}
 
 // Get the appropriate blob store
 function getBlobStore() {
@@ -98,21 +196,50 @@ export async function readBlobJSON(path) {
   return await nflBlobsGetJSON(path);
 }
 
-// FIXED: Multi-season data loading with corrected week detection
+// FIXED: Multi-season data loading with corrected week detection + R PIPELINE INTEGRATION
 export async function loadAdvancedMetrics(season = '2025') {
-  console.log(`=== LOADING MULTI-SEASON METRICS (Target: ${season}) ===`);
+  console.log(`=== LOADING MULTI-SEASON METRICS (Target: ${season}) + R PIPELINE DATA ===`);
   
-  // Try to load the enhanced data first
+  // PRIORITY 1: Try to load fresh R pipeline team data
+  try {
+    console.log('🔄 Attempting to load R pipeline team aggregations...');
+    const rPipelineData = await readFileAsJSON('netlify/functions/_data/nfl-td-comprehensive-latest.json');
+    
+    if (rPipelineData?.metadata?.generated_at) {
+      const generatedTime = new Date(rPipelineData.metadata.generated_at);
+      const hoursOld = (Date.now() - generatedTime.getTime()) / (1000 * 60 * 60);
+      
+      if (hoursOld < 12) { // Use R pipeline data if less than 12 hours old
+        console.log(`✅ Using fresh R pipeline data (${hoursOld.toFixed(1)} hours old)`);
+        
+        // Convert R pipeline player data to team aggregates for EPA model
+        const teamMetrics = aggregatePlayerDataToTeams(rPipelineData);
+        
+        return {
+          version: 'r_pipeline_integrated',
+          generated_at: rPipelineData.metadata.generated_at,
+          currentWeek: rPipelineData.metadata.week,
+          ...teamMetrics
+        };
+      } else {
+        console.log(`⚠️  R pipeline data is stale (${hoursOld.toFixed(1)} hours old), falling back to blobs`);
+      }
+    }
+  } catch (error) {
+    console.log('⚠️  R pipeline data not available, falling back to blob storage:', error.message);
+  }
+  
+  // FALLBACK: Try to load the enhanced data from blobs
   const enhancedData = await readBlobJSON(`nfl/epa/latest.json`);
   
   // If we already have historical integration, return it
   if (enhancedData?.version === 'adv_v2_historical') {
-    console.log('Found existing historical integration data');
+    console.log('Found existing historical integration data from blobs');
     return enhancedData;
   }
   
   // Otherwise, build multi-season integration on the fly
-  console.log('Building multi-season integration...');
+  console.log('Building multi-season integration from blobs...');
   
   const seasons = ['2025', '2024', '2023'];
   const seasonData = {};
