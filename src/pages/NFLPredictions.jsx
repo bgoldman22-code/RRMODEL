@@ -94,54 +94,77 @@ function getTeamAbbreviation(fullName) {
   return nameMap[fullName] || fullName;
 }
 
-function formatSpreadDisplay(spread, homeTeam, awayTeam, odds) {
-  if (!spread) {
+// Drop-in spread display function - always from picked team's POV
+const TEAM_NAME = {
+  ARI:"Arizona Cardinals", ATL:"Atlanta Falcons", BAL:"Baltimore Ravens",
+  BUF:"Buffalo Bills", CAR:"Carolina Panthers", CHI:"Chicago Bears",
+  CIN:"Cincinnati Bengals", CLE:"Cleveland Browns", DAL:"Dallas Cowboys",
+  DEN:"Denver Broncos", DET:"Detroit Lions", GB:"Green Bay Packers",
+  HOU:"Houston Texans", IND:"Indianapolis Colts", JAX:"Jacksonville Jaguars",
+  KC:"Kansas City Chiefs", LV:"Las Vegas Raiders", LAC:"Los Angeles Chargers",
+  LAR:"Los Angeles Rams", MIA:"Miami Dolphins", MIN:"Minnesota Vikings",
+  NE:"New England Patriots", NO:"New Orleans Saints", NYG:"New York Giants",
+  NYJ:"New York Jets", PHI:"Philadelphia Eagles", PIT:"Pittsburgh Steelers",
+  SEA:"Seattle Seahawks", SF:"San Francisco 49ers", TB:"Tampa Bay Buccaneers",
+  TEN:"Tennessee Titans", WAS:"Washington Commanders"
+};
+
+// Helpers
+const fmtNum = (x) => (x === 0 ? "+0.0" : (x > 0 ? `+${Number(x.toFixed(1))}` : `${Number(x.toFixed(1))}`));
+const isNum = (x) => typeof x === "number" && Number.isFinite(x);
+
+function buildSpreadDisplay({
+  home, away,
+  marketHomeLine,      // number, e.g. -2.5 (home favored by 2.5)
+  modelHomeMargin,     // number, e.g. +0.2 (model: home by 0.2)
+  spreadPick,          // "PIT" | "MIN" | "push" | null
+  confidence,          // number or "—"
+  edgePct              // number or "—"
+}) {
+  // Default "no bet" / invalid states
+  if (!spreadPick || spreadPick.toLowerCase() === "push") {
     return {
-      displayPick: '—',
-      displayLine: '—'
+      displayPick: "Pick 'em",
+      bookLine: "—",
+      modelLine: "—",
+      edgePoints: "—",
+      confidence: confidence ?? "—",
+      edgePct: edgePct ?? "—"
     };
   }
-  
-  const marketLine = spread.line || 0;
-  
-  const TEAM_NAME_MAPPING = {
-    'ARI': 'Arizona Cardinals', 'ATL': 'Atlanta Falcons', 'BAL': 'Baltimore Ravens',
-    'BUF': 'Buffalo Bills', 'CAR': 'Carolina Panthers', 'CHI': 'Chicago Bears',
-    'CIN': 'Cincinnati Bengals', 'CLE': 'Cleveland Browns', 'DAL': 'Dallas Cowboys',
-    'DEN': 'Denver Broncos', 'DET': 'Detroit Lions', 'GB': 'Green Bay Packers',
-    'HOU': 'Houston Texans', 'IND': 'Indianapolis Colts', 'JAX': 'Jacksonville Jaguars',
-    'KC': 'Kansas City Chiefs', 'LV': 'Las Vegas Raiders', 'LAC': 'Los Angeles Chargers',
-    'LAR': 'Los Angeles Rams', 'MIA': 'Miami Dolphins', 'MIN': 'Minnesota Vikings',
-    'NE': 'New England Patriots', 'NO': 'New Orleans Saints', 'NYG': 'New York Giants',
-    'NYJ': 'New York Jets', 'PHI': 'Philadelphia Eagles', 'PIT': 'Pittsburgh Steelers',
-    'SF': 'San Francisco 49ers', 'SEA': 'Seattle Seahawks', 'TB': 'Tampa Bay Buccaneers',
-    'TEN': 'Tennessee Titans', 'WAS': 'Washington Commanders'
-  };
 
-  // Determine which team the line favors based on the spread value
-  // Negative spread = home team favored, Positive spread = away team favored
-  const lineFavorsHome = marketLine < 0;
-  const lineFavoredTeam = lineFavorsHome ? homeTeam : awayTeam;
-  const lineFavoredTeamFull = TEAM_NAME_MAPPING[lineFavoredTeam] || lineFavoredTeam;
-  
-  // For display purposes, always show the favored team with the spread
-  const displayLine = lineFavorsHome ? 
-    `${lineFavoredTeamFull} ${marketLine}` : 
-    `${lineFavoredTeamFull} +${Math.abs(marketLine)}`;
-  
-  // Always show the actual team pick, never "push" or "NO BET"
-  let displayPick = spread?.pick;
-  if (!displayPick || displayPick === 'push' || displayPick === 'Push') {
-    displayPick = "Pick 'em";
-  } else if (displayPick && displayPick.length <= 3) {
-    // If it's a team abbreviation, convert to full name
-    displayPick = TEAM_NAME_MAPPING[displayPick] || displayPick;
-  }
-  
+  const picked = spreadPick; // abbr
+  const pickedFull = TEAM_NAME[picked] || picked;
+
+  // Convert to picked-team POV
+  const teamLine = picked === home ? marketHomeLine : -marketHomeLine;
+  const teamModel = picked === home ? modelHomeMargin : -modelHomeMargin;
+
+  // Format lines
+  const bookText = isNum(teamLine)
+    ? (Math.abs(teamLine) < 0.25
+        ? `${pickedFull} +0.0 (Pick 'em)`
+        : `${pickedFull} ${fmtNum(teamLine)}`)
+    : "—";
+
+  const modelText = isNum(teamModel)
+    ? (Math.abs(teamModel) < 0.25
+        ? `${pickedFull} +0.0 (Pick 'em)`
+        : `${pickedFull} ${fmtNum(teamModel)}`)
+    : "—";
+
+  // Edge in points (absolute diff)
+  const edgePoints = (isNum(teamLine) && isNum(teamModel))
+    ? Number(Math.abs(teamLine - teamModel).toFixed(1))
+    : "—";
+
   return {
-    displayPick: displayPick || '—',
-    displayLine: marketLine ? displayLine : '—',
-    lineFavoredTeam: lineFavoredTeam
+    displayPick: pickedFull,          // e.g., "Pittsburgh Steelers"
+    bookLine: `Line: ${bookText}`,    // e.g., "Line: Pittsburgh Steelers +2.5"
+    modelLine: `Model: ${modelText}`, // e.g., "Model: Pittsburgh Steelers +0.0 (Pick 'em)"
+    edgePoints,                        // e.g., 2.5
+    confidence: confidence ?? "—",
+    edgePct: edgePct ?? "—"
   };
 }
 
@@ -260,11 +283,13 @@ export default function NFLPredictions() {
   const [week, setWeek] = useState(4); // Will be updated to current week
   const season = 2025;
 
-  // Initialize with current NFL week
+  // Initialize with current NFL week (use date calculation, not TD data)
   useEffect(() => {
     const initializeWeek = async () => {
       try {
-        const currentWeek = await getCurrentNFLWeekFromData();
+        // For game predictions, use date-based calculation instead of TD data
+        const { getCurrentNFLWeek } = await import('../utils/nflWeek.js');
+        const currentWeek = getCurrentNFLWeek(); // Use date calculation directly
         setWeek(currentWeek);
       } catch (error) {
         console.warn('Could not determine current NFL week, using default');
@@ -364,7 +389,16 @@ export default function NFLPredictions() {
                   total?.confidence > 60 ? (total.confidence - 50) : 0
                 );
 
-                const spreadDisplay = formatSpreadDisplay(spread, r.home_team, r.away_team, odds);
+                // Calculate spread display using drop-in spec
+                const spreadDisplay = buildSpreadDisplay({
+                  home: r.home_team,
+                  away: r.away_team,
+                  marketHomeLine: spread?.line || 0,
+                  modelHomeMargin: spread?.model_home_margin || spread?.predicted || 0,
+                  spreadPick: spread?.pick,
+                  confidence: spread?.confidence,
+                  edgePct: spread?.edge
+                });
 
                 const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge, pickedTeam, unitInfo }) => (
                   <div className="space-y-1">
@@ -400,36 +434,12 @@ export default function NFLPredictions() {
                     )}
                     {marketValue && (
                       <div className="text-xs text-gray-600">
-                        Line: {marketValue}
+                        {marketValue}
                       </div>
                     )}
-                    {modelValue && marketValue && (
+                    {modelValue && (
                       <div className="text-xs text-blue-600">
-                        Model: {(() => {
-                          if (type === 'spread') {
-                            // For spreads, show which team the model actually favors
-                            if (spread?.model_home_margin !== undefined) {
-                              const margin = spread.model_home_margin;
-                              if (Math.abs(margin) < 0.5) {
-                                return 'Pick \'em';
-                              }
-                              const favoredTeam = margin > 0 ? r.home_team : r.away_team;
-                              return `${favoredTeam} -${Math.abs(margin).toFixed(1)}`;
-                            } else if (spread?.predicted !== undefined) {
-                              // Use predicted spread to determine favored team
-                              const margin = spread.predicted;
-                              if (Math.abs(margin) < 0.5) {
-                                return 'Pick \'em';
-                              }
-                              const favoredTeam = margin > 0 ? r.home_team : r.away_team;
-                              return `${favoredTeam} -${Math.abs(margin).toFixed(1)}`;
-                            } else {
-                              return `${modelValue}`;
-                            }
-                          } else {
-                            return `${modelValue} ${pick}`;
-                          }
-                        })()}
+                        {modelValue}
                       </div>
                     )}
                   </div>
@@ -464,12 +474,12 @@ export default function NFLPredictions() {
                       {spread ? (
                         <PickBadge 
                           pick={spreadDisplay.displayPick}
-                          confidence={spread.confidence}
+                          confidence={spreadDisplay.confidence}
                           betRecommendation={spread.betRecommendation || spread.displayNote || "BET"}
-                          edge={spread.edge}
+                          edge={spreadDisplay.edgePct}
                           type="spread"
-                          modelValue={spread.predicted ? `${spread.predicted > 0 ? '+' : ''}${spread.predicted}` : null}
-                          marketValue={spreadDisplay.displayLine}
+                          modelValue={spreadDisplay.modelLine}
+                          marketValue={spreadDisplay.bookLine}
                           pickedTeam={spread.pick}
                         />
                       ) : '—'}
