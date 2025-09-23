@@ -1,6 +1,6 @@
 // src/pages/NFLPredictions.jsx
 import React, { useEffect, useState } from 'react';
-import { getCurrentNFLWeekFromData } from '../utils/nflWeek.js';
+import { getCurrentNFLWeek } from '../utils/nflWeek.js';
 
 /**
  * NFL Predictions Page with Live Odds Display and Parlay Suggestions
@@ -288,7 +288,6 @@ export default function NFLPredictions() {
     const initializeWeek = async () => {
       try {
         // For game predictions, use date-based calculation instead of TD data
-        const { getCurrentNFLWeek } = await import('../utils/nflWeek.js');
         const currentWeek = getCurrentNFLWeek(); // Use date calculation directly
         setWeek(currentWeek);
       } catch (error) {
