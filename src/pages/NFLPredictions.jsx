@@ -345,7 +345,7 @@ export default function NFLPredictions() {
 
                 const spreadDisplay = formatSpreadDisplay(spread, r.home_team, r.away_team, odds);
 
-                const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge }) => (
+                const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge, pickedTeam }) => (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <div className="font-medium text-sm">{pick}</div>
@@ -369,12 +369,12 @@ export default function NFLPredictions() {
                     )}
                     {marketValue && (
                       <div className="text-xs text-gray-600">
-                        Line: {marketValue}
+                        Line: {type === 'spread' && pickedTeam ? `${pickedTeam} ${marketValue}` : marketValue}
                       </div>
                     )}
                     {modelValue && marketValue && (
                       <div className="text-xs text-blue-600">
-                        Model: {modelValue}
+                        Model: {type === 'spread' && pickedTeam ? `${pickedTeam} ${modelValue}` : `${modelValue} ${pick}`}
                       </div>
                     )}
                   </div>
@@ -415,6 +415,7 @@ export default function NFLPredictions() {
                           type="spread"
                           modelValue={spread.predicted ? `${spread.predicted > 0 ? '+' : ''}${spread.predicted}` : null}
                           marketValue={spreadDisplay.displayLine}
+                          pickedTeam={spread.pick}
                         />
                       ) : '—'}
                     </td>
