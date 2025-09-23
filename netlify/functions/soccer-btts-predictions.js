@@ -345,27 +345,29 @@ function getFallbackFixtures(league) {
   const fixtures = {
     'premier-league': [
       {
-        id: 'pl-fallback-001',
+        id: 'pl-demo-001',
         home_team: 'Arsenal',
-        away_team: 'Manchester City',
+        away_team: 'Manchester City', 
         league: 'premier-league',
         kickoff: nextSaturday.toISOString(),
         venue: 'Emirates Stadium',
-        round: 'Matchweek 6',
+        round: 'Demo Matchweek',
         season: '2024-25',
-        fixture_source: 'fallback',
+        fixture_source: 'demo',
+        demo_note: 'Example fixture - real Premier League data unavailable',
         odds: { btts_yes: 1.75, btts_no: 2.10, bookmaker: 'FanDuel' }
       },
       {
-        id: 'pl-fallback-002',
+        id: 'pl-demo-002',
         home_team: 'Liverpool', 
         away_team: 'Manchester United',
         league: 'premier-league',
         kickoff: nextSunday.toISOString(),
         venue: 'Anfield',
-        round: 'Matchweek 6',
+        round: 'Demo Matchweek',
         season: '2024-25', 
-        fixture_source: 'fallback',
+        fixture_source: 'demo',
+        demo_note: 'Example fixture - real Premier League data unavailable', 
         odds: { btts_yes: 1.65, btts_no: 2.25, bookmaker: 'DraftKings' }
       }
     ],
