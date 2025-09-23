@@ -71,18 +71,19 @@ const NFLTouchdownPropsComprehensive = () => {
         const scheduleRes = await fetch(scheduleUrl);
         if (scheduleRes.ok) {
           schedule = await scheduleRes.json();
-          const weekMatchups = schedule.weeks?.[week]?.matchups || [];
+          // Filter schedule array for current week games
+          const weekMatchups = schedule.filter(game => game.week === parseInt(week));
           
           // Create team-to-opponent and home/away mapping
           weekMatchups.forEach(game => {
-            const homeTeam = getTeamAbbreviation(game.homeTeam);
-            const awayTeam = getTeamAbbreviation(game.awayTeam);
+            const homeTeam = game.home_team;
+            const awayTeam = game.away_team;
             
             teamMatchups[homeTeam] = { opponent: awayTeam, isHome: true };
             teamMatchups[awayTeam] = { opponent: homeTeam, isHome: false };
           });
           
-          console.log('Schedule loaded successfully, matchups:', Object.keys(teamMatchups));
+          console.log(`Schedule loaded successfully for Week ${week}, matchups:`, Object.keys(teamMatchups));
         } else {
           console.warn('Could not load schedule data');
         }
@@ -538,7 +539,34 @@ const NFLTouchdownPropsComprehensive = () => {
     
     // Ensure these are arrays, not other data types
     const upside = Array.isArray(metadata.upside_factors) ? metadata.upside_factors : [];
-    const risks = Array.isArray(metadata.risk_factors) ? metadata.risk_factors : [];
+    
+    // INTELLIGENT RISK FACTORS - Only show actual risks, not generic warnings
+    let risks = [];
+    
+    // Only show "limited sample" if really limited (less than 2 games)
+    const gamesPlayed = factors.games_played || 3;
+    if (gamesPlayed < 2) {
+      risks.push('limited_sample');
+    }
+    
+    // Only show "injury risk" for players actually on injury report or low snap %
+    const snapPercentage = factors.snap_percentage || 0.67;
+    const isInjuryRisk = snapPercentage < 0.4 || 
+                        metadata.injury_status === 'questionable' || 
+                        metadata.injury_status === 'doubtful';
+    if (isInjuryRisk) {
+      risks.push('injury_risk');
+    }
+    
+    // Add other contextual risk factors
+    const dataReliability = metadata.data_reliability || 1;
+    if (dataReliability < 0.1) {
+      risks.push('sparse_data');
+    }
+    
+    if (factors.usage_trend_4wk && factors.usage_trend_4wk < -0.1) {
+      risks.push('declining_usage');
+    }
     
     return (
       <div className="text-xs space-y-1">
@@ -584,14 +612,28 @@ const NFLTouchdownPropsComprehensive = () => {
     );
   };
 
-  // Component for odds display
+  // Component for odds display - converts decimal/probability to American odds format
+  const formatToAmericanOdds = (probability) => {
+    if (!probability || probability <= 0) return '+200';
+    
+    if (probability >= 0.5) {
+      // Favorite odds (negative)
+      const odds = Math.round(-100 / (probability / (1 - probability)));
+      return `${odds}`;
+    } else {
+      // Underdog odds (positive) 
+      const odds = Math.round(100 * ((1 - probability) / probability));
+      return `+${odds}`;
+    }
+  };
+
   const OddsDisplay = ({ impliedOdds, probability, bestBook, value }) => (
     <div className="text-sm">
-      <div className="font-medium">
-        {impliedOdds > 0 ? `+${impliedOdds}` : impliedOdds}
+      <div className="font-medium font-mono">
+        {formatToAmericanOdds(probability)}
       </div>
       <div className="text-gray-500 text-xs">
-        {(100/probability).toFixed(1)}x payout
+        {(probability * 100).toFixed(1)}% implied
       </div>
       {bestBook && (
         <div className="text-xs text-blue-600 mt-1">
@@ -890,7 +932,7 @@ const NFLTouchdownPropsComprehensive = () => {
                                 {player.real_odds.books[0]?.anytime_odds > 0 ? '+' : ''}{player.real_odds.books[0]?.anytime_odds || 'N/A'}
                               </div>
                               <div className="text-xs text-gray-500">
-                                {((1 / player.real_odds.anytime_td) || 0).toFixed(1)}x payout
+                                {(player.real_odds.anytime_td * 100).toFixed(1)}% implied
                               </div>
                               {player.real_odds.books[0] && (
                                 <div className="text-xs text-blue-600">
