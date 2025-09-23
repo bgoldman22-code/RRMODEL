@@ -7,6 +7,7 @@ import MLB_HITS2 from "./MLB_HITS2";
 import NflTd from "./pages/NflTd";  // Simple TD system
 import NFLTouchdownPropsComprehensive from "./pages/NFLTouchdownPropsComprehensive";  // Advanced TD system
 import NFLPredictions from "./pages/NFLPredictions";
+import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
@@ -22,6 +23,7 @@ export default function App() {
           <Link to="/nfl-td">NFL TD</Link>
           <Link to="/nfl-td-comprehensive">NFL TD Advanced</Link>
           <Link to="/predictions">NFLPredictions</Link>
+          <Link to="/soccer-btts">Soccer BTTS</Link>
         </div>
       </div>
       <div className="container mx-auto px-4 py-6">
@@ -34,6 +36,7 @@ export default function App() {
           <Route path="/nfl-td" element={<NflTd />} />
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/predictions" element={<NFLPredictions />} />
+          <Route path="/soccer-btts" element={<SoccerBTTS />} />
         </Routes>
       </div>
     </BrowserRouter>
