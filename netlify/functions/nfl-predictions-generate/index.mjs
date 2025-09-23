@@ -4,7 +4,7 @@
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics, getCurrentWeek, getCurrentWeights, diagnoseMetricsData } from '../_lib/blobs-nfl.js';
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
 
-// PHASE 1: Enhanced EPA Features - Calibration Fix
+// PHASE 1: Enhanced EPA Features - Simplified Calibration Fix
 function applyCalibrationFix(confidencePercentage, recentResults = []) {
   // Convert percentage to probability for internal calculations
   const rawProb = confidencePercentage / 100.0;
@@ -15,25 +15,14 @@ function applyCalibrationFix(confidencePercentage, recentResults = []) {
     return Math.round(calibratedProb * 100);
   }
   
-  // Critical fix: 55-65% confidence band drift (where overconfidence occurs)
-  if (confidencePercentage >= 55 && confidencePercentage <= 65) {
-    // More aggressive calibration than before - pull back by 8%
-    const driftAmount = 0.08;
-    const logOdds = Math.log(rawProb / (1 - rawProb));
-    const adjustedLogOdds = logOdds - driftAmount;
-    const calibratedProb = 1 / (1 + Math.exp(-adjustedLogOdds));
-    const boundedProb = Math.max(0.35, Math.min(0.85, calibratedProb));
-    return Math.round(boundedProb * 100);
+  // Light conservative adjustment for very high confidence (>80%) only
+  if (confidencePercentage > 80) {
+    const conservativeAdjustment = (confidencePercentage - 80) * 0.05;
+    return Math.round(Math.max(40, Math.min(95, confidencePercentage - conservativeAdjustment)));
   }
   
-  // Conservative adjustment for very high confidence (>75%) 
-  if (confidencePercentage > 75) {
-    const conservativeAdjustment = (confidencePercentage - 75) * 0.1;
-    return Math.round(Math.max(35, Math.min(85, confidencePercentage - conservativeAdjustment)));
-  }
-  
-  // Ensure bounds are maintained
-  return Math.round(Math.max(35, Math.min(85, confidencePercentage)));
+  // Return raw confidence with reasonable bounds (preserve signal separation)
+  return Math.round(Math.max(25, Math.min(95, confidencePercentage)));
 }
 
 // Platt calibration helper for probability recalibration
@@ -48,7 +37,7 @@ function plattCalibration(probability, historicalResults) {
   if (avgPredicted > 0.5 && Math.abs(avgPredicted - avgActual) > 0.03) {
     const calibrationFactor = avgActual / avgPredicted;
     const calibrated = probability * calibrationFactor;
-    return Math.max(0.35, Math.min(0.85, calibrated));
+    return Math.max(0.25, Math.min(0.95, calibrated)); // Looser bounds to preserve signal
   }
   
   return probability;
@@ -1071,7 +1060,7 @@ function findGameOdds(allOdds, homeTeam, awayTeam) {
 }
 
 // Book priority for display consistency  
-const BOOK_PRIORITY = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'PointsBet'];
+const BOOK_PRIORITY = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'ESPNBet', 'Fanatics'];
 
 // NEW: Extract structured odds with display vs best separation
 function extractStructuredOdds(gameOdds, modelPicks) {
