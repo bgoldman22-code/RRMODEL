@@ -10,8 +10,16 @@ import { getCurrentNFLWeek } from '../utils/nflWeek.js';
 const fmt = (v) => (v === null || v === undefined || v === '' ? '—' : v);
 const fmtOdds = (odds) => odds > 0 ? `+${odds}` : `${odds}`;
 
-async function fetchSchedule(week = 4, season = 2025) {
-  const scheduleUrl = `/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`;
+async function fetchSchedule(week = 4, season = 2025) {                    /* NEW: Show best-book information with improved formatting */
+                    {bestBook && betRecommendation === 'BET' && (
+                      <div className="text-xs text-green-600 font-medium">
+                        Best: {bestBook.bookmaker}
+                        {bestBook.price ? ` ${fmtOdds(bestBook.price)}` : ''}
+                        {Number.isFinite(bestBook.line) ? ` ${bestBook.line > 0 ? '+' : ''}${bestBook.line}` : ''}
+                        {bestBook.edge_pct ? ` (${bestBook.edge_pct}% edge)` : ''}
+                        {bestBook.edge_points ? ` (${bestBook.edge_points} pts)` : ''}
+                      </div>
+                    )}scheduleUrl = `/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`;
   const scheduleRes = await fetch(scheduleUrl);
   if (!scheduleRes.ok) throw new Error(`Failed to get schedule: ${scheduleRes.status}`);
   const scheduleData = await scheduleRes.json();
@@ -109,10 +117,66 @@ const TEAM_NAME = {
   TEN:"Tennessee Titans", WAS:"Washington Commanders"
 };
 
-// Helpers
-const fmtNum = (x) => (x === 0 ? "+0.0" : (x > 0 ? `+${Number(x.toFixed(1))}` : `${Number(x.toFixed(1))}`));
+// Helpers - improved formatting with -0.0 normalization and pick'em detection
+const round1 = (x) => Math.round(x * 10) / 10;
+const normalizeZero = (x) => (Object.is(x, -0) ? 0 : x);
+const fmtNum = (x) => {
+  if (!Number.isFinite(x)) return '—';
+  const v = normalizeZero(round1(x));
+  return v > 0 ? `+${v.toFixed(1)}` : `${v.toFixed(1)}`;
+};
+const fmtPickem = (v) => (Math.abs(v) < 0.25 ? " (Pick 'em)" : "");
 const isNum = (x) => typeof x === "number" && Number.isFinite(x);
 
+// Safe line extraction to avoid NaN display
+const getHomeLine = (r, spread) => {
+  const val = r?.odds?.display?.spread?.home_line ?? spread?.line;
+  return Number.isFinite(Number(val)) ? Number(val) : 0;
+};
+
+// Convert a home-POV number to picked-team POV
+function toPickPOV(valueHomePOV, pickAbbr, homeAbbr) {
+  // home POV: negative => home favored; positive => home getting points
+  // If pick is the home team, keep sign; if pick is the away team, flip sign
+  return pickAbbr === homeAbbr ? valueHomePOV : -valueHomePOV;
+}
+
+// FINAL SOLUTION: Always show both lines, either from pick POV or neutral POV
+function spreadDisplayFromPick({
+  pickAbbr, homeAbbr, awayAbbr,
+  marketHomeLine,   // e.g. -16.5 (home POV)
+  modelHomeMargin,  // e.g. +8.3 means model has HOME by 8.3 (home POV)
+  confidence,       // pass through for NO BET cases
+  edgePct,         // pass through for NO BET cases
+  TEAM_NAME
+}) {
+  // NO BET / PUSH: Show neutral POV for both lines with pick'em annotations
+  if (!pickAbbr || pickAbbr.toLowerCase() === "push") {
+    return {
+      pickText: "Pick 'em",
+      bookText: `Line: Home ${fmtNum(marketHomeLine)}${fmtPickem(marketHomeLine)} / Away ${fmtNum(-marketHomeLine)}${fmtPickem(-marketHomeLine)}`,
+      modelText: `Model: Home ${fmtNum(modelHomeMargin)}${fmtPickem(modelHomeMargin)} / Away ${fmtNum(-modelHomeMargin)}${fmtPickem(-modelHomeMargin)}`,
+      confidence: confidence ?? "—",
+      edgePct: edgePct ?? "—"
+    };
+  }
+
+  const pickName = TEAM_NAME[pickAbbr] || pickAbbr;
+
+  // Convert BOTH to pick POV for consistency
+  const marketPickPOV = toPickPOV(marketHomeLine, pickAbbr, homeAbbr);
+  const modelPickPOV = toPickPOV(modelHomeMargin, pickAbbr, homeAbbr);
+
+  return {
+    pickText: pickName,
+    bookText: `Line: ${pickName} ${fmtNum(marketPickPOV)}${fmtPickem(marketPickPOV)}`,
+    modelText: `Model: ${pickName} ${fmtNum(modelPickPOV)}${fmtPickem(modelPickPOV)}`,
+    confidence: confidence ?? "—",
+    edgePct: edgePct ?? "—"
+  };
+}
+
+// LEGACY: Keep old function during transition (not used anymore)
 function buildSpreadDisplay({
   home, away,
   marketHomeLine,      // number, e.g. -2.5 (home favored by 2.5)
@@ -355,6 +419,10 @@ export default function NFLPredictions() {
 
       <div className="overflow-auto rounded-2xl border border-neutral-200">
         <table className="min-w-full text-sm">
+          <caption className="px-4 py-2 text-xs text-gray-600 text-left">
+            📊 Display prices shown from priority book selection (FanDuel, DraftKings, BetMGM, etc.). 
+            Edges computed using the best available price across all supported books (line-shopped).
+          </caption>
           <thead className="bg-neutral-50 text-neutral-700">
             <tr>
               <th className="px-4 py-3 text-left font-medium">Matchup</th>
@@ -382,24 +450,28 @@ export default function NFLPredictions() {
                 const total = r.predictions?.total;
                 const odds = r.odds || {};
                 
+                // Calculate best signal/edge (handling mixed units temporarily)
                 const bestEdge = Math.max(
                   Math.abs(ml?.edge || 0),
-                  spread?.confidence > 60 ? (spread.confidence - 50) : 0,
-                  total?.confidence > 60 ? (total.confidence - 50) : 0
+                  // For spread/total, use edge if available, otherwise confidence-based
+                  spread?.edge ? Math.abs(spread.edge) : (spread?.confidence > 60 ? (spread.confidence - 50) : 0),
+                  total?.edge ? Math.abs(total.edge) : (total?.confidence > 60 ? (total.confidence - 50) : 0)
                 );
 
-                // Calculate spread display using drop-in spec
-                const spreadDisplay = buildSpreadDisplay({
-                  home: r.home_team,
-                  away: r.away_team,
-                  marketHomeLine: spread?.line || 0,
-                  modelHomeMargin: spread?.model_home_margin || spread?.predicted || 0,
-                  spreadPick: spread?.pick,
+                // FINAL SOLUTION: Use clean spread display with pick POV or neutral POV
+                const spreadDisplay = spreadDisplayFromPick({
+                  pickAbbr: spread?.pick || null,
+                  homeAbbr: r.home_team,
+                  awayAbbr: r.away_team,
+                  // Always use home-POV fields - safe extraction to avoid NaN
+                  marketHomeLine: getHomeLine(r, spread),
+                  modelHomeMargin: Number(spread?.model_home_margin ?? 0), // ✅ ensure this is home POV
                   confidence: spread?.confidence,
-                  edgePct: spread?.edge
+                  edgePct: spread?.edge,
+                  TEAM_NAME
                 });
 
-                const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge, pickedTeam, unitInfo }) => (
+                const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge, pickedTeam, unitInfo, bestBook }) => (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <div className="font-medium text-sm">{pick}</div>
@@ -431,6 +503,7 @@ export default function NFLPredictions() {
                         {unitInfo.tier}: {unitInfo.reasoning}
                       </div>
                     )}
+                    {/* ALWAYS show market and model lines, even for NO BET */}
                     {marketValue && (
                       <div className="text-xs text-gray-600">
                         {marketValue}
@@ -439,6 +512,15 @@ export default function NFLPredictions() {
                     {modelValue && (
                       <div className="text-xs text-blue-600">
                         {modelValue}
+                      </div>
+                    )}
+                    {/* NEW: Show best-book information */}
+                    {bestBook && betRecommendation === 'BET' && (
+                      <div className="text-xs text-green-600 font-medium">
+                        Best: {bestBook.bookmaker} {bestBook.price ? fmtOdds(bestBook.price) : ''}
+                        {bestBook.line !== undefined ? ` ${bestBook.line > 0 ? '+' : ''}${bestBook.line}` : ''}
+                        {bestBook.edge_pct ? ` (${bestBook.edge_pct}% edge)` : ''}
+                        {bestBook.edge_points ? ` (${bestBook.edge_points} pts)` : ''}
                       </div>
                     )}
                   </div>
@@ -458,11 +540,16 @@ export default function NFLPredictions() {
                             betRecommendation={ml.betRecommendation || ml.displayNote || "BET"}
                             edge={ml.edge}
                             type="ml"
+                            bestBook={ml.best_book}
                           />
-                          {(odds.moneyline?.home || odds.moneyline?.away) && (
+                          {/* Show display book prices from structured odds */}
+                          {(odds.display?.h2h || odds.moneyline) && (
                             <div className="text-xs text-gray-500">
-                              <div>{r.away_team}: {fmtOdds(odds.moneyline.away) || '—'}</div>
-                              <div>{r.home_team}: {fmtOdds(odds.moneyline.home) || '—'}</div>
+                              <div>{r.away_team}: {fmtOdds(odds.display?.h2h?.away || odds.moneyline?.away) || '—'}</div>
+                              <div>{r.home_team}: {fmtOdds(odds.display?.h2h?.home || odds.moneyline?.home) || '—'}</div>
+                              {odds.display_book && (
+                                <div className="text-gray-400 text-[10px]">via {odds.display_book}</div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -470,31 +557,48 @@ export default function NFLPredictions() {
                     </td>
                     
                     <td className="px-4 py-3">
-                      {spread ? (
-                        <PickBadge 
-                          pick={spreadDisplay.displayPick}
-                          confidence={spreadDisplay.confidence}
-                          betRecommendation={spread.betRecommendation || spread.displayNote || "BET"}
-                          edge={spreadDisplay.edgePct}
-                          type="spread"
-                          modelValue={spreadDisplay.modelLine}
-                          marketValue={spreadDisplay.bookLine}
-                          pickedTeam={spread.pick}
-                        />
-                      ) : '—'}
+                      {/* ALWAYS show spread info, even for NO BET - crucial for review/backtesting */}
+                      <PickBadge 
+                        pick={spreadDisplay.pickText}
+                        confidence={spreadDisplay.confidence}
+                        betRecommendation={spread?.betRecommendation || spread?.displayNote || (spread?.pick ? "BET" : "NO BET")}
+                        edge={spreadDisplay.edgePct}
+                        type="spread"
+                        modelValue={spreadDisplay.modelText}   // ✅ always shown: pick POV or neutral POV
+                        marketValue={spreadDisplay.bookText}   // ✅ always shown: pick POV or neutral POV
+                        pickedTeam={spread?.pick}
+                        bestBook={spread?.best_book}
+                      />
+                      {/* Show display book for transparency */}
+                      {r.odds?.display_book && (
+                        <div className="text-gray-400 text-[10px] mt-1">via {r.odds.display_book}</div>
+                      )}
                     </td>
                     
                     <td className="px-4 py-3">
                       {total ? (
-                        <PickBadge 
-                          pick={total.pick === 'over' ? 'Over' : total.pick === 'under' ? 'Under' : 'Push'}
-                          confidence={total.confidence}
-                          betRecommendation={total.betRecommendation || total.displayNote || "BET"}
-                          edge={total.edge}
-                          type="total"
-                          modelValue={total.predicted ? `${total.predicted}` : null}
-                          marketValue={total.line ? `${total.line}` : null}
-                        />
+                        <>
+                          <PickBadge 
+                            pick={total.pick === 'over' ? 'Over' : total.pick === 'under' ? 'Under' : 'Push'}
+                            confidence={total.confidence}
+                            betRecommendation={total.betRecommendation || total.displayNote || "BET"}
+                            edge={total.edge}
+                            type="total"
+                            modelValue={total.predicted ? `${total.predicted}` : null}
+                            marketValue={(() => {
+                              // Use display book total if available
+                              if (odds.display?.total?.over?.line) {
+                                return `${odds.display.total.over.line}`;
+                              }
+                              return total.line ? `${total.line}` : null;
+                            })()}
+                            bestBook={total.best_book}
+                          />
+                          {/* Show display book for transparency */}
+                          {r.odds?.display_book && (
+                            <div className="text-gray-400 text-[10px] mt-1">via {r.odds.display_book}</div>
+                          )}
+                        </>
                       ) : '—'}
                     </td>
                     
