@@ -129,8 +129,17 @@ function formatSpreadDisplay(spread, homeTeam, awayTeam, odds) {
     `${lineFavoredTeamFull} ${marketLine}` : 
     `${lineFavoredTeamFull} +${Math.abs(marketLine)}`;
   
+  // Always show the actual team pick, never "push" or "NO BET"
+  let displayPick = spread?.pick;
+  if (!displayPick || displayPick === 'push' || displayPick === 'Push') {
+    displayPick = "Pick 'em";
+  } else if (displayPick && displayPick.length <= 3) {
+    // If it's a team abbreviation, convert to full name
+    displayPick = TEAM_NAME_MAPPING[displayPick] || displayPick;
+  }
+  
   return {
-    displayPick: spread?.pick || 'Push',
+    displayPick: displayPick || '—',
     displayLine: marketLine ? displayLine : '—',
     lineFavoredTeam: lineFavoredTeam
   };

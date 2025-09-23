@@ -79,11 +79,37 @@ function shouldSkipBet(prediction, gameContext = {}, marketOdds = null) {
   return { skip: false, reason: null, trueEdgeData: trueEdgeData };
 }
 
+// Total bet skip logic 
+function shouldSkipTotalBet(totalPick, totalDiff, gameContext = {}, marketOdds = null, confidence = null, edge = null) {
+  // Check confidence threshold for total bets (60% minimum)
+  if (confidence !== null && confidence < 60) {
+    return { skip: true, reason: `confidence<60% (${confidence}%)` };
+  }
+  
+  // Check edge threshold for total bets (2.5% minimum) 
+  if (edge !== null && edge < 2.5) {
+    return { skip: true, reason: `edge<2.5% (${edge.toFixed(1)}%)` };
+  }
+  
+  // Use standard edge-based logic for additional checks
+  return shouldSkipBet({ homeWinProb: Math.abs(totalDiff) > 2 ? 0.6 : 0.5 }, gameContext, marketOdds);
+}
+
 // Push detection logic for spread bets
-function shouldSkipSpreadBet(spreadPick, marginDiff, gameContext = {}, marketOdds = null) {
+function shouldSkipSpreadBet(spreadPick, marginDiff, gameContext = {}, marketOdds = null, confidence = null, edge = null) {
   // Push predictions should always be no-bet
   if (spreadPick === 'push' || Math.abs(marginDiff) < 0.5) {
     return { skip: true, reason: "push_prediction" };
+  }
+  
+  // Check confidence threshold for spread bets (62% minimum)
+  if (confidence !== null && confidence < 62) {
+    return { skip: true, reason: `confidence<62% (${confidence}%)` };
+  }
+  
+  // Check edge threshold for spread bets (1.5% minimum) 
+  if (edge !== null && edge < 1.5) {
+    return { skip: true, reason: `edge<1.5% (${edge.toFixed(1)}%)` };
   }
   
   // Use standard edge-based logic for non-push predictions
@@ -1364,24 +1390,22 @@ async function generateAdvancedPredictions(games, season) {
     
     const spreadEdge = Math.abs(marginDifference);
     
-    // Use spread-specific skip check that detects pushes
-    const spreadSkipCheck = shouldSkipSpreadBet(spreadPick, marginDifference, gameContext, realOdds);
-    
     const baseSpreadConfidence = calculateConfidence(0.6, 0.52, spreadEdge / 14, avgConfidence, avgEvidence, scoreDifference, 'spread', gameContext);
     const spreadConfidence = baseSpreadConfidence; // Always show actual confidence
+    
+    // Use spread-specific skip check that detects pushes AND checks confidence/edge thresholds
+    const spreadSkipCheck = shouldSkipSpreadBet(spreadPick, marginDifference, gameContext, realOdds, spreadConfidence, spreadEdge);
 
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread, homeScoreData.specialTeams, awayScoreData.specialTeams);
     const marketTotal = hasLiveOdds ? (realOdds.total_line || 44) : 44;
-    
-    // Separate skip check for totals (can have different thresholds)
-    const totalSkipCheck = shouldSkipBet({ 
-      homeWinProb: Math.abs(predictedTotal - marketTotal) > 2 ? 0.6 : 0.5 
-    }, gameContext, realOdds);
     
     const totalDifference = predictedTotal - marketTotal;
     const totalPick = predictedTotal > marketTotal ? 'over' : 'under';
     const totalEdge = Math.abs(totalDifference);
     const totalConfidence = calculateConfidence(0.6, 0.52, totalEdge / 10, avgConfidence, avgEvidence, 0, 'total', gameContext);
+    
+    // Use proper totals skip check with confidence and edge thresholds
+    const totalSkipCheck = shouldSkipTotalBet(totalPick, totalDifference, gameContext, realOdds, totalConfidence, totalEdge);
 
     return {
       ...game,
