@@ -73,26 +73,42 @@ async function fetchStaticSchedule(week, season) {
   }
   
   const schedule = await res.json();
-  const weekData = schedule.weeks[week.toString()];
   
-  if (!weekData || !weekData.matchups) {
+  // Handle both structured format {weeks: {...}} and flat array format
+  let allGames = [];
+  if (schedule.weeks && schedule.weeks[week.toString()]) {
+    // Structured format: {weeks: {"4": {matchups: [...]}}}
+    const weekData = schedule.weeks[week.toString()];
+    allGames = weekData.matchups || [];
+  } else if (Array.isArray(schedule)) {
+    // Flat array format: [{week: 4, ...}, {week: 5, ...}]
+    allGames = schedule.filter(game => game.week === week);
+  } else {
+    throw new Error(`Invalid schedule format - expected weeks object or flat array`);
+  }
+  
+  if (!allGames || allGames.length === 0) {
     throw new Error(`No matchups found for Week ${week} in static schedule`);
   }
   
-  console.log(`✓ Static schedule loaded: ${weekData.matchups.length} games for Week ${week}`);
+  console.log(`✓ Static schedule loaded: ${allGames.length} games for Week ${week}`);
   
   // Convert to normalized format
-  const matchups = weekData.matchups.map(m => ({
-    id: m.id || toId(m.homeTeam, m.awayTeam, m.kickoff),
-    homeTeam: m.homeTeam,
-    awayTeam: m.awayTeam,
-    kickoff: m.kickoff
+  const matchups = allGames.map(game => ({
+    id: game.game_id || game.id || toId(
+      game.home_team || game.homeTeam, 
+      game.away_team || game.awayTeam, 
+      game.gameday || game.kickoff
+    ),
+    homeTeam: game.home_team || game.homeTeam,
+    awayTeam: game.away_team || game.awayTeam,
+    kickoff: game.gameday || game.kickoff
   }));
   
   return {
     matchups,
     meta: {
-      season: parseInt(schedule.season),
+      season: season || (Array.isArray(schedule) ? 2025 : parseInt(schedule.season || 2025)),
       week: week,
       source: 'static'
     }
