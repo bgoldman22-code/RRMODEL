@@ -147,50 +147,225 @@ function toAmericanOddsNumeric(decimal) {
   }
 }
 
-// Sample fixtures for demonstration with mock odds
-const SAMPLE_FIXTURES = [
-  {
-    id: 'pl-001',
-    home_team: 'Arsenal',
-    away_team: 'Manchester City', 
-    league: 'premier-league',
-    kickoff: '2025-01-15T17:30:00Z',
-    venue: 'Emirates Stadium',
-    odds: {
-      btts_yes: 1.75,  // -133 in American odds
-      btts_no: 2.10,   // +110 in American odds
-      bookmaker: 'FanDuel'
-    }
-  },
-  {
-    id: 'pl-002', 
-    home_team: 'Liverpool',
-    away_team: 'Manchester United',
-    league: 'premier-league', 
-    kickoff: '2025-01-15T20:00:00Z',
-    venue: 'Anfield',
-    odds: {
-      btts_yes: 1.65,  // -154 in American odds  
-      btts_no: 2.25,   // +125 in American odds
-      bookmaker: 'DraftKings'
-    }
-  },
-  {
-    id: 'bun-001',
-    home_team: 'Bayern Munich',
-    away_team: 'Borussia Dortmund',
-    league: 'bundesliga',
-    kickoff: '2025-01-16T14:30:00Z', 
-    venue: 'Allianz Arena',
-    odds: {
-      btts_yes: 1.55,  // -182 in American odds
-      btts_no: 2.45,   // +145 in American odds
-      bookmaker: 'BetMGM'
-    }
-  }
-];
+// Team name normalization dictionary - handles variations across sources
+const TEAM_NAME_MAPPING = {
+  // Premier League
+  'Manchester City': ['Man City', 'Manchester City FC', 'MCFC'],
+  'Manchester United': ['Man United', 'Man Utd', 'Manchester United FC', 'MUFC'],
+  'Arsenal': ['Arsenal FC', 'Gunners'],
+  'Liverpool': ['Liverpool FC', 'LFC'],
+  'Chelsea': ['Chelsea FC', 'CFC'],
+  'Tottenham': ['Tottenham Hotspur', 'Spurs', 'THFC'],
+  'Newcastle': ['Newcastle United', 'Newcastle United FC', 'NUFC'],
+  'Brighton': ['Brighton & Hove Albion', 'Brighton Hove Albion', 'BHAFC'],
+  
+  // Bundesliga  
+  'Bayern Munich': ['FC Bayern Munich', 'Bayern München', 'FCB'],
+  'Borussia Dortmund': ['BVB', 'Dortmund', 'Borussia Dortmund'],
+  'RB Leipzig': ['Leipzig', 'RasenBallsport Leipzig'],
+  'Bayer Leverkusen': ['Leverkusen', 'Bayer 04 Leverkusen'],
+  
+  // Champions League additions
+  'Barcelona': ['FC Barcelona', 'Barca', 'FCB'],
+  'Real Madrid': ['Real Madrid CF', 'Madrid', 'RMCF'],
+  'PSG': ['Paris Saint-Germain', 'Paris SG', 'Paris Saint Germain'],
+  'AC Milan': ['Milan', 'AC Milan', 'ACM'],
+  'Inter Milan': ['Inter', 'Internazionale', 'Inter Milano']
+};
 
-// Enhanced team stats with Bundesliga teams
+// Reverse lookup for normalization
+const NORMALIZED_NAMES = {};
+Object.entries(TEAM_NAME_MAPPING).forEach(([canonical, variants]) => {
+  NORMALIZED_NAMES[canonical] = canonical;
+  variants.forEach(variant => NORMALIZED_NAMES[variant] = canonical);
+});
+
+function normalizeTeamName(name) {
+  return NORMALIZED_NAMES[name] || name;
+}
+
+// Competition whitelist to avoid random cups/friendlies
+const COMPETITION_WHITELIST = {
+  'premier-league': ['Premier League', 'English Premier League', 'EPL'],
+  'champions-league': ['UEFA Champions League', 'Champions League', 'UCL'],
+  'bundesliga': ['Bundesliga', 'German Bundesliga', '1. Bundesliga']
+};
+
+// Live fixture fetching using TheSportsDB (free API)
+async function fetchLiveFixtures(league, daysAhead = 7) {
+  const now = new Date();
+  const in7Days = new Date(now.getTime() + daysAhead * 24 * 3600 * 1000);
+  
+  try {
+    // Map to TheSportsDB league IDs
+    const leagueIds = {
+      'premier-league': '4328',
+      'champions-league': '4480', 
+      'bundesliga': '4331'
+    };
+    
+    const leagueId = leagueIds[league];
+    if (!leagueId) throw new Error(`Unknown league: ${league}`);
+    
+    // Fetch next 15 fixtures from current round 
+    const url = `https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=${leagueId}`;
+    console.log(`Fetching fixtures from: ${url}`);
+    
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`API Error: ${response.status}`);
+    
+    const data = await response.json();
+    const events = data.events || [];
+    
+    // Filter for next 7 days and transform
+    const fixtures = events
+      .filter(event => {
+        const kickoff = new Date(event.dateEvent + 'T' + event.strTime + ':00Z');
+        return kickoff >= now && kickoff <= in7Days;
+      })
+      .map(event => {
+        const kickoffDateTime = new Date(event.dateEvent + 'T' + event.strTime + ':00Z');
+        
+        return {
+          id: `${league}-${event.idEvent}`,
+          home_team: normalizeTeamName(event.strHomeTeam),
+          away_team: normalizeTeamName(event.strAwayTeam),
+          league: league,
+          kickoff: kickoffDateTime.toISOString(),
+          venue: event.strVenue || `${event.strHomeTeam} Stadium`,
+          round: event.intRound || 'Unknown',
+          season: event.strSeason || '2024-25',
+          fixture_source: 'api',
+          // Will be populated by odds bridge
+          odds: null
+        };
+      });
+      
+    console.log(`Found ${fixtures.length} fixtures for ${league} in next ${daysAhead} days`);
+    return fixtures;
+    
+  } catch (error) {
+    console.error(`Failed to fetch fixtures for ${league}:`, error);
+    
+    // Fallback to mock current week data
+    return getFallbackFixtures(league);
+  }
+}
+
+// Fallback fixtures with correct current dates
+function getFallbackFixtures(league) {
+  const now = new Date();
+  const nextSaturday = new Date();
+  nextSaturday.setDate(now.getDate() + (6 - now.getDay())); // Next Saturday
+  nextSaturday.setHours(15, 30, 0, 0); // 3:30 PM UTC
+  
+  const nextSunday = new Date(nextSaturday);
+  nextSunday.setDate(nextSaturday.getDate() + 1);
+  nextSunday.setHours(16, 30, 0, 0); // 4:30 PM UTC
+  
+  const fixtures = {
+    'premier-league': [
+      {
+        id: 'pl-fallback-001',
+        home_team: 'Arsenal',
+        away_team: 'Manchester City',
+        league: 'premier-league',
+        kickoff: nextSaturday.toISOString(),
+        venue: 'Emirates Stadium',
+        round: 'Matchweek 6',
+        season: '2024-25',
+        fixture_source: 'fallback',
+        odds: { btts_yes: 1.75, btts_no: 2.10, bookmaker: 'FanDuel' }
+      },
+      {
+        id: 'pl-fallback-002',
+        home_team: 'Liverpool', 
+        away_team: 'Manchester United',
+        league: 'premier-league',
+        kickoff: nextSunday.toISOString(),
+        venue: 'Anfield',
+        round: 'Matchweek 6',
+        season: '2024-25', 
+        fixture_source: 'fallback',
+        odds: { btts_yes: 1.65, btts_no: 2.25, bookmaker: 'DraftKings' }
+      }
+    ],
+    'bundesliga': [
+      {
+        id: 'bun-fallback-001',
+        home_team: 'Bayern Munich',
+        away_team: 'Borussia Dortmund',
+        league: 'bundesliga',
+        kickoff: nextSaturday.toISOString(),
+        venue: 'Allianz Arena',
+        round: 'Matchday 5',
+        season: '2024-25',
+        fixture_source: 'fallback',
+        odds: { btts_yes: 1.55, btts_no: 2.45, bookmaker: 'BetMGM' }
+      }
+    ],
+    'champions-league': [
+      {
+        id: 'ucl-fallback-001',
+        home_team: 'Barcelona',
+        away_team: 'PSG', 
+        league: 'champions-league',
+        kickoff: new Date(nextSaturday.getTime() + 3 * 24 * 3600000).toISOString(), // Tuesday
+        venue: 'Camp Nou',
+        round: 'Group Stage - MD 2',
+        season: '2024-25',
+        fixture_source: 'fallback',
+        odds: { btts_yes: 1.70, btts_no: 2.15, bookmaker: 'BetMGM' }
+      }
+    ]
+  };
+  
+  return fixtures[league] || [];
+}
+
+// Mock odds bridge - in production, this would fetch from your odds API
+async function fetchBTTSOdds(league, fixtures) {
+  // Simulate odds fetching with realistic prices
+  return fixtures.map(fixture => {
+    if (fixture.odds) return fixture; // Already has odds from fallback
+    
+    // Generate realistic odds based on team strength
+    const attackingTeams = ['Liverpool', 'Manchester City', 'Bayern Munich', 'Barcelona', 'Real Madrid', 'Arsenal'];
+    const defensiveTeams = ['Atletico Madrid', 'Juventus', 'Chelsea'];
+    
+    let baseYesOdds = 1.75;
+    
+    const homeAttacking = attackingTeams.includes(fixture.home_team);
+    const awayAttacking = attackingTeams.includes(fixture.away_team);
+    const homeDefensive = defensiveTeams.includes(fixture.home_team);
+    const awayDefensive = defensiveTeams.includes(fixture.away_team);
+    
+    if (homeAttacking && awayAttacking) {
+      baseYesOdds = 1.50; // Both attacking = likely BTTS
+    } else if (homeDefensive || awayDefensive) {
+      baseYesOdds = 2.20; // Defensive teams = less likely BTTS
+    }
+    
+    const variation = (Math.random() - 0.5) * 0.3;
+    const yesOdds = Math.max(1.30, Math.min(3.00, baseYesOdds + variation));
+    
+    const yesImplied = 1 / yesOdds;
+    const targetOverround = 1.05;
+    const noImplied = targetOverround - yesImplied;
+    const noOdds = Math.max(1.20, 1 / noImplied);
+    
+    return {
+      ...fixture,
+      odds: {
+        btts_yes: Math.round(yesOdds * 100) / 100,
+        btts_no: Math.round(noOdds * 100) / 100,
+        bookmaker: ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars'][Math.floor(Math.random() * 4)]
+      }
+    };
+  });
+}
+
+// Enhanced team stats with Bundesliga teams and Champions League
 const MOCK_TEAM_STATS = {
   'Manchester City': {
     name: 'Manchester City',
@@ -227,15 +402,28 @@ const MOCK_TEAM_STATS = {
     games_home: 12, goals_scored_home: 26, goals_conceded_home: 15,
     games_away: 12, goals_scored_away: 22, goals_conceded_away: 20,
     btts_rate_home: 0.80, btts_rate_away: 0.75
+  },
+  'Barcelona': {
+    name: 'Barcelona',
+    games_home: 10, goals_scored_home: 24, goals_conceded_home: 9,
+    games_away: 10, goals_scored_away: 18, goals_conceded_away: 12,
+    btts_rate_home: 0.70, btts_rate_away: 0.65
+  },
+  'PSG': {
+    name: 'PSG',
+    games_home: 10, goals_scored_home: 22, goals_conceded_home: 7,
+    games_away: 10, goals_scored_away: 19, goals_conceded_away: 11,
+    btts_rate_home: 0.60, btts_rate_away: 0.58
   }
 };
 
 exports.handler = async (event, context) => {
   try {
-    const { league = 'premier-league', limit = 20 } = event.queryStringParameters || {};
+    const { league = 'premier-league', limit = 20, days = 7 } = event.queryStringParameters || {};
     
-    // Safely coerce limit to prevent string/NaN issues
+    // Safely coerce parameters
     const lim = Math.max(1, Math.min(100, parseInt(limit, 10) || 20));
+    const daysAhead = Math.max(1, Math.min(14, parseInt(days, 10) || 7));
     
     if (!LEAGUES[league]) {
       return {
@@ -250,8 +438,37 @@ exports.handler = async (event, context) => {
 
     const leagueConfig = LEAGUES[league];
     
-    // Get fixtures (mock data for now)
-    const fixtures = SAMPLE_FIXTURES.filter(f => f.league === league).slice(0, lim);
+    console.log(`Fetching fixtures for ${league}, next ${daysAhead} days, limit ${lim}`);
+    
+    // HYBRID APPROACH: Get fixtures from API, then enhance with odds
+    const rawFixtures = await fetchLiveFixtures(league, daysAhead);
+    const fixturesWithOdds = await fetchBTTSOdds(league, rawFixtures);
+    
+    // Apply limit and ensure we have valid fixtures
+    const fixtures = fixturesWithOdds.slice(0, lim).filter(f => f.odds);
+    
+    if (fixtures.length === 0) {
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          league: leagueConfig.name,
+          season: leagueConfig.season,
+          predictions: [],
+          metadata: {
+            total_fixtures: 0,
+            generated_at: new Date().toISOString(),
+            model_version: 'btts_v1.1_hybrid',
+            league_btts_baseline: leagueConfig.btts_baseline,
+            high_confidence: 0,
+            message: 'No fixtures found for the specified period'
+          }
+        })
+      };
+    }
     
     const predictions = fixtures.map(fixture => {
       const homeTeam = MOCK_TEAM_STATS[fixture.home_team];
@@ -262,7 +479,11 @@ exports.handler = async (event, context) => {
           fixture_id: fixture.id,
           home_team: fixture.home_team,
           away_team: fixture.away_team,
-          error: 'Team stats not available'
+          league: leagueConfig.name,
+          kickoff: fixture.kickoff,
+          venue: fixture.venue,
+          error: 'Team stats not available',
+          fixture_source: fixture.fixture_source
         };
       }
 
@@ -322,6 +543,9 @@ exports.handler = async (event, context) => {
         league: leagueConfig.name,
         kickoff: fixture.kickoff,
         venue: fixture.venue,
+        round: fixture.round || 'Unknown',
+        season: fixture.season || leagueConfig.season,
+        fixture_source: fixture.fixture_source,
         btts_prediction: prediction,
         btts_probability: Math.round(modelProb * 100) / 100,
         confidence: Math.round(confidence),
@@ -374,21 +598,29 @@ exports.handler = async (event, context) => {
         predictions: predictions,
         metadata: {
           total_fixtures: predictions.length,
+          api_fixtures: rawFixtures.length,
+          days_ahead: daysAhead,
           generated_at: new Date().toISOString(),
-          model_version: 'btts_v1.0',
+          model_version: 'btts_v1.1_hybrid',
           league_btts_baseline: leagueConfig.btts_baseline,
-          high_confidence: predictions.filter(p => p.confidence >= 65).length
+          high_confidence: predictions.filter(p => p.confidence >= 65).length,
+          fixture_sources: {
+            api: predictions.filter(p => p.fixture_source === 'api').length,
+            fallback: predictions.filter(p => p.fixture_source === 'fallback').length
+          }
         }
       })
     };
 
   } catch (error) {
+    console.error('BTTS Prediction Error:', error);
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         error: 'Prediction generation failed',
-        details: error.message
+        details: error.message,
+        timestamp: new Date().toISOString()
       })
     };
   }
