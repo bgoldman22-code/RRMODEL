@@ -2052,3 +2052,176 @@ export default async (request, context) => {
     });
   }
 };
+
+/**
+ * Check games for kickoff events and trigger pick locking
+ * Auto-locks picks within 5 minutes of kickoff (before or after)
+ */
+async function checkAndLockKickoffGames(predictions) {
+  const now = new Date();
+  const lockPromises = [];
+  
+  for (const game of predictions) {
+    if (!game.start || !game.game_id) continue;
+    
+    const kickoff = new Date(game.start);
+    const timeToKickoff = kickoff - now; // negative = game started
+    const minutesToKickoff = timeToKickoff / (1000 * 60);
+    
+    // Lock picks in 10-minute window around kickoff (-5 to +5 minutes)
+    if (minutesToKickoff <= 5 && minutesToKickoff >= -5) {
+      console.log(`[KICKOFF] Game ${game.game_id} kickoff detected, triggering lock (${minutesToKickoff.toFixed(1)}min)`);
+      
+      // Async lock - don't wait for completion to avoid blocking predictions
+      const lockPromise = lockGamePicks(game.game_id, game, 'kickoff')
+        .catch(error => {
+          console.error(`[KICKOFF] Failed to lock ${game.game_id}:`, error);
+        });
+      
+      lockPromises.push(lockPromise);
+    }
+  }
+  
+  // Wait for all lock attempts to complete (with timeout)
+  if (lockPromises.length > 0) {
+    console.log(`[KICKOFF] Triggering ${lockPromises.length} game locks`);
+    try {
+      await Promise.allSettled(lockPromises);
+    } catch (error) {
+      console.error('[KICKOFF] Error in lock promises:', error);
+    }
+  }
+}
+
+/**
+ * Replace live predictions with locked picks for games that have started
+ */
+async function integrateLockedPicks(result) {
+  const predictions = result.predictions || result;
+  const now = new Date();
+  
+  for (let i = 0; i < predictions.length; i++) {
+    const game = predictions[i];
+    if (!game.start || !game.game_id) continue;
+    
+    const kickoff = new Date(game.start);
+    const gameStarted = now > kickoff;
+    
+    // For started games, try to load locked picks
+    if (gameStarted) {
+      try {
+        const lockedPicks = await getLockedPicks(game.game_id);
+        if (lockedPicks && Object.keys(lockedPicks).length > 0) {
+          // Merge locked picks into game predictions
+          predictions[i] = mergeLockedPicks(game, lockedPicks);
+          console.log(`[LOCKED] Using locked picks for ${game.game_id}`);
+        }
+      } catch (error) {
+        console.warn(`[LOCKED] Could not load locked picks for ${game.game_id}:`, error.message);
+        // Continue with live predictions as fallback
+      }
+    }
+  }
+  
+  return result;
+}
+
+/**
+ * Lock picks for a specific game by calling the locking function
+ */
+async function lockGamePicks(gameId, gameData, source) {
+  try {
+    // Call our locking function
+    const response = await fetch(`${process.env.URL || 'https://localhost:8888'}/.netlify/functions/nfl-picks-lock`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'lock',
+        gameId: gameId,
+        source: source,
+        gameData: gameData // Pass current predictions for locking
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Lock request failed: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log(`[LOCK] Successfully locked ${gameId}:`, result.status);
+    return result;
+    
+  } catch (error) {
+    console.error(`[LOCK] Failed to lock picks for ${gameId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Get locked picks from storage
+ */
+async function getLockedPicks(gameId) {
+  try {
+    const response = await fetch(`${process.env.URL || 'https://localhost:8888'}/.netlify/functions/nfl-picks-lock`, {
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'get',
+        gameId: gameId
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Get locked picks failed: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    return result.lockedPicks;
+    
+  } catch (error) {
+    console.error(`[LOCKED] Failed to get locked picks for ${gameId}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Merge locked picks into game prediction structure
+ */
+function mergeLockedPicks(game, lockedPicks) {
+  const mergedGame = { ...game };
+  
+  // Add locked pick indicators to predictions
+  if (mergedGame.predictions) {
+    if (lockedPicks.spread) {
+      mergedGame.predictions.spread = {
+        ...mergedGame.predictions.spread,
+        ...lockedPicks.spread,
+        isLocked: true,
+        lockedAt: lockedPicks.spread.locked_at,
+        lockSource: lockedPicks.spread.source
+      };
+    }
+    
+    if (lockedPicks.total) {
+      mergedGame.predictions.total = {
+        ...mergedGame.predictions.total,
+        ...lockedPicks.total,
+        isLocked: true,
+        lockedAt: lockedPicks.total.locked_at,
+        lockSource: lockedPicks.total.source
+      };
+    }
+    
+    if (lockedPicks.moneyline) {
+      mergedGame.predictions.moneyline = {
+        ...mergedGame.predictions.moneyline,
+        ...lockedPicks.moneyline,
+        isLocked: true,
+        lockedAt: lockedPicks.moneyline.locked_at,
+        lockSource: lockedPicks.moneyline.source
+      };
+    }
+  }
+  
+  return mergedGame;
+}
