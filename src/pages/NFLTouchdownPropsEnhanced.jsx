@@ -9,9 +9,10 @@ import useNFLTDPredictionsEnhanced, {
   PredictionUtils,
   EnhancedPredictionCard
 } from '../hooks/useNFLTDPredictionsEnhanced';
+import { getCurrentNFLWeekFromData } from '../utils/nflWeek.js';
 
 const NFLTouchdownPropsEnhanced = () => {
-  const [week, setWeek] = useState(3);
+  const [week, setWeek] = useState(4); // Will be updated to current week
   const [selectedMarket, setSelectedMarket] = useState('anytime'); // anytime, first, multiple
   const [filterLevel, setFilterLevel] = useState('all'); // all, high_confidence, value
   const [sortBy, setSortBy] = useState('probability'); // probability, confidence, value
@@ -19,6 +20,19 @@ const NFLTouchdownPropsEnhanced = () => {
   const [selectedTeam, setSelectedTeam] = useState('all'); // all, specific team
   const [viewMode, setViewMode] = useState('comprehensive'); // comprehensive, cards, summary
   const season = 2024;
+
+  // Initialize with current NFL week
+  useEffect(() => {
+    const initializeWeek = async () => {
+      try {
+        const currentWeek = await getCurrentNFLWeekFromData();
+        setWeek(currentWeek);
+      } catch (error) {
+        console.warn('Could not determine current NFL week, using default');
+      }
+    };
+    initializeWeek();
+  }, []);
 
   // Main predictions hook with comprehensive options
   const {

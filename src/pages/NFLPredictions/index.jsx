@@ -1,4 +1,5 @@
 import React from 'react';
+import { getCurrentNFLWeekFromData } from '../../utils/nflWeek.js';
 
 const fmtLocal = (iso) => {
   try {
@@ -15,8 +16,21 @@ export default function NFLPredictionsPage() {
   const [data, setData] = React.useState({ rows: [], updated: null });
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
-  const [week, setWeek] = React.useState('3');
+  const [week, setWeek] = React.useState('4'); // Will be updated to current week
   const [season, setSeason] = React.useState('2025');
+
+  // Initialize with current NFL week
+  React.useEffect(() => {
+    const initializeWeek = async () => {
+      try {
+        const currentWeek = await getCurrentNFLWeekFromData();
+        setWeek(currentWeek.toString());
+      } catch (error) {
+        console.warn('Could not determine current NFL week, using default');
+      }
+    };
+    initializeWeek();
+  }, []);
 
   const loadPredictions = React.useCallback(async () => {
     setLoading(true);

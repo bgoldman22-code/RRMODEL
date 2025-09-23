@@ -3,16 +3,30 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ElitePlayerModel } from '../lib/nfl/elitePlayerModel.js';
 import { oddsService } from '../lib/nfl/oddsService.js';
+import { getCurrentNFLWeekFromData } from '../utils/nflWeek.js';
 
 const NFLTouchdownPropsComprehensive = () => {
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [week, setWeek] = useState(3);
+  const [week, setWeek] = useState(4); // Will be updated to current week
   const [selectedMarket, setSelectedMarket] = useState('anytime'); // anytime, first, multiple
   const [filterLevel, setFilterLevel] = useState('all'); // all, high_confidence, value
   const [sortBy, setSortBy] = useState('probability'); // probability, confidence, value
   const season = 2025;
+
+  // Initialize with current NFL week
+  useEffect(() => {
+    const initializeWeek = async () => {
+      try {
+        const currentWeek = await getCurrentNFLWeekFromData();
+        setWeek(currentWeek);
+      } catch (error) {
+        console.warn('Could not determine current NFL week, using default');
+      }
+    };
+    initializeWeek();
+  }, []);
 
   // Load predictions from enhanced API with proper week-based data
     const loadComprehensivePredictions = async () => {

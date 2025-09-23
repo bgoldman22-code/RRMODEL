@@ -1,5 +1,6 @@
 // src/pages/NFLPredictions.jsx
 import React, { useEffect, useState } from 'react';
+import { getCurrentNFLWeekFromData } from '../utils/nflWeek.js';
 
 /**
  * NFL Predictions Page with Live Odds Display and Parlay Suggestions
@@ -9,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 const fmt = (v) => (v === null || v === undefined || v === '' ? '—' : v);
 const fmtOdds = (odds) => odds > 0 ? `+${odds}` : `${odds}`;
 
-async function fetchSchedule(week = 3, season = 2025) {
+async function fetchSchedule(week = 4, season = 2025) {
   const scheduleUrl = `/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`;
   const scheduleRes = await fetch(scheduleUrl);
   if (!scheduleRes.ok) throw new Error(`Failed to get schedule: ${scheduleRes.status}`);
@@ -25,7 +26,7 @@ async function fetchSchedule(week = 3, season = 2025) {
   return games;
 }
 
-async function fetchPredictions(week = 3, season = 2025, force = false) {
+async function fetchPredictions(week = 4, season = 2025, force = false) {
   const games = await fetchSchedule(week, season);
   
   if (games.length === 0) {
@@ -94,10 +95,10 @@ function getTeamAbbreviation(fullName) {
 }
 
 function formatSpreadDisplay(spread, homeTeam, awayTeam, odds) {
-  if (!spread || !spread.pick || spread.pick === 'push') {
+  if (!spread) {
     return {
-      displayPick: spread?.pick || '—',
-      displayLine: spread?.line ? `${spread.line}` : '—'
+      displayPick: '—',
+      displayLine: '—'
     };
   }
   
@@ -116,25 +117,23 @@ function formatSpreadDisplay(spread, homeTeam, awayTeam, odds) {
     'SF': 'San Francisco 49ers', 'SEA': 'Seattle Seahawks', 'TB': 'Tampa Bay Buccaneers',
     'TEN': 'Tennessee Titans', 'WAS': 'Washington Commanders'
   };
+
+  // Determine which team the line favors based on the spread value
+  // Negative spread = home team favored, Positive spread = away team favored
+  const lineFavorsHome = marketLine < 0;
+  const lineFavoredTeam = lineFavorsHome ? homeTeam : awayTeam;
+  const lineFavoredTeamFull = TEAM_NAME_MAPPING[lineFavoredTeam] || lineFavoredTeam;
   
-  const homeTeamFull = TEAM_NAME_MAPPING[homeTeam] || homeTeam;
-  const awayTeamFull = TEAM_NAME_MAPPING[awayTeam] || awayTeam;
-  const pickedTeamFull = TEAM_NAME_MAPPING[spread.pick] || spread.pick;
+  // For display purposes, always show the favored team with the spread
+  const displayLine = lineFavorsHome ? 
+    `${lineFavoredTeamFull} ${marketLine}` : 
+    `${lineFavoredTeamFull} +${Math.abs(marketLine)}`;
   
-  const favoriteTeamFull = odds?.spread?.favorite_team;
-  const isPickingFavorite = pickedTeamFull === favoriteTeamFull;
-  
-  if (isPickingFavorite) {
-    return {
-      displayPick: spread.pick,
-      displayLine: `${marketLine}`
-    };
-  } else {
-    return {
-      displayPick: spread.pick,
-      displayLine: `+${Math.abs(marketLine)}`
-    };
-  }
+  return {
+    displayPick: spread?.pick || 'Push',
+    displayLine: marketLine ? displayLine : '—',
+    lineFavoredTeam: lineFavoredTeam
+  };
 }
 
 // Parlay suggestion component
@@ -249,8 +248,21 @@ export default function NFLPredictions() {
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [week, setWeek] = useState(3);
+  const [week, setWeek] = useState(4); // Will be updated to current week
   const season = 2025;
+
+  // Initialize with current NFL week
+  useEffect(() => {
+    const initializeWeek = async () => {
+      try {
+        const currentWeek = await getCurrentNFLWeekFromData();
+        setWeek(currentWeek);
+      } catch (error) {
+        console.warn('Could not determine current NFL week, using default');
+      }
+    };
+    initializeWeek();
+  }, []);
 
   const load = async (force = false) => {
     setLoading(true); 
@@ -369,12 +381,30 @@ export default function NFLPredictions() {
                     )}
                     {marketValue && (
                       <div className="text-xs text-gray-600">
-                        Line: {type === 'spread' && pickedTeam ? `${pickedTeam} ${marketValue}` : marketValue}
+                        Line: {marketValue}
                       </div>
                     )}
                     {modelValue && marketValue && (
                       <div className="text-xs text-blue-600">
-                        Model: {type === 'spread' && pickedTeam ? `${pickedTeam} ${modelValue}` : `${modelValue} ${pick}`}
+                        Model: {(() => {
+                          if (type === 'spread') {
+                            // For spreads, show which team the model actually favors
+                            if (spread?.model_home_margin !== undefined) {
+                              const favoredTeam = spread.model_home_margin > 0 ? r.home_team : r.away_team;
+                              const margin = Math.abs(spread.model_home_margin);
+                              return `${favoredTeam} ${spread.model_home_margin >= 0 ? '+' : ''}${spread.model_home_margin.toFixed(1)}`;
+                            } else if (spread?.predicted !== undefined) {
+                              // Use predicted spread to determine favored team
+                              const favoredTeam = spread.predicted > 0 ? r.home_team : r.away_team;
+                              const margin = Math.abs(spread.predicted);
+                              return `${favoredTeam} ${spread.predicted >= 0 ? '+' : ''}${spread.predicted.toFixed(1)}`;
+                            } else {
+                              return `${modelValue}`;
+                            }
+                          } else {
+                            return `${modelValue} ${pick}`;
+                          }
+                        })()}
                       </div>
                     )}
                   </div>
