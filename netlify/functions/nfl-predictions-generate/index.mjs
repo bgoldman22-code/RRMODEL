@@ -91,9 +91,9 @@ function shouldSkipMoneylineBet(mlPick, gameContext = {}, marketOdds = null, con
     return { skip: true, reason: `negative_edge (${edge.toFixed(1)}%)` };
   }
   
-  // Check minimum edge threshold (2% for moneylines after vig removal)
-  if (edge !== null && Math.abs(edge) < 2.0) {
-    return { skip: true, reason: `edge<2.0% (${Math.abs(edge).toFixed(1)}%)` };
+  // RELAXED: Allow 1% edge for ML (instead of 2%) - market is sharper
+  if (edge !== null && Math.abs(edge) < 1.0) {
+    return { skip: true, reason: `edge<1.0% (${Math.abs(edge).toFixed(1)}%)` };
   }
   
   // Use standard edge-based logic for additional checks
@@ -107,14 +107,14 @@ function shouldSkipTotalBet(totalPick, totalDiff, gameContext = {}, marketOdds =
     return { skip: true, reason: `confidence<56% (${confidence}%)` };
   }
   
-  // Check point differential threshold (2.5 pts minimum)
-  if (Math.abs(totalDiff) < 2.5) {
-    return { skip: true, reason: `total_diff<2.5pts (${Math.abs(totalDiff).toFixed(1)}pts)` };
+  // RELAXED: Reduce point differential to 2.0 pts (was 2.5)
+  if (Math.abs(totalDiff) < 2.0) {
+    return { skip: true, reason: `total_diff<2.0pts (${Math.abs(totalDiff).toFixed(1)}pts)` };
   }
   
-  // Check edge threshold for total bets (2% minimum) 
-  if (edge !== null && edge < 2.0) {
-    return { skip: true, reason: `edge<2.0% (${edge.toFixed(1)}%)` };
+  // RELAXED: Allow 1.5% edge for totals (was 2.0%) - softer market
+  if (edge !== null && edge < 1.5) {
+    return { skip: true, reason: `edge<1.5% (${edge.toFixed(1)}%)` };
   }
   
   // Use standard edge-based logic for additional checks
@@ -128,19 +128,25 @@ function shouldSkipSpreadBet(spreadPick, marginDiff, gameContext = {}, marketOdd
     return { skip: true, reason: "push_prediction" };
   }
   
-  // Check confidence threshold for spread bets (58% minimum - standard mode)
-  if (confidence !== null && confidence < 58) {
-    return { skip: true, reason: `confidence<58% (${confidence}%)` };
+  // BALANCED: Use OR condition - bet if EITHER condition is met:
+  // Option 1: High confidence (≥60%) regardless of point differential  
+  // Option 2: Significant point differential (≥2.0 pts) with basic confidence (≥58%)
+  
+  const hasHighConfidence = confidence !== null && confidence >= 60;
+  const hasSignificantDiff = Math.abs(marginDiff) >= 2.0;
+  const hasBasicConfidence = confidence !== null && confidence >= 58;
+  
+  if (!hasHighConfidence && !(hasSignificantDiff && hasBasicConfidence)) {
+    if (confidence < 58) {
+      return { skip: true, reason: `confidence<58% (${confidence}%)` };
+    } else if (!hasSignificantDiff) {
+      return { skip: true, reason: `need ≥60% conf OR ≥2.0pt diff (${confidence}%, ${Math.abs(marginDiff).toFixed(1)}pts)` };
+    }
   }
   
-  // Check point differential threshold (2.0 pts minimum)
-  if (Math.abs(marginDiff) < 2.0) {
-    return { skip: true, reason: `margin_diff<2.0pts (${Math.abs(marginDiff).toFixed(1)}pts)` };
-  }
-  
-  // Check edge threshold for spread bets (2% minimum) 
-  if (edge !== null && edge < 2.0) {
-    return { skip: true, reason: `edge<2.0% (${edge.toFixed(1)}%)` };
+  // RELAXED: Allow 1.5% edge for spreads (was 2%)
+  if (edge !== null && edge < 1.5) {
+    return { skip: true, reason: `edge<1.5% (${edge.toFixed(1)}%)` };
   }
   
   // Use standard edge-based logic for non-push predictions
