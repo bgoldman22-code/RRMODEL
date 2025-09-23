@@ -13,10 +13,32 @@ class NFLVerseDataCollector {
 
     getCurrentWeek() {
         const now = new Date();
-        const seasonStart = new Date('2025-09-04'); // Season start
-        const diffTime = now.getTime() - seasonStart.getTime();
+        const seasonStart = new Date('2025-09-04'); // Season start (Thursday)
+        
+        // NFL weeks run Tuesday to Monday
+        // Week 1: Sept 2-8 (includes TNF Sept 4, SNF Sept 7, MNF Sept 8) 
+        // Week 2: Sept 9-15, Week 3: Sept 16-22, etc.
+        
+        // Adjust current date to NFL week structure
+        // If it's Monday, it's still the current week
+        // If it's Tuesday, it's the start of the new week
+        const nowDay = now.getDay(); // 0=Sunday, 1=Monday, 2=Tuesday...
+        let adjustedDate = new Date(now);
+        
+        // If it's Monday (1), don't advance the week
+        // If it's Tuesday (2) or later, advance as normal
+        if (nowDay === 1) {
+            // Monday: still current week, so subtract 1 day for calculation
+            adjustedDate.setDate(adjustedDate.getDate() - 1);
+        }
+        
+        const diffTime = adjustedDate.getTime() - seasonStart.getTime();
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         const week = Math.floor(diffDays / 7) + 1;
+        
+        console.log(`📅 NFL Week Detection: ${now.toDateString()} -> Week ${Math.max(1, Math.min(18, week))}`);
+        console.log(`   (Day of week: ${nowDay === 0 ? 'Sunday' : nowDay === 1 ? 'Monday' : nowDay === 2 ? 'Tuesday' : nowDay === 3 ? 'Wednesday' : nowDay === 4 ? 'Thursday' : nowDay === 5 ? 'Friday' : 'Saturday'})`);
+        
         return Math.max(1, Math.min(18, week));
     }
 

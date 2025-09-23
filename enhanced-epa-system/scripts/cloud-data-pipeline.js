@@ -17,8 +17,18 @@ const CONFIG = {
 
 function getCurrentWeek() {
   const now = new Date();
-  const seasonStart = new Date(2024, 8, 5); // Sept 5, 2024 (approximate)
-  const weeksDiff = Math.ceil((now - seasonStart) / (7 * 24 * 60 * 60 * 1000));
+  const seasonStart = new Date('2025-09-04'); // Sept 4, 2025 (TNF season start)
+  
+  // NFL weeks run Tuesday to Monday
+  const nowDay = now.getDay(); // 0=Sunday, 1=Monday, 2=Tuesday...
+  let adjustedDate = new Date(now);
+  
+  // If it's Monday, it's still the current week (final day)
+  if (nowDay === 1) {
+    adjustedDate.setDate(adjustedDate.getDate() - 1);
+  }
+  
+  const weeksDiff = Math.ceil((adjustedDate - seasonStart) / (7 * 24 * 60 * 60 * 1000));
   return Math.max(1, Math.min(18, weeksDiff));
 }
 

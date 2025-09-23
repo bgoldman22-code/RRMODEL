@@ -170,24 +170,38 @@ export async function loadAdvancedMetrics(season = '2025') {
   return integratedData;
 }
 
-// FIXED: Proper week detection for 2025 NFL season
+// FIXED: Proper week detection for 2025 NFL season with Tuesday-Monday weeks
 function detectCurrentWeek() {
   const now = new Date();
   
-  // 2025 NFL Season started September 4, 2025 (Thursday Night Football - Chiefs vs Ravens)
+  // 2025 NFL Season started September 4, 2025 (Thursday Night Football)
   const seasonStart = new Date('2025-09-04');
   
-  // Calculate days since season start
-  const daysSinceStart = Math.floor((now - seasonStart) / (24 * 60 * 60 * 1000));
+  // NFL weeks run Tuesday to Monday, not Sunday to Saturday
+  // Week 1: Sept 2-8 (includes TNF Sept 4, games through MNF Sept 8)
+  // Week 2: Sept 9-15, Week 3: Sept 16-22, etc.
   
-  // Convert to weeks - NFL weeks roughly align with calendar weeks
-  // Week 1: Sept 5-10, Week 2: Sept 11-17, Week 3: Sept 18-24, etc.
+  const nowDay = now.getDay(); // 0=Sunday, 1=Monday, 2=Tuesday...
+  let adjustedDate = new Date(now);
+  
+  // If it's Monday, it's still the current week (final day)
+  // If it's Tuesday, it's the start of the new week
+  if (nowDay === 1) {
+    // Monday: still current week, subtract 1 day for calculation
+    adjustedDate.setDate(adjustedDate.getDate() - 1);
+  }
+  
+  // Calculate days since season start with adjustment
+  const daysSinceStart = Math.floor((adjustedDate - seasonStart) / (24 * 60 * 60 * 1000));
+  
+  // Convert to weeks with proper NFL week boundaries
   const weeksSinceStart = Math.floor(daysSinceStart / 7) + 1;
   
-  console.log(`=== WEEK DETECTION DEBUG ===`);
-  console.log(`Current date: ${now.toDateString()}`);
+  console.log(`=== NFL WEEK DETECTION (FIXED) ===`);
+  console.log(`Current date: ${now.toDateString()} (${nowDay === 0 ? 'Sunday' : nowDay === 1 ? 'Monday' : nowDay === 2 ? 'Tuesday' : nowDay === 3 ? 'Wednesday' : nowDay === 4 ? 'Thursday' : nowDay === 5 ? 'Friday' : 'Saturday'})`);
   console.log(`Season start: ${seasonStart.toDateString()}`);
-  console.log(`Days since start: ${daysSinceStart}`);
+  console.log(`Days since start (adjusted): ${daysSinceStart}`);
+  console.log(`Calculated week: ${weeksSinceStart}`);
   console.log(`Calculated week: ${weeksSinceStart}`);
   
   // Clamp to reasonable range (Weeks 1-22 to include playoffs)
