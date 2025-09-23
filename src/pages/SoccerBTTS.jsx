@@ -114,7 +114,7 @@ export default function SoccerBTTS() {
         <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg">Error: {error}</div>
       )}
 
-      {predictions.length > 0 && predictions.some(p => p.fixture_source === 'demo') && (
+      {Array.isArray(predictions) && predictions.length > 0 && predictions.some(p => p && p.fixture_source === 'demo') && (
         <div className="mb-4 p-3 bg-orange-50 text-orange-700 rounded-lg border border-orange-200">
           <strong>📋 Demo Mode:</strong> Live {selectedLeague.replace('-', ' ')} fixtures are currently unavailable. 
           Showing example predictions with realistic team stats for demonstration purposes.
@@ -154,7 +154,7 @@ export default function SoccerBTTS() {
                       <div className="font-medium">{pred.matchup}</div>
                       <div className="text-xs text-gray-500">{pred.venue}</div>
                       <div className="text-xs text-gray-500">{pred.league}</div>
-                      {pred.fixture_source === 'demo' && (
+                      {pred && pred.fixture_source === 'demo' && (
                         <div className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded mt-1">
                           📋 Demo fixture - real data unavailable
                         </div>
@@ -165,23 +165,33 @@ export default function SoccerBTTS() {
                     
                     <td className="px-4 py-3">
                       <div className="space-y-1">
-                        <div className={`font-medium ${getBTTSPredictionColor(pred.btts_prediction, pred.confidence)}`}>
-                          BTTS {pred.btts_prediction}
-                        </div>
-                        <div className="text-xs text-gray-600">
-                          {Math.round(pred.btts_probability * 100)}% probability
-                        </div>
-                        <div className={`text-xs px-2 py-1 rounded ${getConfidenceColor(pred.confidence)}`}>
-                          {pred.confidence}% confidence
-                        </div>
-                        <div className="text-xs text-purple-600">
-                          {pred.edge_pct}% edge
-                        </div>
+                        {pred.error ? (
+                          <div className="text-red-600 font-medium">
+                            {pred.error}
+                          </div>
+                        ) : (
+                          <>
+                            <div className={`font-medium ${getBTTSPredictionColor(pred.btts_prediction, pred.confidence)}`}>
+                              BTTS {pred.btts_prediction}
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {Math.round((pred.btts_probability || 0) * 100)}% probability
+                            </div>
+                            <div className={`text-xs px-2 py-1 rounded ${getConfidenceColor(pred.confidence || 0)}`}>
+                              {pred.confidence || 0}% confidence
+                            </div>
+                            <div className="text-xs text-purple-600">
+                              {pred.edge_pct || 0}% edge
+                            </div>
+                          </>
+                        )}
                       </div>
                     </td>
                     
                     <td className="px-4 py-3">
-                      {pred.market_odds?.btts_yes ? (
+                      {pred.error ? (
+                        <div className="text-gray-500">Prediction unavailable</div>
+                      ) : pred.market_odds?.btts_yes ? (
                         <div className="space-y-1">
                           <div className="text-sm">
                             <span className="font-medium">YES:</span> {fmtDecimal(pred.market_odds.btts_yes)} 
@@ -208,35 +218,47 @@ export default function SoccerBTTS() {
                     </td>
                     
                     <td className="px-4 py-3">
-                      <div className="space-y-1">
-                        <span className={`text-xs px-2 py-1 rounded font-medium ${getRecommendationColor(pred.value_bet.recommendation)}`}>
-                          {pred.value_bet.recommendation}
-                        </span>
-                        {pred.value_bet.selection && (
-                          <>
-                            <div className="text-sm font-medium text-green-600">
-                              Bet {pred.value_bet.selection}
-                            </div>
-                            <div className="text-xs text-gray-600">
-                              Stake: {Math.round(pred.value_bet.stake_fraction * 100)}% of bankroll
-                            </div>
-                            <div className="text-xs text-green-600">
-                              Expected value: {pred.value_bet.expected_value > 0 ? '+' : ''}{Math.round(pred.value_bet.expected_value * 100)}%
-                            </div>
-                          </>
-                        )}
-                      </div>
+                      {pred.error ? (
+                        <div className="text-gray-500">N/A</div>
+                      ) : pred.value_bet ? (
+                        <div className="space-y-1">
+                          <span className={`text-xs px-2 py-1 rounded font-medium ${getRecommendationColor(pred.value_bet.recommendation)}`}>
+                            {pred.value_bet.recommendation}
+                          </span>
+                          {pred.value_bet.selection && (
+                            <>
+                              <div className="text-sm font-medium text-green-600">
+                                Bet {pred.value_bet.selection}
+                              </div>
+                              <div className="text-xs text-gray-600">
+                                Stake: {Math.round(pred.value_bet.stake_fraction * 100)}% of bankroll
+                              </div>
+                              <div className="text-xs text-green-600">
+                                Expected value: {pred.value_bet.expected_value > 0 ? '+' : ''}{Math.round(pred.value_bet.expected_value * 100)}%
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-gray-500">No value bet data</div>
+                      )}
                     </td>
                     
                     <td className="px-4 py-3 text-xs">
-                      <div className="space-y-1">
-                        <div><strong>Home:</strong> {pred.factors.home_goals_pg} goals/game</div>
-                        <div><strong>Away:</strong> {pred.factors.away_goals_pg} goals/game</div>
-                        <div><strong>Home conceded:</strong> {pred.factors.home_conceded_pg}/game</div>
-                        <div><strong>Away conceded:</strong> {pred.factors.away_conceded_pg}/game</div>
-                        <div><strong>Home BTTS rate:</strong> {fmtPercent(pred.factors.home_btts_rate)}</div>
-                        <div><strong>Away BTTS rate:</strong> {fmtPercent(pred.factors.away_btts_rate)}</div>
-                      </div>
+                      {pred.error ? (
+                        <div className="text-gray-500">Team stats unavailable</div>
+                      ) : pred.factors ? (
+                        <div className="space-y-1">
+                          <div><strong>Home:</strong> {pred.factors.home_goals_pg} goals/game</div>
+                          <div><strong>Away:</strong> {pred.factors.away_goals_pg} goals/game</div>
+                          <div><strong>Home conceded:</strong> {pred.factors.home_conceded_pg}/game</div>
+                          <div><strong>Away conceded:</strong> {pred.factors.away_conceded_pg}/game</div>
+                          <div><strong>Home BTTS rate:</strong> {fmtPercent(pred.factors.home_btts_rate)}</div>
+                          <div><strong>Away BTTS rate:</strong> {fmtPercent(pred.factors.away_btts_rate)}</div>
+                        </div>
+                      ) : (
+                        <div className="text-gray-500">No team data</div>
+                      )}
                     </td>
                   </tr>
                 );
