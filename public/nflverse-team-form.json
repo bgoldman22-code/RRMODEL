@@ -1,5 +1,5 @@
 {
-  "updated": "2025-09-19T15:42:28.385Z",
+  "updated": "2025-09-23T09:18:51.224Z",
   "seasons": [
     2022,
     2023,
@@ -11,53 +11,53 @@
   "team_data": {
     "NYJ": {
       "offense": {
-        "epa_per_play": -0.10994246065830356,
-        "pass_epa": -0.12701774672817187,
-        "rush_epa": -0.09314537987256719,
-        "success_rate_pass": 0.3944007858546169,
-        "success_rate_rush": 0.3813488759367194
+        "epa_per_play": -0.1104541615987051,
+        "pass_epa": -0.12836695927399405,
+        "rush_epa": -0.0943630402040056,
+        "success_rate_pass": 0.3956626506024096,
+        "success_rate_rush": 0.38184791496320525
       },
       "defense": {
-        "epa_allowed_per_play": -0.031145725169992134,
-        "pass_epa_allowed": -0.06069982949110369,
-        "rush_epa_allowed": -0.017451178645917106,
-        "success_rate_pass_allowed": 0.4017807456872565,
-        "success_rate_rush_allowed": 0.4137254901960784
+        "epa_allowed_per_play": -0.030984183964751777,
+        "pass_epa_allowed": -0.05517710522089671,
+        "rush_epa_allowed": -0.021662811630935475,
+        "success_rate_pass_allowed": 0.4028461959496442,
+        "success_rate_rush_allowed": 0.4094689699296225
       },
       "decayed_data": {
-        "off_epa_decayed": -0.0612961167025048,
-        "def_epa_decayed": 0.12936675767867883,
-        "off_pass_epa_decayed": 0.044305750055027016,
-        "off_rush_epa_decayed": -0.1209035757218326,
-        "def_pass_epa_decayed": 0.12464601780553373,
-        "def_rush_epa_decayed": 0.10206703427136005
+        "off_epa_decayed": -0.10537397120410567,
+        "def_epa_decayed": 0.0779136894639959,
+        "off_pass_epa_decayed": -0.053797290903858055,
+        "off_rush_epa_decayed": -0.1533000937064388,
+        "def_pass_epa_decayed": 0.17724516965530537,
+        "def_rush_epa_decayed": -0.008878968786554066
       },
-      "form": -0.19066287438118362
+      "form": -0.1832876606681016
     },
     "BAL": {
       "offense": {
-        "epa_per_play": 0.08238860251354906,
-        "pass_epa": 0.11791229338653827,
-        "rush_epa": 0.08214913712817992,
-        "success_rate_pass": 0.4700854700854701,
-        "success_rate_rush": 0.4785515320334262
+        "epa_per_play": 0.08267989909307058,
+        "pass_epa": 0.12144044507763677,
+        "rush_epa": 0.07753387578014942,
+        "success_rate_pass": 0.4712451144611949,
+        "success_rate_rush": 0.47739801543550164
       },
       "defense": {
-        "epa_allowed_per_play": -0.05087992995828496,
-        "pass_epa_allowed": -0.057451734230423004,
-        "rush_epa_allowed": -0.07446400369449288,
-        "success_rate_pass_allowed": 0.41946748144914886,
-        "success_rate_rush_allowed": 0.4037593984962406
+        "epa_allowed_per_play": -0.043918573776566536,
+        "pass_epa_allowed": -0.05061321982123421,
+        "rush_epa_allowed": -0.06424287276962283,
+        "success_rate_pass_allowed": 0.4208710651142734,
+        "success_rate_rush_allowed": 0.40965618141916604
       },
       "decayed_data": {
-        "off_epa_decayed": 0.19149552316566323,
-        "def_epa_decayed": -0.05501516137383621,
-        "off_pass_epa_decayed": 0.29348353285583656,
-        "off_rush_epa_decayed": 0.1292639315393812,
-        "def_pass_epa_decayed": -0.14383559665867515,
-        "def_rush_epa_decayed": 0.05633012181480776
+        "off_epa_decayed": 0.15674908746450808,
+        "def_epa_decayed": 0.09872253111403492,
+        "off_pass_epa_decayed": 0.2847451978039328,
+        "off_rush_epa_decayed": -0.04048813122008947,
+        "def_pass_epa_decayed": 0.092134576007183,
+        "def_rush_epa_decayed": 0.1521515112740781
       },
-      "form": 0.24651068453949945
+      "form": 0.05802655635047316
     },
     "BUF": {
       "offense": {
@@ -86,403 +86,403 @@
     },
     "LA": {
       "offense": {
-        "epa_per_play": 0.002676626236402065,
-        "pass_epa": 0.017685889263236103,
-        "rush_epa": -0.02473288698439085,
-        "success_rate_pass": 0.4563351842503786,
-        "success_rate_rush": 0.4238128986534373
+        "epa_per_play": 0.002665915688302892,
+        "pass_epa": 0.016157148448865514,
+        "rush_epa": -0.024052101676209105,
+        "success_rate_pass": 0.45558312655086847,
+        "success_rate_rush": 0.42718446601941745
       },
       "defense": {
-        "epa_allowed_per_play": -0.001318067732071811,
-        "pass_epa_allowed": 0.01391541594398235,
-        "rush_epa_allowed": -0.0008023753791277785,
-        "success_rate_pass_allowed": 0.4589178356713427,
-        "success_rate_rush_allowed": 0.4163237311385459
+        "epa_allowed_per_play": -0.0010962547139892463,
+        "pass_epa_allowed": 0.01355807755270968,
+        "rush_epa_allowed": 0.000060646415456150394,
+        "success_rate_pass_allowed": 0.45794392523364486,
+        "success_rate_rush_allowed": 0.4164420485175202
       },
       "decayed_data": {
-        "off_epa_decayed": 0.07029103259170255,
-        "def_epa_decayed": -0.09683411491998536,
-        "off_pass_epa_decayed": 0.14955007235345208,
-        "off_rush_epa_decayed": 0.010619391595121545,
-        "def_pass_epa_decayed": -0.19838519140515556,
-        "def_rush_epa_decayed": 0.0578568156095622
+        "off_epa_decayed": 0.05320112091443029,
+        "def_epa_decayed": -0.061844390806399044,
+        "off_pass_epa_decayed": 0.0804969037142446,
+        "off_rush_epa_decayed": 0.01199332751083346,
+        "def_pass_epa_decayed": -0.14252446984206674,
+        "def_rush_epa_decayed": 0.06224704480812364
       },
-      "form": 0.16712514751168792
+      "form": 0.11504551172082933
     },
     "CAR": {
       "offense": {
-        "epa_per_play": -0.0927348712513568,
-        "pass_epa": -0.15515175322708574,
-        "rush_epa": -0.00989655547479733,
-        "success_rate_pass": 0.3805601317957166,
-        "success_rate_rush": 0.42220598977355733
+        "epa_per_play": -0.09129607104431516,
+        "pass_epa": -0.15439606585868823,
+        "rush_epa": -0.008260545817597461,
+        "success_rate_pass": 0.3808234019501625,
+        "success_rate_rush": 0.4248927038626609
       },
       "defense": {
-        "epa_allowed_per_play": 0.05966388911547845,
-        "pass_epa_allowed": 0.07128932581998962,
-        "rush_epa_allowed": 0.06226234335078984,
-        "success_rate_pass_allowed": 0.46471600688468157,
-        "success_rate_rush_allowed": 0.46467218332272436
+        "epa_allowed_per_play": 0.05207631819195486,
+        "pass_epa_allowed": 0.05733995577831401,
+        "rush_epa_allowed": 0.06102990136445738,
+        "success_rate_pass_allowed": 0.4608062709966405,
+        "success_rate_rush_allowed": 0.46486825595984943
       },
       "decayed_data": {
-        "off_epa_decayed": 0.023208159790207603,
-        "def_epa_decayed": 0.159202739161715,
-        "off_pass_epa_decayed": -0.00430518139237525,
-        "off_rush_epa_decayed": -0.05779652145711269,
-        "def_pass_epa_decayed": 0.22700385013195462,
-        "def_rush_epa_decayed": 0.18464567628489112
+        "off_epa_decayed": 0.020632186409391073,
+        "def_epa_decayed": -0.013290444430799828,
+        "off_pass_epa_decayed": -0.024692955586354152,
+        "off_rush_epa_decayed": -0.0016072593574189716,
+        "def_pass_epa_decayed": -0.02941317270054693,
+        "def_rush_epa_decayed": 0.11873897864899988
       },
-      "form": -0.1359945793715074
+      "form": 0.0339226308401909
     },
     "CLE": {
       "offense": {
-        "epa_per_play": -0.10854289560732872,
-        "pass_epa": -0.17196685166259976,
-        "rush_epa": -0.02451722818291196,
-        "success_rate_pass": 0.38956766917293234,
-        "success_rate_rush": 0.41117092866756394
+        "epa_per_play": -0.10904891821678213,
+        "pass_epa": -0.1732656180173679,
+        "rush_epa": -0.023753327576828548,
+        "success_rate_pass": 0.3875288683602771,
+        "success_rate_rush": 0.40996677740863785
       },
       "defense": {
-        "epa_allowed_per_play": -0.03705954209561791,
-        "pass_epa_allowed": -0.059748221589745076,
-        "rush_epa_allowed": -0.02595204832518517,
-        "success_rate_pass_allowed": 0.400679117147708,
-        "success_rate_rush_allowed": 0.39785714285714285
+        "epa_allowed_per_play": -0.03815011793054081,
+        "pass_epa_allowed": -0.059275122298307725,
+        "rush_epa_allowed": -0.028064852764881347,
+        "success_rate_pass_allowed": 0.4012242626599889,
+        "success_rate_rush_allowed": 0.3958041958041958
       },
       "decayed_data": {
-        "off_epa_decayed": -0.24743627862764916,
-        "def_epa_decayed": 0.015263596920400278,
-        "off_pass_epa_decayed": -0.3888970804763578,
-        "off_rush_epa_decayed": -0.031691288881116775,
-        "def_pass_epa_decayed": 0.14702808505753467,
-        "def_rush_epa_decayed": -0.12383830182388089
+        "off_epa_decayed": -0.2007425070271181,
+        "def_epa_decayed": -0.01723887066831004,
+        "off_pass_epa_decayed": -0.3281566447349006,
+        "off_rush_epa_decayed": -0.0036597456442187316,
+        "def_pass_epa_decayed": 0.09470255778604059,
+        "def_rush_epa_decayed": -0.12588546927494568
       },
-      "form": -0.26269987554804947
+      "form": -0.18350363635880806
     },
     "SEA": {
       "offense": {
-        "epa_per_play": -0.006284392989265062,
-        "pass_epa": 0.007488840049366299,
-        "rush_epa": -0.02916961631369824,
-        "success_rate_pass": 0.4633282751643905,
-        "success_rate_rush": 0.40566801619433196
+        "epa_per_play": -0.004481799523163938,
+        "pass_epa": 0.015455179718234433,
+        "rush_epa": -0.03520947785653868,
+        "success_rate_pass": 0.46596596596596596,
+        "success_rate_rush": 0.40252565114443567
       },
       "defense": {
-        "epa_allowed_per_play": 0.02108896608529945,
-        "pass_epa_allowed": 0.032832995031954554,
-        "rush_epa_allowed": 0.016346640067353972,
-        "success_rate_pass_allowed": 0.44450154162384375,
-        "success_rate_rush_allowed": 0.42764438676184297
+        "epa_allowed_per_play": 0.01785528741134395,
+        "pass_epa_allowed": 0.031956564426562195,
+        "rush_epa_allowed": 0.010957302681247377,
+        "success_rate_pass_allowed": 0.4454499748617396,
+        "success_rate_rush_allowed": 0.4260204081632653
       },
       "decayed_data": {
-        "off_epa_decayed": -0.02476292504021645,
-        "def_epa_decayed": -0.042869357103688006,
-        "off_pass_epa_decayed": -0.08867849423401694,
-        "off_rush_epa_decayed": 0.03286191971101258,
-        "def_pass_epa_decayed": 0.03452437055785008,
-        "def_rush_epa_decayed": -0.14027786956862875
+        "off_epa_decayed": 0.03175730549819106,
+        "def_epa_decayed": -0.08060300199044994,
+        "off_pass_epa_decayed": 0.21895038241157624,
+        "off_rush_epa_decayed": -0.07265165442612846,
+        "def_pass_epa_decayed": 0.005572581814562586,
+        "def_rush_epa_decayed": -0.1912042889294841
       },
-      "form": 0.018106432063471557
+      "form": 0.112360307488641
     },
     "DEN": {
       "offense": {
-        "epa_per_play": -0.04363024558627294,
-        "pass_epa": -0.05185001666125861,
-        "rush_epa": -0.04381868561452039,
-        "success_rate_pass": 0.40625,
-        "success_rate_rush": 0.4152847873107426
+        "epa_per_play": -0.044752656544857654,
+        "pass_epa": -0.05191559463772618,
+        "rush_epa": -0.043654677754832345,
+        "success_rate_pass": 0.404177545691906,
+        "success_rate_rush": 0.4136460554371002
       },
       "defense": {
-        "epa_allowed_per_play": -0.04294383302021826,
-        "pass_epa_allowed": -0.03890055507203447,
-        "rush_epa_allowed": -0.05013797348506973,
-        "success_rate_pass_allowed": 0.43252595155709345,
-        "success_rate_rush_allowed": 0.402588066139468
+        "epa_allowed_per_play": -0.04130998032656008,
+        "pass_epa_allowed": -0.039018712497317316,
+        "rush_epa_allowed": -0.04972903871030526,
+        "success_rate_pass_allowed": 0.43132530120481927,
+        "success_rate_rush_allowed": 0.40310077519379844
       },
       "decayed_data": {
-        "off_epa_decayed": 0.08022615626483366,
-        "def_epa_decayed": -0.027472477813150622,
-        "off_pass_epa_decayed": 0.1614144849161457,
-        "off_rush_epa_decayed": 0.018974287439313106,
-        "def_pass_epa_decayed": 0.09169971554956842,
-        "def_rush_epa_decayed": -0.13949881759271385
+        "off_epa_decayed": 0.008782591601209967,
+        "def_epa_decayed": -0.01914131236004631,
+        "off_pass_epa_decayed": 0.08699105270001528,
+        "off_rush_epa_decayed": -0.007336117560830358,
+        "def_pass_epa_decayed": 0.034868099019344005,
+        "def_rush_epa_decayed": -0.10889885368036617
       },
-      "form": 0.10769863407798429
+      "form": 0.027923903961256276
     },
     "MIN": {
       "offense": {
-        "epa_per_play": -0.016215259795536285,
-        "pass_epa": 0.004345875044417603,
-        "rush_epa": -0.07364713357223154,
-        "success_rate_pass": 0.46276346604215457,
-        "success_rate_rush": 0.4092664092664093
+        "epa_per_play": -0.01537736215039733,
+        "pass_epa": 0.006891309588417865,
+        "rush_epa": -0.07086892520116458,
+        "success_rate_pass": 0.46392229417206293,
+        "success_rate_rush": 0.4110105580693816
       },
       "defense": {
-        "epa_allowed_per_play": -0.03485204626235157,
-        "pass_epa_allowed": -0.00031989536716107254,
-        "rush_epa_allowed": -0.05667576920369288,
-        "success_rate_pass_allowed": 0.4475920679886686,
-        "success_rate_rush_allowed": 0.4148629148629149
+        "epa_allowed_per_play": -0.04432600529566158,
+        "pass_epa_allowed": -0.016049561937857382,
+        "rush_epa_allowed": -0.06090006904956545,
+        "success_rate_pass_allowed": 0.44532340623545835,
+        "success_rate_rush_allowed": 0.4129353233830846
       },
       "decayed_data": {
-        "off_epa_decayed": -0.2553938760546914,
-        "def_epa_decayed": -0.02446912534618681,
-        "off_pass_epa_decayed": -0.4514298249905484,
-        "off_rush_epa_decayed": -0.025984314500539608,
-        "def_pass_epa_decayed": -0.14172014147864778,
-        "def_rush_epa_decayed": 0.06121527450268405
+        "off_epa_decayed": -0.17165545377687239,
+        "def_epa_decayed": -0.24552973336470973,
+        "off_pass_epa_decayed": -0.2540185579149644,
+        "off_rush_epa_decayed": 0.0024082051969137952,
+        "def_pass_epa_decayed": -0.47032652937971603,
+        "def_rush_epa_decayed": -0.07795048649298134
       },
-      "form": -0.23092475070850457
+      "form": 0.07387427958783735
     },
     "GB": {
       "offense": {
-        "epa_per_play": 0.05661732789514678,
-        "pass_epa": 0.09338162159496634,
-        "rush_epa": 0.009705961827226352,
-        "success_rate_pass": 0.45909580193756727,
-        "success_rate_rush": 0.4448094612352168
+        "epa_per_play": 0.05383344956633015,
+        "pass_epa": 0.09139871064749365,
+        "rush_epa": 0.007069975581518956,
+        "success_rate_pass": 0.4586864406779661,
+        "success_rate_rush": 0.4420103092783505
       },
       "defense": {
-        "epa_allowed_per_play": -0.014391035351155036,
-        "pass_epa_allowed": -0.016405260524211995,
-        "rush_epa_allowed": 0.006214433870616574,
-        "success_rate_pass_allowed": 0.45774278215223096,
-        "success_rate_rush_allowed": 0.4392209536601746
+        "epa_allowed_per_play": -0.016601630116164754,
+        "pass_epa_allowed": -0.020817005132962432,
+        "rush_epa_allowed": 0.0065896121419285695,
+        "success_rate_pass_allowed": 0.45417095777548916,
+        "success_rate_rush_allowed": 0.4376657824933687
       },
       "decayed_data": {
-        "off_epa_decayed": 0.06944163386552515,
-        "def_epa_decayed": -0.09412601150377858,
-        "off_pass_epa_decayed": 0.14236148609887347,
-        "off_rush_epa_decayed": 0.04331168008906612,
-        "def_pass_epa_decayed": -0.08460380922804013,
-        "def_rush_epa_decayed": -0.14088394781373048
+        "off_epa_decayed": 0.006567561629344082,
+        "def_epa_decayed": -0.0991791504132481,
+        "off_pass_epa_decayed": 0.08085219601615515,
+        "off_rush_epa_decayed": -0.02527995184299259,
+        "def_pass_epa_decayed": -0.12241053727457755,
+        "def_rush_epa_decayed": -0.08418460404934212
       },
-      "form": 0.16356764536930374
+      "form": 0.10574671204259217
     },
     "IND": {
       "offense": {
-        "epa_per_play": -0.06951788685106514,
-        "pass_epa": -0.07443216646262539,
-        "rush_epa": -0.07696030417873313,
-        "success_rate_pass": 0.41697416974169743,
-        "success_rate_rush": 0.3949349760438056
+        "epa_per_play": -0.06219356642989259,
+        "pass_epa": -0.06783516109904485,
+        "rush_epa": -0.06970052953223753,
+        "success_rate_pass": 0.41935483870967744,
+        "success_rate_rush": 0.39703903095558546
       },
       "defense": {
-        "epa_allowed_per_play": -0.014186283853300178,
-        "pass_epa_allowed": 0.019450256134599612,
-        "rush_epa_allowed": -0.0519816633144444,
-        "success_rate_pass_allowed": 0.4583333333333333,
-        "success_rate_rush_allowed": 0.41773778920308485
+        "epa_allowed_per_play": -0.01682367084789168,
+        "pass_epa_allowed": 0.012391355793921296,
+        "rush_epa_allowed": -0.05039181259297617,
+        "success_rate_pass_allowed": 0.4576719576719577,
+        "success_rate_rush_allowed": 0.41861937935402155
       },
       "decayed_data": {
-        "off_epa_decayed": 0.11363242388138285,
-        "def_epa_decayed": 0.036156422970245856,
-        "off_pass_epa_decayed": 0.20263920456510845,
-        "off_rush_epa_decayed": 0.028643694425687746,
-        "def_pass_epa_decayed": 0.12157030252863768,
-        "def_rush_epa_decayed": 0.05837513697792116
+        "off_epa_decayed": 0.24138623821436142,
+        "def_epa_decayed": -0.01549721443636942,
+        "off_pass_epa_decayed": 0.3097323720854169,
+        "off_rush_epa_decayed": 0.15534698176363254,
+        "def_pass_epa_decayed": 0.0011531211095048967,
+        "def_rush_epa_decayed": 0.06597908342017983
       },
-      "form": 0.07747600091113699
+      "form": 0.2568834526507308
     },
     "HOU": {
       "offense": {
-        "epa_per_play": -0.07966225158483912,
-        "pass_epa": -0.05769875815340956,
-        "rush_epa": -0.11923624613907617,
-        "success_rate_pass": 0.4074612403100775,
-        "success_rate_rush": 0.36324479540559945
+        "epa_per_play": -0.08188185274636714,
+        "pass_epa": -0.06062789146454565,
+        "rush_epa": -0.12011230000712682,
+        "success_rate_pass": 0.4065620542082739,
+        "success_rate_rush": 0.3614457831325301
       },
       "defense": {
-        "epa_allowed_per_play": -0.03407046595107046,
-        "pass_epa_allowed": -0.03514102029463803,
-        "rush_epa_allowed": -0.04067124281711715,
-        "success_rate_pass_allowed": 0.42577733199598794,
-        "success_rate_rush_allowed": 0.4137717121588089
+        "epa_allowed_per_play": -0.03517345717578284,
+        "pass_epa_allowed": -0.03910491171723085,
+        "rush_epa_allowed": -0.040750952179460405,
+        "success_rate_pass_allowed": 0.42387033398821217,
+        "success_rate_rush_allowed": 0.41406727828746176
       },
       "decayed_data": {
-        "off_epa_decayed": -0.08624125390617127,
-        "def_epa_decayed": -0.014856094059595842,
-        "off_pass_epa_decayed": -0.1723703590603636,
-        "off_rush_epa_decayed": 0.06908373781424626,
-        "def_pass_epa_decayed": -0.024281124253736953,
-        "def_rush_epa_decayed": 0.03729403247456292
+        "off_epa_decayed": -0.11851863108602641,
+        "def_epa_decayed": -0.05392095685160723,
+        "off_pass_epa_decayed": -0.17419424838777608,
+        "off_rush_epa_decayed": -0.005886648875190367,
+        "def_pass_epa_decayed": -0.11473974510230814,
+        "def_rush_epa_decayed": 0.0012639446366661414
       },
-      "form": -0.07138515984657542
+      "form": -0.06459767423441917
     },
     "JAX": {
       "offense": {
-        "epa_per_play": -0.009305602453764555,
-        "pass_epa": 0.018366144120159772,
-        "rush_epa": -0.048284113226789355,
-        "success_rate_pass": 0.4600294261893085,
-        "success_rate_rush": 0.4072463768115942
+        "epa_per_play": -0.010954927241962861,
+        "pass_epa": 0.013408054816065345,
+        "rush_epa": -0.048252202170487694,
+        "success_rate_pass": 0.45747236905333977,
+        "success_rate_rush": 0.40769779044903776
       },
       "defense": {
-        "epa_allowed_per_play": 0.015413368039892104,
-        "pass_epa_allowed": 0.043713108813803185,
-        "rush_epa_allowed": -0.004726458857523127,
-        "success_rate_pass_allowed": 0.45297504798464494,
-        "success_rate_rush_allowed": 0.4186851211072664
+        "epa_allowed_per_play": 0.011670778229689555,
+        "pass_epa_allowed": 0.03894861038467437,
+        "rush_epa_allowed": -0.006980244352319723,
+        "success_rate_pass_allowed": 0.45124823363165334,
+        "success_rate_rush_allowed": 0.41626794258373206
       },
       "decayed_data": {
-        "off_epa_decayed": 0.045542776548713144,
-        "def_epa_decayed": -0.01500902640934511,
-        "off_pass_epa_decayed": 0.0917051202252482,
-        "off_rush_epa_decayed": 0.06761777550517976,
-        "def_pass_epa_decayed": -0.10417439855060338,
-        "def_rush_epa_decayed": 0.06303271710190725
+        "off_epa_decayed": -0.004723449898458935,
+        "def_epa_decayed": -0.09889555131810163,
+        "off_pass_epa_decayed": -0.016809849368768,
+        "off_rush_epa_decayed": 0.025007921318168622,
+        "def_pass_epa_decayed": -0.16346032190010598,
+        "def_rush_epa_decayed": -0.033749498652815284
       },
-      "form": 0.06055180295805825
+      "form": 0.09417210141964269
     },
     "WAS": {
       "offense": {
-        "epa_per_play": -0.0013349631725011162,
-        "pass_epa": -0.03509578639040899,
-        "rush_epa": 0.029687276690643506,
-        "success_rate_pass": 0.4292565947242206,
-        "success_rate_rush": 0.43976683937823835
+        "epa_per_play": 0.0016539038494560712,
+        "pass_epa": -0.02959839006050615,
+        "rush_epa": 0.03162987028671387,
+        "success_rate_pass": 0.43067426400759734,
+        "success_rate_rush": 0.4397208121827411
       },
       "defense": {
-        "epa_allowed_per_play": 0.029174094748419997,
-        "pass_epa_allowed": 0.052491032245543884,
-        "rush_epa_allowed": -0.024661029388758193,
-        "success_rate_pass_allowed": 0.4431578947368421,
-        "success_rate_rush_allowed": 0.42282321899736147
+        "epa_allowed_per_play": 0.02903039635573005,
+        "pass_epa_allowed": 0.057867529164379275,
+        "rush_epa_allowed": -0.030257089966786863,
+        "success_rate_pass_allowed": 0.4434108527131783,
+        "success_rate_rush_allowed": 0.41941747572815535
       },
       "decayed_data": {
-        "off_epa_decayed": 0.032118058785861846,
-        "def_epa_decayed": 0.0803414296162789,
-        "off_pass_epa_decayed": 0.01939836381434825,
-        "off_rush_epa_decayed": 0.04274623835106144,
-        "def_pass_epa_decayed": 0.12338643641644619,
-        "def_rush_epa_decayed": 0.07762617856511012
+        "off_epa_decayed": 0.08807664787588229,
+        "def_epa_decayed": 0.06522794542047317,
+        "off_pass_epa_decayed": 0.1902710734605634,
+        "off_rush_epa_decayed": 0.05891321784425802,
+        "def_pass_epa_decayed": 0.20812349905971966,
+        "def_rush_epa_decayed": -0.0546711806174423
       },
-      "form": -0.04822337083041705
+      "form": 0.022848702455409126
     },
     "KC": {
       "offense": {
-        "epa_per_play": 0.0810029952071287,
-        "pass_epa": 0.12392327048780527,
-        "rush_epa": 0.036533671493623195,
-        "success_rate_pass": 0.48695652173913045,
-        "success_rate_rush": 0.44100197758734344
+        "epa_per_play": 0.0824648309344546,
+        "pass_epa": 0.12530786688620574,
+        "rush_epa": 0.03688543240254327,
+        "success_rate_pass": 0.486960065199674,
+        "success_rate_rush": 0.44228274967574577
       },
       "defense": {
-        "epa_allowed_per_play": -0.018214882382609356,
-        "pass_epa_allowed": -0.01992817893723538,
-        "rush_epa_allowed": -0.005421310383441945,
-        "success_rate_pass_allowed": 0.42301112061591106,
-        "success_rate_rush_allowed": 0.43384223918575066
+        "epa_allowed_per_play": -0.020133171728647186,
+        "pass_epa_allowed": -0.025889800733491137,
+        "rush_epa_allowed": -0.005593999307989607,
+        "success_rate_pass_allowed": 0.42158516020236086,
+        "success_rate_rush_allowed": 0.434021263289556
       },
       "decayed_data": {
-        "off_epa_decayed": -0.05746264429940363,
-        "def_epa_decayed": 0.10963373078905046,
-        "off_pass_epa_decayed": -0.08016019017475197,
-        "off_rush_epa_decayed": 0.06879564538979915,
-        "def_pass_epa_decayed": 0.1961342714218584,
-        "def_rush_epa_decayed": 0.05717802712674104
+        "off_epa_decayed": 0.03464848053387109,
+        "def_epa_decayed": 0.014932213671458848,
+        "off_pass_epa_decayed": 0.0341435617920453,
+        "off_rush_epa_decayed": 0.08482647896309822,
+        "def_pass_epa_decayed": -0.04669602067898355,
+        "def_rush_epa_decayed": 0.03166147019793003
       },
-      "form": -0.1670963750884541
+      "form": 0.019716266862412242
     },
     "ARI": {
       "offense": {
-        "epa_per_play": -0.031146198890777473,
-        "pass_epa": -0.07392344124242453,
-        "rush_epa": 0.031863912701495786,
-        "success_rate_pass": 0.42578325629173086,
-        "success_rate_rush": 0.4291814946619217
+        "epa_per_play": -0.030316165473578623,
+        "pass_epa": -0.07289524592655482,
+        "rush_epa": 0.03117992555446469,
+        "success_rate_pass": 0.42511346444780634,
+        "success_rate_rush": 0.42847173761339846
       },
       "defense": {
-        "epa_allowed_per_play": 0.03970344934435158,
-        "pass_epa_allowed": 0.07438285477499762,
-        "rush_epa_allowed": 0.01499384021642403,
-        "success_rate_pass_allowed": 0.49783783783783786,
-        "success_rate_rush_allowed": 0.4476987447698745
+        "epa_allowed_per_play": 0.03739584658187519,
+        "pass_epa_allowed": 0.07360927786131698,
+        "rush_epa_allowed": 0.011422911515186809,
+        "success_rate_pass_allowed": 0.4997355896351137,
+        "success_rate_rush_allowed": 0.44666207845836203
       },
       "decayed_data": {
-        "off_epa_decayed": 0.10100927466223016,
-        "def_epa_decayed": -0.00010869456009755576,
-        "off_pass_epa_decayed": 0.15578298292348922,
-        "off_rush_epa_decayed": 0.0654074033247621,
-        "def_pass_epa_decayed": 0.021653373653632776,
-        "def_rush_epa_decayed": -0.062046654775848
+        "off_epa_decayed": 0.06767991063307364,
+        "def_epa_decayed": -0.031985873318004523,
+        "off_pass_epa_decayed": 0.09016691170758878,
+        "off_rush_epa_decayed": 0.04321480582208161,
+        "def_pass_epa_decayed": 0.022817609023292305,
+        "def_rush_epa_decayed": -0.1290988362091082
       },
-      "form": 0.10111796922232771
+      "form": 0.09966578395107817
     },
     "LAC": {
       "offense": {
-        "epa_per_play": -0.01497045179971955,
-        "pass_epa": 0.027786405110128535,
-        "rush_epa": -0.07481922086277316,
-        "success_rate_pass": 0.4461683121767748,
-        "success_rate_rush": 0.3901345291479821
+        "epa_per_play": -0.013981636658091734,
+        "pass_epa": 0.026082458994050345,
+        "rush_epa": -0.07388850829178745,
+        "success_rate_pass": 0.44469940339605324,
+        "success_rate_rush": 0.39092240117130306
       },
       "defense": {
-        "epa_allowed_per_play": -0.024278576881798353,
-        "pass_epa_allowed": -0.03976168250072959,
-        "rush_epa_allowed": 0.010544896002420505,
-        "success_rate_pass_allowed": 0.42395149065184434,
-        "success_rate_rush_allowed": 0.4406294706723891
+        "epa_allowed_per_play": -0.025651255746084112,
+        "pass_epa_allowed": -0.03998699000186104,
+        "rush_epa_allowed": 0.009940867389051146,
+        "success_rate_pass_allowed": 0.4217347956131605,
+        "success_rate_rush_allowed": 0.4386459802538787
       },
       "decayed_data": {
-        "off_epa_decayed": 0.03535069482027111,
-        "def_epa_decayed": -0.14672752517006404,
-        "off_pass_epa_decayed": 0.24013524859993818,
-        "off_rush_epa_decayed": -0.1706963873487626,
-        "def_pass_epa_decayed": -0.22420154926335226,
-        "def_rush_epa_decayed": 0.03184709433880364
+        "off_epa_decayed": 0.02483490848334889,
+        "def_epa_decayed": -0.1500849854032184,
+        "off_pass_epa_decayed": 0.1387729721546028,
+        "off_rush_epa_decayed": -0.13073715250960025,
+        "def_pass_epa_decayed": -0.18294017122563327,
+        "def_rush_epa_decayed": 0.0016748472688130104
       },
-      "form": 0.18207821999033516
+      "form": 0.1749198938865673
     },
     "LV": {
       "offense": {
-        "epa_per_play": -0.0778575448430033,
-        "pass_epa": -0.05751338608342841,
-        "rush_epa": -0.12210518553027366,
-        "success_rate_pass": 0.4287871162556618,
-        "success_rate_rush": 0.39126919967663704
+        "epa_per_play": -0.07597330560530707,
+        "pass_epa": -0.05046409024788909,
+        "rush_epa": -0.12670236804603224,
+        "success_rate_pass": 0.42927794263105834,
+        "success_rate_rush": 0.38783570300157977
       },
       "defense": {
-        "epa_allowed_per_play": 0.0017580570640732046,
-        "pass_epa_allowed": 0.04237154276092287,
-        "rush_epa_allowed": -0.04389441992943811,
-        "success_rate_pass_allowed": 0.46271008403361347,
-        "success_rate_rush_allowed": 0.42888086642599277
+        "epa_allowed_per_play": 0.004982387954295984,
+        "pass_epa_allowed": 0.04754073899915528,
+        "rush_epa_allowed": -0.04007216036751185,
+        "success_rate_pass_allowed": 0.4638961038961039,
+        "success_rate_rush_allowed": 0.429075511644319
       },
       "decayed_data": {
-        "off_epa_decayed": -0.12443519885883109,
-        "def_epa_decayed": -0.048460099474463905,
-        "off_pass_epa_decayed": -0.07685407772657961,
-        "off_rush_epa_decayed": -0.18125892504375143,
-        "def_pass_epa_decayed": 0.11588564065651567,
-        "def_rush_epa_decayed": -0.2180356646327633
+        "off_epa_decayed": -0.06836566345633771,
+        "def_epa_decayed": 0.043289620581856106,
+        "off_pass_epa_decayed": 0.07369272883684586,
+        "off_rush_epa_decayed": -0.22220534537124145,
+        "def_pass_epa_decayed": 0.27165755194160957,
+        "def_rush_epa_decayed": -0.10519272816185733
       },
-      "form": -0.07597509938436718
+      "form": -0.11165528403819382
     },
     "NE": {
       "offense": {
-        "epa_per_play": -0.11194164814005945,
-        "pass_epa": -0.1279260922555202,
-        "rush_epa": -0.06315942386017673,
-        "success_rate_pass": 0.41201949106659447,
-        "success_rate_rush": 0.40478026214340784
+        "epa_per_play": -0.11171454417008116,
+        "pass_epa": -0.12433381334194593,
+        "rush_epa": -0.07127496357040024,
+        "success_rate_pass": 0.4150344097406035,
+        "success_rate_rush": 0.4034690799396682
       },
       "defense": {
-        "epa_allowed_per_play": -0.020886119949942845,
-        "pass_epa_allowed": 0.01965547124883918,
-        "rush_epa_allowed": -0.07258653838845315,
-        "success_rate_pass_allowed": 0.4490010515247108,
-        "success_rate_rush_allowed": 0.3992932862190813
+        "epa_allowed_per_play": -0.020219986116858598,
+        "pass_epa_allowed": 0.01952109676084183,
+        "rush_epa_allowed": -0.07322649050958872,
+        "success_rate_pass_allowed": 0.44987012987012986,
+        "success_rate_rush_allowed": 0.40055632823365783
       },
       "decayed_data": {
-        "off_epa_decayed": 0.010458597979741283,
-        "def_epa_decayed": 0.070116858015558,
-        "off_pass_epa_decayed": 0.1883798160450045,
-        "off_rush_epa_decayed": -0.13143250788572142,
-        "def_pass_epa_decayed": 0.24327321398992893,
-        "def_rush_epa_decayed": -0.09123367231974686
+        "off_epa_decayed": -0.028114670556459862,
+        "def_epa_decayed": 0.04984840553722635,
+        "off_pass_epa_decayed": 0.13780467801457205,
+        "off_rush_epa_decayed": -0.237559129238326,
+        "def_pass_epa_decayed": 0.16014670777546042,
+        "def_rush_epa_decayed": -0.10364903010727736
       },
-      "form": -0.05965826003581672
+      "form": -0.07796307609368622
     },
     "MIA": {
       "offense": {
@@ -511,303 +511,303 @@
     },
     "ATL": {
       "offense": {
-        "epa_per_play": -0.01811736283919242,
-        "pass_epa": -0.01938051435529068,
-        "rush_epa": -0.019197829575966528,
-        "success_rate_pass": 0.45850746268656717,
-        "success_rate_rush": 0.43769373837569747
+        "epa_per_play": -0.02432535805877191,
+        "pass_epa": -0.03161262830575376,
+        "rush_epa": -0.019253409373581772,
+        "success_rate_pass": 0.45459837019790456,
+        "success_rate_rush": 0.4382640586797066
       },
       "defense": {
-        "epa_allowed_per_play": 0.003107262953622933,
-        "pass_epa_allowed": 0.06451405713432674,
-        "rush_epa_allowed": -0.03215142925316196,
-        "success_rate_pass_allowed": 0.4503526858383071,
-        "success_rate_rush_allowed": 0.4426904598490048
+        "epa_allowed_per_play": 0.0029136543514083403,
+        "pass_epa_allowed": 0.06232099162202831,
+        "rush_epa_allowed": -0.030177988579986995,
+        "success_rate_pass_allowed": 0.44967880085653106,
+        "success_rate_rush_allowed": 0.4448183041722746
       },
       "decayed_data": {
-        "off_epa_decayed": 0.05449950069830268,
-        "def_epa_decayed": -0.10065045358918724,
-        "off_pass_epa_decayed": -0.06163162721421213,
-        "off_rush_epa_decayed": 0.10598402512852936,
-        "def_pass_epa_decayed": -0.12285128419668108,
-        "def_rush_epa_decayed": -0.009251471371741704
+        "off_epa_decayed": -0.07222918960300845,
+        "def_epa_decayed": -0.061799595939585214,
+        "off_pass_epa_decayed": -0.20087092891027528,
+        "off_rush_epa_decayed": 0.07112711652990723,
+        "def_pass_epa_decayed": -0.11119499452850896,
+        "def_rush_epa_decayed": 0.031400732299345854
       },
-      "form": 0.15514995428748993
+      "form": -0.010429593663423234
     },
     "NO": {
       "offense": {
-        "epa_per_play": -0.043611739567368954,
-        "pass_epa": -0.02321156148886804,
-        "rush_epa": -0.05441889760044066,
-        "success_rate_pass": 0.43944265809217575,
-        "success_rate_rush": 0.4125624553890079
+        "epa_per_play": -0.04565323270043555,
+        "pass_epa": -0.02286232342900948,
+        "rush_epa": -0.05899859753348317,
+        "success_rate_pass": 0.4405447878470403,
+        "success_rate_rush": 0.4110644257703081
       },
       "defense": {
-        "epa_allowed_per_play": -0.03517282389085941,
-        "pass_epa_allowed": -0.06438869508817313,
-        "rush_epa_allowed": 0.00810305356912486,
-        "success_rate_pass_allowed": 0.4088983050847458,
-        "success_rate_rush_allowed": 0.43220922229869235
+        "epa_allowed_per_play": -0.03297087635334633,
+        "pass_epa_allowed": -0.05526026402673424,
+        "rush_epa_allowed": 0.002146669723313958,
+        "success_rate_pass_allowed": 0.41225772655840753,
+        "success_rate_rush_allowed": 0.428956228956229
       },
       "decayed_data": {
-        "off_epa_decayed": -0.10334924660021227,
-        "def_epa_decayed": 0.09669922091142329,
-        "off_pass_epa_decayed": -0.18486486283267545,
-        "off_rush_epa_decayed": 0.043394731217079194,
-        "def_pass_epa_decayed": 0.131488523147746,
-        "def_rush_epa_decayed": 0.06429641113032687
+        "off_epa_decayed": -0.11617177666059093,
+        "def_epa_decayed": 0.10121906444819993,
+        "off_pass_epa_decayed": -0.1307615441962664,
+        "off_rush_epa_decayed": -0.06208978573957311,
+        "def_pass_epa_decayed": 0.35115350930784917,
+        "def_rush_epa_decayed": -0.05101177873251715
       },
-      "form": -0.20004846751163557
+      "form": -0.21739084110879087
     },
     "NYG": {
       "offense": {
-        "epa_per_play": -0.07310966156282869,
-        "pass_epa": -0.10752967067011363,
-        "rush_epa": -0.027307358686095348,
-        "success_rate_pass": 0.41131498470948014,
-        "success_rate_rush": 0.41426611796982166
+        "epa_per_play": -0.07430115363161932,
+        "pass_epa": -0.11312211364696774,
+        "rush_epa": -0.027095376387226703,
+        "success_rate_pass": 0.40981963927855714,
+        "success_rate_rush": 0.4148148148148148
       },
       "defense": {
-        "epa_allowed_per_play": 0.036821309750829374,
-        "pass_epa_allowed": 0.02933776783642451,
-        "rush_epa_allowed": 0.06071115462367214,
-        "success_rate_pass_allowed": 0.45657826313052524,
-        "success_rate_rush_allowed": 0.4498360655737705
+        "epa_allowed_per_play": 0.039286984564515876,
+        "pass_epa_allowed": 0.03294971185532292,
+        "rush_epa_allowed": 0.060671140587093775,
+        "success_rate_pass_allowed": 0.45718654434250766,
+        "success_rate_rush_allowed": 0.4509677419354839
       },
       "decayed_data": {
-        "off_epa_decayed": -0.0009750462222293812,
-        "def_epa_decayed": 0.1242745532761336,
-        "off_pass_epa_decayed": 0.0979360432213965,
-        "off_rush_epa_decayed": -0.13252399979125912,
-        "def_pass_epa_decayed": 0.1896282684225065,
-        "def_rush_epa_decayed": 0.011068027733270171
+        "off_epa_decayed": -0.04755167642630066,
+        "def_epa_decayed": 0.12973994341029876,
+        "off_pass_epa_decayed": -0.07051248150212777,
+        "off_rush_epa_decayed": -0.08893783004433621,
+        "def_pass_epa_decayed": 0.17099976819928517,
+        "def_rush_epa_decayed": 0.024529125558354754
       },
-      "form": -0.12524959949836298
+      "form": -0.1772916198365994
     },
     "TEN": {
       "offense": {
-        "epa_per_play": -0.08373981848020244,
-        "pass_epa": -0.09050878410007183,
-        "rush_epa": -0.07129148477381138,
-        "success_rate_pass": 0.4025670945157526,
-        "success_rate_rush": 0.3948497854077253
+        "epa_per_play": -0.08511743044051204,
+        "pass_epa": -0.09547634785521182,
+        "rush_epa": -0.06921231504632103,
+        "success_rate_pass": 0.4031890660592255,
+        "success_rate_rush": 0.39619985925404644
       },
       "defense": {
-        "epa_allowed_per_play": 0.020338306291438808,
-        "pass_epa_allowed": 0.06388301349419288,
-        "rush_epa_allowed": -0.05029713670709897,
-        "success_rate_pass_allowed": 0.45787545787545786,
-        "success_rate_rush_allowed": 0.39239598278335724
+        "epa_allowed_per_play": 0.026355108206028047,
+        "pass_epa_allowed": 0.06864621845797458,
+        "rush_epa_allowed": -0.04316433477764048,
+        "success_rate_pass_allowed": 0.4597107438016529,
+        "success_rate_rush_allowed": 0.39464411557434814
       },
       "decayed_data": {
-        "off_epa_decayed": -0.17603461905101866,
-        "def_epa_decayed": 0.11509542449813129,
-        "off_pass_epa_decayed": -0.11875785517303951,
-        "off_rush_epa_decayed": -0.20541025666293386,
-        "def_pass_epa_decayed": 0.0979029365311587,
-        "def_rush_epa_decayed": 0.19757991952383339
+        "off_epa_decayed": -0.17121521829998912,
+        "def_epa_decayed": 0.2195297227323108,
+        "off_pass_epa_decayed": -0.18173719533683044,
+        "off_rush_epa_decayed": -0.11705932674866854,
+        "def_pass_epa_decayed": 0.20718529133046257,
+        "def_rush_epa_decayed": 0.2520343305498271
       },
-      "form": -0.29113004354914995
+      "form": -0.39074494103229995
     },
     "DET": {
       "offense": {
-        "epa_per_play": 0.09387857650436411,
-        "pass_epa": 0.1830348929717869,
-        "rush_epa": 0.00901570620002266,
-        "success_rate_pass": 0.508482792050412,
-        "success_rate_rush": 0.43734491315136476
+        "epa_per_play": 0.09842845618605944,
+        "pass_epa": 0.18739878075430577,
+        "rush_epa": 0.015615789103722036,
+        "success_rate_pass": 0.5088474414155906,
+        "success_rate_rush": 0.4414796846573681
       },
       "defense": {
-        "epa_allowed_per_play": 0.010662443898482192,
-        "pass_epa_allowed": 0.020884297290258255,
-        "rush_epa_allowed": 0.000020683517562647645,
-        "success_rate_pass_allowed": 0.4507177033492823,
-        "success_rate_rush_allowed": 0.4229934924078091
+        "epa_allowed_per_play": 0.012081893248340216,
+        "pass_epa_allowed": 0.025499503093750008,
+        "rush_epa_allowed": -0.004837835360273009,
+        "success_rate_pass_allowed": 0.4520225776105362,
+        "success_rate_rush_allowed": 0.4222539229671897
       },
       "decayed_data": {
-        "off_epa_decayed": 0.18252457410974204,
-        "def_epa_decayed": 0.034034315518310224,
-        "off_pass_epa_decayed": 0.3542367921601122,
-        "off_rush_epa_decayed": 0.037154761694803716,
-        "def_pass_epa_decayed": 0.19027282835567597,
-        "def_rush_epa_decayed": -0.12274831279630508
+        "off_epa_decayed": 0.23762144022965814,
+        "def_epa_decayed": 0.059546294222617084,
+        "off_pass_epa_decayed": 0.40222328970548193,
+        "off_rush_epa_decayed": 0.12237666932887661,
+        "def_pass_epa_decayed": 0.22236844384292057,
+        "def_rush_epa_decayed": -0.18361005098160488
       },
-      "form": 0.14849025859143183
+      "form": 0.17807514600704105
     },
     "PHI": {
       "offense": {
-        "epa_per_play": 0.08793613118016692,
-        "pass_epa": 0.09044948152822668,
-        "rush_epa": 0.10188633072542554,
-        "success_rate_pass": 0.4525025536261491,
-        "success_rate_rush": 0.4715736040609137
+        "epa_per_play": 0.0867542313260466,
+        "pass_epa": 0.08866590790613427,
+        "rush_epa": 0.10119034775170016,
+        "success_rate_pass": 0.45162907268170427,
+        "success_rate_rush": 0.4709418837675351
       },
       "defense": {
-        "epa_allowed_per_play": -0.03806086001521845,
-        "pass_epa_allowed": -0.060821158455617315,
-        "rush_epa_allowed": -0.009786648384130169,
-        "success_rate_pass_allowed": 0.42133098281181136,
-        "success_rate_rush_allowed": 0.4358108108108108
+        "epa_allowed_per_play": -0.037408972715476795,
+        "pass_epa_allowed": -0.060999696500999755,
+        "rush_epa_allowed": -0.009443591456406811,
+        "success_rate_pass_allowed": 0.4211897524967434,
+        "success_rate_rush_allowed": 0.4387822634017207
       },
       "decayed_data": {
-        "off_epa_decayed": 0.09638640009807732,
-        "def_epa_decayed": -0.09303722238255344,
-        "off_pass_epa_decayed": 0.07176160571248268,
-        "off_rush_epa_decayed": 0.1231287005111946,
-        "def_pass_epa_decayed": -0.14904913620749344,
-        "def_rush_epa_decayed": -0.06687768085794114
+        "off_epa_decayed": 0.07204574907027322,
+        "def_epa_decayed": -0.06095262339629886,
+        "off_pass_epa_decayed": 0.04736373939777279,
+        "off_rush_epa_decayed": 0.10024097532214217,
+        "def_pass_epa_decayed": -0.12282917100382235,
+        "def_rush_epa_decayed": -0.0463107583001463
       },
-      "form": 0.18942362248063077
+      "form": 0.1329983724665721
     },
     "PIT": {
       "offense": {
-        "epa_per_play": -0.031240178546883435,
-        "pass_epa": -0.031551857561633076,
-        "rush_epa": -0.029685926607508552,
-        "success_rate_pass": 0.4205962059620596,
-        "success_rate_rush": 0.42479018721755973
+        "epa_per_play": -0.030436934690654276,
+        "pass_epa": -0.031059835252614902,
+        "rush_epa": -0.0308990088092609,
+        "success_rate_pass": 0.42184154175588867,
+        "success_rate_rush": 0.4255725190839695
       },
       "defense": {
-        "epa_allowed_per_play": -0.013441536359938059,
-        "pass_epa_allowed": 0.02109956902117474,
-        "rush_epa_allowed": -0.03372295967208839,
-        "success_rate_pass_allowed": 0.4527620030975736,
-        "success_rate_rush_allowed": 0.4062937062937063
+        "epa_allowed_per_play": -0.015227296638908618,
+        "pass_epa_allowed": 0.021365732282478747,
+        "rush_epa_allowed": -0.041683797997798415,
+        "success_rate_pass_allowed": 0.45477513895907024,
+        "success_rate_rush_allowed": 0.40507196710075394
       },
       "decayed_data": {
-        "off_epa_decayed": -0.04292501526906689,
-        "def_epa_decayed": 0.13898554011873918,
-        "off_pass_epa_decayed": -0.023042883928833236,
-        "off_rush_epa_decayed": -0.13067774179169564,
-        "def_pass_epa_decayed": 0.26011579821025055,
-        "def_rush_epa_decayed": 0.08036870180073376
+        "off_epa_decayed": -0.014507348193955704,
+        "def_epa_decayed": 0.05630968218902085,
+        "off_pass_epa_decayed": -0.005765423482622975,
+        "off_rush_epa_decayed": -0.12310511075401695,
+        "def_pass_epa_decayed": 0.18171499638410507,
+        "def_rush_epa_decayed": -0.09529749774945397
       },
-      "form": -0.18191055538780607
+      "form": -0.07081703038297656
     },
     "CIN": {
       "offense": {
-        "epa_per_play": 0.05910984983542444,
-        "pass_epa": 0.09036861972553359,
-        "rush_epa": -0.017369484659041822,
-        "success_rate_pass": 0.4894000902119982,
-        "success_rate_rush": 0.4141331142152835
+        "epa_per_play": 0.04804220325248168,
+        "pass_epa": 0.07408107638554254,
+        "rush_epa": -0.022837192137701256,
+        "success_rate_pass": 0.48665480427046265,
+        "success_rate_rush": 0.41195476575121165
       },
       "defense": {
-        "epa_allowed_per_play": 0.006395275319465124,
-        "pass_epa_allowed": 0.013947826838338851,
-        "rush_epa_allowed": 0.00035067194861123697,
-        "success_rate_pass_allowed": 0.44705294705294707,
-        "success_rate_rush_allowed": 0.4439058171745152
+        "epa_allowed_per_play": 0.006852184195894398,
+        "pass_epa_allowed": 0.016532339793337715,
+        "rush_epa_allowed": 0.001293026069891687,
+        "success_rate_pass_allowed": 0.4484967964514539,
+        "success_rate_rush_allowed": 0.4447457627118644
       },
       "decayed_data": {
-        "off_epa_decayed": 0.019491496121668533,
-        "def_epa_decayed": -0.006977526276306942,
-        "off_pass_epa_decayed": 0.028036032377059737,
-        "off_rush_epa_decayed": -0.01714073895460085,
-        "def_pass_epa_decayed": -0.0032447742454793428,
-        "def_rush_epa_decayed": -0.03948464576266776
+        "off_epa_decayed": -0.21937905187039466,
+        "def_epa_decayed": 0.009141795977645766,
+        "off_pass_epa_decayed": -0.35970811856044416,
+        "off_rush_epa_decayed": -0.13432059998939097,
+        "def_pass_epa_decayed": 0.07128795255653338,
+        "def_rush_epa_decayed": -0.004983437083657365
       },
-      "form": 0.026469022397975474
+      "form": -0.22852084784804044
     },
     "CHI": {
       "offense": {
-        "epa_per_play": -0.06846263087732626,
-        "pass_epa": -0.14528371634679435,
-        "rush_epa": 0.0321460152553365,
-        "success_rate_pass": 0.38510762070971494,
-        "success_rate_rush": 0.4289422452952628
+        "epa_per_play": -0.06309767745249226,
+        "pass_epa": -0.13266349952576773,
+        "rush_epa": 0.030709161701420174,
+        "success_rate_pass": 0.38637664567830565,
+        "success_rate_rush": 0.430484693877551
       },
       "defense": {
-        "epa_allowed_per_play": 0.02739731930177727,
-        "pass_epa_allowed": 0.057270090627015414,
-        "rush_epa_allowed": -0.0009757033642942087,
-        "success_rate_pass_allowed": 0.46601941747572817,
-        "success_rate_rush_allowed": 0.42627533193570927
+        "epa_allowed_per_play": 0.026166933954891544,
+        "pass_epa_allowed": 0.05428423739543751,
+        "rush_epa_allowed": -0.0010069966821654283,
+        "success_rate_pass_allowed": 0.46581434130072263,
+        "success_rate_rush_allowed": 0.42798070296347346
       },
       "decayed_data": {
-        "off_epa_decayed": -0.15351404347026582,
-        "def_epa_decayed": 0.10505450984833513,
-        "off_pass_epa_decayed": -0.094964067752273,
-        "off_rush_epa_decayed": -0.21372779319972066,
-        "def_pass_epa_decayed": 0.17142584228413324,
-        "def_rush_epa_decayed": 0.010498252635399712
+        "off_epa_decayed": -0.007642201391295574,
+        "def_epa_decayed": 0.06271117481341044,
+        "off_pass_epa_decayed": 0.15690096895161526,
+        "off_rush_epa_decayed": -0.15444909791238617,
+        "def_pass_epa_decayed": 0.09867234921561265,
+        "def_rush_epa_decayed": 0.007076898543923317
       },
-      "form": -0.25856855331860096
+      "form": -0.07035337620470603
     },
     "SF": {
       "offense": {
-        "epa_per_play": 0.0912687460989347,
-        "pass_epa": 0.18527114244729076,
-        "rush_epa": 0.011190544067557541,
-        "success_rate_pass": 0.4986849026827985,
-        "success_rate_rush": 0.44789762340036565
+        "epa_per_play": 0.0882930757647358,
+        "pass_epa": 0.18217677903929172,
+        "rush_epa": 0.00810843757594958,
+        "success_rate_pass": 0.5005149330587023,
+        "success_rate_rush": 0.4469879518072289
       },
       "defense": {
-        "epa_allowed_per_play": -0.03861826700424141,
-        "pass_epa_allowed": -0.07108253912060217,
-        "rush_epa_allowed": -0.017791671748939017,
-        "success_rate_pass_allowed": 0.43175487465181056,
-        "success_rate_rush_allowed": 0.4220055710306407
+        "epa_allowed_per_play": -0.03769697329955416,
+        "pass_epa_allowed": -0.07019822915028984,
+        "rush_epa_allowed": -0.017511478591209086,
+        "success_rate_pass_allowed": 0.43105022831050227,
+        "success_rate_rush_allowed": 0.421448087431694
       },
       "decayed_data": {
-        "off_epa_decayed": 0.0720971080336034,
-        "def_epa_decayed": 0.03286481448533157,
-        "off_pass_epa_decayed": 0.1625650354767494,
-        "off_rush_epa_decayed": -0.045087980366445,
-        "def_pass_epa_decayed": -0.06418832539413918,
-        "def_rush_epa_decayed": 0.07201577092330792
+        "off_epa_decayed": 0.03174673407437616,
+        "def_epa_decayed": 0.03167086502931285,
+        "off_pass_epa_decayed": 0.13938636804266205,
+        "off_rush_epa_decayed": -0.10976368365647499,
+        "def_pass_epa_decayed": -0.04207366098877775,
+        "def_rush_epa_decayed": 0.04967634780636135
       },
-      "form": 0.03923229354827183
+      "form": 0.0000758690450633065
     },
     "DAL": {
       "offense": {
-        "epa_per_play": 0.019043148714898935,
-        "pass_epa": 0.03796904630327727,
-        "rush_epa": -0.021581996739036886,
-        "success_rate_pass": 0.4595605423094904,
-        "success_rate_rush": 0.4297956493078444
+        "epa_per_play": 0.018136235389975455,
+        "pass_epa": 0.03593653609016834,
+        "rush_epa": -0.021343402553439153,
+        "success_rate_pass": 0.45953360768175583,
+        "success_rate_rush": 0.4313597918022121
       },
       "defense": {
-        "epa_allowed_per_play": -0.02865872770856294,
-        "pass_epa_allowed": -0.042782495826670264,
-        "rush_epa_allowed": -0.004608637006630701,
-        "success_rate_pass_allowed": 0.43432757718472004,
-        "success_rate_rush_allowed": 0.43322475570032576
+        "epa_allowed_per_play": -0.02421398196598198,
+        "pass_epa_allowed": -0.03289209633632987,
+        "rush_epa_allowed": -0.005415686149695805,
+        "success_rate_pass_allowed": 0.43476018566271274,
+        "success_rate_rush_allowed": 0.4346991037131882
       },
       "decayed_data": {
-        "off_epa_decayed": 0.03631808283950179,
-        "def_epa_decayed": 0.13755597035772169,
-        "off_pass_epa_decayed": 0.04811227394692252,
-        "off_rush_epa_decayed": -0.03672242198548592,
-        "def_pass_epa_decayed": 0.21023005931404837,
-        "def_rush_epa_decayed": 0.07619602704639182
+        "off_epa_decayed": 0.009777819709063976,
+        "def_epa_decayed": 0.1942754852713107,
+        "off_pass_epa_decayed": -0.0004608984117282557,
+        "off_rush_epa_decayed": -0.029450903453463503,
+        "def_pass_epa_decayed": 0.37758528625616894,
+        "def_rush_epa_decayed": 0.051296206753544044
       },
-      "form": -0.1012378875182199
+      "form": -0.18449766556224673
     },
     "TB": {
       "offense": {
-        "epa_per_play": 0.028229126597653913,
-        "pass_epa": 0.09128397122683285,
-        "rush_epa": -0.06630210879427187,
-        "success_rate_pass": 0.4726788094180364,
-        "success_rate_rush": 0.40115025161754136
+        "epa_per_play": 0.027274319346029096,
+        "pass_epa": 0.0937085671146584,
+        "rush_epa": -0.0697927700728449,
+        "success_rate_pass": 0.4725997369574748,
+        "success_rate_rush": 0.3967696629213483
       },
       "defense": {
-        "epa_allowed_per_play": -0.006443309159964269,
-        "pass_epa_allowed": 0.0374628256046475,
-        "rush_epa_allowed": -0.05767864337027368,
-        "success_rate_pass_allowed": 0.44751381215469616,
-        "success_rate_rush_allowed": 0.418705035971223
+        "epa_allowed_per_play": -0.008733857607327847,
+        "pass_epa_allowed": 0.033295318434334975,
+        "rush_epa_allowed": -0.05928591446687399,
+        "success_rate_pass_allowed": 0.44776119402985076,
+        "success_rate_rush_allowed": 0.4185552407932011
       },
       "decayed_data": {
-        "off_epa_decayed": 0.1497361835841859,
-        "def_epa_decayed": -0.0025400342893416045,
-        "off_pass_epa_decayed": 0.2469314063141971,
-        "off_rush_epa_decayed": 0.11743460144834258,
-        "def_pass_epa_decayed": 0.0557715380811099,
-        "def_rush_epa_decayed": -0.07705608679881089
+        "off_epa_decayed": 0.09520445024614292,
+        "def_epa_decayed": -0.04706254016791302,
+        "off_pass_epa_decayed": 0.2677674376925857,
+        "off_rush_epa_decayed": -0.00415192460041956,
+        "def_pass_epa_decayed": -0.0388360356586903,
+        "def_rush_epa_decayed": -0.08851862099800224
       },
-      "form": 0.1522762178735275
+      "form": 0.14226699041405594
     }
   }
 }
