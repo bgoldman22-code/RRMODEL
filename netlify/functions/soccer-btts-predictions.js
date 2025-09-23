@@ -191,57 +191,83 @@ const COMPETITION_WHITELIST = {
   'bundesliga': ['Bundesliga', 'German Bundesliga', '1. Bundesliga']
 };
 
-// Live fixture fetching using TheSportsDB (free API)
+// Live fixture fetching using TheSportsDB (free API) - Enhanced with robust timestamp parsing
 async function fetchLiveFixtures(league, daysAhead = 7) {
   const now = new Date();
-  const in7Days = new Date(now.getTime() + daysAhead * 24 * 3600 * 1000);
-  
+  const inN = new Date(now.getTime() + daysAhead * 24 * 3600 * 1000);
+
   try {
-    // Map to TheSportsDB league IDs
-    const leagueIds = {
-      'premier-league': '4328',
-      'champions-league': '4480', 
-      'bundesliga': '4331'
-    };
-    
+    const leagueIds = { 'premier-league': '4328', 'champions-league': '4480', 'bundesliga': '4331' };
     const leagueId = leagueIds[league];
     if (!leagueId) throw new Error(`Unknown league: ${league}`);
-    
-    // Fetch next 15 fixtures from current round 
+
     const url = `https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=${leagueId}`;
     console.log(`Fetching fixtures from: ${url}`);
-    
     const response = await fetch(url);
     if (!response.ok) throw new Error(`API Error: ${response.status}`);
-    
+
     const data = await response.json();
-    const events = data.events || [];
-    
-    // Filter for next 7 days and transform
-    const fixtures = events
-      .filter(event => {
-        const kickoff = new Date(event.dateEvent + 'T' + event.strTime + ':00Z');
-        return kickoff >= now && kickoff <= in7Days;
-      })
-      .map(event => {
-        const kickoffDateTime = new Date(event.dateEvent + 'T' + event.strTime + ':00Z');
-        
-        return {
-          id: `${league}-${event.idEvent}`,
-          home_team: normalizeTeamName(event.strHomeTeam),
-          away_team: normalizeTeamName(event.strAwayTeam),
-          league: league,
-          kickoff: kickoffDateTime.toISOString(),
-          venue: event.strVenue || `${event.strHomeTeam} Stadium`,
-          round: event.intRound || 'Unknown',
-          season: event.strSeason || '2024-25',
+    const events = Array.isArray(data?.events) ? data.events : [];
+
+    const parseKickoff = (ev) => {
+      // Prefer strTimestamp (UTC)
+      if (ev.strTimestamp) {
+        const d = new Date(ev.strTimestamp);
+        if (!isNaN(d)) return d;
+      }
+      // Fallback: dateEvent + strTime (best effort)
+      if (ev.dateEvent) {
+        const timePart = ev.strTime && /^\d{2}:\d{2}(:\d{2})?$/.test(ev.strTime) ? ev.strTime : '00:00:00';
+        const d = new Date(`${ev.dateEvent}T${timePart.replace(/^(\d{2}:\d{2})$/, '$1:00')}Z`);
+        if (!isNaN(d)) return d;
+      }
+      return null;
+    };
+
+    // First pass: strict within daysAhead
+    let fixtures = events
+      .map(ev => {
+        const ko = parseKickoff(ev);
+        return !ko ? null : {
+          id: `${league}-${ev.idEvent}`,
+          home_team: normalizeTeamName(ev.strHomeTeam || ''),
+          away_team: normalizeTeamName(ev.strAwayTeam || ''),
+          league,
+          kickoff: ko.toISOString(),
+          venue: ev.strVenue || `${ev.strHomeTeam} Stadium`,
+          round: ev.intRound || ev.strRound || 'Unknown',
+          season: ev.strSeason || '2024-25',
           fixture_source: 'api',
-          // Will be populated by odds bridge
           odds: null
         };
+      })
+      .filter(Boolean)
+      .filter(f => {
+        const t = new Date(f.kickoff);
+        return t >= now && t <= inN;
       });
-      
-    console.log(`Found ${fixtures.length} fixtures for ${league} in next ${daysAhead} days`);
+
+    // If nothing in 7 days (common for UCL), relax to "next 15 events" regardless of day window
+    if (fixtures.length === 0 && events.length > 0) {
+      console.log(`No fixtures in next ${daysAhead} days for ${league}, using next 15 events fallback`);
+      fixtures = events.slice(0, 15).map(ev => {
+        const ko = parseKickoff(ev) || now; // ensure a date
+        return {
+          id: `${league}-${ev.idEvent}`,
+          home_team: normalizeTeamName(ev.strHomeTeam || ''),
+          away_team: normalizeTeamName(ev.strAwayTeam || ''),
+          league,
+          kickoff: ko.toISOString(),
+          venue: ev.strVenue || `${ev.strHomeTeam} Stadium`,
+          round: ev.intRound || ev.strRound || 'Unknown',
+          season: ev.strSeason || '2024-25',
+          fixture_source: 'api',
+          odds: null
+        };
+      }).filter(f => f.home_team && f.away_team); // ensure valid teams
+    }
+
+    console.log(`Found ${fixtures.length} fixtures for ${league}`);
     return fixtures;
     
   } catch (error) {
@@ -255,13 +281,16 @@ async function fetchLiveFixtures(league, daysAhead = 7) {
 // Fallback fixtures with correct current dates
 function getFallbackFixtures(league) {
   const now = new Date();
-  const nextSaturday = new Date();
-  nextSaturday.setDate(now.getDate() + (6 - now.getDay())); // Next Saturday
-  nextSaturday.setHours(15, 30, 0, 0); // 3:30 PM UTC
-  
-  const nextSunday = new Date(nextSaturday);
-  nextSunday.setDate(nextSaturday.getDate() + 1);
-  nextSunday.setHours(16, 30, 0, 0); // 4:30 PM UTC
+  const dow = now.getUTCDay(); // 0..6
+  const daysUntilSat = (6 - dow + 7) % 7;
+  const daysUntilSun = (0 - dow + 7) % 7; // next Sunday
+
+  const nextSaturday = new Date(Date.UTC(
+    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysUntilSat, 15, 30, 0, 0
+  ));
+  const nextSunday = new Date(Date.UTC(
+    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysUntilSun, 16, 30, 0, 0
+  ));
   
   const fixtures = {
     'premier-league': [
@@ -444,8 +473,8 @@ exports.handler = async (event, context) => {
     const rawFixtures = await fetchLiveFixtures(league, daysAhead);
     const fixturesWithOdds = await fetchBTTSOdds(league, rawFixtures);
     
-    // Apply limit and ensure we have valid fixtures
-    const fixtures = fixturesWithOdds.slice(0, lim).filter(f => f.odds);
+    // Apply limit and keep all fixtures (fetchBTTSOdds ensures odds are populated)
+    const fixtures = fixturesWithOdds.slice(0, lim);
     
     if (fixtures.length === 0) {
       return {
