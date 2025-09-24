@@ -198,19 +198,25 @@ function reconcileTeamTotals(predictions, games = []) {
     const homeTeam = game.home_team_abbr || game.home_team || game.home || 'HOME';
     const awayTeam = game.away_team_abbr || game.away_team || game.away || 'AWAY';
     
+    // Normalize team names for reliable favorite matching
+    const normalize = (s) => String(s || '').toUpperCase().replace(/[^A-Z]/g, '');
+    const favNorm = normalize(favorite);
+    const homeNorm = normalize(homeTeam);
+    const awayNorm = normalize(awayTeam);
+    
     // Determine team shares (55% to favorite, 45% to dog)
     let homeShare = 0.5;
-    if (favorite) {
-      if (favorite === homeTeam || favorite.includes(homeTeam) || homeTeam.includes(favorite)) {
+    if (favNorm) {
+      if (favNorm === homeNorm) {
         homeShare = 0.55;
-      } else if (favorite === awayTeam || favorite.includes(awayTeam) || awayTeam.includes(favorite)) {
+      } else if (favNorm === awayNorm) {
         homeShare = 0.45;
       }
     }
     
     // Convert points to TDs (rough conversion: ~7 points per TD)
     const tdPerPoint = 1 / 7.0;
-    const gameTotalTDs = Math.max(4.0, totalPoints * tdPerPoint); // Floor at 4 TDs minimum
+    const gameTotalTDs = totalPoints * tdPerPoint; // No artificial floor - let low totals be low
     
     const homeTDs = Math.max(0.8, gameTotalTDs * homeShare);
     const awayTDs = Math.max(0.8, gameTotalTDs * (1 - homeShare));
@@ -259,7 +265,7 @@ function reconcileTeamTotals(predictions, games = []) {
         adjustedPredictions.push({
           ...player,
           anytime_td_prob: (player.anytime_td_prob || 0) * scalingFactor,
-          multiple_td_prob: (player.multiple_td_prob || 0) * scalingFactor,
+          multiple_td_prob: (player.multiple_td_prob || 0) * Math.pow(scalingFactor, 1.4), // Scale multiples stronger
           first_td_prob: (player.first_td_prob || 0) * scalingFactor,
           team_reconciled: true,
           scaling_factor: Math.round(scalingFactor * 1000) / 1000,
