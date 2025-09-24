@@ -2876,6 +2876,43 @@ exports.handler = async (event, context) => {
           // Portfolio management
           portfolio_warning: portfolioWarning
         },
+        // FRONTEND-EXPECTED FIELDS (for display compatibility)
+        team_form: {
+          home_team: {
+            name: homeTeam.team,
+            recent_form: `${homeTeam.recent_form_attack ? (homeTeam.recent_form_attack * 100).toFixed(0) : 'N/A'}% ATT | ${homeTeam.recent_form_defense ? (homeTeam.recent_form_defense * 100).toFixed(0) : 'N/A'}% DEF`,
+            goals_scored_per_game: Math.round((homeTeam.goals_scored_home / Math.max(homeTeam.games_home, 1)) * 10) / 10,
+            goals_conceded_per_game: Math.round((homeTeam.goals_conceded_home / Math.max(homeTeam.games_home, 1)) * 10) / 10,
+            btts_rate: `${homeTeam.btts_rate_home ? Math.round(homeTeam.btts_rate_home * 100) : 'N/A'}%`,
+            xg_per_game: homeTeam.xg_for_home ? Math.round((homeTeam.xg_for_home / Math.max(homeTeam.games_home, 1)) * 10) / 10 : null
+          },
+          away_team: {
+            name: awayTeam.team,
+            recent_form: `${awayTeam.recent_form_attack ? (awayTeam.recent_form_attack * 100).toFixed(0) : 'N/A'}% ATT | ${awayTeam.recent_form_defense ? (awayTeam.recent_form_defense * 100).toFixed(0) : 'N/A'}% DEF`,
+            goals_scored_per_game: Math.round((awayTeam.goals_scored_away / Math.max(awayTeam.games_away, 1)) * 10) / 10,
+            goals_conceded_per_game: Math.round((awayTeam.goals_conceded_away / Math.max(awayTeam.games_away, 1)) * 10) / 10,
+            btts_rate: `${awayTeam.btts_rate_away ? Math.round(awayTeam.btts_rate_away * 100) : 'N/A'}%`,
+            xg_per_game: awayTeam.xg_for_away ? Math.round((awayTeam.xg_for_away / Math.max(awayTeam.games_away, 1)) * 10) / 10 : null
+          },
+          matchup_summary: `${homeTeam.team} avg ${Math.round((homeTeam.goals_scored_home / Math.max(homeTeam.games_home, 1)) * 10) / 10}G/gm vs ${awayTeam.team} avg ${Math.round((awayTeam.goals_scored_away / Math.max(awayTeam.games_away, 1)) * 10) / 10}G/gm`
+        },
+        value_bet: professionalValueBet && professionalValueBet.selection !== null ? {
+          selection: professionalValueBet.selection,
+          kelly_fraction: `${Math.round(professionalValueBet.kelly_fraction * 1000) / 10}%`,
+          expected_value: `${Math.round(professionalValueBet.expected_value * 100)}%`,
+          recommended_stake: professionalValueBet.kelly_fraction > 0.02 ? 'BET' : 'PASS',
+          confidence_level: professionalValueBet.kelly_fraction > 0.05 ? 'HIGH' : professionalValueBet.kelly_fraction > 0.02 ? 'MEDIUM' : 'LOW',
+          edge_description: `${Math.round(professionalValueBet.expected_value * 100)}% edge vs market`,
+          recommendation: professionalValueBet.recommendation
+        } : {
+          selection: 'NO_VALUE',
+          kelly_fraction: '0%',
+          expected_value: '0%',
+          recommended_stake: 'PASS',
+          confidence_level: 'NONE',
+          edge_description: 'No significant market edge detected',
+          recommendation: 'NO_ANALYSIS'
+        },
         data_info: {
           home_data_source: homeTeam.data_source || 'unknown',
           away_data_source: awayTeam.data_source || 'unknown',
