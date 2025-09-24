@@ -2223,7 +2223,18 @@ async function fetchLiveTeamStats(league) {
   try {
     console.log(`Fetching enhanced team stats with xG data for ${league} (ID: ${leagueId})`);
     
-    // Try to fetch xG data first (placeholder for future xG API)
+    // Try to fetch real team strength data first (Football-Data.co.uk)
+    let realStrengthData = null;
+    try {
+      realStrengthData = await fetchRealTeamStrengths(league);
+      if (realStrengthData) {
+        console.log(`✅ Real strength data available for ${Object.keys(realStrengthData).length} teams`);
+      }
+    } catch (e) {
+      console.log('Real strength data not available, using API fallback');
+    }
+    
+    // Try to fetch xG data (placeholder for future xG API)
     let xgData = null;
     try {
       xgData = await fetchXGData(league);
@@ -2279,20 +2290,32 @@ async function fetchLiveTeamStats(league) {
       const homeXGA = teamXGData.npxga_home || teamXGData.xga_home || homeGoalsConceded;
       const awayXGA = teamXGData.npxga_away || teamXGData.xga_away || awayGoalsConceded;
       
-      // Calculate form factors based on available data
-      // If we have recent vs season xG data, use it; otherwise calculate from available stats
+      // Calculate form factors based on available data (priority order)
       let recentFormAttack, recentFormDefense;
       
-      if (teamXGData.recent_npxg_for && teamXGData.season_npxg_for) {
-        // Use NPxG if available
+      // Get real strength data if available (from Football-Data.co.uk)
+      const realStrengthTeamData = realStrengthData?.[teamName];
+      
+      if (realStrengthTeamData) {
+        // BEST: Use real calculated strength data from actual match results
+        recentFormAttack = realStrengthTeamData.recent_form_attack;
+        recentFormDefense = realStrengthTeamData.recent_form_defense;
+        console.log(`🏆 ${teamName}: Real strength data - ATT ${(recentFormAttack * 100).toFixed(0)}% | DEF ${(recentFormDefense * 100).toFixed(0)}%`);
+        
+      } else if (teamXGData.recent_npxg_for && teamXGData.season_npxg_for) {
+        // GOOD: Use NPxG if available
         recentFormAttack = calculateFormFactor(teamXGData.recent_npxg_for, teamXGData.season_npxg_for);
         recentFormDefense = calculateFormFactor(teamXGData.recent_npxga, teamXGData.season_npxga);
+        console.log(`📊 ${teamName}: NPxG data - ATT ${(recentFormAttack * 100).toFixed(0)}% | DEF ${(recentFormDefense * 100).toFixed(0)}%`);
+        
       } else if (teamXGData.recent_xg_for && teamXGData.season_xg_for) {
-        // Fall back to regular xG
+        // OKAY: Fall back to regular xG
         recentFormAttack = calculateFormFactor(teamXGData.recent_xg_for, teamXGData.season_xg_for);
         recentFormDefense = calculateFormFactor(teamXGData.recent_xga, teamXGData.season_xga);
+        console.log(`📈 ${teamName}: xG data - ATT ${(recentFormAttack * 100).toFixed(0)}% | DEF ${(recentFormDefense * 100).toFixed(0)}%`);
+        
       } else {
-        // Calculate form based on goals per game relative to league average
+        // FALLBACK: Calculate from basic goals data
         const leagueAvgGoalsFor = 1.4; // Premier League average
         const leagueAvgGoalsAgainst = 1.4;
         
@@ -2303,7 +2326,7 @@ async function fetchLiveTeamStats(league) {
         recentFormAttack = Math.max(0.7, Math.min(1.3, teamGoalsForRate / leagueAvgGoalsFor));
         recentFormDefense = Math.max(0.7, Math.min(1.3, leagueAvgGoalsAgainst / teamGoalsAgainstRate)); // Inverted for defense
         
-        console.log(`📊 Form calculation for ${teamName}: Attack=${recentFormAttack.toFixed(2)} (${teamGoalsForRate.toFixed(2)} vs ${leagueAvgGoalsFor}), Defense=${recentFormDefense.toFixed(2)}`);
+        console.log(`⚠️ ${teamName}: Fallback calculation - ATT ${(recentFormAttack * 100).toFixed(0)}% | DEF ${(recentFormDefense * 100).toFixed(0)}%`);
       }
       
       // Calculate BTTS rates with enhanced xG-based approach
@@ -2434,6 +2457,153 @@ function calculateFormFactor(recentRate, seasonRate) {
   
   // Cap between 0.7 and 1.3 (±30% from average)
   return Math.max(0.7, Math.min(1.3, rawFactor));
+}
+
+/**
+ * Fetch real team strength data from Football-Data.co.uk
+ * Calculates attack/defense ratings based on actual performance
+ */
+async function fetchRealTeamStrengths(league) {
+  const LEAGUE_URLS = {
+    'premier-league': 'https://www.football-data.co.uk/mmz4281/2425/E0.csv', // Premier League 2024-25
+    'bundesliga': 'https://www.football-data.co.uk/mmz4281/2425/D1.csv',
+    'champions-league': null // UCL not available via this source
+  };
+  
+  const csvUrl = LEAGUE_URLS[league];
+  if (!csvUrl) {
+    console.log(`📊 No Football-Data.co.uk source for ${league}, using fallback calculation`);
+    return null;
+  }
+  
+  try {
+    console.log(`📊 Fetching real team data from Football-Data.co.uk: ${league}`);
+    const response = await fetch(csvUrl);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const csvText = await response.text();
+    const teamStrengths = parseFootballDataCSV(csvText, league);
+    
+    console.log(`✅ Calculated strength data for ${Object.keys(teamStrengths).length} teams`);
+    return teamStrengths;
+    
+  } catch (error) {
+    console.warn(`⚠️ Football-Data.co.uk failed for ${league}:`, error.message);
+    return null;
+  }
+}
+
+/**
+ * Parse Football-Data.co.uk CSV and calculate team attack/defense strengths
+ * Format: Date,HomeTeam,AwayTeam,FTHG,FTAG,FTR,HTHG,HTAG,HTR,...
+ */
+function parseFootballDataCSV(csvText, league) {
+  const lines = csvText.trim().split('\n');
+  const headers = lines[0].split(',');
+  
+  // Find column indices
+  const homeTeamIdx = headers.indexOf('HomeTeam');
+  const awayTeamIdx = headers.indexOf('AwayTeam');
+  const homeGoalsIdx = headers.indexOf('FTHG');
+  const awayGoalsIdx = headers.indexOf('FTAG');
+  
+  if ([homeTeamIdx, awayTeamIdx, homeGoalsIdx, awayGoalsIdx].some(idx => idx === -1)) {
+    throw new Error('Required columns not found in CSV');
+  }
+  
+  // Accumulate team stats
+  const teamStats = {};
+  let totalGoals = 0;
+  let totalGames = 0;
+  
+  // Process all games (skip header)
+  for (let i = 1; i < lines.length; i++) {
+    const cells = lines[i].split(',');
+    
+    const homeTeam = normalizeTeamName(cells[homeTeamIdx]?.trim());
+    const awayTeam = normalizeTeamName(cells[awayTeamIdx]?.trim());
+    const homeGoals = parseInt(cells[homeGoalsIdx]) || 0;
+    const awayGoals = parseInt(cells[awayGoalsIdx]) || 0;
+    
+    if (!homeTeam || !awayTeam) continue;
+    
+    // Initialize team objects
+    if (!teamStats[homeTeam]) teamStats[homeTeam] = { 
+      homeGames: 0, awayGames: 0, 
+      homeGoalsFor: 0, homeGoalsAgainst: 0,
+      awayGoalsFor: 0, awayGoalsAgainst: 0 
+    };
+    if (!teamStats[awayTeam]) teamStats[awayTeam] = { 
+      homeGames: 0, awayGames: 0, 
+      homeGoalsFor: 0, homeGoalsAgainst: 0,
+      awayGoalsFor: 0, awayGoalsAgainst: 0 
+    };
+    
+    // Update team stats
+    teamStats[homeTeam].homeGames++;
+    teamStats[homeTeam].homeGoalsFor += homeGoals;
+    teamStats[homeTeam].homeGoalsAgainst += awayGoals;
+    
+    teamStats[awayTeam].awayGames++;
+    teamStats[awayTeam].awayGoalsFor += awayGoals;
+    teamStats[awayTeam].awayGoalsAgainst += homeGoals;
+    
+    totalGoals += (homeGoals + awayGoals);
+    totalGames++;
+  }
+  
+  // Calculate league averages
+  const leagueAvgGoalsPerGame = totalGoals / (totalGames * 2); // per team per game
+  console.log(`📊 League average: ${leagueAvgGoalsPerGame.toFixed(2)} goals per team per game`);
+  
+  // Calculate strength ratings for each team
+  const teamStrengths = {};
+  
+  Object.entries(teamStats).forEach(([teamName, stats]) => {
+    const totalGames = stats.homeGames + stats.awayGames;
+    if (totalGames < 3) return; // Need minimum games
+    
+    // Goals per game
+    const homeAttackRate = stats.homeGames > 0 ? stats.homeGoalsFor / stats.homeGames : 0;
+    const homeDefenseRate = stats.homeGames > 0 ? stats.homeGoalsAgainst / stats.homeGames : leagueAvgGoalsPerGame;
+    const awayAttackRate = stats.awayGames > 0 ? stats.awayGoalsFor / stats.awayGames : 0;
+    const awayDefenseRate = stats.awayGames > 0 ? stats.awayGoalsAgainst / stats.awayGames : leagueAvgGoalsPerGame;
+    
+    // Strength = performance relative to league average
+    const homeAttackStrength = homeAttackRate / leagueAvgGoalsPerGame;
+    const homeDefenseStrength = leagueAvgGoalsPerGame / homeDefenseRate; // Inverted for defense (higher = better)
+    const awayAttackStrength = awayAttackRate / leagueAvgGoalsPerGame;
+    const awayDefenseStrength = leagueAvgGoalsPerGame / awayDefenseRate;
+    
+    teamStrengths[teamName] = {
+      // Raw stats
+      homeGames: stats.homeGames,
+      awayGames: stats.awayGames,
+      homeGoalsFor: stats.homeGoalsFor,
+      homeGoalsAgainst: stats.homeGoalsAgainst,
+      awayGoalsFor: stats.awayGoalsFor,
+      awayGoalsAgainst: stats.awayGoalsAgainst,
+      
+      // Strength ratings (1.0 = league average)
+      recent_form_attack: Math.max(0.5, Math.min(2.0, (homeAttackStrength + awayAttackStrength) / 2)),
+      recent_form_defense: Math.max(0.5, Math.min(2.0, (homeDefenseStrength + awayDefenseStrength) / 2)),
+      
+      // Home/Away specific
+      home_attack_strength: Math.max(0.5, Math.min(2.0, homeAttackStrength)),
+      home_defense_strength: Math.max(0.5, Math.min(2.0, homeDefenseStrength)),
+      away_attack_strength: Math.max(0.5, Math.min(2.0, awayAttackStrength)),
+      away_defense_strength: Math.max(0.5, Math.min(2.0, awayDefenseStrength)),
+      
+      data_source: 'football_data_co_uk_2024_25'
+    };
+    
+    console.log(`📊 ${teamName}: ATT ${(teamStrengths[teamName].recent_form_attack * 100).toFixed(0)}% | DEF ${(teamStrengths[teamName].recent_form_defense * 100).toFixed(0)}%`);
+  });
+  
+  return teamStrengths;
 }
 
 // Fallback to historical 2024-25 data with promotion/relegation adjustments
