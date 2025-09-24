@@ -189,24 +189,7 @@ function enhancedFilterAllowedBooks(oddsSources = []) {
   });
 }
 
-function normalizeRow(pred) {
-  const sources = Array.isArray(pred.odds_sources) ? pred.odds_sources : [];
-  const allowed = enhancedFilterAllowedBooks(sources);
-  
-  // Use only APPROVED books for market figures
-  const americanOdds = pred.american_odds ??
-    (allowed.length ? Math.max(...allowed.map(s => s.american_odds ?? s.best_price ?? -Infinity)) : null);
-    
-  const booksCount = allowed.length; // count only approved books
-  
-  return { 
-    ...pred, 
-    american_odds: americanOdds, 
-    books_count: booksCount, 
-    odds_sources_allowed: allowed,
-    odds_sources_all: sources // keep original for debugging
-  };
-}
+// REMOVED: Duplicate normalizeRow - using comprehensive version below
 
 function oddsGate(predictions) {
   return predictions.map(pred => {
@@ -448,7 +431,7 @@ function fairProbFromTwoWay(americanYes, americanNo) {
  * Apply reliability adjustment using shrinkage to position priors + COUNT MODEL
  * ENHANCED: Now builds Poisson intensity μᵢ and ensures mathematical consistency
  */
-function applyReliabilityAdjustment(prediction) {
+function applyReliabilityAdjustment(prediction, queryParams = {}) {
   // Parse reliability as 0..1
   let r = 0.75; // Default reliability
   if (prediction.reliability != null) {
@@ -458,6 +441,13 @@ function applyReliabilityAdjustment(prediction) {
       r = Math.max(0, Math.min(1, parseFloat(match[1]) / 100));
     }
   }
+  
+  // CHATGPT SUGGESTION: Add week-based reliability scaling
+  // Scale reliability based on weeks played - early season needs more shrinkage
+  const weeksPlayed = prediction.weeks_played ?? prediction.samples ?? queryParams.week ?? 1;
+  const weekScaler = Math.max(0.4, Math.min(1, weeksPlayed / 4)); // floor at 0.4, full by week 4
+  r = r * weekScaler;
+  console.log(`📊 Reliability scaling: ${prediction.player_name} - Base: ${(r/weekScaler).toFixed(2)}, Week${weeksPlayed} scaler: ${weekScaler.toFixed(2)}, Final: ${r.toFixed(2)}`);
   
   // Strengthen injury/sparse data downgrades
   if (prediction.injury_status && prediction.injury_status !== 'healthy') {
@@ -1024,7 +1014,7 @@ function validateOddsRealism(predictions) {
 function normalizeRow(prediction) {
   // Filter odds sources to only allowed books
   const rawOddsSources = Array.isArray(prediction.odds_sources) ? prediction.odds_sources : [];
-  const allowedOddsSources = filterAllowedBooks(rawOddsSources);
+  const allowedOddsSources = enhancedFilterAllowedBooks(rawOddsSources);
   
   // Only use odds from whitelisted books
   let americanOdds = null;
@@ -1075,8 +1065,8 @@ function oddsGate(predictions) {
     const americanOdds = pred.american_odds || pred.best_price || null;
     const rejectedSources = pred.rejected_sources || 0;
     
-    // ELITE: Strict qualification criteria with whitelist enforcement
-    const oddsQualified = booksCount >= 2 && hasOdds && pred.whitelisted_books_only;
+    // ELITE: Qualification criteria with whitelist enforcement (1 book sufficient)
+    const oddsQualified = booksCount >= 1 && hasOdds && pred.whitelisted_books_only;
     const singleBookWarning = booksCount === 1 && hasOdds;
     const placeholderOdds = hasOdds && (
       Math.abs(americanOdds - 300) < 10 || // Common placeholder odds
@@ -1179,7 +1169,7 @@ function filterPredictions(predictions, queryParams, games = []) {
   let filtered = predictions.map(normalizeRow);
   
   // Apply reliability adjustments with count model (skip if already adjusted)
-  filtered = filtered.map(p => p.__adjusted ? p : applyReliabilityAdjustment(p));
+  filtered = filtered.map(p => p.__adjusted ? p : applyReliabilityAdjustment(p, queryParams));
   
   // ELITE: Monte Carlo team reconciliation (falls back to legacy if needed)
   const useMonteCarloReconciliation = queryParams.mc_reconciliation !== 'false'; // Default to true
