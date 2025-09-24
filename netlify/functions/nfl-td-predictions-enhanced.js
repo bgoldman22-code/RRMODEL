@@ -40,7 +40,8 @@ const CONFIG = {
     'by-position',   // Predictions by position
     'value-picks',   // Best value opportunities
     'high-confidence', // High confidence picks only
-    'data-quality'   // Data quality analysis and diagnostics
+    'data-quality',  // Data quality analysis and diagnostics
+    'raw'           // Raw data without adjustments (debug mode)
   ]
 };
 
@@ -131,80 +132,154 @@ function processQueryParams(event) {
 }
 
 /**
- * Apply reliability scaling to individual predictions
+ * Apply reliability adjustment using shrinkage to position priors (not scaling)
  */
 function applyReliabilityAdjustment(prediction) {
-  // Extract reliability percentage (handle different formats)
-  let reliabilityScore = 75; // Default reliability
-  
-  if (prediction.reliability) {
+  // Parse reliability as 0..1
+  let r = 0.75; // Default reliability
+  if (prediction.reliability != null) {
     const reliabilityStr = String(prediction.reliability);
-    const reliabilityMatch = reliabilityStr.match(/(\d+)%?/);
-    if (reliabilityMatch) {
-      reliabilityScore = parseInt(reliabilityMatch[1]);
+    const match = reliabilityStr.match(/(\d+(\.\d+)?)%?/);
+    if (match) {
+      r = Math.max(0, Math.min(1, parseFloat(match[1]) / 100));
     }
   }
   
-  // Scale probabilities based on reliability (70-100% range)
-  const reliabilityFactor = Math.max(0.7, Math.min(1.0, reliabilityScore / 100));
-  const confidenceMultiplier = 0.85 + (0.15 * reliabilityFactor); // 85-100% range
+  // Position priors based on historical TD rates
+  const priors = { 
+    RB: 0.22,    // RBs score most frequently
+    WR: 0.16,    // WRs moderate rate
+    TE: 0.13,    // TEs lower rate
+    QB: 0.05,    // QBs rarely score rushing TDs
+    default: 0.16 
+  };
+  
+  const position = prediction.position || 'default';
+  const prior = priors[position] ?? priors.default;
+  
+  // Reliability weight: map r in [0,1] to lambda in [0.35..0.95]
+  // Higher reliability = more weight to model, less shrinkage to prior
+  const lambda = 0.35 + 0.60 * r;
+  
+  const clamp = (x) => Math.max(0.001, Math.min(0.95, x));
+  
+  // Shrink probabilities toward position priors
+  const anytimeAdjusted = clamp(lambda * (prediction.anytime_td_prob || 0) + (1 - lambda) * prior);
+  const multipleAdjusted = clamp(lambda * (prediction.multiple_td_prob || 0) + (1 - lambda) * (prior * 0.12));
+  const firstAdjusted = clamp(lambda * (prediction.first_td_prob || 0) + (1 - lambda) * (prior * 0.10));
   
   return {
     ...prediction,
-    anytime_td_prob: prediction.anytime_td_prob * confidenceMultiplier,
-    multiple_td_prob: (prediction.multiple_td_prob || 0) * confidenceMultiplier,
-    first_td_prob: (prediction.first_td_prob || 0) * confidenceMultiplier,
     reliability_adjusted: true,
+    reliability_factor: Math.round(lambda * 100) / 100,
     original_anytime_prob: prediction.anytime_td_prob,
-    reliability_factor: Math.round(reliabilityFactor * 100) / 100
+    anytime_td_prob: anytimeAdjusted,
+    multiple_td_prob: multipleAdjusted,
+    first_td_prob: firstAdjusted,
+    position_prior: prior,
+    shrinkage_amount: Math.round((1 - lambda) * 100) / 100
   };
 }
 
 /**
- * Reconcile team-level TD totals to realistic bounds
+ * Reconcile team-level TD totals using per-game projections from totals/spreads
  */
-function reconcileTeamTotals(predictions) {
-  // Group predictions by team
-  const teamGroups = {};
-  predictions.forEach(pred => {
-    const team = pred.team || pred.team_abbr;
-    if (!teamGroups[team]) teamGroups[team] = [];
-    teamGroups[team].push(pred);
-  });
+function reconcileTeamTotals(predictions, games = []) {
+  // Build game index for team TD projections
+  const gameIndex = new Map();
+  
+  for (const game of games || []) {
+    const gameId = game.game_id || game.id;
+    if (!gameId) continue;
+    
+    // Extract game total and favorite
+    const totalPoints = game.total_points || game.market_total || game.over_under || 44; // fallback
+    const favorite = game.favorite_team || game.fav_team || null;
+    const homeTeam = game.home_team_abbr || game.home_team || game.home || 'HOME';
+    const awayTeam = game.away_team_abbr || game.away_team || game.away || 'AWAY';
+    
+    // Determine team shares (55% to favorite, 45% to dog)
+    let homeShare = 0.5;
+    if (favorite) {
+      if (favorite === homeTeam || favorite.includes(homeTeam) || homeTeam.includes(favorite)) {
+        homeShare = 0.55;
+      } else if (favorite === awayTeam || favorite.includes(awayTeam) || awayTeam.includes(favorite)) {
+        homeShare = 0.45;
+      }
+    }
+    
+    // Convert points to TDs (rough conversion: ~7 points per TD)
+    const tdPerPoint = 1 / 7.0;
+    const gameTotalTDs = Math.max(4.0, totalPoints * tdPerPoint); // Floor at 4 TDs minimum
+    
+    const homeTDs = Math.max(0.8, gameTotalTDs * homeShare);
+    const awayTDs = Math.max(0.8, gameTotalTDs * (1 - homeShare));
+    
+    gameIndex.set(gameId, {
+      home_team: homeTeam,
+      away_team: awayTeam,
+      total_points: totalPoints,
+      team_proj_TDs: {
+        [homeTeam]: homeTDs,
+        [awayTeam]: awayTDs
+      }
+    });
+  }
+  
+  // Group predictions by (team, game_id)
+  const teamGameBuckets = new Map();
+  for (const pred of predictions) {
+    const team = pred.team || pred.team_abbr || 'UNKNOWN';
+    const gameId = pred.game_id || 'unknown';
+    const key = `${team}::${gameId}`;
+    
+    if (!teamGameBuckets.has(key)) teamGameBuckets.set(key, []);
+    teamGameBuckets.get(key).push(pred);
+  }
   
   const adjustedPredictions = [];
   
-  Object.entries(teamGroups).forEach(([team, teamPlayers]) => {
-    // Calculate team total anytime TD probability
-    const teamTotal = teamPlayers.reduce((sum, p) => sum + (p.anytime_td_prob || 0), 0);
-    const REALISTIC_TEAM_MAX = 2.8; // ~2.8 TDs per team per game average
+  // Reconcile each team-game bucket
+  for (const [key, players] of teamGameBuckets.entries()) {
+    const [team, gameId] = key.split('::');
+    const gameInfo = gameIndex.get(gameId);
+    const teamCap = gameInfo?.team_proj_TDs?.[team];
     
-    if (teamTotal > REALISTIC_TEAM_MAX) {
-      // Scale down all players proportionally
-      const scalingFactor = REALISTIC_TEAM_MAX / teamTotal;
+    // Calculate current team total
+    const currentTotal = players.reduce((sum, p) => sum + (p.anytime_td_prob || 0), 0);
+    
+    // Use game-specific cap or fallback to 2.8
+    const cap = teamCap ?? 2.8;
+    
+    if (currentTotal > cap && currentTotal > 0) {
+      // Scale down proportionally
+      const scalingFactor = cap / currentTotal;
       
-      teamPlayers.forEach(player => {
+      players.forEach(player => {
         adjustedPredictions.push({
           ...player,
-          anytime_td_prob: player.anytime_td_prob * scalingFactor,
+          anytime_td_prob: (player.anytime_td_prob || 0) * scalingFactor,
           multiple_td_prob: (player.multiple_td_prob || 0) * scalingFactor,
           first_td_prob: (player.first_td_prob || 0) * scalingFactor,
           team_reconciled: true,
-          original_team_total: Math.round(teamTotal * 100) / 100,
-          scaling_factor: Math.round(scalingFactor * 100) / 100,
-          reconciled_team_total: Math.round(REALISTIC_TEAM_MAX * 100) / 100
+          scaling_factor: Math.round(scalingFactor * 1000) / 1000,
+          team_cap_TDs: Math.round(cap * 100) / 100,
+          team_sum_before: Math.round(currentTotal * 100) / 100,
+          game_total_proj: gameInfo ? Math.round(gameInfo.total_points * 10) / 10 : null
         });
       });
     } else {
       // No adjustment needed
-      teamPlayers.forEach(player => {
+      players.forEach(player => {
         adjustedPredictions.push({
           ...player,
-          team_reconciled: false
+          team_reconciled: false,
+          team_cap_TDs: Math.round(cap * 100) / 100,
+          team_sum_before: Math.round(currentTotal * 100) / 100
         });
       });
     }
-  });
+  }
   
   return adjustedPredictions;
 }
@@ -213,38 +288,52 @@ function reconcileTeamTotals(predictions) {
  * Validate odds realism and flag suspicious data
  */
 function validateOddsRealism(predictions) {
-  const totalPredictions = predictions.length;
+  // Normalize odds fields first for consistent validation
+  const normalized = predictions.map(normalizeRow);
+  const totalPredictions = normalized.length;
+  
   if (totalPredictions === 0) return { isValid: true, warnings: [] };
   
   const warnings = [];
   
   // Check for uniform odds (placeholder detection)
   const oddsCounts = {};
-  predictions.forEach(p => {
-    if (p.american_odds) {
-      oddsCounts[p.american_odds] = (oddsCounts[p.american_odds] || 0) + 1;
-    }
+  const oddsAvailable = normalized.filter(p => p.american_odds);
+  
+  oddsAvailable.forEach(p => {
+    const odds = String(p.american_odds);
+    oddsCounts[odds] = (oddsCounts[odds] || 0) + 1;
   });
   
-  // Flag if >40% have identical odds
-  Object.entries(oddsCounts).forEach(([odds, count]) => {
-    const percentage = (count / totalPredictions) * 100;
-    if (percentage > 40) {
-      warnings.push(`⚠️ ${percentage.toFixed(0)}% of predictions have identical odds (${odds}) - possible placeholder data`);
-    }
-  });
+  // Flag if >40% have identical odds (among those with odds)
+  if (oddsAvailable.length > 0) {
+    Object.entries(oddsCounts).forEach(([odds, count]) => {
+      const percentage = (count / oddsAvailable.length) * 100;
+      if (percentage > 40) {
+        warnings.push(`⚠️ ${percentage.toFixed(0)}% of predictions have identical odds (${odds}) - possible placeholder data`);
+      }
+    });
+  }
   
   // Check for suspiciously uniform book counts
-  const singleBookCount = predictions.filter(p => p.books_count === 1 || p.books_count === '1').length;
+  const singleBookCount = normalized.filter(p => Number(p.books_count) <= 1).length;
   const singleBookPercentage = (singleBookCount / totalPredictions) * 100;
   
   if (singleBookPercentage > 60) {
-    warnings.push(`⚠️ ${singleBookPercentage.toFixed(0)}% of predictions from single book - limited market coverage`);
+    warnings.push(`⚠️ ${singleBookPercentage.toFixed(0)}% of predictions from ≤1 book - limited market coverage`);
+  }
+  
+  // Check for missing odds data
+  const noOddsCount = normalized.filter(p => !p.american_odds).length;
+  const noOddsPercentage = (noOddsCount / totalPredictions) * 100;
+  
+  if (noOddsPercentage > 30) {
+    warnings.push(`⚠️ ${noOddsPercentage.toFixed(0)}% of predictions missing odds data`);
   }
   
   // Check for realistic probability ranges
-  const highProbCount = predictions.filter(p => (p.anytime_td_prob || 0) > 0.65).length;
-  const lowProbCount = predictions.filter(p => (p.anytime_td_prob || 0) < 0.05).length;
+  const highProbCount = normalized.filter(p => (p.anytime_td_prob || 0) > 0.65).length;
+  const lowProbCount = normalized.filter(p => (p.anytime_td_prob || 0) < 0.05).length;
   
   if (highProbCount > totalPredictions * 0.05) {
     warnings.push(`⚠️ ${highProbCount} players with >65% TD probability - check calibration`);
@@ -259,7 +348,9 @@ function validateOddsRealism(predictions) {
     warnings,
     validation_summary: {
       total_predictions: totalPredictions,
+      odds_available: oddsAvailable.length,
       single_book_percentage: Math.round(singleBookPercentage),
+      no_odds_percentage: Math.round(noOddsPercentage),
       high_prob_count: highProbCount,
       unique_odds: Object.keys(oddsCounts).length,
       most_common_odds: Object.entries(oddsCounts).sort((a, b) => b[1] - a[1])[0]
@@ -268,16 +359,66 @@ function validateOddsRealism(predictions) {
 }
 
 /**
+ * Normalize field names for consistent processing
+ */
+function normalizeRow(prediction) {
+  const americanOdds = prediction.american_odds ?? 
+                      prediction.best_price ?? 
+                      prediction.anytime_best_odds ?? 
+                      prediction.odds ?? null;
+  
+  const booksCount = prediction.books_count ?? 
+                    prediction.num_books ?? 
+                    (Array.isArray(prediction.odds_sources) ? prediction.odds_sources.length : null) ??
+                    1; // Default to 1 book if unknown
+  
+  return {
+    ...prediction,
+    american_odds: americanOdds,
+    books_count: booksCount
+  };
+}
+
+/**
+ * Apply odds quality gates and adjust confidence/value accordingly
+ */
+function oddsGate(predictions) {
+  return predictions.map(pred => {
+    const booksCount = Number(pred.books_count) || 0;
+    const hasOdds = !!(pred.american_odds || pred.best_price);
+    
+    // Require ≥2 books AND valid odds for qualification
+    const oddsQualified = booksCount >= 2 && hasOdds;
+    
+    return {
+      ...pred,
+      odds_qualified: oddsQualified,
+      // Zero out value scores and lower confidence for unqualified odds
+      anytime_value_score: oddsQualified ? pred.anytime_value_score : 0,
+      multiple_value_score: oddsQualified ? pred.multiple_value_score : 0,
+      first_value_score: oddsQualified ? pred.first_value_score : 0,
+      anytime_confidence: oddsQualified ? pred.anytime_confidence : 'low',
+      odds_reason: !oddsQualified ? 
+        (!hasOdds ? 'no_odds' : 'insufficient_books') : 'qualified'
+    };
+  });
+}
+
+/**
  * Filter predictions based on query parameters
  */
-function filterPredictions(predictions, queryParams) {
-  let filtered = [...predictions];
+function filterPredictions(predictions, queryParams, games = []) {
+  // Normalize field names first
+  let filtered = predictions.map(normalizeRow);
   
-  // Apply reliability adjustments first
-  filtered = filtered.map(applyReliabilityAdjustment);
+  // Apply reliability adjustments (skip if already adjusted)
+  filtered = filtered.map(p => p.__adjusted ? p : applyReliabilityAdjustment(p));
   
-  // Apply team-level reconciliation
-  filtered = reconcileTeamTotals(filtered);
+  // Apply team-level reconciliation with game data
+  filtered = reconcileTeamTotals(filtered, games).map(p => ({ ...p, __adjusted: true }));
+  
+  // Apply odds quality gates
+  filtered = oddsGate(filtered);
   
   // Position filter
   if (queryParams.position) {
@@ -326,6 +467,14 @@ function filterPredictions(predictions, queryParams) {
     );
   }
   
+  // Cap displayed probabilities for realism (avoid >85% for non-QBs)
+  filtered = filtered.map(p => ({
+    ...p,
+    anytime_td_prob: Math.max(0.01, Math.min(p.position === 'QB' ? 0.95 : 0.85, p.anytime_td_prob)),
+    multiple_td_prob: Math.max(0.001, Math.min(0.60, p.multiple_td_prob || 0)),
+    first_td_prob: Math.max(0.001, Math.min(0.75, p.first_td_prob || 0))
+  }));
+  
   return filtered;
 }
 
@@ -338,7 +487,7 @@ function generateResponseByType(data, queryParams) {
   switch (type) {
     case 'all':
       return {
-        predictions: filterPredictions(data.full.predictions, queryParams),
+        predictions: filterPredictions(data.full.predictions, queryParams, data.full.games),
         metadata: queryParams.include_metadata ? data.full.metadata : undefined,
         summary: queryParams.include_summary ? data.full.summary : undefined,
         games: data.full.games
@@ -346,12 +495,12 @@ function generateResponseByType(data, queryParams) {
       
     case 'lite':
       return {
-        predictions: filterPredictions(data.lite.predictions, queryParams).slice(0, queryParams.top_n),
+        predictions: filterPredictions(data.lite.predictions, queryParams, data.full.games).slice(0, queryParams.top_n),
         metadata: data.lite.metadata
       };
       
     case 'top-anytime':
-      const topAnytime = filterPredictions(data.full.predictions, queryParams)
+      const topAnytime = filterPredictions(data.full.predictions, queryParams, data.full.games)
         .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
         .slice(0, top_n);
       
@@ -367,7 +516,7 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'top-multiple':
-      const topMultiple = filterPredictions(data.full.predictions, queryParams)
+      const topMultiple = filterPredictions(data.full.predictions, queryParams, data.full.games)
         .sort((a, b) => b.multiple_td_prob - a.multiple_td_prob)
         .slice(0, top_n);
       
@@ -383,7 +532,7 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'top-first':
-      const topFirst = filterPredictions(data.full.predictions, queryParams)
+      const topFirst = filterPredictions(data.full.predictions, queryParams, data.full.games)
         .sort((a, b) => b.first_td_prob - a.first_td_prob)
         .slice(0, top_n);
       
@@ -404,7 +553,7 @@ function generateResponseByType(data, queryParams) {
       }
       
       const gameData = data.full.games.find(g => g.game_id === queryParams.game_id);
-      const gamePlayers = filterPredictions(data.full.predictions, queryParams);
+      const gamePlayers = filterPredictions(data.full.predictions, queryParams, data.full.games);
       
       return {
         type: 'game_predictions',
@@ -418,7 +567,7 @@ function generateResponseByType(data, queryParams) {
       const positions = ['QB', 'RB', 'WR', 'TE'];
       
       positions.forEach(pos => {
-        const posPlayers = filterPredictions(data.full.predictions, { ...queryParams, position: pos })
+        const posPlayers = filterPredictions(data.full.predictions, { ...queryParams, position: pos }, data.full.games)
           .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
           .slice(0, Math.ceil(top_n / positions.length));
         
@@ -432,7 +581,8 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'value-picks':
-      const valuePicks = filterPredictions(data.full.predictions, queryParams)
+      const valuePicks = filterPredictions(data.full.predictions, queryParams, data.full.games)
+        .filter(p => p.odds_qualified) // Only show qualified odds for value picks
         .filter(p => p.anytime_value_score >= 0.6 || p.multiple_value_score >= 0.6 || p.first_value_score >= 0.6)
         .sort((a, b) => Math.max(b.anytime_value_score, b.multiple_value_score, b.first_value_score) - 
                        Math.max(a.anytime_value_score, a.multiple_value_score, a.first_value_score))
@@ -450,7 +600,8 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'high-confidence':
-      const highConfidence = filterPredictions(data.full.predictions, { ...queryParams, min_confidence: 'high' })
+      const highConfidence = filterPredictions(data.full.predictions, { ...queryParams, min_confidence: 'high' }, data.full.games)
+        .filter(p => p.odds_qualified) // Only show qualified odds for high confidence picks
         .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
         .slice(0, top_n);
       
@@ -460,7 +611,8 @@ function generateResponseByType(data, queryParams) {
         metadata: data.full.metadata,
         summary: {
           count: highConfidence.length,
-          avg_probability: highConfidence.reduce((sum, p) => sum + p.anytime_td_prob, 0) / highConfidence.length
+          avg_probability: highConfidence.length > 0 ? 
+            highConfidence.reduce((sum, p) => sum + p.anytime_td_prob, 0) / highConfidence.length : 0
         }
       };
       
@@ -515,6 +667,28 @@ function generateResponseByType(data, queryParams) {
         },
         sample_predictions: rawPredictions.slice(0, 5),
         metadata: data.full.metadata
+      };
+      
+    case 'raw':
+      // Raw data without any adjustments (debug mode)
+      let rawFiltered = [...data.full.predictions];
+      
+      // Apply only basic filters without adjustments
+      if (queryParams.position) {
+        rawFiltered = rawFiltered.filter(p => p.position === queryParams.position);
+      }
+      if (queryParams.team) {
+        rawFiltered = rawFiltered.filter(p => p.team === queryParams.team);
+      }
+      if (queryParams.player_id) {
+        rawFiltered = rawFiltered.filter(p => p.player_id === queryParams.player_id);
+      }
+      
+      return {
+        type: 'raw_predictions',
+        predictions: rawFiltered.slice(0, top_n),
+        metadata: data.full.metadata,
+        note: 'Raw predictions without reliability adjustments, team reconciliation, or odds gating'
       };
       
     default:
