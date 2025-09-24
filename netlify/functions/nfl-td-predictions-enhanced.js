@@ -1594,6 +1594,25 @@ exports.handler = async (event, context) => {
       console.warn('📊 Data Quality Warnings:', validationResult.warnings);
     }
     
+    // EMERGENCY FIX: Add fallback probabilities if missing
+    if (data.full.predictions && data.full.predictions.length > 0) {
+      const samplePred = data.full.predictions[0];
+      if (samplePred.anytime_td_prob === null || samplePred.anytime_td_prob === undefined) {
+        console.log('⚠️ Missing TD probabilities detected - applying fallback calculations');
+        data.full.predictions = data.full.predictions.map(pred => ({
+          ...pred,
+          anytime_td_prob: pred.anytime_td || 0.15, // Default 15% for main players
+          anytime_confidence: 'medium',
+          first_td_prob: pred.first_td || 0.05,
+          multiple_td_prob: pred.multiple_td || 0.08,
+          anytime_value_score: 0.1,
+          first_value_score: 0.1,
+          multiple_value_score: 0.1
+        }));
+        console.log(`✅ Applied fallback probabilities to ${data.full.predictions.length} predictions`);
+      }
+    }
+    
     // Generate response based on query type
     const response = await generateResponseByType(data, queryParams);
     
