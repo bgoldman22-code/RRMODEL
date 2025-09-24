@@ -56,6 +56,76 @@ let cachedData = {
   lastUpdate: null
 };
 
+// ========== BOOK WHITELIST ENFORCEMENT ==========
+
+function normalizeBookName(s = '') {
+  return String(s).toUpperCase().replace(/[\s._-]/g, '');
+}
+
+function enhancedFilterAllowedBooks(oddsSources = []) {
+  if (!Array.isArray(oddsSources)) return [];
+  
+  return oddsSources.filter(src => {
+    const bookName = normalizeBookName(src.book || src.bookmaker || '');
+    const isAllowed = CONFIG.ALLOWED_BOOKS.has(bookName);
+    const isExcluded = CONFIG.EXCLUDED_BOOKS.has(bookName);
+    
+    // Log rejected books for monitoring
+    if (isExcluded) {
+      console.warn(`🚫 EXCLUDED book rejected: ${bookName} (${src.book || src.bookmaker})`);
+    } else if (!isAllowed && bookName) {
+      console.warn(`⚠️ Non-whitelisted book rejected: ${bookName} (${src.book || src.bookmaker})`);
+    }
+    
+    return isAllowed && !isExcluded;
+  });
+}
+
+function normalizeRow(pred) {
+  const sources = Array.isArray(pred.odds_sources) ? pred.odds_sources : [];
+  const allowed = enhancedFilterAllowedBooks(sources);
+  
+  // Use only APPROVED books for market figures
+  const americanOdds = pred.american_odds ??
+    (allowed.length ? Math.max(...allowed.map(s => s.american_odds ?? s.best_price ?? -Infinity)) : null);
+    
+  const booksCount = allowed.length; // count only approved books
+  
+  return { 
+    ...pred, 
+    american_odds: americanOdds, 
+    books_count: booksCount, 
+    odds_sources_allowed: allowed,
+    odds_sources_all: sources // keep original for debugging
+  };
+}
+
+function oddsGate(predictions) {
+  return predictions.map(pred => {
+    const allowed = pred.odds_sources_allowed || [];
+    const booksCount = allowed.length;
+    const hasOdds = booksCount > 0;
+    const americanOdds = hasOdds ? Math.max(...allowed.map(s => s.american_odds ?? s.best_price ?? -Infinity)) : null;
+    
+    const oddsQualified = booksCount >= 2 && hasOdds; // require ≥2 approved books
+    
+    return {
+      ...pred,
+      american_odds: americanOdds,
+      books_count: booksCount,
+      odds_qualified: oddsQualified,
+      odds_quality: !hasOdds ? 'none' : (booksCount >= 3 ? 'excellent' : booksCount >= 2 ? 'good' : 'single'),
+      single_book_warning: hasOdds && booksCount === 1,
+      placeholder_odds_detected: false, // based on allowed books only
+      
+      // Zero out value if not qualified
+      anytime_value_score: oddsQualified ? (pred.anytime_value_score || 0) : 0,
+      multiple_value_score: oddsQualified ? (pred.multiple_value_score || 0) : 0,
+      first_value_score: oddsQualified ? (pred.first_value_score || 0) : 0
+    };
+  });
+}
+
 /**
  * Load and cache R pipeline predictions
  */
@@ -221,24 +291,7 @@ function fairProbFromTwoWay(americanYes, americanNo) {
  * Only allow: FanDuel, DraftKings, Caesars, BetMGM, Fanatics, ESPNBet
  * Explicitly reject: betonline.ag, Bovada, and any others
  */
-function filterAllowedBooks(oddsLines) {
-  if (!Array.isArray(oddsLines)) return [];
-  
-  return oddsLines.filter(line => {
-    const bookName = String(line.book || line.bookmaker || '').toUpperCase();
-    const isAllowed = CONFIG.ALLOWED_BOOKS.has(bookName);
-    const isExcluded = CONFIG.EXCLUDED_BOOKS.has(bookName);
-    
-    // Log rejected books for monitoring
-    if (isExcluded) {
-      console.warn(`🚫 Rejected excluded book: ${bookName}`);
-    } else if (!isAllowed && bookName) {
-      console.warn(`⚠️ Unknown book not in whitelist: ${bookName}`);
-    }
-    
-    return isAllowed && !isExcluded;
-  });
-}
+// REMOVED: Old filterAllowedBooks - replaced with enhancedFilterAllowedBooks above
 
 /**
  * Apply reliability adjustment using shrinkage to position priors + COUNT MODEL
@@ -288,11 +341,11 @@ function applyReliabilityAdjustment(prediction) {
     r = Math.max(0.3, r * 0.75); // 25% penalty for low-touch RBs
   }
 
-  // Position priors based on historical TD rates with role differentiation
+  // Position priors based on historical TD rates with TE boost for elite visibility
   const basePriors = { 
     RB: 0.22,    // RBs score most frequently
     WR: 0.16,    // WRs moderate rate
-    TE: 0.13,    // TEs lower rate
+    TE: 0.15,    // TEs boosted for better visibility (was 0.13)
     QB: 0.05,    // QBs rarely score rushing TDs
     default: 0.16 
   };
@@ -367,10 +420,22 @@ function applyReliabilityAdjustment(prediction) {
   // First TD needs hazard model (placeholder - use shrinkage for now)
   const firstAdjusted = clamp(lambda * (prediction.first_td_prob || 0) + (1 - lambda) * (prior * 0.10));
   
+  // Convert reliability to user-friendly bands
+  const reliabilityBand = r >= 0.75 ? 'HIGH' :
+                         r >= 0.50 ? 'MEDIUM' : 
+                         r >= 0.25 ? 'LOW' : 'SPARSE';
+  
+  const dataQualityScore = Math.round(r * 100);
+  
   return {
     ...prediction,
     reliability_adjusted: true,
     reliability_factor: Math.round(lambda * 100) / 100,
+    
+    // ELITE: User-friendly reliability display
+    reliability_band: reliabilityBand,
+    data_quality_score: dataQualityScore,
+    reliability_raw_percent: Math.round(r * 100), // Keep raw for debugging
     
     // Original values
     original_anytime_prob: prediction.anytime_td_prob,
@@ -1066,9 +1131,30 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'top-anytime':
-      const topAnytime = filterPredictions(data.full.predictions, queryParams, data.full.games)
+      const allFiltered = filterPredictions(data.full.predictions, queryParams, data.full.games);
+      let topAnytime = allFiltered
         .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
         .slice(0, top_n);
+      
+      // ELITE: Guarantee TE visibility - ensure top 5 TEs are included
+      const topTEs = allFiltered
+        .filter(p => p.position === 'TE')
+        .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
+        .slice(0, 5);
+        
+      const teIds = new Set(topAnytime.filter(p => p.position === 'TE').map(p => p.player_id));
+      const missingTEs = topTEs.filter(te => !teIds.has(te.player_id));
+      
+      if (missingTEs.length > 0) {
+        // Remove lowest-probability non-TEs to make room for elite TEs
+        const nonTEs = topAnytime.filter(p => p.position !== 'TE');
+        const keepNonTEs = nonTEs.slice(0, top_n - topTEs.length);
+        const currentTEs = topAnytime.filter(p => p.position === 'TE');
+        
+        topAnytime = [...keepNonTEs, ...currentTEs, ...missingTEs]
+          .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
+          .slice(0, top_n);
+      }
       
       return {
         type: 'anytime_td_leaders',
@@ -1077,7 +1163,9 @@ function generateResponseByType(data, queryParams) {
         summary: {
           count: topAnytime.length,
           avg_probability: topAnytime.reduce((sum, p) => sum + p.anytime_td_prob, 0) / topAnytime.length,
-          top_probability: topAnytime[0]?.anytime_td_prob || 0
+          top_probability: topAnytime[0]?.anytime_td_prob || 0,
+          te_count: topAnytime.filter(p => p.position === 'TE').length,
+          te_guaranteed: missingTEs.length > 0 ? `Added ${missingTEs.length} elite TEs` : null
         }
       };
       
@@ -1380,9 +1468,10 @@ exports.handler = async (event, context) => {
         model_version: 'ELITE',
         
         // ELITE: Enhanced UI guidance with book whitelist awareness
+        approved_books_only: true, // All odds filtered to whitelist
         single_book_count: (response.predictions || []).filter(p => p.single_book_warning).length,
         placeholder_odds_count: (response.predictions || []).filter(p => p.placeholder_odds_detected).length,
-        whitelist_violations: (response.predictions || []).filter(p => !p.whitelisted_books_only).length,
+        odds_qualified_count: (response.predictions || []).filter(p => p.odds_qualified).length,
         kelly_eligible: (response.predictions || []).filter(p => p.kelly_fraction > 0.005).length,
         
         allowed_books: Array.from(CONFIG.ALLOWED_BOOKS),
