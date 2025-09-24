@@ -9,7 +9,9 @@ const LEAGUES = {
     season: '2025-26', // Current season
     historical_season: '2024-25', // For fallback data
     btts_baseline: 0.52, // Historical BTTS rate
-    goals_per_game: 2.8
+    goals_per_game: 2.8,
+    ha_log: 0.085, // ~8.5% home advantage (log scale)
+    liquidity: 'high' // For market shrinking
   },
   'champions-league': {
     id: '4480', 
@@ -17,7 +19,9 @@ const LEAGUES = {
     season: '2025-26',
     historical_season: '2024-25', 
     btts_baseline: 0.48,
-    goals_per_game: 2.9
+    goals_per_game: 2.9,
+    ha_log: 0.06, // Lower home advantage in neutral-ish European games
+    liquidity: 'medium'
   },
   'bundesliga': {
     id: '4331',
@@ -25,7 +29,9 @@ const LEAGUES = {
     season: '2025-26',
     historical_season: '2024-25',
     btts_baseline: 0.58, // Highest scoring league
-    goals_per_game: 3.2
+    goals_per_game: 3.2,
+    ha_log: 0.10, // Strong home advantage in Germany
+    liquidity: 'medium'
   }
 };
 
@@ -53,27 +59,91 @@ function shrinkMean(x, n, k = 12, prior = 1.4) {
   return (x * n + prior * k) / (n + k);
 }
 
+// Enhanced team lambdas with opponent adjustment and form weighting
 function teamLambdas(home, away, league) {
-  // Per-game rates
-  const hGF = (home.goals_scored_home   || 0) / Math.max(home.games_home, 1);
-  const hGA = (home.goals_conceded_home || 0) / Math.max(home.games_home, 1);
-  const aGF = (away.goals_scored_away   || 0) / Math.max(away.games_away, 1);
-  const aGA = (away.goals_conceded_away || 0) / Math.max(away.games_away, 1);
+  // Calculate attack and defense ratings with opponent adjustment
+  const homeAttack = calculateAttackRating(home, league);
+  const homeDefense = calculateDefenseRating(home, league);
+  const awayAttack = calculateAttackRating(away, league);
+  const awayDefense = calculateDefenseRating(away, league);
 
-  // Shrink toward league-ish priors
-  const hGF_s = shrinkMean(hGF, home.games_home || 0, 12, league.goals_per_game/2);
-  const aGF_s = shrinkMean(aGF, away.games_away || 0, 12, league.goals_per_game/2);
-  const hGA_s = shrinkMean(hGA, home.games_home || 0, 12, league.goals_per_game/2);
-  const aGA_s = shrinkMean(aGA, away.games_away || 0, 12, league.goals_per_game/2);
+  // Log-linear formulation with opponent adjustment
+  const homeAdvantage = league.ha_log ?? 0.085; // League-specific home advantage (log scale)
+  const leagueBaseline = Math.log(league.goals_per_game / 2);
+  
+  const logLambdaHome = leagueBaseline + homeAdvantage + homeAttack - awayDefense;
+  const logLambdaAway = leagueBaseline + awayAttack - homeDefense;
+  
+  const lambdaHome = Math.max(0.3, Math.min(4.0, Math.exp(logLambdaHome)));
+  const lambdaAway = Math.max(0.3, Math.min(3.8, Math.exp(logLambdaAway)));
 
-  // Very lightweight attack×defense interaction with home tilt
-  const leagueHomeShare = Math.min(Math.max(league.goals_per_game * 0.52, 1.2), 1.7);
-  const leagueAwayShare = Math.max(league.goals_per_game - leagueHomeShare, 0.9);
+  return { 
+    home: lambdaHome, 
+    away: lambdaAway,
+    factors: {
+      homeAttack,
+      homeDefense, 
+      awayAttack,
+      awayDefense,
+      homeAdvantage
+    }
+  };
+}
 
-  const lambdaHome = Math.max(0.2, Math.min(3.8, (hGF_s * aGA_s) / (league.goals_per_game/2) * leagueHomeShare));
-  const lambdaAway = Math.max(0.2, Math.min(3.5, (aGF_s * hGA_s) / (league.goals_per_game/2) * leagueAwayShare));
+// Calculate attack rating with form weighting and xG integration
+function calculateAttackRating(team, league) {
+  // Use xG if available, fallback to goals
+  const homeXG = team.xg_for_home || team.goals_scored_home || 0;
+  const awayXG = team.xg_for_away || team.goals_scored_away || 0;
+  const homeGames = Math.max(team.games_home, 1);
+  const awayGames = Math.max(team.games_away, 1);
+  
+  // Calculate per-game rates with form weighting
+  const homeRate = applyFormWeighting(homeXG / homeGames, team.recent_form_attack || 1.0);
+  const awayRate = applyFormWeighting(awayXG / awayGames, team.recent_form_attack || 1.0);
+  
+  // Combined rate with home/away balance
+  const combinedRate = (homeRate + awayRate) / 2;
+  const leagueAvg = league.goals_per_game / 2;
+  
+  // Shrink toward league average
+  const totalGames = (team.games_home || 0) + (team.games_away || 0);
+  const shrunkRate = shrinkMean(combinedRate, totalGames, 10, leagueAvg);
+  
+  // Convert to log-scale rating (centered on 0)
+  return Math.log(Math.max(0.1, shrunkRate)) - Math.log(leagueAvg);
+}
 
-  return { home: lambdaHome, away: lambdaAway };
+// Calculate defense rating with form weighting and xGA integration  
+function calculateDefenseRating(team, league) {
+  // Use xGA if available, fallback to goals conceded
+  const homeXGA = team.xga_home || team.goals_conceded_home || 0;
+  const awayXGA = team.xga_away || team.goals_conceded_away || 0;
+  const homeGames = Math.max(team.games_home, 1);
+  const awayGames = Math.max(team.games_away, 1);
+  
+  // Calculate per-game rates with form weighting
+  const homeRate = applyFormWeighting(homeXGA / homeGames, team.recent_form_defense || 1.0);
+  const awayRate = applyFormWeighting(awayXGA / awayGames, team.recent_form_defense || 1.0);
+  
+  // Combined rate with home/away balance  
+  const combinedRate = (homeRate + awayRate) / 2;
+  const leagueAvg = league.goals_per_game / 2;
+  
+  // Shrink toward league average
+  const totalGames = (team.games_home || 0) + (team.games_away || 0);
+  const shrunkRate = shrinkMean(combinedRate, totalGames, 10, leagueAvg);
+  
+  // Convert to log-scale rating (centered on 0, higher = worse defense)
+  return Math.log(Math.max(0.1, shrunkRate)) - Math.log(leagueAvg);
+}
+
+// Apply form weighting to recent performance
+function applyFormWeighting(baseRate, formFactor) {
+  // Form factor: 1.0 = normal, >1.0 = good form, <1.0 = poor form
+  // Limit form impact to ±30%
+  const cappedFormFactor = Math.max(0.7, Math.min(1.3, formFactor));
+  return baseRate * cappedFormFactor;
 }
 
 function bttsProbFromLambdas(lambdaHome, lambdaAway) {
@@ -92,9 +162,9 @@ function calculateConfidence(probability, homeTeam, awayTeam, league, marketYesP
   // market disagreement bonus
   c += Math.min(10, absEdge * 100 * 0.6);
 
-  // sample size (home home-games + away away-games)
-  const n = (homeTeam.games_home || 0) + (awayTeam.games_away || 0);
-  c += Math.min(12, (n / 30) * 12);
+  // sample size (all games for both teams)
+  const n = (homeTeam.games_home||0) + (homeTeam.games_away||0) + (awayTeam.games_home||0) + (awayTeam.games_away||0);
+  c += Math.min(12, (n / 60) * 12); // Scale to 60 total samples instead of 30
 
   // league "data reliability" nudge
   if (league.id === '4328') c += 4; // PL
@@ -114,6 +184,36 @@ function recommendationFromEdge(prob, marketYes, confidence) {
   if (absEdge >= 0.05 && confidence >= 62) return 'BET';
   if (absEdge >= 0.03 && confidence >= 58) return 'CONSIDER';
   return 'PASS';
+}
+
+// Market integration with adaptive shrinking
+function applyMarketShrinking(modelProb, marketProb, league, confidence) {
+  if (!marketProb || marketProb <= 0 || marketProb >= 1) {
+    return { final_prob: modelProb, shrink_weight: 0, market_adjustment: 0 };
+  }
+  
+  // Determine shrink weight based on league liquidity and confidence
+  let shrinkWeight;
+  
+  if (league.id === '4328') { // Premier League - high liquidity, trust market more
+    shrinkWeight = confidence >= 70 ? 0.35 : 0.45; // More shrinking in high liquidity
+  } else if (league.id === '4480') { // Champions League - medium liquidity  
+    shrinkWeight = confidence >= 70 ? 0.30 : 0.40;
+  } else { // Other leagues - lower liquidity, trust model more
+    shrinkWeight = confidence >= 70 ? 0.25 : 0.35; 
+  }
+  
+  // Apply adaptive shrinking
+  const finalProb = (1 - shrinkWeight) * modelProb + shrinkWeight * marketProb;
+  const marketAdjustment = finalProb - modelProb;
+  
+  return {
+    final_prob: Math.max(0.05, Math.min(0.95, finalProb)),
+    shrink_weight: shrinkWeight,
+    market_adjustment: marketAdjustment,
+    raw_model_prob: modelProb,
+    market_prob: marketProb
+  };
 }
 
 // Kelly Criterion-based value betting with confidence adjustment
@@ -656,6 +756,12 @@ const PREMIER_LEAGUE_2025_26_TEAMS = {
     games_away: 12, goals_scored_away: 15, goals_conceded_away: 16,
     btts_rate_home: 0.64, btts_rate_away: 0.67
   },
+  'Sunderland': {
+    name: 'Sunderland', // Championship team appearing in some fixtures
+    games_home: 3, goals_scored_home: 4, goals_conceded_home: 3,
+    games_away: 3, goals_scored_away: 3, goals_conceded_away: 5,
+    btts_rate_home: 0.62, btts_rate_away: 0.64
+  },
   'Burnley': {
     name: 'Burnley',
     games_home: 12, goals_scored_home: 14, goals_conceded_home: 10,
@@ -732,7 +838,7 @@ const PREMIER_LEAGUE_2025_26_TEAMS = {
   }
 };
 
-// Dynamic team statistics fetching from TheSportsDB API
+// Enhanced team statistics with xG data integration
 async function fetchLiveTeamStats(league) {
   const leagueIds = { 
     'premier-league': '4328', 
@@ -744,9 +850,20 @@ async function fetchLiveTeamStats(league) {
   if (!leagueId) return null;
   
   try {
-    console.log(`Fetching live team stats for ${league} (ID: ${leagueId})`);
+    console.log(`Fetching enhanced team stats with xG data for ${league} (ID: ${leagueId})`);
     
-    // Fetch current season table/standings which includes goals scored/conceded
+    // Try to fetch xG data first (placeholder for future xG API)
+    let xgData = null;
+    try {
+      xgData = await fetchXGData(league);
+      if (xgData) {
+        console.log(`✅ xG data available for ${Object.keys(xgData).length} teams`);
+      }
+    } catch (e) {
+      console.log('xG data not available, using goals-based fallback');
+    }
+    
+    // Fetch current season table/standings 
     const tableUrl = `https://www.thesportsdb.com/api/v1/json/3/lookuptable.php?l=${leagueId}&s=2025-2026`;
     console.log(`Table URL: ${tableUrl}`);
     
@@ -772,28 +889,41 @@ async function fetchLiveTeamStats(league) {
       const goalsFor = parseInt(team.intGoalsFor) || 0;
       const goalsAgainst = parseInt(team.intGoalsAgainst) || 0;
       
+      // Get xG data if available
+      const teamXGData = xgData?.[teamName] || {};
+      
       // Estimate home/away splits (roughly 50/50 but with slight home advantage)
       const homeGames = Math.ceil(played / 2);
       const awayGames = Math.floor(played / 2);
       
-      // Home advantage: ~55% of goals scored at home, ~45% of goals conceded at home
+      // Home advantage: ~55% of attack stats at home, ~45% of defensive stats at home
       const homeGoalsScored = Math.round(goalsFor * 0.55);
       const awayGoalsScored = goalsFor - homeGoalsScored;
       const homeGoalsConceded = Math.round(goalsAgainst * 0.45);
       const awayGoalsConceded = goalsAgainst - homeGoalsConceded;
       
-      // Calculate BTTS rates based on scoring/conceding patterns
-      const avgGoalsScoredHome = homeGames > 0 ? homeGoalsScored / homeGames : 0;
-      const avgGoalsConcededHome = homeGames > 0 ? homeGoalsConceded / homeGames : 0;
-      const avgGoalsScoredAway = awayGames > 0 ? awayGoalsScored / awayGames : 0;
-      const avgGoalsConcededAway = awayGames > 0 ? awayGoalsConceded / awayGames : 0;
+      // xG data integration (if available)
+      const homeXGFor = teamXGData.xg_for_home || homeGoalsScored;
+      const awayXGFor = teamXGData.xg_for_away || awayGoalsScored;
+      const homeXGA = teamXGData.xga_home || homeGoalsConceded;
+      const awayXGA = teamXGData.xga_away || awayGoalsConceded;
       
-      // BTTS rate estimation: higher if both teams score and concede regularly
+      // Calculate form factors based on recent performance vs season average
+      const recentFormAttack = calculateFormFactor(teamXGData.recent_xg_for, teamXGData.season_xg_for);
+      const recentFormDefense = calculateFormFactor(teamXGData.recent_xga, teamXGData.season_xga);
+      
+      // Calculate BTTS rates with enhanced xG-based approach
+      const avgXGScoredHome = homeGames > 0 ? homeXGFor / homeGames : 0;
+      const avgXGConcededHome = homeGames > 0 ? homeXGA / homeGames : 0;
+      const avgXGScoredAway = awayGames > 0 ? awayXGFor / awayGames : 0;
+      const avgXGConcededAway = awayGames > 0 ? awayXGA / awayGames : 0;
+      
+      // Enhanced BTTS rate calculation using xG
       const bttsRateHome = Math.min(0.85, Math.max(0.25, 
-        0.5 + (avgGoalsScoredHome - 1.4) * 0.15 + (avgGoalsConcededHome - 1.4) * 0.10
+        0.5 + (avgXGScoredHome - 1.4) * 0.15 + (avgXGConcededHome - 1.4) * 0.10
       ));
       const bttsRateAway = Math.min(0.85, Math.max(0.25,
-        0.5 + (avgGoalsScoredAway - 1.4) * 0.15 + (avgGoalsConcededAway - 1.4) * 0.10  
+        0.5 + (avgXGScoredAway - 1.4) * 0.15 + (avgXGConcededAway - 1.4) * 0.10  
       ));
       
       teamStats[teamName] = {
@@ -804,20 +934,63 @@ async function fetchLiveTeamStats(league) {
         games_away: awayGames,
         goals_scored_away: awayGoalsScored,
         goals_conceded_away: awayGoalsConceded,
+        // Enhanced xG data
+        xg_for_home: homeXGFor,
+        xg_for_away: awayXGFor,
+        xga_home: homeXGA,
+        xga_away: awayXGA,
+        recent_form_attack: recentFormAttack,
+        recent_form_defense: recentFormDefense,
+        // Enhanced BTTS rates
         btts_rate_home: Math.round(bttsRateHome * 100) / 100,
         btts_rate_away: Math.round(bttsRateAway * 100) / 100,
         last_updated: new Date().toISOString(),
-        data_source: 'live_api_2025_26'
+        data_source: xgData ? 'live_api_xg_2025_26' : 'live_api_goals_2025_26'
       };
     });
     
-    console.log(`Fetched live stats for ${Object.keys(teamStats).length} teams`);
+    console.log(`Fetched enhanced stats for ${Object.keys(teamStats).length} teams`);
     return teamStats;
     
   } catch (error) {
     console.error('Failed to fetch live team stats:', error);
     return await fetchHistoricalTeamStats(league);
   }
+}
+
+// Placeholder for xG data API integration (implement when API is available)
+async function fetchXGData(league) {
+  // TODO: Integrate with xG data API (FBref, Understat, etc.)
+  // For now, return null to use goals-based fallback
+  return null;
+  
+  /* Future implementation:
+  try {
+    const xgApiUrl = `https://api.xgdata.com/league/${league}/teams/stats`;
+    const response = await fetch(xgApiUrl, {
+      headers: { 'Authorization': `Bearer ${process.env.XG_API_KEY}` }
+    });
+    
+    if (!response.ok) return null;
+    
+    const data = await response.json();
+    return processXGApiData(data);
+  } catch (error) {
+    console.log('xG API unavailable:', error.message);
+    return null;
+  }
+  */
+}
+
+// Calculate form factor based on recent vs season performance  
+function calculateFormFactor(recentRate, seasonRate) {
+  if (!recentRate || !seasonRate || seasonRate === 0) return 1.0;
+  
+  // Form factor = recent performance / season average
+  const rawFactor = recentRate / seasonRate;
+  
+  // Cap between 0.7 and 1.3 (±30% from average)
+  return Math.max(0.7, Math.min(1.3, rawFactor));
 }
 
 // Fallback to historical 2024-25 data with promotion/relegation adjustments
@@ -898,14 +1071,14 @@ function combineSeasonalData(currentStats, historicalStats, currentWeight = 3) {
 // Enhanced team lookup with fallbacks for common name variations
 function findTeamStats(teamName) {
   // Direct lookup first
-  if (PREMIER_LEAGUE_TEAM_STATS[teamName]) {
-    return PREMIER_LEAGUE_TEAM_STATS[teamName];
+  if (PREMIER_LEAGUE_2025_26_TEAMS[teamName]) {
+    return PREMIER_LEAGUE_2025_26_TEAMS[teamName];
   }
   
   // Try normalized name from mapping
   const normalized = normalizeTeamName(teamName);
-  if (PREMIER_LEAGUE_TEAM_STATS[normalized]) {
-    return PREMIER_LEAGUE_TEAM_STATS[normalized];
+  if (PREMIER_LEAGUE_2025_26_TEAMS[normalized]) {
+    return PREMIER_LEAGUE_2025_26_TEAMS[normalized];
   }
   
   // Common variations lookup
@@ -923,8 +1096,8 @@ function findTeamStats(teamName) {
   ];
   
   for (const variation of variations) {
-    if (PREMIER_LEAGUE_TEAM_STATS[variation]) {
-      return PREMIER_LEAGUE_TEAM_STATS[variation];
+    if (PREMIER_LEAGUE_2025_26_TEAMS[variation]) {
+      return PREMIER_LEAGUE_2025_26_TEAMS[variation];
     }
   }
   
@@ -1086,20 +1259,25 @@ exports.handler = async (event, context) => {
         };
       }
 
-      // Calculate Poisson lambdas and BTTS probability
-      const lambdas = teamLambdas(homeTeam, awayTeam, leagueConfig);
-      const modelProb = bttsProbFromLambdas(lambdas.home, lambdas.away);
+      // Calculate enhanced lambdas with opponent adjustment
+      const lambdaResult = teamLambdas(homeTeam, awayTeam, leagueConfig);
+      const rawModelProb = bttsProbFromLambdas(lambdaResult.home, lambdaResult.away);
       
-      // Market analysis
-      const marketYes = fixture.odds ? marketYesProbFromOdds(fixture.odds) : 0.5;
-      const edge = modelProb - marketYes;
+      // Market analysis and shrinking
+      const marketYes = fixture.odds ? marketYesProbFromOdds(fixture.odds) : null;
+      const prelimConfidence = calculateConfidence(rawModelProb, homeTeam, awayTeam, leagueConfig, marketYes ?? 0.5, marketYes ? Math.abs(rawModelProb - marketYes) : 0);
+      
+      // Apply market shrinking to get final probability
+      const marketResult = applyMarketShrinking(rawModelProb, marketYes, leagueConfig, prelimConfidence);
+      const finalProb = marketResult.final_prob;
+      
+      // Calculate edge and recommendation (only if market available)
+      const edge = marketYes ? (finalProb - marketYes) : 0;
       const absEdge = Math.abs(edge);
+      const confidence = calculateConfidence(finalProb, homeTeam, awayTeam, leagueConfig, marketYes ?? 0.5, absEdge);
+      const recommendation = marketYes ? recommendationFromEdge(finalProb, marketYes, confidence) : 'PASS';
       
-      // Confidence and recommendation
-      const confidence = calculateConfidence(modelProb, homeTeam, awayTeam, leagueConfig, marketYes, absEdge);
-      const recommendation = recommendationFromEdge(modelProb, marketYes, confidence);
-      
-      const prediction = modelProb > 0.5 ? 'YES' : 'NO';
+      const prediction = finalProb > 0.5 ? 'YES' : 'NO';
 
       // Add odds analysis if available
       const odds = fixture.odds || {};
@@ -1114,13 +1292,13 @@ exports.handler = async (event, context) => {
       let expectedValue = 0;
 
       if (odds.btts_yes && odds.btts_no) {
-        const yesValueFraction = calculateValueBet(modelProb, odds.btts_yes, confidence);
-        const noProbability = 1 - modelProb;
+        const yesValueFraction = calculateValueBet(finalProb, odds.btts_yes, confidence);
+        const noProbability = 1 - finalProb;
         const noValueFraction = calculateValueBet(noProbability, odds.btts_no, confidence);
         
         // Calculate expected values against fair market prices
-        const yesExpectedValuePerUnit = (modelProb * (odds.btts_yes - 1)) - ((1 - modelProb) * 1);
-        const noExpectedValuePerUnit = (noProbability * (odds.btts_no - 1)) - (modelProb * 1);
+        const yesExpectedValuePerUnit = (finalProb * (odds.btts_yes - 1)) - ((1 - finalProb) * 1);
+        const noExpectedValuePerUnit = (noProbability * (odds.btts_no - 1)) - (finalProb * 1);
 
         // Choose the better value bet
         if (yesValueFraction > noValueFraction && yesValueFraction > 0) {
@@ -1146,7 +1324,8 @@ exports.handler = async (event, context) => {
         season: fixture.season || leagueConfig.season,
         fixture_source: fixture.fixture_source,
         btts_prediction: prediction,
-        btts_probability: Math.round(modelProb * 100) / 100,
+        btts_probability: Math.round(finalProb * 100) / 100,
+        raw_model_probability: Math.round(rawModelProb * 100) / 100,
         confidence: Math.round(confidence),
         edge_pct: Math.round(edge * 1000) / 10,
         edge_pct_abs: Math.round(Math.abs(edge) * 1000) / 10,
@@ -1160,10 +1339,12 @@ exports.handler = async (event, context) => {
           btts_yes_american_numeric: odds.btts_yes ? toAmericanOddsNumeric(odds.btts_yes) : null,
           btts_no_american_numeric: odds.btts_no ? toAmericanOddsNumeric(odds.btts_no) : null,
           bookmaker: odds.bookmaker || null,
-          implied_prob_yes: odds.btts_yes ? (1 / odds.btts_yes) : null,
-          implied_prob_no: odds.btts_no ? (1 / odds.btts_no) : null,
-          fair_prob_yes: fair.yes ?? null,
-          fair_prob_no: fair.no ?? null,
+          // Raw implied probabilities (with vig)
+          implied_prob_yes_raw: rawYes || null,
+          implied_prob_no_raw: rawNo || null,
+          // Vig-free probabilities (preferred for display)
+          implied_prob_yes: fair.yes ?? null,
+          implied_prob_no: fair.no ?? null,
           overround: fair.overround ?? null
         },
         // Value betting analysis (stake_fraction = % of bankroll)
@@ -1172,15 +1353,35 @@ exports.handler = async (event, context) => {
           stake_fraction: recommendedStake > 0 ? Math.round(recommendedStake * 1000) / 1000 : 0,
           expected_value: Math.round(expectedValue * 1000) / 1000
         },
+        // Enhanced factors with opponent adjustment
         factors: {
-          lambda_home: Math.round(lambdas.home * 100) / 100,
-          lambda_away: Math.round(lambdas.away * 100) / 100,
+          lambda_home: Math.round(lambdaResult.home * 100) / 100,
+          lambda_away: Math.round(lambdaResult.away * 100) / 100,
+          home_attack_rating: Math.round(lambdaResult.factors.homeAttack * 1000) / 1000,
+          home_defense_rating: Math.round(lambdaResult.factors.homeDefense * 1000) / 1000,
+          away_attack_rating: Math.round(lambdaResult.factors.awayAttack * 1000) / 1000,
+          away_defense_rating: Math.round(lambdaResult.factors.awayDefense * 1000) / 1000,
+          home_advantage: lambdaResult.factors.homeAdvantage,
+          home_xg_pg: homeTeam.xg_for_home ? Math.round((homeTeam.xg_for_home / homeTeam.games_home) * 10) / 10 : null,
+          away_xg_pg: awayTeam.xg_for_away ? Math.round((awayTeam.xg_for_away / awayTeam.games_away) * 10) / 10 : null,
           home_goals_pg: Math.round((homeTeam.goals_scored_home / homeTeam.games_home) * 10) / 10,
           away_goals_pg: Math.round((awayTeam.goals_scored_away / awayTeam.games_away) * 10) / 10,
           home_conceded_pg: Math.round((homeTeam.goals_conceded_home / homeTeam.games_home) * 10) / 10, 
           away_conceded_pg: Math.round((awayTeam.goals_conceded_away / awayTeam.games_away) * 10) / 10,
           home_btts_rate: homeTeam.btts_rate_home,
-          away_btts_rate: awayTeam.btts_rate_away
+          away_btts_rate: awayTeam.btts_rate_away,
+          home_form_attack: homeTeam.recent_form_attack || 1.0,
+          away_form_attack: awayTeam.recent_form_attack || 1.0,
+          home_form_defense: homeTeam.recent_form_defense || 1.0,
+          away_form_defense: awayTeam.recent_form_defense || 1.0
+        },
+        // Market integration details
+        market_integration: {
+          shrink_weight: Math.round((marketResult.shrink_weight || 0) * 1000) / 1000,
+          market_adjustment: Math.round((marketResult.market_adjustment || 0) * 1000) / 1000,
+          raw_model_prob: Math.round(rawModelProb * 1000) / 1000,
+          market_prob_fair: marketResult.market_prob || null,
+          final_prob_source: marketResult.shrink_weight > 0 ? 'model_market_blend' : 'pure_model'
         },
         data_info: {
           home_data_source: homeTeam.data_source || 'unknown',
@@ -1209,7 +1410,7 @@ exports.handler = async (event, context) => {
           api_fixtures: rawFixtures.length,
           days_ahead: daysAhead,
           generated_at: new Date().toISOString(),
-          model_version: 'btts_v2.0_live_data',
+          model_version: 'btts_v2.1_enhanced_opponent_adj',
           league_btts_baseline: leagueConfig.btts_baseline,
           high_confidence: predictions.filter(p => p.confidence >= 65).length,
           fixture_sources: {
