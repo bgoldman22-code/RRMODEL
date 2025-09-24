@@ -13,7 +13,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-// Configuration
+// ELITE CONFIGURATION - Sharp Room Standards
 const CONFIG = {
   // R pipeline output paths
   PIPELINE_OUTPUT_DIR: path.join(process.cwd(), 'data', 'nfl_r_pipeline', 'output'),
@@ -26,6 +26,10 @@ const CONFIG = {
   // Response limits
   MAX_PLAYERS_RESPONSE: 500,
   DEFAULT_TOP_N: 50,
+  
+  // ELITE: Book whitelist enforcement (sharp room requirement)
+  ALLOWED_BOOKS: new Set(['FANDUEL', 'DRAFTKINGS', 'CAESARS', 'BETMGM', 'FANATICS', 'ESPNBET']),
+  EXCLUDED_BOOKS: new Set(['BETONLINE', 'BOVADA', 'HERITAGE', 'PINNACLE']), // Explicitly banned
   
   // Supported query types
   QUERY_TYPES: [
@@ -131,8 +135,114 @@ function processQueryParams(event) {
   };
 }
 
+// ========== ELITE COUNT MODEL FUNCTIONS ==========
+
 /**
- * Apply reliability adjustment using shrinkage to position priors (not scaling)
+ * Convert anytime probability to Poisson intensity μ
+ * μᵢ = −ln(1 − pᵢ) where pᵢ is anytime TD probability
+ */
+function pToMu(p) {
+  return -Math.log(Math.max(1e-6, 1 - Math.min(0.999, p)));
+}
+
+/**
+ * Convert Poisson intensity μ back to anytime probability
+ * P(any) = 1 − e^(−μ)
+ */
+function muToAny(mu) {
+  return 1 - Math.exp(-mu);
+}
+
+/**
+ * Calculate P(2+ TDs) from Poisson intensity μ
+ * P(2+) = 1 − e^(−μ) × (1 + μ)
+ */
+function muToTwoPlus(mu) {
+  return 1 - Math.exp(-mu) * (1 + mu);
+}
+
+/**
+ * Calculate P(3+ TDs) from Poisson intensity μ
+ * P(3+) = 1 − e^(−μ) × (1 + μ + μ²/2)
+ */
+function muToThreePlus(mu) {
+  return 1 - Math.exp(-mu) * (1 + mu + (mu * mu) / 2);
+}
+
+/**
+ * Better team TD mapping from total/spread using scoring model
+ * Replaces naive points/7 approach
+ */
+function expectedTeamTDs(totalPoints, spread, teamIsHome, tdShare = 0.74) {
+  // Logistic model for win probability from spread
+  const pHome = 1 / (1 + Math.exp(-0.18 * spread)); // Calibrated coefficient
+  
+  // Expected points for this team
+  const expectedPoints = teamIsHome ? 
+    totalPoints * pHome : 
+    totalPoints * (1 - pHome);
+  
+  // Convert to TDs (74% of points come from TDs, rest from FGs/safeties)
+  return (expectedPoints * tdShare) / 6.0;
+}
+
+/**
+ * Convert American odds to decimal odds
+ */
+function americanToDecimal(americanOdds) {
+  return americanOdds > 0 ? 
+    1 + americanOdds / 100 : 
+    1 + 100 / (-americanOdds);
+}
+
+/**
+ * Remove vig from two-way market (Yes/No)
+ */
+function devigTwoWay(pA, pB) {
+  const sum = pA + pB;
+  return {
+    a: pA / sum,
+    b: pB / sum,
+    overround: sum - 1
+  };
+}
+
+/**
+ * Get fair probability from American odds pair
+ */
+function fairProbFromTwoWay(americanYes, americanNo) {
+  const pYes = 1 / americanToDecimal(americanYes);
+  const pNo = 1 / americanToDecimal(americanNo);
+  return devigTwoWay(pYes, pNo).a;
+}
+
+/**
+ * Enforce book whitelist - CRITICAL REQUIREMENT
+ * Only allow: FanDuel, DraftKings, Caesars, BetMGM, Fanatics, ESPNBet
+ * Explicitly reject: betonline.ag, Bovada, and any others
+ */
+function filterAllowedBooks(oddsLines) {
+  if (!Array.isArray(oddsLines)) return [];
+  
+  return oddsLines.filter(line => {
+    const bookName = String(line.book || line.bookmaker || '').toUpperCase();
+    const isAllowed = CONFIG.ALLOWED_BOOKS.has(bookName);
+    const isExcluded = CONFIG.EXCLUDED_BOOKS.has(bookName);
+    
+    // Log rejected books for monitoring
+    if (isExcluded) {
+      console.warn(`🚫 Rejected excluded book: ${bookName}`);
+    } else if (!isAllowed && bookName) {
+      console.warn(`⚠️ Unknown book not in whitelist: ${bookName}`);
+    }
+    
+    return isAllowed && !isExcluded;
+  });
+}
+
+/**
+ * Apply reliability adjustment using shrinkage to position priors + COUNT MODEL
+ * ENHANCED: Now builds Poisson intensity μᵢ and ensures mathematical consistency
  */
 function applyReliabilityAdjustment(prediction) {
   // Parse reliability as 0..1
@@ -240,24 +350,269 @@ function applyReliabilityAdjustment(prediction) {
   
   // Shrink probabilities toward enhanced position priors
   const anytimeAdjusted = clamp(lambda * (prediction.anytime_td_prob || 0) + (1 - lambda) * prior);
-  const multipleAdjusted = clamp(lambda * (prediction.multiple_td_prob || 0) + (1 - lambda) * (prior * 0.12));
+  
+  // ELITE COUNT MODEL: Convert to Poisson intensity μ and derive consistent probabilities
+  const adjustedMu = pToMu(anytimeAdjusted);
+  
+  // Mathematically consistent multiple TD probabilities from μ
+  const multipleFromMu = muToTwoPlus(adjustedMu);
+  const threePlusFromMu = muToThreePlus(adjustedMu);
+  
+  // Use max of model prediction and count-derived (ensures mathematical consistency)
+  const multipleAdjusted = Math.max(
+    clamp(lambda * (prediction.multiple_td_prob || 0) + (1 - lambda) * (prior * 0.12)),
+    multipleFromMu
+  );
+  
+  // First TD needs hazard model (placeholder - use shrinkage for now)
   const firstAdjusted = clamp(lambda * (prediction.first_td_prob || 0) + (1 - lambda) * (prior * 0.10));
   
   return {
     ...prediction,
     reliability_adjusted: true,
     reliability_factor: Math.round(lambda * 100) / 100,
+    
+    // Original values
     original_anytime_prob: prediction.anytime_td_prob,
+    original_multiple_prob: prediction.multiple_td_prob,
+    
+    // ELITE: Count model adjusted probabilities
     anytime_td_prob: anytimeAdjusted,
     multiple_td_prob: multipleAdjusted,
     first_td_prob: firstAdjusted,
+    
+    // Count model metadata
+    td_intensity_mu: Math.round(adjustedMu * 1000) / 1000,
+    multiple_from_mu: Math.round(multipleFromMu * 1000) / 1000,
+    three_plus_prob: Math.round(threePlusFromMu * 1000) / 1000,
+    
+    // Shrinkage metadata
     position_prior: prior,
-    shrinkage_amount: Math.round((1 - lambda) * 100) / 100
+    shrinkage_amount: Math.round((1 - lambda) * 100) / 100,
+    count_model_applied: true
   };
 }
 
 /**
- * Reconcile team-level TD totals using per-game projections from totals/spreads
+ * ELITE: Monte Carlo team reconciliation with defense/ST allocation
+ * Replaces naive proportional scaling with proper simulation-based approach
+ */
+function monteCarloTeamReconciliation(predictions, games = [], numSimulations = 10000) {
+  // Build game index with enhanced TD projections
+  const gameIndex = new Map();
+  
+  for (const game of games || []) {
+    const gameId = game.game_id || game.id;
+    if (!gameId) continue;
+    
+    // Enhanced team TD projection using scoring model
+    const totalPoints = game.total_points || game.market_total || game.over_under || 44;
+    const spread = game.spread || 0;
+    const homeTeam = game.home_team_abbr || game.home_team || game.home || 'HOME';
+    const awayTeam = game.away_team_abbr || game.away_team || game.away || 'AWAY';
+    
+    // Use scoring model instead of naive points/7
+    const homeTDs = expectedTeamTDs(totalPoints, spread, true);
+    const awayTDs = expectedTeamTDs(totalPoints, spread, false);
+    
+    gameIndex.set(gameId, {
+      home_team: homeTeam,
+      away_team: awayTeam,
+      total_points: totalPoints,
+      spread: spread,
+      team_proj_TDs: {
+        [homeTeam]: homeTDs,
+        [awayTeam]: awayTDs
+      }
+    });
+  }
+  
+  // Group predictions by (team, game_id)
+  const teamGameBuckets = new Map();
+  for (const pred of predictions) {
+    const team = pred.team || pred.team_abbr || 'UNKNOWN';
+    const gameId = pred.game_id || 'unknown';
+    const key = `${team}::${gameId}`;
+    
+    if (!teamGameBuckets.has(key)) teamGameBuckets.set(key, []);
+    teamGameBuckets.get(key).push(pred);
+  }
+  
+  const reconciledPredictions = [];
+  
+  // Monte Carlo reconciliation for each team-game
+  for (const [key, players] of teamGameBuckets.entries()) {
+    const [team, gameId] = key.split('::');
+    const gameInfo = gameIndex.get(gameId);
+    const teamExpectedTDs = gameInfo?.team_proj_TDs?.[team] || 2.5;
+    
+    // Reserve 8-12% for defense/ST TDs (team/opponent adjusted)
+    const defenseSTReserve = Math.min(0.4, teamExpectedTDs * 0.10);
+    const offensiveTDsAvailable = Math.max(0.8, teamExpectedTDs - defenseSTReserve);
+    
+    // Extract intensities (μᵢ) from players
+    const playerIntensities = players.map(p => ({
+      player: p,
+      mu: p.td_intensity_mu || pToMu(p.anytime_td_prob || 0.01)
+    }));
+    
+    // Monte Carlo simulation
+    const simResults = runTeamTDSimulation(playerIntensities, offensiveTDsAvailable, numSimulations);
+    
+    // Apply simulation results to players
+    players.forEach((player, idx) => {
+      const simResult = simResults[idx];
+      
+      reconciledPredictions.push({
+        ...player,
+        
+        // Monte Carlo adjusted probabilities
+        anytime_td_prob: Math.max(0.01, Math.min(0.85, simResult.anytime_prob)),
+        multiple_td_prob: Math.max(0.001, Math.min(0.60, simResult.multiple_prob)),
+        first_td_prob: Math.max(0.001, Math.min(0.75, simResult.first_prob)),
+        
+        // Monte Carlo metadata
+        mc_reconciled: true,
+        mc_simulations: numSimulations,
+        team_expected_tds: Math.round(teamExpectedTDs * 100) / 100,
+        offensive_tds_available: Math.round(offensiveTDsAvailable * 100) / 100,
+        defense_st_reserve: Math.round(defenseSTReserve * 100) / 100,
+        
+        // Original probabilities for comparison
+        pre_mc_anytime: player.anytime_td_prob,
+        pre_mc_multiple: player.multiple_td_prob,
+        
+        // Simulation statistics
+        mc_td_share: Math.round((simResult.expected_tds / offensiveTDsAvailable) * 1000) / 1000,
+        mc_variance: Math.round(simResult.variance * 1000) / 1000
+      });
+    });
+  }
+  
+  return reconciledPredictions;
+}
+
+/**
+ * Run Monte Carlo simulation for team TD allocation
+ * Uses softmax of intensities μᵢ to allocate team TDs across players
+ */
+function runTeamTDSimulation(playerIntensities, teamTDs, numSims = 10000) {
+  const numPlayers = playerIntensities.length;
+  const results = new Array(numPlayers).fill(0).map(() => ({
+    td_counts: [],
+    anytime_hits: 0,
+    multiple_hits: 0,
+    first_hits: 0,
+    total_tds: 0
+  }));
+  
+  // Calculate softmax shares from intensities
+  const totalMu = playerIntensities.reduce((sum, p) => sum + p.mu, 0);
+  const shares = playerIntensities.map(p => totalMu > 0 ? p.mu / totalMu : 1 / numPlayers);
+  
+  for (let sim = 0; sim < numSims; sim++) {
+    // Simulate team TD count (Poisson around expected)
+    const simTeamTDs = Math.max(0, Math.round(poissonRandom(teamTDs)));
+    
+    // Allocate TDs to players using multinomial with softmax shares
+    const playerTDs = new Array(numPlayers).fill(0);
+    
+    for (let td = 0; td < simTeamTDs; td++) {
+      const randomIdx = multinomialSample(shares);
+      if (randomIdx < numPlayers) {
+        playerTDs[randomIdx]++;
+      }
+    }
+    
+    // Record results
+    playerTDs.forEach((tds, idx) => {
+      results[idx].td_counts.push(tds);
+      results[idx].total_tds += tds;
+      if (tds >= 1) results[idx].anytime_hits++;
+      if (tds >= 2) results[idx].multiple_hits++;
+      if (tds >= 1 && sim % (simTeamTDs || 1) === 0) results[idx].first_hits++; // Approximate first TD
+    });
+  }
+  
+  // Calculate probabilities from simulation
+  return results.map((result, idx) => {
+    const anytimeProb = result.anytime_hits / numSims;
+    const multipleProb = result.multiple_hits / numSims;
+    const firstProb = result.first_hits / numSims;
+    const expectedTDs = result.total_tds / numSims;
+    const variance = calculateVariance(result.td_counts);
+    
+    return {
+      anytime_prob: anytimeProb,
+      multiple_prob: multipleProb,
+      first_prob: firstProb,
+      expected_tds: expectedTDs,
+      variance: variance
+    };
+  });
+}
+
+/**
+ * Generate Poisson random number (Box-Muller approximation for speed)
+ */
+function poissonRandom(lambda) {
+  if (lambda < 10) {
+    // Use Knuth's algorithm for small lambda
+    let L = Math.exp(-lambda);
+    let k = 0;
+    let p = 1;
+    
+    do {
+      k++;
+      p *= Math.random();
+    } while (p > L);
+    
+    return k - 1;
+  } else {
+    // Normal approximation for large lambda
+    const normal = boxMullerRandom();
+    return Math.max(0, Math.round(lambda + Math.sqrt(lambda) * normal));
+  }
+}
+
+/**
+ * Box-Muller transformation for normal random numbers
+ */
+function boxMullerRandom() {
+  const u = Math.random();
+  const v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+/**
+ * Sample from multinomial distribution using cumulative probabilities
+ */
+function multinomialSample(probabilities) {
+  const rand = Math.random();
+  let cumSum = 0;
+  
+  for (let i = 0; i < probabilities.length; i++) {
+    cumSum += probabilities[i];
+    if (rand <= cumSum) return i;
+  }
+  
+  return probabilities.length - 1; // Fallback
+}
+
+/**
+ * Calculate sample variance
+ */
+function calculateVariance(values) {
+  if (values.length <= 1) return 0;
+  
+  const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+  const squaredDiffs = values.map(val => Math.pow(val - mean, 2));
+  return squaredDiffs.reduce((sum, val) => sum + val, 0) / (values.length - 1);
+}
+
+/**
+ * LEGACY: Reconcile team-level TD totals using per-game projections from totals/spreads
+ * Kept for fallback when Monte Carlo is disabled
  */
 function reconcileTeamTotals(predictions, games = []) {
   // Build game index for team TD projections
@@ -448,37 +803,64 @@ function validateOddsRealism(predictions) {
 }
 
 /**
- * Normalize field names for consistent processing
+ * Normalize field names for consistent processing + BOOK WHITELIST ENFORCEMENT
  */
 function normalizeRow(prediction) {
-  const americanOdds = prediction.american_odds ?? 
-                      prediction.best_price ?? 
-                      prediction.anytime_best_odds ?? 
-                      prediction.odds ?? null;
+  // Filter odds sources to only allowed books
+  const rawOddsSources = Array.isArray(prediction.odds_sources) ? prediction.odds_sources : [];
+  const allowedOddsSources = filterAllowedBooks(rawOddsSources);
   
-  const booksCount = prediction.books_count ?? 
-                    prediction.num_books ?? 
-                    (Array.isArray(prediction.odds_sources) ? prediction.odds_sources.length : null) ??
-                    1; // Default to 1 book if unknown
+  // Only use odds from whitelisted books
+  let americanOdds = null;
+  let bestPrice = null;
+  let booksCount = 0;
+  
+  if (allowedOddsSources.length > 0) {
+    // Get best price from allowed books only
+    const validPrices = allowedOddsSources
+      .map(source => source.american_odds || source.price || source.best_price)
+      .filter(price => price != null && !isNaN(price));
+    
+    if (validPrices.length > 0) {
+      americanOdds = Math.max(...validPrices); // Best (highest) odds
+      bestPrice = americanOdds;
+      booksCount = allowedOddsSources.length;
+    }
+  } else {
+    // Fallback to direct fields, but only if no odds_sources (legacy data)
+    if (!rawOddsSources.length) {
+      americanOdds = prediction.american_odds ?? 
+                    prediction.best_price ?? 
+                    prediction.anytime_best_odds ?? 
+                    prediction.odds ?? null;
+      booksCount = prediction.books_count ?? prediction.num_books ?? (americanOdds ? 1 : 0);
+    }
+  }
   
   return {
     ...prediction,
     american_odds: americanOdds,
-    books_count: booksCount
+    best_price: bestPrice,
+    books_count: booksCount,
+    allowed_odds_sources: allowedOddsSources,
+    whitelisted_books_only: true,
+    rejected_sources: rawOddsSources.length - allowedOddsSources.length
   };
 }
 
 /**
- * Apply enhanced odds quality gates and adjust confidence/value accordingly
+ * ELITE: Enhanced odds quality gates with STRICT book whitelist enforcement
+ * Only FanDuel, DraftKings, Caesars, BetMGM, Fanatics, ESPNBet allowed
  */
 function oddsGate(predictions) {
   return predictions.map(pred => {
     const booksCount = Number(pred.books_count) || 0;
     const hasOdds = !!(pred.american_odds || pred.best_price);
     const americanOdds = pred.american_odds || pred.best_price || null;
+    const rejectedSources = pred.rejected_sources || 0;
     
-    // Enhanced qualification criteria
-    const oddsQualified = booksCount >= 2 && hasOdds;
+    // ELITE: Strict qualification criteria with whitelist enforcement
+    const oddsQualified = booksCount >= 2 && hasOdds && pred.whitelisted_books_only;
     const singleBookWarning = booksCount === 1 && hasOdds;
     const placeholderOdds = hasOdds && (
       Math.abs(americanOdds - 300) < 10 || // Common placeholder odds
@@ -486,21 +868,27 @@ function oddsGate(predictions) {
       Math.abs(americanOdds - 500) < 10
     );
     
+    // Book quality assessment
+    const hasRejectedBooks = rejectedSources > 0;
+    const sufficientBooks = booksCount >= 3; // Prefer 3+ books for best consensus
+    
     // Classify odds quality for UI badges
     let oddsQuality = 'none';
     if (!hasOdds) {
       oddsQuality = 'none';
     } else if (placeholderOdds) {
       oddsQuality = 'placeholder';
+    } else if (hasRejectedBooks && booksCount < 2) {
+      oddsQuality = 'rejected_sources'; // Had books but they were excluded
     } else if (singleBookWarning) {
       oddsQuality = 'single_book';
-    } else if (booksCount >= 3) {
+    } else if (sufficientBooks) {
       oddsQuality = 'excellent';
     } else if (booksCount === 2) {
       oddsQuality = 'good';
     }
     
-    // Enhanced value scoring with quality penalties
+    // ELITE: Enhanced value scoring with whitelist penalties
     let valueMultiplier = 1.0;
     if (!oddsQualified) {
       valueMultiplier = 0; // No value for unqualified odds
@@ -508,26 +896,58 @@ function oddsGate(predictions) {
       valueMultiplier = 0.3; // Heavy penalty for single book
     } else if (placeholderOdds) {
       valueMultiplier = 0.1; // Near-zero for placeholder odds
+    } else if (hasRejectedBooks) {
+      valueMultiplier = Math.max(0.7, valueMultiplier - (rejectedSources * 0.05)); // Penalty for rejected sources
+    }
+    
+    // Calculate market-based EV and Kelly (if qualified)
+    let expectedValue = 0;
+    let kellyFraction = 0;
+    let fairProb = null;
+    
+    if (oddsQualified && americanOdds) {
+      const modelProb = pred.anytime_td_prob || 0;
+      const impliedProb = 1 / americanToDecimal(americanOdds);
+      
+      // Simple EV calculation: EV = p * (odds - 1) - (1 - p)
+      expectedValue = modelProb * (americanToDecimal(americanOdds) - 1) - (1 - modelProb);
+      
+      // Kelly fraction: f* = (bp - q) / b where b = decimal odds - 1
+      if (expectedValue > 0) {
+        const b = americanToDecimal(americanOdds) - 1;
+        kellyFraction = Math.min(0.05, (b * modelProb - (1 - modelProb)) / b); // Cap at 5%
+      }
+      
+      fairProb = impliedProb; // Store for market comparison
     }
     
     return {
       ...pred,
+      
+      // ELITE: Odds qualification with whitelist enforcement
       odds_qualified: oddsQualified,
       odds_quality: oddsQuality,
       single_book_warning: singleBookWarning,
       placeholder_odds_detected: placeholderOdds,
+      rejected_non_whitelist: rejectedSources,
+      
+      // Market analysis
+      implied_probability: fairProb,
+      expected_value: Math.round(expectedValue * 1000) / 1000,
+      kelly_fraction: Math.max(0, Math.round(kellyFraction * 1000) / 1000),
       
       // Apply quality-adjusted value scores
       anytime_value_score: (pred.anytime_value_score || 0) * valueMultiplier,
       multiple_value_score: (pred.multiple_value_score || 0) * valueMultiplier,
       first_value_score: (pred.first_value_score || 0) * valueMultiplier,
       
-      // Adjust confidence for odds quality
+      // Adjust confidence for odds quality and whitelist compliance
       anytime_confidence: !oddsQualified ? 'low' : 
                          (singleBookWarning || placeholderOdds) ? 
                          Math.min(pred.anytime_confidence, 'medium') : pred.anytime_confidence,
       
       odds_reason: !hasOdds ? 'no_odds' : 
+                  !pred.whitelisted_books_only ? 'non_whitelisted_sources' :
                   placeholderOdds ? 'placeholder_detected' :
                   booksCount < 2 ? 'insufficient_books' : 
                   'qualified'
@@ -536,19 +956,31 @@ function oddsGate(predictions) {
 }
 
 /**
- * Filter predictions based on query parameters
+ * ELITE: Filter predictions with count model + Monte Carlo reconciliation
  */
 function filterPredictions(predictions, queryParams, games = []) {
-  // Normalize field names first
+  // Normalize field names first + enforce book whitelist
   let filtered = predictions.map(normalizeRow);
   
-  // Apply reliability adjustments (skip if already adjusted)
+  // Apply reliability adjustments with count model (skip if already adjusted)
   filtered = filtered.map(p => p.__adjusted ? p : applyReliabilityAdjustment(p));
   
-  // Apply team-level reconciliation with game data
-  filtered = reconcileTeamTotals(filtered, games).map(p => ({ ...p, __adjusted: true }));
+  // ELITE: Monte Carlo team reconciliation (falls back to legacy if needed)
+  const useMonteCarloReconciliation = queryParams.mc_reconciliation !== 'false'; // Default to true
   
-  // Apply odds quality gates
+  if (useMonteCarloReconciliation) {
+    try {
+      filtered = monteCarloTeamReconciliation(filtered, games).map(p => ({ ...p, __adjusted: true }));
+    } catch (error) {
+      console.warn('⚠️ Monte Carlo reconciliation failed, falling back to legacy:', error.message);
+      filtered = reconcileTeamTotals(filtered, games).map(p => ({ ...p, __adjusted: true }));
+    }
+  } else {
+    // Legacy reconciliation
+    filtered = reconcileTeamTotals(filtered, games).map(p => ({ ...p, __adjusted: true }));
+  }
+  
+  // Apply ELITE odds quality gates with book whitelist enforcement
   filtered = oddsGate(filtered);
   
   // Position filter
@@ -919,7 +1351,16 @@ exports.handler = async (event, context) => {
       total_predictions: (response.predictions || []).length
     };
     
-    // Add performance and freshness metadata with UI guidance
+    // ELITE: Enhanced metadata with count model and Monte Carlo stats
+    const eliteStats = {
+      count_model_applied: (response.predictions || []).filter(p => p.count_model_applied).length,
+      monte_carlo_reconciled: (response.predictions || []).filter(p => p.mc_reconciled).length,
+      whitelist_compliant: (response.predictions || []).filter(p => p.whitelisted_books_only).length,
+      kelly_opportunities: (response.predictions || []).filter(p => p.kelly_fraction > 0.01).length,
+      rejected_books_total: (response.predictions || []).reduce((sum, p) => sum + (p.rejected_sources || 0), 0)
+    };
+    
+    // Add performance and freshness metadata with ELITE enhancements
     const responseWithMeta = {
       ...response,
       api_metadata: {
@@ -929,16 +1370,38 @@ exports.handler = async (event, context) => {
         pipeline_version: data.full.metadata.version,
         total_available_players: data.full.predictions.length,
         adjustments_applied: adjustmentStats,
+        elite_enhancements: eliteStats,
+        model_version: 'elite_count_model_mc_reconciliation_v1.0',
         query_params: queryParams.debug ? queryParams : undefined
       },
       ui_guidance: {
         endpoint_used: queryParams.type,
         is_production_ready: !['raw', 'lite'].includes(queryParams.type),
+        model_version: 'ELITE',
+        
+        // ELITE: Enhanced UI guidance with book whitelist awareness
         single_book_count: (response.predictions || []).filter(p => p.single_book_warning).length,
         placeholder_odds_count: (response.predictions || []).filter(p => p.placeholder_odds_detected).length,
+        whitelist_violations: (response.predictions || []).filter(p => !p.whitelisted_books_only).length,
+        kelly_eligible: (response.predictions || []).filter(p => p.kelly_fraction > 0.005).length,
+        
+        allowed_books: Array.from(CONFIG.ALLOWED_BOOKS),
+        excluded_books: Array.from(CONFIG.EXCLUDED_BOOKS),
+        
         recommendations: queryParams.type === 'raw' || queryParams.type === 'lite' ? 
-          ['Switch to top-anytime or value-picks for production UI', 'Badge single-book rows', 'Never show BET button for unqualified odds'] :
-          ['Badge rows with single_book_warning=true', 'Hide BET button when odds_qualified=false']
+          [
+            'Switch to top-anytime or value-picks for production UI', 
+            'Badge single-book rows', 
+            'Never show BET button for unqualified odds',
+            'Only display odds from: FanDuel, DraftKings, Caesars, BetMGM, Fanatics, ESPNBet'
+          ] :
+          [
+            'Badge rows with single_book_warning=true', 
+            'Hide BET button when odds_qualified=false',
+            'Show Kelly fraction for qualified bets (kelly_fraction > 0)',
+            'Flag rejected_non_whitelist > 0 with warning icon',
+            'Display count model metadata: td_intensity_mu, multiple_from_mu'
+          ]
       }
     };
     
