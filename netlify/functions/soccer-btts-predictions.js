@@ -2936,8 +2936,9 @@ exports.handler = async (event, context) => {
         },
         value_bet: professionalValueBet ? {
           selection: professionalValueBet.selection || 'ANALYSIS',
-          kelly_fraction: `${Math.round((professionalValueBet.kelly_fraction || 0) * 1000) / 10}%`,
-          expected_value: `${Math.round((professionalValueBet.expected_value || 0) * 100)}%`,
+          kelly_fraction: `${Math.round((Number(professionalValueBet.kelly_fraction) || 0) * 1000) / 10}%`,
+          expected_value: `${Math.round((Number(professionalValueBet.expected_value) || 0) * 100)}%`,
+          stake_fraction: Number(professionalValueBet.kelly_fraction) || 0, // Backward compatibility
           recommended_stake: (professionalValueBet.kelly_fraction || 0) > 0.02 ? 'BET' : 
                             (professionalValueBet.kelly_fraction || 0) > 0.01 ? 'SMALL_BET' : 'PASS',
           confidence_level: (professionalValueBet.kelly_fraction || 0) > 0.05 ? 'HIGH' : 
@@ -2948,6 +2949,7 @@ exports.handler = async (event, context) => {
           selection: 'NO_ODDS',
           kelly_fraction: '0%',
           expected_value: '0%',
+          stake_fraction: 0, // Backward compatibility
           recommended_stake: 'PASS',
           confidence_level: 'NONE',  
           edge_description: 'No market data available',
@@ -2961,6 +2963,15 @@ exports.handler = async (event, context) => {
           home_data_mix: homeTeam.data_mix || null,
           away_data_mix: awayTeam.data_mix || null,
           season: leagueConfig.season
+        },
+        // Backward compatibility for old frontend
+        factors: {
+          home_goals_pg: homeTeam.goals_scored_home ? Math.round((homeTeam.goals_scored_home / Math.max(homeTeam.games_home, 1)) * 10) / 10 : 1.5,
+          away_goals_pg: awayTeam.goals_scored_away ? Math.round((awayTeam.goals_scored_away / Math.max(awayTeam.games_away, 1)) * 10) / 10 : 1.3,
+          home_conceded_pg: homeTeam.goals_conceded_home ? Math.round((homeTeam.goals_conceded_home / Math.max(homeTeam.games_home, 1)) * 10) / 10 : 1.2,
+          away_conceded_pg: awayTeam.goals_conceded_away ? Math.round((awayTeam.goals_conceded_away / Math.max(awayTeam.games_away, 1)) * 10) / 10 : 1.4,
+          home_btts_rate: homeTeam.btts_rate_home || 0.55,
+          away_btts_rate: awayTeam.btts_rate_away || 0.48
         }
       };
     });

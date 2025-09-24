@@ -231,10 +231,10 @@ export default function SoccerBTTS() {
                                 Bet {pred.value_bet.selection}
                               </div>
                               <div className="text-xs text-gray-600">
-                                Stake: {Math.round(pred.value_bet.stake_fraction * 100)}% of bankroll
+                                Stake: {pred.value_bet.kelly_fraction} of bankroll
                               </div>
                               <div className="text-xs text-green-600">
-                                Expected value: {pred.value_bet.expected_value > 0 ? '+' : ''}{Math.round(pred.value_bet.expected_value * 100)}%
+                                Expected value: {pred.value_bet.expected_value}
                               </div>
                             </>
                           )}
@@ -247,14 +247,14 @@ export default function SoccerBTTS() {
                     <td className="px-4 py-3 text-xs">
                       {pred.error ? (
                         <div className="text-gray-500">Team stats unavailable</div>
-                      ) : pred.factors ? (
+                      ) : pred.team_form ? (
                         <div className="space-y-1">
-                          <div><strong>Home:</strong> {pred.factors.home_goals_pg} goals/game</div>
-                          <div><strong>Away:</strong> {pred.factors.away_goals_pg} goals/game</div>
-                          <div><strong>Home conceded:</strong> {pred.factors.home_conceded_pg}/game</div>
-                          <div><strong>Away conceded:</strong> {pred.factors.away_conceded_pg}/game</div>
-                          <div><strong>Home BTTS rate:</strong> {fmtPercent(pred.factors.home_btts_rate)}</div>
-                          <div><strong>Away BTTS rate:</strong> {fmtPercent(pred.factors.away_btts_rate)}</div>
+                          <div><strong>Home:</strong> {pred.team_form.home_team.recent_form}</div>
+                          <div><strong>Away:</strong> {pred.team_form.away_team.recent_form}</div>
+                          <div><strong>Home goals:</strong> {pred.team_form.home_team.goals_scored_per_game}/game</div>
+                          <div><strong>Away goals:</strong> {pred.team_form.away_team.goals_scored_per_game}/game</div>
+                          <div><strong>Home BTTS:</strong> {pred.team_form.home_team.btts_rate}</div>
+                          <div><strong>Away BTTS:</strong> {pred.team_form.away_team.btts_rate}</div>
                         </div>
                       ) : (
                         <div className="text-gray-500">No team data</div>
