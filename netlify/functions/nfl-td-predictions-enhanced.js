@@ -341,11 +341,11 @@ function applyReliabilityAdjustment(prediction) {
     r = Math.max(0.3, r * 0.75); // 25% penalty for low-touch RBs
   }
 
-  // Position priors based on historical TD rates with role differentiation
+  // Position priors based on historical TD rates with TE boost for elite visibility
   const basePriors = { 
     RB: 0.22,    // RBs score most frequently
     WR: 0.16,    // WRs moderate rate
-    TE: 0.13,    // TEs lower rate
+    TE: 0.15,    // TEs boosted for better visibility (was 0.13)
     QB: 0.05,    // QBs rarely score rushing TDs
     default: 0.16 
   };
@@ -420,10 +420,22 @@ function applyReliabilityAdjustment(prediction) {
   // First TD needs hazard model (placeholder - use shrinkage for now)
   const firstAdjusted = clamp(lambda * (prediction.first_td_prob || 0) + (1 - lambda) * (prior * 0.10));
   
+  // Convert reliability to user-friendly bands
+  const reliabilityBand = r >= 0.75 ? 'HIGH' :
+                         r >= 0.50 ? 'MEDIUM' : 
+                         r >= 0.25 ? 'LOW' : 'SPARSE';
+  
+  const dataQualityScore = Math.round(r * 100);
+  
   return {
     ...prediction,
     reliability_adjusted: true,
     reliability_factor: Math.round(lambda * 100) / 100,
+    
+    // ELITE: User-friendly reliability display
+    reliability_band: reliabilityBand,
+    data_quality_score: dataQualityScore,
+    reliability_raw_percent: Math.round(r * 100), // Keep raw for debugging
     
     // Original values
     original_anytime_prob: prediction.anytime_td_prob,
@@ -1119,9 +1131,30 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'top-anytime':
-      const topAnytime = filterPredictions(data.full.predictions, queryParams, data.full.games)
+      const allFiltered = filterPredictions(data.full.predictions, queryParams, data.full.games);
+      let topAnytime = allFiltered
         .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
         .slice(0, top_n);
+      
+      // ELITE: Guarantee TE visibility - ensure top 5 TEs are included
+      const topTEs = allFiltered
+        .filter(p => p.position === 'TE')
+        .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
+        .slice(0, 5);
+        
+      const teIds = new Set(topAnytime.filter(p => p.position === 'TE').map(p => p.player_id));
+      const missingTEs = topTEs.filter(te => !teIds.has(te.player_id));
+      
+      if (missingTEs.length > 0) {
+        // Remove lowest-probability non-TEs to make room for elite TEs
+        const nonTEs = topAnytime.filter(p => p.position !== 'TE');
+        const keepNonTEs = nonTEs.slice(0, top_n - topTEs.length);
+        const currentTEs = topAnytime.filter(p => p.position === 'TE');
+        
+        topAnytime = [...keepNonTEs, ...currentTEs, ...missingTEs]
+          .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
+          .slice(0, top_n);
+      }
       
       return {
         type: 'anytime_td_leaders',
@@ -1130,7 +1163,9 @@ function generateResponseByType(data, queryParams) {
         summary: {
           count: topAnytime.length,
           avg_probability: topAnytime.reduce((sum, p) => sum + p.anytime_td_prob, 0) / topAnytime.length,
-          top_probability: topAnytime[0]?.anytime_td_prob || 0
+          top_probability: topAnytime[0]?.anytime_td_prob || 0,
+          te_count: topAnytime.filter(p => p.position === 'TE').length,
+          te_guaranteed: missingTEs.length > 0 ? `Added ${missingTEs.length} elite TEs` : null
         }
       };
       
