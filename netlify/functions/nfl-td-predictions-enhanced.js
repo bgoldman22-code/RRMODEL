@@ -49,12 +49,8 @@ const CONFIG = {
   ]
 };
 
-// Cache management
-let cachedData = {
-  full: null,
-  lite: null,
-  lastUpdate: null
-};
+// Cache management - support multiple weeks
+let cachedData = {};
 
 // ========== BOOK WHITELIST ENFORCEMENT ==========
 
@@ -129,35 +125,57 @@ function oddsGate(predictions) {
 /**
  * Load and cache R pipeline predictions
  */
-async function loadPipelineData(forceRefresh = false) {
+async function loadPipelineData(week = null, season = 2025, forceRefresh = false) {
   const now = Date.now();
+  const cacheKey = `${season}_${week || 'current'}`;
   
-  // Check if cache is valid
+  // Check if cache is valid for this week
   if (!forceRefresh && 
-      cachedData.lastUpdate && 
-      (now - cachedData.lastUpdate) < (CONFIG.CACHE_DURATION_SECONDS * 1000)) {
-    return cachedData;
+      cachedData[cacheKey] && 
+      cachedData[cacheKey].lastUpdate && 
+      (now - cachedData[cacheKey].lastUpdate) < (CONFIG.CACHE_DURATION_SECONDS * 1000)) {
+    return cachedData[cacheKey];
   }
   
   try {
-    // Load full predictions
-    const fullPath = path.join(CONFIG.PIPELINE_OUTPUT_DIR, CONFIG.FULL_PREDICTIONS_FILE);
-    const fullData = JSON.parse(await fs.readFile(fullPath, 'utf8'));
+    // Try week-specific files first, then fall back to main file
+    let fullData, liteData;
     
-    // Load lite predictions  
-    const litePath = path.join(CONFIG.PIPELINE_OUTPUT_DIR, CONFIG.LITE_PREDICTIONS_FILE);
-    const liteData = JSON.parse(await fs.readFile(litePath, 'utf8'));
+    // Attempt to load week-specific data
+    if (week) {
+      try {
+        const weekSpecificPath = path.join(process.cwd(), 'data', `nfl-td-comprehensive-week${week}.json`);
+        fullData = JSON.parse(await fs.readFile(weekSpecificPath, 'utf8'));
+        console.log(`✅ Loaded week-specific data for Week ${week}`);
+      } catch (weekError) {
+        console.log(`⚠️ Week ${week} specific file not found, using main comprehensive file`);
+      }
+    }
     
-    // Update cache
-    cachedData = {
+    // Fall back to main comprehensive file if week-specific not available
+    if (!fullData) {
+      const mainPath = path.join(process.cwd(), 'data', 'nfl-td-comprehensive-latest.json');
+      fullData = JSON.parse(await fs.readFile(mainPath, 'utf8'));
+      console.log(`📁 Loaded main comprehensive data (Week ${fullData.metadata?.week || 'unknown'})`);
+    }
+    
+    // Use full data as lite data for now (can optimize later)
+    liteData = fullData;
+    
+    // Update cache for this specific week
+    if (!cachedData[cacheKey]) {
+      cachedData[cacheKey] = {};
+    }
+    
+    cachedData[cacheKey] = {
       full: fullData,
       lite: liteData,
       lastUpdate: now
     };
     
-    console.log(`✅ Loaded pipeline data: ${fullData.predictions.length} players, ${fullData.summary.total_games} games`);
+    console.log(`✅ Loaded pipeline data for ${cacheKey}: ${fullData.predictions?.length || 0} players, ${fullData.summary?.total_games || fullData.metadata?.total_players || 0} games`);
     
-    return cachedData;
+    return cachedData[cacheKey];
     
   } catch (error) {
     console.error('❌ Failed to load pipeline data:', error.message);
@@ -178,9 +196,30 @@ async function loadPipelineData(forceRefresh = false) {
 function processQueryParams(event) {
   const params = event.queryStringParameters || {};
   
+  // Calculate current NFL week if not provided
+  const getCurrentNFLWeek = () => {
+    const now = new Date();
+    const seasonStart = new Date('2025-09-05');
+    const daysSinceStart = Math.floor((now - seasonStart) / (1000 * 60 * 60 * 24));
+    
+    if (daysSinceStart < 0) return 1;
+    
+    let weekNumber;
+    if (daysSinceStart <= 6) weekNumber = 1;
+    else if (daysSinceStart <= 13) weekNumber = 2;
+    else if (daysSinceStart <= 17) weekNumber = 3;
+    else weekNumber = Math.floor((daysSinceStart - 18) / 7) + 4;
+    
+    return Math.min(Math.max(weekNumber, 1), 18);
+  };
+  
   return {
     // Query type - default to adjusted data for production use
     type: params.type || 'top-anytime',
+    
+    // WEEK PARAMETER - Auto-detect current week if not provided
+    week: parseInt(params.week) || getCurrentNFLWeek(),
+    season: parseInt(params.season) || 2025,
     
     // Filters
     position: params.position?.toUpperCase(),
@@ -1383,8 +1422,8 @@ exports.handler = async (event, context) => {
     // Process query parameters
     const queryParams = processQueryParams(event);
     
-    // Load pipeline data
-    const data = await loadPipelineData();
+    // Load pipeline data for the requested week
+    const data = await loadPipelineData(queryParams.week, queryParams.season);
     
     // Validate data freshness
     if (!data.full || !data.full.metadata) {
