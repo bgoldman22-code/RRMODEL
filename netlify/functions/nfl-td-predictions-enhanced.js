@@ -260,9 +260,20 @@ async function loadPipelineData(week = null, season = 2025, forceRefresh = false
     
     // Fall back to main comprehensive file if week-specific not available
     if (!fullData) {
-      const mainPath = path.join(process.cwd(), 'data', 'nfl-td-comprehensive-latest.json');
-      fullData = JSON.parse(await fs.readFile(mainPath, 'utf8'));
-      console.log(`📁 Loaded main comprehensive data (Week ${fullData.metadata?.week || 'unknown'})`);
+      try {
+        // Try to fetch from public static asset first (Netlify deployment)
+        const response = await fetch(`${process.env.URL || 'https://bgroundrobin.com'}/data/nfl-td-comprehensive-latest.json`);
+        if (response.ok) {
+          fullData = await response.json();
+          console.log(`🌐 Loaded main data from public URL (Week ${fullData.metadata?.week || 'unknown'})`);
+        }
+      } catch (fetchError) {
+        console.log('⚠️ Public URL fetch failed, trying file system...');
+        // Fall back to file system
+        const mainPath = path.join(process.cwd(), 'data', 'nfl-td-comprehensive-latest.json');
+        fullData = JSON.parse(await fs.readFile(mainPath, 'utf8'));
+        console.log(`📁 Loaded main comprehensive data from file system (Week ${fullData.metadata?.week || 'unknown'})`);
+      }
     }
     
     // Use full data as lite data for now (can optimize later)
