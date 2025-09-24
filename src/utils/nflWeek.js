@@ -11,7 +11,7 @@ export function getCurrentNFLWeek() {
   
   if (year === 2025) {
     // 2025 NFL season started September 5, 2025 (Thursday)
-    // Adjust calculation so Week 4 starts September 23, 2025
+    // CURRENT: September 24, 2025 = Week 4
     const seasonStart = new Date('2025-09-05');
     const daysSinceStart = Math.floor((now - seasonStart) / (1000 * 60 * 60 * 24));
     
@@ -19,16 +19,24 @@ export function getCurrentNFLWeek() {
       return 1; // Preseason/early
     }
     
-    // Adjusted calculation: Week 4 starts on day 18 (Sept 23)
-    // Week 1: Days 0-6, Week 2: Days 7-13, Week 3: Days 14-17, Week 4: Days 18+
+    // Updated calculation for accurate Week 4 detection
+    // Week 1: Sept 5-11 (Days 0-6)
+    // Week 2: Sept 12-18 (Days 7-13) 
+    // Week 3: Sept 19-22 (Days 14-17)
+    // Week 4: Sept 23+ (Days 18+)
     let weekNumber;
     if (daysSinceStart <= 6) weekNumber = 1;
     else if (daysSinceStart <= 13) weekNumber = 2;
     else if (daysSinceStart <= 17) weekNumber = 3;
     else weekNumber = Math.floor((daysSinceStart - 18) / 7) + 4;
     
-    // Cap at reasonable max (18 weeks regular season + 4 playoffs = 22)
-    return Math.min(Math.max(weekNumber, 1), 22);
+    const calculatedWeek = Math.min(Math.max(weekNumber, 1), 18);
+    
+    // Debug logging for verification
+    const monthDay = `${now.getMonth() + 1}/${now.getDate()}`;
+    console.log(`🏈 NFL Week Detection: ${monthDay} (Day ${daysSinceStart}) = Week ${calculatedWeek}`);
+    
+    return calculatedWeek;
   }
   
   // For other years, use a similar calculation

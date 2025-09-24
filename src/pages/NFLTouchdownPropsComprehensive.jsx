@@ -9,24 +9,46 @@ const NFLTouchdownPropsComprehensive = () => {
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [week, setWeek] = useState(4); // Will be updated to current week
+  
+  // Initialize with current NFL week calculation (September 24 = Week 4)
+  const [week, setWeek] = useState(() => {
+    const now = new Date();
+    const seasonStart = new Date('2025-09-05');
+    const daysSinceStart = Math.floor((now - seasonStart) / (1000 * 60 * 60 * 24));
+    
+    if (daysSinceStart < 0) return 1;
+    
+    let weekNumber;
+    if (daysSinceStart <= 6) weekNumber = 1;
+    else if (daysSinceStart <= 13) weekNumber = 2;
+    else if (daysSinceStart <= 17) weekNumber = 3;
+    else weekNumber = Math.floor((daysSinceStart - 18) / 7) + 4;
+    
+    const calculatedWeek = Math.min(Math.max(weekNumber, 1), 18);
+    console.log(`📅 NFL Week Auto-Detection: ${now.toDateString()} = Week ${calculatedWeek}`);
+    return calculatedWeek;
+  });
+  
   const [selectedMarket, setSelectedMarket] = useState('anytime'); // anytime, first, multiple
   const [filterLevel, setFilterLevel] = useState('all'); // all, high_confidence, value
   const [sortBy, setSortBy] = useState('probability'); // probability, confidence, value
   const season = 2025;
 
-  // Initialize with current NFL week
+  // Try to refine week detection with data source
   useEffect(() => {
-    const initializeWeek = async () => {
+    const refineWeekDetection = async () => {
       try {
         const currentWeek = await getCurrentNFLWeekFromData();
-        setWeek(currentWeek);
+        if (currentWeek && currentWeek !== week) {
+          console.log(`📅 Week refined from data source: ${week} → ${currentWeek}`);
+          setWeek(currentWeek);
+        }
       } catch (error) {
-        console.warn('Could not determine current NFL week, using default');
+        console.log(`📅 Using calculated week ${week} (data source unavailable)`);
       }
     };
-    initializeWeek();
-  }, []);
+    refineWeekDetection();
+  }, [week]);
 
   // Load predictions from enhanced API with proper week-based data
     const loadComprehensivePredictions = async () => {
