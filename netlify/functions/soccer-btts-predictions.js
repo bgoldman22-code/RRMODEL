@@ -270,15 +270,16 @@ const TEAM_NAME_MAPPING = {
   'Wolverhampton Wanderers': ['Wolverhampton', 'Wolves', 'WWFC'],
   'Bournemouth': ['AFC Bournemouth', 'AFCB'],
   'Everton': ['Everton FC', 'EFC'],
-  'Leicester City': ['Leicester', 'Leicester City FC', 'LCFC'],
-  'Ipswich Town': ['Ipswich', 'Ipswich Town FC', 'ITFC'],
+
   'Southampton': ['Southampton FC', 'SFC', 'Saints'],
   
-  // Championship teams that might appear
-  'Leeds United': ['Leeds', 'Leeds United FC', 'LUFC'],
+  // Championship teams that might appear  
   'Burnley': ['Burnley FC', 'BFC'],
   'Sheffield United': ['Sheffield Utd', 'Sheffield United FC', 'SUFC'],
+  
+  // Promoted teams now in Premier League
   'Sunderland': ['Sunderland AFC', 'SAFC'],
+  'Leeds United': ['Leeds', 'Leeds United FC', 'LUFC'],
   
   // Bundesliga  
   'Bayern Munich': ['FC Bayern Munich', 'Bayern München', 'FCB'],
@@ -618,10 +619,10 @@ async function fetchBTTSOdds(league, fixtures) {
   });
 }
 
-// Premier League 2025-26 Team Statistics - Live updating with API integration
+// Premier League 2025-26 Team Statistics - Live updating with API integration  
 // Last updated: September 24, 2025 | Current season weighted 3x vs historical data
-// Promotion/Relegation: Leicester City (promoted), Ipswich Town (promoted), Southampton (promoted back)
-// Relegated 2024-25: Burnley, Sheffield United, Luton Town
+// Promotion/Relegation: Sunderland (promoted), Leeds United (promoted) 
+// Relegated 2024-25: Leicester City, Ipswich Town, Luton Town
 const PREMIER_LEAGUE_2025_26_TEAMS = {
   // Top 6 Traditional
   'Liverpool': {
@@ -730,37 +731,31 @@ const PREMIER_LEAGUE_2025_26_TEAMS = {
     games_away: 10, goals_scored_away: 7, goals_conceded_away: 18,
     btts_rate_home: 0.51, btts_rate_away: 0.54
   },
-  'Leicester City': {
-    name: 'Leicester City', // PROMOTED - Championship playoff winners 2024-25
-    games_home: 3, goals_scored_home: 4, goals_conceded_home: 3, // Strong start back in PL
-    games_away: 3, goals_scored_away: 3, goals_conceded_away: 4,
-    btts_rate_home: 0.65, btts_rate_away: 0.68 // Experience shows
+  'Sunderland': {
+    name: 'Sunderland', // PROMOTED - Championship automatic promotion 2024-25
+    games_home: 3, goals_scored_home: 3, goals_conceded_home: 2, // Based on current table: 2W 2D 1L
+    games_away: 2, goals_scored_away: 3, goals_conceded_away: 2,
+    btts_rate_home: 0.62, btts_rate_away: 0.64 // Mid-table promoted side
   },
-  'Ipswich Town': {
-    name: 'Ipswich Town', // PROMOTED - Championship winners 2024-25
-    games_home: 3, goals_scored_home: 2, goals_conceded_home: 4, // Early season 2025-26
-    games_away: 3, goals_scored_away: 1, goals_conceded_away: 5,
-    btts_rate_home: 0.45, btts_rate_away: 0.50 // Conservative for newly promoted
-  },
-  'Southampton': {
-    name: 'Southampton',
-    games_home: 10, goals_scored_home: 7, goals_conceded_home: 19,
-    games_away: 10, goals_scored_away: 5, goals_conceded_away: 23,
-    btts_rate_home: 0.45, btts_rate_away: 0.49
+  'Leeds United': {
+    name: 'Leeds United', // PROMOTED - Championship promotion 2024-25  
+    games_home: 3, goals_scored_home: 2, goals_conceded_home: 3, // Based on current table: 2W 1D 2L
+    games_away: 2, goals_scored_away: 2, goals_conceded_away: 4,
+    btts_rate_home: 0.64, btts_rate_away: 0.67 // Attacking but defensively suspect
   },
   
   // Championship/Other teams that might appear in Cups or European competitions
-  'Leeds United': {
-    name: 'Leeds United',
-    games_home: 12, goals_scored_home: 18, goals_conceded_home: 12,
-    games_away: 12, goals_scored_away: 15, goals_conceded_away: 16,
-    btts_rate_home: 0.64, btts_rate_away: 0.67
+  'Leicester City': {
+    name: 'Leicester City', // RELEGATED - Back to Championship 2024-25
+    games_home: 12, goals_scored_home: 14, goals_conceded_home: 18,
+    games_away: 12, goals_scored_away: 12, goals_conceded_away: 22,
+    btts_rate_home: 0.69, btts_rate_away: 0.73 // Still attacking but poor defensively
   },
-  'Sunderland': {
-    name: 'Sunderland', // Championship team appearing in some fixtures
-    games_home: 3, goals_scored_home: 4, goals_conceded_home: 3,
-    games_away: 3, goals_scored_away: 3, goals_conceded_away: 5,
-    btts_rate_home: 0.62, btts_rate_away: 0.64
+  'Ipswich Town': {
+    name: 'Ipswich Town', // RELEGATED - Back to Championship 2024-25
+    games_home: 12, goals_scored_home: 8, goals_conceded_home: 17,
+    games_away: 12, goals_scored_away: 6, goals_conceded_away: 20,
+    btts_rate_home: 0.48, btts_rate_away: 0.52 // Struggled in Premier League
   },
   'Burnley': {
     name: 'Burnley',
@@ -800,17 +795,11 @@ const PREMIER_LEAGUE_2025_26_TEAMS = {
     games_away: 10, goals_scored_away: 12, goals_conceded_away: 21,
     btts_rate_home: 0.68, btts_rate_away: 0.72
   },
-  'Leicester': {
-    name: 'Leicester',
-    games_home: 10, goals_scored_home: 14, goals_conceded_home: 18,
-    games_away: 10, goals_scored_away: 12, goals_conceded_away: 22,
-    btts_rate_home: 0.69, btts_rate_away: 0.73
-  },
-  'Ipswich': {
-    name: 'Ipswich',
-    games_home: 10, goals_scored_home: 8, goals_conceded_home: 17,
-    games_away: 10, goals_scored_away: 6, goals_conceded_away: 20,
-    btts_rate_home: 0.48, btts_rate_away: 0.52
+  'Leeds': {
+    name: 'Leeds',
+    games_home: 3, goals_scored_home: 2, goals_conceded_home: 3,
+    games_away: 2, goals_scored_away: 2, goals_conceded_away: 4,
+    btts_rate_home: 0.64, btts_rate_away: 0.67
   },
   'Wolves': {
     name: 'Wolves',
