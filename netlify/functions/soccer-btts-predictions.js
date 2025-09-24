@@ -2856,15 +2856,10 @@ exports.handler = async (event, context) => {
       const homeTeam = findTeamStatsLive(fixture.home_team);
       const awayTeam = findTeamStatsLive(fixture.away_team);
       
-      // Merge real team strength data if available
-      if (realStrengthData && homeTeam && realStrengthData[homeTeam.team]) {
-        homeTeam.recent_form_attack = realStrengthData[homeTeam.team].recent_form_attack;
-        homeTeam.recent_form_defense = realStrengthData[homeTeam.team].recent_form_defense;
-      }
-      if (realStrengthData && awayTeam && realStrengthData[awayTeam.team]) {
-        awayTeam.recent_form_attack = realStrengthData[awayTeam.team].recent_form_attack;
-        awayTeam.recent_form_defense = realStrengthData[awayTeam.team].recent_form_defense;
-      }
+      // Note: Real team strength data (from Football-Data.co.uk) is already blended
+      // into `combinedTeamStats` via `fetchLiveTeamStats` -> `combineSeasonalData`.
+      // No additional merge is needed here, and referencing an out-of-scope
+      // variable would cause runtime errors.
       
       if (!homeTeam || !awayTeam) {
         console.log(`Team stats not found: ${fixture.home_team} (${homeTeam ? 'found' : 'missing'}) vs ${fixture.away_team} (${awayTeam ? 'found' : 'missing'})`);
@@ -3210,13 +3205,27 @@ exports.handler = async (event, context) => {
 
   } catch (error) {
     console.error('BTTS Prediction Error:', error);
+    // Graceful degradation: return an empty predictions set with error metadata
+    // instead of a hard 500 to keep the site operational.
     return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
+      statusCode: 200,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({
-        error: 'Prediction generation failed',
-        details: error.message,
-        timestamp: new Date().toISOString()
+        league: (LEAGUES && LEAGUES['premier-league']?.name) || 'Soccer',
+        season: (LEAGUES && LEAGUES['premier-league']?.season) || '2025-2026',
+        predictions: [],
+        metadata: {
+          total_fixtures: 0,
+          generated_at: new Date().toISOString(),
+          model_version: 'btts_v3.0_elite_bivariate_dixon_coles_pro_features',
+          high_confidence: 0,
+          error: 'Prediction generation failed',
+          details: error?.message || String(error),
+          fallback_mode: true
+        }
       })
     };
   }
