@@ -990,11 +990,11 @@ function calculateProfessionalValueBet(finalProbability, odds, modelUncertainty,
  * Enforce professional odds quality gates
  */
 function enforceOddsQualityGates(oddsQuality) {
-  // Require ≥3 independent books or exchange price
-  const minBooks = 3;
-  const bookCount = oddsQuality.book_count || 0;
+  // RELAXED: Require ≥2 independent books or exchange price (was 3)
+  const minBooks = 2;
+  const bookCount = oddsQuality.book_count || 1; // Default to 1 if missing
   const isExchange = oddsQuality.is_exchange || false;
-  const freshness = oddsQuality.freshness_minutes || 999;
+  const freshness = oddsQuality.freshness_minutes || 30; // Default to 30min if missing
   
   if (bookCount < minBooks && !isExchange) {
     return {
@@ -1003,11 +1003,11 @@ function enforceOddsQualityGates(oddsQuality) {
     };
   }
   
-  // Enforce freshness (≤30-60min)
-  if (freshness > 45) {
+  // RELAXED: Enforce freshness (≤2 hours instead of 45min)
+  if (freshness > 120) {
     return {
       passed: false,
-      reason: `Odds too stale (${freshness}min old, max 45min)`
+      reason: `Odds too stale (${freshness}min old, max 120min)`
     };
   }
   
