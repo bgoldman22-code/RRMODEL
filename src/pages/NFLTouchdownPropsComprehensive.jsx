@@ -1049,7 +1049,7 @@ const NFLTouchdownPropsComprehensive = () => {
                         <div className="text-center">
                           {(() => {
                             const confidence = marketData?.confidence || 0;
-                            const hasApprovedBooks = player.odds_qualified && player.books_count >= 2;
+                            const hasApprovedBooks = player.odds_qualified && player.books_count >= 1;
                             const valueScore = player[`${selectedMarket}_value_score`] || 0;
                             
                             // Only show BET recommendations if we have approved market lines

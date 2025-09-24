@@ -103,7 +103,7 @@ function oddsGate(predictions) {
     const hasOdds = booksCount > 0;
     const americanOdds = hasOdds ? Math.max(...allowed.map(s => s.american_odds ?? s.best_price ?? -Infinity)) : null;
     
-    const oddsQualified = booksCount >= 2 && hasOdds; // require ≥2 approved books
+    const oddsQualified = booksCount >= 1 && hasOdds; // require ≥1 approved book (FD/DK sufficient)
     
     return {
       ...pred,
@@ -111,7 +111,7 @@ function oddsGate(predictions) {
       books_count: booksCount,
       odds_qualified: oddsQualified,
       odds_quality: !hasOdds ? 'none' : (booksCount >= 3 ? 'excellent' : booksCount >= 2 ? 'good' : 'single'),
-      single_book_warning: hasOdds && booksCount === 1,
+      single_book_warning: false, // Don't warn for single book - FD/DK are reliable
       placeholder_odds_detected: false, // based on allowed books only
       
       // Zero out value if not qualified
