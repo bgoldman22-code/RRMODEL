@@ -427,20 +427,28 @@ const NFLTouchdownPropsComprehensive = () => {
     }
   };
 
+  // FIXED: Manual loading only - no auto-refresh
   useEffect(() => {
-    // Wrap in try-catch to prevent component crashes
-    const safeLoad = async () => {
+    // Initial load only, no auto-refresh to prevent UX bugs
+    const initialLoad = async () => {
       try {
-        console.log('useEffect triggered, calling loadComprehensivePredictions...');
+        console.log('🔄 Initial component load for Week', week);
         await loadComprehensivePredictions();
       } catch (error) {
-        console.error('useEffect error:', error);
+        console.error('❌ Initial load error:', error);
         setError(`Component error: ${error.message}`);
         setLoading(false);
       }
     };
     
-    safeLoad();
+    initialLoad();
+  }, []); // Empty deps = runs once only
+  
+  // Separate effect to trigger reload when week changes manually
+  useEffect(() => {
+    if (week) {
+      console.log('📅 Week changed to', week, '- use Refresh button to reload');
+    }
   }, [week]);
 
   // Helper function for team name mapping
@@ -862,6 +870,7 @@ const NFLTouchdownPropsComprehensive = () => {
                 <th className="px-4 py-3 text-left font-medium">Model Analysis</th>
                 <th className="px-4 py-3 text-left font-medium">Probability</th>
                 <th className="px-4 py-3 text-left font-medium">Model Odds</th>
+                <th className="px-4 py-3 text-left font-medium">Market Odds</th>
                 <th className="px-4 py-3 text-left font-medium">Player Insights</th>
                 <th className="px-4 py-3 text-left font-medium">Action</th>
               </tr>
@@ -869,7 +878,7 @@ const NFLTouchdownPropsComprehensive = () => {
             <tbody className="divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td className="px-4 py-8 text-center text-gray-500" colSpan={8}>
+                  <td className="px-4 py-8 text-center text-gray-500" colSpan={9}>
                     <div className="flex items-center justify-center space-x-2">
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
                       <span>Loading comprehensive predictions...</span>
@@ -878,7 +887,7 @@ const NFLTouchdownPropsComprehensive = () => {
                 </tr>
               ) : processedPredictions.length === 0 ? (
                 <tr>
-                  <td className="px-4 py-8 text-center text-gray-500" colSpan={8}>
+                  <td className="px-4 py-8 text-center text-gray-500" colSpan={9}>
                     No qualifying {selectedMarket} TD predictions found for current filters
                   </td>
                 </tr>
@@ -962,26 +971,60 @@ const NFLTouchdownPropsComprehensive = () => {
                       
                       <td className="px-4 py-3">
                         <div className="text-sm space-y-1">
-                          {player.real_odds?.anytime_td ? (
-                            <>
-                              <div className="font-medium">
-                                {player.real_odds.books[0]?.anytime_odds > 0 ? '+' : ''}{player.real_odds.books[0]?.anytime_odds || 'N/A'}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {(player.real_odds.anytime_td * 100).toFixed(1)}% implied
-                              </div>
-                              {player.real_odds.books[0] && (
-                                <div className="text-xs text-blue-600">
-                                  {player.real_odds.books[0].bookmaker}
-                                </div>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              <div className="font-medium text-gray-600">Model Only</div>
-                              <div className="text-xs text-gray-500">No live odds</div>
-                            </>
-                          )}
+                          <div className="font-medium text-gray-800">
+                            {(() => {
+                              const marketData = player[`${selectedMarket}_td`];
+                              const prob = marketData?.probability || 0;
+                              if (prob >= 0.5) {
+                                return Math.round(-100 / (prob / (1 - prob)));
+                              } else {
+                                return '+' + Math.round(100 * ((1 - prob) / prob));
+                              }
+                            })()}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Model probability
+                          </div>
+                          <div className="text-xs text-green-600">
+                            Elite Model
+                          </div>
+                        </div>
+                      </td>
+                      
+                      <td className="px-4 py-3">
+                        <div className="text-sm space-y-1">
+                          {(() => {
+                            const hasApprovedBooks = player.odds_qualified && player.books_count >= 2;
+                            if (hasApprovedBooks && player.real_odds?.books?.[0]) {
+                              return (
+                                <>
+                                  <div className="font-medium text-blue-800">
+                                    {player.real_odds.books[0].anytime_odds > 0 ? '+' : ''}{player.real_odds.books[0].anytime_odds}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {player.books_count} approved book{player.books_count > 1 ? 's' : ''}
+                                  </div>
+                                  <div className="text-xs text-blue-600">
+                                    {player.real_odds.books[0].bookmaker}
+                                  </div>
+                                </>
+                              );
+                            } else if (player.single_book_warning) {
+                              return (
+                                <>
+                                  <div className="font-medium text-orange-600">—</div>
+                                  <div className="text-xs text-orange-600">Only 1 approved book</div>
+                                </>
+                              );
+                            } else {
+                              return (
+                                <>
+                                  <div className="font-medium text-gray-400">—</div>
+                                  <div className="text-xs text-gray-500">No approved market lines</div>
+                                </>
+                              );
+                            }
+                          })()}
                         </div>
                       </td>
                       
@@ -991,20 +1034,72 @@ const NFLTouchdownPropsComprehensive = () => {
                       
                       <td className="px-4 py-3">
                         <div className="text-center">
-                          <div className={`text-sm font-bold ${
-                            (marketData?.confidence || 0) >= 45 ? 'text-green-600' :
-                            (marketData?.confidence || 0) >= 35 ? 'text-blue-600' :
-                            (marketData?.confidence || 0) >= 25 ? 'text-yellow-600' :
-                            (marketData?.confidence || 0) >= 18 ? 'text-orange-600' : 'text-gray-600'
-                          }`}>
-                            {(marketData?.confidence || 0) >= 45 ? '🔥 STRONG BET' :
-                             (marketData?.confidence || 0) >= 35 ? '🎯 BET' :
-                             (marketData?.confidence || 0) >= 25 ? '📈 LEAN' :
-                             (marketData?.confidence || 0) >= 18 ? '👀 WATCH' : '❌ PASS'}
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            {marketData?.confidence || 0}% conf
-                          </div>
+                          {(() => {
+                            const confidence = marketData?.confidence || 0;
+                            const hasApprovedBooks = player.odds_qualified && player.books_count >= 2;
+                            const valueScore = player[`${selectedMarket}_value_score`] || 0;
+                            
+                            // Only show BET recommendations if we have approved market lines
+                            if (!hasApprovedBooks) {
+                              return (
+                                <>
+                                  <div className="text-sm font-bold text-gray-400">
+                                    ⛔ NO BET
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    No approved market lines
+                                  </div>
+                                </>
+                              );
+                            }
+                            
+                            // Gate by confidence AND value thresholds for approved books only
+                            if (confidence >= 65 && valueScore >= 0.6) {
+                              return (
+                                <>
+                                  <div className="text-sm font-bold text-green-600">
+                                    🔥 STRONG BET
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {confidence}% conf | {player.books_count} books
+                                  </div>
+                                </>
+                              );
+                            } else if (confidence >= 50 && valueScore >= 0.4) {
+                              return (
+                                <>
+                                  <div className="text-sm font-bold text-blue-600">
+                                    🎯 BET
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {confidence}% conf | {player.books_count} books
+                                  </div>
+                                </>
+                              );
+                            } else if (confidence >= 35) {
+                              return (
+                                <>
+                                  <div className="text-sm font-bold text-yellow-600">
+                                    📈 LEAN
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {confidence}% conf
+                                  </div>
+                                </>
+                              );
+                            } else {
+                              return (
+                                <>
+                                  <div className="text-sm font-bold text-gray-600">
+                                    👀 WATCH
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {confidence}% conf
+                                  </div>
+                                </>
+                              );
+                            }
+                          })()}
                         </div>
                       </td>
                     </tr>

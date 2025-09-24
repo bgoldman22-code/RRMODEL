@@ -56,6 +56,76 @@ let cachedData = {
   lastUpdate: null
 };
 
+// ========== BOOK WHITELIST ENFORCEMENT ==========
+
+function normalizeBookName(s = '') {
+  return String(s).toUpperCase().replace(/[\s._-]/g, '');
+}
+
+function enhancedFilterAllowedBooks(oddsSources = []) {
+  if (!Array.isArray(oddsSources)) return [];
+  
+  return oddsSources.filter(src => {
+    const bookName = normalizeBookName(src.book || src.bookmaker || '');
+    const isAllowed = CONFIG.ALLOWED_BOOKS.has(bookName);
+    const isExcluded = CONFIG.EXCLUDED_BOOKS.has(bookName);
+    
+    // Log rejected books for monitoring
+    if (isExcluded) {
+      console.warn(`🚫 EXCLUDED book rejected: ${bookName} (${src.book || src.bookmaker})`);
+    } else if (!isAllowed && bookName) {
+      console.warn(`⚠️ Non-whitelisted book rejected: ${bookName} (${src.book || src.bookmaker})`);
+    }
+    
+    return isAllowed && !isExcluded;
+  });
+}
+
+function normalizeRow(pred) {
+  const sources = Array.isArray(pred.odds_sources) ? pred.odds_sources : [];
+  const allowed = enhancedFilterAllowedBooks(sources);
+  
+  // Use only APPROVED books for market figures
+  const americanOdds = pred.american_odds ??
+    (allowed.length ? Math.max(...allowed.map(s => s.american_odds ?? s.best_price ?? -Infinity)) : null);
+    
+  const booksCount = allowed.length; // count only approved books
+  
+  return { 
+    ...pred, 
+    american_odds: americanOdds, 
+    books_count: booksCount, 
+    odds_sources_allowed: allowed,
+    odds_sources_all: sources // keep original for debugging
+  };
+}
+
+function oddsGate(predictions) {
+  return predictions.map(pred => {
+    const allowed = pred.odds_sources_allowed || [];
+    const booksCount = allowed.length;
+    const hasOdds = booksCount > 0;
+    const americanOdds = hasOdds ? Math.max(...allowed.map(s => s.american_odds ?? s.best_price ?? -Infinity)) : null;
+    
+    const oddsQualified = booksCount >= 2 && hasOdds; // require ≥2 approved books
+    
+    return {
+      ...pred,
+      american_odds: americanOdds,
+      books_count: booksCount,
+      odds_qualified: oddsQualified,
+      odds_quality: !hasOdds ? 'none' : (booksCount >= 3 ? 'excellent' : booksCount >= 2 ? 'good' : 'single'),
+      single_book_warning: hasOdds && booksCount === 1,
+      placeholder_odds_detected: false, // based on allowed books only
+      
+      // Zero out value if not qualified
+      anytime_value_score: oddsQualified ? (pred.anytime_value_score || 0) : 0,
+      multiple_value_score: oddsQualified ? (pred.multiple_value_score || 0) : 0,
+      first_value_score: oddsQualified ? (pred.first_value_score || 0) : 0
+    };
+  });
+}
+
 /**
  * Load and cache R pipeline predictions
  */
@@ -221,24 +291,7 @@ function fairProbFromTwoWay(americanYes, americanNo) {
  * Only allow: FanDuel, DraftKings, Caesars, BetMGM, Fanatics, ESPNBet
  * Explicitly reject: betonline.ag, Bovada, and any others
  */
-function filterAllowedBooks(oddsLines) {
-  if (!Array.isArray(oddsLines)) return [];
-  
-  return oddsLines.filter(line => {
-    const bookName = String(line.book || line.bookmaker || '').toUpperCase();
-    const isAllowed = CONFIG.ALLOWED_BOOKS.has(bookName);
-    const isExcluded = CONFIG.EXCLUDED_BOOKS.has(bookName);
-    
-    // Log rejected books for monitoring
-    if (isExcluded) {
-      console.warn(`🚫 Rejected excluded book: ${bookName}`);
-    } else if (!isAllowed && bookName) {
-      console.warn(`⚠️ Unknown book not in whitelist: ${bookName}`);
-    }
-    
-    return isAllowed && !isExcluded;
-  });
-}
+// REMOVED: Old filterAllowedBooks - replaced with enhancedFilterAllowedBooks above
 
 /**
  * Apply reliability adjustment using shrinkage to position priors + COUNT MODEL
@@ -1380,9 +1433,10 @@ exports.handler = async (event, context) => {
         model_version: 'ELITE',
         
         // ELITE: Enhanced UI guidance with book whitelist awareness
+        approved_books_only: true, // All odds filtered to whitelist
         single_book_count: (response.predictions || []).filter(p => p.single_book_warning).length,
         placeholder_odds_count: (response.predictions || []).filter(p => p.placeholder_odds_detected).length,
-        whitelist_violations: (response.predictions || []).filter(p => !p.whitelisted_books_only).length,
+        odds_qualified_count: (response.predictions || []).filter(p => p.odds_qualified).length,
         kelly_eligible: (response.predictions || []).filter(p => p.kelly_fraction > 0.005).length,
         
         allowed_books: Array.from(CONFIG.ALLOWED_BOOKS),
