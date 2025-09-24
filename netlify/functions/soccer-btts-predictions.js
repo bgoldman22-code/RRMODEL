@@ -2856,6 +2856,16 @@ exports.handler = async (event, context) => {
       const homeTeam = findTeamStatsLive(fixture.home_team);
       const awayTeam = findTeamStatsLive(fixture.away_team);
       
+      // Merge real team strength data if available
+      if (realStrengthData && homeTeam && realStrengthData[homeTeam.team]) {
+        homeTeam.recent_form_attack = realStrengthData[homeTeam.team].recent_form_attack;
+        homeTeam.recent_form_defense = realStrengthData[homeTeam.team].recent_form_defense;
+      }
+      if (realStrengthData && awayTeam && realStrengthData[awayTeam.team]) {
+        awayTeam.recent_form_attack = realStrengthData[awayTeam.team].recent_form_attack;
+        awayTeam.recent_form_defense = realStrengthData[awayTeam.team].recent_form_defense;
+      }
+      
       if (!homeTeam || !awayTeam) {
         console.log(`Team stats not found: ${fixture.home_team} (${homeTeam ? 'found' : 'missing'}) vs ${fixture.away_team} (${awayTeam ? 'found' : 'missing'})`);
         return {
