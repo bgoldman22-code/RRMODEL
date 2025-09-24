@@ -39,7 +39,8 @@ const CONFIG = {
     'by-team',       // Predictions for specific team
     'by-position',   // Predictions by position
     'value-picks',   // Best value opportunities
-    'high-confidence' // High confidence picks only
+    'high-confidence', // High confidence picks only
+    'data-quality'   // Data quality analysis and diagnostics
   ]
 };
 
@@ -130,10 +131,153 @@ function processQueryParams(event) {
 }
 
 /**
+ * Apply reliability scaling to individual predictions
+ */
+function applyReliabilityAdjustment(prediction) {
+  // Extract reliability percentage (handle different formats)
+  let reliabilityScore = 75; // Default reliability
+  
+  if (prediction.reliability) {
+    const reliabilityStr = String(prediction.reliability);
+    const reliabilityMatch = reliabilityStr.match(/(\d+)%?/);
+    if (reliabilityMatch) {
+      reliabilityScore = parseInt(reliabilityMatch[1]);
+    }
+  }
+  
+  // Scale probabilities based on reliability (70-100% range)
+  const reliabilityFactor = Math.max(0.7, Math.min(1.0, reliabilityScore / 100));
+  const confidenceMultiplier = 0.85 + (0.15 * reliabilityFactor); // 85-100% range
+  
+  return {
+    ...prediction,
+    anytime_td_prob: prediction.anytime_td_prob * confidenceMultiplier,
+    multiple_td_prob: (prediction.multiple_td_prob || 0) * confidenceMultiplier,
+    first_td_prob: (prediction.first_td_prob || 0) * confidenceMultiplier,
+    reliability_adjusted: true,
+    original_anytime_prob: prediction.anytime_td_prob,
+    reliability_factor: Math.round(reliabilityFactor * 100) / 100
+  };
+}
+
+/**
+ * Reconcile team-level TD totals to realistic bounds
+ */
+function reconcileTeamTotals(predictions) {
+  // Group predictions by team
+  const teamGroups = {};
+  predictions.forEach(pred => {
+    const team = pred.team || pred.team_abbr;
+    if (!teamGroups[team]) teamGroups[team] = [];
+    teamGroups[team].push(pred);
+  });
+  
+  const adjustedPredictions = [];
+  
+  Object.entries(teamGroups).forEach(([team, teamPlayers]) => {
+    // Calculate team total anytime TD probability
+    const teamTotal = teamPlayers.reduce((sum, p) => sum + (p.anytime_td_prob || 0), 0);
+    const REALISTIC_TEAM_MAX = 2.8; // ~2.8 TDs per team per game average
+    
+    if (teamTotal > REALISTIC_TEAM_MAX) {
+      // Scale down all players proportionally
+      const scalingFactor = REALISTIC_TEAM_MAX / teamTotal;
+      
+      teamPlayers.forEach(player => {
+        adjustedPredictions.push({
+          ...player,
+          anytime_td_prob: player.anytime_td_prob * scalingFactor,
+          multiple_td_prob: (player.multiple_td_prob || 0) * scalingFactor,
+          first_td_prob: (player.first_td_prob || 0) * scalingFactor,
+          team_reconciled: true,
+          original_team_total: Math.round(teamTotal * 100) / 100,
+          scaling_factor: Math.round(scalingFactor * 100) / 100,
+          reconciled_team_total: Math.round(REALISTIC_TEAM_MAX * 100) / 100
+        });
+      });
+    } else {
+      // No adjustment needed
+      teamPlayers.forEach(player => {
+        adjustedPredictions.push({
+          ...player,
+          team_reconciled: false
+        });
+      });
+    }
+  });
+  
+  return adjustedPredictions;
+}
+
+/**
+ * Validate odds realism and flag suspicious data
+ */
+function validateOddsRealism(predictions) {
+  const totalPredictions = predictions.length;
+  if (totalPredictions === 0) return { isValid: true, warnings: [] };
+  
+  const warnings = [];
+  
+  // Check for uniform odds (placeholder detection)
+  const oddsCounts = {};
+  predictions.forEach(p => {
+    if (p.american_odds) {
+      oddsCounts[p.american_odds] = (oddsCounts[p.american_odds] || 0) + 1;
+    }
+  });
+  
+  // Flag if >40% have identical odds
+  Object.entries(oddsCounts).forEach(([odds, count]) => {
+    const percentage = (count / totalPredictions) * 100;
+    if (percentage > 40) {
+      warnings.push(`⚠️ ${percentage.toFixed(0)}% of predictions have identical odds (${odds}) - possible placeholder data`);
+    }
+  });
+  
+  // Check for suspiciously uniform book counts
+  const singleBookCount = predictions.filter(p => p.books_count === 1 || p.books_count === '1').length;
+  const singleBookPercentage = (singleBookCount / totalPredictions) * 100;
+  
+  if (singleBookPercentage > 60) {
+    warnings.push(`⚠️ ${singleBookPercentage.toFixed(0)}% of predictions from single book - limited market coverage`);
+  }
+  
+  // Check for realistic probability ranges
+  const highProbCount = predictions.filter(p => (p.anytime_td_prob || 0) > 0.65).length;
+  const lowProbCount = predictions.filter(p => (p.anytime_td_prob || 0) < 0.05).length;
+  
+  if (highProbCount > totalPredictions * 0.05) {
+    warnings.push(`⚠️ ${highProbCount} players with >65% TD probability - check calibration`);
+  }
+  
+  if (lowProbCount > totalPredictions * 0.3) {
+    warnings.push(`⚠️ ${lowProbCount} players with <5% TD probability - possible data quality issues`);
+  }
+  
+  return {
+    isValid: warnings.length === 0,
+    warnings,
+    validation_summary: {
+      total_predictions: totalPredictions,
+      single_book_percentage: Math.round(singleBookPercentage),
+      high_prob_count: highProbCount,
+      unique_odds: Object.keys(oddsCounts).length,
+      most_common_odds: Object.entries(oddsCounts).sort((a, b) => b[1] - a[1])[0]
+    }
+  };
+}
+
+/**
  * Filter predictions based on query parameters
  */
 function filterPredictions(predictions, queryParams) {
   let filtered = [...predictions];
+  
+  // Apply reliability adjustments first
+  filtered = filtered.map(applyReliabilityAdjustment);
+  
+  // Apply team-level reconciliation
+  filtered = reconcileTeamTotals(filtered);
   
   // Position filter
   if (queryParams.position) {
@@ -175,7 +319,7 @@ function filterPredictions(predictions, queryParams) {
     );
   }
   
-  // Probability filter
+  // Probability filter (applied after adjustments)
   if (queryParams.min_probability > 0) {
     filtered = filtered.filter(p => 
       p.anytime_td_prob >= queryParams.min_probability
@@ -320,6 +464,59 @@ function generateResponseByType(data, queryParams) {
         }
       };
       
+    case 'data-quality':
+      // Skip filtering to analyze raw data
+      const rawPredictions = data.full.predictions || [];
+      const validation = validateOddsRealism(rawPredictions);
+      
+      // Team total analysis
+      const teamTotals = {};
+      rawPredictions.forEach(p => {
+        const team = p.team || p.team_abbr;
+        if (!teamTotals[team]) teamTotals[team] = { total: 0, count: 0, players: [] };
+        teamTotals[team].total += (p.anytime_td_prob || 0);
+        teamTotals[team].count += 1;
+        teamTotals[team].players.push({
+          name: p.name || p.player_name,
+          position: p.position,
+          prob: p.anytime_td_prob,
+          reliability: p.reliability
+        });
+      });
+      
+      const teamAnalysis = Object.entries(teamTotals)
+        .map(([team, data]) => ({
+          team,
+          total_prob: Math.round(data.total * 100) / 100,
+          player_count: data.count,
+          avg_prob: Math.round((data.total / data.count) * 100) / 100,
+          needs_scaling: data.total > 2.8,
+          top_players: data.players
+            .sort((a, b) => (b.prob || 0) - (a.prob || 0))
+            .slice(0, 3)
+        }))
+        .sort((a, b) => b.total_prob - a.total_prob);
+      
+      return {
+        type: 'data_quality_analysis',
+        validation_result: validation,
+        team_analysis: teamAnalysis,
+        distribution_analysis: {
+          total_players: rawPredictions.length,
+          avg_probability: rawPredictions.reduce((sum, p) => sum + (p.anytime_td_prob || 0), 0) / rawPredictions.length,
+          high_prob_players: rawPredictions.filter(p => (p.anytime_td_prob || 0) > 0.5).length,
+          zero_prob_players: rawPredictions.filter(p => (p.anytime_td_prob || 0) === 0).length,
+          positions: {
+            RB: rawPredictions.filter(p => p.position === 'RB').length,
+            WR: rawPredictions.filter(p => p.position === 'WR').length,
+            TE: rawPredictions.filter(p => p.position === 'TE').length,
+            QB: rawPredictions.filter(p => p.position === 'QB').length
+          }
+        },
+        sample_predictions: rawPredictions.slice(0, 5),
+        metadata: data.full.metadata
+      };
+      
     default:
       return { error: `Unsupported query type: ${type}. Supported types: ${CONFIG.QUERY_TYPES.join(', ')}` };
   }
@@ -370,6 +567,14 @@ exports.handler = async (event, context) => {
     const dataAge = Date.now() - new Date(data.full.metadata.generated_at).getTime();
     const dataAgeHours = dataAge / (1000 * 60 * 60);
     
+    // Validate data quality before processing
+    const validationResult = validateOddsRealism(data.full.predictions || []);
+    
+    // Log warnings for monitoring
+    if (validationResult.warnings.length > 0) {
+      console.warn('📊 Data Quality Warnings:', validationResult.warnings);
+    }
+    
     // Generate response based on query type
     const response = generateResponseByType(data, queryParams);
     
@@ -390,6 +595,20 @@ exports.handler = async (event, context) => {
       };
     }
     
+    // Add data quality information to response
+    response.data_quality = {
+      validation_status: validationResult.isValid ? 'passed' : 'warnings',
+      warnings: validationResult.warnings,
+      validation_summary: validationResult.validation_summary
+    };
+    
+    // Calculate adjustment statistics
+    const adjustmentStats = {
+      reliability_adjusted: (response.predictions || []).filter(p => p.reliability_adjusted).length,
+      team_reconciled: (response.predictions || []).filter(p => p.team_reconciled).length,
+      total_predictions: (response.predictions || []).length
+    };
+    
     // Add performance and freshness metadata
     const responseWithMeta = {
       ...response,
@@ -399,6 +618,7 @@ exports.handler = async (event, context) => {
         cache_status: data.lastUpdate ? 'hit' : 'miss',
         pipeline_version: data.full.metadata.version,
         total_available_players: data.full.predictions.length,
+        adjustments_applied: adjustmentStats,
         query_params: queryParams.debug ? queryParams : undefined
       }
     };
