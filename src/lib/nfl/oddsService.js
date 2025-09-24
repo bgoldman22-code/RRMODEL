@@ -6,6 +6,12 @@ export class NFLOddsService {
     this.baseUrl = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds';
     this.apiKey = process.env.THEODDS_API_KEY || process.env.REACT_APP_ODDS_API_KEY || 'demo'; // Match Netlify env var
     this.enableDebug = true; // Enhanced logging for real odds investigation
+    this.cache = new Map(); // Add missing cache
+    this.cacheExpiry = 5 * 60 * 1000; // 5 minutes cache
+  }
+
+  get hasValidApiKey() {
+    return this.apiKey && this.apiKey !== 'demo';
   }
 
   /**
@@ -334,4 +340,4 @@ export class NFLOddsService {
 }
 
 // Export singleton instance
-export const oddsService = new NFLTDOddsService();
+export const oddsService = new NFLOddsService();
