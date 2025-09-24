@@ -34,21 +34,42 @@ const NFLTouchdownPropsComprehensive = () => {
   const [sortBy, setSortBy] = useState('probability'); // probability, confidence, value
   const season = 2025;
 
-  // Try to refine week detection with data source
+  // Only auto-detect current week on initial load, don't override user selections
   useEffect(() => {
-    const refineWeekDetection = async () => {
+    const initialWeekDetection = async () => {
       try {
-        const currentWeek = await getCurrentNFLWeekFromData();
-        if (currentWeek && currentWeek !== week) {
-          console.log(`📅 Week refined from data source: ${week} → ${currentWeek}`);
-          setWeek(currentWeek);
+        // Only use date-based calculation, ignore static data file week
+        const calculatedWeek = (() => {
+          const now = new Date();
+          const seasonStart = new Date('2025-09-05');
+          const daysSinceStart = Math.floor((now - seasonStart) / (1000 * 60 * 60 * 24));
+          
+          if (daysSinceStart < 0) return 1;
+          
+          let weekNumber;
+          if (daysSinceStart <= 6) weekNumber = 1;
+          else if (daysSinceStart <= 13) weekNumber = 2;
+          else if (daysSinceStart <= 17) weekNumber = 3;
+          else weekNumber = Math.floor((daysSinceStart - 18) / 7) + 4;
+          
+          return Math.min(Math.max(weekNumber, 1), 18);
+        })();
+        
+        console.log(`📅 Auto-detected current NFL week: ${calculatedWeek} (based on date: ${new Date().toDateString()})`);
+        
+        // Only set if this is the initial calculated week (Week 4 currently)
+        // Don't override if user has already made a different selection
+        if (calculatedWeek !== week) {
+          setWeek(calculatedWeek);
         }
       } catch (error) {
-        console.log(`📅 Using calculated week ${week} (data source unavailable)`);
+        console.log(`📅 Using initial calculated week ${week}`);
       }
     };
-    refineWeekDetection();
-  }, [week]);
+    
+    // Only run once on component mount, not when week changes
+    initialWeekDetection();
+  }, []); // Empty dependency array = only runs once
 
   // Load predictions from enhanced API with proper week-based data
     const loadComprehensivePredictions = async () => {
