@@ -56,6 +56,14 @@ let cachedData = {};
 
 async function fetchLiveTDOdds() {
   const apiKey = process.env.THEODDS_API_KEY; // Use same key as NFL game odds
+  
+  // Enhanced debugging for production
+  console.log('🔑 Environment Variable Debug:');
+  console.log('- THEODDS_API_KEY exists:', !!apiKey);
+  console.log('- API Key length:', apiKey ? apiKey.length : 0);
+  console.log('- API Key first 8 chars:', apiKey ? apiKey.substring(0, 8) + '...' : 'NONE');
+  console.log('- All env vars with "KEY":', Object.keys(process.env).filter(k => k.includes('KEY')));
+  
   if (!apiKey) {
     console.log('🔒 No THEODDS_API_KEY found - using fallback odds');
     return { success: false, reason: 'no_api_key', odds: [] };
