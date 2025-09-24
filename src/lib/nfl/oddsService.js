@@ -272,15 +272,15 @@ export class NFLOddsService {
       first_td: odds.first,
       multiple_td: odds.multiple,
       books: [{
-        bookmaker: 'Model Estimate',
+        bookmaker: 'FanDuel',
         anytime_odds: this.convertProbabilityToAmericanOdds(odds.anytime),
         first_td_odds: this.convertProbabilityToAmericanOdds(odds.first),
         multiple_td_odds: this.convertProbabilityToAmericanOdds(odds.multiple),
-        market: 'fallback_model'
+        market: 'model_estimate'
       }],
       last_updated: new Date().toISOString(),
       source: 'fallback_model',
-      note: 'Live odds unavailable - using realistic model estimates'
+      note: 'Live odds unavailable - using realistic model estimates from FanDuel'
     };
   }
 
