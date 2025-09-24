@@ -105,8 +105,8 @@ function processQueryParams(event) {
   const params = event.queryStringParameters || {};
   
   return {
-    // Query type
-    type: params.type || 'lite',
+    // Query type - default to adjusted data for production use
+    type: params.type || 'top-anytime',
     
     // Filters
     position: params.position?.toUpperCase(),
@@ -145,8 +145,41 @@ function applyReliabilityAdjustment(prediction) {
     }
   }
   
-  // Position priors based on historical TD rates
-  const priors = { 
+  // Strengthen injury/sparse data downgrades
+  if (prediction.injury_status && prediction.injury_status !== 'healthy') {
+    const injuryImpact = {
+      'questionable': 0.15,  // 15% reduction
+      'doubtful': 0.40,      // 40% reduction  
+      'out': 0.90,           // 90% reduction
+      'ir': 0.95,            // 95% reduction
+      'injured': 0.25        // Generic injury: 25% reduction
+    };
+    
+    const impact = injuryImpact[prediction.injury_status.toLowerCase()] || 0.20;
+    r = Math.max(0.1, r * (1 - impact)); // Apply injury penalty to reliability
+  }
+  
+  // Penalize sparse/low usage data more aggressively
+  const snapShare = prediction.snap_share || prediction.snap_pct || 0;
+  const targets = prediction.targets_per_game || prediction.target_share || 0;
+  const carries = prediction.carries_per_game || prediction.rush_attempts || 0;
+  
+  // Usage penalty: players with <30% snap share get reliability hit
+  if (snapShare < 0.30) {
+    const usagePenalty = Math.max(0, (0.30 - snapShare) * 0.5); // Up to 15% penalty
+    r = Math.max(0.2, r * (1 - usagePenalty));
+  }
+  
+  // Low involvement penalty for skill positions
+  if (prediction.position === 'WR' && targets < 3) {
+    r = Math.max(0.3, r * 0.8); // 20% penalty for low-target WRs
+  }
+  if (prediction.position === 'RB' && carries < 5 && targets < 2) {
+    r = Math.max(0.3, r * 0.75); // 25% penalty for low-touch RBs
+  }
+
+  // Position priors based on historical TD rates with role differentiation
+  const basePriors = { 
     RB: 0.22,    // RBs score most frequently
     WR: 0.16,    // WRs moderate rate
     TE: 0.13,    // TEs lower rate
@@ -155,7 +188,49 @@ function applyReliabilityAdjustment(prediction) {
   };
   
   const position = prediction.position || 'default';
-  const prior = priors[position] ?? priors.default;
+  let prior = basePriors[position] ?? basePriors.default;
+  
+  // Multi-path logic: adjust priors based on role/usage patterns
+  const redZoneTargets = prediction.rz_targets_per_game || prediction.red_zone_targets || 0;
+  const explosiveRate = prediction.explosive_play_rate || prediction.long_td_rate || 0;  // Enhanced role-based prior adjustments
+  if (position === 'RB') {
+    // RBs can have explosive upside too
+    if (explosiveRate > 0.15 || prediction.yards_per_carry > 5.0) {
+      prior = Math.min(0.28, prior * 1.15); // Explosive RBs get boost
+    }
+    if (redZoneTargets > 1.5) {
+      prior = Math.min(0.30, prior * 1.20); // RZ receiving RBs get bigger boost  
+    }
+    if (snapShare < 0.4) {
+      prior = Math.max(0.12, prior * 0.7); // Part-time RBs penalized more
+    }
+  }
+  
+  if (position === 'WR') {
+    // WRs can have RZ upside beyond just explosive plays
+    if (redZoneTargets > 1.0) {
+      prior = Math.min(0.24, prior * 1.25); // RZ WRs get significant boost
+    }
+    if (explosiveRate > 0.12) {
+      prior = Math.min(0.22, prior * 1.15); // Explosive WRs get boost
+    }
+    if (snapShare < 0.5) {
+      prior = Math.max(0.08, prior * 0.6); // Part-time WRs penalized
+    }
+  }
+  
+  if (position === 'TE') {
+    // TEs with RZ usage are TD magnets
+    if (redZoneTargets > 0.8) {
+      prior = Math.min(0.20, prior * 1.35); // RZ TEs get huge boost
+    }
+    if (explosiveRate > 0.08) {
+      prior = Math.min(0.18, prior * 1.20); // Explosive TEs get boost
+    }
+    if (snapShare < 0.6) {
+      prior = Math.max(0.06, prior * 0.65); // Part-time TEs penalized
+    }
+  }
   
   // Reliability weight: map r in [0,1] to lambda in [0.35..0.95]
   // Higher reliability = more weight to model, less shrinkage to prior
@@ -163,7 +238,7 @@ function applyReliabilityAdjustment(prediction) {
   
   const clamp = (x) => Math.max(0.001, Math.min(0.95, x));
   
-  // Shrink probabilities toward position priors
+  // Shrink probabilities toward enhanced position priors
   const anytimeAdjusted = clamp(lambda * (prediction.anytime_td_prob || 0) + (1 - lambda) * prior);
   const multipleAdjusted = clamp(lambda * (prediction.multiple_td_prob || 0) + (1 - lambda) * (prior * 0.12));
   const firstAdjusted = clamp(lambda * (prediction.first_td_prob || 0) + (1 - lambda) * (prior * 0.10));
@@ -302,7 +377,7 @@ function validateOddsRealism(predictions) {
   
   const warnings = [];
   
-  // Check for uniform odds (placeholder detection)
+  // Enhanced uniform odds detection (placeholder detection)
   const oddsCounts = {};
   const oddsAvailable = normalized.filter(p => p.american_odds);
   
@@ -311,12 +386,20 @@ function validateOddsRealism(predictions) {
     oddsCounts[odds] = (oddsCounts[odds] || 0) + 1;
   });
   
-  // Flag if >40% have identical odds (among those with odds)
+  // Flag if >25% have identical odds (lowered threshold for better detection)
   if (oddsAvailable.length > 0) {
     Object.entries(oddsCounts).forEach(([odds, count]) => {
       const percentage = (count / oddsAvailable.length) * 100;
-      if (percentage > 40) {
-        warnings.push(`⚠️ ${percentage.toFixed(0)}% of predictions have identical odds (${odds}) - possible placeholder data`);
+      if (percentage > 25) {
+        warnings.push(`⚠️ ${percentage.toFixed(0)}% of predictions have identical odds (${odds}) - likely placeholder data`);
+      }
+    });
+    
+    // Check for common placeholder patterns
+    const commonPlaceholders = ['300', '400', '500', '+300', '+400', '+500'];
+    commonPlaceholders.forEach(placeholder => {
+      if (oddsCounts[placeholder] && (oddsCounts[placeholder] / oddsAvailable.length) > 0.15) {
+        warnings.push(`🚨 High frequency of placeholder odds "${placeholder}" detected - ${Math.round((oddsCounts[placeholder] / oddsAvailable.length) * 100)}% of players`);
       }
     });
   }
@@ -386,26 +469,68 @@ function normalizeRow(prediction) {
 }
 
 /**
- * Apply odds quality gates and adjust confidence/value accordingly
+ * Apply enhanced odds quality gates and adjust confidence/value accordingly
  */
 function oddsGate(predictions) {
   return predictions.map(pred => {
     const booksCount = Number(pred.books_count) || 0;
     const hasOdds = !!(pred.american_odds || pred.best_price);
+    const americanOdds = pred.american_odds || pred.best_price || null;
     
-    // Require ≥2 books AND valid odds for qualification
+    // Enhanced qualification criteria
     const oddsQualified = booksCount >= 2 && hasOdds;
+    const singleBookWarning = booksCount === 1 && hasOdds;
+    const placeholderOdds = hasOdds && (
+      Math.abs(americanOdds - 300) < 10 || // Common placeholder odds
+      Math.abs(americanOdds - 400) < 10 ||
+      Math.abs(americanOdds - 500) < 10
+    );
+    
+    // Classify odds quality for UI badges
+    let oddsQuality = 'none';
+    if (!hasOdds) {
+      oddsQuality = 'none';
+    } else if (placeholderOdds) {
+      oddsQuality = 'placeholder';
+    } else if (singleBookWarning) {
+      oddsQuality = 'single_book';
+    } else if (booksCount >= 3) {
+      oddsQuality = 'excellent';
+    } else if (booksCount === 2) {
+      oddsQuality = 'good';
+    }
+    
+    // Enhanced value scoring with quality penalties
+    let valueMultiplier = 1.0;
+    if (!oddsQualified) {
+      valueMultiplier = 0; // No value for unqualified odds
+    } else if (singleBookWarning) {
+      valueMultiplier = 0.3; // Heavy penalty for single book
+    } else if (placeholderOdds) {
+      valueMultiplier = 0.1; // Near-zero for placeholder odds
+    }
     
     return {
       ...pred,
       odds_qualified: oddsQualified,
-      // Zero out value scores and lower confidence for unqualified odds
-      anytime_value_score: oddsQualified ? pred.anytime_value_score : 0,
-      multiple_value_score: oddsQualified ? pred.multiple_value_score : 0,
-      first_value_score: oddsQualified ? pred.first_value_score : 0,
-      anytime_confidence: oddsQualified ? pred.anytime_confidence : 'low',
-      odds_reason: !oddsQualified ? 
-        (!hasOdds ? 'no_odds' : 'insufficient_books') : 'qualified'
+      odds_quality: oddsQuality,
+      single_book_warning: singleBookWarning,
+      placeholder_odds_detected: placeholderOdds,
+      
+      // Apply quality-adjusted value scores
+      anytime_value_score: (pred.anytime_value_score || 0) * valueMultiplier,
+      multiple_value_score: (pred.multiple_value_score || 0) * valueMultiplier,
+      first_value_score: (pred.first_value_score || 0) * valueMultiplier,
+      
+      // Adjust confidence for odds quality
+      anytime_confidence: !oddsQualified ? 'low' : 
+                         (singleBookWarning || placeholderOdds) ? 
+                         Math.min(pred.anytime_confidence, 'medium') : pred.anytime_confidence,
+      
+      odds_reason: !hasOdds ? 'no_odds' : 
+                  placeholderOdds ? 'placeholder_detected' :
+                  booksCount < 2 ? 'insufficient_books' : 
+                  'qualified'
     };
   });
 }
@@ -500,9 +625,12 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'lite':
+      // Apply basic adjustments even to lite data
+      const liteAdjusted = filterPredictions(data.lite.predictions, queryParams, data.full.games).slice(0, queryParams.top_n);
       return {
-        predictions: filterPredictions(data.lite.predictions, queryParams, data.full.games).slice(0, queryParams.top_n),
-        metadata: data.lite.metadata
+        predictions: liteAdjusted,
+        metadata: data.lite.metadata,
+        ui_warning: 'Lite endpoint provides adjusted data but limited features. Consider using top-anytime for full functionality.'
       };
       
     case 'top-anytime':
@@ -765,12 +893,14 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           error: response.error,
           supported_types: CONFIG.QUERY_TYPES,
-          example_urls: [
-            '/api/nfl-td-predictions?type=lite',
-            '/api/nfl-td-predictions?type=top-anytime&top_n=25',
-            '/api/nfl-td-predictions?type=by-position&position=RB',
-            '/api/nfl-td-predictions?type=value-picks&min_value_score=0.7'
-          ]
+          recommended_ui_endpoints: [
+            '/api/nfl-td-predictions?type=top-anytime&top_n=50',
+            '/api/nfl-td-predictions?type=value-picks&min_value_score=0.6',
+            '/api/nfl-td-predictions?type=high-confidence&min_confidence=medium',
+            '/api/nfl-td-predictions?type=by-position&position=RB'
+          ],
+          avoid_for_ui: ['raw', 'lite'],
+          note: 'UI should use adjusted endpoints (top-anytime, value-picks, high-confidence) for production display. Raw/lite endpoints are for debugging only.'
         })
       };
     }
@@ -789,7 +919,7 @@ exports.handler = async (event, context) => {
       total_predictions: (response.predictions || []).length
     };
     
-    // Add performance and freshness metadata
+    // Add performance and freshness metadata with UI guidance
     const responseWithMeta = {
       ...response,
       api_metadata: {
@@ -800,6 +930,15 @@ exports.handler = async (event, context) => {
         total_available_players: data.full.predictions.length,
         adjustments_applied: adjustmentStats,
         query_params: queryParams.debug ? queryParams : undefined
+      },
+      ui_guidance: {
+        endpoint_used: queryParams.type,
+        is_production_ready: !['raw', 'lite'].includes(queryParams.type),
+        single_book_count: (response.predictions || []).filter(p => p.single_book_warning).length,
+        placeholder_odds_count: (response.predictions || []).filter(p => p.placeholder_odds_detected).length,
+        recommendations: queryParams.type === 'raw' || queryParams.type === 'lite' ? 
+          ['Switch to top-anytime or value-picks for production UI', 'Badge single-book rows', 'Never show BET button for unqualified odds'] :
+          ['Badge rows with single_book_warning=true', 'Hide BET button when odds_qualified=false']
       }
     };
     
