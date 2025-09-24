@@ -12,6 +12,7 @@
 
 const fs = require('fs').promises;
 const path = require('path');
+const fetch = global.fetch || require('node-fetch');
 
 // ELITE CONFIGURATION - Sharp Room Standards
 const CONFIG = {
@@ -51,6 +52,117 @@ const CONFIG = {
 
 // Cache management - support multiple weeks
 let cachedData = {};
+
+// ========== LIVE ODDS INTEGRATION ==========
+
+async function fetchLiveTDOdds() {
+  const apiKey = process.env.ODDS_API_KEY; // Use same key as NFL game odds
+  if (!apiKey) {
+    console.log('🔒 No ODDS_API_KEY found - using fallback odds');
+    return { success: false, reason: 'no_api_key', odds: [] };
+  }
+
+  try {
+    const url = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds` +
+      `?apiKey=${apiKey}` +
+      `&regions=us` +
+      `&markets=player_anytime_td,player_1st_td` +
+      `&oddsFormat=american`;
+
+    console.log('📡 Fetching live TD odds from TheOddsAPI...');
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      console.error(`❌ Odds API error: ${response.status}`);
+      return { success: false, reason: `api_error_${response.status}`, odds: [] };
+    }
+
+    const games = await response.json();
+    const playerOdds = [];
+
+    // Extract player odds from all games
+    for (const game of games) {
+      for (const bookmaker of game.bookmakers || []) {
+        const bookName = normalizeBookName(bookmaker.key);
+        if (!CONFIG.ALLOWED_BOOKS.has(bookName)) continue;
+
+        for (const market of bookmaker.markets || []) {
+          if (market.key === 'player_anytime_td' || market.key === 'player_1st_td') {
+            for (const outcome of market.outcomes || []) {
+              playerOdds.push({
+                player_name: outcome.name,
+                market_type: market.key,
+                odds: outcome.price,
+                bookmaker: bookmaker.key,
+                game_id: game.id,
+                home_team: game.home_team,
+                away_team: game.away_team
+              });
+            }
+          }
+        }
+      }
+    }
+
+    console.log(`✅ Fetched ${playerOdds.length} player odds from ${games.length} games`);
+    return { success: true, odds: playerOdds };
+
+  } catch (error) {
+    console.error('❌ Error fetching live odds:', error.message);
+    return { success: false, reason: 'fetch_error', odds: [], error: error.message };
+  }
+}
+
+function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
+  if (!liveOddsData.success || !liveOddsData.odds.length) {
+    console.log('⚠️ No live odds available - using fallback odds');
+    return predictions.map(pred => ({ ...pred, odds_source: 'fallback' }));
+  }
+
+  return predictions.map(pred => {
+    const playerName = pred.player_name || pred.name;
+    
+    // Find matching odds for this player
+    const anytimeOdds = liveOddsData.odds.filter(odds => 
+      odds.player_name === playerName && odds.market_type === 'player_anytime_td'
+    );
+    const firstOdds = liveOddsData.odds.filter(odds =>
+      odds.player_name === playerName && odds.market_type === 'player_1st_td'  
+    );
+
+    if (anytimeOdds.length > 0) {
+      // Use best (most favorable) odds across books
+      const bestAnytime = anytimeOdds.reduce((best, current) => 
+        current.odds > best.odds ? current : best
+      );
+      
+      return {
+        ...pred,
+        american_odds: bestAnytime.odds,
+        odds_source: 'theoddsapi_live',
+        odds_sources_allowed: anytimeOdds.map(odds => ({
+          book: odds.bookmaker,
+          american_odds: odds.odds,
+          best_price: odds.odds
+        })),
+        books_count: anytimeOdds.length,
+        first_td_odds: firstOdds.length > 0 ? Math.max(...firstOdds.map(o => o.odds)) : null
+      };
+    }
+
+    // No live odds found - use fallback
+    return {
+      ...pred,
+      odds_source: 'fallback',
+      odds_sources_allowed: [{
+        book: 'MODEL_ESTIMATE',
+        american_odds: pred.american_odds || pred.implied_odds || 200,
+        best_price: pred.american_odds || pred.implied_odds || 200
+      }],
+      books_count: 1
+    };
+  });
+}
 
 // ========== BOOK WHITELIST ENFORCEMENT ==========
 
@@ -1148,16 +1260,23 @@ function filterPredictions(predictions, queryParams, games = []) {
 /**
  * Generate response for specific query types
  */
-function generateResponseByType(data, queryParams) {
+async function generateResponseByType(data, queryParams) {
   const { type, top_n } = queryParams;
+  
+  // Fetch live odds for all predictions
+  const liveOddsData = await fetchLiveTDOdds();
+  
+  // Enhance base predictions with live odds
+  const enhancedPredictions = enhancePredictionsWithLiveOdds(data.full.predictions, liveOddsData);
   
   switch (type) {
     case 'all':
       return {
-        predictions: filterPredictions(data.full.predictions, queryParams, data.full.games),
+        predictions: filterPredictions(enhancedPredictions, queryParams, data.full.games),
         metadata: queryParams.include_metadata ? data.full.metadata : undefined,
         summary: queryParams.include_summary ? data.full.summary : undefined,
-        games: data.full.games
+        games: data.full.games,
+        odds_info: { source: liveOddsData.success ? 'live_api' : 'fallback', count: liveOddsData.odds?.length || 0 }
       };
       
     case 'lite':
@@ -1170,7 +1289,7 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'top-anytime':
-      const allFiltered = filterPredictions(data.full.predictions, queryParams, data.full.games);
+      const allFiltered = filterPredictions(enhancedPredictions, queryParams, data.full.games);
       let topAnytime = allFiltered
         .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
         .slice(0, top_n);
@@ -1209,7 +1328,7 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'top-multiple':
-      const topMultiple = filterPredictions(data.full.predictions, queryParams, data.full.games)
+      const topMultiple = filterPredictions(enhancedPredictions, queryParams, data.full.games)
         .sort((a, b) => b.multiple_td_prob - a.multiple_td_prob)
         .slice(0, top_n);
       
@@ -1225,7 +1344,7 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'top-first':
-      const topFirst = filterPredictions(data.full.predictions, queryParams, data.full.games)
+      const topFirst = filterPredictions(enhancedPredictions, queryParams, data.full.games)
         .sort((a, b) => b.first_td_prob - a.first_td_prob)
         .slice(0, top_n);
       
@@ -1246,7 +1365,7 @@ function generateResponseByType(data, queryParams) {
       }
       
       const gameData = data.full.games.find(g => g.game_id === queryParams.game_id);
-      const gamePlayers = filterPredictions(data.full.predictions, queryParams, data.full.games);
+      const gamePlayers = filterPredictions(enhancedPredictions, queryParams, data.full.games);
       
       return {
         type: 'game_predictions',
@@ -1260,7 +1379,7 @@ function generateResponseByType(data, queryParams) {
       const positions = ['QB', 'RB', 'WR', 'TE'];
       
       positions.forEach(pos => {
-        const posPlayers = filterPredictions(data.full.predictions, { ...queryParams, position: pos }, data.full.games)
+        const posPlayers = filterPredictions(enhancedPredictions, { ...queryParams, position: pos }, data.full.games)
           .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
           .slice(0, Math.ceil(top_n / positions.length));
         
@@ -1274,7 +1393,7 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'value-picks':
-      const valuePicks = filterPredictions(data.full.predictions, queryParams, data.full.games)
+      const valuePicks = filterPredictions(enhancedPredictions, queryParams, data.full.games)
         .filter(p => p.odds_qualified) // Only show qualified odds for value picks
         .filter(p => p.anytime_value_score >= 0.6 || p.multiple_value_score >= 0.6 || p.first_value_score >= 0.6)
         .sort((a, b) => Math.max(b.anytime_value_score, b.multiple_value_score, b.first_value_score) - 
@@ -1293,7 +1412,7 @@ function generateResponseByType(data, queryParams) {
       };
       
     case 'high-confidence':
-      const highConfidence = filterPredictions(data.full.predictions, { ...queryParams, min_confidence: 'high' }, data.full.games)
+      const highConfidence = filterPredictions(enhancedPredictions, { ...queryParams, min_confidence: 'high' }, data.full.games)
         .filter(p => p.odds_qualified) // Only show qualified odds for high confidence picks
         .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
         .slice(0, top_n);
@@ -1443,7 +1562,7 @@ exports.handler = async (event, context) => {
     }
     
     // Generate response based on query type
-    const response = generateResponseByType(data, queryParams);
+    const response = await generateResponseByType(data, queryParams);
     
     if (response.error) {
       return {
