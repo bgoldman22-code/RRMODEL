@@ -80,7 +80,7 @@ const NFLTouchdownPropsComprehensive = () => {
     
     try {
       // Try the enhanced NFL TD predictions API first
-      const apiUrl = `/api/nfl-td-predictions-enhanced?type=all&top_n=500&min_confidence=low&season=${season}&week=${week}`;
+      const apiUrl = `/.netlify/functions/nfl-td-predictions-enhanced?type=all&top_n=500&min_confidence=low&season=${season}&week=${week}`;
       console.log('Trying enhanced API:', apiUrl);
       
       let players = [];
