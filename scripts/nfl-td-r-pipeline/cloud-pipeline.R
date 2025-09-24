@@ -204,25 +204,36 @@ generate_comprehensive_predictions <- function(td_stats, schedule_data) {
       is_home = TRUE    # Will be filled from schedule
     )
   
-  # Format for React component
+  # Format for React component with FLAT structure (not nested)
   formatted_predictions <- predictions %>%
-    rowwise() %>%
     mutate(
-      anytime_td = list(list(
-        probability = round(anytime_prob, 3),
-        confidence = round(confidence, 0),
-        odds = round(-110 + runif(1) * 40, 0) # Placeholder odds
-      )),
-      first_td = list(list(
-        probability = round(first_prob, 3),
-        confidence = round(confidence * 0.7, 0),
-        odds = round(500 + runif(1) * 300, 0)
-      )),
-      multiple_td = list(list(
-        probability = round(multiple_prob, 3),
-        confidence = round(confidence * 0.6, 0),
-        odds = round(250 + runif(1) * 200, 0)
-      ))
+      # FLAT probability fields (not nested lists)
+      anytime_td_prob = round(anytime_prob, 3),
+      anytime_confidence = case_when(
+        confidence >= 70 ~ "high",
+        confidence >= 50 ~ "medium",
+        TRUE ~ "low"
+      ),
+      first_td_prob = round(first_prob, 3),
+      first_confidence = case_when(
+        confidence >= 70 ~ "high",
+        confidence >= 50 ~ "medium", 
+        TRUE ~ "low"
+      ),
+      multiple_td_prob = round(multiple_prob, 3),
+      multiple_confidence = case_when(
+        confidence >= 70 ~ "high",
+        confidence >= 50 ~ "medium",
+        TRUE ~ "low"
+      ),
+      # Add value scores for API compatibility
+      anytime_value_score = pmax(0, (anytime_prob - 0.15) * 0.5),
+      first_value_score = pmax(0, (first_prob - 0.05) * 0.3),
+      multiple_value_score = pmax(0, (multiple_prob - 0.08) * 0.4),
+      # Keep original nested structure for backward compatibility
+      anytime_td = anytime_prob,
+      first_td = first_prob,
+      multiple_td = multiple_prob
     ) %>%
     select(
       player_id = td_player_id,
@@ -231,10 +242,21 @@ generate_comprehensive_predictions <- function(td_stats, schedule_data) {
       position,
       opponent,
       is_home,
+      depth_chart_position,
+      # New FLAT fields
+      anytime_td_prob,
+      anytime_confidence,
+      first_td_prob,
+      first_confidence,
+      multiple_td_prob,
+      multiple_confidence,
+      anytime_value_score,
+      first_value_score,
+      multiple_value_score,
+      # Keep legacy fields
       anytime_td,
       first_td,
-      multiple_td,
-      depth_chart_position
+      multiple_td
     )
   
   return(formatted_predictions)
