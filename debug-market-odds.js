@@ -8,9 +8,9 @@ console.log('🎯 Market Odds Debug - Starting...');
 
 async function debugMarketOdds() {
   try {
-    // Test the API endpoint
+    // Test the correct API endpoint
     console.log('📡 Fetching NFL TD predictions...');
-    const response = await fetch('/api/nfl-td-predictions-enhanced?type=all&top_n=5&min_confidence=low');
+    const response = await fetch('/.netlify/functions/nfl-td-predictions-enhanced?type=all&top_n=5&min_confidence=low');
     
     if (!response.ok) {
       console.error('❌ API Error:', response.status, response.statusText);
