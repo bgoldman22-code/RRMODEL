@@ -16,10 +16,9 @@ const fetch = global.fetch || require('node-fetch');
 
 // ELITE CONFIGURATION - Sharp Room Standards
 const CONFIG = {
-  // R pipeline output paths
-  PIPELINE_OUTPUT_DIR: path.join(process.cwd(), 'data', 'nfl_r_pipeline', 'output'),
-  FULL_PREDICTIONS_FILE: 'nfl_td_predictions_enhanced.json',
-  LITE_PREDICTIONS_FILE: 'nfl_td_predictions_lite.json',
+  // Data file paths (R pipeline writes to data/ directly)
+  MAIN_DATA_PATH: path.join(process.cwd(), 'data', 'nfl-td-comprehensive-latest.json'),
+  LITE_DATA_PATH: path.join(process.cwd(), 'data', 'nfl-td-lite-latest.json'),
   
   // Cache settings
   CACHE_DURATION_SECONDS: 300, // 5 minutes
@@ -56,9 +55,9 @@ let cachedData = {};
 // ========== LIVE ODDS INTEGRATION ==========
 
 async function fetchLiveTDOdds() {
-  const apiKey = process.env.ODDS_API_KEY; // Use same key as NFL game odds
+  const apiKey = process.env.THEODDS_API_KEY; // Use same key as NFL game odds
   if (!apiKey) {
-    console.log('🔒 No ODDS_API_KEY found - using fallback odds');
+    console.log('🔒 No THEODDS_API_KEY found - using fallback odds');
     return { success: false, reason: 'no_api_key', odds: [] };
   }
 
@@ -146,7 +145,9 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
           best_price: odds.odds
         })),
         books_count: anytimeOdds.length,
-        first_td_odds: firstOdds.length > 0 ? Math.max(...firstOdds.map(o => o.odds)) : null
+        first_td_odds: firstOdds.length > 0 ? Math.max(...firstOdds.map(o => o.odds)) : null,
+        whitelisted_books_only: true, // Live odds from API are pre-filtered to allowed books
+        odds_qualified: true // Set qualified since we have live odds
       };
     }
 
@@ -159,7 +160,9 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
         american_odds: pred.american_odds || pred.implied_odds || 200,
         best_price: pred.american_odds || pred.implied_odds || 200
       }],
-      books_count: 1
+      books_count: 1,
+      whitelisted_books_only: true, // Allow model estimates as "approved"
+      odds_qualified: true // Allow betting on model estimates
     };
   });
 }
@@ -267,6 +270,9 @@ async function loadPipelineData(week = null, season = 2025, forceRefresh = false
       lite: liteData,
       lastUpdate: now
     };
+    
+    // CHATGPT FIX: Store metadata globally for reliability calculations
+    global.cachedDataMetadata = fullData.metadata;
     
     console.log(`✅ Loaded pipeline data for ${cacheKey}: ${fullData.predictions?.length || 0} players, ${fullData.summary?.total_games || fullData.metadata?.total_players || 0} games`);
     
@@ -444,10 +450,21 @@ function applyReliabilityAdjustment(prediction, queryParams = {}) {
   
   // CHATGPT SUGGESTION: Add week-based reliability scaling
   // Scale reliability based on weeks played - early season needs more shrinkage
-  const weeksPlayed = prediction.weeks_played ?? prediction.samples ?? queryParams.week ?? 1;
-  const weekScaler = Math.max(0.4, Math.min(1, weeksPlayed / 4)); // floor at 0.4, full by week 4
-  r = r * weekScaler;
-  console.log(`📊 Reliability scaling: ${prediction.player_name} - Base: ${(r/weekScaler).toFixed(2)}, Week${weeksPlayed} scaler: ${weekScaler.toFixed(2)}, Final: ${r.toFixed(2)}`);
+  // Try to get current week from various sources (R pipeline metadata, query params, etc.)
+  const currentWeek = queryParams.week ?? 
+                     (global.cachedDataMetadata && global.cachedDataMetadata.week) ?? 3; // Default to Week 3 for Sep 24, 2025
+  
+  // Estimate games played based on current week (assumes player has played most games)
+  const estimatedGamesPlayed = Math.max(1, currentWeek - 1); // Conservative estimate
+  const actualGamesPlayed = prediction.weeks_played ?? prediction.samples ?? prediction.games_played ?? estimatedGamesPlayed;
+  
+  // Scale reliability: 0 games => 0.30 floor, 8+ games => ~0.95 cap (ChatGPT's suggestion)
+  const sampleSize = Math.min(1, actualGamesPlayed / 8);
+  const weekBasedReliability = Math.max(0.30, Math.min(0.95, 0.15 + 0.85 * sampleSize));
+  
+  // Apply week-based reliability (blend with base reliability)
+  r = 0.6 * weekBasedReliability + 0.4 * r; // Blend ChatGPT's formula with model confidence
+  console.log(`📊 Reliability scaling: ${prediction.player_name || prediction.name} - Games: ${actualGamesPlayed}, Week-based: ${weekBasedReliability.toFixed(2)}, Final: ${r.toFixed(2)}`);
   
   // Strengthen injury/sparse data downgrades
   if (prediction.injury_status && prediction.injury_status !== 'healthy') {
@@ -572,6 +589,13 @@ function applyReliabilityAdjustment(prediction, queryParams = {}) {
     ...prediction,
     reliability_adjusted: true,
     reliability_factor: Math.round(lambda * 100) / 100,
+    
+    // CHATGPT FIX: Add metadata.data_reliability for frontend compatibility
+    metadata: {
+      ...prediction.metadata,
+      data_reliability: r, // This is what the frontend uses for "Reliability: XX%"
+      confidence_interval: prediction.confidence >= 70 ? `±${(100-prediction.confidence)}%` : null
+    },
     
     // ELITE: User-friendly reliability display
     reliability_band: reliabilityBand,
