@@ -10,7 +10,7 @@ const NFLTouchdownPropsComprehensive = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Initialize with current NFL week calculation (September 24 = Week 4)
+  // Initialize with current NFL week (auto-detected, same as game predictions)
   const [week, setWeek] = useState(() => {
     const now = new Date();
     const seasonStart = new Date('2025-09-05');
@@ -427,29 +427,21 @@ const NFLTouchdownPropsComprehensive = () => {
     }
   };
 
-  // FIXED: Manual loading only - no auto-refresh
+  // Auto-reload when week changes (like game predictions)
   useEffect(() => {
-    // Initial load only, no auto-refresh to prevent UX bugs
-    const initialLoad = async () => {
+    const loadForCurrentWeek = async () => {
       try {
-        console.log('🔄 Initial component load for Week', week);
+        console.log(`🔄 Loading TD predictions for Week ${week}...`);
         await loadComprehensivePredictions();
       } catch (error) {
-        console.error('❌ Initial load error:', error);
-        setError(`Component error: ${error.message}`);
+        console.error('❌ Load error for Week', week, ':', error);
+        setError(`Week ${week} load error: ${error.message}`);
         setLoading(false);
       }
     };
     
-    initialLoad();
-  }, []); // Empty deps = runs once only
-  
-  // Separate effect to trigger reload when week changes manually
-  useEffect(() => {
-    if (week) {
-      console.log('📅 Week changed to', week, '- use Refresh button to reload');
-    }
-  }, [week]);
+    loadForCurrentWeek();
+  }, [week, season]); // Reload whenever week or season changes
 
   // Helper function for team name mapping
   function getTeamAbbreviation(fullName) {
