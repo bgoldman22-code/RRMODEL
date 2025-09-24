@@ -2279,15 +2279,32 @@ async function fetchLiveTeamStats(league) {
       const homeXGA = teamXGData.npxga_home || teamXGData.xga_home || homeGoalsConceded;
       const awayXGA = teamXGData.npxga_away || teamXGData.xga_away || awayGoalsConceded;
       
-      // Calculate form factors based on recent performance vs season average (prioritize NPxG)
-      const recentFormAttack = calculateFormFactor(
-        teamXGData.recent_npxg_for || teamXGData.recent_xg_for, 
-        teamXGData.season_npxg_for || teamXGData.season_xg_for
-      );
-      const recentFormDefense = calculateFormFactor(
-        teamXGData.recent_npxga || teamXGData.recent_xga,
-        teamXGData.season_npxga || teamXGData.season_xga
-      );
+      // Calculate form factors based on available data
+      // If we have recent vs season xG data, use it; otherwise calculate from available stats
+      let recentFormAttack, recentFormDefense;
+      
+      if (teamXGData.recent_npxg_for && teamXGData.season_npxg_for) {
+        // Use NPxG if available
+        recentFormAttack = calculateFormFactor(teamXGData.recent_npxg_for, teamXGData.season_npxg_for);
+        recentFormDefense = calculateFormFactor(teamXGData.recent_npxga, teamXGData.season_npxga);
+      } else if (teamXGData.recent_xg_for && teamXGData.season_xg_for) {
+        // Fall back to regular xG
+        recentFormAttack = calculateFormFactor(teamXGData.recent_xg_for, teamXGData.season_xg_for);
+        recentFormDefense = calculateFormFactor(teamXGData.recent_xga, teamXGData.season_xga);
+      } else {
+        // Calculate form based on goals per game relative to league average
+        const leagueAvgGoalsFor = 1.4; // Premier League average
+        const leagueAvgGoalsAgainst = 1.4;
+        
+        const teamGoalsForRate = (homeGoalsScored + awayGoalsScored) / Math.max(homeGames + awayGames, 1);
+        const teamGoalsAgainstRate = (homeGoalsConceded + awayGoalsConceded) / Math.max(homeGames + awayGames, 1);
+        
+        // Form factor based on performance vs league average (capped ±30%)
+        recentFormAttack = Math.max(0.7, Math.min(1.3, teamGoalsForRate / leagueAvgGoalsFor));
+        recentFormDefense = Math.max(0.7, Math.min(1.3, leagueAvgGoalsAgainst / teamGoalsAgainstRate)); // Inverted for defense
+        
+        console.log(`📊 Form calculation for ${teamName}: Attack=${recentFormAttack.toFixed(2)} (${teamGoalsForRate.toFixed(2)} vs ${leagueAvgGoalsFor}), Defense=${recentFormDefense.toFixed(2)}`);
+      }
       
       // Calculate BTTS rates with enhanced xG-based approach
       const avgXGScoredHome = homeGames > 0 ? homeXGFor / homeGames : 0;
