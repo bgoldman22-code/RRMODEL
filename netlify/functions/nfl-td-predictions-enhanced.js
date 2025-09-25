@@ -19,255 +19,111 @@ const CONFIG = {
   // Data file paths (R pipeline writes to data/ directly)
   MAIN_DATA_PATH: path.join(process.cwd(), 'data', 'nfl-td-comprehensive-latest.json'),
   LITE_DATA_PATH: path.join(process.cwd(), 'data', 'nfl-td-lite-latest.json'),
-  
+
   // Cache settings
-    CACHE_DURATION_SECONDS: 300, // 5 minutes - restored after Week 4 fix
-  
-  // Response limits
-  MAX_PLAYERS_RESPONSE: 500,
+  CACHE_DURATION_SECONDS: 300, // 5 minutes API cache for function responses
+
+  // UI defaults
   DEFAULT_TOP_N: 50,
-  
-  // ELITE: Book whitelist enforcement (sharp room requirement)
-  ALLOWED_BOOKS: new Set(['FANDUEL', 'DRAFTKINGS', 'CAESARS', 'BETMGM', 'FANATICS', 'BETFANATICS', 'ESPNBET']),
-  EXCLUDED_BOOKS: new Set(['BETONLINE', 'BOVADA', 'HERITAGE', 'PINNACLE']), // Explicitly banned
-  
-  // Supported query types
   QUERY_TYPES: [
-    'all',           // All predictions
-    'lite',          // Lightweight format
-    'top-anytime',   // Top anytime TD candidates
-    'top-multiple',  // Top multiple TD candidates  
-    'top-first',     // Top first TD candidates
-    'by-game',       // Predictions for specific game
-    'by-player',     // Predictions for specific player
-    'by-team',       // Predictions for specific team
-    'by-position',   // Predictions by position
-    'value-picks',   // Best value opportunities
-    'high-confidence', // High confidence picks only
-    'data-quality',  // Data quality analysis and diagnostics
-    'raw'           // Raw data without adjustments (debug mode)
-  ]
+    'all',
+    'lite',
+    'top-anytime',
+    'top-multiple',
+    'top-first',
+    'by-game',
+    'by-position',
+    'value-picks',
+    'high-confidence',
+    'data-quality',
+    'raw'
+  ],
+
+  // Book whitelist configuration (normalized to uppercase, punctuation removed)
+  ALLOWED_BOOKS: new Set(['FANDUEL', 'DRAFTKINGS', 'CAESARS', 'BETMGM', 'BETFANATICS', 'ESPNBET']),
+  EXCLUDED_BOOKS: new Set(['BOVADA', 'BETONLINEAG'])
 };
 
-// Cache management - support multiple weeks
-let cachedData = {}; // TEMP: Force cache reset on deployment
+// In-memory cache for pipeline data across invocations
+const cachedData = {};
 
-// ========== LIVE ODDS INTEGRATION ==========
-
+// Fetch live player TD markets via The Odds API per-event endpoint
 async function fetchLiveTDOdds() {
-  const apiKey = process.env.THEODDS_API_KEY; // Use same key as NFL game odds
-  
-  // Enhanced debugging for production
-  console.log('🔑 Environment Variable Debug:');
-  console.log('- THEODDS_API_KEY exists:', !!apiKey);
-  console.log('- API Key length:', apiKey ? apiKey.length : 0);
-  console.log('- API Key first 8 chars:', apiKey ? apiKey.substring(0, 8) + '...' : 'NONE');
-  console.log('- All env vars with "KEY":', Object.keys(process.env).filter(k => k.includes('KEY')));
-  
+  const apiKey = process.env.THEODDS_API_KEY || process.env.THEODDSAPI_KEY || process.env.ODDS_API_KEY;
+  const baseRoot = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl';
+  const allowedBooksParam = ['fanduel', 'draftkings', 'caesars', 'betmgm', 'betfanatics', 'espnbet'].join(',');
+  const marketsParam = 'player_anytime_td,player_1st_td,player_tds_over';
+  const debug = [];
+
   if (!apiKey) {
-    console.log('🔒 No THEODDS_API_KEY found - using fallback odds');
-    return { success: false, reason: 'no_api_key', odds: [] };
+    return { success: false, reason: 'missing_api_key', odds: [], debug: [{ error: 'No THEODDS_API_KEY set' }] };
   }
 
   try {
-    // Try a sequence of market keys to handle provider differences (correct keys per The Odds API v4)
-    const marketAttempts = [
-      'player_anytime_td,player_first_td',   // Correct naming
-      'player_anytime_td',                   // Single market
-      'player_props'                         // Broad fallback (may include many props)
-    ];
-
-    // Verified bookmaker keys for US region
-    const allowedBooks = ['fanduel','draftkings','caesars','betmgm','betfanatics','espnbet'];
-    const baseRoot = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl';
-    const base = `${baseRoot}/odds`;
-    let lastReason = 'no_attempts';
-    let debug = [];
-
-    for (const markets of marketAttempts) {
-      const url = `${base}?apiKey=${apiKey}&regions=us&oddsFormat=american&bookmakers=${allowedBooks.join(',')}&markets=${markets}`;
-      console.log(`📡 Fetching live TD odds: markets=${markets}`);
-      const response = await fetch(url);
-      if (!response.ok) {
-        lastReason = `api_error_${response.status}`;
-        let body = '';
-        try { body = await response.text(); } catch {}
-        debug.push({ markets, status: response.status, body: body?.slice(0, 300) });
-        continue;
-      }
-
-      const games = await response.json();
-      const playerOdds = [];
-
-      for (const game of games || []) {
-        for (const bookmaker of game.bookmakers || []) {
-          const bookName = normalizeBookName(bookmaker.key);
-          if (!CONFIG.ALLOWED_BOOKS.has(bookName)) continue;
-
-          for (const market of bookmaker.markets || []) {
-            const mkey = String(market.key || '').toLowerCase();
-            const isAnytime = mkey.includes('anytime') && mkey.includes('td');
-            const isFirst = (mkey.includes('first') && mkey.includes('td'));
-            if (!(isAnytime || isFirst)) continue;
-
-            for (const outcome of market.outcomes || []) {
-              playerOdds.push({
-                player_name: outcome.name,
-                market_type: isAnytime ? 'player_anytime_td' : 'player_first_td',
-                odds: outcome.price,
-                bookmaker: bookmaker.key,
-                game_id: game.id,
-                home_team: game.home_team,
-                away_team: game.away_team
-              });
-            }
-          }
-        }
-      }
-
-      debug.push({ markets, games: (games || []).length, odds: playerOdds.length });
-      if (playerOdds.length > 0) {
-        console.log(`✅ Fetched ${playerOdds.length} player odds from ${(games || []).length} games using markets=${markets}`);
-        return { success: true, odds: playerOdds, debug };
-      }
-    }
-
-  // Per-event fallback (player props are often only on event-specific endpoint)
-  console.log('🔁 Trying per-event odds endpoint fallback for player props...');
+    // 1) List NFL events
     const eventsUrl = `${baseRoot}/events?apiKey=${apiKey}&dateFormat=iso`;
     const eventsResp = await fetch(eventsUrl);
     if (!eventsResp.ok) {
-      lastReason = `events_api_error_${eventsResp.status}`;
       let body = '';
       try { body = await eventsResp.text(); } catch {}
       debug.push({ endpoint: 'events', status: eventsResp.status, body: body?.slice(0, 300) });
-    } else {
-      const events = await eventsResp.json();
-      const playerOdds = [];
-      for (const ev of events || []) {
-        const evUrl = `${baseRoot}/events/${encodeURIComponent(ev.id)}/odds?apiKey=${apiKey}&regions=us&oddsFormat=american&bookmakers=${allowedBooks.join(',')}&markets=player_anytime_td,player_first_td`;
-        const evResp = await fetch(evUrl);
-        if (!evResp.ok) {
-          let body = '';
-          try { body = await evResp.text(); } catch {}
-          debug.push({ endpoint: 'event_odds', eventId: ev.id, status: evResp.status, body: body?.slice(0, 200) });
-          continue;
-        }
-        const evData = await evResp.json();
-        for (const bookmaker of evData.bookmakers || []) {
-          const bookName = normalizeBookName(bookmaker.key);
-          if (!CONFIG.ALLOWED_BOOKS.has(bookName)) continue;
-          for (const market of bookmaker.markets || []) {
-            const mkey = String(market.key || '').toLowerCase();
-            const isAnytime = mkey.includes('anytime') && mkey.includes('td');
-            const isFirst = (mkey.includes('first') && mkey.includes('td'));
-            if (!(isAnytime || isFirst)) continue;
-            for (const outcome of market.outcomes || []) {
-              playerOdds.push({
-                player_name: outcome.name,
-                market_type: isAnytime ? 'player_anytime_td' : 'player_first_td',
-                odds: outcome.price,
-                bookmaker: bookmaker.key,
-                game_id: ev.id,
-                home_team: ev.home_team,
-                away_team: ev.away_team
-              });
-            }
-          }
-        }
-      }
-      debug.push({ endpoint: 'event_odds_total', odds: playerOdds.length });
-      if (playerOdds.length > 0) {
-        console.log(`✅ Fetched ${playerOdds.length} player odds via per-event endpoint`);
-        return { success: true, odds: playerOdds, debug };
-      }
+      return { success: false, reason: `events_api_error_${eventsResp.status}`, odds: [], debug };
+    }
+    const events = await eventsResp.json();
+    if (!Array.isArray(events) || events.length === 0) {
+      debug.push({ endpoint: 'events', note: 'no_events' });
+      return { success: false, reason: 'no_events', odds: [], debug };
     }
 
-    // Dynamic market discovery fallback: find available market keys first, then fetch odds
-    console.log('🧭 Discovering available player TD market keys via event markets...');
-    const eventsResp2 = await fetch(eventsUrl);
-    if (eventsResp2.ok) {
-      const events2 = await eventsResp2.json();
-      const discoveredKeys = new Set();
-      // Probe a few events to collect market keys
-      for (const ev of (events2 || []).slice(0, 10)) {
-        const marketsUrl = `${baseRoot}/events/${encodeURIComponent(ev.id)}/markets?apiKey=${apiKey}&regions=us&bookmakers=${allowedBooks.join(',')}`;
-        const mResp = await fetch(marketsUrl);
-        if (!mResp.ok) {
-          let body = '';
-          try { body = await mResp.text(); } catch {}
-          debug.push({ endpoint: 'event_markets', eventId: ev.id, status: mResp.status, body: body?.slice(0, 200) });
-          continue;
-        }
-        const mData = await mResp.json();
-        for (const bookmaker of mData.bookmakers || []) {
-          for (const market of bookmaker.markets || []) {
-            const key = String(market.key || '').toLowerCase();
-            // Heuristic: looking for player TD scoring markets
-            if (key.includes('player') && key.includes('td')) {
-              discoveredKeys.add(key);
-            }
-          }
-        }
+    // 2) Fetch per-event odds for TD scorer markets
+    const playerOdds = [];
+    for (const ev of events) {
+      const evUrl = `${baseRoot}/events/${encodeURIComponent(ev.id)}/odds?apiKey=${apiKey}&regions=us&oddsFormat=american&bookmakers=${allowedBooksParam}&markets=${marketsParam}`;
+      const evResp = await fetch(evUrl);
+      if (!evResp.ok) {
+        let body = '';
+        try { body = await evResp.text(); } catch {}
+        debug.push({ endpoint: 'event_odds', eventId: ev.id, status: evResp.status, body: body?.slice(0, 250) });
+        continue;
       }
-      const keys = Array.from(discoveredKeys);
-      debug.push({ endpoint: 'event_markets_discovered', keys });
-      if (keys.length) {
-        // Fetch odds for discovered keys across events
-        const playerOdds = [];
-        for (const ev of events2 || []) {
-          const evUrl = `${baseRoot}/events/${encodeURIComponent(ev.id)}/odds?apiKey=${apiKey}&regions=us&oddsFormat=american&bookmakers=${allowedBooks.join(',')}&markets=${encodeURIComponent(keys.join(','))}`;
-          const evResp = await fetch(evUrl);
-          if (!evResp.ok) {
-            let body = '';
-            try { body = await evResp.text(); } catch {}
-            debug.push({ endpoint: 'event_odds_dynamic', eventId: ev.id, status: evResp.status, body: body?.slice(0, 200) });
-            continue;
+      const evData = await evResp.json();
+
+      for (const bookmaker of evData.bookmakers || []) {
+        const bookName = normalizeBookName(bookmaker.key);
+        if (!CONFIG.ALLOWED_BOOKS.has(bookName)) continue;
+
+        for (const market of bookmaker.markets || []) {
+          const mkey = String(market.key || '').toLowerCase();
+          const isAnytime = mkey === 'player_anytime_td' || (mkey.includes('anytime') && mkey.includes('td'));
+          const isFirst = mkey === 'player_1st_td' || (mkey.includes('first') && mkey.includes('td'));
+          const isMulti = mkey === 'player_tds_over' || (mkey.includes('tds') && mkey.includes('over'));
+          if (!(isAnytime || isFirst || isMulti)) continue;
+
+          for (const outcome of market.outcomes || []) {
+            const playerName = outcome.description || outcome.name; // props use description for player
+            if (!playerName) continue;
+            const marketType = isAnytime ? 'player_anytime_td' : isFirst ? 'player_1st_td' : 'player_tds_over';
+            playerOdds.push({
+              player_name: playerName,
+              market_type: marketType,
+              odds: outcome.price,
+              bookmaker: bookmaker.key,
+              game_id: evData.id || ev.id,
+              home_team: evData.home_team || ev.home_team,
+              away_team: evData.away_team || ev.away_team,
+              point: outcome.point,
+              outcome_name: outcome.name
+            });
           }
-          const evData = await evResp.json();
-          const marketTypeFromKey = (k) => {
-            const kk = String(k || '').toLowerCase();
-            if (kk.includes('anytime')) return 'player_anytime_td';
-            if (kk.includes('first')) return 'player_first_td';
-            if (kk.includes('tds')) return 'player_tds_over';
-            // fallback: if it has td and player, assume anytime
-            if (kk.includes('player') && kk.includes('td')) return 'player_anytime_td';
-            return null;
-          };
-          for (const bookmaker of evData.bookmakers || []) {
-            const bookName = normalizeBookName(bookmaker.key);
-            if (!CONFIG.ALLOWED_BOOKS.has(bookName)) continue;
-            for (const market of bookmaker.markets || []) {
-              const mtype = marketTypeFromKey(market.key);
-              if (!mtype) continue;
-              for (const outcome of market.outcomes || []) {
-                // Outcome name vs description differs across markets; use available fields
-                const playerName = outcome.description || outcome.name;
-                if (!playerName) continue;
-                playerOdds.push({
-                  player_name: playerName,
-                  market_type: mtype,
-                  odds: outcome.price,
-                  bookmaker: bookmaker.key,
-                  game_id: ev.id,
-                  home_team: ev.home_team,
-                  away_team: ev.away_team
-                });
-              }
-            }
-          }
-        }
-        debug.push({ endpoint: 'event_odds_dynamic_total', odds: playerOdds.length, discovered: keys });
-        if (playerOdds.length > 0) {
-          console.log(`✅ Fetched ${playerOdds.length} player odds via dynamic discovery`);
-          return { success: true, odds: playerOdds, debug };
         }
       }
     }
 
-    console.warn(`⚠️ No player props returned from provider`, debug);
-    return { success: false, reason: lastReason || 'no_player_props', odds: [], debug };
-
+    debug.push({ endpoint: 'summary', events: events.length, odds: playerOdds.length });
+    if (playerOdds.length > 0) {
+      return { success: true, odds: playerOdds, debug };
+    }
+    return { success: false, reason: 'no_player_props', odds: [], debug };
   } catch (error) {
     console.error('❌ Error fetching live odds:', error.message);
     return { success: false, reason: 'fetch_error', odds: [], error: error.message };
@@ -309,7 +165,7 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
       odds.market_type === 'player_anytime_td' && namesLikelyMatch(odds.player_name, playerName)
     );
     const firstOdds = liveOddsData.odds.filter(odds =>
-      odds.market_type === 'player_first_td' && namesLikelyMatch(odds.player_name, playerName)
+      odds.market_type === 'player_1st_td' && namesLikelyMatch(odds.player_name, playerName)
     );
 
     if (anytimeOdds.length > 0) {
