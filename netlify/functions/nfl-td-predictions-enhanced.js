@@ -70,35 +70,46 @@ async function fetchLiveTDOdds() {
   }
 
   try {
-    const url = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds` +
-      `?apiKey=${apiKey}` +
-      `&regions=us` +
-      `&markets=player_anytime_td,player_1st_td` +
-      `&oddsFormat=american`;
+    // Try a sequence of market keys to handle provider differences
+    const marketAttempts = [
+      'player_anytime_td,player_1st_td',     // our preferred naming
+      'player_td_anytime,player_td_first',   // alternative naming
+      'player_props'                         // broad fallback (may include many props)
+    ];
 
-    console.log('📡 Fetching live TD odds from TheOddsAPI...');
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      console.error(`❌ Odds API error: ${response.status}`);
-      return { success: false, reason: `api_error_${response.status}`, odds: [] };
-    }
+    const allowedBooks = ['fanduel','draftkings','caesars','betmgm','fanatics','espnbet'];
+    const base = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds';
+    let lastReason = 'no_attempts';
+    let debug = [];
 
-    const games = await response.json();
-    const playerOdds = [];
+    for (const markets of marketAttempts) {
+      const url = `${base}?apiKey=${apiKey}&regions=us&oddsFormat=american&bookmakers=${allowedBooks.join(',')}&markets=${markets}`;
+      console.log(`📡 Fetching live TD odds: markets=${markets}`);
+      const response = await fetch(url);
+      if (!response.ok) {
+        lastReason = `api_error_${response.status}`;
+        debug.push({ markets, status: response.status });
+        continue;
+      }
 
-    // Extract player odds from all games
-    for (const game of games) {
-      for (const bookmaker of game.bookmakers || []) {
-        const bookName = normalizeBookName(bookmaker.key);
-        if (!CONFIG.ALLOWED_BOOKS.has(bookName)) continue;
+      const games = await response.json();
+      const playerOdds = [];
 
-        for (const market of bookmaker.markets || []) {
-          if (market.key === 'player_anytime_td' || market.key === 'player_1st_td') {
+      for (const game of games || []) {
+        for (const bookmaker of game.bookmakers || []) {
+          const bookName = normalizeBookName(bookmaker.key);
+          if (!CONFIG.ALLOWED_BOOKS.has(bookName)) continue;
+
+          for (const market of bookmaker.markets || []) {
+            const mkey = String(market.key || '').toLowerCase();
+            const isAnytime = mkey.includes('anytime') && mkey.includes('td');
+            const isFirst = (mkey.includes('1st') || mkey.includes('first')) && mkey.includes('td');
+            if (!(isAnytime || isFirst)) continue;
+
             for (const outcome of market.outcomes || []) {
               playerOdds.push({
                 player_name: outcome.name,
-                market_type: market.key,
+                market_type: isAnytime ? 'player_anytime_td' : 'player_1st_td',
                 odds: outcome.price,
                 bookmaker: bookmaker.key,
                 game_id: game.id,
@@ -109,15 +120,42 @@ async function fetchLiveTDOdds() {
           }
         }
       }
+
+      debug.push({ markets, games: (games || []).length, odds: playerOdds.length });
+      if (playerOdds.length > 0) {
+        console.log(`✅ Fetched ${playerOdds.length} player odds from ${(games || []).length} games using markets=${markets}`);
+        return { success: true, odds: playerOdds, debug };
+      }
     }
 
-    console.log(`✅ Fetched ${playerOdds.length} player odds from ${games.length} games`);
-    return { success: true, odds: playerOdds };
+    console.warn(`⚠️ No player props returned from provider`, debug);
+    return { success: false, reason: lastReason || 'no_player_props', odds: [], debug };
 
   } catch (error) {
     console.error('❌ Error fetching live odds:', error.message);
     return { success: false, reason: 'fetch_error', odds: [], error: error.message };
   }
+}
+
+// Normalize names for fuzzy matching (remove punctuation/space, uppercase)
+function normalizePlayerName(name = '') {
+  return String(name).toUpperCase().replace(/[^A-Z]/g, '');
+}
+
+function namesLikelyMatch(a, b) {
+  const A = normalizePlayerName(a);
+  const B = normalizePlayerName(b);
+  if (!A || !B) return false;
+  if (A === B) return true;
+  // Last name + first initial match fallback
+  const lastA = A.replace(/.*([A-Z]+)$/,'$1');
+  const lastB = B.replace(/.*([A-Z]+)$/,'$1');
+  if (lastA && lastA === lastB) {
+    const firstA = A[0];
+    const firstB = B[0];
+    return firstA === firstB;
+  }
+  return false;
 }
 
 function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
@@ -131,10 +169,10 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
     
     // Find matching odds for this player
     const anytimeOdds = liveOddsData.odds.filter(odds => 
-      odds.player_name === playerName && odds.market_type === 'player_anytime_td'
+      odds.market_type === 'player_anytime_td' && namesLikelyMatch(odds.player_name, playerName)
     );
     const firstOdds = liveOddsData.odds.filter(odds =>
-      odds.player_name === playerName && odds.market_type === 'player_1st_td'  
+      odds.market_type === 'player_1st_td' && namesLikelyMatch(odds.player_name, playerName)
     );
 
     if (anytimeOdds.length > 0) {
@@ -1308,7 +1346,7 @@ async function generateResponseByType(data, queryParams) {
         metadata: queryParams.include_metadata ? data.full.metadata : undefined,
         summary: queryParams.include_summary ? data.full.summary : undefined,
         games: data.full.games,
-        odds_info: { source: liveOddsData.success ? 'live_api' : 'fallback', count: liveOddsData.odds?.length || 0 }
+        odds_info: { source: liveOddsData.success ? 'live_api' : 'fallback', count: liveOddsData.odds?.length || 0, debug: liveOddsData.debug }
       };
       
     case 'lite':
@@ -1356,7 +1394,8 @@ async function generateResponseByType(data, queryParams) {
           top_probability: topAnytime[0]?.anytime_td_prob || 0,
           te_count: topAnytime.filter(p => p.position === 'TE').length,
           te_guaranteed: missingTEs.length > 0 ? `Added ${missingTEs.length} elite TEs` : null
-        }
+        },
+        odds_info: { source: liveOddsData.success ? 'live_api' : 'fallback', count: liveOddsData.odds?.length || 0, debug: liveOddsData.debug }
       };
       
     case 'top-multiple':
@@ -1372,7 +1411,8 @@ async function generateResponseByType(data, queryParams) {
           count: topMultiple.length,
           avg_probability: topMultiple.reduce((sum, p) => sum + p.multiple_td_prob, 0) / topMultiple.length,
           top_probability: topMultiple[0]?.multiple_td_prob || 0
-        }
+        },
+        odds_info: { source: liveOddsData.success ? 'live_api' : 'fallback', count: liveOddsData.odds?.length || 0, debug: liveOddsData.debug }
       };
       
     case 'top-first':
@@ -1388,7 +1428,8 @@ async function generateResponseByType(data, queryParams) {
           count: topFirst.length,
           avg_probability: topFirst.reduce((sum, p) => sum + p.first_td_prob, 0) / topFirst.length,
           top_probability: topFirst[0]?.first_td_prob || 0
-        }
+        },
+        odds_info: { source: liveOddsData.success ? 'live_api' : 'fallback', count: liveOddsData.odds?.length || 0, debug: liveOddsData.debug }
       };
       
     case 'by-game':
@@ -1403,7 +1444,8 @@ async function generateResponseByType(data, queryParams) {
         type: 'game_predictions',
         game_info: gameData,
         predictions: gamePlayers,
-        metadata: data.full.metadata
+        metadata: data.full.metadata,
+        odds_info: { source: liveOddsData.success ? 'live_api' : 'fallback', count: liveOddsData.odds?.length || 0, debug: liveOddsData.debug }
       };
       
     case 'by-position':
@@ -1421,7 +1463,8 @@ async function generateResponseByType(data, queryParams) {
       return {
         type: 'position_breakdown',
         by_position: byPosition,
-        metadata: data.full.metadata
+        metadata: data.full.metadata,
+        odds_info: { source: liveOddsData.success ? 'live_api' : 'fallback', count: liveOddsData.odds?.length || 0, debug: liveOddsData.debug }
       };
       
     case 'value-picks':
@@ -1440,7 +1483,8 @@ async function generateResponseByType(data, queryParams) {
           count: valuePicks.length,
           avg_anytime_value: valuePicks.reduce((sum, p) => sum + p.anytime_value_score, 0) / valuePicks.length,
           avg_multiple_value: valuePicks.reduce((sum, p) => sum + p.multiple_value_score, 0) / valuePicks.length
-        }
+        },
+        odds_info: { source: liveOddsData.success ? 'live_api' : 'fallback', count: liveOddsData.odds?.length || 0, debug: liveOddsData.debug }
       };
       
     case 'high-confidence':
@@ -1457,7 +1501,8 @@ async function generateResponseByType(data, queryParams) {
           count: highConfidence.length,
           avg_probability: highConfidence.length > 0 ? 
             highConfidence.reduce((sum, p) => sum + p.anytime_td_prob, 0) / highConfidence.length : 0
-        }
+        },
+        odds_info: { source: liveOddsData.success ? 'live_api' : 'fallback', count: liveOddsData.odds?.length || 0, debug: liveOddsData.debug }
       };
       
     case 'data-quality':
