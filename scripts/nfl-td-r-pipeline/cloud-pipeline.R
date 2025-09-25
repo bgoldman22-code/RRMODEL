@@ -12,11 +12,17 @@ suppressPackageStartupMessages({
 
 cat("🏈 Starting NFL TD Cloud Pipeline...\n")
 
-# Auto-detect current NFL week (matches frontend logic)
+# Auto-detect current NFL week (matches frontend logic) with consistent timezone
 auto_detect_nfl_week <- function() {
-  today <- Sys.Date()
+  # Use Eastern Time to be consistent with NFL scheduling
+  current_time <- as.POSIXct(Sys.time(), tz = "UTC")
+  et_time <- format(current_time, tz = "America/New_York", usetz = TRUE)
+  today <- as.Date(et_time)
+  
   season_start <- as.Date("2025-09-05")  # NFL 2025 season start
   days_since_start <- as.numeric(today - season_start)
+  
+  cat(glue("🕐 Week calculation: Today (ET): {today}, Season start: {season_start}, Days: {days_since_start}\n"))
   
   if (days_since_start < 0) return(1)  # Preseason
   
@@ -33,7 +39,8 @@ CLOUD_CONFIG <- list(
   current_week = if (Sys.getenv("NFL_WEEK") != "") {
     as.numeric(Sys.getenv("NFL_WEEK"))
   } else {
-    auto_detect_nfl_week()
+    # TEMPORARY HARDCODE: Force Week 4 for September 25, 2025
+    4  # auto_detect_nfl_week()
   },
   output_files = list(
     comprehensive = "data/nfl-td-comprehensive-latest.json",
