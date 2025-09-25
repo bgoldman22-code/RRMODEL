@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2025-09-24T15:03:29Z",
+    "generated_at": "2025-09-25T09:04:29Z",
     "season": 2025,
     "week": 3,
-    "total_players": 548,
+    "total_players": 549,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -4631,6 +4631,27 @@
       "player_id": "00-0036268",
       "name": "L.Shenault",
       "team": "BUF",
+      "position": "WR",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "WR",
+      "anytime_td_prob": 0.85,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.35,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.85,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
+      "player_id": "00-0036271",
+      "name": "Q.Watkins",
+      "team": "PHI",
       "position": "WR",
       "opponent": "TBD",
       "is_home": true,
