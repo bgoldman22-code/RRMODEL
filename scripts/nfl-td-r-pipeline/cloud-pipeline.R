@@ -12,35 +12,33 @@ suppressPackageStartupMessages({
 
 cat("🏈 Starting NFL TD Cloud Pipeline...\n")
 
-# Auto-detect current NFL week (matches frontend logic) with consistent timezone
+# Auto-detect current NFL week (matches frontend logic) using Eastern Time
 auto_detect_nfl_week <- function() {
-  # Use Eastern Time to be consistent with NFL scheduling
-  current_time <- as.POSIXct(Sys.time(), tz = "UTC")
-  et_time <- format(current_time, tz = "America/New_York", usetz = TRUE)
-  today <- as.Date(et_time)
-  
-  season_start <- as.Date("2025-09-05")  # NFL 2025 season start
+  # Normalize to America/New_York because NFL schedule uses ET
+  current_time_utc <- as.POSIXct(Sys.time(), tz = "UTC")
+  current_time_et <- format(current_time_utc, tz = "America/New_York")
+  today <- as.Date(current_time_et)
+
+  season_start <- as.Date("2025-09-05")  # NFL 2025 season start (ET)
   days_since_start <- as.numeric(today - season_start)
-  
-  cat(glue("🕐 Week calculation: Today (ET): {today}, Season start: {season_start}, Days: {days_since_start}\n"))
-  
-  if (days_since_start < 0) return(1)  # Preseason
-  
-  # Week calculation (matches frontend)
+
+  cat(glue("🕐 Week calc — Today (ET): {today}, Season start: {season_start}, Days: {days_since_start}\n"))
+
+  if (days_since_start < 0) return(1)  # Preseason (treat as Week 1)
+
+  # Week calculation (matches frontend buckets)
   if (days_since_start <= 6) return(1)
-  else if (days_since_start <= 13) return(2)  
+  else if (days_since_start <= 13) return(2)
   else if (days_since_start <= 17) return(3)
   else return(floor((days_since_start - 18) / 7) + 4)
 }
 
-# Cloud-optimized configuration  
 CLOUD_CONFIG <- list(
   current_season = as.numeric(Sys.getenv("NFL_SEASON", "2025")),
   current_week = if (Sys.getenv("NFL_WEEK") != "") {
     as.numeric(Sys.getenv("NFL_WEEK"))
   } else {
-    # TEMPORARY HARDCODE: Force Week 4 for September 25, 2025
-    4  # auto_detect_nfl_week()
+    auto_detect_nfl_week()
   },
   output_files = list(
     comprehensive = "data/nfl-td-comprehensive-latest.json",
