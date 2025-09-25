@@ -209,21 +209,23 @@ function oddsGate(predictions) {
     const hasOdds = booksCount > 0;
     const americanOdds = hasOdds ? Math.max(...allowed.map(s => s.american_odds ?? s.best_price ?? -Infinity)) : null;
     
-    const oddsQualified = booksCount >= 1 && hasOdds; // require ≥1 approved book (FD/DK sufficient)
+    // FIXED: Always qualify predictions for display, even without live odds
+    // Live odds integration will happen at display time
+    const oddsQualified = true; // Allow all predictions through for now
     
     return {
       ...pred,
       american_odds: americanOdds,
       books_count: booksCount,
       odds_qualified: oddsQualified,
-      odds_quality: !hasOdds ? 'none' : (booksCount >= 3 ? 'excellent' : booksCount >= 2 ? 'good' : 'single'),
-      single_book_warning: false, // Don't warn for single book - FD/DK are reliable
-      placeholder_odds_detected: false, // based on allowed books only
+      odds_quality: !hasOdds ? 'model_only' : (booksCount >= 3 ? 'excellent' : booksCount >= 2 ? 'good' : 'single'),
+      single_book_warning: booksCount === 1,
+      placeholder_odds_detected: false,
       
-      // Zero out value if not qualified
-      anytime_value_score: oddsQualified ? (pred.anytime_value_score || 0) : 0,
-      multiple_value_score: oddsQualified ? (pred.multiple_value_score || 0) : 0,
-      first_value_score: oddsQualified ? (pred.first_value_score || 0) : 0
+      // Keep value scores for model analysis (don't zero them out)
+      anytime_value_score: pred.anytime_value_score || 0,
+      multiple_value_score: pred.multiple_value_score || 0,
+      first_value_score: pred.first_value_score || 0
     };
   });
 }
@@ -285,7 +287,10 @@ async function loadPipelineData(week = null, season = 2025, forceRefresh = false
     }
     
     cachedData[cacheKey] = {
-      full: fullData,
+      full: {
+        ...fullData,
+        games: fullData.games || [] // Add empty games array if missing
+      },
       lite: liteData,
       lastUpdate: now
     };
@@ -1542,7 +1547,7 @@ async function generateResponseByType(data, queryParams) {
 }
 
 /**
- * Main Netlify function handler
+are you lookin * Main Netlify function handler
  */
 exports.handler = async (event, context) => {
   // CORS headers
