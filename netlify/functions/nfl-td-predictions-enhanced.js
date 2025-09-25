@@ -424,7 +424,7 @@ function processQueryParams(event) {
     
     // Ranking options
     top_n: parseInt(params.top_n) || CONFIG.DEFAULT_TOP_N,
-    min_confidence: params.min_confidence || 'low',
+    min_confidence: 'low', // Force to low to allow all predictions with odds through
     
     // Value thresholds
     min_value_score: parseFloat(params.min_value_score) || 0.5,
@@ -1224,19 +1224,9 @@ function filterPredictions(predictions, queryParams, games = []) {
     filtered = filtered.filter(p => p.game_id === queryParams.game_id);
   }
   
-  // Confidence filter
-  if (queryParams.min_confidence !== 'low') {
-    const confidenceOrder = { 'low': 1, 'medium': 2, 'high': 3 };
-    const minLevel = confidenceOrder[queryParams.min_confidence] || 2;
-    console.log(`[FILTER DEBUG] Applying confidence filter: min_confidence=${queryParams.min_confidence}, minLevel=${minLevel}`);
-    
-    const beforeConfidenceFilter = filtered.length;
-    filtered = filtered.filter(p => {
-      const level = confidenceOrder[p.anytime_confidence] || 1;
-      return level >= minLevel;
-    });
-    console.log(`[FILTER DEBUG] After confidence filter: ${beforeConfidenceFilter} → ${filtered.length} predictions`);
-  }
+  // Confidence filter (DISABLED for odds display)
+  console.log(`[FILTER DEBUG] SKIPPING confidence filter - min_confidence=${queryParams.min_confidence} (forced to allow all predictions with odds)`);
+  // No confidence filtering - allow all predictions through
   
   // Value score filter
   if (queryParams.min_value_score > 0) {
