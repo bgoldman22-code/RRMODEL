@@ -1207,23 +1207,26 @@ function oddsGate(predictions) {
  * ELITE: Filter predictions with count model + Monte Carlo reconciliation
  */
 function filterPredictions(predictions, queryParams, games = []) {
-  console.log(`🐛 DEBUG: Starting filterPredictions with ${predictions?.length || 0} predictions`);
-  
   // Normalize field names first + enforce book whitelist
   let filtered = predictions.map(normalizeRow);
-  console.log(`🐛 DEBUG: After normalizeRow: ${filtered.length}`);
   
   // Apply reliability adjustments with count model (skip if already adjusted)
   filtered = filtered.map(p => p.__adjusted ? p : applyReliabilityAdjustment(p, queryParams));
-  console.log(`🐛 DEBUG: After reliability adjustment: ${filtered.length}`);
   
-  // TEMPORARY: Skip reconciliation to debug filtering issue
-  console.log(`🐛 DEBUG: Predictions after normalization: ${filtered.length}`);
+  // ELITE: Monte Carlo team reconciliation (falls back to legacy if needed)
+  const useMonteCarloReconciliation = queryParams.mc_reconciliation !== 'false'; // Default to true
   
-  // Skip reconciliation for now to isolate the filtering issue
-  filtered = filtered.map(p => ({ ...p, __adjusted: true }));
-  
-  console.log(`🐛 DEBUG: Predictions after reconciliation skip: ${filtered.length}`);
+  if (useMonteCarloReconciliation) {
+    try {
+      filtered = monteCarloTeamReconciliation(filtered, games).map(p => ({ ...p, __adjusted: true }));
+    } catch (error) {
+      console.warn('⚠️ Monte Carlo reconciliation failed, falling back to legacy:', error.message);
+      filtered = reconcileTeamTotals(filtered, games).map(p => ({ ...p, __adjusted: true }));
+    }
+  } else {
+    // Legacy reconciliation
+    filtered = reconcileTeamTotals(filtered, games).map(p => ({ ...p, __adjusted: true }));
+  }
   
   // Apply ELITE odds quality gates with book whitelist enforcement
   filtered = oddsGate(filtered);
@@ -1292,14 +1295,11 @@ function filterPredictions(predictions, queryParams, games = []) {
 async function generateResponseByType(data, queryParams) {
   const { type, top_n } = queryParams;
   
-  console.log(`🐛 DEBUG: generateResponseByType called with ${data.full.predictions?.length || 0} predictions`);
-  
   // Fetch live odds for all predictions
   const liveOddsData = await fetchLiveTDOdds();
   
   // Enhance base predictions with live odds
   const enhancedPredictions = enhancePredictionsWithLiveOdds(data.full.predictions, liveOddsData);
-  console.log(`🐛 DEBUG: enhancedPredictions: ${enhancedPredictions?.length || 0}`);
   
   switch (type) {
     case 'all':
@@ -1321,14 +1321,10 @@ async function generateResponseByType(data, queryParams) {
       };
       
     case 'top-anytime':
-      console.log(`🐛 DEBUG: top-anytime case, enhancedPredictions: ${enhancedPredictions.length}`);
-      
-      // TEMPORARY: Skip all filtering to debug
-      let topAnytime = enhancedPredictions
-        .sort((a, b) => (b.anytime_td_prob || 0) - (a.anytime_td_prob || 0))
+      const allFiltered = filterPredictions(enhancedPredictions, queryParams, data.full.games);
+      let topAnytime = allFiltered
+        .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
         .slice(0, top_n);
-        
-      console.log(`🐛 DEBUG: After sort and slice: ${topAnytime.length}`);
       
       // ELITE: Guarantee TE visibility - ensure top 5 TEs are included
       const topTEs = allFiltered
