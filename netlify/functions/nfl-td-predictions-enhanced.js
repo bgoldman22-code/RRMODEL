@@ -1213,11 +1213,15 @@ function oddsGate(predictions) {
  * ELITE: Filter predictions with count model + Monte Carlo reconciliation
  */
 function filterPredictions(predictions, queryParams, games = []) {
+  console.log(`🐛 DEBUG: Starting filterPredictions with ${predictions?.length || 0} predictions`);
+  
   // Normalize field names first + enforce book whitelist
   let filtered = predictions.map(normalizeRow);
+  console.log(`🐛 DEBUG: After normalizeRow: ${filtered.length}`);
   
   // Apply reliability adjustments with count model (skip if already adjusted)
   filtered = filtered.map(p => p.__adjusted ? p : applyReliabilityAdjustment(p, queryParams));
+  console.log(`🐛 DEBUG: After reliability adjustment: ${filtered.length}`);
   
   // TEMPORARY: Skip reconciliation to debug filtering issue
   console.log(`🐛 DEBUG: Predictions after normalization: ${filtered.length}`);
@@ -1294,11 +1298,14 @@ function filterPredictions(predictions, queryParams, games = []) {
 async function generateResponseByType(data, queryParams) {
   const { type, top_n } = queryParams;
   
+  console.log(`🐛 DEBUG: generateResponseByType called with ${data.full.predictions?.length || 0} predictions`);
+  
   // Fetch live odds for all predictions
   const liveOddsData = await fetchLiveTDOdds();
   
   // Enhance base predictions with live odds
   const enhancedPredictions = enhancePredictionsWithLiveOdds(data.full.predictions, liveOddsData);
+  console.log(`🐛 DEBUG: enhancedPredictions: ${enhancedPredictions?.length || 0}`);
   
   switch (type) {
     case 'all':
