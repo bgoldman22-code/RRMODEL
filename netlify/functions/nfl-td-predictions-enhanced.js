@@ -205,24 +205,20 @@ function enhancedFilterAllowedBooks(oddsSources = []) {
 function oddsGate(predictions) {
   return predictions.map(pred => {
     const allowed = pred.odds_sources_allowed || [];
-    const booksCount = allowed.length;
-    const hasOdds = booksCount > 0;
-    const americanOdds = hasOdds ? Math.max(...allowed.map(s => s.american_odds ?? s.best_price ?? -Infinity)) : null;
+    const booksCount = pred.books_count || allowed.length || 0;
+    const hasOdds = !!(pred.american_odds || pred.best_price);
     
     // FIXED: Always qualify predictions for display, even without live odds
-    // Live odds integration will happen at display time
-    const oddsQualified = true; // Allow all predictions through for now
+    const oddsQualified = true; // Allow all predictions through
     
     return {
       ...pred,
-      american_odds: americanOdds,
-      books_count: booksCount,
       odds_qualified: oddsQualified,
       odds_quality: !hasOdds ? 'model_only' : (booksCount >= 3 ? 'excellent' : booksCount >= 2 ? 'good' : 'single'),
-      single_book_warning: booksCount === 1,
+      single_book_warning: booksCount === 1 && hasOdds,
       placeholder_odds_detected: false,
       
-      // Keep value scores for model analysis (don't zero them out)
+      // Keep all value scores
       anytime_value_score: pred.anytime_value_score || 0,
       multiple_value_score: pred.multiple_value_score || 0,
       first_value_score: pred.first_value_score || 0
@@ -1060,35 +1056,33 @@ function validateOddsRealism(predictions) {
  * Normalize field names for consistent processing + BOOK WHITELIST ENFORCEMENT
  */
 function normalizeRow(prediction) {
-  // Filter odds sources to only allowed books
+  // SIMPLIFIED: Handle R pipeline data (no odds_sources) and live odds data
   const rawOddsSources = Array.isArray(prediction.odds_sources) ? prediction.odds_sources : [];
-  const allowedOddsSources = enhancedFilterAllowedBooks(rawOddsSources);
   
-  // Only use odds from whitelisted books
   let americanOdds = null;
   let bestPrice = null;
   let booksCount = 0;
+  let allowedOddsSources = [];
   
-  if (allowedOddsSources.length > 0) {
-    // Get best price from allowed books only
-    const validPrices = allowedOddsSources
-      .map(source => source.american_odds || source.price || source.best_price)
-      .filter(price => price != null && !isNaN(price));
+  if (rawOddsSources.length > 0) {
+    // Has live odds data - filter to allowed books
+    allowedOddsSources = enhancedFilterAllowedBooks(rawOddsSources);
     
-    if (validPrices.length > 0) {
-      americanOdds = Math.max(...validPrices); // Best (highest) odds
-      bestPrice = americanOdds;
-      booksCount = allowedOddsSources.length;
+    if (allowedOddsSources.length > 0) {
+      const validPrices = allowedOddsSources
+        .map(source => source.american_odds || source.price || source.best_price)
+        .filter(price => price != null && !isNaN(price));
+      
+      if (validPrices.length > 0) {
+        americanOdds = Math.max(...validPrices);
+        bestPrice = americanOdds;
+        booksCount = allowedOddsSources.length;
+      }
     }
   } else {
-    // Fallback to direct fields, but only if no odds_sources (legacy data)
-    if (!rawOddsSources.length) {
-      americanOdds = prediction.american_odds ?? 
-                    prediction.best_price ?? 
-                    prediction.anytime_best_odds ?? 
-                    prediction.odds ?? null;
-      booksCount = prediction.books_count ?? prediction.num_books ?? (americanOdds ? 1 : 0);
-    }
+    // R pipeline data - no live odds yet
+    americanOdds = prediction.american_odds ?? prediction.best_price ?? null;
+    booksCount = prediction.books_count ?? (americanOdds ? 1 : 0);
   }
   
   return {
@@ -1096,8 +1090,8 @@ function normalizeRow(prediction) {
     american_odds: americanOdds,
     best_price: bestPrice,
     books_count: booksCount,
-    allowed_odds_sources: allowedOddsSources,
-    whitelisted_books_only: true,
+    odds_sources_allowed: allowedOddsSources, // Fix the field name that oddsGate expects
+    whitelisted_books_only: rawOddsSources.length === 0 || allowedOddsSources.length > 0,
     rejected_sources: rawOddsSources.length - allowedOddsSources.length
   };
 }
