@@ -1219,20 +1219,13 @@ function filterPredictions(predictions, queryParams, games = []) {
   // Apply reliability adjustments with count model (skip if already adjusted)
   filtered = filtered.map(p => p.__adjusted ? p : applyReliabilityAdjustment(p, queryParams));
   
-  // ELITE: Monte Carlo team reconciliation (falls back to legacy if needed)
-  const useMonteCarloReconciliation = queryParams.mc_reconciliation !== 'false'; // Default to true
+  // TEMPORARY: Skip reconciliation to debug filtering issue
+  console.log(`🐛 DEBUG: Predictions after normalization: ${filtered.length}`);
   
-  if (useMonteCarloReconciliation) {
-    try {
-      filtered = monteCarloTeamReconciliation(filtered, games).map(p => ({ ...p, __adjusted: true }));
-    } catch (error) {
-      console.warn('⚠️ Monte Carlo reconciliation failed, falling back to legacy:', error.message);
-      filtered = reconcileTeamTotals(filtered, games).map(p => ({ ...p, __adjusted: true }));
-    }
-  } else {
-    // Legacy reconciliation
-    filtered = reconcileTeamTotals(filtered, games).map(p => ({ ...p, __adjusted: true }));
-  }
+  // Skip reconciliation for now to isolate the filtering issue
+  filtered = filtered.map(p => ({ ...p, __adjusted: true }));
+  
+  console.log(`🐛 DEBUG: Predictions after reconciliation skip: ${filtered.length}`);
   
   // Apply ELITE odds quality gates with book whitelist enforcement
   filtered = oddsGate(filtered);
