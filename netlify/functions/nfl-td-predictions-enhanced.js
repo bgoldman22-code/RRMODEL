@@ -21,7 +21,7 @@ const CONFIG = {
   LITE_DATA_PATH: path.join(process.cwd(), 'data', 'nfl-td-lite-latest.json'),
   
   // Cache settings
-  CACHE_DURATION_SECONDS: 300, // 5 minutes
+  CACHE_DURATION_SECONDS: 0, // TEMP: Disable cache to force refresh
   
   // Response limits
   MAX_PLAYERS_RESPONSE: 500,
@@ -50,7 +50,7 @@ const CONFIG = {
 };
 
 // Cache management - support multiple weeks
-let cachedData = {};
+let cachedData = {}; // TEMP: Force cache reset on deployment
 
 // ========== LIVE ODDS INTEGRATION ==========
 
