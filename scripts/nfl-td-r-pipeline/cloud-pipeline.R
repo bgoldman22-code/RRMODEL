@@ -12,10 +12,29 @@ suppressPackageStartupMessages({
 
 cat("🏈 Starting NFL TD Cloud Pipeline...\n")
 
-# Cloud-optimized configuration
+# Auto-detect current NFL week (matches frontend logic)
+auto_detect_nfl_week <- function() {
+  today <- Sys.Date()
+  season_start <- as.Date("2025-09-05")  # NFL 2025 season start
+  days_since_start <- as.numeric(today - season_start)
+  
+  if (days_since_start < 0) return(1)  # Preseason
+  
+  # Week calculation (matches frontend)
+  if (days_since_start <= 6) return(1)
+  else if (days_since_start <= 13) return(2)  
+  else if (days_since_start <= 17) return(3)
+  else return(floor((days_since_start - 18) / 7) + 4)
+}
+
+# Cloud-optimized configuration  
 CLOUD_CONFIG <- list(
   current_season = as.numeric(Sys.getenv("NFL_SEASON", "2025")),
-  current_week = as.numeric(Sys.getenv("NFL_WEEK", "3")),
+  current_week = if (Sys.getenv("NFL_WEEK") != "") {
+    as.numeric(Sys.getenv("NFL_WEEK"))
+  } else {
+    auto_detect_nfl_week()
+  },
   output_files = list(
     comprehensive = "data/nfl-td-comprehensive-latest.json",
     schedule = "public/data/nfl-schedule-2025.json",
