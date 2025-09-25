@@ -427,7 +427,7 @@ function processQueryParams(event) {
     min_confidence: 'low', // Force to low to allow all predictions with odds through
     
     // Value thresholds
-    min_value_score: parseFloat(params.min_value_score) || 0.5,
+    min_value_score: parseFloat(params.min_value_score) || 0, // Allow all predictions with odds through
     min_probability: parseFloat(params.min_probability) || 0.05,
     
     // Response format
@@ -1230,11 +1230,16 @@ function filterPredictions(predictions, queryParams, games = []) {
   
   // Value score filter
   if (queryParams.min_value_score > 0) {
+    console.log(`[FILTER DEBUG] Applying value score filter: min_value_score=${queryParams.min_value_score}`);
+    const beforeValueFilter = filtered.length;
     filtered = filtered.filter(p => 
       p.anytime_value_score >= queryParams.min_value_score ||
       p.multiple_value_score >= queryParams.min_value_score ||
       p.first_value_score >= queryParams.min_value_score
     );
+    console.log(`[FILTER DEBUG] After value score filter: ${beforeValueFilter} → ${filtered.length} predictions`);
+  } else {
+    console.log(`[FILTER DEBUG] SKIPPING value score filter - min_value_score=${queryParams.min_value_score}`);
   }
   
   // Probability filter (applied after adjustments)
