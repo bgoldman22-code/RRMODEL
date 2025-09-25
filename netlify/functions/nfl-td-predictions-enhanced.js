@@ -1283,11 +1283,10 @@ async function generateResponseByType(data, queryParams) {
   
   switch (type) {
     case 'all':
-      // TEMP: Return first 10 enhanced predictions without filtering to test odds
-      const testPredictions = enhancedPredictions.slice(0, 10);
-      console.log('[TEST] Returning first 10 enhanced predictions:', testPredictions.map(p => ({ name: p.player_name || p.name, odds: p.american_odds, source: p.odds_source })));
+      const allPredictions = filterPredictions(enhancedPredictions, queryParams, data.full.games);
       return {
-        predictions: testPredictions,
+        success: true,
+        predictions: allPredictions,
         metadata: queryParams.include_metadata ? data.full.metadata : undefined,
         summary: queryParams.include_summary ? data.full.summary : undefined,
         games: data.full.games,
@@ -1314,6 +1313,7 @@ async function generateResponseByType(data, queryParams) {
         .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
         .slice(0, top_n);
       return {
+        success: true,
         type: 'anytime_td_leaders',
         predictions: topAnytime,
         metadata: data.full.metadata,
