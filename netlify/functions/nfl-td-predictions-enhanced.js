@@ -163,22 +163,31 @@ function normalizePlayerName(name = '') {
 }
 
 function namesLikelyMatch(a, b) {
-  // Try exact match (case-insensitive, ignore punctuation)
   if (!a || !b) return false;
-  const A = String(a).toUpperCase().replace(/[^A-Z]/g, '');
-  const B = String(b).toUpperCase().replace(/[^A-Z]/g, '');
+  // Normalize both names
+  const norm = s => String(s).toUpperCase().replace(/[^A-Z]/g, '');
+  const A = norm(a);
+  const B = norm(b);
   if (A === B) return true;
-  // Try splitting and matching last name
-  const aParts = String(a).split(/[ .]/);
-  const bParts = String(b).split(/[ .]/);
-  const aLast = aParts[aParts.length - 1].toUpperCase();
-  const bLast = bParts[bParts.length - 1].toUpperCase();
-  if (aLast && bLast && aLast === bLast) {
-    // If last names match, check first initial
-    const aFirst = aParts[0][0].toUpperCase();
-    const bFirst = bParts[0][0].toUpperCase();
-    return aFirst === bFirst;
+
+  // Try last name and first initial match (e.g., 'K.Murray' vs 'Kyler Murray')
+  const getFirstLast = s => {
+    const parts = String(s).replace(/\./g, ' ').split(' ').filter(Boolean);
+    if (parts.length === 1) return { first: parts[0][0], last: parts[0] };
+    return { first: parts[0][0], last: parts[parts.length - 1] };
+  };
+  const aFL = getFirstLast(a);
+  const bFL = getFirstLast(b);
+  if (aFL.last && bFL.last && norm(aFL.last) === norm(bFL.last)) {
+    if (aFL.first && bFL.first && norm(aFL.first) === norm(bFL.first)) {
+      return true;
+    }
   }
+
+  // Try substring match for rare cases (e.g., 'D.Johnson' vs 'David Johnson')
+  if (A.length > 3 && B.includes(A)) return true;
+  if (B.length > 3 && A.includes(B)) return true;
+
   return false;
 }
 
@@ -192,26 +201,37 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
   const apiPlayerNames = new Set(liveOddsData.odds.map(o => o.player_name));
   let matchedCount = 0;
   let unmatched = [];
-  const result = predictions.map(pred => {
+  const result = predictions.map((pred, i) => {
     const playerName = pred.player_name || pred.name;
-    const anytimeOdds = liveOddsData.odds.filter(odds => 
+    // Try to match to any API player name
+    const matchedOdds = liveOddsData.odds.filter(odds =>
       odds.market_type === 'player_anytime_td' && namesLikelyMatch(odds.player_name, playerName)
     );
-    if (anytimeOdds.length > 0) {
+    if (i < 10) {
+      // Log attempted matches for first 10 players
+      const apiNames = liveOddsData.odds.map(o => o.player_name).slice(0, 10);
+      console.log(`[MATCH DEBUG] Model: '${playerName}' | API sample:`, apiNames);
+      if (matchedOdds.length > 0) {
+        console.log(`[MATCH SUCCESS] '${playerName}' matched to '${matchedOdds[0].player_name}'`);
+      } else {
+        console.log(`[MATCH FAIL] '${playerName}' did not match any API player`);
+      }
+    }
+    if (matchedOdds.length > 0) {
       matchedCount++;
-      const bestAnytime = anytimeOdds.reduce((best, current) => 
+      const bestAnytime = matchedOdds.reduce((best, current) =>
         current.odds > best.odds ? current : best
       );
       return {
         ...pred,
         american_odds: bestAnytime.odds,
         odds_source: 'theoddsapi_live',
-        odds_sources_allowed: anytimeOdds.map(odds => ({
+        odds_sources_allowed: matchedOdds.map(odds => ({
           book: odds.bookmaker,
           american_odds: odds.odds,
           best_price: odds.odds
         })),
-        books_count: anytimeOdds.length,
+        books_count: matchedOdds.length,
         whitelisted_books_only: true,
         odds_qualified: true
       };
