@@ -69,9 +69,6 @@ async function loadTeamAliases() {
 // Fetch live player TD markets via The Odds API per-event endpoint
 async function fetchLiveTDOdds() {
   console.log('[DEBUG] Starting fetchLiveTDOdds');
-  console.log('[DEBUG] Fetching NFL events:', eventsUrl);
-  console.log(`[DEBUG] Got ${events.length} events`);
-  console.log('[DEBUG] Loading team aliases for mapping');
   let eventCount = 0;
   const apiKey = process.env.THEODDS_API_KEY || process.env.THEODDSAPI_KEY || process.env.ODDS_API_KEY;
   const baseRoot = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl';
@@ -86,6 +83,7 @@ async function fetchLiveTDOdds() {
   try {
     // 1) List NFL events
     const eventsUrl = `${baseRoot}/events?apiKey=${apiKey}&dateFormat=iso`;
+    console.log('[DEBUG] Fetching NFL events:', eventsUrl);
     const eventsResp = await fetch(eventsUrl);
     if (!eventsResp.ok) {
       let body = '';
@@ -94,12 +92,14 @@ async function fetchLiveTDOdds() {
       return { success: false, reason: `events_api_error_${eventsResp.status}`, odds: [], debug };
     }
     const events = await eventsResp.json();
+    console.log(`[DEBUG] Got ${events.length} events`);
     if (!Array.isArray(events) || events.length === 0) {
       debug.push({ endpoint: 'events', note: 'no_events' });
       return { success: false, reason: 'no_events', odds: [], debug };
     }
 
     // Load team aliases for mapping
+    console.log('[DEBUG] Loading team aliases for mapping');
     const abbrToFull = await loadTeamAliases();
 
     // 2) Fetch per-event odds for TD scorer markets
