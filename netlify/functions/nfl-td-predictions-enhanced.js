@@ -208,10 +208,18 @@ function namesLikelyMatch(a, b) {
 }
 
 function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
+  console.log(`[ODDS MATCH DEBUG] Starting enhancement with ${predictions.length} predictions and ${liveOddsData.odds?.length || 0} odds`);
+  
   if (!liveOddsData.success || !liveOddsData.odds.length) {
     console.log('⚠️ No live odds available - using fallback odds');
     return predictions.map(pred => ({ ...pred, odds_source: 'fallback' }));
   }
+
+  // Debug: Show sample prediction and API data structure
+  console.log('[ODDS MATCH DEBUG] Sample prediction:', predictions[0]);
+  console.log('[ODDS MATCH DEBUG] Sample API odds:', liveOddsData.odds[0]);
+  console.log('[ODDS MATCH DEBUG] First 10 API player names:', liveOddsData.odds.slice(0, 10).map(o => o.player_name));
+  console.log('[ODDS MATCH DEBUG] First 10 model player names:', predictions.slice(0, 10).map(p => p.player_name || p.name));
 
   // Collect all API player names for debug
   const apiPlayerNames = new Set(liveOddsData.odds.map(o => o.player_name));
@@ -1208,11 +1216,15 @@ function normalizeRow(prediction) {
  * ELITE: Filter predictions with count model + Monte Carlo reconciliation
  */
 function filterPredictions(predictions, queryParams, games = []) {
+  console.log(`[FILTER DEBUG] Starting with ${predictions.length} predictions`);
+  
   // Normalize field names first + enforce book whitelist
   let filtered = predictions.map(normalizeRow);
+  console.log(`[FILTER DEBUG] After normalization: ${filtered.length} predictions`);
   
   // Apply reliability adjustments with count model (skip if already adjusted)
   filtered = filtered.map(p => p.__adjusted ? p : applyReliabilityAdjustment(p, queryParams));
+  console.log(`[FILTER DEBUG] After reliability adjustment: ${filtered.length} predictions`);
   
   // ELITE: Monte Carlo team reconciliation (falls back to legacy if needed)
   const useMonteCarloReconciliation = queryParams.mc_reconciliation !== 'false'; // Default to true
@@ -1231,10 +1243,12 @@ function filterPredictions(predictions, queryParams, games = []) {
   
   // Apply ELITE odds quality gates with book whitelist enforcement
   filtered = oddsGate(filtered);
+  console.log(`[FILTER DEBUG] After oddsGate: ${filtered.length} predictions`);
   
   // Position filter
   if (queryParams.position) {
     filtered = filtered.filter(p => p.position === queryParams.position);
+    console.log(`[FILTER DEBUG] After position filter (${queryParams.position}): ${filtered.length} predictions`);
   }
   
   // Team filter
@@ -1256,11 +1270,26 @@ function filterPredictions(predictions, queryParams, games = []) {
   if (queryParams.min_confidence !== 'low') {
     const confidenceOrder = { 'low': 1, 'medium': 2, 'high': 3 };
     const minLevel = confidenceOrder[queryParams.min_confidence] || 2;
+    console.log(`[FILTER DEBUG] Applying confidence filter: min_confidence=${queryParams.min_confidence}, minLevel=${minLevel}`);
     
+    // Debug: Check confidence distribution
+    const confidenceCounts = { low: 0, medium: 0, high: 0, undefined: 0 };
+    filtered.forEach(p => {
+      const conf = p.anytime_confidence;
+      if (conf in confidenceCounts) {
+        confidenceCounts[conf]++;
+      } else {
+        confidenceCounts.undefined++;
+      }
+    });
+    console.log(`[FILTER DEBUG] Confidence distribution:`, confidenceCounts);
+    
+    const beforeConfidenceFilter = filtered.length;
     filtered = filtered.filter(p => {
       const level = confidenceOrder[p.anytime_confidence] || 1;
       return level >= minLevel;
     });
+    console.log(`[FILTER DEBUG] After confidence filter: ${beforeConfidenceFilter} → ${filtered.length} predictions`);
   }
   
   // Value score filter
@@ -1287,6 +1316,7 @@ function filterPredictions(predictions, queryParams, games = []) {
     first_td_prob: Math.max(0.001, Math.min(0.75, p.first_td_prob || 0))
   }));
   
+  console.log(`[FILTER DEBUG] FINAL: Returning ${filtered.length} predictions after all filters`);
   return filtered;
 }
 
