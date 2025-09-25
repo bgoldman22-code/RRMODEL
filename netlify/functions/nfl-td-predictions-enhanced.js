@@ -154,13 +154,17 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
     return predictions.map(pred => ({ ...pred, odds_source: 'fallback' }));
   }
 
-  return predictions.map(pred => {
+  // Collect all API player names for debug
+  const apiPlayerNames = new Set(liveOddsData.odds.map(o => o.player_name));
+  let matchedCount = 0;
+  let unmatched = [];
+  const result = predictions.map(pred => {
     const playerName = pred.player_name || pred.name;
-    // Find matching odds for this player (anytime only)
     const anytimeOdds = liveOddsData.odds.filter(odds => 
       odds.market_type === 'player_anytime_td' && namesLikelyMatch(odds.player_name, playerName)
     );
     if (anytimeOdds.length > 0) {
+      matchedCount++;
       const bestAnytime = anytimeOdds.reduce((best, current) => 
         current.odds > best.odds ? current : best
       );
@@ -177,21 +181,30 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
         whitelisted_books_only: true,
         odds_qualified: true
       };
+    } else {
+      unmatched.push(playerName);
+      return {
+        ...pred,
+        odds_source: 'fallback',
+        odds_sources_allowed: [{
+          book: 'MODEL_ESTIMATE',
+          american_odds: pred.american_odds || pred.implied_odds || 200,
+          best_price: pred.american_odds || pred.implied_odds || 200
+        }],
+        books_count: 1,
+        whitelisted_books_only: true,
+        odds_qualified: true
+      };
     }
-    // No live odds found - use fallback
-    return {
-      ...pred,
-      odds_source: 'fallback',
-      odds_sources_allowed: [{
-        book: 'MODEL_ESTIMATE',
-        american_odds: pred.american_odds || pred.implied_odds || 200,
-        best_price: pred.american_odds || pred.implied_odds || 200
-      }],
-      books_count: 1,
-      whitelisted_books_only: true,
-      odds_qualified: true
-    };
   });
+  // Enhanced debug output
+  console.log('--- ODDS API PLAYER NAMES (sample) ---', Array.from(apiPlayerNames).slice(0, 10));
+  console.log('--- MODEL PLAYER NAMES (sample) ---', predictions.slice(0, 10).map(p => p.player_name || p.name));
+  console.log(`Matched players: ${matchedCount} / ${predictions.length}`);
+  if (unmatched.length > 0) {
+    console.log('Unmatched model player names (sample):', unmatched.slice(0, 10));
+  }
+  return result;
 }
 
 // ========== BOOK WHITELIST ENFORCEMENT ==========
