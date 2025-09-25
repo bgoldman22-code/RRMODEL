@@ -428,7 +428,7 @@ function processQueryParams(event) {
     
     // Value thresholds
     min_value_score: parseFloat(params.min_value_score) || 0, // Allow all predictions with odds through
-    min_probability: parseFloat(params.min_probability) || 0.05,
+    min_probability: parseFloat(params.min_probability) || 0, // Allow all predictions through
     
     // Response format
     include_metadata: params.include_metadata !== 'false',
@@ -1244,9 +1244,14 @@ function filterPredictions(predictions, queryParams, games = []) {
   
   // Probability filter (applied after adjustments)
   if (queryParams.min_probability > 0) {
+    console.log(`[FILTER DEBUG] Applying probability filter: min_probability=${queryParams.min_probability}`);
+    const beforeProbFilter = filtered.length;
     filtered = filtered.filter(p => 
       p.anytime_td_prob >= queryParams.min_probability
     );
+    console.log(`[FILTER DEBUG] After probability filter: ${beforeProbFilter} → ${filtered.length} predictions`);
+  } else {
+    console.log(`[FILTER DEBUG] SKIPPING probability filter - min_probability=${queryParams.min_probability}`);
   }
   
   // Cap displayed probabilities for realism (avoid >85% for non-QBs)
