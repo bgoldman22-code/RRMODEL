@@ -466,7 +466,7 @@ function processQueryParams(event) {
     
     // Ranking options
     top_n: parseInt(params.top_n) || CONFIG.DEFAULT_TOP_N,
-    min_confidence: params.min_confidence || 'medium',
+    min_confidence: params.min_confidence || 'low',
     
     // Value thresholds
     min_value_score: parseFloat(params.min_value_score) || 0.5,
@@ -1271,18 +1271,6 @@ function filterPredictions(predictions, queryParams, games = []) {
     const confidenceOrder = { 'low': 1, 'medium': 2, 'high': 3 };
     const minLevel = confidenceOrder[queryParams.min_confidence] || 2;
     console.log(`[FILTER DEBUG] Applying confidence filter: min_confidence=${queryParams.min_confidence}, minLevel=${minLevel}`);
-    
-    // Debug: Check confidence distribution
-    const confidenceCounts = { low: 0, medium: 0, high: 0, undefined: 0 };
-    filtered.forEach(p => {
-      const conf = p.anytime_confidence;
-      if (conf in confidenceCounts) {
-        confidenceCounts[conf]++;
-      } else {
-        confidenceCounts.undefined++;
-      }
-    });
-    console.log(`[FILTER DEBUG] Confidence distribution:`, confidenceCounts);
     
     const beforeConfidenceFilter = filtered.length;
     filtered = filtered.filter(p => {
