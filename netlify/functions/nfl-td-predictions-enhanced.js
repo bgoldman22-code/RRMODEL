@@ -132,8 +132,8 @@ async function fetchLiveTDOdds() {
       }
     }
 
-    // Per-event fallback (player props are often only on event-specific endpoint)
-    console.log('🔁 Trying per-event odds endpoint fallback for player props...');
+  // Per-event fallback (player props are often only on event-specific endpoint)
+  console.log('🔁 Trying per-event odds endpoint fallback for player props...');
     const eventsUrl = `${baseRoot}/events?apiKey=${apiKey}&dateFormat=iso`;
     const eventsResp = await fetch(eventsUrl);
     if (!eventsResp.ok) {
@@ -180,6 +180,88 @@ async function fetchLiveTDOdds() {
       if (playerOdds.length > 0) {
         console.log(`✅ Fetched ${playerOdds.length} player odds via per-event endpoint`);
         return { success: true, odds: playerOdds, debug };
+      }
+    }
+
+    // Dynamic market discovery fallback: find available market keys first, then fetch odds
+    console.log('🧭 Discovering available player TD market keys via event markets...');
+    const eventsResp2 = await fetch(eventsUrl);
+    if (eventsResp2.ok) {
+      const events2 = await eventsResp2.json();
+      const discoveredKeys = new Set();
+      // Probe a few events to collect market keys
+      for (const ev of (events2 || []).slice(0, 10)) {
+        const marketsUrl = `${baseRoot}/events/${encodeURIComponent(ev.id)}/markets?apiKey=${apiKey}&regions=us&bookmakers=${allowedBooks.join(',')}`;
+        const mResp = await fetch(marketsUrl);
+        if (!mResp.ok) {
+          let body = '';
+          try { body = await mResp.text(); } catch {}
+          debug.push({ endpoint: 'event_markets', eventId: ev.id, status: mResp.status, body: body?.slice(0, 200) });
+          continue;
+        }
+        const mData = await mResp.json();
+        for (const bookmaker of mData.bookmakers || []) {
+          for (const market of bookmaker.markets || []) {
+            const key = String(market.key || '').toLowerCase();
+            // Heuristic: looking for player TD scoring markets
+            if (key.includes('player') && key.includes('td')) {
+              discoveredKeys.add(key);
+            }
+          }
+        }
+      }
+      const keys = Array.from(discoveredKeys);
+      debug.push({ endpoint: 'event_markets_discovered', keys });
+      if (keys.length) {
+        // Fetch odds for discovered keys across events
+        const playerOdds = [];
+        for (const ev of events2 || []) {
+          const evUrl = `${baseRoot}/events/${encodeURIComponent(ev.id)}/odds?apiKey=${apiKey}&regions=us&oddsFormat=american&bookmakers=${allowedBooks.join(',')}&markets=${encodeURIComponent(keys.join(','))}`;
+          const evResp = await fetch(evUrl);
+          if (!evResp.ok) {
+            let body = '';
+            try { body = await evResp.text(); } catch {}
+            debug.push({ endpoint: 'event_odds_dynamic', eventId: ev.id, status: evResp.status, body: body?.slice(0, 200) });
+            continue;
+          }
+          const evData = await evResp.json();
+          const marketTypeFromKey = (k) => {
+            const kk = String(k || '').toLowerCase();
+            if (kk.includes('anytime')) return 'player_anytime_td';
+            if (kk.includes('first')) return 'player_first_td';
+            if (kk.includes('tds')) return 'player_tds_over';
+            // fallback: if it has td and player, assume anytime
+            if (kk.includes('player') && kk.includes('td')) return 'player_anytime_td';
+            return null;
+          };
+          for (const bookmaker of evData.bookmakers || []) {
+            const bookName = normalizeBookName(bookmaker.key);
+            if (!CONFIG.ALLOWED_BOOKS.has(bookName)) continue;
+            for (const market of bookmaker.markets || []) {
+              const mtype = marketTypeFromKey(market.key);
+              if (!mtype) continue;
+              for (const outcome of market.outcomes || []) {
+                // Outcome name vs description differs across markets; use available fields
+                const playerName = outcome.description || outcome.name;
+                if (!playerName) continue;
+                playerOdds.push({
+                  player_name: playerName,
+                  market_type: mtype,
+                  odds: outcome.price,
+                  bookmaker: bookmaker.key,
+                  game_id: ev.id,
+                  home_team: ev.home_team,
+                  away_team: ev.away_team
+                });
+              }
+            }
+          }
+        }
+        debug.push({ endpoint: 'event_odds_dynamic_total', odds: playerOdds.length, discovered: keys });
+        if (playerOdds.length > 0) {
+          console.log(`✅ Fetched ${playerOdds.length} player odds via dynamic discovery`);
+          return { success: true, odds: playerOdds, debug };
+        }
       }
     }
 
