@@ -21,7 +21,7 @@ const CONFIG = {
   LITE_DATA_PATH: path.join(process.cwd(), 'data', 'nfl-td-lite-latest.json'),
   
   // Cache settings
-  CACHE_DURATION_SECONDS: 0, // TEMP: Disable cache to force refresh
+    CACHE_DURATION_SECONDS: 300, // 5 minutes - restored after Week 4 fix
   
   // Response limits
   MAX_PLAYERS_RESPONSE: 500,
