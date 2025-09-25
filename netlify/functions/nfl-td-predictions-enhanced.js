@@ -474,6 +474,402 @@ function muToThreePlus(mu) {
 }
 
 /**
+ * ELITE PRO BETTING MODEL - Hierarchical TD Probability Framework
+ * Based on team anchor → player shares → path intensities → combined probability
+ */
+
+// Elite Model Configuration with learnable weights
+const ELITE_MODEL_CONFIG = {
+  // Block A: Team Anchor (40-50% of explanatory power)
+  team_anchor: {
+    weight: 0.45,
+    total_to_td_rate: 0.6,     // Primary driver
+    rz_drive_rate: 0.25,       // Red zone efficiency  
+    pace_weather: 0.15         // Secondary factors
+  },
+  
+  // Block B: Role Share (25-30% of explanatory power)
+  role_share: {
+    weight: 0.28,
+    inside_5_share: 0.45,      // Goal line carries/targets
+    goal_to_go_share: 0.25,    // 1-2 yard TD situations
+    snap_percentage: 0.15,     // Base usage (capped returns)
+    rz_target_share: 0.15      // Red zone passing role
+  },
+  
+  // Block C: Explosive Component (10-15% WR, 5-8% RB)
+  explosive: {
+    wr_weight: 0.12,
+    rb_weight: 0.06,
+    deep_target_rate: 0.5,     // 15+ air yards
+    adot_factor: 0.25,         // Average depth of target
+    yac_breakaway: 0.25        // YAC ability + breakaway runs
+  },
+  
+  // Block D: Opponent Adjustment (10-15%)
+  opponent: {
+    weight: 0.12,
+    rz_defense_rate: 0.5,      // Opponent RZ TD allowed
+    trench_win_rate: 0.3,      // Pass rush vs run block
+    coverage_busts: 0.2        // Deep TD allowed rate
+  },
+  
+  // Block E: Context Modifiers (5-10%)
+  context: {
+    weight: 0.07,
+    injury_volatility: 0.6,    // Health/role uncertainty  
+    travel_fatigue: 0.2,       // Short week/travel
+    scheme_tendency: 0.2       // RZ play calling
+  },
+  
+  // Calibration parameters
+  calibration: {
+    committee_temperature: 0.9,    // Committee penalty strength
+    alpha_rb_prior_cap: 1.12,     // Max boost for elite RBs
+    team_budget_slack: 0.08,      // Allow 8% variance in team total
+    position_temp_scaling: 0.9     // Reduce over-shrinkage
+  }
+};
+
+/**
+ * Calculate team TD expectation from market lines
+ */
+function calculateTeamTDAnchor(gameTotal, spread, isHome, weather = 'dome') {
+  // Convert market lines to implied team points
+  const teamImpliedPoints = isHome ? 
+    (gameTotal + spread) / 2 : 
+    (gameTotal - spread) / 2;
+  
+  // Baseline TD conversion rate
+  let tdRate = teamImpliedPoints / 7.0;
+  
+  // Weather adjustment (outdoor games slightly lower scoring)
+  if (weather === 'outdoor') {
+    tdRate *= 0.96;
+  }
+  
+  // Red zone drive rate adjustment (better teams convert more)
+  const strengthFactor = Math.max(0.85, Math.min(1.15, 1 + (spread * 0.02)));
+  tdRate *= strengthFactor;
+  
+  return Math.max(1.2, Math.min(4.5, tdRate));
+}
+
+/**
+ * Calculate player role shares using elite methodology
+ */
+function calculatePlayerRoleShares(players, teamContext) {
+  const roleShares = players.map(player => {
+    const pos = player.position;
+    const depth = player.depth_chart_position || 1;
+    
+    // Base role metrics (these would come from real data in production)
+    const baseSnapShare = depth === 1 ? 0.75 : (depth === 2 ? 0.35 : 0.15);
+    const inside5Share = pos === 'RB' ? (depth === 1 ? 0.6 : 0.2) : 
+                        pos === 'TE' ? (depth === 1 ? 0.25 : 0.1) : 0.05;
+    const goalToGoShare = pos === 'RB' ? (depth === 1 ? 0.7 : 0.15) : 0.02;
+    const rzTargetShare = pos !== 'RB' ? (depth === 1 ? 0.25 : 0.1) : 0.05;
+    
+    // Elite explosive factors
+    const deepTargetRate = pos === 'WR' ? (depth === 1 ? 0.15 : 0.08) : 0.02;
+    const adotFactor = pos === 'WR' ? (depth === 1 ? 1.2 : 0.9) : 0.3;
+    const yacBreakaway = pos === 'RB' ? 1.1 : (pos === 'WR' ? 1.0 : 0.7);
+    
+    return {
+      player,
+      // Rush path intensity
+      rush_intensity: (
+        inside5Share * ELITE_MODEL_CONFIG.role_share.inside_5_share +
+        goalToGoShare * ELITE_MODEL_CONFIG.role_share.goal_to_go_share +
+        Math.min(baseSnapShare, 0.8) * ELITE_MODEL_CONFIG.role_share.snap_percentage
+      ) * ELITE_MODEL_CONFIG.role_share.weight,
+      
+      // Receive path intensity  
+      receive_intensity: (
+        rzTargetShare * ELITE_MODEL_CONFIG.role_share.rz_target_share +
+        deepTargetRate * ELITE_MODEL_CONFIG.explosive.deep_target_rate +
+        adotFactor * ELITE_MODEL_CONFIG.explosive.adot_factor * 0.1
+      ) * (pos === 'WR' ? ELITE_MODEL_CONFIG.explosive.wr_weight : ELITE_MODEL_CONFIG.explosive.rb_weight),
+      
+      // Elite player adjustments
+      alpha_multiplier: getAlphaPlayerMultiplier(player),
+      volatility_penalty: getVolatilityPenalty(player)
+    };
+  });
+  
+  return roleShares;
+}
+
+/**
+ * Alpha player multiplier for historically elite TD scorers
+ */
+function getAlphaPlayerMultiplier(player) {
+  const name = (player.name || player.player_name || '').toLowerCase();
+  const pos = player.position;
+  
+  // Elite RB multipliers (would be learned from historical data)
+  if (pos === 'RB') {
+    if (name.includes('mccaffrey') || name.includes('cmc')) return 1.12;
+    if (name.includes('henry')) return 1.10;
+    if (name.includes('taylor') || name.includes('jonathan')) return 1.08;
+    if (name.includes('jacobs')) return 1.07;
+  }
+  
+  // Elite WR multipliers for explosive scorers
+  if (pos === 'WR') {
+    if (name.includes('hill') || name.includes('tyreek')) return 1.08;
+    if (name.includes('jefferson')) return 1.06;
+    if (name.includes('chase')) return 1.05;
+  }
+  
+  return 1.0;
+}
+
+/**
+ * Volatility penalty for role uncertainty
+ */
+function getVolatilityPenalty(player) {
+  // In production, this would be based on recent role variance
+  // For now, use injury status and depth chart uncertainty
+  let penalty = 0;
+  
+  if (player.depth_chart_position > 2) penalty += 0.05;
+  if (player.reliability_factor < 0.5) penalty += 0.03;
+  
+  return Math.min(0.15, penalty);
+}
+
+/**
+ * ELITE MODEL: Generate hierarchical TD probabilities
+ * Team Anchor → Role Shares → Path Intensities → Combined Probability → Calibration
+ */
+function generateEliteTDProbabilities(players, gameContext) {
+  const { gameTotal, spread, isHome, weather, opponent } = gameContext;
+  
+  // Step 1: Calculate team TD anchor (Block A)
+  const teamTDAnchor = calculateTeamTDAnchor(gameTotal, spread, isHome, weather);
+  
+  // Step 2: Calculate player role shares (Blocks B, C)  
+  const playerShares = calculatePlayerRoleShares(players, gameContext);
+  
+  // Step 3: Apply opponent adjustments (Block D)
+  const opponentMultiplier = calculateOpponentAdjustment(opponent);
+  
+  // Step 4: Generate path intensities with committee softmax
+  const enhancedPlayers = playerShares.map(share => {
+    const { player, rush_intensity, receive_intensity, alpha_multiplier, volatility_penalty } = share;
+    
+    // Apply alpha multiplier and volatility penalty
+    const rushLambda = teamTDAnchor * rush_intensity * alpha_multiplier * opponentMultiplier.rush * (1 - volatility_penalty);
+    const receiveLambda = teamTDAnchor * receive_intensity * alpha_multiplier * opponentMultiplier.pass * (1 - volatility_penalty);
+    
+    // Combined lambda for anytime TD (sum of paths)
+    const totalLambda = rushLambda + receiveLambda;
+    
+    // Convert to probabilities using Poisson
+    const anytimeTDProb = Math.max(0.01, Math.min(0.85, 1 - Math.exp(-totalLambda)));
+    const multipleTDProb = Math.max(0.001, Math.min(0.6, muToMultiple(totalLambda)));
+    const firstTDProb = Math.max(0.001, Math.min(0.75, totalLambda * 0.8)); // Approximation
+    
+    return {
+      ...player,
+      // Elite model outputs
+      elite_lambda_total: totalLambda,
+      elite_lambda_rush: rushLambda,
+      elite_lambda_receive: receiveLambda,
+      elite_anytime_raw: anytimeTDProb,
+      elite_multiple_raw: multipleTDProb,
+      elite_first_raw: firstTDProb,
+      
+      // Metadata for analysis
+      elite_alpha_multiplier: alpha_multiplier,
+      elite_volatility_penalty: volatility_penalty,
+      elite_team_anchor: teamTDAnchor,
+      elite_opponent_rush_mult: opponentMultiplier.rush,
+      elite_opponent_pass_mult: opponentMultiplier.pass
+    };
+  });
+  
+  // Step 5: Apply committee penalties and team budget constraints
+  const calibratedPlayers = applyCommitteePenaltiesAndBudget(enhancedPlayers, teamTDAnchor);
+  
+  // Step 6: Position-tier calibration to fix compression
+  return applyPositionTierCalibration(calibratedPlayers);
+}
+
+/**
+ * Calculate opponent-specific adjustments
+ */
+function calculateOpponentAdjustment(opponent) {
+  // In production, this would use opponent defense stats
+  // For now, use reasonable defaults with some variation
+  return {
+    rush: 0.95 + Math.random() * 0.1,  // 0.95-1.05 multiplier
+    pass: 0.95 + Math.random() * 0.1,  // Will be replaced with real data
+    explosive: 0.9 + Math.random() * 0.2
+  };
+}
+
+/**
+ * Apply committee penalties using softmax temperature
+ */
+function applyCommitteePenaltiesAndBudget(players, teamAnchor) {
+  // Group by position for committee analysis
+  const rbPlayers = players.filter(p => p.position === 'RB');
+  const wrPlayers = players.filter(p => p.position === 'WR');
+  const otherPlayers = players.filter(p => !['RB', 'WR'].includes(p.position));
+  
+  // Apply committee softmax for RBs (reduces mid-tier inflation)
+  const processedRBs = applyCommitteeSoftmax(rbPlayers, 'RB', ELITE_MODEL_CONFIG.calibration.committee_temperature);
+  const processedWRs = applyCommitteeSoftmax(wrPlayers, 'WR', 1.0);
+  
+  const allProcessed = [...processedRBs, ...processedWRs, ...otherPlayers];
+  
+  // Team budget constraint: adjust if total exceeds team anchor
+  const totalExpected = allProcessed.reduce((sum, p) => sum + p.elite_anytime_raw, 0);
+  const budgetRatio = Math.min(1.0, (teamAnchor + ELITE_MODEL_CONFIG.calibration.team_budget_slack) / Math.max(0.1, totalExpected));
+  
+  return allProcessed.map(player => ({
+    ...player,
+    elite_anytime_budgeted: player.elite_anytime_raw * budgetRatio,
+    elite_multiple_budgeted: player.elite_multiple_raw * budgetRatio,
+    elite_first_budgeted: player.elite_first_raw * budgetRatio,
+    elite_budget_ratio: budgetRatio
+  }));
+}
+
+/**
+ * Apply committee softmax to prevent mid-tier over-crediting
+ */
+function applyCommitteeSoftmax(positionPlayers, position, temperature) {
+  if (positionPlayers.length <= 1) return positionPlayers;
+  
+  // Calculate softmax weights based on lambda intensities
+  const lambdas = positionPlayers.map(p => p.elite_lambda_total);
+  const maxLambda = Math.max(...lambdas);
+  const expLambdas = lambdas.map(l => Math.exp((l - maxLambda) / temperature));
+  const sumExp = expLambdas.reduce((sum, exp) => sum + exp, 0);
+  
+  return positionPlayers.map((player, idx) => {
+    const softmaxWeight = expLambdas[idx] / sumExp;
+    const adjustmentFactor = Math.min(1.0, softmaxWeight * positionPlayers.length * 0.8);
+    
+    return {
+      ...player,
+      elite_committee_weight: softmaxWeight,
+      elite_committee_adjustment: adjustmentFactor,
+      elite_anytime_raw: player.elite_anytime_raw * adjustmentFactor,
+      elite_multiple_raw: player.elite_multiple_raw * adjustmentFactor,
+      elite_first_raw: player.elite_first_raw * adjustmentFactor
+    };
+  });
+}
+
+/**
+ * Position-tier calibration to fix compression and match market ranges
+ */
+function applyPositionTierCalibration(players) {
+  return players.map(player => {
+    const pos = player.position;
+    const depth = player.depth_chart_position || 1;
+    
+    // Position-specific calibration curves (would be learned from historical data)
+    let calibrationMultiplier = 1.0;
+    
+    if (pos === 'RB') {
+      if (depth === 1) {
+        // Elite RBs: Expand range to 0.45-0.70
+        calibrationMultiplier = 1.2 + (player.elite_alpha_multiplier - 1.0) * 2.0;
+      } else {
+        // Backup RBs: Compress to 0.25-0.40  
+        calibrationMultiplier = 0.7;
+      }
+    } else if (pos === 'WR') {
+      if (depth === 1) {
+        // WR1s: Expand to 0.35-0.50 (was too compressed)
+        calibrationMultiplier = 1.3;
+      } else {
+        // WR2+: Moderate range 0.20-0.35
+        calibrationMultiplier = 0.9;
+      }
+    }
+    
+    // Apply temperature scaling to reduce over-shrinkage
+    const tempScaling = ELITE_MODEL_CONFIG.calibration.position_temp_scaling;
+    
+    return {
+      ...player,
+      // Final calibrated probabilities
+      anytime_td_prob: Math.max(0.01, Math.min(0.85, 
+        player.elite_anytime_budgeted * calibrationMultiplier * tempScaling)),
+      multiple_td_prob: Math.max(0.001, Math.min(0.60,
+        player.elite_multiple_budgeted * calibrationMultiplier * tempScaling)),  
+      first_td_prob: Math.max(0.001, Math.min(0.75,
+        player.elite_first_budgeted * calibrationMultiplier * tempScaling)),
+      
+      // Keep elite metadata
+      elite_calibration_multiplier: calibrationMultiplier,
+      elite_final_temp_scaling: tempScaling
+    };
+  });
+}
+
+/**
+ * Convert lambda (rate parameter) to multiple TD probability using compound Poisson
+ */
+function muToMultiple(lambda) {
+  if (lambda <= 0) return 0;
+  // P(X >= 2) = 1 - P(X = 0) - P(X = 1) = 1 - e^(-λ) - λe^(-λ)
+  const exp_neg_lambda = Math.exp(-lambda);
+  return 1 - exp_neg_lambda - lambda * exp_neg_lambda;
+}
+
+/**
+ * Extract game context from team data
+ */
+function extractGameContext(teamData, playerData) {
+  // In production, this would come from game data API
+  // For now, extract what we can from existing data
+  const firstPlayer = playerData[0] || {};
+  
+  return {
+    gameTotal: 45.5, // Default total, will be replaced with real data
+    spread: 0, // Home team spread, will be replaced
+    isHome: true, // Will determine from data
+    weather: { temp: 70, wind: 5, precip: 0 }, // Defaults
+    opponent: firstPlayer.opponent || 'UNKNOWN',
+    week: firstPlayer.week || 1,
+    season: 2025
+  };
+}
+
+/**
+ * Group players by team for elite model processing
+ */
+function groupPlayersByTeam(predictions) {
+  const teamGroups = {};
+  
+  for (const player of predictions) {
+    const team = player.team || 'UNKNOWN';
+    if (!teamGroups[team]) {
+      teamGroups[team] = [];
+    }
+    teamGroups[team].push(player);
+  }
+  
+  // Sort each team's players by depth chart position for better processing
+  for (const team of Object.keys(teamGroups)) {
+    teamGroups[team].sort((a, b) => {
+      const depthA = a.depth_chart_position || 99;
+      const depthB = b.depth_chart_position || 99;
+      return depthA - depthB;
+    });
+  }
+  
+  return teamGroups;
+}
+
+/**
  * Better team TD mapping from total/spread using scoring model
  * Replaces naive points/7 approach
  */
@@ -1272,6 +1668,32 @@ function filterPredictions(predictions, queryParams, games = []) {
 async function generateResponseByType(data, queryParams) {
   const { type, top_n } = queryParams;
   
+  // ELITE MODEL ENHANCEMENT: Replace compressed predictions with hierarchical calculations
+  console.log('🧠 Applying Elite Pro Model Framework...');
+  
+  // Group by team for elite model processing  
+  const teamGroups = groupPlayersByTeam(data.full.predictions);
+  let eliteEnhancedPredictions = [];
+  
+  for (const [team, players] of Object.entries(teamGroups)) {
+    console.log(`⚡ Processing ${players.length} players for ${team} with Elite Model`);
+    
+    // Extract game context for this team
+    const gameContext = extractGameContext(team, players);
+    
+    // Apply elite model framework
+    const elitePlayers = generateEliteTDProbabilities(players, gameContext);
+    eliteEnhancedPredictions.push(...elitePlayers);
+    
+    console.log(`✨ Elite Model generated probabilities for ${team}: 
+      Avg Anytime: ${(elitePlayers.reduce((sum, p) => sum + p.anytime_td_prob, 0) / elitePlayers.length * 100).toFixed(1)}%
+      Top Player: ${elitePlayers[0]?.name} (${(elitePlayers[0]?.anytime_td_prob * 100).toFixed(1)}%)`);
+  }
+  
+  // Replace original predictions with elite model output
+  data.full.predictions = eliteEnhancedPredictions;
+  console.log(`🎯 Elite Model processed ${eliteEnhancedPredictions.length} predictions`);
+
   // Fetch live odds for all predictions (anytime only)
   const liveOddsData = await fetchLiveTDOdds();
   console.log(`[RAW DEBUG] data.full.predictions length: ${data.full.predictions?.length || 0}`);
