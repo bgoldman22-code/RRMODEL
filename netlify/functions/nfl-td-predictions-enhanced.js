@@ -1321,10 +1321,14 @@ async function generateResponseByType(data, queryParams) {
       };
       
     case 'top-anytime':
-      const allFiltered = filterPredictions(enhancedPredictions, queryParams, data.full.games);
-      let topAnytime = allFiltered
-        .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
+      console.log(`🐛 DEBUG: top-anytime case, enhancedPredictions: ${enhancedPredictions.length}`);
+      
+      // TEMPORARY: Skip all filtering to debug
+      let topAnytime = enhancedPredictions
+        .sort((a, b) => (b.anytime_td_prob || 0) - (a.anytime_td_prob || 0))
         .slice(0, top_n);
+        
+      console.log(`🐛 DEBUG: After sort and slice: ${topAnytime.length}`);
       
       // ELITE: Guarantee TE visibility - ensure top 5 TEs are included
       const topTEs = allFiltered
