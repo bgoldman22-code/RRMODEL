@@ -279,12 +279,15 @@ const NFLTouchdownPropsComprehensive = () => {
       
       const elitePredictionsPromises = enhancedPlayers.map(async (player, index) => {
         try {
-          // Fetch real odds from TheOddsAPI for this player
-          const realOdds = await oddsService.fetchTDPropOdds(
-            player.current_depth_name || player.name,
-            player.position,
-            player.team
-          );
+          // Use odds already provided by the enhanced API
+          const realOdds = player.american_odds ? {
+            anytime_td: player.american_odds,
+            source: player.odds_source || 'live_api',
+            books: [{
+              anytime_odds: player.american_odds,
+              bookmaker: player.odds_sources_allowed?.[0]?.book || 'Live Sportsbook'
+            }]
+          } : null;
           
           // Enhanced player data structure with weighted recent performance (Week 3 = 4 games weight)
           const enrichedPlayer = {
