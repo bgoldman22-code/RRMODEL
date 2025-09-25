@@ -1650,6 +1650,20 @@ exports.handler = async (event, context) => {
       }
     };
     
+    // Debug: Log sample prediction data structure for frontend troubleshooting
+    if (response.predictions && response.predictions.length > 0) {
+      const samplePred = response.predictions[0];
+      console.log(`[FRONTEND DEBUG] Sample prediction data structure:`, {
+        player_name: samplePred.player_name,
+        american_odds: samplePred.american_odds,
+        books_count: samplePred.books_count,
+        odds_qualified: samplePred.odds_qualified,
+        whitelisted_books_only: samplePred.whitelisted_books_only,
+        odds_sources_allowed: samplePred.odds_sources_allowed?.slice(0, 1), // First book only
+        real_odds: samplePred.real_odds
+      });
+    }
+
     // Log request for monitoring
     console.log(`✅ NFL TD Predictions API: ${queryParams.type} query, ${JSON.stringify(response).length} bytes, ${Date.now() - startTime}ms`);
     
