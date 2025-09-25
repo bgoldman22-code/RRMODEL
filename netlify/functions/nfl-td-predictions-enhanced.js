@@ -28,7 +28,7 @@ const CONFIG = {
   DEFAULT_TOP_N: 50,
   
   // ELITE: Book whitelist enforcement (sharp room requirement)
-  ALLOWED_BOOKS: new Set(['FANDUEL', 'DRAFTKINGS', 'CAESARS', 'BETMGM', 'FANATICS', 'ESPNBET']),
+  ALLOWED_BOOKS: new Set(['FANDUEL', 'DRAFTKINGS', 'CAESARS', 'BETMGM', 'FANATICS', 'BETFANATICS', 'ESPNBET']),
   EXCLUDED_BOOKS: new Set(['BETONLINE', 'BOVADA', 'HERITAGE', 'PINNACLE']), // Explicitly banned
   
   // Supported query types
@@ -70,15 +70,17 @@ async function fetchLiveTDOdds() {
   }
 
   try {
-    // Try a sequence of market keys to handle provider differences
+    // Try a sequence of market keys to handle provider differences (correct keys per The Odds API v4)
     const marketAttempts = [
-      'player_anytime_td,player_1st_td',     // our preferred naming
-      'player_td_anytime,player_td_first',   // alternative naming
-      'player_props'                         // broad fallback (may include many props)
+      'player_anytime_td,player_first_td',   // Correct naming
+      'player_anytime_td',                   // Single market
+      'player_props'                         // Broad fallback (may include many props)
     ];
 
-    const allowedBooks = ['fanduel','draftkings','caesars','betmgm','fanatics','espnbet'];
-    const base = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds';
+    // Verified bookmaker keys for US region
+    const allowedBooks = ['fanduel','draftkings','caesars','betmgm','betfanatics','espnbet'];
+    const baseRoot = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl';
+    const base = `${baseRoot}/odds`;
     let lastReason = 'no_attempts';
     let debug = [];
 
@@ -88,7 +90,9 @@ async function fetchLiveTDOdds() {
       const response = await fetch(url);
       if (!response.ok) {
         lastReason = `api_error_${response.status}`;
-        debug.push({ markets, status: response.status });
+        let body = '';
+        try { body = await response.text(); } catch {}
+        debug.push({ markets, status: response.status, body: body?.slice(0, 300) });
         continue;
       }
 
@@ -103,13 +107,13 @@ async function fetchLiveTDOdds() {
           for (const market of bookmaker.markets || []) {
             const mkey = String(market.key || '').toLowerCase();
             const isAnytime = mkey.includes('anytime') && mkey.includes('td');
-            const isFirst = (mkey.includes('1st') || mkey.includes('first')) && mkey.includes('td');
+            const isFirst = (mkey.includes('first') && mkey.includes('td'));
             if (!(isAnytime || isFirst)) continue;
 
             for (const outcome of market.outcomes || []) {
               playerOdds.push({
                 player_name: outcome.name,
-                market_type: isAnytime ? 'player_anytime_td' : 'player_1st_td',
+                market_type: isAnytime ? 'player_anytime_td' : 'player_first_td',
                 odds: outcome.price,
                 bookmaker: bookmaker.key,
                 game_id: game.id,
@@ -124,6 +128,57 @@ async function fetchLiveTDOdds() {
       debug.push({ markets, games: (games || []).length, odds: playerOdds.length });
       if (playerOdds.length > 0) {
         console.log(`✅ Fetched ${playerOdds.length} player odds from ${(games || []).length} games using markets=${markets}`);
+        return { success: true, odds: playerOdds, debug };
+      }
+    }
+
+    // Per-event fallback (player props are often only on event-specific endpoint)
+    console.log('🔁 Trying per-event odds endpoint fallback for player props...');
+    const eventsUrl = `${baseRoot}/events?apiKey=${apiKey}&dateFormat=iso`;
+    const eventsResp = await fetch(eventsUrl);
+    if (!eventsResp.ok) {
+      lastReason = `events_api_error_${eventsResp.status}`;
+      let body = '';
+      try { body = await eventsResp.text(); } catch {}
+      debug.push({ endpoint: 'events', status: eventsResp.status, body: body?.slice(0, 300) });
+    } else {
+      const events = await eventsResp.json();
+      const playerOdds = [];
+      for (const ev of events || []) {
+        const evUrl = `${baseRoot}/events/${encodeURIComponent(ev.id)}/odds?apiKey=${apiKey}&regions=us&oddsFormat=american&bookmakers=${allowedBooks.join(',')}&markets=player_anytime_td,player_first_td`;
+        const evResp = await fetch(evUrl);
+        if (!evResp.ok) {
+          let body = '';
+          try { body = await evResp.text(); } catch {}
+          debug.push({ endpoint: 'event_odds', eventId: ev.id, status: evResp.status, body: body?.slice(0, 200) });
+          continue;
+        }
+        const evData = await evResp.json();
+        for (const bookmaker of evData.bookmakers || []) {
+          const bookName = normalizeBookName(bookmaker.key);
+          if (!CONFIG.ALLOWED_BOOKS.has(bookName)) continue;
+          for (const market of bookmaker.markets || []) {
+            const mkey = String(market.key || '').toLowerCase();
+            const isAnytime = mkey.includes('anytime') && mkey.includes('td');
+            const isFirst = (mkey.includes('first') && mkey.includes('td'));
+            if (!(isAnytime || isFirst)) continue;
+            for (const outcome of market.outcomes || []) {
+              playerOdds.push({
+                player_name: outcome.name,
+                market_type: isAnytime ? 'player_anytime_td' : 'player_first_td',
+                odds: outcome.price,
+                bookmaker: bookmaker.key,
+                game_id: ev.id,
+                home_team: ev.home_team,
+                away_team: ev.away_team
+              });
+            }
+          }
+        }
+      }
+      debug.push({ endpoint: 'event_odds_total', odds: playerOdds.length });
+      if (playerOdds.length > 0) {
+        console.log(`✅ Fetched ${playerOdds.length} player odds via per-event endpoint`);
         return { success: true, odds: playerOdds, debug };
       }
     }
@@ -172,7 +227,7 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
       odds.market_type === 'player_anytime_td' && namesLikelyMatch(odds.player_name, playerName)
     );
     const firstOdds = liveOddsData.odds.filter(odds =>
-      odds.market_type === 'player_1st_td' && namesLikelyMatch(odds.player_name, playerName)
+      odds.market_type === 'player_first_td' && namesLikelyMatch(odds.player_name, playerName)
     );
 
     if (anytimeOdds.length > 0) {
