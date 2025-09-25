@@ -1272,6 +1272,18 @@ function filterPredictions(predictions, queryParams, games = []) {
     const minLevel = confidenceOrder[queryParams.min_confidence] || 2;
     console.log(`[FILTER DEBUG] Applying confidence filter: min_confidence=${queryParams.min_confidence}, minLevel=${minLevel}`);
     
+    // Debug: Check confidence distribution
+    const confidenceCounts = { low: 0, medium: 0, high: 0, undefined: 0 };
+    filtered.forEach(p => {
+      const conf = p.anytime_confidence;
+      if (conf in confidenceCounts) {
+        confidenceCounts[conf]++;
+      } else {
+        confidenceCounts.undefined++;
+      }
+    });
+    console.log(`[FILTER DEBUG] Confidence distribution:`, confidenceCounts);
+    
     const beforeConfidenceFilter = filtered.length;
     filtered = filtered.filter(p => {
       const level = confidenceOrder[p.anytime_confidence] || 1;
