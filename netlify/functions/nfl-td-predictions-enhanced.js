@@ -47,6 +47,25 @@ const CONFIG = {
 // In-memory cache for pipeline data across invocations
 const cachedData = {};
 
+// Load team aliases for mapping abbreviations to full names
+let TEAM_ABBR_TO_FULL = null;
+async function loadTeamAliases() {
+  if (TEAM_ABBR_TO_FULL) return TEAM_ABBR_TO_FULL;
+  try {
+    const aliasPath = path.join(process.cwd(), 'data', 'nfl-team-aliases.json');
+    const aliasData = JSON.parse(await fs.readFile(aliasPath, 'utf8'));
+    // Invert mapping: abbr -> full
+    TEAM_ABBR_TO_FULL = {};
+    for (const [full, abbr] of Object.entries(aliasData)) {
+      if (!TEAM_ABBR_TO_FULL[abbr]) TEAM_ABBR_TO_FULL[abbr] = full;
+    }
+    return TEAM_ABBR_TO_FULL;
+  } catch (e) {
+    TEAM_ABBR_TO_FULL = {};
+    return TEAM_ABBR_TO_FULL;
+  }
+}
+
 // Fetch live player TD markets via The Odds API per-event endpoint
 async function fetchLiveTDOdds() {
   const apiKey = process.env.THEODDS_API_KEY || process.env.THEODDSAPI_KEY || process.env.ODDS_API_KEY;
@@ -75,9 +94,19 @@ async function fetchLiveTDOdds() {
       return { success: false, reason: 'no_events', odds: [], debug };
     }
 
+    // Load team aliases for mapping
+    const abbrToFull = await loadTeamAliases();
+
     // 2) Fetch per-event odds for TD scorer markets
     const playerOdds = [];
     for (const ev of events) {
+      // Map team abbreviations to full names for matching
+      let homeTeam = ev.home_team;
+      let awayTeam = ev.away_team;
+      // If model uses abbreviations, map to full
+      if (abbrToFull[homeTeam]) homeTeam = abbrToFull[homeTeam];
+      if (abbrToFull[awayTeam]) awayTeam = abbrToFull[awayTeam];
+
       const evUrl = `${baseRoot}/events/${encodeURIComponent(ev.id)}/odds?apiKey=${apiKey}&regions=us&oddsFormat=american&bookmakers=${allowedBooksParam}&markets=${marketsParam}`;
       const evResp = await fetch(evUrl);
       if (!evResp.ok) {
@@ -98,7 +127,8 @@ async function fetchLiveTDOdds() {
           if (!isAnytime) continue;
 
           for (const outcome of market.outcomes || []) {
-            const playerName = outcome.description || outcome.name; // props use description for player
+            // Use full player name for matching
+            const playerName = outcome.description || outcome.name; // Odds API uses full names
             if (!playerName) continue;
             playerOdds.push({
               player_name: playerName,
@@ -106,8 +136,8 @@ async function fetchLiveTDOdds() {
               odds: outcome.price,
               bookmaker: bookmaker.key,
               game_id: evData.id || ev.id,
-              home_team: evData.home_team || ev.home_team,
-              away_team: evData.away_team || ev.away_team,
+              home_team: homeTeam,
+              away_team: awayTeam,
               point: outcome.point,
               outcome_name: outcome.name
             });
@@ -122,7 +152,7 @@ async function fetchLiveTDOdds() {
     }
     return { success: false, reason: 'no_player_props', odds: [], debug };
   } catch (error) {
-    console.error('❌ Error fetching live odds:', error.message);
+    console.error('\u274c Error fetching live odds:', error.message);
     return { success: false, reason: 'fetch_error', odds: [], error: error.message };
   }
 }
@@ -133,17 +163,21 @@ function normalizePlayerName(name = '') {
 }
 
 function namesLikelyMatch(a, b) {
-  const A = normalizePlayerName(a);
-  const B = normalizePlayerName(b);
-  if (!A || !B) return false;
+  // Try exact match (case-insensitive, ignore punctuation)
+  if (!a || !b) return false;
+  const A = String(a).toUpperCase().replace(/[^A-Z]/g, '');
+  const B = String(b).toUpperCase().replace(/[^A-Z]/g, '');
   if (A === B) return true;
-  // Last name + first initial match fallback
-  const lastA = A.replace(/.*([A-Z]+)$/,'$1');
-  const lastB = B.replace(/.*([A-Z]+)$/,'$1');
-  if (lastA && lastA === lastB) {
-    const firstA = A[0];
-    const firstB = B[0];
-    return firstA === firstB;
+  // Try splitting and matching last name
+  const aParts = String(a).split(/[ .]/);
+  const bParts = String(b).split(/[ .]/);
+  const aLast = aParts[aParts.length - 1].toUpperCase();
+  const bLast = bParts[bParts.length - 1].toUpperCase();
+  if (aLast && bLast && aLast === bLast) {
+    // If last names match, check first initial
+    const aFirst = aParts[0][0].toUpperCase();
+    const bFirst = bParts[0][0].toUpperCase();
+    return aFirst === bFirst;
   }
   return false;
 }
