@@ -1264,6 +1264,11 @@ async function generateResponseByType(data, queryParams) {
   
   // Fetch live odds for all predictions (anytime only)
   const liveOddsData = await fetchLiveTDOdds();
+  console.log(`[RAW DEBUG] data.full.predictions length: ${data.full.predictions?.length || 0}`);
+  if (data.full.predictions?.length > 0) {
+    console.log(`[RAW DEBUG] First prediction:`, data.full.predictions[0]);
+  }
+  
   const enhancedPredictions = enhancePredictionsWithLiveOdds(data.full.predictions, liveOddsData);
   
   switch (type) {
