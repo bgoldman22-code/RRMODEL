@@ -7,7 +7,7 @@ const ODDS_API_KEY = process.env.ODDS_API_KEY;
 const ODDS_API_URL = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/players/';
 const MARKETS = [
   'player_anytime_td',
-  'player_1st_td',
+  'player_first_td',
   'player_tds_over'
 ];
 const REGIONS = 'us';

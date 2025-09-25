@@ -3,7 +3,8 @@
 
 export class NFLOddsService {
   constructor() {
-    this.baseUrl = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds';
+  // Base root for The Odds API v4
+  this.baseUrl = 'https://api.the-odds-api.com/v4';
     this.apiKey = process.env.THEODDS_API_KEY || process.env.REACT_APP_ODDS_API_KEY || 'demo'; // Match Netlify env var
     this.enableDebug = true; // Enhanced logging for real odds investigation
     this.cache = new Map(); // Add missing cache
@@ -39,7 +40,8 @@ export class NFLOddsService {
     }
 
     try {
-      const apiUrl = `${this.baseUrl}/sports/americanfootball_nfl/odds/?apiKey=${this.apiKey}&regions=us&markets=player_anytime_td,player_1st_td,player_tds_over&oddsFormat=american`;
+  const bookmakers = 'fanduel,draftkings,caesars,betmgm,betfanatics,espnbet';
+  const apiUrl = `${this.baseUrl}/sports/americanfootball_nfl/odds?apiKey=${this.apiKey}&regions=us&bookmakers=${bookmakers}&markets=player_anytime_td,player_first_td,player_tds_over&oddsFormat=american`;
       console.log(`🌐 API CALL: ${apiUrl.replace(this.apiKey, '[HIDDEN]')}`);
       
       // Fetch current NFL games for this week
@@ -52,8 +54,8 @@ export class NFLOddsService {
         throw new Error(`Odds API error: ${gamesResponse.status}`);
       }
 
-      const games = await gamesResponse.json();
-      console.log(`📊 GAMES DATA: Found ${games.length} games with odds data`);
+  const games = await gamesResponse.json();
+  console.log(`📊 GAMES DATA: Found ${(games || []).length} games with odds data`);
       
       // Find odds for this specific player
       const playerOdds = this.extractPlayerOdds(games, playerName, team);
