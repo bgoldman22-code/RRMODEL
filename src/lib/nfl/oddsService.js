@@ -41,7 +41,25 @@ export class NFLOddsService {
 
     try {
   const bookmakers = 'fanduel,draftkings,caesars,betmgm,betfanatics,espnbet';
-  const apiUrl = `${this.baseUrl}/sports/americanfootball_nfl/odds?apiKey=${this.apiKey}&regions=us&bookmakers=${bookmakers}&markets=player_anytime_td,player_first_td,player_tds_over&oddsFormat=american`;
+  // Player props must be fetched per-event; first discover events
+  const eventsUrl = `${this.baseUrl}/sports/americanfootball_nfl/events?apiKey=${this.apiKey}&dateFormat=iso`;
+  console.log(`🌐 API CALL: ${eventsUrl.replace(this.apiKey, '[HIDDEN]')}`);
+  const eventsResp = await fetch(eventsUrl);
+  console.log(`📡 EVENTS RESPONSE: Status ${eventsResp.status}`);
+  if (!eventsResp.ok) {
+    throw new Error(`Odds API events error: ${eventsResp.status}`);
+  }
+  const events = await eventsResp.json();
+  console.log(`📊 EVENTS: Found ${(events || []).length} events`);
+
+  // Build array of event odds promises
+  const markets = 'player_anytime_td,player_1st_td,player_tds_over';
+  const eventOddsPromises = (events || []).map(ev => {
+    const url = `${this.baseUrl}/sports/americanfootball_nfl/events/${encodeURIComponent(ev.id)}/odds?apiKey=${this.apiKey}&regions=us&bookmakers=${bookmakers}&markets=${markets}&oddsFormat=american`;
+    return fetch(url).then(r => r.ok ? r.json() : null).catch(() => null);
+  });
+        const gamesArrays = await Promise.all(eventOddsPromises);
+        const mergedGames = gamesArrays.filter(Boolean);
       console.log(`🌐 API CALL: ${apiUrl.replace(this.apiKey, '[HIDDEN]')}`);
       
       // Fetch current NFL games for this week
@@ -58,7 +76,7 @@ export class NFLOddsService {
   console.log(`📊 GAMES DATA: Found ${(games || []).length} games with odds data`);
       
       // Find odds for this specific player
-      const playerOdds = this.extractPlayerOdds(games, playerName, team);
+        const playerOdds = this.extractPlayerOdds(mergedGames, playerName, team);
       
       console.log(`🎯 PLAYER ODDS: ${playerName} found:`, playerOdds ? 'YES' : 'NO');
       if (playerOdds) {
@@ -118,7 +136,7 @@ export class NFLOddsService {
             }
           }
 
-          if (market.key === 'player_first_td') {
+          if (market.key === 'player_1st_td') {
             const playerOutcome = this.findPlayerInOutcomes(market.outcomes, playerName);
             if (playerOutcome) {
               playerOdds.first_td = this.convertOddsToImpliedProbability(playerOutcome.price);

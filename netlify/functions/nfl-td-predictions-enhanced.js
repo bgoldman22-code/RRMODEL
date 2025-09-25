@@ -248,7 +248,13 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
         })),
         books_count: matchedOdds.length,
         whitelisted_books_only: true,
-        odds_qualified: true
+        odds_qualified: true,
+        real_odds: {
+          books: matchedOdds.map(odds => ({
+            bookmaker: odds.bookmaker,
+            anytime_odds: odds.odds
+          }))
+        }
       };
     } else {
       unmatched.push(playerName);
