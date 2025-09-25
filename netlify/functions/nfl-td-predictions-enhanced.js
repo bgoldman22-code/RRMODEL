@@ -107,45 +107,45 @@ async function fetchLiveTDOdds() {
     for (const ev of events) {
       eventCount++;
       console.log(`[DEBUG] Processing event #${eventCount}: ${ev.home_team} vs ${ev.away_team} (id: ${ev.id})`);
-  console.log(`[DEBUG] Event teams mapped: home='${homeTeam}', away='${awayTeam}'`);
-  console.log('[DEBUG] Fetching event odds:', evUrl);
-      if (!evResp.ok) {
-        console.log(`[DEBUG] Failed to fetch odds for event ${ev.id}, status: ${evResp.status}`);
-      }
-  console.log(`[DEBUG] Got ${evData.bookmakers?.length || 0} bookmakers for event ${ev.id}`);
-  console.log(`[DEBUG] Bookmaker: ${bookmaker.key}, markets: ${(bookmaker.markets || []).map(m => m.key).join(', ')}`);
-          console.log(`[DEBUG] Market: ${market.key}, outcomes: ${(market.outcomes || []).length}`);
-            console.log(`[DEBUG] Player odds outcome: player='${playerName}', odds=${outcome.price}`);
+
       // Map team abbreviations to full names for matching
       let homeTeam = ev.home_team;
       let awayTeam = ev.away_team;
       // If model uses abbreviations, map to full
       if (abbrToFull[homeTeam]) homeTeam = abbrToFull[homeTeam];
       if (abbrToFull[awayTeam]) awayTeam = abbrToFull[awayTeam];
+      
+      console.log(`[DEBUG] Event teams mapped: home='${homeTeam}', away='${awayTeam}'`);
 
       const evUrl = `${baseRoot}/events/${encodeURIComponent(ev.id)}/odds?apiKey=${apiKey}&regions=us&oddsFormat=american&bookmakers=${allowedBooksParam}&markets=${marketsParam}`;
+      console.log('[DEBUG] Fetching event odds:', evUrl);
       const evResp = await fetch(evUrl);
       if (!evResp.ok) {
         let body = '';
         try { body = await evResp.text(); } catch {}
         debug.push({ endpoint: 'event_odds', eventId: ev.id, status: evResp.status, body: body?.slice(0, 250) });
+        console.log(`[DEBUG] Failed to fetch odds for event ${ev.id}, status: ${evResp.status}`);
         continue;
       }
       const evData = await evResp.json();
+      console.log(`[DEBUG] Got ${evData.bookmakers?.length || 0} bookmakers for event ${ev.id}`);
 
       for (const bookmaker of evData.bookmakers || []) {
         const bookName = normalizeBookName(bookmaker.key);
         if (!CONFIG.ALLOWED_BOOKS.has(bookName)) continue;
+        console.log(`[DEBUG] Bookmaker: ${bookmaker.key}, markets: ${(bookmaker.markets || []).map(m => m.key).join(', ')}`);
 
         for (const market of bookmaker.markets || []) {
           const mkey = String(market.key || '').toLowerCase();
           const isAnytime = mkey === 'player_anytime_td' || (mkey.includes('anytime') && mkey.includes('td'));
           if (!isAnytime) continue;
+          console.log(`[DEBUG] Market: ${market.key}, outcomes: ${(market.outcomes || []).length}`);
 
           for (const outcome of market.outcomes || []) {
             // Use full player name for matching
             const playerName = outcome.description || outcome.name; // Odds API uses full names
             if (!playerName) continue;
+            console.log(`[DEBUG] Player odds outcome: player='${playerName}', odds=${outcome.price}`);
             playerOdds.push({
               player_name: playerName,
               market_type: 'player_anytime_td',
