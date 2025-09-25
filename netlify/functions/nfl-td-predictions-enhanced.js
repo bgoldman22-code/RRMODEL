@@ -208,87 +208,45 @@ function namesLikelyMatch(a, b) {
 }
 
 function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
-  console.log(`[ODDS MATCH DEBUG] Starting enhancement with ${predictions.length} predictions and ${liveOddsData.odds?.length || 0} odds`);
+  console.log(`[SIMPLE ODDS] Starting with ${predictions.length} predictions and ${liveOddsData.odds?.length || 0} odds`);
   
   if (!liveOddsData.success || !liveOddsData.odds.length) {
-    console.log('⚠️ No live odds available - using fallback odds');
-    return predictions.map(pred => ({ ...pred, odds_source: 'fallback' }));
+    console.log('[SIMPLE ODDS] No live odds - returning original predictions');
+    return predictions;
   }
 
-  // Debug: Show sample prediction and API data structure
-  console.log('[ODDS MATCH DEBUG] Sample prediction:', predictions[0]);
-  console.log('[ODDS MATCH DEBUG] Sample API odds:', liveOddsData.odds[0]);
-  console.log('[ODDS MATCH DEBUG] First 10 API player names:', liveOddsData.odds.slice(0, 10).map(o => o.player_name));
-  console.log('[ODDS MATCH DEBUG] First 10 model player names:', predictions.slice(0, 10).map(p => p.player_name || p.name));
-
-  // Collect all API player names for debug
-  const apiPlayerNames = new Set(liveOddsData.odds.map(o => o.player_name));
   let matchedCount = 0;
-  let unmatched = [];
-  const result = predictions.map((pred, i) => {
+  
+  const enhanced = predictions.map(pred => {
     const playerName = pred.player_name || pred.name;
-    // Try to match to any API player name
-    const matchedOdds = liveOddsData.odds.filter(odds =>
-      odds.market_type === 'player_anytime_td' && namesLikelyMatch(odds.player_name, playerName)
+    
+    // Find matching odds for anytime TD
+    const matchingOdds = liveOddsData.odds.find(odds => 
+      odds.market_type === 'player_anytime_td' && 
+      namesLikelyMatch(odds.player_name, playerName)
     );
-    // Log every match attempt
-    const apiNames = liveOddsData.odds.map(o => o.player_name);
-    console.log(`[MATCH DEBUG] Model: '${playerName}' | API sample:`, apiNames.slice(0, 10));
-    if (matchedOdds.length > 0) {
-      console.log(`[MATCH SUCCESS] '${playerName}' matched to '${matchedOdds[0].player_name}'`);
-    } else {
-      console.log(`[MATCH FAIL] '${playerName}' did not match any API player`);
-    }
-    if (matchedOdds.length > 0) {
+    
+    if (matchingOdds) {
       matchedCount++;
-      const bestAnytime = matchedOdds.reduce((best, current) =>
-        current.odds > best.odds ? current : best
-      );
-      console.log(`[ODDS ASSIGN] '${playerName}' assigned odds: ${bestAnytime.odds}`);
+      console.log(`[SIMPLE ODDS] ✅ ${playerName} → ${matchingOdds.player_name} = ${matchingOdds.odds}`);
+      
       return {
         ...pred,
-        american_odds: bestAnytime.odds,
-        odds_source: 'theoddsapi_live',
-        odds_sources_allowed: matchedOdds.map(odds => ({
-          book: odds.bookmaker,
-          american_odds: odds.odds,
-          best_price: odds.odds
-        })),
-        books_count: matchedOdds.length,
-        whitelisted_books_only: true,
-        odds_qualified: true,
-        real_odds: {
-          books: matchedOdds.map(odds => ({
-            bookmaker: odds.bookmaker,
-            anytime_odds: odds.odds
-          }))
-        }
+        american_odds: matchingOdds.odds,
+        odds_source: 'live_api',
+        has_live_odds: true
       };
     } else {
-      unmatched.push(playerName);
-      console.log(`[ODDS ASSIGN] '${playerName}' assigned fallback odds: ${pred.american_odds || pred.implied_odds || 200}`);
       return {
         ...pred,
-        odds_source: 'fallback',
-        odds_sources_allowed: [{
-          book: 'MODEL_ESTIMATE',
-          american_odds: pred.american_odds || pred.implied_odds || 200,
-          best_price: pred.american_odds || pred.implied_odds || 200
-        }],
-        books_count: 1,
-        whitelisted_books_only: true,
-        odds_qualified: true
+        odds_source: 'model_estimated', 
+        has_live_odds: false
       };
     }
   });
-  // Enhanced debug output
-  console.log('--- ODDS API PLAYER NAMES (sample) ---', Array.from(apiPlayerNames).slice(0, 10));
-  console.log('--- MODEL PLAYER NAMES (sample) ---', predictions.slice(0, 10).map(p => p.player_name || p.name));
-  console.log(`Matched players: ${matchedCount} / ${predictions.length}`);
-  if (unmatched.length > 0) {
-    console.log('Unmatched model player names (sample):', unmatched.slice(0, 10));
-  }
-  return result;
+  
+  console.log(`[SIMPLE ODDS] Matched ${matchedCount}/${predictions.length} players with live odds`);
+  return enhanced;
 }
 
 // ========== BOOK WHITELIST ENFORCEMENT ==========
