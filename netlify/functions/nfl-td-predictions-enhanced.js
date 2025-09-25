@@ -68,6 +68,11 @@ async function loadTeamAliases() {
 
 // Fetch live player TD markets via The Odds API per-event endpoint
 async function fetchLiveTDOdds() {
+  console.log('[DEBUG] Starting fetchLiveTDOdds');
+  console.log('[DEBUG] Fetching NFL events:', eventsUrl);
+  console.log(`[DEBUG] Got ${events.length} events`);
+  console.log('[DEBUG] Loading team aliases for mapping');
+  let eventCount = 0;
   const apiKey = process.env.THEODDS_API_KEY || process.env.THEODDSAPI_KEY || process.env.ODDS_API_KEY;
   const baseRoot = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl';
   const allowedBooksParam = ['fanduel', 'draftkings', 'caesars', 'betmgm', 'betfanatics', 'espnbet'].join(',');
@@ -100,6 +105,17 @@ async function fetchLiveTDOdds() {
     // 2) Fetch per-event odds for TD scorer markets
     const playerOdds = [];
     for (const ev of events) {
+      eventCount++;
+      console.log(`[DEBUG] Processing event #${eventCount}: ${ev.home_team} vs ${ev.away_team} (id: ${ev.id})`);
+  console.log(`[DEBUG] Event teams mapped: home='${homeTeam}', away='${awayTeam}'`);
+  console.log('[DEBUG] Fetching event odds:', evUrl);
+      if (!evResp.ok) {
+        console.log(`[DEBUG] Failed to fetch odds for event ${ev.id}, status: ${evResp.status}`);
+      }
+  console.log(`[DEBUG] Got ${evData.bookmakers?.length || 0} bookmakers for event ${ev.id}`);
+  console.log(`[DEBUG] Bookmaker: ${bookmaker.key}, markets: ${(bookmaker.markets || []).map(m => m.key).join(', ')}`);
+          console.log(`[DEBUG] Market: ${market.key}, outcomes: ${(market.outcomes || []).length}`);
+            console.log(`[DEBUG] Player odds outcome: player='${playerName}', odds=${outcome.price}`);
       // Map team abbreviations to full names for matching
       let homeTeam = ev.home_team;
       let awayTeam = ev.away_team;
@@ -207,21 +223,20 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
     const matchedOdds = liveOddsData.odds.filter(odds =>
       odds.market_type === 'player_anytime_td' && namesLikelyMatch(odds.player_name, playerName)
     );
-    if (i < 10) {
-      // Log attempted matches for first 10 players
-      const apiNames = liveOddsData.odds.map(o => o.player_name).slice(0, 10);
-      console.log(`[MATCH DEBUG] Model: '${playerName}' | API sample:`, apiNames);
-      if (matchedOdds.length > 0) {
-        console.log(`[MATCH SUCCESS] '${playerName}' matched to '${matchedOdds[0].player_name}'`);
-      } else {
-        console.log(`[MATCH FAIL] '${playerName}' did not match any API player`);
-      }
+    // Log every match attempt
+    const apiNames = liveOddsData.odds.map(o => o.player_name);
+    console.log(`[MATCH DEBUG] Model: '${playerName}' | API sample:`, apiNames.slice(0, 10));
+    if (matchedOdds.length > 0) {
+      console.log(`[MATCH SUCCESS] '${playerName}' matched to '${matchedOdds[0].player_name}'`);
+    } else {
+      console.log(`[MATCH FAIL] '${playerName}' did not match any API player`);
     }
     if (matchedOdds.length > 0) {
       matchedCount++;
       const bestAnytime = matchedOdds.reduce((best, current) =>
         current.odds > best.odds ? current : best
       );
+      console.log(`[ODDS ASSIGN] '${playerName}' assigned odds: ${bestAnytime.odds}`);
       return {
         ...pred,
         american_odds: bestAnytime.odds,
@@ -237,6 +252,7 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
       };
     } else {
       unmatched.push(playerName);
+      console.log(`[ODDS ASSIGN] '${playerName}' assigned fallback odds: ${pred.american_odds || pred.implied_odds || 200}`);
       return {
         ...pred,
         odds_source: 'fallback',
