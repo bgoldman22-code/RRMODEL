@@ -171,7 +171,7 @@ async function processComprehensiveData(allData) {
     // Try to match odds by player name (case-insensitive, fallback to no odds)
     const oddsEntry = oddsByPlayer[player.name] || oddsByPlayer[player.name.toUpperCase()] || oddsByPlayer[player.name.toLowerCase()] || null;
     const odds = {};
-  for (const market of ['player_anytime_td', 'player_first_td', 'player_tds_over']) {
+  for (const market of ['player_anytime_td', 'player_1st_td', 'player_tds_over']) {
       if (oddsEntry && oddsEntry[market]) {
         // Find best price and all books
         let best = null;

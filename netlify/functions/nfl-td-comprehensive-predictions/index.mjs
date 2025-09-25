@@ -325,7 +325,7 @@ async function generateTDPredictions(games, season = '2025') {
         position: player.position,
         team: player.team,
         anytime_td: marketBlock(anytimeProb, oddsEntry?.player_anytime_td),
-  first_td: marketBlock(firstProb, oddsEntry?.player_first_td),
+  first_td: marketBlock(firstProb, oddsEntry?.player_1st_td),
         multiple_td: marketBlock(multipleProb, oddsEntry?.player_tds_over),
         key_factors: {
           red_zone_targets: player.redZoneMetrics?.targets,

@@ -1007,7 +1007,7 @@ const NFLTouchdownPropsComprehensive = () => {
                       <td className="px-4 py-3">
                         <div className="text-sm space-y-1">
                           {(() => {
-                            const hasApprovedBooks = player.odds_qualified && player.books_count >= 2;
+                            const hasApprovedBooks = player.odds_qualified && player.books_count >= 1;
                             if (hasApprovedBooks && player.real_odds?.books?.[0]) {
                               return (
                                 <>
