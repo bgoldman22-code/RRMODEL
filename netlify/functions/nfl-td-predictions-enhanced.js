@@ -1294,7 +1294,12 @@ async function generateResponseByType(data, queryParams) {
       };
       
     case 'top-anytime':
+      console.log(`[TOP-ANYTIME DEBUG] Enhanced predictions length: ${enhancedPredictions.length}`);
+      console.log(`[TOP-ANYTIME DEBUG] Sample enhanced prediction:`, enhancedPredictions[0]);
+      
       const allFiltered = filterPredictions(enhancedPredictions, queryParams, data.full.games);
+      console.log(`[TOP-ANYTIME DEBUG] After filterPredictions: ${allFiltered.length}`);
+      
       const topAnytime = allFiltered
         .sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)
         .slice(0, top_n);
