@@ -870,6 +870,203 @@ function groupPlayersByTeam(predictions) {
 }
 
 /**
+ * TRUE ELITE PRO: Calculate team TD lambda from game total/spread (ANCHOR ENGINE)
+ */
+function calculateTeamTDLambda(game, team) {
+  if (!game) {
+    console.warn(`⚠️ No game data for ${team}, using default λ=3.2`);
+    return 3.2; // Conservative default
+  }
+  
+  const { total, spread, home_team, away_team } = game;
+  const isHome = team === home_team;
+  
+  // Team implied points from total/spread
+  const impliedPoints = isHome ? 
+    (total + spread) / 2 : 
+    (total - spread) / 2;
+  
+  // Convert points to TD expectation (base: 1 TD per 7 points)  
+  const baseLambda = impliedPoints / 7.0;
+  
+  // Elite adjustment: High-scoring games have higher TD variance
+  const scoringEnvironment = total > 47 ? 1.1 : (total < 42 ? 0.9 : 1.0);
+  
+  // Spread adjustment: Heavy favorites score more TDs
+  const favoriteBonus = isHome ? 
+    Math.max(0, spread * 0.05) : 
+    Math.max(0, -spread * 0.05);
+  
+  const teamLambda = (baseLambda + favoriteBonus) * scoringEnvironment;
+  
+  console.log(`🏈 ${team}: ${impliedPoints.toFixed(1)} pts → λ=${teamLambda.toFixed(2)} (total=${total}, spread=${spread})`);
+  
+  return Math.max(2.0, Math.min(5.5, teamLambda)); // Realistic bounds
+}
+
+/**
+ * TRUE ELITE PRO: Allocate lambda shares based on role (GPT's Block B+C priority)
+ */
+function calculateTrueLambdaShares(players, teamLambda) {
+  const shares = players.map(player => {
+    const pos = player.position;
+    const depth = player.depth_chart_position || 1;
+    
+    // ELITE PRIORITY: Inside-5 & G2G > Snap% (GPT feedback)
+    const inside5Share = player.inside_5_share || (depth === 1 && pos === 'RB' ? 0.4 : 
+                        depth === 1 && pos === 'WR' ? 0.15 : 
+                        depth === 2 && pos === 'RB' ? 0.25 : 0.05);
+    
+    const goalLineShare = player.goal_line_share || inside5Share * 0.8;
+    const snapShare = Math.min(0.75, player.snap_percentage || (depth === 1 ? 0.7 : 0.3)); // Cap snap value
+    
+    // Rush lane allocation (RBs primary, some WRs/TEs)
+    let rushLambdaShare = 0;
+    if (pos === 'RB') {
+      rushLambdaShare = (inside5Share * 0.45 + goalLineShare * 0.35 + snapShare * 0.20) * 0.7; // 70% of RB value from rush
+    } else if (pos === 'WR' && depth <= 2) {
+      rushLambdaShare = inside5Share * 0.1; // Jet sweeps, designed runs
+    }
+    
+    // Receiving lane allocation
+    let receiveLambdaShare = 0;
+    if (pos === 'WR') {
+      const redZoneTargets = player.red_zone_targets || (depth === 1 ? 0.25 : 0.15);
+      const explosiveShare = player.explosive_play_rate || (depth === 1 ? 0.12 : 0.06);
+      receiveLambdaShare = (redZoneTargets * 0.4 + explosiveShare * 0.3 + snapShare * 0.3) * 0.85;
+    } else if (pos === 'RB') {
+      receiveLambdaShare = (inside5Share * 0.2 + snapShare * 0.8) * 0.3; // 30% of RB value from receiving  
+    } else if (pos === 'TE') {
+      const redZoneTargets = player.red_zone_targets || 0.18;
+      receiveLambdaShare = (redZoneTargets * 0.6 + snapShare * 0.4) * 0.7;
+    }
+    
+    // Alpha player multiplier (elite names get boost)
+    const alphaMultiplier = getAlphaPlayerMultiplier(player);
+    
+    return {
+      ...player,
+      lambda_rush: rushLambdaShare * alphaMultiplier,
+      lambda_receive: receiveLambdaShare * alphaMultiplier,
+      lambda_total: (rushLambdaShare + receiveLambdaShare) * alphaMultiplier,
+      alpha_multiplier: alphaMultiplier,
+      inside_5_share: inside5Share,
+      goal_line_share: goalLineShare
+    };
+  });
+  
+  // Apply committee softmax for position groups (GPT's temperature suggestion)
+  return applyCommitteeTemperature(shares, teamLambda);
+}
+
+/**
+ * Apply committee temperature to prevent mid-tier inflation
+ */
+function applyCommitteeTemperature(shares, teamLambda) {
+  // Group by position 
+  const rbShares = shares.filter(p => p.position === 'RB');
+  const wrShares = shares.filter(p => p.position === 'WR');
+  const others = shares.filter(p => !['RB', 'WR'].includes(p.position));
+  
+  // Apply softmax temperature (τ = 0.9 for RBs per GPT)
+  const processedRBs = applySoftmaxTemperature(rbShares, 0.9, 'rush');
+  const processedWRs = applySoftmaxTemperature(wrShares, 1.0, 'receive');
+  
+  return [...processedRBs, ...processedWRs, ...others];
+}
+
+function applySoftmaxTemperature(positionShares, temperature, primaryPath) {
+  if (positionShares.length <= 1) return positionShares;
+  
+  const lambdas = positionShares.map(p => p.lambda_total);
+  const maxLambda = Math.max(...lambdas);
+  const expLambdas = lambdas.map(l => Math.exp((l - maxLambda) / temperature));
+  const sumExp = expLambdas.reduce((sum, exp) => sum + exp, 0);
+  
+  return positionShares.map((player, idx) => {
+    const softmaxWeight = expLambdas[idx] / sumExp;
+    const adjustment = Math.min(1.0, softmaxWeight * positionShares.length * 0.85);
+    
+    return {
+      ...player,
+      lambda_rush: player.lambda_rush * adjustment,
+      lambda_receive: player.lambda_receive * adjustment,
+      lambda_total: player.lambda_total * adjustment,
+      committee_adjustment: adjustment
+    };
+  });
+}
+
+/**
+ * Convert lambda to probabilities using Poisson (Elite Pro Method)
+ */
+function convertLambdaToProbabilities(playerShare) {
+  const { lambda_rush, lambda_receive } = playerShare;
+  const totalLambda = lambda_rush + lambda_receive;
+  
+  // Poisson conversion: P(X ≥ 1) = 1 - P(X = 0) = 1 - e^(-λ)
+  const anytimeTDProb = Math.max(0.01, Math.min(0.85, 1 - Math.exp(-totalLambda)));
+  
+  // Multiple TD: P(X ≥ 2) = 1 - P(X=0) - P(X=1) = 1 - e^(-λ) - λe^(-λ)
+  const expNegLambda = Math.exp(-totalLambda);
+  const multipleTDProb = Math.max(0.001, Math.min(0.65, 1 - expNegLambda - totalLambda * expNegLambda));
+  
+  // First TD approximation (would need team context for precision)
+  const firstTDProb = Math.max(0.001, Math.min(0.75, totalLambda * 0.85));
+  
+  return {
+    ...playerShare,
+    anytime_td_prob: anytimeTDProb,
+    multiple_td_prob: multipleTDProb,
+    first_td_prob: firstTDProb,
+    poisson_lambda: totalLambda
+  };
+}
+
+/**
+ * Enforce budget constraint (Elite Pro Discipline)
+ */
+function enforceBudgetConstraint(players, teamLambda) {
+  // Sum current lambda allocation
+  const totalAllocated = players.reduce((sum, p) => sum + p.poisson_lambda, 0);
+  
+  // Budget ratio with 10% slack (GPT's ±5-10% tolerance)
+  const budgetRatio = Math.min(1.0, (teamLambda * 1.1) / Math.max(0.1, totalAllocated));
+  
+  console.log(`💰 Budget: Allocated λ=${totalAllocated.toFixed(2)}, Target λ=${teamLambda.toFixed(2)}, Ratio=${budgetRatio.toFixed(3)}`);
+  
+  // Apply budget constraint to all probabilities
+  return players.map(player => ({
+    ...player,
+    anytime_td_prob: Math.max(0.01, Math.min(0.85, player.anytime_td_prob * budgetRatio)),
+    multiple_td_prob: Math.max(0.001, Math.min(0.65, player.multiple_td_prob * budgetRatio)),
+    first_td_prob: Math.max(0.001, Math.min(0.75, player.first_td_prob * budgetRatio)),
+    budget_ratio: budgetRatio,
+    final_lambda: player.poisson_lambda * budgetRatio
+  }));
+}
+
+/**
+ * Fetch game totals and spreads (placeholder - would connect to odds API)
+ */
+async function fetchGameTotalsAndSpreads(games) {
+  // In production, this would fetch from DraftKings/FanDuel API
+  // For now, return reasonable defaults based on game data
+  if (!games || games.length === 0) {
+    console.warn('⚠️ No game data available for totals/spreads');
+    return [];
+  }
+  
+  return games.map(game => ({
+    ...game,
+    total: game.total || 46.5,  // Default total
+    spread: game.spread || 0,   // Default pick'em  
+    home_team: game.home_team,
+    away_team: game.away_team
+  }));
+}
+
+/**
  * Better team TD mapping from total/spread using scoring model
  * Replaces naive points/7 approach
  */
@@ -1668,31 +1865,43 @@ function filterPredictions(predictions, queryParams, games = []) {
 async function generateResponseByType(data, queryParams) {
   const { type, top_n } = queryParams;
   
-  // ELITE MODEL ENHANCEMENT: Replace compressed predictions with hierarchical calculations
-  console.log('🧠 Applying Elite Pro Model Framework...');
+  // TRUE ELITE PRO MODEL: Team Anchor → Player Shares → Poisson Probabilities  
+  console.log('🚀 Applying TRUE Elite Pro Model (Team-Anchor-First Engine)...');
   
-  // Group by team for elite model processing  
+  // Get game data with totals/spreads for team anchor calculation
+  const gameData = await fetchGameTotalsAndSpreads(data.full.games);
+  
+  // Group by team for team-anchor processing
   const teamGroups = groupPlayersByTeam(data.full.predictions);
-  let eliteEnhancedPredictions = [];
+  let eliteProPredictions = [];
   
   for (const [team, players] of Object.entries(teamGroups)) {
-    console.log(`⚡ Processing ${players.length} players for ${team} with Elite Model`);
+    console.log(`⚡ Processing ${players.length} players for ${team} with Elite Pro Engine`);
     
-    // Extract game context for this team
-    const gameContext = extractGameContext(team, players);
+    // STEP 1: Calculate team TD lambda from game total/spread (ANCHOR FIRST)
+    const game = gameData.find(g => g.home_team === team || g.away_team === team);
+    const teamLambda = calculateTeamTDLambda(game, team);
     
-    // Apply elite model framework
-    const elitePlayers = generateEliteTDProbabilities(players, gameContext);
-    eliteEnhancedPredictions.push(...elitePlayers);
+    // STEP 2: Allocate lambda shares based on role (not compressed predictions)
+    const playerShares = calculateTrueLambdaShares(players, teamLambda);
     
-    console.log(`✨ Elite Model generated probabilities for ${team}: 
-      Avg Anytime: ${(elitePlayers.reduce((sum, p) => sum + p.anytime_td_prob, 0) / elitePlayers.length * 100).toFixed(1)}%
-      Top Player: ${elitePlayers[0]?.name} (${(elitePlayers[0]?.anytime_td_prob * 100).toFixed(1)}%)`);
+    // STEP 3: Convert lambda to probabilities with Poisson
+    const poissonProbabilities = playerShares.map(share => convertLambdaToProbabilities(share));
+    
+    // STEP 4: Apply budget constraint (enforce team total discipline)
+    const budgetEnforced = enforceBudgetConstraint(poissonProbabilities, teamLambda);
+    
+    eliteProPredictions.push(...budgetEnforced);
+    
+    const avgProb = budgetEnforced.reduce((sum, p) => sum + p.anytime_td_prob, 0) / budgetEnforced.length;
+    const topPlayer = budgetEnforced.sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)[0];
+    
+    console.log(`🎯 Elite Pro ${team}: Team λ=${teamLambda.toFixed(2)}, Avg=${(avgProb*100).toFixed(1)}%, Top=${topPlayer.name} ${(topPlayer.anytime_td_prob*100).toFixed(1)}%`);
   }
   
-  // Replace original predictions with elite model output
-  data.full.predictions = eliteEnhancedPredictions;
-  console.log(`🎯 Elite Model processed ${eliteEnhancedPredictions.length} predictions`);
+  // Replace with true elite model output
+  data.full.predictions = eliteProPredictions;
+  console.log(`⭐ Elite Pro Model generated ${eliteProPredictions.length} predictions with team-anchor discipline`);
 
   // Fetch live odds for all predictions (anytime only)
   const liveOddsData = await fetchLiveTDOdds();
