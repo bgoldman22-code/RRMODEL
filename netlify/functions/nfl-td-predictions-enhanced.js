@@ -205,25 +205,23 @@ function enhancedFilterAllowedBooks(oddsSources = []) {
 function oddsGate(predictions) {
   return predictions.map(pred => {
     const allowed = pred.odds_sources_allowed || [];
-    const booksCount = allowed.length;
-    const hasOdds = booksCount > 0;
-    const americanOdds = hasOdds ? Math.max(...allowed.map(s => s.american_odds ?? s.best_price ?? -Infinity)) : null;
+    const booksCount = pred.books_count || allowed.length || 0;
+    const hasOdds = !!(pred.american_odds || pred.best_price);
     
-    const oddsQualified = booksCount >= 1 && hasOdds; // require ≥1 approved book (FD/DK sufficient)
+    // FIXED: Always qualify predictions for display, even without live odds
+    const oddsQualified = true; // Allow all predictions through
     
     return {
       ...pred,
-      american_odds: americanOdds,
-      books_count: booksCount,
       odds_qualified: oddsQualified,
-      odds_quality: !hasOdds ? 'none' : (booksCount >= 3 ? 'excellent' : booksCount >= 2 ? 'good' : 'single'),
-      single_book_warning: false, // Don't warn for single book - FD/DK are reliable
-      placeholder_odds_detected: false, // based on allowed books only
+      odds_quality: !hasOdds ? 'model_only' : (booksCount >= 3 ? 'excellent' : booksCount >= 2 ? 'good' : 'single'),
+      single_book_warning: booksCount === 1 && hasOdds,
+      placeholder_odds_detected: false,
       
-      // Zero out value if not qualified
-      anytime_value_score: oddsQualified ? (pred.anytime_value_score || 0) : 0,
-      multiple_value_score: oddsQualified ? (pred.multiple_value_score || 0) : 0,
-      first_value_score: oddsQualified ? (pred.first_value_score || 0) : 0
+      // Keep all value scores
+      anytime_value_score: pred.anytime_value_score || 0,
+      multiple_value_score: pred.multiple_value_score || 0,
+      first_value_score: pred.first_value_score || 0
     };
   });
 }
@@ -285,7 +283,10 @@ async function loadPipelineData(week = null, season = 2025, forceRefresh = false
     }
     
     cachedData[cacheKey] = {
-      full: fullData,
+      full: {
+        ...fullData,
+        games: fullData.games || [] // Add empty games array if missing
+      },
       lite: liteData,
       lastUpdate: now
     };
@@ -1055,35 +1056,33 @@ function validateOddsRealism(predictions) {
  * Normalize field names for consistent processing + BOOK WHITELIST ENFORCEMENT
  */
 function normalizeRow(prediction) {
-  // Filter odds sources to only allowed books
+  // SIMPLIFIED: Handle R pipeline data (no odds_sources) and live odds data
   const rawOddsSources = Array.isArray(prediction.odds_sources) ? prediction.odds_sources : [];
-  const allowedOddsSources = enhancedFilterAllowedBooks(rawOddsSources);
   
-  // Only use odds from whitelisted books
   let americanOdds = null;
   let bestPrice = null;
   let booksCount = 0;
+  let allowedOddsSources = [];
   
-  if (allowedOddsSources.length > 0) {
-    // Get best price from allowed books only
-    const validPrices = allowedOddsSources
-      .map(source => source.american_odds || source.price || source.best_price)
-      .filter(price => price != null && !isNaN(price));
+  if (rawOddsSources.length > 0) {
+    // Has live odds data - filter to allowed books
+    allowedOddsSources = enhancedFilterAllowedBooks(rawOddsSources);
     
-    if (validPrices.length > 0) {
-      americanOdds = Math.max(...validPrices); // Best (highest) odds
-      bestPrice = americanOdds;
-      booksCount = allowedOddsSources.length;
+    if (allowedOddsSources.length > 0) {
+      const validPrices = allowedOddsSources
+        .map(source => source.american_odds || source.price || source.best_price)
+        .filter(price => price != null && !isNaN(price));
+      
+      if (validPrices.length > 0) {
+        americanOdds = Math.max(...validPrices);
+        bestPrice = americanOdds;
+        booksCount = allowedOddsSources.length;
+      }
     }
   } else {
-    // Fallback to direct fields, but only if no odds_sources (legacy data)
-    if (!rawOddsSources.length) {
-      americanOdds = prediction.american_odds ?? 
-                    prediction.best_price ?? 
-                    prediction.anytime_best_odds ?? 
-                    prediction.odds ?? null;
-      booksCount = prediction.books_count ?? prediction.num_books ?? (americanOdds ? 1 : 0);
-    }
+    // R pipeline data - no live odds yet
+    americanOdds = prediction.american_odds ?? prediction.best_price ?? null;
+    booksCount = prediction.books_count ?? (americanOdds ? 1 : 0);
   }
   
   return {
@@ -1091,8 +1090,8 @@ function normalizeRow(prediction) {
     american_odds: americanOdds,
     best_price: bestPrice,
     books_count: booksCount,
-    allowed_odds_sources: allowedOddsSources,
-    whitelisted_books_only: true,
+    odds_sources_allowed: allowedOddsSources, // Fix the field name that oddsGate expects
+    whitelisted_books_only: rawOddsSources.length === 0 || allowedOddsSources.length > 0,
     rejected_sources: rawOddsSources.length - allowedOddsSources.length
   };
 }
@@ -1542,7 +1541,7 @@ async function generateResponseByType(data, queryParams) {
 }
 
 /**
- * Main Netlify function handler
+are you lookin * Main Netlify function handler
  */
 exports.handler = async (event, context) => {
   // CORS headers
