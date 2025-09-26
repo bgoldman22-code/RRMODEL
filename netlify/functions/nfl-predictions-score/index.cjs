@@ -107,6 +107,19 @@ function consensusFromBookmakers(bookmakers, homeTeam, awayTeam) {
 
 exports.handler = async (event) => {
   try {
+    // DISABLE OLD MODEL: Check if advanced R Pipeline model should be used instead
+    if (process.env.USE_ADVANCED_NFL_MODEL === 'true' || process.env.USE_ADVANCED_NFL_MODEL === '1') {
+      return { 
+        statusCode: 200, 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ 
+          ok: false, 
+          message: "Legacy model disabled - using advanced R Pipeline model instead",
+          redirect: "Use nfl-predictions-generate for live predictions"
+        }) 
+      };
+    }
+
     const scheduleURL = process.env.NFL_SCHEDULE_URL || 'https://bgroundrobin.com/.netlify/functions/nfl-schedule-get';
     const oddsURL = process.env.NFL_ODDS_BRIDGE_URL || 'https://bgroundrobin.com/.netlify/functions/odds-get';
 
