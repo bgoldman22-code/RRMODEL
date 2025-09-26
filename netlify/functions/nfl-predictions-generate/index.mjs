@@ -1778,12 +1778,17 @@ async function generateAdvancedPredictions(games, season) {
       }
       displayedSpread = Math.abs(modelHomeMargin);
     } else {
+      // FIXED: Correct spread pick logic
+      // If model predicts smaller margin than market, take the underdog
+      // If model predicts larger margin than market, take the favorite
       if (Math.abs(marginDifference) < spreadThreshold) {
         spreadPick = 'push';
       } else if (marginDifference > spreadThreshold) {
-        spreadPick = homeCode;
+        // Model thinks favorite will cover by more than market
+        spreadPick = marketFavorite === 'home' ? homeCode : awayCode;
       } else {
-        spreadPick = awayCode;
+        // Model thinks favorite won't cover, take underdog
+        spreadPick = marketFavorite === 'home' ? awayCode : homeCode;
       }
       displayedSpread = Math.abs(marketSpread);
     }
