@@ -142,6 +142,32 @@ function devig(prob1, prob2, method = 'multiplicative') {
   return { prob1, prob2 };
 }
 
+// KELLY CRITERION UNIT SIZING
+// Bankroll = $5,000, Unit size = $20, Bankroll = 250U
+// Quarter Kelly with 5U cap for proper bankroll management
+function kellyUnits(modelProb, decimalOdds, bankroll = 5000, unitSize = 20, kellyFraction = 0.25, maxUnits = 5) {
+  if (!modelProb || !decimalOdds || modelProb <= 0 || decimalOdds <= 1) return 0;
+  
+  const b = decimalOdds - 1; // Net odds multiplier
+  const q = 1 / decimalOdds;  // Implied probability
+  const p = modelProb;       // Model probability
+
+  // Full Kelly fraction: (bp - q) / b  
+  const f = (b * p - q) / b;
+
+  // If Kelly says negative (no value bet), return 0U
+  if (f <= 0) return 0;
+
+  // Apply quarter Kelly for conservative sizing
+  const stakeDollars = bankroll * (f * kellyFraction);
+
+  // Convert to units  
+  const units = stakeDollars / unitSize;
+
+  // Cap bet size at 5U for bankroll protection
+  return Math.min(units, maxUnits);
+}
+
 function calculateDevigged2WayEdge(modelProb, price1, price2) {
   // Convert American odds to probabilities
   const decimal1 = americanToDecimal(price1);
@@ -674,12 +700,18 @@ export default function NFLPredictions() {
                 const odds = r.odds || {};
                 
                 // ELITE PRO: Calculate TRUE devigged edges (replace vigged backend calculations)
-                let enhancedML = ml;
+                let enhancedML = ml || {};
                 if (ml && odds.moneyline?.home_price && odds.moneyline?.away_price) {
                   const homeWinProb = ml.pick === r.home_team ? (ml.confidence / 100) : (1 - ml.confidence / 100);
                   const derigInfo = calculateDeriggedMLEdge(homeWinProb, odds.moneyline.home_price, odds.moneyline.away_price);
                   
                   if (derigInfo) {
+                    // Calculate Kelly unit sizing for ML bet
+                    const mlOdds = ml.pick === r.home_team ? odds.moneyline.home_price : odds.moneyline.away_price;
+                    const mlDecimalOdds = americanToDecimal(mlOdds);
+                    const modelProbML = ml.confidence / 100;
+                    const kellyUnitsML = kellyUnits(modelProbML, mlDecimalOdds);
+                    
                     enhancedML = {
                       ...ml,
                       // CRITICAL FIX: Replace vigged edge with true devigged edge
@@ -689,13 +721,16 @@ export default function NFLPredictions() {
                       edgeImprovement: (derigInfo.improvedBy * 100).toFixed(1),
                       isEliteCalc: true,
                       // Update bet decision based on TRUE devigged edge
-                      bet: Math.abs(derigInfo.deriggedEdge) > 0.05 // 5% true edge threshold
+                      bet: Math.abs(derigInfo.deriggedEdge) > 0.05, // 5% true edge threshold
+                      // KELLY UNIT SIZING
+                      kellyUnits: kellyUnitsML,
+                      betRecommendation: kellyUnitsML > 0 ? `BET ${kellyUnitsML.toFixed(1)}U` : "NO BET"
                     };
                   }
                 }
                 
                 // ELITE PRO: Calculate devigged spread edges when we have both sides
-                let enhancedSpread = spread;
+                let enhancedSpread = spread || {};
                 if (spread && odds.spread?.home_price && odds.spread?.away_price) {
                   try {
                     // Convert spread odds to probabilities and devig
@@ -711,17 +746,71 @@ export default function NFLPredictions() {
                     const deriggedSpreadEdge = modelSpreadProb - homeSpreadFair;
                     
                     if (Math.abs(deriggedSpreadEdge) > 0.02) { // 2% edge threshold for spreads
+                      // Calculate Kelly unit sizing for spread bet
+                      const spreadOdds = spread.pick === r.home_team ? odds.spread.home_price : odds.spread.away_price;
+                      const spreadDecimalOdds = americanToDecimal(spreadOdds);
+                      const modelProbSpread = spread.confidence / 100;
+                      const kellyUnitsSpread = kellyUnits(modelProbSpread, spreadDecimalOdds);
+                      
                       enhancedSpread = {
                         ...spread,
                         edge: parseFloat((deriggedSpreadEdge * 100).toFixed(1)), // Replace with devigged
                         rawSpreadEdge: spread.edge,
                         isDevigged: true,
-                        bet: Math.abs(deriggedSpreadEdge) > 0.05 // 5% devigged edge for bet
+                        bet: Math.abs(deriggedSpreadEdge) > 0.05, // 5% devigged edge for bet
+                        // KELLY UNIT SIZING
+                        kellyUnits: kellyUnitsSpread,
+                        betRecommendation: kellyUnitsSpread > 0 ? `BET ${kellyUnitsSpread.toFixed(1)}U` : "NO BET"
                       };
                     }
                   } catch (e) {
                     // Keep original spread if devig fails
                   }
+                }
+                
+                // FALLBACK KELLY SIZING: Add unit sizing for non-enhanced bets
+                if (ml && (!enhancedML || !enhancedML.kellyUnits)) {
+                  // Use backend odds or default odds for Kelly calculation
+                  const fallbackMLOdds = ml.odds || (ml.edge > 0 ? -110 : +100); // Default odds if none available
+                  const mlDecimalOdds = americanToDecimal(fallbackMLOdds);
+                  const modelProbML = ml.confidence / 100;
+                  const kellyUnitsML = kellyUnits(modelProbML, mlDecimalOdds);
+                  
+                  enhancedML = {
+                    ...enhancedML,
+                    kellyUnits: kellyUnitsML,
+                    betRecommendation: kellyUnitsML > 0 ? `BET ${kellyUnitsML.toFixed(1)}U` : "NO BET"
+                  };
+                }
+                
+                if (spread && (!enhancedSpread || !enhancedSpread.kellyUnits)) {
+                  // Use backend spread odds or default -110
+                  const fallbackSpreadOdds = spread.odds || -110;
+                  const spreadDecimalOdds = americanToDecimal(fallbackSpreadOdds);
+                  const modelProbSpread = spread.confidence / 100;
+                  const kellyUnitsSpread = kellyUnits(modelProbSpread, spreadDecimalOdds);
+                  
+                  enhancedSpread = {
+                    ...enhancedSpread,
+                    kellyUnits: kellyUnitsSpread,
+                    betRecommendation: kellyUnitsSpread > 0 ? `BET ${kellyUnitsSpread.toFixed(1)}U` : "NO BET"
+                  };
+                }
+                
+                // TOTALS KELLY SIZING
+                let enhancedTotal = total || {};
+                if (total && total.confidence > 0) {
+                  // Use total odds or default -110
+                  const totalOdds = odds.display?.total?.over?.price || odds.display?.total?.under?.price || total.odds || -110;
+                  const totalDecimalOdds = americanToDecimal(totalOdds);
+                  const modelProbTotal = total.confidence / 100;
+                  const kellyUnitsTotal = kellyUnits(modelProbTotal, totalDecimalOdds);
+                  
+                  enhancedTotal = {
+                    ...total,
+                    kellyUnits: kellyUnitsTotal,
+                    betRecommendation: kellyUnitsTotal > 0 ? `BET ${kellyUnitsTotal.toFixed(1)}U` : "NO BET"
+                  };
                 }
                 
                 // Calculate best TRUE edge (all devigged when possible)
@@ -851,6 +940,7 @@ export default function NFLPredictions() {
                             betRecommendation={enhancedML.betRecommendation || enhancedML.displayNote || "BET"}
                             edge={enhancedML.edge} // Now always the corrected edge (devigged when possible)
                             type="ml"
+                            unitInfo={enhancedML?.kellyUnits > 0 ? { units: enhancedML.kellyUnits.toFixed(1) } : null}
                             bestBook={enhancedML.best_book}
                             lockedPick={r.locked_picks?.moneyline}
                           />
@@ -881,6 +971,7 @@ export default function NFLPredictions() {
                         betRecommendation={enhancedSpread?.betRecommendation || spread?.betRecommendation || spread?.displayNote || (spread?.pick ? "BET" : "NO BET")}
                         edge={spreadDisplay.edgePts + " pts"}
                         type="spread"
+                        unitInfo={enhancedSpread?.kellyUnits > 0 ? { units: enhancedSpread.kellyUnits.toFixed(1) } : null}
                         modelValue={spreadDisplay.modelText}   // ✅ always shown: pick POV or neutral POV
                         marketValue={spreadDisplay.bookText}   // ✅ always shown: pick POV or neutral POV
                         pickedTeam={spread?.pick}
@@ -900,23 +991,24 @@ export default function NFLPredictions() {
                     </td>
                     
                     <td className="px-4 py-3">
-                      {total ? (
+                      {enhancedTotal ? (
                         <>
                           <PickBadge 
-                            pick={total.pick === 'over' ? 'Over' : total.pick === 'under' ? 'Under' : 'Push'}
-                            confidence={total.confidence}
-                            betRecommendation={total.betRecommendation || total.displayNote || "BET"}
-                            edge={total.edge}
+                            pick={enhancedTotal.pick === 'over' ? 'Over' : enhancedTotal.pick === 'under' ? 'Under' : 'Push'}
+                            confidence={enhancedTotal.confidence}
+                            betRecommendation={enhancedTotal.betRecommendation || enhancedTotal.displayNote || "BET"}
+                            edge={enhancedTotal.edge}
                             type="total"
-                            modelValue={total.predicted ? `${total.predicted}` : null}
+                            unitInfo={enhancedTotal?.kellyUnits > 0 ? { units: enhancedTotal.kellyUnits.toFixed(1) } : null}
+                            modelValue={enhancedTotal.predicted ? `${enhancedTotal.predicted}` : null}
                             marketValue={(() => {
                               // Use display book total if available
                               if (odds.display?.total?.over?.line) {
                                 return `${odds.display.total.over.line}`;
                               }
-                              return total.line ? `${total.line}` : null;
+                              return enhancedTotal.line ? `${enhancedTotal.line}` : null;
                             })()}
-                            bestBook={total.best_book}
+                            bestBook={enhancedTotal.best_book}
                             lockedPick={r.locked_picks?.total}
                           />
                           {/* Show display book for transparency */}
