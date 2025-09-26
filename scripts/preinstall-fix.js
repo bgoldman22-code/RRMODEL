@@ -1,6 +1,6 @@
 // scripts/preinstall-fix.js
 // Permanently enforce debug@4.3.4 and sanitize any bad refs before npm install.
-const fs = require('fs');
+import fs from 'fs';
 const pkgPath = 'package.json';
 if (!fs.existsSync(pkgPath)) {
   console.log('[preinstall-fix] No package.json found; skipping.');
