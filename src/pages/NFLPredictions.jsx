@@ -688,8 +688,8 @@ export default function NFLPredictions() {
         )}
         <span className={`text-xs px-2 py-1 rounded font-medium ${
           betRecommendation?.text?.includes('BET') ? 
-            (betRecommendation.color?.includes('green') ? 'bg-green-100 text-green-800' :
-             betRecommendation.color?.includes('yellow') ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800')
+            (betRecommendation.color?.includes('text-green') ? 'bg-green-100 text-green-800' :
+             betRecommendation.color?.includes('text-yellow') ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800')
             : 'bg-red-100 text-red-800'
         }`}>
           {betRecommendation?.text || betRecommendation || 'NO BET'}
@@ -712,9 +712,9 @@ export default function NFLPredictions() {
           {typeof edge === 'number' ? `${edge.toFixed(1)}% edge` : edge}
         </div>
       )}
-      {(betRecommendation?.text?.includes('BET') || betRecommendation === 'BET') && unitInfo && (
+      {(betRecommendation?.text?.includes('BET') || betRecommendation === 'BET') && unitInfo && unitInfo.tier && (
         <div className="text-xs text-orange-600 font-medium">
-          {unitInfo.tier}: {unitInfo.reasoning}
+          {unitInfo.tier}: {unitInfo.reasoning || 'Bet sizing'}
         </div>
       )}
       {/* ALWAYS show market and model lines, even for NO BET */}
@@ -1008,7 +1008,7 @@ export default function NFLPredictions() {
                           <PickBadge 
                             pick={enhancedML.pick}
                             confidence={enhancedML.confidence}
-                            betRecommendation={enhancedML.betRecommendation || enhancedML.displayNote || "BET"}
+                            betRecommendation={enhancedML.betRecommendation || getBetRecommendation(0)}
                             edge={enhancedML.edge} // Now always the corrected edge (devigged when possible)
                             type="ml"
                             unitInfo={Number.isFinite(enhancedML?.kellyUnits) && enhancedML.kellyUnits > 0 ? { units: enhancedML.kellyUnits.toFixed(1) } : null}
@@ -1040,7 +1040,7 @@ export default function NFLPredictions() {
                       <PickBadge 
                         pick={spreadDisplay.pickText}
                         confidence={spreadDisplay.confidence}
-                        betRecommendation={enhancedSpread?.betRecommendation || spread?.betRecommendation || spread?.displayNote || (spread?.pick ? "BET" : "NO BET")}
+                        betRecommendation={enhancedSpread?.betRecommendation || (spread?.betRecommendation ? getBetRecommendation(0) : getBetRecommendation(0))}
                         edge={spreadDisplay.edgePts + " pts"}
                         type="spread"
                         unitInfo={Number.isFinite(enhancedSpread?.kellyUnits) && enhancedSpread.kellyUnits > 0 ? { units: enhancedSpread.kellyUnits.toFixed(1) } : null}
@@ -1068,7 +1068,7 @@ export default function NFLPredictions() {
                           <PickBadge 
                             pick={enhancedTotal.pick === 'over' ? 'Over' : enhancedTotal.pick === 'under' ? 'Under' : 'Push'}
                             confidence={enhancedTotal.confidence}
-                            betRecommendation={enhancedTotal.betRecommendation || enhancedTotal.displayNote || "BET"}
+                            betRecommendation={enhancedTotal.betRecommendation || getBetRecommendation(0)}
                             edge={enhancedTotal.edge}
                             type="total"
                             unitInfo={Number.isFinite(enhancedTotal?.kellyUnits) && enhancedTotal.kellyUnits > 0 ? { units: enhancedTotal.kellyUnits.toFixed(1) } : null}
