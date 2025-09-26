@@ -282,20 +282,25 @@ function oddsGate(predictions) {
     const booksCount = pred.books_count || allowed.length || 0;
     const hasOdds = !!(pred.american_odds || pred.best_price);
     
-    // FIXED: Always qualify predictions for display, even without live odds
-    const oddsQualified = true; // Allow all predictions through
+    // IMPROVED: Require ≥3 books for actionable picks (per GPT feedback)
+    const oddsQualified = hasOdds && booksCount >= 3;
+    const isActionable = oddsQualified && (pred.anytime_value_score || 0) > 0.03; // 3+ point edge
     
     return {
       ...pred,
       odds_qualified: oddsQualified,
+      is_actionable: isActionable,
       odds_quality: !hasOdds ? 'model_only' : (booksCount >= 3 ? 'excellent' : booksCount >= 2 ? 'good' : 'single'),
       single_book_warning: booksCount === 1 && hasOdds,
-      placeholder_odds_detected: false,
+      multi_book_consensus: booksCount >= 3,
       
-      // Keep all value scores
+      // Enhanced value scores for decision making
       anytime_value_score: pred.anytime_value_score || 0,
       multiple_value_score: pred.multiple_value_score || 0,
-      first_value_score: pred.first_value_score || 0
+      first_value_score: pred.first_value_score || 0,
+      
+      // Display warning for low-quality odds
+      display_warning: booksCount < 3 && hasOdds ? `Only ${booksCount} book${booksCount > 1 ? 's' : ''}` : null
     };
   });
 }
@@ -696,7 +701,7 @@ function convertLambdaToProbabilities(playerShare) {
 }
 
 /**
- * Enforce budget constraint (Elite Pro Discipline)
+ * Enforce budget constraint (Elite Pro Discipline) - FIXED: Scale λ not probabilities
  */
 function enforceBudgetConstraint(players, teamLambda) {
   // Sum current lambda allocation
@@ -707,15 +712,25 @@ function enforceBudgetConstraint(players, teamLambda) {
   
   console.log(`💰 Budget: Allocated λ=${totalAllocated.toFixed(2)}, Target λ=${teamLambda.toFixed(2)}, Ratio=${budgetRatio.toFixed(3)}`);
   
-  // Apply budget constraint to all probabilities
-  return players.map(player => ({
-    ...player,
-    anytime_td_prob: Math.max(0.01, Math.min(0.85, player.anytime_td_prob * budgetRatio)),
-    multiple_td_prob: Math.max(0.001, Math.min(0.65, player.multiple_td_prob * budgetRatio)),
-    first_td_prob: Math.max(0.001, Math.min(0.75, player.first_td_prob * budgetRatio)),
-    budget_ratio: budgetRatio,
-    final_lambda: player.poisson_lambda * budgetRatio
-  }));
+  // FIXED: Scale λ first, then recompute probabilities (prevents compression)
+  return players.map(player => {
+    const scaledLambda = player.poisson_lambda * budgetRatio;
+    
+    // Recompute probabilities from scaled lambda (preserves elite ranges)
+    const anytimeTDProb = Math.max(0.01, Math.min(0.85, 1 - Math.exp(-scaledLambda)));
+    const expNegLambda = Math.exp(-scaledLambda);
+    const multipleTDProb = Math.max(0.001, Math.min(0.65, 1 - expNegLambda - scaledLambda * expNegLambda));
+    const firstTDProb = Math.max(0.001, Math.min(0.75, scaledLambda * 0.85)); // Improved approximation
+    
+    return {
+      ...player,
+      final_lambda: scaledLambda,
+      anytime_td_prob: anytimeTDProb,
+      multiple_td_prob: multipleTDProb, 
+      first_td_prob: firstTDProb,
+      budget_ratio: budgetRatio
+    };
+  });
 }
 
 /**
@@ -1568,7 +1583,13 @@ async function generateResponseByType(data, queryParams) {
     const avgProb = budgetEnforced.reduce((sum, p) => sum + p.anytime_td_prob, 0) / budgetEnforced.length;
     const topPlayer = budgetEnforced.sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)[0];
     
-    console.log(`🎯 Elite Pro ${team}: Team λ=${teamLambda.toFixed(2)}, Avg=${(avgProb*100).toFixed(1)}%, Top=${topPlayer.name} ${(topPlayer.anytime_td_prob*100).toFixed(1)}%`);
+    // SMOKE TEST LOGGING: Check lambda values and elite player results  
+    const topRB = budgetEnforced.filter(p => p.position === 'RB').sort((a, b) => b.final_lambda - a.final_lambda)[0];
+    const topWR = budgetEnforced.filter(p => p.position === 'WR').sort((a, b) => b.final_lambda - a.final_lambda)[0];
+    
+    console.log(`🎯 Elite Pro ${team}: Team λ=${teamLambda.toFixed(2)}, Avg=${(avgProb*100).toFixed(1)}%`);
+    if (topRB) console.log(`   🏃 Top RB: ${topRB.name} λ=${topRB.final_lambda.toFixed(2)} → ${(topRB.anytime_td_prob*100).toFixed(1)}%`);
+    if (topWR) console.log(`   🎯 Top WR: ${topWR.name} λ=${topWR.final_lambda.toFixed(2)} → ${(topWR.anytime_td_prob*100).toFixed(1)}%`);
   }
   
   // Replace with true elite model output
