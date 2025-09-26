@@ -574,6 +574,25 @@ export default function NFLPredictions() {
   };
 
   useEffect(() => { load(false); }, [week]);
+  
+  // 🔬 ELITE DEBUGGER: Expose predictions data for console analysis
+  useEffect(() => {
+    if (predictions && predictions.length > 0) {
+      window.predictionsData = predictions;
+      
+      // Load the elite debugger functions
+      if (!window.debugGameModel) {
+        const script = document.createElement('script');
+        script.src = '/debug-model-analysis.js';
+        script.onload = () => {
+          console.log('🔬 Elite Model Debugger loaded! Try: debugGameModel("BUF", "NO")');
+        };
+        document.head.appendChild(script);
+      }
+      
+      console.log(`📊 Predictions data updated: ${predictions.length} games available for analysis`);
+    }
+  }, [predictions]);
 
   return (
     <div className="p-6">
@@ -654,7 +673,7 @@ export default function NFLPredictions() {
                 const total = r.predictions?.total;
                 const odds = r.odds || {};
                 
-                // ELITE PRO: Calculate devigged ML edge if we have odds
+                // ELITE PRO: Calculate TRUE devigged edges (replace vigged backend calculations)
                 let enhancedML = ml;
                 if (ml && odds.moneyline?.home_price && odds.moneyline?.away_price) {
                   const homeWinProb = ml.pick === r.home_team ? (ml.confidence / 100) : (1 - ml.confidence / 100);
@@ -663,20 +682,57 @@ export default function NFLPredictions() {
                   if (derigInfo) {
                     enhancedML = {
                       ...ml,
-                      rawEdge: (derigInfo.rawEdge * 100).toFixed(1), // Convert to %
-                      deriggedEdge: (derigInfo.deriggedEdge * 100).toFixed(1),
+                      // CRITICAL FIX: Replace vigged edge with true devigged edge
+                      edge: parseFloat((derigInfo.deriggedEdge * 100).toFixed(1)), // This is now the TRUE edge
+                      rawEdge: (derigInfo.rawEdge * 100).toFixed(1),
+                      deriggedEdge: (derigInfo.deriggedEdge * 100).toFixed(1), 
                       edgeImprovement: (derigInfo.improvedBy * 100).toFixed(1),
-                      isEliteCalc: true
+                      isEliteCalc: true,
+                      // Update bet decision based on TRUE devigged edge
+                      bet: Math.abs(derigInfo.deriggedEdge) > 0.05 // 5% true edge threshold
                     };
                   }
                 }
                 
-                // Calculate best signal/edge (using devigged when available)
-                const mlEdgeForComparison = enhancedML?.isEliteCalc ? Math.abs(enhancedML.deriggedEdge) : Math.abs(ml?.edge || 0);
+                // ELITE PRO: Calculate devigged spread edges when we have both sides
+                let enhancedSpread = spread;
+                if (spread && odds.spread?.home_price && odds.spread?.away_price) {
+                  try {
+                    // Convert spread odds to probabilities and devig
+                    const homeSpreadDecimal = americanToDecimal(odds.spread.home_price);
+                    const awaySpreadDecimal = americanToDecimal(odds.spread.away_price);
+                    const homeSpreadImplied = decimalToImpliedProb(homeSpreadDecimal);
+                    const awaySpreadImplied = decimalToImpliedProb(awaySpreadDecimal);
+                    
+                    const { prob1: homeSpreadFair } = devig(homeSpreadImplied, awaySpreadImplied);
+                    
+                    // Calculate model's implied spread probability based on its prediction
+                    const modelSpreadProb = spread.pick === r.home_team ? 0.6 : 0.4; // Rough conversion
+                    const deriggedSpreadEdge = modelSpreadProb - homeSpreadFair;
+                    
+                    if (Math.abs(deriggedSpreadEdge) > 0.02) { // 2% edge threshold for spreads
+                      enhancedSpread = {
+                        ...spread,
+                        edge: parseFloat((deriggedSpreadEdge * 100).toFixed(1)), // Replace with devigged
+                        rawSpreadEdge: spread.edge,
+                        isDevigged: true,
+                        bet: Math.abs(deriggedSpreadEdge) > 0.05 // 5% devigged edge for bet
+                      };
+                    }
+                  } catch (e) {
+                    // Keep original spread if devig fails
+                  }
+                }
+                
+                // Calculate best TRUE edge (all devigged when possible)
+                const mlEdgeForComparison = Math.abs(enhancedML?.edge || 0); // Now truly devigged
+                const spreadEdgeForComparison = enhancedSpread?.isDevigged ? 
+                  Math.abs(enhancedSpread.edge) : 
+                  Math.abs(spread?.edge || 0);
+                  
                 const bestEdge = Math.max(
                   mlEdgeForComparison,
-                  // For spread/total, use edge if available, otherwise confidence-based
-                  spread?.edge ? Math.abs(spread.edge) : (spread?.confidence > 60 ? (spread.confidence - 50) : 0),
+                  spreadEdgeForComparison,
                   total?.edge ? Math.abs(total.edge) : (total?.confidence > 60 ? (total.confidence - 50) : 0)
                 );
 
@@ -692,7 +748,7 @@ export default function NFLPredictions() {
                   spreadAbs: spreadAbs > 0 ? spreadAbs : null, // absolute spread value
                   modelHomeMargin: Number(spread?.model_home_margin ?? 0),
                   confidence: spread?.confidence,
-                  edgePct: spread?.edge,
+                  edgePct: enhancedSpread?.edge || spread?.edge, // Use devigged edge when available
                   TEAM_NAME
                 });
 
@@ -793,14 +849,14 @@ export default function NFLPredictions() {
                             pick={enhancedML.pick}
                             confidence={enhancedML.confidence}
                             betRecommendation={enhancedML.betRecommendation || enhancedML.displayNote || "BET"}
-                            edge={enhancedML.isEliteCalc ? enhancedML.deriggedEdge : enhancedML.edge}
+                            edge={enhancedML.edge} // Now always the corrected edge (devigged when possible)
                             type="ml"
                             bestBook={enhancedML.best_book}
                             lockedPick={r.locked_picks?.moneyline}
                           />
                           {enhancedML.isEliteCalc && (
-                            <div className="text-xs text-blue-600 font-medium">
-                              🎯 Elite Derig: {enhancedML.deriggedEdge}% (Raw: {enhancedML.rawEdge}%)
+                            <div className="text-xs text-green-600 font-medium">
+                              ✅ Devigged: {enhancedML.edge}% (Was: {enhancedML.rawEdge}% vigged)
                             </div>
                           )}
                           {/* Show display book prices from structured odds */}
@@ -822,7 +878,7 @@ export default function NFLPredictions() {
                       <PickBadge 
                         pick={spreadDisplay.pickText}
                         confidence={spreadDisplay.confidence}
-                        betRecommendation={spread?.betRecommendation || spread?.displayNote || (spread?.pick ? "BET" : "NO BET")}
+                        betRecommendation={enhancedSpread?.betRecommendation || spread?.betRecommendation || spread?.displayNote || (spread?.pick ? "BET" : "NO BET")}
                         edge={spreadDisplay.edgePts + " pts"}
                         type="spread"
                         modelValue={spreadDisplay.modelText}   // ✅ always shown: pick POV or neutral POV
@@ -831,6 +887,12 @@ export default function NFLPredictions() {
                         bestBook={spread?.best_book}
                         lockedPick={r.locked_picks?.spread}
                       />
+                      {/* Show devig status for spreads */}
+                      {enhancedSpread?.isDevigged && (
+                        <div className="text-xs text-green-600 font-medium mt-1">
+                          ✅ Spread devigged: {enhancedSpread.edge}% (Was: {enhancedSpread.rawSpreadEdge}%)
+                        </div>
+                      )}
                       {/* Show display book for transparency */}
                       {r.odds?.display_book && (
                         <div className="text-gray-400 text-[10px] mt-1">via {r.odds.display_book}</div>
@@ -902,6 +964,22 @@ export default function NFLPredictions() {
           <p><strong>Line:</strong> Displayed from the perspective of the picked team. <strong>Model:</strong> Model's prediction.</p>
           <p><strong>Edge:</strong> Model probability vs market probability difference.</p>
           <p><strong>Live odds ✓:</strong> Real sportsbook data integrated for this game.</p>
+        </div>
+      )}
+
+      {/* Debug Panel for Elite Analysis */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <h3 className="font-bold text-yellow-800 mb-2">🔬 Elite Model Debugger</h3>
+          <p className="text-sm text-yellow-700 mb-2">
+            Open browser console and try: <code className="bg-yellow-100 px-1 rounded">debugGameModel('BUF', 'NO')</code>
+          </p>
+          <button 
+            onClick={() => console.log('📊 Available games:', rows.map(r => `${r.away_team} @ ${r.home_team}`))}
+            className="text-xs bg-yellow-200 hover:bg-yellow-300 px-2 py-1 rounded"
+          >
+            List Games in Console
+          </button>
         </div>
       )}
 
