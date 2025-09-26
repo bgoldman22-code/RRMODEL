@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Learn Status</title>
+  <meta name="robots" content="noindex"/>
+  <style>
+    body { font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; padding: 24px; }
+    pre { background: #f5f5f7; padding: 12px; overflow:auto; border-radius: 8px; }
+    table { border-collapse: collapse; margin-top: 16px; }
+    td, th { border: 1px solid #ddd; padding: 6px 10px; }
+    th { background:#fafafa; text-align:left;}
+    .mute { color:#666; }
+  </style>
+</head>
+<body>
+  <h1>Learning Status</h1>
+  <div id="main" class="mute">Loading…</div>
+  <script>
+    async function go(){
+      const el = document.getElementById('main')
+      try{
+        const r = await fetch('/.netlify/functions/learn-status', {cache:'no-store'})
+        if(!r.ok){ el.textContent = 'No receipt yet.'; return }
+        const data = await r.json()
+        const receipt = data.receipt || {}
+        el.innerHTML = `
+          <p><strong>Latest receipt:</strong> ${data.key}</p>
+          <table>
+            <tr><th>Date (ET)</th><td>${receipt.date_et || '—'}</td></tr>
+            <tr><th>Started</th><td>${receipt.started_at || '—'}</td></tr>
+            <tr><th>Finished</th><td>${receipt.finished_at || '—'}</td></tr>
+            <tr><th>Games</th><td>${receipt.games ?? '—'}</td></tr>
+            <tr><th>Samples</th><td>${receipt.samples ?? '—'}</td></tr>
+            <tr><th>Global scale</th><td>${receipt.calibration?.global_scale ?? '—'}</td></tr>
+            <tr><th>Logloss</th><td>${receipt.calibration?.logloss ?? '—'}</td></tr>
+            <tr><th>Brier</th><td>${receipt.calibration?.brier ?? '—'}</td></tr>
+          </table>
+          <h3>Weights</h3>
+          <pre>${JSON.stringify(receipt.factors || {}, null, 2)}</pre>
+          <h3>Reliability</h3>
+          <pre>${JSON.stringify(receipt.calibration?.reliability_buckets || [], null, 2)}</pre>
+          <h3>Deltas vs yesterday</h3>
+          <pre>${JSON.stringify(receipt.deltas || {}, null, 2)}</pre>
+          <p class="mute">This page is intentionally unlinked.</p>
+        `
+      }catch(e){
+        el.textContent = 'Error: ' + e
+      }
+    }
+    go()
+  </script>
+</body>
+</html>
