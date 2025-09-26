@@ -140,7 +140,7 @@ async function processTeamInjuries(teamCode) {
 
 async function fetchESPNInjuries(teamCode) {
   const teamId = getESPNTeamId(teamCode);
-  const url = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}/roster`;
+  const url = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/teams/${teamId}/injuries`;
   
   try {
     const response = await fetch(url, {
@@ -154,30 +154,51 @@ async function fetchESPNInjuries(teamCode) {
     }
     
     const data = await response.json();
+    const injuryRefs = data.items || [];
     const injuries = [];
     
-    // Process all athlete groups (offense, defense, special teams)
-    if (data.athletes) {
-      data.athletes.forEach(group => {
-        if (group.items) {
-          group.items.forEach(player => {
-            // Check if player has injury status
-            if (player.status && player.status.type !== 'active') {
-              injuries.push({
-                name: player.displayName,
-                position: player.position?.abbreviation,
-                status: mapInjuryStatus(player.status.type),
-                description: player.status.detail || '',
-                espnId: player.id,
-                depthOrder: group.items.indexOf(player) + 1 // Rough depth estimate
-              });
+    console.log(`${teamCode}: Processing ${injuryRefs.length} injury references`);
+    
+    // Process each injury reference (limit to 15 to avoid timeout)
+    for (const ref of injuryRefs.slice(0, 15)) {
+      try {
+        const injuryResponse = await fetch(ref.$ref);
+        if (!injuryResponse.ok) continue;
+        
+        const injuryData = await injuryResponse.json();
+        
+        // Get athlete data
+        let athleteName = 'Unknown Player';
+        let position = 'UNK';
+        
+        if (injuryData.athlete && injuryData.athlete.$ref) {
+          try {
+            const athleteResponse = await fetch(injuryData.athlete.$ref);
+            if (athleteResponse.ok) {
+              const athleteData = await athleteResponse.json();
+              athleteName = athleteData.displayName || athleteData.name || 'Unknown';
+              position = athleteData.position?.abbreviation || 'UNK';
             }
-          });
+          } catch (e) {
+            console.log(`Could not fetch athlete details: ${e.message}`);
+          }
         }
-      });
+        
+        injuries.push({
+          name: athleteName,
+          position: position,
+          status: mapInjuryStatus(injuryData.status),
+          description: injuryData.description || injuryData.detail || 'No details',
+          espnId: injuryData.athlete?.id || 'unknown',
+          depthOrder: injuries.length + 1 // Sequential for now
+        });
+        
+      } catch (error) {
+        console.log(`Error processing injury reference: ${error.message}`);
+      }
     }
     
-    console.log(`${teamCode}: Found ${injuries.length} injured players`);
+    console.log(`${teamCode}: Successfully processed ${injuries.length} injuries`);
     return injuries;
     
   } catch (error) {
