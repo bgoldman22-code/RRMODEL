@@ -127,7 +127,13 @@ function marketSpreadForTeam(game, teamId) {
 }
 
 function modelSpreadForTeam(game, model, teamId) {
-  return teamId === game.homeId ? model.homeSpread : -model.homeSpread;
+  // model.homeSpread: positive = home favored by X, negative = away favored by X
+  // Return the spread from the perspective of teamId (negative = favored, positive = underdog)
+  if (teamId === game.homeId) {
+    return -model.homeSpread; // If home favored by 12.6, return -12.6 for home team  
+  } else {
+    return model.homeSpread; // If home favored by 12.6, return +12.6 for away team
+  }
 }
 
 function pickBestSpreadSide(game, model) {
@@ -145,7 +151,7 @@ function pickBestSpreadSide(game, model) {
     };
   }
 
-  // Compute edges for both teams
+  // Check both teams for value and pick the one with better edge
   const scored = teams.map(teamId => {
     const mkt = marketSpreadForTeam(game, teamId);
     const mdl = modelSpreadForTeam(game, model, teamId);
@@ -156,15 +162,14 @@ function pickBestSpreadSide(game, model) {
   // Choose the team with the larger edge
   scored.sort((a, b) => b.edge - a.edge);
   const best = scored[0];
-
-  // Gate by thresholds (require edge >= +0.5 pts for a bet)
+  
   const isBet = Number.isFinite(best.edge) && best.edge > 0.5;
 
   return {
     pickedTeamId: best.teamId,
-    market: best.mkt,
-    model: best.mdl,
-    edgePts: best.edge,
+    market: predictedWinnerMarketSpread,
+    model: predictedWinnerModelSpread,
+    edgePts: edgePts,
     isBet,
     reason: isBet ? "Value vs model" : "No value"
   };
@@ -550,13 +555,14 @@ export default function NFLPredictions() {
                 );
 
                 // CLEAN SOLUTION: Use favorite-based logic to automatically pick best side
-                const favoriteId = r?.odds?.spread?.favorite || spread?.favorite;
+                const favoriteString = r?.odds?.spread?.favorite || spread?.favorite; // 'home' or 'away'
+                const favoriteTeamId = favoriteString === 'home' ? r.home_team : r.away_team;
                 const spreadAbs = Math.abs(Number(r?.odds?.spread?.line || spread?.line || 0));
                 
                 const spreadDisplay = spreadDisplayFromPick({
                   homeAbbr: r.home_team,
                   awayAbbr: r.away_team,
-                  favoriteId: favoriteId, // 'home' or 'away'
+                  favoriteId: favoriteTeamId, // actual team ID like 'PIT'
                   spreadAbs: spreadAbs > 0 ? spreadAbs : null, // absolute spread value
                   modelHomeMargin: Number(spread?.model_home_margin ?? 0),
                   confidence: spread?.confidence,
