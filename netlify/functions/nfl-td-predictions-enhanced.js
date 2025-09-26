@@ -1460,12 +1460,14 @@ function filterPredictions(predictions, queryParams, games = []) {
   let filtered = predictions.map(normalizeRow);
   console.log(`[FILTER DEBUG] After normalization: ${filtered.length} predictions`);
   
-  // Apply reliability adjustments with count model (skip if already adjusted)
-  filtered = filtered.map(p => p.__adjusted ? p : applyReliabilityAdjustment(p, queryParams));
+  // TEMPORARILY DISABLED: Reliability adjustment (was crushing to 7-20%, GPT's diagnosis)
+  // filtered = filtered.map(p => p.__adjusted ? p : applyReliabilityAdjustment(p, queryParams));
+  console.log('⚠️ RELIABILITY DISABLED FOR LAMBDA TESTING - Should see elite RBs >55% now');
   console.log(`[FILTER DEBUG] After reliability adjustment: ${filtered.length} predictions`);
   
-  // ELITE: Monte Carlo team reconciliation (falls back to legacy if needed)
-  const useMonteCarloReconciliation = queryParams.mc_reconciliation !== 'false'; // Default to true
+  // TEMPORARILY DISABLED: Monte Carlo reconciliation (prevents double-scaling, GPT's diagnosis)
+  const useMonteCarloReconciliation = false; // queryParams.mc_reconciliation !== 'false'; 
+  console.log('⚠️ MONTE CARLO DISABLED FOR LAMBDA TESTING - Pure Poisson probabilities only');
   
   if (useMonteCarloReconciliation) {
     try {
@@ -1578,18 +1580,46 @@ async function generateResponseByType(data, queryParams) {
     // STEP 4: Apply budget constraint (enforce team total discipline)
     const budgetEnforced = enforceBudgetConstraint(poissonProbabilities, teamLambda);
     
+    // GPT DIAGNOSTIC LOGGING - Track lambda through pipeline
+    console.log('🔍 λ_team', { team, total: game?.total, spread: game?.spread, isHome: game?.home_team === team, lambda_team: teamLambda });
+    
+    const sumLambdaBefore = playerShares.reduce((s, p) => s + p.lambda_total, 0);
+    console.log('🔍 Σλ_before', { team, sum_lambda_before: sumLambdaBefore });
+    
+    const sumLambdaAfter = budgetEnforced.reduce((s, p) => s + p.final_lambda, 0);
+    console.log('🔍 Budget', { team, target: teamLambda, before: sumLambdaBefore, after: sumLambdaAfter, ratio: budgetEnforced[0]?.budget_ratio });
+    
+    // Log bell-cow RB and WR1 lambda paths (GPT's expected ranges)
+    const bellcowRB = budgetEnforced.find(p => p.position === 'RB' && (p.depth_chart_position === 1 || p.depth_chart_position === undefined));
+    const wr1 = budgetEnforced.find(p => p.position === 'WR' && (p.depth_chart_position === 1 || p.depth_chart_position === undefined));
+    
+    if (bellcowRB) {
+      console.log('🔍 λ_paths_RB', { 
+        player: bellcowRB.name, 
+        λ_rush: bellcowRB.lambda_rush?.toFixed(3) || 0, 
+        λ_rec: bellcowRB.lambda_receive?.toFixed(3) || 0, 
+        λ_total: bellcowRB.final_lambda?.toFixed(3) || 0, 
+        p_any: (bellcowRB.anytime_td_prob * 100).toFixed(1) + '%',
+        expected: 'λ=0.9-1.4 → p=59-75%'
+      });
+    }
+    
+    if (wr1) {
+      console.log('🔍 λ_paths_WR', { 
+        player: wr1.name, 
+        λ_rush: wr1.lambda_rush?.toFixed(3) || 0, 
+        λ_rec: wr1.lambda_receive?.toFixed(3) || 0, 
+        λ_total: wr1.final_lambda?.toFixed(3) || 0, 
+        p_any: (wr1.anytime_td_prob * 100).toFixed(1) + '%',
+        expected: 'λ=0.5-0.9 → p=39-59%'
+      });
+    }
+
     eliteProPredictions.push(...budgetEnforced);
     
     const avgProb = budgetEnforced.reduce((sum, p) => sum + p.anytime_td_prob, 0) / budgetEnforced.length;
-    const topPlayer = budgetEnforced.sort((a, b) => b.anytime_td_prob - a.anytime_td_prob)[0];
-    
-    // SMOKE TEST LOGGING: Check lambda values and elite player results  
-    const topRB = budgetEnforced.filter(p => p.position === 'RB').sort((a, b) => b.final_lambda - a.final_lambda)[0];
-    const topWR = budgetEnforced.filter(p => p.position === 'WR').sort((a, b) => b.final_lambda - a.final_lambda)[0];
     
     console.log(`🎯 Elite Pro ${team}: Team λ=${teamLambda.toFixed(2)}, Avg=${(avgProb*100).toFixed(1)}%`);
-    if (topRB) console.log(`   🏃 Top RB: ${topRB.name} λ=${topRB.final_lambda.toFixed(2)} → ${(topRB.anytime_td_prob*100).toFixed(1)}%`);
-    if (topWR) console.log(`   🎯 Top WR: ${topWR.name} λ=${topWR.final_lambda.toFixed(2)} → ${(topWR.anytime_td_prob*100).toFixed(1)}%`);
   }
   
   // Replace with true elite model output
