@@ -199,23 +199,41 @@ export_for_r_pipeline <- function(formatted_data) {
   # Ensure directory exists
   dir.create(dirname(output_file), recursive = TRUE, showWarnings = FALSE)
   
-  # Create final structure
+  # Create final structure with timestamp for cache-busting
   final_data <- list(
     asOf = Sys.time(),
     teams = formatted_data,
     source = "ESPN_API_2025_Week4",
-    version = "v3_espn_current"
+    version = sprintf("v3_espn_%s", format(Sys.time(), "%Y%m%d_%H%M%S")),
+    cache_buster = as.numeric(Sys.time())
   )
   
-  # Write JSON
+  # Write JSON to data folder
   write_json(final_data, output_file, pretty = TRUE, auto_unbox = TRUE)
   cat(sprintf("✅ Exported to: %s\n", output_file))
   
-  # Also write to a backup location
+  # CRITICAL: Also copy to public folder for web access
+  public_output_file <- "public/data/nfl/injuries/latest.json"
+  dir.create(dirname(public_output_file), recursive = TRUE, showWarnings = FALSE)
+  write_json(final_data, public_output_file, pretty = TRUE, auto_unbox = TRUE)
+  cat(sprintf("🌐 Web accessible copy: %s\n", public_output_file))
+  
+  # Backup with timestamp (only keep latest 5)
   backup_file <- sprintf("data/nfl-injuries-r-pipeline-%s.json", 
                          format(Sys.time(), "%Y%m%d_%H%M%S"))
   write_json(final_data, backup_file, pretty = TRUE, auto_unbox = TRUE)
   cat(sprintf("💾 Backup saved: %s\n", backup_file))
+  
+  # Clean old backups (keep only 5 most recent)
+  backup_pattern <- "data/nfl-injuries-r-pipeline-*.json"
+  backup_files <- Sys.glob(backup_pattern)
+  if (length(backup_files) > 5) {
+    # Sort by modification time and remove oldest
+    backup_info <- file.info(backup_files)
+    old_files <- backup_files[order(backup_info$mtime)][1:(length(backup_files)-5)]
+    file.remove(old_files)
+    cat(sprintf("🗑️ Cleaned %d old backup files\n", length(old_files)))
+  }
   
   return(final_data)
 }
