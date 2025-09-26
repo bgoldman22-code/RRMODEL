@@ -113,6 +113,64 @@ const TEAM_NAME = {
   TEN:"Tennessee Titans", WAS:"Washington Commanders"
 };
 
+// ELITE PRO UTILITIES: DEVIG & VALIDATION
+function americanToDecimal(american) {
+  if (american > 0) return (american / 100) + 1;
+  return (100 / Math.abs(american)) + 1;
+}
+
+function decimalToImpliedProb(decimal) {
+  return 1 / decimal;
+}
+
+function devig(prob1, prob2, method = 'multiplicative') {
+  const total = prob1 + prob2;
+  if (total <= 1) return { prob1, prob2 }; // Already fair
+  
+  if (method === 'multiplicative') {
+    return {
+      prob1: prob1 / total,
+      prob2: prob2 / total
+    };
+  } else if (method === 'additive') {
+    const excess = total - 1;
+    return {
+      prob1: prob1 - (excess * prob1 / total),
+      prob2: prob2 - (excess * prob2 / total)  
+    };
+  }
+  return { prob1, prob2 };
+}
+
+function calculateDevigged2WayEdge(modelProb, price1, price2) {
+  // Convert American odds to probabilities
+  const decimal1 = americanToDecimal(price1);
+  const decimal2 = americanToDecimal(price2);
+  const rawProb1 = decimalToImpliedProb(decimal1);
+  const rawProb2 = decimalToImpliedProb(decimal2);
+  
+  // Remove vig
+  const { prob1: fairProb1 } = devig(rawProb1, rawProb2);
+  
+  // Calculate true edge
+  return modelProb - fairProb1;
+}
+
+function calculateDeriggedMLEdge(homeProb, homePrice, awayPrice) {
+  if (!homePrice || !awayPrice) return null;
+  
+  try {
+    const deriggedEdge = calculateDevigged2WayEdge(homeProb, homePrice, awayPrice);
+    return {
+      rawEdge: homeProb - decimalToImpliedProb(americanToDecimal(homePrice)),
+      deriggedEdge: deriggedEdge,
+      improvedBy: deriggedEdge - (homeProb - decimalToImpliedProb(americanToDecimal(homePrice)))
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
 // CLEAN SPREAD DISPLAY HELPERS (Favorite-Based Logic)
 function spreadLabel(n) {
   if (n == null) return "—";
@@ -136,7 +194,42 @@ function modelSpreadForTeam(game, model, teamId) {
   }
 }
 
-function pickBestSpreadSide(game, model) {
+function validateModelData(game, model, mlPrices = null) {
+  const warnings = [];
+  
+  // 1. Model Sign Sanity Check
+  if (Math.abs(model.homeSpread) > 21) {
+    warnings.push("EXTREME_SPREAD"); // Model predicting 3+ TD margin
+  }
+  
+  // 2. Favorite Conflict Detection
+  if (mlPrices && game.favoriteId && game.spreadAbs > 1.0) {
+    const mlHomeFav = mlPrices.home < mlPrices.away;
+    const spreadHomeFav = game.favoriteId === game.homeId;
+    
+    if (mlHomeFav !== spreadHomeFav) {
+      warnings.push("FAVORITE_CONFLICT");
+    }
+  }
+  
+  // 3. Spread-ML Alignment Check  
+  if (mlPrices && Math.abs(model.homeSpread) > 7) {
+    const modelFavorsHome = model.homeSpread < 0;
+    const mlFavorsHome = mlPrices.home < mlPrices.away;
+    
+    if (modelFavorsHome !== mlFavorsHome) {
+      warnings.push("ML_SPREAD_MISMATCH");
+    }
+  }
+  
+  return {
+    isValid: warnings.length === 0,
+    warnings,
+    shouldSuppress: warnings.includes("EXTREME_SPREAD") || warnings.includes("FAVORITE_CONFLICT")
+  };
+}
+
+function pickBestSpreadSide(game, model, mlPrices = null) {
   const teams = [game.homeId, game.awayId];
 
   // If the odds feed is missing, bail cleanly
@@ -148,6 +241,19 @@ function pickBestSpreadSide(game, model) {
       edgePts: null, 
       isBet: false, 
       reason: "No market spread" 
+    };
+  }
+
+  // ELITE PRO CHECK: Validate model data integrity
+  const validation = validateModelData(game, model, mlPrices);
+  if (validation.shouldSuppress) {
+    return {
+      pickedTeamId: null,
+      market: null, 
+      model: null,
+      edgePts: null,
+      isBet: false,
+      reason: `⚠ Data issue: ${validation.warnings.join(', ')}`
     };
   }
 
@@ -230,11 +336,12 @@ function spreadDisplayFromPick({
   // Use the clean logic to pick the best side
   const result = pickBestSpreadSide(game, model);
   
-  // Handle missing odds feed
+  // Handle missing odds feed or validation failures
   if (result.pickedTeamId == null) {
+    const isDataIssue = result.reason?.includes("⚠");
     return {
-      pickText: "Odds Unavailable",
-      bookText: "Line: No market data",
+      pickText: isDataIssue ? "Data Issue" : "Odds Unavailable", 
+      bookText: isDataIssue ? result.reason : "Line: No market data",
       modelText: `Model: Home ${spreadLabel(modelHomeMargin)} / Away ${spreadLabel(-modelHomeMargin)}`,
       confidence: confidence ?? "—",
       edgePts: "—"
@@ -260,7 +367,8 @@ function spreadDisplayFromPick({
     bookText: `Line: ${pickName} ${spreadLabel(result.market)}`,
     modelText: `Model: ${pickName} ${spreadLabel(result.model)}`,
     confidence: confidence ?? "—",
-    edgePts: `+${result.edgePts.toFixed(1)}`
+    edgePts: `+${result.edgePts.toFixed(1)}`,
+    isEliteLevel: true // Flag for pro-level calculation
   };
 }
 
@@ -546,9 +654,27 @@ export default function NFLPredictions() {
                 const total = r.predictions?.total;
                 const odds = r.odds || {};
                 
-                // Calculate best signal/edge (handling mixed units temporarily)
+                // ELITE PRO: Calculate devigged ML edge if we have odds
+                let enhancedML = ml;
+                if (ml && odds.moneyline?.home_price && odds.moneyline?.away_price) {
+                  const homeWinProb = ml.pick === r.home_team ? (ml.confidence / 100) : (1 - ml.confidence / 100);
+                  const derigInfo = calculateDeriggedMLEdge(homeWinProb, odds.moneyline.home_price, odds.moneyline.away_price);
+                  
+                  if (derigInfo) {
+                    enhancedML = {
+                      ...ml,
+                      rawEdge: (derigInfo.rawEdge * 100).toFixed(1), // Convert to %
+                      deriggedEdge: (derigInfo.deriggedEdge * 100).toFixed(1),
+                      edgeImprovement: (derigInfo.improvedBy * 100).toFixed(1),
+                      isEliteCalc: true
+                    };
+                  }
+                }
+                
+                // Calculate best signal/edge (using devigged when available)
+                const mlEdgeForComparison = enhancedML?.isEliteCalc ? Math.abs(enhancedML.deriggedEdge) : Math.abs(ml?.edge || 0);
                 const bestEdge = Math.max(
-                  Math.abs(ml?.edge || 0),
+                  mlEdgeForComparison,
                   // For spread/total, use edge if available, otherwise confidence-based
                   spread?.edge ? Math.abs(spread.edge) : (spread?.confidence > 60 ? (spread.confidence - 50) : 0),
                   total?.edge ? Math.abs(total.edge) : (total?.confidence > 60 ? (total.confidence - 50) : 0)
@@ -661,17 +787,22 @@ export default function NFLPredictions() {
                     <td className="px-4 py-3">{kickoff}</td>
                     
                     <td className="px-4 py-3">
-                      {ml ? (
+                      {enhancedML ? (
                         <div className="space-y-2">
                           <PickBadge 
-                            pick={ml.pick}
-                            confidence={ml.confidence}
-                            betRecommendation={ml.betRecommendation || ml.displayNote || "BET"}
-                            edge={ml.edge}
+                            pick={enhancedML.pick}
+                            confidence={enhancedML.confidence}
+                            betRecommendation={enhancedML.betRecommendation || enhancedML.displayNote || "BET"}
+                            edge={enhancedML.isEliteCalc ? enhancedML.deriggedEdge : enhancedML.edge}
                             type="ml"
-                            bestBook={ml.best_book}
+                            bestBook={enhancedML.best_book}
                             lockedPick={r.locked_picks?.moneyline}
                           />
+                          {enhancedML.isEliteCalc && (
+                            <div className="text-xs text-blue-600 font-medium">
+                              🎯 Elite Derig: {enhancedML.deriggedEdge}% (Raw: {enhancedML.rawEdge}%)
+                            </div>
+                          )}
                           {/* Show display book prices from structured odds */}
                           {(odds.display?.h2h || odds.moneyline) && (
                             <div className="text-xs text-gray-500">
