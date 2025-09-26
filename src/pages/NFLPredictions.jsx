@@ -662,13 +662,104 @@ export default function NFLPredictions() {
       window.predictionsData = rows;
       
       // Load the elite debugger functions
+      // Store predictions data globally for debugging
+      window.predictionsData = rows;
+      
+      // Add debug functions directly to window
       if (!window.debugGameModel) {
-        const script = document.createElement('script');
-        script.src = '/debug-model-analysis.js';
-        script.onload = () => {
-          console.log('🔬 Elite Model Debugger loaded! Try: debugGameModel("BUF", "NO")');
+        window.debugGameModel = function(homeTeam, awayTeam) {
+          console.log(`🔬 ELITE MODEL ANALYSIS: ${awayTeam} @ ${homeTeam}`);
+          console.log("=".repeat(60));
+          
+          const gameData = window.predictionsData?.find(g => 
+            g.home_team === homeTeam && g.away_team === awayTeam
+          );
+          
+          if (!gameData) {
+            console.error("❌ Game not found. Available games:");
+            window.predictionsData?.forEach(g => 
+              console.log(`   ${g.away_team} @ ${g.home_team}`)
+            );
+            return;
+          }
+          
+          console.log("📊 RAW GAME DATA:");
+          console.table(gameData);
+          
+          // Weather Analysis
+          console.log("\n🌤️ WEATHER IMPACT ANALYSIS:");
+          const weather = gameData.weather || gameData.conditions || {};
+          if (weather.wind_mph !== undefined) {
+            console.log(`💨 Wind: ${weather.wind_mph} mph ${weather.wind_mph > 15 ? "🚨 HIGH WIND" : "✅ Normal"}`);
+          }
+          if (weather.temperature !== undefined) {
+            console.log(`🌡️ Temperature: ${weather.temperature}°F ${weather.temperature < 32 ? "🥶 FREEZING" : weather.temperature > 90 ? "🔥 HOT" : "✅ Normal"}`);
+          }
+          
+          // Injury Analysis
+          console.log("\n🏥 INJURY IMPACT ANALYSIS:");
+          const homeInjuries = gameData.injuries?.home || gameData.home_injuries || [];
+          const awayInjuries = gameData.injuries?.away || gameData.away_injuries || [];
+          
+          if (homeInjuries.length > 0) {
+            console.log(`🏠 ${homeTeam} INJURIES:`, homeInjuries);
+          } else {
+            console.log(`🏠 ${homeTeam}: No significant injuries`);
+          }
+          
+          if (awayInjuries.length > 0) {
+            console.log(`✈️ ${awayTeam} INJURIES:`, awayInjuries);
+          } else {
+            console.log(`✈️ ${awayTeam}: No significant injuries`);
+          }
+          
+          // Model Analysis
+          console.log("\n⚙️ MODEL COMPONENTS:");
+          const predictions = gameData.predictions || {};
+          if (predictions.spread) {
+            console.log("📏 SPREAD:", predictions.spread);
+          }
+          if (predictions.moneyline) {
+            console.log("� MONEYLINE:", predictions.moneyline);
+          }
+          if (predictions.total) {
+            console.log("🎲 TOTAL:", predictions.total);
+          }
+          
+          // Team Stats
+          if (gameData.teamStats) {
+            console.log("\n📊 TEAM STATS:");
+            console.log(`${homeTeam}:`, gameData.teamStats.home);
+            console.log(`${awayTeam}:`, gameData.teamStats.away);
+          }
         };
-        document.head.appendChild(script);
+        
+        // Quick injury debug
+        window.debugInjuries = function(homeTeam, awayTeam) {
+          const game = window.predictionsData?.find(g => g.home_team === homeTeam && g.away_team === awayTeam);
+          if (!game) {
+            console.error("Game not found");
+            return;
+          }
+          
+          console.log(`🏥 INJURY REPORT: ${awayTeam} @ ${homeTeam}`);
+          console.log("Home injuries:", game.injuries?.home || game.home_injuries || []);
+          console.log("Away injuries:", game.injuries?.away || game.away_injuries || []);
+        };
+        
+        // Quick weather debug
+        window.debugWeather = function(homeTeam, awayTeam) {
+          const game = window.predictionsData?.find(g => g.home_team === homeTeam && g.away_team === awayTeam);
+          if (!game) {
+            console.error("Game not found");
+            return;
+          }
+          
+          console.log(`🌤️ WEATHER REPORT: ${awayTeam} @ ${homeTeam}`);
+          console.log(game.weather || game.conditions || "No weather data");
+        };
+        
+        console.log('🔬 Elite Model Debugger loaded! Try: debugGameModel("DET", "CLE")');
       }
       
       console.log(`📊 Predictions data updated: ${rows.length} games available for analysis`);
