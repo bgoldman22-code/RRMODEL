@@ -254,6 +254,36 @@ const TEAM_NAME_MAPPING = {
   'TEN': 'Tennessee Titans', 'WAS': 'Washington Commanders'
 };
 
+// Helper to get team abbreviation from full name (for schedule parsing)
+function getTeamAbbreviation(fullName) {
+  if (!fullName) return '';
+  
+  // If it's already an abbreviation, return it
+  if (Object.keys(TEAM_NAME_MAPPING).includes(fullName)) return fullName;
+  
+  // Find abbreviation by full name
+  for (const [abbr, name] of Object.entries(TEAM_NAME_MAPPING)) {
+    if (name === fullName) return abbr;
+  }
+  
+  // Fallback for common variations
+  const nameMap = {
+    "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL",
+    "Buffalo Bills": "BUF", "Carolina Panthers": "CAR", "Chicago Bears": "CHI",
+    "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE", "Dallas Cowboys": "DAL",
+    "Denver Broncos": "DEN", "Detroit Lions": "DET", "Green Bay Packers": "GB",
+    "Houston Texans": "HOU", "Indianapolis Colts": "IND", "Jacksonville Jaguars": "JAX",
+    "Kansas City Chiefs": "KC", "Las Vegas Raiders": "LV", "Los Angeles Chargers": "LAC",
+    "Los Angeles Rams": "LAR", "Miami Dolphins": "MIA", "Minnesota Vikings": "MIN",
+    "New England Patriots": "NE", "New Orleans Saints": "NO", "New York Giants": "NYG",
+    "New York Jets": "NYJ", "Philadelphia Eagles": "PHI", "Pittsburgh Steelers": "PIT",
+    "San Francisco 49ers": "SF", "Seattle Seahawks": "SEA", "Tampa Bay Buccaneers": "TB",
+    "Tennessee Titans": "TEN", "Washington Commanders": "WAS"
+  };
+  
+  return nameMap[fullName] || fullName;
+}
+
 const DIVISIONAL_CONTEXT = {
   'AFC_EAST': ['BUF', 'MIA', 'NE', 'NYJ'], 'AFC_NORTH': ['BAL', 'CIN', 'CLE', 'PIT'], 
   'AFC_SOUTH': ['HOU', 'IND', 'JAX', 'TEN'], 'AFC_WEST': ['DEN', 'KC', 'LV', 'LAC'],
@@ -1984,6 +2014,115 @@ async function generateAdvancedPredictions(games, season) {
   };
 }
 
+/**
+ * Save advanced predictions to blob storage in the format that nfl-predictions-get expects
+ * This bridges the sophisticated R Pipeline model to the live website
+ */
+async function saveAdvancedPredictionsToBlobs(result, season) {
+  const { getStore } = await import('@netlify/blobs');
+  
+  // Transform advanced predictions to the format expected by the frontend
+  const rows = result.predictions.map(game => {
+    const homeTeam = TEAM_NAME_MAPPING[game.home_team] || game.home_team;
+    const awayTeam = TEAM_NAME_MAPPING[game.away_team] || game.away_team;
+    
+    return {
+      id: game.game_id,
+      matchup: `${awayTeam} @ ${homeTeam}`,
+      kickoff: game.start,
+      homeTeam: homeTeam,
+      awayTeam: awayTeam,
+      
+      // Transform advanced predictions to simple format
+      odds: game.odds || {},
+      
+      // Use the sophisticated model's best pick as the main choice
+      model_choice: {
+        market: game.predictions.moneyline.bet ? "moneyline" : 
+                game.predictions.spread.bet ? "spread" : 
+                game.predictions.total.bet ? "total" : "moneyline",
+        side: game.predictions.moneyline.bet ? 
+              (game.predictions.moneyline.pick === game.home_team ? "home" : "away") :
+              game.predictions.spread.bet ? 
+              (game.predictions.spread.pick === game.home_team ? "home" : "away") : "home"
+      },
+      
+      // Frontend display fields
+      displayMarket: game.predictions.moneyline.bet ? "moneyline" : "spread",
+      displayPick: game.predictions.moneyline.bet ? 
+                   TEAM_NAME_MAPPING[game.predictions.moneyline.pick] || game.predictions.moneyline.pick :
+                   TEAM_NAME_MAPPING[game.predictions.spread.pick] || game.predictions.spread.pick,
+      displayPrice: game.odds?.moneyline?.home || null,
+      displayLine: game.predictions.spread.line || null,
+      
+      // Enhanced confidence from sophisticated model
+      confidence: Math.max(
+        game.predictions.moneyline.confidence / 100,
+        game.predictions.spread.confidence / 100,
+        game.predictions.total.confidence / 100
+      ),
+      
+      // Detailed pick information
+      pick: {
+        type: game.predictions.moneyline.bet ? "moneyline" : "spread",
+        team: game.predictions.moneyline.bet ? 
+              TEAM_NAME_MAPPING[game.predictions.moneyline.pick] || game.predictions.moneyline.pick :
+              TEAM_NAME_MAPPING[game.predictions.spread.pick] || game.predictions.spread.pick,
+        confidence: Math.max(
+          game.predictions.moneyline.confidence / 100,
+          game.predictions.spread.confidence / 100
+        ),
+        pickLabel: game.predictions.moneyline.bet ? 
+                   `moneyline: ${TEAM_NAME_MAPPING[game.predictions.moneyline.pick] || game.predictions.moneyline.pick}` :
+                   `spread: ${TEAM_NAME_MAPPING[game.predictions.spread.pick] || game.predictions.spread.pick} ${game.predictions.spread.line}`
+      },
+      
+      // Advanced metadata for power users
+      _advanced: {
+        modelVersion: game.modelEnhancements?.version || 'v13_r_pipeline',
+        mlEdge: game.predictions.moneyline.edge,
+        spreadEdge: game.predictions.spread.edge,
+        totalEdge: game.predictions.total.edge,
+        homeWinProb: game.predictions.home_win_prob,
+        awayWinProb: game.predictions.away_win_prob,
+        betRecommendations: {
+          moneyline: game.predictions.moneyline.betRecommendation,
+          spread: game.predictions.spread.betRecommendation,
+          total: game.predictions.total.betRecommendation
+        }
+      }
+    };
+  });
+  
+  // Create the payload in the expected format
+  const blobData = {
+    ok: true,
+    updated: new Date().toISOString(),
+    rows: rows,
+    source: 'r_pipeline_advanced_epa_model',
+    version: 'v13_hybrid_integration',
+    totalGames: rows.length,
+    metadata: {
+      season: season,
+      modelEnhancements: result.predictions[0]?.modelEnhancements || {},
+      parlayData: result.parlaySuggestions || [],
+      generatedAt: new Date().toISOString(),
+      dataSource: 'nfl-predictions-generate (R Pipeline + NFLVerse EPA)'
+    }
+  };
+  
+  // Save to the same blob storage that nfl-predictions-get reads from
+  const name = process.env.BLOBS_STORE_NFL || "nfl-td";
+  const siteID = process.env.NETLIFY_SITE_ID;
+  const token = process.env.NETLIFY_API_TOKEN;
+  const store = (siteID && token) ? getStore({ siteID, token, name }) : getStore(name);
+  
+  await store.set("predictions/current.json", JSON.stringify(blobData));
+  
+  console.log(`💾 Saved ${rows.length} advanced predictions to blob storage (predictions/current.json)`);
+  return blobData;
+}
+
 export default async (request, context) => {
   try {
     if (request.method === 'OPTIONS') {
@@ -1999,6 +2138,7 @@ export default async (request, context) => {
 
     let games = [];
     let season = '2025';
+    const saveToBlobs = request.method === 'GET'; // Auto-save when called via GET (like a refresh)
     
     if (request.method === 'POST') {
       const body = await request.json();
@@ -2007,10 +2147,39 @@ export default async (request, context) => {
     } else if (request.method === 'GET') {
       const url = new URL(request.url);
       season = url.searchParams.get('season') || '2025';
-      games = [];
+      
+      // AUTO-FETCH GAMES: When called via GET, automatically get current week games
+      try {
+        console.log('🔄 Auto-fetching current NFL games for predictions...');
+        const scheduleRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-schedule-get');
+        if (scheduleRes.ok) {
+          const scheduleData = await scheduleRes.json();
+          games = (scheduleData.matchups || scheduleData.games || []).map(game => ({
+            game_id: game.id || `${game.away || game.awayTeam}_${game.home || game.homeTeam}`,
+            home_team: getTeamAbbreviation(game.home || game.homeTeam),
+            away_team: getTeamAbbreviation(game.away || game.awayTeam),
+            start: game.kickoff || game.start
+          }));
+          console.log(`✅ Auto-fetched ${games.length} games for predictions`);
+        }
+      } catch (error) {
+        console.warn('⚠️  Failed to auto-fetch games:', error.message);
+        games = []; // Continue with empty games if fetch fails
+      }
     }
 
     const result = await generateAdvancedPredictions(games, season);
+    
+    // LIVE SITE INTEGRATION: Save to blob storage for nfl-predictions-get to serve
+    if (saveToBlobs && result.predictions && result.predictions.length > 0) {
+      try {
+        await saveAdvancedPredictionsToBlobs(result, season);
+        console.log('✅ Saved advanced predictions to blob storage for live site');
+      } catch (error) {
+        console.error('❌ Failed to save to blobs:', error);
+        // Continue anyway - don't fail the request
+      }
+    }
     
     // PICK LOCKING: Check for kickoff events and trigger locks
     await checkAndLockKickoffGames(result.predictions || result);
