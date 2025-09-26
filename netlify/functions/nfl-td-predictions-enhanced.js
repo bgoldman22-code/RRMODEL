@@ -770,36 +770,48 @@ function enforceBudgetConstraint(players, teamLambda) {
 }
 
 /**
- * Load injury data from R pipeline
+ * Load injury data from R pipeline (Netlify-compatible version)
  */
 async function loadInjuryData() {
-  const fs = require('fs');
-  const path = require('path');
-  
   try {
-    // Try multiple locations for injury data
-    const possiblePaths = [
-      path.join(process.cwd(), 'data', 'nfl', 'injuries', 'latest.json'),
-      path.join(process.cwd(), 'public', 'data', 'nfl', 'injuries', 'latest.json'),
-      path.join(__dirname, '..', '..', 'data', 'nfl', 'injuries', 'latest.json'),
-      path.join(__dirname, '..', '..', 'public', 'data', 'nfl', 'injuries', 'latest.json')
+    // In Netlify serverless functions, we need to use HTTP fetch or relative imports
+    // Try to fetch the injury data from the public URL path
+    const fetch = require('node-fetch');
+    
+    // Try multiple possible URLs for injury data
+    const possibleUrls = [
+      'https://rrmodel33.netlify.app/data/nfl/injuries/latest.json',
+      '/data/nfl/injuries/latest.json',  // Relative path
     ];
     
-    for (const filePath of possiblePaths) {
+    for (const url of possibleUrls) {
       try {
-        if (fs.existsSync(filePath)) {
-          const rawData = fs.readFileSync(filePath, 'utf8');
-          const injuryData = JSON.parse(rawData);
-          console.log(`✅ Loaded injury data from: ${filePath}`);
-          console.log(`📊 Injury data stats: ${Object.keys(injuryData.teams || {}).length} teams, ${injuryData.summary?.total_injuries || 0} total injuries`);
+        console.log(`🔍 Trying to load injury data from: ${url}`);
+        
+        let response;
+        if (url.startsWith('http')) {
+          response = await fetch(url);
+        } else {
+          // For relative paths, we'll need to read from the deployment
+          // Skip relative paths for now in serverless environment
+          continue;
+        }
+        
+        if (response && response.ok) {
+          const injuryData = await response.json();
+          console.log(`✅ Loaded injury data from: ${url}`);
+          console.log(`📊 Injury data stats: ${Object.keys(injuryData.teams || {}).length} teams`);
           return injuryData;
+        } else {
+          console.warn(`⚠️ Failed to load from ${url}: Status ${response?.status}`);
         }
       } catch (err) {
-        console.warn(`⚠️ Failed to load from ${filePath}:`, err.message);
+        console.warn(`⚠️ Failed to load from ${url}:`, err.message);
       }
     }
     
-    console.warn('⚠️ No injury data found at any expected location');
+    console.warn('⚠️ No injury data found at any expected URL');
+    console.warn('🔧 Falling back to empty injury data structure');
     return { teams: {}, summary: { total_injuries: 0 } };
   } catch (error) {
     console.error('❌ Error loading injury data:', error.message);
@@ -915,8 +927,9 @@ function addInjuryDataToGame(game, injuryData) {
  * Fetch game totals and spreads (placeholder - would connect to odds API)
  */
 async function fetchGameTotalsAndSpreads(games) {
-  // Load injury data from R pipeline
-  const injuryData = await loadInjuryData();
+  // TEMPORARILY DISABLE injury loading for debugging
+  console.log('⚠️ Injury data loading temporarily disabled for debugging');
+  const injuryData = { teams: {}, summary: { total_injuries: 0 } };
   
   // In production, this would fetch from DraftKings/FanDuel API
   // For now, return reasonable defaults based on game data
