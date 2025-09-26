@@ -16,6 +16,78 @@ const fmtPct = (p, digits = 1) => Number.isFinite(p) ? `${(p * 100).toFixed(digi
 const fmtDec = (x, digits = 1) => Number.isFinite(x) ? x.toFixed(digits) : '—';
 const fmtPts = (x, digits = 1) => Number.isFinite(x) ? `${x >= 0 ? '+' : ''}${x.toFixed(digits)} pts` : '—';
 
+// BET RECOMMENDATION HELPER with color coding
+const getBetRecommendation = (kellyUnits) => {
+  if (!Number.isFinite(kellyUnits) || kellyUnits <= 0) {
+    return { text: "NO BET", color: "text-red-600" };
+  }
+  
+  const units = kellyUnits.toFixed(1);
+  if (kellyUnits >= 2.0) {
+    return { text: `BET ${units}U`, color: "text-green-600 font-semibold" }; // HEAVY bets (2U+) = green
+  } else if (kellyUnits >= 0.5) {
+    return { text: `BET ${units}U`, color: "text-yellow-600 font-medium" }; // Medium bets (.5-1.99U) = yellow
+  } else {
+    return { text: "NO BET", color: "text-red-600" }; // Small bets (<0.5U) = red/no bet
+  }
+};
+
+// PROPER DEVIG IMPLEMENTATION 
+function impliedFromAmerican(odds) {
+  if (!Number.isFinite(odds)) return undefined;
+  return odds > 0 ? 100 / (odds + 100) : (-odds) / ((-odds) + 100);
+}
+
+function devigPair(pA_raw, pB_raw) {
+  const k = pA_raw + pB_raw;
+  if (!Number.isFinite(k) || k <= 0) return [undefined, undefined];
+  return [pA_raw / k, pB_raw / k];
+}
+
+function edgeProb(modelProb, fairProb) {
+  if (!Number.isFinite(modelProb) || !Number.isFinite(fairProb)) return undefined;
+  return modelProb - fairProb; // in probability (0..1)
+}
+
+// Calculate proper devigged ML edge with both sides
+function calculateDeriggedMLEdge(homeOdds, awayOdds, modelProbHome, modelProbAway) {
+  const pHome_raw = impliedFromAmerican(homeOdds);
+  const pAway_raw = impliedFromAmerican(awayOdds);
+  
+  if (!pHome_raw || !pAway_raw) return null;
+  
+  const [fairHome, fairAway] = devigPair(pHome_raw, pAway_raw);
+  
+  if (!fairHome || !fairAway) return null;
+  
+  const edgeHome = edgeProb(modelProbHome, fairHome);
+  const edgeAway = edgeProb(modelProbAway, fairAway);
+  
+  return {
+    fairHome,
+    fairAway,
+    edgeHome,
+    edgeAway,
+    debug: {
+      rawHome: pHome_raw,
+      rawAway: pAway_raw,
+      rawSum: pHome_raw + pAway_raw,
+      fairSum: fairHome + fairAway
+    }
+  };
+};
+
+// Legacy function for compatibility
+function americanToDecimal(american) {
+  if (!Number.isFinite(american)) return 2.0;
+  if (american > 0) return (american / 100) + 1;
+  return (100 / Math.abs(american)) + 1;
+}
+
+function decimalToImpliedProb(decimal) {
+  return 1 / decimal;
+}
+
 async function fetchSchedule(week = 4, season = 2025) {
   const scheduleUrl = `/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`;
   const scheduleRes = await fetch(scheduleUrl);
@@ -120,14 +192,6 @@ const TEAM_NAME = {
 };
 
 // ELITE PRO UTILITIES: DEVIG & VALIDATION
-function americanToDecimal(american) {
-  if (american > 0) return (american / 100) + 1;
-  return (100 / Math.abs(american)) + 1;
-}
-
-function decimalToImpliedProb(decimal) {
-  return 1 / decimal;
-}
 
 function devig(prob1, prob2, method = 'multiplicative') {
   const total = prob1 + prob2;
@@ -186,21 +250,6 @@ function calculateDevigged2WayEdge(modelProb, price1, price2) {
   
   // Calculate true edge
   return modelProb - fairProb1;
-}
-
-function calculateDeriggedMLEdge(homeProb, homePrice, awayPrice) {
-  if (!homePrice || !awayPrice) return null;
-  
-  try {
-    const deriggedEdge = calculateDevigged2WayEdge(homeProb, homePrice, awayPrice);
-    return {
-      rawEdge: homeProb - decimalToImpliedProb(americanToDecimal(homePrice)),
-      deriggedEdge: deriggedEdge,
-      improvedBy: deriggedEdge - (homeProb - decimalToImpliedProb(americanToDecimal(homePrice)))
-    };
-  } catch (e) {
-    return null;
-  }
 }
 
 // CLEAN SPREAD DISPLAY HELPERS (Favorite-Based Logic)
@@ -638,11 +687,14 @@ export default function NFLPredictions() {
           </span>
         )}
         <span className={`text-xs px-2 py-1 rounded font-medium ${
-          betRecommendation === 'BET' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          betRecommendation?.text?.includes('BET') ? 
+            (betRecommendation.color?.includes('green') ? 'bg-green-100 text-green-800' :
+             betRecommendation.color?.includes('yellow') ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800')
+            : 'bg-red-100 text-red-800'
         }`}>
-          {betRecommendation}
+          {betRecommendation?.text || betRecommendation || 'NO BET'}
         </span>
-        {betRecommendation === 'BET' && unitInfo && (
+        {(betRecommendation?.text?.includes('BET') || betRecommendation === 'BET') && unitInfo && (
           <span className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-800 font-medium">
             {unitInfo.units}U
           </span>
@@ -660,7 +712,7 @@ export default function NFLPredictions() {
           {typeof edge === 'number' ? `${edge.toFixed(1)}% edge` : edge}
         </div>
       )}
-      {betRecommendation === 'BET' && unitInfo && (
+      {(betRecommendation?.text?.includes('BET') || betRecommendation === 'BET') && unitInfo && (
         <div className="text-xs text-orange-600 font-medium">
           {unitInfo.tier}: {unitInfo.reasoning}
         </div>
@@ -677,7 +729,7 @@ export default function NFLPredictions() {
         </div>
       )}
       {/* Show best-book information ONLY if not locked */}
-      {bestBook && betRecommendation === 'BET' && !lockedPick && (
+      {bestBook && (betRecommendation?.text?.includes('BET') || betRecommendation === 'BET') && !lockedPick && (
         <div className="text-xs text-green-600 font-medium">
           Best: {bestBook.bookmaker || 'N/A'}
           {bestBook.price !== undefined ? ` ${fmtOdds(bestBook.price)}` : ''}
@@ -794,29 +846,41 @@ export default function NFLPredictions() {
                 // ELITE PRO: Calculate TRUE devigged edges (replace vigged backend calculations)
                 let enhancedML = ml || {};
                 if (ml && odds.moneyline?.home_price && odds.moneyline?.away_price) {
-                  const homeWinProb = ml.pick === r.home_team ? ((ml.confidence || 0) / 100) : (1 - (ml.confidence || 0) / 100);
-                  const derigInfo = calculateDeriggedMLEdge(homeWinProb, odds.moneyline.home_price, odds.moneyline.away_price);
+                  // Get model probabilities for both sides
+                  const modelProbHome = ml.pick === r.home_team ? ((ml.confidence || 0) / 100) : (1 - (ml.confidence || 0) / 100);
+                  const modelProbAway = 1 - modelProbHome;
+                  
+                  // Calculate proper devigged edge with both sides
+                  const derigInfo = calculateDeriggedMLEdge(odds.moneyline.home_price, odds.moneyline.away_price, modelProbHome, modelProbAway);
                   
                   if (derigInfo) {
+                    // Determine which side we're betting and get the correct edge
+                    const bettingSide = ml.pick;
+                    const isHomeBet = bettingSide === r.home_team;
+                    const modelProb = isHomeBet ? modelProbHome : modelProbAway;
+                    const fairProb = isHomeBet ? derigInfo.fairHome : derigInfo.fairAway;
+                    const trueEdge = isHomeBet ? derigInfo.edgeHome : derigInfo.edgeAway;
+                    
                     // Calculate Kelly unit sizing for ML bet
-                    const mlOdds = ml.pick === r.home_team ? odds.moneyline.home_price : odds.moneyline.away_price;
-                    const mlDecimalOdds = mlOdds ? americanToDecimal(mlOdds) : 2.0; // Default to even odds
-                    const modelProbML = (ml.confidence || 0) / 100;
-                    const kellyUnitsML = kellyUnits(modelProbML, mlDecimalOdds);
+                    const mlOdds = isHomeBet ? odds.moneyline.home_price : odds.moneyline.away_price;
+                    const mlDecimalOdds = mlOdds ? americanToDecimal(mlOdds) : 2.0;
+                    const kellyUnitsML = kellyUnits(modelProb, mlDecimalOdds); // Use model prob for Kelly
                     
                     enhancedML = {
                       ...ml,
-                      // CRITICAL FIX: Replace vigged edge with true devigged edge
-                      edge: parseFloat((derigInfo.deriggedEdge * 100).toFixed(1)), // This is now the TRUE edge
-                      rawEdge: (derigInfo.rawEdge * 100).toFixed(1),
-                      deriggedEdge: (derigInfo.deriggedEdge * 100).toFixed(1), 
-                      edgeImprovement: (derigInfo.improvedBy * 100).toFixed(1),
+                      // TRUE DEVIGGED EDGE in percentage
+                      edge: Number.isFinite(trueEdge) ? parseFloat((trueEdge * 100).toFixed(1)) : 0,
+                      modelProb: (modelProb * 100).toFixed(1),
+                      fairProb: (fairProb * 100).toFixed(1),
+                      rawImplied: ((isHomeBet ? derigInfo.debug.rawHome : derigInfo.debug.rawAway) * 100).toFixed(1),
                       isEliteCalc: true,
+                      // Debug info for verification
+                      debugDerig: `Raw: ${derigInfo.debug.rawSum.toFixed(3)} → Fair: ${derigInfo.debug.fairSum.toFixed(3)}`,
                       // Update bet decision based on TRUE devigged edge
-                      bet: Math.abs(derigInfo.deriggedEdge) > 0.05, // 5% true edge threshold
+                      bet: Number.isFinite(trueEdge) && Math.abs(trueEdge) > 0.05, // 5% true edge threshold
                       // KELLY UNIT SIZING
                       kellyUnits: kellyUnitsML,
-                      betRecommendation: kellyUnitsML > 0 && Number.isFinite(kellyUnitsML) ? `BET ${kellyUnitsML.toFixed(1)}U` : "NO BET"
+                      betRecommendation: getBetRecommendation(kellyUnitsML)
                     };
                   }
                 }
@@ -852,7 +916,7 @@ export default function NFLPredictions() {
                         bet: Math.abs(deriggedSpreadEdge) > 0.05, // 5% devigged edge for bet
                         // KELLY UNIT SIZING
                         kellyUnits: kellyUnitsSpread,
-                        betRecommendation: kellyUnitsSpread > 0 && Number.isFinite(kellyUnitsSpread) ? `BET ${kellyUnitsSpread.toFixed(1)}U` : "NO BET"
+                        betRecommendation: getBetRecommendation(kellyUnitsSpread)
                       };
                     }
                   } catch (e) {
@@ -871,7 +935,7 @@ export default function NFLPredictions() {
                   enhancedML = {
                     ...enhancedML,
                     kellyUnits: kellyUnitsML,
-                    betRecommendation: kellyUnitsML > 0 && Number.isFinite(kellyUnitsML) ? `BET ${kellyUnitsML.toFixed(1)}U` : "NO BET"
+                    betRecommendation: getBetRecommendation(kellyUnitsML)
                   };
                 }
                 
@@ -885,7 +949,7 @@ export default function NFLPredictions() {
                   enhancedSpread = {
                     ...enhancedSpread,
                     kellyUnits: kellyUnitsSpread,
-                    betRecommendation: kellyUnitsSpread > 0 && Number.isFinite(kellyUnitsSpread) ? `BET ${kellyUnitsSpread.toFixed(1)}U` : "NO BET"
+                    betRecommendation: getBetRecommendation(kellyUnitsSpread)
                   };
                 }
                 
@@ -901,7 +965,7 @@ export default function NFLPredictions() {
                   enhancedTotal = {
                     ...total,
                     kellyUnits: kellyUnitsTotal,
-                    betRecommendation: kellyUnitsTotal > 0 && Number.isFinite(kellyUnitsTotal) ? `BET ${kellyUnitsTotal.toFixed(1)}U` : "NO BET"
+                    betRecommendation: getBetRecommendation(kellyUnitsTotal)
                   };
                 }
                 
@@ -952,8 +1016,9 @@ export default function NFLPredictions() {
                             lockedPick={r.locked_picks?.moneyline}
                           />
                           {enhancedML.isEliteCalc && (
-                            <div className="text-xs text-green-600 font-medium">
-                              ✅ Devigged: {enhancedML.edge}% (Was: {enhancedML.rawEdge}% vigged)
+                            <div className="text-xs text-green-600 font-medium space-y-1">
+                              <div>✅ TRUE Edge: {enhancedML.edge}% (Model: {enhancedML.modelProb}% - Fair: {enhancedML.fairProb}%)</div>
+                              <div className="text-gray-500">Raw Implied: {enhancedML.rawImplied}% | {enhancedML.debugDerig}</div>
                             </div>
                           )}
                           {/* Show display book prices from structured odds */}
