@@ -167,9 +167,9 @@ function pickBestSpreadSide(game, model) {
 
   return {
     pickedTeamId: best.teamId,
-    market: predictedWinnerMarketSpread,
-    model: predictedWinnerModelSpread,
-    edgePts: edgePts,
+    market: best.mkt,
+    model: best.mdl,
+    edgePts: best.edge,
     isBet,
     reason: isBet ? "Value vs model" : "No value"
   };
