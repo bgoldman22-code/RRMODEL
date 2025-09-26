@@ -813,42 +813,69 @@ async function loadInjuryData() {
 function addInjuryDataToGame(game, injuryData) {
   const { home_team, away_team } = game;
   
-  // Get injury data for both teams
-  const homeInjuries = injuryData.teams?.[home_team]?.injuries || [];
-  const awayInjuries = injuryData.teams?.[away_team]?.injuries || [];
+  // Get team injury data (new structure: rb_injuries, wr_injuries, te_injuries, etc.)
+  const homeTeamData = injuryData.teams?.[home_team] || {};
+  const awayTeamData = injuryData.teams?.[away_team] || {};
   
-  // Convert to expected format for debug functions
-  const injuries = [];
+  // Flatten position-specific injuries into unified arrays
+  const homeInjuries = [];
+  const awayInjuries = [];
   
-  // Add home team injuries
-  homeInjuries.forEach(injury => {
-    injuries.push({
-      ...injury,
+  // Helper function to process position injuries
+  const processPositionInjuries = (teamData, positionKey, position, injuryArray, teamCode) => {
+    const posInjuries = teamData[positionKey] || [];
+    posInjuries.forEach(injury => {
+      injuryArray.push({
+        ...injury,
+        position: position,
+        team: teamCode,
+        team_side: teamCode === home_team ? 'home' : 'away'
+      });
+    });
+  };
+  
+  // Process all position groups for both teams
+  ['rb', 'wr', 'te', 'qb', 'ol', 'def', 'k'].forEach(pos => {
+    const injuryKey = `${pos}_injuries`;
+    const positionName = pos.toUpperCase();
+    
+    processPositionInjuries(homeTeamData, injuryKey, positionName, homeInjuries, home_team);
+    processPositionInjuries(awayTeamData, injuryKey, positionName, awayInjuries, away_team);
+  });
+  
+  // Add QB data from qb_status fields
+  if (homeTeamData.qb_status && homeTeamData.qb_name) {
+    homeInjuries.push({
+      name: homeTeamData.qb_name,
+      player: homeTeamData.qb_name,
+      position: 'QB',
+      status: homeTeamData.qb_status.toUpperCase(),
+      injury: homeTeamData.qb_injury_details || 'QB status',
       team: home_team,
-      team_side: 'home'
+      team_side: 'home',
+      depth: 1
     });
-  });
+  }
   
-  // Add away team injuries
-  awayInjuries.forEach(injury => {
-    injuries.push({
-      ...injury,
+  if (awayTeamData.qb_status && awayTeamData.qb_name) {
+    awayInjuries.push({
+      name: awayTeamData.qb_name,
+      player: awayTeamData.qb_name,
+      position: 'QB',
+      status: awayTeamData.qb_status.toUpperCase(),
+      injury: awayTeamData.qb_injury_details || 'QB status',
       team: away_team,
-      team_side: 'away'
+      team_side: 'away',
+      depth: 1
     });
-  });
+  }
+  
+  // Combine all injuries
+  const injuries = [...homeInjuries, ...awayInjuries];
   
   // Extract QB status for both teams
-  const homeQBs = homeInjuries.filter(i => i.position === 'QB');
-  const awayQBs = awayInjuries.filter(i => i.position === 'QB');
-  
-  const homeQBStatus = homeQBs.length > 0 ? 
-    homeQBs.find(qb => qb.status === 'OUT' || qb.status === 'IR')?.status || 'ACTIVE' : 
-    'ACTIVE';
-    
-  const awayQBStatus = awayQBs.length > 0 ? 
-    awayQBs.find(qb => qb.status === 'OUT' || qb.status === 'IR')?.status || 'ACTIVE' : 
-    'ACTIVE';
+  const homeQBStatus = homeTeamData.qb_status ? homeTeamData.qb_status.toUpperCase() : 'ACTIVE';
+  const awayQBStatus = awayTeamData.qb_status ? awayTeamData.qb_status.toUpperCase() : 'ACTIVE';
   
   return {
     ...game,
@@ -863,10 +890,10 @@ function addInjuryDataToGame(game, injuryData) {
       away: awayQBStatus
     },
     
-    // Starting QBs (first QB not marked as OUT/IR)
+    // Starting QBs
     starting_qbs: {
-      home: homeQBs.find(qb => qb.status !== 'OUT' && qb.status !== 'IR')?.name || 'Unknown',
-      away: awayQBs.find(qb => qb.status !== 'OUT' && qb.status !== 'IR')?.name || 'Unknown'
+      home: homeTeamData.qb_name || 'Unknown',
+      away: awayTeamData.qb_name || 'Unknown'
     },
     
     // Additional injury metadata
