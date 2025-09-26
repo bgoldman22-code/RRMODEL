@@ -2170,8 +2170,8 @@ export default async (request, context) => {
 
     const result = await generateAdvancedPredictions(games, season);
     
-    // LIVE SITE INTEGRATION: Save to blob storage for nfl-predictions-get to serve
-    if (saveToBlobs && result.predictions && result.predictions.length > 0) {
+    // LIVE SITE INTEGRATION: Always save to blob storage when we have predictions
+    if (result.predictions && result.predictions.length > 0) {
       try {
         await saveAdvancedPredictionsToBlobs(result, season);
         console.log('✅ Saved advanced predictions to blob storage for live site');
