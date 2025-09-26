@@ -42,7 +42,8 @@ async function fetchPredictions(week = 4, season = 2025, force = false) {
     },
     body: JSON.stringify({
       season: season.toString(),
-      games: games
+      games: games,
+      refresh: force // Pass refresh flag to backend
     })
   });
   
@@ -73,7 +74,7 @@ async function fetchPredictions(week = 4, season = 2025, force = false) {
       week: week,
       season: season,
       games: predictions.length,
-      model: 'enhanced_v12_calibrated'
+      model: response.source === 'r_pipeline_advanced_epa_model' ? 'R Pipeline + NFLVerse EPA' : 'enhanced_v12_calibrated'
     }
   };
 }
@@ -378,9 +379,16 @@ export default function NFLPredictions() {
         <div>
           <h1 className="text-2xl font-semibold">NFL Predictions</h1>
           {meta && (
-            <p className="text-sm text-gray-600">
-              Week {meta.week}, {meta.season} • {meta.games} games • Model: {meta.model}
-            </p>
+            <div className="space-y-1">
+              <p className="text-sm text-gray-600">
+                Week {meta.week}, {meta.season} • {meta.games} games • Model: {meta.model}
+              </p>
+              {meta.model === 'R Pipeline + NFLVerse EPA' && (
+                <p className="text-xs text-green-600 font-medium">
+                  🚀 Advanced R Pipeline + NFLVerse EPA Model Active
+                </p>
+              )}
+            </div>
           )}
         </div>
         <div className="flex items-center gap-4">
