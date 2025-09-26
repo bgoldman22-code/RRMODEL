@@ -702,14 +702,14 @@ export default function NFLPredictions() {
                 // ELITE PRO: Calculate TRUE devigged edges (replace vigged backend calculations)
                 let enhancedML = ml || {};
                 if (ml && odds.moneyline?.home_price && odds.moneyline?.away_price) {
-                  const homeWinProb = ml.pick === r.home_team ? (ml.confidence / 100) : (1 - ml.confidence / 100);
+                  const homeWinProb = ml.pick === r.home_team ? ((ml.confidence || 0) / 100) : (1 - (ml.confidence || 0) / 100);
                   const derigInfo = calculateDeriggedMLEdge(homeWinProb, odds.moneyline.home_price, odds.moneyline.away_price);
                   
                   if (derigInfo) {
                     // Calculate Kelly unit sizing for ML bet
                     const mlOdds = ml.pick === r.home_team ? odds.moneyline.home_price : odds.moneyline.away_price;
-                    const mlDecimalOdds = americanToDecimal(mlOdds);
-                    const modelProbML = ml.confidence / 100;
+                    const mlDecimalOdds = mlOdds ? americanToDecimal(mlOdds) : 2.0; // Default to even odds
+                    const modelProbML = (ml.confidence || 0) / 100;
                     const kellyUnitsML = kellyUnits(modelProbML, mlDecimalOdds);
                     
                     enhancedML = {
@@ -748,8 +748,8 @@ export default function NFLPredictions() {
                     if (Math.abs(deriggedSpreadEdge) > 0.02) { // 2% edge threshold for spreads
                       // Calculate Kelly unit sizing for spread bet
                       const spreadOdds = spread.pick === r.home_team ? odds.spread.home_price : odds.spread.away_price;
-                      const spreadDecimalOdds = americanToDecimal(spreadOdds);
-                      const modelProbSpread = spread.confidence / 100;
+                      const spreadDecimalOdds = spreadOdds ? americanToDecimal(spreadOdds) : 1.91; // Default to -110
+                      const modelProbSpread = (spread.confidence || 0) / 100;
                       const kellyUnitsSpread = kellyUnits(modelProbSpread, spreadDecimalOdds);
                       
                       enhancedSpread = {
@@ -773,7 +773,7 @@ export default function NFLPredictions() {
                   // Use backend odds or default odds for Kelly calculation
                   const fallbackMLOdds = ml.odds || (ml.edge > 0 ? -110 : +100); // Default odds if none available
                   const mlDecimalOdds = americanToDecimal(fallbackMLOdds);
-                  const modelProbML = ml.confidence / 100;
+                  const modelProbML = (ml.confidence || 0) / 100;
                   const kellyUnitsML = kellyUnits(modelProbML, mlDecimalOdds);
                   
                   enhancedML = {
@@ -787,7 +787,7 @@ export default function NFLPredictions() {
                   // Use backend spread odds or default -110
                   const fallbackSpreadOdds = spread.odds || -110;
                   const spreadDecimalOdds = americanToDecimal(fallbackSpreadOdds);
-                  const modelProbSpread = spread.confidence / 100;
+                  const modelProbSpread = (spread.confidence || 0) / 100;
                   const kellyUnitsSpread = kellyUnits(modelProbSpread, spreadDecimalOdds);
                   
                   enhancedSpread = {
@@ -803,7 +803,7 @@ export default function NFLPredictions() {
                   // Use total odds or default -110
                   const totalOdds = odds.display?.total?.over?.price || odds.display?.total?.under?.price || total.odds || -110;
                   const totalDecimalOdds = americanToDecimal(totalOdds);
-                  const modelProbTotal = total.confidence / 100;
+                  const modelProbTotal = (total.confidence || 0) / 100;
                   const kellyUnitsTotal = kellyUnits(modelProbTotal, totalDecimalOdds);
                   
                   enhancedTotal = {
