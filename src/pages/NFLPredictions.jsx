@@ -27,76 +27,53 @@ async function fetchSchedule(week = 4, season = 2025) {
 }
 
 async function fetchPredictions(week = 4, season = 2025, force = false) {
-  // Use the working nfl-predictions-get endpoint that has R Pipeline data
-  const url = `/.netlify/functions/nfl-predictions-get`;
+  const games = await fetchSchedule(week, season);
+  
+  if (games.length === 0) {
+    throw new Error(`No games found for Week ${week}, ${season}`);
+  }
+  
+  // Use nfl-predictions-generate for live R Pipeline + NFLVerse EPA model
+  const url = `/.netlify/functions/nfl-predictions-generate`;
   const res = await fetch(url, {
-    method: 'GET',
+    method: 'POST',
     headers: { 
-      'cache-control': force ? 'no-cache' : 'default'
-    }
+      'Content-Type': 'application/json',
+      'cache-control': 'no-cache' 
+    },
+    body: JSON.stringify({
+      season: season.toString(),
+      games: games,
+      refresh: force
+    })
   });
   
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const response = await res.json();
   
-  // Handle the nfl-predictions-get response structure
-  const predictions = response.rows || [];
-  const parlaySuggestions = response.parlayData || [];
-  const parlayMetadata = response.metadata?.parlayData || {};
-  
-  // Convert nfl-predictions-get format to expected format
-  const convertedRows = predictions.map(pred => {
-    // Extract team names from matchup string (e.g., "Atlanta Falcons @ Kansas City Chiefs")
-    const matchupParts = pred.matchup?.split(' @ ') || ['', ''];
-    const awayTeam = matchupParts[0] || '';
-    const homeTeam = matchupParts[1] || '';
-    
-    return {
-      gameId: pred.id,
-      matchup: pred.matchup,
-      start: pred.kickoff,
-      predictions: {
-        moneyline: pred._advanced ? {
-          pick: pred.displayPick || pred.pick?.team,
-          confidence: Math.round((pred.confidence || 0) * 100),
-          betRecommendation: pred._advanced?.betRecommendations?.moneyline || 'NO BET',
-          edge: pred._advanced?.mlEdge || 0
-        } : null,
-        spread: pred._advanced ? {
-          pick: pred.displayPick || pred.pick?.team,
-          confidence: Math.round((pred.confidence || 0) * 100),
-          betRecommendation: pred._advanced?.betRecommendations?.spread || 'NO BET',
-          edge: pred._advanced?.spreadEdge || 0,
-          model_home_margin: pred._advanced?.spreadEdge || 0
-        } : null,
-        total: pred._advanced ? {
-          pick: pred.displayMarket === 'total' ? (pred._advanced?.totalEdge > 0 ? 'over' : 'under') : null,
-          confidence: Math.round((pred.confidence || 0) * 100),
-          betRecommendation: pred._advanced?.betRecommendations?.total || 'NO BET',
-          edge: pred._advanced?.totalEdge || 0
-        } : null
-      },
-      odds: pred.odds || {},
-      home_team: getTeamAbbreviation(homeTeam),
-      away_team: getTeamAbbreviation(awayTeam),
-      teamStats: {
-        home: { strength: pred._advanced?.homeWinProb || 0.5 },
-        away: { strength: pred._advanced?.awayWinProb || 0.5 }
-      },
-      modelEnhancements: pred._advanced,
-      locked_picks: null
-    };
-  });
-
-  return {
-    rows: convertedRows,
+  // Handle nfl-predictions-generate response structure  
+  const predictions = response.predictions || [];
+  const parlaySuggestions = response.parlaySuggestions || [];
+  const parlayMetadata = response.parlayMetadata || {};  return {
+    rows: predictions.map(pred => ({
+      gameId: pred.game_id,
+      matchup: `${pred.away_team} @ ${pred.home_team}`,
+      start: pred.start,
+      predictions: pred.predictions,
+      odds: pred.odds,
+      home_team: pred.home_team,
+      away_team: pred.away_team,
+      teamStats: pred.teamStats,
+      modelEnhancements: pred.modelEnhancements,
+      locked_picks: pred.locked_picks
+    })),
     parlaySuggestions: parlaySuggestions,
     parlayMetadata: parlayMetadata,
     meta: {
       week: week,
       season: season,
       games: predictions.length,
-      model: response.source === 'r_pipeline_advanced_epa_model' ? 'R Pipeline + NFLVerse EPA' : 'enhanced_v12_calibrated'
+      model: 'R Pipeline + NFLVerse EPA' // nfl-predictions-generate always uses R Pipeline
     }
   };
 }
