@@ -770,9 +770,127 @@ function enforceBudgetConstraint(players, teamLambda) {
 }
 
 /**
+ * Load injury data from R pipeline
+ */
+async function loadInjuryData() {
+  const fs = require('fs');
+  const path = require('path');
+  
+  try {
+    // Try multiple locations for injury data
+    const possiblePaths = [
+      path.join(process.cwd(), 'data', 'nfl', 'injuries', 'latest.json'),
+      path.join(process.cwd(), 'public', 'data', 'nfl', 'injuries', 'latest.json'),
+      path.join(__dirname, '..', '..', 'data', 'nfl', 'injuries', 'latest.json'),
+      path.join(__dirname, '..', '..', 'public', 'data', 'nfl', 'injuries', 'latest.json')
+    ];
+    
+    for (const filePath of possiblePaths) {
+      try {
+        if (fs.existsSync(filePath)) {
+          const rawData = fs.readFileSync(filePath, 'utf8');
+          const injuryData = JSON.parse(rawData);
+          console.log(`✅ Loaded injury data from: ${filePath}`);
+          console.log(`📊 Injury data stats: ${Object.keys(injuryData.teams || {}).length} teams, ${injuryData.summary?.total_injuries || 0} total injuries`);
+          return injuryData;
+        }
+      } catch (err) {
+        console.warn(`⚠️ Failed to load from ${filePath}:`, err.message);
+      }
+    }
+    
+    console.warn('⚠️ No injury data found at any expected location');
+    return { teams: {}, summary: { total_injuries: 0 } };
+  } catch (error) {
+    console.error('❌ Error loading injury data:', error.message);
+    return { teams: {}, summary: { total_injuries: 0 } };
+  }
+}
+
+/**
+ * Add injury data to a game object
+ */
+function addInjuryDataToGame(game, injuryData) {
+  const { home_team, away_team } = game;
+  
+  // Get injury data for both teams
+  const homeInjuries = injuryData.teams?.[home_team]?.injuries || [];
+  const awayInjuries = injuryData.teams?.[away_team]?.injuries || [];
+  
+  // Convert to expected format for debug functions
+  const injuries = [];
+  
+  // Add home team injuries
+  homeInjuries.forEach(injury => {
+    injuries.push({
+      ...injury,
+      team: home_team,
+      team_side: 'home'
+    });
+  });
+  
+  // Add away team injuries
+  awayInjuries.forEach(injury => {
+    injuries.push({
+      ...injury,
+      team: away_team,
+      team_side: 'away'
+    });
+  });
+  
+  // Extract QB status for both teams
+  const homeQBs = homeInjuries.filter(i => i.position === 'QB');
+  const awayQBs = awayInjuries.filter(i => i.position === 'QB');
+  
+  const homeQBStatus = homeQBs.length > 0 ? 
+    homeQBs.find(qb => qb.status === 'OUT' || qb.status === 'IR')?.status || 'ACTIVE' : 
+    'ACTIVE';
+    
+  const awayQBStatus = awayQBs.length > 0 ? 
+    awayQBs.find(qb => qb.status === 'OUT' || qb.status === 'IR')?.status || 'ACTIVE' : 
+    'ACTIVE';
+  
+  return {
+    ...game,
+    // Injury data in expected format for debug functions
+    injuries: injuries,
+    home_injuries: homeInjuries,
+    away_injuries: awayInjuries,
+    
+    // QB status for quick access
+    qb_status: {
+      home: homeQBStatus,
+      away: awayQBStatus
+    },
+    
+    // Starting QBs (first QB not marked as OUT/IR)
+    starting_qbs: {
+      home: homeQBs.find(qb => qb.status !== 'OUT' && qb.status !== 'IR')?.name || 'Unknown',
+      away: awayQBs.find(qb => qb.status !== 'OUT' && qb.status !== 'IR')?.name || 'Unknown'
+    },
+    
+    // Additional injury metadata
+    playerNews: injuries.map(i => ({ name: i.name, status: i.status, injury: i.injury })),
+    inactives: injuries.filter(i => i.status === 'OUT' || i.status === 'IR').map(i => i.name),
+    injuryReport: {
+      total: injuries.length,
+      out: injuries.filter(i => i.status === 'OUT').length,
+      questionable: injuries.filter(i => i.status === 'QUESTIONABLE').length,
+      doubtful: injuries.filter(i => i.status === 'DOUBTFUL').length
+    },
+    playerStatus: Object.fromEntries(
+      injuries.map(i => [i.name, { status: i.status, injury: i.injury, position: i.position }])
+    )
+  };
+}
+
+/**
  * Fetch game totals and spreads (placeholder - would connect to odds API)
  */
 async function fetchGameTotalsAndSpreads(games) {
+  // Load injury data from R pipeline
+  const injuryData = await loadInjuryData();
+  
   // In production, this would fetch from DraftKings/FanDuel API
   // For now, return reasonable defaults based on game data
   if (!games || games.length === 0) {
@@ -780,6 +898,7 @@ async function fetchGameTotalsAndSpreads(games) {
     
     // Generate some test games with realistic totals/spreads for lambda testing
     const testGames = [
+      { home_team: 'ATL', away_team: 'WAS', total: 48.5, spread: -3.5 },
       { home_team: 'BUF', away_team: 'MIA', total: 48.5, spread: -3.5 },
       { home_team: 'KC', away_team: 'LV', total: 44.0, spread: -9.5 },  
       { home_team: 'SF', away_team: 'LAR', total: 51.5, spread: -7.0 },
@@ -788,16 +907,18 @@ async function fetchGameTotalsAndSpreads(games) {
     ];
     
     console.log('🎲 Using test game data for lambda diagnostics:', testGames.length, 'games');
-    return testGames;
+    
+    // Add injury data to test games
+    return testGames.map(game => addInjuryDataToGame(game, injuryData));
   }
   
-  return games.map(game => ({
+  return games.map(game => addInjuryDataToGame({
     ...game,
     total: game.total || 46.5,  // Default total
     spread: game.spread || 0,   // Default pick'em  
     home_team: game.home_team,
     away_team: game.away_team
-  }));
+  }, injuryData));
 }
 
 /**
