@@ -10,6 +10,12 @@ import { getCurrentNFLWeek } from '../utils/nflWeek.js';
 const fmt = (v) => (v === null || v === undefined || v === '' ? '—' : v);
 const fmtOdds = (odds) => odds > 0 ? `+${odds}` : `${odds}`;
 
+// SAFE FORMATTERS - Prevent undefined/NaN from causing blank pages
+const nz = (x, fallback = 0) => (Number.isFinite(x) ? x : fallback);
+const fmtPct = (p, digits = 1) => Number.isFinite(p) ? `${(p * 100).toFixed(digits)}%` : '—';
+const fmtDec = (x, digits = 1) => Number.isFinite(x) ? x.toFixed(digits) : '—';
+const fmtPts = (x, digits = 1) => Number.isFinite(x) ? `${x >= 0 ? '+' : ''}${x.toFixed(digits)} pts` : '—';
+
 async function fetchSchedule(week = 4, season = 2025) {
   const scheduleUrl = `/.netlify/functions/nfl-schedule-get?week=${week}&season=${season}`;
   const scheduleRes = await fetch(scheduleUrl);
@@ -393,7 +399,7 @@ function spreadDisplayFromPick({
     bookText: `Line: ${pickName} ${spreadLabel(result.market)}`,
     modelText: `Model: ${pickName} ${spreadLabel(result.model)}`,
     confidence: confidence ?? "—",
-    edgePts: `+${result.edgePts.toFixed(1)}`,
+    edgePts: Number.isFinite(result.edgePts) ? `+${result.edgePts.toFixed(1)}` : "—",
     isEliteLevel: true // Flag for pro-level calculation
   };
 }
@@ -530,7 +536,7 @@ function ParlaySuggestions({ parlaySuggestions, parlayMetadata }) {
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-medium">{leg.confidence}%</div>
-                    <div className="text-xs text-gray-500">{leg.edge.toFixed(1)}% edge</div>
+                    <div className="text-xs text-gray-500">{Number.isFinite(leg.edge) ? `${leg.edge.toFixed(1)}% edge` : '—'}</div>
                   </div>
                 </div>
               ))}
@@ -603,8 +609,8 @@ export default function NFLPredictions() {
   
   // 🔬 ELITE DEBUGGER: Expose predictions data for console analysis
   useEffect(() => {
-    if (predictions && predictions.length > 0) {
-      window.predictionsData = predictions;
+    if (rows && rows.length > 0) {
+      window.predictionsData = rows;
       
       // Load the elite debugger functions
       if (!window.debugGameModel) {
@@ -616,9 +622,9 @@ export default function NFLPredictions() {
         document.head.appendChild(script);
       }
       
-      console.log(`📊 Predictions data updated: ${predictions.length} games available for analysis`);
+      console.log(`📊 Predictions data updated: ${rows.length} games available for analysis`);
     }
-  }, [predictions]);
+  }, [rows]);
 
   // PickBadge Component - moved outside map for proper JSX structure
   const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge, pickedTeam, unitInfo, bestBook, lockedPick }) => (
@@ -810,7 +816,7 @@ export default function NFLPredictions() {
                       bet: Math.abs(derigInfo.deriggedEdge) > 0.05, // 5% true edge threshold
                       // KELLY UNIT SIZING
                       kellyUnits: kellyUnitsML,
-                      betRecommendation: kellyUnitsML > 0 ? `BET ${kellyUnitsML.toFixed(1)}U` : "NO BET"
+                      betRecommendation: kellyUnitsML > 0 && Number.isFinite(kellyUnitsML) ? `BET ${kellyUnitsML.toFixed(1)}U` : "NO BET"
                     };
                   }
                 }
@@ -846,7 +852,7 @@ export default function NFLPredictions() {
                         bet: Math.abs(deriggedSpreadEdge) > 0.05, // 5% devigged edge for bet
                         // KELLY UNIT SIZING
                         kellyUnits: kellyUnitsSpread,
-                        betRecommendation: kellyUnitsSpread > 0 ? `BET ${kellyUnitsSpread.toFixed(1)}U` : "NO BET"
+                        betRecommendation: kellyUnitsSpread > 0 && Number.isFinite(kellyUnitsSpread) ? `BET ${kellyUnitsSpread.toFixed(1)}U` : "NO BET"
                       };
                     }
                   } catch (e) {
@@ -865,7 +871,7 @@ export default function NFLPredictions() {
                   enhancedML = {
                     ...enhancedML,
                     kellyUnits: kellyUnitsML,
-                    betRecommendation: kellyUnitsML > 0 ? `BET ${kellyUnitsML.toFixed(1)}U` : "NO BET"
+                    betRecommendation: kellyUnitsML > 0 && Number.isFinite(kellyUnitsML) ? `BET ${kellyUnitsML.toFixed(1)}U` : "NO BET"
                   };
                 }
                 
@@ -879,7 +885,7 @@ export default function NFLPredictions() {
                   enhancedSpread = {
                     ...enhancedSpread,
                     kellyUnits: kellyUnitsSpread,
-                    betRecommendation: kellyUnitsSpread > 0 ? `BET ${kellyUnitsSpread.toFixed(1)}U` : "NO BET"
+                    betRecommendation: kellyUnitsSpread > 0 && Number.isFinite(kellyUnitsSpread) ? `BET ${kellyUnitsSpread.toFixed(1)}U` : "NO BET"
                   };
                 }
                 
@@ -895,7 +901,7 @@ export default function NFLPredictions() {
                   enhancedTotal = {
                     ...total,
                     kellyUnits: kellyUnitsTotal,
-                    betRecommendation: kellyUnitsTotal > 0 ? `BET ${kellyUnitsTotal.toFixed(1)}U` : "NO BET"
+                    betRecommendation: kellyUnitsTotal > 0 && Number.isFinite(kellyUnitsTotal) ? `BET ${kellyUnitsTotal.toFixed(1)}U` : "NO BET"
                   };
                 }
                 
@@ -941,7 +947,7 @@ export default function NFLPredictions() {
                             betRecommendation={enhancedML.betRecommendation || enhancedML.displayNote || "BET"}
                             edge={enhancedML.edge} // Now always the corrected edge (devigged when possible)
                             type="ml"
-                            unitInfo={enhancedML?.kellyUnits > 0 ? { units: enhancedML.kellyUnits.toFixed(1) } : null}
+                            unitInfo={Number.isFinite(enhancedML?.kellyUnits) && enhancedML.kellyUnits > 0 ? { units: enhancedML.kellyUnits.toFixed(1) } : null}
                             bestBook={enhancedML.best_book}
                             lockedPick={r.locked_picks?.moneyline}
                           />
@@ -972,7 +978,7 @@ export default function NFLPredictions() {
                         betRecommendation={enhancedSpread?.betRecommendation || spread?.betRecommendation || spread?.displayNote || (spread?.pick ? "BET" : "NO BET")}
                         edge={spreadDisplay.edgePts + " pts"}
                         type="spread"
-                        unitInfo={enhancedSpread?.kellyUnits > 0 ? { units: enhancedSpread.kellyUnits.toFixed(1) } : null}
+                        unitInfo={Number.isFinite(enhancedSpread?.kellyUnits) && enhancedSpread.kellyUnits > 0 ? { units: enhancedSpread.kellyUnits.toFixed(1) } : null}
                         modelValue={spreadDisplay.modelText}   // ✅ always shown: pick POV or neutral POV
                         marketValue={spreadDisplay.bookText}   // ✅ always shown: pick POV or neutral POV
                         pickedTeam={spread?.pick}
@@ -1000,7 +1006,7 @@ export default function NFLPredictions() {
                             betRecommendation={enhancedTotal.betRecommendation || enhancedTotal.displayNote || "BET"}
                             edge={enhancedTotal.edge}
                             type="total"
-                            unitInfo={enhancedTotal?.kellyUnits > 0 ? { units: enhancedTotal.kellyUnits.toFixed(1) } : null}
+                            unitInfo={Number.isFinite(enhancedTotal?.kellyUnits) && enhancedTotal.kellyUnits > 0 ? { units: enhancedTotal.kellyUnits.toFixed(1) } : null}
                             modelValue={enhancedTotal.predicted ? `${enhancedTotal.predicted}` : null}
                             marketValue={(() => {
                               // Use display book total if available
@@ -1026,7 +1032,7 @@ export default function NFLPredictions() {
                         bestEdge > 5 ? 'text-yellow-600' : 
                         'text-gray-600'
                       }`}>
-                        {bestEdge > 0 ? `${bestEdge.toFixed(1)}%` : '—'}
+                        {bestEdge > 0 && Number.isFinite(bestEdge) ? `${bestEdge.toFixed(1)}%` : '—'}
                       </span>
                     </td>
                     
