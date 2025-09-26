@@ -113,31 +113,61 @@ const TEAM_NAME = {
   TEN:"Tennessee Titans", WAS:"Washington Commanders"
 };
 
-// CLEAN SPREAD DISPLAY HELPERS
+// CLEAN SPREAD DISPLAY HELPERS (Favorite-Based Logic)
 function spreadLabel(n) {
+  if (n == null) return "—";
   if (Math.abs(n) < 0.25) return "Pick 'em";
   const sign = n > 0 ? "+" : "";
   return `${sign}${n.toFixed(1)}`;
 }
 
-function spreadToPickedPerspective(pickedTeamId, teams, marketLine) {
-  // marketLine is assumed to be from home team perspective (negative = home favored)
-  // Convert to picked team perspective
-  const marketSpreadForPicked = pickedTeamId === teams.homeId ? marketLine : -marketLine;
-  return marketSpreadForPicked;
+function marketSpreadForTeam(game, teamId) {
+  if (game.favoriteId == null || game.spreadAbs == null) return null;
+  return teamId === game.favoriteId ? -game.spreadAbs : +game.spreadAbs;
 }
 
-function modelSpreadForPickedTeam(pickedTeamId, teams, modelHomeSpread) {
-  // modelHomeSpread: negative = home favored, positive = away favored
-  // Convert to picked team perspective 
-  const modelSpreadForPicked = pickedTeamId === teams.homeId ? modelHomeSpread : -modelHomeSpread;
-  return modelSpreadForPicked;
+function modelSpreadForTeam(game, model, teamId) {
+  return teamId === game.homeId ? model.homeSpread : -model.homeSpread;
 }
 
-function spreadEdgePts(marketSpreadForPicked, modelSpreadForPicked) {
-  // How many points better is the market vs our model requirement?
-  // Positive = good (market more favorable than model requires)
-  return marketSpreadForPicked - modelSpreadForPicked;
+function pickBestSpreadSide(game, model) {
+  const teams = [game.homeId, game.awayId];
+
+  // If the odds feed is missing, bail cleanly
+  if (game.favoriteId == null || game.spreadAbs == null) {
+    return { 
+      pickedTeamId: null, 
+      market: null, 
+      model: null, 
+      edgePts: null, 
+      isBet: false, 
+      reason: "No market spread" 
+    };
+  }
+
+  // Compute edges for both teams
+  const scored = teams.map(teamId => {
+    const mkt = marketSpreadForTeam(game, teamId);
+    const mdl = modelSpreadForTeam(game, model, teamId);
+    const edge = mkt - mdl; // positive => value
+    return { teamId, mkt, mdl, edge };
+  });
+
+  // Choose the team with the larger edge
+  scored.sort((a, b) => b.edge - a.edge);
+  const best = scored[0];
+
+  // Gate by thresholds (require edge >= +0.5 pts for a bet)
+  const isBet = Number.isFinite(best.edge) && best.edge > 0.5;
+
+  return {
+    pickedTeamId: best.teamId,
+    market: best.mkt,
+    model: best.mdl,
+    edgePts: best.edge,
+    isBet,
+    reason: isBet ? "Value vs model" : "No value"
+  };
 }
 
 // Legacy helpers for compatibility
@@ -153,46 +183,79 @@ const isNum = (x) => typeof x === "number" && Number.isFinite(x);
 
 // Safe line extraction to avoid NaN display
 const getHomeLine = (r, spread) => {
-  const val = r?.odds?.display?.spread?.home_line ?? spread?.line;
-  return Number.isFinite(Number(val)) ? Number(val) : 0;
+  // Use actual home_line if available, otherwise convert favorite's line to home perspective
+  if (r?.odds?.display?.spread?.home_line !== undefined) {
+    return Number.isFinite(Number(r.odds.display.spread.home_line)) ? Number(r.odds.display.spread.home_line) : 0;
+  }
+  
+  // Fallback: convert favorite's line to home perspective
+  const favoriteLine = spread?.line;
+  const favorite = r?.odds?.spread?.favorite || spread?.favorite;
+  
+  if (Number.isFinite(Number(favoriteLine))) {
+    if (favorite === 'home') {
+      return -Math.abs(Number(favoriteLine)); // Home favored, so negative
+    } else if (favorite === 'away') {
+      return Math.abs(Number(favoriteLine)); // Away favored, so home gets positive
+    }
+  }
+  
+  return 0;
 };
 
 // Removed toPickPOV - replaced with clean spreadToPickedPerspective helper
 
-// CLEAN SPREAD DISPLAY: Always show from picked team's perspective
+// CLEAN SPREAD DISPLAY: Use favorite-based logic to pick best side and display
 function spreadDisplayFromPick({
-  pickAbbr, homeAbbr, awayAbbr,
-  marketHomeLine,   // e.g. -16.5 (home POV)
-  modelHomeMargin,  // e.g. +8.3 means model has HOME by 8.3 (home POV)
-  confidence,       // pass through for NO BET cases
-  edgePct,         // pass through for NO BET cases
+  homeAbbr, awayAbbr, favoriteId, spreadAbs,
+  modelHomeMargin,  // model's home spread (negative = home favored)
+  confidence,
+  edgePct,
   TEAM_NAME
 }) {
-  // NO BET / PUSH: Show neutral POV for both lines
-  if (!pickAbbr || pickAbbr.toLowerCase() === "push") {
+  const game = { 
+    homeId: homeAbbr, 
+    awayId: awayAbbr, 
+    favoriteId, 
+    spreadAbs: Number.isFinite(spreadAbs) ? spreadAbs : null 
+  };
+  
+  const model = { homeSpread: modelHomeMargin };
+  
+  // Use the clean logic to pick the best side
+  const result = pickBestSpreadSide(game, model);
+  
+  // Handle missing odds feed
+  if (result.pickedTeamId == null) {
     return {
-      pickText: "Pick 'em",
-      bookText: `Line: Home ${spreadLabel(marketHomeLine)} / Away ${spreadLabel(-marketHomeLine)}`,
+      pickText: "Odds Unavailable",
+      bookText: "Line: No market data",
       modelText: `Model: Home ${spreadLabel(modelHomeMargin)} / Away ${spreadLabel(-modelHomeMargin)}`,
       confidence: confidence ?? "—",
       edgePts: "—"
     };
   }
 
-  const pickName = TEAM_NAME[pickAbbr] || pickAbbr;
-  const teams = { homeId: homeAbbr, awayId: awayAbbr };
+  // Handle no-bet cases (negative or insufficient edge)
+  if (!result.isBet) {
+    return {
+      pickText: "No Value",
+      bookText: `Best Line: ${TEAM_NAME[result.pickedTeamId] || result.pickedTeamId} ${spreadLabel(result.market)}`,
+      modelText: `Model: ${TEAM_NAME[result.pickedTeamId] || result.pickedTeamId} ${spreadLabel(result.model)}`,
+      confidence: confidence ?? "—",
+      edgePts: result.edgePts?.toFixed(1) || "—"
+    };
+  }
 
-  // Convert BOTH to picked team perspective using clean helpers
-  const marketSpreadForPicked = spreadToPickedPerspective(pickAbbr, teams, marketHomeLine);
-  const modelSpreadForPicked = modelSpreadForPickedTeam(pickAbbr, teams, modelHomeMargin);
-  const edgePts = spreadEdgePts(marketSpreadForPicked, modelSpreadForPicked);
-
+  // Show the picked team with positive edge
+  const pickName = TEAM_NAME[result.pickedTeamId] || result.pickedTeamId;
+  
   return {
     pickText: pickName,
-    bookText: `Line: ${pickName} ${spreadLabel(marketSpreadForPicked)}`,
-    modelText: `Model: ${pickName} ${spreadLabel(modelSpreadForPicked)}`,
+    bookText: `Line: ${pickName} ${spreadLabel(result.market)}`,
+    modelText: `Model: ${pickName} ${spreadLabel(result.model)}`,
     confidence: confidence ?? "—",
-    edgePts: edgePts.toFixed(1)
+    edgePts: `+${result.edgePts.toFixed(1)}`
   };
 }
 
@@ -486,14 +549,16 @@ export default function NFLPredictions() {
                   total?.edge ? Math.abs(total.edge) : (total?.confidence > 60 ? (total.confidence - 50) : 0)
                 );
 
-                // FINAL SOLUTION: Use clean spread display with pick POV or neutral POV
+                // CLEAN SOLUTION: Use favorite-based logic to automatically pick best side
+                const favoriteId = r?.odds?.spread?.favorite || spread?.favorite;
+                const spreadAbs = Math.abs(Number(r?.odds?.spread?.line || spread?.line || 0));
+                
                 const spreadDisplay = spreadDisplayFromPick({
-                  pickAbbr: spread?.pick || null,
                   homeAbbr: r.home_team,
                   awayAbbr: r.away_team,
-                  // Always use home-POV fields - safe extraction to avoid NaN
-                  marketHomeLine: getHomeLine(r, spread),
-                  modelHomeMargin: Number(spread?.model_home_margin ?? 0), // ✅ ensure this is home POV
+                  favoriteId: favoriteId, // 'home' or 'away'
+                  spreadAbs: spreadAbs > 0 ? spreadAbs : null, // absolute spread value
+                  modelHomeMargin: Number(spread?.model_home_margin ?? 0),
                   confidence: spread?.confidence,
                   edgePct: spread?.edge,
                   TEAM_NAME
