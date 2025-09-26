@@ -155,7 +155,7 @@ export default function Predictions() {
       <div className="mb-6">
         <h1 className="text-2xl font-semibold mb-1">NFL Predictions</h1>
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-gray-500">
-          <span>Updated — {updated ? new Date(updated).toLocaleString() : '—'}</span>
+          <span>Updated — {updated ? new Date(updated).toLocaleString() : '—'} v2.1</span>
           {isAdvancedModel && (
             <>
               <span className="hidden sm:inline">•</span>
