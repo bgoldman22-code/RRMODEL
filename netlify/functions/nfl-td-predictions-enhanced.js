@@ -241,12 +241,15 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
       return {
         ...pred,
         american_odds: matchingOdds.odds,
+        real_odds: matchingOdds.odds,  // 🔧 ADD real_odds field for frontend
         odds_source: 'live_api',
         has_live_odds: true
       };
     } else {
       return {
         ...pred,
+        american_odds: null,
+        real_odds: null,  // 🔧 ADD real_odds field for frontend
         odds_source: 'model_estimated', 
         has_live_odds: false
       };
@@ -1486,6 +1489,7 @@ function normalizeRow(prediction) {
   return {
     ...prediction,
     american_odds: americanOdds,
+    real_odds: americanOdds,  // 🔧 ADD real_odds field for frontend
     best_price: bestPrice,
     books_count: booksCount,
     odds_sources_allowed: allowedOddsSources, // Fix the field name that oddsGate expects
