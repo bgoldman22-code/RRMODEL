@@ -734,7 +734,7 @@ export default function NFLPredictions() {
           }
         };
         
-        // Quick injury debug
+        // Enhanced injury debug - check all possible data sources
         window.debugInjuries = function(homeTeam, awayTeam) {
           const game = window.predictionsData?.find(g => g.home_team === homeTeam && g.away_team === awayTeam);
           if (!game) {
@@ -742,9 +742,73 @@ export default function NFLPredictions() {
             return;
           }
           
-          console.log(`🏥 INJURY REPORT: ${awayTeam} @ ${homeTeam}`);
-          console.log("Home injuries:", game.injuries?.home || game.home_injuries || []);
-          console.log("Away injuries:", game.injuries?.away || game.away_injuries || []);
+          console.log(`🏥 COMPREHENSIVE INJURY ANALYSIS: ${awayTeam} @ ${homeTeam}`);
+          console.log("=".repeat(50));
+          
+          // Check all possible injury data locations
+          console.log("🔍 INJURY DATA SOURCES:");
+          console.log("game.injuries:", game.injuries);
+          console.log("game.home_injuries:", game.home_injuries);
+          console.log("game.away_injuries:", game.away_injuries);
+          console.log("game.playerNews:", game.playerNews);
+          console.log("game.inactives:", game.inactives);
+          console.log("game.injuryReport:", game.injuryReport);
+          console.log("game.playerStatus:", game.playerStatus);
+          
+          // Check QB-specific status
+          console.log("\n🏈 QB STATUS CHECK:");
+          console.log("game.qb_status:", game.qb_status);
+          console.log("game.starting_qbs:", game.starting_qbs);
+          
+          // Check model enhancements for injury adjustments
+          console.log("\n⚙️ MODEL INJURY ADJUSTMENTS:");
+          const enhancements = game.modelEnhancements;
+          if (enhancements) {
+            console.log("Enhanced features:", enhancements.enhancedFeatures);
+            console.log("Fixes applied:", enhancements.fixesApplied);
+            console.log("Diagnostics:", enhancements.diagnostics);
+            
+            // Look for injury-related enhancements
+            if (enhancements.enhancedFeatures?.injuryAdjustments) {
+              console.log("🚨 INJURY ADJUSTMENTS FOUND:", enhancements.enhancedFeatures.injuryAdjustments);
+            }
+            
+            // Check for QB injury flags
+            if (enhancements.enhancedFeatures?.qbInjuryRisk) {
+              console.log("🚨 QB INJURY RISK:", enhancements.enhancedFeatures.qbInjuryRisk);
+            }
+          }
+          
+          // Check team stats for injury impact
+          console.log("\n📊 INJURY IMPACT ON STATS:");
+          if (game.teamStats?.home?.injuryImpact) {
+            console.log("Home injury impact:", game.teamStats.home.injuryImpact);
+          }
+          if (game.teamStats?.away?.injuryImpact) {
+            console.log("Away injury impact:", game.teamStats.away.injuryImpact);
+          }
+          
+          // Check if confidence was reduced due to injuries
+          console.log("\n🎯 CONFIDENCE ANALYSIS:");
+          const predictions = game.predictions || {};
+          console.log("ML confidence:", predictions.moneyline?.confidence);
+          console.log("Spread confidence:", predictions.spread?.confidence);
+          console.log("Total confidence:", predictions.total?.confidence);
+          
+          if (predictions.moneyline?.confidence < 60) {
+            console.log("⚠️ LOW ML CONFIDENCE - May indicate injury uncertainty");
+          }
+          
+          // Summary
+          console.log("\n📋 INJURY DATA STATUS:");
+          const hasInjuryData = game.injuries || game.home_injuries || game.away_injuries || 
+                               game.playerNews || game.inactives || game.injuryReport;
+          console.log(`Injury data available: ${hasInjuryData ? "YES" : "NO"}`);
+          
+          if (!hasInjuryData) {
+            console.log("🔴 ISSUE: No injury data found in any standard location");
+            console.log("🔧 Recommendation: Check R pipeline injury data integration");
+          }
         };
         
         // Quick weather debug
@@ -759,7 +823,72 @@ export default function NFLPredictions() {
           console.log(game.weather || game.conditions || "No weather data");
         };
         
-        console.log('🔬 Elite Model Debugger loaded! Try: debugGameModel("DET", "CLE")');
+        // Check R Pipeline data structure
+        window.debugRPipeline = function(homeTeam, awayTeam) {
+          const game = window.predictionsData?.find(g => g.home_team === homeTeam && g.away_team === awayTeam);
+          if (!game) {
+            console.error("Game not found");
+            return;
+          }
+          
+          console.log(`🔬 R PIPELINE DATA ANALYSIS: ${awayTeam} @ ${homeTeam}`);
+          console.log("=".repeat(60));
+          
+          console.log("📦 COMPLETE GAME OBJECT STRUCTURE:");
+          console.log("Top-level keys:", Object.keys(game));
+          
+          // Check each major section
+          console.log("\n📊 PREDICTIONS STRUCTURE:");
+          if (game.predictions) {
+            Object.keys(game.predictions).forEach(key => {
+              console.log(`${key}:`, Object.keys(game.predictions[key] || {}));
+            });
+          }
+          
+          console.log("\n💰 ODDS STRUCTURE:");
+          if (game.odds) {
+            console.log("Odds keys:", Object.keys(game.odds));
+            console.log("Full odds:", game.odds);
+          }
+          
+          console.log("\n📈 TEAM STATS STRUCTURE:");
+          if (game.teamStats) {
+            console.log("Home stats keys:", Object.keys(game.teamStats.home || {}));
+            console.log("Away stats keys:", Object.keys(game.teamStats.away || {}));
+            console.log("Full team stats:", game.teamStats);
+          }
+          
+          console.log("\n🚀 MODEL ENHANCEMENTS:");
+          if (game.modelEnhancements) {
+            console.log("Enhancement keys:", Object.keys(game.modelEnhancements));
+            console.log("Full enhancements:", game.modelEnhancements);
+          }
+          
+          console.log("\n🔍 SEARCHING FOR INJURY KEYWORDS:");
+          const gameStr = JSON.stringify(game);
+          const injuryKeywords = ['injury', 'injured', 'questionable', 'doubtful', 'out', 'inactive', 'qb_status', 'daniels'];
+          
+          injuryKeywords.forEach(keyword => {
+            if (gameStr.toLowerCase().includes(keyword)) {
+              console.log(`✅ Found "${keyword}" in game data`);
+              // Try to extract context
+              const regex = new RegExp(`.{0,50}${keyword}.{0,50}`, 'gi');
+              const matches = gameStr.match(regex);
+              if (matches) {
+                console.log(`   Context:`, matches.slice(0, 3));
+              }
+            } else {
+              console.log(`❌ "${keyword}" not found`);
+            }
+          });
+        };
+        
+        console.log('🔬 Elite Model Debugger loaded!');
+        console.log('📝 Available functions:');
+        console.log('  debugGameModel("ATL", "WAS") - Complete game analysis');
+        console.log('  debugInjuries("ATL", "WAS")  - Enhanced injury check'); 
+        console.log('  debugWeather("ATL", "WAS")   - Weather analysis');
+        console.log('  debugRPipeline("ATL", "WAS") - R Pipeline data structure');
       }
       
       console.log(`📊 Predictions data updated: ${rows.length} games available for analysis`);
