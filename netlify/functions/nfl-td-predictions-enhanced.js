@@ -132,8 +132,16 @@ async function fetchLiveTDOdds() {
 
       for (const bookmaker of evData.bookmakers || []) {
         const bookName = normalizeBookName(bookmaker.key);
-        if (!CONFIG.ALLOWED_BOOKS.has(bookName)) continue;
-        console.log(`[DEBUG] Bookmaker: ${bookmaker.key}, markets: ${(bookmaker.markets || []).map(m => m.key).join(', ')}`);
+        const isAllowed = CONFIG.ALLOWED_BOOKS.has(bookName);
+        
+        // DIAGNOSTIC: Show book matching details
+        console.log(`📋 Book check: ${bookmaker.key} → ${bookName} → allowed: ${isAllowed}`);
+        if (!isAllowed) {
+          console.log(`📋 Rejected book. Available: ${Array.from(CONFIG.ALLOWED_BOOKS).join(', ')}`);
+          continue;
+        }
+        
+        console.log(`[DEBUG] ✅ Accepted Bookmaker: ${bookmaker.key}, markets: ${(bookmaker.markets || []).map(m => m.key).join(', ')}`);
 
         for (const market of bookmaker.markets || []) {
           const mkey = String(market.key || '').toLowerCase();
@@ -233,12 +241,15 @@ function enhancePredictionsWithLiveOdds(predictions, liveOddsData) {
       return {
         ...pred,
         american_odds: matchingOdds.odds,
+        real_odds: matchingOdds.odds,  // 🔧 ADD real_odds field for frontend
         odds_source: 'live_api',
         has_live_odds: true
       };
     } else {
       return {
         ...pred,
+        american_odds: null,
+        real_odds: null,  // 🔧 ADD real_odds field for frontend
         odds_source: 'model_estimated', 
         has_live_odds: false
       };
@@ -1478,6 +1489,7 @@ function normalizeRow(prediction) {
   return {
     ...prediction,
     american_odds: americanOdds,
+    real_odds: americanOdds,  // 🔧 ADD real_odds field for frontend
     best_price: bestPrice,
     books_count: booksCount,
     odds_sources_allowed: allowedOddsSources, // Fix the field name that oddsGate expects
@@ -1662,14 +1674,31 @@ async function generateResponseByType(data, queryParams) {
   data.full.predictions = eliteProPredictions;
   console.log(`⭐ Elite Pro Model generated ${eliteProPredictions.length} predictions with team-anchor discipline`);
 
-  // Fetch live odds for all predictions (anytime only)
+  // ODDS DIAGNOSTIC: Check what's happening with live odds
+  console.log('📊 Fetching live TD odds...');
   const liveOddsData = await fetchLiveTDOdds();
-  console.log(`[RAW DEBUG] data.full.predictions length: ${data.full.predictions?.length || 0}`);
-  if (data.full.predictions?.length > 0) {
-    console.log(`[RAW DEBUG] First prediction:`, data.full.predictions[0]);
+  
+  console.log('📊 ODDS DEBUG:', {
+    success: liveOddsData.success,
+    odds_count: liveOddsData.odds?.length || 0,
+    first_odds: liveOddsData.odds?.[0] || 'none',
+    error: liveOddsData.error || 'none'
+  });
+  
+  if (liveOddsData.odds?.length > 0) {
+    const sampleOdds = liveOddsData.odds[0];
+    console.log('📊 Sample odds bookmakers:', sampleOdds.bookmakers?.map(b => b.title) || []);
   }
   
+  console.log(`[RAW DEBUG] data.full.predictions length: ${data.full.predictions?.length || 0}`);
+  
   const enhancedPredictions = enhancePredictionsWithLiveOdds(data.full.predictions, liveOddsData);
+  
+  console.log('📊 ENHANCEMENT RESULT:', {
+    input_predictions: data.full.predictions?.length || 0,
+    enhanced_predictions: enhancedPredictions?.length || 0,
+    sample_enhanced: enhancedPredictions?.[0]?.realOdds ? 'has_odds' : 'no_odds'
+  });
   
   switch (type) {
     case 'all':
