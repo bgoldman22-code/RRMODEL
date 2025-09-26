@@ -90,7 +90,10 @@ function getTeamAbbreviation(fullName) {
     "New England Patriots": "NE", "New Orleans Saints": "NO", "New York Giants": "NYG",
     "New York Jets": "NYJ", "Philadelphia Eagles": "PHI", "Pittsburgh Steelers": "PIT",
     "Seattle Seahawks": "SEA", "San Francisco 49ers": "SF", "Tampa Bay Buccaneers": "TB",
-    "Tennessee Titans": "TEN", "Washington Commanders": "WAS"
+    "Tennessee Titans": "TEN", "Washington Commanders": "WAS",
+    // Fallbacks for common abbreviations
+    "LA": "LAR", // Default LA to Rams
+    "LAR": "LAR", "LAC": "LAC" // Handle abbreviation inputs
   };
   return nameMap[fullName] || fullName;
 }
@@ -110,7 +113,34 @@ const TEAM_NAME = {
   TEN:"Tennessee Titans", WAS:"Washington Commanders"
 };
 
-// Helpers - improved formatting with -0.0 normalization and pick'em detection
+// CLEAN SPREAD DISPLAY HELPERS
+function spreadLabel(n) {
+  if (Math.abs(n) < 0.25) return "Pick 'em";
+  const sign = n > 0 ? "+" : "";
+  return `${sign}${n.toFixed(1)}`;
+}
+
+function spreadToPickedPerspective(pickedTeamId, teams, marketLine) {
+  // marketLine is assumed to be from home team perspective (negative = home favored)
+  // Convert to picked team perspective
+  const marketSpreadForPicked = pickedTeamId === teams.homeId ? marketLine : -marketLine;
+  return marketSpreadForPicked;
+}
+
+function modelSpreadForPickedTeam(pickedTeamId, teams, modelHomeSpread) {
+  // modelHomeSpread: negative = home favored, positive = away favored
+  // Convert to picked team perspective 
+  const modelSpreadForPicked = pickedTeamId === teams.homeId ? modelHomeSpread : -modelHomeSpread;
+  return modelSpreadForPicked;
+}
+
+function spreadEdgePts(marketSpreadForPicked, modelSpreadForPicked) {
+  // How many points better is the market vs our model requirement?
+  // Positive = good (market more favorable than model requires)
+  return marketSpreadForPicked - modelSpreadForPicked;
+}
+
+// Legacy helpers for compatibility
 const round1 = (x) => Math.round(x * 10) / 10;
 const normalizeZero = (x) => (Object.is(x, -0) ? 0 : x);
 const fmtNum = (x) => {
@@ -127,14 +157,9 @@ const getHomeLine = (r, spread) => {
   return Number.isFinite(Number(val)) ? Number(val) : 0;
 };
 
-// Convert a home-POV number to picked-team POV
-function toPickPOV(valueHomePOV, pickAbbr, homeAbbr) {
-  // home POV: negative => home favored; positive => home getting points
-  // If pick is the home team, keep sign; if pick is the away team, flip sign
-  return pickAbbr === homeAbbr ? valueHomePOV : -valueHomePOV;
-}
+// Removed toPickPOV - replaced with clean spreadToPickedPerspective helper
 
-// FINAL SOLUTION: Always show both lines, either from pick POV or neutral POV
+// CLEAN SPREAD DISPLAY: Always show from picked team's perspective
 function spreadDisplayFromPick({
   pickAbbr, homeAbbr, awayAbbr,
   marketHomeLine,   // e.g. -16.5 (home POV)
@@ -143,29 +168,31 @@ function spreadDisplayFromPick({
   edgePct,         // pass through for NO BET cases
   TEAM_NAME
 }) {
-  // NO BET / PUSH: Show neutral POV for both lines with pick'em annotations
+  // NO BET / PUSH: Show neutral POV for both lines
   if (!pickAbbr || pickAbbr.toLowerCase() === "push") {
     return {
       pickText: "Pick 'em",
-      bookText: `Line: Home ${fmtNum(marketHomeLine)}${fmtPickem(marketHomeLine)} / Away ${fmtNum(-marketHomeLine)}${fmtPickem(-marketHomeLine)}`,
-      modelText: `Model: Home ${fmtNum(modelHomeMargin)}${fmtPickem(modelHomeMargin)} / Away ${fmtNum(-modelHomeMargin)}${fmtPickem(-modelHomeMargin)}`,
+      bookText: `Line: Home ${spreadLabel(marketHomeLine)} / Away ${spreadLabel(-marketHomeLine)}`,
+      modelText: `Model: Home ${spreadLabel(modelHomeMargin)} / Away ${spreadLabel(-modelHomeMargin)}`,
       confidence: confidence ?? "—",
-      edgePct: edgePct ?? "—"
+      edgePts: "—"
     };
   }
 
   const pickName = TEAM_NAME[pickAbbr] || pickAbbr;
+  const teams = { homeId: homeAbbr, awayId: awayAbbr };
 
-  // Convert BOTH to pick POV for consistency
-  const marketPickPOV = toPickPOV(marketHomeLine, pickAbbr, homeAbbr);
-  const modelPickPOV = toPickPOV(modelHomeMargin, pickAbbr, homeAbbr);
+  // Convert BOTH to picked team perspective using clean helpers
+  const marketSpreadForPicked = spreadToPickedPerspective(pickAbbr, teams, marketHomeLine);
+  const modelSpreadForPicked = modelSpreadForPickedTeam(pickAbbr, teams, modelHomeMargin);
+  const edgePts = spreadEdgePts(marketSpreadForPicked, modelSpreadForPicked);
 
   return {
     pickText: pickName,
-    bookText: `Line: ${pickName} ${fmtNum(marketPickPOV)}${fmtPickem(marketPickPOV)}`,
-    modelText: `Model: ${pickName} ${fmtNum(modelPickPOV)}${fmtPickem(modelPickPOV)}`,
+    bookText: `Line: ${pickName} ${spreadLabel(marketSpreadForPicked)}`,
+    modelText: `Model: ${pickName} ${spreadLabel(modelSpreadForPicked)}`,
     confidence: confidence ?? "—",
-    edgePct: edgePct ?? "—"
+    edgePts: edgePts.toFixed(1)
   };
 }
 
@@ -594,7 +621,7 @@ export default function NFLPredictions() {
                         pick={spreadDisplay.pickText}
                         confidence={spreadDisplay.confidence}
                         betRecommendation={spread?.betRecommendation || spread?.displayNote || (spread?.pick ? "BET" : "NO BET")}
-                        edge={spreadDisplay.edgePct}
+                        edge={spreadDisplay.edgePts + " pts"}
                         type="spread"
                         modelValue={spreadDisplay.modelText}   // ✅ always shown: pick POV or neutral POV
                         marketValue={spreadDisplay.bookText}   // ✅ always shown: pick POV or neutral POV
