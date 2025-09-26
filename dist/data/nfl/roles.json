@@ -1,0 +1,22 @@
+{
+  "alpha-possession": {
+    "desc": "High-volume chain-mover",
+    "profile": "high_targets_low_adot"
+  },
+  "alpha-deep": {
+    "desc": "Perimeter deep threat",
+    "profile": "low_targets_high_adot"
+  },
+  "speed-deep": {
+    "desc": "Speed slot/deep role",
+    "profile": "low_targets_high_adot"
+  },
+  "rookie-possession": {
+    "desc": "Rookie, schemed short area",
+    "profile": "mid_targets_low_adot"
+  },
+  "qb-checkdown": {
+    "desc": "QB with short aDOT tendencies",
+    "profile": "qb_attempts_over_yards_under"
+  }
+}
