@@ -3,7 +3,8 @@
 
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics, getCurrentWeek, getCurrentWeights, diagnoseMetricsData } from '../_lib/blobs-nfl.js';
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
-import { calculateDynamicInjuryImpact, detectInactiveStarters } from '../_lib/dynamic-injury-impact.js';
+// Temporarily commenting out dynamic import to debug 500 error
+// import { calculateDynamicInjuryImpact, detectInactiveStarters } from '../_lib/dynamic-injury-impact.js';
 
 // PHASE 1: Enhanced EPA Features - Simplified Calibration Fix
 function applyCalibrationFix(confidencePercentage, recentResults = []) {
@@ -733,76 +734,49 @@ function calculateDefaultInjuryImpact(position, teamCode) {
   };
 }
 
-async function applyInjuryAdjustments(scoreData, teamCode, injuries) {
+function applyInjuryAdjustments(scoreData, teamCode, injuries) {
   const teamInjuries = injuries.teams?.[teamCode] || {};
   let totalDelta = 0;
   const injuryAnalysis = {
     adjustments: [],
     totalImpact: 0,
     confidence: 1.0,
-    baselineCorrection: 'dynamic_v1' // Track our new approach
+    baselineCorrection: 'temp_fix_v1' // Temporary revert while debugging
   };
   
   // DEBUG: Log what we're working with
-  console.log(`🏥 DYNAMIC INJURY DEBUG for ${teamCode}:`, {
+  console.log(`🏥 TEMP INJURY DEBUG for ${teamCode}:`, {
     hasInjuryData: !!injuries.teams,
     teamInjuries: teamInjuries,
     qbStatus: teamInjuries.qb_status,
     qbName: teamInjuries.qb_name
   });
 
-  // SPECIAL DEBUG FOR WASHINGTON
-  if (teamCode === 'WAS') {
-    console.log(`🔥 WASHINGTON DYNAMIC INJURY DEBUG:`, {
-      fullInjuryData: teamInjuries,
-      qbStatus: teamInjuries.qb_status,
-      qbName: teamInjuries.qb_name,
-      hasQbStatus: !!teamInjuries.qb_status,
-      qbStatusNotActive: teamInjuries.qb_status !== 'active'
-    });
-  }
-
-  // QB Injuries - Use dynamic calculation
+  // QB Injuries - Use simple calculation temporarily
   if (teamInjuries.qb_status && teamInjuries.qb_status !== 'active') {
     const qbName = teamInjuries.qb_name || 'Unknown QB';
-    console.log(`🔥 DYNAMIC QB INJURY DETECTED for ${teamCode}: ${qbName} is ${teamInjuries.qb_status}`);
+    console.log(`🔥 TEMP QB INJURY DETECTED for ${teamCode}: ${qbName} is ${teamInjuries.qb_status}`);
     
-    try {
-      const qbImpact = await calculateDynamicInjuryImpact(qbName, 'QB', teamInjuries.qb_status, teamCode);
-      console.log(`🔥 Dynamic QB Impact calculated:`, qbImpact);
-      
-      const qbDelta = qbImpact.impact;
-      console.log(`🔥 Final Dynamic QB Delta for ${teamCode}: ${qbDelta}`);
-      
-      totalDelta += qbDelta;
-      injuryAnalysis.adjustments.push({
-        name: qbName,
-        position: 'QB',
-        status: teamInjuries.qb_status,
-        impact: qbDelta,
-        confidence: qbImpact.confidence,
-        details: qbImpact.details,
-        reason: `Dynamic calculation: ${qbImpact.breakdown?.playerEPA} → ${qbImpact.breakdown?.backupEPA} EPA`
-      });
-    } catch (error) {
-      console.error(`❌ Dynamic QB calculation failed, using fallback:`, error);
-      // Fallback to old system
-      const qbImpact = calculateDefaultInjuryImpact('QB', teamCode);
-      let qbDelta = 0;
-      switch (teamInjuries.qb_status) {
-        case 'out': qbDelta = qbImpact.expectedGameImpact; break;
-        case 'doubtful': qbDelta = qbImpact.expectedGameImpact * 0.7; break;
-        case 'questionable': qbDelta = qbImpact.expectedGameImpact * 0.3; break;
-      }
-      totalDelta += qbDelta;
-      injuryAnalysis.adjustments.push({
-        name: qbName,
-        position: 'QB', 
-        status: teamInjuries.qb_status,
-        impact: qbDelta,
-        reason: 'Fallback calculation after dynamic error'
-      });
+    // Simple QB impact calculation (will be more conservative)
+    const qbImpact = calculateDefaultInjuryImpact('QB', teamCode);
+    let qbDelta = 0;
+    
+    switch (teamInjuries.qb_status) {
+      case 'out': qbDelta = qbImpact.expectedGameImpact; break;
+      case 'doubtful': qbDelta = qbImpact.expectedGameImpact * 0.7; break;
+      case 'questionable': qbDelta = qbImpact.expectedGameImpact * 0.3; break;
     }
+    
+    console.log(`🔥 Temp QB Delta for ${teamCode}: ${qbDelta}`);
+    
+    totalDelta += qbDelta;
+    injuryAnalysis.adjustments.push({
+      name: qbName,
+      position: 'QB',
+      status: teamInjuries.qb_status,
+      impact: qbDelta,
+      reason: 'Temporary simple calculation - debugging dynamic system'
+    });
     totalDelta += qbDelta;
     injuryAnalysis.adjustments.push({
       player: qbName,
@@ -814,72 +788,49 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries) {
     });
   }
 
-  // SKILL POSITION INJURIES - Use dynamic calculation system
+  // SKILL POSITION INJURIES - Temporary simple calculation
   const skillPositions = ['RB', 'WR', 'TE'];
   
-  for (const position of skillPositions) {
+  skillPositions.forEach(position => {
     const positionInjuries = teamInjuries[`${position.toLowerCase()}_injuries`] || [];
     
-    for (const injury of positionInjuries) {
+    positionInjuries.forEach(injury => {
       const playerName = injury.name || injury.player || 'Unknown';
       const status = injury.status || 'questionable';
       const depthPosition = injury.depth || 1;
       
-      if (status === 'active') continue;
+      if (status === 'active') return;
       
       // Only calculate for key players (starters + key backups)  
-      if (depthPosition > 2) continue;
+      if (depthPosition > 2) return;
       
-      try {
-        const dynamicImpact = await calculateDynamicInjuryImpact(playerName, position, status, teamCode);
-        const positionDelta = dynamicImpact.impact;
-        
-        totalDelta += positionDelta;
-        injuryAnalysis.adjustments.push({
-          name: playerName,
-          position: position,
-          status: status,
-          depth: depthPosition,
-          impact: positionDelta,
-          confidence: dynamicImpact.confidence,
-          details: dynamicImpact.details,
-          reason: `Dynamic: ${dynamicImpact.breakdown?.playerEPA} → ${dynamicImpact.breakdown?.backupEPA} EPA, snap share: ${dynamicImpact.breakdown?.snapShareUsed}`
-        });
-        
-        console.log(`✅ Dynamic ${position} impact for ${teamCode}: ${playerName} = ${positionDelta}`);
-        
-      } catch (error) {
-        console.error(`❌ Dynamic ${position} calculation failed for ${playerName}, using fallback:`, error);
-        
-        // Fallback to old system
-        const impactAnalysis = calculateDefaultInjuryImpact(position, teamCode);
-        let positionDelta = 0;
-        const depthMultiplier = depthPosition === 1 ? 1.0 : 0.4;
-        
-        switch (status) {
-          case 'out':
-            positionDelta = impactAnalysis.expectedGameImpact * depthMultiplier;
-            break;
-          case 'doubtful':
-            positionDelta = impactAnalysis.expectedGameImpact * depthMultiplier * 0.7;
-            break;
-          case 'questionable':
-            positionDelta = impactAnalysis.expectedGameImpact * depthMultiplier * 0.3;
-            break;
-        }
-        
-        totalDelta += positionDelta;
-        injuryAnalysis.adjustments.push({
-          name: playerName,
-          position: position,
-          status: status,
-          depth: depthPosition,
-          impact: positionDelta,
-          reason: 'Fallback calculation after dynamic error'
-        });
+      const impactAnalysis = calculateDefaultInjuryImpact(position, teamCode);
+      let positionDelta = 0;
+      const depthMultiplier = depthPosition === 1 ? 1.0 : 0.4;
+      
+      switch (status) {
+        case 'out':
+          positionDelta = impactAnalysis.expectedGameImpact * depthMultiplier;
+          break;
+        case 'doubtful':
+          positionDelta = impactAnalysis.expectedGameImpact * depthMultiplier * 0.7;
+          break;
+        case 'questionable':
+          positionDelta = impactAnalysis.expectedGameImpact * depthMultiplier * 0.3;
+          break;
       }
-    }
-  }
+      
+      totalDelta += positionDelta;
+      injuryAnalysis.adjustments.push({
+        name: playerName,
+        position: position,
+        status: status,
+        depth: depthPosition,
+        impact: positionDelta,
+        reason: 'Temporary simple calculation - debugging dynamic system'
+      });
+    });
+  });
 
   // Traditional positional injuries (O-line, Defense, Special Teams)
   const olOut = teamInjuries.ol_starters_out ?? 0;
@@ -1679,7 +1630,7 @@ async function generateAdvancedPredictions(games, season) {
 
   console.log(`v13 logic + v8 odds: Processing ${games.length} games with working odds integration`);
 
-  const predictions = await Promise.all(games.map(async (game) => {
+  const predictions = games.map(game => {
     const homeCode = game.home_team;
     const awayCode = game.away_team;
 
@@ -1695,9 +1646,9 @@ async function generateAdvancedPredictions(games, season) {
     let awayScoreData = scoreTeamFromFeatures(awayMetrics, league, contextWeights, matchups?.away, false, currentWeek, homeMetrics, awayCode);
 
     if (injuries) {
-      console.log(`🔥 APPLYING DYNAMIC INJURIES for ${awayCode} @ ${homeCode}`);
-      homeScoreData = await applyInjuryAdjustments(homeScoreData, homeCode, injuries);
-      awayScoreData = await applyInjuryAdjustments(awayScoreData, awayCode, injuries);
+      console.log(`🔥 APPLYING TEMP INJURIES for ${awayCode} @ ${homeCode}`);
+      homeScoreData = applyInjuryAdjustments(homeScoreData, homeCode, injuries);
+      awayScoreData = applyInjuryAdjustments(awayScoreData, awayCode, injuries);
     } else {
       console.log(`❌ NO INJURIES APPLIED - injuries object is falsy:`, injuries);
     }
@@ -2060,7 +2011,7 @@ async function generateAdvancedPredictions(games, season) {
         }
       }
     };
-  }));
+  });
 
   const parlayComponents = generateParlayComponents(games, predictions);
   const parlaySuggestions = generateResponsibleParlays(parlayComponents);
