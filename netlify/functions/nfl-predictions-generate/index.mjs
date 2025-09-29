@@ -745,12 +745,14 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries) {
     baselineCorrection: 'temp_fix_v1' // Temporary revert while debugging
   };
   
-  // DEBUG: Log what we're working with
-  console.log(`🏥 TEMP INJURY DEBUG for ${teamCode}:`, {
+  // ENHANCED DEBUG: Log everything we're working with
+  console.log(`🏥 ENHANCED INJURY DEBUG for ${teamCode}:`, {
     hasInjuryData: !!injuries.teams,
+    injuryKeys: injuries.teams ? Object.keys(injuries.teams) : [],
     teamInjuries: teamInjuries,
     qbStatus: teamInjuries.qb_status,
-    qbName: teamInjuries.qb_name
+    qbName: teamInjuries.qb_name,
+    teamExists: !!injuries.teams?.[teamCode]
   });
 
   // QB Injuries - Use simple calculation temporarily
