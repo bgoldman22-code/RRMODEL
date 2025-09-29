@@ -101,6 +101,23 @@
         console.log(`   Games with Injuries: ${gamesWithInjuries}`);
         console.log(`   Games without Injuries: ${data.predictions.length - gamesWithInjuries}`);
         
+        // Debug: Check if new dynamic system working
+        console.log('\n🔧 SYSTEM DEPLOYMENT CHECK:');
+        data.predictions.forEach(game => {
+            const awayAdjustments = game.teamStats?.away?.injuryImpact?.adjustments || [];
+            const homeAdjustments = game.teamStats?.home?.injuryImpact?.adjustments || [];
+            
+            [...awayAdjustments, ...homeAdjustments].forEach(adj => {
+                if (adj.reason && adj.reason.includes('Dynamic')) {
+                    console.log(`✅ DYNAMIC SYSTEM WORKING: ${adj.name} (${adj.position}) - ${adj.reason}`);
+                } else if (adj.reason && adj.reason.includes('Fallback')) {
+                    console.log(`⚠️  FALLBACK USED: ${adj.name} (${adj.position}) - ${adj.reason}`);
+                } else {
+                    console.log(`❓ OLD SYSTEM?: ${adj.name} (${adj.position}) - ${adj.reason || 'no reason'}`);
+                }
+            });
+        });
+
         // Market alignment check for major injuries
         console.log('\n🎯 MARKET ALIGNMENT CHECK:');
         data.predictions.forEach(game => {
