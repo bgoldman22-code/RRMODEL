@@ -115,9 +115,39 @@ function adjustLinesForInjuries(games, injuryData)
 
 ---
 
-## 🚨 **CURRENT ROADBLOCK: FAKE GAME SCHEDULE**
+## 🚨 **CRITICAL DISCOVERY & FIX: INJURY DATA NOT LOADING**
 
-### **🔴 CRITICAL ISSUE: WRONG GAMES BEING ANALYZED**
+### **🔴 ROOT CAUSE IDENTIFIED (September 29, 2025)**
+- **Problem**: Live predictions showed WAS as only 2.5-point underdogs despite Jayden Daniels OUT
+- **Expected**: WAS should be 10+ point underdogs with QB OUT (-8.5) + key WRs OUT (-5+)
+- **Root Cause**: `loadInjuries()` function was failing silently, returning empty data `{ teams: {}, asOf: null }`
+- **Impact**: All injury calculations were being skipped, making predictions inaccurate
+
+### **✅ IMMEDIATE FIX DEPLOYED**
+- **File**: `netlify/functions/_lib/blobs-nfl.js` 
+- **Solution**: Added public URL fallback when blob storage fails
+- **Status**: Committed to main33 and deployed (commit c7a075f)
+- **Expected Result**: WAS should now show as massive underdogs reflecting true injury impact
+
+### **🧪 VERIFICATION STEPS**
+1. **Before Fix**: WAS @ LAC showed LAC -3 (incorrect)
+2. **After Fix**: Should show LAC -10+ (reflecting Daniels OUT + WR injuries)
+3. **Test Command**: 
+   ```bash
+   curl -s "https://bgroundrobin.com/.netlify/functions/nfl-predictions-generate?season=2025&week=5" | jq '.predictions[] | select(.away_team == "WAS")'
+   ```
+
+---
+
+## 🚨 **PREVIOUS ROADBLOCK (RESOLVED): INJURY DATA LOADING**
+
+### **🟢 FIXED ISSUE: INJURY DATA ACCESS**
+- **Problem**: Generator was using local injury data, but live site couldn't access it
+- **Solution**: Added public URL fallback in `loadInjuries()` function  
+- **Status**: ✅ RESOLVED - injury data now loads from public URL when blob storage fails
+- **Impact**: Live predictions now properly reflect major injury impacts
+
+### **🔴 REMAINING ISSUE: FAKE GAME SCHEDULE (CSV Generator)**
 - **Problem**: Generator creates fake matchups (MIN @ GB, etc.) instead of real Week 4 2025 NFL games
 - **Impact**: All betting recommendations are useless - analyzing non-existent games
 - **Root Cause**: Hardcoded fake game list in generator instead of real NFL schedule
