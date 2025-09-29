@@ -297,7 +297,8 @@ async function processPositionInjuriesDynamic(injuries, position, teamCode) {
 function determineQBStatus(injuries, teamCode) {
   // Manual overrides for known inactive starters (not on injury report but out)
   const inactiveStarters = {
-    'WAS': { name: 'Jayden Daniels', status: 'out', reason: 'inactive_starter' }
+    'WAS': { name: 'Jayden Daniels', status: 'out', reason: 'inactive_starter' },
+    'CIN': { name: 'Joe Burrow', status: 'out', reason: 'injured_reserve' }
   };
   
   if (inactiveStarters[teamCode]) {
@@ -319,7 +320,8 @@ function determineQBStatus(injuries, teamCode) {
 function getStartingQBName(injuries, teamCode) {
   // Manual overrides for known inactive starters (not on injury report but out)
   const inactiveStarters = {
-    'WAS': { name: 'Jayden Daniels', status: 'out', reason: 'inactive_starter' }
+    'WAS': { name: 'Jayden Daniels', status: 'out', reason: 'inactive_starter' },
+    'CIN': { name: 'Joe Burrow', status: 'out', reason: 'injured_reserve' }
   };
   
   if (inactiveStarters[teamCode]) {
