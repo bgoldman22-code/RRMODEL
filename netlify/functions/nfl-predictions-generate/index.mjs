@@ -630,6 +630,7 @@ const PLAYER_EPA_DATABASE = {
     'Patrick Mahomes II': [0.29, 0.12, 1.0],
     'Lamar Jackson': [0.28, 0.06, 1.0],
     'Kyler Murray': [0.24, 0.05, 1.0],
+    'Jayden Daniels': [0.26, 0.04, 1.0], // Strong rookie season, big dropoff to Mariota
     // Add more as needed
   }
 };
@@ -641,6 +642,7 @@ const TEAM_SCHEME_DEPENDENCY = {
   'KC': { RB: 0.5, WR: 0.6, TE: 0.9, QB: 1.0 }, // Mahomes + Kelce system
   'SF': { RB: 0.95, WR: 0.65, TE: 0.8, QB: 0.7 }, // CMC-dependent
   'PHI': { RB: 0.85, WR: 0.7, TE: 0.6, QB: 0.9 }, // Saquon + Hurts
+  'WAS': { RB: 0.6, WR: 0.75, TE: 0.6, QB: 0.95 }, // Jayden Daniels rookie system dependent
   // Add more teams as needed - default to 0.7 across positions
 };
 
@@ -748,6 +750,17 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries) {
     qbName: teamInjuries.qb_name
   });
 
+  // SPECIAL DEBUG FOR WASHINGTON
+  if (teamCode === 'WAS') {
+    console.log(`🔥 WASHINGTON INJURY DEBUG:`, {
+      fullInjuryData: teamInjuries,
+      qbStatus: teamInjuries.qb_status,
+      qbName: teamInjuries.qb_name,
+      hasQbStatus: !!teamInjuries.qb_status,
+      qbStatusNotActive: teamInjuries.qb_status !== 'active'
+    });
+  }
+
   // ELITE BASELINE CORRECTION APPROACH:
   // Only apply injury adjustments for players whose absence ISN'T already 
   // reflected in the season statistics baseline
@@ -755,7 +768,10 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries) {
   // QB Injuries - Always apply (major system impact)
   if (teamInjuries.qb_status && teamInjuries.qb_status !== 'active') {
     const qbName = teamInjuries.qb_name || 'Unknown QB';
+    console.log(`🔥 QB INJURY DETECTED for ${teamCode}: ${qbName} is ${teamInjuries.qb_status}`);
+    
     const qbImpact = calculateReplacementValue(qbName, 'QB', teamCode, null, injuries);
+    console.log(`🔥 QB Impact calculated:`, qbImpact);
     
     let qbDelta = 0;
     switch (teamInjuries.qb_status) {
@@ -770,6 +786,7 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries) {
         break;
     }
     
+    console.log(`🔥 Final QB Delta for ${teamCode}: ${qbDelta}`);
     totalDelta += qbDelta;
     injuryAnalysis.adjustments.push({
       player: qbName,
