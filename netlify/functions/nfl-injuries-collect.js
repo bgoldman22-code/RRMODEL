@@ -222,34 +222,36 @@ async function fetchESPNInjuries(teamCode) {
 async function processQBInjuries(injuries, teamCode) {
   const qbInjuries = injuries.filter(inj => inj.position === 'QB');
   
-  let qbStatus = 'active';
-  let qbName = 'Starting QB';
+  // FIXED: Use manual overrides for QB status and name
+  let qbStatus = determineQBStatus(qbInjuries, teamCode);
+  let qbName = getStartingQBName(qbInjuries, teamCode);
   let dynamicImpact = null;
   
-  if (qbInjuries.length > 0) {
+  // If we have live injury data, use it unless overridden
+  if (qbInjuries.length > 0 && qbStatus === 'active') {
     const starterQB = qbInjuries.sort((a, b) => a.depthOrder - b.depthOrder)[0];
     qbStatus = starterQB.status;
     qbName = starterQB.name;
-    
-    // Calculate dynamic impact if QB is injured
-    if (qbStatus !== 'active') {
-      try {
-        dynamicImpact = await calculateDynamicInjuryImpact(
-          starterQB.name, 
-          'QB', 
-          starterQB.status, 
-          teamCode
-        );
-      } catch (error) {
-        console.error(`Failed to calculate dynamic QB impact for ${teamCode}:`, error);
-      }
+  }
+  
+  // Calculate dynamic impact if QB is injured
+  if (qbStatus !== 'active') {
+    try {
+      dynamicImpact = await calculateDynamicInjuryImpact(
+        qbName, 
+        'QB', 
+        qbStatus,
+        teamCode
+      );
+    } catch (error) {
+      console.error(`Failed to calculate dynamic QB impact for ${teamCode}:`, error);
     }
   }
   
   return {
     status: qbStatus,
     name: qbName,
-    details: qbInjuries[0]?.description || null,
+    details: getQBInjuryDetails(qbInjuries),
     dynamicImpact: dynamicImpact
   };
 }
