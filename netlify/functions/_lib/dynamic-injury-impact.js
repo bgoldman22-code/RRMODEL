@@ -99,8 +99,8 @@ export async function calculateDynamicInjuryImpact(playerName, position, status,
     // Apply team context (offensive line, scheme, etc.)
     const contextAdjustedImpact = applyTeamContext(adjustedImpact, team, position);
     
-    // Convert to point spread impact
-    const pointImpact = convertToPointImpact(contextAdjustedImpact);
+    // Convert to point spread impact with position and status scaling
+    const pointImpact = convertToPointImpact(contextAdjustedImpact, position, status);
     
     return {
       player: playerName,
@@ -115,6 +115,9 @@ export async function calculateDynamicInjuryImpact(playerName, position, status,
         rawDifference: playerValue.epa - backupValue.epa,
         performanceAdjustment: backupPerformance?.adjustment || 0,
         teamContextMultiplier: getTeamContextMultiplier(team, position),
+        snapShareUsed: position === 'QB' ? (status === 'out' ? 0.95 : 0.7) : 
+                      position === 'RB' ? (status === 'out' ? 0.65 : 0.4) : 0.75,
+        conversionFactor: 3.75,
         finalPointImpact: pointImpact
       },
       backup: {
@@ -204,7 +207,7 @@ function getPlayerValue(playerName, position, team) {
 }
 
 /**
- * Get backup player value
+ * Get backup player value with improved unknown player handling
  */
 function getBackupValue(starterName, position, team) {
   const depthChart = DEPTH_CHARTS[team]?.[position] || [];
@@ -216,11 +219,30 @@ function getBackupValue(starterName, position, team) {
     return { ...backupValue, name: backupName };
   }
   
-  // Fallback: generic backup value
+  // Improved fallback: position-specific backup estimates based on league averages
+  return getPositionalBackupEstimate(position, team);
+}
+
+/**
+ * Get position-specific backup estimates (replaces generic -1.5 fallback)
+ */
+function getPositionalBackupEstimate(position, team) {
+  // League average backup EPA by position (more systematic than flat -1.5)
+  const backupAverages = {
+    'QB': { epa: -0.15, tier: 'backup', confidence: 0.6 },
+    'RB': { epa: -0.08, tier: 'backup', confidence: 0.7 }, 
+    'WR': { epa: -0.05, tier: 'backup', confidence: 0.5 },
+    'TE': { epa: -0.06, tier: 'backup', confidence: 0.6 },
+    'DB': { epa: -0.03, tier: 'backup', confidence: 0.4 } // DBs hardest to estimate
+  };
+  
+  const baseEstimate = backupAverages[position] || { epa: -0.10, tier: 'backup', confidence: 0.3 };
+  
   return {
-    name: 'Unknown Backup',
-    epa: getGenericBackupEPA(position),
-    tier: 'backup'
+    name: `Unknown ${position} Backup`,
+    epa: baseEstimate.epa,
+    tier: baseEstimate.tier,
+    confidence: baseEstimate.confidence
   };
 }
 
@@ -303,14 +325,26 @@ function getTeamContextMultiplier(team, position) {
 }
 
 /**
- * Convert EPA impact to point spread impact
+ * Convert EPA impact to point spread impact with snap share scaling
  */
-function convertToPointImpact(epaImpact) {
-  // EPA to points conversion: ~65 plays per game, each EPA point = ~65 yards = ~4.5 points
-  const playsPerGame = 65;
-  const pointsPerEPA = 4.5;
+function convertToPointImpact(epaImpact, position, status = 'out') {
+  // More conservative EPA to points conversion
+  const basePlaysPerGame = 65;
+  const pointsPerEPA = 3.75; // Reduced from 4.5 to be more realistic
   
-  return epaImpact * playsPerGame * pointsPerEPA;
+  // Expected snap share for backup players (not 100% usage)
+  const snapShareByPosition = {
+    'QB': status === 'out' ? 0.95 : 0.7, // QBs get most snaps when starting
+    'RB': status === 'out' ? 0.65 : 0.4, // RBs share more with committees  
+    'WR': status === 'out' ? 0.75 : 0.5, // WRs depend on role/depth
+    'TE': status === 'out' ? 0.80 : 0.6, // TEs often every-down players
+    'DB': status === 'out' ? 0.85 : 0.6  // DBs usually full-time when healthy
+  };
+  
+  const snapShare = snapShareByPosition[position] || 0.7;
+  const effectivePlays = basePlaysPerGame * snapShare;
+  
+  return epaImpact * effectivePlays * pointsPerEPA;
 }
 
 /**
@@ -350,19 +384,7 @@ function estimatePlayerValue(playerName, position, team) {
   };
 }
 
-/**
- * Get generic backup EPA for position
- */
-function getGenericBackupEPA(position) {
-  const backupAverages = {
-    'QB': -0.15,
-    'WR': -0.05,
-    'RB': -0.02,
-    'TE': -0.02
-  };
-  
-  return backupAverages[position] || -0.05;
-}
+// Removed getGenericBackupEPA - replaced with getPositionalBackupEstimate
 
 /**
  * Fallback impact calculation
