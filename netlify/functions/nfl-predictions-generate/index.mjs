@@ -1988,13 +1988,15 @@ async function generateAdvancedPredictions(games, season) {
           strength: Number(homeWinProb.toFixed(3)),
           score: Number(homeScoreData.score.toFixed(2)),
           confidence: Number(homeScoreData.confidence.toFixed(3)),
-          specialTeamsValue: homeScoreData.specialTeams?.total_st_value || 0
+          specialTeamsValue: homeScoreData.specialTeams?.total_st_value || 0,
+          injuryImpact: homeScoreData.injuryAnalysis || null
         },
         away: {
           strength: Number(awayWinProb.toFixed(3)),
           score: Number(awayScoreData.score.toFixed(2)),
           confidence: Number(awayScoreData.confidence.toFixed(3)),
-          specialTeamsValue: awayScoreData.specialTeams?.total_st_value || 0
+          specialTeamsValue: awayScoreData.specialTeams?.total_st_value || 0,
+          injuryImpact: awayScoreData.injuryAnalysis || null
         }
       }
     };

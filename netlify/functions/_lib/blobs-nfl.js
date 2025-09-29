@@ -494,7 +494,34 @@ export async function storeHistoricalMetrics(season, data) {
 }
 
 export async function loadInjuries() {
-  return (await readBlobJSON(`nfl/injuries/latest.json`)) || { teams: {}, asOf: null };
+  try {
+    // Try blob storage first
+    const blobData = await readBlobJSON(`nfl/injuries/latest.json`);
+    if (blobData && blobData.teams && Object.keys(blobData.teams).length > 0) {
+      console.log('✅ Loaded injury data from blob storage');
+      return blobData;
+    }
+  } catch (error) {
+    console.warn('⚠️ Blob storage injury data failed:', error.message);
+  }
+  
+  try {
+    // Fallback to public URL
+    console.log('🔄 Trying public URL fallback for injury data...');
+    const response = await fetch('https://rrmodel33.netlify.app/data/nfl/injuries/latest.json');
+    if (response.ok) {
+      const publicData = await response.json();
+      if (publicData && publicData.teams && Object.keys(publicData.teams).length > 0) {
+        console.log('✅ Loaded injury data from public URL');
+        return publicData;
+      }
+    }
+  } catch (error) {
+    console.warn('⚠️ Public URL injury data failed:', error.message);
+  }
+  
+  console.error('❌ No injury data available from any source');
+  return { teams: {}, asOf: null };
 }
 
 // Validation functions
