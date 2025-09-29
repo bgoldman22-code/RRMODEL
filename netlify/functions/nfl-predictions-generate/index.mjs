@@ -1998,6 +1998,13 @@ async function generateAdvancedPredictions(games, season) {
           marginDiff: marginDifference.toFixed(2),
           spreadPick: spreadPick,
           liveOddsWorking: hasLiveOdds
+        },
+        // INJURY ANALYSIS: Expose injury data for debugging and transparency
+        injuryAnalysis: {
+          home: homeScoreData.injuryAnalysis || null,
+          away: awayScoreData.injuryAnalysis || null,
+          hasInjuryImpact: !!(homeScoreData.injuryAnalysis?.adjustments?.length || awayScoreData.injuryAnalysis?.adjustments?.length),
+          injuryDataAvailable: !!injuries?.teams
         }
       },
       
@@ -2037,6 +2044,17 @@ async function generateAdvancedPredictions(games, season) {
         riskWarning: "Parlays have exponentially higher risk. Only bet what you can afford to lose.",
         bankrollManagement: "Never exceed 5% of total bankroll on parlays combined."
       }
+    },
+    // INJURY INTEGRATION STATUS: For debugging and transparency
+    injuryIntegrationStatus: {
+      dataAvailable: !!injuries?.teams,
+      teamsWithData: injuries?.teams ? Object.keys(injuries.teams).length : 0,
+      gamesWithInjuryImpact: predictions.filter(p => 
+        p.modelEnhancements?.injuryAnalysis?.hasInjuryImpact || 
+        p.teamStats?.home?.injuryImpact?.adjustments?.length ||
+        p.teamStats?.away?.injuryImpact?.adjustments?.length
+      ).length,
+      lastUpdated: injuries?.asOf || null
     }
   };
 }
