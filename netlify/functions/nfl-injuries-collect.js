@@ -1,8 +1,10 @@
 // netlify/functions/nfl-injuries-collect.js
 // Collects current NFL injury data and stores it for the R Pipeline
+// ENHANCED: Dynamic injury impact system with player-specific values
 
 import fetch from 'node-fetch';
 import { getStore } from '@netlify/blobs';
+import { detectInactiveStarters, calculateDynamicInjuryImpact } from './_lib/dynamic-injury-impact.js';
 
 // Get blob storage
 function getBlobStore() {
@@ -103,38 +105,45 @@ async function generateInjuryReport() {
 }
 
 async function processTeamInjuries(teamCode) {
-  const injuries = await fetchESPNInjuries(teamCode);
+  const rawInjuries = await fetchESPNInjuries(teamCode);
   
-  // Process QB specifically
-  const qbStatus = determineQBStatus(injuries, teamCode);
-  const qbName = getStartingQBName(injuries, teamCode);
+  // Auto-detect inactive starters not on injury report
+  const enhancedInjuries = detectInactiveStarters(rawInjuries, teamCode);
   
-  // Process skill positions with depth info
-  const rbInjuries = processPositionInjuries(injuries, 'RB');
-  const wrInjuries = processPositionInjuries(injuries, 'WR');  
-  const teInjuries = processPositionInjuries(injuries, 'TE');
+  // Process QB specifically with dynamic impact
+  const qbData = await processQBInjuries(enhancedInjuries, teamCode);
+  
+  // Process skill positions with dynamic impacts
+  const rbInjuries = await processPositionInjuriesDynamic(enhancedInjuries, 'RB', teamCode);
+  const wrInjuries = await processPositionInjuriesDynamic(enhancedInjuries, 'WR', teamCode);  
+  const teInjuries = await processPositionInjuriesDynamic(enhancedInjuries, 'TE', teamCode);
   
   return {
-    // QB STATUS - exactly what R Pipeline expects
-    qb_status: qbStatus,
-    qb_name: qbName,
-    qb_injury_details: getQBInjuryDetails(injuries),
+    // QB STATUS - with dynamic impact calculation
+    qb_status: qbData.status,
+    qb_name: qbData.name,
+    qb_injury_details: qbData.details,
+    qb_dynamic_impact: qbData.dynamicImpact, // NEW: Dynamic impact data
     
-    // SKILL POSITION INJURIES - with depth and status
+    // SKILL POSITION INJURIES - with dynamic impacts
     rb_injuries: rbInjuries,
     wr_injuries: wrInjuries,
     te_injuries: teInjuries,
     
-    // LINE AND DEFENSIVE INJURIES
-    ol_starters_out: countPositionInjuries(injuries, ['C', 'LG', 'RG', 'LT', 'RT']),
-    db_starters_out: countPositionInjuries(injuries, ['CB', 'S', 'FS', 'SS']),
+    // LINE AND DEFENSIVE INJURIES (keeping existing logic for now)
+    ol_starters_out: countPositionInjuries(enhancedInjuries, ['C', 'LG', 'RG', 'LT', 'RT']),
+    db_starters_out: countPositionInjuries(enhancedInjuries, ['CB', 'S', 'FS', 'SS']),
     
     // SPECIAL TEAMS
-    kicker_status: getSpecialTeamsStatus(injuries, 'K'),
-    punter_status: getSpecialTeamsStatus(injuries, 'P'),
-    returner_status: getSpecialTeamsStatus(injuries, 'KR'),
+    kicker_status: getSpecialTeamsStatus(enhancedInjuries, 'K'),
+    punter_status: getSpecialTeamsStatus(enhancedInjuries, 'P'),
+    returner_status: getSpecialTeamsStatus(enhancedInjuries, 'KR'),
     
-    updated_at: new Date().toISOString()
+    // METADATA
+    updated_at: new Date().toISOString(),
+    enhancement_version: 'dynamic_v1',
+    total_injuries_detected: enhancedInjuries.length,
+    auto_detected_count: enhancedInjuries.filter(inj => inj.source === 'auto_detected').length
   };
 }
 
@@ -207,6 +216,84 @@ async function fetchESPNInjuries(teamCode) {
   }
 }
 
+/**
+ * Process QB injuries with dynamic impact calculation
+ */
+async function processQBInjuries(injuries, teamCode) {
+  const qbInjuries = injuries.filter(inj => inj.position === 'QB');
+  
+  let qbStatus = 'active';
+  let qbName = 'Starting QB';
+  let dynamicImpact = null;
+  
+  if (qbInjuries.length > 0) {
+    const starterQB = qbInjuries.sort((a, b) => a.depthOrder - b.depthOrder)[0];
+    qbStatus = starterQB.status;
+    qbName = starterQB.name;
+    
+    // Calculate dynamic impact if QB is injured
+    if (qbStatus !== 'active') {
+      try {
+        dynamicImpact = await calculateDynamicInjuryImpact(
+          starterQB.name, 
+          'QB', 
+          starterQB.status, 
+          teamCode
+        );
+      } catch (error) {
+        console.error(`Failed to calculate dynamic QB impact for ${teamCode}:`, error);
+      }
+    }
+  }
+  
+  return {
+    status: qbStatus,
+    name: qbName,
+    details: qbInjuries[0]?.description || null,
+    dynamicImpact: dynamicImpact
+  };
+}
+
+/**
+ * Process position injuries with dynamic impact calculations
+ */
+async function processPositionInjuriesDynamic(injuries, position, teamCode) {
+  const positionInjuries = injuries.filter(inj => inj.position === position);
+  
+  const results = [];
+  
+  for (const injury of positionInjuries) {
+    let dynamicImpact = null;
+    
+    // Calculate dynamic impact for injured players
+    if (injury.status !== 'active') {
+      try {
+        dynamicImpact = await calculateDynamicInjuryImpact(
+          injury.name,
+          position,
+          injury.status,
+          teamCode
+        );
+      } catch (error) {
+        console.error(`Failed to calculate dynamic impact for ${injury.name}:`, error);
+      }
+    }
+    
+    results.push({
+      name: injury.name,
+      player: injury.name,
+      status: injury.status,
+      depth: injury.depthOrder || 1,
+      injury: injury.description,
+      dynamicImpact: dynamicImpact,
+      source: injury.source || 'espn'
+    });
+  }
+  
+  return results;
+}
+
+// Keep existing functions for backwards compatibility
 function determineQBStatus(injuries, teamCode) {
   // Manual overrides for known inactive starters (not on injury report but out)
   const inactiveStarters = {
