@@ -506,9 +506,9 @@ export async function loadInjuries() {
   }
   
   try {
-    // Fallback to public URL
+    // Fallback to public URL  
     console.log('🔄 Trying public URL fallback for injury data...');
-    const response = await fetch('https://rrmodel33.netlify.app/data/nfl/injuries/latest.json');
+    const response = await fetch('https://bgroundrobin.com/data/nfl/injuries/latest.json');
     if (response.ok) {
       const publicData = await response.json();
       if (publicData && publicData.teams && Object.keys(publicData.teams).length > 0) {
