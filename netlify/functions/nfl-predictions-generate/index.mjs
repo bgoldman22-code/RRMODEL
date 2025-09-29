@@ -3,12 +3,13 @@
 
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics, getCurrentWeek, getCurrentWeights, diagnoseMetricsData } from '../_lib/blobs-nfl.js';
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
+import { updateInjuryDurations, initializeInjuryDurationTracking } from '../_lib/injury-duration-tracker.js';
 // Temporarily commenting out dynamic import to debug 500 error
 // import { calculateDynamicInjuryImpact, detectInactiveStarters } from '../_lib/dynamic-injury-impact.js';
 
 // PHASE 1: Enhanced EPA Features - Simplified Calibration Fix
 function applyCalibrationFix(confidencePercentage, recentResults = []) {
-  // Convert percentage to probability for internal calculations
+  // Convert percentage to probability foWr internal calculations
   const rawProb = confidencePercentage / 100.0;
   
   // Platt scaling on last 8 weeks only (if sufficient data available)
@@ -1575,6 +1576,12 @@ async function generateAdvancedPredictions(games, season) {
   try {
     advancedMetrics = await loadAdvancedMetrics(season);
     injuries = await loadInjuries();
+    
+    // **NEW: Initialize injury duration tracking when injuries are loaded**
+    if (injuries && injuries.teams && Object.keys(injuries.teams).length > 0) {
+      console.log('🔄 Updating injury duration tracking...');
+      await updateInjuryDurations(injuries, currentWeek);
+    }
     
     console.log('🔥 INJURY DEBUG - Loaded injuries:', {
       injuriesIsNull: injuries === null,

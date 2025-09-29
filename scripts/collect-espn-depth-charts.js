@@ -1,10 +1,14 @@
 // scripts/collect-espn-depth-charts.js
 // Direct ESPN depth chart collection for live data
 
-const fs = require('fs').promises;
-const path = require('path');
+import { promises as fs } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const CURRENT_WEEK = process.env.NFL_WEEK || '3';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const CURRENT_WEEK = process.env.NFL_WEEK || '4';
 const CURRENT_SEASON = process.env.NFL_SEASON || '2025';
 
 function normTeam(code) {
@@ -144,8 +148,9 @@ async function main() {
   }
 }
 
-if (require.main === module) {
+// Check if this is the main module (ES module version)
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-module.exports = { fetchESPNDepthCharts, saveDepthCharts, main };
+export { fetchESPNDepthCharts, saveDepthCharts, main };

@@ -1,5 +1,7 @@
 // netlify/functions/_lib/dynamic-injury-impact.js
-// Dynamic injury impact system that accounts for individual player value and backup quality
+// Revolutionary dynamic injury impact system with EPA-based player values
+
+import { getWeeksOut, applyResidualDecay } from './injury-duration-tracker.js';
 // Addresses: player-specific impacts, backup quality, performance tracking, automatic detection
 
 import { getStore } from '@netlify/blobs';
@@ -99,26 +101,41 @@ export async function calculateDynamicInjuryImpact(playerName, position, status,
     // Apply team context (offensive line, scheme, etc.)
     const contextAdjustedImpact = applyTeamContext(adjustedImpact, team, position);
     
+    // **NEW: Apply residual decay for long-term injuries**
+    const weeksOut = getWeeksOut(playerName, team, week);
+    const finalImpact = weeksOut > 0 ? 
+      applyResidualDecay(contextAdjustedImpact, weeksOut, 4) : // 4-week decay constant
+      contextAdjustedImpact;
+    
     // Convert to point spread impact with position and status scaling
-    const pointImpact = convertToPointImpact(contextAdjustedImpact, position, status);
+    const pointImpact = convertToPointImpact(finalImpact, position, status);
+    
+    // Apply QB caps and shrinkage if position is QB
+    const cappedImpact = position === 'QB' ? 
+      applyQBCapsAndShrinkage(pointImpact) : 
+      pointImpact;
     
     return {
       player: playerName,
       position: position,
       status: status,
       team: team,
-      impact: pointImpact,
+      impact: cappedImpact,
       confidence: calculateConfidence(playerValue, backupValue, backupPerformance),
       breakdown: {
         playerEPA: playerValue.epa,
         backupEPA: backupValue.epa,
         rawDifference: playerValue.epa - backupValue.epa,
+        weeksOut: weeksOut,
+        residualDecayApplied: weeksOut > 0,
+        preDecayImpact: contextAdjustedImpact,
+        postDecayImpact: finalImpact,
         performanceAdjustment: backupPerformance?.adjustment || 0,
         teamContextMultiplier: getTeamContextMultiplier(team, position),
         snapShareUsed: position === 'QB' ? (status === 'out' ? 0.95 : 0.7) : 
                       position === 'RB' ? (status === 'out' ? 0.65 : 0.4) : 0.75,
         conversionFactor: 3.75,
-        finalPointImpact: pointImpact
+        finalPointImpact: cappedImpact
       },
       backup: {
         name: backupValue.name,
@@ -280,6 +297,27 @@ function calculateRawImpact(playerValue, backupValue, status) {
   };
   
   return epaDifference * (statusMultipliers[status] || 1.0);
+}
+
+/**
+ * Apply QB caps and shrinkage to prevent unrealistic impacts
+ * @param {number} impact - Raw QB impact
+ * @returns {number} Capped and shrunk impact
+ */
+function applyQBCapsAndShrinkage(impact) {
+  // Apply shrinkage factor for QB injuries (reduce extreme values)
+  const shrinkageFactor = 0.65; // Reduce impact by 35%
+  const shrunkImpact = impact * shrinkageFactor;
+  
+  // Apply maximum cap to prevent unrealistic impacts
+  const maxImpact = -8.5; // Maximum 8.5 point negative impact
+  const cappedImpact = Math.max(shrunkImpact, maxImpact);
+  
+  if (cappedImpact !== impact) {
+    console.log(`🧢 QB impact adjusted: ${impact.toFixed(2)} → ${cappedImpact.toFixed(2)} (shrinkage: ${shrinkageFactor}, cap: ${maxImpact})`);
+  }
+  
+  return cappedImpact;
 }
 
 /**
