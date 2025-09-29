@@ -1,6 +1,8 @@
 // netlify/functions/_lib/injury-duration-tracker.js
 // Track how long players have been out for residual decay calculations
 
+import { INJURY_CONFIG } from './injury-system-config.js';
+
 /**
  * Injury Duration Tracker
  * Tracks when players first went on injury list to calculate weeks out
@@ -201,19 +203,31 @@ export function getWeeksOut(playerName, team, currentWeek = 4, currentSeason = 2
  * Apply residual decay to injury impact based on weeks out
  * @param {number} rawImpact - Original injury impact
  * @param {number} weeksOut - Number of weeks player has been out
- * @param {number} tau - Decay time constant (default: 4 weeks)
+ * @param {string} position - Player position for position-specific tau
  * @returns {number} Adjusted impact with residual decay
  */
-export function applyResidualDecay(rawImpact, weeksOut, tau = 4) {
+export function applyResidualDecay(rawImpact, weeksOut, position = 'WR') {
   if (weeksOut <= 0) {
     return rawImpact; // No decay for new injuries
+  }
+  
+  // Use position-specific time constants from centralized config
+  let tau;
+  if (position === 'QB') {
+    tau = INJURY_CONFIG.TAU_QB_GAMES;
+  } else if (['OL', 'OT', 'OG', 'C'].includes(position)) {
+    tau = INJURY_CONFIG.TAU_OLINE_GAMES;
+  } else if (['CB', 'S', 'LB', 'DL', 'DE', 'DT'].includes(position)) {
+    tau = INJURY_CONFIG.TAU_DEFENSE_GAMES;
+  } else {
+    tau = INJURY_CONFIG.TAU_NON_QB_GAMES; // RB, WR, TE default
   }
   
   // Exponential decay: impact × exp(-weeks_out / τ)
   const decayFactor = Math.exp(-weeksOut / tau);
   const adjustedImpact = rawImpact * decayFactor;
   
-  console.log(`🔄 Residual decay applied: ${rawImpact.toFixed(2)} × exp(-${weeksOut}/${tau}) = ${adjustedImpact.toFixed(2)}`);
+  console.log(`🔄 Residual decay applied (${position}): ${rawImpact.toFixed(2)} × exp(-${weeksOut}/${tau}) = ${adjustedImpact.toFixed(2)}`);
   
   return adjustedImpact;
 }

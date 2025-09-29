@@ -2,6 +2,8 @@
 // Revolutionary dynamic injury impact system with EPA-based player values
 
 import { getWeeksOut, applyResidualDecay } from './injury-duration-tracker.js';
+import { INJURY_CONFIG, UNKNOWN_PLAYER_PRIORS, getOpponentAdjustmentFactor } from './injury-system-config.js';
+import { calculateEnhancedInjuryImpact } from './enhanced-injury-calculations.js';
 // Addresses: player-specific impacts, backup quality, performance tracking, automatic detection
 
 import { getStore } from '@netlify/blobs';
@@ -241,25 +243,18 @@ function getBackupValue(starterName, position, team) {
 }
 
 /**
- * Get position-specific backup estimates (replaces generic -1.5 fallback)
+ * Get position-specific backup estimates using centralized priors
  */
 function getPositionalBackupEstimate(position, team) {
-  // League average backup EPA by position (more systematic than flat -1.5)
-  const backupAverages = {
-    'QB': { epa: -0.15, tier: 'backup', confidence: 0.6 },
-    'RB': { epa: -0.08, tier: 'backup', confidence: 0.7 }, 
-    'WR': { epa: -0.05, tier: 'backup', confidence: 0.5 },
-    'TE': { epa: -0.06, tier: 'backup', confidence: 0.6 },
-    'DB': { epa: -0.03, tier: 'backup', confidence: 0.4 } // DBs hardest to estimate
-  };
-  
-  const baseEstimate = backupAverages[position] || { epa: -0.10, tier: 'backup', confidence: 0.3 };
+  // Use centralized unknown player priors
+  const prior = UNKNOWN_PLAYER_PRIORS[position] || UNKNOWN_PLAYER_PRIORS['WR'];
   
   return {
     name: `Unknown ${position} Backup`,
-    epa: baseEstimate.epa,
-    tier: baseEstimate.tier,
-    confidence: baseEstimate.confidence
+    epa: prior.epa,
+    tier: 'backup',
+    confidence: prior.confidence,
+    description: prior.description
   };
 }
 
@@ -288,15 +283,10 @@ async function getBackupPerformance(team, position, week) {
 function calculateRawImpact(playerValue, backupValue, status) {
   const epaDifference = playerValue.epa - backupValue.epa;
   
-  // Status multipliers
-  const statusMultipliers = {
-    'out': 1.0,
-    'doubtful': 0.8,
-    'questionable': 0.5,
-    'active': 0.0
-  };
+  // Use centralized status multipliers (refined based on NFL analysis)
+  const statusMultiplier = INJURY_CONFIG.STATUS_WEIGHTS[status] || INJURY_CONFIG.STATUS_WEIGHTS['questionable'];
   
-  return epaDifference * (statusMultipliers[status] || 1.0);
+  return epaDifference * statusMultiplier;
 }
 
 /**
@@ -305,12 +295,12 @@ function calculateRawImpact(playerValue, backupValue, status) {
  * @returns {number} Capped and shrunk impact
  */
 function applyQBCapsAndShrinkage(impact) {
-  // Apply shrinkage factor for QB injuries (reduce extreme values)
-  const shrinkageFactor = 0.65; // Reduce impact by 35%
+  // Use centralized configuration
+  const shrinkageFactor = INJURY_CONFIG.QB_SHRINK; // Centralized: 0.65
   const shrunkImpact = impact * shrinkageFactor;
   
   // Apply maximum cap to prevent unrealistic impacts
-  const maxImpact = -8.5; // Maximum 8.5 point negative impact
+  const maxImpact = -INJURY_CONFIG.QB_SOFT_CAP_PTS; // Centralized: -8.5
   const cappedImpact = Math.max(shrunkImpact, maxImpact);
   
   if (cappedImpact !== impact) {
@@ -366,20 +356,14 @@ function getTeamContextMultiplier(team, position) {
  * Convert EPA impact to point spread impact with snap share scaling
  */
 function convertToPointImpact(epaImpact, position, status = 'out') {
-  // More conservative EPA to points conversion
+  // Use centralized configuration
   const basePlaysPerGame = 65;
-  const pointsPerEPA = 3.75; // Reduced from 4.5 to be more realistic
+  const pointsPerEPA = INJURY_CONFIG.POINTS_PER_EPA; // Centralized: 3.75 (reduced from 4.5)
   
-  // Expected snap share for backup players (not 100% usage)
-  const snapShareByPosition = {
-    'QB': status === 'out' ? 0.95 : 0.7, // QBs get most snaps when starting
-    'RB': status === 'out' ? 0.65 : 0.4, // RBs share more with committees  
-    'WR': status === 'out' ? 0.75 : 0.5, // WRs depend on role/depth
-    'TE': status === 'out' ? 0.80 : 0.6, // TEs often every-down players
-    'DB': status === 'out' ? 0.85 : 0.6  // DBs usually full-time when healthy
-  };
+  // Use centralized snap share configuration
+  const snapConfig = INJURY_CONFIG.SNAP_SHARES[position] || INJURY_CONFIG.SNAP_SHARES['WR'];
+  const snapShare = status === 'out' ? snapConfig.starter : snapConfig.backup;
   
-  const snapShare = snapShareByPosition[position] || 0.7;
   const effectivePlays = basePlaysPerGame * snapShare;
   
   return epaImpact * effectivePlays * pointsPerEPA;
