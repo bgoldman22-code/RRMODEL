@@ -1601,6 +1601,14 @@ async function generateAdvancedPredictions(games, season) {
     advancedMetrics = await loadAdvancedMetrics(season);
     injuries = await loadInjuries();
     
+    console.log('🔥 INJURY DEBUG - Loaded injuries:', {
+      injuriesIsNull: injuries === null,
+      injuriesType: typeof injuries,
+      hasTeams: !!(injuries && injuries.teams),
+      teamCount: injuries && injuries.teams ? Object.keys(injuries.teams).length : 0,
+      wasTeam: injuries && injuries.teams && injuries.teams.WAS ? 'has WAS data' : 'no WAS data'
+    });
+    
     // TEMP: Use test data for James Conner injury testing
     if (!injuries.teams || Object.keys(injuries.teams).length === 0) {
       const fs = require('fs');
@@ -1663,8 +1671,11 @@ async function generateAdvancedPredictions(games, season) {
     let awayScoreData = scoreTeamFromFeatures(awayMetrics, league, contextWeights, matchups?.away, false, currentWeek, homeMetrics, awayCode);
 
     if (injuries) {
+      console.log(`🔥 APPLYING INJURIES for ${awayCode} @ ${homeCode}`);
       homeScoreData = applyInjuryAdjustments(homeScoreData, homeCode, injuries);
       awayScoreData = applyInjuryAdjustments(awayScoreData, awayCode, injuries);
+    } else {
+      console.log(`❌ NO INJURIES APPLIED - injuries object is falsy:`, injuries);
     }
 
     const scoreDifference = homeScoreData.score - awayScoreData.score;
