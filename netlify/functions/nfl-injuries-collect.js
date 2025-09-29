@@ -106,7 +106,7 @@ async function processTeamInjuries(teamCode) {
   const injuries = await fetchESPNInjuries(teamCode);
   
   // Process QB specifically
-  const qbStatus = determineQBStatus(injuries);
+  const qbStatus = determineQBStatus(injuries, teamCode);
   const qbName = getStartingQBName(injuries, teamCode);
   
   // Process skill positions with depth info
@@ -207,7 +207,16 @@ async function fetchESPNInjuries(teamCode) {
   }
 }
 
-function determineQBStatus(injuries) {
+function determineQBStatus(injuries, teamCode) {
+  // Manual overrides for known inactive starters (not on injury report but out)
+  const inactiveStarters = {
+    'WAS': { name: 'Jayden Daniels', status: 'out', reason: 'inactive_starter' }
+  };
+  
+  if (inactiveStarters[teamCode]) {
+    return inactiveStarters[teamCode].status;
+  }
+  
   const qbInjuries = injuries.filter(inj => inj.position === 'QB');
   
   if (qbInjuries.length === 0) {
@@ -221,6 +230,15 @@ function determineQBStatus(injuries) {
 }
 
 function getStartingQBName(injuries, teamCode) {
+  // Manual overrides for known inactive starters (not on injury report but out)
+  const inactiveStarters = {
+    'WAS': { name: 'Jayden Daniels', status: 'out', reason: 'inactive_starter' }
+  };
+  
+  if (inactiveStarters[teamCode]) {
+    return inactiveStarters[teamCode].name;
+  }
+  
   const qbInjuries = injuries.filter(inj => inj.position === 'QB');
   
   if (qbInjuries.length > 0) {
