@@ -739,6 +739,14 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries) {
     confidence: 1.0,
     baselineCorrection: 'elite_v1' // Track our approach
   };
+  
+  // DEBUG: Log what we're working with
+  console.log(`🏥 INJURY DEBUG for ${teamCode}:`, {
+    hasInjuryData: !!injuries.teams,
+    teamInjuries: teamInjuries,
+    qbStatus: teamInjuries.qb_status,
+    qbName: teamInjuries.qb_name
+  });
 
   // ELITE BASELINE CORRECTION APPROACH:
   // Only apply injury adjustments for players whose absence ISN'T already 
