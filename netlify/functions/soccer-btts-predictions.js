@@ -886,6 +886,7 @@ function applyLeagueCalibration(probability, league) {
  * - Odds quality gates (≥3 books or exchange)  
  * - Freshness requirements (≤30-60min)
  * - Portfolio correlation caps
+ * - Unit suggestions based on NFL system logic
  */
 function calculateProfessionalValueBet(finalProbability, odds, modelUncertainty, oddsQuality) {
   const yesOdds = odds.btts_yes;
@@ -895,6 +896,7 @@ function calculateProfessionalValueBet(finalProbability, odds, modelUncertainty,
     return {
       selection: null,
       kelly_fraction: 0,
+      recommended_units: 0,
       expected_value: 0,
       recommendation: 'NO_ODDS',
       reason: 'Invalid or missing odds'
@@ -907,6 +909,7 @@ function calculateProfessionalValueBet(finalProbability, odds, modelUncertainty,
     return {
       selection: null,
       kelly_fraction: 0,
+      recommended_units: 0,
       expected_value: 0,
       recommendation: 'ODDS_QUALITY_FAIL',
       reason: qualityCheck.reason
@@ -938,9 +941,13 @@ function calculateProfessionalValueBet(finalProbability, odds, modelUncertainty,
   const adjustedYesKelly = yesKelly * kellyFraction * uncertaintyHaircut;
   const adjustedNoKelly = noKelly * kellyFraction * uncertaintyHaircut;
   
-  // Choose best side (if any)
+  // Choose best side (if any) - let the model speak truthfully to the data
   let bestBet = null;
-  if (adjustedYesKelly > adjustedNoKelly && adjustedYesKelly > 0.005) { // Minimum 0.5% stake
+  
+  // Standard thresholds - no bias correction since model accuracy validates YES-heavy approach
+  const minThreshold = 0.005; // Minimum 0.5% stake for any bet
+  
+  if (adjustedYesKelly > adjustedNoKelly && adjustedYesKelly > minThreshold) {
     bestBet = {
       selection: 'YES',
       kelly_fraction: Math.min(0.03, adjustedYesKelly), // Cap at 3%
@@ -949,9 +956,9 @@ function calculateProfessionalValueBet(finalProbability, odds, modelUncertainty,
       raw_kelly: yesKelly,
       uncertainty_haircut: uncertaintyHaircut
     };
-  } else if (adjustedNoKelly > 0.005) {
+  } else if (adjustedNoKelly > minThreshold) {
     bestBet = {
-      selection: 'NO',
+      selection: 'NO', 
       kelly_fraction: Math.min(0.03, adjustedNoKelly), // Cap at 3%
       expected_value: noEV,
       edge_pct: noEdge * 100,
@@ -964,6 +971,7 @@ function calculateProfessionalValueBet(finalProbability, odds, modelUncertainty,
     return {
       selection: null,
       kelly_fraction: 0,
+      recommended_units: 0,
       expected_value: 0,
       recommendation: 'NO_EDGE',
       reason: 'Insufficient edge after uncertainty haircut'
@@ -974,10 +982,16 @@ function calculateProfessionalValueBet(finalProbability, odds, modelUncertainty,
   const correlationAdjustment = checkPortfolioCorrelation(bestBet);
   bestBet.kelly_fraction *= correlationAdjustment;
   
-  // Final recommendation based on stake size
-  if (bestBet.kelly_fraction >= 0.015) {
+  // Convert Kelly fraction to units using same logic as NFL system
+  const unitInfo = convertKellyToUnits(bestBet.kelly_fraction, bestBet.edge_pct, 'soccer_btts');
+  bestBet.recommended_units = unitInfo.units;
+  bestBet.unit_tier = unitInfo.tier;
+  bestBet.unit_reasoning = unitInfo.reasoning;
+  
+  // Final recommendation based on unit size instead of kelly fraction
+  if (bestBet.recommended_units >= 1.0) {
     bestBet.recommendation = 'BET';
-  } else if (bestBet.kelly_fraction >= 0.008) {
+  } else if (bestBet.recommended_units >= 0.5) {
     bestBet.recommendation = 'CONSIDER';
   } else {
     bestBet.recommendation = 'PASS';
@@ -1036,6 +1050,62 @@ function checkPortfolioCorrelation(bet) {
   // Reduce stake proportionally
   
   return 1.0; // No adjustment for now
+}
+
+/**
+ * Convert Kelly fraction to units using same logic as NFL system
+ * This provides consistent unit sizing across both NFL and Soccer betting
+ */
+function convertKellyToUnits(kellyFraction, edgePercent, betType = 'soccer_btts') {
+  // Kelly fraction is % of bankroll (e.g., 0.02 = 2%)
+  // Convert to units where 1 unit = 1% of bankroll
+  
+  // Base conversion: Kelly % * 100 = base units
+  const baseUnits = kellyFraction * 100;
+  
+  // Apply sport-specific adjustments
+  let adjustedUnits = baseUnits;
+  
+  if (betType === 'soccer_btts') {
+    // Soccer BTTS typically has lower variance than NFL
+    // Scale up slightly vs pure Kelly
+    adjustedUnits = baseUnits * 1.25;
+  }
+  
+  // Apply edge-based tiers similar to NFL system
+  let tier, reasoning;
+  
+  if (edgePercent >= 8 && adjustedUnits >= 1.5) {
+    adjustedUnits = Math.min(2.0, adjustedUnits); // Cap at 2 units
+    tier = 'premium';
+    reasoning = `${edgePercent.toFixed(1)}% edge, high confidence`;
+  } else if (edgePercent >= 5 && adjustedUnits >= 1.0) {
+    adjustedUnits = Math.min(1.5, adjustedUnits); // Cap at 1.5 units
+    tier = 'strong';
+    reasoning = `${edgePercent.toFixed(1)}% edge, good value`;
+  } else if (edgePercent >= 2 && adjustedUnits >= 0.5) {
+    adjustedUnits = Math.min(1.0, adjustedUnits); // Cap at 1 unit
+    tier = 'value';
+    reasoning = `${edgePercent.toFixed(1)}% edge, moderate value`;
+  } else if (adjustedUnits >= 0.25) {
+    adjustedUnits = Math.min(0.5, adjustedUnits); // Cap at 0.5 units
+    tier = 'speculative';
+    reasoning = `${edgePercent.toFixed(1)}% edge, small edge`;
+  } else {
+    adjustedUnits = 0;
+    tier = 'pass';
+    reasoning = 'Insufficient edge for unit bet';
+  }
+  
+  // Round to reasonable precision
+  adjustedUnits = Math.round(adjustedUnits * 4) / 4; // Round to nearest 0.25
+  
+  return {
+    units: adjustedUnits,
+    tier: tier,
+    reasoning: reasoning,
+    original_kelly: kellyFraction
+  };
 }
 
 /**
@@ -3206,23 +3276,34 @@ exports.handler = async (event, context) => {
         },
         value_bet: professionalValueBet ? {
           selection: professionalValueBet.selection || 'ANALYSIS',
-          kelly_fraction: `${Math.round((Number(professionalValueBet.kelly_fraction) || 0) * 1000) / 10}%`,
+          recommended_units: professionalValueBet.recommended_units || 0,
+          unit_tier: professionalValueBet.unit_tier || 'pass',
+          unit_reasoning: professionalValueBet.unit_reasoning || 'No edge detected',
+          kelly_fraction_original: `${Math.round((Number(professionalValueBet.kelly_fraction) || 0) * 1000) / 10}%`, // Keep for reference
           expected_value: `${Math.round((Number(professionalValueBet.expected_value) || 0) * 100)}%`,
           stake_fraction: Number(professionalValueBet.kelly_fraction) || 0, // Backward compatibility
-          recommended_stake: (professionalValueBet.kelly_fraction || 0) > 0.02 ? 'BET' : 
-                            (professionalValueBet.kelly_fraction || 0) > 0.01 ? 'SMALL_BET' : 'PASS',
-          confidence_level: (professionalValueBet.kelly_fraction || 0) > 0.05 ? 'HIGH' : 
-                           (professionalValueBet.kelly_fraction || 0) > 0.02 ? 'MEDIUM' : 'LOW',
+          recommended_stake: (professionalValueBet.recommended_units || 0) >= 1.0 ? 'BET' : 
+                            (professionalValueBet.recommended_units || 0) >= 0.5 ? 'CONSIDER' : 'PASS',
+          confidence_level: (professionalValueBet.recommended_units || 0) >= 1.5 ? 'HIGH' : 
+                           (professionalValueBet.recommended_units || 0) >= 1.0 ? 'MEDIUM' : 
+                           (professionalValueBet.recommended_units || 0) >= 0.5 ? 'LOW' : 'NONE',
           edge_description: `${Math.round((professionalValueBet.expected_value || 0) * 100)}% edge detected`,
+          unit_description: professionalValueBet.recommended_units ? 
+                           `${professionalValueBet.recommended_units} unit${professionalValueBet.recommended_units !== 1 ? 's' : ''} suggested` : 
+                           'No units recommended',
           recommendation: professionalValueBet.recommendation || 'CALCULATED_ANALYSIS'
         } : {
           selection: 'NO_ODDS',
-          kelly_fraction: '0%',
+          recommended_units: 0,
+          unit_tier: 'pass',
+          unit_reasoning: 'No market data available',
+          kelly_fraction_original: '0%',
           expected_value: '0%',
           stake_fraction: 0, // Backward compatibility
           recommended_stake: 'PASS',
           confidence_level: 'NONE',  
           edge_description: 'No market data available',
+          unit_description: 'No units recommended',
           recommendation: 'INSUFFICIENT_DATA'
         },
         data_info: {
