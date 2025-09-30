@@ -1,8 +1,10 @@
 // netlify/functions/nfl-injuries-comprehensive.js
 // ELITE INJURY SYSTEM v4.0 - Production-grade with replacement-adjusted impacts
 
-import fetch from 'node-fetch';
 import { getStore } from '@netlify/blobs';
+
+// Use global fetch (available in Node 18+)
+const fetch = globalThis.fetch;
 
 // ───────────────────────────────────────────────────────────────────────────────
 // Version / Config
