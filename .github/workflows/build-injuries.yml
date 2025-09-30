@@ -1,0 +1,52 @@
+name: NFL Injury Snapshot Builder
+on:
+  schedule:
+    # Every 30 minutes during football season
+    - cron: "*/30 * * * *"
+  # Manual trigger for testing
+  workflow_dispatch:
+    inputs:
+      force_rebuild:
+        description: 'Force complete rebuild (ignores cache)'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build-injury-snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    permissions:
+      contents: read
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build injury snapshot
+        run: node scripts/build-injuries-snapshot.js
+        env:
+          NETLIFY_BLOBS_TOKEN: ${{ secrets.NETLIFY_BLOBS_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          BLOBS_STORE_NFL: nfl-data
+          FORCE_REBUILD: ${{ github.event.inputs.force_rebuild || 'false' }}
+          
+      - name: Report status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Injury snapshot build completed successfully"
+          else
+            echo "❌ Injury snapshot build failed"
+            exit 1
+          fi
