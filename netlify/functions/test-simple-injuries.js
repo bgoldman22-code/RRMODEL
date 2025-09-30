@@ -25,8 +25,8 @@ export const handler = async (event, context) => {
     
     const injuries = [];
     
-    // Process first 3 injuries only
-    for (const ref of injuryRefs.slice(0, 3)) {
+    // Process first 6 injuries to get more details
+    for (const ref of injuryRefs.slice(0, 6)) {
       try {
         const injuryResponse = await fetch(ref.$ref, {
           headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NFLInjuryBot/4.0)' }
@@ -36,11 +36,34 @@ export const handler = async (event, context) => {
         
         const injuryData = await injuryResponse.json();
         
+        // Get player details if available
+        let playerName = 'Unknown';
+        let position = 'UNK';
+        
+        if (injuryData.athlete?.$ref) {
+          try {
+            const playerResponse = await fetch(injuryData.athlete.$ref, {
+              headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NFLInjuryBot/4.0)' }
+            });
+            
+            if (playerResponse.ok) {
+              const playerData = await playerResponse.json();
+              playerName = playerData.displayName || playerData.name || 'Unknown';
+              position = playerData.position?.abbreviation || 'UNK';
+            }
+          } catch {
+            // Skip player details if it fails
+          }
+        }
+        
         injuries.push({
-          player: injuryData.athlete?.displayName || 'Unknown',
+          player: playerName,
+          position: position,
           status: injuryData.status || 'Unknown',
           description: injuryData.description || 'Undisclosed',
-          lastUpdated: new Date().toISOString()
+          injuryType: injuryData.type || 'Unknown',
+          lastUpdated: new Date().toISOString(),
+          espnRef: ref.$ref.split('/').pop() // ESPN ID
         });
 
       } catch (error) {
