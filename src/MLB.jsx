@@ -709,6 +709,10 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
       {/* --- Straight HR Bets (Top 13 Raw Probability) --- */}
       {Array.isArray(rawTop) && rawTop.length>0 && (
         <div className="mt-8">
@@ -775,10 +779,6 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
             <p className="text-xs text-gray-500 mt-2">
               EV computed from model probability and current book odds; filtered by model p ≥ 19% to avoid pure longshots.
             </p>
-          </div>
-        </div>
-      )}
-)}
           </div>
         </div>
       )}
