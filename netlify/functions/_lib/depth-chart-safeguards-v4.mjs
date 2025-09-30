@@ -2,8 +2,6 @@
 // Elite Injury System v4.1 - Depth Chart Production Safeguards
 // Prevents overconfident heuristic depth chart impacts per GPT feedback
 
-import { calculateAdvancedInjuryImpact } from './advanced-injury-calculations.js';
-
 // CONSERVATIVE DEPTH CHART LIMITS
 const DEPTH_SAFEGUARDS = {
   MAX_DEPTH_IMPACT: {
