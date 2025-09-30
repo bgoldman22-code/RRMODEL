@@ -1,6 +1,8 @@
 // Background processor with atomic writes - Production v4.0
-import fetch from 'node-fetch';
 import { getStore } from '@netlify/blobs';
+
+// Use global fetch (available in Node 18+)
+const fetch = globalThis.fetch;
 
 // Import configuration from comprehensive system
 const INJURY_CONFIG = {
