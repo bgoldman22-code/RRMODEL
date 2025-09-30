@@ -7,7 +7,7 @@ async function testWeek5InjuryOverride() {
   try {
     // 1. Force trigger injury collection to get latest data with Joe Burrow override
     console.log('🏥 Triggering fresh injury collection...');
-    const collectResponse = await fetch('/.netlify/functions/nfl-injuries-collect', {
+    const collectResponse = await fetch('https://rrmodel.netlify.app/.netlify/functions/nfl-injuries-collect', {
       method: 'POST'
     });
     
@@ -24,7 +24,7 @@ async function testWeek5InjuryOverride() {
     
     // 2. Test the updated injury data
     console.log('\n📋 Testing updated injury data...');
-    const injuryResponse = await fetch('/.netlify/functions/nfl-injuries-get');
+    const injuryResponse = await fetch('https://rrmodel.netlify.app/.netlify/functions/nfl-injuries-collect');
     
     if (injuryResponse.ok) {
       const injuryData = await injuryResponse.json();
@@ -42,7 +42,7 @@ async function testWeek5InjuryOverride() {
       if (injuryData.teams?.CIN?.qb_status === 'out') {
         console.log('✅ Joe Burrow confirmed OUT - testing prediction impact...');
         
-        const predResponse = await fetch('/.netlify/functions/nfl-predictions-generate', {
+        const predResponse = await fetch('https://rrmodel.netlify.app/.netlify/functions/nfl-predictions-generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

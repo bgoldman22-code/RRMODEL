@@ -1,10 +1,13 @@
 // netlify/functions/nfl-injuries-collect.js
 // Collects current NFL injury data and stores it for the R Pipeline
-// ENHANCED: Dynamic injury impact system with player-specific values
+// ENHANCED v3: Comprehensive automatic injury system for ALL positions
 
 import fetch from 'node-fetch';
 import { getStore } from '@netlify/blobs';
 import { detectInactiveStarters, calculateDynamicInjuryImpact } from './_lib/dynamic-injury-impact.js';
+
+// Import comprehensive injury system
+const COMPREHENSIVE_INJURY_SYSTEM = true;
 
 // Get blob storage
 function getBlobStore() {
