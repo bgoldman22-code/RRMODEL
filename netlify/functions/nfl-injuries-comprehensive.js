@@ -101,24 +101,56 @@ const POSITION_CATEGORIES = {
   K:'K', PK:'K', P:'DEFAULT', LS:'DEFAULT'
 };
 
-// Manual overrides for specific players (Joe Burrow, etc.)
-function getManualInjuryOverrides(teamCode) {
-  const overrides = {
-    CIN: [
-      {
-        playerName: 'Joe Burrow',
-        position: 'QB',
-        status: 'out',
-        statusDetails: 'Manual override - confirmed OUT',
-        injuryNote: 'Wrist injury',
-        depthOrder: 1,
-        teamCode: 'CIN',
-        source: 'MANUAL_OVERRIDE'
-      }
-    ]
-  };
+// Load injury duration history data for automatic integration
+async function loadInjuryHistory() {
+  try {
+    const fs = await import('fs');
+    const path = './data/nfl/injuries/injury-duration-history.json';
+    const data = fs.readFileSync(path, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.log('📊 Could not load injury history data, using ESPN only');
+    return null;
+  }
+}
+
+// Get current week injuries from our injury history data
+function getCurrentWeekInjuries(injuryHistory, teamCode) {
+  if (!injuryHistory) return [];
   
-  return overrides[teamCode] || [];
+  const currentWeek = '2025_W4'; // Current week
+  const teamInjuries = [];
+  
+  // Look through injury history for current week injuries
+  const sections = ['current_injuries', 'week_4_2025'];
+  
+  for (const section of sections) {
+    if (injuryHistory[section]) {
+      for (const [playerId, playerData] of Object.entries(injuryHistory[section])) {
+        if (playerData.team === teamCode && playerData.injury_history) {
+          // Find most recent injury status
+          const recentInjury = playerData.injury_history
+            .filter(inj => inj.week === currentWeek)
+            .pop();
+          
+          if (recentInjury && recentInjury.status !== 'active') {
+            teamInjuries.push({
+              playerName: playerData.name,
+              position: playerData.position,
+              status: recentInjury.status,
+              statusDetails: `Injury history - ${recentInjury.status}`,
+              injuryNote: recentInjury.injury_type || 'Unknown',
+              depthOrder: getPlayerDepthPosition(playerData.name, playerData.position, teamCode),
+              teamCode: teamCode,
+              source: 'INJURY_HISTORY_AUTO'
+            });
+          }
+        }
+      }
+    }
+  }
+  
+  return teamInjuries;
 }
 
 // ───────────────────────────────────────────────────────────────────────────────
@@ -214,9 +246,9 @@ function calcReplacementAdjusted(injury, playerPriors, weeksOut = 0) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────────
-// ESPN fetch
+// ESPN fetch with automatic injury history integration
 // ───────────────────────────────────────────────────────────────────────────────
-async function fetchTeamInjuriesESPN(teamCode, playerPriors) {
+async function fetchTeamInjuriesESPN(teamCode, playerPriors, injuryHistory = null) {
   const teamId = ESPN_TEAM_MAP[teamCode];
   if (!teamId) {
     console.log(`⚠️ No ESPN ID for team: ${teamCode}`);
@@ -237,7 +269,7 @@ async function fetchTeamInjuriesESPN(teamCode, playerPriors) {
     const data = await res.json();
     const refs = data.items || [];
     if (refs.length === 0) {
-      console.log(`📊 ${teamCode}: No ESPN injuries, checking manual overrides...`);
+      console.log(`📊 ${teamCode}: No ESPN injuries, checking injury history...`);
     }
 
     const items = [];
@@ -301,38 +333,56 @@ async function fetchTeamInjuriesESPN(teamCode, playerPriors) {
       await new Promise(r => setTimeout(r, 100));
     }
 
-    // Apply manual overrides (Joe Burrow etc)
-    const manualOverrides = getManualInjuryOverrides(teamCode);
-    for (const override of manualOverrides) {
-      console.log(`🔧 Applying manual override for ${teamCode}: ${override.playerName} (${override.status})`);
+    // Automatically integrate injury history data
+    const historyInjuries = getCurrentWeekInjuries(injuryHistory, teamCode);
+    for (const historyInj of historyInjuries) {
+      console.log(`� Auto-integrating from injury history: ${teamCode}: ${historyInj.playerName} (${historyInj.status})`);
       
       const existingIndex = items.findIndex(inj => 
-        inj.playerName.toLowerCase().includes(override.playerName.toLowerCase())
+        inj.playerName.toLowerCase().includes(historyInj.playerName.toLowerCase())
       );
       
       if (existingIndex >= 0) {
-        // Update existing
-        items[existingIndex] = { 
-          ...items[existingIndex], 
-          ...override,
-          impact: calcReplacementAdjusted(override, playerPriors, 0)
-        };
+        // Update existing with history data if more severe
+        const existing = items[existingIndex];
+        const severityOrder = { out: 3, doubtful: 2, questionable: 1, active: 0 };
+        if ((severityOrder[historyInj.status] || 0) > (severityOrder[existing.status] || 0)) {
+          items[existingIndex] = { 
+            ...existing, 
+            ...historyInj,
+            impact: calcReplacementAdjusted(historyInj, playerPriors, 0),
+            source: 'INJURY_HISTORY_AUTO'
+          };
+        }
       } else {
-        // Add new
-        const impact = calcReplacementAdjusted(override, playerPriors, 0);
+        // Add new from history
+        const impact = calcReplacementAdjusted(historyInj, playerPriors, 0);
         items.push({
-          ...override,
+          ...historyInj,
           impact,
           lastUpdated: new Date().toISOString(),
-          description: override.injuryNote || 'Manual override'
+          description: historyInj.injuryNote || 'From injury history'
         });
       }
     }
 
-    console.log(`📊 ${teamCode}: Found ${items.length} total injuries (${manualOverrides.length} manual)`);
+    console.log(`📊 ${teamCode}: Found ${items.length} total injuries (${historyInjuries.length} from history)`);
     return items;
   } catch (e) {
     console.error(`❌ ESPN fetch failed for ${teamCode}: ${e.message}`);
+    
+    // Fallback to injury history only
+    const historyInjuries = getCurrentWeekInjuries(injuryHistory, teamCode);
+    if (historyInjuries.length > 0) {
+      console.log(`📊 ${teamCode}: Using ${historyInjuries.length} injuries from history (ESPN failed)`);
+      return historyInjuries.map(inj => ({
+        ...inj,
+        impact: calcReplacementAdjusted(inj, playerPriors, 0),
+        lastUpdated: new Date().toISOString(),
+        description: inj.injuryNote || 'From injury history'
+      }));
+    }
+    
     return [];
   }
 }
@@ -422,12 +472,13 @@ async function generateEliteInjuryReport() {
   console.log('🏥 Generating elite replacement-adjusted injury report…');
 
   const playerPriors = await loadPlayerPriors();
+  const injuryHistory = await loadInjuryHistory();
   const allTeams = Object.keys(ESPN_TEAM_MAP);
 
   const report = {
     asOf: new Date().toISOString(),
     version: SYSTEM_VERSION,
-    source: 'ESPN_API_comprehensive',
+    source: 'ESPN_API_comprehensive + injury_history_auto',
     teams: {},
     games: {}, // ← wire schedule & market anchor here if desired
     summary: {
@@ -446,7 +497,7 @@ async function generateEliteInjuryReport() {
   const criticalAlerts = [];
 
   for (const team of allTeams) {
-    const injuries = await fetchTeamInjuriesESPN(team, playerPriors);
+    const injuries = await fetchTeamInjuriesESPN(team, playerPriors, injuryHistory);
     const teamSummary = summarizeTeam(injuries, team);
     report.teams[team] = teamSummary;
 
