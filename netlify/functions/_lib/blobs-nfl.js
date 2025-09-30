@@ -495,10 +495,21 @@ export async function storeHistoricalMetrics(season, data) {
 
 export async function loadInjuries() {
   try {
-    // Try blob storage first
+    // Try comprehensive injury system first (Elite v4.0)
+    const comprehensiveData = await readBlobJSON(`nfl/injuries/comprehensive.json`);
+    if (comprehensiveData && comprehensiveData.teams && Object.keys(comprehensiveData.teams).length > 0) {
+      console.log('✅ Loaded injury data from Elite Injury System v4.0 (comprehensive)');
+      return comprehensiveData;
+    }
+  } catch (error) {
+    console.warn('⚠️ Elite comprehensive injury data failed:', error.message);
+  }
+
+  try {
+    // Fallback to legacy blob storage
     const blobData = await readBlobJSON(`nfl/injuries/latest.json`);
     if (blobData && blobData.teams && Object.keys(blobData.teams).length > 0) {
-      console.log('✅ Loaded injury data from blob storage');
+      console.log('✅ Loaded injury data from blob storage (legacy)');
       return blobData;
     }
   } catch (error) {
@@ -518,6 +529,21 @@ export async function loadInjuries() {
     }
   } catch (error) {
     console.warn('⚠️ Public URL injury data failed:', error.message);
+  }
+
+  try {
+    // Final fallback: Try to generate fresh injury data from comprehensive system
+    console.log('🔄 Attempting to generate fresh injury data...');
+    const response = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-injuries-comprehensive');
+    if (response.ok) {
+      const freshData = await response.json();
+      if (freshData.success && freshData.teams && Object.keys(freshData.teams).length > 0) {
+        console.log('✅ Generated fresh injury data from comprehensive system');
+        return { teams: freshData.teams, asOf: freshData.asOf, version: freshData.version };
+      }
+    }
+  } catch (error) {
+    console.warn('⚠️ Fresh injury data generation failed:', error.message);
   }
   
   console.error('❌ No injury data available from any source');
