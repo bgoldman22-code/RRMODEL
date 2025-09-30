@@ -104,9 +104,23 @@ const POSITION_CATEGORIES = {
 // Load injury duration history data for automatic integration
 async function loadInjuryHistory() {
   try {
+    // Try web-accessible path first (for Netlify deployment)
+    const response = await fetch('https://bgroundrobin.com/data/nfl/injuries/injury-duration-history.json');
+    if (response.ok) {
+      const data = await response.json();
+      console.log('📊 Loaded injury history from web URL');
+      return data;
+    }
+  } catch (error) {
+    console.log('📊 Web URL failed, trying local file system...');
+  }
+
+  try {
+    // Fallback to local file system (for local development)
     const fs = await import('fs');
     const path = './data/nfl/injuries/injury-duration-history.json';
     const data = fs.readFileSync(path, 'utf8');
+    console.log('📊 Loaded injury history from local file');
     return JSON.parse(data);
   } catch (error) {
     console.log('📊 Could not load injury history data, using ESPN only');
