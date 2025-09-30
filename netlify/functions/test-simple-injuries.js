@@ -5,8 +5,8 @@ export const handler = async (event, context) => {
   console.log('🚀 Simple background processor v4.0 starting...');
   
   try {
-    // Test ESPN API with a single team
-    const teamId = '19'; // NYG
+    // Test ESPN API with SEA (Seattle Seahawks)
+    const teamId = '26'; // SEA
     const url = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/teams/${teamId}/injuries`;
     
     const response = await fetch(url, {
@@ -21,7 +21,7 @@ export const handler = async (event, context) => {
     const data = await response.json();
     const injuryRefs = data.items || [];
     
-    console.log(`📊 NYG has ${injuryRefs.length} injury reports`);
+    console.log(`📊 SEA has ${injuryRefs.length} injury reports`);
     
     const injuries = [];
     
@@ -76,7 +76,7 @@ export const handler = async (event, context) => {
     const result = {
       success: true,
       version: 'v4.0-simple',
-      team: 'NYG',
+      team: 'SEA',
       injuries: injuries,
       injuryCount: injuries.length,
       processingTimeMs: processingTime,
