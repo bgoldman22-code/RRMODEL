@@ -5,8 +5,6 @@
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics, getCurrentWeek, getCurrentWeights, diagnoseMetricsData } from '../_lib/blobs-nfl.js';
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
 import { updateInjuryDurations, initializeInjuryDurationTracking } from '../_lib/injury-duration-tracker.js';
-// Kelly Hybrid Staking: Production-ready staking system
-import { recommendUnits } from '../_lib/kelly-hybrid-staking.mjs';
 
 // v4.1 PRODUCTION SAFEGUARDS: Import new safety systems
 import { 
@@ -1415,18 +1413,7 @@ function generateParlayComponents(games, predictions) {
     const totalPick = pred.predictions.total;
     
     if (mlPick.confidence >= 65 && mlPick.edge >= 10) {
-      const pickData = {
-        odds: pred.odds?.moneyline?.pick_odds || -110,
-        weekNumber: currentWeek || 1,
-        isPrimetime: game.is_primetime || false,
-        availability: {
-          teamImpact: pred.modelEnhancements?.injuryAnalysis?.home?.totalDelta || 0,
-          opponentImpact: pred.modelEnhancements?.injuryAnalysis?.away?.totalDelta || 0,
-          keyPlayerStatus: 'healthy'
-        }
-      };
-      
-      const unitInfo = calculateRecommendedUnits(mlPick.confidence, mlPick.edge, 'straight', pickData);
+      const unitInfo = calculateRecommendedUnits(mlPick.confidence, mlPick.edge, 'straight');
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
         matchup: `${game.away_team} @ ${game.home_team}`,
@@ -1439,24 +1426,12 @@ function generateParlayComponents(games, predictions) {
         ev_score: (mlPick.confidence - 50) * mlPick.edge,
         recommended_units: unitInfo.units,
         unit_tier: unitInfo.tier,
-        unit_reasoning: unitInfo.reasoning,
-        kelly_audit: unitInfo.kellyAudit
+        unit_reasoning: unitInfo.reasoning
       });
     }
     
     if (spreadPick.confidence >= 62 && spreadPick.edge >= 1.5 && spreadPick.pick !== 'push') {
-      const pickData = {
-        odds: pred.odds?.spread?.pick_odds || -110,
-        weekNumber: currentWeek || 1,
-        isPrimetime: game.is_primetime || false,
-        availability: {
-          teamImpact: pred.modelEnhancements?.injuryAnalysis?.home?.totalDelta || 0,
-          opponentImpact: pred.modelEnhancements?.injuryAnalysis?.away?.totalDelta || 0,
-          keyPlayerStatus: 'healthy'
-        }
-      };
-      
-      const unitInfo = calculateRecommendedUnits(spreadPick.confidence, spreadPick.edge, 'straight', pickData);
+      const unitInfo = calculateRecommendedUnits(spreadPick.confidence, spreadPick.edge, 'straight');
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
         matchup: `${game.away_team} @ ${game.home_team}`,
@@ -1469,24 +1444,12 @@ function generateParlayComponents(games, predictions) {
         ev_score: (spreadPick.confidence - 50) * spreadPick.edge,
         recommended_units: unitInfo.units,
         unit_tier: unitInfo.tier,
-        unit_reasoning: unitInfo.reasoning,
-        kelly_audit: unitInfo.kellyAudit
+        unit_reasoning: unitInfo.reasoning
       });
     }
     
     if (totalPick.confidence >= 60 && totalPick.edge >= 2.5) {
-      const pickData = {
-        odds: pred.odds?.total?.pick_odds || -110,
-        weekNumber: currentWeek || 1,
-        isPrimetime: game.is_primetime || false,
-        availability: {
-          teamImpact: pred.modelEnhancements?.injuryAnalysis?.home?.totalDelta || 0,
-          opponentImpact: pred.modelEnhancements?.injuryAnalysis?.away?.totalDelta || 0,
-          keyPlayerStatus: 'healthy'
-        }
-      };
-      
-      const unitInfo = calculateRecommendedUnits(totalPick.confidence, totalPick.edge, 'straight', pickData);
+      const unitInfo = calculateRecommendedUnits(totalPick.confidence, totalPick.edge, 'straight');
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
         matchup: `${game.away_team} @ ${game.home_team}`,
@@ -1499,8 +1462,7 @@ function generateParlayComponents(games, predictions) {
         ev_score: (totalPick.confidence - 50) * totalPick.edge * 0.8,
         recommended_units: unitInfo.units,
         unit_tier: unitInfo.tier,
-        unit_reasoning: unitInfo.reasoning,
-        kelly_audit: unitInfo.kellyAudit
+        unit_reasoning: unitInfo.reasoning
       });
     }
   }
@@ -1509,88 +1471,22 @@ function generateParlayComponents(games, predictions) {
   return components;
 }
 
-// ==================================================
-// KELLY HYBRID STAKING INTEGRATION
-// ==================================================
-function calculateRecommendedUnits(confidence, edge, betType = 'straight', pickData = null) {
-  // For parlays, use conservative sizing (Kelly doesn't apply to correlated parlays)
+// Unit sizing based on confidence and edge tiers
+function calculateRecommendedUnits(confidence, edge, betType = 'straight') {
+  // For parlays, always use small units
   if (betType === 'parlay') {
     return edge >= 8 ? 0.5 : 0.25;
   }
   
-  // If pickData not provided, fall back to simple thresholds
-  if (!pickData) {
-    console.warn('⚠️ calculateRecommendedUnits called without pickData - using simple thresholds');
-    if (confidence >= 65 && edge >= 8) {
-      return { units: 1.5, tier: 'premium', reasoning: '65%+ conf, 8%+ edge (legacy)' };
-    } else if (confidence >= 61 && edge >= 5) {
-      return { units: 1.0, tier: 'strong', reasoning: '61-64% conf, 5-7% edge (legacy)' };
-    } else if (confidence >= 58 && edge >= 2) {
-      return { units: 0.5, tier: 'value', reasoning: '58-60% conf, 2-4% edge (legacy)' };
-    } else {
-      return { units: 1.0, tier: 'standard', reasoning: 'flat unit (safe default)' };
-    }
-  }
-  
-  // Try Kelly staking with error handling fallback
-  try {
-    // Convert American odds to decimal
-    const americanOdds = pickData.odds || -110;
-    const priceDec = americanOdds > 0 
-      ? (americanOdds / 100) + 1 
-      : (100 / Math.abs(americanOdds)) + 1;
-    
-    // Convert confidence % and edge % to probability
-    const edgeProb = confidence / 100; // e.g., 67% -> 0.67
-    
-    // Build signals object for Kelly multiplier system
-    const signals = {
-      edgePct: edge,
-      clvPts: pickData.clvPts || 0,
-      lineMoveToward: pickData.lineMovement || 0,
-      ticketsPct: pickData.publicSplit || 50,
-      handlePct: pickData.publicSplit || 50,
-      availabilityConf: 0.85,
-      marketShockActive: false,
-      injurySwingPts: Math.abs(pickData.availability?.teamImpact || 0),
-      injuryConfirmedHours: 24,
-      modelCalibration: pickData.calibrationScore || 0.85,
-      backtestRoi: pickData.backtestROI || 0,
-      primetimeGame: pickData.isPrimetime || false
-    };
-    
-    // Call Kelly hybrid staking system
-    const kellyRecommendation = recommendUnits(edgeProb, priceDec, signals, 10);
-    
-    console.log(`📊 Kelly Hybrid Recommendation:`, {
-      confidence,
-      edge,
-      americanOdds,
-      priceDec: priceDec.toFixed(3),
-      edgeProb: edgeProb.toFixed(3),
-      kellyUnits: kellyRecommendation.units,
-      recommendation: kellyRecommendation.recommendation,
-      reason: kellyRecommendation.reason
-    });
-    
-    return {
-      units: kellyRecommendation.units,
-      tier: kellyRecommendation.recommendation,
-      reasoning: kellyRecommendation.reason,
-      kellyAudit: kellyRecommendation.audit
-    };
-  } catch (error) {
-    console.error('⚠️ Kelly staking error, falling back to legacy:', error);
-    // Fallback to legacy thresholds
-    if (confidence >= 65 && edge >= 8) {
-      return { units: 1.5, tier: 'premium', reasoning: '65%+ conf, 8%+ edge (fallback)' };
-    } else if (confidence >= 61 && edge >= 5) {
-      return { units: 1.0, tier: 'strong', reasoning: '61-64% conf, 5-7% edge (fallback)' };
-    } else if (confidence >= 58 && edge >= 2) {
-      return { units: 0.5, tier: 'value', reasoning: '58-60% conf, 2-4% edge (fallback)' };
-    } else {
-      return { units: 1.0, tier: 'standard', reasoning: 'flat unit (fallback)' };
-    }
+  // Straight bet unit sizing based on confidence and edge tiers
+  if (confidence >= 65 && edge >= 8) {
+    return { units: 1.5, tier: 'premium', reasoning: '65%+ conf, 8%+ edge' };
+  } else if (confidence >= 61 && edge >= 5) {
+    return { units: 1.0, tier: 'strong', reasoning: '61-64% conf, 5-7% edge' };
+  } else if (confidence >= 58 && edge >= 2) {
+    return { units: 0.5, tier: 'value', reasoning: '58-60% conf, 2-4% edge' };
+  } else {
+    return { units: 1.0, tier: 'standard', reasoning: 'flat unit (safe default)' };
   }
 }
 
