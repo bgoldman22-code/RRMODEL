@@ -1532,51 +1532,66 @@ function calculateRecommendedUnits(confidence, edge, betType = 'straight', pickD
     }
   }
   
-  // Convert American odds to decimal
-  const americanOdds = pickData.odds || -110;
-  const priceDec = americanOdds > 0 
-    ? (americanOdds / 100) + 1 
-    : (100 / Math.abs(americanOdds)) + 1;
-  
-  // Convert confidence % and edge % to probability
-  const edgeProb = confidence / 100; // e.g., 67% -> 0.67
-  
-  // Build signals object for Kelly multiplier system
-  const signals = {
-    edgePct: edge,
-    clvPts: pickData.clvPts || 0,
-    lineMoveToward: pickData.lineMovement || 0,
-    ticketsPct: pickData.publicSplit || 50,
-    handlePct: pickData.publicSplit || 50, // Use same as tickets if not available
-    availabilityConf: 0.85, // Default high confidence
-    marketShockActive: false,
-    injurySwingPts: Math.abs(pickData.availability?.teamImpact || 0),
-    injuryConfirmedHours: 24, // Assume 24h if we have injury data
-    modelCalibration: pickData.calibrationScore || 0.85,
-    backtestRoi: pickData.backtestROI || 0,
-    primetimeGame: pickData.isPrimetime || false
-  };
-  
-  // Call Kelly hybrid staking system with correct signature
-  const kellyRecommendation = recommendUnits(edgeProb, priceDec, signals, 10);
-  
-  console.log(`📊 Kelly Hybrid Recommendation:`, {
-    confidence,
-    edge,
-    americanOdds,
-    priceDec: priceDec.toFixed(3),
-    edgeProb: edgeProb.toFixed(3),
-    kellyUnits: kellyRecommendation.units,
-    recommendation: kellyRecommendation.recommendation,
-    reason: kellyRecommendation.reason
-  });
-  
-  return {
-    units: kellyRecommendation.units,
-    tier: kellyRecommendation.recommendation,
-    reasoning: kellyRecommendation.reason,
-    kellyAudit: kellyRecommendation.audit // Full audit trail for debugging
-  };
+  // Try Kelly staking with error handling fallback
+  try {
+    // Convert American odds to decimal
+    const americanOdds = pickData.odds || -110;
+    const priceDec = americanOdds > 0 
+      ? (americanOdds / 100) + 1 
+      : (100 / Math.abs(americanOdds)) + 1;
+    
+    // Convert confidence % and edge % to probability
+    const edgeProb = confidence / 100; // e.g., 67% -> 0.67
+    
+    // Build signals object for Kelly multiplier system
+    const signals = {
+      edgePct: edge,
+      clvPts: pickData.clvPts || 0,
+      lineMoveToward: pickData.lineMovement || 0,
+      ticketsPct: pickData.publicSplit || 50,
+      handlePct: pickData.publicSplit || 50,
+      availabilityConf: 0.85,
+      marketShockActive: false,
+      injurySwingPts: Math.abs(pickData.availability?.teamImpact || 0),
+      injuryConfirmedHours: 24,
+      modelCalibration: pickData.calibrationScore || 0.85,
+      backtestRoi: pickData.backtestROI || 0,
+      primetimeGame: pickData.isPrimetime || false
+    };
+    
+    // Call Kelly hybrid staking system
+    const kellyRecommendation = recommendUnits(edgeProb, priceDec, signals, 10);
+    
+    console.log(`📊 Kelly Hybrid Recommendation:`, {
+      confidence,
+      edge,
+      americanOdds,
+      priceDec: priceDec.toFixed(3),
+      edgeProb: edgeProb.toFixed(3),
+      kellyUnits: kellyRecommendation.units,
+      recommendation: kellyRecommendation.recommendation,
+      reason: kellyRecommendation.reason
+    });
+    
+    return {
+      units: kellyRecommendation.units,
+      tier: kellyRecommendation.recommendation,
+      reasoning: kellyRecommendation.reason,
+      kellyAudit: kellyRecommendation.audit
+    };
+  } catch (error) {
+    console.error('⚠️ Kelly staking error, falling back to legacy:', error);
+    // Fallback to legacy thresholds
+    if (confidence >= 65 && edge >= 8) {
+      return { units: 1.5, tier: 'premium', reasoning: '65%+ conf, 8%+ edge (fallback)' };
+    } else if (confidence >= 61 && edge >= 5) {
+      return { units: 1.0, tier: 'strong', reasoning: '61-64% conf, 5-7% edge (fallback)' };
+    } else if (confidence >= 58 && edge >= 2) {
+      return { units: 0.5, tier: 'value', reasoning: '58-60% conf, 2-4% edge (fallback)' };
+    } else {
+      return { units: 1.0, tier: 'standard', reasoning: 'flat unit (fallback)' };
+    }
+  }
 }
 
 function generateResponsibleParlays(components) {
