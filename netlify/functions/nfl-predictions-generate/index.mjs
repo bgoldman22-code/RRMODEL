@@ -5,10 +5,8 @@
 import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetrics, getCurrentWeek, getCurrentWeights, diagnoseMetricsData } from '../_lib/blobs-nfl.js';
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
 import { updateInjuryDurations, initializeInjuryDurationTracking } from '../_lib/injury-duration-tracker.js';
-// Canonical Availability v5: Production-ready availability system
-import { buildCanonicalAvailability, applyPositionCaps, SOURCE_PRIORITY } from '../_lib/canonical-availability-v5.mjs';
 // Kelly Hybrid Staking: Production-ready staking system
-import { recommendUnits, buildSignalsFromContext } from '../_lib/kelly-hybrid-staking.mjs';
+import { recommendUnits } from '../_lib/kelly-hybrid-staking.mjs';
 
 // v4.1 PRODUCTION SAFEGUARDS: Import new safety systems
 import { 
@@ -797,48 +795,95 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries) {
     baselineCorrection: 'temp_fix_v1' // Temporary revert while debugging
   };
   
-  // ==================================================
-  // CANONICAL AVAILABILITY V5 INTEGRATION
-  // ==================================================
-  console.log(`📋 Building canonical availability for ${teamCode}...`);
-  
-  // Build single source of truth for player availability
-  const availabilitySources = {
-    injuryReport: teamInjuries,
-    depthChart: { team: teamCode }, // Will be enhanced when depth chart data available
-    inactives: { team: teamCode }    // Will be enhanced when inactive list available
-  };
-  
-  const now = new Date();
-  const canonicalData = buildCanonicalAvailability(availabilitySources, weekNumber, now);
-  
-  // Apply position caps with budget reallocation
-  const cappedData = applyPositionCaps(canonicalData, weekNumber);
-  
-  console.log(`✅ Canonical availability built for ${teamCode}:`, {
-    totalPlayers: cappedData.players.size,
-    qbImpact: cappedData.positionSummaries.QB?.netImpact || 0,
-    rbImpact: cappedData.positionSummaries.RB?.netImpact || 0,
-    wrImpact: cappedData.positionSummaries.WR?.netImpact || 0,
-    teImpact: cappedData.positionSummaries.TE?.netImpact || 0,
-    totalImpact: cappedData.teamSummary.totalImpact
+  // ENHANCED DEBUG: Log everything we're working with
+  console.log(`🏥 ENHANCED INJURY DEBUG for ${teamCode}:`, {
+    hasInjuryData: !!injuries.teams,
+    injuryKeys: injuries.teams ? Object.keys(injuries.teams) : [],
+    teamInjuries: teamInjuries,
+    qbStatus: teamInjuries.qb_status,
+    qbName: teamInjuries.qb_name,
+    teamExists: !!injuries.teams?.[teamCode]
   });
-  
-  // Extract adjustments from canonical availability
-  totalDelta = cappedData.teamSummary.totalImpact;
-  
-  // Build adjustment list for audit trail
-  for (const [playerId, playerAvailability] of cappedData.players.entries()) {
-    if (Math.abs(playerAvailability.impact.net) > 0.01) {
-      injuryAnalysis.adjustments.push({
-        name: playerAvailability.name,
-        position: playerAvailability.position,
-        status: playerAvailability.gameStatus,
-        impact: playerAvailability.impact.net,
-        reason: `Canonical availability (confidence: ${(playerAvailability.confidence * 100).toFixed(0)}%)`
-      });
+
+  // QB Injuries - Use simple calculation temporarily
+  if (teamInjuries.qb_status && teamInjuries.qb_status !== 'active') {
+    const qbName = teamInjuries.qb_name || 'Unknown QB';
+    console.log(`🔥 TEMP QB INJURY DETECTED for ${teamCode}: ${qbName} is ${teamInjuries.qb_status}`);
+    
+    // Simple QB impact calculation (will be more conservative)
+    const qbImpact = calculateDefaultInjuryImpact('QB', teamCode);
+    let qbDelta = 0;
+    
+    switch (teamInjuries.qb_status) {
+      case 'out': qbDelta = qbImpact.expectedGameImpact; break;
+      case 'doubtful': qbDelta = qbImpact.expectedGameImpact * 0.7; break;
+      case 'questionable': qbDelta = qbImpact.expectedGameImpact * 0.3; break;
     }
+    
+    console.log(`🔥 Temp QB Delta for ${teamCode}: ${qbDelta}`);
+    
+    totalDelta += qbDelta;
+    injuryAnalysis.adjustments.push({
+      name: qbName,
+      position: 'QB',
+      status: teamInjuries.qb_status,
+      impact: qbDelta,
+      reason: 'Temporary simple calculation - debugging dynamic system'
+    });
+    totalDelta += qbDelta;
+    injuryAnalysis.adjustments.push({
+      player: qbName,
+      position: 'QB',
+      status: teamInjuries.qb_status,
+      impact: qbDelta,
+      analysis: qbImpact,
+      reason: 'QB injuries always applied - major system impact'
+    });
   }
+
+  // SKILL POSITION INJURIES - Temporary simple calculation
+  const skillPositions = ['RB', 'WR', 'TE'];
+  
+  skillPositions.forEach(position => {
+    const positionInjuries = teamInjuries[`${position.toLowerCase()}_injuries`] || [];
+    
+    positionInjuries.forEach(injury => {
+      const playerName = injury.name || injury.player || 'Unknown';
+      const status = injury.status || 'questionable';
+      const depthPosition = injury.depth || 1;
+      
+      if (status === 'active') return;
+      
+      // Only calculate for key players (starters + key backups)  
+      if (depthPosition > 2) return;
+      
+      const impactAnalysis = calculateDefaultInjuryImpact(position, teamCode);
+      let positionDelta = 0;
+      const depthMultiplier = depthPosition === 1 ? 1.0 : 0.4;
+      
+      switch (status) {
+        case 'out':
+          positionDelta = impactAnalysis.expectedGameImpact * depthMultiplier;
+          break;
+        case 'doubtful':
+          positionDelta = impactAnalysis.expectedGameImpact * depthMultiplier * 0.7;
+          break;
+        case 'questionable':
+          positionDelta = impactAnalysis.expectedGameImpact * depthMultiplier * 0.3;
+          break;
+      }
+      
+      totalDelta += positionDelta;
+      injuryAnalysis.adjustments.push({
+        name: playerName,
+        position: position,
+        status: status,
+        depth: depthPosition,
+        impact: positionDelta,
+        reason: 'Temporary simple calculation - debugging dynamic system'
+      });
+    });
+  });
 
   // Traditional positional injuries (O-line, Defense, Special Teams)
   const olOut = teamInjuries.ol_starters_out ?? 0;
@@ -1487,48 +1532,40 @@ function calculateRecommendedUnits(confidence, edge, betType = 'straight', pickD
     }
   }
   
-  // Build Kelly context from pick data
-  const kellyContext = {
-    // Core betting parameters
-    edge: edge,
-    odds: pickData.odds || -110, // American odds
-    confidence: confidence,
-    
-    // Market context (will be enhanced when available)
-    marketContext: {
-      lineMovement: pickData.lineMovement || 0,
-      sharpActivity: pickData.sharpActivity || 'neutral',
-      publicBetting: pickData.publicSplit || 50
-    },
-    
-    // Model quality signals
-    modelQuality: {
-      calibrationScore: pickData.calibrationScore || 0.85,
-      backtestPerformance: pickData.backtestROI || 0,
-      sampleSize: pickData.historicalSamples || 100
-    },
-    
-    // Game context
-    gameContext: {
-      weekNumber: pickData.weekNumber || 1,
-      isPrimetime: pickData.isPrimetime || false,
-      restDays: pickData.restDays || 7
-    },
-    
-    // Injury/availability context
-    availability: pickData.availability || {
-      teamImpact: 0,
-      opponentImpact: 0,
-      keyPlayerStatus: 'healthy'
-    }
+  // Convert American odds to decimal
+  const americanOdds = pickData.odds || -110;
+  const priceDec = americanOdds > 0 
+    ? (americanOdds / 100) + 1 
+    : (100 / Math.abs(americanOdds)) + 1;
+  
+  // Convert confidence % and edge % to probability
+  const edgeProb = confidence / 100; // e.g., 67% -> 0.67
+  
+  // Build signals object for Kelly multiplier system
+  const signals = {
+    edgePct: edge,
+    clvPts: pickData.clvPts || 0,
+    lineMoveToward: pickData.lineMovement || 0,
+    ticketsPct: pickData.publicSplit || 50,
+    handlePct: pickData.publicSplit || 50, // Use same as tickets if not available
+    availabilityConf: 0.85, // Default high confidence
+    marketShockActive: false,
+    injurySwingPts: Math.abs(pickData.availability?.teamImpact || 0),
+    injuryConfirmedHours: 24, // Assume 24h if we have injury data
+    modelCalibration: pickData.calibrationScore || 0.85,
+    backtestRoi: pickData.backtestROI || 0,
+    primetimeGame: pickData.isPrimetime || false
   };
   
-  // Call Kelly hybrid staking system
-  const kellyRecommendation = recommendUnits(kellyContext, []);
+  // Call Kelly hybrid staking system with correct signature
+  const kellyRecommendation = recommendUnits(edgeProb, priceDec, signals, 10);
   
   console.log(`📊 Kelly Hybrid Recommendation:`, {
     confidence,
     edge,
+    americanOdds,
+    priceDec: priceDec.toFixed(3),
+    edgeProb: edgeProb.toFixed(3),
     kellyUnits: kellyRecommendation.units,
     recommendation: kellyRecommendation.recommendation,
     reason: kellyRecommendation.reason
