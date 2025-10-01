@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2025-09-30T19:12:19Z",
+    "generated_at": "2025-10-01T12:34:34Z",
     "season": 2025,
     "week": 5,
-    "total_players": 558,
+    "total_players": 559,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -3763,6 +3763,27 @@
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.765,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
+      "player_id": "00-0035639",
+      "name": "P.Campbell",
+      "team": "DAL",
+      "position": "WR",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "WR",
+      "anytime_td_prob": 0.85,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.35,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.85,
       "first_td": 0,
       "multiple_td": 0
     },
