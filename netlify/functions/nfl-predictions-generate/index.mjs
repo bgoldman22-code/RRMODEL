@@ -30,7 +30,7 @@ import {
   calculateSituationalBaseline,
   detectDataQualityIssues,
   SITUATIONAL_THRESHOLDS 
-} from '../_lib/situatoional-epa-filters-v4.mjs';
+} from '../_lib/situational-epa-filters-v4.mjs';
 
 // v4.1 PRODUCTION SAFEGUARDS: Helper function for EPA filtering
 function applySituationalEPAFilters(homeMetrics, awayMetrics, game) {
