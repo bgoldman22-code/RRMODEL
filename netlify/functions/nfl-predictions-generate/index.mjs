@@ -787,20 +787,19 @@ function calculateDefaultInjuryImpact(position, teamCode) {
   };
 }
 
-function applyInjuryAdjustments(scoreData, teamCode, injuries) {
+function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1) {
   const teamInjuries = injuries.teams?.[teamCode] || {};
   let totalDelta = 0;
   const injuryAnalysis = {
     adjustments: [],
     totalImpact: 0,
-    confidence: 1.0,
-    baselineCorrection: 'temp_fix_v1' // Temporary revert while debugging
+    confidence: 1.0
   };
   
   // ==================================================
   // CANONICAL AVAILABILITY V5 INTEGRATION
   // ==================================================
-  console.log(`📋 Building canonical availability for ${teamCode}...`);
+  console.log(`📋 Building canonical availability for ${teamCode}, Week ${weekNumber}...`);
   
   const now = Date.now();
   const allPlayers = [];
@@ -1804,9 +1803,9 @@ async function generateAdvancedPredictions(games, season) {
     const epaFilterResults = applySituationalEPAFilters(homeMetrics, awayMetrics, game);
     
     if (injuries) {
-      console.log(`🔥 APPLYING TEMP INJURIES for ${awayCode} @ ${homeCode}`);
-      homeScoreData = applyInjuryAdjustments(homeScoreData, homeCode, injuries);
-      awayScoreData = applyInjuryAdjustments(awayScoreData, awayCode, injuries);
+      console.log(`🔥 APPLYING CANONICAL AVAILABILITY for ${awayCode} @ ${homeCode}, Week ${currentWeek}`);
+      homeScoreData = applyInjuryAdjustments(homeScoreData, homeCode, injuries, currentWeek);
+      awayScoreData = applyInjuryAdjustments(awayScoreData, awayCode, injuries, currentWeek);
       
       // v4.1 SAFEGUARDS: Apply depth chart safeguards to injury impacts
       if (homeScoreData.injuryAnalysis?.adjustments?.length > 0) {
