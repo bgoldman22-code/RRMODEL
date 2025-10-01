@@ -1279,13 +1279,14 @@ const TEAM_NAME_MAPPING = {
   'Bayer 04 Leverkusen': ['Bayer Leverkusen', 'Leverkusen'],
   'F.C. Copenhagen': ['Copenhagen', 'FCK'],
   'SSC Napoli': ['Napoli'],
-  'Sporting CP': ['Sporting Lisbon', 'Sporting'],
+  'Sporting CP': ['Sporting Lisbon', 'Sporting', 'Sporting Clube de Portugal', 'Sporting Portugal'],
   'Athletic Club': ['Athletic Bilbao'],
   'PSV Eindhoven': ['PSV'],
-  'R. Union Saint-Gilloise': ['Union Saint-Gilloise', 'Union SG'],
-  'Qarabağ FK': ['Qarabag', 'Qarabağ'],
+  'Union Saint-Gilloise': ['R. Union Saint-Gilloise', 'Union SG', 'Royale Union Saint-Gilloise'],
+  'Qarabag': ['Qarabağ FK', 'Qarabag FK', 'Qarabağ', 'Qarabağ Ağdam FK'],
   'Newcastle United FC': ['Newcastle United', 'Newcastle', 'NUFC'],
-  'FC Kairat Almaty': ['Kairat Almaty', 'Kairat']
+  'FC Kairat Almaty': ['Kairat Almaty', 'Kairat'],
+  'Olympiakos Piraeus': ['Olympiacos', 'PAE Olympiakos SFP', 'Olympiakos FC', 'Olympiacos Piraeus']
 };
 
 // Reverse lookup for normalization
@@ -2538,6 +2539,12 @@ const CHAMPIONS_LEAGUE_2025_26_TEAMS = {
     games_away: 1, goals_scored_away: 1, goals_conceded_away: 2,
     btts_rate_home: 0.58, btts_rate_away: 0.63
   },
+  'Union Saint-Gilloise': {
+    name: 'Union Saint-Gilloise',
+    games_home: 1, goals_scored_home: 1, goals_conceded_home: 1,
+    games_away: 1, goals_scored_away: 1, goals_conceded_away: 2,
+    btts_rate_home: 0.55, btts_rate_away: 0.60
+  },
   
   // Czech Teams - NEW
   'SK Slavia Praha': {
@@ -2553,6 +2560,22 @@ const CHAMPIONS_LEAGUE_2025_26_TEAMS = {
     games_home: 1, goals_scored_home: 1, goals_conceded_home: 1,
     games_away: 1, goals_scored_away: 0, goals_conceded_away: 2,
     btts_rate_home: 0.52, btts_rate_away: 0.48
+  },
+  
+  // Azerbaijani Teams - NEW
+  'Qarabag': {
+    name: 'Qarabag',
+    games_home: 1, goals_scored_home: 1, goals_conceded_home: 1,
+    games_away: 1, goals_scored_away: 0, goals_conceded_away: 2,
+    btts_rate_home: 0.50, btts_rate_away: 0.45
+  },
+  
+  // Greek Teams - NEW
+  'Olympiakos Piraeus': {
+    name: 'Olympiakos Piraeus',
+    games_home: 1, goals_scored_home: 2, goals_conceded_home: 1,
+    games_away: 1, goals_scored_away: 1, goals_conceded_away: 1,
+    btts_rate_home: 0.60, btts_rate_away: 0.58
   },
   
   // Turkish Teams - NEW
