@@ -1737,16 +1737,7 @@ async function generateAdvancedPredictions(games, season) {
       wasTeam: injuries && injuries.teams && injuries.teams.WAS ? 'has WAS data' : 'no WAS data'
     });
     
-    // TEMP: Use test data for James Conner injury testing
-    if (!injuries.teams || Object.keys(injuries.teams).length === 0) {
-      const fs = require('fs');
-      const path = require('path');
-      const testDataPath = path.join(process.cwd(), 'test-injury-data.json');
-      if (fs.existsSync(testDataPath)) {
-        injuries = JSON.parse(fs.readFileSync(testDataPath, 'utf8'));
-        console.log('Using test injury data with James Conner out');
-      }
-    }
+    // Injury data is loaded from Netlify Blobs - no test harness needed
   } catch (error) {
     console.warn('Enhanced metrics loading failed:', error);
   }
