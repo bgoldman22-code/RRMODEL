@@ -113,11 +113,11 @@ export default function NHL() {
               <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                 🏒 NHL SOG Props
                 <span className="text-sm font-normal text-blue-400 bg-blue-500/20 px-3 py-1 rounded-full">
-                  v3.1 Production
+                  v3.1 Fast ⚡
                 </span>
               </h1>
               <p className="text-gray-400 mt-1">
-                Real Player Stats • Historical Data • Home/Away Factors • Position-Adjusted
+                Real NHL Players • Fast Execution • Position-Optimized • Timeout-Free
               </p>
             </div>
             
