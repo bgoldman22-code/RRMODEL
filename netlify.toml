@@ -24,24 +24,7 @@
   name = "injuries-cron-all"
   cron = "*/30 * * * *"
 
-# Intensive injury refresh during prime time (Thu-Mon nights)
+# Intensive injury refresh during prime time (Thu-Mon nights, 10pm-3am)
 [[scheduled.functions]]
-  name = "injuries-cron-primetime"  
-  cron = "*/10 22-23,0-3 * * 4-1"
-
-# Background injury analysis - runs every 30 minutes
-[[scheduled.functions]]
-  name = "injuries-cron-all"
-  cron = "*/30 * * * *"
-
-# Intensive injury refresh during prime time (Thu-Mon nights)
-[[scheduled.functions]]
-  name = "injuries-cron-primetime"  
-  cron = "*/10 22-23,0-3 * * 4-1"
-
-[build.environment]
-  BLOBS_STORE_NFL        = "nfl-td"
-  NFL_SCHEDULE_URL       = "nfl-schedule-get"
-  NFL_ODDS_BRIDGE_URL    = "odds-get"
-  NFLVERSE_TEAM_FORM_URL = "/nflverse-team-form.json"
-  NODE_VERSION           = "20"
+  name = "injuries-cron-primetime"
+  cron = "*/10 22-23,0-3 * * 0,4-6"
