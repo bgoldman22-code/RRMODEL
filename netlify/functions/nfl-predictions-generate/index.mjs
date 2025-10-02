@@ -888,25 +888,35 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1) {
   });
 
   // Apply position caps with budget reallocation
-  const teamAdjustments = {
-    week: weekNumber,
-    players: new Map(allPlayers.map(p => [p.name, p.availability])),
-    positionSummaries: {},
-    teamSummary: { totalImpact: totalDelta }
-  };
-  
-  const cappedAdjustments = applyPositionCaps(teamAdjustments);
-  totalDelta = cappedAdjustments.teamSummary.totalImpact;
+  // Build adjustments array for position caps (expected input is an array of per-player adjustments)
+  const rawAdjustments = allPlayers.map(p => ({
+    position: p.position,
+    impact: {
+      spreadImpact: p.impact,
+      totalImpact: p.impact * (p.position === 'QB' ? 0.3 : 0.25),
+      confidence: p.confidence
+    },
+    player: p.name,
+    status: p.status,
+    depth: p.depth || 1
+  }));
+
+  const cappedAdjustments = applyPositionCaps(rawAdjustments);
+  // Recompute total delta from capped adjustments
+  totalDelta = cappedAdjustments.reduce((sum, adj) => sum + (adj.impact?.spreadImpact || 0), 0);
   
   // Build injuryAnalysis from canonical availability
-  allPlayers.forEach(player => {
+  // Expose adjustments in a shape used by safeguards: include EPA-style impact and player field
+  cappedAdjustments.forEach(adj => {
     injuryAnalysis.adjustments.push({
-      name: player.name,
-      position: player.position,
-      status: player.status,
-      depth: player.depth,
-      impact: player.impact,
-      confidence: player.confidence,
+      player: adj.player,
+      name: adj.player,
+      position: adj.position,
+      status: adj.status,
+      depth: adj.depth,
+      impact: adj.impact?.spreadImpact,
+      epaImpact: (adj.impact?.spreadImpact || 0) / 20,
+      confidence: adj.impact?.confidence || 0.8,
       reason: 'Canonical availability v5 (field-level precedence)'
     });
   });
@@ -1718,9 +1728,18 @@ async function generateAdvancedPredictions(games, season) {
   
   let advancedMetrics = null;
   let injuries = null;
+  // Ensure currentWeek is available before any injury-duration updates
+  let currentWeek = 1;
   
   try {
     advancedMetrics = await loadAdvancedMetrics(season);
+    // Determine current week as soon as metrics are available
+    try {
+      currentWeek = getCurrentWeek(advancedMetrics);
+    } catch (e) {
+      console.warn('Could not determine current week from metrics, defaulting to 1');
+      currentWeek = 1;
+    }
     injuries = await loadInjuries();
     
     // **NEW: Initialize injury duration tracking when injuries are loaded**
@@ -1767,7 +1786,6 @@ async function generateAdvancedPredictions(games, season) {
   }
 
   const league = advancedMetrics?.league || { means: {}, stds: {} };
-  const currentWeek = getCurrentWeek(advancedMetrics);
   
   // v8 WORKING ODDS: Load live odds using proven working method
   const allOdds = await loadLiveOdds();
