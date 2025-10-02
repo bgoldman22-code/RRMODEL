@@ -26,9 +26,8 @@ export default function NHL() {
     setScanning(true);
     
     try {
-      // TEMPORARY: Use simple diagnostic endpoint to debug 502 errors
-      // TODO: Switch back to nhl-sog-scanner-v3 once issues resolved
-      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-simple`);
+      // Using real NHL data with simplified projections (avoids v3 timeout issues)
+      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-real`);
       
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -109,12 +108,12 @@ export default function NHL() {
             <div>
               <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                 🏒 NHL SOG Props
-                <span className="text-sm font-normal text-yellow-400 bg-yellow-500/20 px-3 py-1 rounded-full">
-                  Diagnostic Mode
+                <span className="text-sm font-normal text-green-400 bg-green-500/20 px-3 py-1 rounded-full">
+                  Live
                 </span>
               </h1>
               <p className="text-gray-400 mt-1">
-                Testing NHL API connectivity • Real schedule data • Mock projections
+                Real NHL Players • Live Schedule • Simple Bayesian Projections
               </p>
             </div>
             
