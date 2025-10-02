@@ -112,12 +112,12 @@ export default function NHL() {
             <div>
               <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                 🏒 NHL SOG Props
-                <span className="text-sm font-normal text-blue-400 bg-blue-500/20 px-3 py-1 rounded-full">
-                  v3.1 Fast ⚡
-                </span>
+              <span className="text-sm font-normal text-blue-400 bg-blue-500/20 px-3 py-1 rounded-full">
+                v3.1 Fast {metadata?.usingRealOdds ? '🎯' : '⚡'}
+              </span>
               </h1>
               <p className="text-gray-400 mt-1">
-                Real NHL Players • Fast Execution • Position-Optimized • Timeout-Free
+                Real NHL Players • Fast Execution • {metadata?.usingRealOdds ? 'Real Odds API' : 'Position-Optimized'} • Timeout-Free
               </p>
             </div>
             
@@ -141,13 +141,21 @@ export default function NHL() {
           
           {/* Metadata */}
           {metadata && (
-            <div className="mt-4 flex gap-6 text-sm">
+            <div className="mt-4 flex gap-6 text-sm flex-wrap">
               <span className="text-gray-400">
                 📅 Last scan: {new Date().toLocaleTimeString()}
               </span>
               <span className="text-blue-400 font-semibold">
                 🎯 {opportunities.length} opportunities
               </span>
+              <span className={metadata.usingRealOdds ? "text-green-400" : "text-yellow-400"}>
+                {metadata.usingRealOdds ? '🎯 Real Odds API' : '⚡ Simulated Odds'}
+              </span>
+              {metadata.realOddsLines > 0 && (
+                <span className="text-green-400">
+                  📊 {metadata.realOddsLines} live lines
+                </span>
+              )}
               {metadata.operationalCompleteness && (
                 <span className="text-green-400">
                   ✅ {Math.round(metadata.operationalCompleteness * 100)}% Operational
