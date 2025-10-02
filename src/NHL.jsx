@@ -279,9 +279,6 @@ export default function NHL() {
                             <div className="font-bold text-green-400 text-lg">
                               {units.toFixed(1)}U
                             </div>
-                            <div className="text-xs text-gray-500 font-mono">
-                              ${stakeAmount.toFixed(0)}
-                            </div>
                           </div>
                         </td>
                       </tr>
@@ -290,11 +287,6 @@ export default function NHL() {
                 </tbody>
               </table>
             </div>
-          </div>
-          
-          {/* Table Legend */}
-          <div className="mt-4 text-sm text-gray-400 text-center">
-            💡 1 Unit = ${UNIT_SIZE} (of ${BANKROLL} bankroll) • Stakes calculated via Kelly Criterion with uncertainty penalties
           </div>
         </div>
       )}
