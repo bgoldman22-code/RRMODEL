@@ -89,27 +89,90 @@ function debugWeatherImpact(game) {
   }
 }
 
-function debugInjuryImpact(game) {
+// Load and convert injury data to expected format
+async function loadAndConvertInjuryData() {
+  try {
+    const response = await fetch('/data/nfl/injuries/latest.json');
+    if (!response.ok) return null;
+    
+    const data = await response.json();
+    return data.teams;
+  } catch (error) {
+    console.log('⚠️ Could not load injury data:', error.message);
+    return null;
+  }
+}
+
+// Convert our injury structure to expected format
+function convertTeamInjuries(teamData, teamCode) {
+  if (!teamData) return [];
+  
+  const injuries = [];
+  
+  // QB injury
+  if (teamData.qb_status && teamData.qb_status !== 'active') {
+    injuries.push({
+      player: teamData.qb_name || 'Starting QB',
+      position: 'QB',
+      status: teamData.qb_status,
+      impact: 'high'
+    });
+  }
+  
+  // Skill position injuries
+  ['rb_injuries', 'wr_injuries', 'te_injuries'].forEach(posType => {
+    const position = posType.replace('_injuries', '').toUpperCase();
+    const posInjuries = teamData[posType] || [];
+    
+    posInjuries.forEach(injury => {
+      if (injury.status !== 'active') {
+        injuries.push({
+          player: injury.name || injury.player,
+          position: position,
+          status: injury.status,
+          impact: position === 'WR' && injury.depth === 1 ? 'high' : 'medium'
+        });
+      }
+    });
+  });
+  
+  return injuries;
+}
+
+async function debugInjuryImpact(game) {
   console.log("\n🏥 INJURY IMPACT ANALYSIS:");
   console.log("-".repeat(40));
   
-  const homeInjuries = game.injuries?.home || game.home_injuries || [];
-  const awayInjuries = game.injuries?.away || game.away_injuries || [];
-  const spread = game.predictions?.spread || {};
+  // Load our actual injury data
+  const injuryTeams = await loadAndConvertInjuryData();
+  
+  if (!injuryTeams) {
+    console.log('❌ No injury data available');
+    return;
+  }
+  
+  // Convert to expected format
+  const homeInjuries = convertTeamInjuries(injuryTeams[game.home_team], game.home_team);
+  const awayInjuries = convertTeamInjuries(injuryTeams[game.away_team], game.away_team);
+  
+  let homeImpactTotal = 0;
+  let awayImpactTotal = 0;
   
   // Home team injuries
   if (homeInjuries.length > 0) {
     console.log(`🏠 ${game.home_team} INJURIES:`);
     homeInjuries.forEach(injury => {
       const impact = calculateInjuryImpact(injury);
-      console.log(`   ${injury.player} (${injury.position}) - ${injury.status}`);
+      console.log(`   ${injury.player} (${injury.position}) - ${injury.status.toUpperCase()}`);
       console.log(`      📊 Impact: ${impact.severity} (${impact.points} pts)`);
-      if (injury.position === 'QB' && injury.status !== 'Probable') {
+      homeImpactTotal += impact.points;
+      
+      if (injury.position === 'QB' && injury.status !== 'probable') {
         console.log(`      🚨 CRITICAL: QB injury significantly impacts model`);
       }
     });
   } else {
-    console.log(`🏠 ${game.home_team}: No significant injuries reported`);
+    console.log(`🏠 ${game.home_team}: No significant injuries`);
   }
   
   // Away team injuries  
@@ -117,23 +180,37 @@ function debugInjuryImpact(game) {
     console.log(`✈️ ${game.away_team} INJURIES:`);
     awayInjuries.forEach(injury => {
       const impact = calculateInjuryImpact(injury);
-      console.log(`   ${injury.player} (${injury.position}) - ${injury.status}`);
+      console.log(`   ${injury.player} (${injury.position}) - ${injury.status.toUpperCase()}`);
       console.log(`      📊 Impact: ${impact.severity} (${impact.points} pts)`);
-      if (injury.position === 'QB' && injury.status !== 'Probable') {
+      awayImpactTotal += impact.points;
+      
+      if (injury.position === 'QB' && injury.status !== 'probable') {
         console.log(`      🚨 CRITICAL: QB injury significantly impacts model`);
       }
     });
   } else {
-    console.log(`✈️ ${game.away_team}: No significant injuries reported`);
+    console.log(`✈️ ${game.away_team}: No significant injuries`);
   }
   
-  // Overall injury impact on spread
-  if (spread.model_home_margin !== undefined) {
-    const injuryAdjustment = estimateInjuryAdjustment(homeInjuries, awayInjuries);
-    console.log(`\n📈 ESTIMATED INJURY IMPACT ON SPREAD:`);
-    console.log(`   Net adjustment: ${injuryAdjustment > 0 ? '+' : ''}${injuryAdjustment.toFixed(1)} pts toward home`);
-    console.log(`   Model spread: ${spread.model_home_margin}`);
-    console.log(`   Market spread: ${spread.line || 'N/A'}`);
+  // Calculate net injury impact
+  const netImpact = awayImpactTotal - homeImpactTotal; // Positive favors home team
+  
+  console.log(`\n📈 INJURY IMPACT ON SPREAD:`);
+  console.log(`   ${game.home_team} total impact: ${homeImpactTotal.toFixed(1)} pts`);
+  console.log(`   ${game.away_team} total impact: ${awayImpactTotal.toFixed(1)} pts`);
+  console.log(`   Net adjustment: ${netImpact > 0 ? '+' : ''}${netImpact.toFixed(1)} pts toward ${netImpact > 0 ? game.home_team : game.away_team}`);
+  
+  if (Math.abs(netImpact) >= 3.0) {
+    console.log(`   🔥 SIGNIFICANT INJURY IMPACT (${Math.abs(netImpact).toFixed(1)} pts)`);
+  }
+  
+  // Show how this should affect current predictions
+  const spread = game.predictions?.spread || {};
+  if (spread.line !== undefined) {
+    const adjustedSpread = (spread.line || 0) + netImpact;
+    console.log(`\n🎯 ADJUSTED PREDICTIONS:`);
+    console.log(`   Current model spread: ${game.home_team} ${spread.line > 0 ? '+' : ''}${spread.line}`);
+    console.log(`   Injury-adjusted spread: ${game.home_team} ${adjustedSpread > 0 ? '+' : ''}${adjustedSpread.toFixed(1)}`);
   }
 }
 
