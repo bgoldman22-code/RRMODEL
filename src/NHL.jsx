@@ -26,8 +26,12 @@ export default function NHL() {
     setScanning(true);
     
     try {
-      // Using real NHL data with simplified projections (avoids v3 timeout issues)
-      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-real`);
+      // v3.1 Optimized: Real player stats + production-grade projections
+      const params = new URLSearchParams({
+        minEdge: '3.0'
+      });
+      
+      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-v3-optimized?${params}`);
       
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -108,12 +112,12 @@ export default function NHL() {
             <div>
               <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                 🏒 NHL SOG Props
-                <span className="text-sm font-normal text-green-400 bg-green-500/20 px-3 py-1 rounded-full">
-                  Live
+                <span className="text-sm font-normal text-blue-400 bg-blue-500/20 px-3 py-1 rounded-full">
+                  v3.1 Production
                 </span>
               </h1>
               <p className="text-gray-400 mt-1">
-                Real NHL Players • Live Schedule • Simple Bayesian Projections
+                Real Player Stats • Historical Data • Home/Away Factors • Position-Adjusted
               </p>
             </div>
             
