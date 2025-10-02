@@ -20,16 +20,83 @@ export const ARCHETYPES = {
     label: 'Steady Playmaker',
     description: 'Low Yards, High Receptions - slot WRs, possession TEs',
     thresholds: {
-      max_adot: 7.5,           // Short routes
-      max_yac_per_rec: 5.0,    // Not YAC-heavy
+      max_adot: 8.5,           // Short routes (relaxed)
+      max_yac_per_rec: 6.0,    // Not YAC-heavy (relaxed)
       min_targets: 6.0,        // Higher volume
-      max_explosive_rate: 0.12 // Low explosive rate
+      max_explosive_rate: 0.15 // Low explosive rate (relaxed)
     }
   }
 };
 
 /**
- * ALT LINE COMBOS TO SCAN
+ * Generate dynamic alt line combos tailored to player's projection
+ * @param {number} projReceptions - Projected receptions
+ * @param {number} projYards - Projected receiving yards
+ * @param {string} archetype - 'EXPLOSIVE' or 'STEADY'
+ * @returns {Array} - Array of {rec, yards} combo objects
+ */
+export function generateDynamicLines(projReceptions, projYards, archetype) {
+  const combos = [];
+  
+  if (archetype === 'EXPLOSIVE') {
+    // Under receptions, Over yards
+    // Generate lines around projection with negative correlation
+    const recLines = [
+      Math.floor(projReceptions - 1.5),
+      Math.floor(projReceptions - 0.5),
+      Math.floor(projReceptions + 0.5)
+    ].filter(l => l >= 1.5).map(l => l + 0.5);
+    
+    const yardLines = [
+      Math.floor(projYards - 20) + 0.5,
+      Math.floor(projYards - 10) + 0.5,
+      Math.floor(projYards) + 0.5,
+      Math.floor(projYards + 10) + 0.5,
+      Math.floor(projYards + 20) + 0.5
+    ].filter(l => l >= 19.5);
+    
+    // Create combos: lower rec paired with higher yards
+    for (const recLine of recLines) {
+      for (const yardLine of yardLines) {
+        combos.push({
+          rec: { line: recLine, side: 'under' },
+          yards: { line: yardLine, side: 'over' }
+        });
+      }
+    }
+  } else if (archetype === 'STEADY') {
+    // Over receptions, Under yards
+    // Generate lines around projection with negative correlation
+    const recLines = [
+      Math.floor(projReceptions - 1.5),
+      Math.floor(projReceptions - 0.5),
+      Math.floor(projReceptions + 0.5),
+      Math.floor(projReceptions + 1.5)
+    ].filter(l => l >= 2.5).map(l => l + 0.5);
+    
+    const yardLines = [
+      Math.floor(projYards - 20) + 0.5,
+      Math.floor(projYards - 10) + 0.5,
+      Math.floor(projYards) + 0.5,
+      Math.floor(projYards + 10) + 0.5
+    ].filter(l => l >= 19.5);
+    
+    // Create combos: higher rec paired with lower yards
+    for (const recLine of recLines) {
+      for (const yardLine of yardLines) {
+        combos.push({
+          rec: { line: recLine, side: 'over' },
+          yards: { line: yardLine, side: 'under' }
+        });
+      }
+    }
+  }
+  
+  return combos;
+}
+
+/**
+ * LEGACY: ALT LINE COMBOS (kept for backwards compatibility)
  */
 export const ALT_LINE_COMBOS = {
   EXPLOSIVE: [
@@ -236,14 +303,19 @@ export function buildPlayerProjection(playerStats, gameContext, opponentDefense)
  * Scan player for best alt line combos
  */
 export function scanPlayerCombos(playerStats, playerProj, archetype) {
-  const combos = ALT_LINE_COMBOS[archetype];
+  // Calculate projected stats for dynamic line generation
+  const projReceptions = playerProj.projTargets * playerProj.catchRate;
+  const projYards = projReceptions * (playerProj.adot + playerProj.yacPerRec);
+  
+  // Generate dynamic lines tailored to this player's projection
+  const combos = generateDynamicLines(projReceptions, projYards, archetype);
   const results = [];
   
   for (const combo of combos) {
     const prob = calculateComboProb(playerProj, combo, 50000);
     
-    // Only include if probability is reasonable (15-50% range for good value)
-    if (prob >= 0.15 && prob <= 0.50) {
+    // Only include if probability is reasonable (8-50% range for testing, normally 15-50%)
+    if (prob >= 0.08 && prob <= 0.50) {
       results.push({
         combo,
         trueProbability: prob,
