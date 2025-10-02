@@ -1,12 +1,122 @@
 /**
- * NHL SOG SCANNER V3.1 - FAST OPTIMIZED
+ * NHL SOG SCANNER V3.1 - FAST OPTIMIZED WITH REAL ODDS
  * 
  * SPEED OPTIMIZATIONS:
  * - Fetch all rosters in parallel
  * - Skip individual player stats (too slow)
  * - Use team-level stats + position baselines
  * - 5x faster execution while keeping real data
+ * 
+ * REAL ODDS INTEGRATION:
+ * - The Odds API for live NHL player props
+ * - Real shots on goal lines from sportsbooks
+ * - Live odds for accurate edge calculations
  */
+
+// Real odds fetching using The Odds API
+async function fetchNHLOdds() {
+  const apiKey = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
+  
+  if (!apiKey) {
+    console.warn('⚠️ No Odds API key found - using simulated odds');
+    return null;
+  }
+  
+  try {
+    console.log('🎯 Fetching real NHL odds from The Odds API...');
+    
+    // Fetch NHL events for today
+    const today = new Date().toISOString().split('T')[0];
+    const eventsUrl = `https://api.the-odds-api.com/v4/sports/icehockey_nhl/events?regions=us&dateFormat=iso&apiKey=${apiKey}`;
+    
+    const eventsResponse = await fetch(eventsUrl);
+    if (!eventsResponse.ok) {
+      console.warn('Events API failed:', eventsResponse.status);
+      return null;
+    }
+    
+    const events = await eventsResponse.json();
+    const todayEvents = events.filter(event => event.commence_time?.startsWith(today));
+    
+    if (todayEvents.length === 0) {
+      console.log('📅 No NHL events today in Odds API');
+      return null;
+    }
+    
+    console.log(`📊 Found ${todayEvents.length} NHL events, fetching player props...`);
+    
+    // Fetch player props for each event
+    const oddsPromises = todayEvents.slice(0, 5).map(async (event) => { // Limit to 5 games for speed
+      try {
+        const propsUrl = `https://api.the-odds-api.com/v4/sports/icehockey_nhl/events/${event.id}/odds?regions=us&markets=player_shots_on_goal&oddsFormat=american&dateFormat=iso&apiKey=${apiKey}`;
+        
+        const propsResponse = await fetch(propsUrl);
+        if (!propsResponse.ok) return null;
+        
+        const propsData = await propsResponse.json();
+        return { event, props: propsData };
+      } catch (e) {
+        console.warn(`Failed to fetch props for event ${event.id}`);
+        return null;
+      }
+    });
+    
+    const oddsResults = await Promise.all(oddsPromises);
+    const validOdds = oddsResults.filter(Boolean);
+    
+    console.log(`✅ Fetched odds for ${validOdds.length} games`);
+    return validOdds;
+    
+  } catch (error) {
+    console.warn('⚠️ Odds API error:', error.message);
+    return null;
+  }
+}
+
+// Process real odds data into usable format
+function processRealOdds(oddsData) {
+  if (!oddsData) return new Map();
+  
+  const playerOddsMap = new Map();
+  
+  for (const gameData of oddsData) {
+    const { event, props } = gameData;
+    
+    if (!props.bookmakers) continue;
+    
+    for (const bookmaker of props.bookmakers) {
+      if (!bookmaker.markets) continue;
+      
+      for (const market of bookmaker.markets) {
+        if (market.key !== 'player_shots_on_goal') continue;
+        
+        for (const outcome of market.outcomes || []) {
+          if (!outcome.description) continue;
+          
+          const playerName = outcome.description.replace(/\s+(Over|Under).*$/i, '').trim();
+          const isOver = /over/i.test(outcome.name || '');
+          
+          if (isOver && outcome.point && outcome.price) {
+            const key = `${playerName}_${outcome.point}`;
+            
+            if (!playerOddsMap.has(key)) {
+              playerOddsMap.set(key, {
+                playerName,
+                line: parseFloat(outcome.point),
+                odds: outcome.price,
+                bookmaker: bookmaker.title,
+                event: `${event.home_team} vs ${event.away_team}`
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  console.log(`📊 Processed odds for ${playerOddsMap.size} player lines`);
+  return playerOddsMap;
+}
 
 export async function handler(event, context) {
   const headers = {
@@ -20,12 +130,22 @@ export async function handler(event, context) {
   }
   
   try {
-    console.log('🏒 NHL SOG Scanner v3.1 - Fast Optimized');
+    console.log('🏒 NHL SOG Scanner v3.1 - Fast Optimized with Real Odds');
     
     const params = event.queryStringParameters || {};
     const minEdge = parseFloat(params.minEdge) || 3.0;
+    const useRealOdds = params.realOdds !== 'false'; // Default to true
     
-    // Step 1: Fetch today's schedule
+    // Step 1: Fetch real odds data if available
+    let realOddsData = null;
+    let realOddsMap = new Map();
+    
+    if (useRealOdds) {
+      realOddsData = await fetchNHLOdds();
+      realOddsMap = processRealOdds(realOddsData);
+    }
+    
+    // Step 2: Fetch today's schedule
     const today = new Date().toISOString().split('T')[0];
     const scheduleUrl = `https://api-web.nhle.com/v1/schedule/${today}`;
     
@@ -44,8 +164,9 @@ export async function handler(event, context) {
         body: JSON.stringify({
           opportunities: [],
           metadata: {
-            version: '3.1-fast',
+            version: '3.1-fast-odds',
             message: 'No NHL games scheduled today',
+            usingRealOdds: !!realOddsData,
             timestamp: new Date().toISOString()
           }
         })
@@ -54,14 +175,14 @@ export async function handler(event, context) {
     
     console.log(`📅 Found ${games.length} games`);
     
-    // Step 2: Get all unique teams
+    // Step 3: Get all unique teams
     const teams = new Set();
     for (const game of games) {
       teams.add(game.homeTeam?.abbrev);
       teams.add(game.awayTeam?.abbrev);
     }
     
-    // Step 3: Fetch all rosters in parallel (FAST)
+    // Step 4: Fetch all rosters in parallel (FAST)
     console.log(`👥 Fetching rosters for ${teams.size} teams in parallel...`);
     
     const rosterPromises = Array.from(teams).filter(Boolean).map(async (teamAbbrev) => {
@@ -88,7 +209,7 @@ export async function handler(event, context) {
     
     console.log(`✅ Fetched ${Object.keys(rosters).length} rosters`);
     
-    // Step 4: Generate opportunities
+    // Step 5: Generate opportunities
     const opportunities = [];
     
     for (const game of games) {
@@ -120,7 +241,8 @@ export async function handler(event, context) {
             teamAbbrev,
             opponent,
             isHome,
-            game.startTimeUTC
+            game.startTimeUTC,
+            realOddsMap
           );
           
           if (projection && projection.edge >= minEdge) {
@@ -141,17 +263,20 @@ export async function handler(event, context) {
       body: JSON.stringify({
         opportunities: opportunities.slice(0, 50),
         metadata: {
-          version: '3.1-fast',
+          version: '3.1-fast-odds',
           features: {
             realPlayerData: true,
             fastExecution: true,
+            realOddsAPI: !!realOddsData,
             positionOptimized: true,
             homeAwayFactors: true
           },
           gamesProcessed: games.length,
           teamsProcessed: Object.keys(rosters).length,
+          realOddsLines: realOddsMap.size,
+          usingRealOdds: !!realOddsData,
           executionTime: 'Under 5 seconds',
-          note: 'Fast execution with real NHL roster data. Position-based projections.',
+          note: realOddsData ? 'Using real odds from The Odds API' : 'Using simulated odds (no API key)',
           timestamp: new Date().toISOString()
         }
       })
@@ -166,7 +291,7 @@ export async function handler(event, context) {
       body: JSON.stringify({
         opportunities: [],
         error: error.message,
-        version: '3.1-fast',
+        version: '3.1-fast-odds',
         timestamp: new Date().toISOString()
       })
     };
@@ -175,8 +300,9 @@ export async function handler(event, context) {
 
 /**
  * Generate player projection (FAST - no individual API calls)
+ * Now with real odds integration when available
  */
-function generatePlayerProjection(player, team, opponent, isHome, gameTime) {
+function generatePlayerProjection(player, team, opponent, isHome, gameTime, realOddsMap) {
   try {
     const playerId = player.id;
     const playerName = `${player.firstName?.default || ''} ${player.lastName?.default || ''}`.trim();
@@ -212,8 +338,31 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime) {
       projectedSOG *= 0.94;
     }
     
-    // Generate market line
-    const line = Math.round(projectedSOG * 2) / 2;
+    // Check for real odds data
+    let line, odds, oddsSource;
+    let realOddsFound = false;
+    
+    if (realOddsMap && realOddsMap.size > 0) {
+      // Try to find real odds for this player
+      for (const [key, oddsData] of realOddsMap.entries()) {
+        if (oddsData.playerName.toLowerCase().includes(playerName.toLowerCase()) ||
+            playerName.toLowerCase().includes(oddsData.playerName.toLowerCase())) {
+          line = oddsData.line;
+          odds = oddsData.odds;
+          oddsSource = `${oddsData.bookmaker} (real)`;
+          realOddsFound = true;
+          break;
+        }
+      }
+    }
+    
+    // Fallback to simulated odds if no real odds found
+    if (!realOddsFound) {
+      line = Math.round(projectedSOG * 2) / 2;
+      const vigAdjustment = Math.random() * 30 - 15;
+      odds = Math.round(-110 + vigAdjustment);
+      oddsSource = 'simulated';
+    }
     
     // Calculate edge
     const diff = projectedSOG - line;
@@ -222,12 +371,8 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime) {
     // Only return if we have edge
     if (edge < 3.0 || edge > 25.0) return null;
     
-    // Generate realistic odds
-    const vigAdjustment = Math.random() * 30 - 15;
-    const overOdds = Math.round(-110 + vigAdjustment);
-    
     // Kelly calculation
-    const oddsDecimal = overOdds > 0 ? (overOdds / 100) + 1 : (100 / Math.abs(overOdds)) + 1;
+    const oddsDecimal = odds > 0 ? (odds / 100) + 1 : (100 / Math.abs(odds)) + 1;
     const winProb = 0.5 + (edge / 200);
     const b = oddsDecimal - 1;
     const q = 1 - winProb;
@@ -237,8 +382,9 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime) {
     kelly *= 0.25; // Fractional Kelly
     kelly = Math.max(0, Math.min(kelly, 0.05));
     
-    // Confidence based on position reliability
-    const confidence = position === 'C' ? 78 : position === 'D' ? 72 : 75;
+    // Confidence boost for real odds
+    const baseConfidence = position === 'C' ? 78 : position === 'D' ? 72 : 75;
+    const confidence = realOddsFound ? Math.min(baseConfidence + 10, 90) : baseConfidence;
     
     return {
       playerId,
@@ -249,7 +395,7 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime) {
       gameTime,
       direction: 'OVER',
       line,
-      odds: overOdds,
+      odds,
       projection: parseFloat(projectedSOG.toFixed(1)),
       edge: parseFloat(edge.toFixed(1)),
       ev: parseFloat((edge * 0.4).toFixed(1)),
@@ -258,7 +404,8 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime) {
       variance: parseFloat(variance.toFixed(1)),
       scratchRisk: 0.05,
       mlEnhanced: false,
-      dataSource: 'position-optimized'
+      dataSource: realOddsFound ? 'real-odds' : 'position-optimized',
+      oddsSource
     };
     
   } catch (error) {
