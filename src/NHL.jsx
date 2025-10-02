@@ -26,16 +26,9 @@ export default function NHL() {
     setScanning(true);
     
     try {
-      // Call v3 endpoint with fixed parameters
-      const params = new URLSearchParams({
-        minEdge: '3.0',
-        minConfidence: '60',
-        maxScratchRisk: '0.15',
-        maxKelly: '0.03',
-        minKelly: '0.005'
-      });
-      
-      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-v3?${params}`);
+      // TEMPORARY: Use simple diagnostic endpoint to debug 502 errors
+      // TODO: Switch back to nhl-sog-scanner-v3 once issues resolved
+      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-simple`);
       
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -116,12 +109,12 @@ export default function NHL() {
             <div>
               <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                 🏒 NHL SOG Props
-                <span className="text-sm font-normal text-blue-400 bg-blue-500/20 px-3 py-1 rounded-full">
-                  v3.0 Elite ML Model
+                <span className="text-sm font-normal text-yellow-400 bg-yellow-500/20 px-3 py-1 rounded-full">
+                  Diagnostic Mode
                 </span>
               </h1>
               <p className="text-gray-400 mt-1">
-                ZINB + Hierarchical Bayesian + XGBoost • Live Injury Data • Kelly Staking
+                Testing NHL API connectivity • Real schedule data • Mock projections
               </p>
             </div>
             
