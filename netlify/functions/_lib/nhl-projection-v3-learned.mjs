@@ -1,5 +1,6 @@
 // netlify/functions/_lib/nhl-projection-v3-learned.mjs
 // ELITE v3.0: Projections with LEARNED parameters from historical data
+// PRODUCTION: Hard-wired injury/lineup factors
 
 import {
   fetchPlayerHistoricalGames,
@@ -18,8 +19,14 @@ import { RINK_EFFECTS } from './nhl-advanced-projection-v2.mjs';
 
 /**
  * v3.0 MASTER PROJECTION: Uses LEARNED ZINB priors, not hardcoded
+ * 
+ * ELITE PRODUCTION UPGRADE:
+ * - REQUIRES injuryLineupFactors parameter
+ * - Applies TOI/PP/usage multipliers directly to projection
+ * - Force zero projection for scratched players
+ * - Confidence haircut for uncertain lineup status
  */
-export async function projectPlayerSOGv3(playerId, opponentTeamAbbrev, gameContext) {
+export async function projectPlayerSOGv3(playerId, opponentTeamAbbrev, gameContext, injuryLineupFactors = null) {
   const {
     isHome,
     venue,
@@ -29,6 +36,39 @@ export async function projectPlayerSOGv3(playerId, opponentTeamAbbrev, gameConte
     expectedGameScript = null,
     travelDistance = 0
   } = gameContext;
+  
+  // ELITE CHECK: Require injury/lineup context
+  if (!injuryLineupFactors) {
+    console.warn(`⚠️ projectPlayerSOGv3 called without injuryLineupFactors for player ${playerId}`);
+    console.warn(`⚠️ Using default safe values - projection accuracy may be reduced`);
+  }
+  
+  // Extract injury/lineup factors with safe defaults
+  const {
+    toiMultiplier = 1.0,
+    ppMultiplier = 1.0,
+    usageMultiplier = 1.0,
+    scratchRisk = 0.05,
+    roleVolatility = 0.15,
+    lineChangeRisk = 0.10,
+    confirmedScratch = false,
+    injuryStatus = 'healthy',
+    linePosition = null,
+    ppUnit = null
+  } = injuryLineupFactors || {};
+  
+  // CRITICAL: Force zero projection for confirmed scratches
+  if (confirmedScratch || scratchRisk >= 0.95) {
+    console.log(`🚫 Player ${playerId} is scratched/inactive - forcing zero projection`);
+    return {
+      projection: 0.0,
+      variance: 0.0,
+      confidence: 0.0,
+      scratchRisk: 1.0,
+      ev: null, // Auto-PASS in scanner
+      recommendation: 'AVOID - Player scratched'
+    };
+  }
   
   // 1. Fetch current season data
   const [playerStats, gameLog, opponentStats] = await Promise.all([
@@ -97,11 +137,27 @@ export async function projectPlayerSOGv3(playerId, opponentTeamAbbrev, gameConte
   const matchupPenalty = calculateMatchupPenalty(opponentStats);
   mu *= matchupPenalty;
   
-  // 8. Update scratch risk based on recent activity
-  const scratchRisk = calculateScratchRisk(gameLog);
-  pi = Math.max(pi, scratchRisk); // Use max of historical or recent scratch risk
+  // 8. ELITE: Apply injury/lineup multipliers to expected usage
+  mu *= toiMultiplier;
+  mu *= usageMultiplier;
   
-  // 9. Return learned projection
+  // Apply PP adjustment if player is on power play unit
+  if (ppUnit !== null) {
+    mu *= ppMultiplier;
+  }
+  
+  // 9. Update scratch risk based on recent activity vs. injury data
+  const recentScratchRisk = calculateScratchRisk(gameLog);
+  const finalScratchRisk = Math.max(scratchRisk, recentScratchRisk); // Use max of injury data or recent pattern
+  pi = Math.max(pi, finalScratchRisk);
+  
+  // 10. Confidence haircut for lineup uncertainty
+  let confidenceMultiplier = 1.0;
+  if (roleVolatility > 0.30) confidenceMultiplier *= 0.90; // High role volatility
+  if (lineChangeRisk > 0.25) confidenceMultiplier *= 0.92; // Recent line demotion risk
+  if (injuryStatus !== 'healthy' && injuryStatus !== null) confidenceMultiplier *= 0.85; // Injury concern
+  
+  // 11. Return learned projection with injury integration
   return {
     playerId,
     playerName: playerStats.fullName,
@@ -116,6 +172,20 @@ export async function projectPlayerSOGv3(playerId, opponentTeamAbbrev, gameConte
       pi: Math.min(0.5, pi)
     },
     
+    // ELITE: Injury/lineup integration metadata
+    injuryFactors: {
+      toiMultiplier,
+      ppMultiplier,
+      usageMultiplier,
+      scratchRisk: finalScratchRisk,
+      roleVolatility,
+      lineChangeRisk,
+      confirmedScratch,
+      injuryStatus,
+      linePosition,
+      ppUnit
+    },
+    
     // Metadata
     metadata: {
       priorSource: 'LEARNED', // vs 'HARDCODED' in v2.0
@@ -123,17 +193,17 @@ export async function projectPlayerSOGv3(playerId, opponentTeamAbbrev, gameConte
       empiricalMu: empiricalParams.mu,
       shrunkMu: priorParams.mu,
       recentFormMu: recentForm.avgSOG,
-      scratchRisk: pi,
+      scratchRisk: finalScratchRisk,
       restDays,
       venue,
       rinkEffect: rinkFactor,
       
-      // Model confidence
+      // Model confidence (with lineup uncertainty haircut)
       confidence: calculateModelConfidence(
         historicalGames.length,
         gameLog.length,
-        scratchRisk
-      )
+        finalScratchRisk
+      ) * confidenceMultiplier
     },
     
     // Supporting data
