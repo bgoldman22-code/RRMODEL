@@ -5,3 +5,7 @@
 *.rds
 data/nfl_r_pipeline/*.rds
 .env
+
+# macOS
+.DS_Store
+
