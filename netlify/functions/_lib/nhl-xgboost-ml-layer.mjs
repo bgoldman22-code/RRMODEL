@@ -1,5 +1,5 @@
 /**
- * NHL PHASE 2C - XGBOOST ML LAYER
+ * NHL PHASE 2C - XGBOOST ML LAYER (ELITE PRODUCTION VERSION)
  * 
  * ARCHITECTURE:
  * 1. Feature Engineering: 50+ features from historical games
@@ -15,6 +15,12 @@
  * - Target: Actual SOG from game
  * 
  * EXPECTED IMPROVEMENT: +2-3% ROI over Phase 2A
+ * 
+ * ELITE PRODUCTION FEATURES:
+ * - Model artifact loading with version control
+ * - Graceful fallback to ZINB if models missing
+ * - Confidence haircut for untrained models
+ * - Environment-based model versioning
  */
 
 // NOTE: XGBoost requires native bindings - use xgboost-node package
@@ -22,6 +28,71 @@
 
 import { buildTrainingDataset } from './nhl-historical-data-pipeline.mjs';
 import { calculateShootingStats } from './nhl-historical-data-pipeline.mjs';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
+
+// Model registry cache
+let MODEL_CACHE = {
+  mu: null,
+  sigma: null,
+  version: null,
+  loadAttempted: false
+};
+
+/**
+ * LOAD TRAINED XGBOOST MODEL FROM DISK
+ * 
+ * Environment-based versioning:
+ * - NHL_MODEL_VERSION env var (e.g., "2025-10-02")
+ * - Defaults to "latest"
+ * - Falls back to null if loading fails (triggers ZINB-only mode)
+ */
+export async function loadBooster(modelType = 'mu') {
+  const version = process.env.NHL_MODEL_VERSION || '2025-10-02';
+  
+  // Return cached model if already loaded
+  if (MODEL_CACHE[modelType] && MODEL_CACHE.version === version) {
+    return MODEL_CACHE[modelType];
+  }
+  
+  try {
+    const modelPath = join(process.cwd(), 'models', version, `nhl_xgb_${modelType}.json`);
+    const modelData = await readFile(modelPath, 'utf8');
+    const model = JSON.parse(modelData);
+    
+    // Cache the loaded model
+    MODEL_CACHE[modelType] = model;
+    MODEL_CACHE.version = version;
+    MODEL_CACHE.loadAttempted = true;
+    
+    console.log(`✅ Loaded XGBoost ${modelType} model (version: ${version})`);
+    return model;
+    
+  } catch (error) {
+    if (!MODEL_CACHE.loadAttempted) {
+      console.warn(`⚠️ Failed to load XGBoost ${modelType} model (version: ${version})`);
+      console.warn(`⚠️ Falling back to ZINB baseline. Error: ${error.message}`);
+      MODEL_CACHE.loadAttempted = true;
+    }
+    return null;
+  }
+}
+
+/**
+ * CHECK IF ML MODELS ARE AVAILABLE
+ */
+export async function areModelsAvailable() {
+  if (MODEL_CACHE.mu !== null && MODEL_CACHE.sigma !== null) {
+    return true;
+  }
+  
+  const [mu, sigma] = await Promise.all([
+    loadBooster('mu'),
+    loadBooster('sigma')
+  ]);
+  
+  return mu !== null && sigma !== null;
+}
 
 /**
  * FEATURE ENGINEERING PIPELINE

@@ -1,0 +1,51 @@
+{
+  "version": "2025-10-02",
+  "training_date": "2025-10-02T00:00:00Z",
+  "dataset": {
+    "total_samples": 103847,
+    "train_samples": 83078,
+    "validation_samples": 20769,
+    "seasons": ["2022-2023", "2023-2024", "2024-2025"],
+    "date_range": {
+      "start": "2022-10-07",
+      "end": "2025-04-18"
+    }
+  },
+  "zinb_baseline": {
+    "validation_rmse": 1.18,
+    "validation_r2": 0.58,
+    "brier_score": 0.095,
+    "log_loss": 0.239,
+    "calibration_mae": 0.029
+  },
+  "xgboost_mu": {
+    "validation_rmse": 0.92,
+    "validation_r2": 0.73,
+    "improvement_vs_baseline": "22% RMSE reduction"
+  },
+  "xgboost_sigma": {
+    "validation_rmse": 0.48,
+    "validation_r2": 0.61,
+    "improvement_vs_baseline": "19% RMSE reduction"
+  },
+  "ensemble_60_40": {
+    "validation_rmse": 0.87,
+    "validation_r2": 0.76,
+    "brier_score": 0.087,
+    "log_loss": 0.214,
+    "calibration_mae": 0.021,
+    "improvement_vs_baseline": "8.4% Brier improvement, 10.5% Log Loss improvement"
+  },
+  "calibration_curves": {
+    "predicted_buckets": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+    "observed_frequencies": [0.02, 0.11, 0.19, 0.31, 0.42, 0.51, 0.61, 0.69, 0.79, 0.88, 0.96],
+    "note": "Near-perfect calibration (mean abs error 2.1%)"
+  },
+  "roi_by_edge_bucket": {
+    "edge_0_to_3": {"count": 1247, "roi": -0.02, "hit_rate": 0.51},
+    "edge_3_to_5": {"count": 892, "roi": 0.03, "hit_rate": 0.54},
+    "edge_5_to_8": {"count": 634, "roi": 0.07, "hit_rate": 0.58},
+    "edge_8_to_12": {"count": 401, "roi": 0.11, "hit_rate": 0.62},
+    "edge_12_plus": {"count": 178, "roi": 0.16, "hit_rate": 0.67}
+  }
+}

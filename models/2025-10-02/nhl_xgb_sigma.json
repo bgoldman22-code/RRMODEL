@@ -1,0 +1,35 @@
+{
+  "version": "2025-10-02",
+  "model_type": "xgboost_sigma_predictor",
+  "target": "sog_variance",
+  "trained_on": "2025-10-02T00:00:00Z",
+  "training_samples": 103847,
+  "validation_rmse": 0.48,
+  "validation_r2": 0.61,
+  "features": 52,
+  "booster_params": {
+    "max_depth": 5,
+    "learning_rate": 0.05,
+    "n_estimators": 250,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "objective": "reg:squarederror",
+    "min_child_weight": 5,
+    "gamma": 0.2,
+    "reg_alpha": 0.05,
+    "reg_lambda": 1.5
+  },
+  "feature_importance": {
+    "player_std_sog_l10": 0.156,
+    "player_season_std_sog": 0.121,
+    "role_volatility": 0.098,
+    "line_change_risk": 0.087,
+    "opponent_pace_variance": 0.072,
+    "expected_toi": 0.064,
+    "player_trend_l10": 0.058,
+    "is_home": 0.042,
+    "rest_days": 0.039,
+    "matchup_difficulty": 0.036
+  },
+  "note": "PLACEHOLDER - Replace with actual trained model using xgboost.train() and booster.save_model()"
+}

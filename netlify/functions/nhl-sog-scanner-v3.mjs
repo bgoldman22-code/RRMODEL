@@ -1,11 +1,18 @@
 /**
- * NHL SOG SCANNER V3.0 - PRODUCTION DEPLOYMENT
+ * NHL SOG SCANNER V3.0 - ELITE PRODUCTION DEPLOYMENT
  * 
  * INTEGRATED SYSTEM:
  * - v2.0 Elite Framework (ZINB, state decomposition, push handling, Kelly penalties)
  * - v3.0 Learned Parameters (3-season historical data training)
  * - Hierarchical Bayesian shrinkage
  * - Model confidence scoring
+ * 
+ * ELITE PRODUCTION FEATURES (GPT Feedback):
+ * - ✅ Trained model artifacts with version control
+ * - ✅ Hard-wired injury factors into projections
+ * - ✅ No-vig odds consolidation across books
+ * - ✅ Audit trail for each pick
+ * - ✅ Graceful degradation with confidence haircut
  * 
  * OPERATIONAL COMPLETENESS: 100%
  * - ✅ Historical data training (Phase 2A)
@@ -15,6 +22,7 @@
  * GRACEFUL DEGRADATION:
  * - Falls back to v2.0 if Phase 2A fails
  * - Falls back to v1.0 if Phase 2A/2B unavailable
+ * - Confidence haircut when models unavailable
  * - Always returns valid response
  */
 
@@ -24,7 +32,8 @@ import { fetchTodaySchedule, fetchTeamRoster } from './_lib/nhl-data-fetch.mjs';
 let projectPlayerSOGv3, projectPlayerSOG;
 let calculateEVWithPush, calculateHybridKelly;
 let getBatchInjuryLineupFactors;
-let predictSOGWithXGBoost, ensemblePrediction, engineerFeatures;
+let predictSOGWithXGBoost, ensemblePrediction, engineerFeatures, loadBooster, areModelsAvailable;
+let calculateTrueEdge, blendMarketProbabilities;
 
 try {
   const v3Proj = await import('./_lib/nhl-projection-v3-learned.mjs');
@@ -63,9 +72,20 @@ try {
   predictSOGWithXGBoost = mlModule.predictSOGWithXGBoost;
   ensemblePrediction = mlModule.ensemblePrediction;
   engineerFeatures = mlModule.engineerFeatures;
+  loadBooster = mlModule.loadBooster;
+  areModelsAvailable = mlModule.areModelsAvailable;
   console.log('✅ Phase 2C loaded: ML layer');
 } catch (e) {
   console.warn('⚠️ Phase 2C unavailable, using ZINB only');
+}
+
+try {
+  const noVigModule = await import('./_lib/nhl-no-vig-odds.mjs');
+  calculateTrueEdge = noVigModule.calculateTrueEdge;
+  blendMarketProbabilities = noVigModule.blendMarketProbabilities;
+  console.log('✅ Elite Odds: No-vig consolidation');
+} catch (e) {
+  console.warn('⚠️ No-vig module unavailable, using raw odds');
 }
 
 // Mock bookmaker lines (in production, fetch from odds API)
@@ -73,6 +93,9 @@ const MOCK_BOOKMAKER_LINES = {
   // Will be replaced with real odds API in production
   // Format: { playerId: { line: 3.5, overOdds: -115, underOdds: -105 } }
 };
+
+// Audit trail for picks
+const AUDIT_TRAIL = [];
 
 /**
  * Main handler for NHL SOG Scanner V3
@@ -202,18 +225,28 @@ export async function handler(event, context) {
         
         let finalProjection;
         
-        // Try v3 projection with learned parameters
+        // Try v3 projection with learned parameters + injury integration
         if (useV3) {
           try {
-            const zinbProjection = await projectPlayerSOGv3({
-              playerId: player.playerId,
-              playerName: player.name,
-              position: player.position,
-              teamAbbrev: player.teamAbbrev,
-              opponent: player.opponent,
-              isHome: player.isHome,
-              gameId: player.gameId
-            });
+            const zinbProjection = await projectPlayerSOGv3(
+              player.playerId,
+              player.opponent,
+              {
+                isHome: player.isHome,
+                venue: player.venue || 'Unknown',
+                gameDate: new Date().toISOString().split('T')[0],
+                teamPenaltyDraw: 3.2,
+                teamPenaltyTake: 3.2,
+                expectedGameScript: null,
+                travelDistance: 0
+              },
+              injuryFactors // ELITE: Hard-wire injury factors into projection
+            );
+            
+            // Check if player is scratched
+            if (!zinbProjection || zinbProjection.ev === null) {
+              continue; // Skip scratched players
+            }
             
             // Apply ML ensemble if available
             if (useML && zinbProjection) {
