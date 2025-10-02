@@ -1,5 +1,5 @@
 // src/NHL.jsx
-// Elite NHL SOG Props Interface - Professional Sharp Betting Tool
+// Elite NHL SOG Props Interface - Professional Sharp Betting Tool v3.0
 
 import React, { useState, useEffect } from 'react';
 
@@ -8,19 +8,14 @@ export default function NHL() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [scanning, setScanning] = useState(false);
-  
-  // User settings
-  const [settings, setSettings] = useState({
-    minEdge: 5,
-    minConfidence: 60,
-    bankroll: 10000,
-    kellyFraction: 0.25
-  });
-  
-  const [summary, setSummary] = useState(null);
   const [metadata, setMetadata] = useState(null);
+  const [sortConfig, setSortConfig] = useState({ key: 'edge', direction: 'desc' });
   
-  // Fetch opportunities on mount and when settings change
+  // Fixed settings for v3.0 (no user customization)
+  const BANKROLL = 5000;
+  const UNIT_SIZE = 20; // $20 per unit
+  
+  // Fetch opportunities on mount
   useEffect(() => {
     fetchOpportunities();
   }, []);
@@ -31,28 +26,32 @@ export default function NHL() {
     setScanning(true);
     
     try {
+      // Call v3 endpoint with fixed parameters
       const params = new URLSearchParams({
-        minEdge: settings.minEdge,
-        minConfidence: settings.minConfidence,
-        bankroll: settings.bankroll,
-        kellyFraction: settings.kellyFraction
+        minEdge: '3.0',
+        minConfidence: '60',
+        maxScratchRisk: '0.15',
+        maxKelly: '0.03',
+        minKelly: '0.005'
       });
       
-      const response = await fetch(`/api/nhl-sog-scanner?${params}`);
+      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-v3?${params}`);
       
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
+      }
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text.substring(0, 200));
+        throw new Error('API returned non-JSON response (check function deployment)');
       }
       
       const result = await response.json();
       
-      if (!result.success) {
-        throw new Error(result.error || 'Unknown error');
-      }
-      
-      setOpportunities(result.data.topOpportunities || []);
-      setSummary(result.data.summary || null);
-      setMetadata(result.data.metadata || null);
+      setOpportunities(result.opportunities || []);
+      setMetadata(result.metadata || null);
       
     } catch (err) {
       setError(err.message);
@@ -67,12 +66,46 @@ export default function NHL() {
     fetchOpportunities();
   };
   
-  const handleSettingChange = (key, value) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: parseFloat(value)
+  // Sort handler
+  const handleSort = (key) => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'desc' ? 'asc' : 'desc'
     }));
   };
+  
+  // Sort opportunities
+  const sortedOpportunities = React.useMemo(() => {
+    const sorted = [...opportunities];
+    sorted.sort((a, b) => {
+      let aVal, bVal;
+      
+      switch (sortConfig.key) {
+        case 'edge':
+          aVal = a.edge;
+          bVal = b.edge;
+          break;
+        case 'confidence':
+          aVal = a.confidence;
+          bVal = b.confidence;
+          break;
+        case 'stake':
+          aVal = a.kelly * BANKROLL;
+          bVal = b.kelly * BANKROLL;
+          break;
+        default:
+          return 0;
+      }
+      
+      if (sortConfig.direction === 'asc') {
+        return aVal - bVal;
+      } else {
+        return bVal - aVal;
+      }
+    });
+    
+    return sorted;
+  }, [opportunities, sortConfig]);
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -84,11 +117,11 @@ export default function NHL() {
               <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                 🏒 NHL SOG Props
                 <span className="text-sm font-normal text-blue-400 bg-blue-500/20 px-3 py-1 rounded-full">
-                  Elite Sharp Model v1.0
+                  v3.0 Elite ML Model
                 </span>
               </h1>
               <p className="text-gray-400 mt-1">
-                Advanced Bayesian projections • Edge detection • Kelly staking
+                ZINB + Hierarchical Bayesian + XGBoost • Live Injury Data • Kelly Staking
               </p>
             </div>
             
@@ -104,7 +137,7 @@ export default function NHL() {
                 </>
               ) : (
                 <>
-                  🔄 Refresh Scan
+                  🔄 Refresh
                 </>
               )}
             </button>
@@ -112,91 +145,25 @@ export default function NHL() {
           
           {/* Metadata */}
           {metadata && (
-            <div className="mt-4 flex gap-6 text-sm text-gray-400">
-              <span>📅 {metadata.scannedAt ? new Date(metadata.scannedAt).toLocaleString() : 'N/A'}</span>
-              <span>🎯 {opportunities.length} opportunities found</span>
-              {summary && (
-                <>
-                  <span>📊 Avg Edge: {summary.avgEdge}%</span>
-                  <span>💰 Avg EV: {summary.avgEV}%</span>
-                </>
+            <div className="mt-4 flex gap-6 text-sm">
+              <span className="text-gray-400">
+                📅 Last scan: {new Date().toLocaleTimeString()}
+              </span>
+              <span className="text-blue-400 font-semibold">
+                🎯 {opportunities.length} opportunities
+              </span>
+              {metadata.operationalCompleteness && (
+                <span className="text-green-400">
+                  ✅ {Math.round(metadata.operationalCompleteness * 100)}% Operational
+                </span>
+              )}
+              {metadata.dataQuality && (
+                <span className="text-purple-400">
+                  📊 Avg Confidence: {Math.round(metadata.dataQuality.avgConfidence)}
+                </span>
               )}
             </div>
           )}
-        </div>
-      </div>
-      
-      {/* Settings Panel */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="bg-slate-800/50 rounded-xl p-6 border border-blue-500/30 backdrop-blur-sm">
-          <h2 className="text-xl font-bold text-white mb-4">⚙️ Scanner Settings</h2>
-          
-          <div className="grid grid-cols-4 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
-                Min Edge %
-              </label>
-              <input
-                type="number"
-                value={settings.minEdge}
-                onChange={(e) => handleSettingChange('minEdge', e.target.value)}
-                className="w-full px-4 py-2 bg-slate-900 text-white rounded-lg border border-blue-500/30 focus:border-blue-500 focus:outline-none"
-                step="0.5"
-                min="0"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
-                Min Confidence
-              </label>
-              <input
-                type="number"
-                value={settings.minConfidence}
-                onChange={(e) => handleSettingChange('minConfidence', e.target.value)}
-                className="w-full px-4 py-2 bg-slate-900 text-white rounded-lg border border-blue-500/30 focus:border-blue-500 focus:outline-none"
-                step="5"
-                min="0"
-                max="100"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
-                Bankroll ($)
-              </label>
-              <input
-                type="number"
-                value={settings.bankroll}
-                onChange={(e) => handleSettingChange('bankroll', e.target.value)}
-                className="w-full px-4 py-2 bg-slate-900 text-white rounded-lg border border-blue-500/30 focus:border-blue-500 focus:outline-none"
-                step="1000"
-                min="100"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
-                Kelly Fraction
-              </label>
-              <input
-                type="number"
-                value={settings.kellyFraction}
-                onChange={(e) => handleSettingChange('kellyFraction', e.target.value)}
-                className="w-full px-4 py-2 bg-slate-900 text-white rounded-lg border border-blue-500/30 focus:border-blue-500 focus:outline-none"
-                step="0.05"
-                min="0.1"
-                max="1"
-              />
-            </div>
-          </div>
-          
-          <button
-            onClick={handleRefresh}
-            className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
-          >
-            Apply Settings & Rescan
-          </button>
         </div>
       </div>
       
@@ -218,83 +185,124 @@ export default function NHL() {
       )}
       
       {/* Opportunities Table */}
-      {!loading && !error && opportunities.length > 0 && (
+      {!loading && !error && sortedOpportunities.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 pb-12">
           <div className="bg-slate-800/50 rounded-xl border border-blue-500/30 backdrop-blur-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-slate-900/80">
                   <tr className="text-left text-sm text-gray-400 border-b border-blue-500/30">
-                    <th className="px-4 py-3 font-semibold">Rank</th>
+                    <th className="px-4 py-3 font-semibold">#</th>
                     <th className="px-4 py-3 font-semibold">Player</th>
                     <th className="px-4 py-3 font-semibold">Matchup</th>
                     <th className="px-4 py-3 font-semibold">Market</th>
-                    <th className="px-4 py-3 font-semibold">Book</th>
+                    <th className="px-4 py-3 font-semibold">Line</th>
                     <th className="px-4 py-3 font-semibold">Odds</th>
                     <th className="px-4 py-3 font-semibold">Projection</th>
-                    <th className="px-4 py-3 font-semibold">Edge</th>
-                    <th className="px-4 py-3 font-semibold">EV</th>
-                    <th className="px-4 py-3 font-semibold">Confidence</th>
-                    <th className="px-4 py-3 font-semibold">Stake</th>
+                    <th 
+                      className="px-4 py-3 font-semibold cursor-pointer hover:text-white transition"
+                      onClick={() => handleSort('edge')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Edge
+                        {sortConfig.key === 'edge' && (
+                          <span>{sortConfig.direction === 'desc' ? '↓' : '↑'}</span>
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-3 font-semibold cursor-pointer hover:text-white transition"
+                      onClick={() => handleSort('confidence')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Confidence
+                        {sortConfig.key === 'confidence' && (
+                          <span>{sortConfig.direction === 'desc' ? '↓' : '↑'}</span>
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-3 font-semibold cursor-pointer hover:text-white transition"
+                      onClick={() => handleSort('stake')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Stake (Units)
+                        {sortConfig.key === 'stake' && (
+                          <span>{sortConfig.direction === 'desc' ? '↓' : '↑'}</span>
+                        )}
+                      </div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {opportunities.map((opp, index) => (
-                    <tr
-                      key={index}
-                      className="border-b border-slate-700/50 hover:bg-blue-500/10 transition text-white"
-                    >
-                      <td className="px-4 py-4 text-gray-400">#{index + 1}</td>
-                      <td className="px-4 py-4 font-semibold">{opp.player}</td>
-                      <td className="px-4 py-4 text-sm text-gray-400">
-                        {opp.team} vs {opp.opponent}
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                          opp.bet.startsWith('Over')
-                            ? 'bg-green-500/20 text-green-400'
-                            : 'bg-red-500/20 text-red-400'
-                        }`}>
-                          {opp.bet}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 text-sm text-gray-400">{opp.book}</td>
-                      <td className="px-4 py-4 font-mono text-sm">
-                        {opp.odds > 0 ? `+${opp.odds}` : opp.odds}
-                      </td>
-                      <td className="px-4 py-4 font-semibold">{opp.projectedSOG}</td>
-                      <td className="px-4 py-4">
-                        <span className="text-green-400 font-bold">+{opp.edge}%</span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className="text-blue-400 font-bold">+{opp.ev}%</span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 bg-slate-700 rounded-full h-2">
-                            <div
-                              className="bg-blue-500 h-2 rounded-full"
-                              style={{ width: `${opp.confidence}%` }}
-                            ></div>
+                  {sortedOpportunities.map((opp, index) => {
+                    const stakeAmount = opp.kelly * BANKROLL;
+                    const units = stakeAmount / UNIT_SIZE;
+                    
+                    return (
+                      <tr
+                        key={index}
+                        className="border-b border-slate-700/50 hover:bg-blue-500/10 transition text-white"
+                      >
+                        <td className="px-4 py-4 text-gray-400">#{index + 1}</td>
+                        <td className="px-4 py-4 font-semibold">
+                          {opp.playerName}
+                          <div className="text-xs text-gray-500">{opp.position}</div>
+                        </td>
+                        <td className="px-4 py-4 text-sm text-gray-400">
+                          {opp.team} @ {opp.opponent}
+                        </td>
+                        <td className="px-4 py-4">
+                          <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                            opp.direction === 'OVER'
+                              ? 'bg-green-500/20 text-green-400'
+                              : 'bg-red-500/20 text-red-400'
+                          }`}>
+                            {opp.direction}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 font-mono text-sm">{opp.line}</td>
+                        <td className="px-4 py-4 font-mono text-sm">
+                          {opp.odds > 0 ? `+${opp.odds}` : opp.odds}
+                        </td>
+                        <td className="px-4 py-4 font-semibold text-blue-400">
+                          {opp.projection.toFixed(1)}
+                        </td>
+                        <td className="px-4 py-4">
+                          <span className="text-green-400 font-bold">+{opp.edge.toFixed(1)}%</span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-16 bg-slate-700 rounded-full h-2">
+                              <div
+                                className="bg-blue-500 h-2 rounded-full transition-all"
+                                style={{ width: `${Math.min(opp.confidence, 100)}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm text-gray-400 font-mono">{opp.confidence}</span>
                           </div>
-                          <span className="text-sm text-gray-400">{opp.confidence}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="text-right">
-                          <div className="font-bold text-green-400">
-                            ${opp.staking?.recommendedStake || 0}
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="text-right">
+                            <div className="font-bold text-green-400 text-lg">
+                              {units.toFixed(1)}U
+                            </div>
+                            <div className="text-xs text-gray-500 font-mono">
+                              ${stakeAmount.toFixed(0)}
+                            </div>
                           </div>
-                          <div className="text-xs text-gray-500">
-                            ({opp.staking?.fractionalKellyPct || 0}% bankroll)
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
+          </div>
+          
+          {/* Table Legend */}
+          <div className="mt-4 text-sm text-gray-400 text-center">
+            💡 1 Unit = ${UNIT_SIZE} (of ${BANKROLL} bankroll) • Stakes calculated via Kelly Criterion with uncertainty penalties
           </div>
         </div>
       )}
@@ -304,10 +312,10 @@ export default function NHL() {
         <div className="max-w-7xl mx-auto px-4 py-12 text-center">
           <div className="bg-slate-800/50 rounded-xl border border-blue-500/30 p-12">
             <p className="text-gray-400 text-lg">
-              No opportunities found with current settings.
+              📭 No opportunities found
             </p>
             <p className="text-gray-500 mt-2">
-              Try lowering the minimum edge or confidence thresholds.
+              Either no NHL games today, or no edges detected with current model thresholds
             </p>
           </div>
         </div>
