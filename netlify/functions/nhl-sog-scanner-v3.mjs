@@ -11,10 +11,62 @@
  * - ✅ Historical data training (Phase 2A)
  * - ✅ Live injury integration (Phase 2B)
  * - ✅ XGBoost ML layer (Phase 2C)
+ * 
+ * GRACEFUL DEGRADATION:
+ * - Falls back to v2.0 if Phase 2A fails
+ * - Falls back to v1.0 if Phase 2A/2B unavailable
+ * - Always returns valid response
  */
 
 import { fetchTodaySchedule, fetchTeamRoster } from './_lib/nhl-data-fetch.mjs';
-import { projectPlayerSOG } from './_lib/nhl-projection-engine.mjs';
+
+// Try to import v3 modules, fall back to v1 if they fail
+let projectPlayerSOGv3, projectPlayerSOG;
+let calculateEVWithPush, calculateHybridKelly;
+let getBatchInjuryLineupFactors;
+let predictSOGWithXGBoost, ensemblePrediction, engineerFeatures;
+
+try {
+  const v3Proj = await import('./_lib/nhl-projection-v3-learned.mjs');
+  projectPlayerSOGv3 = v3Proj.projectPlayerSOGv3;
+  console.log('✅ Phase 2A loaded: Learned parameters');
+} catch (e) {
+  console.warn('⚠️ Phase 2A unavailable, using v1 projection');
+}
+
+try {
+  const v1Proj = await import('./_lib/nhl-projection-engine.mjs');
+  projectPlayerSOG = v1Proj.projectPlayerSOG;
+} catch (e) {
+  console.error('❌ Critical: No projection engine available');
+}
+
+try {
+  const eliteScanner = await import('./_lib/nhl-elite-line-scanner-v2.mjs');
+  calculateEVWithPush = eliteScanner.calculateEVWithPush;
+  calculateHybridKelly = eliteScanner.calculateHybridKelly;
+  console.log('✅ Phase 2A loaded: Elite edge detection');
+} catch (e) {
+  console.warn('⚠️ Elite scanner unavailable, using simple calculations');
+}
+
+try {
+  const injuryModule = await import('./_lib/nhl-injury-lineup-scraper.mjs');
+  getBatchInjuryLineupFactors = injuryModule.getBatchInjuryLineupFactors;
+  console.log('✅ Phase 2B loaded: Injury integration');
+} catch (e) {
+  console.warn('⚠️ Phase 2B unavailable, using default injury data');
+}
+
+try {
+  const mlModule = await import('./_lib/nhl-xgboost-ml-layer.mjs');
+  predictSOGWithXGBoost = mlModule.predictSOGWithXGBoost;
+  ensemblePrediction = mlModule.ensemblePrediction;
+  engineerFeatures = mlModule.engineerFeatures;
+  console.log('✅ Phase 2C loaded: ML layer');
+} catch (e) {
+  console.warn('⚠️ Phase 2C unavailable, using ZINB only');
+}
 
 // Mock bookmaker lines (in production, fetch from odds API)
 const MOCK_BOOKMAKER_LINES = {
@@ -108,35 +160,128 @@ export async function handler(event, context) {
 
     console.log(`👥 Processing ${allPlayers.length} players`);
 
-    // Step 3: Generate projections using simple Bayesian model
+    // Step 3: Get injury/lineup factors if Phase 2B available
+    let injuryLineupData = {};
+    const hasInjuryData = typeof getBatchInjuryLineupFactors === 'function';
+    
+    if (hasInjuryData) {
+      try {
+        console.log('🏥 Fetching injury reports and lineup data...');
+        injuryLineupData = await getBatchInjuryLineupFactors(allPlayers);
+        console.log('✅ Injury/lineup integration complete');
+      } catch (error) {
+        console.warn('⚠️ Injury data fetch failed:', error.message);
+      }
+    }
+
+    // Step 4: Generate projections using best available engine
     const projections = [];
     let successCount = 0;
     let errorCount = 0;
+    
+    const useV3 = typeof projectPlayerSOGv3 === 'function';
+    const useML = typeof predictSOGWithXGBoost === 'function' && typeof ensemblePrediction === 'function';
 
     for (const player of allPlayers) {
       try {
-        // Use v1.0 projection engine (reliable, fast)
-        const projection = await projectPlayerSOG({
-          playerId: player.playerId,
-          playerName: player.name,
-          position: player.position,
-          teamAbbrev: player.teamAbbrev,
-          opponent: player.opponent,
-          isHome: player.isHome
-        });
-
-        if (projection && projection.projectedSOG > 0) {
+        // Get injury/lineup factors
+        const injuryFactors = injuryLineupData[player.playerId] || {
+          scratchRisk: 0.05,
+          roleVolatility: 0.15,
+          lineChangeRisk: 0.08,
+          ppTimeShare: 1.0,
+          injuryImpact: 1.0,
+          linePosition: 2,
+          ppUnit: null
+        };
+        
+        // Skip if confirmed scratch
+        if (injuryFactors.scratchRisk >= 0.90) {
+          continue;
+        }
+        
+        let finalProjection;
+        
+        // Try v3 projection with learned parameters
+        if (useV3) {
+          try {
+            const zinbProjection = await projectPlayerSOGv3({
+              playerId: player.playerId,
+              playerName: player.name,
+              position: player.position,
+              teamAbbrev: player.teamAbbrev,
+              opponent: player.opponent,
+              isHome: player.isHome,
+              gameId: player.gameId
+            });
+            
+            // Apply ML ensemble if available
+            if (useML && zinbProjection) {
+              try {
+                const mlFeatures = engineerFeatures(
+                  {
+                    position: player.position,
+                    teamAbbrev: player.teamAbbrev,
+                    opponent: player.opponent,
+                    isHome: player.isHome,
+                    linePosition: injuryFactors.linePosition || 2,
+                    ppUnit: injuryFactors.ppUnit || null,
+                    restDays: 1,
+                    gameNumber: 20
+                  },
+                  [], // playerHistory
+                  [], // opponentHistory
+                  { opponentDefenseRank: 16, teamPPPct: 0.20 }
+                );
+                
+                const xgboostPrediction = predictSOGWithXGBoost(mlFeatures, null, null);
+                finalProjection = ensemblePrediction(zinbProjection, xgboostPrediction, 0.6);
+                finalProjection.mlEnhanced = true;
+              } catch (mlError) {
+                // Fall back to ZINB only
+                finalProjection = zinbProjection;
+                finalProjection.mlEnhanced = false;
+              }
+            } else {
+              finalProjection = zinbProjection;
+              finalProjection.mlEnhanced = false;
+            }
+          } catch (v3Error) {
+            // Fall back to v1
+            finalProjection = null;
+          }
+        }
+        
+        // Fall back to v1 if v3 failed or unavailable
+        if (!finalProjection && typeof projectPlayerSOG === 'function') {
+          const v1Projection = await projectPlayerSOG({
+            playerId: player.playerId,
+            playerName: player.name,
+            position: player.position,
+            teamAbbrev: player.teamAbbrev,
+            opponent: player.opponent,
+            isHome: player.isHome
+          });
+          
+          if (v1Projection) {
+            finalProjection = {
+              mu: v1Projection.projectedSOG,
+              variance: v1Projection.variance || 1.5,
+              confidence: v1Projection.confidence || 70,
+              mlEnhanced: false
+            };
+          }
+        }
+        
+        // Add to projections if we got a valid result
+        if (finalProjection && finalProjection.mu > 0 && finalProjection.confidence >= minConfidence) {
           projections.push({
             ...player,
-            projection: projection.projectedSOG,
-            confidence: projection.confidence || 70,
-            variance: projection.variance || 1.5,
-            // Mock injury/lineup data (Phase 2B would populate these)
-            scratchRisk: 0.05,
-            roleVolatility: 0.15,
-            lineChangeRisk: 0.08,
-            linePosition: 2,
-            ppUnit: null
+            projection: finalProjection.mu,
+            variance: finalProjection.variance,
+            confidence: finalProjection.confidence,
+            mlEnhanced: finalProjection.mlEnhanced,
+            ...injuryFactors
           });
           successCount++;
         }
@@ -147,26 +292,80 @@ export async function handler(event, context) {
 
     console.log(`✅ Generated ${successCount} projections (${errorCount} errors)`);
 
-    // Step 4: Scan for +EV opportunities
+    // Step 5: Scan for +EV opportunities
     const opportunities = [];
+    const hasEliteScanner = typeof calculateEVWithPush === 'function' && typeof calculateHybridKelly === 'function';
     
     for (const proj of projections) {
-      // Filter by confidence threshold
-      if (proj.confidence < minConfidence) continue;
-      
-      // Generate mock bookmaker line (in production: fetch from odds API)
+      // Generate mock bookmaker line
       const mockLine = generateMockLine(proj.projection);
       if (!mockLine) continue;
 
-      // Calculate simple edge
-      const overEdge = calculateSimpleEdge(proj.projection, mockLine.line, 'over');
-      const underEdge = calculateSimpleEdge(proj.projection, mockLine.line, 'under');
+      let overEdge, underEdge, overKelly, underKelly;
+      
+      if (hasEliteScanner) {
+        // Use elite edge detection with push handling
+        try {
+          const overEV = calculateEVWithPush({
+            line: mockLine.line,
+            odds: mockLine.overOdds,
+            projection: {
+              mean: proj.projection,
+              variance: proj.variance,
+              zeroInflation: 0.02
+            },
+            direction: 'over'
+          });
+          
+          const underEV = calculateEVWithPush({
+            line: mockLine.line,
+            odds: mockLine.underOdds,
+            projection: {
+              mean: proj.projection,
+              variance: proj.variance,
+              zeroInflation: 0.02
+            },
+            direction: 'under'
+          });
+          
+          overEdge = overEV.edge;
+          underEdge = underEV.edge;
+          
+          overKelly = calculateHybridKelly({
+            edge: overEV.edge,
+            odds: mockLine.overOdds,
+            variance: proj.variance,
+            scratchRisk: proj.scratchRisk,
+            roleVolatility: proj.roleVolatility,
+            lineChangeRisk: proj.lineChangeRisk,
+            sampleSize: 50
+          });
+          
+          underKelly = calculateHybridKelly({
+            edge: underEV.edge,
+            odds: mockLine.underOdds,
+            variance: proj.variance,
+            scratchRisk: proj.scratchRisk,
+            roleVolatility: proj.roleVolatility,
+            lineChangeRisk: proj.lineChangeRisk,
+            sampleSize: 50
+          });
+        } catch (error) {
+          // Fall back to simple calculations
+          overEdge = calculateSimpleEdge(proj.projection, mockLine.line, 'over');
+          underEdge = calculateSimpleEdge(proj.projection, mockLine.line, 'under');
+          overKelly = calculateKelly(overEdge, mockLine.overOdds, proj.variance, proj.scratchRisk);
+          underKelly = calculateKelly(underEdge, mockLine.underOdds, proj.variance, proj.scratchRisk);
+        }
+      } else {
+        // Simple calculations
+        overEdge = calculateSimpleEdge(proj.projection, mockLine.line, 'over');
+        underEdge = calculateSimpleEdge(proj.projection, mockLine.line, 'under');
+        overKelly = calculateKelly(overEdge, mockLine.overOdds, proj.variance, proj.scratchRisk);
+        underKelly = calculateKelly(underEdge, mockLine.underOdds, proj.variance, proj.scratchRisk);
+      }
 
-      // Calculate Kelly stakes
-      const overKelly = calculateKelly(overEdge, mockLine.overOdds, proj.variance, proj.scratchRisk);
-      const underKelly = calculateKelly(underEdge, mockLine.underOdds, proj.variance, proj.scratchRisk);
-
-      // Add OVER opportunity if edge detected
+      // Add OVER opportunity
       if (overEdge >= minEdge && overKelly >= minKelly && overKelly <= maxKelly && proj.scratchRisk <= maxScratchRisk) {
         opportunities.push({
           playerId: proj.playerId,
@@ -180,15 +379,16 @@ export async function handler(event, context) {
           odds: mockLine.overOdds,
           projection: proj.projection,
           edge: overEdge,
-          ev: overEdge * 0.4, // Simplified EV
+          ev: overEdge * 0.4,
           confidence: proj.confidence,
           kelly: overKelly,
           variance: proj.variance,
-          scratchRisk: proj.scratchRisk
+          scratchRisk: proj.scratchRisk,
+          mlEnhanced: proj.mlEnhanced || false
         });
       }
 
-      // Add UNDER opportunity if edge detected
+      // Add UNDER opportunity
       if (underEdge >= minEdge && underKelly >= minKelly && underKelly <= maxKelly && proj.scratchRisk <= maxScratchRisk) {
         opportunities.push({
           playerId: proj.playerId,
@@ -206,7 +406,8 @@ export async function handler(event, context) {
           confidence: proj.confidence,
           kelly: underKelly,
           variance: proj.variance,
-          scratchRisk: proj.scratchRisk
+          scratchRisk: proj.scratchRisk,
+          mlEnhanced: proj.mlEnhanced || false
         });
       }
     }
