@@ -243,7 +243,7 @@ export default function NHL() {
                         <td className="px-4 py-4 text-gray-400">#{index + 1}</td>
                         <td className="px-4 py-4 font-semibold">
                           {opp.playerName}
-                          <div className="text-xs text-gray-500">{opp.position}</div>
+                          <div className="text-xs text-gray-500">{opp.position} - {opp.team}</div>
                         </td>
                         <td className="px-4 py-4 text-sm text-gray-400">
                           {opp.team} @ {opp.opponent}
