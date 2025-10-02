@@ -14,16 +14,28 @@ import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
 // Dropdown Menu Component
 function DropdownMenu({ label, items, isOpen, onToggle }) {
+  const handleMouseEnter = () => {
+    if (!isOpen) onToggle();
+  };
+  
+  const handleMouseLeave = () => {
+    if (isOpen) onToggle();
+  };
+  
   return (
-    <div className="relative" onMouseEnter={onToggle} onMouseLeave={onToggle}>
-      <button className="font-medium hover:text-blue-600 transition-colors flex items-center gap-1">
+    <div 
+      className="relative" 
+      onMouseEnter={handleMouseEnter} 
+      onMouseLeave={handleMouseLeave}
+    >
+      <button className="font-medium hover:text-blue-600 transition-colors flex items-center gap-1 py-2">
         {label}
         <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 bg-white border rounded-md shadow-lg min-w-[200px] z-50">
+        <div className="absolute top-full left-0 mt-0 bg-white border rounded-md shadow-lg min-w-[200px] z-50">
           {items.map((item, idx) => (
             <Link
               key={idx}
