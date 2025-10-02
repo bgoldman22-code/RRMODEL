@@ -8,6 +8,7 @@ import NflTd from "./pages/NflTd";  // Simple TD system
 import NFLTouchdownPropsComprehensive from "./pages/NFLTouchdownPropsComprehensive";  // Advanced TD system
 import NFLPredictions from "./pages/NFLPredictions";
 import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
+import NHL from "./NHL";  // Elite NHL SOG Props
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
@@ -66,7 +67,7 @@ export default function App() {
     nhl: {
       label: 'NHL',
       items: [
-        { label: 'Coming Soon...', path: '#', disabled: true }
+        { label: 'SOG Props (Elite Model)', path: '/nhl-sog' }
       ]
     },
     nba: {
@@ -104,6 +105,7 @@ export default function App() {
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/predictions" element={<NFLPredictions />} />
           <Route path="/soccer-btts" element={<SoccerBTTS />} />
+          <Route path="/nhl-sog" element={<NHL />} />
         </Routes>
       </div>
     </BrowserRouter>
