@@ -3,7 +3,8 @@
 // Force redeploy: 2025-10-03
 
 import fs from 'fs/promises';
-import { fetchPlayerPropOdds } from '../../../scripts/fetch-player-prop-odds.js';
+// REMOVED: fetchPlayerPropOdds import - causes Netlify crash (script not in bundle)
+// import { fetchPlayerPropOdds } from '../../../scripts/fetch-player-prop-odds.js';
 import { calculateRealisticTDProbabilities, buildPlayerAvailability } from './td-probability-engine.mjs';
 
 // Team name mapping for schedule normalization (matches NFL predictions approach)
@@ -237,26 +238,10 @@ async function generateTDPredictions(games, season = '2025', weekNumber) {
     console.warn('⚠️ Cache load failed, continuing without odds:', e.message);
   }
   
-  // Step 2: ONLY try to fetch fresh odds if we have no cache AND we have time (3s max)
-  if (!usedCache) {
-    try {
-      console.log('🔄 Fetching fresh player prop odds (3s timeout)...');
-      const oddsPromise = fetchPlayerPropOdds();
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Odds fetch timeout after 3s')), 3000)
-      );
-      const freshOdds = await Promise.race([oddsPromise, timeoutPromise]);
-      oddsByPlayer = freshOdds;
-      console.log(`✅ Pulled fresh odds for ${Object.keys(oddsByPlayer).length} players`);
-      
-      // Save to cache for next time (fire and forget)
-      saveCachedOdds(freshOdds).catch(e => console.warn('Cache save failed:', e.message));
-    } catch (e) {
-      console.warn('⚠️ Fresh odds fetch failed, continuing with model-only predictions:', e.message);
-      oddsByPlayer = {}; // Continue without odds - NOT a fatal error
-    }
-  }
-  // Skip background refresh to avoid timeout issues - let the cron job handle it
+  // Step 2: SKIP odds fetching in Netlify (causes crashes)
+  // The fetchPlayerPropOdds script is not available in Netlify function bundle
+  console.log('⏭️ Skipping odds fetch (rely on cache or scheduled function)');
+  // Fresh odds fetching disabled - use cached odds only
   
   console.log('=== NFL TD REALISTIC PREDICTIONS (CANONICAL AVAILABILITY) ===');
   
