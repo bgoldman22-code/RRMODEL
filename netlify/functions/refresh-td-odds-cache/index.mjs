@@ -5,6 +5,27 @@
 import fs from 'fs/promises';
 import { getStore } from '@netlify/blobs';
 
+function getBlobsStore() {
+  const name = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'nfl-td';
+  const siteID = process.env.NETLIFY_SITE_ID;
+  const token = process.env.NETLIFY_API_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
+  // try multiple call signatures for compatibility
+  try {
+    // signature: getStore(name, { siteID, token })
+    if (siteID && token && typeof getStore === 'function') {
+      const s = getStore(name, { siteID, token });
+      if (s && typeof s.setJSON === 'function') return s;
+    }
+  } catch {}
+  try {
+    // signature: getStore({ name, siteID, token })
+    const s = getStore({ name, siteID, token });
+    if (s && typeof s.setJSON === 'function') return s;
+  } catch {}
+  // final: getStore({ name }) relies on Netlify-provided context
+  return getStore({ name });
+}
+
 const ODDS_CACHE_FILE = 'public/data/nfl-td-odds-cache.json';
 const SPORT_KEY = 'americanfootball_nfl';
 const MARKETS = ['player_anytime_td','player_1st_td','player_tds_over'];
@@ -121,22 +142,10 @@ export default async function handler(request){
       quota
     };
 
-    // Write to Netlify Blobs (preferred in functions runtime)
-    try {
-      const storeName = process.env.BLOBS_STORE_NFL || 'nfl-td';
-      const store = getStore({ name: storeName });
-      await store.setJSON('nfl-td-odds-cache.json', cache);
-      console.log(`✅ Saved NFL TD odds cache to Blobs store '${storeName}' (nfl-td-odds-cache.json)`);
-    } catch (e) {
-      console.warn('⚠️ Blobs write failed, attempting filesystem fallback:', e.message);
-      try {
-        await fs.mkdir('public/data', { recursive: true });
-        await fs.writeFile(ODDS_CACHE_FILE, JSON.stringify(cache, null, 2));
-        console.log(`✅ Saved NFL TD odds cache (FS fallback) with ${cache.player_count} players to ${ODDS_CACHE_FILE}`);
-      } catch (fsErr) {
-        console.error('❌ Filesystem write failed:', fsErr.message);
-      }
-    }
+    // Write to Netlify Blobs (preferred; avoid filesystem writes in lambda)
+    const store = getBlobsStore();
+    await store.setJSON('nfl-td-odds-cache.json', cache);
+    console.log(`✅ Saved NFL TD odds cache to Blobs (nfl-td-odds-cache.json)`);
 
     return jsonResponse({ success:true, player_count: cache.player_count, quota, cache_key: 'nfl-td-odds-cache.json' }, 200);
   }catch(err){
