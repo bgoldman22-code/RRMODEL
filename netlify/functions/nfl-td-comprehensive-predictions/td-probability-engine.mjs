@@ -2,14 +2,7 @@
 // REALISTIC TD Probability Engine - Uses Canonical Availability + Real Data
 // Integrates: Injury status, depth charts, snap counts, usage patterns
 
-// Simplified status weights (no need for full canonical availability module)
-const STATUS_WEIGHTS = {
-  'OUT': 0,
-  'DOUBTFUL': 0.25,
-  'QUESTIONABLE': 0.75,
-  'ACTIVE': 1.0,
-  'HEALTHY': 1.0
-};
+import { buildCanonicalAvailability, STATUS_WEIGHTS } from '../_lib/canonical-availability-v5.mjs';
 
 /**
  * REALISTIC TD PROBABILITY BASELINES
@@ -328,37 +321,41 @@ function clamp(value, min, max) {
  */
 export function buildPlayerAvailability(player, team, week, injuryReports, depthCharts) {
   const { name, position } = player;
-  
-  // 1. Check injury report
+  const sources = [];
   const injuryData = findPlayerInjury(name, team, injuryReports);
-  const status = injuryData?.status || 'ACTIVE';
-  const probPlay = STATUS_WEIGHTS[status] || 1.0;
-  
-  // 2. Check depth chart
-  const depthData = findPlayerDepth(name, position, team, depthCharts);
-  // Use realistic fallbacks by position if depth is unknown to avoid overrating bench players
-  let depthOrder;
-  if (depthData?.position) {
-    depthOrder = depthData.position;
-  } else if (Number.isFinite(player.depth_chart_position)) {
-    depthOrder = player.depth_chart_position;
-  } else {
-    depthOrder = (position === 'WR') ? 3
-      : (position === 'RB') ? 2
-      : (position === 'TE') ? 2
-      : (position === 'QB') ? 1
-      : 3; // conservative default
+  if (injuryData) {
+    sources.push({
+      type: 'INJURY_REPORT',
+      gameStatus: injuryData.status,
+      injuryStatus: injuryData.status,
+      probPlay: STATUS_WEIGHTS[injuryData.status] || 1.0,
+      timestamp: injuryData.timestamp || Date.now()
+    });
   }
-  
-  // 3. Build simplified availability object
-  return {
-    status: status,
-    probPlay: probPlay,
-    depthOrder: depthOrder,
-    confidence: injuryData ? 0.9 : 0.7,  // Higher confidence with injury data
-    topSource: injuryData ? 'injury_report' : 'depth_chart',
-    snapShare: player.snap_share || 0.50
-  };
+  const depthData = findPlayerDepth(name, position, team, depthCharts);
+  if (depthData) {
+    sources.push({
+      type: 'DEPTH_CHART',
+      depthPosition: depthData.position,
+      isStarter: depthData.position === 1,
+      timestamp: depthData.timestamp || Date.now()
+    });
+  }
+  if (player.snap_share !== undefined) {
+    sources.push({ type: 'SNAP_SHARE', snapShare: player.snap_share, timestamp: Date.now() });
+  }
+  if (sources.length > 0) {
+    return buildCanonicalAvailability(
+      `${team}_${position}_${name}`,
+      name,
+      team,
+      position,
+      week,
+      sources,
+      Date.now()
+    );
+  }
+  return null;
 }
 
 /**
