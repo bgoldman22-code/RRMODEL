@@ -184,6 +184,22 @@ async function loadCachedOdds() {
     './' + ODDS_CACHE_FILE,
     process.cwd() + '/' + ODDS_CACHE_FILE
   ];
+  // Try Netlify Blobs first (preferred in functions runtime)
+  try {
+    const { getStore } = await import('@netlify/blobs');
+    const storeName = process.env.BLOBS_STORE_NFL || 'nfl-td';
+    const store = getStore({ name: storeName });
+    const cache = await store.getJSON('nfl-td-odds-cache.json');
+    if (cache && cache.odds) {
+      const age = Date.now() - new Date(cache.timestamp).getTime();
+      if (age < ODDS_CACHE_TTL) {
+        console.log(`✅ Using cached odds from Blobs (${Math.round(age / 60000)} minutes old)`);
+        return cache.odds;
+      }
+    }
+  } catch (e) {
+    console.log('Blobs odds load not available:', e.message);
+  }
   
   for (const filePath of possiblePaths) {
     try {
