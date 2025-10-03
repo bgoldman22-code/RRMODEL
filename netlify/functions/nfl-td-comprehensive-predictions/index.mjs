@@ -1,8 +1,9 @@
 // netlify/functions/nfl-td-comprehensive-predictions/index.mjs
-// FIXED VERSION: Uses same blob pattern as working NFL predictions + does actual TD predictions
+// REALISTIC VERSION: Uses Canonical Availability + Real Data for TD Predictions
 
 import fs from 'fs/promises';
 import { fetchPlayerPropOdds } from '../../../scripts/fetch-player-prop-odds.js';
+import { calculateRealisticTDProbabilities, buildPlayerAvailability } from './td-probability-engine.mjs';
 
 // Team name mapping for schedule normalization (matches NFL predictions approach)
 function getTeamAbbreviation(fullName) {
@@ -23,17 +24,28 @@ function getTeamAbbreviation(fullName) {
 }
 
 
-// TD prediction weights
-const QUICK_TD_WEIGHTS = {
-  ANYTIME: {
-    position_base: 0.40,
-    team_quality: 0.25,
-    snap_share: 0.20,
-    red_zone_role: 0.15
-  }
-};
+function getCurrentWeek() {
+  const now = new Date();
+  const seasonStart = new Date('2025-09-04');
+  const diffTime = now.getTime() - seasonStart.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const week = Math.floor(diffDays / 7) + 1;
+  return Math.max(1, Math.min(18, week));
+}
 
-// Load player data from committed JSON (correct paths for Netlify deployment)
+function getTeamQuality(team) {
+  // Import from realistic engine
+  const ratings = {
+    'KC': 1.40, 'BUF': 1.35, 'SF': 1.32, 'MIA': 1.30, 'DAL': 1.28,
+    'PHI': 1.24, 'DET': 1.22, 'BAL': 1.20, 'CIN': 1.18, 'LAC': 1.15,
+    'MIN': 1.12, 'HOU': 1.10, 'GB': 1.05, 'LAR': 1.02, 'SEA': 1.00,
+    'ATL': 0.98, 'TB': 0.96, 'JAX': 0.92, 'NO': 0.90, 'IND': 0.88,
+    'NYJ': 0.85, 'PIT': 0.83, 'CLE': 0.80, 'TEN': 0.78, 'LV': 0.75,
+    'DEN': 0.73, 'WAS': 0.72, 'CHI': 0.70, 'NE': 0.68, 'NYG': 0.65,
+    'CAR': 0.63, 'ARI': 0.60
+  };
+  return ratings[team] || 1.0;
+}
 async function loadPlayerData() {
   console.log(`🔍 DEBUG: Current working directory for player data: ${process.cwd()}`);
   
@@ -65,6 +77,57 @@ async function loadPlayerData() {
   
   console.warn('⚠️ Player data file not found in any location');
   return null;
+}
+
+// Load depth charts from public/history/{season}/week{N}/depth-charts.json
+async function loadDepthCharts(season, week) {
+  const possiblePaths = [
+    `public/history/${season}/week${week}/depth-charts.json`,
+    `/opt/buildhome/repo/public/history/${season}/week${week}/depth-charts.json`,
+    `/var/task/public/history/${season}/week${week}/depth-charts.json`,
+    `./public/history/${season}/week${week}/depth-charts.json`,
+    process.cwd() + `/public/history/${season}/week${week}/depth-charts.json`
+  ];
+  
+  for (const filePath of possiblePaths) {
+    try {
+      const raw = await fs.readFile(filePath, 'utf8');
+      const data = JSON.parse(raw);
+      console.log(`✅ Loaded depth charts for Week ${week}`);
+      return data;
+    } catch (error) {
+      continue;
+    }
+  }
+  
+  console.warn(`⚠️ No depth chart data found for Week ${week}`);
+  return {};
+}
+
+// Load injury reports (from game predictions injury data structure)
+async function loadInjuryReports(season, week) {
+  // Try to load from the same location game predictions uses
+  const possiblePaths = [
+    `public/history/${season}/week${week}/injuries.json`,
+    `/opt/buildhome/repo/public/history/${season}/week${week}/injuries.json`,
+    `/var/task/public/history/${season}/week${week}/injuries.json`,
+    `./public/history/${season}/week${week}/injuries.json`,
+    process.cwd() + `/public/history/${season}/week${week}/injuries.json`
+  ];
+  
+  for (const filePath of possiblePaths) {
+    try {
+      const raw = await fs.readFile(filePath, 'utf8');
+      const data = JSON.parse(raw);
+      console.log(`✅ Loaded injury reports for Week ${week}`);
+      return data;
+    } catch (error) {
+      continue;
+    }
+  }
+  
+  console.warn(`⚠️ No injury report data found for Week ${week}`);
+  return {};
 }
 
 // Generate minimal player roster from game schedule (fallback)
@@ -116,188 +179,6 @@ function getCurrentWeek() {
   return Math.max(1, Math.min(18, week));
 }
 
-// Add metrics to any player data
-function addPlayerMetrics(player) {
-  return {
-    ...player,
-    redZoneMetrics: {
-      targets: estimateRedZoneTargets(player),
-      carries: estimateRedZoneCarries(player),
-      touchdowns: estimateSeasonTDs(player),
-      efficiency: 0.25
-    },
-    opportunityFactors: {
-      snapShare: estimateSnapShare(player),
-      targetShare: estimateTargetShare(player),
-      redZoneShare: estimateRedZoneShare(player),
-      goalLineShare: estimateGoalLineShare(player)
-    },
-    // Add individual talent rating
-    talentRating: calculatePlayerTalent(player)
-  };
-}
-
-function calculatePlayerTalent(player) {
-  // Individual talent ratings (0.5 = backup, 1.0 = average starter, 1.5+ = elite)
-  const playerName = player.name.toLowerCase();
-  const position = player.position;
-  
-  // Elite superstars get major boost
-  if (playerName.includes('travis kelce') || playerName.includes('tyreek hill') ||
-      playerName.includes('davante adams') || playerName.includes('cooper kupp') ||
-      playerName.includes('christian mccaffrey') || playerName.includes('derrick henry') ||
-      playerName.includes('josh allen') || playerName.includes('lamar jackson') ||
-      playerName.includes('saquon barkley') || playerName.includes('nick chubb')) {
-    return 1.8; // Elite tier
-  }
-  
-  // Good starters
-  if (playerName.includes('james cook') || playerName.includes('dalton kincaid') ||
-      playerName.includes('keon coleman') || playerName.includes('a.j. brown') ||
-      playerName.includes('devonta smith') || playerName.includes('brandon aiyuk')) {
-    return 1.3; // Good starter
-  }
-  
-  // Position-based defaults with depth chart consideration
-  const depthPenalties = {
-    1: 1.0,    // Starter
-    2: 0.7,    // Backup
-    3: 0.4,    // 3rd string
-    4: 0.2     // Deep backup
-  };
-  
-  const depthPosition = parseInt(player.id?.split('_').pop()) || 1;
-  const depthPenalty = depthPenalties[Math.min(depthPosition, 4)] || 0.2;
-  
-  const positionBase = {
-    'RB': 1.1, 'WR': 1.0, 'TE': 0.9, 'QB': 1.2
-  }[position] || 1.0;
-  
-  return positionBase * depthPenalty;
-}
-
-function estimateRedZoneTargets(player) {
-  const base = { 'RB': 1.5, 'WR': 2.0, 'TE': 1.8, 'QB': 0 };
-  return (base[player.position] || 0) * getTeamQuality(player.team);
-}
-
-function estimateRedZoneCarries(player) {
-  const base = player.position === 'RB' ? 2.0 : player.position === 'QB' ? 0.3 : 0;
-  return base * getTeamQuality(player.team);
-}
-
-function estimateSnapShare(player) {
-  const base = { 'QB': 0.98, 'RB': 0.60, 'WR': 0.70, 'TE': 0.75 };
-  return base[player.position] || 0.5;
-}
-
-function estimateTargetShare(player) {
-  const base = { 'RB': 0.12, 'WR': 0.22, 'TE': 0.18, 'QB': 0 };
-  return base[player.position] || 0;
-}
-
-function estimateRedZoneShare(player) {
-  const base = { 'RB': 0.18, 'WR': 0.22, 'TE': 0.20, 'QB': 0.02 };
-  return base[player.position] || 0.1;
-}
-
-function estimateGoalLineShare(player) {
-  const base = { 'RB': 0.65, 'WR': 0.18, 'TE': 0.28, 'QB': 0.12 };
-  return base[player.position] || 0.1;
-}
-
-function estimateSeasonTDs(player) {
-  const teamQuality = getTeamQuality(player.team);
-  const base = { 'RB': 8, 'WR': 6, 'TE': 4, 'QB': 3 };
-  return Math.round((base[player.position] || 2) * teamQuality);
-}
-
-function calculateQuickAnytimeTD(player) {
-  const weights = QUICK_TD_WEIGHTS.ANYTIME;
-  
-  // REALISTIC base probabilities by position AND depth chart position
-  // Historical data: RB1s score ~50% of games, WR1s ~35%, TE1s ~25%
-  const depthPosition = parseInt(player.id?.split('_').pop()) || 1;
-  
-  let positionBase;
-  if (player.position === 'RB') {
-    positionBase = depthPosition === 1 ? 0.48 : depthPosition === 2 ? 0.22 : 0.08;
-  } else if (player.position === 'WR') {
-    positionBase = depthPosition === 1 ? 0.35 : depthPosition === 2 ? 0.18 : depthPosition === 3 ? 0.10 : 0.05;
-  } else if (player.position === 'TE') {
-    positionBase = depthPosition === 1 ? 0.28 : depthPosition === 2 ? 0.12 : 0.05;
-  } else if (player.position === 'QB') {
-    positionBase = 0.15; // QBs score rushing TDs occasionally
-  } else {
-    positionBase = 0.05;
-  }
-  
-  // Team quality impact (full effect - good offenses score more TDs)
-  const teamQuality = getTeamQuality(player.team);
-  const teamMultiplier = teamQuality; // Use full team quality rating
-  
-  const snapShare = player.opportunityFactors?.snapShare || 0.5;
-  const redZoneRole = player.opportunityFactors?.redZoneShare || 0.1;
-  
-  // Use individual talent rating for elite player boost
-  const talentModifier = player.talentRating || 1.0;
-  
-  // Starter vs backup penalty for backup QBs
-  let starterPenalty = 1.0;
-  if (player.position === 'QB' && 
-      (player.name.includes('II') || player.name.includes('Minshew') || 
-       player.name.includes('Brissett') || player.name.includes('Mills'))) {
-    starterPenalty = 0.5;
-  }
-  
-  // Weighted combination: Base (60%) + Situational factors (40%)
-  const baseScore = positionBase * teamMultiplier * talentModifier;
-  const situationalBoost = (snapShare * 0.15) + (redZoneRole * 0.25);
-  
-  const finalScore = (baseScore * 0.6 + situationalBoost * 0.4) * starterPenalty;
-  
-  // More realistic bounds: 5% minimum, 65% maximum (elite RB1s on great teams)
-  return Math.max(0.05, Math.min(0.65, finalScore));
-}
-
-function calculateQuickFirstTD(anytimeProb) {
-  // First TD is roughly 20% of anytime probability
-  // (22 starters on field, but TD scorers get more opportunities)
-  return Math.max(0.01, Math.min(0.25, anytimeProb * 0.20));
-}
-
-function calculateQuickMultipleTD(anytimeProb) {
-  // Multiple TDs = roughly probability of 2+ TDs
-  // If anytime is 50%, multiple is ~15-20%
-  // Using squared probability with slight boost for high scorers
-  const multipleProb = Math.pow(anytimeProb, 1.5) * 0.8;
-  return Math.max(0.01, Math.min(0.35, multipleProb));
-}
-
-function getTeamQuality(team) {
-  // More differentiated team quality ratings for better TD distribution
-  const ratings = {
-    'KC': 1.35, 'BUF': 1.30, 'SF': 1.25, 'PHI': 1.20, 'DAL': 1.18, 'BAL': 1.18,
-    'MIA': 1.15, 'CIN': 1.12, 'DET': 1.12, 'MIN': 1.08, 'LAC': 1.08, 'HOU': 1.05,
-    'GB': 1.02, 'LAR': 1.02, 'ATL': 0.98, 'NYJ': 0.95, 'PIT': 0.95, 'SEA': 0.95,
-    'IND': 0.90, 'TB': 0.90, 'JAX': 0.85, 'NO': 0.85, 'CLE': 0.82, 'TEN': 0.82,
-    'LV': 0.78, 'DEN': 0.78, 'WAS': 0.75, 'CHI': 0.72, 'NE': 0.70, 'NYG': 0.70, 'CAR': 0.65, 'ARI': 0.62
-  };
-  return ratings[team] || 1.0;
-}
-
-function calculateConfidence(anytimeProb) {
-  return Math.round(Math.max(50, Math.min(85, 45 + (anytimeProb * 65))));
-}
-
-function probabilityToAmericanOdds(probability) {
-  if (probability >= 0.5) {
-    return Math.round(-100 / (probability / (1 - probability)));
-  } else {
-    return Math.round(100 * ((1 - probability) / probability));
-  }
-}
-
 // Cache management for odds data
 const ODDS_CACHE_FILE = 'public/data/nfl-td-odds-cache.json';
 const ODDS_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
@@ -346,8 +227,8 @@ async function saveCachedOdds(odds) {
   }
 }
 
-// Main TD prediction generation
-async function generateTDPredictions(games, season = '2025') {
+// Main TD prediction generation - NOW USES CANONICAL AVAILABILITY
+async function generateTDPredictions(games, season = '2025', weekNumber) {
   // STRATEGY: Try cache first, fetch in background if needed
   let oddsByPlayer = {};
   let usedCache = false;
@@ -389,51 +270,73 @@ async function generateTDPredictions(games, season = '2025') {
       .catch(e => console.warn('⚠️ Background odds refresh failed:', e.message));
   }
   
-  console.log('=== NFL TD COMPREHENSIVE PREDICTIONS (FIXED VERSION) ===');
+  console.log('=== NFL TD REALISTIC PREDICTIONS (CANONICAL AVAILABILITY) ===');
   
-  // Try to load live data from blobs first
-  let playerData = null;
-  const blobData = await loadPlayerData(season);
-  if (blobData && blobData.players) {
-    playerData = blobData.players;
-    console.log(`🎯 Using LIVE data: ${Object.keys(playerData).length} players`);
+  // Load real data sources
+  const [playerData, depthCharts, injuryReports] = await Promise.all([
+    loadPlayerData(),
+    loadDepthCharts(season, weekNumber),
+    loadInjuryReports(season, weekNumber)
+  ]);
+  
+  let players = {};
+  if (playerData && playerData.players) {
+    players = playerData.players;
+    console.log(`🎯 Using LIVE player data: ${Object.keys(players).length} players`);
   } else {
-    // FALLBACK: Generate minimal player roster from games
+    // FALLBACK: Generate minimal roster
     console.warn('⚠️ No player data file found, generating minimal roster from games');
-    playerData = generateMinimalPlayerRoster(games);
-    console.log(`🎯 Generated minimal roster: ${Object.keys(playerData).length} players`);
+    players = generateMinimalPlayerRoster(games);
+    console.log(`🎯 Generated minimal roster: ${Object.keys(players).length} players`);
   }
   
-  if (!playerData || Object.keys(playerData).length === 0) {
-    throw new Error('No player data available - cannot generate TD predictions');
-  }
-  
-  const dataSource = blobData ? 'live_blobs' : 'generated_minimal';
+  const dataSource = playerData ? 'live_data_with_canonical_availability' : 'generated_minimal';
   
   const allPredictions = [];
   
   for (const game of games) {
     const gamePlayerPredictions = [];
     
-    // Normalize team names from schedule (convert full names to abbreviations)
+    // Normalize team names from schedule
     const homeTeamAbbr = getTeamAbbreviation(game.homeTeam || game.home_team) || game.homeTeam || game.home_team;
     const awayTeamAbbr = getTeamAbbreviation(game.awayTeam || game.away_team) || game.awayTeam || game.away_team;
     console.log(`🔄 Game: ${game.homeTeam || game.home_team}(${homeTeamAbbr}) vs ${game.awayTeam || game.away_team}(${awayTeamAbbr})`);
     
     // Process all players for this game
-    for (const [playerId, basePlayer] of Object.entries(playerData)) {
+    for (const [playerId, basePlayer] of Object.entries(players)) {
       // Match using normalized team abbreviations
       if (basePlayer.team !== homeTeamAbbr && basePlayer.team !== awayTeamAbbr) continue;
       
-      const player = addPlayerMetrics(basePlayer);
+      // Build canonical availability for this player
+      const availability = buildPlayerAvailability(
+        basePlayer,
+        basePlayer.team,
+        weekNumber,
+        injuryReports,
+        depthCharts
+      );
       
-      const anytimeProb = calculateQuickAnytimeTD(player);
-      const firstProb = calculateQuickFirstTD(anytimeProb);
-      const multipleProb = calculateQuickMultipleTD(anytimeProb);
-      const confidence = calculateConfidence(anytimeProb);
+      // Determine game context
+      const isHome = basePlayer.team === homeTeamAbbr;
+      const opponent = isHome ? awayTeamAbbr : homeTeamAbbr;
+      const gameContext = {
+        opponent,
+        isHome,
+        weather: null  // TODO: Add weather data
+      };
+      
+      // Calculate REALISTIC probabilities using canonical availability
+      const tdProbs = calculateRealisticTDProbabilities(
+        basePlayer,
+        availability,
+        gameContext
+      );
 
       // Join odds by player name (case-insensitive)
-      const oddsEntry = oddsByPlayer[player.name] || oddsByPlayer[player.name.toUpperCase()] || oddsByPlayer[player.name.toLowerCase()] || null;
+      const oddsEntry = oddsByPlayer[basePlayer.name] || 
+                       oddsByPlayer[basePlayer.name.toUpperCase()] || 
+                       oddsByPlayer[basePlayer.name.toLowerCase()] || null;
+      
       // Convert American odds to implied probability
       function impliedProbFromAmerican(american) {
         if (american == null) return null;
@@ -480,19 +383,31 @@ async function generateTDPredictions(games, season = '2025') {
 
       gamePlayerPredictions.push({
         player_id: playerId,
-        name: player.name,
-        position: player.position,
-        team: player.team,
-        anytime_td: marketBlock(anytimeProb, oddsEntry?.player_anytime_td),
-  first_td: marketBlock(firstProb, oddsEntry?.player_1st_td),
-        multiple_td: marketBlock(multipleProb, oddsEntry?.player_tds_over),
+        name: basePlayer.name,
+        position: basePlayer.position,
+        team: basePlayer.team,
+        depth_chart_position: availability?.depthOrder || basePlayer.depth_chart_position || 1,
+        injury_status: availability?.status || 'active',
+        prob_play: availability?.probPlay || 1.0,
+        anytime_td: marketBlock(tdProbs.anytime, oddsEntry?.player_anytime_td),
+        first_td: marketBlock(tdProbs.first, oddsEntry?.player_1st_td),
+        multiple_td: marketBlock(tdProbs.multiple, oddsEntry?.player_tds_over),
         key_factors: {
-          red_zone_targets: player.redZoneMetrics?.targets,
-          red_zone_carries: player.redZoneMetrics?.carries,
-          snap_share: player.opportunityFactors?.snapShare,
-          target_share: player.opportunityFactors?.targetShare,
-          team_quality: getTeamQuality(player.team)
-        }
+          red_zone_targets: basePlayer.redZoneMetrics?.targets || basePlayer.red_zone_targets || 0,
+          red_zone_carries: basePlayer.redZoneMetrics?.carries || basePlayer.red_zone_carries || 0,
+          snap_share: basePlayer.snap_share || basePlayer.opportunityFactors?.snapShare || 0.6,
+          target_share: basePlayer.target_share || basePlayer.opportunityFactors?.targetShare || 0.15,
+          team_quality: getTeamQuality(basePlayer.team),
+          availability_confidence: availability?.confidence || 0.75,
+          ...tdProbs.factors
+        },
+        canonical_availability: availability ? {
+          status: availability.status,
+          prob_play: availability.probPlay,
+          depth_order: availability.depthOrder,
+          confidence: availability.confidence,
+          source: availability.topSource
+        } : null
       });
     }
     
@@ -505,8 +420,11 @@ async function generateTDPredictions(games, season = '2025') {
       players: gamePlayerPredictions,
       metadata: {
         total_players: gamePlayerPredictions.length,
-        high_confidence_count: gamePlayerPredictions.filter(p => p.anytime_td.confidence >= 70).length,
-        data_source: dataSource
+        high_confidence_count: gamePlayerPredictions.filter(p => p.anytime_td.probability >= 0.40).length,
+        data_source: dataSource,
+        has_canonical_availability: gamePlayerPredictions.some(p => p.canonical_availability !== null),
+        has_injury_data: Object.keys(injuryReports).length > 0,
+        has_depth_charts: Object.keys(depthCharts).length > 0
       }
     });
   }
@@ -514,12 +432,14 @@ async function generateTDPredictions(games, season = '2025') {
   return {
     success: true,
     metadata: {
-      model: 'comprehensive-fixed-v1',
+      model: 'realistic-canonical-availability-v1',
       data_source: dataSource,
       generated_at: new Date().toISOString(),
       games_processed: games.length,
       total_players: allPredictions.reduce((sum, game) => sum + game.players.length, 0),
-      blob_attempt: blobData ? 'successful' : 'failed'
+      uses_canonical_availability: true,
+      injury_data_available: Object.keys(injuryReports).length > 0,
+      depth_chart_data_available: Object.keys(depthCharts).length > 0
     },
     predictions: allPredictions
   };
@@ -623,8 +543,8 @@ export default async (request, context) => {
       throw new Error('No games provided for TD predictions - check schedule file and request format');
     }
 
-    console.log(`🏈 Generating TD predictions for ${games.length} games`);
-    const result = await generateTDPredictions(games, season);
+    console.log(`🏈 Generating TD predictions for ${games.length} games, Week ${week}`);
+    const result = await generateTDPredictions(games, season, week);
     console.log(`✅ Generated predictions successfully`);
 
     // Write latest predictions to public/data/nfl-td-comprehensive-latest.json for frontend
