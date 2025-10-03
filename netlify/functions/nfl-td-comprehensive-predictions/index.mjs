@@ -1,5 +1,6 @@
 // netlify/functions/nfl-td-comprehensive-predictions/index.mjs
 // REALISTIC VERSION: Uses Canonical Availability + Real Data for TD Predictions
+// Force redeploy: 2025-10-03
 
 import fs from 'fs/promises';
 import { fetchPlayerPropOdds } from '../../../scripts/fetch-player-prop-odds.js';
