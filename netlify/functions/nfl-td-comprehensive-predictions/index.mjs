@@ -421,7 +421,15 @@ async function getScheduleFromFile(season, week) {
       console.log(`🔍 Trying to load schedule from: ${filePath}`);
       const raw = await fs.readFile(filePath, 'utf8');
       const data = JSON.parse(raw);
-      if (data && data.weeks && data.weeks[week]) {
+      
+      // Schedule file is an array, not an object with weeks
+      if (Array.isArray(data)) {
+        const weekNumber = parseInt(week);
+        const weekGames = data.filter(game => game.week === weekNumber);
+        console.log(`✅ Loaded schedule from ${filePath}: Week ${week} has ${weekGames.length} games`);
+        return weekGames;
+      } else if (data && data.weeks && data.weeks[week]) {
+        // Legacy format with weeks object
         console.log(`✅ Loaded schedule from ${filePath}: Week ${week} has ${data.weeks[week].matchups?.length || 0} games`);
         return data.weeks[week].matchups || [];
       }
