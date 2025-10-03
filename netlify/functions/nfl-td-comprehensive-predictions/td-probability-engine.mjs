@@ -336,7 +336,19 @@ export function buildPlayerAvailability(player, team, week, injuryReports, depth
   
   // 2. Check depth chart
   const depthData = findPlayerDepth(name, position, team, depthCharts);
-  const depthOrder = depthData?.position || player.depth_chart_position || 1;
+  // Use realistic fallbacks by position if depth is unknown to avoid overrating bench players
+  let depthOrder;
+  if (depthData?.position) {
+    depthOrder = depthData.position;
+  } else if (Number.isFinite(player.depth_chart_position)) {
+    depthOrder = player.depth_chart_position;
+  } else {
+    depthOrder = (position === 'WR') ? 3
+      : (position === 'RB') ? 2
+      : (position === 'TE') ? 2
+      : (position === 'QB') ? 1
+      : 3; // conservative default
+  }
   
   // 3. Build simplified availability object
   return {
@@ -345,7 +357,7 @@ export function buildPlayerAvailability(player, team, week, injuryReports, depth
     depthOrder: depthOrder,
     confidence: injuryData ? 0.9 : 0.7,  // Higher confidence with injury data
     topSource: injuryData ? 'injury_report' : 'depth_chart',
-    snapShare: player.snap_share || 0.65
+    snapShare: player.snap_share || 0.50
   };
 }
 
