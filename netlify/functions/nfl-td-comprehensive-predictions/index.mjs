@@ -221,55 +221,60 @@ async function saveCachedOdds(odds) {
 
 // Main TD prediction generation - NOW USES CANONICAL AVAILABILITY
 async function generateTDPredictions(games, season = '2025', weekNumber) {
-  // STRATEGY: Try cache first, fetch in background if needed
+  // STRATEGY: Try cache first, skip odds if problematic (Netlify has 10s timeout)
   let oddsByPlayer = {};
   let usedCache = false;
   
   // Step 1: Try to load from cache (fast, always works)
-  const cachedOdds = await loadCachedOdds();
-  if (cachedOdds) {
-    oddsByPlayer = cachedOdds;
-    usedCache = true;
-    console.log(`✅ Using cached odds for ${Object.keys(oddsByPlayer).length} players`);
+  try {
+    const cachedOdds = await loadCachedOdds();
+    if (cachedOdds) {
+      oddsByPlayer = cachedOdds;
+      usedCache = true;
+      console.log(`✅ Using cached odds for ${Object.keys(oddsByPlayer).length} players`);
+    }
+  } catch (e) {
+    console.warn('⚠️ Cache load failed, continuing without odds:', e.message);
   }
   
-  // Step 2: Try to fetch fresh odds (but don't block on it)
+  // Step 2: ONLY try to fetch fresh odds if we have no cache AND we have time (3s max)
   if (!usedCache) {
     try {
-      console.log('🔄 Fetching fresh player prop odds from TheOddsAPI...');
+      console.log('🔄 Fetching fresh player prop odds (3s timeout)...');
       const oddsPromise = fetchPlayerPropOdds();
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Odds fetch timeout after 8s')), 8000)
+        setTimeout(() => reject(new Error('Odds fetch timeout after 3s')), 3000)
       );
       const freshOdds = await Promise.race([oddsPromise, timeoutPromise]);
       oddsByPlayer = freshOdds;
       console.log(`✅ Pulled fresh odds for ${Object.keys(oddsByPlayer).length} players`);
       
-      // Save to cache for next time (async, don't wait)
+      // Save to cache for next time (fire and forget)
       saveCachedOdds(freshOdds).catch(e => console.warn('Cache save failed:', e.message));
     } catch (e) {
       console.warn('⚠️ Fresh odds fetch failed, continuing with model-only predictions:', e.message);
-      oddsByPlayer = {}; // Continue without odds
+      oddsByPlayer = {}; // Continue without odds - NOT a fatal error
     }
-  } else {
-    // We used cache, but try to refresh it in the background (fire and forget)
-    console.log('🔄 Refreshing odds cache in background...');
-    fetchPlayerPropOdds()
-      .then(freshOdds => {
-        console.log(`✅ Background refresh: ${Object.keys(freshOdds).length} players`);
-        return saveCachedOdds(freshOdds);
-      })
-      .catch(e => console.warn('⚠️ Background odds refresh failed:', e.message));
   }
+  // Skip background refresh to avoid timeout issues - let the cron job handle it
   
   console.log('=== NFL TD REALISTIC PREDICTIONS (CANONICAL AVAILABILITY) ===');
   
-  // Load real data sources
-  const [playerData, depthCharts, injuryReports] = await Promise.all([
-    loadPlayerData(),
-    loadDepthCharts(season, weekNumber),
-    loadInjuryReports(season, weekNumber)
-  ]);
+  // Load real data sources with robust error handling
+  let playerData = null;
+  let depthCharts = {};
+  let injuryReports = {};
+  
+  try {
+    [playerData, depthCharts, injuryReports] = await Promise.all([
+      loadPlayerData().catch(e => { console.warn('Player data load failed:', e.message); return null; }),
+      loadDepthCharts(season, weekNumber).catch(e => { console.warn('Depth charts load failed:', e.message); return {}; }),
+      loadInjuryReports(season, weekNumber).catch(e => { console.warn('Injury reports load failed:', e.message); return {}; })
+    ]);
+  } catch (e) {
+    console.error('Error loading data sources:', e.message);
+    // Continue with empty data rather than crash
+  }
   
   let players = {};
   if (playerData && playerData.players) {
