@@ -1,0 +1,39 @@
+{
+  "timestamp": "2025-10-02T19:06:03.503Z",
+  "matched": 32,
+  "correct": 17,
+  "incorrect": 15,
+  "accuracy": "53.1",
+  "byWeek": {
+    "1": {
+      "total": 16,
+      "correct": 7,
+      "incorrect": 9
+    },
+    "2": {
+      "total": 16,
+      "correct": 10,
+      "incorrect": 6
+    }
+  },
+  "byConfidence": {
+    "high": {
+      "total": 16,
+      "correct": 1
+    },
+    "medium": {
+      "total": 10,
+      "correct": 10
+    },
+    "low": {
+      "total": 6,
+      "correct": 6
+    }
+  },
+  "bettingPerformance": {
+    "totalBets": 21,
+    "won": 6,
+    "lost": 15
+  },
+  "bettingROI": "-45.43"
+}

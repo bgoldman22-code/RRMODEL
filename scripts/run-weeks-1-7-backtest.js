@@ -1,0 +1,114 @@
+#!/usr/bin/env node
+import TrueNFLBacktest from './nfl-2024-true-backtest.js';
+
+const csvData = `Week,Day,Date,Time,Winner/tie,,Loser/tie,,PtsW,PtsL,YdsW,TOW,YdsL,TOL
+1,Thu,2024-09-05,8:20PM,Kansas City Chiefs,,Baltimore Ravens,boxscore,27,20,353,1,452,1
+1,Fri,2024-09-06,8:15PM,Philadelphia Eagles,,Green Bay Packers,boxscore,34,29,410,3,414,1
+1,Sun,2024-09-08,1:00PM,Pittsburgh Steelers,@,Atlanta Falcons,boxscore,18,10,270,0,226,3
+1,Sun,2024-09-08,1:00PM,Buffalo Bills,,Arizona Cardinals,boxscore,34,28,352,1,270,1
+1,Sun,2024-09-08,1:00PM,New Orleans Saints,,Carolina Panthers,boxscore,47,10,379,1,193,3
+1,Sun,2024-09-08,1:00PM,Chicago Bears,,Tennessee Titans,boxscore,24,17,148,1,244,3
+1,Sun,2024-09-08,1:00PM,New England Patriots,@,Cincinnati Bengals,boxscore,16,10,290,0,224,2
+1,Sun,2024-09-08,1:00PM,Houston Texans,@,Indianapolis Colts,boxscore,29,27,417,0,303,1
+1,Sun,2024-09-08,1:00PM,Miami Dolphins,,Jacksonville Jaguars,boxscore,20,17,400,0,267,1
+1,Sun,2024-09-08,1:00PM,Minnesota Vikings,@,New York Giants,boxscore,28,6,312,2,240,2
+1,Sun,2024-09-08,4:05PM,Seattle Seahawks,,Denver Broncos,boxscore,26,20,304,2,231,3
+1,Sun,2024-09-08,4:05PM,Los Angeles Chargers,,Las Vegas Raiders,boxscore,22,10,316,0,296,3
+1,Sun,2024-09-08,4:25PM,Dallas Cowboys,@,Cleveland Browns,boxscore,33,17,265,0,230,2
+1,Sun,2024-09-08,4:25PM,Tampa Bay Buccaneers,,Washington Commanders,boxscore,37,20,392,0,299,0
+1,Sun,2024-09-08,8:20PM,Detroit Lions,,Los Angeles Rams,boxscore,26,20,363,1,387,1
+1,Mon,2024-09-09,8:15PM,San Francisco 49ers,,New York Jets,boxscore,32,19,401,0,266,2
+2,Thu,2024-09-12,8:15PM,Buffalo Bills,@,Miami Dolphins,boxscore,31,10,247,0,351,3
+2,Sun,2024-09-15,1:00PM,Los Angeles Chargers,@,Carolina Panthers,boxscore,26,3,349,2,159,1
+2,Sun,2024-09-15,1:00PM,Cleveland Browns,@,Jacksonville Jaguars,boxscore,18,13,297,0,323,0
+2,Sun,2024-09-15,1:00PM,Green Bay Packers,,Indianapolis Colts,boxscore,16,10,383,1,338,3
+2,Sun,2024-09-15,1:00PM,New Orleans Saints,@,Dallas Cowboys,boxscore,44,19,432,1,353,2
+2,Sun,2024-09-15,1:00PM,Tampa Bay Buccaneers,@,Detroit Lions,boxscore,20,16,216,1,463,2
+2,Sun,2024-09-15,1:00PM,Minnesota Vikings,,San Francisco 49ers,boxscore,23,17,403,2,396,2
+2,Sun,2024-09-15,1:00PM,Seattle Seahawks,@,New England Patriots,boxscore,23,20,358,0,310,0
+2,Sun,2024-09-15,1:00PM,Washington Commanders,,New York Giants,boxscore,21,18,425,0,304,1
+2,Sun,2024-09-15,1:00PM,New York Jets,@,Tennessee Titans,boxscore,24,17,265,0,300,2
+2,Sun,2024-09-15,1:00PM,Las Vegas Raiders,@,Baltimore Ravens,boxscore,26,23,260,1,383,1
+2,Sun,2024-09-15,4:05PM,Arizona Cardinals,,Los Angeles Rams,boxscore,41,10,489,1,245,1
+2,Sun,2024-09-15,4:25PM,Kansas City Chiefs,,Cincinnati Bengals,boxscore,26,25,286,3,320,1
+2,Sun,2024-09-15,4:25PM,Pittsburgh Steelers,@,Denver Broncos,boxscore,13,6,251,0,295,2
+2,Sun,2024-09-15,8:20PM,Houston Texans,,Chicago Bears,boxscore,19,13,310,1,205,2
+2,Mon,2024-09-16,8:15PM,Atlanta Falcons,@,Philadelphia Eagles,boxscore,22,21,385,0,365,1
+3,Thu,2024-09-19,8:15PM,New York Jets,,New England Patriots,boxscore,24,3,400,0,139,1
+3,Sun,2024-09-22,1:00PM,Indianapolis Colts,,Chicago Bears,boxscore,21,16,306,2,395,3
+3,Sun,2024-09-22,1:00PM,New York Giants,@,Cleveland Browns,boxscore,21,15,340,2,217,2
+3,Sun,2024-09-22,1:00PM,Denver Broncos,@,Tampa Bay Buccaneers,boxscore,26,7,352,1,223,2
+3,Sun,2024-09-22,1:00PM,Green Bay Packers,@,Tennessee Titans,boxscore,30,14,378,0,237,3
+3,Sun,2024-09-22,1:00PM,Minnesota Vikings,,Houston Texans,boxscore,34,7,274,0,296,2
+3,Sun,2024-09-22,1:00PM,Philadelphia Eagles,@,New Orleans Saints,boxscore,15,12,460,2,219,1
+3,Sun,2024-09-22,1:00PM,Pittsburgh Steelers,,Los Angeles Chargers,boxscore,20,10,346,1,166,0
+3,Sun,2024-09-22,4:05PM,Carolina Panthers,@,Las Vegas Raiders,boxscore,36,22,437,0,331,1
+3,Sun,2024-09-22,4:05PM,Seattle Seahawks,,Miami Dolphins,boxscore,24,3,370,2,205,0
+3,Sun,2024-09-22,4:25PM,Detroit Lions,@,Arizona Cardinals,boxscore,20,13,373,1,277,1
+3,Sun,2024-09-22,4:25PM,Baltimore Ravens,@,Dallas Cowboys,boxscore,28,25,456,0,412,1
+3,Sun,2024-09-22,4:25PM,Los Angeles Rams,,San Francisco 49ers,boxscore,27,24,296,0,425,1
+3,Sun,2024-09-22,8:20PM,Kansas City Chiefs,@,Atlanta Falcons,boxscore,22,17,345,1,311,1
+3,Mon,2024-09-23,7:30PM,Buffalo Bills,,Jacksonville Jaguars,boxscore,47,10,388,0,239,2
+3,Mon,2024-09-23,8:15PM,Washington Commanders,@,Cincinnati Bengals,boxscore,38,33,356,0,436,0
+4,Thu,2024-09-26,8:15PM,Dallas Cowboys,@,New York Giants,boxscore,20,15,293,0,303,1
+4,Sun,2024-09-29,1:00PM,Atlanta Falcons,,New Orleans Saints,boxscore,26,24,315,1,366,2
+4,Sun,2024-09-29,1:00PM,Cincinnati Bengals,@,Carolina Panthers,boxscore,34,24,373,1,375,1
+4,Sun,2024-09-29,1:00PM,Chicago Bears,,Los Angeles Rams,boxscore,24,18,264,0,322,2
+4,Sun,2024-09-29,1:00PM,Indianapolis Colts,,Pittsburgh Steelers,boxscore,27,24,358,0,404,2
+4,Sun,2024-09-29,1:00PM,Denver Broncos,@,New York Jets,boxscore,10,9,186,1,248,1
+4,Sun,2024-09-29,1:00PM,Minnesota Vikings,@,Green Bay Packers,boxscore,31,29,374,3,465,4
+4,Sun,2024-09-29,1:00PM,Houston Texans,,Jacksonville Jaguars,boxscore,24,20,435,1,313,0
+4,Sun,2024-09-29,1:00PM,Tampa Bay Buccaneers,,Philadelphia Eagles,boxscore,33,16,445,0,227,2
+4,Sun,2024-09-29,4:05PM,Washington Commanders,@,Arizona Cardinals,boxscore,42,14,449,1,296,1
+4,Sun,2024-09-29,4:05PM,San Francisco 49ers,,New England Patriots,boxscore,30,13,431,2,216,3
+4,Sun,2024-09-29,4:25PM,Las Vegas Raiders,,Cleveland Browns,boxscore,20,16,268,1,241,1
+4,Sun,2024-09-29,4:25PM,Kansas City Chiefs,@,Los Angeles Chargers,boxscore,17,10,329,2,224,0
+4,Sun,2024-09-29,8:20PM,Baltimore Ravens,,Buffalo Bills,boxscore,35,10,427,1,236,1
+4,Mon,2024-09-30,7:30PM,Tennessee Titans,@,Miami Dolphins,boxscore,31,12,244,1,184,1
+4,Mon,2024-09-30,8:15PM,Detroit Lions,,Seattle Seahawks,boxscore,42,29,389,0,516,2
+5,Thu,2024-10-03,8:15PM,Atlanta Falcons,,Tampa Bay Buccaneers,boxscore,36,30,550,1,333,1
+5,Sun,2024-10-06,9:30AM,Minnesota Vikings,,New York Jets,boxscore,23,17,253,2,254,3
+5,Sun,2024-10-06,1:00PM,Houston Texans,,Buffalo Bills,boxscore,23,20,425,2,276,0
+5,Sun,2024-10-06,1:00PM,Chicago Bears,,Carolina Panthers,boxscore,36,10,424,0,292,3
+5,Sun,2024-10-06,1:00PM,Baltimore Ravens,@,Cincinnati Bengals,boxscore,41,38,520,1,442,1
+5,Sun,2024-10-06,1:00PM,Washington Commanders,,Cleveland Browns,boxscore,34,13,434,2,212,1
+5,Sun,2024-10-06,1:00PM,Jacksonville Jaguars,,Indianapolis Colts,boxscore,37,34,497,2,447,1
+5,Sun,2024-10-06,1:00PM,Miami Dolphins,@,New England Patriots,boxscore,15,10,372,2,299,0
+5,Sun,2024-10-06,4:05PM,Arizona Cardinals,@,San Francisco 49ers,boxscore,24,23,358,1,384,3
+5,Sun,2024-10-06,4:05PM,Denver Broncos,,Las Vegas Raiders,boxscore,34,18,289,0,330,3
+5,Sun,2024-10-06,4:25PM,Green Bay Packers,@,Los Angeles Rams,boxscore,24,19,328,1,370,2
+5,Sun,2024-10-06,4:25PM,New York Giants,@,Seattle Seahawks,boxscore,29,20,420,1,333,1
+5,Sun,2024-10-06,8:20PM,Dallas Cowboys,@,Pittsburgh Steelers,boxscore,20,17,445,3,226,1
+5,Mon,2024-10-07,8:15PM,Kansas City Chiefs,,New Orleans Saints,boxscore,26,13,460,1,220,1
+6,Thu,2024-10-10,8:15PM,San Francisco 49ers,@,Seattle Seahawks,boxscore,36,24,483,0,358,3
+6,Sun,2024-10-13,9:30AM,Chicago Bears,,Jacksonville Jaguars,boxscore,35,16,373,1,278,2
+6,Sun,2024-10-13,1:00PM,Philadelphia Eagles,,Cleveland Browns,boxscore,20,16,372,0,244,0
+6,Sun,2024-10-13,1:00PM,Indianapolis Colts,@,Tennessee Titans,boxscore,20,17,269,1,241,1
+6,Sun,2024-10-13,1:00PM,Green Bay Packers,,Arizona Cardinals,boxscore,34,13,437,1,303,3
+6,Sun,2024-10-13,1:00PM,Houston Texans,@,New England Patriots,boxscore,41,21,368,1,291,4
+6,Sun,2024-10-13,1:00PM,Tampa Bay Buccaneers,@,New Orleans Saints,boxscore,51,27,594,3,303,3
+6,Sun,2024-10-13,1:00PM,Baltimore Ravens,,Washington Commanders,boxscore,30,23,484,1,305,0
+6,Sun,2024-10-13,4:05PM,Los Angeles Chargers,@,Denver Broncos,boxscore,23,16,350,0,316,2
+6,Sun,2024-10-13,4:05PM,Pittsburgh Steelers,@,Las Vegas Raiders,boxscore,32,13,293,0,275,3
+6,Sun,2024-10-13,4:25PM,Atlanta Falcons,@,Carolina Panthers,boxscore,38,20,423,1,335,2
+6,Sun,2024-10-13,4:25PM,Detroit Lions,@,Dallas Cowboys,boxscore,47,9,492,0,251,5
+6,Sun,2024-10-13,8:20PM,Cincinnati Bengals,@,New York Giants,boxscore,17,7,304,1,309,1
+6,Mon,2024-10-14,8:15PM,Buffalo Bills,@,New York Jets,boxscore,23,20,359,0,393,1
+7,Thu,2024-10-17,8:15PM,Denver Broncos,@,New Orleans Saints,boxscore,33,10,389,1,271,2
+7,Sun,2024-10-20,9:30AM,Jacksonville Jaguars,,New England Patriots,boxscore,32,16,364,0,295,0
+7,Sun,2024-10-20,1:00PM,Detroit Lions,@,Minnesota Vikings,boxscore,31,29,391,1,383,1
+7,Sun,2024-10-20,1:00PM,Seattle Seahawks,@,Atlanta Falcons,boxscore,34,14,339,0,369,3
+7,Sun,2024-10-20,1:00PM,Buffalo Bills,,Tennessee Titans,boxscore,34,10,389,0,289,2
+7,Sun,2024-10-20,1:00PM,Cincinnati Bengals,@,Cleveland Browns,boxscore,21,14,223,0,336,2
+7,Sun,2024-10-20,1:00PM,Indianapolis Colts,,Miami Dolphins,boxscore,16,10,284,1,337,2
+7,Sun,2024-10-20,1:00PM,Green Bay Packers,,Houston Texans,boxscore,24,22,277,3,197,0
+7,Sun,2024-10-20,1:00PM,Philadelphia Eagles,@,New York Giants,boxscore,28,3,339,0,119,0
+7,Sun,2024-10-20,4:05PM,Washington Commanders,,Carolina Panthers,boxscore,40,7,421,0,180,2
+7,Sun,2024-10-20,4:05PM,Los Angeles Rams,,Las Vegas Raiders,boxscore,20,15,259,1,317,4
+7,Sun,2024-10-20,4:25PM,Kansas City Chiefs,@,San Francisco 49ers,boxscore,28,18,329,2,310,3
+7,Sun,2024-10-20,8:20PM,Pittsburgh Steelers,,New York Jets,boxscore,37,15,409,0,323,2
+7,Mon,2024-10-21,8:15PM,Baltimore Ravens,@,Tampa Bay Buccaneers,boxscore,41,31,508,1,481,2
+7,Mon,2024-10-21,9:00PM,Arizona Cardinals,,Los Angeles Chargers,boxscore,17,15,326,1,395,2`;
+
+const backtest = new TrueNFLBacktest();
+backtest.run(csvData).catch(console.error);

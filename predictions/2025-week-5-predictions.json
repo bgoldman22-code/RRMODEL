@@ -1,0 +1,645 @@
+{
+  "season": 2025,
+  "week": 5,
+  "generatedDate": "2025-10-02",
+  "model": "NFL Time-Constrained Prediction Model",
+  "totalGames": 14,
+  "predictions": [
+    {
+      "matchup": "SF @ LAR",
+      "kickoff": "Oct 1, 8:00 PM",
+      "homeTeam": "LAR",
+      "awayTeam": "SF",
+      "moneyline": {
+        "prediction": "LAR",
+        "betRecommendation": "NO BET",
+        "confidence": 52.7,
+        "edge": 8.0,
+        "odds": {
+          "SF": "+350",
+          "LAR": "-450",
+          "source": "FanDuel"
+        },
+        "bestEdge": "BetUS -440 (26.7% edge)"
+      },
+      "spread": {
+        "prediction": "San Francisco 49ers",
+        "betRecommendation": "NO BET",
+        "confidence": 54.4,
+        "line": "San Francisco 49ers +8.5",
+        "modelSpread": "+0.9",
+        "edgePoints": 7.6,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Under",
+        "betRecommendation": "NO BET",
+        "confidence": 58,
+        "edge": 1.3,
+        "line": 43.5,
+        "modelTotal": 42.7,
+        "bestEdge": "Caesars -110 +44 (1.3 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 8.0,
+      "teamStats": {
+        "home": { "EPA": 0.517 },
+        "away": { "EPA": 0.483 }
+      }
+    },
+    {
+      "matchup": "MIN @ CLE",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "CLE",
+      "awayTeam": "MIN",
+      "moneyline": {
+        "prediction": "MIN",
+        "betRecommendation": "NO BET",
+        "confidence": 56.95,
+        "edge": 1.7,
+        "odds": {
+          "MIN": "-190",
+          "CLE": "+160",
+          "source": "FanDuel"
+        }
+      },
+      "spread": {
+        "prediction": "Minnesota Vikings",
+        "betRecommendation": "BET",
+        "units": 1.2,
+        "confidence": 59.5,
+        "line": "Minnesota Vikings -3.5",
+        "modelSpread": "-9.8",
+        "edgePoints": 6.3,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Over",
+        "betRecommendation": "NO BET",
+        "confidence": 58,
+        "edge": 1.5,
+        "line": 35.5,
+        "modelTotal": 38,
+        "bestEdge": "BetMGM -118 +36.5 (1.5 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 5.3,
+      "teamStats": {
+        "home": { "EPA": 0.332 },
+        "away": { "EPA": 0.668 }
+      }
+    },
+    {
+      "matchup": "HOU @ BAL",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "BAL",
+      "awayTeam": "HOU",
+      "moneyline": {
+        "prediction": "BAL",
+        "betRecommendation": "BET",
+        "units": 2.2,
+        "confidence": 61.2,
+        "edge": 8.0,
+        "odds": {
+          "HOU": "-132",
+          "BAL": "+112",
+          "source": "FanDuel"
+        },
+        "bestEdge": "DraftKings +114 (20.1% edge)"
+      },
+      "spread": {
+        "prediction": "Baltimore Ravens",
+        "betRecommendation": "BET",
+        "units": 1.2,
+        "confidence": 59.5,
+        "line": "Baltimore Ravens +1.5",
+        "modelSpread": "-8.7",
+        "edgePoints": 10.2,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Over",
+        "betRecommendation": "NO BET",
+        "units": 0.2,
+        "confidence": 58,
+        "edge": 8.0,
+        "line": 40.5,
+        "modelTotal": 52.1,
+        "bestEdge": "BetUS -110 +41 (11.1 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 8.0,
+      "teamStats": {
+        "home": { "EPA": 0.650 },
+        "away": { "EPA": 0.350 }
+      }
+    },
+    {
+      "matchup": "MIA @ CAR",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "CAR",
+      "awayTeam": "MIA",
+      "moneyline": {
+        "prediction": "MIA",
+        "betRecommendation": "NO BET",
+        "confidence": 56.1,
+        "edge": 4.4,
+        "odds": {
+          "MIA": "-118",
+          "CAR": "+100",
+          "source": "FanDuel"
+        }
+      },
+      "spread": {
+        "prediction": "Miami Dolphins",
+        "betRecommendation": "BET",
+        "units": 1.2,
+        "confidence": 59.5,
+        "line": "Miami Dolphins -1.5",
+        "modelSpread": "-5.1",
+        "edgePoints": 3.6,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Under",
+        "betRecommendation": "BET",
+        "units": 2.6,
+        "confidence": 58,
+        "edge": 5.4,
+        "line": 44.5,
+        "modelTotal": 40.1,
+        "bestEdge": "DraftKings -118 +45.5 (5.4 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 5.4,
+      "teamStats": {
+        "home": { "EPA": 0.411 },
+        "away": { "EPA": 0.589 }
+      }
+    },
+    {
+      "matchup": "LV @ IND",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "IND",
+      "awayTeam": "LV",
+      "moneyline": {
+        "prediction": "IND",
+        "betRecommendation": "BET",
+        "units": 5.0,
+        "confidence": 66,
+        "edge": 8.0,
+        "odds": {
+          "LV": "+260",
+          "IND": "-320",
+          "source": "FanDuel"
+        },
+        "bestEdge": "Bovada -290 (13.3% edge)"
+      },
+      "spread": {
+        "prediction": "Las Vegas Raiders",
+        "betRecommendation": "BET",
+        "units": 5.0,
+        "confidence": 67,
+        "line": "Las Vegas Raiders +6.5",
+        "modelSpread": "+4.7",
+        "edgePoints": 1.8,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Under",
+        "betRecommendation": "NO BET",
+        "confidence": 58,
+        "edge": 8.0,
+        "line": 47.5,
+        "modelTotal": 38,
+        "bestEdge": "LowVig.ag -107 +48 (10.0 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 8.0,
+      "teamStats": {
+        "home": { "EPA": 0.584 },
+        "away": { "EPA": 0.416 }
+      }
+    },
+    {
+      "matchup": "NYG @ NO",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "NO",
+      "awayTeam": "NYG",
+      "moneyline": {
+        "prediction": "NO",
+        "betRecommendation": "BET",
+        "units": 4.0,
+        "confidence": 64,
+        "edge": 7.2,
+        "odds": {
+          "NYG": "+104",
+          "NO": "-122",
+          "source": "FanDuel"
+        },
+        "bestEdge": "DraftKings -120 (7.2% edge)"
+      },
+      "spread": {
+        "prediction": "New Orleans Saints",
+        "betRecommendation": "BET",
+        "units": 5.0,
+        "confidence": 67,
+        "line": "New Orleans Saints -1.5",
+        "modelSpread": "-5.3",
+        "edgePoints": 3.8,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Under",
+        "betRecommendation": "NO BET",
+        "confidence": 58,
+        "edge": 4.5,
+        "line": 41.5,
+        "modelTotal": 38,
+        "bestEdge": "DraftKings -115 +42.5 (4.5 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 7.2,
+      "teamStats": {
+        "home": { "EPA": 0.593 },
+        "away": { "EPA": 0.407 }
+      }
+    },
+    {
+      "matchup": "DAL @ NYJ",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "NYJ",
+      "awayTeam": "DAL",
+      "moneyline": {
+        "prediction": "NYJ",
+        "betRecommendation": "NO BET",
+        "confidence": 56.95,
+        "edge": 8.0,
+        "odds": {
+          "DAL": "-134",
+          "NYJ": "+114",
+          "source": "FanDuel"
+        },
+        "bestEdge": "BetMGM +125 (15.7% edge)"
+      },
+      "spread": {
+        "prediction": "New York Jets",
+        "betRecommendation": "NO BET",
+        "confidence": 56.95,
+        "line": "New York Jets +2.5",
+        "modelSpread": "-4.7",
+        "edgePoints": 7.2,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Under",
+        "betRecommendation": "BET",
+        "units": 3.1,
+        "confidence": 58,
+        "edge": 6.3,
+        "line": 47.5,
+        "modelTotal": 41.7,
+        "bestEdge": "MyBookie.ag -110 +48 (6.3 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 8.0,
+      "teamStats": {
+        "home": { "EPA": 0.583 },
+        "away": { "EPA": 0.417 }
+      }
+    },
+    {
+      "matchup": "DEN @ PHI",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "PHI",
+      "awayTeam": "DEN",
+      "moneyline": {
+        "prediction": "PHI",
+        "betRecommendation": "BET",
+        "units": 4.0,
+        "confidence": 64,
+        "edge": 3.6,
+        "odds": {
+          "DEN": "+176",
+          "PHI": "-210",
+          "source": "FanDuel"
+        },
+        "bestEdge": "Fanatics -200 (3.6% edge)"
+      },
+      "spread": {
+        "prediction": "Philadelphia Eagles",
+        "betRecommendation": "BET",
+        "units": 5.0,
+        "confidence": 68,
+        "line": "Philadelphia Eagles -4.5",
+        "modelSpread": "-5.8",
+        "edgePoints": 1.3,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Over",
+        "betRecommendation": "NO BET",
+        "confidence": 58,
+        "edge": 8.0,
+        "line": 43.5,
+        "modelTotal": 53.9,
+        "bestEdge": "BetRivers -114 +44 (9.9 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 8.0,
+      "teamStats": {
+        "home": { "EPA": 0.603 },
+        "away": { "EPA": 0.397 }
+      }
+    },
+    {
+      "matchup": "TEN @ ARI",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "ARI",
+      "awayTeam": "TEN",
+      "moneyline": {
+        "prediction": "ARI",
+        "betRecommendation": "BET",
+        "units": 5.0,
+        "confidence": 70,
+        "edge": 8.0,
+        "odds": {
+          "TEN": "+350",
+          "ARI": "-450",
+          "source": "FanDuel"
+        },
+        "bestEdge": "DraftKings -395 (10.4% edge)"
+      },
+      "spread": {
+        "prediction": "Arizona Cardinals",
+        "betRecommendation": "BET",
+        "units": 5.0,
+        "confidence": 69,
+        "line": "Arizona Cardinals -8.5",
+        "modelSpread": "-9.4",
+        "edgePoints": 0.9,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Under",
+        "betRecommendation": "NO BET",
+        "confidence": 58,
+        "edge": 2.9,
+        "line": 41.5,
+        "modelTotal": 39.6,
+        "bestEdge": "LowVig.ag -113 +42.5 (2.9 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 8.0,
+      "teamStats": {
+        "home": { "EPA": 0.662 },
+        "away": { "EPA": 0.338 }
+      }
+    },
+    {
+      "matchup": "TB @ SEA",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "SEA",
+      "awayTeam": "TB",
+      "moneyline": {
+        "prediction": "TB",
+        "betRecommendation": "BET",
+        "units": 5.0,
+        "confidence": 68,
+        "edge": 8.0,
+        "odds": {
+          "TB": "+152",
+          "SEA": "-180",
+          "source": "FanDuel"
+        },
+        "bestEdge": "Bovada +165 (20.0% edge)"
+      },
+      "spread": {
+        "prediction": "Tampa Bay Buccaneers",
+        "betRecommendation": "BET",
+        "units": 5.0,
+        "confidence": 69,
+        "line": "Tampa Bay Buccaneers +3.0",
+        "modelSpread": "-3.6",
+        "edgePoints": 6.6,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Over",
+        "betRecommendation": "NO BET",
+        "confidence": 58,
+        "edge": 5.5,
+        "line": 44.5,
+        "modelTotal": 50.5,
+        "bestEdge": "Bovada -110 +45 (5.5 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 8.0,
+      "teamStats": {
+        "home": { "EPA": 0.437 },
+        "away": { "EPA": 0.563 }
+      }
+    },
+    {
+      "matchup": "DET @ CIN",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "CIN",
+      "awayTeam": "DET",
+      "moneyline": {
+        "prediction": "DET",
+        "betRecommendation": "BET",
+        "units": 0.6,
+        "confidence": 58.65,
+        "edge": 8.0,
+        "odds": {
+          "DET": "-600",
+          "CIN": "+450",
+          "source": "FanDuel"
+        }
+      },
+      "spread": {
+        "prediction": "Cincinnati Bengals",
+        "betRecommendation": "BET",
+        "units": 1.2,
+        "confidence": 59.5,
+        "line": "Cincinnati Bengals +10.5",
+        "modelSpread": "+4.4",
+        "edgePoints": 6.1,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Over",
+        "betRecommendation": "NO BET",
+        "confidence": 58,
+        "edge": 4.6,
+        "line": 48.5,
+        "modelTotal": 54.1,
+        "bestEdge": "DraftKings -108 +49.5 (4.6 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 8.0,
+      "teamStats": {
+        "home": { "EPA": 0.421 },
+        "away": { "EPA": 0.579 }
+      }
+    },
+    {
+      "matchup": "WAS @ LAC",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "LAC",
+      "awayTeam": "WAS",
+      "moneyline": {
+        "prediction": "LAC",
+        "betRecommendation": "BET",
+        "units": 1.5,
+        "confidence": 60,
+        "edge": 4.9,
+        "odds": {
+          "WAS": "+134",
+          "LAC": "-158",
+          "source": "FanDuel"
+        },
+        "bestEdge": "BetUS -150 (4.9% edge)"
+      },
+      "spread": {
+        "prediction": "Washington Commanders",
+        "betRecommendation": "BET",
+        "units": 2.7,
+        "confidence": 62,
+        "line": "Washington Commanders +2.5",
+        "modelSpread": "+1.7",
+        "edgePoints": 0.8,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Over",
+        "betRecommendation": "BET",
+        "units": 2.6,
+        "confidence": 58,
+        "edge": 4.2,
+        "line": 48.5,
+        "modelTotal": 52.7,
+        "bestEdge": "FanDuel -115 +48.5 (4.2 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 4.9,
+      "teamStats": {
+        "home": { "EPA": 0.530 },
+        "away": { "EPA": 0.470 }
+      }
+    },
+    {
+      "matchup": "NE @ BUF",
+      "kickoff": "Oct 4, 8:00 PM",
+      "homeTeam": "BUF",
+      "awayTeam": "NE",
+      "moneyline": {
+        "prediction": "BUF",
+        "betRecommendation": "NO BET",
+        "units": 0.1,
+        "confidence": 57.8,
+        "edge": 3.4,
+        "odds": {
+          "NE": "+330",
+          "BUF": "-420",
+          "source": "FanDuel"
+        },
+        "bestEdge": "Caesars -420 (3.4% edge)"
+      },
+      "spread": {
+        "prediction": "Buffalo Bills",
+        "betRecommendation": "NO BET",
+        "units": 0.1,
+        "confidence": 57.8,
+        "line": "Buffalo Bills -8.5",
+        "modelSpread": "-14.5",
+        "edgePoints": 6.0,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Under",
+        "betRecommendation": "BET",
+        "units": 2.6,
+        "confidence": 58,
+        "edge": 5.2,
+        "line": 49.5,
+        "modelTotal": 44.3,
+        "bestEdge": "DraftKings -108 +49.5 (5.2 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 6.0,
+      "teamStats": {
+        "home": { "EPA": 0.738 },
+        "away": { "EPA": 0.262 }
+      }
+    },
+    {
+      "matchup": "KC @ JAX",
+      "kickoff": "Oct 5, 8:00 PM",
+      "homeTeam": "JAX",
+      "awayTeam": "KC",
+      "moneyline": {
+        "prediction": "KC",
+        "betRecommendation": "NO BET",
+        "confidence": 55.25,
+        "edge": 5.9,
+        "odds": {
+          "KC": "-186",
+          "JAX": "+156",
+          "source": "FanDuel"
+        }
+      },
+      "spread": {
+        "prediction": "Kansas City Chiefs",
+        "betRecommendation": "NO BET",
+        "confidence": 56.1,
+        "line": "Kansas City Chiefs -3.0",
+        "modelSpread": "-4.3",
+        "edgePoints": 1.3,
+        "source": "FanDuel"
+      },
+      "total": {
+        "prediction": "Under",
+        "betRecommendation": "BET",
+        "units": 4.1,
+        "confidence": 58,
+        "edge": 1.2,
+        "line": 46.5,
+        "modelTotal": 45.3,
+        "bestEdge": "LowVig.ag -104 +46.5 (1.2 pts)",
+        "source": "FanDuel"
+      },
+      "bestEdge": 5.9,
+      "teamStats": {
+        "home": { "EPA": 0.423 },
+        "away": { "EPA": 0.577 }
+      }
+    }
+  ],
+  "summary": {
+    "totalBets": {
+      "moneyline": 10,
+      "spread": 11,
+      "total": 8
+    },
+    "totalUnits": {
+      "moneyline": 31.5,
+      "spread": 35.9,
+      "total": 21.6
+    },
+    "highConfidenceBets": [
+      "TEN @ ARI (ARI ML 70% conf, 5.0U)",
+      "TB @ SEA (TB ML 68% conf, 5.0U)",
+      "DEN @ PHI (PHI Spread 68% conf, 5.0U)",
+      "TEN @ ARI (ARI Spread 69% conf, 5.0U)",
+      "TB @ SEA (TB Spread 69% conf, 5.0U)"
+    ]
+  },
+  "notes": [
+    "All predictions use time-constrained methodology - only 2025 weeks 1-4 data",
+    "Confidence thresholds: 60%+ for recommended bets",
+    "Unit sizing based on Kelly Criterion with edge calculations",
+    "Live odds verified at time of prediction generation",
+    "Model incorporates EPA (Expected Points Added) metrics"
+  ]
+}
