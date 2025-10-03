@@ -1,10 +1,6 @@
-// netlify/functions/nfl-td-comprehensive-predictions/index.mjs
-// REALISTIC VERSION: Uses Canonical Availability + Real Data for TD Predictions
-// Force redeploy: 2025-10-03
-
+// Reverted to morning baseline version (fe960db) with canonical availability integration and original odds fetch structure.
 import fs from 'fs/promises';
-// REMOVED: fetchPlayerPropOdds import - causes Netlify crash (script not in bundle)
-// import { fetchPlayerPropOdds } from '../../../scripts/fetch-player-prop-odds.js';
+import { fetchPlayerPropOdds } from '../../../scripts/fetch-player-prop-odds.js';
 import { calculateRealisticTDProbabilities, buildPlayerAvailability } from './td-probability-engine.mjs';
 
 // Team name mapping for schedule normalization (matches NFL predictions approach)
@@ -172,124 +168,58 @@ function generateMinimalPlayerRoster(games) {
   return players;
 }
 
-// Cache management for odds data
+// Cache management for odds data (original file-based version)
 const ODDS_CACHE_FILE = 'public/data/nfl-td-odds-cache.json';
-const ODDS_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-
+const ODDS_CACHE_TTL = 24 * 60 * 60 * 1000;
 async function loadCachedOdds() {
-  const possiblePaths = [
-    ODDS_CACHE_FILE,
-    '/opt/buildhome/repo/' + ODDS_CACHE_FILE,
-    '/var/task/' + ODDS_CACHE_FILE,
-    './' + ODDS_CACHE_FILE,
-    process.cwd() + '/' + ODDS_CACHE_FILE
-  ];
-  // Try Netlify Blobs first (preferred in functions runtime)
-  try {
-    const { getStore } = await import('@netlify/blobs');
-    const storeName = process.env.BLOBS_STORE_NFL || 'nfl-td';
-    const store = getStore({ name: storeName });
-    const cache = await store.getJSON('nfl-td-odds-cache.json');
-    if (cache && cache.odds) {
-      const age = Date.now() - new Date(cache.timestamp).getTime();
-      if (age < ODDS_CACHE_TTL) {
-        console.log(`✅ Using cached odds from Blobs (${Math.round(age / 60000)} minutes old)`);
-        return cache.odds;
-      }
-    }
-  } catch (e) {
-    console.log('Blobs odds load not available:', e.message);
-  }
-  
-  for (const filePath of possiblePaths) {
+  const paths = [ODDS_CACHE_FILE,'/opt/buildhome/repo/'+ODDS_CACHE_FILE,'/var/task/'+ODDS_CACHE_FILE,'./'+ODDS_CACHE_FILE,process.cwd()+'/'+ODDS_CACHE_FILE];
+  for (const p of paths) {
     try {
-      const raw = await fs.readFile(filePath, 'utf8');
+      const raw = await fs.readFile(p,'utf8');
       const cache = JSON.parse(raw);
       const age = Date.now() - new Date(cache.timestamp).getTime();
-      
       if (age < ODDS_CACHE_TTL) {
-        console.log(`✅ Using cached odds (${Math.round(age / 1000 / 60)} minutes old, ${Object.keys(cache.odds).length} players)`);
+        console.log(`✅ Using cached odds (${Math.round(age/60000)}m old)`);
         return cache.odds;
-      } else {
-        console.log(`⚠️ Cached odds expired (${Math.round(age / 1000 / 60 / 60)} hours old)`);
       }
-    } catch (e) {
-      // Cache doesn't exist or can't be read - that's ok
-      continue;
-    }
+    } catch {}
   }
   return null;
 }
-
 async function saveCachedOdds(odds) {
   try {
-    const cache = {
-      timestamp: new Date().toISOString(),
-      player_count: Object.keys(odds).length,
-      odds: odds
-    };
-    await fs.mkdir('public/data', { recursive: true });
-    await fs.writeFile(ODDS_CACHE_FILE, JSON.stringify(cache, null, 2));
-    console.log(`✅ Saved odds cache with ${Object.keys(odds).length} players`);
-  } catch (e) {
-    console.warn('⚠️ Could not save odds cache:', e.message);
-  }
+    await fs.mkdir('public/data',{recursive:true});
+    await fs.writeFile(ODDS_CACHE_FILE, JSON.stringify({ timestamp:new Date().toISOString(), player_count:Object.keys(odds).length, odds }, null,2));
+  } catch(e){ console.warn('Cache save failed:', e.message); }
 }
 
 // Main TD prediction generation - NOW USES CANONICAL AVAILABILITY
-async function generateTDPredictions(games, season = '2025', weekNumber) {
-  // STRATEGY: Try cache first, skip odds if problematic (Netlify has 10s timeout)
+async function generateTDPredictions(games, season='2025', weekNumber){
   let oddsByPlayer = {};
   let usedCache = false;
-  
-  // Step 1: Try to load from cache (fast, always works)
-  try {
-    const cachedOdds = await loadCachedOdds();
-    if (cachedOdds) {
-      oddsByPlayer = cachedOdds;
-      usedCache = true;
-      console.log(`✅ Using cached odds for ${Object.keys(oddsByPlayer).length} players`);
-    }
-  } catch (e) {
-    console.warn('⚠️ Cache load failed, continuing without odds:', e.message);
-  }
-  
-  // Step 2: SKIP odds fetching in Netlify (causes crashes)
-  // The fetchPlayerPropOdds script is not available in Netlify function bundle
-  console.log('⏭️ Skipping odds fetch (rely on cache or scheduled function)');
-  // Fresh odds fetching disabled - use cached odds only
-  
-  console.log('=== NFL TD REALISTIC PREDICTIONS (CANONICAL AVAILABILITY) ===');
-  
-  // Load real data sources with robust error handling
-  let playerData = null;
-  let depthCharts = {};
-  let injuryReports = {};
-  
-  try {
-    [playerData, depthCharts, injuryReports] = await Promise.all([
-      loadPlayerData().catch(e => { console.warn('Player data load failed:', e.message); return null; }),
-      loadDepthCharts(season, weekNumber).catch(e => { console.warn('Depth charts load failed:', e.message); return {}; }),
-      loadInjuryReports(season, weekNumber).catch(e => { console.warn('Injury reports load failed:', e.message); return {}; })
-    ]);
-  } catch (e) {
-    console.error('Error loading data sources:', e.message);
-    // Continue with empty data rather than crash
-  }
-  
-  let players = {};
-  if (playerData && playerData.players) {
-    players = playerData.players;
-    console.log(`🎯 Using LIVE player data: ${Object.keys(players).length} players`);
+  const cached = await loadCachedOdds();
+  if (cached) { oddsByPlayer = cached; usedCache = true; }
+  if (!usedCache) {
+    try {
+      console.log('🔄 Fetching fresh player prop odds from TheOddsAPI...');
+      const fresh = await Promise.race([
+        fetchPlayerPropOdds(),
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Odds fetch timeout after 8s')),8000))
+      ]);
+      oddsByPlayer = fresh; saveCachedOdds(fresh).catch(()=>{});
+    } catch(e){ console.warn('⚠️ Fresh odds fetch failed, continuing without odds:', e.message); }
   } else {
-    // FALLBACK: Generate minimal roster
-    console.warn('⚠️ No player data file found, generating minimal roster from games');
-    players = generateMinimalPlayerRoster(games);
-    console.log(`🎯 Generated minimal roster: ${Object.keys(players).length} players`);
+    fetchPlayerPropOdds().then(o=>saveCachedOdds(o).catch(()=>{})).catch(()=>{});
   }
-  
+  console.log('=== NFL TD REALISTIC PREDICTIONS (CANONICAL AVAILABILITY) ===');
+  const [playerData, depthCharts, injuryReports] = await Promise.all([
+    loadPlayerData(),
+    loadDepthCharts(season, weekNumber),
+    loadInjuryReports(season, weekNumber)
+  ]);
+  let players = {};
+  if (playerData?.players) players = playerData.players; else players = generateMinimalPlayerRoster(games);
   const dataSource = playerData ? 'live_data_with_canonical_availability' : 'generated_minimal';
-  
   const allPredictions = [];
   
   for (const game of games) {
@@ -300,33 +230,7 @@ async function generateTDPredictions(games, season = '2025', weekNumber) {
     const awayTeamAbbr = getTeamAbbreviation(game.awayTeam || game.away_team) || game.awayTeam || game.away_team;
     console.log(`🔄 Game: ${game.homeTeam || game.home_team}(${homeTeamAbbr}) vs ${game.awayTeam || game.away_team}(${awayTeamAbbr})`);
     
-    // Build per-team position buckets to enforce realistic caps (e.g., WR1-3, RB1-2, TE1-2, QB1)
-    const teamBuckets = { [homeTeamAbbr]: { QB: [], RB: [], WR: [], TE: [] }, [awayTeamAbbr]: { QB: [], RB: [], WR: [], TE: [] } };
-    for (const [pid, p] of Object.entries(players)) {
-      if ((p.team === homeTeamAbbr || p.team === awayTeamAbbr) && teamBuckets[p.team] && teamBuckets[p.team][p.position]) {
-        const depthGuess = Number.isFinite(p.depth_chart_position) ? p.depth_chart_position : (
-          p.position === 'QB' ? 1 : p.position === 'RB' ? 2 : p.position === 'TE' ? 2 : 3
-        );
-        teamBuckets[p.team][p.position].push({ pid, p, depth: depthGuess });
-      }
-    }
-    // Sort each bucket by depth and cap counts
-    const caps = { QB: 1, RB: 3, WR: 4, TE: 2 }; // allow one extra for RB/WR to include situational players
-    Object.values(teamBuckets).forEach(posMap => {
-      Object.keys(posMap).forEach(pos => {
-        posMap[pos].sort((a, b) => a.depth - b.depth);
-        posMap[pos] = posMap[pos].slice(0, caps[pos]);
-      });
-    });
-
-    // Process only capped players for this game
-    const allowedSet = new Set([
-      ...teamBuckets[homeTeamAbbr].QB, ...teamBuckets[homeTeamAbbr].RB, ...teamBuckets[homeTeamAbbr].WR, ...teamBuckets[homeTeamAbbr].TE,
-      ...teamBuckets[awayTeamAbbr].QB, ...teamBuckets[awayTeamAbbr].RB, ...teamBuckets[awayTeamAbbr].WR, ...teamBuckets[awayTeamAbbr].TE
-    ].map(x => x.pid));
-
     for (const [playerId, basePlayer] of Object.entries(players)) {
-      if (!allowedSet.has(playerId)) continue; // skip deep bench players by default
       // Match using normalized team abbreviations
       if (basePlayer.team !== homeTeamAbbr && basePlayer.team !== awayTeamAbbr) continue;
       
@@ -392,11 +296,6 @@ async function generateTDPredictions(games, season = '2025', weekNumber) {
           ? Number((prob - impliedProb).toFixed(4)) 
           : null;
         
-        // Simple confidence proxy: availability confidence and snap share influence downstream
-        const confidencePct = Math.round(100 * (availability?.confidence || 0.7));
-        // Value proxy if market exists
-        const value = (typeof impliedProb === 'number') ? Number((prob - impliedProb).toFixed(4)) : null;
-
         return {
           probability: Number(prob.toFixed(4)),
           best_odds: bestOdds,
@@ -405,9 +304,7 @@ async function generateTDPredictions(games, season = '2025', weekNumber) {
           books: books,
           implied_prob: impliedProb != null ? Number(impliedProb.toFixed(4)) : null,
           edge,
-          value,
-          confidence: confidencePct,
-          odds_qualified: bookKeys.length >= 2  // Need at least 2 books
+          odds_qualified: bookKeys.length >= 2
         };
       }
 
