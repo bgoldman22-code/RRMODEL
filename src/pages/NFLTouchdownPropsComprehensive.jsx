@@ -71,405 +71,149 @@ const NFLTouchdownPropsComprehensive = () => {
     initialWeekDetection();
   }, []); // Empty dependency array = only runs once
 
-  // Load predictions from enhanced API with proper week-based data
+  // Load predictions from REAL comprehensive TD predictions API
     const loadComprehensivePredictions = async () => {
     setLoading(true);
     setError(null);
     
-    console.log(`Loading comprehensive predictions for week ${week}...`);
+    console.log(`🏈 Loading REAL TD predictions for Week ${week}...`);
     
     try {
-      // Try the enhanced NFL TD predictions API first
-      const apiUrl = `/.netlify/functions/nfl-td-predictions-enhanced?type=all&top_n=500&min_confidence=low&season=${season}&week=${week}`;
-      console.log('Trying enhanced API:', apiUrl);
-      
-      let players = [];
-      let useStaticFallback = false;
-      
-      try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error(`Enhanced API failed with status ${response.status}`);
-        }
-        
-        const data = await response.json();
-        if (!data.success || !data.predictions || !Array.isArray(data.predictions)) {
-          throw new Error('Invalid enhanced API response format');
-        }
-        
-        players = data.predictions;
-        console.log(`✅ Enhanced API: Loaded ${players.length} players`);
-        
-      } catch (apiError) {
-        console.warn('Enhanced API failed, falling back to static data:', apiError.message);
-        useStaticFallback = true;
-      }
-      
-      // Fallback to static JSON if API fails
-      if (useStaticFallback) {
-        console.log('📁 Using static data fallback...');
-        const playerRes = await fetch('/nfl-anytime-td-player-data.json');
-        if (!playerRes.ok) {
-          throw new Error(`Static data fallback failed: ${playerRes.status}`);
-        }
-        
-        const playerData = await playerRes.json();
-        players = Object.values(playerData.players || {});
-        console.log(`📁 Static fallback: Loaded ${players.length} players`);
-      }
-      
-      // Load current week schedule for proper matchup display
+      // STEP 1: Load the week's schedule to get games
       const scheduleUrl = `/data/nfl-schedule-2025.json`;
-      console.log('Loading schedule:', scheduleUrl);
+      console.log('📅 Loading schedule:', scheduleUrl);
       
-      let schedule = {};
-      let teamMatchups = {};
+      let weekGames = [];
       try {
         const scheduleRes = await fetch(scheduleUrl);
         if (scheduleRes.ok) {
-          schedule = await scheduleRes.json();
-          // Filter schedule array for current week games
-          const weekMatchups = schedule.filter(game => game.week === parseInt(week));
-          
-          // Create team-to-opponent and home/away mapping
-          weekMatchups.forEach(game => {
-            const homeTeam = game.home_team;
-            const awayTeam = game.away_team;
-            
-            teamMatchups[homeTeam] = { opponent: awayTeam, isHome: true };
-            teamMatchups[awayTeam] = { opponent: homeTeam, isHome: false };
-          });
-          
-          console.log(`Schedule loaded successfully for Week ${week}, matchups:`, Object.keys(teamMatchups));
+          const scheduleData = await scheduleRes.json();
+          // Filter for current week's games
+          weekGames = scheduleData.filter(game => game.week === parseInt(week));
+          console.log(`✅ Found ${weekGames.length} games for Week ${week}`);
         } else {
-          console.warn('Could not load schedule data');
+          throw new Error('Schedule not found');
         }
       } catch (err) {
-        console.warn('Schedule loading failed:', err.message);
+        console.error('❌ Schedule loading failed:', err);
+        throw new Error(`Cannot load Week ${week} schedule: ${err.message}`);
       }
       
-      // Enhance with current depth chart data
-      const depthChartUrl = `/history/${season}/week${week}/depth-charts.json`;
-      console.log('Loading depth charts:', depthChartUrl);
+      // STEP 2: Call the REAL comprehensive predictions API with the schedule
+      const apiUrl = `/.netlify/functions/nfl-td-comprehensive-predictions?week=${week}&season=${season}`;
+      console.log('🎯 Calling REAL TD predictions API:', apiUrl);
       
-      let depthCharts = {};
+      let tdPredictions = null;
       try {
-        const depthRes = await fetch(depthChartUrl);
-        if (depthRes.ok) {
-          depthCharts = await depthRes.json();
-          console.log('Depth charts loaded successfully');
-        } else {
-          console.warn('Could not load depth charts, using default positioning');
+        // POST the games to the comprehensive predictions function
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            games: weekGames,
+            season: season,
+            week: week
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`API returned ${response.status}`);
         }
-      } catch (err) {
-        console.warn('Depth chart loading failed:', err.message);
+        
+        const data = await response.json();
+        if (!data.success || !data.predictions) {
+          throw new Error('Invalid API response format');
+        }
+        
+        tdPredictions = data.predictions;
+        console.log(`✅ REAL API: Generated predictions for ${tdPredictions.length} games`);
+        
+      } catch (apiError) {
+        console.error('❌ Real API failed:', apiError);
+        throw new Error(`TD predictions API failed: ${apiError.message}`);
       }
       
-      // FILTER TO CURRENT ACTIVE PLAYERS ONLY using depth charts
-      const activePlayersOnly = [];
-      
-      // Helper functions for name matching
-      
-      // Insert a space after single-letter initials before punctuation removal.
-      // "C.Lamb" -> "C Lamb", "J.Jefferson" -> "J Jefferson"
-      const splitInitials = (name) => {
-        if (!name) return '';
-        return name
-          // single-letter dot attached to a word, make it "C Lamb" not "CLamb"
-          .replace(/\b([A-Za-z])\.(?=[A-Za-z])/g, '$1 ')
-          // handle multi-initials like "A.St. Brown" -> "A St Brown"
-          .replace(/\.(?=[A-Za-z])/g, ' ');
-      };
-
-      const normalizePlayerName = (name) => {
-        const s = splitInitials(name);
-        return s
-          .toLowerCase()
-          .replace(/[^\w\s]/g, '') // remove punctuation AFTER splitting initials
-          .replace(/\s+/g, ' ')
-          .trim();
-      };
-
-      // More permissive fuzzy match:
-      // 1) exact normalized equality
-      // 2) same last name, and (first initials match OR one contains the other)
-      // 3) allow "ceedee" vs "c" initial when last names match
-      const fuzzyNameMatch = (name1, name2) => {
-        const n1 = normalizePlayerName(name1);
-        const n2 = normalizePlayerName(name2);
-        if (!n1 || !n2) return false;
-        if (n1 === n2) return true;
-        if (n1.includes(n2) || n2.includes(n1)) return true;
-
-        const p1 = n1.split(' ');
-        const p2 = n2.split(' ');
-        const last1 = p1[p1.length - 1];
-        const last2 = p2[p2.length - 1];
-        if (last1 !== last2) return false;
-
-        const first1 = p1[0]?.[0] || '';
-        const first2 = p2[0]?.[0] || '';
-        if (first1 && first2 && first1 === first2) return true;
-
-        // permit "cee dee" vs "c"
-        return p1[0]?.startsWith(p2[0] || '') || p2[0]?.startsWith(p1[0] || '');
-      };
-      
-      // Only include players who are in current week depth charts
-      for (const [team, positions] of Object.entries(depthCharts)) {
-        for (const [position, playerNames] of Object.entries(positions)) {
-          playerNames.forEach((playerName, index) => {
-            console.log(`🔍 Looking for: ${playerName} (${team} ${position})`);
-            // Find matching player in our data by name similarity
-            const matchingPlayer = players.find(p => 
-              p.team === team && 
-              p.position === position &&
-              (normalizePlayerName(p.name) === normalizePlayerName(playerName) ||
-               p.name === playerName ||
-               fuzzyNameMatch(p.name, playerName))
-            );
-          
-            if (matchingPlayer) {
-              console.log(`✅ Matched: ${playerName} (${team} ${position}) -> ${matchingPlayer.name}`);
-              
-              // Get proper matchup info
-              const matchupInfo = teamMatchups[team] || { opponent: 'TBD', isHome: false };
-              
-              activePlayersOnly.push({
-                ...matchingPlayer,
-                depth_chart_position: index + 1,
-                current_depth_name: playerName,
-                // Proper game matchup display
-                opponent: matchupInfo.opponent,
-                is_home: matchupInfo.isHome,
-                home_team: matchupInfo.isHome ? team : matchupInfo.opponent,
-                away_team: matchupInfo.isHome ? matchupInfo.opponent : team,
-                game_matchup: `${matchupInfo.isHome ? team : matchupInfo.opponent} vs ${matchupInfo.isHome ? matchupInfo.opponent : team}`,
-                matchup_display: `${matchupInfo.isHome ? team : matchupInfo.opponent} vs ${matchupInfo.isHome ? matchupInfo.opponent : team}`,
-                is_active_current_week: true
-              });
-            } else {
-              console.log(`❌ No match found for: ${playerName} (${team} ${position})`);
-              // Show some candidates to understand why matching fails
-              const candidates = players.filter(p => p.team === team && p.position === position);
-              console.log(`   Candidates with same team/pos:`, candidates.slice(0, 5).map(p => p.name));
-              
-              // CRITICAL DEBUG: Test the fuzzy match function directly
-              if (candidates.length > 0) {
-                console.log(`   Testing fuzzy match for "${playerName}":`);
-                candidates.slice(0, 3).forEach(candidate => {
-                  const match = fuzzyNameMatch(playerName, candidate.name);
-                  console.log(`     "${playerName}" vs "${candidate.name}" = ${match}`);
-                });
-              }
-            }
+      // STEP 3: Flatten game predictions into player list
+      let players = [];
+      for (const gamePrediction of tdPredictions) {
+        if (gamePrediction.players && Array.isArray(gamePrediction.players)) {
+          // Add game context to each player
+          gamePrediction.players.forEach(player => {
+            players.push({
+              ...player,
+              home_team: gamePrediction.home_team,
+              away_team: gamePrediction.away_team,
+              game_id: gamePrediction.game_id
+            });
           });
         }
       }
       
-      console.log(`✅ Filtered to ${activePlayersOnly.length} ACTIVE players from depth charts`);
-      console.log('Sample active players:', activePlayersOnly.slice(0, 3).map(p => `${p.name} (${p.team} ${p.position})`));
+      console.log(`✅ Extracted ${players.length} total players from API predictions`);
       
-      const enhancedPlayers = activePlayersOnly;
+      console.log(`✅ Extracted ${players.length} total players from API predictions`);
       
-      console.log(`Enhanced ${enhancedPlayers.length} players with depth chart data`);
-      
-      // ELITE MODEL: Apply professional-grade predictions with REAL ODDS integration
-      const eliteModel = new ElitePlayerModel();
-      
-      // Helper function for consistent "random" values based on player name
-      const getPlayerHash = (name, seed = 0) => {
-        let hash = seed;
-        for (let i = 0; i < name.length; i++) {
-          hash = ((hash << 5) - hash + name.charCodeAt(i)) & 0xffffffff;
-        }
-        return Math.abs(hash) / 0xffffffff;
-      };
-
-      const elitePredictionsPromises = enhancedPlayers.map(async (player, index) => {
-        try {
-          // Use odds already provided by the enhanced API
-          const realOdds = player.american_odds ? {
-            anytime_td: player.american_odds,
-            source: player.odds_source || 'live_api',
-            books: [{
-              anytime_odds: player.american_odds,
-              bookmaker: player.odds_sources_allowed?.[0]?.book || 'Live Sportsbook'
-            }]
-          } : null;
-
-          const playerName = player.name || player.player_name || 'Unknown';
-          const hash1 = getPlayerHash(playerName, 1);
-          const hash2 = getPlayerHash(playerName, 2);
-          const hash3 = getPlayerHash(playerName, 3);
-          const hash4 = getPlayerHash(playerName, 4);
-          
-          // Enhanced player data structure with weighted recent performance (Week 3 = 4 games weight)
-          const enrichedPlayer = {
-            ...player,
-            // Historical TD rates with 2025 season weighting (deterministic based on player)
-            td_rate_4wk: (player.position === 'RB' ? 0.35 : 
-                         player.position === 'WR' ? 0.25 : 
-                         player.position === 'TE' ? 0.18 : 0.15) + 
-                         (hash1 - 0.5) * 0.1,
-            
-            td_rate_season: (player.position === 'RB' ? 0.32 : 
-                            player.position === 'WR' ? 0.22 : 
-                            player.position === 'TE' ? 0.17 : 0.13) + 
-                            (hash2 - 0.5) * 0.08,
-            
-            // Usage metrics from depth charts (deterministic)
-            snap_percentage: player.depth_chart_position === 1 ? 0.75 + hash1 * 0.2 :
-                            player.depth_chart_position === 2 ? 0.35 + hash1 * 0.3 : 
-                            0.15 + hash1 * 0.25,
-            
-            target_share: player.position !== 'RB' ? 
-                         (player.depth_chart_position === 1 ? 0.18 + hash2 * 0.12 : 
-                          player.depth_chart_position === 2 ? 0.08 + hash2 * 0.08 : 
-                          0.03 + hash2 * 0.05) : 0,
-            
-            rz_usage_rate: player.depth_chart_position === 1 ? 0.25 + hash3 * 0.15 :
-                          player.depth_chart_position === 2 ? 0.12 + hash3 * 0.1 : 
-                          0.04 + hash3 * 0.06,
-            
-            games_played: 3, // Week 3 completed games  
-            usage_trend_4wk: (hash4 - 0.5) * 0.15, // Usage trending (deterministic)
-            
-            // Add key_factors for display (deterministic values)
-            key_factors: {
-              snap_percentage: player.depth_chart_position === 1 ? 0.75 + hash1 * 0.2 :
-                              player.depth_chart_position === 2 ? 0.35 + hash1 * 0.3 : 
-                              0.15 + hash1 * 0.25,
-              red_zone_efficiency: player.position === 'RB' ? 0.25 + hash2 * 0.2 :
-                                  player.position === 'WR' ? 0.15 + hash2 * 0.15 :
-                                  player.position === 'TE' ? 0.20 + hash2 * 0.15 : 0.12 + hash2 * 0.1,
-              consistency_score: player.depth_chart_position === 1 ? 0.65 + hash3 * 0.3 :
-                                player.depth_chart_position === 2 ? 0.45 + hash3 * 0.25 :
-                                0.35 + hash3 * 0.2
-            }
-          };
-          
-          const gameContext = {
-            opponent: player.opponent || 'TBD',
-            is_home: player.is_home,
-            game_total: 45.5 + (hash1 - 0.5) * 8, // 41.5-49.5 (deterministic)
-            spread: (hash2 - 0.5) * 10,            // -5 to +5 (deterministic)
-            weather: hash3 > 0.7 ? 'outdoor' : 'dome', // Deterministic weather
-            real_odds: realOdds
-          };
-          
-          const elitePrediction = eliteModel.generateElitePrediction(enrichedPlayer, gameContext);
-          
-          // Blend model prediction with market consensus for final confidence
-          const marketConsensus = realOdds ? oddsService.getMarketConsensus(realOdds) : 0.15;
-          const modelWeight = realOdds?.source === 'theoddsapi_live' ? 0.6 : 0.8; // Trust model more with fallback odds
-          
-          const blendedConfidence = Math.round(
-            (elitePrediction.confidence * modelWeight) + (marketConsensus * 100 * (1 - modelWeight))
-          );
-          
-          // Create market data structure that the component expects
-          const probabilityBase = blendedConfidence / 100;
-          
-          return {
-            ...enrichedPlayer,
-            elite_confidence: blendedConfidence,
-            elite_analysis: elitePrediction.analysis,
-            model_factors: elitePrediction.factors,
-            real_odds: realOdds,
-            market_consensus: Math.round(marketConsensus * 100),
-            prediction_metadata: elitePrediction.metadata,
-            // Display enhancements
-            display_name: player.current_depth_name || player.name,
-            matchup_display: `${player.home_team} vs ${player.away_team}`,
-            depth_rank: `#${player.depth_chart_position}`,
-            odds_source: realOdds?.source || 'model_only',
-            // CRITICAL: Add market data structure that component filtering expects
-            anytime_td: {
-              confidence: blendedConfidence,
-              probability: probabilityBase,
-              value: realOdds ? Math.max(0, probabilityBase - marketConsensus) : 0,
-              odds: realOdds?.books?.[0]?.anytime_odds || Math.round(100 / probabilityBase),
-              bookmaker: realOdds?.books?.[0]?.bookmaker || 'Model',
-              data_reliability: elitePrediction.metadata?.confidence_interval ? 0.8 : 0.6
-            },
-            first_td: {
-              confidence: Math.round(blendedConfidence * 0.3), // First TD is ~30% of anytime
-              probability: probabilityBase * 0.3,
-              value: realOdds ? Math.max(0, (probabilityBase * 0.3) - (marketConsensus * 0.3)) : 0,
-              odds: realOdds?.books?.[0]?.first_td_odds || Math.round(100 / (probabilityBase * 0.3)),
-              bookmaker: realOdds?.books?.[0]?.bookmaker || 'Model',
-              data_reliability: elitePrediction.metadata?.confidence_interval ? 0.7 : 0.5
-            },
-            multiple_td: {
-              confidence: Math.round(blendedConfidence * 0.15), // Multiple TDs is ~15% of anytime
-              probability: probabilityBase * 0.15,
-              value: realOdds ? Math.max(0, (probabilityBase * 0.15) - (marketConsensus * 0.15)) : 0,
-              odds: Math.round(100 / (probabilityBase * 0.15)),
-              bookmaker: 'Model',
-              data_reliability: elitePrediction.metadata?.confidence_interval ? 0.6 : 0.4
-            }
-          };
-          
-        } catch (error) {
-          console.error(`Error processing ${player.name}:`, error);
-          // Fallback prediction with proper market data structure
-          const fallbackConfidence = 18;
-          const fallbackProbability = fallbackConfidence / 100;
-          
-          return {
-            ...player,
-            elite_confidence: fallbackConfidence,
-            elite_analysis: `Limited prediction for ${player.name} - using position baseline`,
-            model_factors: { baseline_score: 0.18 },
-            real_odds: null,
-            market_consensus: null,
-            error: error.message,
-            display_name: player.current_depth_name || player.name,
-            // CRITICAL: Add market data structure for fallback
-            anytime_td: {
-              confidence: fallbackConfidence,
-              probability: fallbackProbability,
-              value: 0,
-              odds: Math.round(100 / fallbackProbability),
-              bookmaker: 'Model Fallback',
-              data_reliability: 0.3
-            },
-            first_td: {
-              confidence: Math.round(fallbackConfidence * 0.3),
-              probability: fallbackProbability * 0.3,
-              value: 0,
-              odds: Math.round(100 / (fallbackProbability * 0.3)),
-              bookmaker: 'Model Fallback',
-              data_reliability: 0.3
-            },
-            multiple_td: {
-              confidence: Math.round(fallbackConfidence * 0.15),
-              probability: fallbackProbability * 0.15,
-              value: 0,
-              odds: Math.round(100 / (fallbackProbability * 0.15)),
-              bookmaker: 'Model Fallback',
-              data_reliability: 0.3
-            }
-          };
-        }
+      // STEP 4: Add game/team context from schedule
+      const teamMatchups = {};
+      weekGames.forEach(game => {
+        teamMatchups[game.home_team] = { 
+          opponent: game.away_team, 
+          isHome: true,
+          game_id: game.game_id 
+        };
+        teamMatchups[game.away_team] = { 
+          opponent: game.home_team, 
+          isHome: false,
+          game_id: game.game_id 
+        };
       });
       
-      // Wait for all elite predictions to complete
-      const elitePredictions = await Promise.all(elitePredictionsPromises);
-      console.log(`✅ Generated ${elitePredictions.length} elite predictions with real odds`);
+      // Enhance players with matchup display
+      const enhancedPlayers = players.map(player => {
+        const matchupInfo = teamMatchups[player.team] || { opponent: 'TBD', isHome: false };
+        return {
+          ...player,
+          opponent: matchupInfo.opponent,
+          is_home: matchupInfo.isHome,
+          matchup_display: `${player.team} vs ${matchupInfo.opponent}`,
+          is_active_current_week: true // All players from API are active
+        };
+      });
       
-      // CRITICAL DEBUG: Log sample predictions to verify market data structure
-      if (elitePredictions.length > 0) {
-        console.log('Sample prediction structure:', elitePredictions[0]);
-        console.log('Market data check:', {
-          anytime_td: elitePredictions[0].anytime_td,
-          first_td: elitePredictions[0].first_td,
-          multiple_td: elitePredictions[0].multiple_td
-        });
-      }
+      console.log(`✅ Enhanced ${enhancedPlayers.length} players with matchup context`);
       
-      setPredictions(elitePredictions);
+      // STEP 5: Transform API data structure to match frontend expectations
+      const transformedPredictions = enhancedPlayers.map(player => {
+        // The API returns: anytime_td.probability, anytime_td.best_odds, etc.
+        // Frontend expects: same structure (we already fixed this!)
+        
+        return {
+          ...player,
+          // Use depth_chart_position from API if available
+          depth_chart_position: player.depth_chart_position || parseInt(player.player_id?.split('_').pop()) || 1,
+          display_name: player.name,
+          depth_rank: `#${player.depth_chart_position || 1}`,
+          
+          // Market data is already in correct structure from API
+          // anytime_td: { probability, best_odds, books_count, odds_qualified, edge, ... }
+          // first_td: { ... }
+          // multiple_td: { ... }
+          
+          // Add player insights metadata for display
+          key_factors: player.key_factors || {
+            snap_percentage: player.snap_share || 0.75,
+            red_zone_efficiency: player.red_zone_targets ? (player.red_zone_targets / 10) : 0.25,
+            consistency_score: 0.70
+          },
+          
+          model_metadata: {
+            primary_td_path: determineTDPath(player),
+            data_reliability: player.anytime_td?.data_reliability || 0.8
+          }
+        };
+      });
+      
+      setPredictions(transformedPredictions);
       
     } catch (err) {
       console.error('Error in loadComprehensivePredictions:', err);
@@ -494,6 +238,16 @@ const NFLTouchdownPropsComprehensive = () => {
     
     loadForCurrentWeek();
   }, [week, season]); // Reload whenever week or season changes
+
+  // Helper function to determine TD scoring path
+  function determineTDPath(player) {
+    const rzTargets = player.red_zone_targets || 0;
+    const rzCarries = player.red_zone_carries || 0;
+    
+    if (rzTargets + rzCarries > 5) return 'red_zone';
+    if (player.position === 'WR' && player.target_share > 0.20) return 'explosive';
+    return 'mixed';
+  }
 
   // Helper function for team name mapping
   function getTeamAbbreviation(fullName) {
@@ -993,20 +747,20 @@ const NFLTouchdownPropsComprehensive = () => {
                       <td className="px-4 py-3">
                         <div className="space-y-1">
                           <div className="font-semibold text-lg text-center">
-                            {player.elite_confidence || 15}%
+                            {marketData?.probability ? (marketData.probability * 100).toFixed(0) : 15}%
                           </div>
                           <div className="text-xs text-center space-y-0.5">
-                            {player.market_consensus && (
+                            {marketData?.implied_prob && (
                               <div className="text-blue-600">
-                                Market: {player.market_consensus}%
+                                Market: {(marketData.implied_prob * 100).toFixed(0)}%
                               </div>
                             )}
                             <div className="text-gray-500">
-                              {player.odds_source === 'theoddsapi_live' ? '📊 Live' : '🎯 Model'}
+                              {marketData?.edge ? `Edge: ${(marketData.edge * 100).toFixed(1)}%` : '🎯 Model'}
                             </div>
-                            {player.real_odds?.books?.length > 0 && (
+                            {marketData?.books_count > 0 && (
                               <div className="text-xs text-green-600">
-                                {player.real_odds.books.length} book{player.real_odds.books.length > 1 ? 's' : ''}
+                                {marketData.books_count} book{marketData.books_count > 1 ? 's' : ''}
                               </div>
                             )}
                           </div>
@@ -1038,22 +792,24 @@ const NFLTouchdownPropsComprehensive = () => {
                       <td className="px-4 py-3">
                         <div className="text-sm space-y-1">
                           {(() => {
-                            const hasApprovedBooks = player.odds_qualified && player.books_count >= 1;
-                            if (hasApprovedBooks && player.real_odds?.books?.[0]) {
+                            const hasApprovedBooks = marketData?.odds_qualified && marketData?.books_count >= 2;
+                            const hasSingleBook = marketData?.books_count === 1;
+                            
+                            if (hasApprovedBooks && marketData?.best_book) {
                               return (
                                 <>
                                   <div className="font-medium text-blue-800">
-                                    {player.real_odds.books[0].anytime_odds > 0 ? '+' : ''}{player.real_odds.books[0].anytime_odds}
+                                    {marketData.best_odds > 0 ? '+' : ''}{marketData.best_odds}
                                   </div>
                                   <div className="text-xs text-gray-500">
-                                    {player.books_count} approved book{player.books_count > 1 ? 's' : ''}
+                                    {marketData.books_count} approved book{marketData.books_count > 1 ? 's' : ''}
                                   </div>
                                   <div className="text-xs text-blue-600">
-                                    {player.real_odds.books[0].bookmaker}
+                                    {marketData.best_book}
                                   </div>
                                 </>
                               );
-                            } else if (player.single_book_warning) {
+                            } else if (hasSingleBook) {
                               return (
                                 <>
                                   <div className="font-medium text-orange-600">—</div>
@@ -1079,11 +835,11 @@ const NFLTouchdownPropsComprehensive = () => {
                       <td className="px-4 py-3">
                         <div className="text-center">
                           {(() => {
-                            const confidence = marketData?.confidence || 0;
-                            const hasApprovedBooks = player.odds_qualified && player.books_count >= 1;
-                            const valueScore = player[`${selectedMarket}_value_score`] || 0;
+                            const confidence = marketData?.probability ? marketData.probability * 100 : 0;
+                            const hasApprovedBooks = marketData?.odds_qualified && marketData?.books_count >= 2;
+                            const edge = marketData?.edge || 0;
                             
-                            // Only show BET recommendations if we have approved market lines
+                            // Only show BET recommendations if we have approved market lines (2+ books)
                             if (!hasApprovedBooks) {
                               return (
                                 <>
@@ -1097,37 +853,37 @@ const NFLTouchdownPropsComprehensive = () => {
                               );
                             }
                             
-                            // Gate by confidence AND value thresholds for approved books only
-                            if (confidence >= 65 && valueScore >= 0.6) {
+                            // Gate by confidence AND edge thresholds for approved books only
+                            if (confidence >= 40 && edge >= 0.08) {
                               return (
                                 <>
                                   <div className="text-sm font-bold text-green-600">
                                     🔥 STRONG BET
                                   </div>
                                   <div className="text-xs text-gray-500 mt-1">
-                                    {confidence}% conf | {player.books_count} books
+                                    {confidence.toFixed(0)}% conf | {marketData.books_count} books
                                   </div>
                                 </>
                               );
-                            } else if (confidence >= 50 && valueScore >= 0.4) {
+                            } else if (confidence >= 30 && edge >= 0.05) {
                               return (
                                 <>
                                   <div className="text-sm font-bold text-blue-600">
                                     🎯 BET
                                   </div>
                                   <div className="text-xs text-gray-500 mt-1">
-                                    {confidence}% conf | {player.books_count} books
+                                    {confidence.toFixed(0)}% conf | {marketData.books_count} books
                                   </div>
                                 </>
                               );
-                            } else if (confidence >= 35) {
+                            } else if (confidence >= 20 && edge >= 0.02) {
                               return (
                                 <>
                                   <div className="text-sm font-bold text-yellow-600">
                                     📈 LEAN
                                   </div>
                                   <div className="text-xs text-gray-500 mt-1">
-                                    {confidence}% conf
+                                    {confidence.toFixed(0)}% conf
                                   </div>
                                 </>
                               );
@@ -1138,7 +894,7 @@ const NFLTouchdownPropsComprehensive = () => {
                                     👀 WATCH
                                   </div>
                                   <div className="text-xs text-gray-500 mt-1">
-                                    {confidence}% conf
+                                    {confidence.toFixed(0)}% conf
                                   </div>
                                 </>
                               );

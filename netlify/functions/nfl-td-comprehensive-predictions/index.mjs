@@ -175,44 +175,63 @@ function estimateSeasonTDs(player) {
 function calculateQuickAnytimeTD(player) {
   const weights = QUICK_TD_WEIGHTS.ANYTIME;
   
-  // Base probabilities by position
-  const positionBase = {
-    'RB': 0.16, 'WR': 0.13, 'TE': 0.10, 'QB': 0.05
-  }[player.position] || 0.06;
+  // REALISTIC base probabilities by position AND depth chart position
+  // Historical data: RB1s score ~50% of games, WR1s ~35%, TE1s ~25%
+  const depthPosition = parseInt(player.id?.split('_').pop()) || 1;
   
-  // Team quality impact (reduced to avoid total KC domination)
+  let positionBase;
+  if (player.position === 'RB') {
+    positionBase = depthPosition === 1 ? 0.48 : depthPosition === 2 ? 0.22 : 0.08;
+  } else if (player.position === 'WR') {
+    positionBase = depthPosition === 1 ? 0.35 : depthPosition === 2 ? 0.18 : depthPosition === 3 ? 0.10 : 0.05;
+  } else if (player.position === 'TE') {
+    positionBase = depthPosition === 1 ? 0.28 : depthPosition === 2 ? 0.12 : 0.05;
+  } else if (player.position === 'QB') {
+    positionBase = 0.15; // QBs score rushing TDs occasionally
+  } else {
+    positionBase = 0.05;
+  }
+  
+  // Team quality impact (full effect - good offenses score more TDs)
   const teamQuality = getTeamQuality(player.team);
-  const teamMultiplier = 1.0 + ((teamQuality - 1.0) * 0.3); // Reduced from full impact
+  const teamMultiplier = teamQuality; // Use full team quality rating
   
   const snapShare = player.opportunityFactors?.snapShare || 0.5;
   const redZoneRole = player.opportunityFactors?.redZoneShare || 0.1;
   
-  // Use individual talent rating instead of generic modifiers
+  // Use individual talent rating for elite player boost
   const talentModifier = player.talentRating || 1.0;
   
-  // Starter vs backup penalty for QBs
+  // Starter vs backup penalty for backup QBs
   let starterPenalty = 1.0;
   if (player.position === 'QB' && 
       (player.name.includes('II') || player.name.includes('Minshew') || 
        player.name.includes('Brissett') || player.name.includes('Mills'))) {
-    starterPenalty = 0.4;
+    starterPenalty = 0.5;
   }
   
-  const score = 
-    (positionBase * weights.position_base * talentModifier * teamMultiplier) +
-    (snapShare * weights.snap_share) +
-    (redZoneRole * weights.red_zone_role);
+  // Weighted combination: Base (60%) + Situational factors (40%)
+  const baseScore = positionBase * teamMultiplier * talentModifier;
+  const situationalBoost = (snapShare * 0.15) + (redZoneRole * 0.25);
   
-  const finalScore = score * starterPenalty;
-  return Math.max(0.03, Math.min(0.35, finalScore));
+  const finalScore = (baseScore * 0.6 + situationalBoost * 0.4) * starterPenalty;
+  
+  // More realistic bounds: 5% minimum, 65% maximum (elite RB1s on great teams)
+  return Math.max(0.05, Math.min(0.65, finalScore));
 }
 
 function calculateQuickFirstTD(anytimeProb) {
-  return Math.max(0.01, Math.min(0.20, anytimeProb * 0.18));
+  // First TD is roughly 20% of anytime probability
+  // (22 starters on field, but TD scorers get more opportunities)
+  return Math.max(0.01, Math.min(0.25, anytimeProb * 0.20));
 }
 
 function calculateQuickMultipleTD(anytimeProb) {
-  return Math.max(0.01, Math.min(0.35, Math.pow(anytimeProb, 1.6)));
+  // Multiple TDs = roughly probability of 2+ TDs
+  // If anytime is 50%, multiple is ~15-20%
+  // Using squared probability with slight boost for high scorers
+  const multipleProb = Math.pow(anytimeProb, 1.5) * 0.8;
+  return Math.max(0.01, Math.min(0.35, multipleProb));
 }
 
 function getTeamQuality(team) {
@@ -284,38 +303,47 @@ async function generateTDPredictions(games, season = '2025') {
 
       // Join odds by player name (case-insensitive)
       const oddsEntry = oddsByPlayer[player.name] || oddsByPlayer[player.name.toUpperCase()] || oddsByPlayer[player.name.toLowerCase()] || null;
+      // Convert American odds to implied probability
       function impliedProbFromAmerican(american) {
         if (american == null) return null;
         if (american > 0) return 100 / (american + 100);
         return (-american) / ((-american) + 100);
       }
-      function blendConfidence(modelProb, offeredAmerican, blendWeight=0.6, clampRange=[0.05,0.85]) {
-        const implied = (offeredAmerican != null) ? impliedProbFromAmerican(offeredAmerican) : null;
-        let conf = null;
-        if (typeof modelProb === 'number' && typeof implied === 'number') {
-          conf = blendWeight * modelProb + (1-blendWeight) * implied;
-        } else if (typeof modelProb === 'number') {
-          conf = modelProb;
-        } else if (typeof implied === 'number') {
-          conf = implied;
-        } else {
-          conf = (clampRange[0] + clampRange[1]) / 2;
-        }
-        return Math.max(clampRange[0], Math.min(clampRange[1], conf));
-      }
 
       function marketBlock(prob, oddsObj) {
-        let best = oddsObj?.best ?? null;
-        let implied = (best != null) ? impliedProbFromAmerican(best) : null;
-        let conf = blendConfidence(prob, best);
-        let edge = (typeof conf === 'number' && typeof implied === 'number') ? Number((conf - implied).toFixed(4)) : null;
+        const books = oddsObj?.books ?? {};
+        const bookKeys = Object.keys(books);
+        
+        // Get best odds across all approved books
+        let bestOdds = null;
+        let bestBook = null;
+        let impliedProb = null;
+        
+        if (bookKeys.length > 0) {
+          // Find the best (highest) odds across all books
+          for (const [bookmaker, odds] of Object.entries(books)) {
+            if (bestOdds === null || odds > bestOdds) {
+              bestOdds = odds;
+              bestBook = bookmaker;
+            }
+          }
+          impliedProb = impliedProbFromAmerican(bestOdds);
+        }
+        
+        // Calculate edge vs market
+        const edge = (typeof prob === 'number' && typeof impliedProb === 'number') 
+          ? Number((prob - impliedProb).toFixed(4)) 
+          : null;
+        
         return {
           probability: Number(prob.toFixed(4)),
-          best_odds: best,
-          books: oddsObj?.books ?? {},
-          implied_prob: implied != null ? Number(implied.toFixed(4)) : null,
-          confidence: conf,
-          edge
+          best_odds: bestOdds,
+          best_book: bestBook,
+          books_count: bookKeys.length,
+          books: books,
+          implied_prob: impliedProb != null ? Number(impliedProb.toFixed(4)) : null,
+          edge,
+          odds_qualified: bookKeys.length >= 2  // Need at least 2 books
         };
       }
 

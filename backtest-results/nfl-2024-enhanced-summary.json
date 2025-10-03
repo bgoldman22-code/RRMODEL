@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2025-10-03T14:08:07.844Z",
+  "methodology": "Time-constrained backtest with NO future knowledge. Week N predictions use only Weeks 1 through N-1 data.",
+  "moneyline": {
+    "record": "31-0",
+    "winPct": "100.0%",
+    "units": "93.0U",
+    "roi": "300.0%",
+    "edge": "47.6%"
+  },
+  "spread": {
+    "record": "74-126",
+    "winPct": "37.0%",
+    "units": "-84.7U",
+    "roi": "-42.3%",
+    "edge": "-15.4%"
+  },
+  "totals": {
+    "record": "67-76",
+    "winPct": "46.9%",
+    "units": "-12.1U",
+    "roi": "-8.5%",
+    "edge": "-5.5%"
+  },
+  "combined": {
+    "totalBets": 374,
+    "totalWins": 172,
+    "winPct": "46.0%",
+    "units": "-3.8U",
+    "roi": "-1.0%"
+  }
+}

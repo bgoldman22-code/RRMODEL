@@ -1,0 +1,351 @@
+{
+  "metadata": {
+    "season": 2024,
+    "testType": "moneyline-only",
+    "generatedAt": "2025-10-02T18:22:51.569Z",
+    "totalGames": 16
+  },
+  "analysis": {
+    "overall": {
+      "totalGames": 32,
+      "correct": 10,
+      "incorrect": 6,
+      "accuracy": "31.3"
+    },
+    "byWeek": {
+      "2": {
+        "total": 16,
+        "correct": 10,
+        "accuracy": "62.5"
+      }
+    },
+    "byConfidence": {
+      "high": {
+        "total": 6,
+        "correct": 0,
+        "accuracy": "0.0"
+      },
+      "medium": {
+        "total": 5,
+        "correct": 5,
+        "accuracy": "100.0"
+      },
+      "low": {
+        "total": 5,
+        "correct": 5,
+        "accuracy": "100.0"
+      }
+    },
+    "betting": {
+      "totalBets": 8,
+      "betsWon": 2,
+      "betsLost": 6,
+      "roi": "-52.25"
+    },
+    "strongPicks": [
+      {
+        "game": "MIA @ BUF",
+        "pick": "BUF",
+        "confidence": 67,
+        "week": 2
+      },
+      {
+        "game": "CIN @ KC",
+        "pick": "KC",
+        "confidence": 66,
+        "week": 2
+      }
+    ],
+    "wrongPicks": [
+      {
+        "game": "JAX @ CLE",
+        "pick": "JAX",
+        "actual": "CLE",
+        "confidence": 71,
+        "week": 2
+      },
+      {
+        "game": "DAL @ NO",
+        "pick": "DAL",
+        "actual": "NO",
+        "confidence": 73,
+        "week": 2
+      },
+      {
+        "game": "DET @ TB",
+        "pick": "DET",
+        "actual": "TB",
+        "confidence": 79,
+        "week": 2
+      },
+      {
+        "game": "NE @ SEA",
+        "pick": "NE",
+        "actual": "SEA",
+        "confidence": 71,
+        "week": 2
+      },
+      {
+        "game": "BAL @ LV",
+        "pick": "BAL",
+        "actual": "LV",
+        "confidence": 77,
+        "week": 2
+      },
+      {
+        "game": "LAR @ ARI",
+        "pick": "LAR",
+        "actual": "ARI",
+        "confidence": 76,
+        "week": 2
+      }
+    ],
+    "regularSeasonOnly": {
+      "total": 16,
+      "correct": 10,
+      "accuracy": "62.5"
+    },
+    "playoffsOnly": {
+      "total": 0,
+      "correct": 0,
+      "accuracy": "0.0"
+    }
+  },
+  "predictions": [
+    {
+      "gameId": "MIA_BUF_2024_W2",
+      "homeTeam": "BUF",
+      "awayTeam": "MIA",
+      "week": 2,
+      "predictedWinner": "BUF",
+      "confidence": 67,
+      "edge": 5.9,
+      "betRecommendation": "BET",
+      "actualWinner": "BUF",
+      "actualScore": "31-10",
+      "correct": true,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "CAR_LAC_2024_W2",
+      "homeTeam": "LAC",
+      "awayTeam": "CAR",
+      "week": 2,
+      "predictedWinner": "LAC",
+      "confidence": 50,
+      "edge": 0.3,
+      "betRecommendation": "NO BET",
+      "actualWinner": "LAC",
+      "actualScore": "26-3",
+      "correct": true,
+      "shouldHaveBet": false
+    },
+    {
+      "gameId": "JAX_CLE_2024_W2",
+      "homeTeam": "CLE",
+      "awayTeam": "JAX",
+      "week": 2,
+      "predictedWinner": "JAX",
+      "confidence": 71,
+      "edge": 7.1,
+      "betRecommendation": "BET",
+      "actualWinner": "CLE",
+      "actualScore": "18-13",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "IND_GB_2024_W2",
+      "homeTeam": "GB",
+      "awayTeam": "IND",
+      "week": 2,
+      "predictedWinner": "GB",
+      "confidence": 61,
+      "edge": 4,
+      "betRecommendation": "NO BET",
+      "actualWinner": "GB",
+      "actualScore": "16-10",
+      "correct": true,
+      "shouldHaveBet": false
+    },
+    {
+      "gameId": "DAL_NO_2024_W2",
+      "homeTeam": "NO",
+      "awayTeam": "DAL",
+      "week": 2,
+      "predictedWinner": "DAL",
+      "confidence": 73,
+      "edge": 8,
+      "betRecommendation": "BET",
+      "actualWinner": "NO",
+      "actualScore": "44-19",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "DET_TB_2024_W2",
+      "homeTeam": "TB",
+      "awayTeam": "DET",
+      "week": 2,
+      "predictedWinner": "DET",
+      "confidence": 79,
+      "edge": 10,
+      "betRecommendation": "BET",
+      "actualWinner": "TB",
+      "actualScore": "20-16",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "SF_MIN_2024_W2",
+      "homeTeam": "MIN",
+      "awayTeam": "SF",
+      "week": 2,
+      "predictedWinner": "MIN",
+      "confidence": 61,
+      "edge": 4,
+      "betRecommendation": "NO BET",
+      "actualWinner": "MIN",
+      "actualScore": "23-17",
+      "correct": true,
+      "shouldHaveBet": false
+    },
+    {
+      "gameId": "NE_SEA_2024_W2",
+      "homeTeam": "SEA",
+      "awayTeam": "NE",
+      "week": 2,
+      "predictedWinner": "NE",
+      "confidence": 71,
+      "edge": 7.2,
+      "betRecommendation": "BET",
+      "actualWinner": "SEA",
+      "actualScore": "23-20",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "NYG_WAS_2024_W2",
+      "homeTeam": "WAS",
+      "awayTeam": "NYG",
+      "week": 2,
+      "predictedWinner": "WAS",
+      "confidence": 51,
+      "edge": 0.6,
+      "betRecommendation": "NO BET",
+      "actualWinner": "WAS",
+      "actualScore": "21-18",
+      "correct": true,
+      "shouldHaveBet": false
+    },
+    {
+      "gameId": "TEN_NYJ_2024_W2",
+      "homeTeam": "NYJ",
+      "awayTeam": "TEN",
+      "week": 2,
+      "predictedWinner": "NYJ",
+      "confidence": 50,
+      "edge": 0.2,
+      "betRecommendation": "NO BET",
+      "actualWinner": "NYJ",
+      "actualScore": "24-17",
+      "correct": true,
+      "shouldHaveBet": false
+    },
+    {
+      "gameId": "BAL_LV_2024_W2",
+      "homeTeam": "LV",
+      "awayTeam": "BAL",
+      "week": 2,
+      "predictedWinner": "BAL",
+      "confidence": 77,
+      "edge": 9.2,
+      "betRecommendation": "BET",
+      "actualWinner": "LV",
+      "actualScore": "26-23",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "LAR_ARI_2024_W2",
+      "homeTeam": "ARI",
+      "awayTeam": "LAR",
+      "week": 2,
+      "predictedWinner": "LAR",
+      "confidence": 76,
+      "edge": 8.7,
+      "betRecommendation": "BET",
+      "actualWinner": "ARI",
+      "actualScore": "41-10",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "CIN_KC_2024_W2",
+      "homeTeam": "KC",
+      "awayTeam": "CIN",
+      "week": 2,
+      "predictedWinner": "KC",
+      "confidence": 66,
+      "edge": 5.6,
+      "betRecommendation": "BET",
+      "actualWinner": "KC",
+      "actualScore": "26-25",
+      "correct": true,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "DEN_PIT_2024_W2",
+      "homeTeam": "PIT",
+      "awayTeam": "DEN",
+      "week": 2,
+      "predictedWinner": "PIT",
+      "confidence": 56,
+      "edge": 2.3,
+      "betRecommendation": "NO BET",
+      "actualWinner": "PIT",
+      "actualScore": "13-6",
+      "correct": true,
+      "shouldHaveBet": false
+    },
+    {
+      "gameId": "CHI_HOU_2024_W2",
+      "homeTeam": "HOU",
+      "awayTeam": "CHI",
+      "week": 2,
+      "predictedWinner": "HOU",
+      "confidence": 52,
+      "edge": 0.7,
+      "betRecommendation": "NO BET",
+      "actualWinner": "HOU",
+      "actualScore": "19-13",
+      "correct": true,
+      "shouldHaveBet": false
+    },
+    {
+      "gameId": "PHI_ATL_2024_W2",
+      "homeTeam": "ATL",
+      "awayTeam": "PHI",
+      "week": 2,
+      "predictedWinner": "ATL",
+      "confidence": 54,
+      "edge": 1.5,
+      "betRecommendation": "NO BET",
+      "actualWinner": "ATL",
+      "actualScore": "22-21",
+      "correct": true,
+      "shouldHaveBet": false
+    }
+  ],
+  "summary": {
+    "overallAccuracy": "31.3% (10/32)",
+    "regularSeasonAccuracy": "62.5% (10/16)",
+    "playoffAccuracy": "0.0% (0/0)",
+    "bettingPerformance": "2-6 (-52.25% ROI)",
+    "confidenceAccuracy": {
+      "high": "0.0% (70%+ confidence)",
+      "medium": "100.0% (55-70% confidence)",
+      "low": "100.0% (<55% confidence)"
+    }
+  }
+}

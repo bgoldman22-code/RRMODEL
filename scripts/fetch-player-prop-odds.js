@@ -37,12 +37,11 @@ async function fetchPlayerPropOdds() {
           const player = outcome.description || outcome.name;
           if (!player) continue;
           if (!allOdds[player]) allOdds[player] = {};
-          if (!allOdds[player][market]) allOdds[player][market] = [];
-          allOdds[player][market].push({
-            price: outcome.price,
-            bookmaker: bookmaker.key,
-            label: outcome.name || outcome.description
-          });
+          if (!allOdds[player][market]) {
+            allOdds[player][market] = { books: {} };
+          }
+          // Store in format that matches expected structure
+          allOdds[player][market].books[bookmaker.key] = outcome.price;
         }
       }
     }

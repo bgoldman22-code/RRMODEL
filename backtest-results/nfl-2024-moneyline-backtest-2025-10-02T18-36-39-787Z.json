@@ -1,0 +1,667 @@
+{
+  "metadata": {
+    "season": 2024,
+    "testType": "moneyline-only",
+    "generatedAt": "2025-10-02T18:36:39.792Z",
+    "totalGames": 77
+  },
+  "analysis": {
+    "overall": {
+      "totalGames": 154,
+      "correct": 44,
+      "incorrect": 33,
+      "accuracy": "28.6"
+    },
+    "byWeek": {
+      "1": {
+        "total": 16,
+        "correct": 7,
+        "accuracy": "43.8"
+      },
+      "2": {
+        "total": 16,
+        "correct": 10,
+        "accuracy": "62.5"
+      },
+      "3": {
+        "total": 16,
+        "correct": 8,
+        "accuracy": "50.0"
+      },
+      "4": {
+        "total": 16,
+        "correct": 12,
+        "accuracy": "75.0"
+      },
+      "19": {
+        "total": 6,
+        "correct": 3,
+        "accuracy": "50.0"
+      },
+      "20": {
+        "total": 4,
+        "correct": 3,
+        "accuracy": "75.0"
+      },
+      "21": {
+        "total": 2,
+        "correct": 1,
+        "accuracy": "50.0"
+      },
+      "22": {
+        "total": 1,
+        "correct": 0,
+        "accuracy": "0.0"
+      }
+    },
+    "byConfidence": {
+      "high": {
+        "total": 32,
+        "correct": 1,
+        "accuracy": "3.1"
+      },
+      "medium": {
+        "total": 34,
+        "correct": 32,
+        "accuracy": "94.1"
+      },
+      "low": {
+        "total": 11,
+        "correct": 11,
+        "accuracy": "100.0"
+      }
+    },
+    "betting": {
+      "totalBets": 46,
+      "betsWon": 13,
+      "betsLost": 33,
+      "roi": "-46.02"
+    },
+    "strongPicks": [
+      {
+        "game": "GB @ PHI",
+        "pick": "PHI",
+        "confidence": 67,
+        "week": 1
+      },
+      {
+        "game": "ATL @ PIT",
+        "pick": "PIT",
+        "confidence": 67,
+        "week": 1
+      },
+      {
+        "game": "ARI @ BUF",
+        "pick": "BUF",
+        "confidence": 72,
+        "week": 1
+      },
+      {
+        "game": "WAS @ TB",
+        "pick": "TB",
+        "confidence": 65,
+        "week": 1
+      },
+      {
+        "game": "MIA @ BUF",
+        "pick": "BUF",
+        "confidence": 67,
+        "week": 2
+      },
+      {
+        "game": "CIN @ KC",
+        "pick": "KC",
+        "confidence": 66,
+        "week": 2
+      },
+      {
+        "game": "NO @ ATL",
+        "pick": "ATL",
+        "confidence": 65,
+        "week": 4
+      },
+      {
+        "game": "CAR @ CIN",
+        "pick": "CIN",
+        "confidence": 65,
+        "week": 4
+      }
+    ],
+    "wrongPicks": [
+      {
+        "game": "CAR @ NO",
+        "pick": "CAR",
+        "actual": "NO",
+        "confidence": 78,
+        "week": 1
+      },
+      {
+        "game": "TEN @ CHI",
+        "pick": "TEN",
+        "actual": "CHI",
+        "confidence": 74,
+        "week": 1
+      },
+      {
+        "game": "CIN @ NE",
+        "pick": "CIN",
+        "actual": "NE",
+        "confidence": 71,
+        "week": 1
+      },
+      {
+        "game": "JAX @ MIA",
+        "pick": "JAX",
+        "actual": "MIA",
+        "confidence": 73,
+        "week": 1
+      },
+      {
+        "game": "NYG @ MIN",
+        "pick": "NYG",
+        "actual": "MIN",
+        "confidence": 72,
+        "week": 1
+      },
+      {
+        "game": "LV @ LAC",
+        "pick": "LV",
+        "actual": "LAC",
+        "confidence": 77,
+        "week": 1
+      },
+      {
+        "game": "CLE @ DAL",
+        "pick": "CLE",
+        "actual": "DAL",
+        "confidence": 78,
+        "week": 1
+      },
+      {
+        "game": "LAR @ DET",
+        "pick": "LAR",
+        "actual": "DET",
+        "confidence": 76,
+        "week": 1
+      },
+      {
+        "game": "NYJ @ SF",
+        "pick": "NYJ",
+        "actual": "SF",
+        "confidence": 76,
+        "week": 1
+      },
+      {
+        "game": "JAX @ CLE",
+        "pick": "JAX",
+        "actual": "CLE",
+        "confidence": 71,
+        "week": 2
+      },
+      {
+        "game": "DAL @ NO",
+        "pick": "DAL",
+        "actual": "NO",
+        "confidence": 73,
+        "week": 2
+      },
+      {
+        "game": "DET @ TB",
+        "pick": "DET",
+        "actual": "TB",
+        "confidence": 79,
+        "week": 2
+      },
+      {
+        "game": "NE @ SEA",
+        "pick": "NE",
+        "actual": "SEA",
+        "confidence": 71,
+        "week": 2
+      },
+      {
+        "game": "BAL @ LV",
+        "pick": "BAL",
+        "actual": "LV",
+        "confidence": 77,
+        "week": 2
+      },
+      {
+        "game": "LAR @ ARI",
+        "pick": "LAR",
+        "actual": "ARI",
+        "confidence": 76,
+        "week": 2
+      },
+      {
+        "game": "NE @ NYJ",
+        "pick": "NE",
+        "actual": "NYJ",
+        "confidence": 71,
+        "week": 3
+      },
+      {
+        "game": "TB @ DEN",
+        "pick": "TB",
+        "actual": "DEN",
+        "confidence": 73,
+        "week": 3
+      },
+      {
+        "game": "TEN @ GB",
+        "pick": "TEN",
+        "actual": "GB",
+        "confidence": 77,
+        "week": 3
+      },
+      {
+        "game": "HOU @ MIN",
+        "pick": "HOU",
+        "actual": "MIN",
+        "confidence": 72,
+        "week": 3
+      },
+      {
+        "game": "LAC @ PIT",
+        "pick": "LAC",
+        "actual": "PIT",
+        "confidence": 79,
+        "week": 3
+      },
+      {
+        "game": "ARI @ DET",
+        "pick": "ARI",
+        "actual": "DET",
+        "confidence": 74,
+        "week": 3
+      },
+      {
+        "game": "DAL @ BAL",
+        "pick": "DAL",
+        "actual": "BAL",
+        "confidence": 74,
+        "week": 3
+      },
+      {
+        "game": "ATL @ KC",
+        "pick": "ATL",
+        "actual": "KC",
+        "confidence": 76,
+        "week": 3
+      },
+      {
+        "game": "LAR @ CHI",
+        "pick": "LAR",
+        "actual": "CHI",
+        "confidence": 68,
+        "week": 4
+      },
+      {
+        "game": "GB @ MIN",
+        "pick": "GB",
+        "actual": "MIN",
+        "confidence": 75,
+        "week": 4
+      },
+      {
+        "game": "JAX @ HOU",
+        "pick": "JAX",
+        "actual": "HOU",
+        "confidence": 72,
+        "week": 4
+      },
+      {
+        "game": "SEA @ DET",
+        "pick": "SEA",
+        "actual": "DET",
+        "confidence": 72,
+        "week": 4
+      },
+      {
+        "game": "DEN @ BUF",
+        "pick": "DEN",
+        "actual": "BUF",
+        "confidence": 74,
+        "week": 19
+      },
+      {
+        "game": "GB @ PHI",
+        "pick": "GB",
+        "actual": "PHI",
+        "confidence": 76,
+        "week": 19
+      },
+      {
+        "game": "TB @ WAS",
+        "pick": "TB",
+        "actual": "WAS",
+        "confidence": 73,
+        "week": 19
+      },
+      {
+        "game": "LAR @ PHI",
+        "pick": "LAR",
+        "actual": "PHI",
+        "confidence": 79,
+        "week": 20
+      },
+      {
+        "game": "BUF @ KC",
+        "pick": "BUF",
+        "actual": "KC",
+        "confidence": 68,
+        "week": 21
+      },
+      {
+        "game": "KC @ PHI",
+        "pick": "KC",
+        "actual": "PHI",
+        "confidence": 74,
+        "week": 22
+      }
+    ],
+    "regularSeasonOnly": {
+      "total": 64,
+      "correct": 37,
+      "accuracy": "57.8"
+    },
+    "playoffsOnly": {
+      "total": 13,
+      "correct": 7,
+      "accuracy": "53.8"
+    }
+  },
+  "predictions": [
+    {
+      "gameId": "BAL_KC_2024_W1",
+      "homeTeam": "KC",
+      "awayTeam": "BAL",
+      "week": 1,
+      "predictedWinner": "KC",
+      "confidence": 52,
+      "edge": 0.8,
+      "betRecommendation": "NO BET",
+      "actualWinner": "KC",
+      "actualScore": "27-20",
+      "correct": true,
+      "shouldHaveBet": false
+    },
+    {
+      "gameId": "GB_PHI_2024_W1",
+      "homeTeam": "PHI",
+      "awayTeam": "GB",
+      "week": 1,
+      "predictedWinner": "PHI",
+      "confidence": 67,
+      "edge": 6,
+      "betRecommendation": "BET",
+      "actualWinner": "PHI",
+      "actualScore": "34-29",
+      "correct": true,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "ATL_PIT_2024_W1",
+      "homeTeam": "PIT",
+      "awayTeam": "ATL",
+      "week": 1,
+      "predictedWinner": "PIT",
+      "confidence": 67,
+      "edge": 5.9,
+      "betRecommendation": "BET",
+      "actualWinner": "PIT",
+      "actualScore": "18-10",
+      "correct": true,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "ARI_BUF_2024_W1",
+      "homeTeam": "BUF",
+      "awayTeam": "ARI",
+      "week": 1,
+      "predictedWinner": "BUF",
+      "confidence": 72,
+      "edge": 7.5,
+      "betRecommendation": "BET",
+      "actualWinner": "BUF",
+      "actualScore": "34-28",
+      "correct": true,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "CAR_NO_2024_W1",
+      "homeTeam": "NO",
+      "awayTeam": "CAR",
+      "week": 1,
+      "predictedWinner": "CAR",
+      "confidence": 78,
+      "edge": 9.6,
+      "betRecommendation": "BET",
+      "actualWinner": "NO",
+      "actualScore": "47-10",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "TEN_CHI_2024_W1",
+      "homeTeam": "CHI",
+      "awayTeam": "TEN",
+      "week": 1,
+      "predictedWinner": "TEN",
+      "confidence": 74,
+      "edge": 8.3,
+      "betRecommendation": "BET",
+      "actualWinner": "CHI",
+      "actualScore": "24-17",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "CIN_NE_2024_W1",
+      "homeTeam": "NE",
+      "awayTeam": "CIN",
+      "week": 1,
+      "predictedWinner": "CIN",
+      "confidence": 71,
+      "edge": 7.2,
+      "betRecommendation": "BET",
+      "actualWinner": "NE",
+      "actualScore": "16-10",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "IND_HOU_2024_W1",
+      "homeTeam": "HOU",
+      "awayTeam": "IND",
+      "week": 1,
+      "predictedWinner": "HOU",
+      "confidence": 59,
+      "edge": 3.1,
+      "betRecommendation": "NO BET",
+      "actualWinner": "HOU",
+      "actualScore": "29-27",
+      "correct": true,
+      "shouldHaveBet": false
+    },
+    {
+      "gameId": "JAX_MIA_2024_W1",
+      "homeTeam": "MIA",
+      "awayTeam": "JAX",
+      "week": 1,
+      "predictedWinner": "JAX",
+      "confidence": 73,
+      "edge": 7.9,
+      "betRecommendation": "BET",
+      "actualWinner": "MIA",
+      "actualScore": "20-17",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "NYG_MIN_2024_W1",
+      "homeTeam": "MIN",
+      "awayTeam": "NYG",
+      "week": 1,
+      "predictedWinner": "NYG",
+      "confidence": 72,
+      "edge": 7.4,
+      "betRecommendation": "BET",
+      "actualWinner": "MIN",
+      "actualScore": "28-6",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "DEN_SEA_2024_W1",
+      "homeTeam": "SEA",
+      "awayTeam": "DEN",
+      "week": 1,
+      "predictedWinner": "SEA",
+      "confidence": 61,
+      "edge": 3.9,
+      "betRecommendation": "NO BET",
+      "actualWinner": "SEA",
+      "actualScore": "26-20",
+      "correct": true,
+      "shouldHaveBet": false
+    },
+    {
+      "gameId": "LV_LAC_2024_W1",
+      "homeTeam": "LAC",
+      "awayTeam": "LV",
+      "week": 1,
+      "predictedWinner": "LV",
+      "confidence": 77,
+      "edge": 9.2,
+      "betRecommendation": "BET",
+      "actualWinner": "LAC",
+      "actualScore": "22-10",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "CLE_DAL_2024_W1",
+      "homeTeam": "DAL",
+      "awayTeam": "CLE",
+      "week": 1,
+      "predictedWinner": "CLE",
+      "confidence": 78,
+      "edge": 9.5,
+      "betRecommendation": "BET",
+      "actualWinner": "DAL",
+      "actualScore": "33-17",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "WAS_TB_2024_W1",
+      "homeTeam": "TB",
+      "awayTeam": "WAS",
+      "week": 1,
+      "predictedWinner": "TB",
+      "confidence": 65,
+      "edge": 5.2,
+      "betRecommendation": "BET",
+      "actualWinner": "TB",
+      "actualScore": "37-20",
+      "correct": true,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "LAR_DET_2024_W1",
+      "homeTeam": "DET",
+      "awayTeam": "LAR",
+      "week": 1,
+      "predictedWinner": "LAR",
+      "confidence": 76,
+      "edge": 8.7,
+      "betRecommendation": "BET",
+      "actualWinner": "DET",
+      "actualScore": "26-20",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "NYJ_SF_2024_W1",
+      "homeTeam": "SF",
+      "awayTeam": "NYJ",
+      "week": 1,
+      "predictedWinner": "NYJ",
+      "confidence": 76,
+      "edge": 8.7,
+      "betRecommendation": "BET",
+      "actualWinner": "SF",
+      "actualScore": "32-19",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "MIA_BUF_2024_W2",
+      "homeTeam": "BUF",
+      "awayTeam": "MIA",
+      "week": 2,
+      "predictedWinner": "BUF",
+      "confidence": 67,
+      "edge": 5.9,
+      "betRecommendation": "BET",
+      "actualWinner": "BUF",
+      "actualScore": "31-10",
+      "correct": true,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "CAR_LAC_2024_W2",
+      "homeTeam": "LAC",
+      "awayTeam": "CAR",
+      "week": 2,
+      "predictedWinner": "LAC",
+      "confidence": 50,
+      "edge": 0.3,
+      "betRecommendation": "NO BET",
+      "actualWinner": "LAC",
+      "actualScore": "26-3",
+      "correct": true,
+      "shouldHaveBet": false
+    },
+    {
+      "gameId": "JAX_CLE_2024_W2",
+      "homeTeam": "CLE",
+      "awayTeam": "JAX",
+      "week": 2,
+      "predictedWinner": "JAX",
+      "confidence": 71,
+      "edge": 7.1,
+      "betRecommendation": "BET",
+      "actualWinner": "CLE",
+      "actualScore": "18-13",
+      "correct": false,
+      "shouldHaveBet": true
+    },
+    {
+      "gameId": "IND_GB_2024_W2",
+      "homeTeam": "GB",
+      "awayTeam": "IND",
+      "week": 2,
+      "predictedWinner": "GB",
+      "confidence": 61,
+      "edge": 4,
+      "betRecommendation": "NO BET",
+      "actualWinner": "GB",
+      "actualScore": "16-10",
+      "correct": true,
+      "shouldHaveBet": false
+    }
+  ],
+  "summary": {
+    "overallAccuracy": "28.6% (44/154)",
+    "regularSeasonAccuracy": "57.8% (37/64)",
+    "playoffAccuracy": "53.8% (7/13)",
+    "bettingPerformance": "13-33 (-46.02% ROI)",
+    "confidenceAccuracy": {
+      "high": "3.1% (70%+ confidence)",
+      "medium": "94.1% (55-70% confidence)",
+      "low": "100.0% (<55% confidence)"
+    }
+  }
+}
