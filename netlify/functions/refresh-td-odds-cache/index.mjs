@@ -3,6 +3,7 @@
 // Safe to run manually or via Netlify schedule
 
 import fs from 'fs/promises';
+import { getStore } from '@netlify/blobs';
 
 const ODDS_CACHE_FILE = 'public/data/nfl-td-odds-cache.json';
 const SPORT_KEY = 'americanfootball_nfl';
@@ -120,11 +121,24 @@ export default async function handler(request){
       quota
     };
 
-    await fs.mkdir('public/data', { recursive: true });
-    await fs.writeFile(ODDS_CACHE_FILE, JSON.stringify(cache, null, 2));
-    console.log(`✅ Saved NFL TD odds cache with ${cache.player_count} players to ${ODDS_CACHE_FILE}`);
+    // Write to Netlify Blobs (preferred in functions runtime)
+    try {
+      const storeName = process.env.BLOBS_STORE_NFL || 'nfl-td';
+      const store = getStore({ name: storeName });
+      await store.setJSON('nfl-td-odds-cache.json', cache);
+      console.log(`✅ Saved NFL TD odds cache to Blobs store '${storeName}' (nfl-td-odds-cache.json)`);
+    } catch (e) {
+      console.warn('⚠️ Blobs write failed, attempting filesystem fallback:', e.message);
+      try {
+        await fs.mkdir('public/data', { recursive: true });
+        await fs.writeFile(ODDS_CACHE_FILE, JSON.stringify(cache, null, 2));
+        console.log(`✅ Saved NFL TD odds cache (FS fallback) with ${cache.player_count} players to ${ODDS_CACHE_FILE}`);
+      } catch (fsErr) {
+        console.error('❌ Filesystem write failed:', fsErr.message);
+      }
+    }
 
-    return jsonResponse({ success:true, player_count: cache.player_count, quota, cache_file: ODDS_CACHE_FILE }, 200);
+    return jsonResponse({ success:true, player_count: cache.player_count, quota, cache_key: 'nfl-td-odds-cache.json' }, 200);
   }catch(err){
     console.error('❌ refresh-td-odds-cache error:', err);
     return jsonResponse({ success:false, error:String(err?.message||err) }, 200);
