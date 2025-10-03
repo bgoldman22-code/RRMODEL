@@ -170,15 +170,6 @@ function generateMinimalPlayerRoster(games) {
   return players;
 }
 
-function getCurrentWeek() {
-  const now = new Date();
-  const seasonStart = new Date('2025-09-04');
-  const diffTime = now.getTime() - seasonStart.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  const week = Math.floor(diffDays / 7) + 1;
-  return Math.max(1, Math.min(18, week));
-}
-
 // Cache management for odds data
 const ODDS_CACHE_FILE = 'public/data/nfl-td-odds-cache.json';
 const ODDS_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
