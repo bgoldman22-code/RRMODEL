@@ -9,11 +9,7 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs", "node-fetch"]
-
-[[functions]]
-  path = "netlify/functions/nfl-td-comprehensive-predictions"
   included_files = ["public/**"]
-  node_bundler = "esbuild"
 
 [build.environment]
   NODE_VERSION = "20"
