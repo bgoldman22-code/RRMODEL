@@ -40,9 +40,13 @@ function toVariants(fullName){
 
 export default async function handler(request){
   const apiKey = process.env.ODDS_API_KEY || process.env.VITE_ODDS_API_KEY;
-  const bookmakers = new URL(request.url).searchParams.get('bookmakers') || DEFAULT_BOOKS;
+  const url = new URL(request.url);
+  const bookmakers = url.searchParams.get('bookmakers') || DEFAULT_BOOKS;
+  const limit = Math.max(6, Math.min(40, parseInt(url.searchParams.get('limit') || '18', 10))); // cap events processed
   const regions = 'us';
   const oddsFormat = 'american';
+  const startTs = Date.now();
+  const timeBudgetMs = 9000; // stay under Netlify 10s limit
 
   if(!apiKey){
     return jsonResponse({ success:false, reason:'missing_api_key' }, 200);
@@ -56,8 +60,9 @@ export default async function handler(request){
     if(!evRes.ok){
       return jsonResponse({ success:false, step:'events', status:evRes.status }, 200);
     }
-    const events = await evRes.json();
-    console.log(`🗓️ Found ${events.length} NFL events`);
+  let events = await evRes.json();
+  console.log(`🗓️ Found ${events.length} NFL events (processing up to ${limit})`);
+  events = events.slice(0, limit);
 
     // 2) For each event, fetch markets
     const oddsByPlayer = {}; // nameKey -> { player_anytime_td:{books:{}}, ... }
@@ -65,9 +70,11 @@ export default async function handler(request){
 
     // modest concurrency
     const chunk = (arr,n)=>{ const out=[]; for(let i=0;i<arr.length;i+=n) out.push(arr.slice(i,i+n)); return out; };
-    const chunks = chunk(events, 6);
+    const chunks = chunk(events, 4);
     for(const group of chunks){
+      if (Date.now() - startTs > timeBudgetMs) break; // stop if out of time
       await Promise.all(group.map(async ev => {
+        if (Date.now() - startTs > timeBudgetMs) return; // skip if out of time
         const qs = new URLSearchParams({
           apiKey, regions, oddsFormat, markets: MARKETS.join(','), includeLinks:'false', bookmakers
         });
@@ -77,7 +84,7 @@ export default async function handler(request){
         quota.used = r.headers.get('x-requests-used') ?? quota.used;
         quota.reset = r.headers.get('x-requests-reset') ?? quota.reset;
         if(!r.ok) return;
-        const data = await r.json();
+  const data = await r.json();
         for(const bk of (data.bookmakers||[])){
           const bookKey = (bk.key || '').toLowerCase();
           for(const mk of (bk.markets||[])){
