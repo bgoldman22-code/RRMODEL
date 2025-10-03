@@ -13,7 +13,7 @@ const MARKETS = [
 const REGIONS = 'us';
 const ODDS_FORMAT = 'american';
 
-async function fetchPlayerPropOdds() {
+export async function fetchPlayerPropOdds() {
   if (!ODDS_API_KEY) throw new Error('Missing ODDS_API_KEY');
   const allOdds = {};
   // Fetch events first
@@ -48,5 +48,3 @@ async function fetchPlayerPropOdds() {
   }
   return allOdds;
 }
-
-module.exports = { fetchPlayerPropOdds };
