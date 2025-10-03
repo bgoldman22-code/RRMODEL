@@ -260,13 +260,19 @@ function probabilityToAmericanOdds(probability) {
 
 // Main TD prediction generation
 async function generateTDPredictions(games, season = '2025') {
-  // Fetch live player prop odds for all 3 markets
+  // Fetch live player prop odds for all 3 markets (with timeout)
   let oddsByPlayer = {};
   try {
-    oddsByPlayer = await fetchPlayerPropOdds();
+    console.log('🔄 Fetching player prop odds from TheOddsAPI...');
+    const oddsPromise = fetchPlayerPropOdds();
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Odds fetch timeout after 10s')), 10000)
+    );
+    oddsByPlayer = await Promise.race([oddsPromise, timeoutPromise]);
     console.log(`✅ Pulled player prop odds for ${Object.keys(oddsByPlayer).length} players`);
   } catch (e) {
-    console.warn('⚠️ Could not fetch player prop odds:', e.message);
+    console.warn('⚠️ Could not fetch player prop odds (will continue with model-only):', e.message);
+    oddsByPlayer = {}; // Continue without odds
   }
   console.log('=== NFL TD COMPREHENSIVE PREDICTIONS (FIXED VERSION) ===');
   
@@ -431,6 +437,10 @@ async function getScheduleFromFile(season, week) {
 
 // Netlify Function Handler (FIXED - proper pattern, now loads schedule from correct path)
 export default async (request, context) => {
+  console.log('🏈 TD Predictions Function Started');
+  console.log('Method:', request.method);
+  console.log('URL:', request.url);
+  
   try {
     if (request.method === 'OPTIONS') {
       return new Response(null, {
@@ -448,29 +458,41 @@ export default async (request, context) => {
     let week = null;
 
     if (request.method === 'POST') {
-      const body = await request.json();
-      season = body.season || '2025';
-      week = body.week || null;
-      if (Array.isArray(body.games) && body.games.length > 0) {
-        games = body.games;
+      try {
+        const body = await request.json();
+        console.log('POST body received:', JSON.stringify(body).substring(0, 200));
+        season = body.season || '2025';
+        week = body.week || null;
+        if (Array.isArray(body.games) && body.games.length > 0) {
+          games = body.games;
+          console.log(`✅ Received ${games.length} games from POST body`);
+        }
+      } catch (parseError) {
+        console.error('❌ Error parsing POST body:', parseError);
+        throw new Error(`Invalid JSON in POST body: ${parseError.message}`);
       }
     } else if (request.method === 'GET') {
       const url = new URL(request.url);
       season = url.searchParams.get('season') || '2025';
       week = url.searchParams.get('week');
+      console.log(`GET request for season ${season}, week ${week}`);
     }
 
     if ((!games || games.length === 0) && week) {
       // Load games for the week from the correct schedule file
+      console.log(`📅 Loading schedule for week ${week}...`);
       games = await getScheduleFromFile(season, week);
+      console.log(`✅ Loaded ${games.length} games from schedule file`);
     }
 
     if (!games || games.length === 0) {
-      throw new Error('No games provided for TD predictions');
+      console.error('❌ No games available after all loading attempts');
+      throw new Error('No games provided for TD predictions - check schedule file and request format');
     }
 
     console.log(`🏈 Generating TD predictions for ${games.length} games`);
     const result = await generateTDPredictions(games, season);
+    console.log(`✅ Generated predictions successfully`);
 
     // Write latest predictions to public/data/nfl-td-comprehensive-latest.json for frontend
     try {
@@ -493,11 +515,13 @@ export default async (request, context) => {
 
   } catch (error) {
     console.error('❌ TD prediction generation failed:', error);
+    console.error('Error stack:', error.stack);
 
     return new Response(JSON.stringify({
       success: false,
       error: 'TD prediction generation failed',
-      message: error.message
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }), {
       status: 500,
       headers: {
