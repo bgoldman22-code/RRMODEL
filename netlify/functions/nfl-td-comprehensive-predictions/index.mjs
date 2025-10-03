@@ -284,8 +284,33 @@ async function generateTDPredictions(games, season = '2025', weekNumber) {
     const awayTeamAbbr = getTeamAbbreviation(game.awayTeam || game.away_team) || game.awayTeam || game.away_team;
     console.log(`🔄 Game: ${game.homeTeam || game.home_team}(${homeTeamAbbr}) vs ${game.awayTeam || game.away_team}(${awayTeamAbbr})`);
     
-    // Process all players for this game
+    // Build per-team position buckets to enforce realistic caps (e.g., WR1-3, RB1-2, TE1-2, QB1)
+    const teamBuckets = { [homeTeamAbbr]: { QB: [], RB: [], WR: [], TE: [] }, [awayTeamAbbr]: { QB: [], RB: [], WR: [], TE: [] } };
+    for (const [pid, p] of Object.entries(players)) {
+      if ((p.team === homeTeamAbbr || p.team === awayTeamAbbr) && teamBuckets[p.team] && teamBuckets[p.team][p.position]) {
+        const depthGuess = Number.isFinite(p.depth_chart_position) ? p.depth_chart_position : (
+          p.position === 'QB' ? 1 : p.position === 'RB' ? 2 : p.position === 'TE' ? 2 : 3
+        );
+        teamBuckets[p.team][p.position].push({ pid, p, depth: depthGuess });
+      }
+    }
+    // Sort each bucket by depth and cap counts
+    const caps = { QB: 1, RB: 3, WR: 4, TE: 2 }; // allow one extra for RB/WR to include situational players
+    Object.values(teamBuckets).forEach(posMap => {
+      Object.keys(posMap).forEach(pos => {
+        posMap[pos].sort((a, b) => a.depth - b.depth);
+        posMap[pos] = posMap[pos].slice(0, caps[pos]);
+      });
+    });
+
+    // Process only capped players for this game
+    const allowedSet = new Set([
+      ...teamBuckets[homeTeamAbbr].QB, ...teamBuckets[homeTeamAbbr].RB, ...teamBuckets[homeTeamAbbr].WR, ...teamBuckets[homeTeamAbbr].TE,
+      ...teamBuckets[awayTeamAbbr].QB, ...teamBuckets[awayTeamAbbr].RB, ...teamBuckets[awayTeamAbbr].WR, ...teamBuckets[awayTeamAbbr].TE
+    ].map(x => x.pid));
+
     for (const [playerId, basePlayer] of Object.entries(players)) {
+      if (!allowedSet.has(playerId)) continue; // skip deep bench players by default
       // Match using normalized team abbreviations
       if (basePlayer.team !== homeTeamAbbr && basePlayer.team !== awayTeamAbbr) continue;
       
@@ -351,6 +376,11 @@ async function generateTDPredictions(games, season = '2025', weekNumber) {
           ? Number((prob - impliedProb).toFixed(4)) 
           : null;
         
+        // Simple confidence proxy: availability confidence and snap share influence downstream
+        const confidencePct = Math.round(100 * (availability?.confidence || 0.7));
+        // Value proxy if market exists
+        const value = (typeof impliedProb === 'number') ? Number((prob - impliedProb).toFixed(4)) : null;
+
         return {
           probability: Number(prob.toFixed(4)),
           best_odds: bestOdds,
@@ -359,6 +389,8 @@ async function generateTDPredictions(games, season = '2025', weekNumber) {
           books: books,
           implied_prob: impliedProb != null ? Number(impliedProb.toFixed(4)) : null,
           edge,
+          value,
+          confidence: confidencePct,
           odds_qualified: bookKeys.length >= 2  // Need at least 2 books
         };
       }
