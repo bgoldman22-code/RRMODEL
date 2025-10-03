@@ -258,22 +258,97 @@ function probabilityToAmericanOdds(probability) {
   }
 }
 
+// Cache management for odds data
+const ODDS_CACHE_FILE = 'public/data/nfl-td-odds-cache.json';
+const ODDS_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+async function loadCachedOdds() {
+  const possiblePaths = [
+    ODDS_CACHE_FILE,
+    '/opt/buildhome/repo/' + ODDS_CACHE_FILE,
+    '/var/task/' + ODDS_CACHE_FILE,
+    './' + ODDS_CACHE_FILE,
+    process.cwd() + '/' + ODDS_CACHE_FILE
+  ];
+  
+  for (const filePath of possiblePaths) {
+    try {
+      const raw = await fs.readFile(filePath, 'utf8');
+      const cache = JSON.parse(raw);
+      const age = Date.now() - new Date(cache.timestamp).getTime();
+      
+      if (age < ODDS_CACHE_TTL) {
+        console.log(`✅ Using cached odds (${Math.round(age / 1000 / 60)} minutes old, ${Object.keys(cache.odds).length} players)`);
+        return cache.odds;
+      } else {
+        console.log(`⚠️ Cached odds expired (${Math.round(age / 1000 / 60 / 60)} hours old)`);
+      }
+    } catch (e) {
+      // Cache doesn't exist or can't be read - that's ok
+      continue;
+    }
+  }
+  return null;
+}
+
+async function saveCachedOdds(odds) {
+  try {
+    const cache = {
+      timestamp: new Date().toISOString(),
+      player_count: Object.keys(odds).length,
+      odds: odds
+    };
+    await fs.mkdir('public/data', { recursive: true });
+    await fs.writeFile(ODDS_CACHE_FILE, JSON.stringify(cache, null, 2));
+    console.log(`✅ Saved odds cache with ${Object.keys(odds).length} players`);
+  } catch (e) {
+    console.warn('⚠️ Could not save odds cache:', e.message);
+  }
+}
+
 // Main TD prediction generation
 async function generateTDPredictions(games, season = '2025') {
-  // Fetch live player prop odds for all 3 markets (with timeout)
+  // STRATEGY: Try cache first, fetch in background if needed
   let oddsByPlayer = {};
-  try {
-    console.log('🔄 Fetching player prop odds from TheOddsAPI...');
-    const oddsPromise = fetchPlayerPropOdds();
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Odds fetch timeout after 10s')), 10000)
-    );
-    oddsByPlayer = await Promise.race([oddsPromise, timeoutPromise]);
-    console.log(`✅ Pulled player prop odds for ${Object.keys(oddsByPlayer).length} players`);
-  } catch (e) {
-    console.warn('⚠️ Could not fetch player prop odds (will continue with model-only):', e.message);
-    oddsByPlayer = {}; // Continue without odds
+  let usedCache = false;
+  
+  // Step 1: Try to load from cache (fast, always works)
+  const cachedOdds = await loadCachedOdds();
+  if (cachedOdds) {
+    oddsByPlayer = cachedOdds;
+    usedCache = true;
+    console.log(`✅ Using cached odds for ${Object.keys(oddsByPlayer).length} players`);
   }
+  
+  // Step 2: Try to fetch fresh odds (but don't block on it)
+  if (!usedCache) {
+    try {
+      console.log('🔄 Fetching fresh player prop odds from TheOddsAPI...');
+      const oddsPromise = fetchPlayerPropOdds();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Odds fetch timeout after 8s')), 8000)
+      );
+      const freshOdds = await Promise.race([oddsPromise, timeoutPromise]);
+      oddsByPlayer = freshOdds;
+      console.log(`✅ Pulled fresh odds for ${Object.keys(oddsByPlayer).length} players`);
+      
+      // Save to cache for next time (async, don't wait)
+      saveCachedOdds(freshOdds).catch(e => console.warn('Cache save failed:', e.message));
+    } catch (e) {
+      console.warn('⚠️ Fresh odds fetch failed, continuing with model-only predictions:', e.message);
+      oddsByPlayer = {}; // Continue without odds
+    }
+  } else {
+    // We used cache, but try to refresh it in the background (fire and forget)
+    console.log('🔄 Refreshing odds cache in background...');
+    fetchPlayerPropOdds()
+      .then(freshOdds => {
+        console.log(`✅ Background refresh: ${Object.keys(freshOdds).length} players`);
+        return saveCachedOdds(freshOdds);
+      })
+      .catch(e => console.warn('⚠️ Background odds refresh failed:', e.message));
+  }
+  
   console.log('=== NFL TD COMPREHENSIVE PREDICTIONS (FIXED VERSION) ===');
   
   // Try to load live data from blobs first
