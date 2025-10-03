@@ -28,3 +28,8 @@
 [[scheduled.functions]]
   name = "injuries-cron-primetime"
   cron = "*/10 22-23,0-3 * * 0,4-6"
+
+# TD Player Props Odds Cache - refresh daily at 8am ET (12pm UTC)
+[[scheduled.functions]]
+  name = "refresh-td-odds-cache"
+  cron = "0 12 * * *"
