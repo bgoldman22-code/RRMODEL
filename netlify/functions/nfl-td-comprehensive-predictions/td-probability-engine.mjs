@@ -2,7 +2,14 @@
 // REALISTIC TD Probability Engine - Uses Canonical Availability + Real Data
 // Integrates: Injury status, depth charts, snap counts, usage patterns
 
-import { buildCanonicalAvailability, STATUS_WEIGHTS } from '../_lib/canonical-availability-v5.mjs';
+// Simplified status weights (no need for full canonical availability module)
+const STATUS_WEIGHTS = {
+  'OUT': 0,
+  'DOUBTFUL': 0.25,
+  'QUESTIONABLE': 0.75,
+  'ACTIVE': 1.0,
+  'HEALTHY': 1.0
+};
 
 /**
  * REALISTIC TD PROBABILITY BASELINES
@@ -316,60 +323,30 @@ function clamp(value, min, max) {
 }
 
 /**
- * Build canonical availability for a player
+ * Build simplified availability for a player (lightweight version)
+ * This avoids the heavy canonical-availability-v5.mjs import
  */
 export function buildPlayerAvailability(player, team, week, injuryReports, depthCharts) {
   const { name, position } = player;
   
-  // Gather all data sources
-  const sources = [];
-  
-  // 1. Injury report data
+  // 1. Check injury report
   const injuryData = findPlayerInjury(name, team, injuryReports);
-  if (injuryData) {
-    sources.push({
-      type: 'INJURY_REPORT',
-      gameStatus: injuryData.status,
-      injuryStatus: injuryData.status,
-      probPlay: STATUS_WEIGHTS[injuryData.status] || 1.0,
-      timestamp: injuryData.timestamp || Date.now()
-    });
-  }
+  const status = injuryData?.status || 'ACTIVE';
+  const probPlay = STATUS_WEIGHTS[status] || 1.0;
   
-  // 2. Depth chart data
+  // 2. Check depth chart
   const depthData = findPlayerDepth(name, position, team, depthCharts);
-  if (depthData) {
-    sources.push({
-      type: 'DEPTH_CHART',
-      depthPosition: depthData.position,
-      isStarter: depthData.position === 1,
-      timestamp: depthData.timestamp || Date.now()
-    });
-  }
+  const depthOrder = depthData?.position || player.depth_chart_position || 1;
   
-  // 3. Snap share inference (if available)
-  if (player.snap_share !== undefined) {
-    sources.push({
-      type: 'SNAP_SHARE',
-      snapShare: player.snap_share,
-      timestamp: Date.now()
-    });
-  }
-  
-  // Build canonical availability
-  if (sources.length > 0) {
-    return buildCanonicalAvailability(
-      `${team}_${position}_${name}`,
-      name,
-      team,
-      position,
-      week,
-      sources,
-      Date.now()
-    );
-  }
-  
-  return null;
+  // 3. Build simplified availability object
+  return {
+    status: status,
+    probPlay: probPlay,
+    depthOrder: depthOrder,
+    confidence: injuryData ? 0.9 : 0.7,  // Higher confidence with injury data
+    topSource: injuryData ? 'injury_report' : 'depth_chart',
+    snapShare: player.snap_share || 0.65
+  };
 }
 
 /**
