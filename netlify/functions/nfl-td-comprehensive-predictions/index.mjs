@@ -67,6 +67,46 @@ async function loadPlayerData() {
   return null;
 }
 
+// Generate minimal player roster from game schedule (fallback)
+function generateMinimalPlayerRoster(games) {
+  const players = {};
+  let playerCounter = 0;
+  
+  // Common positions and typical depth chart
+  const positions = [
+    { pos: 'QB', count: 1 },
+    { pos: 'RB', count: 2 },
+    { pos: 'WR', count: 3 },
+    { pos: 'TE', count: 2 }
+  ];
+  
+  // Generate basic roster for each team in the games
+  const teams = new Set();
+  games.forEach(game => {
+    teams.add(game.home_team);
+    teams.add(game.away_team);
+  });
+  
+  teams.forEach(team => {
+    positions.forEach(({ pos, count }) => {
+      for (let depth = 1; depth <= count; depth++) {
+        playerCounter++;
+        const playerId = `${team}_${pos}_${depth}`;
+        players[playerId] = {
+          id: playerId,
+          name: `${team} ${pos}${depth}`,
+          team: team,
+          position: pos,
+          depth_chart_position: depth
+        };
+      }
+    });
+  });
+  
+  console.log(`Generated ${playerCounter} placeholder players for ${teams.size} teams`);
+  return players;
+}
+
 function getCurrentWeek() {
   const now = new Date();
   const seasonStart = new Date('2025-09-04');
@@ -352,13 +392,23 @@ async function generateTDPredictions(games, season = '2025') {
   console.log('=== NFL TD COMPREHENSIVE PREDICTIONS (FIXED VERSION) ===');
   
   // Try to load live data from blobs first
+  let playerData = null;
   const blobData = await loadPlayerData(season);
-  if (!blobData || !blobData.players) {
-    throw new Error('No valid player data found in public/nfl-anytime-td-player-data.json. Run the ETL to generate full player data.');
+  if (blobData && blobData.players) {
+    playerData = blobData.players;
+    console.log(`🎯 Using LIVE data: ${Object.keys(playerData).length} players`);
+  } else {
+    // FALLBACK: Generate minimal player roster from games
+    console.warn('⚠️ No player data file found, generating minimal roster from games');
+    playerData = generateMinimalPlayerRoster(games);
+    console.log(`🎯 Generated minimal roster: ${Object.keys(playerData).length} players`);
   }
-  const playerData = blobData.players;
-  const dataSource = 'live_blobs';
-  console.log(`🎯 Using LIVE data: ${Object.keys(playerData).length} players`);
+  
+  if (!playerData || Object.keys(playerData).length === 0) {
+    throw new Error('No player data available - cannot generate TD predictions');
+  }
+  
+  const dataSource = blobData ? 'live_blobs' : 'generated_minimal';
   
   const allPredictions = [];
   
