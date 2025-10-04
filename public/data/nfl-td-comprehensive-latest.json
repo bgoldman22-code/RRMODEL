@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2025-10-03T20:59:23Z",
+    "generated_at": "2025-10-04T14:36:40Z",
     "season": 2025,
     "week": 5,
-    "total_players": 559,
+    "total_players": 558,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -5932,7 +5932,7 @@
     {
       "player_id": "00-0036906",
       "name": "K.Herbert",
-      "team": "SEA",
+      "team": "NYJ",
       "position": "RB",
       "opponent": "TBD",
       "is_home": true,
@@ -11701,27 +11701,6 @@
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.85,
-      "first_td": 0,
-      "multiple_td": 0
-    },
-    {
-      "player_id": "00-0040784",
-      "name": "Q.Judkins",
-      "team": "CLE",
-      "position": "RB",
-      "opponent": "TBD",
-      "is_home": true,
-      "depth_chart_position": "RB",
-      "anytime_td_prob": 0.935,
-      "anytime_confidence": "medium",
-      "first_td_prob": 0,
-      "first_confidence": "medium",
-      "multiple_td_prob": 0,
-      "multiple_confidence": "medium",
-      "anytime_value_score": 0.3925,
-      "first_value_score": 0,
-      "multiple_value_score": 0,
-      "anytime_td": 0.935,
       "first_td": 0,
       "multiple_td": 0
     },
