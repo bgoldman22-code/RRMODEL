@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2025-10-06T19:16:13Z",
+    "generated_at": "2025-10-07T14:53:22Z",
     "season": 2025,
-    "week": 5,
-    "total_players": 563,
+    "week": 6,
+    "total_players": 564,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -208,14 +208,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.045,
+      "multiple_td_prob": 0.042,
       "multiple_confidence": "high",
       "anytime_value_score": 0.33,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.81,
       "first_td": 0,
-      "multiple_td": 0.045
+      "multiple_td": 0.0415
     },
     {
       "player_id": "00-0030564",
@@ -1657,14 +1657,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.036,
+      "multiple_td_prob": 0.03,
       "multiple_confidence": "high",
       "anytime_value_score": 0.06,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.27,
       "first_td": 0,
-      "multiple_td": 0.036
+      "multiple_td": 0.03
     },
     {
       "player_id": "00-0033876",
@@ -1888,14 +1888,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.11,
+      "multiple_td_prob": 0.139,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.012,
+      "multiple_value_score": 0.0236,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.11
+      "multiple_td": 0.1389
     },
     {
       "player_id": "00-0033941",
@@ -6151,14 +6151,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.072,
+      "multiple_td_prob": 0.09,
       "multiple_confidence": "high",
       "anytime_value_score": 0.06,
       "first_value_score": 0,
-      "multiple_value_score": 0,
+      "multiple_value_score": 0.004,
       "anytime_td": 0.27,
       "first_td": 0,
-      "multiple_td": 0.072
+      "multiple_td": 0.09
     },
     {
       "player_id": "00-0036972",
@@ -6768,6 +6768,27 @@
       "anytime_td": 0.9,
       "first_td": 0,
       "multiple_td": 0.15
+    },
+    {
+      "player_id": "00-0037244",
+      "name": "D.Lloyd",
+      "team": "JAX",
+      "position": "LB",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "MLB",
+      "anytime_td_prob": 0.68,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.265,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.68,
+      "first_td": 0,
+      "multiple_td": 0
     },
     {
       "player_id": "00-0037247",
