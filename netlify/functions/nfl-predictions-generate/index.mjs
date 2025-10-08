@@ -9,6 +9,9 @@ import { updateInjuryDurations, initializeInjuryDurationTracking } from '../_lib
 import { buildCanonicalAvailability, applyPositionCaps } from '../_lib/canonical-availability-v5.mjs';
 // Kelly Hybrid Staking: Explicit staking system
 import { recommendUnits } from '../_lib/kelly-hybrid-staking.mjs';
+// ENHANCED: Comprehensive EPA database (300+ players) + Return Boost System
+import { getPlayerEPA, calculateQualityBackupMultiplier, REPLACEMENT_LEVEL_EPA } from '../_lib/comprehensive-player-epa.js';
+import { getAllReturnBoosts, savePriorWeekSnapshot } from '../_lib/return-boost-system.js';
 
 // v4.1 PRODUCTION SAFEGUARDS: Import new safety systems
 import { 
@@ -896,7 +899,7 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
       now
     );
     
-    const qbImpact = qbAvail.calculateImpact();
+    const qbImpact = await qbAvail.calculateImpact();
     if (Math.abs(qbImpact.spreadImpact) > 0.01) {
       allPlayers.push({
         name: teamInjuries.qb_name,
@@ -912,17 +915,17 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
   
   // Process skill positions (RB, WR, TE)
   const skillPositions = ['RB', 'WR', 'TE'];
-  skillPositions.forEach(position => {
+  for (const position of skillPositions) {
     const positionInjuries = teamInjuries[`${position.toLowerCase()}_injuries`] || [];
     
-    positionInjuries.forEach(injury => {
+    for (const injury of positionInjuries) {
       const playerName = injury.name || injury.player || 'Unknown';
       const statusRaw = injury.status || 'active';
       const status = normalizeStatus(statusRaw);
       const depthPosition = injury.depth || 1;
       
       // Skip healthy players beyond depth 2
-      if (status === 'active' && depthPosition > 2) return;
+      if (status === 'active' && depthPosition > 2) continue;
       
       // PHASE 1: Get replacement from depth chart (injured player's depth + 1)
       let replacementPlayer = null;
@@ -956,7 +959,7 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
         now
       );
       
-      const impact = avail.calculateImpact();
+      const impact = await avail.calculateImpact();
       if (Math.abs(impact.spreadImpact) > 0.01) {
         allPlayers.push({
           name: playerName,
@@ -969,8 +972,8 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
         });
         totalDelta += impact.spreadImpact;
       }
-    });
-  });
+    }
+  }
 
   // Apply position caps with budget reallocation
   // Build adjustments array for position caps (expected input is an array of per-player adjustments)
@@ -1072,6 +1075,43 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
   
   injuryAnalysis.totalImpact = totalDelta;
   injuryAnalysis.confidence = minConfidence;
+  
+  // ==================================================
+  // RETURN BOOST SYSTEM (NEW)
+  // ==================================================
+  // Detect week-over-week improvements and apply positive impact credits
+  console.log(`🔄 Checking return boosts for ${teamCode}, Week ${weekNumber}...`);
+  
+  try {
+    const { detectReturnBoosts } = await import('../_lib/return-boost-system.js');
+    const returnBoostData = await detectReturnBoosts(teamCode, injuries, weekNumber, 2025);
+    
+    if (returnBoostData.boosts && returnBoostData.boosts.length > 0) {
+      console.log(`✅ Found ${returnBoostData.boosts.length} return boosts for ${teamCode}`);
+      
+      returnBoostData.boosts.forEach(boost => {
+        totalDelta += boost.boost; // Add positive impact
+        injuryAnalysis.adjustments.push({
+          player: boost.playerName,
+          name: boost.playerName,
+          position: boost.position,
+          status: boost.currentStatus,
+          impact: boost.boost, // POSITIVE value
+          epaImpact: boost.boost / 20,
+          confidence: 0.8,
+          reason: `Return boost: ${boost.reason}`,
+          isReturnBoost: true
+        });
+      });
+      
+      injuryAnalysis.totalReturnBoost = returnBoostData.totalBoost;
+      injuryAnalysis.totalImpact = totalDelta; // Update total with boosts
+      
+      console.log(`📈 Total return boost for ${teamCode}: +${returnBoostData.totalBoost.toFixed(2)} points`);
+    }
+  } catch (err) {
+    console.warn(`⚠️ Return boost calculation failed for ${teamCode}: ${err.message}`);
+  }
   
   return {
     score: scoreData.score + totalDelta,

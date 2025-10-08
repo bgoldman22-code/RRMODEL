@@ -342,7 +342,7 @@ export class PlayerWeekAvailability {
    * Calculate impact using EPA-based calculations (YOUR precision)
    * Called exactly ONCE per player-week after all sources merged
    */
-  calculateImpact() {
+  async calculateImpact() {
     // No impact if active and healthy
     if (this.status === 'active' && this.probPlay >= 0.95 && !this.replacementPlayerId) {
       return {
@@ -361,9 +361,9 @@ export class PlayerWeekAvailability {
       return this._calculateQBImpact();
     }
     
-    // RB/WR/TE calculations
+    // RB/WR/TE calculations (ENHANCED with comprehensive EPA)
     if (['RB', 'WR', 'TE'].includes(this.position)) {
-      return this._calculateSkillPositionImpact();
+      return await this._calculateSkillPositionImpact();
     }
     
     // Fallback for other positions
@@ -556,9 +556,78 @@ export class PlayerWeekAvailability {
   
   /**
    * Skill position (RB/WR/TE) impact calculation
+   * ENHANCED: Uses comprehensive EPA database for player-specific calculations
    */
-  _calculateSkillPositionImpact() {
-    // Position-specific baseline impacts
+  async _calculateSkillPositionImpact() {
+    // Try to load comprehensive EPA database
+    let playerEPA = null;
+    let replacementEPA = null;
+    let usePlayerSpecificEPA = false;
+    
+    try {
+      const { getPlayerEPA, calculateQualityBackupMultiplier, REPLACEMENT_LEVEL_EPA } = 
+        await import('./comprehensive-player-epa.js');
+      
+      // Get player-specific EPA
+      const playerData = getPlayerEPA(this.playerName, this.position);
+      const replacementData = this.replacementPlayerName ? 
+        getPlayerEPA(this.replacementPlayerName, this.position) : null;
+      
+      if (playerData) {
+        playerEPA = playerData.epa;
+        replacementEPA = replacementData?.epa || REPLACEMENT_LEVEL_EPA[this.position];
+        usePlayerSpecificEPA = true;
+        
+        // Calculate EPA-based impact
+        const epaDelta = replacementEPA - playerEPA;
+        const touches = this.position === 'RB' ? 18 : (this.position === 'WR' ? 8 : 6);
+        let rawSpreadImpact = epaDelta * touches;
+        
+        // Apply quality backup multiplier if we have specific backup data
+        if (replacementData) {
+          const qualityMultiplier = calculateQualityBackupMultiplier(
+            playerEPA,
+            replacementEPA,
+            this.position
+          );
+          rawSpreadImpact *= qualityMultiplier;
+          
+          if (process.env.DEBUG_AVAILABILITY && qualityMultiplier !== 1.0) {
+            console.log(`🔧 Quality backup adjustment: ${this.playerName} → ${this.replacementPlayerName}`);
+            console.log(`   Multiplier: ${qualityMultiplier.toFixed(2)}, Impact: ${rawSpreadImpact.toFixed(2)}`);
+          }
+        }
+        
+        // Apply weeks-out decay (faster for skill positions)
+        if (this.weeksOut > 0 && this.reason === 'injury') {
+          const skillTau = 2.0;
+          const decay = Math.exp(-this.weeksOut / skillTau);
+          rawSpreadImpact *= decay;
+        }
+        
+        // Adjust by probability
+        const finalSpreadImpact = rawSpreadImpact * (1 - this.probPlay);
+        const totalImpact = finalSpreadImpact * 0.25;
+        
+        return {
+          spreadImpact: finalSpreadImpact,
+          totalImpact: totalImpact,
+          epaImpact: epaDelta,
+          playerEPA: playerEPA,
+          replacementEPA: replacementEPA,
+          confidence: this.confidence,
+          reason: this._getImpactReason(),
+          source: this.topSource,
+          calculationType: 'player_specific_epa',
+          probPlay: this.probPlay,
+          usedComprehensiveEPA: true
+        };
+      }
+    } catch (err) {
+      console.warn(`⚠️ Failed to use comprehensive EPA for ${this.playerName}: ${err.message}`);
+    }
+    
+    // FALLBACK: Use baseline impacts if EPA database unavailable
     const baselineImpacts = {
       RB: -1.8,  // RB1 vs RB2
       WR: -2.2,  // WR1 vs WR2
