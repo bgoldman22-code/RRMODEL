@@ -175,6 +175,46 @@ exports.handler = async (event) => {
       team.totalImpact.spread = Math.round(team.totalImpact.spread * 10) / 10;
       team.totalImpact.total = Math.round(team.totalImpact.total * 10) / 10;
     }
+
+    // NORMALIZATION LAYER: Add legacy fields (qb_name, qb_status, *_injuries arrays) so
+    // prediction engine's applyInjuryAdjustments() can operate on BallDontLie data
+    // without further changes. This mirrors the expected structure from the previous
+    // comprehensive injury system.
+    for (const teamCode in teams) {
+      const team = teams[teamCode];
+      if (!team || !Array.isArray(team.injuries)) continue;
+
+      const rbInj = [];
+      const wrInj = [];
+      const teInj = [];
+      let qbSet = false;
+
+      team.injuries.forEach(inj => {
+        const pos = (inj.position || '').toUpperCase();
+        const status = (inj.status || '').toLowerCase();
+        // Only propagate meaningful injury statuses
+        const tracked = ['out', 'doubtful', 'questionable'];
+        if (!tracked.includes(status)) return;
+        if (pos === 'QB' && !qbSet) {
+          team.qb_name = inj.playerName;
+          team.qb_status = status; // prediction code lowercases before normalization
+          qbSet = true;
+        } else if (pos === 'RB') {
+          rbInj.push({ name: inj.playerName, status, depth: 1 });
+        } else if (pos === 'WR') {
+          wrInj.push({ name: inj.playerName, status, depth: 1 });
+        } else if (pos === 'TE') {
+          teInj.push({ name: inj.playerName, status, depth: 1 });
+        }
+      });
+
+      // Attach arrays only if we have entries (keeps payload concise)
+      if (rbInj.length) team.rb_injuries = rbInj;
+      if (wrInj.length) team.wr_injuries = wrInj;
+      if (teInj.length) team.te_injuries = teInj;
+      // Marker to avoid double-normalization if future processing reuses object
+      team._normalized_legacy_fields = true;
+    }
     
     // Generate summary
     const significantTotal = allInjuries.filter(i => i.impact.isSignificant).length;
