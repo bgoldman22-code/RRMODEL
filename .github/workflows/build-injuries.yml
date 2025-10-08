@@ -1,8 +1,21 @@
 name: NFL Injury Snapshot Builder
 on:
   schedule:
-    # Every 30 minutes during football season
-    - cron: "*/30 * * * *"
+    # Twice daily on non-game days (6 AM and 6 PM ET = 10 AM and 10 PM UTC)
+    - cron: "0 10,22 * * 2,3,5,6"
+    # Hourly on game days between 9 AM - 9 PM ET (1 PM - 1 AM UTC)
+    # Thursday Night Football: 9 AM - 11 PM ET
+    - cron: "0 13-23 * * 4"
+    # Thursday Night Football: 12 AM - 1 AM ET (for games that run late)
+    - cron: "0 0-1 * * 5"
+    # Sunday games: 9 AM - 11 PM ET
+    - cron: "0 13-23 * * 0"
+    # Sunday Night Football spillover: 12 AM - 1 AM ET Monday
+    - cron: "0 0-1 * * 1"
+    # Monday Night Football: 9 AM - 11 PM ET
+    - cron: "0 13-23 * * 1"
+    # Monday Night Football spillover: 12 AM - 1 AM ET Tuesday
+    - cron: "0 0-1 * * 2"
   # Manual trigger for testing
   workflow_dispatch:
     inputs:
