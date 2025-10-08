@@ -1,6 +1,6 @@
 // netlify/functions/nfl-depthcharts-rollover.cjs
 // Updates Blobs key depth/season/2025/current.json to point to the latest week
-const { getBlobsStore } = require('./_blobs.js');
+const { getBlobsStore } = require('./_blobs.cjs');
 
 exports.handler = async () => {
   const store = getBlobsStore('nfl-td');

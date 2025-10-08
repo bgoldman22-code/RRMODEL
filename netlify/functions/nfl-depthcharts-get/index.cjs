@@ -53,7 +53,7 @@ exports.handler = async (event) => {
     // 2) Try blobs (lazy require)
     let charts = null, src = null;
     try {
-      const { getBlobsStore } = require("../_blobs.js");
+      const { getBlobsStore } = require("../_blobs.cjs");
       const store = getBlobsStore("nfl-td"); // ✅ ensure this matches the seeder
       const currKey = `depth/season/${season}/current.json`;
       const wkKey   = `depth/season/${season}/week${week}.json`;

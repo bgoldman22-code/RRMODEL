@@ -1,5 +1,5 @@
 // netlify/functions/health-blobs/index.cjs
-const { getBlobsStore } = require('../_blobs.js');
+const { getBlobsStore } = require('../_blobs.cjs');
 
 exports.handler = async () => {
   const info = {

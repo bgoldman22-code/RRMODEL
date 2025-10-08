@@ -1,6 +1,6 @@
 // netlify/functions/blobs-introspect/index.cjs
 const blobs = require('@netlify/blobs');
-const { getBlobsStore } = require('../_blobs.js');
+const { getBlobsStore } = require('../_blobs.cjs');
 
 exports.handler = async () => {
   const keys = Object.keys(blobs || {});

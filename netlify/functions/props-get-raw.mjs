@@ -1,6 +1,6 @@
 
 // netlify/functions/props-get-raw.mjs
-import { getBlobsStore } from "./_blobs.js";
+import { getBlobsStore } from "./_blobs.cjs";
 export const handler = async (event) => {
   const q = event.queryStringParameters || {};
   const market = (q.market || "tb").toLowerCase();

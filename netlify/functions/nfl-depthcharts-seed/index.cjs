@@ -1,5 +1,5 @@
 // netlify/functions/nfl-depthcharts-seed/index.cjs
-const { getBlobsStore } = require('../_blobs.js');
+const { getBlobsStore } = require('../_blobs.cjs');
 
 // Full depth charts (seed payload)
 const FULL_DEPTH = {

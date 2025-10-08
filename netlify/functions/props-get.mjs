@@ -1,6 +1,6 @@
 
 // netlify/functions/props-get.mjs
-import { getBlobsStore } from "./_blobs.js";
+import { getBlobsStore } from "./_blobs.cjs";
 function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g,"'").replace(/[.]/g,"").replace(/,+/g,"").replace(/\s+/g," ").trim();}
 export const handler = async (event) => {
   const q = event.queryStringParameters || {};

@@ -1,6 +1,6 @@
 
 // netlify/functions/props-diagnostics.mjs
-import { getBlobsStore } from "./_blobs.js";
+import { getBlobsStore } from "./_blobs.cjs";
 export const handler = async () => {
   const store = getBlobsStore();
   const out = { ok:true, snapshots:{} };

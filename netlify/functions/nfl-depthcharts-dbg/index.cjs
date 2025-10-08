@@ -1,7 +1,7 @@
 // netlify/functions/nfl-depthcharts-dbg/index.cjs
 const path = require('path');
 const fs = require('fs/promises');
-const { getBlobsStore } = require('../_blobs.js');
+const { getBlobsStore } = require('../_blobs.cjs');
 
 exports.handler = async () => {
   const info = {

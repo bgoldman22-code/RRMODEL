@@ -1,6 +1,6 @@
 
 // netlify/functions/props-prob.mjs
-import { getBlobsStore } from "./_blobs.js";
+import { getBlobsStore } from "./_blobs.cjs";
 
 function impliedFromAmerican(a){ a=Number(a); if(!Number.isFinite(a)) return null; return a>0? 100/(a+100) : Math.abs(a)/(Math.abs(a)+100); }
 function ev(prob, amer){ const q=1-prob; const mult = amer>0? amer/100 : 100/Math.abs(amer); return prob*mult - q; }

@@ -11,7 +11,7 @@
 //   depth/season/{season}/current.json
 
 const { parse } = require('csv-parse/sync');
-const { getBlobsStore } = require('../_blobs.js');
+const { getBlobsStore } = require('../_blobs.cjs');
 
 // Map FantasyPros team names/abbrevs to our aliases
 const TEAM_MAP = {

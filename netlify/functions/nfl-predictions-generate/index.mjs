@@ -1981,8 +1981,11 @@ async function generateAdvancedPredictions(games, season) {
             normalized: awayInj._normalized_legacy_fields === true
         });
       }
-      homeScoreData = await applyInjuryAdjustments(homeScoreData, homeCode, injuries, currentWeek);
-      awayScoreData = await applyInjuryAdjustments(awayScoreData, awayCode, injuries, currentWeek);
+      
+      // LEGACY INJURY SYSTEM DISABLED - Using Elite System Instead
+      // homeScoreData = await applyInjuryAdjustments(homeScoreData, homeCode, injuries, currentWeek);
+      // awayScoreData = await applyInjuryAdjustments(awayScoreData, awayCode, injuries, currentWeek);
+      console.log('⚡ Legacy injury adjustments SKIPPED - Elite system active');
       
       // v4.1 SAFEGUARDS: Apply depth chart safeguards to injury impacts
       if (homeScoreData.injuryAnalysis?.adjustments?.length > 0) {
@@ -2016,7 +2019,7 @@ async function generateAdvancedPredictions(games, season) {
     let eliteKellyReduction = 1.0;
     
     if (injuries && injuries.length > 0) {
-      const { calculateEliteInjuryAdjustment } = await import('./_lib/elite-injury-penalty-calculator.mjs');
+      const { calculateEliteInjuryAdjustment } = await import('../_lib/elite-injury-penalty-calculator.mjs');
       
       // Separate home/away injuries
       const homeInjuries = injuries.filter(inj => inj.team === homeCode);

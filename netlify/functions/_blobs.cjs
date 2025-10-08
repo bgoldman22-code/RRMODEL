@@ -1,42 +1,54 @@
+// netlify/functions/_blobs.cjs
+// Minimal helper around @netlify/blobs v7 style API.
 const { getStore } = require('@netlify/blobs');
 
-const storeName = process.env.BLOBS_STORE_NFL || process.env.NFL_TD_BLOBS || "nfl-td";
-const store = getStore({
-  name: storeName,
-  siteID: process.env.NETLIFY_SITE_ID,
-  token: process.env.NETLIFY_BLOBS_TOKEN,
-});
+const storeName = process.env.BLOBS_STORE_NFL || process.env.BLOBS_STORE || 'rrmodelblobs';
 
-const safeJSONParse = (input, fallback=null) => {
-  try { return JSON.parse(input); } catch { return fallback; }
+let _store;
+function store() {
+  if (!_store) {
+    _store = getStore({
+      name: storeName,
+      siteID: process.env.NETLIFY_SITE_ID,
+      token: process.env.NETLIFY_BLOBS_TOKEN,
+    });
+  }
+  return _store;
+}
+
+const safeJSON = (s) => {
+  if (!s) return null;
+  try { return JSON.parse(s); } catch { return null; }
 };
 
 exports.get = async (key) => {
   try {
-    const raw = await store.get(key, { type: "text" });
-    return raw ? safeJSONParse(raw) : null;
-  } catch (err) {
-    console.error("Blobs get error:", err);
+    const txt = await store().get(key, { type: 'text' });
+    return safeJSON(txt);
+  } catch (e) {
+    console.error('[_blobs.get] error', e);
     return null;
   }
 };
 
-exports.set = async (key, value) => {
+exports.set = async (key, obj) => {
   try {
-    await store.set(key, JSON.stringify(value));
+    await store().set(key, JSON.stringify(obj));
     return true;
-  } catch (err) {
-    console.error("Blobs set error:", err);
+  } catch (e) {
+    console.error('[_blobs.set] error', e);
     return false;
   }
 };
 
 exports.del = async (key) => {
   try {
-    await store.delete(key);
+    await store().delete(key);
     return true;
-  } catch (err) {
-    console.error("Blobs del error:", err);
+  } catch (e) {
+    console.error('[_blobs.del] error', e);
     return false;
   }
 };
+
+exports.storeInfo = () => ({ name: storeName });

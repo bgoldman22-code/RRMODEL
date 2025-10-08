@@ -1,6 +1,6 @@
 
 // netlify/functions/props-refresh.mjs
-import { getBlobsStore } from "./_blobs.js";
+import { getBlobsStore } from "./_blobs.cjs";
 
 const BASE = process.env.THEODDS_API_BASE || "https://api.the-odds-api.com/v4";
 const KEY = process.env.THEODDS_API_KEY;
