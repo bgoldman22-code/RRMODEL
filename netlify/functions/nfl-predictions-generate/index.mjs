@@ -789,6 +789,42 @@ function calculateDefaultInjuryImpact(position, teamCode) {
 
 async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1) {
   const teamInjuries = injuries.teams?.[teamCode] || {};
+
+  // FALLBACK NORMALIZATION: If legacy fields (qb_name, *_injuries) are absent but a raw
+  // BallDontLie-style injuries array exists, derive the expected structure on the fly.
+  if (!teamInjuries.qb_name && Array.isArray(teamInjuries.injuries)) {
+    try {
+      const trackedStatuses = new Set(['out','doubtful','questionable']);
+      const rb_injuries = [];
+      const wr_injuries = [];
+      const te_injuries = [];
+      let qbPicked = false;
+      for (const inj of teamInjuries.injuries) {
+        const pos = (inj.position || '').toUpperCase();
+        const status = (inj.status || '').toLowerCase();
+        if (!trackedStatuses.has(status)) continue;
+        if (pos === 'QB' && !qbPicked) {
+          teamInjuries.qb_name = inj.playerName;
+          teamInjuries.qb_status = status;
+          qbPicked = true;
+        } else if (pos === 'RB') {
+          rb_injuries.push({ name: inj.playerName, status, depth: 1 });
+        } else if (pos === 'WR') {
+          wr_injuries.push({ name: inj.playerName, status, depth: 1 });
+        } else if (pos === 'TE') {
+          te_injuries.push({ name: inj.playerName, status, depth: 1 });
+        }
+      }
+      if (rb_injuries.length) teamInjuries.rb_injuries = rb_injuries;
+      if (wr_injuries.length) teamInjuries.wr_injuries = wr_injuries;
+      if (te_injuries.length) teamInjuries.te_injuries = te_injuries;
+      if (qbPicked || rb_injuries.length || wr_injuries.length || te_injuries.length) {
+        console.log(`🧩 Derived legacy injury fields for ${teamCode} (on-the-fly)`);
+      }
+    } catch (e) {
+      console.warn(`⚠️ Failed fallback normalization for ${teamCode}: ${e.message}`);
+    }
+  }
   let totalDelta = 0;
   const injuryAnalysis = {
     adjustments: [],
@@ -1862,6 +1898,29 @@ async function generateAdvancedPredictions(games, season) {
     
     if (injuries) {
       console.log(`🔥 APPLYING CANONICAL AVAILABILITY for ${awayCode} @ ${homeCode}, Week ${currentWeek}`);
+      // Debug snapshot of normalized injury shape per team (once per game)
+      const homeInj = injuries.teams?.[homeCode];
+      const awayInj = injuries.teams?.[awayCode];
+      if (homeInj) {
+        console.log('🩺 HOME injury snapshot:', {
+          qb_name: homeInj.qb_name,
+            qb_status: homeInj.qb_status,
+            rb_injuries: homeInj.rb_injuries?.length || 0,
+            wr_injuries: homeInj.wr_injuries?.length || 0,
+            te_injuries: homeInj.te_injuries?.length || 0,
+            normalized: homeInj._normalized_legacy_fields === true
+        });
+      }
+      if (awayInj) {
+        console.log('🩺 AWAY injury snapshot:', {
+          qb_name: awayInj.qb_name,
+            qb_status: awayInj.qb_status,
+            rb_injuries: awayInj.rb_injuries?.length || 0,
+            wr_injuries: awayInj.wr_injuries?.length || 0,
+            te_injuries: awayInj.te_injuries?.length || 0,
+            normalized: awayInj._normalized_legacy_fields === true
+        });
+      }
       homeScoreData = await applyInjuryAdjustments(homeScoreData, homeCode, injuries, currentWeek);
       awayScoreData = await applyInjuryAdjustments(awayScoreData, awayCode, injuries, currentWeek);
       
@@ -2296,7 +2355,10 @@ async function generateAdvancedPredictions(games, season) {
         injuryAnalysis: {
           home: homeScoreData.injuryAnalysis || null,
           away: awayScoreData.injuryAnalysis || null,
-          hasInjuryImpact: !!(homeScoreData.injuryAnalysis?.adjustments?.length || awayScoreData.injuryAnalysis?.adjustments?.length),
+          hasInjuryImpact: !!(
+            (homeScoreData.injuryAnalysis?.adjustments && homeScoreData.injuryAnalysis.adjustments.some(a => Math.abs(a.impact) > 0.01)) ||
+            (awayScoreData.injuryAnalysis?.adjustments && awayScoreData.injuryAnalysis.adjustments.some(a => Math.abs(a.impact) > 0.01))
+          ),
           injuryDataAvailable: !!injuries?.teams
         }
       },
