@@ -796,6 +796,7 @@ const handler = async () => {
     console.error('❌ Elite injury system failed:', error);
     return {
       statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         success: false,
         error: error.message,
@@ -806,4 +807,4 @@ const handler = async () => {
   }
 };
 
-exports.handler = handler;
+exports.handler = handler;}
