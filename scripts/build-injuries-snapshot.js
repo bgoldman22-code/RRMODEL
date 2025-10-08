@@ -109,23 +109,12 @@ async function savePlayerCache(cache) {
 async function loadInjuryHistory() {
   try {
     const store = getBlobStore();
-    const text = await store.get('nfl/injuries/injury-duration-history.json');
-    if (text) {
-      console.log('📊 Loaded injury history from blobs');
-      return JSON.parse(text);
-    }
-  } catch {}
-  
-  try {
-    const response = await fetch('https://bgroundrobin.com/data/nfl/injuries/injury-duration-history.json');
-    if (response.ok) {
-      console.log('📊 Loaded injury history from web');
-      return await response.json();
-    }
-  } catch {}
-  
-  console.log('📊 No injury history available (using ESPN only)');
-  return null;
+    const text = await store.get('nfl/injuries/injury-history.json');
+    return text ? JSON.parse(text) : null;
+  } catch {
+    console.log('📊 No injury history available (using RapidAPI only)');
+    return null;
+  }
 }
 
 function normalizeInjuryStatus(espnStatus) {
@@ -232,79 +221,81 @@ function dedupeByPlayer(items) {
   return [...map.values()];
 }
 
-// OPTIMIZED: Team processor with player cache to reduce ESPN API calls
+// OPTIMIZED: Team processor with player cache using RapidAPI
 async function processTeamWithCache(teamCode, playerPriors, injuryHistory, playerCache) {
   const teamId = ESPN_TEAM_MAP[teamCode];
   if (!teamId) {
-    console.log(`⚠️ No ESPN ID for team: ${teamCode}`);
+    console.log(`⚠️ No team ID for: ${teamCode}`);
     return { injuries: [], teamSummary: null };
   }
 
-  const url = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/teams/${teamId}/injuries`;
+  const rapidApiKey = process.env.RAPIDAPI_NFL_KEY;
+  if (!rapidApiKey) {
+    console.log(`⚠️ RAPIDAPI_NFL_KEY not configured`);
+    return { injuries: [], teamSummary: null };
+  }
+
+  const url = `https://nfl-api-data.p.rapidapi.com/nfl-team-injuries?id=${teamId}`;
   console.log(`🏥 Processing ${teamCode}...`);
 
   try {
     const res = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; NFLInjuryBot/4.0)',
-        'Accept': 'application/json'
+        'x-rapidapi-host': 'nfl-api-data.p.rapidapi.com',
+        'x-rapidapi-key': rapidApiKey
       }
     });
-    if (!res.ok) throw new Error(`ESPN API error: ${res.status}`);
+    if (!res.ok) throw new Error(`RapidAPI error: ${res.status}`);
 
     const data = await res.json();
-    const refs = data.items || [];
-    console.log(`📊 ${teamCode}: Found ${refs.length} injury entries`);
+    const injuries = data.injuries || [];
+    console.log(`📊 ${teamCode}: Found ${injuries.length} injury entries`);
 
     const items = [];
-    for (let i = 0; i < Math.min(refs.length, 20); i++) { // Process more since we're not time-constrained
-      const ref = refs[i];
+    for (const injury of injuries) {
       try {
-        // Get injury details
-        const ir = await fetch(ref.$ref, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NFLInjuryBot/4.0)' }
-        });
-        if (!ir.ok) continue;
+        // RapidAPI provides direct status field
+        const rawStatus = injury.status || 'Active';
+        const status = normalizeInjuryStatus(rawStatus);
+        
+        // Skip if active (not a real injury)
+        if (status === 'active') continue;
 
-        const injuryData = await ir.json();
-        const status = normalizeInjuryStatus(injuryData.status);
-
-        // Use player cache to avoid redundant athlete API calls
+        // Extract player info from injury data
         let playerName = 'Unknown';
         let position = 'UNK';
-        const athleteRef = injuryData.athlete?.$ref;
         
-        if (athleteRef) {
-          if (playerCache[athleteRef]) {
-            // Use cached player data
-            const cached = playerCache[athleteRef];
-            playerName = cached.name;
-            position = cached.position;
-            console.log(`💾 Used cached player: ${playerName}`);
-          } else {
-            // Fetch and cache new player data
-            try {
-              const pr = await fetch(athleteRef, {
-                headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NFLInjuryBot/4.0)' }
-              });
-              if (pr.ok) {
-                const pd = await pr.json();
-                playerName = pd.displayName || pd.name || 'Unknown';
-                position = pd.position?.abbreviation || 'UNK';
-                
-                // Cache this player for future use
-                playerCache[athleteRef] = {
-                  name: playerName,
-                  position: position,
-                  lastUpdated: new Date().toISOString()
-                };
-                console.log(`💾 Cached new player: ${playerName}`);
-              }
-            } catch { /* Skip if player fetch fails */ }
-          }
+        // Try to extract player name from shortComment or longComment
+        const commentText = injury.shortComment || injury.longComment || '';
+        const nameMatch = commentText.match(/^([A-Z][a-z]+(?:\s[A-Z][a-z]+)*)/);
+        if (nameMatch) {
+          playerName = nameMatch[1];
+        }
+
+        // Try to get player info from cache first
+        const cacheKey = `${teamCode}_${playerName}`;
+        if (playerCache[cacheKey]) {
+          const cached = playerCache[cacheKey];
+          position = cached.position;
+          console.log(`💾 Used cached player: ${playerName}`);
         }
 
         const depthOrder = getPlayerDepthPosition(position);
+        
+        // If we found a depth position, extract the actual position
+        if (depthOrder && depthOrder !== 'bench') {
+          const posMatch = depthOrder.match(/^([A-Z]+)/);
+          if (posMatch) {
+            position = posMatch[1];
+            // Update cache
+            playerCache[cacheKey] = {
+              name: playerName,
+              position: position,
+              lastUpdated: new Date().toISOString()
+            };
+          }
+        }
+
         const weeksOut = deriveWeeksOutFromHistory(injuryHistory, teamCode, playerName) ?? 0;
 
         const impact = calcReplacementAdjusted(
@@ -313,27 +304,26 @@ async function processTeamWithCache(teamCode, playerPriors, injuryHistory, playe
           weeksOut
         );
 
+        const injuryType = injury.details?.type || injury.details?.location || 'Undisclosed';
+
         items.push({
           teamCode,
           playerName,
           position,
           status,
           depthOrder,
-          description: injuryData.description || 'Undisclosed',
+          description: injuryType,
           impact,
           lastUpdated: new Date().toISOString(),
-          source: 'ESPN_API_BACKGROUND'
+          source: 'RAPIDAPI_BACKGROUND'
         });
 
         if (impact.isSignificant) {
           console.log(`🚨 ${teamCode}: ${playerName} (${position}) ${status.toUpperCase()} → spread ${impact.spreadImpact.toFixed(2)} / total ${impact.totalImpact.toFixed(2)}`);
         }
       } catch (e) {
-        console.log(`⚠️ ${teamCode} injury item error: ${e.message}`);
+        console.log(`⚠️ ${teamCode} RapidAPI injury parse error: ${e.message}`);
       }
-      
-      // Polite rate limiting for background job
-      await new Promise(r => setTimeout(r, 150));
     }
 
     // Apply deduplication
@@ -406,7 +396,7 @@ async function buildInjurySnapshot() {
   const report = {
     asOf: new Date().toISOString(),
     version: SYSTEM_VERSION,
-    source: 'ESPN_API_BACKGROUND_CACHED',
+    source: 'RAPIDAPI_BACKGROUND_CACHED',
     teams: {},
     summary: {
       totalTeamsProcessed: 0,
