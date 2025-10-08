@@ -176,6 +176,17 @@ function getTeamAbbreviation(fullName) {
   return nameMap[fullName] || fullName;
 }
 
+// Check if team is significantly affected by injuries (3+ points total impact)
+function hasSignificantInjuryImpact(teamStats) {
+  if (!teamStats?.injuryImpact) return false;
+  
+  const totalImpact = Math.abs(teamStats.injuryImpact.totalImpact || 0);
+  const adjustmentCount = (teamStats.injuryImpact.adjustments || []).length;
+  
+  // Significant if 3+ points impact OR 3+ injury adjustments
+  return totalImpact >= 3 || adjustmentCount >= 3;
+}
+
 // Drop-in spread display function - always from picked team's POV
 const TEAM_NAME = {
   ARI:"Arizona Cardinals", ATL:"Atlanta Falcons", BAL:"Baltimore Ravens",
@@ -1219,7 +1230,21 @@ export default function NFLPredictions() {
 
                 return (
                   <tr key={r.gameId || idx} className="border-t border-neutral-200 hover:bg-neutral-25">
-                    <td className="px-4 py-3 font-medium">{fmt(r.matchup)}</td>
+                    <td className="px-4 py-3 font-medium">
+                      <div className="flex items-center gap-2">
+                        <span>{fmt(r.matchup)}</span>
+                        {hasSignificantInjuryImpact(r.teamStats?.away) && (
+                          <span className="text-xs" title={`${r.away_team} significantly affected by injuries (${Math.abs(r.teamStats.away.injuryImpact?.totalImpact || 0).toFixed(1)} pts)`}>
+                            🏥
+                          </span>
+                        )}
+                        {hasSignificantInjuryImpact(r.teamStats?.home) && (
+                          <span className="text-xs" title={`${r.home_team} significantly affected by injuries (${Math.abs(r.teamStats.home.injuryImpact?.totalImpact || 0).toFixed(1)} pts)`}>
+                            🏥
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3">{kickoff}</td>
                     
                     <td className="px-4 py-3">

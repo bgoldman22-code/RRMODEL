@@ -787,7 +787,7 @@ function calculateDefaultInjuryImpact(position, teamCode) {
   };
 }
 
-function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1) {
+async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1) {
   const teamInjuries = injuries.teams?.[teamCode] || {};
   let totalDelta = 0;
   const injuryAnalysis = {
@@ -804,14 +804,49 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1) {
   const now = Date.now();
   const allPlayers = [];
   
+  // PHASE 1: Load current depth chart for replacement identification
+  let currentDepthChart = null;
+  try {
+    const { loadDepthChart } = await import('../_lib/depth-chart-change-detector.js');
+    currentDepthChart = loadDepthChart(weekNumber, 2025);
+    if (currentDepthChart) {
+      console.log(`✅ Loaded depth chart for Week ${weekNumber}`);
+    } else {
+      console.warn(`⚠️ No depth chart available for Week ${weekNumber}, using generic backup values`);
+    }
+  } catch (error) {
+    console.warn(`⚠️ Failed to load depth chart:`, error.message);
+  }
+  
+  // Helper: normalize incoming injury status strings to canonical lowercase keys
+  const normalizeStatus = (s) => {
+    if (!s) return 'active';
+    const lower = String(s).toLowerCase();
+    // Map common variants
+    const map = { questionable: 'questionable', q: 'questionable', dout: 'doubtful', d: 'doubtful', prob: 'active', probable: 'active', inactive: 'out' };
+    return map[lower] || lower; // allow 'out', 'doubtful', 'questionable', 'active'
+  };
+  
   // Process QB
   if (teamInjuries.qb_name && teamInjuries.qb_status) {
+    const qbStatus = normalizeStatus(teamInjuries.qb_status);
+    
+    // PHASE 1: Get replacement QB from depth chart (position 2 = index 1)
+    let replacementQB = null;
+    if (currentDepthChart?.[teamCode]?.QB?.[1]) {
+      replacementQB = currentDepthChart[teamCode].QB[1];
+      console.log(`  QB replacement: ${teamInjuries.qb_name} → ${replacementQB}`);
+    }
+    
     const qbSources = [{
       type: 'INJURY_REPORT',
-      gameStatus: teamInjuries.qb_status,
-      injuryStatus: teamInjuries.qb_status,
+      status: qbStatus,          // CRITICAL: canonical mergeSource expects 'status'
+      reason: 'injury',
       isStarter: true,
+      depthOrder: 1,
       depthPosition: 1,
+      replacementPlayerName: replacementQB,  // ← PHASE 1 FIX: Actual replacement from depth chart
+      probPlay: qbStatus === 'out' ? 0 : (qbStatus === 'doubtful' ? 0.2 : (qbStatus === 'questionable' ? 0.55 : 1.0)),
       timestamp: now
     }];
     
@@ -846,18 +881,32 @@ function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1) {
     
     positionInjuries.forEach(injury => {
       const playerName = injury.name || injury.player || 'Unknown';
-      const status = injury.status || 'active';
+      const statusRaw = injury.status || 'active';
+      const status = normalizeStatus(statusRaw);
       const depthPosition = injury.depth || 1;
       
       // Skip healthy players beyond depth 2
       if (status === 'active' && depthPosition > 2) return;
       
+      // PHASE 1: Get replacement from depth chart (injured player's depth + 1)
+      let replacementPlayer = null;
+      if (currentDepthChart?.[teamCode]?.[position]?.[depthPosition]) {
+        // If player at depth 1 is out, depth 2 (index 1) becomes replacement
+        replacementPlayer = currentDepthChart[teamCode][position][depthPosition];
+        if (replacementPlayer && replacementPlayer !== playerName) {
+          console.log(`  ${position} replacement: ${playerName} → ${replacementPlayer}`);
+        }
+      }
+      
       const sources = [{
         type: 'INJURY_REPORT',
-        gameStatus: status,
-        injuryStatus: status,
+        status: status,          // Provide canonical field
+        reason: 'injury',
         isStarter: depthPosition === 1,
+        depthOrder: depthPosition,
         depthPosition: depthPosition,
+        replacementPlayerName: replacementPlayer,  // ← PHASE 1 FIX: Actual replacement from depth chart
+        probPlay: status === 'out' ? 0 : (status === 'doubtful' ? 0.2 : (status === 'questionable' ? 0.55 : 1.0)),
         timestamp: now
       }];
       
@@ -1792,7 +1841,7 @@ async function generateAdvancedPredictions(games, season) {
 
   console.log(`v13 logic + v8 odds: Processing ${games.length} games with working odds integration`);
 
-  const predictions = games.map(game => {
+  const predictions = await Promise.all(games.map(async (game) => {
     const homeCode = game.home_team;
     const awayCode = game.away_team;
 
@@ -1813,8 +1862,8 @@ async function generateAdvancedPredictions(games, season) {
     
     if (injuries) {
       console.log(`🔥 APPLYING CANONICAL AVAILABILITY for ${awayCode} @ ${homeCode}, Week ${currentWeek}`);
-      homeScoreData = applyInjuryAdjustments(homeScoreData, homeCode, injuries, currentWeek);
-      awayScoreData = applyInjuryAdjustments(awayScoreData, awayCode, injuries, currentWeek);
+      homeScoreData = await applyInjuryAdjustments(homeScoreData, homeCode, injuries, currentWeek);
+      awayScoreData = await applyInjuryAdjustments(awayScoreData, awayCode, injuries, currentWeek);
       
       // v4.1 SAFEGUARDS: Apply depth chart safeguards to injury impacts
       if (homeScoreData.injuryAnalysis?.adjustments?.length > 0) {
@@ -2273,7 +2322,7 @@ async function generateAdvancedPredictions(games, season) {
         }
       }
     };
-  });
+  }));
 
   const parlayComponents = generateParlayComponents(games, predictions);
   const parlaySuggestions = generateResponsibleParlays(parlayComponents);
