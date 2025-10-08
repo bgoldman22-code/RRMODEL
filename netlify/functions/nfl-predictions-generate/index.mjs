@@ -2010,10 +2010,43 @@ async function generateAdvancedPredictions(games, season) {
       console.log(`❌ NO INJURIES APPLIED - injuries object is falsy:`, injuries);
     }
 
+    // ELITE INJURY SYSTEM: Apply scenario-based penalty calculator
+    let eliteInjuryAdjustment = null;
+    let eliteSpreadAdjustment = 0;
+    let eliteKellyReduction = 1.0;
+    
+    if (injuries && injuries.length > 0) {
+      const { calculateEliteInjuryAdjustment } = await import('./_lib/elite-injury-penalty-calculator.mjs');
+      
+      // Separate home/away injuries
+      const homeInjuries = injuries.filter(inj => inj.team === homeCode);
+      const awayInjuries = injuries.filter(inj => inj.team === awayCode);
+      
+      // Get market spread if available
+      const marketSpread = marketOdds?.homeSpread || null;
+      
+      // Calculate elite injury penalties
+      eliteInjuryAdjustment = calculateEliteInjuryAdjustment(homeInjuries, awayInjuries, marketSpread);
+      eliteSpreadAdjustment = eliteInjuryAdjustment.netSpreadImpact;
+      eliteKellyReduction = eliteInjuryAdjustment.stakingReduction.factor;
+      
+      console.log(`🎯 ELITE INJURY: Home ${homeCode} penalty ${eliteInjuryAdjustment.home.total.toFixed(2)} pts, Away ${awayCode} penalty ${eliteInjuryAdjustment.away.total.toFixed(2)} pts`);
+      console.log(`   Net spread impact: ${eliteSpreadAdjustment > 0 ? '+' : ''}${eliteSpreadAdjustment.toFixed(2)} pts (helps ${eliteSpreadAdjustment > 0 ? homeCode : awayCode})`);
+      console.log(`   Kelly reduction factor: ${eliteKellyReduction.toFixed(3)} (${((1 - eliteKellyReduction) * 100).toFixed(0)}% haircut)`);
+      
+      if (eliteInjuryAdjustment.sanityCheck.alert) {
+        console.warn(`🚨 MARKET SANITY ALERT: Model differs ${eliteInjuryAdjustment.sanityCheck.diff.toFixed(1)} pts from market!`);
+        console.warn(`   ${eliteInjuryAdjustment.sanityCheck.message}`);
+      }
+    }
+
     const scoreDifference = homeScoreData.score - awayScoreData.score;
     
     // v13 LOGIC: Fixed spread calculation
-    const predictedSpread = calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayCode);
+    let predictedSpread = calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayCode);
+    
+    // Apply elite injury spread adjustment
+    predictedSpread += eliteSpreadAdjustment;
     const rawHomeWinProb = sigmoid(predictedSpread / 14);
     const rawAwayWinProb = 1 - rawHomeWinProb;
 
