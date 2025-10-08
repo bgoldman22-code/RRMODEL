@@ -494,6 +494,21 @@ export async function storeHistoricalMetrics(season, data) {
 }
 
 export async function loadInjuries() {
+  // PRIORITY 1: BallDontLie.io live injury data (All-Star tier)
+  try {
+    console.log('🏥 Fetching live injury data from BallDontLie.io...');
+    const response = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-injuries-balldontlie');
+    if (response.ok) {
+      const liveData = await response.json();
+      if (liveData.success && liveData.teams && Object.keys(liveData.teams).length > 0) {
+        console.log(`✅ Loaded ${liveData.summary.totalInjuriesFound} injuries from BallDontLie (${liveData.summary.significantInjuries} significant)`);
+        return liveData;
+      }
+    }
+  } catch (error) {
+    console.warn('⚠️ BallDontLie injury data failed:', error.message);
+  }
+
   try {
     // Try comprehensive injury system first (Elite v4.0)
     const comprehensiveData = await readBlobJSON(`nfl/injuries/comprehensive.json`);
