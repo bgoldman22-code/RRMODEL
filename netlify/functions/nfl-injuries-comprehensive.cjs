@@ -763,7 +763,7 @@ async function writeToBlobStorage(path, data) {
   }
 }
 
-const handler = async () => {
+exports.handler = async () => {
   console.log('🚀 ELITE NFL injury system v4.0 starting…');
   try {
     const injuryData = await generateEliteInjuryReport();
@@ -808,5 +808,3 @@ const handler = async () => {
 };
 
 };
-
-exports.handler = handler;
