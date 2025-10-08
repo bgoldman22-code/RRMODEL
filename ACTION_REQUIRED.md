@@ -20,15 +20,11 @@ The GitHub Action needs the RapidAPI key added as a secret:
 
 ### Quick Steps:
 
-1. **Go to**: https://github.com/bgoldman22-code/RRMODEL/settings/secrets/actions
-
-2. **Click**: "New repository secret"
-
-3. **Add**:
-   - Name: `RAPIDAPI_NFL_KEY`
-   - Value: `f6106f437fmshacd6852e72d406bp1f5f8fjsn641b21f44fcf`
-
-4. **Click**: "Add secret"
+1. Go to: https://github.com/bgoldman22-code/RRMODEL/settings/secrets/actions
+2. Click **"New repository secret"**
+3. Name: `RAPIDAPI_NFL_KEY`
+4. Value: `[Your RapidAPI NFL key from Netlify env vars]`
+5. Click **"Add secret"**
 
 That's it! The GitHub Action will then work automatically.
 
