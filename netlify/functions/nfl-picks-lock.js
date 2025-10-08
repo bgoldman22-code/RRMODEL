@@ -43,13 +43,14 @@ export const handler = async (event, context) => {
       action, 
       source = 'kickoff',
       home_team,
-      away_team 
+      away_team,
+      gameData // (optional) full game prediction payload from nfl-predictions-generate
     } = JSON.parse(event.body || '{}');
     
     const resolvedGameId = gameId || game_id;
     
     if (action === 'lock' && resolvedGameId) {
-      const result = await lockPicksForGame(resolvedGameId, source, false, home_team, away_team);
+      const result = await lockPicksForGame(resolvedGameId, source, false, home_team, away_team, gameData);
       return {
         statusCode: 200,
         headers,
@@ -95,7 +96,7 @@ export const handler = async (event, context) => {
  * Lock picks for a specific game at kickoff with closing odds
  * Idempotent - won't overwrite existing locks unless force=true
  */
-async function lockPicksForGame(gameId, source = 'kickoff', force = false, homeTeam = null, awayTeam = null) {
+async function lockPicksForGame(gameId, source = 'kickoff', force = false, homeTeam = null, awayTeam = null, gameData = null) {
   const store = getStore("locked-picks");
   const now = new Date();
   
@@ -117,16 +118,34 @@ async function lockPicksForGame(gameId, source = 'kickoff', force = false, homeT
     return { gameId, status: 'already_locked', existing: true };
   }
 
-  // Get current predictions and odds for this game
-  const currentPredictions = await getCurrentPredictions(gameId);
+  // Derive home/away from gameData if not explicitly supplied
+  if (gameData && (!homeTeam || !awayTeam)) {
+    homeTeam = homeTeam || gameData.home_team || gameData.homeTeam || null;
+    awayTeam = awayTeam || gameData.away_team || gameData.awayTeam || null;
+  }
+
+  // Prefer inline gameData (already contains fresh predictions) to avoid recursive fetches
+  let currentPredictions = null;
+  if (gameData && gameData.predictions) {
+    currentPredictions = extractPredictionsFromGame(gameData);
+  } else {
+    currentPredictions = await getCurrentPredictions(gameId);
+  }
+
   if (!currentPredictions) {
-    throw new Error(`Could not get current predictions for game ${gameId}`);
+    throw new Error(`Could not get current predictions for game ${gameId} (no gameData and fetch stub not implemented)`);
   }
   
-  // Get closing odds from multiple books
-  const closingOdds = await getClosingOdds(gameId);
+  // Build a pseudo "closing odds" snapshot from supplied odds if API not implemented
+  let closingOdds = await getClosingOdds(gameId);
+  if (!closingOdds && gameData?.odds) {
+    closingOdds = buildClosingOddsSnapshot(gameData.odds);
+    if (closingOdds) {
+      console.log(`[LOCK] Using inline odds snapshot for ${gameId} as closing odds (fallback)`);
+    }
+  }
   if (!closingOdds) {
-    console.warn(`[LOCK] Could not get closing odds for ${gameId}, using current predictions`);
+    console.warn(`[LOCK] Could not get closing odds or fallback snapshot for ${gameId}, proceeding with prediction odds`);
   }
 
   const lockedPicks = {};
@@ -272,6 +291,64 @@ async function lockMarketPick({ gameId, market, prediction, closingOdds, odds, s
   }
   
   return lockData;
+}
+
+/**
+ * Extract simplified prediction object from full game payload
+ */
+function extractPredictionsFromGame(game) {
+  try {
+    if (!game || !game.predictions) return null;
+    return {
+      spread: game.predictions.spread || null,
+      total: game.predictions.total || null,
+      moneyline: game.predictions.moneyline || null,
+      odds: game.odds || null
+    };
+  } catch (e) {
+    console.error('[LOCK] Failed to extract predictions from gameData:', e);
+    return null;
+  }
+}
+
+/**
+ * Build a closing odds snapshot object from the in-flight odds structure
+ * Expected shape consumed downstream:
+ * { display_book, spread:{home_line,home_price,away_line,away_price}, total:{over_line,over_price,under_price}, moneyline:{home_price,away_price} }
+ */
+function buildClosingOddsSnapshot(odds) {
+  try {
+    // Support both new structured (display + display_book) and legacy formats
+    const display = odds.display || odds; // fallback
+    const book = odds.display_book || display.bookmaker || 'Unknown';
+
+    const spread = {
+      home_line: display.spread?.home_line ?? odds.spread?.home_line ?? odds.spread?.line ?? null,
+      home_price: display.spread?.home_price ?? null,
+      away_line: display.spread?.away_line ?? null,
+      away_price: display.spread?.away_price ?? null
+    };
+    const total = {
+      over_line: display.total?.over?.line ?? null,
+      over_price: display.total?.over?.price ?? null,
+      under_line: display.total?.under?.line ?? null,
+      under_price: display.total?.under?.price ?? null
+    };
+    const moneyline = {
+      home_price: display.h2h?.home ?? odds.moneyline?.home ?? null,
+      away_price: display.h2h?.away ?? odds.moneyline?.away ?? null
+    };
+
+    // If we have no actual prices/lines, treat as unusable
+    const hasAny = [spread.home_line, spread.away_line, total.over_line, moneyline.home_price, moneyline.away_price]
+      .some(v => v !== null && v !== undefined);
+    if (!hasAny) return null;
+
+    return { display_book: book, spread, total, moneyline };
+  } catch (e) {
+    console.error('[LOCK] Failed building closing odds snapshot:', e);
+    return null;
+  }
 }
 
 /**
