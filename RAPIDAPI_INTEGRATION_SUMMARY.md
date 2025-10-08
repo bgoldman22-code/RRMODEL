@@ -12,7 +12,7 @@ ESPN's public injury API changed from providing actual injury statuses (Out/Ques
 
 ### Environment Variable Required
 ```bash
-RAPIDAPI_NFL_KEY=f6106f437fmshacd6852e72d406bp1f5f8fjsn641b21f44fcf
+RAPIDAPI_NFL_KEY=[Your RapidAPI NFL key]
 ```
 
 **✅ Already configured in Netlify environment**

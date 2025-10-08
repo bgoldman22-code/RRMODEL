@@ -58,7 +58,7 @@ const res = await fetch(url, {
 
 3. **Add the secret**:
    - **Name**: `RAPIDAPI_NFL_KEY`
-   - **Value**: `f6106f437fmshacd6852e72d406bp1f5f8fjsn641b21f44fcf`
+   - **Value**: `[Your RapidAPI NFL key - same as in Netlify]`
 
 4. **Click "Add secret"**
 
