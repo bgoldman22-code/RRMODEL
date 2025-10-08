@@ -2456,7 +2456,29 @@ async function generateAdvancedPredictions(games, season) {
             (awayScoreData.injuryAnalysis?.adjustments && awayScoreData.injuryAnalysis.adjustments.some(a => Math.abs(a.impact) > 0.01))
           ),
           injuryDataAvailable: !!injuries?.teams
-        }
+        },
+        // ELITE INJURY SYSTEM: Expose elite injury penalties for UI icons and transparency
+        eliteInjury: eliteInjuryAdjustment ? {
+          home: {
+            offensive: eliteInjuryAdjustment.home.offensive,
+            defensive: eliteInjuryAdjustment.home.defensive,
+            total: eliteInjuryAdjustment.home.total,
+            uncertainty: eliteInjuryAdjustment.home.uncertainty,
+            injuries: homeInjuries || []
+          },
+          away: {
+            offensive: eliteInjuryAdjustment.away.offensive,
+            defensive: eliteInjuryAdjustment.away.defensive,
+            total: eliteInjuryAdjustment.away.total,
+            uncertainty: eliteInjuryAdjustment.away.uncertainty,
+            injuries: awayInjuries || []
+          },
+          netSpreadImpact: eliteInjuryAdjustment.netSpreadImpact,
+          kellyReduction: eliteInjuryAdjustment.stakingReduction.factor,
+          kellyRecommendation: eliteInjuryAdjustment.stakingReduction.recommendation,
+          sanityCheck: eliteInjuryAdjustment.sanityCheck,
+          metadata: eliteInjuryAdjustment.metadata
+        } : null
       },
       
       teamStats: {
@@ -2589,7 +2611,9 @@ async function saveAdvancedPredictionsToBlobs(result, season) {
           moneyline: game.predictions.moneyline.betRecommendation,
           spread: game.predictions.spread.betRecommendation,
           total: game.predictions.total.betRecommendation
-        }
+        },
+        // ELITE INJURY DATA: Include for UI icons and tooltips
+        eliteInjury: game.modelEnhancements?.eliteInjury || null
       }
     };
   });
