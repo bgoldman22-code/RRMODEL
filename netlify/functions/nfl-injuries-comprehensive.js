@@ -373,63 +373,68 @@ function dedupeByPlayer(items) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────────
-// ESPN fetch with automatic injury history integration
+// RapidAPI NFL Injuries fetch (replaces broken ESPN API)
 // ───────────────────────────────────────────────────────────────────────────────
-async function fetchTeamInjuriesESPN(teamCode, playerPriors, injuryHistory = null) {
+async function fetchTeamInjuriesRapidAPI(teamCode, playerPriors, injuryHistory = null) {
   const teamId = ESPN_TEAM_MAP[teamCode];
   if (!teamId) {
-    console.log(`⚠️ No ESPN ID for team: ${teamCode}`);
+    console.log(`⚠️ No RapidAPI team ID for: ${teamCode}`);
     return [];
   }
 
-  const url = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/teams/${teamId}/injuries`;
+  const rapidApiKey = process.env.RAPIDAPI_NFL_KEY;
+  if (!rapidApiKey) {
+    console.log(`⚠️ RAPIDAPI_NFL_KEY not configured`);
+    return [];
+  }
+
+  const url = `https://nfl-api-data.p.rapidapi.com/nfl-team-injuries?id=${teamId}`;
 
   try {
     const res = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; NFLInjuryBot/4.0)',
-        'Accept': 'application/json'
+        'x-rapidapi-host': 'nfl-api-data.p.rapidapi.com',
+        'x-rapidapi-key': rapidApiKey
       }
     });
-    if (!res.ok) throw new Error(`ESPN API error: ${res.status}`);
+    
+    if (!res.ok) throw new Error(`RapidAPI error: ${res.status}`);
 
     const data = await res.json();
-    const refs = data.items || [];
-    if (refs.length === 0) {
-      console.log(`📊 ${teamCode}: No ESPN injuries, checking injury history...`);
-    }
+    const injuries = data.injuries || [];
+    
+    console.log(`📊 ${teamCode}: ${injuries.length} total injuries from RapidAPI`);
 
     const items = [];
-    for (let i = 0; i < Math.min(refs.length, 8); i++) { // Reduced from 25 to 8 for cloud timeout
-      const ref = refs[i];
+    for (const injury of injuries) {
       try {
-        const ir = await fetch(ref.$ref, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NFLInjuryBot/4.0)' },
-          timeout: 3000 // 3 second timeout per request
-        });
-        if (!ir.ok) continue;
+        // RapidAPI provides direct status field
+        const rawStatus = injury.status || 'Active';
+        const status = normalizeInjuryStatus(rawStatus);
+        
+        // Skip if active (not a real injury)
+        if (status === 'active') continue;
 
-        const injuryData = await ir.json();
-        const status = normalizeInjuryStatus(injuryData.status);
-
-        // Player details
+        // Extract player info from injury.details or parse from comments
         let playerName = 'Unknown';
-        let position   = 'UNK';
-        if (injuryData.athlete?.$ref) {
-          try {
-            const pr = await fetch(injuryData.athlete.$ref, {
-              headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NFLInjuryBot/4.0)' },
-              timeout: 2000 // 2 second timeout for player details
-            });
-            if (pr.ok) {
-              const pd = await pr.json();
-              playerName = pd.displayName || pd.name || 'Unknown';
-              position   = pd.position?.abbreviation || 'UNK';
-            }
-          } catch { /* Skip player details if timeout */ }
+        let position = 'UNK';
+        
+        // Try to extract player name from shortComment or longComment
+        // RapidAPI format: "Player caught two of four targets..."
+        const commentText = injury.shortComment || injury.longComment || '';
+        const nameMatch = commentText.match(/^([A-Z][a-z]+(?:\s[A-Z][a-z]+)*)/);
+        if (nameMatch) {
+          playerName = nameMatch[1];
         }
 
+        // Get position from injury type/location context or depth chart
         const depthOrder = getPlayerDepthPosition(playerName, position, teamCode);
+        
+        // If we found a depth position, extract the actual position
+        if (depthOrder && depthOrder !== 'bench') {
+          const posMatch = depthOrder.match(/^([A-Z]+)/);
+          if (posMatch) position = posMatch[1];
+        }
 
         const weeksOut = deriveWeeksOutFromHistory(injuryHistory, teamCode, playerName) ?? 0;
 
@@ -439,31 +444,32 @@ async function fetchTeamInjuriesESPN(teamCode, playerPriors, injuryHistory = nul
           weeksOut
         );
 
+        const injuryType = injury.details?.type || injury.details?.location || 'Undisclosed';
+        
         items.push({
           teamCode,
           playerName,
           position,
           status,
           depthOrder,
-          description: injuryData.description || 'Undisclosed',
+          description: injuryType,
           impact,
           lastUpdated: new Date().toISOString(),
-          source: 'ESPN_API_comprehensive'
+          source: 'RapidAPI_NFL'
         });
 
         if (impact.isSignificant) {
           console.log(`🚨 ${teamCode}: ${playerName} (${position}) ${status.toUpperCase()} → spread ${impact.spreadImpact.toFixed(2)} / total ${impact.totalImpact.toFixed(2)}`);
         }
       } catch (e) {
-        console.log(`⚠️ ${teamCode} injury item error: ${e.message}`);
+        console.log(`⚠️ ${teamCode} RapidAPI injury parse error: ${e.message}`);
       }
-      // Skip rate limit in cloud for speed
     }
 
     // Automatically integrate injury history data
     const historyInjuries = getCurrentWeekInjuries(injuryHistory, teamCode);
     for (const historyInj of historyInjuries) {
-      console.log(`� Auto-integrating from injury history: ${teamCode}: ${historyInj.playerName} (${historyInj.status})`);
+      console.log(`📋 Auto-integrating from injury history: ${teamCode}: ${historyInj.playerName} (${historyInj.status})`);
       
       const existingIndex = items.findIndex(inj =>
         inj.playerName.localeCompare(historyInj.playerName, undefined, { sensitivity: 'accent' }) === 0 &&
@@ -504,17 +510,17 @@ async function fetchTeamInjuriesESPN(teamCode, playerPriors, injuryHistory = nul
     
     return deduped;
   } catch (e) {
-    console.error(`❌ ESPN fetch failed for ${teamCode}: ${e.message}`);
+    console.error(`❌ RapidAPI fetch failed for ${teamCode}: ${e.message}`);
     
     // Fallback to injury history only
     const historyInjuries = getCurrentWeekInjuries(injuryHistory, teamCode);
     if (historyInjuries.length > 0) {
-      console.log(`📊 ${teamCode}: Using ${historyInjuries.length} injuries from history (ESPN failed)`);
+      console.log(`📊 ${teamCode}: Using ${historyInjuries.length} injuries from history (RapidAPI failed)`);
       const historyWithImpacts = historyInjuries.map(inj => ({
         ...inj,
         impact: calcReplacementAdjusted(inj, playerPriors, 0),
         lastUpdated: new Date().toISOString(),
-        description: inj.injuryNote || 'From injury history'
+        source: 'INJURY_HISTORY_FALLBACK'
       }));
       return dedupeByPlayer(historyWithImpacts);
     }
@@ -690,7 +696,7 @@ async function generateEliteInjuryReport() {
     }
 
     try {
-      let injuries = await fetchTeamInjuriesESPN(team, playerPriors, injuryHistory);
+      let injuries = await fetchTeamInjuriesRapidAPI(team, playerPriors, injuryHistory);
       injuries = dedupeByPlayer(injuries); // Apply deduplication
       const teamSummary = summarizeTeam(injuries, team);
       
