@@ -128,14 +128,29 @@ function shouldSkipBet(prediction, gameContext = {}, marketOdds = null) {
 
 // Moneyline bet skip logic 
 function shouldSkipMoneylineBet(mlPick, gameContext = {}, marketOdds = null, confidence = null, edge = null, winProbability = null) {
-  // PRIMARY RULE: Bet if model win probability ≥ 58% OR vig-free edge ≥ 2%
+  // CORRECTED KELLY FILTER: Use breakeven probability from odds
+  // For +X odds: breakeven = 1/(1 + X/100)  [e.g., +150 → 40%, +200 → 33.3%]
+  // For -X odds: breakeven = X/(X + 100)     [e.g., -200 → 66.7%]
   
-  if (winProbability !== null && winProbability >= 58) {
-    return { skip: false, reason: `model_confidence_${winProbability}%` };
-  }
-  
-  if (edge !== null && Math.abs(edge) >= 2.0) {
-    return { skip: false, reason: `edge_${Math.abs(edge).toFixed(1)}%` };
+  if (marketOdds !== null && winProbability !== null) {
+    const american = marketOdds;
+    const breakeven = american > 0 
+      ? 1 / (1 + american / 100)  
+      : Math.abs(american) / (Math.abs(american) + 100);
+    
+    // EV check: model probability vs breakeven
+    const modelP = winProbability / 100;
+    const evPercent = modelP - breakeven;
+    
+    // Allow if +EV with at least 1% edge over breakeven
+    if (evPercent >= 0.01) {
+      return { skip: false, reason: `+EV_${(evPercent * 100).toFixed(1)}%_over_breakeven` };
+    }
+    
+    // Block if insufficient EV
+    if (evPercent < 0.01) {
+      return { skip: true, reason: `insufficient_ev_${(evPercent * 100).toFixed(1)}%` };
+    }
   }
   
   // Skip extreme dogs unless edge ≥ 5%
@@ -143,8 +158,13 @@ function shouldSkipMoneylineBet(mlPick, gameContext = {}, marketOdds = null, con
     return { skip: true, reason: `extreme_dog_${winProbability}%_insufficient_edge` };
   }
   
-  // Skip if neither condition met
-  const reason = winProbability < 58 ? `confidence_${winProbability}%<58%` : `edge_${Math.abs(edge || 0).toFixed(1)}%<2%`;
+  // Fallback: legacy edge gate for missing odds
+  if (edge !== null && Math.abs(edge) >= 2.0) {
+    return { skip: false, reason: `edge_${Math.abs(edge).toFixed(1)}%` };
+  }
+  
+  // Default block
+  const reason = `no_valid_ev_check_conf_${winProbability}%`;
   return { skip: true, reason: reason };
 }
 
