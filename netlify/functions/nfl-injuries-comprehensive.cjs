@@ -1,5 +1,6 @@
-// netlify/functions/nfl-injuries-comprehensive.mjs
+// netlify/functions/nfl-injuries-comprehensive.cjs
 // ELITE INJURY SYSTEM v4.0 - Production-grade with replacement-adjusted impacts
+// Updated: October 8, 2025 - CommonJS export format
 
 const { getStore } = require('@netlify/blobs');
 
