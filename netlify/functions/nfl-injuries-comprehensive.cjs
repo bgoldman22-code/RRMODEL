@@ -1,7 +1,7 @@
-// netlify/functions/nfl-injuries-comprehensive.js
+// netlify/functions/nfl-injuries-comprehensive.mjs
 // ELITE INJURY SYSTEM v4.0 - Production-grade with replacement-adjusted impacts
 
-import { getStore } from '@netlify/blobs';
+const { getStore } = require('@netlify/blobs');
 
 // Use global fetch (available in Node 18+)
 const fetch = globalThis.fetch;
@@ -763,7 +763,7 @@ async function writeToBlobStorage(path, data) {
   }
 }
 
-export const handler = async () => {
+const handler = async () => {
   console.log('🚀 ELITE NFL injury system v4.0 starting…');
   try {
     const injuryData = await generateEliteInjuryReport();
@@ -805,3 +805,5 @@ export const handler = async () => {
     };
   }
 };
+
+exports.handler = handler;
