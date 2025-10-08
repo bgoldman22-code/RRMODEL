@@ -1,31 +1,135 @@
 {
   "metadata": {
-    "last_updated": "2025-09-29T14:51:49.346Z",
-    "total_players_tracked": 5,
+    "last_updated": "2025-10-08T13:26:35.874Z",
+    "total_players_tracked": 69,
     "version": "1.0"
   },
   "players": {
     "metadata": {
-      "last_updated": "2025-09-29T14:51:49.345Z",
-      "total_players_tracked": 5,
+      "last_updated": "2025-10-08T13:23:39.308Z",
+      "total_players_tracked": 69,
       "version": "1.0"
     },
     "players": {
       "metadata": {
-        "last_updated": "2025-09-29T14:51:49.344Z",
-        "total_players_tracked": 3,
+        "last_updated": "2025-09-29T14:51:49.346Z",
+        "total_players_tracked": 5,
         "version": "1.0"
       },
       "players": {
+        "metadata": {
+          "last_updated": "2025-09-29T14:51:49.345Z",
+          "total_players_tracked": 5,
+          "version": "1.0"
+        },
+        "players": {
+          "metadata": {
+            "last_updated": "2025-09-29T14:51:49.344Z",
+            "total_players_tracked": 3,
+            "version": "1.0"
+          },
+          "players": {
+            "Terry McLaurin_WAS": {
+              "name": "Terry McLaurin",
+              "team": "WAS",
+              "position": "WR",
+              "first_injured": "2025_W4",
+              "first_injured_date": "2025-09-29",
+              "injury_history": [
+                {
+                  "week": "2025_W4",
+                  "date": "2025-09-29",
+                  "status": "out",
+                  "injury_type": "unknown"
+                }
+              ]
+            },
+            "Jayden Daniels_WAS": {
+              "name": "Jayden Daniels",
+              "team": "WAS",
+              "position": "QB",
+              "first_injured": "2025_W4",
+              "first_injured_date": "2025-09-29",
+              "injury_history": [
+                {
+                  "week": "2025_W4",
+                  "date": "2025-09-29",
+                  "status": "out",
+                  "injury_type": "unknown"
+                }
+              ]
+            },
+            "Malik Nabers_NYG": {
+              "name": "Malik Nabers",
+              "team": "NYG",
+              "position": "WR",
+              "first_injured": "2025_W4",
+              "first_injured_date": "2025-09-29",
+              "injury_history": [
+                {
+                  "week": "2025_W4",
+                  "date": "2025-09-29",
+                  "status": "out",
+                  "injury_type": "unknown"
+                }
+              ]
+            }
+          },
+          "Terry McLaurin_WAS": {
+            "name": "Terry McLaurin",
+            "team": "WAS",
+            "position": "WR",
+            "first_injured": "2025_W5",
+            "first_injured_date": "2025-09-29",
+            "injury_history": [
+              {
+                "week": "2025_W5",
+                "date": "2025-09-29",
+                "status": "out",
+                "injury_type": "unknown"
+              }
+            ]
+          },
+          "Jayden Daniels_WAS": {
+            "name": "Jayden Daniels",
+            "team": "WAS",
+            "position": "QB",
+            "first_injured": "2025_W5",
+            "first_injured_date": "2025-09-29",
+            "injury_history": [
+              {
+                "week": "2025_W5",
+                "date": "2025-09-29",
+                "status": "out",
+                "injury_type": "unknown"
+              }
+            ]
+          },
+          "Malik Nabers_NYG": {
+            "name": "Malik Nabers",
+            "team": "NYG",
+            "position": "WR",
+            "first_injured": "2025_W5",
+            "first_injured_date": "2025-09-29",
+            "injury_history": [
+              {
+                "week": "2025_W5",
+                "date": "2025-09-29",
+                "status": "out",
+                "injury_type": "unknown"
+              }
+            ]
+          }
+        },
         "Terry McLaurin_WAS": {
           "name": "Terry McLaurin",
           "team": "WAS",
           "position": "WR",
-          "first_injured": "2025_W4",
+          "first_injured": "2025_W6",
           "first_injured_date": "2025-09-29",
           "injury_history": [
             {
-              "week": "2025_W4",
+              "week": "2025_W6",
               "date": "2025-09-29",
               "status": "out",
               "injury_type": "unknown"
@@ -36,11 +140,11 @@
           "name": "Jayden Daniels",
           "team": "WAS",
           "position": "QB",
-          "first_injured": "2025_W4",
+          "first_injured": "2025_W6",
           "first_injured_date": "2025-09-29",
           "injury_history": [
             {
-              "week": "2025_W4",
+              "week": "2025_W6",
               "date": "2025-09-29",
               "status": "out",
               "injury_type": "unknown"
@@ -51,11 +155,11 @@
           "name": "Malik Nabers",
           "team": "NYG",
           "position": "WR",
-          "first_injured": "2025_W4",
+          "first_injured": "2025_W6",
           "first_injured_date": "2025-09-29",
           "injury_history": [
             {
-              "week": "2025_W4",
+              "week": "2025_W6",
               "date": "2025-09-29",
               "status": "out",
               "injury_type": "unknown"
@@ -63,33 +167,618 @@
           ]
         }
       },
-      "Terry McLaurin_WAS": {
-        "name": "Terry McLaurin",
-        "team": "WAS",
+      "Simi Fehoko_ARI": {
+        "name": "Simi Fehoko",
+        "team": "ARI",
         "position": "WR",
         "first_injured": "2025_W5",
-        "first_injured_date": "2025-09-29",
+        "first_injured_date": "2025-10-08",
         "injury_history": [
           {
             "week": "2025_W5",
-            "date": "2025-09-29",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "The wide receiver did not record a stat before exiting. Fehoko moved up to the active roster Sept. 10 and played on 29 special-teams snaps over the next two games. He did not see a snap on offense."
+          }
+        ]
+      },
+      "Zay Jones_ARI": {
+        "name": "Zay Jones",
+        "team": "ARI",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "inactive"
+          }
+        ]
+      },
+      "Travis Vokolek_ARI": {
+        "name": "Travis Vokolek",
+        "team": "ARI",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "inactive"
+          }
+        ]
+      },
+      "Nathan Carter_ATL": {
+        "name": "Nathan Carter",
+        "team": "ATL",
+        "position": "RB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "questionable"
+          }
+        ]
+      },
+      "Casey Washington_ATL": {
+        "name": "Casey Washington",
+        "team": "ATL",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Washington emerged from the Falcons' season-opening loss to the Buccaneers with a concussion and missed the last two games as a result. He didn't practice during Week 2 prep and then was listed as limited on four consecutive injury reports before getting back to all activity Thursday. There's been no indication that Washington has gained clearance from the protocol for head injuries, but he has two more days to do so ahead of Sunday's game versus the Commanders."
+          }
+        ]
+      },
+      "KhaDarel Hodge_ATL": {
+        "name": "KhaDarel Hodge",
+        "team": "ATL",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "questionable"
+          }
+        ]
+      },
+      "Jamal Agnew_ATL": {
+        "name": "Jamal Agnew",
+        "team": "ATL",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "questionable"
+          }
+        ]
+      },
+      "Isaiah Likely_BAL": {
+        "name": "Isaiah Likely",
+        "team": "BAL",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Per Jamison Hensley of ESPN.com, offensive coordinator Todd Monken noted Thursday of Likely, \"Hopefully we get (him) back this week. He adds another tool for us.\" The tight end has missed the Ravens' first three games this season while recovering from foot surgery, but his continued ability to practice -- albeit in a limited capacity -- has him trending in the right direction ahead of Sunday's game against the Chiefs."
+          }
+        ]
+      },
+      "Chuba Hubbard_CAR": {
+        "name": "Chuba Hubbard",
+        "team": "CAR",
+        "position": "RB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "The Panthers added Hubbard to their injury report Thursday as a limited participant. He was again limited Friday, suggesting the injury probably isn't serious, although the failure to return to full participation leaves some doubt about his Week 4 status ahead of a 1:00 p.m. ET kickoff. Should Hubbard end up inactive, the Panthers will promote Rico Dowdle to the starting lineup and Trevor Etienne to the No. 2 role."
+          }
+        ]
+      },
+      "Xavier Legette_CAR": {
+        "name": "Xavier Legette",
+        "team": "CAR",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "Legette, who was unable to practice this week, will thus target a potential return to action Oct. 5 against the Dolphins. In his absence this weekend, David Moore, Hunter Renfrow and Brycen Tremayne are candidates to see added Week 4 snaps alongside fellow WR Tetairoa McMillan (calf, questionable)."
+          }
+        ]
+      },
+      "Tetairoa McMillan_CAR": {
+        "name": "Tetairoa McMillan",
+        "team": "CAR",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "McMillan didn't practice Wednesday but managed limited participation Thursday and Friday. He said Thursday that he'll be fine for Sunday's game, but fantasy managers should still keep an eye out for additional updates before the Panthers release their inactive list around 11:30 a.m. ET this Sunday."
+          }
+        ]
+      },
+      "Jalen Coker_CAR": {
+        "name": "Jalen Coker",
+        "team": "CAR",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "It sounds like Coker won't be ready to return from injured reserve when first eligible in Week 5. He was expected to miss four-to-six games all along, with his return likely to come at some point in October. With the Panthers not getting much from their pass catchers so far, Coker should push for a starting job before mid-season."
+          }
+        ]
+      },
+      "Ja'Tavion Sanders_CAR": {
+        "name": "Ja'Tavion Sanders",
+        "team": "CAR",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "It's a mere technicality, with Sanders a candidate to miss multiple games after suffering a high-ankle sprain in Week 3. The Panthers are left with Tommy Tremble, Mitchell Evans and James Mitchell as their top tight ends, making Tremble a clear favorite to start even if he's unlikely to see more than a few targets."
+          }
+        ]
+      },
+      "D'Andre Swift_CHI": {
+        "name": "D'Andre Swift",
+        "team": "CHI",
+        "position": "RB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Swift maintained his activity level from Wednesday as he deals with a hip injury, leaving him just one more opportunity to prove his health ahead of the weekend. Friday's practice report will reveal whether or not he has a designation ahead of Sunday's game against the Raiders. Through three weeks this season, Swift is averaging 17 touches for 70.7 yards from scrimmage per game while scoring one touchdown."
+          }
+        ]
+      },
+      "Colston Loveland_CHI": {
+        "name": "Colston Loveland",
+        "team": "CHI",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Loveland left this past Sunday's win against the Cowboys in the second quarter due to a hip injury and wasn't able to return. Since then, the rookie first-round pick hasn't been able to practice this week, giving him one more chance to mix into drills before the Bears potentially make a ruling on his availability for Sunday's game in Las Vegas. If Loveland misses the first game of his career, veteran TE Cole Kmet would be in line for a few more passes from QB Caleb Williams."
+          }
+        ]
+      },
+      "Noah Fant_CIN": {
+        "name": "Noah Fant",
+        "team": "CIN",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "The veteran tight end was concussed in last Sunday's loss to the Vikings and is in the league's concussion protocol ahead of Monday night's game against the Broncos. If Fant is unable to go, Mike Gesicki and Tanner Hudson would be in line for elevated pass-catching snaps, with Drew Sample also in the mix."
+          }
+        ]
+      },
+      "Joe Burrow_CIN": {
+        "name": "Joe Burrow",
+        "team": "CIN",
+        "position": "QB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
             "status": "out",
             "injury_type": "unknown"
           }
         ]
       },
-      "Jayden Daniels_WAS": {
-        "name": "Jayden Daniels",
-        "team": "WAS",
-        "position": "QB",
+      "Cedric Tillman_CLE": {
+        "name": "Cedric Tillman",
+        "team": "CLE",
+        "position": "WR",
         "first_injured": "2025_W5",
-        "first_injured_date": "2025-09-29",
+        "first_injured_date": "2025-10-08",
         "injury_history": [
           {
             "week": "2025_W5",
-            "date": "2025-09-29",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "With back-to-back limited sessions thus far this week, Tillman probably will need to practice fully in order to avoid an injury designation ahead of Sunday's game against the Lions. With a 10-100-2 line on 18 targets through three games, Tillman is on the fantasy lineup radar Week 4 while working alongside fellow starting WR Jerry Jeudy."
+          }
+        ]
+      },
+      "CeeDee Lamb_DAL": {
+        "name": "CeeDee Lamb",
+        "team": "DAL",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "doubtful",
+            "injury_type": "Lamb now has missed both practices this week due to the high left-ankle sprain that's expected to sideline him for 3-to-4 weeks. However, the Cowboys have yet to make a ruling on his status for a Week 4 matchup with the Packers, something that may be confirmed as soon as the team posts its final injury report of the week Friday, or as late as 90 minutes before Sunday's 8:20 p.m. ET kickoff. No matter when it happens, the Dallas passing game likely will feature WR George Pickens and TE Jake Ferguson for at least the next few games, with WRs Jalen Tolbert and KaVontae Turpin also poised for larger roles."
+          }
+        ]
+      },
+      "Josh Jacobs_GB": {
+        "name": "Josh Jacobs",
+        "team": "GB",
+        "position": "RB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Jacobs appears to be following the same LP/LP/LP practice regimen from last week due to an ankle issue, which, if it's officially replicated, will mean the running back doesn't carry a designation into the weekend. He's been afforded plenty of carries (58) this season but is averaging just 3.1 YPC, and he also has just six catches through three contests. Jacobs also saw his streak of games with a rushing touchdown end at 11 in this past Sunday's loss at Cleveland."
+          }
+        ]
+      },
+      "Tucker Kraft_GB": {
+        "name": "Tucker Kraft",
+        "team": "GB",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Kraft tweaked his knee at practice last Thursday but was able to gut through it this past Sunday in Cleveland, logging 88 percent of the offensive snaps, running a route 67 percent of the time and turning four targets into three catches for 29 yards. So far during Week 4 prep, the third-year TE has operated with a cap on his reps and also has been donning a sleeve on his right leg. Speaking of last week's health scare, Kraft told Rob Demovsky of ESPN.com that his knee \"got extended in a weird way\" while blocking. Kraft will have one more chance to get back to a full practice this week, and Friday's injury report will reveal whether or not he has a designation ahead of Sunday's visit to the Cowboys."
+          }
+        ]
+      },
+      "John FitzPatrick_GB": {
+        "name": "John FitzPatrick",
+        "team": "GB",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "FitzPatrick reeled in two passes for 12 yards and a touchdown in the team's 13-10 loss to the Browns in Week 3, but he may have suffered a groin injury in the game. The tight end's ability to practice in any capacity Wednesday is a positive sign, and he'll have two more chances to practice in full ahead of Sunday night's contest in Dallas."
+          }
+        ]
+      },
+      "Alec Pierce_IND": {
+        "name": "Alec Pierce",
+        "team": "IND",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "At this stage, Pierce remains in the NFL's concussion protocol, so his next chance to see game action will arrive Oct. 5 against the Raiders. In his absence Sunday, Adonai Mitchell figures to see an expanded Week 4 role alongside fellow WRs Michael Pittman and Josh Downs."
+          }
+        ]
+      },
+      "Anthony Gould_IND": {
+        "name": "Anthony Gould",
+        "team": "IND",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "The illness is a new issue, as the 2024 fifth-rounder did not appear on Wednesday's injury report. It's unclear how severe Gould's illness is, but Friday's injury report will provide clarity on his chances of playing against the Rams on Sunday. Gould has primarily served on special teams and has returned six kickoffs for 181 yards and two punts for four yards through the first three games of the regular season."
+          }
+        ]
+      },
+      "Bhayshul Tuten_JAX": {
+        "name": "Bhayshul Tuten",
+        "team": "JAX",
+        "position": "RB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "For a second straight session to kick off Week 4 prep, Tuten operated with a cap on his reps due to a shoulder issue. The rookie fourth-round pick thus has one more chance to prove his health before the Jaguars potentially tag him with a designation for Sunday's game in San Francisco. Working behind Jacksonville's lead runner Travis Etienne, Tuten still has notched 17 carries for 74 yards and one touchdown and two catches (on three targets) for 32 yards and another score through the first three contests of his career."
+          }
+        ]
+      },
+      "Dyami Brown_JAX": {
+        "name": "Dyami Brown",
+        "team": "JAX",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Brown exited this past Sunday's game against the Texans in the second half with a shoulder injury that didn't allow him to practice Wednesday. Having said that, he was able to take part in some drills Thursday and appears to be trending in a positive direction. Friday's practice report will reveal if Brown has a designation ahead of Sunday's contest at San Francisco."
+          }
+        ]
+      },
+      "Michael Mayer_LV": {
+        "name": "Michael Mayer",
+        "team": "LV",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Mayer exited Las Vegas' Week 3 loss at Washington in the first half and eventually was ruled out due to a concussion. Considering he has yet to practice this week, he's trending in the wrong direction ahead of Sunday's game against the Bears. Friday's injury report ultimately may provide a ruling on Mayer's status for Week 4 action."
+          }
+        ]
+      },
+      "Najee Harris_LAC": {
+        "name": "Najee Harris",
+        "team": "LAC",
+        "position": "RB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "Coach John Harbaugh confirmed Monday that Harris suffered a torn Achilles during this past Sunday's win over the Broncos, and the running back will miss the remainder of the season as a result. In his absence going forward, Omarion Hampton is in line to lead the Chargers backfield, with Hassan Haskins in reserve and Kimani Vidal as well as Amar Johnson representing possible additions via the team's practice squad."
+          }
+        ]
+      },
+      "Derius Davis_LAC": {
+        "name": "Derius Davis",
+        "team": "LAC",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Davis injured his knee during the first half of Sunday's 23-20 win over the Broncos. He was able to return for the the second half (and proceeded to fumble on his kickoff return early in the third quarter), but the injury has lingered into the week. Davis will have two more opportunities to practice in at least a limited capacity heading into Sunday's contest against the Giants."
+          }
+        ]
+      },
+      "Will Dissly_LAC": {
+        "name": "Will Dissly",
+        "team": "LAC",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "After missing Week 3, Dissly appears to be trending toward another missed contest this Sunday against the Giants. With Dissly out last week, the Chargers used Tucker Fisk in a blocking role at tight end, and rookie Oronde Gadsden and Tyler Conklin shared pass-catching duties in a three-man weave at the position. Gadsden popped up for a 5-46-0 receiving line on seven targets but played just over 25 percent of the snaps."
+          }
+        ]
+      },
+      "Davante Adams_LAR": {
+        "name": "Davante Adams",
+        "team": "LAR",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Adams hasn't practiced so far during Week 4 prep due to what coach Sean McVay has termed a sore hamstring, per Sarah Barshop of ESPN.com. McVay also isn't concerned about Adams' availability for Sunday's game against the Colts, but ultimately Friday's injury report will unveil if the wide receiver has a designation entering the weekend."
+          }
+        ]
+      },
+      "Colby Parkinson_LAR": {
+        "name": "Colby Parkinson",
+        "team": "LAR",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Parkinson has opened the week with back-to-back limited practice sessions as he continues to nurse an AC joint sprain that he suffered in Week 1. If available, the tight end could be asked to step into a more significant role in Week 4 against the Colts, with fellow tight end Tyler Higbee (hip) being added to the injury report Thursday. Parkinson's status for Sunday's matchup with Indianapolis will be much clearer following Friday's final injury report of the week."
+          }
+        ]
+      },
+      "Tyler Higbee_LAR": {
+        "name": "Tyler Higbee",
+        "team": "LAR",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Higbee has received at least a 50 percent snap share in all three of the Rams' games this season, but with just four catches (on six targets) for 37 yards and no touchdowns to date, he doesn't hold much sway in terms of fantasy. Fellow TE Colby Parkinson (shoulder) also had a cap on his reps Thursday, which leaves Davis Allen and Terrance Ferguson as the current healthy options at the position on the active roster."
+          }
+        ]
+      },
+      "Jaylen Waddle_MIA": {
+        "name": "Jaylen Waddle",
+        "team": "MIA",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "After logging limited practices last Tuesday and Wednesday, Waddle approached last Thursday's game against the Bills listed as questionable. The wideout was able to suit up for the contest and recorded an 87 percent snap share versus Buffalo while catching five of his six targets for 39 yards and a touchdown. With no reported setbacks, there's a solid chance that Waddle's listed limitations this Thursday were maintenance-related ahead of Monday night's game against the Jets."
+          }
+        ]
+      },
+      "Darren Waller_MIA": {
+        "name": "Darren Waller",
+        "team": "MIA",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Waller is ramping up his activity and remains on track to make his 2025 season debut Monday night against the Jets, though coach Mike McDaniel has already stated the veteran tight end will be on a snap count. It's unclear how much Waller has left in the tank at 33-years-old, especially dealing with an injury after sitting out the entire 2024 campaign."
+          }
+        ]
+      },
+      "J.J. McCarthy_MIN": {
+        "name": "J.J. McCarthy",
+        "team": "MIN",
+        "position": "QB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
             "status": "out",
             "injury_type": "unknown"
+          }
+        ]
+      },
+      "Devaughn Vele_NO": {
+        "name": "Devaughn Vele",
+        "team": "NO",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Vele was unable to play against the Seahawks this past Sunday due to a hip issue. He has logged back-to-back limited practices to open the week, but he would likely avoid an injury tag heading into Sunday's game against the Bills if he were to fully participate in Friday's session."
+          }
+        ]
+      },
+      "Trey Palmer_NO": {
+        "name": "Trey Palmer",
+        "team": "NO",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Palmer sat out the latter two of the Saints' three practices last week before spending Sunday's game at Seattle on the sideline, so his participation Wednesday was a step in the right direction. If he can practice in full Thursday or Friday, there's a good chance he'd be able to make his 2025 debut at Buffalo."
+          }
+        ]
+      },
+      "Tyrone Tracy Jr._NYG": {
+        "name": "Tyrone Tracy Jr.",
+        "team": "NYG",
+        "position": "RB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "doubtful",
+            "injury_type": "Tracy hasn't practiced since making an early exit from a Week 3 loss to Kansas City. Rookie Cam Skattebo figures to lead the Giants' backfield again this Sunday against the Chargers, with Devin Singletary elevating to the No. 2 role."
+          }
+        ]
+      },
+      "Beaux Collins_NYG": {
+        "name": "Beaux Collins",
+        "team": "NYG",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "questionable"
+          }
+        ]
+      },
+      "Darius Slayton_NYG": {
+        "name": "Darius Slayton",
+        "team": "NYG",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Slayton maintained his activity level from Wednesday as he tends to a calf issue, and he'll now have just one more opportunity to practice in full this week before the Giants potentially hand him a designation prior to Sunday's contest versus the Chargers. If he's able to avoid being inactive this weekend, he'll be working with rookie signal-caller Jaxson Dart, who is taking over for veteran Russell Wilson."
           }
         ]
       },
@@ -98,44 +787,1004 @@
         "team": "NYG",
         "position": "WR",
         "first_injured": "2025_W5",
-        "first_injured_date": "2025-09-29",
+        "first_injured_date": "2025-10-08",
         "injury_history": [
           {
             "week": "2025_W5",
-            "date": "2025-09-29",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Nabers made a brief exit in the second half of Sunday night's loss to the Chiefs when he broke up a deep shot from QB Russell Wilson in the end zone that left the wide receiver in pain on the turf for a spell. He followed up Wednesday's lack of activity with some drills Thursday and now has one more chance to practice this week before the Giants potentially tag him with a designation ahead of Sunday's game versus the Chargers. If Nabers is able to suit up this weekend, he'll be on the receiving end of passes from rookie signal-caller Jaxson Dart."
+          }
+        ]
+      },
+      "Theo Johnson_NYG": {
+        "name": "Theo Johnson",
+        "team": "NYG",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "After logging a DNP on Wednesday, Johnson's return to a limited practice puts him on track to play Sunday against the Chargers. Johnson has played 83 percent of the Giants' offensive snaps through three games but has little to show for it in the box score, producing a 6-49-0 receiving line on 10 targets."
+          }
+        ]
+      },
+      "Kene Nwangwu_NYJ": {
+        "name": "Kene Nwangwu",
+        "team": "NYJ",
+        "position": "RB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "questionable"
+          }
+        ]
+      },
+      "Josh Reynolds_NYJ": {
+        "name": "Josh Reynolds",
+        "team": "NYJ",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Reynolds has missed the Jets' previous two games, but his return to practice Thursday puts the veteran wideout on track to play Monday night against the Dolphins. Reynolds has minimal fantasy value in the Jets' low-volume passing game."
+          }
+        ]
+      },
+      "Justin Fields_NYJ": {
+        "name": "Justin Fields",
+        "team": "NYJ",
+        "position": "QB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "unknown"
+          }
+        ]
+      },
+      "Darius Cooper_PHI": {
+        "name": "Darius Cooper",
+        "team": "PHI",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "Cooper will be sidelined at least four games due to a shoulder injury sustained during Sunday's win over the Rams. The issue reportedly won't require surgery. In his stead, John Metchie becomes positioned for an uptick in opportunities behind A.J. Brown, DeVonta Smith and Jahan Dotson."
+          }
+        ]
+      },
+      "Tanner McKee_PHI": {
+        "name": "Tanner McKee",
+        "team": "PHI",
+        "position": "QB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "unknown"
+          }
+        ]
+      },
+      "Jaylen Warren_PIT": {
+        "name": "Jaylen Warren",
+        "team": "PIT",
+        "position": "RB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Warren logged another limited practice Friday with the Steelers citing both 'resting vet' and 'knee' for the running back's listing on the team's final Week 4 injury report. Warren's status is thus worth tracking ahead of Sunday's 9:30 a.m. kickoff in Dublin, with late Saturday and/or early Sunday reports via NFL insiders such as Adam Schefter and Ian Rapoport hopefully providing added context on that front. If Warren is limited or out Sunday, added snaps would be available for Kenneth Gainwell and Kaleb Johnson (who didn't see the field in Week 3), with Trey Sermon, Lew Nichols and Max Hurleman representing possible practice-squad elevations."
+          }
+        ]
+      },
+      "Jonnu Smith_PIT": {
+        "name": "Jonnu Smith",
+        "team": "PIT",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Smith logged a pair of limited practices Thursday and Friday following a DNP due to rest on Wednesday. If the veteran tight end is unable to play in Dublin, Pat Freiermuth and Darnell Washington would handle tight-end duties for Pittsburgh. Smith is averaging a career-worst 5.4 yards per catch this season but does have 12 grabs for 65 yards and one touchdown through three games."
+          }
+        ]
+      },
+      "Ricky Pearsall_SF": {
+        "name": "Ricky Pearsall",
+        "team": "SF",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Prior to sitting out Wednesday's practice due to a knee injury, Pearsall said that he'd be playing if there was a game, according to Jennifer Lee Chan of NBC Sports Bay Area. Pearsall's return to drills one day later sets him up to do just that Sunday versus the Jaguars, but he may still enter the weekend with a designation when the 49ers post their final Week 4 practice report Friday. If he's able to suit up, who between Brock Purdy (left shoulder/toe) and Mac Jones (knee) will be under center remains to be seen."
+          }
+        ]
+      },
+      "Jauan Jennings_SF": {
+        "name": "Jauan Jennings",
+        "team": "SF",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Jennings hasn't been able to practice since coming out of a Week 2 win at New Orleans with an ankle injury. Coach Kyle Shanahan has referred to Jennings as day-to-day each of the last two weeks, but the wide receiver may not be a viable candidate for game action until he mixes into at least some drills. Friday's practice report will unveil whether or not Jennings has a chance to play Sunday against the Jaguars."
+          }
+        ]
+      },
+      "Brandon Aiyuk_SF": {
+        "name": "Brandon Aiyuk",
+        "team": "SF",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "Lombardi believes a Week 6 return is not realistic for Aiyuk, as the wide receiver is still working to hit various markers in his recovery. Coach Kyle Shanahan said back in August that Week 6 was a reasonable target for Aiyuk's return to game action, but that is looking increasingly unlikely at this point. The 49ers will continue to work through injuries at the position, but Ricky Pearsall (knee) and Jauan Jennings (ankle) appear poised to lead this wideout room for the foreseeable future."
+          }
+        ]
+      },
+      "Jordan Watkins_SF": {
+        "name": "Jordan Watkins",
+        "team": "SF",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Watkins is reportedly dealing with a serious calf injury, as it was previously reported that he could be a candidate for injured reserve. That said, he hasn't been ruled out for a Week 4 matchup against the Jaguars at this point."
+          }
+        ]
+      },
+      "Mac Jones_SF": {
+        "name": "Mac Jones",
+        "team": "SF",
+        "position": "QB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "unknown"
+          }
+        ]
+      },
+      "Cody White_SEA": {
+        "name": "Cody White",
+        "team": "SEA",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "White was signed to the Seahawks' active roster Tuesday, but he'll observe Thursday's game in street clothes. His next opportunity to play will be Week 5 against Tampa Bay on Sunday, Oct. 5."
+          }
+        ]
+      },
+      "Mike Evans_TB": {
+        "name": "Mike Evans",
+        "team": "TB",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "He didn't practice this week and is expected to miss multiple games, but the Buccaneers waited until Friday to publicly rule out Evans for this Sunday's game. Fellow Tampa Bay wideout Chris Godwin (hamstring) is listed as questionable, potentially giving the team a quality replacement for Evans in the starting lineup, though Godwin's explosiveness and workload may both be somewhat limited initially."
+          }
+        ]
+      },
+      "Chris Godwin Jr._TB": {
+        "name": "Chris Godwin Jr.",
+        "team": "TB",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "The designation was probably to be expected once Godwin upgraded to full practice participation Wednesday. He sat out Thursday for maintenance, before returning Friday, with Auman suggesting that the wideout appears on track for his season debut. Meanwhile, teammate Mike Evans (hamstring) has been ruled out for Week 4 and could miss additional time."
+          }
+        ]
+      },
+      "Ko Kieft_TB": {
+        "name": "Ko Kieft",
+        "team": "TB",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "Kieft likely suffered the injury during the Buccaneers' 29-27 win over the Jets on Sunday. His placement on IR means he'll be forced to miss at least the next four games, but the injury could sideline the 2022 sixth-rounder for the rest of the season, per Rick Stroud of the Tampa Bay Times. Kieft's absence opens the door for Devin Culp to serve as the Bucs' TE3 behind Cade Otton and Payne Durham."
+          }
+        ]
+      },
+      "Baker Mayfield_TB": {
+        "name": "Baker Mayfield",
+        "team": "TB",
+        "position": "QB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "unknown"
+          }
+        ]
+      },
+      "Kalel Mullings_TEN": {
+        "name": "Kalel Mullings",
+        "team": "TEN",
+        "position": "RB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "The 2025 sixth-round pick from Michigan played through an ankle injury in the Titans' Week 3 loss to the Colts, logging eight special-teams snaps. However, he began Tennessee's week of practice with consecutive DNPs and has now shifted to IR, suggesting the injury worsened in Week 3. With Mullings out for at least the Titans next four games, the team is down to just two healthy running backs on the active roster: Julius Chestnut and Tony Pollard."
+          }
+        ]
+      },
+      "Bryce Oliver_TEN": {
+        "name": "Bryce Oliver",
+        "team": "TEN",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "The Youngstown State product sustained a knee injury in Tennessee's Week 2 loss to the Rams and hasn't practiced since, making it no surprise that he'll remain out Sunday. Julius Chestnut is expected to serve as the Titans' second kick returner while Oliver is out in Week 4."
+          }
+        ]
+      },
+      "Jacory Croskey-Merritt_WAS": {
+        "name": "Jacory Croskey-Merritt",
+        "team": "WAS",
+        "position": "RB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "questionable",
+            "injury_type": "Croskey-Merritt was listed as a non-participant in Wednesday and Thursday's practices, so his presence at Friday's session is a step in the right direction. Either way, the Commanders' upcoming injury report will reveal both the running back's participation level, as well as his game status for Sunday's road matchup against the Falcons."
+          }
+        ]
+      },
+      "Noah Brown_WAS": {
+        "name": "Noah Brown",
+        "team": "WAS",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "With Brown missing a second straight game and Terry McLaurin (quad) now unavailable, the Commanders are left with Deebo Samuel, Jaylin Lane, Luke McCaffrey and Chris Moore as the healthy wide receivers on their active roster."
+          }
+        ]
+      },
+      "Terry McLaurin_WAS": {
+        "name": "Terry McLaurin",
+        "team": "WAS",
+        "position": "WR",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "He hasn't practiced since making an early exit from the Week 3 win over Las Vegas. It sounds like McLaurin will miss additional time beyond Sunday, with Commanders coach Dan Quinn calling the wideout \"week-to-week\" on Friday, per Mike Garafolo of NFL Network. Washington also will be without QB Jayden Daniels (knee), WR Noah Brown (groin) and TE John Bates (groin) this weekend, opening up opportunities for a slew of young players (plus QB Marcus Mariota). In any case, McLaurin's prospects for Week 5 at the Chargers don't sound good right now."
+          }
+        ]
+      },
+      "John Bates_WAS": {
+        "name": "John Bates",
+        "team": "WAS",
+        "position": "TE",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
+            "status": "out",
+            "injury_type": "Bates hasn't practiced the past two weeks and will now miss a second straight game. Ben Sinnott figures to step up as the No. 2 tight end again, with playing time largely depending on the gameplan (and then game script)."
+          }
+        ]
+      },
+      "Jayden Daniels_WAS": {
+        "name": "Jayden Daniels",
+        "team": "WAS",
+        "position": "QB",
+        "first_injured": "2025_W5",
+        "first_injured_date": "2025-10-08",
+        "injury_history": [
+          {
+            "week": "2025_W5",
+            "date": "2025-10-08",
             "status": "out",
             "injury_type": "unknown"
           }
         ]
       }
     },
-    "Terry McLaurin_WAS": {
-      "name": "Terry McLaurin",
-      "team": "WAS",
+    "Simi Fehoko_ARI": {
+      "name": "Simi Fehoko",
+      "team": "ARI",
       "position": "WR",
-      "first_injured": "2025_W6",
-      "first_injured_date": "2025-09-29",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
       "injury_history": [
         {
-          "week": "2025_W6",
-          "date": "2025-09-29",
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "The wide receiver did not record a stat before exiting. Fehoko moved up to the active roster Sept. 10 and played on 29 special-teams snaps over the next two games. He did not see a snap on offense."
+        }
+      ]
+    },
+    "Zay Jones_ARI": {
+      "name": "Zay Jones",
+      "team": "ARI",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "inactive"
+        }
+      ]
+    },
+    "Travis Vokolek_ARI": {
+      "name": "Travis Vokolek",
+      "team": "ARI",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "inactive"
+        }
+      ]
+    },
+    "Nathan Carter_ATL": {
+      "name": "Nathan Carter",
+      "team": "ATL",
+      "position": "RB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "questionable"
+        }
+      ]
+    },
+    "Casey Washington_ATL": {
+      "name": "Casey Washington",
+      "team": "ATL",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Washington emerged from the Falcons' season-opening loss to the Buccaneers with a concussion and missed the last two games as a result. He didn't practice during Week 2 prep and then was listed as limited on four consecutive injury reports before getting back to all activity Thursday. There's been no indication that Washington has gained clearance from the protocol for head injuries, but he has two more days to do so ahead of Sunday's game versus the Commanders."
+        }
+      ]
+    },
+    "KhaDarel Hodge_ATL": {
+      "name": "KhaDarel Hodge",
+      "team": "ATL",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "questionable"
+        }
+      ]
+    },
+    "Jamal Agnew_ATL": {
+      "name": "Jamal Agnew",
+      "team": "ATL",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "questionable"
+        }
+      ]
+    },
+    "Isaiah Likely_BAL": {
+      "name": "Isaiah Likely",
+      "team": "BAL",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Per Jamison Hensley of ESPN.com, offensive coordinator Todd Monken noted Thursday of Likely, \"Hopefully we get (him) back this week. He adds another tool for us.\" The tight end has missed the Ravens' first three games this season while recovering from foot surgery, but his continued ability to practice -- albeit in a limited capacity -- has him trending in the right direction ahead of Sunday's game against the Chiefs."
+        }
+      ]
+    },
+    "Chuba Hubbard_CAR": {
+      "name": "Chuba Hubbard",
+      "team": "CAR",
+      "position": "RB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "The Panthers added Hubbard to their injury report Thursday as a limited participant. He was again limited Friday, suggesting the injury probably isn't serious, although the failure to return to full participation leaves some doubt about his Week 4 status ahead of a 1:00 p.m. ET kickoff. Should Hubbard end up inactive, the Panthers will promote Rico Dowdle to the starting lineup and Trevor Etienne to the No. 2 role."
+        }
+      ]
+    },
+    "Xavier Legette_CAR": {
+      "name": "Xavier Legette",
+      "team": "CAR",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "Legette, who was unable to practice this week, will thus target a potential return to action Oct. 5 against the Dolphins. In his absence this weekend, David Moore, Hunter Renfrow and Brycen Tremayne are candidates to see added Week 4 snaps alongside fellow WR Tetairoa McMillan (calf, questionable)."
+        }
+      ]
+    },
+    "Tetairoa McMillan_CAR": {
+      "name": "Tetairoa McMillan",
+      "team": "CAR",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "McMillan didn't practice Wednesday but managed limited participation Thursday and Friday. He said Thursday that he'll be fine for Sunday's game, but fantasy managers should still keep an eye out for additional updates before the Panthers release their inactive list around 11:30 a.m. ET this Sunday."
+        }
+      ]
+    },
+    "Jalen Coker_CAR": {
+      "name": "Jalen Coker",
+      "team": "CAR",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "It sounds like Coker won't be ready to return from injured reserve when first eligible in Week 5. He was expected to miss four-to-six games all along, with his return likely to come at some point in October. With the Panthers not getting much from their pass catchers so far, Coker should push for a starting job before mid-season."
+        }
+      ]
+    },
+    "Ja'Tavion Sanders_CAR": {
+      "name": "Ja'Tavion Sanders",
+      "team": "CAR",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "It's a mere technicality, with Sanders a candidate to miss multiple games after suffering a high-ankle sprain in Week 3. The Panthers are left with Tommy Tremble, Mitchell Evans and James Mitchell as their top tight ends, making Tremble a clear favorite to start even if he's unlikely to see more than a few targets."
+        }
+      ]
+    },
+    "D'Andre Swift_CHI": {
+      "name": "D'Andre Swift",
+      "team": "CHI",
+      "position": "RB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Swift maintained his activity level from Wednesday as he deals with a hip injury, leaving him just one more opportunity to prove his health ahead of the weekend. Friday's practice report will reveal whether or not he has a designation ahead of Sunday's game against the Raiders. Through three weeks this season, Swift is averaging 17 touches for 70.7 yards from scrimmage per game while scoring one touchdown."
+        }
+      ]
+    },
+    "Colston Loveland_CHI": {
+      "name": "Colston Loveland",
+      "team": "CHI",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Loveland left this past Sunday's win against the Cowboys in the second quarter due to a hip injury and wasn't able to return. Since then, the rookie first-round pick hasn't been able to practice this week, giving him one more chance to mix into drills before the Bears potentially make a ruling on his availability for Sunday's game in Las Vegas. If Loveland misses the first game of his career, veteran TE Cole Kmet would be in line for a few more passes from QB Caleb Williams."
+        }
+      ]
+    },
+    "Noah Fant_CIN": {
+      "name": "Noah Fant",
+      "team": "CIN",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "The veteran tight end was concussed in last Sunday's loss to the Vikings and is in the league's concussion protocol ahead of Monday night's game against the Broncos. If Fant is unable to go, Mike Gesicki and Tanner Hudson would be in line for elevated pass-catching snaps, with Drew Sample also in the mix."
+        }
+      ]
+    },
+    "Joe Burrow_CIN": {
+      "name": "Joe Burrow",
+      "team": "CIN",
+      "position": "QB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
           "status": "out",
           "injury_type": "unknown"
         }
       ]
     },
-    "Jayden Daniels_WAS": {
-      "name": "Jayden Daniels",
-      "team": "WAS",
-      "position": "QB",
-      "first_injured": "2025_W6",
-      "first_injured_date": "2025-09-29",
+    "Cedric Tillman_CLE": {
+      "name": "Cedric Tillman",
+      "team": "CLE",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
       "injury_history": [
         {
-          "week": "2025_W6",
-          "date": "2025-09-29",
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "With back-to-back limited sessions thus far this week, Tillman probably will need to practice fully in order to avoid an injury designation ahead of Sunday's game against the Lions. With a 10-100-2 line on 18 targets through three games, Tillman is on the fantasy lineup radar Week 4 while working alongside fellow starting WR Jerry Jeudy."
+        }
+      ]
+    },
+    "CeeDee Lamb_DAL": {
+      "name": "CeeDee Lamb",
+      "team": "DAL",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "doubtful",
+          "injury_type": "Lamb now has missed both practices this week due to the high left-ankle sprain that's expected to sideline him for 3-to-4 weeks. However, the Cowboys have yet to make a ruling on his status for a Week 4 matchup with the Packers, something that may be confirmed as soon as the team posts its final injury report of the week Friday, or as late as 90 minutes before Sunday's 8:20 p.m. ET kickoff. No matter when it happens, the Dallas passing game likely will feature WR George Pickens and TE Jake Ferguson for at least the next few games, with WRs Jalen Tolbert and KaVontae Turpin also poised for larger roles."
+        }
+      ]
+    },
+    "Josh Jacobs_GB": {
+      "name": "Josh Jacobs",
+      "team": "GB",
+      "position": "RB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Jacobs appears to be following the same LP/LP/LP practice regimen from last week due to an ankle issue, which, if it's officially replicated, will mean the running back doesn't carry a designation into the weekend. He's been afforded plenty of carries (58) this season but is averaging just 3.1 YPC, and he also has just six catches through three contests. Jacobs also saw his streak of games with a rushing touchdown end at 11 in this past Sunday's loss at Cleveland."
+        }
+      ]
+    },
+    "Tucker Kraft_GB": {
+      "name": "Tucker Kraft",
+      "team": "GB",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Kraft tweaked his knee at practice last Thursday but was able to gut through it this past Sunday in Cleveland, logging 88 percent of the offensive snaps, running a route 67 percent of the time and turning four targets into three catches for 29 yards. So far during Week 4 prep, the third-year TE has operated with a cap on his reps and also has been donning a sleeve on his right leg. Speaking of last week's health scare, Kraft told Rob Demovsky of ESPN.com that his knee \"got extended in a weird way\" while blocking. Kraft will have one more chance to get back to a full practice this week, and Friday's injury report will reveal whether or not he has a designation ahead of Sunday's visit to the Cowboys."
+        }
+      ]
+    },
+    "John FitzPatrick_GB": {
+      "name": "John FitzPatrick",
+      "team": "GB",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "FitzPatrick reeled in two passes for 12 yards and a touchdown in the team's 13-10 loss to the Browns in Week 3, but he may have suffered a groin injury in the game. The tight end's ability to practice in any capacity Wednesday is a positive sign, and he'll have two more chances to practice in full ahead of Sunday night's contest in Dallas."
+        }
+      ]
+    },
+    "Alec Pierce_IND": {
+      "name": "Alec Pierce",
+      "team": "IND",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "At this stage, Pierce remains in the NFL's concussion protocol, so his next chance to see game action will arrive Oct. 5 against the Raiders. In his absence Sunday, Adonai Mitchell figures to see an expanded Week 4 role alongside fellow WRs Michael Pittman and Josh Downs."
+        }
+      ]
+    },
+    "Anthony Gould_IND": {
+      "name": "Anthony Gould",
+      "team": "IND",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "The illness is a new issue, as the 2024 fifth-rounder did not appear on Wednesday's injury report. It's unclear how severe Gould's illness is, but Friday's injury report will provide clarity on his chances of playing against the Rams on Sunday. Gould has primarily served on special teams and has returned six kickoffs for 181 yards and two punts for four yards through the first three games of the regular season."
+        }
+      ]
+    },
+    "Bhayshul Tuten_JAX": {
+      "name": "Bhayshul Tuten",
+      "team": "JAX",
+      "position": "RB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "For a second straight session to kick off Week 4 prep, Tuten operated with a cap on his reps due to a shoulder issue. The rookie fourth-round pick thus has one more chance to prove his health before the Jaguars potentially tag him with a designation for Sunday's game in San Francisco. Working behind Jacksonville's lead runner Travis Etienne, Tuten still has notched 17 carries for 74 yards and one touchdown and two catches (on three targets) for 32 yards and another score through the first three contests of his career."
+        }
+      ]
+    },
+    "Dyami Brown_JAX": {
+      "name": "Dyami Brown",
+      "team": "JAX",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Brown exited this past Sunday's game against the Texans in the second half with a shoulder injury that didn't allow him to practice Wednesday. Having said that, he was able to take part in some drills Thursday and appears to be trending in a positive direction. Friday's practice report will reveal if Brown has a designation ahead of Sunday's contest at San Francisco."
+        }
+      ]
+    },
+    "Michael Mayer_LV": {
+      "name": "Michael Mayer",
+      "team": "LV",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Mayer exited Las Vegas' Week 3 loss at Washington in the first half and eventually was ruled out due to a concussion. Considering he has yet to practice this week, he's trending in the wrong direction ahead of Sunday's game against the Bears. Friday's injury report ultimately may provide a ruling on Mayer's status for Week 4 action."
+        }
+      ]
+    },
+    "Najee Harris_LAC": {
+      "name": "Najee Harris",
+      "team": "LAC",
+      "position": "RB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "Coach John Harbaugh confirmed Monday that Harris suffered a torn Achilles during this past Sunday's win over the Broncos, and the running back will miss the remainder of the season as a result. In his absence going forward, Omarion Hampton is in line to lead the Chargers backfield, with Hassan Haskins in reserve and Kimani Vidal as well as Amar Johnson representing possible additions via the team's practice squad."
+        }
+      ]
+    },
+    "Derius Davis_LAC": {
+      "name": "Derius Davis",
+      "team": "LAC",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Davis injured his knee during the first half of Sunday's 23-20 win over the Broncos. He was able to return for the the second half (and proceeded to fumble on his kickoff return early in the third quarter), but the injury has lingered into the week. Davis will have two more opportunities to practice in at least a limited capacity heading into Sunday's contest against the Giants."
+        }
+      ]
+    },
+    "Will Dissly_LAC": {
+      "name": "Will Dissly",
+      "team": "LAC",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "After missing Week 3, Dissly appears to be trending toward another missed contest this Sunday against the Giants. With Dissly out last week, the Chargers used Tucker Fisk in a blocking role at tight end, and rookie Oronde Gadsden and Tyler Conklin shared pass-catching duties in a three-man weave at the position. Gadsden popped up for a 5-46-0 receiving line on seven targets but played just over 25 percent of the snaps."
+        }
+      ]
+    },
+    "Davante Adams_LAR": {
+      "name": "Davante Adams",
+      "team": "LAR",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Adams hasn't practiced so far during Week 4 prep due to what coach Sean McVay has termed a sore hamstring, per Sarah Barshop of ESPN.com. McVay also isn't concerned about Adams' availability for Sunday's game against the Colts, but ultimately Friday's injury report will unveil if the wide receiver has a designation entering the weekend."
+        }
+      ]
+    },
+    "Colby Parkinson_LAR": {
+      "name": "Colby Parkinson",
+      "team": "LAR",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Parkinson has opened the week with back-to-back limited practice sessions as he continues to nurse an AC joint sprain that he suffered in Week 1. If available, the tight end could be asked to step into a more significant role in Week 4 against the Colts, with fellow tight end Tyler Higbee (hip) being added to the injury report Thursday. Parkinson's status for Sunday's matchup with Indianapolis will be much clearer following Friday's final injury report of the week."
+        }
+      ]
+    },
+    "Tyler Higbee_LAR": {
+      "name": "Tyler Higbee",
+      "team": "LAR",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Higbee has received at least a 50 percent snap share in all three of the Rams' games this season, but with just four catches (on six targets) for 37 yards and no touchdowns to date, he doesn't hold much sway in terms of fantasy. Fellow TE Colby Parkinson (shoulder) also had a cap on his reps Thursday, which leaves Davis Allen and Terrance Ferguson as the current healthy options at the position on the active roster."
+        }
+      ]
+    },
+    "Jaylen Waddle_MIA": {
+      "name": "Jaylen Waddle",
+      "team": "MIA",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "After logging limited practices last Tuesday and Wednesday, Waddle approached last Thursday's game against the Bills listed as questionable. The wideout was able to suit up for the contest and recorded an 87 percent snap share versus Buffalo while catching five of his six targets for 39 yards and a touchdown. With no reported setbacks, there's a solid chance that Waddle's listed limitations this Thursday were maintenance-related ahead of Monday night's game against the Jets."
+        }
+      ]
+    },
+    "Darren Waller_MIA": {
+      "name": "Darren Waller",
+      "team": "MIA",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Waller is ramping up his activity and remains on track to make his 2025 season debut Monday night against the Jets, though coach Mike McDaniel has already stated the veteran tight end will be on a snap count. It's unclear how much Waller has left in the tank at 33-years-old, especially dealing with an injury after sitting out the entire 2024 campaign."
+        }
+      ]
+    },
+    "J.J. McCarthy_MIN": {
+      "name": "J.J. McCarthy",
+      "team": "MIN",
+      "position": "QB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
           "status": "out",
           "injury_type": "unknown"
+        }
+      ]
+    },
+    "Devaughn Vele_NO": {
+      "name": "Devaughn Vele",
+      "team": "NO",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Vele was unable to play against the Seahawks this past Sunday due to a hip issue. He has logged back-to-back limited practices to open the week, but he would likely avoid an injury tag heading into Sunday's game against the Bills if he were to fully participate in Friday's session."
+        }
+      ]
+    },
+    "Trey Palmer_NO": {
+      "name": "Trey Palmer",
+      "team": "NO",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Palmer sat out the latter two of the Saints' three practices last week before spending Sunday's game at Seattle on the sideline, so his participation Wednesday was a step in the right direction. If he can practice in full Thursday or Friday, there's a good chance he'd be able to make his 2025 debut at Buffalo."
+        }
+      ]
+    },
+    "Tyrone Tracy Jr._NYG": {
+      "name": "Tyrone Tracy Jr.",
+      "team": "NYG",
+      "position": "RB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "doubtful",
+          "injury_type": "Tracy hasn't practiced since making an early exit from a Week 3 loss to Kansas City. Rookie Cam Skattebo figures to lead the Giants' backfield again this Sunday against the Chargers, with Devin Singletary elevating to the No. 2 role."
+        }
+      ]
+    },
+    "Beaux Collins_NYG": {
+      "name": "Beaux Collins",
+      "team": "NYG",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "questionable"
+        }
+      ]
+    },
+    "Darius Slayton_NYG": {
+      "name": "Darius Slayton",
+      "team": "NYG",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Slayton maintained his activity level from Wednesday as he tends to a calf issue, and he'll now have just one more opportunity to practice in full this week before the Giants potentially hand him a designation prior to Sunday's contest versus the Chargers. If he's able to avoid being inactive this weekend, he'll be working with rookie signal-caller Jaxson Dart, who is taking over for veteran Russell Wilson."
         }
       ]
     },
@@ -143,12 +1792,387 @@
       "name": "Malik Nabers",
       "team": "NYG",
       "position": "WR",
-      "first_injured": "2025_W6",
-      "first_injured_date": "2025-09-29",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
       "injury_history": [
         {
-          "week": "2025_W6",
-          "date": "2025-09-29",
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Nabers made a brief exit in the second half of Sunday night's loss to the Chiefs when he broke up a deep shot from QB Russell Wilson in the end zone that left the wide receiver in pain on the turf for a spell. He followed up Wednesday's lack of activity with some drills Thursday and now has one more chance to practice this week before the Giants potentially tag him with a designation ahead of Sunday's game versus the Chargers. If Nabers is able to suit up this weekend, he'll be on the receiving end of passes from rookie signal-caller Jaxson Dart."
+        }
+      ]
+    },
+    "Theo Johnson_NYG": {
+      "name": "Theo Johnson",
+      "team": "NYG",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "After logging a DNP on Wednesday, Johnson's return to a limited practice puts him on track to play Sunday against the Chargers. Johnson has played 83 percent of the Giants' offensive snaps through three games but has little to show for it in the box score, producing a 6-49-0 receiving line on 10 targets."
+        }
+      ]
+    },
+    "Kene Nwangwu_NYJ": {
+      "name": "Kene Nwangwu",
+      "team": "NYJ",
+      "position": "RB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "questionable"
+        }
+      ]
+    },
+    "Josh Reynolds_NYJ": {
+      "name": "Josh Reynolds",
+      "team": "NYJ",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Reynolds has missed the Jets' previous two games, but his return to practice Thursday puts the veteran wideout on track to play Monday night against the Dolphins. Reynolds has minimal fantasy value in the Jets' low-volume passing game."
+        }
+      ]
+    },
+    "Justin Fields_NYJ": {
+      "name": "Justin Fields",
+      "team": "NYJ",
+      "position": "QB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "unknown"
+        }
+      ]
+    },
+    "Darius Cooper_PHI": {
+      "name": "Darius Cooper",
+      "team": "PHI",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "Cooper will be sidelined at least four games due to a shoulder injury sustained during Sunday's win over the Rams. The issue reportedly won't require surgery. In his stead, John Metchie becomes positioned for an uptick in opportunities behind A.J. Brown, DeVonta Smith and Jahan Dotson."
+        }
+      ]
+    },
+    "Tanner McKee_PHI": {
+      "name": "Tanner McKee",
+      "team": "PHI",
+      "position": "QB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "unknown"
+        }
+      ]
+    },
+    "Jaylen Warren_PIT": {
+      "name": "Jaylen Warren",
+      "team": "PIT",
+      "position": "RB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Warren logged another limited practice Friday with the Steelers citing both 'resting vet' and 'knee' for the running back's listing on the team's final Week 4 injury report. Warren's status is thus worth tracking ahead of Sunday's 9:30 a.m. kickoff in Dublin, with late Saturday and/or early Sunday reports via NFL insiders such as Adam Schefter and Ian Rapoport hopefully providing added context on that front. If Warren is limited or out Sunday, added snaps would be available for Kenneth Gainwell and Kaleb Johnson (who didn't see the field in Week 3), with Trey Sermon, Lew Nichols and Max Hurleman representing possible practice-squad elevations."
+        }
+      ]
+    },
+    "Jonnu Smith_PIT": {
+      "name": "Jonnu Smith",
+      "team": "PIT",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Smith logged a pair of limited practices Thursday and Friday following a DNP due to rest on Wednesday. If the veteran tight end is unable to play in Dublin, Pat Freiermuth and Darnell Washington would handle tight-end duties for Pittsburgh. Smith is averaging a career-worst 5.4 yards per catch this season but does have 12 grabs for 65 yards and one touchdown through three games."
+        }
+      ]
+    },
+    "Ricky Pearsall_SF": {
+      "name": "Ricky Pearsall",
+      "team": "SF",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Prior to sitting out Wednesday's practice due to a knee injury, Pearsall said that he'd be playing if there was a game, according to Jennifer Lee Chan of NBC Sports Bay Area. Pearsall's return to drills one day later sets him up to do just that Sunday versus the Jaguars, but he may still enter the weekend with a designation when the 49ers post their final Week 4 practice report Friday. If he's able to suit up, who between Brock Purdy (left shoulder/toe) and Mac Jones (knee) will be under center remains to be seen."
+        }
+      ]
+    },
+    "Jauan Jennings_SF": {
+      "name": "Jauan Jennings",
+      "team": "SF",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Jennings hasn't been able to practice since coming out of a Week 2 win at New Orleans with an ankle injury. Coach Kyle Shanahan has referred to Jennings as day-to-day each of the last two weeks, but the wide receiver may not be a viable candidate for game action until he mixes into at least some drills. Friday's practice report will unveil whether or not Jennings has a chance to play Sunday against the Jaguars."
+        }
+      ]
+    },
+    "Brandon Aiyuk_SF": {
+      "name": "Brandon Aiyuk",
+      "team": "SF",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "Lombardi believes a Week 6 return is not realistic for Aiyuk, as the wide receiver is still working to hit various markers in his recovery. Coach Kyle Shanahan said back in August that Week 6 was a reasonable target for Aiyuk's return to game action, but that is looking increasingly unlikely at this point. The 49ers will continue to work through injuries at the position, but Ricky Pearsall (knee) and Jauan Jennings (ankle) appear poised to lead this wideout room for the foreseeable future."
+        }
+      ]
+    },
+    "Jordan Watkins_SF": {
+      "name": "Jordan Watkins",
+      "team": "SF",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Watkins is reportedly dealing with a serious calf injury, as it was previously reported that he could be a candidate for injured reserve. That said, he hasn't been ruled out for a Week 4 matchup against the Jaguars at this point."
+        }
+      ]
+    },
+    "Mac Jones_SF": {
+      "name": "Mac Jones",
+      "team": "SF",
+      "position": "QB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "unknown"
+        }
+      ]
+    },
+    "Cody White_SEA": {
+      "name": "Cody White",
+      "team": "SEA",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "White was signed to the Seahawks' active roster Tuesday, but he'll observe Thursday's game in street clothes. His next opportunity to play will be Week 5 against Tampa Bay on Sunday, Oct. 5."
+        }
+      ]
+    },
+    "Mike Evans_TB": {
+      "name": "Mike Evans",
+      "team": "TB",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "He didn't practice this week and is expected to miss multiple games, but the Buccaneers waited until Friday to publicly rule out Evans for this Sunday's game. Fellow Tampa Bay wideout Chris Godwin (hamstring) is listed as questionable, potentially giving the team a quality replacement for Evans in the starting lineup, though Godwin's explosiveness and workload may both be somewhat limited initially."
+        }
+      ]
+    },
+    "Chris Godwin Jr._TB": {
+      "name": "Chris Godwin Jr.",
+      "team": "TB",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "The designation was probably to be expected once Godwin upgraded to full practice participation Wednesday. He sat out Thursday for maintenance, before returning Friday, with Auman suggesting that the wideout appears on track for his season debut. Meanwhile, teammate Mike Evans (hamstring) has been ruled out for Week 4 and could miss additional time."
+        }
+      ]
+    },
+    "Ko Kieft_TB": {
+      "name": "Ko Kieft",
+      "team": "TB",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "Kieft likely suffered the injury during the Buccaneers' 29-27 win over the Jets on Sunday. His placement on IR means he'll be forced to miss at least the next four games, but the injury could sideline the 2022 sixth-rounder for the rest of the season, per Rick Stroud of the Tampa Bay Times. Kieft's absence opens the door for Devin Culp to serve as the Bucs' TE3 behind Cade Otton and Payne Durham."
+        }
+      ]
+    },
+    "Baker Mayfield_TB": {
+      "name": "Baker Mayfield",
+      "team": "TB",
+      "position": "QB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "unknown"
+        }
+      ]
+    },
+    "Kalel Mullings_TEN": {
+      "name": "Kalel Mullings",
+      "team": "TEN",
+      "position": "RB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "The 2025 sixth-round pick from Michigan played through an ankle injury in the Titans' Week 3 loss to the Colts, logging eight special-teams snaps. However, he began Tennessee's week of practice with consecutive DNPs and has now shifted to IR, suggesting the injury worsened in Week 3. With Mullings out for at least the Titans next four games, the team is down to just two healthy running backs on the active roster: Julius Chestnut and Tony Pollard."
+        }
+      ]
+    },
+    "Bryce Oliver_TEN": {
+      "name": "Bryce Oliver",
+      "team": "TEN",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "The Youngstown State product sustained a knee injury in Tennessee's Week 2 loss to the Rams and hasn't practiced since, making it no surprise that he'll remain out Sunday. Julius Chestnut is expected to serve as the Titans' second kick returner while Oliver is out in Week 4."
+        }
+      ]
+    },
+    "Jacory Croskey-Merritt_WAS": {
+      "name": "Jacory Croskey-Merritt",
+      "team": "WAS",
+      "position": "RB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "questionable",
+          "injury_type": "Croskey-Merritt was listed as a non-participant in Wednesday and Thursday's practices, so his presence at Friday's session is a step in the right direction. Either way, the Commanders' upcoming injury report will reveal both the running back's participation level, as well as his game status for Sunday's road matchup against the Falcons."
+        }
+      ]
+    },
+    "Noah Brown_WAS": {
+      "name": "Noah Brown",
+      "team": "WAS",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "With Brown missing a second straight game and Terry McLaurin (quad) now unavailable, the Commanders are left with Deebo Samuel, Jaylin Lane, Luke McCaffrey and Chris Moore as the healthy wide receivers on their active roster."
+        }
+      ]
+    },
+    "Terry McLaurin_WAS": {
+      "name": "Terry McLaurin",
+      "team": "WAS",
+      "position": "WR",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "He hasn't practiced since making an early exit from the Week 3 win over Las Vegas. It sounds like McLaurin will miss additional time beyond Sunday, with Commanders coach Dan Quinn calling the wideout \"week-to-week\" on Friday, per Mike Garafolo of NFL Network. Washington also will be without QB Jayden Daniels (knee), WR Noah Brown (groin) and TE John Bates (groin) this weekend, opening up opportunities for a slew of young players (plus QB Marcus Mariota). In any case, McLaurin's prospects for Week 5 at the Chargers don't sound good right now."
+        }
+      ]
+    },
+    "John Bates_WAS": {
+      "name": "John Bates",
+      "team": "WAS",
+      "position": "TE",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
+          "status": "out",
+          "injury_type": "Bates hasn't practiced the past two weeks and will now miss a second straight game. Ben Sinnott figures to step up as the No. 2 tight end again, with playing time largely depending on the gameplan (and then game script)."
+        }
+      ]
+    },
+    "Jayden Daniels_WAS": {
+      "name": "Jayden Daniels",
+      "team": "WAS",
+      "position": "QB",
+      "first_injured": "2025_W5",
+      "first_injured_date": "2025-10-08",
+      "injury_history": [
+        {
+          "week": "2025_W5",
+          "date": "2025-10-08",
           "status": "out",
           "injury_type": "unknown"
         }
