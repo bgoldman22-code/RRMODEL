@@ -807,4 +807,6 @@ const handler = async () => {
   }
 };
 
-exports.handler = handler;}
+};
+
+exports.handler = handler;
