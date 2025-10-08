@@ -1228,18 +1228,33 @@ export default function NFLPredictions() {
                   TEAM_NAME
                 });
 
+                // Elite injury system icons
+                const eliteInjury = r._advanced?.eliteInjury;
+                const awayInjuries = eliteInjury?.away?.injuries || [];
+                const homeInjuries = eliteInjury?.home?.injuries || [];
+                const awayHasInjuries = awayInjuries.length > 0 && eliteInjury?.away?.total > 1.0;
+                const homeHasInjuries = homeInjuries.length > 0 && eliteInjury?.home?.total > 1.0;
+                
+                // Build injury tooltip
+                const awayInjuryTooltip = awayInjuries.length > 0 ? 
+                  `${r.away_team} injuries (${eliteInjury.away.total.toFixed(1)} pts impact):\n${awayInjuries.map(i => `${i.player} (${i.position}) - ${i.availability}`).join('\n')}` : 
+                  '';
+                const homeInjuryTooltip = homeInjuries.length > 0 ? 
+                  `${r.home_team} injuries (${eliteInjury.home.total.toFixed(1)} pts impact):\n${homeInjuries.map(i => `${i.player} (${i.position}) - ${i.availability}`).join('\n')}` : 
+                  '';
+                
                 return (
                   <tr key={r.gameId || idx} className="border-t border-neutral-200 hover:bg-neutral-25">
                     <td className="px-4 py-3 font-medium">
                       <div className="flex items-center gap-2">
                         <span>{fmt(r.matchup)}</span>
-                        {hasSignificantInjuryImpact(r.teamStats?.away) && (
-                          <span className="text-xs" title={`${r.away_team} significantly affected by injuries (${Math.abs(r.teamStats.away.injuryImpact?.totalImpact || 0).toFixed(1)} pts)`}>
+                        {awayHasInjuries && (
+                          <span className="text-xs cursor-help" title={awayInjuryTooltip}>
                             🏥
                           </span>
                         )}
-                        {hasSignificantInjuryImpact(r.teamStats?.home) && (
-                          <span className="text-xs" title={`${r.home_team} significantly affected by injuries (${Math.abs(r.teamStats.home.injuryImpact?.totalImpact || 0).toFixed(1)} pts)`}>
+                        {homeHasInjuries && (
+                          <span className="text-xs cursor-help" title={homeInjuryTooltip}>
                             🏥
                           </span>
                         )}
