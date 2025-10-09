@@ -144,7 +144,7 @@ export const BASELINE_CONTRIBUTORS_2025 = {
   'NYG': {
     'QB': ['Daniel Jones'],
     'RB': ['Devin Singletary', 'Tyrone Tracy Jr.'],
-    'WR': [], // Malik Nabers injured before/early season - NOT in baseline
+    'WR': ['Malik Nabers', 'Darius Slayton', 'Wan\'Dale Robinson'], // Nabers WAS active Weeks 1-3, IS in baseline
     'TE': ['Theo Johnson', 'Daniel Bellinger']
   },
   'NYJ': {
