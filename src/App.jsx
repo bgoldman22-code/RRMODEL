@@ -1,5 +1,5 @@
 // src/App.jsx
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import MLB_HR from "./MLB_HR";
 import MLB_HITS2 from "./MLB_HITS2";
@@ -7,21 +7,104 @@ import MLB_HITS2 from "./MLB_HITS2";
 import NflTd from "./pages/NflTd";  // Simple TD system
 import NFLTouchdownPropsComprehensive from "./pages/NFLTouchdownPropsComprehensive";  // Advanced TD system
 import NFLPredictions from "./pages/NFLPredictions";
+import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
+import NHL from "./NHL";  // Elite NHL SOG Props
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
+// Dropdown Menu Component
+function DropdownMenu({ label, items, isOpen, onToggle }) {
+  const handleMouseEnter = () => {
+    if (!isOpen) onToggle();
+  };
+  
+  const handleMouseLeave = () => {
+    if (isOpen) onToggle();
+  };
+  
+  return (
+    <div 
+      className="relative" 
+      onMouseEnter={handleMouseEnter} 
+      onMouseLeave={handleMouseLeave}
+    >
+      <button className="font-medium hover:text-blue-600 transition-colors flex items-center gap-1 py-2">
+        {label}
+        <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-0 bg-white border rounded-md shadow-lg min-w-[200px] z-50">
+          {items.map((item, idx) => (
+            <Link
+              key={idx}
+              to={item.path}
+              className="block px-4 py-2 hover:bg-gray-100 transition-colors text-sm"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function App() {
+  const [openMenu, setOpenMenu] = useState(null);
+
+  const menuStructure = {
+    mlb: {
+      label: 'MLB',
+      items: [
+        { label: 'Home Runs', path: '/mlb-hr' },
+        { label: '2+ Hits', path: '/mlb-hits2' },
+        { label: 'HRR (Hit-Run-RBI)', path: '/hrr' }
+      ]
+    },
+    nfl: {
+      label: 'NFL',
+      items: [
+        { label: 'TD Advanced', path: '/nfl-td-comprehensive' },
+        { label: 'Game Predictions', path: '/predictions' }
+      ]
+    },
+    soccer: {
+      label: 'Soccer',
+      items: [
+        { label: 'BTTS (Both Teams To Score)', path: '/soccer-btts' }
+      ]
+    },
+    nhl: {
+      label: 'NHL',
+      items: [
+        { label: 'SOG Props (Elite Model)', path: '/nhl-sog' }
+      ]
+    },
+    nba: {
+      label: 'NBA',
+      items: [
+        { label: 'Coming Soon...', path: '#', disabled: true }
+      ]
+    }
+  };
+
   return (
     <BrowserRouter>
-      <div className="w-full border-b bg-white">
-        <div className="container mx-auto px-4 py-3 flex flex-wrap gap-4">
-          <Link to="/">Home</Link>
-          <Link to="/mlb-hr">MLB HR</Link>
-          <Link to="/mlb-hits2">MLB 2+ Hits</Link>
-          <Link to="/hrr">HRR</Link>
-          <Link to="/nfl-td">NFL TD</Link>
-          <Link to="/nfl-td-comprehensive">NFL TD Advanced</Link>
-          <Link to="/predictions">NFLPredictions</Link>
+      <div className="w-full border-b bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-3 flex flex-wrap gap-6 items-center">
+          <Link to="/" className="font-bold text-lg hover:text-blue-600 transition-colors">Home</Link>
+          
+          {Object.entries(menuStructure).map(([key, menu]) => (
+            <DropdownMenu
+              key={key}
+              label={menu.label}
+              items={menu.items}
+              isOpen={openMenu === key}
+              onToggle={() => setOpenMenu(openMenu === key ? null : key)}
+            />
+          ))}
         </div>
       </div>
       <div className="container mx-auto px-4 py-6">
@@ -30,10 +113,11 @@ export default function App() {
           <Route path="/mlb-hr" element={<MLB_HR />} />
           <Route path="/mlb-hits2" element={<MLB_HITS2 />} />
           <Route path="/hrr" element={<HRR />} />
-          {/* CHANGED: Use actual components */}
-          <Route path="/nfl-td" element={<NflTd />} />
+          {/* CHANGED: Removed simple NFL TD route */}
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/predictions" element={<NFLPredictions />} />
+          <Route path="/soccer-btts" element={<SoccerBTTS />} />
+          <Route path="/nhl-sog" element={<NHL />} />
         </Routes>
       </div>
     </BrowserRouter>
