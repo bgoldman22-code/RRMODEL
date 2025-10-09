@@ -29,7 +29,7 @@
 - **32-team comprehensive mapping** of players in 2025 baseline EPA
 - **Key principle**: If player on IR AND not in baseline → skip adjustment
 - **Example mappings**:
-  - NYG WR: `[]` (Nabers NOT in baseline - injured early)
+  - NYG WR: `['Malik Nabers', 'Darius Slayton', 'Wan\'Dale Robinson']` (Nabers WAS in baseline Weeks 1-3 - apply impact)
   - ARI RB: `['James Conner']` (Conner WAS in baseline - recent IR)
   - SF RB: `['Christian McCaffrey', 'Jordan Mason']` (CMC in baseline)
 
@@ -66,7 +66,7 @@ Critical Test Cases:
 #### Decision Logic Validation
 | Player | Team | IR Status | In Baseline? | Decision | Correct? |
 |--------|------|-----------|--------------|----------|----------|
-| Malik Nabers | NYG | ✅ Yes | ❌ No | ⏭️ Skip | ✅ Yes |
+| Malik Nabers | NYG | ✅ Yes | ✅ Yes (Weeks 1-3) | ⚠️ Apply Impact | ✅ Yes |
 | James Conner | ARI | ✅ Yes | ✅ Yes | ⚠️ Apply Impact | ✅ Yes |
 | Brock Purdy | SF | ❌ No | ✅ Yes | ✅ Process Normal | ✅ Yes |
 | Christian McCaffrey | SF | ❌ No | ✅ Yes | ✅ Process Normal | ✅ Yes |
@@ -93,12 +93,12 @@ Critical Test Cases:
 ### Impact Analysis
 
 #### Before (Missing IR Players)
-- **Nabers (NYG)**: Not in any injury report → No adjustment → ❌ WRONG (but accidentally correct since not in baseline)
+- **Nabers (NYG)**: Not in any injury report → No adjustment → ❌ WRONG (should apply -4 to -5 pts)
 - **Conner (ARI)**: Not in weekly report → No adjustment → ❌ WRONG (should apply impact)
 - **Purdy (SF)**: In BallDontLie but filtered → ❓ Unknown status
 
 #### After (Full IR Integration)
-- **Nabers (NYG)**: ✅ Detected on IR → Not in baseline → Skip adjustment (correct!)
+- **Nabers (NYG)**: ✅ Detected on IR → In baseline (Weeks 1-3) → Apply -4 to -5 pt impact (correct!)
 - **Conner (ARI)**: ✅ Detected on IR → In baseline → Apply impact (correct!)  
 - **Purdy (SF)**: ❌ Not on IR → In baseline → Process normally (correct!)
 - **262 IR players**: All tracked, baseline logic applied correctly
