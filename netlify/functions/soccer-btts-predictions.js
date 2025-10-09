@@ -1247,6 +1247,20 @@ const TEAM_NAME_MAPPING = {
   'Borussia Dortmund': ['BVB', 'Dortmund'],
   'RB Leipzig': ['Leipzig', 'RasenBallsport Leipzig'],
   'Bayer Leverkusen': ['Leverkusen', 'Bayer 04 Leverkusen'],
+  'TSG Hoffenheim': ['TSG 1899 Hoffenheim', 'Hoffenheim', '1899 Hoffenheim', 'TSG'],
+  'Hamburger SV': ['Hamburg', 'HSV', 'Hamburger Sport-Verein'],
+  'Eintracht Frankfurt': ['Frankfurt', 'SGE'],
+  'VfB Stuttgart': ['Stuttgart'],
+  'Borussia Monchengladbach': ['Monchengladbach', 'Gladbach', 'BMG'],
+  'VfL Wolfsburg': ['Wolfsburg'],
+  'SC Freiburg': ['Freiburg'],
+  'FC Augsburg': ['Augsburg'],
+  '1. FC Heidenheim': ['Heidenheim', 'FC Heidenheim'],
+  'Werder Bremen': ['Bremen', 'SV Werder Bremen'],
+  'FC St. Pauli': ['St. Pauli', 'St Pauli'],
+  '1. FC Union Berlin': ['Union Berlin', 'FC Union Berlin'],
+  'VfL Bochum': ['Bochum'],
+  'FSV Mainz 05': ['Mainz', 'Mainz 05'],
   
   // Champions League additions - FIXED with proper UCL 2025-26 teams
   'FC Barcelona': ['Barcelona', 'Barca', 'FCB'],
@@ -2279,6 +2293,13 @@ const BUNDESLIGA_2025_26_TEAMS = {
     games_away: 2, goals_scored_away: 2, goals_conceded_away: 4,
     btts_rate_home: 0.66, btts_rate_away: 0.70,
     recent_form_attack: 0.52, recent_form_defense: 0.48
+  },
+  'Hamburger SV': {
+    name: 'Hamburger SV',
+    games_home: 3, goals_scored_home: 5, goals_conceded_home: 4,
+    games_away: 2, goals_scored_away: 3, goals_conceded_away: 5,
+    btts_rate_home: 0.69, btts_rate_away: 0.72,
+    recent_form_attack: 0.64, recent_form_defense: 0.56
   },
   
   // Lower Table
