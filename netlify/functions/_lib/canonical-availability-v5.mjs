@@ -26,6 +26,7 @@ function normalizeTimestamp(ts) {
  */
 export const SOURCE_PRIORITY = {
   MANUAL_OVERRIDE: 100,      // Human override (ops/manual corrections)
+  RESERVE_LIST: 95,          // NEW: Season-long IR/PUP/NFI/SUSP source (above weekly reports)
   INACTIVES_LIST: 90,        // Official 90-minute inactive list
   INJURY_REPORT: 70,         // ESPN/official injury reports (Wed-Fri)
   DEPTH_CHART: 60,           // Weekly depth chart snapshots
@@ -885,10 +886,151 @@ export function applyPositionCaps(teamAdjustments) {
   return capped;
 }
 
+/**
+ * GAP FIX A: Apply Reserve List Entry (IR/PUP/NFI/SUSP)
+ * Promotes long-term injuries to first-class source (priority 95)
+ * @param {PlayerWeekAvailability} player - Player availability object
+ * @param {object} reserve - Reserve list data { status, expectedReturnWeek, source }
+ * @param {number} priority - Source priority (default RESERVE_LIST = 95)
+ * @returns {PlayerWeekAvailability} Updated player object
+ */
+export function applyReserveEntry(player, reserve, priority = SOURCE_PRIORITY.RESERVE_LIST) {
+  if (!reserve) return player;
+  
+  const timestamp = Date.now();
+  const source = {
+    type: 'RESERVE_LIST',
+    status: 'out',
+    probPlay: 0.0,
+    reason: reserve.status || 'IR',  // 'IR' | 'PUP' | 'NFI' | 'SUSP'
+    weeksOut: reserve.expectedReturnWeek ? (reserve.expectedReturnWeek - getCurrentWeek()) : null,
+    confidence: 1.0  // Reserve list is definitive
+  };
+  
+  // Use existing merge logic with RESERVE_LIST priority
+  player.mergeSource(source, priority, timestamp);
+  
+  // Add reserve-specific metadata
+  player.reserveStatus = reserve.status;
+  player.expectedReturnWeek = reserve.expectedReturnWeek || null;
+  player.expectedReturnDate = reserve.expectedReturnDate || null;
+  player.reserveSource = reserve.source || 'RESERVE_LIST';
+  
+  return player;
+}
+
+/**
+ * GAP FIX B: Calculate Interaction Bumps
+ * Small synergy penalties when multiple key positions injured together
+ * Conservative caps prevent over-adjustment
+ * @param {object} roomTotals - Position-grouped injury impacts
+ * @returns {number} Total interaction bump (capped at 1.0)
+ */
+export function calculateInteractionBumps(roomTotals) {
+  let bump = 0;
+  
+  // QB + LT synergy (blindside protection critical)
+  if ((roomTotals.QB || 0) > 0 && (roomTotals.OL_LT || 0) > 0) {
+    bump += 0.6;
+  }
+  
+  // WR1 + TE1 both impacted (route distribution disrupted)
+  if ((roomTotals.WR1 || 0) > 0 && (roomTotals.TE1 || 0) > 0) {
+    bump += 0.4;
+  }
+  
+  // OL cluster (3+ significant OL injuries)
+  const olCount = (roomTotals.OL_hitCount || 0);
+  if (olCount >= 3) {
+    bump += 0.5;
+  }
+  
+  // Conservative cap: max 1.0 pt from all interactions
+  return Math.min(bump, 1.0);
+}
+
+/**
+ * GAP FIX B: Apply Team/Global Caps with Interaction Bumps
+ * Prevents rare multi-unit stacks from exceeding pro-grade limits
+ * @param {array} adjustments - All injury adjustments
+ * @param {object} roomTotals - Position-grouped totals
+ * @returns {object} { qbImpact, nonQbImpact, teamTotal, bumps, capsApplied }
+ */
+export function applyTeamGlobalCaps(adjustments, roomTotals) {
+  const NON_QB_TEAM_CAP = 10.0;  // Offense + defense, excluding QB
+  const TEAM_TOTAL_CAP = 14.0;   // Global cap including QB
+  
+  // Calculate QB vs non-QB impacts
+  const qbAdjustments = adjustments.filter(a => a.position === 'QB');
+  const nonQbAdjustments = adjustments.filter(a => a.position !== 'QB');
+  
+  const qbImpact = qbAdjustments.reduce((sum, a) => sum + (a.impact?.spreadImpact || 0), 0);
+  let nonQbImpact = nonQbAdjustments.reduce((sum, a) => sum + (a.impact?.spreadImpact || 0), 0);
+  
+  // Add interaction bumps (conservative)
+  const interactionBump = calculateInteractionBumps(roomTotals);
+  nonQbImpact += interactionBump;
+  
+  // Track which caps were hit
+  const capsApplied = {
+    hitNonQBCap: false,
+    hitTeamCap: false,
+    interactionBump: interactionBump
+  };
+  
+  // Apply non-QB cap
+  if (Math.abs(nonQbImpact) > NON_QB_TEAM_CAP) {
+    const scaleFactor = NON_QB_TEAM_CAP / Math.abs(nonQbImpact);
+    nonQbImpact = Math.sign(nonQbImpact) * NON_QB_TEAM_CAP;
+    capsApplied.hitNonQBCap = true;
+    capsApplied.nonQBScaleFactor = scaleFactor;
+    
+    if (process.env.DEBUG_AVAILABILITY) {
+      console.log(`🛡️ Non-QB team cap applied: ${(Math.abs(nonQbImpact) / scaleFactor).toFixed(2)} → ${NON_QB_TEAM_CAP.toFixed(2)}`);
+    }
+  }
+  
+  // Apply team total cap
+  const teamTotal = qbImpact + nonQbImpact;
+  let finalTeamTotal = teamTotal;
+  
+  if (Math.abs(teamTotal) > TEAM_TOTAL_CAP) {
+    const scaleFactor = TEAM_TOTAL_CAP / Math.abs(teamTotal);
+    finalTeamTotal = Math.sign(teamTotal) * TEAM_TOTAL_CAP;
+    capsApplied.hitTeamCap = true;
+    capsApplied.teamScaleFactor = scaleFactor;
+    
+    if (process.env.DEBUG_AVAILABILITY) {
+      console.log(`🛡️ Team total cap applied: ${Math.abs(teamTotal).toFixed(2)} → ${TEAM_TOTAL_CAP.toFixed(2)}`);
+    }
+  }
+  
+  return {
+    qbImpact,
+    nonQbImpact,
+    teamTotal: finalTeamTotal,
+    bumps: {
+      interaction: interactionBump
+    },
+    capsApplied
+  };
+}
+
+// Helper to get current NFL week
+function getCurrentWeek() {
+  const seasonStart = new Date('2025-09-04');
+  const now = new Date();
+  const daysSinceStart = Math.floor((now - seasonStart) / (24 * 60 * 60 * 1000));
+  return Math.max(1, Math.min(22, Math.floor(daysSinceStart / 7) + 1));
+}
+
 export default {
   PlayerWeekAvailability,
   buildCanonicalAvailability,
   applyPositionCaps,
+  applyReserveEntry,
+  calculateInteractionBumps,
+  applyTeamGlobalCaps,
   SOURCE_PRIORITY,
   STATUS_WEIGHTS,
   POSITION_CAPS,

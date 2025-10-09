@@ -6,7 +6,13 @@ import { loadAdvancedMetrics, loadInjuries, validateAdvancedMetrics, getTeamMetr
 import { calculateMatchups, calculateExpectedPlays, calculateMatchupScore } from '../_lib/matchups.js';
 import { updateInjuryDurations, initializeInjuryDurationTracking } from '../_lib/injury-duration-tracker.js';
 // Canonical Availability v5: Single source of truth for player availability
-import { buildCanonicalAvailability, applyPositionCaps } from '../_lib/canonical-availability-v5.mjs';
+import { 
+  buildCanonicalAvailability, 
+  applyPositionCaps,
+  applyReserveEntry,           // Gap A: IR as first-class source
+  applyTeamGlobalCaps,          // Gap B: Team caps + interaction bumps
+  SOURCE_PRIORITY               // For debugging
+} from '../_lib/canonical-availability-v5.mjs';
 // Kelly Hybrid Staking: Explicit staking system
 import { recommendUnits } from '../_lib/kelly-hybrid-staking.mjs';
 // ENHANCED: Comprehensive EPA database (300+ players) + Return Boost System
@@ -963,6 +969,25 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
   } catch (err) {
     console.warn(`⚠️ ESPN IR data unavailable for baseline check: ${err.message}`);
   }
+  
+  // Gap A Fix: Build reserve index for IR/PUP/NFI/SUSP (priority 95)
+  const reserveIndex = new Map();
+  if (espnIRData?.irPlayers) {
+    Object.entries(espnIRData.irPlayers).forEach(([team, players]) => {
+      players.forEach(p => {
+        // Use name only as key (cross-team matching)
+        const key = p.name.trim();
+        reserveIndex.set(key, {
+          status: 'IR',  // ESPN primarily tracks IR
+          expectedReturnWeek: null,  // ESPN doesn't provide
+          expectedReturnDate: null,
+          source: 'ESPN_IR',
+          team: team
+        });
+      });
+    });
+    console.log(`📋 Gap A: Built reserve index with ${reserveIndex.size} IR players`);
+  }
 
   // Process skill positions (RB, WR, TE)
   const skillPositions = ['RB', 'WR', 'TE'];
@@ -1062,6 +1087,39 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
   // Recompute total delta from capped adjustments
   totalDelta = cappedAdjustments.reduce((sum, adj) => sum + (adj.impact?.spreadImpact || 0), 0);
   
+  // Gap B Fix: Apply team/global caps with interaction bumps
+  // Build roomTotals for interaction detection
+  const roomTotals = {
+    QB: cappedAdjustments
+      .filter(a => a.position === 'QB')
+      .reduce((sum, a) => sum + Math.abs(a.impact?.spreadImpact || 0), 0),
+    WR1: cappedAdjustments
+      .filter(a => a.position === 'WR' && a.depth === 1)
+      .reduce((sum, a) => sum + Math.abs(a.impact?.spreadImpact || 0), 0),
+    TE1: cappedAdjustments
+      .filter(a => a.position === 'TE' && a.depth === 1)
+      .reduce((sum, a) => sum + Math.abs(a.impact?.spreadImpact || 0), 0),
+    OL_LT: teamInjuries.ol_starters_out >= 1 ? 2.0 : 0,  // Proxy: OL impacts
+    OL_hitCount: teamInjuries.ol_starters_out || 0
+  };
+  
+  const teamCaps = applyTeamGlobalCaps(cappedAdjustments, roomTotals);
+  
+  // Log cap enforcement
+  console.log(`🛡️ Gap B: Team caps applied - QB: ${teamCaps.qbImpact.toFixed(2)}, Non-QB: ${teamCaps.nonQbImpact.toFixed(2)}, Total: ${teamCaps.teamTotal.toFixed(2)}`);
+  if (teamCaps.bumps > 0) {
+    console.log(`  ↗️ Interaction bumps: +${teamCaps.bumps.toFixed(2)}pt`);
+  }
+  if (teamCaps.capsApplied.hitNonQBCap) {
+    console.log(`  ⚠️ Non-QB cap applied (10.0 max, scale: ${teamCaps.capsApplied.scaleFactor.toFixed(3)})`);
+  }
+  if (teamCaps.capsApplied.hitTeamCap) {
+    console.log(`  ⚠️ Team total cap applied (14.0 max, scale: ${teamCaps.capsApplied.scaleFactor.toFixed(3)})`);
+  }
+  
+  // Override totalDelta with capped team total
+  totalDelta = teamCaps.teamTotal;
+  
   // Build injuryAnalysis from canonical availability
   // Expose adjustments in a shape used by safeguards: include EPA-style impact and player field
   cappedAdjustments.forEach(adj => {
@@ -1144,6 +1202,12 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
   
   injuryAnalysis.totalImpact = totalDelta;
   injuryAnalysis.confidence = minConfidence;
+  
+  // Gap B: Add team cap metadata to analysis
+  injuryAnalysis.teamCaps = teamCaps.capsApplied;
+  injuryAnalysis.interactionBumps = teamCaps.bumps;
+  injuryAnalysis.qbImpact = teamCaps.qbImpact;
+  injuryAnalysis.nonQbImpact = teamCaps.nonQbImpact;
   
   // ==================================================
   // RETURN BOOST SYSTEM (NEW)
