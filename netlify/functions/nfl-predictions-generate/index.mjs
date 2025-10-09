@@ -951,9 +951,12 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
   
   // Load ESPN IR data for baseline contributor check
   let espnIRData = null;
+  let isPlayerOnIR = null; // Declare in outer scope
+  
   try {
-    const { fetchESPN_IR_Players, isPlayerOnIR } = await import('../_lib/espn-ir-tracker.mjs');
-    espnIRData = await fetchESPN_IR_Players();
+    const espnModule = await import('../_lib/espn-ir-tracker.mjs');
+    isPlayerOnIR = espnModule.isPlayerOnIR; // Assign to outer scope
+    espnIRData = await espnModule.fetchESPN_IR_Players();
     if (espnIRData.totalIR > 0) {
       console.log(`📋 Loaded ${espnIRData.totalIR} IR players for baseline validation`);
     }
@@ -978,7 +981,7 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
         const wasInBaseline = checkPlayerBaselineContribution(playerName, position, teamCode);
         
         // Double-check with ESPN IR data if available
-        const confirmedIR = espnIRData ? isPlayerOnIR(playerName, teamCode, espnIRData) : isIR;
+        const confirmedIR = (espnIRData && isPlayerOnIR) ? isPlayerOnIR(playerName, teamCode, espnIRData) : isIR;
         
         if (confirmedIR && !wasInBaseline) {
           console.log(`⏭️ Skipping ${playerName} (${position}) - on IR, not in baseline EPA`);
