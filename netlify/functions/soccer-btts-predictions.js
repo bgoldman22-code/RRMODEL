@@ -1310,6 +1310,7 @@ const COMPETITION_WHITELIST = {
 // Live fixture fetching using TheSportsDB (free API) - Enhanced with robust timestamp parsing
 // ENHANCED: Football-Data.org API integration for real-time fixtures
 async function fetchFootballDataFixtures(league, daysAhead = 7) {
+  // FIXED: Use current date/time to avoid showing past matches
   const now = new Date();
   const endDate = new Date(now.getTime() + daysAhead * 24 * 3600 * 1000);
   
@@ -1327,9 +1328,11 @@ async function fetchFootballDataFixtures(league, daysAhead = 7) {
   }
   
   try {
-    // Format dates for API (YYYY-MM-DD)
+    // FIXED: Start from TODAY to exclude past matches
     const dateFrom = now.toISOString().split('T')[0];
     const dateTo = endDate.toISOString().split('T')[0];
+    
+    console.log(`🗓️ Fetching fixtures from ${dateFrom} to ${dateTo} (today + ${daysAhead} days)`);
     
     // Football-Data.org API endpoint
     const apiUrl = `https://api.football-data.org/v4/competitions/${competitionCode}/matches?dateFrom=${dateFrom}&dateTo=${dateTo}&status=SCHEDULED`;
@@ -1361,21 +1364,31 @@ async function fetchFootballDataFixtures(league, daysAhead = 7) {
     
     console.log(`Football-Data.org returned ${matches.length} matches for ${league}`);
     
-    // Convert to our fixture format
-    const fixtures = matches.map(match => ({
-      id: `fd-${league}-${match.id}`,
-      home_team: normalizeTeamName(match.homeTeam.name),
-      away_team: normalizeTeamName(match.awayTeam.name),
-      league,
-      kickoff: match.utcDate,
-      venue: match.venue || `${match.homeTeam.name} Stadium`,
-      round: match.matchday ? `Matchday ${match.matchday}` : 'Unknown',
-      season: match.season?.startDate ? match.season.startDate.split('-')[0] + '-' + (parseInt(match.season.startDate.split('-')[0]) + 1).toString().slice(-2) : '2025-26',
-      fixture_source: 'football-data.org',
-      odds: null,
-      competition: match.competition?.name || league
-    }));
+    // Convert to our fixture format and FILTER OUT PAST MATCHES
+    const fixtures = matches
+      .filter(match => {
+        const kickoffTime = new Date(match.utcDate);
+        const isPast = kickoffTime < now;
+        if (isPast) {
+          console.log(`⏭️ Skipping past match: ${match.homeTeam.name} vs ${match.awayTeam.name} (${match.utcDate})`);
+        }
+        return !isPast; // Only include future matches
+      })
+      .map(match => ({
+        id: `fd-${league}-${match.id}`,
+        home_team: normalizeTeamName(match.homeTeam.name),
+        away_team: normalizeTeamName(match.awayTeam.name),
+        league,
+        kickoff: match.utcDate,
+        venue: match.venue || `${match.homeTeam.name} Stadium`,
+        round: match.matchday ? `Matchday ${match.matchday}` : 'Unknown',
+        season: match.season?.startDate ? match.season.startDate.split('-')[0] + '-' + (parseInt(match.season.startDate.split('-')[0]) + 1).toString().slice(-2) : '2025-26',
+        fixture_source: 'football-data.org',
+        odds: null,
+        competition: match.competition?.name || league
+      }));
     
+    console.log(`✅ Filtered to ${fixtures.length} upcoming fixtures`);
     return fixtures;
     
   } catch (error) {
