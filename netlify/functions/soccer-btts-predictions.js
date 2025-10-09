@@ -674,6 +674,7 @@ function applyDixonColesCorrection(probMatrix, lambda1, lambda2, league) {
 /**
  * Calculate BTTS probability from bivariate distribution with DC correction
  * P(BTTS) = 1 - P(X=0) - P(Y=0) + P(X=0,Y=0)
+ * Matrix structure: correctedMatrix[home_goals][away_goals]
  */
 function calculateBTTSFromBivariate(lambda1, lambda2, rho, league) {
   // Get bivariate probabilities
@@ -683,11 +684,12 @@ function calculateBTTSFromBivariate(lambda1, lambda2, rho, league) {
   const correctedMatrix = applyDixonColesCorrection(probMatrix, lambda1, lambda2, league);
   
   // Calculate marginal probabilities
-  const pX0 = correctedMatrix.map(row => row[0]).reduce((sum, p) => sum + p, 0);
-  const pY0 = correctedMatrix[0].reduce((sum, p) => sum + p, 0);
-  const pX0Y0 = correctedMatrix[0][0];
+  // FIXED: correctedMatrix[i][j] where i=home goals, j=away goals
+  const pX0 = correctedMatrix[0].reduce((sum, p) => sum + p, 0);  // P(home=0) = sum of row 0
+  const pY0 = correctedMatrix.map(row => row[0]).reduce((sum, p) => sum + p, 0);  // P(away=0) = sum of column 0
+  const pX0Y0 = correctedMatrix[0][0];  // P(home=0 AND away=0)
   
-  // BTTS = 1 - P(X=0) - P(Y=0) + P(X=0,Y=0)
+  // BTTS = P(home≥1 AND away≥1) = 1 - P(home=0) - P(away=0) + P(both=0)
   const bttsProbability = 1 - pX0 - pY0 + pX0Y0;
   
   return {
@@ -1247,6 +1249,20 @@ const TEAM_NAME_MAPPING = {
   'Borussia Dortmund': ['BVB', 'Dortmund'],
   'RB Leipzig': ['Leipzig', 'RasenBallsport Leipzig'],
   'Bayer Leverkusen': ['Leverkusen', 'Bayer 04 Leverkusen'],
+  'TSG Hoffenheim': ['TSG 1899 Hoffenheim', 'Hoffenheim', '1899 Hoffenheim', 'TSG'],
+  'Hamburger SV': ['Hamburg', 'HSV', 'Hamburger Sport-Verein'],
+  'Eintracht Frankfurt': ['Frankfurt', 'SGE'],
+  'VfB Stuttgart': ['Stuttgart'],
+  'Borussia Monchengladbach': ['Monchengladbach', 'Gladbach', 'BMG'],
+  'VfL Wolfsburg': ['Wolfsburg'],
+  'SC Freiburg': ['Freiburg'],
+  'FC Augsburg': ['Augsburg'],
+  '1. FC Heidenheim': ['Heidenheim', 'FC Heidenheim'],
+  'Werder Bremen': ['Bremen', 'SV Werder Bremen'],
+  'FC St. Pauli': ['St. Pauli', 'St Pauli'],
+  '1. FC Union Berlin': ['Union Berlin', 'FC Union Berlin'],
+  'VfL Bochum': ['Bochum'],
+  'FSV Mainz 05': ['Mainz', 'Mainz 05'],
   
   // Champions League additions - FIXED with proper UCL 2025-26 teams
   'FC Barcelona': ['Barcelona', 'Barca', 'FCB'],
@@ -1310,6 +1326,7 @@ const COMPETITION_WHITELIST = {
 // Live fixture fetching using TheSportsDB (free API) - Enhanced with robust timestamp parsing
 // ENHANCED: Football-Data.org API integration for real-time fixtures
 async function fetchFootballDataFixtures(league, daysAhead = 7) {
+  // FIXED: Use current date/time to avoid showing past matches
   const now = new Date();
   const endDate = new Date(now.getTime() + daysAhead * 24 * 3600 * 1000);
   
@@ -1327,9 +1344,11 @@ async function fetchFootballDataFixtures(league, daysAhead = 7) {
   }
   
   try {
-    // Format dates for API (YYYY-MM-DD)
+    // FIXED: Start from TODAY to exclude past matches
     const dateFrom = now.toISOString().split('T')[0];
     const dateTo = endDate.toISOString().split('T')[0];
+    
+    console.log(`🗓️ Fetching fixtures from ${dateFrom} to ${dateTo} (today + ${daysAhead} days)`);
     
     // Football-Data.org API endpoint
     const apiUrl = `https://api.football-data.org/v4/competitions/${competitionCode}/matches?dateFrom=${dateFrom}&dateTo=${dateTo}&status=SCHEDULED`;
@@ -1361,21 +1380,31 @@ async function fetchFootballDataFixtures(league, daysAhead = 7) {
     
     console.log(`Football-Data.org returned ${matches.length} matches for ${league}`);
     
-    // Convert to our fixture format
-    const fixtures = matches.map(match => ({
-      id: `fd-${league}-${match.id}`,
-      home_team: normalizeTeamName(match.homeTeam.name),
-      away_team: normalizeTeamName(match.awayTeam.name),
-      league,
-      kickoff: match.utcDate,
-      venue: match.venue || `${match.homeTeam.name} Stadium`,
-      round: match.matchday ? `Matchday ${match.matchday}` : 'Unknown',
-      season: match.season?.startDate ? match.season.startDate.split('-')[0] + '-' + (parseInt(match.season.startDate.split('-')[0]) + 1).toString().slice(-2) : '2025-26',
-      fixture_source: 'football-data.org',
-      odds: null,
-      competition: match.competition?.name || league
-    }));
+    // Convert to our fixture format and FILTER OUT PAST MATCHES
+    const fixtures = matches
+      .filter(match => {
+        const kickoffTime = new Date(match.utcDate);
+        const isPast = kickoffTime < now;
+        if (isPast) {
+          console.log(`⏭️ Skipping past match: ${match.homeTeam.name} vs ${match.awayTeam.name} (${match.utcDate})`);
+        }
+        return !isPast; // Only include future matches
+      })
+      .map(match => ({
+        id: `fd-${league}-${match.id}`,
+        home_team: normalizeTeamName(match.homeTeam.name),
+        away_team: normalizeTeamName(match.awayTeam.name),
+        league,
+        kickoff: match.utcDate,
+        venue: match.venue || `${match.homeTeam.name} Stadium`,
+        round: match.matchday ? `Matchday ${match.matchday}` : 'Unknown',
+        season: match.season?.startDate ? match.season.startDate.split('-')[0] + '-' + (parseInt(match.season.startDate.split('-')[0]) + 1).toString().slice(-2) : '2025-26',
+        fixture_source: 'football-data.org',
+        odds: null,
+        competition: match.competition?.name || league
+      }));
     
+    console.log(`✅ Filtered to ${fixtures.length} upcoming fixtures`);
     return fixtures;
     
   } catch (error) {
@@ -2266,6 +2295,13 @@ const BUNDESLIGA_2025_26_TEAMS = {
     games_away: 2, goals_scored_away: 2, goals_conceded_away: 4,
     btts_rate_home: 0.66, btts_rate_away: 0.70,
     recent_form_attack: 0.52, recent_form_defense: 0.48
+  },
+  'Hamburger SV': {
+    name: 'Hamburger SV',
+    games_home: 3, goals_scored_home: 5, goals_conceded_home: 4,
+    games_away: 2, goals_scored_away: 3, goals_conceded_away: 5,
+    btts_rate_home: 0.69, btts_rate_away: 0.72,
+    recent_form_attack: 0.64, recent_form_defense: 0.56
   },
   
   // Lower Table
@@ -3556,11 +3592,11 @@ function findTeamStatsFromDataset(teamName, dataset) {
 
 exports.handler = async (event, context) => {
   try {
-    const { league = 'premier-league', limit = 20, days = 7, force_refresh = 'false' } = event.queryStringParameters || {};
+    const { league = 'premier-league', limit = 20, days = 14, force_refresh = 'false' } = event.queryStringParameters || {};
     
     // Safely coerce parameters
     const lim = Math.max(1, Math.min(100, parseInt(limit, 10) || 20));
-    const daysAhead = Math.max(1, Math.min(14, parseInt(days, 10) || 7));
+    const daysAhead = Math.max(1, Math.min(21, parseInt(days, 10) || 14)); // INCREASED: 14 day default, 21 day max for full matchday coverage
     const forceRefresh = force_refresh.toLowerCase() === 'true';
     
     if (!LEAGUES[league]) {
@@ -3987,6 +4023,20 @@ exports.handler = async (event, context) => {
       };
     });
 
+    // CRITICAL FIX: Filter out past matches before returning
+    const now = new Date();
+    const upcomingPredictions = predictions.filter(pred => {
+      if (!pred.kickoff) return true; // Keep if no kickoff time
+      const kickoffTime = new Date(pred.kickoff);
+      const isPast = kickoffTime < now;
+      if (isPast) {
+        console.log(`⏭️ Filtering out past match: ${pred.home_team} vs ${pred.away_team} (${pred.kickoff})`);
+      }
+      return !isPast; // Only include future matches
+    });
+
+    console.log(`✅ Filtered ${predictions.length} total predictions → ${upcomingPredictions.length} upcoming matches`);
+
     return {
       statusCode: 200,
       headers: { 
@@ -3996,18 +4046,19 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         league: leagueConfig.name,
         season: leagueConfig.season,
-        predictions: predictions,
+        predictions: upcomingPredictions,
         metadata: {
-          total_fixtures: predictions.length,
+          total_fixtures: upcomingPredictions.length,
           api_fixtures: rawFixtures.length,
+          filtered_past_matches: predictions.length - upcomingPredictions.length,
           days_ahead: daysAhead,
           generated_at: new Date().toISOString(),
           model_version: 'btts_v3.0_elite_bivariate_dixon_coles_pro_features',
           league_btts_baseline: leagueConfig.btts_baseline,
-          high_confidence: predictions.filter(p => p.confidence >= 65).length,
+          high_confidence: upcomingPredictions.filter(p => p.confidence >= 65).length,
           fixture_sources: {
-            api: predictions.filter(p => p.fixture_source === 'api').length,
-            fallback: predictions.filter(p => p.fixture_source === 'fallback').length
+            api: upcomingPredictions.filter(p => p.fixture_source === 'api').length,
+            fallback: upcomingPredictions.filter(p => p.fixture_source === 'fallback').length
           },
           team_data: {
             total_teams: Object.keys(combinedTeamStats).length,
