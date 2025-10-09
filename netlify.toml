@@ -38,3 +38,29 @@
 [[scheduled.functions]]
   name = "refresh-td-odds-cache"
   cron = "0 12 * * *"
+
+# ============================================
+# DAILY LEARNERS - Continuous Model Improvement
+# ============================================
+
+# MLB Daily Learner - runs at 3:05am ET (7:05 UTC) after games complete
+# Learns from completed MLB games: pitch types, zones, batter/pitcher patterns
+[[scheduled.functions]]
+  name = "mlb-daily-learn"
+  cron = "5 7 * * *"
+
+# MLB 2+ Hits Learner - runs at 3:10am ET (7:10 UTC)
+[[scheduled.functions]]
+  name = "hits2-daily-learn"
+  cron = "10 7 * * *"
+
+# MLB Stolen Base Learner - runs at 3:15am ET (7:15 UTC)
+[[scheduled.functions]]
+  name = "sb-daily-learn"
+  cron = "15 7 * * *"
+
+# Soccer Daily Learner - runs at 3:20am ET (7:20 UTC)
+# Learns from completed soccer matches: goals, BTTS rates, team form
+[[scheduled.functions]]
+  name = "soccer-daily-learn"
+  cron = "20 7 * * *"
