@@ -1,0 +1,37 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Analyze injury impacts (live generator)",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"scripts/analyze_injury_impact.mjs"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Format injuries per game",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"scripts/format_injury_by_game.mjs"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Week 6 injury format report",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"scripts/format_injury_by_week.mjs",
+				"2025",
+				"6"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

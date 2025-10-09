@@ -882,7 +882,18 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
     if (!s) return 'active';
     const lower = String(s).toLowerCase();
     // Map common variants
-    const map = { questionable: 'questionable', q: 'questionable', dout: 'doubtful', d: 'doubtful', prob: 'active', probable: 'active', inactive: 'out' };
+    const map = {
+      // Core statuses
+      questionable: 'questionable', q: 'questionable',
+      doubtful: 'doubtful', d: 'doubtful', dout: 'doubtful',
+      out: 'out', inactive: 'out',
+      prob: 'active', probable: 'active', active: 'active',
+      // Practice report aliases → treat as questionable unless clearly full/rest
+      dnp: 'questionable', 'did not practice': 'questionable',
+      lp: 'questionable', limited: 'questionable', 'limited practice': 'questionable',
+      fp: 'active', full: 'active', 'full practice': 'active',
+      rest: 'active'
+    };
     return map[lower] || lower; // allow 'out', 'doubtful', 'questionable', 'active'
   };
   
