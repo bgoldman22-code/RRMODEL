@@ -3569,11 +3569,11 @@ function findTeamStatsFromDataset(teamName, dataset) {
 
 exports.handler = async (event, context) => {
   try {
-    const { league = 'premier-league', limit = 20, days = 7, force_refresh = 'false' } = event.queryStringParameters || {};
+    const { league = 'premier-league', limit = 20, days = 14, force_refresh = 'false' } = event.queryStringParameters || {};
     
     // Safely coerce parameters
     const lim = Math.max(1, Math.min(100, parseInt(limit, 10) || 20));
-    const daysAhead = Math.max(1, Math.min(14, parseInt(days, 10) || 7));
+    const daysAhead = Math.max(1, Math.min(21, parseInt(days, 10) || 14)); // INCREASED: 14 day default, 21 day max for full matchday coverage
     const forceRefresh = force_refresh.toLowerCase() === 'true';
     
     if (!LEAGUES[league]) {
