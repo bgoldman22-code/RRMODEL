@@ -1,4 +1,0 @@
-This patch adds a robust trainer and Blobs helper.
-To see what rows your model is generating at runtime, call:
-  /.netlify/functions/nfl-predictions-generate?force=true&log=1
-and check function logs. Ensure your generator prints the computed rows when log=1.
