@@ -674,6 +674,7 @@ function applyDixonColesCorrection(probMatrix, lambda1, lambda2, league) {
 /**
  * Calculate BTTS probability from bivariate distribution with DC correction
  * P(BTTS) = 1 - P(X=0) - P(Y=0) + P(X=0,Y=0)
+ * Matrix structure: correctedMatrix[home_goals][away_goals]
  */
 function calculateBTTSFromBivariate(lambda1, lambda2, rho, league) {
   // Get bivariate probabilities
@@ -683,11 +684,12 @@ function calculateBTTSFromBivariate(lambda1, lambda2, rho, league) {
   const correctedMatrix = applyDixonColesCorrection(probMatrix, lambda1, lambda2, league);
   
   // Calculate marginal probabilities
-  const pX0 = correctedMatrix.map(row => row[0]).reduce((sum, p) => sum + p, 0);
-  const pY0 = correctedMatrix[0].reduce((sum, p) => sum + p, 0);
-  const pX0Y0 = correctedMatrix[0][0];
+  // FIXED: correctedMatrix[i][j] where i=home goals, j=away goals
+  const pX0 = correctedMatrix[0].reduce((sum, p) => sum + p, 0);  // P(home=0) = sum of row 0
+  const pY0 = correctedMatrix.map(row => row[0]).reduce((sum, p) => sum + p, 0);  // P(away=0) = sum of column 0
+  const pX0Y0 = correctedMatrix[0][0];  // P(home=0 AND away=0)
   
-  // BTTS = 1 - P(X=0) - P(Y=0) + P(X=0,Y=0)
+  // BTTS = P(home≥1 AND away≥1) = 1 - P(home=0) - P(away=0) + P(both=0)
   const bttsProbability = 1 - pX0 - pY0 + pX0Y0;
   
   return {
