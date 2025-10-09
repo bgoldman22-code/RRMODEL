@@ -1,0 +1,160 @@
+# GitHub Actions workflow for NFL Predictions deployment
+name: Deploy NFL Predictions
+
+on:
+  push:
+    branches: [ main, main33 ]
+  schedule:
+    # Run twice daily during NFL season (6am and 2pm ET)
+    - cron: '0 11,19 * 9-12 *'
+    - cron: '0 11,19 * 1-2 *'
+
+jobs:
+  test-predictions:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Generate Cloud Data Pipeline
+      run: |
+        echo "🚀 Generating cloud data pipeline..."
+        node scripts/cloud-data-pipeline.js
+        
+        # Verify data files were created
+        if [ ! -f public/data/team-metrics.json ]; then
+          echo "❌ Team metrics not generated"
+          exit 1
+        fi
+        
+        if [ ! -f public/data/schedule.json ]; then
+          echo "❌ Schedule not generated"  
+          exit 1
+        fi
+        
+        if [ ! -f public/predictions/week-current-full.json ]; then
+          echo "❌ Predictions not generated"
+          exit 1
+        fi
+        
+        echo "✅ Cloud data pipeline completed successfully"
+      
+    - name: Generate repo structure artifact
+      run: |
+        echo "📋 Generating repository structure..."
+        find . -type f \( -name "*.js" -o -name "*.mjs" -o -name "*.json" -o -name "*.md" -o -name "*.R" -o -name "*.py" \) \
+          ! -path "./node_modules/*" ! -path "./.git/*" > repo-structure.txt
+        echo "Generated $(wc -l < repo-structure.txt) file entries"
+        
+    - name: Upload repo structure artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: repo-structure
+        path: repo-structure.txt
+        retention-days: 7
+      
+    - name: Test clean EPA core
+      run: |
+        echo "Testing Clean EPA Core..."
+        node -e "
+        import('./netlify/functions/_lib/clean-epa-core.mjs').then(({ calculateCleanGameProbability }) => {
+          const mockHome = { core: { off_epa: 0.05, def_epa: -0.03 } };
+          const mockAway = { core: { off_epa: -0.02, def_epa: 0.01 } };
+          const result = calculateCleanGameProbability(mockHome, mockAway);
+          console.log('✅ Clean EPA core test passed:', result.homeWinProb);
+          process.exit(result.homeWinProb > 0.5 ? 0 : 1);
+        }).catch(err => {
+          console.error('❌ Clean EPA core test failed:', err);
+          process.exit(1);
+        });
+        "
+
+    - name: Test prediction function
+      run: |
+        echo "Testing main prediction function..."
+        node -e "
+        const games = [{
+          home_team: 'KC',
+          away_team: 'BUF',
+          weather: { temperature: 72, wind_mph: 5 }
+        }];
+        
+        // Mock the required functions
+        global.loadAdvancedMetrics = () => Promise.resolve({
+          KC: { core: { off_epa: 0.08, def_epa: -0.05 }, variance: { off_epa: 0.09, def_epa: 0.07 } },
+          BUF: { core: { off_epa: 0.06, def_epa: -0.04 }, variance: { off_epa: 0.08, def_epa: 0.08 } },
+          league: { means: {}, stds: {} }
+        });
+        global.loadInjuries = () => Promise.resolve({ teams: {} });
+        global.validateAdvancedMetrics = () => true;
+        global.getTeamMetrics = (metrics, team) => metrics[team] || {};
+        global.getCurrentWeek = () => 3;
+        global.loadLiveOdds = () => Promise.resolve([]);
+        global.findGameOdds = () => null;
+        global.isDivisionalGame = () => false;
+        global.americanToImplied = () => 0.5;
+        
+        import('./netlify/functions/nfl-predictions-generate/index.mjs')
+          .then(module => module.default({ 
+            queryStringParameters: { season: '2025', week: '3' } 
+          }))
+          .then(response => {
+            const data = JSON.parse(response.body);
+            console.log('✅ Prediction function test passed');
+            console.log('Predictions generated:', data.predictions?.length || 0);
+            process.exit(0);
+          })
+          .catch(err => {
+            console.error('❌ Prediction function test failed:', err);
+            process.exit(1);
+          });
+        "
+
+  deploy:
+    needs: test-predictions
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/main33'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install Netlify CLI
+      run: npm install -g netlify-cli
+        
+    - name: Deploy to Netlify
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      run: netlify deploy --prod --dir=.
+        
+    - name: Generate current week predictions
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      run: |
+        CURRENT_WEEK=$(date +%V)
+        curl -f "https://${{ secrets.NETLIFY_SITE_ID }}.netlify.app/.netlify/functions/nfl-predictions-generate?season=2025&week=${CURRENT_WEEK}" \
+          -H "Authorization: Bearer ${{ secrets.NETLIFY_AUTH_TOKEN }}" \
+          -o predictions-latest.json
+        
+        echo "📊 Latest predictions generated and cached"
+        
+    - name: Commit prediction cache
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add predictions-latest.json
+        git commit -m "🤖 Auto-update predictions cache $(date)" || exit 0
+        git push
