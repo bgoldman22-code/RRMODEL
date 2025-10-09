@@ -4000,6 +4000,20 @@ exports.handler = async (event, context) => {
       };
     });
 
+    // CRITICAL FIX: Filter out past matches before returning
+    const now = new Date();
+    const upcomingPredictions = predictions.filter(pred => {
+      if (!pred.kickoff) return true; // Keep if no kickoff time
+      const kickoffTime = new Date(pred.kickoff);
+      const isPast = kickoffTime < now;
+      if (isPast) {
+        console.log(`⏭️ Filtering out past match: ${pred.home_team} vs ${pred.away_team} (${pred.kickoff})`);
+      }
+      return !isPast; // Only include future matches
+    });
+
+    console.log(`✅ Filtered ${predictions.length} total predictions → ${upcomingPredictions.length} upcoming matches`);
+
     return {
       statusCode: 200,
       headers: { 
@@ -4009,18 +4023,19 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         league: leagueConfig.name,
         season: leagueConfig.season,
-        predictions: predictions,
+        predictions: upcomingPredictions,
         metadata: {
-          total_fixtures: predictions.length,
+          total_fixtures: upcomingPredictions.length,
           api_fixtures: rawFixtures.length,
+          filtered_past_matches: predictions.length - upcomingPredictions.length,
           days_ahead: daysAhead,
           generated_at: new Date().toISOString(),
           model_version: 'btts_v3.0_elite_bivariate_dixon_coles_pro_features',
           league_btts_baseline: leagueConfig.btts_baseline,
-          high_confidence: predictions.filter(p => p.confidence >= 65).length,
+          high_confidence: upcomingPredictions.filter(p => p.confidence >= 65).length,
           fixture_sources: {
-            api: predictions.filter(p => p.fixture_source === 'api').length,
-            fallback: predictions.filter(p => p.fixture_source === 'fallback').length
+            api: upcomingPredictions.filter(p => p.fixture_source === 'api').length,
+            fallback: upcomingPredictions.filter(p => p.fixture_source === 'fallback').length
           },
           team_data: {
             total_teams: Object.keys(combinedTeamStats).length,
