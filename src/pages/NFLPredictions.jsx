@@ -1235,25 +1235,17 @@ export default function NFLPredictions() {
                 const awayHasInjuries = awayInjuries.length > 0 && eliteInjury?.away?.total > 1.0;
                 const homeHasInjuries = homeInjuries.length > 0 && eliteInjury?.home?.total > 1.0;
                 
-                // DEBUG: Log injury data for ANY game with data
-                if (eliteInjury || (r.modelEnhancements && Object.keys(r.modelEnhancements).length > 0)) {
-                  console.log(`🏥 INJURY DEBUG for ${r.away_team} @ ${r.home_team}:`, JSON.stringify({
-                    hasModelEnhancements: !!r.modelEnhancements,
-                    modelEnhancementKeys: r.modelEnhancements ? Object.keys(r.modelEnhancements) : 'none',
+                // DEBUG: Log injury data for SF @ TB
+                if (r.away_team === 'SF' && r.home_team === 'TB') {
+                  console.log('🏥 SF @ TB INJURY DEBUG:', {
                     hasEliteInjury: !!eliteInjury,
-                    eliteInjuryStructure: eliteInjury ? {
-                      homeTotal: eliteInjury.home?.total,
-                      awayTotal: eliteInjury.away?.total,
-                      homeInjuriesCount: eliteInjury.home?.injuries?.length,
-                      awayInjuriesCount: eliteInjury.away?.injuries?.length
-                    } : null,
-                    awayInjuriesCount: awayInjuries.length,
-                    homeInjuriesCount: homeInjuries.length,
-                    awayTotal: eliteInjury?.away?.total,
-                    homeTotal: eliteInjury?.home?.total,
+                    eliteInjury: eliteInjury,
+                    awayInjuries: awayInjuries.length,
+                    homeInjuries: homeInjuries.length,
                     awayHasInjuries,
-                    homeHasInjuries
-                  }, null, 2));
+                    homeHasInjuries,
+                    modelEnhancements: r.modelEnhancements
+                  });
                 }
                 
                 // Build injury tooltip
