@@ -1237,19 +1237,23 @@ export default function NFLPredictions() {
                 
                 // DEBUG: Log injury data for ANY game with data
                 if (eliteInjury || (r.modelEnhancements && Object.keys(r.modelEnhancements).length > 0)) {
-                  console.log(`🏥 INJURY DEBUG for ${r.away_team} @ ${r.home_team}:`, {
+                  console.log(`🏥 INJURY DEBUG for ${r.away_team} @ ${r.home_team}:`, JSON.stringify({
                     hasModelEnhancements: !!r.modelEnhancements,
                     modelEnhancementKeys: r.modelEnhancements ? Object.keys(r.modelEnhancements) : 'none',
                     hasEliteInjury: !!eliteInjury,
-                    eliteInjury: eliteInjury,
+                    eliteInjuryStructure: eliteInjury ? {
+                      homeTotal: eliteInjury.home?.total,
+                      awayTotal: eliteInjury.away?.total,
+                      homeInjuriesCount: eliteInjury.home?.injuries?.length,
+                      awayInjuriesCount: eliteInjury.away?.injuries?.length
+                    } : null,
                     awayInjuriesCount: awayInjuries.length,
                     homeInjuriesCount: homeInjuries.length,
                     awayTotal: eliteInjury?.away?.total,
                     homeTotal: eliteInjury?.home?.total,
                     awayHasInjuries,
-                    homeHasInjuries,
-                    rawData: r
-                  });
+                    homeHasInjuries
+                  }, null, 2));
                 }
                 
                 // Build injury tooltip
