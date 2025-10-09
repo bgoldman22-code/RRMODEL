@@ -2017,6 +2017,18 @@ async function generateAdvancedPredictions(games, season) {
     let eliteInjuryAdjustment = null;
     let eliteSpreadAdjustment = 0;
     let eliteKellyReduction = 1.0;
+    let homeInjuries = [];  // Moved up so it's available for modelEnhancements
+    let awayInjuries = [];  // Moved up so it's available for modelEnhancements
+    
+    // DEBUG: Log injury structure for debugging
+    console.log(`🔍 INJURY STRUCTURE DEBUG for ${homeCode} vs ${awayCode}:`, {
+      hasInjuries: !!injuries,
+      injuriesType: typeof injuries,
+      hasTeamsProperty: !!(injuries && injuries.teams),
+      teamKeys: injuries && injuries.teams ? Object.keys(injuries.teams) : 'no teams',
+      homeTeamData: injuries && injuries.teams && injuries.teams[homeCode] ? 'has data' : 'no data',
+      awayTeamData: injuries && injuries.teams && injuries.teams[awayCode] ? 'has data' : 'no data'
+    });
     
     // Convert injuries.teams object structure to flat array for Elite system
     const injuriesArray = [];
@@ -2042,23 +2054,40 @@ async function generateAdvancedPredictions(games, season) {
       } catch (e) {
         console.error('❌ Error converting injuries for Elite system:', e.message);
       }
+    } else {
+      console.log(`⚠️ Elite Injury: No injuries.teams found - injuries is`, typeof injuries);
     }
     
     if (injuriesArray.length > 0) {
       try {
         const { calculateEliteInjuryAdjustment } = await import('../_lib/elite-injury-penalty-calculator.mjs');
         
-        // Separate home/away injuries
-        const homeInjuries = injuriesArray.filter(inj => inj.team === homeCode);
-        const awayInjuries = injuriesArray.filter(inj => inj.team === awayCode);
+        // Separate home/away injuries (assign to outer scope variables)
+        homeInjuries = injuriesArray.filter(inj => inj.team === homeCode);
+        awayInjuries = injuriesArray.filter(inj => inj.team === awayCode);
         
-        console.log(`🏥 Elite Injury: Home ${homeCode} = ${homeInjuries.length} injuries, Away ${awayCode} = ${awayInjuries.length} injuries`);
+        console.log(`🏥 Elite Injury INPUTS for ${homeCode} vs ${awayCode}:`, {
+          homeCount: homeInjuries.length,
+          awayCount: awayInjuries.length,
+          homeList: homeInjuries.map(i => `${i.player}(${i.position}:${i.status})`).join(', '),
+          awayList: awayInjuries.map(i => `${i.player}(${i.position}:${i.status})`).join(', ')
+        });
         
         // Get market spread if available
         const marketSpread = marketOdds?.homeSpread || null;
         
         // Calculate elite injury penalties
         eliteInjuryAdjustment = calculateEliteInjuryAdjustment(homeInjuries, awayInjuries, marketSpread);
+        
+        console.log(`✅ Elite Injury RESULT for ${homeCode} vs ${awayCode}:`, {
+          hasAdjustment: !!eliteInjuryAdjustment,
+          homePenalty: eliteInjuryAdjustment?.home?.total,
+          awayPenalty: eliteInjuryAdjustment?.away?.total,
+          netSpread: eliteInjuryAdjustment?.netSpreadImpact,
+          kellyFactor: eliteInjuryAdjustment?.stakingReduction?.factor,
+          sanityFlags: eliteInjuryAdjustment?.sanityCheck?.flags
+        });
+        
         eliteSpreadAdjustment = eliteInjuryAdjustment.netSpreadImpact;
         eliteKellyReduction = eliteInjuryAdjustment.stakingReduction.factor;
         
