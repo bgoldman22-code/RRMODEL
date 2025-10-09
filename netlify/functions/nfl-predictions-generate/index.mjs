@@ -2018,12 +2018,25 @@ async function generateAdvancedPredictions(games, season) {
     let eliteSpreadAdjustment = 0;
     let eliteKellyReduction = 1.0;
     
-    if (injuries && injuries.length > 0) {
+    // Convert injuries.teams object structure to flat array for Elite system
+    const injuriesArray = [];
+    if (injuries && injuries.teams) {
+      for (const [team, teamData] of Object.entries(injuries.teams)) {
+        if (teamData.injuries && Array.isArray(teamData.injuries)) {
+          injuriesArray.push(...teamData.injuries.map(inj => ({
+            ...inj,
+            team: team
+          })));
+        }
+      }
+    }
+    
+    if (injuriesArray.length > 0) {
       const { calculateEliteInjuryAdjustment } = await import('../_lib/elite-injury-penalty-calculator.mjs');
       
       // Separate home/away injuries
-      const homeInjuries = injuries.filter(inj => inj.team === homeCode);
-      const awayInjuries = injuries.filter(inj => inj.team === awayCode);
+      const homeInjuries = injuriesArray.filter(inj => inj.team === homeCode);
+      const awayInjuries = injuriesArray.filter(inj => inj.team === awayCode);
       
       // Get market spread if available
       const marketSpread = marketOdds?.homeSpread || null;
