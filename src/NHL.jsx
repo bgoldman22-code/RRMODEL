@@ -202,6 +202,7 @@ export default function NHL() {
                     <th className="px-4 py-3 font-semibold">Market</th>
                     <th className="px-4 py-3 font-semibold">Line</th>
                     <th className="px-4 py-3 font-semibold">Odds</th>
+                    <th className="px-4 py-3 font-semibold">Book</th>
                     <th className="px-4 py-3 font-semibold">Projection</th>
                     <th 
                       className="px-4 py-3 font-semibold cursor-pointer hover:text-white transition"
@@ -268,6 +269,11 @@ export default function NHL() {
                         <td className="px-4 py-4 font-mono text-sm">{opp.line}</td>
                         <td className="px-4 py-4 font-mono text-sm">
                           {opp.odds > 0 ? `+${opp.odds}` : opp.odds}
+                        </td>
+                        <td className="px-4 py-4 text-sm">
+                          <span className="bg-purple-500/20 text-purple-300 px-2 py-1 rounded text-xs font-medium">
+                            {opp.bookmaker || 'Unknown'}
+                          </span>
                         </td>
                         <td className="px-4 py-4 font-semibold text-blue-400">
                           {opp.projection.toFixed(1)}

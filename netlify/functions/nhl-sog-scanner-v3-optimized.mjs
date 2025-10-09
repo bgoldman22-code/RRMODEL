@@ -339,7 +339,7 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime, real
     }
     
     // Check for real odds data
-    let line, odds, oddsSource;
+    let line, odds, oddsSource, bookmaker;
     let realOddsFound = false;
     
     if (realOddsMap && realOddsMap.size > 0) {
@@ -349,6 +349,7 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime, real
             playerName.toLowerCase().includes(oddsData.playerName.toLowerCase())) {
           line = oddsData.line;
           odds = oddsData.odds;
+          bookmaker = oddsData.bookmaker;
           oddsSource = `${oddsData.bookmaker} (real)`;
           realOddsFound = true;
           break;
@@ -356,12 +357,9 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime, real
       }
     }
     
-    // Fallback to simulated odds if no real odds found
+    // NO FALLBACK: Only return opportunities with real odds from actual books
     if (!realOddsFound) {
-      line = Math.round(projectedSOG * 2) / 2;
-      const vigAdjustment = Math.random() * 30 - 15;
-      odds = Math.round(-110 + vigAdjustment);
-      oddsSource = 'simulated';
+      return null; // Skip players without real book lines
     }
     
     // Calculate edge
@@ -404,8 +402,9 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime, real
       variance: parseFloat(variance.toFixed(1)),
       scratchRisk: 0.05,
       mlEnhanced: false,
-      dataSource: realOddsFound ? 'real-odds' : 'position-optimized',
-      oddsSource
+      dataSource: 'real-odds', // Always real odds now (we return null otherwise)
+      oddsSource,
+      bookmaker: bookmaker || 'Unknown' // Add explicit bookmaker field for UI display
     };
     
   } catch (error) {
