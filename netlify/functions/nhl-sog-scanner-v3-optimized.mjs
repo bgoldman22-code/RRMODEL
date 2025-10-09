@@ -87,6 +87,23 @@ function processRealOdds(oddsData) {
     for (const bookmaker of props.bookmakers) {
       if (!bookmaker.markets) continue;
       
+      // ELITE FILTER: Only include priority books (remove BetRivers, PointsBet)
+      const PRIORITY_BOOKS = [
+        'FanDuel',
+        'DraftKings', 
+        'BetMGM',
+        'Caesars',
+        'ESPN BET',
+        'Fanatics Sportsbook',
+        'NoVig',
+        'ProphetX'
+      ];
+      
+      const bookName = bookmaker.title || '';
+      if (!PRIORITY_BOOKS.some(b => bookName.includes(b))) {
+        continue; // Skip non-priority books
+      }
+      
       for (const market of bookmaker.markets) {
         if (market.key !== 'player_shots_on_goal') continue;
         
@@ -95,15 +112,19 @@ function processRealOdds(oddsData) {
           
           const playerName = outcome.description.replace(/\s+(Over|Under).*$/i, '').trim();
           const isOver = /over/i.test(outcome.name || '');
+          const isUnder = /under/i.test(outcome.name || '');
           
-          if (isOver && outcome.point && outcome.price) {
-            const key = `${playerName}_${outcome.point}`;
+          // ELITE UPGRADE: Capture BOTH over and under lines
+          if ((isOver || isUnder) && outcome.point && outcome.price) {
+            const direction = isOver ? 'over' : 'under';
+            const key = `${playerName}_${outcome.point}_${direction}`;
             
             if (!playerOddsMap.has(key)) {
               playerOddsMap.set(key, {
                 playerName,
                 line: parseFloat(outcome.point),
                 odds: outcome.price,
+                direction: direction.toUpperCase(),
                 bookmaker: bookmaker.title,
                 event: `${event.home_team} vs ${event.away_team}`
               });
@@ -338,75 +359,78 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime, real
       projectedSOG *= 0.94;
     }
     
-    // Check for real odds data
-    let line, odds, oddsSource;
-    let realOddsFound = false;
+    // Check for real odds data - BOTH over and under
+    const opportunities = [];
     
     if (realOddsMap && realOddsMap.size > 0) {
-      // Try to find real odds for this player
+      // Try to find real odds for this player (both over and under)
       for (const [key, oddsData] of realOddsMap.entries()) {
         if (oddsData.playerName.toLowerCase().includes(playerName.toLowerCase()) ||
             playerName.toLowerCase().includes(oddsData.playerName.toLowerCase())) {
-          line = oddsData.line;
-          odds = oddsData.odds;
-          oddsSource = `${oddsData.bookmaker} (real)`;
-          realOddsFound = true;
-          break;
+          
+          const line = oddsData.line;
+          const odds = oddsData.odds;
+          const bookmaker = oddsData.bookmaker;
+          const direction = oddsData.direction;
+          const oddsSource = `${oddsData.bookmaker} (real)`;
+          
+          // Calculate edge based on direction
+          let diff, edge;
+          if (direction === 'OVER') {
+            diff = projectedSOG - line;
+            edge = diff > 0 ? (diff / line) * 100 : 0;
+          } else { // UNDER
+            diff = line - projectedSOG;
+            edge = diff > 0 ? (diff / line) * 100 : 0;
+          }
+          
+          // Only include if we have sufficient edge
+          if (edge >= 3.0 && edge <= 25.0) {
+            // Kelly calculation
+            const oddsDecimal = odds > 0 ? (odds / 100) + 1 : (100 / Math.abs(odds)) + 1;
+            const winProb = 0.5 + (edge / 200);
+            const b = oddsDecimal - 1;
+            const q = 1 - winProb;
+            
+            let kelly = (b * winProb - q) / b;
+            kelly *= (1 - Math.min(variance / 5, 0.3)); // Variance penalty
+            kelly *= 0.25; // Fractional Kelly
+            kelly = Math.max(0, Math.min(kelly, 0.05));
+            
+            // Confidence adjustment
+            const baseConfidence = position === 'C' ? 78 : position === 'D' ? 72 : 75;
+            const confidence = Math.min(baseConfidence + 10, 90); // Real odds boost
+            
+            opportunities.push({
+              playerId,
+              playerName,
+              position,
+              team,
+              opponent,
+              gameTime,
+              direction,
+              line,
+              odds,
+              projection: parseFloat(projectedSOG.toFixed(1)),
+              edge: parseFloat(edge.toFixed(1)),
+              ev: parseFloat((edge * 0.4).toFixed(1)),
+              confidence,
+              kelly: parseFloat(kelly.toFixed(4)),
+              variance: parseFloat(variance.toFixed(1)),
+              scratchRisk: 0.05,
+              mlEnhanced: false,
+              dataSource: 'real-odds',
+              oddsSource,
+              bookmaker: bookmaker || 'Unknown'
+            });
+          }
         }
       }
     }
     
-    // Fallback to simulated odds if no real odds found
-    if (!realOddsFound) {
-      line = Math.round(projectedSOG * 2) / 2;
-      const vigAdjustment = Math.random() * 30 - 15;
-      odds = Math.round(-110 + vigAdjustment);
-      oddsSource = 'simulated';
-    }
-    
-    // Calculate edge
-    const diff = projectedSOG - line;
-    const edge = diff > 0 ? (diff / line) * 100 : 0;
-    
-    // Only return if we have edge
-    if (edge < 3.0 || edge > 25.0) return null;
-    
-    // Kelly calculation
-    const oddsDecimal = odds > 0 ? (odds / 100) + 1 : (100 / Math.abs(odds)) + 1;
-    const winProb = 0.5 + (edge / 200);
-    const b = oddsDecimal - 1;
-    const q = 1 - winProb;
-    
-    let kelly = (b * winProb - q) / b;
-    kelly *= (1 - Math.min(variance / 5, 0.3)); // Variance penalty
-    kelly *= 0.25; // Fractional Kelly
-    kelly = Math.max(0, Math.min(kelly, 0.05));
-    
-    // Confidence boost for real odds
-    const baseConfidence = position === 'C' ? 78 : position === 'D' ? 72 : 75;
-    const confidence = realOddsFound ? Math.min(baseConfidence + 10, 90) : baseConfidence;
-    
-    return {
-      playerId,
-      playerName,
-      position,
-      team,
-      opponent,
-      gameTime,
-      direction: 'OVER',
-      line,
-      odds,
-      projection: parseFloat(projectedSOG.toFixed(1)),
-      edge: parseFloat(edge.toFixed(1)),
-      ev: parseFloat((edge * 0.4).toFixed(1)),
-      confidence,
-      kelly: parseFloat(kelly.toFixed(4)),
-      variance: parseFloat(variance.toFixed(1)),
-      scratchRisk: 0.05,
-      mlEnhanced: false,
-      dataSource: realOddsFound ? 'real-odds' : 'position-optimized',
-      oddsSource
-    };
+    // Return best opportunity (highest edge) or null if none found
+    if (opportunities.length === 0) return null;
+    return opportunities.sort((a, b) => b.edge - a.edge)[0];
     
   } catch (error) {
     console.warn(`Error projecting ${player.firstName?.default} ${player.lastName?.default}:`, error.message);
