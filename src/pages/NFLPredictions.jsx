@@ -1229,7 +1229,7 @@ export default function NFLPredictions() {
                 });
 
                 // Elite injury system icons
-                const eliteInjury = r._advanced?.eliteInjury;
+                const eliteInjury = r.modelEnhancements?.eliteInjury;
                 const awayInjuries = eliteInjury?.away?.injuries || [];
                 const homeInjuries = eliteInjury?.home?.injuries || [];
                 const awayHasInjuries = awayInjuries.length > 0 && eliteInjury?.away?.total > 1.0;
