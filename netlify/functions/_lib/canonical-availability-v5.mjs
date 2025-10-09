@@ -36,11 +36,14 @@ export const SOURCE_PRIORITY = {
 /**
  * STATUS WEIGHTS (probability of playing)
  * Used when status is set but prob_play not explicitly provided
+ * SAFEGUARD #3: Aligned with elite calculator for consistent math
  */
 export const STATUS_WEIGHTS = {
-  'active': 1.0,
-  'questionable': 0.50,
-  'doubtful': 0.25,
+  'active': 0.95,               // SAFEGUARD: Changed from 1.0 to 0.95 (elite standard)
+  'full_practice': 0.95,        // SAFEGUARD: Added FP tracking (elite standard)
+  'limited_practice': 0.75,     // SAFEGUARD: Added LP tracking (elite standard)
+  'questionable': 0.50,         // Unchanged: both systems agree
+  'doubtful': 0.15,             // SAFEGUARD: Changed from 0.25 to 0.15 (elite standard)
   'out': 0.0,
   'bench': 0.0,
   'rest': 0.0,
@@ -67,9 +70,10 @@ export const POSITION_CAPS = {
  * Prevents over-confident extreme projections
  */
 export const QB_IMPACT_CAPS = {
-  VETERAN_MAX: 12.0,           // Max impact for veteran QB change
-  ROOKIE_FIRST_START_MAX: 10.0, // Max for true rookie first start
-  UNPROVEN_MAX: 11.0,          // Max for QB with <8 career starts
+  // SAFEGUARD #2: Aligned to elite calculator caps (7.5 max) to prevent blow-ups
+  VETERAN_MAX: 7.5,            // Max impact for veteran QB change (aligned with elite)
+  ROOKIE_FIRST_START_MAX: 7.5, // Max for true rookie first start (aligned)
+  UNPROVEN_MAX: 7.5,           // Max for QB with <8 career starts (aligned)
   
   // Confidence penalties
   ROOKIE_CONFIDENCE: 0.65,      // Lower confidence for rookies
