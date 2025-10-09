@@ -494,7 +494,7 @@ export async function storeHistoricalMetrics(season, data) {
 }
 
 export async function loadInjuries() {
-  // PRIORITY 1: BallDontLie.io live injury data (All-Star tier)
+  // PRIORITY 1: BallDontLie.io live injury data (All-Star tier) + ESPN IR supplement
   try {
     console.log('🏥 Fetching live injury data from BallDontLie.io...');
     const response = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-injuries-balldontlie');
@@ -502,6 +502,21 @@ export async function loadInjuries() {
       const liveData = await response.json();
       if (liveData.success && liveData.teams && Object.keys(liveData.teams).length > 0) {
         console.log(`✅ Loaded ${liveData.summary.totalInjuriesFound} injuries from BallDontLie (${liveData.summary.significantInjuries} significant)`);
+        
+        // SUPPLEMENT: Add ESPN IR data (BallDontLie only tracks weekly injury reports)
+        try {
+          const { fetchESPN_IR_Players, mergeIRIntoInjuryData } = await import('./espn-ir-tracker.mjs');
+          const irData = await fetchESPN_IR_Players();
+          
+          if (irData.totalIR > 0) {
+            const mergedData = mergeIRIntoInjuryData(liveData, irData);
+            console.log(`✅ Supplemented with ${irData.totalIR} IR players from ESPN (${irData.source})`);
+            return mergedData;
+          }
+        } catch (irError) {
+          console.warn('⚠️ ESPN IR supplement failed (non-blocking):', irError.message);
+        }
+        
         return liveData;
       }
     }

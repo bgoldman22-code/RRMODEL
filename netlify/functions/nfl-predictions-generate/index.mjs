@@ -15,6 +15,8 @@ import { getAllReturnBoosts, savePriorWeekSnapshot } from '../_lib/return-boost-
 // Elite Injury System: Safeguards and sanity checks
 import eliteInj from '../_lib/elite-injury-penalty-calculator.mjs';
 const { checkMarketSanity } = eliteInj;
+// IR + Baseline Integration: 32-team baseline contributors
+import { BASELINE_CONTRIBUTORS_2025 } from '../_lib/baseline-contributors-2025.mjs';
 
 // v4.1 PRODUCTION SAFEGUARDS: Import new safety systems
 import { 
@@ -947,6 +949,18 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
     }
   }
   
+  // Load ESPN IR data for baseline contributor check
+  let espnIRData = null;
+  try {
+    const { fetchESPN_IR_Players, isPlayerOnIR } = await import('../_lib/espn-ir-tracker.mjs');
+    espnIRData = await fetchESPN_IR_Players();
+    if (espnIRData.totalIR > 0) {
+      console.log(`📋 Loaded ${espnIRData.totalIR} IR players for baseline validation`);
+    }
+  } catch (err) {
+    console.warn(`⚠️ ESPN IR data unavailable for baseline check: ${err.message}`);
+  }
+
   // Process skill positions (RB, WR, TE)
   const skillPositions = ['RB', 'WR', 'TE'];
   for (const position of skillPositions) {
@@ -957,6 +971,24 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
       const statusRaw = injury.status || 'active';
       const status = normalizeStatus(statusRaw);
       const depthPosition = injury.depth || 1;
+      const isIR = injury.isIR || false; // Flag from ESPN IR supplement
+      
+      // BASELINE CONTRIBUTOR CHECK: Skip IR players not in baseline
+      if (isIR || status === 'out') {
+        const wasInBaseline = checkPlayerBaselineContribution(playerName, position, teamCode);
+        
+        // Double-check with ESPN IR data if available
+        const confirmedIR = espnIRData ? isPlayerOnIR(playerName, teamCode, espnIRData) : isIR;
+        
+        if (confirmedIR && !wasInBaseline) {
+          console.log(`⏭️ Skipping ${playerName} (${position}) - on IR, not in baseline EPA`);
+          continue; // Skip adjustment - already absent when baseline calculated
+        }
+        
+        if (confirmedIR && wasInBaseline) {
+          console.log(`⚠️ ${playerName} (${position}) - on IR but WAS in baseline, applying impact`);
+        }
+      }
       
       // Skip healthy players beyond depth 2
       if (status === 'active' && depthPosition > 2) continue;
@@ -1162,35 +1194,30 @@ function checkPlayerBaselineContribution(playerName, position, teamCode) {
   // If player missed significant time already this season, their absence is 
   // already baked into the team's EPA baseline
   
-  const BASELINE_CONTRIBUTORS = {
-    // Players who played significant snaps and ARE in the season baseline
-    'ARI': {
-      'RB': ['James Conner'], // Conner played early season, IS in baseline
-      'WR': ['Marvin Harrison Jr.', 'Michael Wilson'],
-      'TE': ['Trey McBride']
-    },
-    'BUF': {
-      'QB': ['Josh Allen'],
-      'RB': ['James Cook III'],
-      'WR': ['Khalil Shakir', 'Keon Coleman'],
-      'TE': ['Dalton Kincaid']
-    },
-    'KC': {
-      'QB': ['Patrick Mahomes II'],
-      'RB': ['Kareem Hunt'],
-      'WR': ['DeAndre Hopkins', 'Xavier Worthy'],
-      'TE': ['Travis Kelce']
-    }
-    // Add more teams as needed, or implement dynamic lookup
-  };
-  
-  const teamContributors = BASELINE_CONTRIBUTORS[teamCode];
-  if (!teamContributors || !teamContributors[position]) {
-    // Default: assume player contributed to baseline if we don't have data
-    return true;
+  const teamContributors = BASELINE_CONTRIBUTORS_2025[teamCode];
+  if (!teamContributors) {
+    console.warn(`⚠️ No baseline data for ${teamCode} - assuming player contributed`);
+    return true; // Conservative: assume player contributed if no data
   }
   
-  return teamContributors[position].includes(playerName);
+  const positionContributors = teamContributors[position];
+  if (!positionContributors) {
+    return true; // Conservative: assume player contributed if position not mapped
+  }
+  
+  // Enhanced name matching with suffix normalization
+  const normalizedPlayerName = playerName.toLowerCase()
+    .replace(/\s+(jr\.?|sr\.?|ii|iii|iv)$/i, '');
+  
+  const isInBaseline = positionContributors.some(baselineName => {
+    const normalizedBaseline = baselineName.toLowerCase()
+      .replace(/\s+(jr\.?|sr\.?|ii|iii|iv)$/i, '');
+    return normalizedPlayerName === normalizedBaseline ||
+           normalizedPlayerName.includes(normalizedBaseline) ||
+           normalizedBaseline.includes(normalizedPlayerName);
+  });
+  
+  return isInBaseline;
 }
 
 // v13 LOGIC: Fixed spread calculation
