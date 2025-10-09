@@ -12,6 +12,9 @@ import { recommendUnits } from '../_lib/kelly-hybrid-staking.mjs';
 // ENHANCED: Comprehensive EPA database (300+ players) + Return Boost System
 import { getPlayerEPA, calculateQualityBackupMultiplier, REPLACEMENT_LEVEL_EPA } from '../_lib/comprehensive-player-epa.js';
 import { getAllReturnBoosts, savePriorWeekSnapshot } from '../_lib/return-boost-system.js';
+// Elite Injury System: Safeguards and sanity checks
+import eliteInj from '../_lib/elite-injury-penalty-calculator.mjs';
+const { checkMarketSanity } = eliteInj;
 
 // v4.1 PRODUCTION SAFEGUARDS: Import new safety systems
 import { 
@@ -1624,7 +1627,8 @@ function generateParlayComponents(games, predictions) {
           pred.modelEnhancements?.injuryAnalysis?.away?.confidence || 1.0
         )
       };
-      const unitInfo = calculateRecommendedUnits(mlPick.confidence, mlPick.edge, 'straight', availabilityData);
+      const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
+      const unitInfo = calculateRecommendedUnits(mlPick.confidence, mlPick.edge, 'straight', availabilityData, sanityCheck);
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
         matchup: `${game.away_team} @ ${game.home_team}`,
@@ -1650,7 +1654,8 @@ function generateParlayComponents(games, predictions) {
           pred.modelEnhancements?.injuryAnalysis?.away?.confidence || 1.0
         )
       };
-      const unitInfo = calculateRecommendedUnits(spreadPick.confidence, spreadPick.edge, 'straight', availabilityData);
+      const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
+      const unitInfo = calculateRecommendedUnits(spreadPick.confidence, spreadPick.edge, 'straight', availabilityData, sanityCheck);
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
         matchup: `${game.away_team} @ ${game.home_team}`,
@@ -1676,7 +1681,8 @@ function generateParlayComponents(games, predictions) {
           pred.modelEnhancements?.injuryAnalysis?.away?.confidence || 1.0
         )
       };
-      const unitInfo = calculateRecommendedUnits(totalPick.confidence, totalPick.edge, 'straight', availabilityData);
+      const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
+      const unitInfo = calculateRecommendedUnits(totalPick.confidence, totalPick.edge, 'straight', availabilityData, sanityCheck);
       components.push({
         gameId: game.game_id || `${game.away_team}_${game.home_team}`,
         matchup: `${game.away_team} @ ${game.home_team}`,
@@ -1699,7 +1705,7 @@ function generateParlayComponents(games, predictions) {
 }
 
 // Kelly Hybrid Staking Integration
-function calculateRecommendedUnits(confidence, edge, betType = 'straight', availabilityData = null) {
+function calculateRecommendedUnits(confidence, edge, betType = 'straight', availabilityData = null, sanityCheck = null) {
   // For parlays, always use small units
   if (betType === 'parlay') {
     return edge >= 8 ? 0.5 : 0.25;
@@ -1727,28 +1733,56 @@ function calculateRecommendedUnits(confidence, edge, betType = 'straight', avail
     // Assume -110 odds (1.909 decimal)
     const priceDec = 1.909;
     
-    const kellyResult = recommendUnits(edgeProb, priceDec, signals, 10);
+    let kellyResult = recommendUnits(edgeProb, priceDec, signals, 10);
+    
+    // SAFEGUARD: Apply 35% haircut if sanity check alert fires
+    if (sanityCheck?.alert) {
+      const originalUnits = kellyResult.units;
+      kellyResult.units *= 0.65; // 35% reduction for outliers
+      console.log(`🚨 Sanity alert haircut: ${originalUnits.toFixed(2)}U → ${kellyResult.units.toFixed(2)}U`);
+      kellyResult.reasoning = (kellyResult.reason || '') + ' | Reduced 35% (sanity alert)';
+    }
     
     console.log(`📊 Kelly recommendation: ${kellyResult.units}U (${kellyResult.recommendation})`);
     
     return {
       units: kellyResult.units,
       tier: kellyResult.recommendation,
-      reasoning: kellyResult.reason || 'Kelly hybrid staking',
+      reasoning: kellyResult.reasoning || kellyResult.reason || 'Kelly hybrid staking',
       kellyAudit: kellyResult.audit
     };
   } catch (error) {
     console.error('⚠️ Kelly error, using fallback:', error.message);
     // Fallback to simple thresholds
+    let units;
+    let tier;
+    let reasoning;
+    
     if (confidence >= 65 && edge >= 8) {
-      return { units: 1.5, tier: 'premium', reasoning: '65%+ conf, 8%+ edge (fallback)' };
+      units = 1.5;
+      tier = 'premium';
+      reasoning = '65%+ conf, 8%+ edge (fallback)';
     } else if (confidence >= 61 && edge >= 5) {
-      return { units: 1.0, tier: 'strong', reasoning: '61-64% conf, 5-7% edge (fallback)' };
+      units = 1.0;
+      tier = 'strong';
+      reasoning = '61-64% conf, 5-7% edge (fallback)';
     } else if (confidence >= 58 && edge >= 2) {
-      return { units: 0.5, tier: 'value', reasoning: '58-60% conf, 2-4% edge (fallback)' };
+      units = 0.5;
+      tier = 'value';
+      reasoning = '58-60% conf, 2-4% edge (fallback)';
     } else {
-      return { units: 1.0, tier: 'standard', reasoning: 'flat unit (fallback)' };
+      units = 1.0;
+      tier = 'standard';
+      reasoning = 'flat unit (fallback)';
     }
+    
+    // Apply sanity haircut to fallback too
+    if (sanityCheck?.alert) {
+      units *= 0.65;
+      reasoning += ' | Reduced 35% (sanity alert)';
+    }
+    
+    return { units, tier, reasoning };
   }
 }
 
@@ -2176,6 +2210,23 @@ async function generateAdvancedPredictions(games, season) {
     }
     
     const marginDifference = modelHomeMargin - marketHomeMargin;
+    
+    // SAFEGUARD #1: Market Sanity Check (7.5pt threshold)
+    const allHomeInjuries = homeScoreData.injuryAnalysis?.adjustments || [];
+    const allAwayInjuries = awayScoreData.injuryAnalysis?.adjustments || [];
+    const sanityCheck = checkMarketSanity(modelHomeMargin, marketHomeMargin, [...allHomeInjuries, ...allAwayInjuries]);
+    
+    // Store sanity check in predictions
+    if (!game.predictions) game.predictions = {};
+    if (!game.predictions.elite) game.predictions.elite = {};
+    game.predictions.elite.sanityCheck = sanityCheck;
+    
+    // Flag for manual review if sanity check fails
+    if (sanityCheck?.alert) {
+      console.warn(`🚨 SANITY CHECK ALERT: ${sanityCheck.message}`);
+      if (!game.predictions.flags) game.predictions.flags = [];
+      game.predictions.flags.push('MANUAL_REVIEW');
+    }
     const spreadThreshold = hasLiveOdds ? 2.5 : 1.0;
     
     let spreadPick = initialSpreadPick; // Start with initial pick
