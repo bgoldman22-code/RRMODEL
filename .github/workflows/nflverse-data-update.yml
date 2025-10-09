@@ -21,7 +21,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        ref: main33
+        ref: main41
 
     - name: Set up R
       uses: r-lib/actions/setup-r@v2
@@ -119,6 +119,8 @@ jobs:
         Rscript scripts/nfl-td-r-pipeline/cloud-pipeline.R
         
         # Convert R output for React component (copies to all locations)
+        # Must run from repo root where convert_for_react.R is located
+        cd $GITHUB_WORKSPACE
         Rscript convert_for_react.R
         
         # Update ESPN depth charts as backup
