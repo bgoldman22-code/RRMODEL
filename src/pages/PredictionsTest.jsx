@@ -4,22 +4,50 @@
 
 import React, { useState, useEffect } from 'react';
 import { Sparklines, SparklinesLine } from 'react-sparklines';
+import { loadPredictionsWithPolling } from '../lib/fetchPredictions.js';
+import { getCurrentNFLWeek } from '../utils/nflWeek.js';
 
 const PredictionsTest = () => {
   const [predictions, setPredictions] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState('Loading predictions...');
   const [selectedGame, setSelectedGame] = useState(null);
   const [clvStats, setCLVStats] = useState(null);
+  const [week, setWeek] = useState(null);
+  const season = 2025;
 
   useEffect(() => {
-    fetchPredictions();
-    fetchCLVStats();
+    const currentWeek = getCurrentNFLWeek();
+    setWeek(currentWeek);
   }, []);
+
+  useEffect(() => {
+    if (week) {
+      fetchPredictions();
+      fetchCLVStats();
+    }
+  }, [week]);
 
   const fetchPredictions = async () => {
     try {
-      const response = await fetch('/.netlify/functions/nfl-predictions-cached');
-      const data = await response.json();
+      setLoading(true);
+      setLoadingMessage('Loading predictions...');
+      
+      const data = await loadPredictionsWithPolling({ 
+        season, 
+        week,
+        games: [], // Will be auto-fetched by polling utility
+        onProgress: (progress) => {
+          if (progress.stage === 'polling') {
+            setLoadingMessage(progress.message || `Warming cache… retry ${progress.attempt}/${progress.maxRetries}`);
+          } else if (progress.stage === 'fallback') {
+            setLoadingMessage(progress.message || 'Generating fresh predictions (15-20s)…');
+          } else if (progress.stage === 'ready') {
+            setLoadingMessage('Loaded from cache');
+          }
+        }
+      });
+      
       setPredictions(data);
       if (data.predictions?.length > 0) {
         setSelectedGame(data.predictions[0]);
@@ -27,6 +55,7 @@ const PredictionsTest = () => {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching predictions:', error);
+      setLoadingMessage('Error loading predictions: ' + error.message);
       setLoading(false);
     }
   };
@@ -44,7 +73,7 @@ const PredictionsTest = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#101520] flex items-center justify-center">
-        <div className="text-white text-xl">Loading predictions...</div>
+        <div className="text-white text-xl">{loadingMessage}</div>
       </div>
     );
   }
