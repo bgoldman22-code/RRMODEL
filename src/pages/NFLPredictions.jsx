@@ -111,8 +111,8 @@ async function fetchPredictions(week = 4, season = 2025, force = false) {
     throw new Error(`No games found for Week ${week}, ${season}`);
   }
   
-  // Use nfl-predictions-cached for fast loading (30min TTL)
-  const url = `/.netlify/functions/nfl-predictions-cached`;
+  // Use nfl-predictions-generate directly (cache will be added later)
+  const url = `/.netlify/functions/nfl-predictions-generate`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 
