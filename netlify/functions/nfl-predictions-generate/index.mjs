@@ -1439,20 +1439,44 @@ function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evide
   return Math.round(calibratedConfidence);
 }
 
-// v8 WORKING ODDS: Load live odds (proven working)
+// v8 WORKING ODDS (ENHANCED): Load live odds with deep links directly from The Odds API
+// Includes includeLinks=true so outcome.link is available for betslip deep linking
 async function loadLiveOdds() {
-  try {
-    console.log('Fetching live odds...');
-    const oddsRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals');
-    if (!oddsRes.ok) {
-      throw new Error(`Odds API failed: ${oddsRes.status}`);
+  const apiKey = process.env.ODDS_API_KEY;
+  const oddsApiUrl = apiKey
+    ? `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds?apiKey=${encodeURIComponent(apiKey)}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso&includeLinks=true`
+    : null;
+
+  // Primary: Fetch directly from The Odds API with includeLinks
+  if (oddsApiUrl) {
+    try {
+      console.log('[ODDS] Fetching from The Odds API with includeLinks=true');
+      const res = await fetch(oddsApiUrl, { timeout: 15000 });
+      if (res.ok) {
+        const data = await res.json();
+        console.log(`[ODDS] Loaded ${Array.isArray(data) ? data.length : 0} games from The Odds API`);
+        if (Array.isArray(data) && data.length > 0) return data;
+      } else {
+        console.warn(`[ODDS] The Odds API responded ${res.status}`);
+      }
+    } catch (err) {
+      console.warn('[ODDS] The Odds API fetch failed, will try fallback:', err?.message || err);
     }
+  } else {
+    console.warn('[ODDS] Missing ODDS_API_KEY, skipping direct The Odds API fetch');
+  }
+
+  // Fallback: Use internal aggregator (may not include deep links)
+  try {
+    console.log('[ODDS] Fallback: fetching from internal nfl-odds-get');
+    const oddsRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals');
+    if (!oddsRes.ok) throw new Error(`Fallback odds endpoint failed: ${oddsRes.status}`);
     const oddsResponse = await oddsRes.json();
     const oddsData = oddsResponse.games || oddsResponse || [];
-    console.log(`Loaded odds for ${oddsData.length} games`);
+    console.log(`[ODDS] Fallback loaded ${oddsData.length} games`);
     return oddsData;
-  } catch (error) {
-    console.warn('Failed to load live odds:', error);
+  } catch (fallbackErr) {
+    console.error('[ODDS] All odds sources failed:', fallbackErr?.message || fallbackErr);
     return [];
   }
 }
@@ -2859,6 +2883,51 @@ async function saveAdvancedPredictionsToBlobs(result, season) {
     const homeTeam = TEAM_NAME_MAPPING[game.home_team] || game.home_team;
     const awayTeam = TEAM_NAME_MAPPING[game.away_team] || game.away_team;
     
+    // Extract compact predictions with best_book (including deep_link when available)
+    const compactPredictions = {
+      moneyline: game.predictions?.moneyline ? {
+        pick: game.predictions.moneyline.pick,
+        confidence: game.predictions.moneyline.confidence,
+        odds: game.predictions.moneyline.odds || null,
+        edge: game.predictions.moneyline.edge ?? null,
+        best_book: game.predictions.moneyline.best_book ? {
+          bookmaker: game.predictions.moneyline.best_book.bookmaker,
+          price: game.predictions.moneyline.best_book.price,
+          line: game.predictions.moneyline.best_book.line ?? null,
+          edge_pct: game.predictions.moneyline.best_book.edge_pct ?? null,
+          deep_link: game.predictions.moneyline.best_book.deep_link || null
+        } : null
+      } : null,
+      spread: game.predictions?.spread ? {
+        pick: game.predictions.spread.pick,
+        line: game.predictions.spread.line,
+        confidence: game.predictions.spread.confidence,
+        edge: game.predictions.spread.edge ?? null,
+        odds: game.predictions.spread.odds || null,
+        best_book: game.predictions.spread.best_book ? {
+          bookmaker: game.predictions.spread.best_book.bookmaker,
+          price: game.predictions.spread.best_book.price,
+          line: game.predictions.spread.best_book.line ?? null,
+          edge_pct: game.predictions.spread.best_book.edge_pct ?? null,
+          deep_link: game.predictions.spread.best_book.deep_link || null
+        } : null
+      } : null,
+      total: game.predictions?.total ? {
+        pick: game.predictions.total.pick,
+        line: game.predictions.total.line,
+        confidence: game.predictions.total.confidence,
+        edge: game.predictions.total.edge ?? null,
+        odds: game.predictions.total.odds || null,
+        best_book: game.predictions.total.best_book ? {
+          bookmaker: game.predictions.total.best_book.bookmaker,
+          price: game.predictions.total.best_book.price,
+          line: game.predictions.total.best_book.line ?? null,
+          edge_pct: game.predictions.total.best_book.edge_pct ?? null,
+          deep_link: game.predictions.total.best_book.deep_link || null
+        } : null
+      } : null
+    };
+
     return {
       id: game.game_id,
       matchup: `${awayTeam} @ ${homeTeam}`,
@@ -2868,6 +2937,12 @@ async function saveAdvancedPredictionsToBlobs(result, season) {
       
       // Transform advanced predictions to simple format
       odds: game.odds || {},
+      // Expose simplified predictions including best_book (with deep_link)
+      predictions: compactPredictions,
+      // Convenience fields for CTAs
+      ml_deep_link: compactPredictions.moneyline?.best_book?.deep_link || null,
+      spread_deep_link: compactPredictions.spread?.best_book?.deep_link || null,
+      total_deep_link: compactPredictions.total?.best_book?.deep_link || null,
       
       // Use the sophisticated model's best pick as the main choice
       model_choice: {
