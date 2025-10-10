@@ -43,10 +43,3 @@
 [[scheduled.functions]]
   name = "nfl-predictions-refresh"
   cron = "*/30 * * * *"
-
-# Deploy hook - prime prediction cache on every deploy
-[[plugins]]
-  package = "@netlify/plugin-functions"
-  
-[build.lifecycle]
-  onSuccess = "curl -X POST ${DEPLOY_PRIME_URL}/.netlify/functions/nfl-predictions-refresh || true"
