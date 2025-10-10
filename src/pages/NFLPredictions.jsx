@@ -111,8 +111,8 @@ async function fetchPredictions(week = 4, season = 2025, force = false) {
     throw new Error(`No games found for Week ${week}, ${season}`);
   }
   
-  // Use nfl-predictions-generate for live R Pipeline + NFLVerse EPA model
-  const url = `/.netlify/functions/nfl-predictions-generate`;
+  // Use nfl-predictions-cached for fast loading (30min TTL)
+  const url = `/.netlify/functions/nfl-predictions-cached`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 
