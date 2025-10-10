@@ -3016,11 +3016,16 @@ export default async (request, context) => {
     });
     
   } catch (error) {
-    console.error('Hybrid v13+v8 prediction error:', error);
+    console.error('❌ Hybrid v13+v8 prediction error:', error);
+    console.error('❌ Error stack:', error.stack);
+    console.error('❌ Error name:', error.name);
+    console.error('❌ Error message:', error.message);
     
     return new Response(JSON.stringify({
       error: 'Hybrid prediction generation failed',
-      message: error.message
+      message: error.message,
+      stack: error.stack,
+      name: error.name
     }), {
       status: 500,
       headers: { 
