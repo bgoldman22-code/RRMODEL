@@ -1334,7 +1334,7 @@ function calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayC
   }
   
   const scoreDifference = homeScoreData.score - awayScoreData.score;
-  const spreadFromScores = scoreDifference * 3.5;
+  const spreadFromScores = scoreDifference * 3.0; // Reduced from 3.5 to prevent extreme predictions
   
   let stSpreadAdjustment = 0;
   if (homeScoreData.specialTeams && awayScoreData.specialTeams) {
@@ -1345,7 +1345,12 @@ function calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayC
   
   const predictedHomeMargin = adjustedHFA + spreadFromScores + stSpreadAdjustment;
   
-  return clamp(predictedHomeMargin, -21, 21);
+  // Log extreme predictions for investigation
+  if (Math.abs(predictedHomeMargin) > 17) {
+    console.log(`⚠️ EXTREME SPREAD: ${homeCode} vs ${awayCode}: ${predictedHomeMargin.toFixed(1)} (HFA: ${adjustedHFA.toFixed(1)}, ScoreDiff: ${scoreDifference.toFixed(2)}, Mult: ${spreadFromScores.toFixed(1)}, ST: ${stSpreadAdjustment.toFixed(1)})`);
+  }
+  
+  return clamp(predictedHomeMargin, -17, 17); // Reduced from ±21 to ±17 (max realistic NFL spread)
 }
 
 function calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread = 0, homeSTData = null, awaySTData = null) {
@@ -2362,6 +2367,18 @@ async function generateAdvancedPredictions(games, season) {
     
     // v13 LOGIC: Fixed spread calculation
     const predictedSpread = calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayCode);
+    
+    // VALIDATION: Check for extreme market divergence
+    const currentMarketSpread = realOdds.spread_line || 0;
+    const marketDivergence = Math.abs(predictedSpread - currentMarketSpread);
+    if (marketDivergence > 10) {
+      console.log(`🚨 LARGE DIVERGENCE: ${homeCode} vs ${awayCode}`);
+      console.log(`   Model: ${predictedSpread > 0 ? homeCode : awayCode} ${Math.abs(predictedSpread).toFixed(1)}`);
+      console.log(`   Market: ${currentMarketSpread > 0 ? homeCode : awayCode} ${Math.abs(currentMarketSpread).toFixed(1)}`);
+      console.log(`   Divergence: ${marketDivergence.toFixed(1)} points`);
+      console.log(`   Home Score: ${homeScoreData.score.toFixed(2)}, Away Score: ${awayScoreData.score.toFixed(2)}`);
+    }
+    
     const rawHomeWinProb = sigmoid(predictedSpread / 14);
     const rawAwayWinProb = 1 - rawHomeWinProb;
 
