@@ -2904,6 +2904,7 @@ async function saveAdvancedPredictionsToBlobs(result, season) {
         confidence: game.predictions.spread.confidence,
         edge: game.predictions.spread.edge ?? null,
         odds: game.predictions.spread.odds || null,
+        model_home_margin: game.predictions.spread.model_home_margin ?? null,
         best_book: game.predictions.spread.best_book ? {
           bookmaker: game.predictions.spread.best_book.bookmaker,
           price: game.predictions.spread.best_book.price,
