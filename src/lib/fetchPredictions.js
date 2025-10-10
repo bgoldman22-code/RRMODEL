@@ -45,7 +45,25 @@ export async function fetchPredictionsCached({ season, week }) {
 /**
  * Fetch predictions from generator (slow path fallback)
  */
-export async function fetchPredictionsDirect({ season, games }) {
+export async function fetchPredictionsDirect({ season, week, games }) {
+  // If no games provided, fetch schedule first
+  if (!games || games.length === 0) {
+    const scheduleUrl = `/.netlify/functions/nfl-schedule-get?week=${week || 'current'}&season=${season}`;
+    const scheduleRes = await fetch(scheduleUrl);
+    
+    if (!scheduleRes.ok) {
+      throw new Error(`Failed to fetch schedule: ${scheduleRes.status}`);
+    }
+    
+    const scheduleData = await scheduleRes.json();
+    games = (scheduleData.matchups || []).map(game => ({
+      home_team: getTeamAbbreviation(game.homeTeam),
+      away_team: getTeamAbbreviation(game.awayTeam),
+      game_id: game.id || `${game.homeTeam}-${game.awayTeam}`,
+      start: game.kickoff
+    }));
+  }
+  
   const url = `/.netlify/functions/nfl-predictions-generate`;
   
   const res = await fetch(url, {
@@ -67,6 +85,26 @@ export async function fetchPredictionsDirect({ season, games }) {
   }
 
   return await res.json();
+}
+
+/**
+ * Helper to convert team full names to abbreviations
+ */
+function getTeamAbbreviation(fullName) {
+  const nameMap = {
+    "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL", "Baltimore Ravens": "BAL",
+    "Buffalo Bills": "BUF", "Carolina Panthers": "CAR", "Chicago Bears": "CHI",
+    "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE", "Dallas Cowboys": "DAL",
+    "Denver Broncos": "DEN", "Detroit Lions": "DET", "Green Bay Packers": "GB",
+    "Houston Texans": "HOU", "Indianapolis Colts": "IND", "Jacksonville Jaguars": "JAX",
+    "Kansas City Chiefs": "KC", "Los Angeles Rams": "LAR", "Los Angeles Chargers": "LAC",
+    "Las Vegas Raiders": "LV", "Miami Dolphins": "MIA", "Minnesota Vikings": "MIN",
+    "New England Patriots": "NE", "New Orleans Saints": "NO", "New York Giants": "NYG",
+    "New York Jets": "NYJ", "Philadelphia Eagles": "PHI", "Pittsburgh Steelers": "PIT",
+    "Seattle Seahawks": "SEA", "San Francisco 49ers": "SF", "Tampa Bay Buccaneers": "TB",
+    "Tennessee Titans": "TEN", "Washington Commanders": "WAS"
+  };
+  return nameMap[fullName] || fullName;
 }
 
 /**
@@ -122,5 +160,5 @@ export async function loadPredictionsWithPolling({ season, week, games, onProgre
     message: 'Cache still warming, generating fresh predictions (15-20s)…' 
   });
   
-  return await fetchPredictionsDirect({ season, games });
+  return await fetchPredictionsDirect({ season, week, games });
 }
