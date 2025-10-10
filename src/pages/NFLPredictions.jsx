@@ -938,9 +938,9 @@ export default function NFLPredictions() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-800 font-medium hover:bg-orange-200 transition-colors cursor-pointer inline-flex items-center gap-1"
-              title={`Place bet at ${bestBook.bookmaker || 'sportsbook'}`}
+              title={`Place ${unitInfo.units}U bet at ${bestBook.bookmaker || 'sportsbook'}`}
             >
-              🎯 {unitInfo.units}U
+              🎯 Place
             </a>
           ) : (
             <span className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-800 font-medium">
