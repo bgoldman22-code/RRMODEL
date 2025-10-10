@@ -1768,19 +1768,32 @@ async function generateParlayComponents(games, predictions) {
       const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
       let unitInfo = calculateRecommendedUnits(mlPick.confidence, mlPick.edge, 'straight', availabilityData, sanityCheck);
       
-      // PHASE 2: Apply line movement gates
+      // PHASE 2: Apply line movement gates (with error handling)
       const gameId = game.game_id || `${game.away_team}_${game.home_team}`;
       const pickSide = mlPick.pick === game.home_team ? 'home' : 'away';
-      const gateResult = await applyPreBetGates({ market: 'moneyline', pick: pickSide }, gameId);
+      let gateResult, sizingResult;
       
-      if (!gateResult.pass) {
-        console.log(`🚫 [GATES] Blocking ML pick for ${gameId}: ${gateResult.reason}`);
-        continue; // Skip this pick
+      try {
+        gateResult = await applyPreBetGates({ market: 'moneyline', pick: pickSide }, gameId);
+        
+        if (!gateResult.pass) {
+          console.log(`🚫 [GATES] Blocking ML pick for ${gameId}: ${gateResult.reason}`);
+          continue; // Skip this pick
+        }
+        
+        // PHASE 2: Apply line movement sizing modifiers
+        sizingResult = await applyLineMovementSizingModifiers({ market: 'moneyline', pick: pickSide }, gameId, unitInfo.units);
+        console.log(`📏 [SIZING] ML pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
+      } catch (lineMovementError) {
+        console.log(`⚠️ [LINE_MOVEMENT] Error processing ML pick ${gameId}, using base units:`, lineMovementError.message);
+        // Fallback: Use base units without line movement modifiers
+        gateResult = { pass: true, reason: 'line_movement_unavailable' };
+        sizingResult = {
+          final_units: unitInfo.units,
+          reasons: ['line_movement_unavailable'],
+          metrics: null
+        };
       }
-      
-      // PHASE 2: Apply line movement sizing modifiers
-      const sizingResult = await applyLineMovementSizingModifiers({ market: 'moneyline', pick: pickSide }, gameId, unitInfo.units);
-      console.log(`📏 [SIZING] ML pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
       
       components.push({
         gameId,
@@ -1812,19 +1825,31 @@ async function generateParlayComponents(games, predictions) {
       const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
       let unitInfo = calculateRecommendedUnits(spreadPick.confidence, spreadPick.edge, 'straight', availabilityData, sanityCheck);
       
-      // PHASE 2: Apply line movement gates
+      // PHASE 2: Apply line movement gates (with error handling)
       const gameId = game.game_id || `${game.away_team}_${game.home_team}`;
       const pickSide = spreadPick.pick === game.home_team ? 'home' : 'away';
-      const gateResult = await applyPreBetGates({ market: 'spread', pick: pickSide }, gameId);
+      let gateResult, sizingResult;
       
-      if (!gateResult.pass) {
-        console.log(`🚫 [GATES] Blocking spread pick for ${gameId}: ${gateResult.reason}`);
-        continue;
+      try {
+        gateResult = await applyPreBetGates({ market: 'spread', pick: pickSide }, gameId);
+        
+        if (!gateResult.pass) {
+          console.log(`🚫 [GATES] Blocking spread pick for ${gameId}: ${gateResult.reason}`);
+          continue;
+        }
+        
+        // PHASE 2: Apply line movement sizing modifiers
+        sizingResult = await applyLineMovementSizingModifiers({ market: 'spread', pick: pickSide }, gameId, unitInfo.units);
+        console.log(`📏 [SIZING] Spread pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
+      } catch (lineMovementError) {
+        console.log(`⚠️ [LINE_MOVEMENT] Error processing spread pick ${gameId}, using base units:`, lineMovementError.message);
+        gateResult = { pass: true, reason: 'line_movement_unavailable' };
+        sizingResult = {
+          final_units: unitInfo.units,
+          reasons: ['line_movement_unavailable'],
+          metrics: null
+        };
       }
-      
-      // PHASE 2: Apply line movement sizing modifiers
-      const sizingResult = await applyLineMovementSizingModifiers({ market: 'spread', pick: pickSide }, gameId, unitInfo.units);
-      console.log(`📏 [SIZING] Spread pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
       
       components.push({
         gameId,
@@ -1856,19 +1881,31 @@ async function generateParlayComponents(games, predictions) {
       const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
       let unitInfo = calculateRecommendedUnits(totalPick.confidence, totalPick.edge, 'straight', availabilityData, sanityCheck);
       
-      // PHASE 2: Apply line movement gates
+      // PHASE 2: Apply line movement gates (with error handling)
       const gameId = game.game_id || `${game.away_team}_${game.home_team}`;
       const pickSide = totalPick.pick === 'over' ? 'over' : 'under';
-      const gateResult = await applyPreBetGates({ market: 'total', pick: pickSide }, gameId);
+      let gateResult, sizingResult;
       
-      if (!gateResult.pass) {
-        console.log(`🚫 [GATES] Blocking total pick for ${gameId}: ${gateResult.reason}`);
-        continue;
+      try {
+        gateResult = await applyPreBetGates({ market: 'total', pick: pickSide }, gameId);
+        
+        if (!gateResult.pass) {
+          console.log(`🚫 [GATES] Blocking total pick for ${gameId}: ${gateResult.reason}`);
+          continue;
+        }
+        
+        // PHASE 2: Apply line movement sizing modifiers
+        sizingResult = await applyLineMovementSizingModifiers({ market: 'total', pick: pickSide }, gameId, unitInfo.units);
+        console.log(`📏 [SIZING] Total pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
+      } catch (lineMovementError) {
+        console.log(`⚠️ [LINE_MOVEMENT] Error processing total pick ${gameId}, using base units:`, lineMovementError.message);
+        gateResult = { pass: true, reason: 'line_movement_unavailable' };
+        sizingResult = {
+          final_units: unitInfo.units,
+          reasons: ['line_movement_unavailable'],
+          metrics: null
+        };
       }
-      
-      // PHASE 2: Apply line movement sizing modifiers
-      const sizingResult = await applyLineMovementSizingModifiers({ market: 'total', pick: pickSide }, gameId, unitInfo.units);
-      console.log(`📏 [SIZING] Total pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
       
       components.push({
         gameId,
