@@ -34,11 +34,16 @@ export const handler = async (event, context) => {
       
       return {
         statusCode: 202,
-        headers,
+        headers: {
+          ...headers,
+          'Retry-After': '3' // seconds
+        },
         body: JSON.stringify({
-          status: 'regenerating',
-          message: 'Predictions are being regenerated. Check back in 30-60 seconds.',
-          estimated_wait: 45
+          status: 'pending',
+          season: parseInt(season),
+          week: week,
+          message: 'Predictions are being regenerated. Retry in 3 seconds.',
+          estimated_wait_seconds: 3
         })
       };
     }
@@ -75,12 +80,16 @@ export const handler = async (event, context) => {
     
     return {
       statusCode: 202,
-      headers,
+      headers: {
+        ...headers,
+        'Retry-After': '3' // seconds
+      },
       body: JSON.stringify({
-        status: 'cache_miss',
-        message: 'Predictions are being generated. Check back in 30-60 seconds.',
-        estimated_wait: 45,
-        cache_key: cacheKey
+        status: 'pending',
+        season: parseInt(season),
+        week: week,
+        message: 'Cache warming… grabbing latest odds & injury snapshots. Retry in 3 seconds.',
+        estimated_wait_seconds: 3
       })
     };
     

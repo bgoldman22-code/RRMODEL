@@ -38,3 +38,15 @@
 [[scheduled.functions]]
   name = "refresh-td-odds-cache"
   cron = "0 12 * * *"
+
+# NFL Predictions Cache - refresh every 30 minutes during game weeks (Tue-Mon)
+[[scheduled.functions]]
+  name = "nfl-predictions-refresh"
+  cron = "*/30 * * * *"
+
+# Deploy hook - prime prediction cache on every deploy
+[[plugins]]
+  package = "@netlify/plugin-functions"
+  
+[build.lifecycle]
+  onSuccess = "curl -X POST ${DEPLOY_PRIME_URL}/.netlify/functions/nfl-predictions-refresh || true"
