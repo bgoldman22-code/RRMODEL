@@ -7,6 +7,7 @@ import MLB_HITS2 from "./MLB_HITS2";
 import NflTd from "./pages/NflTd";  // Simple TD system
 import NFLTouchdownPropsComprehensive from "./pages/NFLTouchdownPropsComprehensive";  // Advanced TD system
 import NFLPredictions from "./pages/NFLPredictions";
+import PredictionsTest from "./pages/PredictionsTest";  // Enhanced Split View Test Page
 import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
 import NHL from "./NHL";  // Elite NHL SOG Props
 import HRR from "./HRR";
@@ -116,6 +117,7 @@ export default function App() {
           {/* CHANGED: Removed simple NFL TD route */}
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/predictions" element={<NFLPredictions />} />
+          <Route path="/predictionstest" element={<PredictionsTest />} />
           <Route path="/soccer-btts" element={<SoccerBTTS />} />
           <Route path="/nhl-sog" element={<NHL />} />
         </Routes>
