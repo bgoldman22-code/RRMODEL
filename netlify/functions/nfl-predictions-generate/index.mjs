@@ -35,6 +35,9 @@ import {
   PRIORITY_BOOK_ORDER
 } from '../_lib/odds-constants.mjs';
 
+// LINE MOVEMENT: Gates and sizing modifiers
+import { applyPreBetGates, applyLineMovementSizingModifiers } from '../_lib/sizing-gates.mjs';
+
 // v4.1 PRODUCTION SAFEGUARDS: Import new safety systems
 import { 
   loadCalibrationMapping, 
@@ -1742,7 +1745,7 @@ function extractOddsData(gameOdds) {
 }
 
 // v13 LOGIC: Generate parlay components
-function generateParlayComponents(games, predictions) {
+async function generateParlayComponents(games, predictions) {
   const components = [];
   
   for (let i = 0; i < games.length; i++) {
@@ -1763,9 +1766,24 @@ function generateParlayComponents(games, predictions) {
         )
       };
       const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
-      const unitInfo = calculateRecommendedUnits(mlPick.confidence, mlPick.edge, 'straight', availabilityData, sanityCheck);
+      let unitInfo = calculateRecommendedUnits(mlPick.confidence, mlPick.edge, 'straight', availabilityData, sanityCheck);
+      
+      // PHASE 2: Apply line movement gates
+      const gameId = game.game_id || `${game.away_team}_${game.home_team}`;
+      const pickSide = mlPick.pick === game.home_team ? 'home' : 'away';
+      const gateResult = await applyPreBetGates({ market: 'moneyline', pick: pickSide }, gameId);
+      
+      if (!gateResult.pass) {
+        console.log(`🚫 [GATES] Blocking ML pick for ${gameId}: ${gateResult.reason}`);
+        continue; // Skip this pick
+      }
+      
+      // PHASE 2: Apply line movement sizing modifiers
+      const sizingResult = await applyLineMovementSizingModifiers({ market: 'moneyline', pick: pickSide }, gameId, unitInfo.units);
+      console.log(`📏 [SIZING] ML pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
+      
       components.push({
-        gameId: game.game_id || `${game.away_team}_${game.home_team}`,
+        gameId,
         matchup: `${game.away_team} @ ${game.home_team}`,
         type: 'moneyline',
         pick: mlPick.pick,
@@ -1774,9 +1792,11 @@ function generateParlayComponents(games, predictions) {
         description: `${mlPick.pick} ML`,
         odds: pred.odds?.moneyline?.pick_odds,
         ev_score: (mlPick.confidence - 50) * mlPick.edge,
-        recommended_units: unitInfo.units,
+        recommended_units: sizingResult.final_units,
         unit_tier: unitInfo.tier,
-        unit_reasoning: unitInfo.reasoning
+        unit_reasoning: `${unitInfo.reasoning} | ${sizingResult.reasons.join(', ')}`,
+        line_movement: sizingResult.metrics,
+        gate_result: gateResult.reason
       });
     }
     
@@ -1790,9 +1810,24 @@ function generateParlayComponents(games, predictions) {
         )
       };
       const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
-      const unitInfo = calculateRecommendedUnits(spreadPick.confidence, spreadPick.edge, 'straight', availabilityData, sanityCheck);
+      let unitInfo = calculateRecommendedUnits(spreadPick.confidence, spreadPick.edge, 'straight', availabilityData, sanityCheck);
+      
+      // PHASE 2: Apply line movement gates
+      const gameId = game.game_id || `${game.away_team}_${game.home_team}`;
+      const pickSide = spreadPick.pick === game.home_team ? 'home' : 'away';
+      const gateResult = await applyPreBetGates({ market: 'spread', pick: pickSide }, gameId);
+      
+      if (!gateResult.pass) {
+        console.log(`🚫 [GATES] Blocking spread pick for ${gameId}: ${gateResult.reason}`);
+        continue;
+      }
+      
+      // PHASE 2: Apply line movement sizing modifiers
+      const sizingResult = await applyLineMovementSizingModifiers({ market: 'spread', pick: pickSide }, gameId, unitInfo.units);
+      console.log(`📏 [SIZING] Spread pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
+      
       components.push({
-        gameId: game.game_id || `${game.away_team}_${game.home_team}`,
+        gameId,
         matchup: `${game.away_team} @ ${game.home_team}`,
         type: 'spread',
         pick: spreadPick.pick,
@@ -1801,9 +1836,11 @@ function generateParlayComponents(games, predictions) {
         description: `${spreadPick.pick} ${spreadPick.line >= 0 ? '+' : ''}${spreadPick.line}`,
         odds: pred.odds?.spread?.pick_odds,
         ev_score: (spreadPick.confidence - 50) * spreadPick.edge,
-        recommended_units: unitInfo.units,
+        recommended_units: sizingResult.final_units,
         unit_tier: unitInfo.tier,
-        unit_reasoning: unitInfo.reasoning
+        unit_reasoning: `${unitInfo.reasoning} | ${sizingResult.reasons.join(', ')}`,
+        line_movement: sizingResult.metrics,
+        gate_result: gateResult.reason
       });
     }
     
@@ -1817,9 +1854,24 @@ function generateParlayComponents(games, predictions) {
         )
       };
       const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
-      const unitInfo = calculateRecommendedUnits(totalPick.confidence, totalPick.edge, 'straight', availabilityData, sanityCheck);
+      let unitInfo = calculateRecommendedUnits(totalPick.confidence, totalPick.edge, 'straight', availabilityData, sanityCheck);
+      
+      // PHASE 2: Apply line movement gates
+      const gameId = game.game_id || `${game.away_team}_${game.home_team}`;
+      const pickSide = totalPick.pick === 'over' ? 'over' : 'under';
+      const gateResult = await applyPreBetGates({ market: 'total', pick: pickSide }, gameId);
+      
+      if (!gateResult.pass) {
+        console.log(`🚫 [GATES] Blocking total pick for ${gameId}: ${gateResult.reason}`);
+        continue;
+      }
+      
+      // PHASE 2: Apply line movement sizing modifiers
+      const sizingResult = await applyLineMovementSizingModifiers({ market: 'total', pick: pickSide }, gameId, unitInfo.units);
+      console.log(`📏 [SIZING] Total pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
+      
       components.push({
-        gameId: game.game_id || `${game.away_team}_${game.home_team}`,
+        gameId,
         matchup: `${game.away_team} @ ${game.home_team}`,
         type: 'total',
         pick: totalPick.pick,
@@ -1828,9 +1880,11 @@ function generateParlayComponents(games, predictions) {
         description: `${totalPick.pick.toUpperCase()} ${totalPick.line}`,
         odds: null,
         ev_score: (totalPick.confidence - 50) * totalPick.edge * 0.8,
-        recommended_units: unitInfo.units,
+        recommended_units: sizingResult.final_units,
         unit_tier: unitInfo.tier,
-        unit_reasoning: unitInfo.reasoning
+        unit_reasoning: `${unitInfo.reasoning} | ${sizingResult.reasons.join(', ')}`,
+        line_movement: sizingResult.metrics,
+        gate_result: gateResult.reason
       });
     }
   }
@@ -2668,7 +2722,7 @@ async function generateAdvancedPredictions(games, season) {
     };
   }));
 
-  const parlayComponents = generateParlayComponents(games, predictions);
+  const parlayComponents = await generateParlayComponents(games, predictions);
   const parlaySuggestions = generateResponsibleParlays(parlayComponents);
   
   console.log(`Generated ${parlaySuggestions.length} parlay suggestions from ${parlayComponents.length} qualifying components`);
