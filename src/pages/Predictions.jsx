@@ -32,6 +32,11 @@ function Row({ row }) {
   const tot = totalPick(row);
   const isAdvanced = row._advanced;
 
+  // New: Deep link availability (from blob rows)
+  const mlDeep = row?.predictions?.moneyline?.best_book?.deep_link || row?.ml_deep_link || null;
+  const spDeep = row?.predictions?.spread?.best_book?.deep_link || row?.spread_deep_link || null;
+  const toDeep = row?.predictions?.total?.best_book?.deep_link || row?.total_deep_link || null;
+
   return (
     <tr className="border-b border-gray-200">
       <td className="py-2 px-3 text-sm text-gray-700">{formatKickoffLocal(row.kickoff)}</td>
@@ -75,6 +80,17 @@ function Row({ row }) {
                   {ml.betRecommendation}
                 </span>
               )}
+              {mlDeep && (
+                <a
+                  href={mlDeep}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 inline-block text-xs px-2 py-1 rounded bg-orange-100 text-orange-800 font-medium hover:bg-orange-200"
+                  title="Open sportsbook to place this bet"
+                >
+                  🎯 Place
+                </a>
+              )}
             </div>
             <ConfidenceBar value={ml.confidence} />
           </div>
@@ -86,6 +102,17 @@ function Row({ row }) {
                   {sp.betRecommendation}
                 </span>
               )}
+              {spDeep && (
+                <a
+                  href={spDeep}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 inline-block text-xs px-2 py-1 rounded bg-orange-100 text-orange-800 font-medium hover:bg-orange-200"
+                  title="Open sportsbook to place this bet"
+                >
+                  🎯 Place
+                </a>
+              )}
             </div>
             <ConfidenceBar value={sp.confidence} />
           </div>
@@ -96,6 +123,17 @@ function Row({ row }) {
                 <span className={`text-xs font-medium ${tot.betRecommendation === 'BET' ? 'text-green-600' : 'text-red-600'}`}>
                   {tot.betRecommendation}
                 </span>
+              )}
+              {toDeep && (
+                <a
+                  href={toDeep}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 inline-block text-xs px-2 py-1 rounded bg-orange-100 text-orange-800 font-medium hover:bg-orange-200"
+                  title="Open sportsbook to place this bet"
+                >
+                  🎯 Place
+                </a>
               )}
             </div>
             <ConfidenceBar value={tot.confidence} />
