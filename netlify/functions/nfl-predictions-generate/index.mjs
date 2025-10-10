@@ -2659,10 +2659,8 @@ async function generateAdvancedPredictions(games, season) {
           injury_home_count: (homeScoreData.injuryAnalysis?.adjustments || []).length,
           injury_away_count: (awayScoreData.injuryAnalysis?.adjustments || []).length,
           scoreDifference: scoreDifference,
-          hfa_pts: adjustedHFA,
           spreadFromScores: scoreDifference * 3.0,
-          stAdjustment: 0, // Will be calculated in spread function
-          preClamp_home_margin: predictedSpread, // This is after clamp, need to check
+          predictedSpread: predictedSpread,
           clampApplied: Math.abs(predictedSpread) >= 16.9
         },
         // OUTPUTS
@@ -2674,7 +2672,7 @@ async function generateAdvancedPredictions(games, season) {
           marketFavorite: marketFavorite
         }
       };
-      console.log('\n' + JSON.stringify(diagnostic, null, 2));
+      console.log('\n🔍 SPREAD_DIAGNOSTIC:\n' + JSON.stringify(diagnostic, null, 2));
     }
     
     // Use spread-specific skip check with enhanced edge
