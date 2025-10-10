@@ -1444,18 +1444,17 @@ function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evide
   return Math.round(calibratedConfidence);
 }
 
-// v8 WORKING ODDS (ENHANCED): Load live odds with deep links directly from The Odds API
-// Includes includeLinks=true so outcome.link is available for betslip deep linking
+// v8 WORKING ODDS: Load live odds directly from The Odds API
 async function loadLiveOdds() {
   const apiKey = process.env.ODDS_API_KEY;
   const oddsApiUrl = apiKey
-    ? `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds?apiKey=${encodeURIComponent(apiKey)}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso&includeLinks=true`
+    ? `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds?apiKey=${encodeURIComponent(apiKey)}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso`
     : null;
 
-  // Primary: Fetch directly from The Odds API with includeLinks
+  // Primary: Fetch directly from The Odds API
   if (oddsApiUrl) {
     try {
-      console.log('[ODDS] Fetching from The Odds API with includeLinks=true');
+      console.log('[ODDS] Fetching from The Odds API');
       const res = await fetch(oddsApiUrl, { timeout: 15000 });
       if (res.ok) {
         const data = await res.json();
@@ -1471,7 +1470,7 @@ async function loadLiveOdds() {
     console.warn('[ODDS] Missing ODDS_API_KEY, skipping direct The Odds API fetch');
   }
 
-  // Fallback: Use internal aggregator (may not include deep links)
+  // Fallback: Use internal aggregator
   try {
     console.log('[ODDS] Fallback: fetching from internal nfl-odds-get');
     const oddsRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals');
@@ -1621,13 +1620,11 @@ function extractStructuredOdds(gameOdds, modelPicks) {
     
     if (bestMLBook) {
       const bestBookData = all_books[bestMLBook];
-      const deepLink = isHomePick ? bestBookData.h2h?.home_link : bestBookData.h2h?.away_link;
       
       best.h2h = {
         bookmaker: bestMLBook,
         pick_side: isHomePick ? 'home' : 'away',
         price: bestMLPrice,
-        deep_link: deepLink,
         ts: timestamp
       };
     }
@@ -1663,14 +1660,12 @@ function extractStructuredOdds(gameOdds, modelPicks) {
     
     if (bestSpreadBook) {
       const bestBookData = all_books[bestSpreadBook];
-      const deepLink = isHomePick ? bestBookData.spread?.home_link : bestBookData.spread?.away_link;
       
       best.spread = {
         bookmaker: bestSpreadBook,
         pick_side: isHomePick ? 'home' : 'away',
         line: bestSpreadLine,
         price: bestSpreadPrice,
-        deep_link: deepLink,
         ts: timestamp
       };
     }
@@ -1706,14 +1701,12 @@ function extractStructuredOdds(gameOdds, modelPicks) {
     if (bestTotalBook) {
       const bestBookData = all_books[bestTotalBook];
       const targetOutcome = isOverPick ? bestBookData.total?.over : bestBookData.total?.under;
-      const deepLink = targetOutcome?.link;
       
       best.total = {
         bookmaker: bestTotalBook,
         pick_side: isOverPick ? 'over' : 'under',
         line: bestTotalLine,
         price: bestTotalPrice,
-        deep_link: deepLink,
         ts: timestamp
       };
     }
@@ -2365,6 +2358,10 @@ async function generateAdvancedPredictions(games, season) {
 
     const scoreDifference = homeScoreData.score - awayScoreData.score;
     
+    // v8 WORKING ODDS: Get odds data early for validation
+    const gameOdds = findGameOdds(allOdds, homeCode, awayCode);
+    const realOdds = gameOdds ? extractOddsData(gameOdds) : {};  // Keep legacy for now
+    
     // v13 LOGIC: Fixed spread calculation
     const predictedSpread = calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayCode);
     
@@ -2422,9 +2419,6 @@ async function generateAdvancedPredictions(games, season) {
     const basicPredictedTotal = homeScoreData.score + awayScoreData.score;
     let initialTotalPick = 'push';
     
-    // v8 WORKING ODDS: Use proven working odds integration
-    const gameOdds = findGameOdds(allOdds, homeCode, awayCode);
-    
     // NEW: Extract structured odds with display vs best separation
     const modelPicks = {
       mlPick: mlPick === homeCode ? 'home' : 'away',
@@ -2433,7 +2427,6 @@ async function generateAdvancedPredictions(games, season) {
     };
     
     const structuredOdds = extractStructuredOdds(gameOdds, modelPicks);
-    const realOdds = gameOdds ? extractOddsData(gameOdds) : {};  // Keep legacy for now
     const hasLiveOdds = gameOdds && realOdds.ml_home && realOdds.ml_away;
     
     // GPT SANITY GUARD: Check model-to-market spread delta (flag if >5 points)
@@ -2618,8 +2611,7 @@ async function generateAdvancedPredictions(games, season) {
           bookmaker: bestSpread.bookmaker,
           line: bestLine,
           price: bestSpread.price,
-          edge_points: spreadEdge,
-          deep_link: bestSpread.deep_link || null
+          edge_points: spreadEdge
         };
       }
     }
@@ -2652,8 +2644,7 @@ async function generateAdvancedPredictions(games, season) {
         line: bestTotalLine,
         price: bestTotal.price,
         side: bestTotal.pick_side,
-        edge_points: totalEdge,
-        deep_link: bestTotal.deep_link || null
+        edge_points: totalEdge
       };
     }
     
@@ -2675,8 +2666,7 @@ async function generateAdvancedPredictions(games, season) {
         best_book: structuredOdds.best.h2h ? {
           bookmaker: structuredOdds.best.h2h.bookmaker,
           price: structuredOdds.best.h2h.price,
-          edge_pct: Number((mlEdge * 100).toFixed(1)),
-          deep_link: structuredOdds.best.h2h.deep_link || null
+          edge_pct: Number((mlEdge * 100).toFixed(1))
         } : null
       },
       spread: { 
@@ -2900,7 +2890,7 @@ async function saveAdvancedPredictionsToBlobs(result, season) {
     const homeTeam = TEAM_NAME_MAPPING[game.home_team] || game.home_team;
     const awayTeam = TEAM_NAME_MAPPING[game.away_team] || game.away_team;
     
-    // Extract compact predictions with best_book (including deep_link when available)
+    // Extract compact predictions with best_book
     const compactPredictions = {
       moneyline: game.predictions?.moneyline ? {
         pick: game.predictions.moneyline.pick,
@@ -2911,8 +2901,7 @@ async function saveAdvancedPredictionsToBlobs(result, season) {
           bookmaker: game.predictions.moneyline.best_book.bookmaker,
           price: game.predictions.moneyline.best_book.price,
           line: game.predictions.moneyline.best_book.line ?? null,
-          edge_pct: game.predictions.moneyline.best_book.edge_pct ?? null,
-          deep_link: game.predictions.moneyline.best_book.deep_link || null
+          edge_pct: game.predictions.moneyline.best_book.edge_pct ?? null
         } : null
       } : null,
       spread: game.predictions?.spread ? {
@@ -2926,8 +2915,7 @@ async function saveAdvancedPredictionsToBlobs(result, season) {
           bookmaker: game.predictions.spread.best_book.bookmaker,
           price: game.predictions.spread.best_book.price,
           line: game.predictions.spread.best_book.line ?? null,
-          edge_pct: game.predictions.spread.best_book.edge_pct ?? null,
-          deep_link: game.predictions.spread.best_book.deep_link || null
+          edge_pct: game.predictions.spread.best_book.edge_pct ?? null
         } : null
       } : null,
       total: game.predictions?.total ? {
@@ -2940,8 +2928,7 @@ async function saveAdvancedPredictionsToBlobs(result, season) {
           bookmaker: game.predictions.total.best_book.bookmaker,
           price: game.predictions.total.best_book.price,
           line: game.predictions.total.best_book.line ?? null,
-          edge_pct: game.predictions.total.best_book.edge_pct ?? null,
-          deep_link: game.predictions.total.best_book.deep_link || null
+          edge_pct: game.predictions.total.best_book.edge_pct ?? null
         } : null
       } : null
     };
