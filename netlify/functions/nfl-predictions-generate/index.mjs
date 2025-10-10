@@ -1334,7 +1334,11 @@ function calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayC
   }
   
   const scoreDifference = homeScoreData.score - awayScoreData.score;
-  const spreadFromScores = scoreDifference * 3.0; // Reduced from 3.5 to prevent extreme predictions
+  
+  // CRITICAL FIX: Scores from scoreTeamFromFeatures are ALREADY in point units!
+  // The SCORING_MULTIPLIERS (CORE_EPA=24, TIER_BASE=8, etc.) convert EPA to points.
+  // We should NOT multiply by 3.0 again - that inflates spreads 3x!
+  const spreadFromScores = scoreDifference; // Remove the 3.0 multiplier
   
   let stSpreadAdjustment = 0;
   if (homeScoreData.specialTeams && awayScoreData.specialTeams) {
@@ -1351,7 +1355,7 @@ function calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayC
     console.log(`\n🔍 === SPREAD DEBUG: ${awayCode} @ ${homeCode} ===`);
     console.log(`   Raw Scores: Home=${homeScoreData.score.toFixed(4)}, Away=${awayScoreData.score.toFixed(4)}`);
     console.log(`   Score Difference: ${scoreDifference.toFixed(4)}`);
-    console.log(`   Spread from Scores (×3.0): ${spreadFromScores.toFixed(2)}`);
+    console.log(`   Spread from Scores (NO MULTIPLIER - scores already in points!): ${spreadFromScores.toFixed(2)}`);
     console.log(`   HFA Components: dynamic=${dynamicHFA.toFixed(2)}, div=${divisionalAdjustment.toFixed(2)}, weak=${weakTeamAdjustment.toFixed(2)}`);
     console.log(`   Adjusted HFA: ${adjustedHFA.toFixed(2)}`);
     console.log(`   ST Adjustment: ${stSpreadAdjustment.toFixed(2)}`);
@@ -2659,7 +2663,7 @@ async function generateAdvancedPredictions(games, season) {
           injury_home_count: (homeScoreData.injuryAnalysis?.adjustments || []).length,
           injury_away_count: (awayScoreData.injuryAnalysis?.adjustments || []).length,
           scoreDifference: scoreDifference,
-          spreadFromScores: scoreDifference * 3.0,
+          spreadFromScores_NO_MULTIPLIER: scoreDifference, // Scores already in points!
           predictedSpread: predictedSpread,
           clampApplied: Math.abs(predictedSpread) >= 16.9
         },
