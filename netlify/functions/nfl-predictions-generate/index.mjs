@@ -2443,33 +2443,36 @@ async function generateAdvancedPredictions(games, season) {
       console.log(`   Stake reduction: 100% → 25%`);
     }
     
-    console.log(JSON.stringify({
-      tag: "SPREAD_DIAGNOSTIC",
-      matchup: `${awayCode} @ ${homeCode}`,
-      base: { 
-        home: homeScoreData.score, 
-        away: awayScoreData.score, 
-        diff: homeScoreData.score - awayScoreData.score 
-      },
-      injuries: { 
-        homePts: homeScoreData.injuryAnalysis?.totalImpact || 0,
-        homeCount: (homeScoreData.injuryAnalysis?.adjustments || []).length,
-        homeApplied: homeScoreData._injuryApplied || false,
-        awayPts: awayScoreData.injuryAnalysis?.totalImpact || 0,
-        awayCount: (awayScoreData.injuryAnalysis?.adjustments || []).length,
-        awayApplied: awayScoreData._injuryApplied || false
-      },
-      safeguards: {
-        probabilityNormalization: probabilityNormalizationApplied,
-        reviewFlag: reviewFlag !== null,
-        stakeReduction: stakeReductionFactor
-      },
-      final: { 
-        model_home_margin: predictedSpread,
-        market_spread: currentMarketSpread,
-        divergence: marketDivergence
-      }
-    }));
+    // GPT DIAGNOSTIC: Only log for games with large divergence (reduce log spam)
+    if (marketDivergence > DIVERGENCE_REVIEW_THRESHOLD) {
+      console.log(JSON.stringify({
+        tag: "SPREAD_DIAGNOSTIC",
+        matchup: `${awayCode} @ ${homeCode}`,
+        base: { 
+          home: homeScoreData.score, 
+          away: awayScoreData.score, 
+          diff: homeScoreData.score - awayScoreData.score 
+        },
+        injuries: { 
+          homePts: homeScoreData.injuryAnalysis?.totalImpact || 0,
+          homeCount: (homeScoreData.injuryAnalysis?.adjustments || []).length,
+          homeApplied: homeScoreData._injuryApplied || false,
+          awayPts: awayScoreData.injuryAnalysis?.totalImpact || 0,
+          awayCount: (awayScoreData.injuryAnalysis?.adjustments || []).length,
+          awayApplied: awayScoreData._injuryApplied || false
+        },
+        safeguards: {
+          probabilityNormalization: probabilityNormalizationApplied,
+          reviewFlag: reviewFlag !== null,
+          stakeReduction: stakeReductionFactor
+        },
+        final: { 
+          model_home_margin: predictedSpread,
+          market_spread: currentMarketSpread,
+          divergence: marketDivergence
+        }
+      }));
+    }
     
     // VALIDATION: Check for extreme market divergence
     if (marketDivergence > 10) {
