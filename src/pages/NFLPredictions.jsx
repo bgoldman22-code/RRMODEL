@@ -932,9 +932,21 @@ export default function NFLPredictions() {
           {betRecommendation?.text || betRecommendation || 'NO BET'}
         </span>
         {(betRecommendation?.text?.includes('BET') || betRecommendation === 'BET') && unitInfo && (
-          <span className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-800 font-medium">
-            {unitInfo.units}U
-          </span>
+          bestBook?.deep_link ? (
+            <a 
+              href={bestBook.deep_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-800 font-medium hover:bg-orange-200 transition-colors cursor-pointer inline-flex items-center gap-1"
+              title={`Place bet at ${bestBook.bookmaker || 'sportsbook'}`}
+            >
+              🎯 {unitInfo.units}U
+            </a>
+          ) : (
+            <span className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-800 font-medium">
+              {unitInfo.units}U
+            </span>
+          )
         )}
       </div>
       <div className={`text-xs px-2 py-1 rounded ${
