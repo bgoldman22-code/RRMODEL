@@ -1345,6 +1345,20 @@ function calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayC
   
   const predictedHomeMargin = adjustedHFA + spreadFromScores + stSpreadAdjustment;
   
+  // DEBUG: Detailed logging for ATL and TB games
+  if (homeCode === 'ATL' || homeCode === 'TB' || awayCode === 'ATL' || awayCode === 'TB' || 
+      homeCode === 'SF' || homeCode === 'BUF' || awayCode === 'SF' || awayCode === 'BUF') {
+    console.log(`\n🔍 === SPREAD DEBUG: ${awayCode} @ ${homeCode} ===`);
+    console.log(`   Raw Scores: Home=${homeScoreData.score.toFixed(4)}, Away=${awayScoreData.score.toFixed(4)}`);
+    console.log(`   Score Difference: ${scoreDifference.toFixed(4)}`);
+    console.log(`   Spread from Scores (×3.0): ${spreadFromScores.toFixed(2)}`);
+    console.log(`   HFA Components: dynamic=${dynamicHFA.toFixed(2)}, div=${divisionalAdjustment.toFixed(2)}, weak=${weakTeamAdjustment.toFixed(2)}`);
+    console.log(`   Adjusted HFA: ${adjustedHFA.toFixed(2)}`);
+    console.log(`   ST Adjustment: ${stSpreadAdjustment.toFixed(2)}`);
+    console.log(`   BEFORE clamp: ${predictedHomeMargin.toFixed(2)}`);
+    console.log(`   AFTER clamp (±17): ${clamp(predictedHomeMargin, -17, 17).toFixed(2)}`);
+  }
+  
   // Log extreme predictions for investigation
   if (Math.abs(predictedHomeMargin) > 17) {
     console.log(`⚠️ EXTREME SPREAD: ${homeCode} vs ${awayCode}: ${predictedHomeMargin.toFixed(1)} (HFA: ${adjustedHFA.toFixed(1)}, ScoreDiff: ${scoreDifference.toFixed(2)}, Mult: ${spreadFromScores.toFixed(1)}, ST: ${stSpreadAdjustment.toFixed(1)})`);
