@@ -24,6 +24,17 @@ const { checkMarketSanity } = eliteInj;
 // IR + Baseline Integration: 32-team baseline contributors
 import { BASELINE_CONTRIBUTORS_2025 } from '../_lib/baseline-contributors-2025.mjs';
 
+// BOOK ALLOWLIST: Centralized sportsbook filtering
+import {
+  canonicalBookName,
+  isBookAllowed,
+  filterToAllowedBooks,
+  auditBooks,
+  getDisplayBook,
+  ALLOWED_BOOKS,
+  PRIORITY_BOOK_ORDER
+} from '../_lib/odds-constants.mjs';
+
 // v4.1 PRODUCTION SAFEGUARDS: Import new safety systems
 import { 
   loadCalibrationMapping, 
@@ -1468,12 +1479,24 @@ function extractStructuredOdds(gameOdds, modelPicks) {
   const bookmakers = gameOdds.bookmakers || [];
   if (bookmakers.length === 0) return { display: null, best: {}, all_books: {} };
   
+  // BOOK FILTER: Audit incoming books and normalize names
+  const rawBookNames = bookmakers.map(b => b.title);
+  auditBooks(rawBookNames.map(n => ({ book: n })), 'extractStructuredOdds');
+  
   const timestamp = new Date().toISOString();
   const all_books = {};
   
-  // Extract all bookmaker data
+  // Extract all bookmaker data (ALLOWED BOOKS ONLY)
   bookmakers.forEach(book => {
-    const bookName = book.title;
+    const rawBookName = book.title;
+    const bookName = canonicalBookName(rawBookName);
+    
+    // FILTER: Skip disallowed books
+    if (!isBookAllowed(bookName)) {
+      console.log(`⛔ [BOOK_FILTER] Skipping disallowed book: ${rawBookName} → ${bookName}`);
+      return; // Skip this book
+    }
+    
     const bookData = { bookmaker: bookName };
     
     if (book.markets) {
@@ -1519,18 +1542,20 @@ function extractStructuredOdds(gameOdds, modelPicks) {
     all_books[bookName] = bookData;
   });
   
-  // Select display book (consistent UI)
+  // Select display book (consistent UI) - ALLOWED BOOKS ONLY
   let displayBook = null;
-  for (const priorityBook of BOOK_PRIORITY) {
+  for (const priorityBook of PRIORITY_BOOK_ORDER) {
     if (all_books[priorityBook]) {
       displayBook = all_books[priorityBook];
+      console.log(`📊 [DISPLAY] Using priority book: ${priorityBook}`);
       break;
     }
   }
   
-  // Fallback to first available book
+  // Fallback to first available allowed book
   if (!displayBook && Object.keys(all_books).length > 0) {
     displayBook = Object.values(all_books)[0];
+    console.log(`📊 [DISPLAY] Fallback to first available: ${displayBook.bookmaker}`);
   }
   
   // Find best book for each market based on model picks
@@ -2836,6 +2861,13 @@ export default async (request, context) => {
       try {
         await saveAdvancedPredictionsToBlobs(result, season);
         console.log('✅ Saved advanced predictions to blob storage for live site');
+        
+        // CACHE: Also save to predictions cache for fast loading
+        const body = await request.json().catch(() => ({}));
+        if (body.cache === true || request.method === 'GET') {
+          await saveToPredictionsCache(result, season);
+          console.log('✅ Saved to predictions cache for fast loading');
+        }
       } catch (error) {
         console.error('❌ Failed to save to blobs:', error);
         // Continue anyway - don't fail the request
@@ -2871,6 +2903,40 @@ export default async (request, context) => {
     });
   }
 };
+
+/**
+ * Save predictions to cache for fast loading (30min cache lifetime)
+ */
+async function saveToPredictionsCache(result, season) {
+  try {
+    const cacheStore = getStore("predictions-cache");
+    
+    // Determine week from first prediction
+    const week = result.predictions?.[0]?.week || 'current';
+    const cacheKey = `nfl-predictions-${season}-week${week}`;
+    
+    const cacheData = {
+      ...result,
+      generated_at: new Date().toISOString(),
+      cache_key: cacheKey,
+      cache_ttl: 1800 // 30 minutes
+    };
+    
+    await cacheStore.set(cacheKey, JSON.stringify(cacheData), {
+      metadata: {
+        generated_at: new Date().toISOString(),
+        season: season,
+        week: week,
+        games_count: result.predictions?.length || 0
+      }
+    });
+    
+    console.log(`💾 [CACHE] Saved predictions to ${cacheKey}`);
+  } catch (error) {
+    console.error('[CACHE] Failed to save predictions cache:', error);
+    // Don't throw - caching is optional
+  }
+}
 
 /**
  * Check games for kickoff events and trigger pick locking
