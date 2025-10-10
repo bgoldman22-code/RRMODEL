@@ -2384,19 +2384,25 @@ async function generateAdvancedPredictions(games, season) {
     const scoreDifference = homeScoreData.score - awayScoreData.score;
     
     // GPT SAFEGUARD: Defensive normalization to catch probability-like scores
-    // If scores are in 0-1 range (probabilities), convert to point units
-    const isProb = (x) => x >= 0 && x <= 1;
-    const toPoints = (p) => 14 + (p - 0.5) * 40; // 0.5→14pts, 0.7→22pts, 0.3→6pts
+    // Only trigger if scores look like win probabilities (0.3-0.7 range AND sum ~1.0)
+    // Real team scores should be outside this range (typically -5 to +10 points)
+    const looksLikeProbability = (home, away) => {
+      if (typeof home !== 'number' || typeof away !== 'number') return false;
+      if (home < 0 || away < 0 || home > 1 || away > 1) return false;
+      const sum = home + away;
+      const inProbRange = home >= 0.2 && home <= 0.8 && away >= 0.2 && away <= 0.8;
+      const sumIsOne = Math.abs(sum - 1.0) < 0.1; // Allow small rounding error
+      return inProbRange && sumIsOne;
+    };
     
-    let normalizedHomeScore = homeScoreData.score;
-    let normalizedAwayScore = awayScoreData.score;
+    const toPoints = (p) => 14 + (p - 0.5) * 40; // 0.5→14pts, 0.7→22pts, 0.3→6pts
     let probabilityNormalizationApplied = false;
     
-    if (isProb(homeScoreData.score) && isProb(awayScoreData.score)) {
+    if (looksLikeProbability(homeScoreData.score, awayScoreData.score)) {
       console.log(`🚨 PROBABILITY→POINTS NORMALIZATION: ${homeCode} vs ${awayCode}`);
-      console.log(`   Raw: Home=${homeScoreData.score.toFixed(4)}, Away=${awayScoreData.score.toFixed(4)}`);
-      normalizedHomeScore = toPoints(homeScoreData.score);
-      normalizedAwayScore = toPoints(awayScoreData.score);
+      console.log(`   Raw: Home=${homeScoreData.score.toFixed(4)}, Away=${awayScoreData.score.toFixed(4)}, Sum=${(homeScoreData.score + awayScoreData.score).toFixed(4)}`);
+      const normalizedHomeScore = toPoints(homeScoreData.score);
+      const normalizedAwayScore = toPoints(awayScoreData.score);
       console.log(`   Normalized: Home=${normalizedHomeScore.toFixed(2)}, Away=${normalizedAwayScore.toFixed(2)}`);
       probabilityNormalizationApplied = true;
       
