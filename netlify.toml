@@ -43,3 +43,8 @@
 [[scheduled.functions]]
   name = "nfl-predictions-refresh"
   cron = "*/30 * * * *"
+
+# NFL Odds Snapshots - capture every 5 minutes for line movement tracking
+[[scheduled.functions]]
+  name = "nfl-odds-snapshot"
+  cron = "*/5 * * * *"

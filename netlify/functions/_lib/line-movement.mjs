@@ -15,7 +15,7 @@ export async function getMovementMetrics(gameId, market, side) {
   
   try {
     // Get all snapshots for this game (last 24h)
-    const snapshots = await getRecentSnapshots(store, gameId, hours = 24);
+    const snapshots = await getRecentSnapshots(store, gameId, 24);
     
     if (snapshots.length === 0) {
       return null;
@@ -129,22 +129,39 @@ async function getRecentSnapshots(store, gameId, hours = 24) {
  * Extract implied probability from snapshot for specific market/side
  */
 function getImpliedProbFromSnapshot(snapshot, market, side) {
-  // Average across all allowed books
+  // Average across all bookmakers in snapshot
   const impliedValues = [];
   
-  for (const [bookName, bookData] of Object.entries(snapshot.books || {})) {
-    let implied = null;
-    
-    if (market === 'moneyline') {
-      implied = side === 'home' ? bookData.moneyline?.home_implied : bookData.moneyline?.away_implied;
-    } else if (market === 'spread') {
-      implied = side === 'home' ? bookData.spread?.home_implied : bookData.spread?.away_implied;
-    } else if (market === 'total') {
-      implied = side === 'over' ? bookData.total?.over_implied : bookData.total?.under_implied;
-    }
-    
-    if (implied !== null && implied !== undefined) {
-      impliedValues.push(implied);
+  for (const bookmaker of snapshot.bookmakers || []) {
+    for (const mkt of bookmaker.markets || []) {
+      if (mkt.key === market || 
+          (market === 'moneyline' && mkt.key === 'h2h') ||
+          (market === 'spread' && mkt.key === 'spreads') ||
+          (market === 'total' && mkt.key === 'totals')) {
+        
+        for (const outcome of mkt.outcomes || []) {
+          let isMatch = false;
+          
+          if (market === 'moneyline' || market === 'h2h') {
+            isMatch = (side === 'home' && outcome.name === snapshot.home_team) ||
+                      (side === 'away' && outcome.name === snapshot.away_team);
+          } else if (market === 'spread' || market === 'spreads') {
+            isMatch = (side === 'home' && outcome.name === snapshot.home_team) ||
+                      (side === 'away' && outcome.name === snapshot.away_team);
+          } else if (market === 'total' || market === 'totals') {
+            isMatch = (side === 'over' && outcome.name === 'Over') ||
+                      (side === 'under' && outcome.name === 'Under');
+          }
+          
+          if (isMatch && outcome.price) {
+            // Convert American odds to implied probability
+            const implied = outcome.price > 0 
+              ? 100 / (outcome.price + 100)
+              : Math.abs(outcome.price) / (Math.abs(outcome.price) + 100);
+            impliedValues.push(implied);
+          }
+        }
+      }
     }
   }
   
