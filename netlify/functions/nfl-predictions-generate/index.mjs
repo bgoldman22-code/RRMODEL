@@ -624,8 +624,13 @@ function scoreTeamFromFeatures(teamData, league, contextWeights, matchupTerms = 
 
   const consistency = teamData?.consistency?.off ?? 0.5;
   const form = teamData?.form?.off ?? 0;
+  
+  // GPT SANITY GUARD: Clip weekly EPA form deltas to prevent overreaction to single hot games
+  // Max ±0.05 weekly change (prevents +0.15 spike from weak opponent from adding 4+ points)
+  const clippedForm = clamp(form, -0.05, 0.05);
+  
   const enhancedForm = hasHistoricalData && contextWeights?.recent_4_weeks > 0 ? 
-    form * (1 + contextWeights.recent_4_weeks * 2.5) : form;
+    clippedForm * (1 + contextWeights.recent_4_weeks * 2.5) : clippedForm;
 
   const currentMomentum = calculateCurrentSeasonMomentum(teamData, currentWeek);
   const paceAdj = clamp((tempo.pace ?? 30) / 30 - 1, -0.5, 0.5);
@@ -1301,7 +1306,18 @@ function calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayC
   const isDivisional = isDivisionalGame(homeCode, awayCode);
   const divisionalAdjustment = isDivisional ? 0.8 : 1.0;
   
-  const adjustedHFA = dynamicHFA * divisionalAdjustment;
+  // GPT SANITY GUARD: Reduce home field when both teams have below-average EPA
+  // If both teams are weak (EPA < 0), home field is less reliable - halve the advantage
+  const homeEPA = homeScoreData?.score || 0;
+  const awayEPA = awayScoreData?.score || 0;
+  const bothTeamsWeak = (homeEPA < 0 && awayEPA < 0);
+  const weakTeamAdjustment = bothTeamsWeak ? 0.5 : 1.0;
+  
+  const adjustedHFA = dynamicHFA * divisionalAdjustment * weakTeamAdjustment;
+  
+  if (bothTeamsWeak) {
+    console.log(`⚖️ Weak team HFA reduction: ${dynamicHFA.toFixed(2)} → ${adjustedHFA.toFixed(2)} (both teams EPA < 0)`);
+  }
   
   const scoreDifference = homeScoreData.score - awayScoreData.score;
   const spreadFromScores = scoreDifference * 3.5;
@@ -2210,6 +2226,29 @@ async function generateAdvancedPredictions(games, season) {
     const realOdds = gameOdds ? extractOddsData(gameOdds) : {};  // Keep legacy for now
     const hasLiveOdds = gameOdds && realOdds.ml_home && realOdds.ml_away;
     
+    // GPT SANITY GUARD: Check model-to-market spread delta (flag if >5 points)
+    let modelMarketDelta = null;
+    let sanityWarning = null;
+    if (hasLiveOdds && realOdds.spread_line !== undefined) {
+      const marketSpread = realOdds.spread_favorite === homeCode ? realOdds.spread_line : -realOdds.spread_line;
+      modelMarketDelta = Math.abs(predictedSpread - marketSpread);
+      
+      if (modelMarketDelta > 5.0) {
+        sanityWarning = {
+          type: 'LARGE_MODEL_MARKET_DELTA',
+          message: `Model spread (${predictedSpread.toFixed(1)}) differs from market (${marketSpread.toFixed(1)}) by ${modelMarketDelta.toFixed(1)} points`,
+          recommendation: 'MANUAL_REVIEW',
+          confidence_penalty: 0.15 // Reduce confidence by 15% when model disagrees heavily with market
+        };
+        console.log(`⚠️ SANITY WARNING: ${sanityWarning.message}`);
+        
+        // Apply confidence penalty for extreme divergence
+        homeWinProb = 0.50 + (homeWinProb - 0.50) * (1 - sanityWarning.confidence_penalty);
+        awayWinProb = 1 - homeWinProb;
+        console.log(`  ↘️ Confidence reduced due to market divergence`);
+      }
+    }
+    
     // Update total pick now that we have market total
     if (structuredOdds.display?.total?.over?.line) {
       const marketTotal = structuredOdds.display.total.over.line;
@@ -2550,7 +2589,9 @@ async function generateAdvancedPredictions(games, season) {
           epaFilteringAway: epaFilterResults.away?.filterStats?.filterRate?.toFixed(1) + '%' || 'N/A',
           depthChartWarnings: (homeScoreData.injuryAnalysis?.safeguardWarnings?.length || 0) + (awayScoreData.injuryAnalysis?.safeguardWarnings?.length || 0),
           safetyLimitsApplied: safeguardedPredictions.safetyLimits?.applied?.length || 0,
-          marketAnchoringAvailable: !!anchoringData
+          marketAnchoringAvailable: !!anchoringData,
+          sanityWarning: sanityWarning || null, // GPT sanity guard
+          modelMarketDelta: modelMarketDelta?.toFixed(1) || null
         },
         enhancedFeatures: {
           calibrationFix: "Applied to confidence band 55-65%",
