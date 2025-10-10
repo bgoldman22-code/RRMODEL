@@ -22,7 +22,7 @@ export const handler = async (event, context) => {
     const season = params.season || '2025';
     const force = params.force === 'true' || params.refresh === 'true';
     
-    const store = getStore("predictions-cache");
+    const store = getStore({ name: "predictions-cache", context });
     const cacheKey = `nfl-predictions-${season}-week${week}`;
     
     // If force refresh, skip cache and trigger regeneration
