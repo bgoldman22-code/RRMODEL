@@ -2875,26 +2875,60 @@ export default async (request, context) => {
 /**
  * Check games for kickoff events and trigger pick locking
  * Auto-locks picks within 5 minutes of kickoff (before or after)
+ * 
+ * FIX: Proper UTC normalization (GPT audit fix #1)
+ * - All time comparisons done in UTC epoch milliseconds
+ * - Logs both kickoff and now in ISO format for debugging
  */
 async function checkAndLockKickoffGames(predictions) {
-  const now = new Date();
+  const nowUtc = new Date(); // Always UTC
+  const nowEpochMs = nowUtc.getTime();
+  const nowIso = nowUtc.toISOString();
+  
   const lockPromises = [];
   
   for (const game of predictions) {
     if (!game.start || !game.game_id) continue;
     
-    const kickoff = new Date(game.start);
-    const timeToKickoff = kickoff - now; // negative = game started
-    const minutesToKickoff = timeToKickoff / (1000 * 60);
+    // Parse kickoff time - handle both ISO strings and epoch timestamps
+    let kickoffEpochMs;
+    try {
+      const kickoffParsed = new Date(game.start);
+      kickoffEpochMs = kickoffParsed.getTime();
+      
+      // Validate parsed time
+      if (isNaN(kickoffEpochMs)) {
+        console.warn(`[KICKOFF] Invalid kickoff time for ${game.game_id}: ${game.start}`);
+        continue;
+      }
+    } catch (error) {
+      console.error(`[KICKOFF] Failed to parse kickoff for ${game.game_id}:`, error);
+      continue;
+    }
+    
+    const kickoffIso = new Date(kickoffEpochMs).toISOString();
+    const diffMs = kickoffEpochMs - nowEpochMs; // negative = game started
+    const minutesToKickoff = diffMs / (1000 * 60);
+    
+    // GPT DEBUG: Log timezone-normalized comparison
+    console.log(`[KICKOFF] ${game.game_id} time check:`, {
+      kickoff_raw: game.start,
+      kickoff_iso: kickoffIso,
+      kickoff_epoch_ms: kickoffEpochMs,
+      now_iso: nowIso,
+      now_epoch_ms: nowEpochMs,
+      diff_ms: diffMs,
+      minutes_to_kickoff: minutesToKickoff.toFixed(1)
+    });
     
     // Lock picks in 10-minute window around kickoff (-5 to +5 minutes)
     if (minutesToKickoff <= 5 && minutesToKickoff >= -5) {
-      console.log(`[KICKOFF] Game ${game.game_id} kickoff detected, triggering lock (${minutesToKickoff.toFixed(1)}min)`);
+      console.log(`[KICKOFF] 🔒 Game ${game.game_id} kickoff detected, triggering lock (${minutesToKickoff.toFixed(1)}min)`);
       
       // Async lock - don't wait for completion to avoid blocking predictions
       const lockPromise = lockGamePicks(game.game_id, game, 'kickoff')
         .catch(error => {
-          console.error(`[KICKOFF] Failed to lock ${game.game_id}:`, error);
+          console.error(`[KICKOFF] ❌ Failed to lock ${game.game_id}:`, error);
         });
       
       lockPromises.push(lockPromise);
@@ -2914,17 +2948,35 @@ async function checkAndLockKickoffGames(predictions) {
 
 /**
  * Replace live predictions with locked picks for games that have started
+ * 
+ * FIX: Proper UTC normalization (GPT audit fix #1)
+ * - All time comparisons done in UTC epoch milliseconds
  */
 async function integrateLockedPicks(result) {
   const predictions = result.predictions || result;
-  const now = new Date();
+  const nowUtc = new Date();
+  const nowEpochMs = nowUtc.getTime();
   
   for (let i = 0; i < predictions.length; i++) {
     const game = predictions[i];
     if (!game.start || !game.game_id) continue;
     
-    const kickoff = new Date(game.start);
-    const gameStarted = now > kickoff;
+    // Parse kickoff time with proper UTC handling
+    let kickoffEpochMs;
+    try {
+      const kickoffParsed = new Date(game.start);
+      kickoffEpochMs = kickoffParsed.getTime();
+      
+      if (isNaN(kickoffEpochMs)) {
+        console.warn(`[LOCKED] Invalid kickoff time for ${game.game_id}: ${game.start}`);
+        continue;
+      }
+    } catch (error) {
+      console.error(`[LOCKED] Failed to parse kickoff for ${game.game_id}:`, error);
+      continue;
+    }
+    
+    const gameStarted = nowEpochMs > kickoffEpochMs;
     
     // For started games, try to load locked picks
     if (gameStarted) {
@@ -2933,10 +2985,12 @@ async function integrateLockedPicks(result) {
         if (lockedPicks && Object.keys(lockedPicks).length > 0) {
           // Merge locked picks into game predictions
           predictions[i] = mergeLockedPicks(game, lockedPicks);
-          console.log(`[LOCKED] Using locked picks for ${game.game_id}`);
+          console.log(`[LOCKED] ✅ Using locked picks for ${game.game_id}`);
+        } else {
+          console.log(`[LOCKED] ⚠️ No locked picks found for started game ${game.game_id}`);
         }
       } catch (error) {
-        console.warn(`[LOCKED] Could not load locked picks for ${game.game_id}:`, error.message);
+        console.warn(`[LOCKED] ❌ Could not load locked picks for ${game.game_id}:`, error.message);
         // Continue with live predictions as fallback
       }
     }
