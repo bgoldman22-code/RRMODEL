@@ -2633,6 +2633,50 @@ async function generateAdvancedPredictions(games, season) {
     const baseSpreadConfidence = calculateConfidence(0.6, 0.52, spreadEdge / 14, avgConfidence, avgEvidence, scoreDifference, 'spread', gameContext);
     const spreadConfidence = baseSpreadConfidence;
     
+    // COMPREHENSIVE DIAGNOSTIC for problematic games
+    if (homeCode === 'ATL' || homeCode === 'TB' || awayCode === 'SF' || awayCode === 'BUF') {
+      const diagnostic = {
+        tag: 'SPREAD_DIAGNOSTIC',
+        gameId: `${currentWeek}_${awayCode}_${homeCode}`,
+        matchup: `${awayCode} @ ${homeCode}`,
+        // RAW FEATURES
+        features: {
+          offEpa_home: homeMetrics?.core?.off_epa || 0,
+          defEpa_home: homeMetrics?.core?.def_epa || 0,
+          offEpa_away: awayMetrics?.core?.off_epa || 0,
+          defEpa_away: awayMetrics?.core?.def_epa || 0,
+          form_home: homeMetrics?.form?.off || 0,
+          form_away: awayMetrics?.form?.off || 0,
+          base_home_score: homeScoreData.score,
+          base_away_score: awayScoreData.score
+        },
+        // INTERMEDIATE COMPUTATIONS
+        comp: {
+          preInjury_home_score: homeScoreData.score,
+          preInjury_away_score: awayScoreData.score,
+          injury_home_total: homeScoreData.injuryAnalysis?.totalImpact || 0,
+          injury_away_total: awayScoreData.injuryAnalysis?.totalImpact || 0,
+          injury_home_count: (homeScoreData.injuryAnalysis?.adjustments || []).length,
+          injury_away_count: (awayScoreData.injuryAnalysis?.adjustments || []).length,
+          scoreDifference: scoreDifference,
+          hfa_pts: adjustedHFA,
+          spreadFromScores: scoreDifference * 3.0,
+          stAdjustment: 0, // Will be calculated in spread function
+          preClamp_home_margin: predictedSpread, // This is after clamp, need to check
+          clampApplied: Math.abs(predictedSpread) >= 16.9
+        },
+        // OUTPUTS
+        out: {
+          model_home_margin: modelHomeMargin,
+          market_home_margin: marketHomeMargin,
+          diff: marginDifference,
+          marketSpread: marketSpread,
+          marketFavorite: marketFavorite
+        }
+      };
+      console.log('\n' + JSON.stringify(diagnostic, null, 2));
+    }
+    
     // Use spread-specific skip check with enhanced edge
     const spreadSkipCheck = shouldSkipSpreadBet(spreadPick, marginDifference, gameContext, realOdds, spreadConfidence, spreadEdge);
 
