@@ -1,6 +1,7 @@
 // src/pages/NFLPredictions.jsx
 import React, { useEffect, useState } from 'react';
 import { getCurrentNFLWeek } from '../utils/nflWeek.js';
+import { loadPredictionsWithPolling } from '../lib/fetchPredictions.js';
 
 /**
  * NFL Predictions Page with Live Odds Display and Parlay Suggestions
@@ -104,35 +105,27 @@ async function fetchSchedule(week = 4, season = 2025) {
   return games;
 }
 
-async function fetchPredictions(week = 4, season = 2025, force = false) {
+async function fetchPredictions(week = 4, season = 2025, force = false, onProgress = null) {
   const games = await fetchSchedule(week, season);
   
   if (games.length === 0) {
     throw new Error(`No games found for Week ${week}, ${season}`);
   }
   
-  // Use nfl-predictions-generate directly (cache will be added later)
-  const url = `/.netlify/functions/nfl-predictions-generate`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'cache-control': 'no-cache' 
-    },
-    body: JSON.stringify({
-      season: season.toString(),
-      games: games,
-      refresh: force
-    })
+  // Use smart polling with cache (fast path) and fallback to generator (slow path)
+  const response = await loadPredictionsWithPolling({ 
+    season, 
+    week, 
+    games,
+    onProgress 
   });
-  
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const response = await res.json();
   
   // Handle nfl-predictions-generate response structure  
   const predictions = response.predictions || [];
   const parlaySuggestions = response.parlaySuggestions || [];
-  const parlayMetadata = response.parlayMetadata || {};  return {
+  const parlayMetadata = response.parlayMetadata || {};
+  
+  return {
     rows: predictions.map(pred => ({
       gameId: pred.game_id,
       matchup: `${pred.away_team} @ ${pred.home_team}`,
@@ -151,7 +144,7 @@ async function fetchPredictions(week = 4, season = 2025, force = false) {
       week: week,
       season: season,
       games: predictions.length,
-      model: 'R Pipeline + NFLVerse EPA' // nfl-predictions-generate always uses R Pipeline
+      model: 'R Pipeline + NFLVerse EPA'
     }
   };
 }
@@ -631,6 +624,7 @@ export default function NFLPredictions() {
   const [parlayMetadata, setParlayMetadata] = useState({});
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState('Loading predictions...');
   const [error, setError] = useState(null);
   const [week, setWeek] = useState(4); // Will be updated to current week
   const season = 2025;
@@ -652,8 +646,20 @@ export default function NFLPredictions() {
   const load = async (force = false) => {
     setLoading(true); 
     setError(null);
+    setLoadingMessage('Loading predictions...');
+    
     try {
-      const data = await fetchPredictions(week, season, force);
+      const data = await fetchPredictions(week, season, force, (progress) => {
+        // Update loading message based on polling stage
+        if (progress.stage === 'polling') {
+          setLoadingMessage(progress.message || `Warming cache… retry ${progress.attempt}/${progress.maxRetries}`);
+        } else if (progress.stage === 'fallback') {
+          setLoadingMessage(progress.message || 'Generating fresh predictions (15-20s)…');
+        } else if (progress.stage === 'ready') {
+          setLoadingMessage('Loaded from cache');
+        }
+      });
+      
       setRows(Array.isArray(data.rows) ? data.rows : []);
       setParlaySuggestions(data.parlaySuggestions || []);
       setParlayMetadata(data.parlayMetadata || {});
@@ -1060,7 +1066,7 @@ export default function NFLPredictions() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td className="px-4 py-6 text-neutral-500" colSpan={7}>Loading…</td></tr>
+              <tr><td className="px-4 py-6 text-neutral-500" colSpan={7}>{loadingMessage}</td></tr>
             ) : rows.length === 0 ? (
               <tr><td className="px-4 py-6 text-neutral-500" colSpan={7}>No predictions available for Week {week}, {season}.</td></tr>
             ) : (
