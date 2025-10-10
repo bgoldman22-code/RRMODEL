@@ -307,10 +307,28 @@ const MoneylineCard = ({ game }) => {
 
   const lineMovement = game.line_movement?.moneyline;
   
-  // Get the odds for the picked team
-  const pickOdds = pick.pick === game.home_team 
-    ? (game.odds?.display?.h2h?.home || game.odds?.moneyline?.home)
-    : (game.odds?.display?.h2h?.away || game.odds?.moneyline?.away);
+  // Get the odds for the picked team - try multiple paths
+  let pickOdds;
+  const isHome = pick.pick === game.home_team;
+  
+  if (game.odds?.display?.h2h) {
+    pickOdds = isHome ? game.odds.display.h2h.home : game.odds.display.h2h.away;
+  } else if (game.odds?.moneyline) {
+    pickOdds = isHome ? game.odds.moneyline.home : game.odds.moneyline.away;
+  }
+  
+  // Format odds for display (handle both +/- American odds)
+  const formatOdds = (odds) => {
+    if (!odds) return 'N/A';
+    const num = Number(odds);
+    if (isNaN(num)) return odds;
+    return num > 0 ? `+${num}` : num.toString();
+  };
+  
+  const formattedOdds = formatOdds(pickOdds);
+  
+  // Get best book info for deep link
+  const bestBook = pick.best_book?.bookmaker || 'Sportsbook';
 
   return (
     <div className="bg-[#1C2433] rounded-lg p-5 border border-gray-800">
@@ -337,10 +355,10 @@ const MoneylineCard = ({ game }) => {
       )}
 
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <MetricBox label="Wager" value={`${pick.recommended_units?.toFixed(1)}U`} highlight />
+        <MetricBox label="Wager" value={pick.recommended_units ? `${pick.recommended_units.toFixed(1)}U` : '1.0U'} highlight />
         <MetricBox label="Confidence" value={`${pick.confidence?.toFixed(1)}%`} />
         <MetricBox label="Edge" value={`${pick.edge?.toFixed(1)}%`} highlight />
-        <MetricBox label="Live Line" value={pickOdds || 'N/A'} />
+        <MetricBox label="Live Line" value={formattedOdds} />
       </div>
 
       {pick.unit_reasoning && (
@@ -349,9 +367,14 @@ const MoneylineCard = ({ game }) => {
         </div>
       )}
 
-      <button className="w-full bg-[#00CC66] hover:bg-[#00DD77] text-white font-bold py-2.5 rounded-lg transition-colors">
-        BET NOW - {pick.pick} ({pickOdds || 'N/A'})
-      </button>
+      <a 
+        href={`https://www.actionnetwork.com/nfl/betting-odds`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block w-full bg-[#00CC66] hover:bg-[#00DD77] text-white font-bold py-2.5 rounded-lg transition-colors text-center cursor-pointer"
+      >
+        BET NOW @ {bestBook} - {pick.pick} ({formattedOdds})
+      </a>
     </div>
   );
 };
@@ -393,15 +416,20 @@ const SpreadCard = ({ game }) => {
       )}
 
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <MetricBox label="Wager" value={`${pick.recommended_units?.toFixed(1)}U`} highlight />
+        <MetricBox label="Wager" value={pick.recommended_units ? `${pick.recommended_units.toFixed(1)}U` : '1.0U'} highlight />
         <MetricBox label="Confidence" value={`${pick.confidence?.toFixed(1)}%`} />
         <MetricBox label="Edge" value={`${pick.edge?.toFixed(1)}%`} highlight />
-        <MetricBox label="Live Line" value={game.odds?.spread?.pick_odds || 'N/A'} />
+        <MetricBox label="Live Line" value={pick.line ? `${pick.line >= 0 ? '+' : ''}${pick.line}` : 'N/A'} />
       </div>
 
-      <button className="w-full bg-[#00CC66] hover:bg-[#00DD77] text-white font-bold py-2.5 rounded-lg transition-colors">
-        BET NOW - {pick.pick} {pick.line >= 0 ? '+' : ''}{pick.line}
-      </button>
+      <a 
+        href={`https://www.actionnetwork.com/nfl/betting-odds`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block w-full bg-[#00CC66] hover:bg-[#00DD77] text-white font-bold py-2.5 rounded-lg transition-colors text-center cursor-pointer"
+      >
+        BET NOW @ {pick.best_book?.bookmaker || 'Sportsbook'} - {pick.pick} {pick.line >= 0 ? '+' : ''}{pick.line}
+      </a>
     </div>
   );
 };
@@ -426,15 +454,20 @@ const TotalCard = ({ game }) => {
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <MetricBox label="Wager" value={`${pick.recommended_units?.toFixed(1)}U`} highlight />
+        <MetricBox label="Wager" value={pick.recommended_units ? `${pick.recommended_units.toFixed(1)}U` : '1.0U'} highlight />
         <MetricBox label="Confidence" value={`${pick.confidence?.toFixed(1)}%`} />
         <MetricBox label="Edge" value={`${pick.edge?.toFixed(1)}%`} highlight />
-        <MetricBox label="Line" value={pick.line} />
+        <MetricBox label="Line" value={pick.line ? pick.line.toString() : 'N/A'} />
       </div>
 
-      <button className="w-full bg-[#00CC66] hover:bg-[#00DD77] text-white font-bold py-2.5 rounded-lg transition-colors">
-        BET NOW - {pick.pick.toUpperCase()} {pick.line}
-      </button>
+      <a 
+        href={`https://www.actionnetwork.com/nfl/betting-odds`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block w-full bg-[#00CC66] hover:bg-[#00DD77] text-white font-bold py-2.5 rounded-lg transition-colors text-center cursor-pointer"
+      >
+        BET NOW @ {pick.best_book?.bookmaker || 'Sportsbook'} - {pick.pick.toUpperCase()} {pick.line}
+      </a>
     </div>
   );
 };
