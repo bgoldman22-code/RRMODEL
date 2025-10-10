@@ -2992,7 +2992,7 @@ export default async (request, context) => {
         // CACHE: Also save to predictions cache for fast loading
         const body = await request.json().catch(() => ({}));
         if (body.cache === true || request.method === 'GET') {
-          await saveToPredictionsCache(result, season, context);
+          await saveToPredictionsCache(result, season);
           console.log('✅ Saved to predictions cache for fast loading');
         }
       } catch (error) {
@@ -3039,9 +3039,9 @@ export default async (request, context) => {
 /**
  * Save predictions to cache for fast loading (30min cache lifetime)
  */
-async function saveToPredictionsCache(result, season, context) {
+async function saveToPredictionsCache(result, season) {
   try {
-    const cacheStore = getStore({ name: "predictions-cache", context });
+    const cacheStore = getStore("predictions-cache");
     
     // Determine week from first prediction
     const week = result.predictions?.[0]?.week || 'current';
