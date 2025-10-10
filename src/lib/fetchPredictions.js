@@ -114,6 +114,16 @@ function getTeamAbbreviation(fullName) {
  * 3. If still pending after retries, fall back to direct generator
  */
 export async function loadPredictionsWithPolling({ season, week, games, onProgress }) {
+  // TEMPORARY: Skip cache due to Blob store issues, go straight to generator
+  console.warn('[CACHE_DISABLED] Skipping cache, using direct generator');
+  onProgress?.({ 
+    stage: 'fallback', 
+    message: 'Generating predictions (15-20s)…' 
+  });
+  
+  return await fetchPredictionsDirect({ season, week, games });
+  
+  /* CACHE POLLING CODE - RE-ENABLE WHEN BLOBS FIXED
   let delay = 1500; // ms
   const maxRetries = 5;
   
@@ -161,4 +171,5 @@ export async function loadPredictionsWithPolling({ season, week, games, onProgre
   });
   
   return await fetchPredictionsDirect({ season, week, games });
+  */
 }
