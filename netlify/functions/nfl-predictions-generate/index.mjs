@@ -1768,31 +1768,41 @@ async function generateParlayComponents(games, predictions) {
       const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
       let unitInfo = calculateRecommendedUnits(mlPick.confidence, mlPick.edge, 'straight', availabilityData, sanityCheck);
       
-      // PHASE 2: Apply line movement gates (with error handling)
+      // PHASE 2: Apply line movement gates (with safe defaults)
       const gameId = game.game_id || `${game.away_team}_${game.home_team}`;
       const pickSide = mlPick.pick === game.home_team ? 'home' : 'away';
-      let gateResult, sizingResult;
+      
+      // Safe defaults - never undefined
+      let gateResult = { pass: true, reason: 'no_gates_applied', metadata: {} };
+      let sizingResult = { 
+        final_units: unitInfo.units, 
+        reasons: ['base_kelly_units'], 
+        metrics: null,
+        multiplier: 1.0
+      };
       
       try {
-        gateResult = await applyPreBetGates({ market: 'moneyline', pick: pickSide }, gameId);
-        
-        if (!gateResult.pass) {
-          console.log(`🚫 [GATES] Blocking ML pick for ${gameId}: ${gateResult.reason}`);
-          continue; // Skip this pick
+        const g = await applyPreBetGates({ market: 'moneyline', pick: pickSide }, gameId);
+        if (g && typeof g.pass === 'boolean') {
+          gateResult = g;
+          
+          if (!gateResult.pass) {
+            console.log(`🚫 [GATES] Blocking ML pick for ${gameId}: ${gateResult.reason}`);
+            continue; // Skip this pick
+          }
         }
-        
-        // PHASE 2: Apply line movement sizing modifiers
-        sizingResult = await applyLineMovementSizingModifiers({ market: 'moneyline', pick: pickSide }, gameId, unitInfo.units);
-        console.log(`📏 [SIZING] ML pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
-      } catch (lineMovementError) {
-        console.log(`⚠️ [LINE_MOVEMENT] Error processing ML pick ${gameId}, using base units:`, lineMovementError.message);
-        // Fallback: Use base units without line movement modifiers
-        gateResult = { pass: true, reason: 'line_movement_unavailable' };
-        sizingResult = {
-          final_units: unitInfo.units,
-          reasons: ['line_movement_unavailable'],
-          metrics: null
-        };
+      } catch (gateError) {
+        console.warn('[GATE_ERROR]', gameId, 'moneyline', String(gateError));
+      }
+      
+      try {
+        const s = await applyLineMovementSizingModifiers({ market: 'moneyline', pick: pickSide }, gameId, unitInfo.units);
+        if (s && Number.isFinite(s.final_units)) {
+          sizingResult = s;
+          console.log(`📏 [SIZING] ML pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
+        }
+      } catch (sizingError) {
+        console.warn('[SIZING_ERROR]', gameId, 'moneyline', String(sizingError));
       }
       
       components.push({
@@ -1803,13 +1813,15 @@ async function generateParlayComponents(games, predictions) {
         confidence: mlPick.confidence,
         edge: mlPick.edge,
         description: `${mlPick.pick} ML`,
-        odds: pred.odds?.moneyline?.pick_odds,
+        odds: pred.odds?.moneyline?.pick_odds || null,
         ev_score: (mlPick.confidence - 50) * mlPick.edge,
-        recommended_units: sizingResult.final_units,
+        recommended_units: Math.max(0, Number(sizingResult?.final_units) || unitInfo.units),
         unit_tier: unitInfo.tier,
-        unit_reasoning: `${unitInfo.reasoning} | ${sizingResult.reasons.join(', ')}`,
-        line_movement: sizingResult.metrics,
-        gate_result: gateResult.reason
+        unit_reasoning: sizingResult?.reasons?.length > 0 
+          ? `${unitInfo.reasoning} | ${sizingResult.reasons.join(', ')}`
+          : unitInfo.reasoning,
+        line_movement: sizingResult?.metrics || null,
+        gate_result: gateResult?.reason || 'no_gates_applied'
       });
     }
     
@@ -1825,30 +1837,40 @@ async function generateParlayComponents(games, predictions) {
       const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
       let unitInfo = calculateRecommendedUnits(spreadPick.confidence, spreadPick.edge, 'straight', availabilityData, sanityCheck);
       
-      // PHASE 2: Apply line movement gates (with error handling)
+      // PHASE 2: Apply line movement gates (with safe defaults)
       const gameId = game.game_id || `${game.away_team}_${game.home_team}`;
       const pickSide = spreadPick.pick === game.home_team ? 'home' : 'away';
-      let gateResult, sizingResult;
+      
+      // Safe defaults
+      let gateResult = { pass: true, reason: 'no_gates_applied', metadata: {} };
+      let sizingResult = { 
+        final_units: unitInfo.units, 
+        reasons: ['base_kelly_units'], 
+        metrics: null,
+        multiplier: 1.0
+      };
       
       try {
-        gateResult = await applyPreBetGates({ market: 'spread', pick: pickSide }, gameId);
-        
-        if (!gateResult.pass) {
-          console.log(`🚫 [GATES] Blocking spread pick for ${gameId}: ${gateResult.reason}`);
-          continue;
+        const g = await applyPreBetGates({ market: 'spread', pick: pickSide }, gameId);
+        if (g && typeof g.pass === 'boolean') {
+          gateResult = g;
+          if (!gateResult.pass) {
+            console.log(`🚫 [GATES] Blocking spread pick for ${gameId}: ${gateResult.reason}`);
+            continue;
+          }
         }
-        
-        // PHASE 2: Apply line movement sizing modifiers
-        sizingResult = await applyLineMovementSizingModifiers({ market: 'spread', pick: pickSide }, gameId, unitInfo.units);
-        console.log(`📏 [SIZING] Spread pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
-      } catch (lineMovementError) {
-        console.log(`⚠️ [LINE_MOVEMENT] Error processing spread pick ${gameId}, using base units:`, lineMovementError.message);
-        gateResult = { pass: true, reason: 'line_movement_unavailable' };
-        sizingResult = {
-          final_units: unitInfo.units,
-          reasons: ['line_movement_unavailable'],
-          metrics: null
-        };
+      } catch (gateError) {
+        console.warn('[GATE_ERROR]', gameId, 'spread', String(gateError));
+      }
+      
+      try {
+        const s = await applyLineMovementSizingModifiers({ market: 'spread', pick: pickSide }, gameId, unitInfo.units);
+        if (s && Number.isFinite(s.final_units)) {
+          sizingResult = s;
+          console.log(`📏 [SIZING] Spread pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
+        }
+      } catch (sizingError) {
+        console.warn('[SIZING_ERROR]', gameId, 'spread', String(sizingError));
       }
       
       components.push({
@@ -1859,13 +1881,15 @@ async function generateParlayComponents(games, predictions) {
         confidence: spreadPick.confidence,
         edge: spreadPick.edge,
         description: `${spreadPick.pick} ${spreadPick.line >= 0 ? '+' : ''}${spreadPick.line}`,
-        odds: pred.odds?.spread?.pick_odds,
+        odds: pred.odds?.spread?.pick_odds || null,
         ev_score: (spreadPick.confidence - 50) * spreadPick.edge,
-        recommended_units: sizingResult.final_units,
+        recommended_units: Math.max(0, Number(sizingResult?.final_units) || unitInfo.units),
         unit_tier: unitInfo.tier,
-        unit_reasoning: `${unitInfo.reasoning} | ${sizingResult.reasons.join(', ')}`,
-        line_movement: sizingResult.metrics,
-        gate_result: gateResult.reason
+        unit_reasoning: sizingResult?.reasons?.length > 0 
+          ? `${unitInfo.reasoning} | ${sizingResult.reasons.join(', ')}`
+          : unitInfo.reasoning,
+        line_movement: sizingResult?.metrics || null,
+        gate_result: gateResult?.reason || 'no_gates_applied'
       });
     }
     
@@ -1881,30 +1905,40 @@ async function generateParlayComponents(games, predictions) {
       const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
       let unitInfo = calculateRecommendedUnits(totalPick.confidence, totalPick.edge, 'straight', availabilityData, sanityCheck);
       
-      // PHASE 2: Apply line movement gates (with error handling)
+      // PHASE 2: Apply line movement gates (with safe defaults)
       const gameId = game.game_id || `${game.away_team}_${game.home_team}`;
       const pickSide = totalPick.pick === 'over' ? 'over' : 'under';
-      let gateResult, sizingResult;
+      
+      // Safe defaults
+      let gateResult = { pass: true, reason: 'no_gates_applied', metadata: {} };
+      let sizingResult = { 
+        final_units: unitInfo.units, 
+        reasons: ['base_kelly_units'], 
+        metrics: null,
+        multiplier: 1.0
+      };
       
       try {
-        gateResult = await applyPreBetGates({ market: 'total', pick: pickSide }, gameId);
-        
-        if (!gateResult.pass) {
-          console.log(`🚫 [GATES] Blocking total pick for ${gameId}: ${gateResult.reason}`);
-          continue;
+        const g = await applyPreBetGates({ market: 'total', pick: pickSide }, gameId);
+        if (g && typeof g.pass === 'boolean') {
+          gateResult = g;
+          if (!gateResult.pass) {
+            console.log(`🚫 [GATES] Blocking total pick for ${gameId}: ${gateResult.reason}`);
+            continue;
+          }
         }
-        
-        // PHASE 2: Apply line movement sizing modifiers
-        sizingResult = await applyLineMovementSizingModifiers({ market: 'total', pick: pickSide }, gameId, unitInfo.units);
-        console.log(`📏 [SIZING] Total pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
-      } catch (lineMovementError) {
-        console.log(`⚠️ [LINE_MOVEMENT] Error processing total pick ${gameId}, using base units:`, lineMovementError.message);
-        gateResult = { pass: true, reason: 'line_movement_unavailable' };
-        sizingResult = {
-          final_units: unitInfo.units,
-          reasons: ['line_movement_unavailable'],
-          metrics: null
-        };
+      } catch (gateError) {
+        console.warn('[GATE_ERROR]', gameId, 'total', String(gateError));
+      }
+      
+      try {
+        const s = await applyLineMovementSizingModifiers({ market: 'total', pick: pickSide }, gameId, unitInfo.units);
+        if (s && Number.isFinite(s.final_units)) {
+          sizingResult = s;
+          console.log(`📏 [SIZING] Total pick ${gameId}: ${unitInfo.units.toFixed(2)}U → ${sizingResult.final_units.toFixed(2)}U (${sizingResult.reasons.join(', ')})`);
+        }
+      } catch (sizingError) {
+        console.warn('[SIZING_ERROR]', gameId, 'total', String(sizingError));
       }
       
       components.push({
@@ -1917,11 +1951,13 @@ async function generateParlayComponents(games, predictions) {
         description: `${totalPick.pick.toUpperCase()} ${totalPick.line}`,
         odds: null,
         ev_score: (totalPick.confidence - 50) * totalPick.edge * 0.8,
-        recommended_units: sizingResult.final_units,
+        recommended_units: Math.max(0, Number(sizingResult?.final_units) || unitInfo.units),
         unit_tier: unitInfo.tier,
-        unit_reasoning: `${unitInfo.reasoning} | ${sizingResult.reasons.join(', ')}`,
-        line_movement: sizingResult.metrics,
-        gate_result: gateResult.reason
+        unit_reasoning: sizingResult?.reasons?.length > 0 
+          ? `${unitInfo.reasoning} | ${sizingResult.reasons.join(', ')}`
+          : unitInfo.reasoning,
+        line_movement: sizingResult?.metrics || null,
+        gate_result: gateResult?.reason || 'no_gates_applied'
       });
     }
   }
