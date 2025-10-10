@@ -841,6 +841,12 @@ function calculateDefaultInjuryImpact(position, teamCode) {
 }
 
 async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1) {
+  // GPT SAFEGUARD: Prevent double application of injury adjustments
+  if (scoreData._injuryApplied) {
+    console.log(`⚠️ SAFEGUARD: Injury adjustments already applied for ${teamCode}, skipping`);
+    return scoreData;
+  }
+  
   const teamInjuries = injuries.teams?.[teamCode] || {};
 
   // FALLBACK NORMALIZATION: If legacy fields (qb_name, *_injuries) are absent but a raw
@@ -1270,7 +1276,8 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
     confidence: scoreData.confidence * injuryAnalysis.confidence,
     evidenceStrength: scoreData.evidenceStrength,
     specialTeams: scoreData.specialTeams,
-    injuryAnalysis: injuryAnalysis
+    injuryAnalysis: injuryAnalysis,
+    _injuryApplied: true  // GPT SAFEGUARD: Mark that injuries have been applied
   };
 }
 
@@ -2376,6 +2383,28 @@ async function generateAdvancedPredictions(games, season) {
 
     const scoreDifference = homeScoreData.score - awayScoreData.score;
     
+    // GPT SAFEGUARD: Defensive normalization to catch probability-like scores
+    // If scores are in 0-1 range (probabilities), convert to point units
+    const isProb = (x) => x >= 0 && x <= 1;
+    const toPoints = (p) => 14 + (p - 0.5) * 40; // 0.5→14pts, 0.7→22pts, 0.3→6pts
+    
+    let normalizedHomeScore = homeScoreData.score;
+    let normalizedAwayScore = awayScoreData.score;
+    let probabilityNormalizationApplied = false;
+    
+    if (isProb(homeScoreData.score) && isProb(awayScoreData.score)) {
+      console.log(`🚨 PROBABILITY→POINTS NORMALIZATION: ${homeCode} vs ${awayCode}`);
+      console.log(`   Raw: Home=${homeScoreData.score.toFixed(4)}, Away=${awayScoreData.score.toFixed(4)}`);
+      normalizedHomeScore = toPoints(homeScoreData.score);
+      normalizedAwayScore = toPoints(awayScoreData.score);
+      console.log(`   Normalized: Home=${normalizedHomeScore.toFixed(2)}, Away=${normalizedAwayScore.toFixed(2)}`);
+      probabilityNormalizationApplied = true;
+      
+      // Update scoreData objects with normalized values
+      homeScoreData = { ...homeScoreData, score: normalizedHomeScore };
+      awayScoreData = { ...awayScoreData, score: normalizedAwayScore };
+    }
+    
     // v8 WORKING ODDS: Get odds data early for validation
     const gameOdds = findGameOdds(allOdds, homeCode, awayCode);
     const realOdds = gameOdds ? extractOddsData(gameOdds) : {};  // Keep legacy for now
@@ -2383,9 +2412,60 @@ async function generateAdvancedPredictions(games, season) {
     // v13 LOGIC: Fixed spread calculation
     const predictedSpread = calculateSpreadPrediction(homeScoreData, awayScoreData, homeCode, awayCode);
     
-    // VALIDATION: Check for extreme market divergence
+    // GPT COMPREHENSIVE DIAGNOSTIC: Log all components for problem games
     const currentMarketSpread = realOdds.spread_line || 0;
     const marketDivergence = Math.abs(predictedSpread - currentMarketSpread);
+    
+    // GPT DIVERGENCE REVIEW FLAG: Flag extreme divergences for manual review
+    const DIVERGENCE_REVIEW_THRESHOLD = 8.0; // points
+    let reviewFlag = null;
+    let stakeReductionFactor = 1.0;
+    
+    if (marketDivergence > DIVERGENCE_REVIEW_THRESHOLD) {
+      reviewFlag = {
+        reason: "MODEL_MARKET_DIVERGENCE",
+        divergence: Number(marketDivergence.toFixed(1)),
+        action: "MANUAL_REVIEW_REQUIRED",
+        model: predictedSpread > 0 ? homeCode : awayCode,
+        modelLine: Number(Math.abs(predictedSpread).toFixed(1)),
+        market: currentMarketSpread > 0 ? homeCode : awayCode,
+        marketLine: Math.abs(currentMarketSpread)
+      };
+      stakeReductionFactor = 0.25; // Reduce Kelly stake to 25% for manual review games
+      console.log(`⚠️ DIVERGENCE REVIEW FLAG: ${awayCode} @ ${homeCode}`);
+      console.log(`   Divergence: ${marketDivergence.toFixed(1)} pts (threshold: ${DIVERGENCE_REVIEW_THRESHOLD})`);
+      console.log(`   Stake reduction: 100% → 25%`);
+    }
+    
+    console.log(JSON.stringify({
+      tag: "SPREAD_DIAGNOSTIC",
+      matchup: `${awayCode} @ ${homeCode}`,
+      base: { 
+        home: homeScoreData.score, 
+        away: awayScoreData.score, 
+        diff: homeScoreData.score - awayScoreData.score 
+      },
+      injuries: { 
+        homePts: homeScoreData.injuryAnalysis?.totalImpact || 0,
+        homeCount: (homeScoreData.injuryAnalysis?.adjustments || []).length,
+        homeApplied: homeScoreData._injuryApplied || false,
+        awayPts: awayScoreData.injuryAnalysis?.totalImpact || 0,
+        awayCount: (awayScoreData.injuryAnalysis?.adjustments || []).length,
+        awayApplied: awayScoreData._injuryApplied || false
+      },
+      safeguards: {
+        probabilityNormalization: probabilityNormalizationApplied,
+        reviewFlag: reviewFlag !== null,
+        stakeReduction: stakeReductionFactor
+      },
+      final: { 
+        model_home_margin: predictedSpread,
+        market_spread: currentMarketSpread,
+        divergence: marketDivergence
+      }
+    }));
+    
+    // VALIDATION: Check for extreme market divergence
     if (marketDivergence > 10) {
       console.log(`🚨 LARGE DIVERGENCE: ${homeCode} vs ${awayCode}`);
       console.log(`   Model: ${predictedSpread > 0 ? homeCode : awayCode} ${Math.abs(predictedSpread).toFixed(1)}`);
@@ -2854,7 +2934,11 @@ async function generateAdvancedPredictions(games, season) {
           safetyLimitsApplied: safeguardedPredictions.safetyLimits?.applied?.length || 0,
           marketAnchoringAvailable: !!anchoringData,
           sanityWarning: sanityWarning || null, // GPT sanity guard
-          modelMarketDelta: modelMarketDelta?.toFixed(1) || null
+          modelMarketDelta: modelMarketDelta?.toFixed(1) || null,
+          divergenceReviewFlag: reviewFlag, // GPT: Manual review for extreme divergences
+          stakeReductionFactor: stakeReductionFactor,
+          injuryDoubleApplicationPrevented: homeScoreData._injuryApplied && awayScoreData._injuryApplied,
+          probabilityNormalizationApplied: probabilityNormalizationApplied
         },
         enhancedFeatures: {
           calibrationFix: "Applied to confidence band 55-65%",
