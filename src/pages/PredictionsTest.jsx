@@ -327,8 +327,9 @@ const MoneylineCard = ({ game }) => {
   
   const formattedOdds = formatOdds(pickOdds);
   
-  // Get best book info for deep link
+  // Get best book info and deep link
   const bestBook = pick.best_book?.bookmaker || 'Sportsbook';
+  const deepLink = pick.best_book?.deep_link || `https://www.actionnetwork.com/nfl/betting-odds`;
 
   return (
     <div className="bg-[#1C2433] rounded-lg p-5 border border-gray-800">
@@ -368,7 +369,7 @@ const MoneylineCard = ({ game }) => {
       )}
 
       <a 
-        href={`https://www.actionnetwork.com/nfl/betting-odds`}
+        href={deepLink}
         target="_blank"
         rel="noopener noreferrer"
         className="block w-full bg-[#00CC66] hover:bg-[#00DD77] text-white font-bold py-2.5 rounded-lg transition-colors text-center cursor-pointer"
@@ -423,7 +424,7 @@ const SpreadCard = ({ game }) => {
       </div>
 
       <a 
-        href={`https://www.actionnetwork.com/nfl/betting-odds`}
+        href={pick.best_book?.deep_link || `https://www.actionnetwork.com/nfl/betting-odds`}
         target="_blank"
         rel="noopener noreferrer"
         className="block w-full bg-[#00CC66] hover:bg-[#00DD77] text-white font-bold py-2.5 rounded-lg transition-colors text-center cursor-pointer"
@@ -461,7 +462,7 @@ const TotalCard = ({ game }) => {
       </div>
 
       <a 
-        href={`https://www.actionnetwork.com/nfl/betting-odds`}
+        href={pick.best_book?.deep_link || `https://www.actionnetwork.com/nfl/betting-odds`}
         target="_blank"
         rel="noopener noreferrer"
         className="block w-full bg-[#00CC66] hover:bg-[#00DD77] text-white font-bold py-2.5 rounded-lg transition-colors text-center cursor-pointer"

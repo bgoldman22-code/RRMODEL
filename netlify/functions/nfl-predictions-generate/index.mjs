@@ -1511,6 +1511,8 @@ function extractStructuredOdds(gameOdds, modelPicks) {
         bookData.h2h = {
           home: homeOutcome?.price || null,
           away: awayOutcome?.price || null,
+          home_link: homeOutcome?.link || null,
+          away_link: awayOutcome?.link || null,
           ts: timestamp
         };
       }
@@ -1523,8 +1525,10 @@ function extractStructuredOdds(gameOdds, modelPicks) {
         bookData.spread = {
           home_line: homeOutcome?.point || 0,
           home_price: homeOutcome?.price || -110,
+          home_link: homeOutcome?.link || null,
           away_line: awayOutcome?.point || 0,
           away_price: awayOutcome?.price || -110,
+          away_link: awayOutcome?.link || null,
           ts: timestamp
         };
       }
@@ -1535,8 +1539,8 @@ function extractStructuredOdds(gameOdds, modelPicks) {
         const overOutcome = totalMarket.outcomes.find(o => o.name === 'Over');
         const underOutcome = totalMarket.outcomes.find(o => o.name === 'Under');
         bookData.total = {
-          over: { line: overOutcome?.point || 0, price: overOutcome?.price || -110 },
-          under: { line: underOutcome?.point || 0, price: underOutcome?.price || -110 },
+          over: { line: overOutcome?.point || 0, price: overOutcome?.price || -110, link: overOutcome?.link || null },
+          under: { line: underOutcome?.point || 0, price: underOutcome?.price || -110, link: underOutcome?.link || null },
           ts: timestamp
         };
       }
@@ -1587,10 +1591,14 @@ function extractStructuredOdds(gameOdds, modelPicks) {
     });
     
     if (bestMLBook) {
+      const bestBookData = all_books[bestMLBook];
+      const deepLink = isHomePick ? bestBookData.h2h?.home_link : bestBookData.h2h?.away_link;
+      
       best.h2h = {
         bookmaker: bestMLBook,
         pick_side: isHomePick ? 'home' : 'away',
         price: bestMLPrice,
+        deep_link: deepLink,
         ts: timestamp
       };
     }
@@ -1625,11 +1633,15 @@ function extractStructuredOdds(gameOdds, modelPicks) {
     });
     
     if (bestSpreadBook) {
+      const bestBookData = all_books[bestSpreadBook];
+      const deepLink = isHomePick ? bestBookData.spread?.home_link : bestBookData.spread?.away_link;
+      
       best.spread = {
         bookmaker: bestSpreadBook,
         pick_side: isHomePick ? 'home' : 'away',
         line: bestSpreadLine,
         price: bestSpreadPrice,
+        deep_link: deepLink,
         ts: timestamp
       };
     }
@@ -1663,11 +1675,16 @@ function extractStructuredOdds(gameOdds, modelPicks) {
     });
     
     if (bestTotalBook) {
+      const bestBookData = all_books[bestTotalBook];
+      const targetOutcome = isOverPick ? bestBookData.total?.over : bestBookData.total?.under;
+      const deepLink = targetOutcome?.link;
+      
       best.total = {
         bookmaker: bestTotalBook,
         pick_side: isOverPick ? 'over' : 'under',
         line: bestTotalLine,
         price: bestTotalPrice,
+        deep_link: deepLink,
         ts: timestamp
       };
     }
@@ -2560,7 +2577,8 @@ async function generateAdvancedPredictions(games, season) {
           bookmaker: bestSpread.bookmaker,
           line: bestLine,
           price: bestSpread.price,
-          edge_points: spreadEdge
+          edge_points: spreadEdge,
+          deep_link: bestSpread.deep_link || null
         };
       }
     }
@@ -2593,7 +2611,8 @@ async function generateAdvancedPredictions(games, season) {
         line: bestTotalLine,
         price: bestTotal.price,
         side: bestTotal.pick_side,
-        edge_points: totalEdge
+        edge_points: totalEdge,
+        deep_link: bestTotal.deep_link || null
       };
     }
     
@@ -2615,7 +2634,8 @@ async function generateAdvancedPredictions(games, season) {
         best_book: structuredOdds.best.h2h ? {
           bookmaker: structuredOdds.best.h2h.bookmaker,
           price: structuredOdds.best.h2h.price,
-          edge_pct: Number((mlEdge * 100).toFixed(1))
+          edge_pct: Number((mlEdge * 100).toFixed(1)),
+          deep_link: structuredOdds.best.h2h.deep_link || null
         } : null
       },
       spread: { 
