@@ -48,9 +48,16 @@ const PredictionsTest = () => {
         }
       });
       
-      setPredictions(data);
-      if (data.predictions?.length > 0) {
-        setSelectedGame(data.predictions[0]);
+      // Normalize response structure - add week and season if missing
+      const normalizedData = {
+        ...data,
+        week: data.week || week,
+        season: data.season || season
+      };
+      
+      setPredictions(normalizedData);
+      if (normalizedData.predictions?.length > 0) {
+        setSelectedGame(normalizedData.predictions[0]);
       }
       setLoading(false);
     } catch (error) {
@@ -184,7 +191,7 @@ const GameCard = ({ game, isSelected, onClick }) => {
             {game.away_team} @ {game.home_team}
           </div>
           <div className="text-xs text-gray-400 mt-1">
-            {new Date(game.commence_time).toLocaleDateString('en-US', { 
+            {new Date(game.start || game.commence_time).toLocaleDateString('en-US', { 
               month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' 
             })}
           </div>
@@ -241,7 +248,7 @@ const TopActionCard = ({ game }) => {
             {game.away_team} @ {game.home_team}
           </div>
           <div className="text-sm text-gray-400 mt-1">
-            {new Date(game.commence_time).toLocaleDateString('en-US', { 
+            {new Date(game.start || game.commence_time).toLocaleDateString('en-US', { 
               weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' 
             })}
           </div>
@@ -299,6 +306,11 @@ const MoneylineCard = ({ game }) => {
   if (!pick || pick.confidence < 60) return null;
 
   const lineMovement = game.line_movement?.moneyline;
+  
+  // Get the odds for the picked team
+  const pickOdds = pick.pick === game.home_team 
+    ? (game.odds?.display?.h2h?.home || game.odds?.moneyline?.home)
+    : (game.odds?.display?.h2h?.away || game.odds?.moneyline?.away);
 
   return (
     <div className="bg-[#1C2433] rounded-lg p-5 border border-gray-800">
@@ -328,7 +340,7 @@ const MoneylineCard = ({ game }) => {
         <MetricBox label="Wager" value={`${pick.recommended_units?.toFixed(1)}U`} highlight />
         <MetricBox label="Confidence" value={`${pick.confidence?.toFixed(1)}%`} />
         <MetricBox label="Edge" value={`${pick.edge?.toFixed(1)}%`} highlight />
-        <MetricBox label="Live Line" value={game.odds?.moneyline?.pick_odds || 'N/A'} />
+        <MetricBox label="Live Line" value={pickOdds || 'N/A'} />
       </div>
 
       {pick.unit_reasoning && (
@@ -338,7 +350,7 @@ const MoneylineCard = ({ game }) => {
       )}
 
       <button className="w-full bg-[#00CC66] hover:bg-[#00DD77] text-white font-bold py-2.5 rounded-lg transition-colors">
-        BET NOW - {pick.pick} ({game.odds?.moneyline?.pick_odds})
+        BET NOW - {pick.pick} ({pickOdds || 'N/A'})
       </button>
     </div>
   );
@@ -429,13 +441,13 @@ const TotalCard = ({ game }) => {
 
 // Deep Dive Stats
 const DeepDiveStats = ({ game }) => {
-  const homeEPA = game.modelEnhancements?.injuryAnalysis?.home?.adjustedEPA || 
-                  game.team_metrics?.home?.composite_epa || 0;
-  const awayEPA = game.modelEnhancements?.injuryAnalysis?.away?.adjustedEPA || 
-                  game.team_metrics?.away?.composite_epa || 0;
+  // Use team strength (win probability) as the primary metric
+  // EPA data is embedded in the model's strength calculation
+  const homeEPA = game.teamStats?.home?.strength || 0;
+  const awayEPA = game.teamStats?.away?.strength || 0;
 
-  const homeInjuries = game.modelEnhancements?.injuryAnalysis?.home?.impactedPlayers || [];
-  const awayInjuries = game.modelEnhancements?.injuryAnalysis?.away?.impactedPlayers || [];
+  const homeInjuries = game.teamStats?.home?.injuryImpact?.adjustments || [];
+  const awayInjuries = game.teamStats?.away?.injuryImpact?.adjustments || [];
 
   return (
     <div className="bg-[#1C2433] rounded-lg p-5 border border-gray-800">
@@ -479,7 +491,7 @@ const DeepDiveStats = ({ game }) => {
           <span className="text-[#00CC66]">✓</span> Live Odds Feed
         </div>
         <div className="text-gray-400">
-          Last updated: {new Date(game.odds?.last_update || Date.now()).toLocaleTimeString()}
+          Last updated: {new Date(game.odds?.source_snapshot_at || game.odds?.last_update || Date.now()).toLocaleTimeString()}
         </div>
       </div>
     </div>
