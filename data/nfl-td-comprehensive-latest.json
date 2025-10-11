@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "generated_at": "2025-10-09T19:48:54Z",
+    "generated_at": "2025-10-11T14:36:46Z",
     "season": 2025,
     "week": 6,
     "total_players": 564,
@@ -2161,14 +2161,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.054,
+      "multiple_td_prob": 0.049,
       "multiple_confidence": "high",
       "anytime_value_score": 0.33,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.81,
       "first_td": 0,
-      "multiple_td": 0.054
+      "multiple_td": 0.0491
     },
     {
       "player_id": "00-0034376",
@@ -5059,14 +5059,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.06,
+      "multiple_td_prob": 0.058,
       "multiple_confidence": "high",
       "anytime_value_score": 0.06,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.27,
       "first_td": 0,
-      "multiple_td": 0.06
+      "multiple_td": 0.0579
     },
     {
       "player_id": "00-0036407",
@@ -6310,7 +6310,7 @@
     {
       "player_id": "00-0036996",
       "name": "G.Newsome",
-      "team": "CLE",
+      "team": "JAX",
       "position": "DB",
       "opponent": "TBD",
       "is_home": true,
@@ -8122,11 +8122,11 @@
       "is_home": true,
       "depth_chart_position": "WR",
       "anytime_td_prob": 0.85,
-      "anytime_confidence": "medium",
+      "anytime_confidence": "high",
       "first_td_prob": 0,
-      "first_confidence": "medium",
+      "first_confidence": "high",
       "multiple_td_prob": 0,
-      "multiple_confidence": "medium",
+      "multiple_confidence": "high",
       "anytime_value_score": 0.35,
       "first_value_score": 0,
       "multiple_value_score": 0,
@@ -11733,18 +11733,18 @@
       "opponent": "TBD",
       "is_home": true,
       "depth_chart_position": "RB",
-      "anytime_td_prob": 0.935,
-      "anytime_confidence": "medium",
+      "anytime_td_prob": 0.95,
+      "anytime_confidence": "high",
       "first_td_prob": 0,
-      "first_confidence": "medium",
-      "multiple_td_prob": 0,
-      "multiple_confidence": "medium",
-      "anytime_value_score": 0.3925,
+      "first_confidence": "high",
+      "multiple_td_prob": 0.22,
+      "multiple_confidence": "high",
+      "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0,
-      "anytime_td": 0.935,
+      "multiple_value_score": 0.056,
+      "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0
+      "multiple_td": 0.22
     },
     {
       "player_id": "00-0040719",
