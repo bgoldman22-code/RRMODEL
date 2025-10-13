@@ -1,4 +1,4 @@
-// netlify/functions/nfl-picks-lock.js
+// netlify/functions/nfl-picks-lock.mjs
 // Lock picks at kickoff with closing odds for honest performance tracking
 
 import { getStore } from "@netlify/blobs";
@@ -16,7 +16,7 @@ const ODDS_API_BASE = 'https://api.the-odds-api.com/v4/sports/americanfootball_n
 //   odds_snapshot: { full closing odds }
 // }
 
-export const handler = async (event, context) => {
+export default async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
