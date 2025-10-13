@@ -2,16 +2,16 @@
  * CSV Snapshot System for Pick Locking at Kickoff
  * 
  * Purpose: Write a timestamped CSV snapshot of all predictions with market odds
- * at the time of each prediction refresh. This    // Write as Blob with proper content type
+ * at the time of each prediction refresh. This    // Write as string (Netlify Blobs stores strings directly)
     const newContent = existingContent + rows.join('\n') + '\n';
-    const blob = new Blob([newContent], { type: 'text/csv' });
     
-    await store.set(key, blob, {
+    await store.set(key, newContent, {
       metadata: { 
         season: String(season), 
         week: String(week), 
         kind: 'nfl-picks-csv',
-        generatedAt: timestamp
+        generatedAt: timestamp,
+        contentType: 'text/csv'
       }
     });
     
@@ -75,12 +75,13 @@ export async function writePicksSnapshot(payload, week, season) {
     const store = getSnapshotStore();
     
     // Get existing CSV content (or empty string if first write)
+    // Netlify Blobs returns string directly
     let existingContent = '';
     let needsHeader = false;
     try {
-      const blob = await store.get(key);
-      if (blob) {
-        existingContent = await blob.text();
+      const content = await store.get(key);
+      if (content) {
+        existingContent = content;
       } else {
         needsHeader = true;
       }
@@ -242,9 +243,9 @@ export async function getSnapshotCSV(season, week, allowListFallback = true) {
     
     console.log(`[CSV] Attempting to get blob: ${key}`);
     
-    const blob = await store.get(key);
-    if (blob) {
-      const content = await blob.text();
+    // Netlify Blobs returns string directly
+    const content = await store.get(key);
+    if (content) {
       console.log(`[CSV] Retrieved ${content.length} chars from ${key}`);
       return { key, content };
     }
@@ -263,9 +264,8 @@ export async function getSnapshotCSV(season, week, allowListFallback = true) {
     console.log(`[CSV] Keys:`, items.map(it => it.key));
     
     if (found) {
-      const again = await store.get(found.key);
-      if (again) {
-        const content = await again.text();
+      const content = await store.get(found.key);
+      if (content) {
         return { key: found.key, content, listed: items.map(it => it.key) };
       }
     }
