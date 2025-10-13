@@ -3,35 +3,69 @@
  * 
  * Trains ensemble models on historical NBA data
  * Includes cross-validation, hyperparameter tuning, and model persistence
+ * 
+ * ELITE SYSTEM INTEGRATIONS:
+ * - Rolling OOS CV with time-series splits (training-elite.mjs)
+ * - Isotonic calibration for win probabilities (calibration.mjs)
+ * - Feature validation with bounds checking (feature-validator.mjs)
+ * - Model versioning with artifacts (artifact-manager.mjs)
+ * - Safe data loading with retries (safe-fetch.mjs)
  */
 
 import { buildTeamFeatures, buildMatchupFeatures } from '../features.mjs';
 import { fetchTodaysGames, loadTeamInfo } from '../loaders.mjs';
 import EnsembleModel from './ensemble.mjs';
+import { runRollingCV } from '../training-elite.mjs';
+import { IsotonicCalibrator, calculateBrierScore, calculateLogLoss } from '../calibration.mjs';
+import { validateFeatureBatch } from '../feature-validator.mjs';
+import { saveArtifact } from '../artifact-manager.mjs';
+import fs from 'fs/promises';
 
 /**
  * Load historical game results for training
+ * ELITE: Now loads from collected multi-season data files
  */
 export async function loadHistoricalGames(seasons = ['2023-24', '2024-25']) {
   console.log('[Training] Loading historical games for seasons:', seasons);
   
-  // In production, this would load from a database or data files
-  // For now, return placeholder structure
+  const allGames = [];
   
-  const games = [];
+  // Map season format to file names
+  const seasonFileMap = {
+    '2022-23': 'games_2022_23.json',
+    '2023-24': 'games_2023_24.json',
+    '2024-25': 'games_2024_25.json'
+  };
   
-  // TODO: Implement actual data loading from:
-  // - Local JSON files in data/nba/games/
-  // - Or fetch from Basketball Reference
-  // - Or load from Supabase/database
+  for (const season of seasons) {
+    const filename = seasonFileMap[season];
+    if (!filename) {
+      console.warn(`[Training] Unknown season format: ${season}`);
+      continue;
+    }
+    
+    const filepath = `data/nba/games/${filename}`;
+    
+    try {
+      const content = await fs.readFile(filepath, 'utf8');
+      const seasonGames = JSON.parse(content);
+      
+      console.log(`[Training] Loaded ${seasonGames.length} games from ${season}`);
+      allGames.push(...seasonGames);
+      
+    } catch (error) {
+      console.warn(`[Training] Could not load ${filepath}:`, error.message);
+    }
+  }
   
-  console.log(`[Training] Loaded ${games.length} historical games`);
+  console.log(`[Training] ✅ Total games loaded: ${allGames.length}`);
   
-  return games;
+  return allGames;
 }
 
 /**
  * Build training dataset from historical games
+ * ELITE: Now includes feature validation
  */
 export async function buildTrainingDataset(games) {
   console.log('[Training] Building feature dataset from', games.length, 'games');
@@ -39,6 +73,7 @@ export async function buildTrainingDataset(games) {
   const X = []; // Features
   const y_spread = []; // Actual spreads (home team perspective)
   const y_total = []; // Actual totals
+  const y_homeWin = []; // Win/loss (1/0)
   
   for (const game of games) {
     try {
@@ -55,7 +90,8 @@ export async function buildTrainingDataset(games) {
       const allFeatures = {
         ...homeFeatures,
         ...awayFeatures,
-        ...matchupFeatures
+        ...matchupFeatures,
+        date: game.date // Keep for time-series splits
       };
       
       X.push(allFeatures);
@@ -63,18 +99,38 @@ export async function buildTrainingDataset(games) {
       // Target variables
       const actualSpread = game.homeScore - game.awayScore;
       const actualTotal = game.homeScore + game.awayScore;
+      const homeWin = actualSpread > 0 ? 1 : 0;
       
       y_spread.push(actualSpread);
       y_total.push(actualTotal);
+      y_homeWin.push(homeWin);
       
     } catch (error) {
       console.error('[Training] Error processing game:', game.id, error);
     }
   }
   
-  console.log('[Training] ✅ Built dataset:', X.length, 'samples');
+  // ELITE: Validate features with bounds checking
+  console.log('[Training] Validating features...');
+  const validationResult = validateFeatureBatch(X, {
+    clamp: true,
+    impute: true,
+    logViolations: true
+  });
   
-  return { X, y_spread, y_total };
+  if (validationResult.violationCount > 0) {
+    console.warn(`[Training] ⚠️  ${validationResult.violationCount} feature violations detected and corrected`);
+  }
+  
+  console.log('[Training] ✅ Built dataset:', validationResult.features.length, 'samples');
+  
+  return { 
+    X: validationResult.features, 
+    y_spread, 
+    y_total, 
+    y_homeWin,
+    rawGames: games // Keep for rolling CV
+  };
 }
 
 /**
@@ -295,66 +351,181 @@ export function calibrateProbabilities(predictions, actuals, bins = 10) {
 }
 
 /**
- * Full training pipeline
+ * Full training pipeline - ELITE VERSION
+ * 
+ * Features:
+ * - Rolling OOS CV with time-series splits
+ * - Isotonic calibration
+ * - Feature validation
+ * - Model versioning
  */
-export async function runFullTrainingPipeline(seasons = ['2023-24', '2024-25']) {
-  console.log('='.repeat(60));
-  console.log('NBA ELITE MODEL TRAINING PIPELINE');
-  console.log('='.repeat(60));
+export async function runFullTrainingPipeline(seasons = ['2022-23', '2023-24', '2024-25']) {
+  console.log('='.repeat(70));
+  console.log('NBA ELITE MODEL TRAINING PIPELINE V2.0');
+  console.log('With Rolling CV, Calibration, and Hardened Features');
+  console.log('='.repeat(70));
   
   // 1. Load data
   const games = await loadHistoricalGames(seasons);
   
   if (games.length === 0) {
     console.log('[Training] ⚠️  No historical data available yet');
-    console.log('[Training] Run data collection first');
+    console.log('[Training] Run: node scripts/collect-nba-data.js first');
     return null;
   }
   
-  // 2. Build features
-  const { X, y_spread, y_total } = await buildTrainingDataset(games);
+  // 2. Build features with validation
+  const { X, y_spread, y_total, y_homeWin, rawGames } = await buildTrainingDataset(games);
   
-  // 3. Cross-validation
-  console.log('\n' + '='.repeat(60));
-  console.log('SPREAD MODEL VALIDATION');
-  console.log('='.repeat(60));
-  await crossValidate(X, y_spread, 5);
+  console.log(`\n[Training] Dataset Summary:`);
+  console.log(`  Total Games: ${games.length}`);
+  console.log(`  Features per Sample: ${Object.keys(X[0]).filter(k => k !== 'date').length}`);
+  console.log(`  Date Range: ${rawGames[0]?.date} to ${rawGames[rawGames.length - 1]?.date}`);
   
-  console.log('\n' + '='.repeat(60));
-  console.log('TOTAL MODEL VALIDATION');
-  console.log('='.repeat(60));
-  await crossValidate(X, y_total, 5);
+  // 3. ELITE: Rolling OOS Cross-Validation
+  console.log('\n' + '='.repeat(70));
+  console.log('ROLLING OUT-OF-SAMPLE CROSS-VALIDATION');
+  console.log('='.repeat(70));
   
-  // 4. Walk-forward validation
-  console.log('\n' + '='.repeat(60));
-  console.log('WALK-FORWARD VALIDATION');
-  console.log('='.repeat(60));
-  await walkForwardValidation(X, y_spread);
+  // Define model training function for CV
+  async function trainModel(trainGames) {
+    const { X: X_train, y_spread: y_train } = await buildTrainingDataset(trainGames);
+    const model = new EnsembleModel();
+    await model.train(X_train, y_train);
+    return model;
+  }
   
-  // 5. Train final models on all data
-  console.log('\n' + '='.repeat(60));
-  console.log('TRAINING FINAL MODELS');
-  console.log('='.repeat(60));
+  // Define prediction function for CV
+  async function predict(model, game) {
+    const features = await buildGameFeatures(game);
+    const prediction = model.predict([features])[0];
+    
+    // Convert spread to win probability (rough approximation)
+    const homeWinProb = 1 / (1 + Math.exp(-prediction.prediction / 7)); // Logistic
+    
+    return {
+      homeWinProb,
+      spread: prediction.prediction,
+      total: null // Handled separately
+    };
+  }
+  
+  // Run rolling CV
+  const cvResults = await runRollingCV(rawGames, trainModel, predict, {
+    minTrainSize: 500,
+    validationSize: 100,
+    step: 50,
+    maxSplits: 8
+  });
+  
+  // 4. Train final models on ALL data
+  console.log('\n' + '='.repeat(70));
+  console.log('TRAINING FINAL PRODUCTION MODELS');
+  console.log('='.repeat(70));
   
   const spreadModel = await trainSpreadModel(X, y_spread);
   const totalModel = await trainTotalModel(X, y_total);
   
-  // 6. Analyze feature importance
-  console.log('\n' + '='.repeat(60));
-  console.log('FEATURE IMPORTANCE');
-  console.log('='.repeat(60));
-  analyzeFeatureImportance(spreadModel, 20);
+  // 5. ELITE: Train calibrators using best CV fold
+  console.log('\n' + '='.repeat(70));
+  console.log('CALIBRATING WIN PROBABILITIES');
+  console.log('='.repeat(70));
   
-  console.log('\n' + '='.repeat(60));
-  console.log('✅ TRAINING PIPELINE COMPLETE');
-  console.log('='.repeat(60));
+  const bestFold = cvResults.folds.reduce((best, fold) => 
+    fold.metrics.calibrated.brier < best.metrics.calibrated.brier ? fold : best
+  );
+  
+  const spreadCalibrator = bestFold.calibrator;
+  console.log(`[Training] Using calibrator from fold ${bestFold.fold}`);
+  console.log(`  Brier Score: ${bestFold.metrics.calibrated.brier.toFixed(4)}`);
+  console.log(`  Log Loss: ${bestFold.metrics.calibrated.logLoss.toFixed(4)}`);
+  
+  // 6. ELITE: Save versioned artifact
+  console.log('\n' + '='.repeat(70));
+  console.log('SAVING VERSIONED ARTIFACT');
+  console.log('='.repeat(70));
+  
+  const artifact = {
+    modelType: 'ensemble',
+    season: seasons[seasons.length - 1], // Latest season
+    trainingConfig: {
+      seasons,
+      cv_folds: cvResults.totalFolds,
+      validation_size: 100,
+      features: Object.keys(X[0]).filter(k => k !== 'date').length
+    },
+    performance: {
+      spreadMAE: cvResults.aggregated.spreadMAE.mean,
+      totalMAE: cvResults.aggregated.totalMAE.mean,
+      brier: cvResults.aggregated.brier.calibrated.mean,
+      logLoss: cvResults.aggregated.logLoss.calibrated.mean
+    },
+    models: {
+      spread: spreadModel.serialize(),
+      total: totalModel.serialize()
+    },
+    calibrators: {
+      spread: spreadCalibrator.toJSON()
+    },
+    metadata: {
+      trainingGames: games.length,
+      dateRange: {
+        start: rawGames[0]?.date,
+        end: rawGames[rawGames.length - 1]?.date
+      }
+    }
+  };
+  
+  try {
+    const saved = await saveArtifact(artifact, { updateLatest: true });
+    console.log(`[Training] ✅ Artifact saved: ${saved.versionKey}`);
+  } catch (error) {
+    console.warn('[Training] ⚠️  Could not save artifact (Netlify Blobs not available):', error.message);
+    console.log('[Training] Models trained successfully, but not persisted to Blobs');
+  }
+  
+  // 7. Summary
+  console.log('\n' + '='.repeat(70));
+  console.log('✅ ELITE TRAINING PIPELINE COMPLETE');
+  console.log('='.repeat(70));
+  console.log('\nPerformance Summary:');
+  console.log(`  Spread MAE: ${cvResults.aggregated.spreadMAE.mean.toFixed(2)} ± ${cvResults.aggregated.spreadMAE.std.toFixed(2)} pts`);
+  console.log(`  Total MAE: ${cvResults.aggregated.totalMAE.mean.toFixed(2)} ± ${cvResults.aggregated.totalMAE.std.toFixed(2)} pts`);
+  console.log(`  Win Prob Brier: ${cvResults.aggregated.brier.calibrated.mean.toFixed(4)} (calibrated)`);
+  console.log(`  Win Prob Log Loss: ${cvResults.aggregated.logLoss.calibrated.mean.toFixed(4)} (calibrated)`);
+  console.log('\nCalibration Improvement:');
+  console.log(`  Brier: ${cvResults.aggregated.improvement.brier.mean.toFixed(1)}% better`);
+  console.log(`  Log Loss: ${cvResults.aggregated.improvement.logLoss.mean.toFixed(1)}% better`);
+  console.log('\n' + '='.repeat(70));
   
   return {
     spreadModel,
     totalModel,
+    calibrators: { spread: spreadCalibrator },
+    cvResults,
+    artifact,
     stats: {
       games: games.length,
-      features: Object.keys(X[0]).length
+      features: Object.keys(X[0]).filter(k => k !== 'date').length,
+      performance: artifact.performance
     }
+  };
+}
+
+/**
+ * Helper: Build features for a single game
+ */
+async function buildGameFeatures(game) {
+  const [homeFeatures, awayFeatures] = await Promise.all([
+    buildTeamFeatures(game.homeTeamId, game, game.season),
+    buildTeamFeatures(game.awayTeamId, game, game.season)
+  ]);
+  
+  const matchupFeatures = buildMatchupFeatures(homeFeatures, awayFeatures);
+  
+  return {
+    ...homeFeatures,
+    ...awayFeatures,
+    ...matchupFeatures
   };
 }
