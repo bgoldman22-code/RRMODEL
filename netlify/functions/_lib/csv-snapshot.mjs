@@ -201,15 +201,22 @@ export async function getSnapshotCSV(season, week) {
     });
     
     const blobKey = `picks_snapshots_${season}_week${week}`;
+    console.log(`[CSV] Attempting to get blob: ${blobKey}`);
+    
     const blob = await store.get(blobKey);
+    console.log(`[CSV] Blob result:`, blob ? 'found' : 'not found', blob);
     
     if (!blob) {
+      console.log(`[CSV] Blob not found for key: ${blobKey}`);
       return null;
     }
     
-    return await blob.text();
+    // Try getting as text
+    const content = await blob.text();
+    console.log(`[CSV] Retrieved ${content.length} chars`);
+    return content;
   } catch (error) {
-    console.error('Error fetching snapshot:', error);
+    console.error('[CSV] Error fetching snapshot:', error, error.stack);
     return null;
   }
 }
