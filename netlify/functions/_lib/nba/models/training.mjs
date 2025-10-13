@@ -19,6 +19,7 @@ import { runRollingCV } from '../training-elite.mjs';
 import { IsotonicCalibrator, calculateBrierScore, calculateLogLoss } from '../calibration.mjs';
 import { validateFeatureBatch } from '../feature-validator.mjs';
 import { saveArtifact } from '../artifact-manager.mjs';
+import { buildCompleteTrainingFeatures } from '../training-features.mjs';
 import fs from 'fs/promises';
 
 /**
@@ -65,36 +66,28 @@ export async function loadHistoricalGames(seasons = ['2023-24', '2024-25']) {
 
 /**
  * Build training dataset from historical games
- * ELITE: Now includes feature validation
+ * ELITE: Uses cached features, no live API calls
  */
 export async function buildTrainingDataset(games) {
   console.log('[Training] Building feature dataset from', games.length, 'games');
+  console.log('[Training] Using historical rolling averages (NO live API calls)');
   
   const X = []; // Features
   const y_spread = []; // Actual spreads (home team perspective)
   const y_total = []; // Actual totals
   const y_homeWin = []; // Win/loss (1/0)
   
-  for (const game of games) {
+  // Sort games chronologically to prevent leakage
+  const sortedGames = games.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  for (let i = 0; i < sortedGames.length; i++) {
+    const game = sortedGames[i];
+    
     try {
-      // Build features for both teams
-      const [homeFeatures, awayFeatures] = await Promise.all([
-        buildTeamFeatures(game.homeTeamId, game, game.season),
-        buildTeamFeatures(game.awayTeamId, game, game.season)
-      ]);
+      // Build features using only PREVIOUS games (prevents leakage!)
+      const features = buildCompleteTrainingFeatures(sortedGames, i);
       
-      // Build matchup features
-      const matchupFeatures = buildMatchupFeatures(homeFeatures, awayFeatures);
-      
-      // Combine all features
-      const allFeatures = {
-        ...homeFeatures,
-        ...awayFeatures,
-        ...matchupFeatures,
-        date: game.date // Keep for time-series splits
-      };
-      
-      X.push(allFeatures);
+      X.push(features);
       
       // Target variables
       const actualSpread = game.homeScore - game.awayScore;
@@ -106,9 +99,11 @@ export async function buildTrainingDataset(games) {
       y_homeWin.push(homeWin);
       
     } catch (error) {
-      console.error('[Training] Error processing game:', game.id, error);
+      console.error('[Training] Error processing game:', game.gameId, error.message);
     }
   }
+  
+  console.log('[Training] ✅ Built dataset:', X.length, 'samples');
   
   // ELITE: Validate features with bounds checking
   console.log('[Training] Validating features...');
@@ -122,14 +117,12 @@ export async function buildTrainingDataset(games) {
     console.warn(`[Training] ⚠️  ${validationResult.violationCount} feature violations detected and corrected`);
   }
   
-  console.log('[Training] ✅ Built dataset:', validationResult.features.length, 'samples');
-  
   return { 
     X: validationResult.features, 
     y_spread, 
     y_total, 
     y_homeWin,
-    rawGames: games // Keep for rolling CV
+    rawGames: sortedGames // Keep for rolling CV
   };
 }
 
@@ -397,7 +390,7 @@ export async function runFullTrainingPipeline(seasons = ['2022-23', '2023-24', '
   
   // Define prediction function for CV
   async function predict(model, game) {
-    const features = await buildGameFeatures(game);
+    const features = buildGameFeaturesForCV(rawGames, game);
     const prediction = model.predict([features])[0];
     
     // Convert spread to win probability (rough approximation)
@@ -513,19 +506,21 @@ export async function runFullTrainingPipeline(seasons = ['2022-23', '2023-24', '
 }
 
 /**
- * Helper: Build features for a single game
+ * Helper: Build features for a single game during CV
+ * Uses only historical data from the training set
  */
-async function buildGameFeatures(game) {
-  const [homeFeatures, awayFeatures] = await Promise.all([
-    buildTeamFeatures(game.homeTeamId, game, game.season),
-    buildTeamFeatures(game.awayTeamId, game, game.season)
-  ]);
+function buildGameFeaturesForCV(allTrainGames, game) {
+  // Find index of this game in the full dataset
+  const gameIndex = allTrainGames.findIndex(g => 
+    g.gameId === game.gameId || 
+    (g.date === game.date && g.homeTeamId === game.homeTeamId && g.awayTeamId === game.awayTeamId)
+  );
   
-  const matchupFeatures = buildMatchupFeatures(homeFeatures, awayFeatures);
+  if (gameIndex === -1) {
+    console.warn('[Training] Game not found in training set, using league averages');
+    // Return minimal features
+    return buildCompleteTrainingFeatures(allTrainGames, 0);
+  }
   
-  return {
-    ...homeFeatures,
-    ...awayFeatures,
-    ...matchupFeatures
-  };
+  return buildCompleteTrainingFeatures(allTrainGames, gameIndex);
 }
