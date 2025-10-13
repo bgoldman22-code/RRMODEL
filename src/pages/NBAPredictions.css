@@ -768,15 +768,19 @@
   margin-top: 8px;
 }
 
-.units {
+.units,
+.units-display {
+  font-size: 1.2rem;
   font-weight: bold;
-  color: #666;
+  color: #4caf50;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .amount {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #f97316;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #666;
 }
 
 /* Analytics View */

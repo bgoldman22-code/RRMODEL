@@ -12,7 +12,12 @@ import './NBAPredictions.css';
  * - Correlation matrix visualization
  * - Live odds tracking
  * - Bet ladder optimizer
- * - Bankroll dashboard
+ * - Unit-based betting (no personal bankroll displayed)
+ * 
+ * Unit System:
+ * - $10/unit (based on $5000 bankroll = 500 units)
+ * - 1-5 unit recommendations
+ * - Users apply to their own bankroll size
  */
 
 const NBAPredictions = () => {
@@ -20,7 +25,12 @@ const NBAPredictions = () => {
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'predictions'); // predictions, inefficiencies, kelly, analytics
-  const [bankroll, setBankroll] = useState(10000);
+  
+  // Unit-based betting (remove personal bankroll)
+  const UNIT_VALUE = 10; // $10 per unit (based on $5000 bankroll)
+  const BANKROLL_UNITS = 500; // Total units in bankroll
+  const IMPLIED_BANKROLL = UNIT_VALUE * BANKROLL_UNITS; // $5000 for calculations only
+  
   const [inefficiencies, setInefficiencies] = useState([]);
   const [kellyPortfolio, setKellyPortfolio] = useState(null);
   const [betLadder, setBetLadder] = useState(null);
@@ -55,12 +65,12 @@ const NBAPredictions = () => {
     const ineff = scanInefficiencies(preds);
     setInefficiencies(ineff);
     
-    // Kelly portfolio
-    const kelly = optimizeKelly(ineff, bankroll);
+    // Kelly portfolio (uses implied bankroll for calculations)
+    const kelly = optimizeKelly(ineff, IMPLIED_BANKROLL);
     setKellyPortfolio(kelly);
     
-    // Bet ladder
-    const ladder = generateLadder(ineff, bankroll);
+    // Bet ladder (uses implied bankroll for calculations)
+    const ladder = generateLadder(ineff, IMPLIED_BANKROLL);
     setBetLadder(ladder);
   };
 
@@ -99,21 +109,20 @@ const NBAPredictions = () => {
       const fractionalKelly = Math.max(0, Math.min(kelly * 0.25, 0.05));
       
       if (fractionalKelly > 0.005) {
+        const dollarAmount = fractionalKelly * bankrollAmount;
+        const units = dollarAmount / UNIT_VALUE;
+        
         bets.push({
-          game: opp.game,
-          market: opp.market,
-          edge: opp.edge,
-          kelly: (fractionalKelly * 100).toFixed(2),
-          stake: Math.round(fractionalKelly * bankrollAmount)
+          ...opp,
+          kelly: fractionalKelly,
+          units: Math.round(units * 10) / 10, // Round to 0.1 units
+          stake: Math.round(dollarAmount) // Keep for internal calculations
         });
       }
     }
     
     return { bets, total: bets.reduce((sum, b) => sum + b.stake, 0) };
-  };
-
-  const generateLadder = (opportunities, bankrollAmount) => {
-    const unitSize = bankrollAmount / 100;
+  };  const generateLadder = (opportunities, bankrollAmount) => {
     const bets = opportunities.slice(0, 15).map(opp => {
       const units = opp.edgePercent > 10 ? 5 :
                     opp.edgePercent > 7 ? 4 :
@@ -123,12 +132,16 @@ const NBAPredictions = () => {
       return {
         ...opp,
         units,
-        stake: Math.round(units * unitSize),
+        stake: units * UNIT_VALUE, // $10 per unit
         rating: '⭐'.repeat(units)
       };
     });
     
-    return { bets, totalStake: bets.reduce((sum, b) => sum + b.stake, 0) };
+    return { 
+      bets, 
+      totalStake: bets.reduce((sum, b) => sum + b.stake, 0),
+      totalUnits: bets.reduce((sum, b) => sum + b.units, 0)
+    };
   };
 
   const getConfidenceBadge = (confidence) => {
@@ -168,8 +181,8 @@ const NBAPredictions = () => {
             <span className="stat-value">{inefficiencies.length}</span>
           </div>
           <div className="stat">
-            <span className="stat-label">Bankroll</span>
-            <span className="stat-value">${bankroll.toLocaleString()}</span>
+            <span className="stat-label">Unit Value</span>
+            <span className="stat-value">${UNIT_VALUE}</span>
           </div>
         </div>
       </header>
@@ -392,7 +405,7 @@ const NBAPredictions = () => {
       {activeTab === 'kelly' && kellyPortfolio && (
         <div className="kelly-view">
           <h2>Kelly Criterion Portfolio Optimizer</h2>
-          <p className="subtitle">Optimal bet sizing based on edge and bankroll</p>
+          <p className="subtitle">Optimal bet sizing based on edge ($10/unit)</p>
           
           <div className="portfolio-summary">
             <div className="summary-stat">
@@ -400,12 +413,12 @@ const NBAPredictions = () => {
               <span className="value">{kellyPortfolio.bets.length}</span>
             </div>
             <div className="summary-stat">
-              <span className="label">Total Allocation</span>
-              <span className="value">${kellyPortfolio.total.toLocaleString()}</span>
+              <span className="label">Total Units</span>
+              <span className="value">{kellyPortfolio.bets.reduce((sum, b) => sum + b.units, 0).toFixed(1)}U</span>
             </div>
             <div className="summary-stat">
-              <span className="label">Risk %</span>
-              <span className="value">{((kellyPortfolio.total / bankroll) * 100).toFixed(1)}%</span>
+              <span className="label">Total $</span>
+              <span className="value">${kellyPortfolio.total.toLocaleString()}</span>
             </div>
           </div>
           
@@ -419,15 +432,15 @@ const NBAPredictions = () => {
                 <div className="bet-details">
                   <div className="bet-row">
                     <span className="label">Edge:</span>
-                    <span className="value">{bet.edge.toFixed(1)} pts</span>
+                    <span className="value">{bet.edge.toFixed(1)} pts ({bet.edgePercent.toFixed(1)}%)</span>
                   </div>
                   <div className="bet-row">
                     <span className="label">Kelly %:</span>
-                    <span className="value">{bet.kelly}%</span>
+                    <span className="value">{(bet.kelly * 100).toFixed(1)}%</span>
                   </div>
                   <div className="bet-row stake">
-                    <span className="label">Stake:</span>
-                    <span className="value">${bet.stake.toLocaleString()}</span>
+                    <span className="label">Recommended:</span>
+                    <span className="value">{bet.units.toFixed(1)} Units (${bet.stake})</span>
                   </div>
                 </div>
               </div>
@@ -439,7 +452,7 @@ const NBAPredictions = () => {
       {activeTab === 'ladder' && betLadder && (
         <div className="ladder-view">
           <h2>Bet Ladder - Progressive Staking</h2>
-          <p className="subtitle">Stake sizing based on confidence and edge quality</p>
+          <p className="subtitle">1-5 unit recommendations based on edge quality ($10/unit)</p>
           
           <div className="ladder-summary">
             <div className="summary-stat">
@@ -447,12 +460,12 @@ const NBAPredictions = () => {
               <span className="value">{betLadder.bets.length}</span>
             </div>
             <div className="summary-stat">
-              <span className="label">Total Stake</span>
-              <span className="value">${betLadder.totalStake.toLocaleString()}</span>
+              <span className="label">Total Units</span>
+              <span className="value">{betLadder.totalUnits}U</span>
             </div>
             <div className="summary-stat">
-              <span className="label">Risk %</span>
-              <span className="value">{((betLadder.totalStake / bankroll) * 100).toFixed(1)}%</span>
+              <span className="label">Total $</span>
+              <span className="value">${betLadder.totalStake.toLocaleString()}</span>
             </div>
           </div>
           
@@ -470,8 +483,8 @@ const NBAPredictions = () => {
                     {getEdgeBadge(bet.edgePercent)}
                   </div>
                   <div className="bet-stake">
-                    <span className="units">{bet.units} units</span>
-                    <span className="amount">${bet.stake.toLocaleString()}</span>
+                    <span className="units-display">{bet.units} Units</span>
+                    <span className="amount">(${bet.stake})</span>
                   </div>
                 </div>
               </div>
@@ -518,18 +531,18 @@ const NBAPredictions = () => {
             </div>
             
             <div className="analytics-card">
-              <h3>Bankroll Management</h3>
+              <h3>Unit Sizing</h3>
               <div className="stat-row">
-                <span>Current Bankroll:</span>
-                <span>${bankroll.toLocaleString()}</span>
+                <span>Unit Value:</span>
+                <span>${UNIT_VALUE}</span>
               </div>
               <div className="stat-row">
-                <span>Recommended Risk:</span>
+                <span>Recommended Units:</span>
+                <span>{kellyPortfolio ? kellyPortfolio.bets.reduce((sum, b) => sum + b.units, 0).toFixed(1) : 0}U</span>
+              </div>
+              <div className="stat-row">
+                <span>Total Stake:</span>
                 <span>${kellyPortfolio ? kellyPortfolio.total.toLocaleString() : 0}</span>
-              </div>
-              <div className="stat-row">
-                <span>Risk Percentage:</span>
-                <span>{kellyPortfolio ? ((kellyPortfolio.total / bankroll) * 100).toFixed(1) : 0}%</span>
               </div>
             </div>
           </div>
