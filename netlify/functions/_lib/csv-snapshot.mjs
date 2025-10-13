@@ -168,9 +168,9 @@ export async function writePicksSnapshot(payload, week, season) {
       rows.push(escapedRow.join(','));
     }
     
-    // Append to blob
+    // Append to blob (no metadata - keep it simple)
     const newContent = existingContent + rows.join('\n') + '\n';
-    await store.set(blobKey, newContent, { metadata: { contentType: 'text/csv' } });
+    await store.set(blobKey, newContent);
     
     return {
       success: true,
