@@ -29,15 +29,18 @@ export default async (request, context) => {
       });
     }
     
-    // Get specific week's CSV
-    const csv = await getSnapshotCSV(season, week);
+    // Get specific week's CSV with diagnostics
+    const result = await getSnapshotCSV(season, week, true);
     
-    if (!csv) {
+    if (!result.content) {
+      // Enhanced 404 with diagnostics
       return new Response(JSON.stringify({
         ok: false,
         error: 'Snapshot not found',
         season: season,
-        week: week
+        week: week,
+        attemptedKey: result.key,
+        nearby: result.listed || []
       }), {
         status: 404,
         headers: {
@@ -48,11 +51,14 @@ export default async (request, context) => {
     }
     
     // Return CSV file
-    return new Response(csv, {
+    const pad2 = n => String(n).padStart(2, '0');
+    return new Response(result.content, {
       status: 200,
       headers: {
-        'Content-Type': 'text/csv',
-        'Content-Disposition': `attachment; filename="${season}_week${week}_picks_snapshots.csv"`,
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': `attachment; filename="${season}_week${pad2(week)}_picks_snapshots.csv"`,
+        'Cache-Control': 'public, max-age=60',
+        'X-Snapshot-Key': result.key,
         'Access-Control-Allow-Origin': '*'
       }
     });
