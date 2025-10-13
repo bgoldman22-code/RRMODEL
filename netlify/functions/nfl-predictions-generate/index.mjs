@@ -3237,9 +3237,10 @@ export default async (request, context) => {
     const result = await generateAdvancedPredictions(games, season);
     
     // LIVE SITE INTEGRATION: Always save to blob storage when we have predictions
+    let blobData = null;
     if (result.predictions && result.predictions.length > 0) {
       try {
-        await saveAdvancedPredictionsToBlobs(result, season);
+        blobData = await saveAdvancedPredictionsToBlobs(result, season);
         console.log('✅ Saved advanced predictions to blob storage for live site');
         
         // CACHE: Also save to predictions cache for fast loading
@@ -3253,10 +3254,11 @@ export default async (request, context) => {
     
     // CSV SNAPSHOT: Write picks snapshot for CLV tracking
     // Every prediction refresh writes a timestamped row to CSV with exact picks + market odds
-    if (result.ok && result.rows && result.rows.length > 0) {
+    // This captures the picks + odds at the time of generation (not just at kickoff)
+    if (blobData && blobData.rows && blobData.rows.length > 0) {
       try {
-        const currentWeek = result.metadata?.week || getCurrentWeek();
-        const snapshotResult = await writePicksSnapshot(result, currentWeek, season);
+        const currentWeek = blobData.metadata?.week || getCurrentWeek();
+        const snapshotResult = await writePicksSnapshot(blobData, currentWeek, season);
         if (snapshotResult.success) {
           console.log(`✅ CSV snapshot written: ${snapshotResult.games_count} games at ${snapshotResult.timestamp}`);
         } else {
