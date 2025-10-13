@@ -15,6 +15,15 @@
   external_node_modules = ["@netlify/blobs", "node-fetch"]
   included_files = ["public/**"]
 
+# Phase 1 Speed Optimization: Slim bundles per function
+[functions."nfl-predictions-get"]
+  external_node_modules = ["@netlify/blobs"]
+  included_files = []  # GET needs no data files, only reads from blobs
+
+[functions."nfl-predictions-generate"]
+  included_files = ["data/nfl/**", "netlify/functions/_lib/nfl-*.mjs", "netlify/functions/_lib/*-nfl.js", "netlify/functions/_lib/*-nfl.mjs"]
+  external_node_modules = ["@netlify/blobs", "node-fetch"]
+
 [build.environment]
   NODE_VERSION = "20"
   NETLIFY_USE_YARN = "false"
