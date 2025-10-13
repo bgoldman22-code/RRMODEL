@@ -3255,12 +3255,14 @@ export default async (request, context) => {
     // CSV SNAPSHOT: Write picks snapshot for CLV tracking
     // Every prediction refresh writes a timestamped row to CSV with exact picks + market odds
     // This captures the picks + odds at the time of generation (not just at kickoff)
+    let snapshotInfo = null;
     if (blobData && blobData.rows && blobData.rows.length > 0) {
       try {
         const currentWeek = blobData.metadata?.week || getCurrentWeek();
         const snapshotResult = await writePicksSnapshot(blobData, currentWeek, season);
         if (snapshotResult.success) {
-          console.log(`✅ CSV snapshot written: ${snapshotResult.games_count} games at ${snapshotResult.timestamp}`);
+          console.log(`✅ CSV snapshot written: ${snapshotResult.games_count} games to ${snapshotResult.key}`);
+          snapshotInfo = { key: snapshotResult.key, timestamp: snapshotResult.timestamp };
         } else {
           console.warn('⚠️  CSV snapshot failed:', snapshotResult.error);
         }
@@ -3270,7 +3272,10 @@ export default async (request, context) => {
       }
     }
     
-    const finalResult = result;
+    const finalResult = {
+      ...result,
+      snapshot: snapshotInfo  // Include snapshot info for verification
+    };
     
     return new Response(JSON.stringify(finalResult), {
       status: 200,

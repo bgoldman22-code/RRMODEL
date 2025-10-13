@@ -2,15 +2,62 @@
  * CSV Snapshot System for Pick Locking at Kickoff
  * 
  * Purpose: Write a timestamped CSV snapshot of all predictions with market odds
- * at the time of each prediction refresh. This enables honest CLV tracking by
+ * at the time of each prediction refresh. This    // Write as Blob with proper content type
+    const newContent = existingContent + rows.join('\n') + '\n';
+    const blob = new Blob([newContent], { type: 'text/csv' });
+    
+    await store.set(key, blob, {
+      metadata: { 
+        season: String(season), 
+        week: String(week), 
+        kind: 'nfl-picks-csv',
+        generatedAt: timestamp
+      }
+    });
+    
+    // Gentle retry to avoid eventual-consistency read issues
+    for (let i = 0; i < 5; i++) {
+      const ok = await store.get(key);
+      if (ok) break;
+      await new Promise(r => setTimeout(r, 150));
+    }
+    
+    return {
+      success: true,
+      key: key,
+      games_count: payload.rows?.length || 0,
+      timestamp,
+      total_rows: newContent.split('\n').length - 1
+    };nest CLV tracking by
  * locking in the exact picks and closing lines that were available.
  * 
  * After each week, download the CSV and grade offline.
  * 
  * NOTE: Uses Netlify Blobs for storage since function filesystem is read-only
+ * 
+ * CRITICAL: Single source of truth for store name and key format
  */
 
 import { getStore } from '@netlify/blobs';
+
+// SINGLE SOURCE OF TRUTH for store and key format
+const STORE_NAME = 'nfl-td'; // Using existing store for simplicity
+const pad2 = n => String(n).padStart(2, '0');
+
+export const snapshotKey = ({ season, week }) => {
+  if (!season) throw new Error('snapshotKey: season required');
+  if (week == null) throw new Error('snapshotKey: week required');
+  // Keep this EXACT in writer and reader - zero-padded week
+  return `nfl/${season}/week${pad2(week)}.csv`;
+};
+
+export const getSnapshotStore = () => {
+  return getStore({
+    siteID: process.env.NETLIFY_SITE_ID,
+    token: process.env.NETLIFY_API_TOKEN,
+    name: STORE_NAME
+  });
+};
 
 /**
  * Write predictions snapshot to CSV
@@ -22,20 +69,16 @@ import { getStore } from '@netlify/blobs';
 export async function writePicksSnapshot(payload, week, season) {
   try {
     const timestamp = new Date().toISOString();
-    const blobKey = `picks_snapshots_${season}_week${week}`;
+    const key = snapshotKey({ season, week });
     
     // Get blob store
-    const store = getStore({
-      siteID: process.env.NETLIFY_SITE_ID,
-      token: process.env.NETLIFY_API_TOKEN,
-      name: 'nfl-td'
-    });
+    const store = getSnapshotStore();
     
     // Get existing CSV content (or empty string if first write)
     let existingContent = '';
     let needsHeader = false;
     try {
-      const blob = await store.get(blobKey);
+      const blob = await store.get(key);
       if (blob) {
         existingContent = await blob.text();
       } else {
@@ -190,35 +233,47 @@ export async function writePicksSnapshot(payload, week, season) {
 }
 
 /**
- * Get snapshot CSV content from blob storage
+ * Get snapshot CSV content from blob storage with fallback diagnostics
  */
-export async function getSnapshotCSV(season, week) {
+export async function getSnapshotCSV(season, week, allowListFallback = true) {
   try {
-    const store = getStore({
-      siteID: process.env.NETLIFY_SITE_ID,
-      token: process.env.NETLIFY_API_TOKEN,
-      name: 'nfl-td'
-    });
+    const store = getSnapshotStore();
+    const key = snapshotKey({ season, week: Number(week) });
     
-    const blobKey = `picks_snapshots_${season}_week${week}`;
-    console.log(`[CSV] Attempting to get blob: ${blobKey}`);
+    console.log(`[CSV] Attempting to get blob: ${key}`);
     
-    // Use getWithMetadata instead of get for better debugging
-    const result = await store.getWithMetadata(blobKey);
-    console.log(`[CSV] getWithMetadata result:`, result ? 'found' : 'not found');
-    
-    if (!result || !result.data) {
-      console.log(`[CSV] Blob not found for key: ${blobKey}`);
-      return null;
+    const blob = await store.get(key);
+    if (blob) {
+      const content = await blob.text();
+      console.log(`[CSV] Retrieved ${content.length} chars from ${key}`);
+      return { key, content };
     }
     
-    // Get as text
-    const content = await result.data.text();
-    console.log(`[CSV] Retrieved ${content.length} chars`);
-    return content;
+    if (!allowListFallback) {
+      console.log(`[CSV] Blob not found for key: ${key}`);
+      return { key, content: null };
+    }
+    
+    // List fallback for diagnostics
+    const prefix = `nfl/${season}/`;
+    const { blobs: items = [] } = await store.list({ prefix });
+    const found = items.find(it => it.key === key);
+    
+    console.log(`[CSV] List fallback - found ${items.length} items with prefix ${prefix}`);
+    console.log(`[CSV] Keys:`, items.map(it => it.key));
+    
+    if (found) {
+      const again = await store.get(found.key);
+      if (again) {
+        const content = await again.text();
+        return { key: found.key, content, listed: items.map(it => it.key) };
+      }
+    }
+    
+    return { key, content: null, listed: items.map(it => it.key) };
   } catch (error) {
     console.error('[CSV] Error fetching snapshot:', error, error.stack);
-    return null;
+    return { key: null, content: null, error: error.message };
   }
 }
 
@@ -227,13 +282,9 @@ export async function getSnapshotCSV(season, week) {
  */
 export async function listSnapshots(season) {
   try {
-    const store = getStore({
-      siteID: process.env.NETLIFY_SITE_ID,
-      token: process.env.NETLIFY_API_TOKEN,
-      name: 'nfl-td'
-    });
-    
-    const { blobs } = await store.list({ prefix: `picks_snapshots_${season}_` });
+    const store = getSnapshotStore();
+    const prefix = `nfl/${season}/`;
+    const { blobs } = await store.list({ prefix });
     return blobs.map(b => b.key);
   } catch (error) {
     console.error('Error listing snapshots:', error);
