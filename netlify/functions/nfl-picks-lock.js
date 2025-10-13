@@ -119,9 +119,10 @@ async function lockPicksForGame(gameId, source = 'kickoff', force = false, homeT
   }
 
   // Derive home/away from gameData if not explicitly supplied
+  // FIX: Support both camelCase (homeTeam) and snake_case (home_team) field names
   if (gameData && (!homeTeam || !awayTeam)) {
-    homeTeam = homeTeam || gameData.home_team || gameData.homeTeam || null;
-    awayTeam = awayTeam || gameData.away_team || gameData.awayTeam || null;
+    homeTeam = homeTeam || gameData.homeTeam || gameData.home_team || null;
+    awayTeam = awayTeam || gameData.awayTeam || gameData.away_team || null;
   }
 
   // Prefer inline gameData (already contains fresh predictions) to avoid recursive fetches
