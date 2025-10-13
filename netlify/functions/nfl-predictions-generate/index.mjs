@@ -23,6 +23,8 @@ import eliteInj from '../_lib/elite-injury-penalty-calculator.mjs';
 const { checkMarketSanity } = eliteInj;
 // IR + Baseline Integration: 32-team baseline contributors
 import { BASELINE_CONTRIBUTORS_2025 } from '../_lib/baseline-contributors-2025.mjs';
+// CSV Snapshot System: Lock picks at kickoff for honest CLV tracking
+import { writePicksSnapshot } from '../_lib/csv-snapshot.mjs';
 
 // BOOK ALLOWLIST: Centralized sportsbook filtering
 import {
@@ -3249,11 +3251,24 @@ export default async (request, context) => {
       }
     }
     
-    // PICK LOCKING: Check for kickoff events and trigger locks
-    await checkAndLockKickoffGames(result.predictions || result);
+    // CSV SNAPSHOT: Write picks snapshot for CLV tracking
+    // Every prediction refresh writes a timestamped row to CSV with exact picks + market odds
+    if (result.ok && result.rows && result.rows.length > 0) {
+      try {
+        const currentWeek = result.metadata?.week || getCurrentWeek();
+        const snapshotResult = await writePicksSnapshot(result, currentWeek, season);
+        if (snapshotResult.success) {
+          console.log(`✅ CSV snapshot written: ${snapshotResult.games_count} games at ${snapshotResult.timestamp}`);
+        } else {
+          console.warn('⚠️  CSV snapshot failed:', snapshotResult.error);
+        }
+      } catch (error) {
+        console.warn('⚠️  CSV snapshot error:', error.message);
+        // Continue anyway - don't fail the request
+      }
+    }
     
-    // PICK RETRIEVAL: Replace live predictions with locked picks for started games
-    const finalResult = await integrateLockedPicks(result);
+    const finalResult = result;
     
     return new Response(JSON.stringify(finalResult), {
       status: 200,
@@ -3326,247 +3341,8 @@ async function saveToPredictionsCache(result, season) {
  * - All time comparisons done in UTC epoch milliseconds
  * - Logs both kickoff and now in ISO format for debugging
  */
-async function checkAndLockKickoffGames(predictions) {
-  const nowUtc = new Date(); // Always UTC
-  const nowEpochMs = nowUtc.getTime();
-  const nowIso = nowUtc.toISOString();
-  
-  const lockPromises = [];
-  
-  for (const game of predictions) {
-    // FIX: Use actual field names from data structure (id, kickoff, not game_id, start)
-    const gameId = game.id || game.game_id;
-    const kickoffStr = game.kickoff || game.start;
-    
-    if (!kickoffStr || !gameId) continue;
-    
-    // Parse kickoff time - handle both ISO strings, date-only strings, and epoch timestamps
-    let kickoffEpochMs;
-    try {
-      let kickoffParsed = new Date(kickoffStr);
-      
-      // FIX: If kickoff is date-only (no time), add default game time (1PM ET = 6PM UTC)
-      // This handles cases like "2025-10-09" → "2025-10-09T18:00:00Z"
-      if (kickoffStr.length === 10 && kickoffStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        // Date-only string, add 1PM ET (18:00 UTC) as default
-        const dateOnly = kickoffStr;
-        kickoffParsed = new Date(`${dateOnly}T18:00:00Z`);
-        console.log(`[KICKOFF] Date-only kickoff detected for ${gameId}, using default 1PM ET: ${kickoffParsed.toISOString()}`);
-      }
-      
-      kickoffEpochMs = kickoffParsed.getTime();
-      
-      // Validate parsed time
-      if (isNaN(kickoffEpochMs)) {
-        console.warn(`[KICKOFF] Invalid kickoff time for ${gameId}: ${kickoffStr}`);
-        continue;
-      }
-    } catch (error) {
-      console.error(`[KICKOFF] Failed to parse kickoff for ${gameId}:`, error);
-      continue;
-    }
-    
-    const kickoffIso = new Date(kickoffEpochMs).toISOString();
-    const diffMs = kickoffEpochMs - nowEpochMs; // negative = game started
-    const minutesToKickoff = diffMs / (1000 * 60);
-    
-    // GPT DEBUG: Log timezone-normalized comparison
-    console.log(`[KICKOFF] ${gameId} time check:`, {
-      kickoff_raw: kickoffStr,
-      kickoff_iso: kickoffIso,
-      kickoff_epoch_ms: kickoffEpochMs,
-      now_iso: nowIso,
-      now_epoch_ms: nowEpochMs,
-      diff_ms: diffMs,
-      minutes_to_kickoff: minutesToKickoff.toFixed(1)
-    });
-    
-    // Lock picks in 10-minute window around kickoff (-5 to +5 minutes)
-    if (minutesToKickoff <= 5 && minutesToKickoff >= -5) {
-      console.log(`[KICKOFF] 🔒 Game ${gameId} kickoff detected, triggering lock (${minutesToKickoff.toFixed(1)}min)`);
-      
-      // Async lock - don't wait for completion to avoid blocking predictions
-      const lockPromise = lockGamePicks(gameId, game, 'kickoff')
-        .catch(error => {
-          console.error(`[KICKOFF] ❌ Failed to lock ${game.game_id}:`, error);
-        });
-      
-      lockPromises.push(lockPromise);
-    }
-  }
-  
-  // Wait for all lock attempts to complete (with timeout)
-  if (lockPromises.length > 0) {
-    console.log(`[KICKOFF] Triggering ${lockPromises.length} game locks`);
-    try {
-      await Promise.allSettled(lockPromises);
-    } catch (error) {
-      console.error('[KICKOFF] Error in lock promises:', error);
-    }
-  }
-}
-
-/**
- * Replace live predictions with locked picks for games that have started
- * 
- * FIX: Proper UTC normalization (GPT audit fix #1)
- * - All time comparisons done in UTC epoch milliseconds
- */
-async function integrateLockedPicks(result) {
-  const predictions = result.predictions || result;
-  const nowUtc = new Date();
-  const nowEpochMs = nowUtc.getTime();
-  
-  for (let i = 0; i < predictions.length; i++) {
-    const game = predictions[i];
-    
-    // FIX: Use actual field names from data structure
-    const gameId = game.id || game.game_id;
-    const kickoffStr = game.kickoff || game.start;
-    
-    if (!kickoffStr || !gameId) continue;
-    
-    // Parse kickoff time with proper UTC handling and date-only support
-    let kickoffEpochMs;
-    try {
-      let kickoffParsed = new Date(kickoffStr);
-      
-      // Handle date-only strings (add default 1PM ET = 6PM UTC)
-      if (kickoffStr.length === 10 && kickoffStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        const dateOnly = kickoffStr;
-        kickoffParsed = new Date(`${dateOnly}T18:00:00Z`);
-      }
-      
-      kickoffEpochMs = kickoffParsed.getTime();
-      
-      if (isNaN(kickoffEpochMs)) {
-        console.warn(`[LOCKED] Invalid kickoff time for ${gameId}: ${kickoffStr}`);
-        continue;
-      }
-    } catch (error) {
-      console.error(`[LOCKED] Failed to parse kickoff for ${gameId}:`, error);
-      continue;
-    }
-    
-    const gameStarted = nowEpochMs > kickoffEpochMs;
-    
-    // For started games, try to load locked picks
-    if (gameStarted) {
-      try {
-        const lockedPicks = await getLockedPicks(gameId);
-        if (lockedPicks && Object.keys(lockedPicks).length > 0) {
-          // Merge locked picks into game predictions
-          predictions[i] = mergeLockedPicks(game, lockedPicks);
-          console.log(`[LOCKED] ✅ Using locked picks for ${gameId}`);
-        } else {
-          console.log(`[LOCKED] ⚠️ No locked picks found for started game ${gameId}`);
-        }
-      } catch (error) {
-        console.warn(`[LOCKED] ❌ Could not load locked picks for ${gameId}:`, error.message);
-        // Continue with live predictions as fallback
-      }
-    }
-  }
-  
-  return result;
-}
-
-/**
- * Lock picks for a specific game by calling the locking function
- */
-async function lockGamePicks(gameId, gameData, source) {
-  try {
-    // Call our locking function
-    const response = await fetch(`${process.env.URL || 'https://localhost:8888'}/.netlify/functions/nfl-picks-lock`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'lock',
-        gameId: gameId,
-        source: source,
-        gameData: gameData // Pass current predictions for locking
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Lock request failed: ${response.status}`);
-    }
-    
-    const result = await response.json();
-    console.log(`[LOCK] Successfully locked ${gameId}:`, result.status);
-    return result;
-    
-  } catch (error) {
-    console.error(`[LOCK] Failed to lock picks for ${gameId}:`, error);
-    throw error;
-  }
-}
-
-/**
- * Get locked picks from storage
- */
-async function getLockedPicks(gameId) {
-  try {
-    const response = await fetch(`${process.env.URL || 'https://localhost:8888'}/.netlify/functions/nfl-picks-lock`, {
-      method: 'POST', 
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'get',
-        gameId: gameId
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Get locked picks failed: ${response.status}`);
-    }
-    
-    const result = await response.json();
-    return result.lockedPicks;
-    
-  } catch (error) {
-    console.error(`[LOCKED] Failed to get locked picks for ${gameId}:`, error);
-    return null;
-  }
-}
-
-/**
- * Merge locked picks into game prediction structure
- */
-function mergeLockedPicks(game, lockedPicks) {
-  const mergedGame = { ...game };
-  
-  // Add locked pick indicators to predictions
-  if (mergedGame.predictions) {
-    if (lockedPicks.spread) {
-      mergedGame.predictions.spread = {
-        ...mergedGame.predictions.spread,
-        ...lockedPicks.spread,
-        isLocked: true,
-        lockedAt: lockedPicks.spread.locked_at,
-        lockSource: lockedPicks.spread.source
-      };
-    }
-    
-    if (lockedPicks.total) {
-      mergedGame.predictions.total = {
-        ...mergedGame.predictions.total,
-        ...lockedPicks.total,
-        isLocked: true,
-        lockedAt: lockedPicks.total.locked_at,
-        lockSource: lockedPicks.total.source
-      };
-    }
-    
-    if (lockedPicks.moneyline) {
-      mergedGame.predictions.moneyline = {
-        ...mergedGame.predictions.moneyline,
-        ...lockedPicks.moneyline,
-        isLocked: true,
-        lockedAt: lockedPicks.moneyline.locked_at,
-        lockSource: lockedPicks.moneyline.source
-      };
-    }
-  }
-  
-  return mergedGame;
-}
+// LOCKING SYSTEM REMOVED: Replaced with simple CSV snapshots
+// Old locking system (500+ lines) replaced with ~50 lines of CSV writing
+// Benefits: Simpler, more reliable, portable, transparent
+// All picks + market odds captured in timestamped CSV rows
+// Grade offline after week ends

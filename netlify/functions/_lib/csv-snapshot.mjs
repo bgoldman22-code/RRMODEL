@@ -1,0 +1,194 @@
+/**
+ * CSV Snapshot System for Pick Locking at Kickoff
+ * 
+ * Purpose: Write a timestamped CSV snapshot of all predictions with market odds
+ * at the time of each prediction refresh. This enables honest CLV tracking by
+ * locking in the exact picks and closing lines that were available.
+ * 
+ * After each week, download the CSV and grade offline.
+ */
+
+import { promises as fs } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+/**
+ * Write predictions snapshot to CSV
+ * 
+ * @param {Object} payload - The full predictions response object
+ * @param {number} week - The NFL week number
+ * @param {number} season - The NFL season year
+ */
+export async function writePicksSnapshot(payload, week, season) {
+  try {
+    const timestamp = new Date().toISOString();
+    const csvPath = join(__dirname, '..', '..', '..', 'data', 'picks', `${season}_week${week}_snapshots.csv`);
+    
+    // Ensure directory exists
+    await fs.mkdir(dirname(csvPath), { recursive: true });
+    
+    // Check if file exists to determine if we need headers
+    let needsHeader = false;
+    try {
+      await fs.access(csvPath);
+    } catch {
+      needsHeader = true;
+    }
+    
+    // Build CSV rows
+    const rows = [];
+    
+    if (needsHeader) {
+      rows.push([
+        'timestamp',
+        'game_id',
+        'home_team',
+        'away_team',
+        'kickoff',
+        'model_version',
+        
+        // Spread data
+        'spread_pick',
+        'spread_pick_side',
+        'spread_model_line',
+        'spread_model_home_margin',
+        'spread_confidence',
+        'spread_edge',
+        'spread_market_line',
+        'spread_market_price',
+        'spread_market_book',
+        'spread_deep_link',
+        
+        // Total data
+        'total_pick',
+        'total_model_line',
+        'total_confidence',
+        'total_edge',
+        'total_market_line',
+        'total_market_price',
+        'total_market_book',
+        'total_deep_link',
+        
+        // Moneyline data
+        'ml_pick',
+        'ml_confidence',
+        'ml_edge',
+        'ml_market_home_price',
+        'ml_market_away_price',
+        'ml_market_book',
+        'ml_deep_link',
+        
+        // Model probabilities
+        'home_win_prob',
+        'away_win_prob',
+        
+        // Display/recommended pick
+        'display_market',
+        'display_pick',
+        'display_line',
+        'display_price',
+        'overall_confidence',
+        'bet_recommendation'
+      ].join(','));
+    }
+    
+    // Add data rows
+    for (const game of payload.rows || []) {
+      const row = [
+        timestamp,
+        game.id || '',
+        game.homeTeam || '',
+        game.awayTeam || '',
+        game.kickoff || '',
+        game._advanced?.modelVersion || '',
+        
+        // Spread data
+        game.predictions?.spread?.pick || '',
+        game.model_choice?.market === 'spread' ? (game.model_choice?.side === 'home' ? game.homeTeam : game.awayTeam) : '',
+        game.predictions?.spread?.line || '',
+        game.predictions?.spread?.model_home_margin || '',
+        game.predictions?.spread?.confidence || '',
+        game.predictions?.spread?.edge || '',
+        game.odds?.spread?.home_line || game.odds?.spread?.away_line || '',
+        game.odds?.spread?.home_price || game.odds?.spread?.away_price || '',
+        game.predictions?.spread?.best_book || game.odds?.spread?.book || '',
+        game.spread_deep_link || '',
+        
+        // Total data
+        game.predictions?.total?.pick || '',
+        game.predictions?.total?.line || '',
+        game.predictions?.total?.confidence || '',
+        game.predictions?.total?.edge || '',
+        game.odds?.total?.line || game.odds?.total?.over_line || '',
+        game.odds?.total?.over_price || game.odds?.total?.under_price || '',
+        game.predictions?.total?.best_book || game.odds?.total?.book || '',
+        game.total_deep_link || '',
+        
+        // Moneyline data
+        game.predictions?.moneyline?.pick || '',
+        game.predictions?.moneyline?.confidence || '',
+        game.predictions?.moneyline?.edge || '',
+        game.odds?.moneyline?.home || game.odds?.h2h?.home || '',
+        game.odds?.moneyline?.away || game.odds?.h2h?.away || '',
+        game.predictions?.moneyline?.best_book || game.odds?.moneyline?.book || '',
+        game.ml_deep_link || '',
+        
+        // Model probabilities
+        game._advanced?.homeWinProb || '',
+        game._advanced?.awayWinProb || '',
+        
+        // Display/recommended pick
+        game.displayMarket || '',
+        game.displayPick || '',
+        game.displayLine || '',
+        game.displayPrice || '',
+        game.confidence || '',
+        game._advanced?.betRecommendations?.[game.displayMarket] || ''
+      ];
+      
+      // Escape and quote fields that might contain commas
+      const escapedRow = row.map(field => {
+        const str = String(field);
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      });
+      
+      rows.push(escapedRow.join(','));
+    }
+    
+    // Append to file
+    await fs.appendFile(csvPath, rows.join('\n') + '\n', 'utf8');
+    
+    return {
+      success: true,
+      path: csvPath,
+      games_count: payload.rows?.length || 0,
+      timestamp
+    };
+    
+  } catch (error) {
+    console.error('❌ CSV snapshot error:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Get all snapshot files for a season
+ */
+export async function getSnapshotFiles(season) {
+  const picksDir = join(__dirname, '..', '..', '..', 'data', 'picks');
+  try {
+    const files = await fs.readdir(picksDir);
+    return files.filter(f => f.startsWith(`${season}_week`) && f.endsWith('_snapshots.csv'));
+  } catch {
+    return [];
+  }
+}
