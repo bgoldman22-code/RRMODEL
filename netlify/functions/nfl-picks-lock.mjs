@@ -16,7 +16,7 @@ const ODDS_API_BASE = 'https://api.the-odds-api.com/v4/sports/americanfootball_n
 //   odds_snapshot: { full closing odds }
 // }
 
-export default async (event, context) => {
+export default async (request, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -24,19 +24,20 @@ export default async (event, context) => {
     'Content-Type': 'application/json'
   };
 
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+  // Handle OPTIONS for CORS
+  if (request.method === 'OPTIONS') {
+    return new Response('', { status: 200, headers });
   }
 
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
+  if (request.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers
+    });
   }
 
   try {
+    const body = await request.json();
     const { 
       gameId, 
       game_id, 
@@ -45,50 +46,45 @@ export default async (event, context) => {
       home_team,
       away_team,
       gameData // (optional) full game prediction payload from nfl-predictions-generate
-    } = JSON.parse(event.body || '{}');
+    } = body;
     
     const resolvedGameId = gameId || game_id;
     
     if (action === 'lock' && resolvedGameId) {
       const result = await lockPicksForGame(resolvedGameId, source, false, home_team, away_team, gameData);
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify(result)
-      };
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers
+      });
     }
     
     if (action === 'get' && resolvedGameId) {
       const lockedPicks = await getLockedPicks(resolvedGameId);
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ gameId: resolvedGameId, lockedPicks })
-      };
+      return new Response(JSON.stringify({ gameId: resolvedGameId, lockedPicks }), {
+        status: 200,
+        headers
+      });
     }
     
     if (action === 'batch_safety') {
       const result = await batchSafetyLock();
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify(result)
-      };
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers
+      });
     }
 
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ error: 'Invalid action or missing gameId' })
-    };
+    return new Response(JSON.stringify({ error: 'Invalid action or missing gameId' }), {
+      status: 400,
+      headers
+    });
 
   } catch (error) {
     console.error('Pick locking error:', error);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
-    };
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers
+    });
   }
 };
 
