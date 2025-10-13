@@ -10,6 +10,7 @@ import NFLPredictions from "./pages/NFLPredictions";
 import PredictionsTest from "./pages/PredictionsTest";  // Enhanced Split View Test Page
 import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
 import NHL from "./NHL";  // Elite NHL SOG Props
+import NBAPredictions from "./pages/NBAPredictions";  // Elite NBA Betting System
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
@@ -86,7 +87,9 @@ export default function App() {
     nba: {
       label: 'NBA',
       items: [
-        { label: 'Coming Soon...', path: '#', disabled: true }
+        { label: 'Elite Predictions 🔥', path: '/nba-predictions' },
+        { label: 'Market Scanner', path: '/nba-predictions?tab=inefficiencies' },
+        { label: 'Kelly Portfolio', path: '/nba-predictions?tab=kelly' }
       ]
     }
   };
@@ -120,6 +123,7 @@ export default function App() {
           <Route path="/predictionstest" element={<PredictionsTest />} />
           <Route path="/soccer-btts" element={<SoccerBTTS />} />
           <Route path="/nhl-sog" element={<NHL />} />
+          <Route path="/nba-predictions" element={<NBAPredictions />} />
         </Routes>
       </div>
     </BrowserRouter>

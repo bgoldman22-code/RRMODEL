@@ -212,16 +212,32 @@ export async function writePicksSnapshot(payload, week, season) {
       rows.push(escapedRow.join(','));
     }
     
-    // Append to blob (no metadata - keep it simple)
+    // Write as string (Netlify Blobs stores strings directly)
     const newContent = existingContent + rows.join('\n') + '\n';
-    await store.set(blobKey, newContent);
+    
+    await store.set(key, newContent, {
+      metadata: { 
+        season: String(season), 
+        week: String(week), 
+        kind: 'nfl-picks-csv',
+        generatedAt: timestamp,
+        contentType: 'text/csv'
+      }
+    });
+    
+    // Gentle retry to avoid eventual-consistency read issues
+    for (let i = 0; i < 5; i++) {
+      const ok = await store.get(key);
+      if (ok) break;
+      await new Promise(r => setTimeout(r, 150));
+    }
     
     return {
       success: true,
-      blobKey: blobKey,
+      key: key,
       games_count: payload.rows?.length || 0,
       timestamp,
-      total_rows: newContent.split('\n').length - 1 // Subtract 1 for trailing newline
+      total_rows: newContent.split('\n').length - 1
     };
     
   } catch (error) {
@@ -244,14 +260,23 @@ export async function getSnapshotCSV(season, week, allowListFallback = true) {
     console.log(`[CSV] Attempting to get blob: ${key}`);
     
     // Netlify Blobs returns string directly
-    const content = await store.get(key);
+    let content = await store.get(key);
     if (content) {
       console.log(`[CSV] Retrieved ${content.length} chars from ${key}`);
       return { key, content };
     }
     
+    // Try legacy key format for backwards compatibility
+    const legacyKey = `picks_snapshots_${season}_week${week}`;
+    console.log(`[CSV] New key not found, trying legacy: ${legacyKey}`);
+    content = await store.get(legacyKey);
+    if (content) {
+      console.log(`[CSV] Retrieved ${content.length} chars from legacy key ${legacyKey}`);
+      return { key: legacyKey, content };
+    }
+    
     if (!allowListFallback) {
-      console.log(`[CSV] Blob not found for key: ${key}`);
+      console.log(`[CSV] Blob not found for keys: ${key}, ${legacyKey}`);
       return { key, content: null };
     }
     

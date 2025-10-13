@@ -61,6 +61,7 @@ export default async (request, context) => {
       season: season,
       predictions_count: result.predictions?.length || 0,
       parlay_suggestions: result.parlaySuggestions?.length || 0,
+      snapshot: result.snapshot || null,
       updated_at: new Date().toISOString()
     }), {
       status: 200,
