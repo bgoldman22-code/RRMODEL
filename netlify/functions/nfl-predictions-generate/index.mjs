@@ -3334,21 +3334,35 @@ async function checkAndLockKickoffGames(predictions) {
   const lockPromises = [];
   
   for (const game of predictions) {
-    if (!game.start || !game.game_id) continue;
+    // FIX: Use actual field names from data structure (id, kickoff, not game_id, start)
+    const gameId = game.id || game.game_id;
+    const kickoffStr = game.kickoff || game.start;
     
-    // Parse kickoff time - handle both ISO strings and epoch timestamps
+    if (!kickoffStr || !gameId) continue;
+    
+    // Parse kickoff time - handle both ISO strings, date-only strings, and epoch timestamps
     let kickoffEpochMs;
     try {
-      const kickoffParsed = new Date(game.start);
+      let kickoffParsed = new Date(kickoffStr);
+      
+      // FIX: If kickoff is date-only (no time), add default game time (1PM ET = 6PM UTC)
+      // This handles cases like "2025-10-09" → "2025-10-09T18:00:00Z"
+      if (kickoffStr.length === 10 && kickoffStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        // Date-only string, add 1PM ET (18:00 UTC) as default
+        const dateOnly = kickoffStr;
+        kickoffParsed = new Date(`${dateOnly}T18:00:00Z`);
+        console.log(`[KICKOFF] Date-only kickoff detected for ${gameId}, using default 1PM ET: ${kickoffParsed.toISOString()}`);
+      }
+      
       kickoffEpochMs = kickoffParsed.getTime();
       
       // Validate parsed time
       if (isNaN(kickoffEpochMs)) {
-        console.warn(`[KICKOFF] Invalid kickoff time for ${game.game_id}: ${game.start}`);
+        console.warn(`[KICKOFF] Invalid kickoff time for ${gameId}: ${kickoffStr}`);
         continue;
       }
     } catch (error) {
-      console.error(`[KICKOFF] Failed to parse kickoff for ${game.game_id}:`, error);
+      console.error(`[KICKOFF] Failed to parse kickoff for ${gameId}:`, error);
       continue;
     }
     
@@ -3357,8 +3371,8 @@ async function checkAndLockKickoffGames(predictions) {
     const minutesToKickoff = diffMs / (1000 * 60);
     
     // GPT DEBUG: Log timezone-normalized comparison
-    console.log(`[KICKOFF] ${game.game_id} time check:`, {
-      kickoff_raw: game.start,
+    console.log(`[KICKOFF] ${gameId} time check:`, {
+      kickoff_raw: kickoffStr,
       kickoff_iso: kickoffIso,
       kickoff_epoch_ms: kickoffEpochMs,
       now_iso: nowIso,
@@ -3369,10 +3383,10 @@ async function checkAndLockKickoffGames(predictions) {
     
     // Lock picks in 10-minute window around kickoff (-5 to +5 minutes)
     if (minutesToKickoff <= 5 && minutesToKickoff >= -5) {
-      console.log(`[KICKOFF] 🔒 Game ${game.game_id} kickoff detected, triggering lock (${minutesToKickoff.toFixed(1)}min)`);
+      console.log(`[KICKOFF] 🔒 Game ${gameId} kickoff detected, triggering lock (${minutesToKickoff.toFixed(1)}min)`);
       
       // Async lock - don't wait for completion to avoid blocking predictions
-      const lockPromise = lockGamePicks(game.game_id, game, 'kickoff')
+      const lockPromise = lockGamePicks(gameId, game, 'kickoff')
         .catch(error => {
           console.error(`[KICKOFF] ❌ Failed to lock ${game.game_id}:`, error);
         });
@@ -3405,20 +3419,32 @@ async function integrateLockedPicks(result) {
   
   for (let i = 0; i < predictions.length; i++) {
     const game = predictions[i];
-    if (!game.start || !game.game_id) continue;
     
-    // Parse kickoff time with proper UTC handling
+    // FIX: Use actual field names from data structure
+    const gameId = game.id || game.game_id;
+    const kickoffStr = game.kickoff || game.start;
+    
+    if (!kickoffStr || !gameId) continue;
+    
+    // Parse kickoff time with proper UTC handling and date-only support
     let kickoffEpochMs;
     try {
-      const kickoffParsed = new Date(game.start);
+      let kickoffParsed = new Date(kickoffStr);
+      
+      // Handle date-only strings (add default 1PM ET = 6PM UTC)
+      if (kickoffStr.length === 10 && kickoffStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const dateOnly = kickoffStr;
+        kickoffParsed = new Date(`${dateOnly}T18:00:00Z`);
+      }
+      
       kickoffEpochMs = kickoffParsed.getTime();
       
       if (isNaN(kickoffEpochMs)) {
-        console.warn(`[LOCKED] Invalid kickoff time for ${game.game_id}: ${game.start}`);
+        console.warn(`[LOCKED] Invalid kickoff time for ${gameId}: ${kickoffStr}`);
         continue;
       }
     } catch (error) {
-      console.error(`[LOCKED] Failed to parse kickoff for ${game.game_id}:`, error);
+      console.error(`[LOCKED] Failed to parse kickoff for ${gameId}:`, error);
       continue;
     }
     
@@ -3427,16 +3453,16 @@ async function integrateLockedPicks(result) {
     // For started games, try to load locked picks
     if (gameStarted) {
       try {
-        const lockedPicks = await getLockedPicks(game.game_id);
+        const lockedPicks = await getLockedPicks(gameId);
         if (lockedPicks && Object.keys(lockedPicks).length > 0) {
           // Merge locked picks into game predictions
           predictions[i] = mergeLockedPicks(game, lockedPicks);
-          console.log(`[LOCKED] ✅ Using locked picks for ${game.game_id}`);
+          console.log(`[LOCKED] ✅ Using locked picks for ${gameId}`);
         } else {
-          console.log(`[LOCKED] ⚠️ No locked picks found for started game ${game.game_id}`);
+          console.log(`[LOCKED] ⚠️ No locked picks found for started game ${gameId}`);
         }
       } catch (error) {
-        console.warn(`[LOCKED] ❌ Could not load locked picks for ${game.game_id}:`, error.message);
+        console.warn(`[LOCKED] ❌ Could not load locked picks for ${gameId}:`, error.message);
         // Continue with live predictions as fallback
       }
     }
