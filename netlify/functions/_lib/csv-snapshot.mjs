@@ -6,14 +6,11 @@
  * locking in the exact picks and closing lines that were available.
  * 
  * After each week, download the CSV and grade offline.
+ * 
+ * NOTE: Uses Netlify Blobs for storage since function filesystem is read-only
  */
 
-import { promises as fs } from 'fs';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { getStore } from '@netlify/blobs';
 
 /**
  * Write predictions snapshot to CSV
@@ -25,15 +22,25 @@ const __dirname = dirname(__filename);
 export async function writePicksSnapshot(payload, week, season) {
   try {
     const timestamp = new Date().toISOString();
-    const csvPath = join(__dirname, '..', '..', '..', 'data', 'picks', `${season}_week${week}_snapshots.csv`);
+    const blobKey = `picks_snapshots_${season}_week${week}`;
     
-    // Ensure directory exists
-    await fs.mkdir(dirname(csvPath), { recursive: true });
+    // Get blob store
+    const store = getStore({
+      siteID: process.env.NETLIFY_SITE_ID,
+      token: process.env.NETLIFY_API_TOKEN,
+      name: 'nfl-td'
+    });
     
-    // Check if file exists to determine if we need headers
+    // Get existing CSV content (or empty string if first write)
+    let existingContent = '';
     let needsHeader = false;
     try {
-      await fs.access(csvPath);
+      const blob = await store.get(blobKey);
+      if (blob) {
+        existingContent = await blob.text();
+      } else {
+        needsHeader = true;
+      }
     } catch {
       needsHeader = true;
     }
@@ -161,14 +168,16 @@ export async function writePicksSnapshot(payload, week, season) {
       rows.push(escapedRow.join(','));
     }
     
-    // Append to file
-    await fs.appendFile(csvPath, rows.join('\n') + '\n', 'utf8');
+    // Append to blob
+    const newContent = existingContent + rows.join('\n') + '\n';
+    await store.set(blobKey, newContent, { metadata: { contentType: 'text/csv' } });
     
     return {
       success: true,
-      path: csvPath,
+      blobKey: blobKey,
       games_count: payload.rows?.length || 0,
-      timestamp
+      timestamp,
+      total_rows: newContent.split('\n').length - 1 // Subtract 1 for trailing newline
     };
     
   } catch (error) {
@@ -181,14 +190,45 @@ export async function writePicksSnapshot(payload, week, season) {
 }
 
 /**
- * Get all snapshot files for a season
+ * Get snapshot CSV content from blob storage
  */
-export async function getSnapshotFiles(season) {
-  const picksDir = join(__dirname, '..', '..', '..', 'data', 'picks');
+export async function getSnapshotCSV(season, week) {
   try {
-    const files = await fs.readdir(picksDir);
-    return files.filter(f => f.startsWith(`${season}_week`) && f.endsWith('_snapshots.csv'));
-  } catch {
+    const store = getStore({
+      siteID: process.env.NETLIFY_SITE_ID,
+      token: process.env.NETLIFY_API_TOKEN,
+      name: 'nfl-td'
+    });
+    
+    const blobKey = `picks_snapshots_${season}_week${week}`;
+    const blob = await store.get(blobKey);
+    
+    if (!blob) {
+      return null;
+    }
+    
+    return await blob.text();
+  } catch (error) {
+    console.error('Error fetching snapshot:', error);
+    return null;
+  }
+}
+
+/**
+ * List all snapshot keys for a season
+ */
+export async function listSnapshots(season) {
+  try {
+    const store = getStore({
+      siteID: process.env.NETLIFY_SITE_ID,
+      token: process.env.NETLIFY_API_TOKEN,
+      name: 'nfl-td'
+    });
+    
+    const { blobs } = await store.list({ prefix: `picks_snapshots_${season}_` });
+    return blobs.map(b => b.key);
+  } catch (error) {
+    console.error('Error listing snapshots:', error);
     return [];
   }
 }
