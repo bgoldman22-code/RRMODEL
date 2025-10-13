@@ -13,7 +13,83 @@ import { join } from 'path';
 const ESPN_BASE = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba';
 
 /**
- * Fetch games for a specific date
+ * Fetch detailed stats for a single game
+ */
+async function fetchGameDetails(gameId) {
+  const url = `${ESPN_BASE}/summary?event=${gameId}`;
+  
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    const boxscore = data.boxscore;
+    if (!boxscore || !boxscore.teams) {
+      return null;
+    }
+    
+    // Extract team stats
+    const teams = boxscore.teams;
+    const stats = {};
+    
+    for (const team of teams) {
+      const teamStats = {};
+      const homeAway = team.homeAway;
+      
+      // Get team statistics
+      if (team.statistics) {
+        for (const stat of team.statistics) {
+          const name = stat.name;
+          const value = parseFloat(stat.displayValue) || 0;
+          
+          // Map to our feature names
+          if (name === 'fieldGoalsMade-fieldGoalsAttempted') {
+            const [made, attempted] = stat.displayValue.split('-').map(Number);
+            teamStats.fgm = made;
+            teamStats.fga = attempted;
+            teamStats.fgPct = attempted > 0 ? made / attempted : 0;
+          } else if (name === 'threePointFieldGoalsMade-threePointFieldGoalsAttempted') {
+            const [made, attempted] = stat.displayValue.split('-').map(Number);
+            teamStats.fg3m = made;
+            teamStats.fg3a = attempted;
+            teamStats.fg3Pct = attempted > 0 ? made / attempted : 0;
+          } else if (name === 'freeThrowsMade-freeThrowsAttempted') {
+            const [made, attempted] = stat.displayValue.split('-').map(Number);
+            teamStats.ftm = made;
+            teamStats.fta = attempted;
+            teamStats.ftPct = attempted > 0 ? made / attempted : 0;
+          } else if (name === 'totalRebounds') {
+            teamStats.rebounds = value;
+          } else if (name === 'offensiveRebounds') {
+            teamStats.offRebounds = value;
+          } else if (name === 'defensiveRebounds') {
+            teamStats.defRebounds = value;
+          } else if (name === 'assists') {
+            teamStats.assists = value;
+          } else if (name === 'steals') {
+            teamStats.steals = value;
+          } else if (name === 'blocks') {
+            teamStats.blocks = value;
+          } else if (name === 'turnovers') {
+            teamStats.turnovers = value;
+          } else if (name === 'fouls') {
+            teamStats.fouls = value;
+          }
+        }
+      }
+      
+      stats[homeAway] = teamStats;
+    }
+    
+    return stats;
+    
+  } catch (error) {
+    console.error(`Error fetching details for game ${gameId}:`, error.message);
+    return null;
+  }
+}
+
+/**
+ * Fetch games for a specific date with detailed stats
  */
 async function fetchGamesForDate(date) {
   const dateStr = date.replace(/-/g, ''); // YYYYMMDD
@@ -23,28 +99,42 @@ async function fetchGamesForDate(date) {
     const response = await fetch(url);
     const data = await response.json();
     
-    const games = (data.events || []).map(event => {
+    const games = [];
+    
+    for (const event of (data.events || [])) {
       const competition = event.competitions[0];
       const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
       const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
       
       // Only include completed games
       if (competition.status.type.completed) {
-        return {
+        // Fetch detailed stats
+        const details = await fetchGameDetails(event.id);
+        
+        const game = {
           gameId: event.id,
           date: event.date.split('T')[0],
+          season: getSeason(event.date),
           homeTeamId: parseInt(homeTeam.team.id),
+          homeTeam: homeTeam.team.abbreviation,
+          homeTeamName: homeTeam.team.displayName,
           awayTeamId: parseInt(awayTeam.team.id),
+          awayTeam: awayTeam.team.abbreviation,
+          awayTeamName: awayTeam.team.displayName,
           homeScore: parseInt(homeTeam.score),
           awayScore: parseInt(awayTeam.score),
-          season: getSeason(event.date),
-          homeTeam: homeTeam.team.abbreviation,
-          awayTeam: awayTeam.team.abbreviation
+          homeStats: details?.home || {},
+          awayStats: details?.away || {},
+          venue: competition.venue?.fullName,
+          attendance: competition.attendance
         };
+        
+        games.push(game);
+        
+        // Rate limit for detail fetches
+        await new Promise(resolve => setTimeout(resolve, 300));
       }
-      
-      return null;
-    }).filter(g => g !== null);
+    }
     
     return games;
     
@@ -114,17 +204,15 @@ async function collectHistoricalData(startDate, endDate) {
     const date = dates[i];
     
     // Show progress
-    if (i % 10 === 0 || i === dates.length - 1) {
-      const percent = ((i + 1) / dates.length * 100).toFixed(1);
-      process.stdout.write(`\rProgress: ${i + 1}/${dates.length} (${percent}%) - ${allGames.length} games found`);
-    }
+    const percent = ((i + 1) / dates.length * 100).toFixed(1);
+    process.stdout.write(`\rProgress: ${i + 1}/${dates.length} (${percent}%) - ${allGames.length} games found (fetching detailed stats...)`);
     
     const games = await fetchGamesForDate(date);
     allGames.push(...games);
     processed++;
     
-    // Rate limiting: wait 200ms between requests
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Rate limiting: wait 500ms between date requests (already waiting 300ms per game detail)
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
   
   console.log(`\n\n✅ Collection complete: ${allGames.length} games\n`);
