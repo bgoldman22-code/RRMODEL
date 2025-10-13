@@ -97,7 +97,12 @@ export const handler = async (event, context) => {
  * Idempotent - won't overwrite existing locks unless force=true
  */
 async function lockPicksForGame(gameId, source = 'kickoff', force = false, homeTeam = null, awayTeam = null, gameData = null) {
-  const store = getStore("locked-picks");
+  // FIX: Use proper Netlify environment variables for blob store
+  const siteID = process.env.NETLIFY_SITE_ID;
+  const token = process.env.NETLIFY_API_TOKEN;
+  const store = (siteID && token) 
+    ? getStore({ siteID, token, name: "locked-picks" })
+    : getStore("locked-picks");
   const now = new Date();
   
   console.log(`[LOCK] Attempting to lock picks for game ${gameId} from ${source}`);
@@ -391,7 +396,12 @@ async function getClosingOdds(gameId) {
  * Get locked picks for a game
  */
 async function getLockedPicks(gameId) {
-  const store = getStore("locked-picks");
+  // FIX: Use proper Netlify environment variables for blob store
+  const siteID = process.env.NETLIFY_SITE_ID;
+  const token = process.env.NETLIFY_API_TOKEN;
+  const store = (siteID && token) 
+    ? getStore({ siteID, token, name: "locked-picks" })
+    : getStore("locked-picks");
   
   const [spread, total, moneyline] = await Promise.allSettled([
     store.get(`${gameId}-spread`),
