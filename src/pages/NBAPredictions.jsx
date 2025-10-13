@@ -180,10 +180,6 @@ const NBAPredictions = () => {
             <span className="stat-label">Opportunities</span>
             <span className="stat-value">{inefficiencies.length}</span>
           </div>
-          <div className="stat">
-            <span className="stat-label">Unit Value</span>
-            <span className="stat-value">${UNIT_VALUE}</span>
-          </div>
         </div>
       </header>
 
