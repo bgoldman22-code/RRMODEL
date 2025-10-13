@@ -913,16 +913,10 @@ export default function NFLPredictions() {
   }, [rows]);
 
   // PickBadge Component - moved outside map for proper JSX structure
-  const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge, pickedTeam, unitInfo, bestBook, lockedPick }) => (
+  const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge, pickedTeam, unitInfo, bestBook }) => (
     <div className="space-y-1">
       <div className="flex items-center gap-2">
         <div className="font-medium text-sm">{pick}</div>
-        {/* Lock indicator - shows if pick is locked with closing odds */}
-        {lockedPick && (
-          <span className="text-xs px-2 py-1 rounded bg-gray-600 text-white font-medium">
-            🔒 LOCKED
-          </span>
-        )}
         <span className={`text-xs px-2 py-1 rounded font-medium ${
           betRecommendation?.text?.includes('BET') ? 
             (betRecommendation.color?.includes('text-green') ? 'bg-green-100 text-green-800' :
@@ -977,37 +971,14 @@ export default function NFLPredictions() {
           {modelValue}
         </div>
       )}
-      {/* Show best-book information ONLY if not locked */}
-      {bestBook && (betRecommendation?.text?.includes('BET') || betRecommendation === 'BET') && !lockedPick && (
+      {/* Show best-book information for BET recommendations */}
+      {bestBook && (betRecommendation?.text?.includes('BET') || betRecommendation === 'BET') && (
         <div className="text-xs text-green-600 font-medium">
           Best: {bestBook.bookmaker || 'N/A'}
           {bestBook.price !== undefined ? ` ${fmtOdds(bestBook.price)}` : ''}
           {bestBook.line !== undefined ? ` ${bestBook.line > 0 ? '+' : ''}${bestBook.line}` : ''}
           {bestBook.edge_pct !== undefined ? ` (${Number(bestBook.edge_pct).toFixed(1)}% edge)` : ''}
           {bestBook.edge_points !== undefined ? ` (${Number(bestBook.edge_points).toFixed(1)} pts)` : ''}
-        </div>
-      )}
-      {/* Show locked pick details when available */}
-      {lockedPick && (
-        <div className="text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded">
-          <div className="font-medium">🔒 Locked at kickoff ({new Date(lockedPick.locked_at).toLocaleTimeString()})</div>
-          {lockedPick.closing_book && (
-            <div>Book: {lockedPick.closing_book}</div>
-          )}
-          {lockedPick.closing_line && (
-            <div>Closing: {lockedPick.closing_line}</div>
-          )}
-          {lockedPick.closing_total !== undefined && (
-            <div>Closing: {lockedPick.closing_total} {lockedPick.pick && lockedPick.pick.charAt(0).toUpperCase()}</div>
-          )}
-          {lockedPick.closing_odds !== undefined && (
-            <div>Closing odds: {fmtOdds(lockedPick.closing_odds)}</div>
-          )}
-          {lockedPick.trigger_source && (
-            <div className="text-[10px] text-gray-500">
-              Source: {lockedPick.trigger_source === 'kickoff' ? 'Auto (kickoff)' : 'Batch safety'}
-            </div>
-          )}
         </div>
       )}
     </div>
@@ -1063,7 +1034,7 @@ export default function NFLPredictions() {
           <caption className="px-4 py-2 text-xs text-gray-600 text-left">
             📊 Display prices shown from priority book selection (FanDuel, DraftKings, BetMGM, etc.). 
             Edges computed using the best available price across all supported books (line-shopped).
-            🔒 Picks are automatically locked at kickoff with closing odds for accurate performance tracking.
+            � All picks + closing odds are captured in CSV snapshots for post-week CLV analysis.
           </caption>
           <thead className="bg-neutral-50 text-neutral-700">
             <tr>
@@ -1276,12 +1247,11 @@ export default function NFLPredictions() {
                           <PickBadge 
                             pick={enhancedML.pick}
                             confidence={enhancedML.confidence}
-                            betRecommendation={hasGameStarted ? { text: "LOCKED", color: "text-gray-500" } : (enhancedML.betRecommendation || getBetRecommendation(0))}
+                            betRecommendation={enhancedML.betRecommendation || getBetRecommendation(0)}
                             edge={enhancedML.edge} // Now always the corrected edge (devigged when possible)
                             type="ml"
-                            unitInfo={hasGameStarted ? null : (Number.isFinite(enhancedML?.kellyUnits) && enhancedML.kellyUnits > 0 ? { units: enhancedML.kellyUnits.toFixed(1) } : null)}
-                            bestBook={hasGameStarted ? null : enhancedML.best_book}
-                            lockedPick={hasGameStarted ? { locked: true, game_started: true } : r.locked_picks?.moneyline}
+                            unitInfo={Number.isFinite(enhancedML?.kellyUnits) && enhancedML.kellyUnits > 0 ? { units: enhancedML.kellyUnits.toFixed(1) } : null}
+                            bestBook={enhancedML.best_book}
                           />
                           {enhancedML.isEliteCalc && (
                             <div className="text-xs text-green-600 font-medium space-y-1">
@@ -1308,15 +1278,14 @@ export default function NFLPredictions() {
                       <PickBadge 
                         pick={spreadDisplay.pickText}
                         confidence={spreadDisplay.confidence}
-                        betRecommendation={hasGameStarted ? { text: "LOCKED", color: "text-gray-500" } : (enhancedSpread?.betRecommendation || (spread?.betRecommendation ? getBetRecommendation(0) : getBetRecommendation(0)))}
+                        betRecommendation={enhancedSpread?.betRecommendation || (spread?.betRecommendation ? getBetRecommendation(0) : getBetRecommendation(0))}
                         edge={spreadDisplay.edgePts + " pts"}
                         type="spread"
-                        unitInfo={hasGameStarted ? null : (Number.isFinite(enhancedSpread?.kellyUnits) && enhancedSpread.kellyUnits > 0 ? { units: enhancedSpread.kellyUnits.toFixed(1) } : null)}
+                        unitInfo={Number.isFinite(enhancedSpread?.kellyUnits) && enhancedSpread.kellyUnits > 0 ? { units: enhancedSpread.kellyUnits.toFixed(1) } : null}
                         modelValue={spreadDisplay.modelText}   // ✅ always shown: pick POV or neutral POV
                         marketValue={spreadDisplay.bookText}   // ✅ always shown: pick POV or neutral POV
                         pickedTeam={spread?.pick}
-                        bestBook={hasGameStarted ? null : spread?.best_book}
-                        lockedPick={hasGameStarted ? { locked: true, game_started: true } : r.locked_picks?.spread}
+                        bestBook={spread?.best_book}
                       />
                       {/* Show devig status for spreads */}
                       {enhancedSpread?.isDevigged && (
@@ -1336,10 +1305,10 @@ export default function NFLPredictions() {
                           <PickBadge 
                             pick={enhancedTotal.pick === 'over' ? 'Over' : enhancedTotal.pick === 'under' ? 'Under' : 'Push'}
                             confidence={enhancedTotal.confidence}
-                            betRecommendation={hasGameStarted ? { text: "LOCKED", color: "text-gray-500" } : (enhancedTotal.betRecommendation || getBetRecommendation(0))}
+                            betRecommendation={enhancedTotal.betRecommendation || getBetRecommendation(0)}
                             edge={enhancedTotal.edge}
                             type="total"
-                            unitInfo={hasGameStarted ? null : (Number.isFinite(enhancedTotal?.kellyUnits) && enhancedTotal.kellyUnits > 0 ? { units: enhancedTotal.kellyUnits.toFixed(1) } : null)}
+                            unitInfo={Number.isFinite(enhancedTotal?.kellyUnits) && enhancedTotal.kellyUnits > 0 ? { units: enhancedTotal.kellyUnits.toFixed(1) } : null}
                             modelValue={enhancedTotal.predicted ? `${enhancedTotal.predicted}` : null}
                             marketValue={(() => {
                               // Use display book total if available
@@ -1348,8 +1317,7 @@ export default function NFLPredictions() {
                               }
                               return enhancedTotal.line ? `${enhancedTotal.line}` : null;
                             })()}
-                            bestBook={hasGameStarted ? null : enhancedTotal.best_book}
-                            lockedPick={hasGameStarted ? { locked: true, game_started: true } : r.locked_picks?.total}
+                            bestBook={enhancedTotal.best_book}
                           />
                           {/* Show display book for transparency */}
                           {r.odds?.display_book && (
