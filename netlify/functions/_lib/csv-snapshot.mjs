@@ -203,16 +203,17 @@ export async function getSnapshotCSV(season, week) {
     const blobKey = `picks_snapshots_${season}_week${week}`;
     console.log(`[CSV] Attempting to get blob: ${blobKey}`);
     
-    const blob = await store.get(blobKey);
-    console.log(`[CSV] Blob result:`, blob ? 'found' : 'not found', blob);
+    // Use getWithMetadata instead of get for better debugging
+    const result = await store.getWithMetadata(blobKey);
+    console.log(`[CSV] getWithMetadata result:`, result ? 'found' : 'not found');
     
-    if (!blob) {
+    if (!result || !result.data) {
       console.log(`[CSV] Blob not found for key: ${blobKey}`);
       return null;
     }
     
-    // Try getting as text
-    const content = await blob.text();
+    // Get as text
+    const content = await result.data.text();
     console.log(`[CSV] Retrieved ${content.length} chars`);
     return content;
   } catch (error) {
