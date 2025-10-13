@@ -841,12 +841,6 @@ function calculateDefaultInjuryImpact(position, teamCode) {
 }
 
 async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1) {
-  // GPT SAFEGUARD: Prevent double application of injury adjustments
-  if (scoreData._injuryApplied) {
-    console.log(`⚠️ SAFEGUARD: Injury adjustments already applied for ${teamCode}, skipping`);
-    return scoreData;
-  }
-  
   const teamInjuries = injuries.teams?.[teamCode] || {};
 
   // FALLBACK NORMALIZATION: If legacy fields (qb_name, *_injuries) are absent but a raw
@@ -3214,30 +3208,11 @@ export default async (request, context) => {
       const url = new URL(request.url);
       season = url.searchParams.get('season') || '2025';
 
-      // CACHE LOGIC: Try to load cached predictions first
-      const cacheStore = getStore("predictions-cache");
-      let cacheKey = `nfl-predictions-${season}-weekcurrent`;
-      let cached = null;
-      try {
-        cached = await cacheStore.get(cacheKey, { type: 'json' });
-      } catch (e) {
-        cached = null;
-      }
-      if (cached && cached.generated_at) {
-        const cacheAge = (Date.now() - new Date(cached.generated_at).getTime()) / 1000;
-        if (cacheAge < 10800 && cached.predictions && cached.predictions.length > 0) {
-          console.log(`[CACHE] Serving cached predictions (${Math.round(cacheAge/60)} min old)`);
-          return new Response(JSON.stringify(cached), {
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*'
-            }
-          });
-        }
-      }
+      // CACHING DISABLED: Always generate fresh predictions
+      // The caching system was causing issues with stale data and locking
+      console.log('🔄 Generating fresh predictions (caching disabled)');
 
-      // If no valid cache, fetch games and regenerate
+      // Fetch games and regenerate
       try {
         console.log('🔄 Auto-fetching current NFL games for predictions...');
         const scheduleRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-schedule-get');
@@ -3266,11 +3241,8 @@ export default async (request, context) => {
         console.log('✅ Saved advanced predictions to blob storage for live site');
         
         // CACHE: Also save to predictions cache for fast loading
-        const body = await request.json().catch(() => ({}));
-        if (body.cache === true || request.method === 'GET') {
-          await saveToPredictionsCache(result, season);
-          console.log('✅ Saved to predictions cache for fast loading');
-        }
+        // CACHING DISABLED: Skip saving to cache
+        console.log('📌 Caching disabled - predictions saved only to main blob storage');
       } catch (error) {
         console.error('❌ Failed to save to blobs:', error);
         // Continue anyway - don't fail the request
