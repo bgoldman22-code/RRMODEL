@@ -8,6 +8,8 @@
 import { getStore } from '@netlify/blobs';
 import { fetchTodaysGames, loadTeamInfo } from '../_lib/nba/loaders.mjs';
 import { buildTeamFeatures, buildMatchupFeatures } from '../_lib/nba/features.mjs';
+import { getGameInjuryReport } from '../_lib/nba/injuries.mjs';
+import { compareDepth, getProjectedLineup } from '../_lib/nba/depth.mjs';
 import EnsembleModel from '../_lib/nba/models/ensemble.mjs';
 
 /**
@@ -146,10 +148,23 @@ async function generatePredictions(games, models) {
     try {
       console.log(`[NBA] Processing: ${game.awayTeam.abbreviation} @ ${game.homeTeam.abbreviation}`);
       
-      // Build features
-      const [homeFeatures, awayFeatures] = await Promise.all([
+      // Fetch injury and depth data
+      const [homeFeatures, awayFeatures, injuryReport, depthComparison] = await Promise.all([
         buildTeamFeatures(game.homeTeam.id, game),
-        buildTeamFeatures(game.awayTeam.id, game)
+        buildTeamFeatures(game.awayTeam.id, game),
+        getGameInjuryReport(game.homeTeam.abbreviation, game.awayTeam.abbreviation).catch(e => {
+          console.log('[NBA] Injury data unavailable:', e.message);
+          return null;
+        }),
+        compareDepth(
+          game.homeTeam.abbreviation, 
+          game.homeTeam.id,
+          game.awayTeam.abbreviation,
+          game.awayTeam.id
+        ).catch(e => {
+          console.log('[NBA] Depth data unavailable:', e.message);
+          return null;
+        })
       ]);
       
       const matchupFeatures = buildMatchupFeatures(homeFeatures, awayFeatures);
@@ -184,6 +199,18 @@ async function generatePredictions(games, models) {
         gameId: game.id,
         game: `${game.awayTeam.abbreviation} @ ${game.homeTeam.abbreviation}`,
         gameTime: game.date,
+        teams: {
+          home: {
+            name: game.homeTeam.name,
+            abbreviation: game.homeTeam.abbreviation,
+            record: game.homeTeam.record
+          },
+          away: {
+            name: game.awayTeam.name,
+            abbreviation: game.awayTeam.abbreviation,
+            record: game.awayTeam.record
+          }
+        },
         
         // Predictions
         predictedSpread: parseFloat(spreadPred.toFixed(1)),
@@ -193,6 +220,39 @@ async function generatePredictions(games, models) {
         
         // Confidence
         confidence: Math.round(confidence),
+        
+        // Injury & Depth Analysis
+        injuries: injuryReport ? {
+          home: {
+            impact: injuryReport.homeTeam.impact,
+            count: injuryReport.homeTeam.count,
+            advantage: injuryReport.homeTeam.advantage,
+            details: injuryReport.homeTeam.details
+          },
+          away: {
+            impact: injuryReport.awayTeam.impact,
+            count: injuryReport.awayTeam.count,
+            advantage: injuryReport.awayTeam.advantage,
+            details: injuryReport.awayTeam.details
+          },
+          differential: injuryReport.differential,
+          summary: injuryReport.summary
+        } : null,
+        
+        depth: depthComparison ? {
+          home: {
+            quality: depthComparison.homeTeam.quality,
+            score: depthComparison.homeTeam.score.toFixed(1),
+            advantage: depthComparison.homeTeam.advantage
+          },
+          away: {
+            quality: depthComparison.awayTeam.quality,
+            score: depthComparison.awayTeam.score.toFixed(1),
+            advantage: depthComparison.awayTeam.advantage
+          },
+          differential: depthComparison.differential.toFixed(1),
+          summary: depthComparison.summary
+        } : null,
         
         // Features for transparency
         keyFactors: {

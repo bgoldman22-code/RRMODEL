@@ -10,7 +10,7 @@
         season: String(season), 
         week: String(week), 
         kind: 'nfl-picks-csv',
-        generatedAt: timestamp,
+        ygeneratedAt: timestamp,
         contentType: 'text/csv'
       }
     });

@@ -263,6 +263,68 @@ const NBAPredictions = () => {
                 </div>
               )}
 
+              {/* Injury Report */}
+              {pred.injuries && (
+                <div className="injury-report">
+                  <h4>🏥 Injury Report</h4>
+                  <div className="injury-summary">{pred.injuries.summary}</div>
+                  <div className="injury-grid">
+                    <div className="injury-team">
+                      <span className="team-label">{pred.teams.home.abbreviation}</span>
+                      <span className={`impact-badge impact-${pred.injuries.home.impact.toLowerCase()}`}>
+                        {pred.injuries.home.impact} ({pred.injuries.home.count})
+                      </span>
+                      {pred.injuries.home.details && pred.injuries.home.details.length > 0 && (
+                        <div className="injury-details">
+                          {pred.injuries.home.details.slice(0, 3).map((inj, idx) => (
+                            <div key={idx} className="injury-item">
+                              {inj.player}: {inj.status}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="injury-team">
+                      <span className="team-label">{pred.teams.away.abbreviation}</span>
+                      <span className={`impact-badge impact-${pred.injuries.away.impact.toLowerCase()}`}>
+                        {pred.injuries.away.impact} ({pred.injuries.away.count})
+                      </span>
+                      {pred.injuries.away.details && pred.injuries.away.details.length > 0 && (
+                        <div className="injury-details">
+                          {pred.injuries.away.details.slice(0, 3).map((inj, idx) => (
+                            <div key={idx} className="injury-item">
+                              {inj.player}: {inj.status}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Depth Chart Analysis */}
+              {pred.depth && (
+                <div className="depth-analysis">
+                  <h4>📊 Depth Chart</h4>
+                  <div className="depth-summary">{pred.depth.summary}</div>
+                  <div className="depth-grid">
+                    <div className="depth-team">
+                      <span className="team-label">{pred.teams.home.abbreviation}</span>
+                      <span className={`depth-badge depth-${pred.depth.home.quality.toLowerCase()}`}>
+                        {pred.depth.home.quality} ({pred.depth.home.score})
+                      </span>
+                    </div>
+                    <div className="depth-team">
+                      <span className="team-label">{pred.teams.away.abbreviation}</span>
+                      <span className={`depth-badge depth-${pred.depth.away.quality.toLowerCase()}`}>
+                        {pred.depth.away.quality} ({pred.depth.away.score})
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="key-factors">
                 <h4>Key Factors</h4>
                 <div className="factors-grid">
