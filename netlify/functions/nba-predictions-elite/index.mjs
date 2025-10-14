@@ -13,7 +13,7 @@ import { SPREAD_MODEL, TOTAL_MODEL } from '../_lib/nba/models-inline.mjs';
 /**
  * Fetch live Vegas lines from The Odds API
  */
-async function fetchVegasLines(gameIds) {
+async function fetchVegasLines(gameIds, isPreseason = false) {
   const ODDS_API_KEY = process.env.ODDS_API_KEY;
   
   if (!ODDS_API_KEY) {
@@ -22,15 +22,21 @@ async function fetchVegasLines(gameIds) {
   }
   
   try {
-    const url = `https://api.the-odds-api.com/v4/sports/basketball_nba/odds/?apiKey=${ODDS_API_KEY}&regions=us&markets=h2h,spreads,totals&oddsFormat=american`;
+    // Use correct sport key based on season type
+    const sportKey = isPreseason ? 'basketball_nba_preseason' : 'basketball_nba';
+    const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${ODDS_API_KEY}&regions=us&markets=h2h,spreads,totals&oddsFormat=american`;
+    
+    console.log('[NBA Elite] Fetching odds from:', sportKey, '- Preseason:', isPreseason);
     
     const response = await fetch(url);
     if (!response.ok) {
-      console.log('[NBA Elite] Odds API error:', response.status);
+      console.log('[NBA Elite] Odds API error:', response.status, response.statusText);
       return {};
     }
     
     const data = await response.json();
+    console.log('[NBA Elite] Odds API returned:', data?.length || 0, 'games');
+    
     const linesMap = {};
     
     // Team name mapping (Odds API uses full names, we need to match with abbreviations)
@@ -368,10 +374,14 @@ export default async (request, context) => {
     const historicalGames = await dataResponse.json();
     console.log(`[NBA Elite] Loaded ${historicalGames.length} historical games`);
     
-    // 3. Fetch live Vegas lines
-    const vegasLines = await fetchVegasLines(espnData.events.map(e => e.id));
+    // 3. Detect if preseason based on first game
+    const isPreseason = espnData.events[0]?.season?.type === 1; // Type 1 = preseason, 2 = regular season, 3 = playoffs
+    console.log(`[NBA Elite] Season type detected: ${isPreseason ? 'PRESEASON' : 'REGULAR SEASON'}`);
     
-    // 4. Generate predictions
+    // 4. Fetch live Vegas lines (use correct endpoint for season type)
+    const vegasLines = await fetchVegasLines(espnData.events.map(e => e.id), isPreseason);
+    
+    // 5. Generate predictions
     const predictions = [];
     
     for (const event of espnData.events) {
