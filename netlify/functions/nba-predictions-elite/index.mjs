@@ -33,10 +33,32 @@ async function fetchVegasLines(gameIds) {
     const data = await response.json();
     const linesMap = {};
     
-    // Map odds to game IDs (will need team matching logic)
+    // Team name mapping (Odds API uses full names, we need to match with abbreviations)
+    const teamAbbrevMap = {
+      'Atlanta Hawks': 'ATL', 'Boston Celtics': 'BOS', 'Brooklyn Nets': 'BKN',
+      'Charlotte Hornets': 'CHA', 'Chicago Bulls': 'CHI', 'Cleveland Cavaliers': 'CLE',
+      'Dallas Mavericks': 'DAL', 'Denver Nuggets': 'DEN', 'Detroit Pistons': 'DET',
+      'Golden State Warriors': 'GS', 'Houston Rockets': 'HOU', 'Indiana Pacers': 'IND',
+      'Los Angeles Clippers': 'LAC', 'Los Angeles Lakers': 'LAL', 'Memphis Grizzlies': 'MEM',
+      'Miami Heat': 'MIA', 'Milwaukee Bucks': 'MIL', 'Minnesota Timberwolves': 'MIN',
+      'New Orleans Pelicans': 'NO', 'New York Knicks': 'NY', 'Oklahoma City Thunder': 'OKC',
+      'Orlando Magic': 'ORL', 'Philadelphia 76ers': 'PHI', 'Phoenix Suns': 'PHX',
+      'Portland Trail Blazers': 'POR', 'Sacramento Kings': 'SAC', 'San Antonio Spurs': 'SA',
+      'Toronto Raptors': 'TOR', 'Utah Jazz': 'UTA', 'Washington Wizards': 'WSH'
+    };
+    
+    // Map odds to game IDs by team abbreviations
     for (const game of data || []) {
-      // Simple key by teams for now
-      const key = `${game.away_team}_${game.home_team}`;
+      const awayAbbrev = teamAbbrevMap[game.away_team];
+      const homeAbbrev = teamAbbrevMap[game.home_team];
+      
+      if (!awayAbbrev || !homeAbbrev) {
+        console.log(`[NBA Elite] Unknown team: ${game.away_team} or ${game.home_team}`);
+        continue;
+      }
+      
+      // Key by abbreviations to match ESPN data
+      const key = `${awayAbbrev}_${homeAbbrev}`;
       
       const bestLines = {
         spread: { home: null, away: null, book: null },
@@ -394,8 +416,8 @@ export default async (request, context) => {
       // Win probability from spread
       const winProb = 1 / (1 + Math.exp(-spreadPred / 10));
       
-      // Get Vegas lines for this game
-      const vegasKey = `${away.team.displayName}_${home.team.displayName}`;
+      // Get Vegas lines for this game (match by abbreviations)
+      const vegasKey = `${away.team.abbreviation}_${home.team.abbreviation}`;
       const gameVegasLines = vegasLines[vegasKey] || {};
       
       // Calculate edges and Kelly sizing
