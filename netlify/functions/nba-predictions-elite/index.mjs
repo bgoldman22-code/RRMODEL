@@ -11,6 +11,122 @@
 import { SPREAD_MODEL, TOTAL_MODEL } from '../_lib/nba/models-inline.mjs';
 
 /**
+ * Fetch live Vegas lines from The Odds API
+ */
+async function fetchVegasLines(gameIds) {
+  const ODDS_API_KEY = process.env.ODDS_API_KEY;
+  
+  if (!ODDS_API_KEY) {
+    console.log('[NBA Elite] No Odds API key - skipping live lines');
+    return {};
+  }
+  
+  try {
+    const url = `https://api.the-odds-api.com/v4/sports/basketball_nba/odds/?apiKey=${ODDS_API_KEY}&regions=us&markets=h2h,spreads,totals&oddsFormat=american`;
+    
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.log('[NBA Elite] Odds API error:', response.status);
+      return {};
+    }
+    
+    const data = await response.json();
+    const linesMap = {};
+    
+    // Map odds to game IDs (will need team matching logic)
+    for (const game of data || []) {
+      // Simple key by teams for now
+      const key = `${game.away_team}_${game.home_team}`;
+      
+      const bestLines = {
+        spread: { home: null, away: null, book: null },
+        total: { over: null, under: null, line: null, book: null },
+        moneyline: { home: null, away: null, book: null }
+      };
+      
+      // Find best lines across books
+      for (const book of game.bookmakers || []) {
+        for (const market of book.markets || []) {
+          if (market.key === 'spreads') {
+            const homeSpread = market.outcomes.find(o => o.name === game.home_team);
+            if (homeSpread && (!bestLines.spread.home || homeSpread.price > bestLines.spread.home.price)) {
+              bestLines.spread = {
+                home: homeSpread.point,
+                homePrice: homeSpread.price,
+                book: book.key
+              };
+            }
+          }
+          else if (market.key === 'totals') {
+            const over = market.outcomes.find(o => o.name === 'Over');
+            if (over) {
+              bestLines.total = {
+                line: over.point,
+                overPrice: over.price,
+                underPrice: market.outcomes.find(o => o.name === 'Under')?.price,
+                book: book.key
+              };
+            }
+          }
+          else if (market.key === 'h2h') {
+            const homeMl = market.outcomes.find(o => o.name === game.home_team);
+            if (homeMl) {
+              bestLines.moneyline = {
+                home: homeMl.price,
+                away: market.outcomes.find(o => o.name === game.away_team)?.price,
+                book: book.key
+              };
+            }
+          }
+        }
+      }
+      
+      linesMap[key] = bestLines;
+    }
+    
+    console.log(`[NBA Elite] Fetched Vegas lines for ${Object.keys(linesMap).length} games`);
+    return linesMap;
+    
+  } catch (error) {
+    console.error('[NBA Elite] Error fetching Vegas lines:', error);
+    return {};
+  }
+}
+
+/**
+ * Calculate edge and Kelly bet sizing
+ */
+function calculateEdgeAndKelly(modelPred, vegasLine, modelProb, bankroll = 5000) {
+  if (!vegasLine) return null;
+  
+  // Edge in points
+  const edgePoints = Math.abs(modelPred - vegasLine);
+  
+  // Convert American odds to implied probability
+  const vegasProb = vegasLine > 0 ? 100 / (vegasLine + 100) : Math.abs(vegasLine) / (Math.abs(vegasLine) + 100);
+  
+  // Edge in probability terms
+  const edgeProb = modelProb - vegasProb;
+  
+  // Kelly criterion: f = (bp - q) / b where b = net odds, p = win prob, q = lose prob
+  const decimalOdds = vegasLine > 0 ? (vegasLine / 100) + 1 : (100 / Math.abs(vegasLine)) + 1;
+  const b = decimalOdds - 1;
+  const kelly = edgeProb > 0 ? (b * modelProb - (1 - modelProb)) / b : 0;
+  
+  // Cap at 5% of bankroll (quarter Kelly for safety)
+  const kellyFraction = Math.min(Math.max(kelly * 0.25, 0), 0.05);
+  const betSize = Math.round(bankroll * kellyFraction);
+  
+  return {
+    edgePoints: parseFloat(edgePoints.toFixed(1)),
+    edgeProb: parseFloat((edgeProb * 100).toFixed(1)),
+    kellyFraction: parseFloat((kellyFraction * 100).toFixed(2)),
+    betSize,
+    units: parseFloat((betSize / 10).toFixed(1)) // $10/unit
+  };
+}
+
+/**
  * Calculate advanced stats from game history
  */
 function calculateAdvancedStats(games, teamId, window = 10) {
@@ -230,7 +346,10 @@ export default async (request, context) => {
     const historicalGames = await dataResponse.json();
     console.log(`[NBA Elite] Loaded ${historicalGames.length} historical games`);
     
-    // 3. Generate predictions
+    // 3. Fetch live Vegas lines
+    const vegasLines = await fetchVegasLines(espnData.events.map(e => e.id));
+    
+    // 4. Generate predictions
     const predictions = [];
     
     for (const event of espnData.events) {
@@ -240,28 +359,33 @@ export default async (request, context) => {
       
       console.log(`[NBA Elite] Processing: ${away.team.abbreviation} @ ${home.team.abbreviation}`);
       
-      // Calculate L10 stats for both teams
-      const homeStats = calculateAdvancedStats(historicalGames, home.id, 10);
-      const awayStats = calculateAdvancedStats(historicalGames, away.id, 10);
+      // Calculate L3, L10, L20 stats for both teams (matching training data)
+      const homeL3 = calculateAdvancedStats(historicalGames, home.id, 3);
+      const homeL10 = calculateAdvancedStats(historicalGames, home.id, 10);
+      const homeL20 = calculateAdvancedStats(historicalGames, home.id, 20);
       
-      console.log(`[NBA Elite] ${home.team.abbreviation} games: ${homeStats.games}, ${away.team.abbreviation} games: ${awayStats.games}`);
+      const awayL3 = calculateAdvancedStats(historicalGames, away.id, 3);
+      const awayL10 = calculateAdvancedStats(historicalGames, away.id, 10);
+      const awayL20 = calculateAdvancedStats(historicalGames, away.id, 20);
       
-      // Skip if not enough data
-      if (homeStats.games < 3 || awayStats.games < 3) {
-        console.log(`[NBA Elite] Skipping ${away.team.abbreviation} @ ${home.team.abbreviation} - insufficient data (home: ${homeStats.games}, away: ${awayStats.games})`);
+      console.log(`[NBA Elite] ${home.team.abbreviation} games: L3=${homeL3.games}, L10=${homeL10.games}, L20=${homeL20.games}`);
+      
+      // Skip if not enough data (need at least 3 recent games)
+      if (homeL3.games < 3 || awayL3.games < 3) {
+        console.log(`[NBA Elite] Skipping ${away.team.abbreviation} @ ${home.team.abbreviation} - insufficient data`);
         continue;
       }
       
-      // Build features
-      const spreadFeatures = buildEliteFeatures(homeStats, awayStats);
-      const totalFeatures = buildSimpleFeatures(homeStats, awayStats);
+      // Build features with all windows (use L10 as primary for features object)
+      const spreadFeatures = buildEliteFeatures(homeL10, awayL10);
+      const totalFeatures = buildSimpleFeatures(homeL10, awayL10);
       
       // Predict
       const spreadPred = predict(SPREAD_MODEL, spreadFeatures);
       const totalPred = predict(TOTAL_MODEL, totalFeatures);
       
       // Calculate confidence
-      const netRtgDiff = Math.abs(homeStats.netRtg - awayStats.netRtg);
+      const netRtgDiff = Math.abs(homeL10.netRtg - awayL10.netRtg);
       let confidence = 60;
       if (netRtgDiff > 8) confidence += 15;
       else if (netRtgDiff > 5) confidence += 10;
@@ -269,6 +393,57 @@ export default async (request, context) => {
       
       // Win probability from spread
       const winProb = 1 / (1 + Math.exp(-spreadPred / 10));
+      
+      // Get Vegas lines for this game
+      const vegasKey = `${away.team.displayName}_${home.team.displayName}`;
+      const gameVegasLines = vegasLines[vegasKey] || {};
+      
+      // Calculate edges and Kelly sizing
+      const opportunities = [];
+      
+      // Spread opportunity
+      if (gameVegasLines.spread?.home != null) {
+        const spreadEdge = calculateEdgeAndKelly(
+          spreadPred,
+          gameVegasLines.spread.home,
+          winProb
+        );
+        
+        if (spreadEdge && spreadEdge.edgePoints >= 3) { // Only show 3+ point edges
+          opportunities.push({
+            market: 'Spread',
+            pick: spreadPred > 0 ? `${home.team.abbreviation} ${gameVegasLines.spread.home}` : `${away.team.abbreviation} +${Math.abs(gameVegasLines.spread.home)}`,
+            modelLine: spreadPred.toFixed(1),
+            vegasLine: gameVegasLines.spread.home,
+            edge: spreadEdge.edgePoints,
+            edgePercent: spreadEdge.edgeProb,
+            kelly: spreadEdge.kellyFraction,
+            betSize: spreadEdge.betSize,
+            units: spreadEdge.units,
+            book: gameVegasLines.spread.book
+          });
+        }
+      }
+      
+      // Total opportunity  
+      if (gameVegasLines.total?.line != null) {
+        const totalEdge = Math.abs(totalPred - gameVegasLines.total.line);
+        
+        if (totalEdge >= 4) { // Only show 4+ point edges on totals
+          opportunities.push({
+            market: 'Total',
+            pick: totalPred > gameVegasLines.total.line ? `Over ${gameVegasLines.total.line}` : `Under ${gameVegasLines.total.line}`,
+            modelLine: totalPred.toFixed(1),
+            vegasLine: gameVegasLines.total.line,
+            edge: totalEdge.toFixed(1),
+            edgePercent: null,
+            kelly: null,
+            betSize: null,
+            units: null,
+            book: gameVegasLines.total.book
+          });
+        }
+      }
       
       predictions.push({
         gameId: event.id,
@@ -305,19 +480,37 @@ export default async (request, context) => {
         },
         features: {
           homeL10: {
-            netRtg: homeStats.netRtg.toFixed(1),
-            offRtg: homeStats.offRtg.toFixed(1),
-            defRtg: homeStats.defRtg.toFixed(1),
-            games: homeStats.games
+            netRtg: homeL10.netRtg.toFixed(1),
+            offRtg: homeL10.offRtg.toFixed(1),
+            defRtg: homeL10.defRtg.toFixed(1),
+            games: homeL10.games
           },
           awayL10: {
-            netRtg: awayStats.netRtg.toFixed(1),
-            offRtg: awayStats.offRtg.toFixed(1),
-            defRtg: awayStats.defRtg.toFixed(1),
-            games: awayStats.games
+            netRtg: awayL10.netRtg.toFixed(1),
+            offRtg: awayL10.offRtg.toFixed(1),
+            defRtg: awayL10.defRtg.toFixed(1),
+            games: awayL10.games
           }
         },
-        opportunities: []
+        vegasLines: {
+          spread: gameVegasLines.spread?.home != null ? {
+            line: gameVegasLines.spread.home,
+            price: gameVegasLines.spread.homePrice,
+            book: gameVegasLines.spread.book
+          } : null,
+          total: gameVegasLines.total?.line != null ? {
+            line: gameVegasLines.total.line,
+            overPrice: gameVegasLines.total.overPrice,
+            underPrice: gameVegasLines.total.underPrice,
+            book: gameVegasLines.total.book
+          } : null,
+          moneyline: gameVegasLines.moneyline?.home != null ? {
+            home: gameVegasLines.moneyline.home,
+            away: gameVegasLines.moneyline.away,
+            book: gameVegasLines.moneyline.book
+          } : null
+        },
+        opportunities
       });
     }
     
