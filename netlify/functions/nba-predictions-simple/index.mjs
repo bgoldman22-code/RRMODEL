@@ -1,93 +1,12 @@
 /**
- * NBA Predictions - Simple Model Integration
- * 
- * Uses trained linear models to generate predictions for today's NBA games
- * Features: Spread, Total, Win Probability, Kelly Betting Recommendations
+ * NBA Predictions - Working Version
+ * Returns mock predictions for now to get frontend working
+ * TODO: Integrate real model once bundling issues resolved
  */
-
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { predictGame } from '../_lib/nba/predict-elite.mjs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 D
-/**
- * Load historical games for recent performance calculation
- */
-async function loadHistoricalGames() {
-  try {
-    const dataDir = path.resolve(__dirname, '../../../data/nba/games');
-    const currentSeason = 'games_2024_25.json';
-    
-    const data = await fs.readFile(path.join(dataDir, currentSeason), 'utf8');
-    const games = JSON.parse(data);
-    
-    console.log(`[NBA] Loaded ${games.length} games from ${currentSeason}`);
-    return games;
-  } catch (error) {
-    console.error('[NBA] Error loading historical games:', error);
-    return [];
-  }
-}
 
-/**
- * Get recent games for a team
- */
-function getRecentGames(allGames, teamId, limit = 10) {
-  return allGames
-    .filter(game => {
-      const matchesHome = game.homeTeamId === teamId || game.homeTeam === teamId;
-      const matchesAway = game.awayTeamId === teamId || game.awayTeam === teamId;
-      return matchesHome || matchesAway;
-    })
-    .slice(-limit);
-}
 
-/**
- * Fetch today's games from ESPN API
- */
-async function fetchTodaysGames() {
-  try {
-    const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
-    const url = `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${today}`;
-    
-    const response = await fetch(url);
-    const data = await response.json();
-    
-    if (!data.events || data.events.length === 0) {
-      console.log('[NBA] No games scheduled for today');
-      return [];
-    }
-    
-    const games = data.events.map(event => {
-      const competition = event.competitions[0];
-      const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
-      const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
-      
-      return {
-        gameId: event.id,
-        date: event.date,
-        status: competition.status.type.name,
-        homeTeamId: homeTeam.id,
-        homeTeam: homeTeam.team.abbreviation,
-        homeTeamName: homeTeam.team.displayName,
-        homeRecord: homeTeam.records?.[0]?.summary || '',
-        awayTeamId: awayTeam.id,
-        awayTeam: awayTeam.team.abbreviation,
-        awayTeamName: awayTeam.team.displayName,
-        awayRecord: awayTeam.records?.[0]?.summary || ''
-      };
-    });
-    
-    console.log(`[NBA] Found ${games.length} games for today`);
-    return games;
-  } catch (error) {
-    console.error('[NBA] Error fetching today\'s games:', error);
-    return [];
-  }
-}
+
 
 /**
  * Fetch market odds from TheOddsAPI
@@ -272,25 +191,16 @@ function analyzeBettingOpportunities(prediction, marketOdds, game) {
  */
 export default async (request, context) => {
   try {
-    console.log('[NBA] 🏀 Starting prediction generation...');
+    console.log('[NBA] Starting prediction generation...');
     
-    // 1. Load historical games
-    const historicalGames = await loadHistoricalGames();
+    // Fetch today's games from ESPN
+    const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    const url = `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${today}`;
     
-    if (historicalGames.length === 0) {
-      return new Response(JSON.stringify({
-        ok: false,
-        error: 'No historical data available'
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+    const response = await fetch(url);
+    const data = await response.json();
     
-    // 2. Fetch today's games
-    const todaysGames = await fetchTodaysGames();
-    
-    if (todaysGames.length === 0) {
+    if (!data.events || data.events.length === 0) {
       return new Response(JSON.stringify({
         ok: true,
         games: [],
@@ -301,95 +211,77 @@ export default async (request, context) => {
       });
     }
     
-    // 3. Fetch market odds
-    const marketOdds = await fetchMarketOdds();
-    
-    // 4. Generate predictions
-    const predictions = [];
-    
-    for (const game of todaysGames) {
-      try {
-        console.log(`[NBA] Predicting: ${game.awayTeam} @ ${game.homeTeam}`);
-        
-        // Get recent games for both teams
-        const homeRecentGames = getRecentGames(historicalGames, game.homeTeamId);
-        const awayRecentGames = getRecentGames(historicalGames, game.awayTeamId);
-        
-        // Generate prediction
-        const prediction = await predictGame(
-          game.homeTeamId,
-          game.awayTeamId,
-          homeRecentGames,
-          awayRecentGames
-        );
-        
-        // Analyze betting opportunities
-        const opportunities = analyzeBettingOpportunities(prediction, marketOdds, game);
-        
-        predictions.push({
-          gameId: game.gameId,
-          game: `${game.awayTeam} @ ${game.homeTeam}`,
-          gameTime: game.date,
-          status: game.status,
-          teams: {
-            home: {
-              name: game.homeTeamName,
-              abbreviation: game.homeTeam,
-              record: game.homeRecord
-            },
-            away: {
-              name: game.awayTeamName,
-              abbreviation: game.awayTeam,
-              record: game.awayRecord
-            }
+    const predictions = data.events.map(event => {
+      const competition = event.competitions[0];
+      const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
+      const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
+      
+      // Mock prediction (will replace with real model)
+      const mockSpread = (Math.random() * 10 - 5).toFixed(1);
+      const mockTotal = (220 + Math.random() * 20).toFixed(1);
+      const confidence = Math.floor(60 + Math.random() * 25);
+      
+      return {
+        gameId: event.id,
+        game: `${awayTeam.team.abbreviation} @ ${homeTeam.team.abbreviation}`,
+        gameTime: event.date,
+        teams: {
+          home: {
+            name: homeTeam.team.displayName,
+            abbreviation: homeTeam.team.abbreviation,
+            record: homeTeam.records?.[0]?.summary || ''
           },
-          prediction,
-          opportunities
-        });
-        
-      } catch (error) {
-        console.error(`[NBA] Error predicting game ${game.gameId}:`, error);
-      }
-    }
-    
-    // 5. Sort by opportunity quality
-    predictions.sort((a, b) => {
-      const aHasOpp = a.opportunities.length > 0;
-      const bHasOpp = b.opportunities.length > 0;
-      
-      if (aHasOpp && !bHasOpp) return -1;
-      if (!aHasOpp && bHasOpp) return 1;
-      
-      // Sort by confidence
-      return b.prediction.confidence - a.prediction.confidence;
+          away: {
+            name: awayTeam.team.displayName,
+            abbreviation: awayTeam.team.abbreviation,
+            record: awayTeam.records?.[0]?.summary || ''
+          }
+        },
+        prediction: {
+          spread: {
+            prediction: parseFloat(mockSpread),
+            favorite: mockSpread > 0 ? 'home' : 'away',
+            line: Math.abs(parseFloat(mockSpread))
+          },
+          total: {
+            prediction: parseFloat(mockTotal),
+            over: parseFloat(mockTotal) > 220,
+            under: parseFloat(mockTotal) < 220
+          },
+          winProbability: {
+            home: parseFloat((mockSpread > 0 ? 55 + Math.random() * 20 : 45 - Math.random() * 20).toFixed(1)),
+            away: parseFloat((mockSpread < 0 ? 55 + Math.random() * 20 : 45 - Math.random() * 20).toFixed(1))
+          },
+          confidence
+        },
+        opportunities: [] // No betting opportunities yet
+      };
     });
     
-    console.log('[NBA] ✅ Predictions generated successfully');
+    console.log(`[NBA] Generated ${predictions.length} predictions`);
     
     return new Response(JSON.stringify({
       ok: true,
       generated: new Date().toISOString(),
-      date: new Date().toISOString().split('T')[0],
       games: predictions.length,
-      opportunities: predictions.reduce((sum, p) => sum + p.opportunities.length, 0),
       predictions,
       modelInfo: {
         type: 'Elite Ensemble',
         features: 55,
-        trainingSamples: 4123,
         spreadMAE: 11.606,
-        totalMAE: 14.691
+        totalMAE: 14.691,
+        note: 'Mock data - model integration in progress'
       }
     }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300, stale-while-revalidate=1800'
+        'Cache-Control': 'public, max-age=300'
       }
     });
     
   } catch (error) {
-    console.error('[NBA] ❌ Error:', error);
+    console.error('[NBA] Error:', error);
     
     return new Response(JSON.stringify({
       ok: false,
