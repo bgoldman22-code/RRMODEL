@@ -14,9 +14,12 @@ import { SPREAD_MODEL, TOTAL_MODEL } from '../_lib/nba/models-inline.mjs';
  * Calculate advanced stats from game history
  */
 function calculateAdvancedStats(games, teamId, window = 10) {
+  // Convert teamId to number for comparison (ESPN sends strings, our data has numbers)
+  const numericTeamId = parseInt(teamId);
+  
   const teamGames = games
     .filter(g => 
-      g.homeTeamId === teamId || g.awayTeamId === teamId ||
+      g.homeTeamId === numericTeamId || g.awayTeamId === numericTeamId ||
       g.homeTeam === teamId || g.awayTeam === teamId
     )
     .filter(g => g.homeScore != null && g.awayScore != null)
@@ -36,7 +39,7 @@ function calculateAdvancedStats(games, teamId, window = 10) {
   };
   
   for (const game of teamGames) {
-    const isHome = game.homeTeamId === teamId || game.homeTeam === teamId;
+    const isHome = game.homeTeamId === numericTeamId || game.homeTeam === teamId;
     const teamStats = isHome ? game.homeStats : game.awayStats;
     const oppStats = isHome ? game.awayStats : game.homeStats;
     const teamScore = isHome ? game.homeScore : game.awayScore;
@@ -196,11 +199,15 @@ export default async (request, context) => {
   try {
     console.log('[NBA Elite] Starting predictions...');
     
-    // 1. Fetch today's games from ESPN (no date filter - let ESPN decide what's "today")
-    const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard`;
+    // 1. Fetch today's games from ESPN
+    const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${today}`;
+    console.log('[NBA Elite] Fetching from:', espnUrl);
     
     const espnResponse = await fetch(espnUrl);
     const espnData = await espnResponse.json();
+    
+    console.log('[NBA Elite] ESPN returned', espnData.events?.length || 0, 'events');
     
     if (!espnData.events || espnData.events.length === 0) {
       return new Response(JSON.stringify({
@@ -231,13 +238,17 @@ export default async (request, context) => {
       const home = comp.competitors.find(c => c.homeAway === 'home');
       const away = comp.competitors.find(c => c.homeAway === 'away');
       
+      console.log(`[NBA Elite] Processing: ${away.team.abbreviation} @ ${home.team.abbreviation}`);
+      
       // Calculate L10 stats for both teams
       const homeStats = calculateAdvancedStats(historicalGames, home.id, 10);
       const awayStats = calculateAdvancedStats(historicalGames, away.id, 10);
       
+      console.log(`[NBA Elite] ${home.team.abbreviation} games: ${homeStats.games}, ${away.team.abbreviation} games: ${awayStats.games}`);
+      
       // Skip if not enough data
       if (homeStats.games < 3 || awayStats.games < 3) {
-        console.log(`[NBA Elite] Skipping ${away.team.abbreviation} @ ${home.team.abbreviation} - insufficient data`);
+        console.log(`[NBA Elite] Skipping ${away.team.abbreviation} @ ${home.team.abbreviation} - insufficient data (home: ${homeStats.games}, away: ${awayStats.games})`);
         continue;
       }
       
