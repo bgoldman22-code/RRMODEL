@@ -22,6 +22,19 @@ from typing import Dict, List, Optional
 # Install: pip install py_ball
 from py_ball import team, league
 
+# Browser headers (required by NBA Stats API)
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive',
+    'Referer': 'https://www.nba.com/',
+    'Origin': 'https://www.nba.com',
+    'x-nba-stats-origin': 'stats',
+    'x-nba-stats-token': 'true'
+}
+
 # Paths
 DATA_DIR = Path(__file__).parent.parent / 'data' / 'nba'
 CHECKPOINTS_DIR = DATA_DIR / 'checkpoints'
@@ -106,7 +119,8 @@ def collect_team_advanced_stats(team_id: str, season: str) -> dict:
     
     # 1. Traditional Stats
     print(f"    - Traditional stats...")
-    team_traditional = team.TeamDashboard(
+    team_traditional = team.Team(
+        headers=HEADERS,
         team_id=team_id,
         season=season_format,
         season_type='Regular Season'
@@ -119,7 +133,8 @@ def collect_team_advanced_stats(team_id: str, season: str) -> dict:
     
     # 2. Advanced Stats
     print(f"    - Advanced stats...")
-    team_advanced = team.TeamDashboard(
+    team_advanced = team.Team(
+        headers=HEADERS,
         team_id=team_id,
         season=season_format,
         season_type='Regular Season',
@@ -133,7 +148,8 @@ def collect_team_advanced_stats(team_id: str, season: str) -> dict:
     
     # 3. Four Factors
     print(f"    - Four Factors...")
-    team_four_factors = team.TeamDashboard(
+    team_four_factors = team.Team(
+        headers=HEADERS,
         team_id=team_id,
         season=season_format,
         season_type='Regular Season',
