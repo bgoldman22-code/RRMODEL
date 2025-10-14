@@ -45,7 +45,7 @@ const NBAPredictions = () => {
   const loadPredictions = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/.netlify/functions/nba-predictions-clean');
+      const response = await fetch('/.netlify/functions/nba-predictions-elite');
       const data = await response.json();
       
       if (data.ok) {
