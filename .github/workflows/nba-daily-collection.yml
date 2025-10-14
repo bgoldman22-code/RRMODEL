@@ -19,37 +19,30 @@ jobs:
           ref: main41
           fetch-depth: 1
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          python-version: '3.11'
+          cache: 'pip'
       
-      - name: Install dependencies
-        run: npm install
+      - name: Install Python dependencies
+        run: |
+          pip install requests pandas
       
       - name: Check for new games
         id: check_games
         run: |
           # Get yesterday's date (games are usually finalized by 8am)
-          YESTERDAY=$(date -u -d "yesterday" +%Y-%m-%d)
+          YESTERDAY=$(date -u --date="yesterday" +%Y-%m-%d)
           TODAY=$(date -u +%Y-%m-%d)
           
           echo "Checking for games from $YESTERDAY to $TODAY"
           echo "date_yesterday=$YESTERDAY" >> $GITHUB_OUTPUT
           echo "date_today=$TODAY" >> $GITHUB_OUTPUT
       
-      - name: Collect yesterday's games
+      - name: Collect yesterday's games (Ultimate Collector)
         run: |
-          node scripts/collect-nba-data.js ${{ steps.check_games.outputs.date_yesterday }} ${{ steps.check_games.outputs.date_today }}
-        continue-on-error: true
-      
-      - name: Update season aggregates
-        run: |
-          # Run aggregation script to update season totals
-          if [ -f "scripts/aggregate-season-stats.js" ]; then
-            node scripts/aggregate-season-stats.js
-          fi
+          python scripts/collect-nba-ultimate.py 2024-25 ${{ steps.check_games.outputs.date_yesterday }} ${{ steps.check_games.outputs.date_today }}
         continue-on-error: true
       
       - name: Commit and push data
