@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./utils/ev.js";
 import { hotColdMultiplier } from "./utils/hotcold.js";
-import { normName, buildWhy } from "./utils/why.js";
+import { normName } from "./lib/nameNormalize.js";
+import { buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
 
 // === Variance Controls (no UI/odds changes) ===
