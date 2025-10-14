@@ -12,8 +12,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Import the predict function
-const predictPath = path.join(__dirname, '../netlify/functions/_lib/nba/predict-simple.mjs');
-const { predictGame, calculateL10Stats } = await import(predictPath);
+const predictPath = path.join(__dirname, '../netlify/functions/_lib/nba/predict-elite.mjs');
+const { predictGame, calculateAdvancedStats } = await import(predictPath);
 
 // Load historical games
 const dataPath = path.join(__dirname, '../data/nba/games/games_2024_25.json');
@@ -36,8 +36,8 @@ console.log(`Lakers recent games: ${lakersGames.length}`);
 console.log(`Suns recent games: ${sunsGames.length}\n`);
 
 // Calculate L10 stats
-const lakersStats = calculateL10Stats(lakersGames, '13');
-const sunsStats = calculateL10Stats(sunsGames, '21');
+const lakersStats = calculateAdvancedStats(lakersGames, '13', 10);
+const sunsStats = calculateAdvancedStats(sunsGames, '21', 10);
 
 console.log('Lakers L10 Stats:', lakersStats);
 console.log('Suns L10 Stats:', sunsStats, '\n');
