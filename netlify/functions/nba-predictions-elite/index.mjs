@@ -196,9 +196,8 @@ export default async (request, context) => {
   try {
     console.log('[NBA Elite] Starting predictions...');
     
-    // 1. Fetch today's games from ESPN
-    const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
-    const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${today}`;
+    // 1. Fetch today's games from ESPN (no date filter - let ESPN decide what's "today")
+    const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard`;
     
     const espnResponse = await fetch(espnUrl);
     const espnData = await espnResponse.json();
