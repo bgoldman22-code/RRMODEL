@@ -24,18 +24,18 @@ import fs from 'fs/promises';
 
 /**
  * Load historical game results for training
- * ELITE: Now loads from collected multi-season data files
+ * ELITE: Now loads ENHANCED games with advanced stats (Pace, OffRtg, DefRtg, etc.)
  */
 export async function loadHistoricalGames(seasons = ['2023-24', '2024-25']) {
-  console.log('[Training] Loading historical games for seasons:', seasons);
+  console.log('[Training] Loading ENHANCED historical games for seasons:', seasons);
   
   const allGames = [];
   
-  // Map season format to file names
+  // Map season format to ENHANCED file names
   const seasonFileMap = {
-    '2022-23': 'games_2022_23.json',
-    '2023-24': 'games_2023_24.json',
-    '2024-25': 'games_2024_25.json'
+    '2022-23': 'games_2022_23_enhanced.json',
+    '2023-24': 'games_2023_24_enhanced.json',
+    '2024-25': 'games_2024_25_enhanced.json'
   };
   
   for (const season of seasons) {
@@ -45,21 +45,39 @@ export async function loadHistoricalGames(seasons = ['2023-24', '2024-25']) {
       continue;
     }
     
-    const filepath = `data/nba/games/${filename}`;
+    // Try enhanced file first, fallback to regular
+    let filepath = `data/nba/advanced/${filename}`;
+    let isEnhanced = true;
     
     try {
       const content = await fs.readFile(filepath, 'utf8');
       const seasonGames = JSON.parse(content);
       
-      console.log(`[Training] Loaded ${seasonGames.length} games from ${season}`);
+      // Verify it has advanced stats
+      const hasAdvanced = seasonGames[0]?.homeAdvanced !== undefined;
+      
+      console.log(`[Training] Loaded ${seasonGames.length} games from ${season} ${hasAdvanced ? '(ENHANCED)' : '(BASIC)'}`);
       allGames.push(...seasonGames);
       
     } catch (error) {
-      console.warn(`[Training] Could not load ${filepath}:`, error.message);
+      // Fallback to basic games if enhanced not available
+      filepath = `data/nba/games/${filename.replace('_enhanced', '')}`;
+      try {
+        const content = await fs.readFile(filepath, 'utf8');
+        const seasonGames = JSON.parse(content);
+        console.warn(`[Training] ⚠️  Using BASIC games for ${season} (enhanced not found)`);
+        allGames.push(...seasonGames);
+      } catch (fallbackError) {
+        console.warn(`[Training] Could not load ${season}:`, fallbackError.message);
+      }
     }
   }
   
   console.log(`[Training] ✅ Total games loaded: ${allGames.length}`);
+  
+  // Check if we have enhanced stats
+  const hasEnhanced = allGames[0]?.homeAdvanced !== undefined;
+  console.log(`[Training] ${hasEnhanced ? '✅ ENHANCED stats available' : '⚠️  Using BASIC stats only'}`);
   
   return allGames;
 }
