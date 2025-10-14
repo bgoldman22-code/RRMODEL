@@ -25,6 +25,7 @@ const NBAPredictions = () => {
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'predictions'); // predictions, inefficiencies, kelly, analytics
+  const [preseasonMessage, setPreseasonMessage] = useState(null);
   
   // Unit-based betting (remove personal bankroll)
   const UNIT_VALUE = 10; // $10 per unit (based on $5000 bankroll)
@@ -49,10 +50,20 @@ const NBAPredictions = () => {
       const data = await response.json();
       
       if (data.ok) {
-        setPredictions(data.predictions);
-        
-        // Process advanced analytics
-        processAnalytics(data.predictions);
+        // Check if preseason pause is active
+        if (data.preseason) {
+          setPredictions([]);
+          setInefficiencies([]);
+          setKellyPortfolio({ bets: [], total: 0 });
+          setBetLadder({ bets: [], totalStake: 0, totalUnits: 0 });
+          setPreseasonMessage(data);
+        } else {
+          setPredictions(data.predictions);
+          setPreseasonMessage(null);
+          
+          // Process advanced analytics
+          processAnalytics(data.predictions);
+        }
       }
     } catch (error) {
       console.error('Error loading predictions:', error);
@@ -182,6 +193,39 @@ const NBAPredictions = () => {
           </div>
         </div>
       </header>
+
+      {preseasonMessage && (
+        <div className="preseason-notice" style={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          padding: '2rem',
+          borderRadius: '12px',
+          margin: '2rem',
+          textAlign: 'center',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+        }}>
+          <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>🏀 {preseasonMessage.message}</h2>
+          <p style={{ fontSize: '1.1rem', marginBottom: '1rem', lineHeight: '1.6' }}>
+            {preseasonMessage.explanation}
+          </p>
+          <div style={{ 
+            background: 'rgba(255,255,255,0.1)', 
+            padding: '1rem', 
+            borderRadius: '8px',
+            marginTop: '1.5rem'
+          }}>
+            <p style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>
+              <strong>Regular Season Starts:</strong> {preseasonMessage.regularSeasonStart}
+            </p>
+            <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>
+              {preseasonMessage.note}
+            </p>
+          </div>
+          <div style={{ marginTop: '1.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
+            <p>Model: {preseasonMessage.modelInfo.type} | MAE: {preseasonMessage.modelInfo.spreadMAE} | Features: {preseasonMessage.modelInfo.features}</p>
+          </div>
+        </div>
+      )}
 
       <nav className="predictions-nav">
         <button 
