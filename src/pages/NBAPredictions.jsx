@@ -339,15 +339,15 @@ const NBAPredictions = () => {
                 <div className="factors-grid">
                   <div className="factor">
                     <span className="factor-label">Home L10:</span>
-                    <span className="factor-value">{pred.keyFactors.homeL10NetRating}</span>
+                    <span className="factor-value">{pred.features?.homeL10?.netRtg || 'N/A'}</span>
                   </div>
                   <div className="factor">
                     <span className="factor-label">Away L10:</span>
-                    <span className="factor-value">{pred.keyFactors.awayL10NetRating}</span>
+                    <span className="factor-value">{pred.features?.awayL10?.netRtg || 'N/A'}</span>
                   </div>
                   <div className="factor">
-                    <span className="factor-label">Pace:</span>
-                    <span className="factor-value">{pred.keyFactors.paceMatchup}</span>
+                    <span className="factor-label">Games:</span>
+                    <span className="factor-value">{pred.features?.homeL10?.games || 0}</span>
                   </div>
                 </div>
               </div>
