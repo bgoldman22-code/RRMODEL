@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import './NBAPredictions.css';
 
 /**
- * NBA Predictions - Elite Pro Bettor Interface
+ * NBA Predictions - Elite Pro Bettor Interface (v2.0)
  * 
  * Features:
  * - Real-time predictions with confidence scores
