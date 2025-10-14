@@ -228,15 +228,19 @@ const NBAPredictions = () => {
               <div className="prediction-details">
                 <div className="detail-row">
                   <span className="label">Predicted Spread:</span>
-                  <span className="value">{pred.predictedSpread > 0 ? '+' : ''}{pred.predictedSpread}</span>
+                  <span className="value">
+                    {pred.prediction?.spread?.favorite === 'home' ? 
+                      `${pred.teams?.home?.abbreviation || 'HOME'} -${pred.prediction.spread.line}` : 
+                      `${pred.teams?.away?.abbreviation || 'AWAY'} -${pred.prediction.spread.line}`}
+                  </span>
                 </div>
                 <div className="detail-row">
                   <span className="label">Predicted Total:</span>
-                  <span className="value">{pred.predictedTotal}</span>
+                  <span className="value">{pred.prediction?.total?.prediction?.toFixed(1) || 'N/A'}</span>
                 </div>
                 <div className="detail-row">
                   <span className="label">Home Win Prob:</span>
-                  <span className="value">{pred.homeWinProb}%</span>
+                  <span className="value">{pred.prediction?.winProbability?.home || 0}%</span>
                 </div>
               </div>
 
