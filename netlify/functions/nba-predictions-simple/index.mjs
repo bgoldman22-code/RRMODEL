@@ -8,11 +8,11 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { predictGame } from '../_lib/nba/predict-simple.mjs';
+import { predictGame } from '../_lib/nba/predict-elite.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
+D
 /**
  * Load historical games for recent performance calculation
  */
@@ -374,11 +374,11 @@ export default async (request, context) => {
       opportunities: predictions.reduce((sum, p) => sum + p.opportunities.length, 0),
       predictions,
       modelInfo: {
-        type: 'Linear Regression',
-        features: 18,
+        type: 'Elite Ensemble',
+        features: 55,
         trainingSamples: 4123,
-        spreadMAE: 12.70,
-        totalMAE: 15.89
+        spreadMAE: 11.606,
+        totalMAE: 14.691
       }
     }), {
       status: 200,
