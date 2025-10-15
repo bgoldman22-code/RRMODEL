@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2025-10-14T16:48:55Z",
+    "generated_at": "2025-10-15T16:46:58Z",
     "season": 2025,
     "week": 7,
-    "total_players": 569,
+    "total_players": 570,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -2192,6 +2192,27 @@
       "multiple_td": 0.0491
     },
     {
+      "player_id": "00-0034364",
+      "name": "J.Akins",
+      "team": "JAX",
+      "position": "TE",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "TE",
+      "anytime_td_prob": 0.765,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.3075,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.765,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
       "player_id": "00-0034376",
       "name": "Ta.Johnson",
       "team": "BUF",
@@ -3601,7 +3622,7 @@
     {
       "player_id": "00-0035341",
       "name": "T.Irwin",
-      "team": "JAX",
+      "team": "NYJ",
       "position": "WR",
       "opponent": "TBD",
       "is_home": true,
