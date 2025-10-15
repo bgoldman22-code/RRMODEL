@@ -50,19 +50,44 @@ const NBAPredictions = () => {
       const data = await response.json();
       
       if (data.ok) {
+        // Transform backend data to frontend format
+        const transformedPredictions = (data.predictions || []).map(pred => ({
+          ...pred,
+          // Map opportunities to recommendations format
+          recommendations: (pred.opportunities || []).map(opp => ({
+            market: opp.market,
+            pick: opp.pick,
+            line: opp.odds || opp.vegasLine || '',
+            edgePercent: opp.edgePercent || Math.abs(opp.edge || 0),
+            edge: opp.edge,
+            units: opp.units || (opp.edgePercent > 10 ? 5 : opp.edgePercent > 7 ? 4 : opp.edgePercent > 5 ? 3 : opp.edgePercent > 3 ? 2 : 1),
+            rating: '⭐'.repeat(opp.units || (opp.edgePercent > 10 ? 5 : opp.edgePercent > 7 ? 4 : opp.edgePercent > 5 ? 3 : opp.edgePercent > 3 ? 2 : 1)),
+            betSize: opp.betSize,
+            book: opp.book,
+            modelLine: opp.modelLine,
+            vegasLine: opp.vegasLine
+          })),
+          // Map vegasLines to marketOdds format
+          marketOdds: pred.vegasLines ? {
+            spread: pred.vegasLines.spread ? `${pred.vegasLines.spread.line} (${pred.vegasLines.spread.price > 0 ? '+' : ''}${pred.vegasLines.spread.price})` : 'N/A',
+            total: pred.vegasLines.total ? `${pred.vegasLines.total.line} (O: ${pred.vegasLines.total.overPrice > 0 ? '+' : ''}${pred.vegasLines.total.overPrice} / U: ${pred.vegasLines.total.underPrice > 0 ? '+' : ''}${pred.vegasLines.total.underPrice})` : 'N/A',
+            moneyline: pred.vegasLines.moneyline ? `${pred.teams?.home?.abbreviation || 'HOME'}: ${pred.vegasLines.moneyline.home > 0 ? '+' : ''}${pred.vegasLines.moneyline.home} / ${pred.teams?.away?.abbreviation || 'AWAY'}: ${pred.vegasLines.moneyline.away > 0 ? '+' : ''}${pred.vegasLines.moneyline.away}` : 'N/A'
+          } : null
+        }));
+        
         // If preseason, display picks for UI/UX but exclude from analytics
-        if (data.preseason) {
+        if (data.isPreseason) {
           setPreseasonMessage({
-            message: 'Preseason – For Display Only. These picks do NOT affect model training, analytics, or bankroll. Use for UI/UX and curiosity only.',
+            message: data.preseasonWarning || 'Preseason – For Display Only. These picks do NOT affect model training, analytics, or bankroll. Use for UI/UX and curiosity only.',
             ...data
           });
-          setPredictions(data.predictions || []);
+          setPredictions(transformedPredictions);
           // Only process analytics on regular season games
-          processAnalytics((data.predictions || []).filter(p => !p.preseason));
+          processAnalytics(transformedPredictions.filter(p => !p.isPreseason));
         } else {
           setPreseasonMessage(null);
-          setPredictions(data.predictions || []);
-          processAnalytics(data.predictions || []);
+          setPredictions(transformedPredictions);
+          processAnalytics(transformedPredictions);
         }
       }
     } catch (error) {
@@ -288,33 +313,124 @@ const NBAPredictions = () => {
                 </div>
               </div>
 
-              {pred.marketOdds && (
-                <div className="market-comparison">
-                  <h4>Market Odds</h4>
-                  <div className="detail-row">
-                    <span className="label">Market Spread:</span>
-                    <span className="value">{pred.marketOdds.spread}</span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="label">Market Total:</span>
-                    <span className="value">{pred.marketOdds.total}</span>
-                  </div>
+              {/* Vegas Lines & Model Comparison */}
+              {pred.vegasLines && (
+                <div className="vegas-lines">
+                  <h4>📊 Vegas Lines & Model</h4>
+                  
+                  {/* Spread */}
+                  {pred.vegasLines.spread && (
+                    <div className="line-comparison">
+                      <div className="detail-row">
+                        <span className="label">Model Spread:</span>
+                        <span className="value">
+                          {pred.prediction?.spread?.favorite === 'home' ? 
+                            `${pred.teams?.home?.abbreviation} -${pred.prediction.spread.line}` : 
+                            `${pred.teams?.away?.abbreviation} -${pred.prediction.spread.line}`}
+                        </span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="label">Vegas Spread:</span>
+                        <span className="value">
+                          {pred.vegasLines.spread.line > 0 ? 
+                            `${pred.teams?.away?.abbreviation} -${pred.vegasLines.spread.line}` : 
+                            `${pred.teams?.home?.abbreviation} -${Math.abs(pred.vegasLines.spread.line)}`}
+                          <span className="book-badge">{pred.vegasLines.spread.book}</span>
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Total */}
+                  {pred.vegasLines.total && (
+                    <div className="line-comparison">
+                      <div className="detail-row">
+                        <span className="label">Model Total:</span>
+                        <span className="value">{pred.prediction?.total?.prediction?.toFixed(1)}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="label">Vegas Total:</span>
+                        <span className="value">
+                          {pred.vegasLines.total.line}
+                          <span className="book-badge">{pred.vegasLines.total.book}</span>
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Moneyline */}
+                  {pred.vegasLines.moneyline && (
+                    <div className="line-comparison">
+                      <div className="detail-row">
+                        <span className="label">Moneyline:</span>
+                        <span className="value">
+                          {pred.teams?.home?.abbreviation} {pred.vegasLines.moneyline.home > 0 ? '+' : ''}{pred.vegasLines.moneyline.home} / 
+                          {pred.teams?.away?.abbreviation} {pred.vegasLines.moneyline.away > 0 ? '+' : ''}{pred.vegasLines.moneyline.away}
+                          <span className="book-badge">{pred.vegasLines.moneyline.book}</span>
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {pred.recommendations && pred.recommendations.length > 0 && (
+              {/* Betting Opportunities */}
+              {pred.opportunities && pred.opportunities.length > 0 && (
                 <div className="recommendations">
-                  <h4>🎯 Best Bets</h4>
-                  {pred.recommendations.map((rec, j) => (
+                  <h4>🎯 Recommended Bets</h4>
+                  {pred.opportunities.map((opp, j) => (
                     <div key={j} className="recommendation">
                       <div className="rec-header">
-                        <span className="market">{rec.market}</span>
-                        <span className="rating">{rec.rating}</span>
+                        <span className="market-type">{opp.market}</span>
+                        {opp.units && <span className="units-badge">{opp.units} Units</span>}
                       </div>
                       <div className="rec-pick">
-                        <strong>{rec.pick}</strong> ({rec.line})
+                        {opp.pick}
                       </div>
-                      {getEdgeBadge(rec.edgePercent)}
+                      <div className="rec-details">
+                        <div className="detail-item">
+                          <span className="detail-label">Model Line</span>
+                          <span className="detail-value">{opp.modelLine}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">Vegas Line</span>
+                          <span className="detail-value">{opp.vegasLine}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">Edge</span>
+                          <span className="detail-value highlight">
+                            {typeof opp.edge === 'number' ? Math.abs(opp.edge).toFixed(1) : opp.edge} pts
+                          </span>
+                        </div>
+                      </div>
+                      {opp.edgePercent && (
+                        <div className="edge-display">
+                          <div className="detail-row">
+                            <span className="label">Edge %:</span>
+                            <span className="value highlight">{Math.abs(opp.edgePercent).toFixed(1)}%</span>
+                          </div>
+                        </div>
+                      )}
+                      {opp.betSize && opp.kelly && (
+                        <div className="kelly-sizing">
+                          <div className="kelly-stat">
+                            <span className="kelly-label">Kelly %</span>
+                            <span className="kelly-value">{opp.kelly}%</span>
+                          </div>
+                          <div className="kelly-stat">
+                            <span className="kelly-label">Bet Size</span>
+                            <span className="kelly-value">${opp.betSize}</span>
+                          </div>
+                          <div className="kelly-stat">
+                            <span className="kelly-label">Units</span>
+                            <span className="kelly-value">{opp.units}</span>
+                          </div>
+                        </div>
+                      )}
+                      <div className="detail-row">
+                        <span className="label">Book:</span>
+                        <span className="value">{opp.book || 'Best Line'}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
