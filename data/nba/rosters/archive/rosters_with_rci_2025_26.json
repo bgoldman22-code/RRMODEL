@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "calculated_at": "2025-10-15T00:26:12.195Z",
+  "season": "2025-26",
+  "previous_season": "2024-25",
+  "team_count": 0,
+  "formula": "RCI = 0.6 * (returning_minutes_pct) + 0.4 * (returning_BPM_impact_pct)",
+  "min_games_played": 20,
+  "min_total_minutes": 200,
+  "rosters": []
+}
