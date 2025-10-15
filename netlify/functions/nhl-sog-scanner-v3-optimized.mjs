@@ -13,6 +13,8 @@
  * - Live odds for accurate edge calculations
  */
 
+import { logNHLPredictions } from './_lib/nhl/prediction-logger.mjs';
+
 // Real odds fetching using The Odds API
 async function fetchNHLOdds() {
   const apiKey = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
@@ -176,7 +178,20 @@ export async function handler(event, context) {
     }
     
     const schedule = await scheduleResponse.json();
-    const games = schedule.gameWeek?.[0]?.games || [];
+    
+    // FIX: Get ALL games from entire game week, not just first day
+    // This ensures afternoon AND evening games both show up
+    const allGames = [];
+    if (schedule.gameWeek) {
+      for (const day of schedule.gameWeek) {
+        if (day.games) {
+          allGames.push(...day.games);
+        }
+      }
+    }
+    
+    // Filter to only today's games (but from full week data)
+    const games = allGames.filter(g => g.gameDate?.startsWith(today));
     
     if (games.length === 0) {
       return {
@@ -277,6 +292,18 @@ export async function handler(event, context) {
     opportunities.sort((a, b) => b.edge - a.edge);
     
     console.log(`✅ Generated ${opportunities.length} opportunities`);
+    
+    // Log predictions to CSV for tracking
+    try {
+      await logNHLPredictions(opportunities, {
+        date: today,
+        usingRealOdds: !!realOddsData
+      });
+      console.log('📊 Predictions logged to CSV');
+    } catch (logError) {
+      console.error('⚠️ Failed to log predictions:', logError);
+      // Don't fail the request if logging fails
+    }
     
     return {
       statusCode: 200,
