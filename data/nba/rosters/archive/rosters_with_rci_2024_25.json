@@ -1,0 +1,3892 @@
+{
+  "schema_version": 1,
+  "calculated_at": "2025-10-15T00:26:12.194Z",
+  "season": "2024-25",
+  "previous_season": "2023-24",
+  "team_count": 30,
+  "formula": "RCI = 0.6 * (returning_minutes_pct) + 0.4 * (returning_BPM_impact_pct)",
+  "min_games_played": 20,
+  "min_total_minutes": 200,
+  "rosters": [
+    {
+      "team": "PHI",
+      "season": "2024-25",
+      "rci": 0.321,
+      "returning_minutes_pct": 0.321,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 4,
+      "total_previous_players": 16,
+      "new_player_count": 12,
+      "roster": [
+        {
+          "player": "Adem Bona",
+          "minutes_played": 904.55,
+          "games_played": 58,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Andre Drummond",
+          "minutes_played": 750.6333333333333,
+          "games_played": 40,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Eric Gordon",
+          "minutes_played": 768.4916666666667,
+          "games_played": 39,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Guerschon Yabusele",
+          "minutes_played": 1894.7366666666667,
+          "games_played": 70,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jared Butler",
+          "minutes_played": 1043.735,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jared McCain",
+          "minutes_played": 591.7916666666666,
+          "games_played": 23,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jeff Dowtin Jr.",
+          "minutes_played": 620.77,
+          "games_played": 41,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Justin Edwards",
+          "minutes_played": 1154.72,
+          "games_played": 44,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Kelly Oubre Jr.",
+          "minutes_played": 2078.19,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kyle Lowry",
+          "minutes_played": 659.4483333333334,
+          "games_played": 35,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Lonnie Walker IV",
+          "minutes_played": 476.7033333333333,
+          "games_played": 20,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Paul George",
+          "minutes_played": 1333.5933333333332,
+          "games_played": 41,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Quentin Grimes",
+          "minutes_played": 2013.09,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Reggie Jackson",
+          "minutes_played": 383.9916666666667,
+          "games_played": 31,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Ricky Council IV",
+          "minutes_played": 1250.015,
+          "games_played": 73,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Tyrese Maxey",
+          "minutes_played": 1960.195,
+          "games_played": 52,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "CHA",
+      "season": "2024-25",
+      "rci": 0.392,
+      "returning_minutes_pct": 0.392,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 5,
+      "total_previous_players": 17,
+      "new_player_count": 11,
+      "roster": [
+        {
+          "player": "Brandon Miller",
+          "minutes_played": 923.565,
+          "games_played": 27,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "DaQuan Jeffries",
+          "minutes_played": 1071.5066666666667,
+          "games_played": 47,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Isaiah Wong",
+          "minutes_played": 265.50333333333333,
+          "games_played": 20,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Josh Green",
+          "minutes_played": 1887.5033333333333,
+          "games_played": 68,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Josh Okogie",
+          "minutes_played": 624.9783333333334,
+          "games_played": 40,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jusuf Nurkić",
+          "minutes_played": 1062.8266666666666,
+          "games_played": 51,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "KJ Simpson",
+          "minutes_played": 842.0833333333334,
+          "games_played": 36,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "LaMelo Ball",
+          "minutes_played": 1504.475,
+          "games_played": 47,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Mark Williams",
+          "minutes_played": 1171.045,
+          "games_played": 44,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Miles Bridges",
+          "minutes_played": 2028.735,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Moussa Diabaté",
+          "minutes_played": 1240.6333333333334,
+          "games_played": 71,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Nick Smith Jr.",
+          "minutes_played": 1368.7466666666667,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Seth Curry",
+          "minutes_played": 1061.9566666666667,
+          "games_played": 68,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Taj Gibson",
+          "minutes_played": 408.85,
+          "games_played": 37,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Tidjane Salaün",
+          "minutes_played": 1244.3533333333332,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Wendell Moore Jr.",
+          "minutes_played": 498.9166666666667,
+          "games_played": 36,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "WAS",
+      "season": "2024-25",
+      "rci": 0.444,
+      "returning_minutes_pct": 0.444,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 6,
+      "total_previous_players": 14,
+      "new_player_count": 11,
+      "roster": [
+        {
+          "player": "AJ Johnson",
+          "minutes_played": 638.3866666666667,
+          "games_played": 29,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Alex Sarr",
+          "minutes_played": 1814.2283333333332,
+          "games_played": 67,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Anthony Gill",
+          "minutes_played": 397.575,
+          "games_played": 51,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Bilal Coulibaly",
+          "minutes_played": 1947.5066666666667,
+          "games_played": 59,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Bub Carrington",
+          "minutes_played": 2457.79,
+          "games_played": 82,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Colby Jones",
+          "minutes_played": 514.6483333333333,
+          "games_played": 39,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Corey Kispert",
+          "minutes_played": 1601.5233333333333,
+          "games_played": 61,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "JT Thor",
+          "minutes_played": 249.31666666666666,
+          "games_played": 20,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Johnny Davis",
+          "minutes_played": 241.65833333333333,
+          "games_played": 34,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jordan Poole",
+          "minutes_played": 2000.8866666666668,
+          "games_played": 68,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Justin Champagnie",
+          "minutes_played": 1340.5333333333333,
+          "games_played": 62,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Khris Middleton",
+          "minutes_played": 843.1816666666666,
+          "games_played": 37,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Kyshawn George",
+          "minutes_played": 1802.1833333333334,
+          "games_played": 68,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Malcolm Brogdon",
+          "minutes_played": 564.0766666666667,
+          "games_played": 24,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Marcus Smart",
+          "minutes_played": 680.34,
+          "games_played": 34,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Richaun Holmes",
+          "minutes_played": 534.135,
+          "games_played": 31,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Tristan Vukcevic",
+          "minutes_played": 512.51,
+          "games_played": 35,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "BKN",
+      "season": "2024-25",
+      "rci": 0.445,
+      "returning_minutes_pct": 0.445,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 7,
+      "total_previous_players": 14,
+      "new_player_count": 8,
+      "roster": [
+        {
+          "player": "Cam Thomas",
+          "minutes_played": 781.1566666666666,
+          "games_played": 25,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Cameron Johnson",
+          "minutes_played": 1799.7633333333333,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "D'Angelo Russell",
+          "minutes_played": 1480.4183333333333,
+          "games_played": 58,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Dariq Whitehead",
+          "minutes_played": 246.07833333333335,
+          "games_played": 20,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Day'Ron Sharpe",
+          "minutes_played": 907.4583333333334,
+          "games_played": 50,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jalen Wilson",
+          "minutes_played": 2031.3866666666668,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Keon Johnson",
+          "minutes_played": 1925.2016666666666,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Maxwell Lewis",
+          "minutes_played": 327.68833333333333,
+          "games_played": 28,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Nic Claxton",
+          "minutes_played": 1881.7316666666666,
+          "games_played": 70,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Noah Clowney",
+          "minutes_played": 1042.2866666666666,
+          "games_played": 46,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Reece Beekman",
+          "minutes_played": 469.30333333333334,
+          "games_played": 36,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Tosan Evbuomwan",
+          "minutes_played": 664.93,
+          "games_played": 28,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Trendon Watford",
+          "minutes_played": 912.6766666666666,
+          "games_played": 44,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Tyrese Martin",
+          "minutes_played": 1315.32,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Ziaire Williams",
+          "minutes_played": 1541.4033333333334,
+          "games_played": 63,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "LAL",
+      "season": "2024-25",
+      "rci": 0.446,
+      "returning_minutes_pct": 0.446,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 6,
+      "total_previous_players": 13,
+      "new_player_count": 10,
+      "roster": [
+        {
+          "player": "Alex Len",
+          "minutes_played": 379.79,
+          "games_played": 46,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Austin Reaves",
+          "minutes_played": 2550.0916666666667,
+          "games_played": 73,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Cam Reddish",
+          "minutes_played": 589.45,
+          "games_played": 33,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Christian Koloko",
+          "minutes_played": 341.53,
+          "games_played": 37,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Dalton Knecht",
+          "minutes_played": 1493.795,
+          "games_played": 78,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Dorian Finney-Smith",
+          "minutes_played": 1818.6783333333333,
+          "games_played": 63,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Gabe Vincent",
+          "minutes_played": 1527.265,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jarred Vanderbilt",
+          "minutes_played": 580.8583333333333,
+          "games_played": 36,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jaxson Hayes",
+          "minutes_played": 1092.6833333333334,
+          "games_played": 56,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jordan Goodwin",
+          "minutes_played": 542.575,
+          "games_played": 29,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "LeBron James",
+          "minutes_played": 2444.4466666666667,
+          "games_played": 70,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Luka Dončić",
+          "minutes_played": 1768.55,
+          "games_played": 50,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Maxi Kleber",
+          "minutes_played": 636.875,
+          "games_played": 34,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Rui Hachimura",
+          "minutes_played": 1868.825,
+          "games_played": 59,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Shake Milton",
+          "minutes_played": 836.2766666666666,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Trey Jemison III",
+          "minutes_played": 392.0233333333333,
+          "games_played": 38,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "ATL",
+      "season": "2024-25",
+      "rci": 0.453,
+      "returning_minutes_pct": 0.453,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 6,
+      "total_previous_players": 13,
+      "new_player_count": 9,
+      "roster": [
+        {
+          "player": "Caris LeVert",
+          "minutes_played": 1596.1066666666666,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Clint Capela",
+          "minutes_played": 1176.4333333333334,
+          "games_played": 55,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Dominick Barlow",
+          "minutes_played": 374.99833333333333,
+          "games_played": 35,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Dyson Daniels",
+          "minutes_played": 2571.17,
+          "games_played": 76,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Garrison Mathews",
+          "minutes_played": 829.5083333333333,
+          "games_played": 47,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Georges Niang",
+          "minutes_played": 1697.2333333333333,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jalen Johnson",
+          "minutes_played": 1284.1783333333333,
+          "games_played": 36,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Keaton Wallace",
+          "minutes_played": 501.1666666666667,
+          "games_played": 31,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Larry Nance Jr.",
+          "minutes_played": 463.2266666666667,
+          "games_played": 24,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Mouhamed Gueye",
+          "minutes_played": 532.7566666666667,
+          "games_played": 33,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Onyeka Okongwu",
+          "minutes_played": 2063.9266666666667,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Terance Mann",
+          "minutes_played": 1414.25,
+          "games_played": 67,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Trae Young",
+          "minutes_played": 2739.06,
+          "games_played": 76,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Vít Krejčí",
+          "minutes_played": 1152.6316666666667,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Zaccharie Risacher",
+          "minutes_played": 1843.3866666666668,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "SAC",
+      "season": "2024-25",
+      "rci": 0.488,
+      "returning_minutes_pct": 0.488,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 5,
+      "total_previous_players": 14,
+      "new_player_count": 7,
+      "roster": [
+        {
+          "player": "DeMar DeRozan",
+          "minutes_played": 2767.615,
+          "games_played": 77,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Devin Carter",
+          "minutes_played": 395.9433333333333,
+          "games_played": 36,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Domantas Sabonis",
+          "minutes_played": 2428.8766666666666,
+          "games_played": 70,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Doug McDermott",
+          "minutes_played": 341.65166666666664,
+          "games_played": 42,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Isaac Jones",
+          "minutes_played": 303.86333333333334,
+          "games_played": 40,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jake LaRavia",
+          "minutes_played": 1349.28,
+          "games_played": 66,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jonas Valančiūnas",
+          "minutes_played": 1523.7633333333333,
+          "games_played": 81,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Keegan Murray",
+          "minutes_played": 2610.173333333333,
+          "games_played": 76,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Keon Ellis",
+          "minutes_played": 1948.1916666666666,
+          "games_played": 80,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Malik Monk",
+          "minutes_played": 2054.11,
+          "games_played": 65,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Trey Lyles",
+          "minutes_played": 1349.5216666666668,
+          "games_played": 69,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Zach LaVine",
+          "minutes_played": 2602.48,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "NYK",
+      "season": "2024-25",
+      "rci": 0.49,
+      "returning_minutes_pct": 0.49,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 5,
+      "total_previous_players": 13,
+      "new_player_count": 7,
+      "roster": [
+        {
+          "player": "Ariel Hukporti",
+          "minutes_played": 217.365,
+          "games_played": 25,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Cameron Payne",
+          "minutes_played": 1089.9766666666667,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Delon Wright",
+          "minutes_played": 634.4966666666667,
+          "games_played": 40,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jalen Brunson",
+          "minutes_played": 2300.7083333333335,
+          "games_played": 65,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Josh Hart",
+          "minutes_played": 2896.83,
+          "games_played": 77,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Karl-Anthony Towns",
+          "minutes_played": 2516.72,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Landry Shamet",
+          "minutes_played": 761.6,
+          "games_played": 50,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Mikal Bridges",
+          "minutes_played": 3036.076666666667,
+          "games_played": 82,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Miles McBride",
+          "minutes_played": 1593.455,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "OG Anunoby",
+          "minutes_played": 2705.7766666666666,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Precious Achiuwa",
+          "minutes_played": 1169.6133333333332,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Tyler Kolek",
+          "minutes_played": 296.15166666666664,
+          "games_played": 41,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "DAL",
+      "season": "2024-25",
+      "rci": 0.529,
+      "returning_minutes_pct": 0.529,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 8,
+      "total_previous_players": 15,
+      "new_player_count": 9,
+      "roster": [
+        {
+          "player": "Anthony Davis",
+          "minutes_played": 1705.4883333333332,
+          "games_played": 51,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Brandon Williams",
+          "minutes_played": 487.13,
+          "games_played": 33,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Caleb Martin",
+          "minutes_played": 1218.0166666666667,
+          "games_played": 45,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Daniel Gafford",
+          "minutes_played": 1226.095,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Danté Exum",
+          "minutes_played": 372.31,
+          "games_played": 20,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Dereck Lively II",
+          "minutes_played": 832.7366666666667,
+          "games_played": 36,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Dwight Powell",
+          "minutes_played": 550.86,
+          "games_played": 55,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jaden Hardy",
+          "minutes_played": 907.4383333333334,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kai Jones",
+          "minutes_played": 468.37,
+          "games_played": 40,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Kessler Edwards",
+          "minutes_played": 608.46,
+          "games_played": 40,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Klay Thompson",
+          "minutes_played": 1964.5683333333334,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Kyrie Irving",
+          "minutes_played": 1803.7966666666666,
+          "games_played": 50,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Max Christie",
+          "minutes_played": 2127.141666666667,
+          "games_played": 78,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Naji Marshall",
+          "minutes_played": 1919.0833333333333,
+          "games_played": 69,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Olivier-Maxence Prosper",
+          "minutes_played": 584.07,
+          "games_played": 52,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "P.J. Washington",
+          "minutes_played": 1834.8583333333333,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Spencer Dinwiddie",
+          "minutes_played": 2136.085,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "LAC",
+      "season": "2024-25",
+      "rci": 0.538,
+      "returning_minutes_pct": 0.538,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 6,
+      "total_previous_players": 14,
+      "new_player_count": 8,
+      "roster": [
+        {
+          "player": "Amir Coffey",
+          "minutes_played": 1747.54,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Ben Simmons",
+          "minutes_played": 1119.6933333333334,
+          "games_played": 51,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Bogdan Bogdanović",
+          "minutes_played": 1347.6583333333333,
+          "games_played": 54,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Derrick Jones Jr.",
+          "minutes_played": 1873.3883333333333,
+          "games_played": 77,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Drew Eubanks",
+          "minutes_played": 746.01,
+          "games_played": 61,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Ivica Zubac",
+          "minutes_played": 2624.1766666666667,
+          "games_played": 80,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "James Harden",
+          "minutes_played": 2789.036666666667,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jordan Miller",
+          "minutes_played": 420.31,
+          "games_played": 37,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Kawhi Leonard",
+          "minutes_played": 1179.9566666666667,
+          "games_played": 37,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kobe Brown",
+          "minutes_played": 272.22,
+          "games_played": 40,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kris Dunn",
+          "minutes_played": 1782.9183333333333,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Nicolas Batum",
+          "minutes_played": 1367.3733333333332,
+          "games_played": 78,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Norman Powell",
+          "minutes_played": 1957.9883333333332,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Patty Mills",
+          "minutes_played": 320.655,
+          "games_played": 29,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "NOP",
+      "season": "2024-25",
+      "rci": 0.56,
+      "returning_minutes_pct": 0.56,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 7,
+      "total_previous_players": 14,
+      "new_player_count": 11,
+      "roster": [
+        {
+          "player": "Antonio Reeves",
+          "minutes_played": 659.5583333333333,
+          "games_played": 44,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Brandon Boston",
+          "minutes_played": 992.78,
+          "games_played": 42,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Bruce Brown",
+          "minutes_played": 921.53,
+          "games_played": 41,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "CJ McCollum",
+          "minutes_played": 1831.6783333333333,
+          "games_played": 56,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Daniel Theis",
+          "minutes_played": 621.2416666666667,
+          "games_played": 38,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Dejounte Murray",
+          "minutes_played": 1012.1483333333333,
+          "games_played": 31,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Elfrid Payton",
+          "minutes_played": 510.805,
+          "games_played": 24,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Herbert Jones",
+          "minutes_played": 648.1316666666667,
+          "games_played": 20,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jamal Cain",
+          "minutes_played": 501.79833333333335,
+          "games_played": 37,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jeremiah Robinson-Earl",
+          "minutes_played": 1238.9,
+          "games_played": 66,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jordan Hawkins",
+          "minutes_played": 1320.5,
+          "games_played": 56,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jose Alvarado",
+          "minutes_played": 1365.9,
+          "games_played": 56,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Karlo Matković",
+          "minutes_played": 790.585,
+          "games_played": 42,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Kelly Olynyk",
+          "minutes_played": 890.9983333333333,
+          "games_played": 44,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Mo Bamba",
+          "minutes_played": 413.485,
+          "games_played": 32,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Trey Murphy III",
+          "minutes_played": 1854.23,
+          "games_played": 53,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Yves Missi",
+          "minutes_played": 1955.79,
+          "games_played": 73,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Zion Williamson",
+          "minutes_played": 857.2766666666666,
+          "games_played": 30,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "CHI",
+      "season": "2024-25",
+      "rci": 0.56,
+      "returning_minutes_pct": 0.56,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 7,
+      "total_previous_players": 13,
+      "new_player_count": 8,
+      "roster": [
+        {
+          "player": "Ayo Dosunmu",
+          "minutes_played": 1393.8833333333334,
+          "games_played": 46,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Coby White",
+          "minutes_played": 2450.2566666666667,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Dalen Terry",
+          "minutes_played": 987.1783333333333,
+          "games_played": 73,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jalen Smith",
+          "minutes_played": 962.3833333333333,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jevon Carter",
+          "minutes_played": 320.5733333333333,
+          "games_played": 36,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Josh Giddey",
+          "minutes_played": 2116.641666666667,
+          "games_played": 70,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Julian Phillips",
+          "minutes_played": 1122.905,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kevin Huerter",
+          "minutes_played": 1678.9933333333333,
+          "games_played": 69,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Lonzo Ball",
+          "minutes_played": 777.03,
+          "games_played": 35,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Matas Buzelis",
+          "minutes_played": 1511.295,
+          "games_played": 80,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Nikola Vučević",
+          "minutes_played": 2278.25,
+          "games_played": 73,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Patrick Williams",
+          "minutes_played": 1576.3266666666666,
+          "games_played": 63,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Talen Horton-Tucker",
+          "minutes_played": 723.695,
+          "games_played": 58,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Tre Jones",
+          "minutes_played": 904.9716666666667,
+          "games_played": 46,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Zach Collins",
+          "minutes_played": 977.06,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "MEM",
+      "season": "2024-25",
+      "rci": 0.568,
+      "returning_minutes_pct": 0.568,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 7,
+      "total_previous_players": 16,
+      "new_player_count": 9,
+      "roster": [
+        {
+          "player": "Brandon Clarke",
+          "minutes_played": 1206.8616666666667,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Cam Spencer",
+          "minutes_played": 252.24333333333334,
+          "games_played": 25,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Cole Anthony",
+          "minutes_played": 1234.1133333333332,
+          "games_played": 67,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "GG Jackson",
+          "minutes_played": 458.615,
+          "games_played": 29,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Ja Morant",
+          "minutes_played": 1519.11,
+          "games_played": 50,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jaren Jackson Jr.",
+          "minutes_played": 2206.951666666667,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jay Huff",
+          "minutes_played": 748.0316666666666,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jaylen Wells",
+          "minutes_played": 2043.4816666666666,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "John Konchar",
+          "minutes_played": 558.2233333333334,
+          "games_played": 46,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kentavious Caldwell-Pope",
+          "minutes_played": 2279.036666666667,
+          "games_played": 77,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Luke Kennard",
+          "minutes_played": 1471.6916666666666,
+          "games_played": 65,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Marvin Bagley III",
+          "minutes_played": 265.2266666666667,
+          "games_played": 31,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Santi Aldama",
+          "minutes_played": 1659.6483333333333,
+          "games_played": 65,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Scotty Pippen Jr.",
+          "minutes_played": 1682.88,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Vince Williams Jr.",
+          "minutes_played": 498.5466666666667,
+          "games_played": 27,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Zach Edey",
+          "minutes_played": 1415.765,
+          "games_played": 66,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "TOR",
+      "season": "2024-25",
+      "rci": 0.593,
+      "returning_minutes_pct": 0.593,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 8,
+      "total_previous_players": 15,
+      "new_player_count": 7,
+      "roster": [
+        {
+          "player": "A.J. Lawson",
+          "minutes_played": 486.41,
+          "games_played": 26,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Chris Boucher",
+          "minutes_played": 862.3,
+          "games_played": 50,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Colin Castleton",
+          "minutes_played": 431.99,
+          "games_played": 26,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Garrett Temple",
+          "minutes_played": 226.76833333333335,
+          "games_played": 28,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Gradey Dick",
+          "minutes_played": 1587.3733333333332,
+          "games_played": 54,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Immanuel Quickley",
+          "minutes_played": 917.7533333333333,
+          "games_played": 33,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Ja'Kobe Walter",
+          "minutes_played": 1103.235,
+          "games_played": 52,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jakob Poeltl",
+          "minutes_played": 1685.7483333333332,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jamal Shead",
+          "minutes_played": 1466.825,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jamison Battle",
+          "minutes_played": 1041.6783333333333,
+          "games_played": 59,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jonathan Mogbo",
+          "minutes_played": 1285.655,
+          "games_played": 63,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Ochai Agbaji",
+          "minutes_played": 1738.67,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Orlando Robinson",
+          "minutes_played": 769.8016666666666,
+          "games_played": 44,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "RJ Barrett",
+          "minutes_played": 1868.8033333333333,
+          "games_played": 58,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Scottie Barnes",
+          "minutes_played": 2134.13,
+          "games_played": 65,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "PHX",
+      "season": "2024-25",
+      "rci": 0.594,
+      "returning_minutes_pct": 0.594,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 6,
+      "total_previous_players": 13,
+      "new_player_count": 9,
+      "roster": [
+        {
+          "player": "Bol Bol",
+          "minutes_played": 448.48333333333335,
+          "games_played": 36,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Bradley Beal",
+          "minutes_played": 1702.1916666666666,
+          "games_played": 53,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Cody Martin",
+          "minutes_played": 1173.2066666666667,
+          "games_played": 53,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Collin Gillespie",
+          "minutes_played": 461.2183333333333,
+          "games_played": 33,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Devin Booker",
+          "minutes_played": 2794.9666666666667,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Grayson Allen",
+          "minutes_played": 1543.705,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kevin Durant",
+          "minutes_played": 2264.685,
+          "games_played": 62,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Mason Plumlee",
+          "minutes_played": 1300.045,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Monté Morris",
+          "minutes_played": 570.77,
+          "games_played": 45,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Nick Richards",
+          "minutes_played": 1256.2233333333334,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Oso Ighodaro",
+          "minutes_played": 1045.545,
+          "games_played": 61,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Royce O'Neale",
+          "minutes_played": 1836.8733333333332,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Ryan Dunn",
+          "minutes_played": 1410.4166666666667,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Tyus Jones",
+          "minutes_played": 2173.516666666667,
+          "games_played": 81,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Vasilije Micic",
+          "minutes_played": 784.9083333333333,
+          "games_played": 41,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "DET",
+      "season": "2024-25",
+      "rci": 0.607,
+      "returning_minutes_pct": 0.607,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 7,
+      "total_previous_players": 18,
+      "new_player_count": 7,
+      "roster": [
+        {
+          "player": "Ausar Thompson",
+          "minutes_played": 1327.715,
+          "games_played": 59,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Cade Cunningham",
+          "minutes_played": 2451.9466666666667,
+          "games_played": 70,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Dennis Schröder",
+          "minutes_played": 2104.778333333333,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Isaiah Stewart",
+          "minutes_played": 1433.8483333333334,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jaden Ivey",
+          "minutes_played": 898.0333333333333,
+          "games_played": 30,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jalen Duren",
+          "minutes_played": 2033.5483333333334,
+          "games_played": 78,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Lindy Waters III",
+          "minutes_played": 778.41,
+          "games_played": 52,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Malik Beasley",
+          "minutes_played": 2282.9466666666667,
+          "games_played": 82,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Marcus Sasser",
+          "minutes_played": 810.7866666666666,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Paul Reed",
+          "minutes_played": 437.5366666666667,
+          "games_played": 45,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Ronald Holland II",
+          "minutes_played": 1266.3216666666667,
+          "games_played": 81,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Simone Fontecchio",
+          "minutes_played": 1236.6816666666666,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Tim Hardaway Jr.",
+          "minutes_played": 2152.795,
+          "games_played": 77,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Tobias Harris",
+          "minutes_played": 2305.4133333333334,
+          "games_played": 73,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "GSW",
+      "season": "2024-25",
+      "rci": 0.614,
+      "returning_minutes_pct": 0.614,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 8,
+      "total_previous_players": 14,
+      "new_player_count": 5,
+      "roster": [
+        {
+          "player": "Brandin Podziemski",
+          "minutes_played": 1716.3483333333334,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Buddy Hield",
+          "minutes_played": 1862.9883333333332,
+          "games_played": 82,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Draymond Green",
+          "minutes_played": 1983.3066666666666,
+          "games_played": 68,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Gary Payton II",
+          "minutes_played": 927.1766666666666,
+          "games_played": 62,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Gui Santos",
+          "minutes_played": 761.5233333333333,
+          "games_played": 56,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jimmy Butler III",
+          "minutes_played": 1746.135,
+          "games_played": 55,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jonathan Kuminga",
+          "minutes_played": 1144.08,
+          "games_played": 47,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kevon Looney",
+          "minutes_played": 1142.155,
+          "games_played": 76,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Moses Moody",
+          "minutes_played": 1649.15,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Pat Spencer",
+          "minutes_played": 249.61166666666668,
+          "games_played": 39,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Quinten Post",
+          "minutes_played": 685.7566666666667,
+          "games_played": 42,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Stephen Curry",
+          "minutes_played": 2252.45,
+          "games_played": 70,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Trayce Jackson-Davis",
+          "minutes_played": 966.7866666666666,
+          "games_played": 62,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "MIL",
+      "season": "2024-25",
+      "rci": 0.618,
+      "returning_minutes_pct": 0.618,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 7,
+      "total_previous_players": 13,
+      "new_player_count": 6,
+      "roster": [
+        {
+          "player": "AJ Green",
+          "minutes_played": 1659.1416666666667,
+          "games_played": 73,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Andre Jackson Jr.",
+          "minutes_played": 980.0916666666667,
+          "games_played": 67,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Bobby Portis",
+          "minutes_played": 1243.68,
+          "games_played": 49,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Brook Lopez",
+          "minutes_played": 2546.07,
+          "games_played": 80,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Damian Lillard",
+          "minutes_played": 2092.87,
+          "games_played": 58,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Gary Trent Jr.",
+          "minutes_played": 1893.395,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Giannis Antetokounmpo",
+          "minutes_played": 2288.63,
+          "games_played": 67,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jericho Sims",
+          "minutes_played": 631.245,
+          "games_played": 53,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Kevin Porter Jr.",
+          "minutes_played": 1482.02,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Kyle Kuzma",
+          "minutes_played": 1936.415,
+          "games_played": 65,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Pat Connaughton",
+          "minutes_played": 602.8266666666667,
+          "games_played": 41,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Ryan Rollins",
+          "minutes_played": 819.525,
+          "games_played": 56,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Taurean Prince",
+          "minutes_played": 2165.86,
+          "games_played": 80,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "MIA",
+      "season": "2024-25",
+      "rci": 0.649,
+      "returning_minutes_pct": 0.649,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 8,
+      "total_previous_players": 16,
+      "new_player_count": 6,
+      "roster": [
+        {
+          "player": "Alec Burks",
+          "minutes_played": 863.4966666666667,
+          "games_played": 49,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Andrew Wiggins",
+          "minutes_played": 1842.2816666666668,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Bam Adebayo",
+          "minutes_played": 2673.693333333333,
+          "games_played": 78,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Davion Mitchell",
+          "minutes_played": 2027.3133333333333,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Duncan Robinson",
+          "minutes_played": 1785.595,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Haywood Highsmith",
+          "minutes_played": 1818.3266666666666,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jaime Jaquez Jr.",
+          "minutes_played": 1368.38,
+          "games_played": 66,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kel'el Ware",
+          "minutes_played": 1422.4866666666667,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Kevin Love",
+          "minutes_played": 251.45333333333335,
+          "games_played": 23,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kyle Anderson",
+          "minutes_played": 1002.0933333333334,
+          "games_played": 61,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Nikola Jović",
+          "minutes_played": 1155.6766666666667,
+          "games_played": 46,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Pelle Larsson",
+          "minutes_played": 781.9466666666667,
+          "games_played": 55,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Terry Rozier",
+          "minutes_played": 1658.22,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Tyler Herro",
+          "minutes_played": 2725.08,
+          "games_played": 77,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "SAS",
+      "season": "2024-25",
+      "rci": 0.696,
+      "returning_minutes_pct": 0.696,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 8,
+      "total_previous_players": 13,
+      "new_player_count": 7,
+      "roster": [
+        {
+          "player": "Bismack Biyombo",
+          "minutes_played": 527.4866666666667,
+          "games_played": 28,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Blake Wesley",
+          "minutes_played": 683.1066666666667,
+          "games_played": 58,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Charles Bassey",
+          "minutes_played": 375.515,
+          "games_played": 36,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Chris Paul",
+          "minutes_played": 2292.1633333333334,
+          "games_played": 82,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "De'Aaron Fox",
+          "minutes_played": 2241.1366666666668,
+          "games_played": 62,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Devin Vassell",
+          "minutes_played": 1983.185,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Harrison Barnes",
+          "minutes_played": 2230.0633333333335,
+          "games_played": 82,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jeremy Sochan",
+          "minutes_played": 1363.9683333333332,
+          "games_played": 54,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jordan McLaughlin",
+          "minutes_played": 314.27666666666664,
+          "games_played": 46,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Julian Champagnie",
+          "minutes_played": 1932.1283333333333,
+          "games_played": 82,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Keldon Johnson",
+          "minutes_played": 1837.9966666666667,
+          "games_played": 77,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Malaki Branham",
+          "minutes_played": 426.555,
+          "games_played": 47,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Sandro Mamukelashvili",
+          "minutes_played": 681.2083333333334,
+          "games_played": 61,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Stephon Castle",
+          "minutes_played": 2162.0216666666665,
+          "games_played": 81,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Victor Wembanyama",
+          "minutes_played": 1527.2533333333333,
+          "games_played": 46,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "DEN",
+      "season": "2024-25",
+      "rci": 0.727,
+      "returning_minutes_pct": 0.727,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 9,
+      "total_previous_players": 13,
+      "new_player_count": 3,
+      "roster": [
+        {
+          "player": "Aaron Gordon",
+          "minutes_played": 1446.7166666666667,
+          "games_played": 51,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Christian Braun",
+          "minutes_played": 2675.383333333333,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "DeAndre Jordan",
+          "minutes_played": 690.7016666666667,
+          "games_played": 56,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Hunter Tyson",
+          "minutes_played": 399.935,
+          "games_played": 51,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jalen Pickett",
+          "minutes_played": 666.19,
+          "games_played": 49,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jamal Murray",
+          "minutes_played": 2418.346666666667,
+          "games_played": 67,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Julian Strawther",
+          "minutes_played": 1383.47,
+          "games_played": 65,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Michael Porter Jr.",
+          "minutes_played": 2593.2633333333333,
+          "games_played": 77,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Nikola Jokić",
+          "minutes_played": 2570.765,
+          "games_played": 70,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Peyton Watson",
+          "minutes_played": 1655.7283333333332,
+          "games_played": 68,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Russell Westbrook",
+          "minutes_played": 2092.2916666666665,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Zeke Nnaji",
+          "minutes_played": 607.9666666666667,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "MIN",
+      "season": "2024-25",
+      "rci": 0.734,
+      "returning_minutes_pct": 0.734,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 6,
+      "total_previous_players": 10,
+      "new_player_count": 8,
+      "roster": [
+        {
+          "player": "Anthony Edwards",
+          "minutes_played": 2871.0583333333334,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Bones Hyland",
+          "minutes_played": 238.77,
+          "games_played": 24,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Donte DiVincenzo",
+          "minutes_played": 1605.7333333333333,
+          "games_played": 62,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jaden McDaniels",
+          "minutes_played": 2614.41,
+          "games_played": 82,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jaylen Clark",
+          "minutes_played": 521.9933333333333,
+          "games_played": 40,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Josh Minott",
+          "minutes_played": 276.275,
+          "games_played": 46,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Julius Randle",
+          "minutes_played": 2225.5266666666666,
+          "games_played": 69,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Luka Garza",
+          "minutes_played": 219.31,
+          "games_played": 39,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Mike Conley",
+          "minutes_played": 1755.85,
+          "games_played": 71,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Naz Reid",
+          "minutes_played": 2200.116666666667,
+          "games_played": 80,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Nickeil Alexander-Walker",
+          "minutes_played": 2073.1016666666665,
+          "games_played": 82,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Rob Dillingham",
+          "minutes_played": 515.975,
+          "games_played": 49,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Rudy Gobert",
+          "minutes_played": 2388.423333333333,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Terrence Shannon Jr.",
+          "minutes_played": 338.8283333333333,
+          "games_played": 32,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "UTA",
+      "season": "2024-25",
+      "rci": 0.734,
+      "returning_minutes_pct": 0.734,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 8,
+      "total_previous_players": 14,
+      "new_player_count": 7,
+      "roster": [
+        {
+          "player": "Brice Sensabaugh",
+          "minutes_played": 1431.9216666666666,
+          "games_played": 71,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Cody Williams",
+          "minutes_played": 1059.6116666666667,
+          "games_played": 50,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Collin Sexton",
+          "minutes_played": 1757.76,
+          "games_played": 63,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Isaiah Collier",
+          "minutes_played": 1839.1066666666666,
+          "games_played": 71,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jaden Springer",
+          "minutes_played": 365.175,
+          "games_played": 43,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "John Collins",
+          "minutes_played": 1220.4916666666666,
+          "games_played": 40,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Johnny Juzang",
+          "minutes_played": 1269.83,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jordan Clarkson",
+          "minutes_played": 962.47,
+          "games_played": 37,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "KJ Martin",
+          "minutes_played": 911.4983333333333,
+          "games_played": 43,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Keyonte George",
+          "minutes_played": 2108.475,
+          "games_played": 67,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kyle Filipowski",
+          "minutes_played": 1521.54,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Lauri Markkanen",
+          "minutes_played": 1475.8433333333332,
+          "games_played": 47,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Micah Potter",
+          "minutes_played": 705.165,
+          "games_played": 38,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Svi Mykhailiuk",
+          "minutes_played": 760.3066666666666,
+          "games_played": 38,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Walker Kessler",
+          "minutes_played": 1740.32,
+          "games_played": 58,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "CLE",
+      "season": "2024-25",
+      "rci": 0.759,
+      "returning_minutes_pct": 0.759,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 10,
+      "total_previous_players": 14,
+      "new_player_count": 4,
+      "roster": [
+        {
+          "player": "Craig Porter Jr.",
+          "minutes_played": 513.265,
+          "games_played": 51,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Darius Garland",
+          "minutes_played": 2300.77,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "De'Andre Hunter",
+          "minutes_played": 1740.015,
+          "games_played": 64,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Dean Wade",
+          "minutes_played": 1252.4516666666666,
+          "games_played": 59,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Donovan Mitchell",
+          "minutes_played": 2232.0333333333333,
+          "games_played": 71,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Evan Mobley",
+          "minutes_played": 2166.555,
+          "games_played": 71,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Isaac Okoro",
+          "minutes_played": 1053.2033333333334,
+          "games_played": 55,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jarrett Allen",
+          "minutes_played": 2296.0533333333333,
+          "games_played": 82,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Javonte Green",
+          "minutes_played": 1257.8333333333333,
+          "games_played": 68,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jaylon Tyson",
+          "minutes_played": 452.96,
+          "games_played": 47,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Max Strus",
+          "minutes_played": 1272.725,
+          "games_played": 50,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Sam Merrill",
+          "minutes_played": 1401.2816666666668,
+          "games_played": 71,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Tristan Thompson",
+          "minutes_played": 328.17,
+          "games_played": 40,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Ty Jerome",
+          "minutes_played": 1392.4,
+          "games_played": 70,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        }
+      ]
+    },
+    {
+      "team": "OKC",
+      "season": "2024-25",
+      "rci": 0.766,
+      "returning_minutes_pct": 0.766,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 10,
+      "total_previous_players": 15,
+      "new_player_count": 6,
+      "roster": [
+        {
+          "player": "Aaron Wiggins",
+          "minutes_played": 1743.9,
+          "games_played": 76,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Adam Flagler",
+          "minutes_played": 202.965,
+          "games_played": 37,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Ajay Mitchell",
+          "minutes_played": 596.955,
+          "games_played": 36,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Alex Caruso",
+          "minutes_played": 1040.635,
+          "games_played": 54,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Branden Carlson",
+          "minutes_played": 246.40333333333334,
+          "games_played": 32,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Cason Wallace",
+          "minutes_played": 1876.26,
+          "games_played": 68,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Chet Holmgren",
+          "minutes_played": 876.54,
+          "games_played": 32,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Dillon Jones",
+          "minutes_played": 551.4933333333333,
+          "games_played": 54,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Isaiah Hartenstein",
+          "minutes_played": 1589.6416666666667,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Isaiah Joe",
+          "minutes_played": 1603.9766666666667,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jalen Williams",
+          "minutes_played": 2236.673333333333,
+          "games_played": 69,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jaylin Williams",
+          "minutes_played": 784.055,
+          "games_played": 47,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kenrich Williams",
+          "minutes_played": 1131.5383333333334,
+          "games_played": 69,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Luguentz Dort",
+          "minutes_played": 2073.3,
+          "games_played": 71,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Ousmane Dieng",
+          "minutes_played": 404.84166666666664,
+          "games_played": 37,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Shai Gilgeous-Alexander",
+          "minutes_played": 2597.63,
+          "games_played": 76,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "ORL",
+      "season": "2024-25",
+      "rci": 0.778,
+      "returning_minutes_pct": 0.778,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 10,
+      "total_previous_players": 14,
+      "new_player_count": 5,
+      "roster": [
+        {
+          "player": "Anthony Black",
+          "minutes_played": 1886.9933333333333,
+          "games_played": 78,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Caleb Houstan",
+          "minutes_played": 787.99,
+          "games_played": 58,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Cory Joseph",
+          "minutes_played": 611.7333333333333,
+          "games_played": 50,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Desmond Bane",
+          "minutes_played": 2205.225,
+          "games_played": 69,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Franz Wagner",
+          "minutes_played": 2023.3066666666666,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Gary Harris",
+          "minutes_played": 710.71,
+          "games_played": 48,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Goga Bitadze",
+          "minutes_played": 1429.4616666666666,
+          "games_played": 70,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jalen Suggs",
+          "minutes_played": 1002.4533333333334,
+          "games_played": 35,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jett Howard",
+          "minutes_played": 701.1066666666667,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jonathan Isaac",
+          "minutes_played": 1090.015,
+          "games_played": 71,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Moritz Wagner",
+          "minutes_played": 564.1566666666666,
+          "games_played": 30,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Paolo Banchero",
+          "minutes_played": 1581.53,
+          "games_played": 46,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Trevelin Queen",
+          "minutes_played": 430.28,
+          "games_played": 31,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Tristan da Silva",
+          "minutes_played": 1628.6116666666667,
+          "games_played": 74,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Wendell Carter Jr.",
+          "minutes_played": 1758.2683333333334,
+          "games_played": 68,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "POR",
+      "season": "2024-25",
+      "rci": 0.83,
+      "returning_minutes_pct": 0.83,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 11,
+      "total_previous_players": 15,
+      "new_player_count": 3,
+      "roster": [
+        {
+          "player": "Anfernee Simons",
+          "minutes_played": 2291.8983333333335,
+          "games_played": 70,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Dalano Banton",
+          "minutes_played": 1119.945,
+          "games_played": 67,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Deandre Ayton",
+          "minutes_played": 1205.62,
+          "games_played": 40,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Deni Avdija",
+          "minutes_played": 2161.1483333333335,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Donovan Clingan",
+          "minutes_played": 1323.6433333333334,
+          "games_played": 67,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Duop Reath",
+          "minutes_played": 469.4266666666667,
+          "games_played": 46,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jabari Walker",
+          "minutes_played": 749.165,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jerami Grant",
+          "minutes_played": 1523.5866666666666,
+          "games_played": 47,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kris Murray",
+          "minutes_played": 1040.3866666666668,
+          "games_played": 69,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Rayan Rupert",
+          "minutes_played": 459.5416666666667,
+          "games_played": 52,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Robert Williams III",
+          "minutes_played": 351.33,
+          "games_played": 20,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Scoot Henderson",
+          "minutes_played": 1759.0716666666667,
+          "games_played": 66,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Shaedon Sharpe",
+          "minutes_played": 2252.33,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Toumani Camara",
+          "minutes_played": 2548.0516666666667,
+          "games_played": 78,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "IND",
+      "season": "2024-25",
+      "rci": 0.857,
+      "returning_minutes_pct": 0.857,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 10,
+      "total_previous_players": 13,
+      "new_player_count": 3,
+      "roster": [
+        {
+          "player": "Aaron Nesmith",
+          "minutes_played": 1121.6183333333333,
+          "games_played": 45,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Andrew Nembhard",
+          "minutes_played": 1880.67,
+          "games_played": 65,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Ben Sheppard",
+          "minutes_played": 1229.5583333333334,
+          "games_played": 63,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Bennedict Mathurin",
+          "minutes_played": 2149.318333333333,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jarace Walker",
+          "minutes_played": 1186.62,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Johnny Furphy",
+          "minutes_played": 379.49666666666667,
+          "games_played": 50,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Myles Turner",
+          "minutes_played": 2173.6366666666668,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Obi Toppin",
+          "minutes_played": 1544.815,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Pascal Siakam",
+          "minutes_played": 2547.8533333333335,
+          "games_played": 78,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Quenton Jackson",
+          "minutes_played": 381.03833333333336,
+          "games_played": 28,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "T.J. McConnell",
+          "minutes_played": 1415.4333333333334,
+          "games_played": 79,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Thomas Bryant",
+          "minutes_played": 963.0166666666667,
+          "games_played": 66,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Tyrese Haliburton",
+          "minutes_played": 2450.391666666667,
+          "games_played": 73,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "BOS",
+      "season": "2024-25",
+      "rci": 0.924,
+      "returning_minutes_pct": 0.924,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 11,
+      "total_previous_players": 14,
+      "new_player_count": 3,
+      "roster": [
+        {
+          "player": "Al Horford",
+          "minutes_played": 1658.5733333333333,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Baylor Scheierman",
+          "minutes_played": 383.8883333333333,
+          "games_played": 31,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Derrick White",
+          "minutes_played": 2573.615,
+          "games_played": 76,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jaylen Brown",
+          "minutes_played": 2157.9283333333333,
+          "games_played": 63,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jayson Tatum",
+          "minutes_played": 2623.8166666666666,
+          "games_played": 72,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jordan Walsh",
+          "minutes_played": 403.00333333333333,
+          "games_played": 52,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Jrue Holiday",
+          "minutes_played": 1896.0683333333334,
+          "games_played": 62,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Kristaps Porziņģis",
+          "minutes_played": 1209.9633333333334,
+          "games_played": 42,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Luke Kornet",
+          "minutes_played": 1361.06,
+          "games_played": 73,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Neemias Queta",
+          "minutes_played": 863.09,
+          "games_played": 62,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Payton Pritchard",
+          "minutes_played": 2270.875,
+          "games_played": 80,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Sam Hauser",
+          "minutes_played": 1541.1333333333334,
+          "games_played": 71,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Torrey Craig",
+          "minutes_played": 313.94666666666666,
+          "games_played": 26,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Xavier Tillman",
+          "minutes_played": 230.90333333333334,
+          "games_played": 33,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    },
+    {
+      "team": "HOU",
+      "season": "2024-25",
+      "rci": 0.979,
+      "returning_minutes_pct": 0.979,
+      "returning_bpm_impact_pct": null,
+      "returning_player_count": 12,
+      "total_previous_players": 13,
+      "new_player_count": 3,
+      "roster": [
+        {
+          "player": "Aaron Holiday",
+          "minutes_played": 792.2466666666667,
+          "games_played": 62,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Alperen Sengun",
+          "minutes_played": 2394.9766666666665,
+          "games_played": 76,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Amen Thompson",
+          "minutes_played": 2225.415,
+          "games_played": 69,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Cam Whitmore",
+          "minutes_played": 826.585,
+          "games_played": 51,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "David Roddy",
+          "minutes_played": 409.75333333333333,
+          "games_played": 33,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Dillon Brooks",
+          "minutes_played": 2388.2616666666668,
+          "games_played": 75,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Fred VanVleet",
+          "minutes_played": 2111.298333333333,
+          "games_played": 60,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jabari Smith Jr.",
+          "minutes_played": 1715.5783333333334,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jae'Sean Tate",
+          "minutes_played": 588.11,
+          "games_played": 52,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jalen Green",
+          "minutes_played": 2697.11,
+          "games_played": 82,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jeff Green",
+          "minutes_played": 396.44666666666666,
+          "games_played": 32,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Jock Landale",
+          "minutes_played": 500.0233333333333,
+          "games_played": 42,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        },
+        {
+          "player": "Reed Sheppard",
+          "minutes_played": 654.3516666666667,
+          "games_played": 52,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Steven Adams",
+          "minutes_played": 794.0666666666667,
+          "games_played": 58,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": false
+        },
+        {
+          "player": "Tari Eason",
+          "minutes_played": 1420.1933333333334,
+          "games_played": 57,
+          "bpm": null,
+          "vorp": null,
+          "is_returning": true
+        }
+      ]
+    }
+  ]
+}

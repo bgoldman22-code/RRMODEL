@@ -1,0 +1,2630 @@
+{
+  "schema_version": 1,
+  "calculated_at": "2025-10-15T00:29:07.593Z",
+  "season": "2025-26",
+  "previous_season": "2024-25",
+  "formula": "RCI = returning_minutes / total_previous_minutes (roster-based)",
+  "note": "Based on roster presence in 2025-26 vs minutes played in 2024-25",
+  "teams": [
+    {
+      "team": "Phoenix Suns",
+      "abbreviation": "PHX",
+      "season": "2025-26",
+      "rci": 0.498,
+      "returning_minutes_pct": 0.498,
+      "returning_player_count": 7,
+      "total_previous_players": 15,
+      "lost_player_count": 8,
+      "returning_players": [
+        {
+          "player": "Collin Gillespie",
+          "minutes_2024_25": 461.2183333333333,
+          "games_2024_25": 33
+        },
+        {
+          "player": "Devin Booker",
+          "minutes_2024_25": 2794.9666666666667,
+          "games_2024_25": 75
+        },
+        {
+          "player": "Grayson Allen",
+          "minutes_2024_25": 1543.705,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Nick Richards",
+          "minutes_2024_25": 1256.2233333333334,
+          "games_2024_25": 57
+        },
+        {
+          "player": "Oso Ighodaro",
+          "minutes_2024_25": 1045.545,
+          "games_2024_25": 61
+        },
+        {
+          "player": "Royce O'Neale",
+          "minutes_2024_25": 1836.8733333333332,
+          "games_2024_25": 75
+        },
+        {
+          "player": "Ryan Dunn",
+          "minutes_2024_25": 1410.4166666666667,
+          "games_2024_25": 74
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Bol Bol",
+          "minutes_2024_25": 448.48333333333335,
+          "games_2024_25": 36
+        },
+        {
+          "player": "Bradley Beal",
+          "minutes_2024_25": 1702.1916666666666,
+          "games_2024_25": 53
+        },
+        {
+          "player": "Cody Martin",
+          "minutes_2024_25": 1173.2066666666667,
+          "games_2024_25": 53
+        },
+        {
+          "player": "Kevin Durant",
+          "minutes_2024_25": 2264.685,
+          "games_2024_25": 62
+        },
+        {
+          "player": "Mason Plumlee",
+          "minutes_2024_25": 1300.045,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Monté Morris",
+          "minutes_2024_25": 570.77,
+          "games_2024_25": 45
+        },
+        {
+          "player": "Tyus Jones",
+          "minutes_2024_25": 2173.516666666667,
+          "games_2024_25": 81
+        },
+        {
+          "player": "Vasilije Micic",
+          "minutes_2024_25": 784.9083333333333,
+          "games_2024_25": 41
+        }
+      ]
+    },
+    {
+      "team": "New Orleans Pelicans",
+      "abbreviation": "NOP",
+      "season": "2025-26",
+      "rci": 0.533,
+      "returning_minutes_pct": 0.533,
+      "returning_player_count": 8,
+      "total_previous_players": 18,
+      "lost_player_count": 10,
+      "returning_players": [
+        {
+          "player": "Dejounte Murray",
+          "minutes_2024_25": 1012.1483333333333,
+          "games_2024_25": 31
+        },
+        {
+          "player": "Herbert Jones",
+          "minutes_2024_25": 648.1316666666667,
+          "games_2024_25": 20
+        },
+        {
+          "player": "Jordan Hawkins",
+          "minutes_2024_25": 1320.5,
+          "games_2024_25": 56
+        },
+        {
+          "player": "Jose Alvarado",
+          "minutes_2024_25": 1365.9,
+          "games_2024_25": 56
+        },
+        {
+          "player": "Karlo Matković",
+          "minutes_2024_25": 790.585,
+          "games_2024_25": 42
+        },
+        {
+          "player": "Trey Murphy III",
+          "minutes_2024_25": 1854.23,
+          "games_2024_25": 53
+        },
+        {
+          "player": "Yves Missi",
+          "minutes_2024_25": 1955.79,
+          "games_2024_25": 73
+        },
+        {
+          "player": "Zion Williamson",
+          "minutes_2024_25": 857.2766666666666,
+          "games_2024_25": 30
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Antonio Reeves",
+          "minutes_2024_25": 659.5583333333333,
+          "games_2024_25": 44
+        },
+        {
+          "player": "Brandon Boston",
+          "minutes_2024_25": 992.78,
+          "games_2024_25": 42
+        },
+        {
+          "player": "Bruce Brown",
+          "minutes_2024_25": 921.53,
+          "games_2024_25": 41
+        },
+        {
+          "player": "CJ McCollum",
+          "minutes_2024_25": 1831.6783333333333,
+          "games_2024_25": 56
+        },
+        {
+          "player": "Daniel Theis",
+          "minutes_2024_25": 621.2416666666667,
+          "games_2024_25": 38
+        },
+        {
+          "player": "Elfrid Payton",
+          "minutes_2024_25": 510.805,
+          "games_2024_25": 24
+        },
+        {
+          "player": "Jamal Cain",
+          "minutes_2024_25": 501.79833333333335,
+          "games_2024_25": 37
+        },
+        {
+          "player": "Jeremiah Robinson-Earl",
+          "minutes_2024_25": 1238.9,
+          "games_2024_25": 66
+        },
+        {
+          "player": "Kelly Olynyk",
+          "minutes_2024_25": 890.9983333333333,
+          "games_2024_25": 44
+        },
+        {
+          "player": "Mo Bamba",
+          "minutes_2024_25": 413.485,
+          "games_2024_25": 32
+        }
+      ]
+    },
+    {
+      "team": "Brooklyn Nets",
+      "abbreviation": "BKN",
+      "season": "2025-26",
+      "rci": 0.548,
+      "returning_minutes_pct": 0.548,
+      "returning_player_count": 7,
+      "total_previous_players": 15,
+      "lost_player_count": 8,
+      "returning_players": [
+        {
+          "player": "Cam Thomas",
+          "minutes_2024_25": 781.1566666666666,
+          "games_2024_25": 25
+        },
+        {
+          "player": "Day'Ron Sharpe",
+          "minutes_2024_25": 907.4583333333334,
+          "games_2024_25": 50
+        },
+        {
+          "player": "Jalen Wilson",
+          "minutes_2024_25": 2031.3866666666668,
+          "games_2024_25": 79
+        },
+        {
+          "player": "Nic Claxton",
+          "minutes_2024_25": 1881.7316666666666,
+          "games_2024_25": 70
+        },
+        {
+          "player": "Noah Clowney",
+          "minutes_2024_25": 1042.2866666666666,
+          "games_2024_25": 46
+        },
+        {
+          "player": "Tyrese Martin",
+          "minutes_2024_25": 1315.32,
+          "games_2024_25": 60
+        },
+        {
+          "player": "Ziaire Williams",
+          "minutes_2024_25": 1541.4033333333334,
+          "games_2024_25": 63
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Cameron Johnson",
+          "minutes_2024_25": 1799.7633333333333,
+          "games_2024_25": 57
+        },
+        {
+          "player": "D'Angelo Russell",
+          "minutes_2024_25": 1480.4183333333333,
+          "games_2024_25": 58
+        },
+        {
+          "player": "Dariq Whitehead",
+          "minutes_2024_25": 246.07833333333335,
+          "games_2024_25": 20
+        },
+        {
+          "player": "Keon Johnson",
+          "minutes_2024_25": 1925.2016666666666,
+          "games_2024_25": 79
+        },
+        {
+          "player": "Maxwell Lewis",
+          "minutes_2024_25": 327.68833333333333,
+          "games_2024_25": 28
+        },
+        {
+          "player": "Reece Beekman",
+          "minutes_2024_25": 469.30333333333334,
+          "games_2024_25": 36
+        },
+        {
+          "player": "Tosan Evbuomwan",
+          "minutes_2024_25": 664.93,
+          "games_2024_25": 28
+        },
+        {
+          "player": "Trendon Watford",
+          "minutes_2024_25": 912.6766666666666,
+          "games_2024_25": 44
+        }
+      ]
+    },
+    {
+      "team": "Charlotte Hornets",
+      "abbreviation": "CHA",
+      "season": "2025-26",
+      "rci": 0.562,
+      "returning_minutes_pct": 0.562,
+      "returning_player_count": 7,
+      "total_previous_players": 16,
+      "lost_player_count": 9,
+      "returning_players": [
+        {
+          "player": "Brandon Miller",
+          "minutes_2024_25": 923.565,
+          "games_2024_25": 27
+        },
+        {
+          "player": "Josh Green",
+          "minutes_2024_25": 1887.5033333333333,
+          "games_2024_25": 68
+        },
+        {
+          "player": "KJ Simpson",
+          "minutes_2024_25": 842.0833333333334,
+          "games_2024_25": 36
+        },
+        {
+          "player": "LaMelo Ball",
+          "minutes_2024_25": 1504.475,
+          "games_2024_25": 47
+        },
+        {
+          "player": "Miles Bridges",
+          "minutes_2024_25": 2028.735,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Moussa Diabaté",
+          "minutes_2024_25": 1240.6333333333334,
+          "games_2024_25": 71
+        },
+        {
+          "player": "Tidjane Salaün",
+          "minutes_2024_25": 1244.3533333333332,
+          "games_2024_25": 60
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "DaQuan Jeffries",
+          "minutes_2024_25": 1071.5066666666667,
+          "games_2024_25": 47
+        },
+        {
+          "player": "Isaiah Wong",
+          "minutes_2024_25": 265.50333333333333,
+          "games_2024_25": 20
+        },
+        {
+          "player": "Josh Okogie",
+          "minutes_2024_25": 624.9783333333334,
+          "games_2024_25": 40
+        },
+        {
+          "player": "Jusuf Nurkić",
+          "minutes_2024_25": 1062.8266666666666,
+          "games_2024_25": 51
+        },
+        {
+          "player": "Mark Williams",
+          "minutes_2024_25": 1171.045,
+          "games_2024_25": 44
+        },
+        {
+          "player": "Nick Smith Jr.",
+          "minutes_2024_25": 1368.7466666666667,
+          "games_2024_25": 60
+        },
+        {
+          "player": "Seth Curry",
+          "minutes_2024_25": 1061.9566666666667,
+          "games_2024_25": 68
+        },
+        {
+          "player": "Taj Gibson",
+          "minutes_2024_25": 408.85,
+          "games_2024_25": 37
+        },
+        {
+          "player": "Wendell Moore Jr.",
+          "minutes_2024_25": 498.9166666666667,
+          "games_2024_25": 36
+        }
+      ]
+    },
+    {
+      "team": "Detroit Pistons",
+      "abbreviation": "DET",
+      "season": "2025-26",
+      "rci": 0.602,
+      "returning_minutes_pct": 0.602,
+      "returning_player_count": 9,
+      "total_previous_players": 14,
+      "lost_player_count": 5,
+      "returning_players": [
+        {
+          "player": "Ausar Thompson",
+          "minutes_2024_25": 1327.715,
+          "games_2024_25": 59
+        },
+        {
+          "player": "Cade Cunningham",
+          "minutes_2024_25": 2451.9466666666667,
+          "games_2024_25": 70
+        },
+        {
+          "player": "Isaiah Stewart",
+          "minutes_2024_25": 1433.8483333333334,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Jaden Ivey",
+          "minutes_2024_25": 898.0333333333333,
+          "games_2024_25": 30
+        },
+        {
+          "player": "Jalen Duren",
+          "minutes_2024_25": 2033.5483333333334,
+          "games_2024_25": 78
+        },
+        {
+          "player": "Marcus Sasser",
+          "minutes_2024_25": 810.7866666666666,
+          "games_2024_25": 57
+        },
+        {
+          "player": "Paul Reed",
+          "minutes_2024_25": 437.5366666666667,
+          "games_2024_25": 45
+        },
+        {
+          "player": "Ronald Holland II",
+          "minutes_2024_25": 1266.3216666666667,
+          "games_2024_25": 81
+        },
+        {
+          "player": "Tobias Harris",
+          "minutes_2024_25": 2305.4133333333334,
+          "games_2024_25": 73
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Dennis Schröder",
+          "minutes_2024_25": 2104.778333333333,
+          "games_2024_25": 75
+        },
+        {
+          "player": "Lindy Waters III",
+          "minutes_2024_25": 778.41,
+          "games_2024_25": 52
+        },
+        {
+          "player": "Malik Beasley",
+          "minutes_2024_25": 2282.9466666666667,
+          "games_2024_25": 82
+        },
+        {
+          "player": "Simone Fontecchio",
+          "minutes_2024_25": 1236.6816666666666,
+          "games_2024_25": 75
+        },
+        {
+          "player": "Tim Hardaway Jr.",
+          "minutes_2024_25": 2152.795,
+          "games_2024_25": 77
+        }
+      ]
+    },
+    {
+      "team": "Utah Jazz",
+      "abbreviation": "UTA",
+      "season": "2025-26",
+      "rci": 0.624,
+      "returning_minutes_pct": 0.624,
+      "returning_player_count": 8,
+      "total_previous_players": 15,
+      "lost_player_count": 7,
+      "returning_players": [
+        {
+          "player": "Brice Sensabaugh",
+          "minutes_2024_25": 1431.9216666666666,
+          "games_2024_25": 71
+        },
+        {
+          "player": "Cody Williams",
+          "minutes_2024_25": 1059.6116666666667,
+          "games_2024_25": 50
+        },
+        {
+          "player": "Isaiah Collier",
+          "minutes_2024_25": 1839.1066666666666,
+          "games_2024_25": 71
+        },
+        {
+          "player": "Keyonte George",
+          "minutes_2024_25": 2108.475,
+          "games_2024_25": 67
+        },
+        {
+          "player": "Kyle Filipowski",
+          "minutes_2024_25": 1521.54,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Lauri Markkanen",
+          "minutes_2024_25": 1475.8433333333332,
+          "games_2024_25": 47
+        },
+        {
+          "player": "Svi Mykhailiuk",
+          "minutes_2024_25": 760.3066666666666,
+          "games_2024_25": 38
+        },
+        {
+          "player": "Walker Kessler",
+          "minutes_2024_25": 1740.32,
+          "games_2024_25": 58
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Collin Sexton",
+          "minutes_2024_25": 1757.76,
+          "games_2024_25": 63
+        },
+        {
+          "player": "Jaden Springer",
+          "minutes_2024_25": 365.175,
+          "games_2024_25": 43
+        },
+        {
+          "player": "John Collins",
+          "minutes_2024_25": 1220.4916666666666,
+          "games_2024_25": 40
+        },
+        {
+          "player": "Johnny Juzang",
+          "minutes_2024_25": 1269.83,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Jordan Clarkson",
+          "minutes_2024_25": 962.47,
+          "games_2024_25": 37
+        },
+        {
+          "player": "KJ Martin",
+          "minutes_2024_25": 911.4983333333333,
+          "games_2024_25": 43
+        },
+        {
+          "player": "Micah Potter",
+          "minutes_2024_25": 705.165,
+          "games_2024_25": 38
+        }
+      ]
+    },
+    {
+      "team": "Atlanta Hawks",
+      "abbreviation": "ATL",
+      "season": "2025-26",
+      "rci": 0.627,
+      "returning_minutes_pct": 0.627,
+      "returning_player_count": 8,
+      "total_previous_players": 15,
+      "lost_player_count": 7,
+      "returning_players": [
+        {
+          "player": "Dyson Daniels",
+          "minutes_2024_25": 2571.17,
+          "games_2024_25": 76
+        },
+        {
+          "player": "Jalen Johnson",
+          "minutes_2024_25": 1284.1783333333333,
+          "games_2024_25": 36
+        },
+        {
+          "player": "Keaton Wallace",
+          "minutes_2024_25": 501.1666666666667,
+          "games_2024_25": 31
+        },
+        {
+          "player": "Mouhamed Gueye",
+          "minutes_2024_25": 532.7566666666667,
+          "games_2024_25": 33
+        },
+        {
+          "player": "Onyeka Okongwu",
+          "minutes_2024_25": 2063.9266666666667,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Trae Young",
+          "minutes_2024_25": 2739.06,
+          "games_2024_25": 76
+        },
+        {
+          "player": "Vít Krejčí",
+          "minutes_2024_25": 1152.6316666666667,
+          "games_2024_25": 57
+        },
+        {
+          "player": "Zaccharie Risacher",
+          "minutes_2024_25": 1843.3866666666668,
+          "games_2024_25": 75
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Caris LeVert",
+          "minutes_2024_25": 1596.1066666666666,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Clint Capela",
+          "minutes_2024_25": 1176.4333333333334,
+          "games_2024_25": 55
+        },
+        {
+          "player": "Dominick Barlow",
+          "minutes_2024_25": 374.99833333333333,
+          "games_2024_25": 35
+        },
+        {
+          "player": "Garrison Mathews",
+          "minutes_2024_25": 829.5083333333333,
+          "games_2024_25": 47
+        },
+        {
+          "player": "Georges Niang",
+          "minutes_2024_25": 1697.2333333333333,
+          "games_2024_25": 79
+        },
+        {
+          "player": "Larry Nance Jr.",
+          "minutes_2024_25": 463.2266666666667,
+          "games_2024_25": 24
+        },
+        {
+          "player": "Terance Mann",
+          "minutes_2024_25": 1414.25,
+          "games_2024_25": 67
+        }
+      ]
+    },
+    {
+      "team": "Houston Rockets",
+      "abbreviation": "HOU",
+      "season": "2025-26",
+      "rci": 0.657,
+      "returning_minutes_pct": 0.657,
+      "returning_player_count": 10,
+      "total_previous_players": 15,
+      "lost_player_count": 5,
+      "returning_players": [
+        {
+          "player": "Aaron Holiday",
+          "minutes_2024_25": 792.2466666666667,
+          "games_2024_25": 62
+        },
+        {
+          "player": "Alperen Sengun",
+          "minutes_2024_25": 2394.9766666666665,
+          "games_2024_25": 76
+        },
+        {
+          "player": "Amen Thompson",
+          "minutes_2024_25": 2225.415,
+          "games_2024_25": 69
+        },
+        {
+          "player": "Fred VanVleet",
+          "minutes_2024_25": 2111.298333333333,
+          "games_2024_25": 60
+        },
+        {
+          "player": "Jabari Smith Jr.",
+          "minutes_2024_25": 1715.5783333333334,
+          "games_2024_25": 57
+        },
+        {
+          "player": "Jae'Sean Tate",
+          "minutes_2024_25": 588.11,
+          "games_2024_25": 52
+        },
+        {
+          "player": "Jeff Green",
+          "minutes_2024_25": 396.44666666666666,
+          "games_2024_25": 32
+        },
+        {
+          "player": "Reed Sheppard",
+          "minutes_2024_25": 654.3516666666667,
+          "games_2024_25": 52
+        },
+        {
+          "player": "Steven Adams",
+          "minutes_2024_25": 794.0666666666667,
+          "games_2024_25": 58
+        },
+        {
+          "player": "Tari Eason",
+          "minutes_2024_25": 1420.1933333333334,
+          "games_2024_25": 57
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Cam Whitmore",
+          "minutes_2024_25": 826.585,
+          "games_2024_25": 51
+        },
+        {
+          "player": "David Roddy",
+          "minutes_2024_25": 409.75333333333333,
+          "games_2024_25": 33
+        },
+        {
+          "player": "Dillon Brooks",
+          "minutes_2024_25": 2388.2616666666668,
+          "games_2024_25": 75
+        },
+        {
+          "player": "Jalen Green",
+          "minutes_2024_25": 2697.11,
+          "games_2024_25": 82
+        },
+        {
+          "player": "Jock Landale",
+          "minutes_2024_25": 500.0233333333333,
+          "games_2024_25": 42
+        }
+      ]
+    },
+    {
+      "team": "Boston Celtics",
+      "abbreviation": "BOS",
+      "season": "2025-26",
+      "rci": 0.67,
+      "returning_minutes_pct": 0.67,
+      "returning_player_count": 9,
+      "total_previous_players": 14,
+      "lost_player_count": 5,
+      "returning_players": [
+        {
+          "player": "Jayson Tatum",
+          "minutes_2024_25": 2623.8166666666666,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Derrick White",
+          "minutes_2024_25": 2573.615,
+          "games_2024_25": 76
+        },
+        {
+          "player": "Payton Pritchard",
+          "minutes_2024_25": 2270.875,
+          "games_2024_25": 80
+        },
+        {
+          "player": "Jaylen Brown",
+          "minutes_2024_25": 2157.9283333333333,
+          "games_2024_25": 63
+        },
+        {
+          "player": "Sam Hauser",
+          "minutes_2024_25": 1541.1333333333334,
+          "games_2024_25": 71
+        },
+        {
+          "player": "Neemias Queta",
+          "minutes_2024_25": 863.09,
+          "games_2024_25": 62
+        },
+        {
+          "player": "Jordan Walsh",
+          "minutes_2024_25": 403.00333333333333,
+          "games_2024_25": 52
+        },
+        {
+          "player": "Baylor Scheierman",
+          "minutes_2024_25": 383.8883333333333,
+          "games_2024_25": 31
+        },
+        {
+          "player": "Xavier Tillman",
+          "minutes_2024_25": 230.90333333333334,
+          "games_2024_25": 33
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Jrue Holiday",
+          "minutes_2024_25": 1896.0683333333334,
+          "games_2024_25": 62
+        },
+        {
+          "player": "Al Horford",
+          "minutes_2024_25": 1658.5733333333333,
+          "games_2024_25": 60
+        },
+        {
+          "player": "Luke Kornet",
+          "minutes_2024_25": 1361.06,
+          "games_2024_25": 73
+        },
+        {
+          "player": "Kristaps Porziņģis",
+          "minutes_2024_25": 1209.9633333333334,
+          "games_2024_25": 42
+        },
+        {
+          "player": "Torrey Craig",
+          "minutes_2024_25": 313.94666666666666,
+          "games_2024_25": 26
+        }
+      ]
+    },
+    {
+      "team": "Philadelphia 76ers",
+      "abbreviation": "PHI",
+      "season": "2025-26",
+      "rci": 0.683,
+      "returning_minutes_pct": 0.683,
+      "returning_player_count": 10,
+      "total_previous_players": 16,
+      "lost_player_count": 6,
+      "returning_players": [
+        {
+          "player": "Adem Bona",
+          "minutes_2024_25": 904.55,
+          "games_2024_25": 58
+        },
+        {
+          "player": "Andre Drummond",
+          "minutes_2024_25": 750.6333333333333,
+          "games_2024_25": 40
+        },
+        {
+          "player": "Eric Gordon",
+          "minutes_2024_25": 768.4916666666667,
+          "games_2024_25": 39
+        },
+        {
+          "player": "Jared McCain",
+          "minutes_2024_25": 591.7916666666666,
+          "games_2024_25": 23
+        },
+        {
+          "player": "Justin Edwards",
+          "minutes_2024_25": 1154.72,
+          "games_2024_25": 44
+        },
+        {
+          "player": "Kelly Oubre Jr.",
+          "minutes_2024_25": 2078.19,
+          "games_2024_25": 60
+        },
+        {
+          "player": "Kyle Lowry",
+          "minutes_2024_25": 659.4483333333334,
+          "games_2024_25": 35
+        },
+        {
+          "player": "Paul George",
+          "minutes_2024_25": 1333.5933333333332,
+          "games_2024_25": 41
+        },
+        {
+          "player": "Quentin Grimes",
+          "minutes_2024_25": 2013.09,
+          "games_2024_25": 75
+        },
+        {
+          "player": "Tyrese Maxey",
+          "minutes_2024_25": 1960.195,
+          "games_2024_25": 52
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Guerschon Yabusele",
+          "minutes_2024_25": 1894.7366666666667,
+          "games_2024_25": 70
+        },
+        {
+          "player": "Jared Butler",
+          "minutes_2024_25": 1043.735,
+          "games_2024_25": 60
+        },
+        {
+          "player": "Jeff Dowtin Jr.",
+          "minutes_2024_25": 620.77,
+          "games_2024_25": 41
+        },
+        {
+          "player": "Lonnie Walker IV",
+          "minutes_2024_25": 476.7033333333333,
+          "games_2024_25": 20
+        },
+        {
+          "player": "Reggie Jackson",
+          "minutes_2024_25": 383.9916666666667,
+          "games_2024_25": 31
+        },
+        {
+          "player": "Ricky Council IV",
+          "minutes_2024_25": 1250.015,
+          "games_2024_25": 73
+        }
+      ]
+    },
+    {
+      "team": "Los Angeles Clippers",
+      "abbreviation": "LAC",
+      "season": "2025-26",
+      "rci": 0.699,
+      "returning_minutes_pct": 0.699,
+      "returning_player_count": 9,
+      "total_previous_players": 14,
+      "lost_player_count": 5,
+      "returning_players": [
+        {
+          "player": "Bogdan Bogdanović",
+          "minutes_2024_25": 1347.6583333333333,
+          "games_2024_25": 54
+        },
+        {
+          "player": "Derrick Jones Jr.",
+          "minutes_2024_25": 1873.3883333333333,
+          "games_2024_25": 77
+        },
+        {
+          "player": "Ivica Zubac",
+          "minutes_2024_25": 2624.1766666666667,
+          "games_2024_25": 80
+        },
+        {
+          "player": "James Harden",
+          "minutes_2024_25": 2789.036666666667,
+          "games_2024_25": 79
+        },
+        {
+          "player": "Jordan Miller",
+          "minutes_2024_25": 420.31,
+          "games_2024_25": 37
+        },
+        {
+          "player": "Kawhi Leonard",
+          "minutes_2024_25": 1179.9566666666667,
+          "games_2024_25": 37
+        },
+        {
+          "player": "Kobe Brown",
+          "minutes_2024_25": 272.22,
+          "games_2024_25": 40
+        },
+        {
+          "player": "Kris Dunn",
+          "minutes_2024_25": 1782.9183333333333,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Nicolas Batum",
+          "minutes_2024_25": 1367.3733333333332,
+          "games_2024_25": 78
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Amir Coffey",
+          "minutes_2024_25": 1747.54,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Ben Simmons",
+          "minutes_2024_25": 1119.6933333333334,
+          "games_2024_25": 51
+        },
+        {
+          "player": "Drew Eubanks",
+          "minutes_2024_25": 746.01,
+          "games_2024_25": 61
+        },
+        {
+          "player": "Norman Powell",
+          "minutes_2024_25": 1957.9883333333332,
+          "games_2024_25": 60
+        },
+        {
+          "player": "Patty Mills",
+          "minutes_2024_25": 320.655,
+          "games_2024_25": 29
+        }
+      ]
+    },
+    {
+      "team": "Denver Nuggets",
+      "abbreviation": "DEN",
+      "season": "2025-26",
+      "rci": 0.72,
+      "returning_minutes_pct": 0.72,
+      "returning_player_count": 9,
+      "total_previous_players": 12,
+      "lost_player_count": 3,
+      "returning_players": [
+        {
+          "player": "Aaron Gordon",
+          "minutes_2024_25": 1446.7166666666667,
+          "games_2024_25": 51
+        },
+        {
+          "player": "Christian Braun",
+          "minutes_2024_25": 2675.383333333333,
+          "games_2024_25": 79
+        },
+        {
+          "player": "Hunter Tyson",
+          "minutes_2024_25": 399.935,
+          "games_2024_25": 51
+        },
+        {
+          "player": "Jalen Pickett",
+          "minutes_2024_25": 666.19,
+          "games_2024_25": 49
+        },
+        {
+          "player": "Jamal Murray",
+          "minutes_2024_25": 2418.346666666667,
+          "games_2024_25": 67
+        },
+        {
+          "player": "Julian Strawther",
+          "minutes_2024_25": 1383.47,
+          "games_2024_25": 65
+        },
+        {
+          "player": "Nikola Jokić",
+          "minutes_2024_25": 2570.765,
+          "games_2024_25": 70
+        },
+        {
+          "player": "Peyton Watson",
+          "minutes_2024_25": 1655.7283333333332,
+          "games_2024_25": 68
+        },
+        {
+          "player": "Zeke Nnaji",
+          "minutes_2024_25": 607.9666666666667,
+          "games_2024_25": 57
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "DeAndre Jordan",
+          "minutes_2024_25": 690.7016666666667,
+          "games_2024_25": 56
+        },
+        {
+          "player": "Michael Porter Jr.",
+          "minutes_2024_25": 2593.2633333333333,
+          "games_2024_25": 77
+        },
+        {
+          "player": "Russell Westbrook",
+          "minutes_2024_25": 2092.2916666666665,
+          "games_2024_25": 75
+        }
+      ]
+    },
+    {
+      "team": "Portland Trail Blazers",
+      "abbreviation": "POR",
+      "season": "2025-26",
+      "rci": 0.721,
+      "returning_minutes_pct": 0.721,
+      "returning_player_count": 10,
+      "total_previous_players": 14,
+      "lost_player_count": 4,
+      "returning_players": [
+        {
+          "player": "Deni Avdija",
+          "minutes_2024_25": 2161.1483333333335,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Donovan Clingan",
+          "minutes_2024_25": 1323.6433333333334,
+          "games_2024_25": 67
+        },
+        {
+          "player": "Duop Reath",
+          "minutes_2024_25": 469.4266666666667,
+          "games_2024_25": 46
+        },
+        {
+          "player": "Jerami Grant",
+          "minutes_2024_25": 1523.5866666666666,
+          "games_2024_25": 47
+        },
+        {
+          "player": "Kris Murray",
+          "minutes_2024_25": 1040.3866666666668,
+          "games_2024_25": 69
+        },
+        {
+          "player": "Rayan Rupert",
+          "minutes_2024_25": 459.5416666666667,
+          "games_2024_25": 52
+        },
+        {
+          "player": "Robert Williams III",
+          "minutes_2024_25": 351.33,
+          "games_2024_25": 20
+        },
+        {
+          "player": "Scoot Henderson",
+          "minutes_2024_25": 1759.0716666666667,
+          "games_2024_25": 66
+        },
+        {
+          "player": "Shaedon Sharpe",
+          "minutes_2024_25": 2252.33,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Toumani Camara",
+          "minutes_2024_25": 2548.0516666666667,
+          "games_2024_25": 78
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Anfernee Simons",
+          "minutes_2024_25": 2291.8983333333335,
+          "games_2024_25": 70
+        },
+        {
+          "player": "Dalano Banton",
+          "minutes_2024_25": 1119.945,
+          "games_2024_25": 67
+        },
+        {
+          "player": "Deandre Ayton",
+          "minutes_2024_25": 1205.62,
+          "games_2024_25": 40
+        },
+        {
+          "player": "Jabari Walker",
+          "minutes_2024_25": 749.165,
+          "games_2024_25": 60
+        }
+      ]
+    },
+    {
+      "team": "Miami Heat",
+      "abbreviation": "MIA",
+      "season": "2025-26",
+      "rci": 0.732,
+      "returning_minutes_pct": 0.732,
+      "returning_player_count": 9,
+      "total_previous_players": 14,
+      "lost_player_count": 5,
+      "returning_players": [
+        {
+          "player": "Andrew Wiggins",
+          "minutes_2024_25": 1842.2816666666668,
+          "games_2024_25": 60
+        },
+        {
+          "player": "Bam Adebayo",
+          "minutes_2024_25": 2673.693333333333,
+          "games_2024_25": 78
+        },
+        {
+          "player": "Davion Mitchell",
+          "minutes_2024_25": 2027.3133333333333,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Jaime Jaquez Jr.",
+          "minutes_2024_25": 1368.38,
+          "games_2024_25": 66
+        },
+        {
+          "player": "Kel'el Ware",
+          "minutes_2024_25": 1422.4866666666667,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Nikola Jović",
+          "minutes_2024_25": 1155.6766666666667,
+          "games_2024_25": 46
+        },
+        {
+          "player": "Pelle Larsson",
+          "minutes_2024_25": 781.9466666666667,
+          "games_2024_25": 55
+        },
+        {
+          "player": "Terry Rozier",
+          "minutes_2024_25": 1658.22,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Tyler Herro",
+          "minutes_2024_25": 2725.08,
+          "games_2024_25": 77
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Alec Burks",
+          "minutes_2024_25": 863.4966666666667,
+          "games_2024_25": 49
+        },
+        {
+          "player": "Duncan Robinson",
+          "minutes_2024_25": 1785.595,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Haywood Highsmith",
+          "minutes_2024_25": 1818.3266666666666,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Kevin Love",
+          "minutes_2024_25": 251.45333333333335,
+          "games_2024_25": 23
+        },
+        {
+          "player": "Kyle Anderson",
+          "minutes_2024_25": 1002.0933333333334,
+          "games_2024_25": 61
+        }
+      ]
+    },
+    {
+      "team": "Washington Wizards",
+      "abbreviation": "WAS",
+      "season": "2025-26",
+      "rci": 0.736,
+      "returning_minutes_pct": 0.736,
+      "returning_player_count": 10,
+      "total_previous_players": 17,
+      "lost_player_count": 7,
+      "returning_players": [
+        {
+          "player": "AJ Johnson",
+          "minutes_2024_25": 638.3866666666667,
+          "games_2024_25": 29
+        },
+        {
+          "player": "Alex Sarr",
+          "minutes_2024_25": 1814.2283333333332,
+          "games_2024_25": 67
+        },
+        {
+          "player": "Anthony Gill",
+          "minutes_2024_25": 397.575,
+          "games_2024_25": 51
+        },
+        {
+          "player": "Bilal Coulibaly",
+          "minutes_2024_25": 1947.5066666666667,
+          "games_2024_25": 59
+        },
+        {
+          "player": "Bub Carrington",
+          "minutes_2024_25": 2457.79,
+          "games_2024_25": 82
+        },
+        {
+          "player": "Corey Kispert",
+          "minutes_2024_25": 1601.5233333333333,
+          "games_2024_25": 61
+        },
+        {
+          "player": "Justin Champagnie",
+          "minutes_2024_25": 1340.5333333333333,
+          "games_2024_25": 62
+        },
+        {
+          "player": "Khris Middleton",
+          "minutes_2024_25": 843.1816666666666,
+          "games_2024_25": 37
+        },
+        {
+          "player": "Kyshawn George",
+          "minutes_2024_25": 1802.1833333333334,
+          "games_2024_25": 68
+        },
+        {
+          "player": "Tristan Vukcevic",
+          "minutes_2024_25": 512.51,
+          "games_2024_25": 35
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Colby Jones",
+          "minutes_2024_25": 514.6483333333333,
+          "games_2024_25": 39
+        },
+        {
+          "player": "JT Thor",
+          "minutes_2024_25": 249.31666666666666,
+          "games_2024_25": 20
+        },
+        {
+          "player": "Johnny Davis",
+          "minutes_2024_25": 241.65833333333333,
+          "games_2024_25": 34
+        },
+        {
+          "player": "Jordan Poole",
+          "minutes_2024_25": 2000.8866666666668,
+          "games_2024_25": 68
+        },
+        {
+          "player": "Malcolm Brogdon",
+          "minutes_2024_25": 564.0766666666667,
+          "games_2024_25": 24
+        },
+        {
+          "player": "Marcus Smart",
+          "minutes_2024_25": 680.34,
+          "games_2024_25": 34
+        },
+        {
+          "player": "Richaun Holmes",
+          "minutes_2024_25": 534.135,
+          "games_2024_25": 31
+        }
+      ]
+    },
+    {
+      "team": "Milwaukee Bucks",
+      "abbreviation": "MIL",
+      "season": "2025-26",
+      "rci": 0.742,
+      "returning_minutes_pct": 0.742,
+      "returning_player_count": 10,
+      "total_previous_players": 13,
+      "lost_player_count": 3,
+      "returning_players": [
+        {
+          "player": "AJ Green",
+          "minutes_2024_25": 1659.1416666666667,
+          "games_2024_25": 73
+        },
+        {
+          "player": "Andre Jackson Jr.",
+          "minutes_2024_25": 980.0916666666667,
+          "games_2024_25": 67
+        },
+        {
+          "player": "Bobby Portis",
+          "minutes_2024_25": 1243.68,
+          "games_2024_25": 49
+        },
+        {
+          "player": "Gary Trent Jr.",
+          "minutes_2024_25": 1893.395,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Giannis Antetokounmpo",
+          "minutes_2024_25": 2288.63,
+          "games_2024_25": 67
+        },
+        {
+          "player": "Jericho Sims",
+          "minutes_2024_25": 631.245,
+          "games_2024_25": 53
+        },
+        {
+          "player": "Kevin Porter Jr.",
+          "minutes_2024_25": 1482.02,
+          "games_2024_25": 75
+        },
+        {
+          "player": "Kyle Kuzma",
+          "minutes_2024_25": 1936.415,
+          "games_2024_25": 65
+        },
+        {
+          "player": "Ryan Rollins",
+          "minutes_2024_25": 819.525,
+          "games_2024_25": 56
+        },
+        {
+          "player": "Taurean Prince",
+          "minutes_2024_25": 2165.86,
+          "games_2024_25": 80
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Brook Lopez",
+          "minutes_2024_25": 2546.07,
+          "games_2024_25": 80
+        },
+        {
+          "player": "Damian Lillard",
+          "minutes_2024_25": 2092.87,
+          "games_2024_25": 58
+        },
+        {
+          "player": "Pat Connaughton",
+          "minutes_2024_25": 602.8266666666667,
+          "games_2024_25": 41
+        }
+      ]
+    },
+    {
+      "team": "Los Angeles Lakers",
+      "abbreviation": "LAL",
+      "season": "2025-26",
+      "rci": 0.758,
+      "returning_minutes_pct": 0.758,
+      "returning_player_count": 10,
+      "total_previous_players": 16,
+      "lost_player_count": 6,
+      "returning_players": [
+        {
+          "player": "Austin Reaves",
+          "minutes_2024_25": 2550.0916666666667,
+          "games_2024_25": 73
+        },
+        {
+          "player": "Christian Koloko",
+          "minutes_2024_25": 341.53,
+          "games_2024_25": 37
+        },
+        {
+          "player": "Dalton Knecht",
+          "minutes_2024_25": 1493.795,
+          "games_2024_25": 78
+        },
+        {
+          "player": "Gabe Vincent",
+          "minutes_2024_25": 1527.265,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Jarred Vanderbilt",
+          "minutes_2024_25": 580.8583333333333,
+          "games_2024_25": 36
+        },
+        {
+          "player": "Jaxson Hayes",
+          "minutes_2024_25": 1092.6833333333334,
+          "games_2024_25": 56
+        },
+        {
+          "player": "LeBron James",
+          "minutes_2024_25": 2444.4466666666667,
+          "games_2024_25": 70
+        },
+        {
+          "player": "Luka Dončić",
+          "minutes_2024_25": 1768.55,
+          "games_2024_25": 50
+        },
+        {
+          "player": "Maxi Kleber",
+          "minutes_2024_25": 636.875,
+          "games_2024_25": 34
+        },
+        {
+          "player": "Rui Hachimura",
+          "minutes_2024_25": 1868.825,
+          "games_2024_25": 59
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Alex Len",
+          "minutes_2024_25": 379.79,
+          "games_2024_25": 46
+        },
+        {
+          "player": "Cam Reddish",
+          "minutes_2024_25": 589.45,
+          "games_2024_25": 33
+        },
+        {
+          "player": "Dorian Finney-Smith",
+          "minutes_2024_25": 1818.6783333333333,
+          "games_2024_25": 63
+        },
+        {
+          "player": "Jordan Goodwin",
+          "minutes_2024_25": 542.575,
+          "games_2024_25": 29
+        },
+        {
+          "player": "Shake Milton",
+          "minutes_2024_25": 836.2766666666666,
+          "games_2024_25": 57
+        },
+        {
+          "player": "Trey Jemison III",
+          "minutes_2024_25": 392.0233333333333,
+          "games_2024_25": 38
+        }
+      ]
+    },
+    {
+      "team": "San Antonio Spurs",
+      "abbreviation": "SAS",
+      "season": "2025-26",
+      "rci": 0.783,
+      "returning_minutes_pct": 0.783,
+      "returning_player_count": 10,
+      "total_previous_players": 15,
+      "lost_player_count": 5,
+      "returning_players": [
+        {
+          "player": "Bismack Biyombo",
+          "minutes_2024_25": 527.4866666666667,
+          "games_2024_25": 28
+        },
+        {
+          "player": "De'Aaron Fox",
+          "minutes_2024_25": 2241.1366666666668,
+          "games_2024_25": 62
+        },
+        {
+          "player": "Devin Vassell",
+          "minutes_2024_25": 1983.185,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Harrison Barnes",
+          "minutes_2024_25": 2230.0633333333335,
+          "games_2024_25": 82
+        },
+        {
+          "player": "Jeremy Sochan",
+          "minutes_2024_25": 1363.9683333333332,
+          "games_2024_25": 54
+        },
+        {
+          "player": "Jordan McLaughlin",
+          "minutes_2024_25": 314.27666666666664,
+          "games_2024_25": 46
+        },
+        {
+          "player": "Julian Champagnie",
+          "minutes_2024_25": 1932.1283333333333,
+          "games_2024_25": 82
+        },
+        {
+          "player": "Keldon Johnson",
+          "minutes_2024_25": 1837.9966666666667,
+          "games_2024_25": 77
+        },
+        {
+          "player": "Stephon Castle",
+          "minutes_2024_25": 2162.0216666666665,
+          "games_2024_25": 81
+        },
+        {
+          "player": "Victor Wembanyama",
+          "minutes_2024_25": 1527.2533333333333,
+          "games_2024_25": 46
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Blake Wesley",
+          "minutes_2024_25": 683.1066666666667,
+          "games_2024_25": 58
+        },
+        {
+          "player": "Charles Bassey",
+          "minutes_2024_25": 375.515,
+          "games_2024_25": 36
+        },
+        {
+          "player": "Chris Paul",
+          "minutes_2024_25": 2292.1633333333334,
+          "games_2024_25": 82
+        },
+        {
+          "player": "Malaki Branham",
+          "minutes_2024_25": 426.555,
+          "games_2024_25": 47
+        },
+        {
+          "player": "Sandro Mamukelashvili",
+          "minutes_2024_25": 681.2083333333334,
+          "games_2024_25": 61
+        }
+      ]
+    },
+    {
+      "team": "Sacramento Kings",
+      "abbreviation": "SAC",
+      "season": "2025-26",
+      "rci": 0.785,
+      "returning_minutes_pct": 0.785,
+      "returning_player_count": 9,
+      "total_previous_players": 12,
+      "lost_player_count": 3,
+      "returning_players": [
+        {
+          "player": "DeMar DeRozan",
+          "minutes_2024_25": 2767.615,
+          "games_2024_25": 77
+        },
+        {
+          "player": "Devin Carter",
+          "minutes_2024_25": 395.9433333333333,
+          "games_2024_25": 36
+        },
+        {
+          "player": "Domantas Sabonis",
+          "minutes_2024_25": 2428.8766666666666,
+          "games_2024_25": 70
+        },
+        {
+          "player": "Doug McDermott",
+          "minutes_2024_25": 341.65166666666664,
+          "games_2024_25": 42
+        },
+        {
+          "player": "Isaac Jones",
+          "minutes_2024_25": 303.86333333333334,
+          "games_2024_25": 40
+        },
+        {
+          "player": "Keegan Murray",
+          "minutes_2024_25": 2610.173333333333,
+          "games_2024_25": 76
+        },
+        {
+          "player": "Keon Ellis",
+          "minutes_2024_25": 1948.1916666666666,
+          "games_2024_25": 80
+        },
+        {
+          "player": "Malik Monk",
+          "minutes_2024_25": 2054.11,
+          "games_2024_25": 65
+        },
+        {
+          "player": "Zach LaVine",
+          "minutes_2024_25": 2602.48,
+          "games_2024_25": 74
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Jake LaRavia",
+          "minutes_2024_25": 1349.28,
+          "games_2024_25": 66
+        },
+        {
+          "player": "Jonas Valančiūnas",
+          "minutes_2024_25": 1523.7633333333333,
+          "games_2024_25": 81
+        },
+        {
+          "player": "Trey Lyles",
+          "minutes_2024_25": 1349.5216666666668,
+          "games_2024_25": 69
+        }
+      ]
+    },
+    {
+      "team": "Cleveland Cavaliers",
+      "abbreviation": "CLE",
+      "season": "2025-26",
+      "rci": 0.795,
+      "returning_minutes_pct": 0.795,
+      "returning_player_count": 10,
+      "total_previous_players": 14,
+      "lost_player_count": 4,
+      "returning_players": [
+        {
+          "player": "Craig Porter Jr.",
+          "minutes_2024_25": 513.265,
+          "games_2024_25": 51
+        },
+        {
+          "player": "Darius Garland",
+          "minutes_2024_25": 2300.77,
+          "games_2024_25": 75
+        },
+        {
+          "player": "De'Andre Hunter",
+          "minutes_2024_25": 1740.015,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Dean Wade",
+          "minutes_2024_25": 1252.4516666666666,
+          "games_2024_25": 59
+        },
+        {
+          "player": "Donovan Mitchell",
+          "minutes_2024_25": 2232.0333333333333,
+          "games_2024_25": 71
+        },
+        {
+          "player": "Evan Mobley",
+          "minutes_2024_25": 2166.555,
+          "games_2024_25": 71
+        },
+        {
+          "player": "Jarrett Allen",
+          "minutes_2024_25": 2296.0533333333333,
+          "games_2024_25": 82
+        },
+        {
+          "player": "Jaylon Tyson",
+          "minutes_2024_25": 452.96,
+          "games_2024_25": 47
+        },
+        {
+          "player": "Max Strus",
+          "minutes_2024_25": 1272.725,
+          "games_2024_25": 50
+        },
+        {
+          "player": "Sam Merrill",
+          "minutes_2024_25": 1401.2816666666668,
+          "games_2024_25": 71
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Isaac Okoro",
+          "minutes_2024_25": 1053.2033333333334,
+          "games_2024_25": 55
+        },
+        {
+          "player": "Javonte Green",
+          "minutes_2024_25": 1257.8333333333333,
+          "games_2024_25": 68
+        },
+        {
+          "player": "Tristan Thompson",
+          "minutes_2024_25": 328.17,
+          "games_2024_25": 40
+        },
+        {
+          "player": "Ty Jerome",
+          "minutes_2024_25": 1392.4,
+          "games_2024_25": 70
+        }
+      ]
+    },
+    {
+      "team": "Memphis Grizzlies",
+      "abbreviation": "MEM",
+      "season": "2025-26",
+      "rci": 0.809,
+      "returning_minutes_pct": 0.809,
+      "returning_player_count": 12,
+      "total_previous_players": 16,
+      "lost_player_count": 4,
+      "returning_players": [
+        {
+          "player": "Brandon Clarke",
+          "minutes_2024_25": 1206.8616666666667,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Cam Spencer",
+          "minutes_2024_25": 252.24333333333334,
+          "games_2024_25": 25
+        },
+        {
+          "player": "GG Jackson",
+          "minutes_2024_25": 458.615,
+          "games_2024_25": 29
+        },
+        {
+          "player": "Ja Morant",
+          "minutes_2024_25": 1519.11,
+          "games_2024_25": 50
+        },
+        {
+          "player": "Jaren Jackson Jr.",
+          "minutes_2024_25": 2206.951666666667,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Jaylen Wells",
+          "minutes_2024_25": 2043.4816666666666,
+          "games_2024_25": 79
+        },
+        {
+          "player": "John Konchar",
+          "minutes_2024_25": 558.2233333333334,
+          "games_2024_25": 46
+        },
+        {
+          "player": "Kentavious Caldwell-Pope",
+          "minutes_2024_25": 2279.036666666667,
+          "games_2024_25": 77
+        },
+        {
+          "player": "Santi Aldama",
+          "minutes_2024_25": 1659.6483333333333,
+          "games_2024_25": 65
+        },
+        {
+          "player": "Scotty Pippen Jr.",
+          "minutes_2024_25": 1682.88,
+          "games_2024_25": 79
+        },
+        {
+          "player": "Vince Williams Jr.",
+          "minutes_2024_25": 498.5466666666667,
+          "games_2024_25": 27
+        },
+        {
+          "player": "Zach Edey",
+          "minutes_2024_25": 1415.765,
+          "games_2024_25": 66
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Cole Anthony",
+          "minutes_2024_25": 1234.1133333333332,
+          "games_2024_25": 67
+        },
+        {
+          "player": "Jay Huff",
+          "minutes_2024_25": 748.0316666666666,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Luke Kennard",
+          "minutes_2024_25": 1471.6916666666666,
+          "games_2024_25": 65
+        },
+        {
+          "player": "Marvin Bagley III",
+          "minutes_2024_25": 265.2266666666667,
+          "games_2024_25": 31
+        }
+      ]
+    },
+    {
+      "team": "Dallas Mavericks",
+      "abbreviation": "DAL",
+      "season": "2025-26",
+      "rci": 0.817,
+      "returning_minutes_pct": 0.817,
+      "returning_player_count": 13,
+      "total_previous_players": 17,
+      "lost_player_count": 4,
+      "returning_players": [
+        {
+          "player": "Anthony Davis",
+          "minutes_2024_25": 1705.4883333333332,
+          "games_2024_25": 51
+        },
+        {
+          "player": "Brandon Williams",
+          "minutes_2024_25": 487.13,
+          "games_2024_25": 33
+        },
+        {
+          "player": "Caleb Martin",
+          "minutes_2024_25": 1218.0166666666667,
+          "games_2024_25": 45
+        },
+        {
+          "player": "Daniel Gafford",
+          "minutes_2024_25": 1226.095,
+          "games_2024_25": 57
+        },
+        {
+          "player": "Danté Exum",
+          "minutes_2024_25": 372.31,
+          "games_2024_25": 20
+        },
+        {
+          "player": "Dereck Lively II",
+          "minutes_2024_25": 832.7366666666667,
+          "games_2024_25": 36
+        },
+        {
+          "player": "Dwight Powell",
+          "minutes_2024_25": 550.86,
+          "games_2024_25": 55
+        },
+        {
+          "player": "Jaden Hardy",
+          "minutes_2024_25": 907.4383333333334,
+          "games_2024_25": 57
+        },
+        {
+          "player": "Klay Thompson",
+          "minutes_2024_25": 1964.5683333333334,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Kyrie Irving",
+          "minutes_2024_25": 1803.7966666666666,
+          "games_2024_25": 50
+        },
+        {
+          "player": "Max Christie",
+          "minutes_2024_25": 2127.141666666667,
+          "games_2024_25": 78
+        },
+        {
+          "player": "Naji Marshall",
+          "minutes_2024_25": 1919.0833333333333,
+          "games_2024_25": 69
+        },
+        {
+          "player": "P.J. Washington",
+          "minutes_2024_25": 1834.8583333333333,
+          "games_2024_25": 57
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Kai Jones",
+          "minutes_2024_25": 468.37,
+          "games_2024_25": 40
+        },
+        {
+          "player": "Kessler Edwards",
+          "minutes_2024_25": 608.46,
+          "games_2024_25": 40
+        },
+        {
+          "player": "Olivier-Maxence Prosper",
+          "minutes_2024_25": 584.07,
+          "games_2024_25": 52
+        },
+        {
+          "player": "Spencer Dinwiddie",
+          "minutes_2024_25": 2136.085,
+          "games_2024_25": 79
+        }
+      ]
+    },
+    {
+      "team": "Indiana Pacers",
+      "abbreviation": "IND",
+      "season": "2025-26",
+      "rci": 0.839,
+      "returning_minutes_pct": 0.839,
+      "returning_player_count": 11,
+      "total_previous_players": 13,
+      "lost_player_count": 2,
+      "returning_players": [
+        {
+          "player": "Aaron Nesmith",
+          "minutes_2024_25": 1121.6183333333333,
+          "games_2024_25": 45
+        },
+        {
+          "player": "Andrew Nembhard",
+          "minutes_2024_25": 1880.67,
+          "games_2024_25": 65
+        },
+        {
+          "player": "Ben Sheppard",
+          "minutes_2024_25": 1229.5583333333334,
+          "games_2024_25": 63
+        },
+        {
+          "player": "Bennedict Mathurin",
+          "minutes_2024_25": 2149.318333333333,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Jarace Walker",
+          "minutes_2024_25": 1186.62,
+          "games_2024_25": 75
+        },
+        {
+          "player": "Johnny Furphy",
+          "minutes_2024_25": 379.49666666666667,
+          "games_2024_25": 50
+        },
+        {
+          "player": "Obi Toppin",
+          "minutes_2024_25": 1544.815,
+          "games_2024_25": 79
+        },
+        {
+          "player": "Pascal Siakam",
+          "minutes_2024_25": 2547.8533333333335,
+          "games_2024_25": 78
+        },
+        {
+          "player": "Quenton Jackson",
+          "minutes_2024_25": 381.03833333333336,
+          "games_2024_25": 28
+        },
+        {
+          "player": "T.J. McConnell",
+          "minutes_2024_25": 1415.4333333333334,
+          "games_2024_25": 79
+        },
+        {
+          "player": "Tyrese Haliburton",
+          "minutes_2024_25": 2450.391666666667,
+          "games_2024_25": 73
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Myles Turner",
+          "minutes_2024_25": 2173.6366666666668,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Thomas Bryant",
+          "minutes_2024_25": 963.0166666666667,
+          "games_2024_25": 66
+        }
+      ]
+    },
+    {
+      "team": "New York Knicks",
+      "abbreviation": "NYK",
+      "season": "2025-26",
+      "rci": 0.849,
+      "returning_minutes_pct": 0.849,
+      "returning_player_count": 9,
+      "total_previous_players": 12,
+      "lost_player_count": 3,
+      "returning_players": [
+        {
+          "player": "Ariel Hukporti",
+          "minutes_2024_25": 217.365,
+          "games_2024_25": 25
+        },
+        {
+          "player": "Jalen Brunson",
+          "minutes_2024_25": 2300.7083333333335,
+          "games_2024_25": 65
+        },
+        {
+          "player": "Josh Hart",
+          "minutes_2024_25": 2896.83,
+          "games_2024_25": 77
+        },
+        {
+          "player": "Karl-Anthony Towns",
+          "minutes_2024_25": 2516.72,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Landry Shamet",
+          "minutes_2024_25": 761.6,
+          "games_2024_25": 50
+        },
+        {
+          "player": "Mikal Bridges",
+          "minutes_2024_25": 3036.076666666667,
+          "games_2024_25": 82
+        },
+        {
+          "player": "Miles McBride",
+          "minutes_2024_25": 1593.455,
+          "games_2024_25": 64
+        },
+        {
+          "player": "OG Anunoby",
+          "minutes_2024_25": 2705.7766666666666,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Tyler Kolek",
+          "minutes_2024_25": 296.15166666666664,
+          "games_2024_25": 41
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Cameron Payne",
+          "minutes_2024_25": 1089.9766666666667,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Delon Wright",
+          "minutes_2024_25": 634.4966666666667,
+          "games_2024_25": 40
+        },
+        {
+          "player": "Precious Achiuwa",
+          "minutes_2024_25": 1169.6133333333332,
+          "games_2024_25": 57
+        }
+      ]
+    },
+    {
+      "team": "Orlando Magic",
+      "abbreviation": "ORL",
+      "season": "2025-26",
+      "rci": 0.862,
+      "returning_minutes_pct": 0.862,
+      "returning_player_count": 11,
+      "total_previous_players": 15,
+      "lost_player_count": 4,
+      "returning_players": [
+        {
+          "player": "Anthony Black",
+          "minutes_2024_25": 1886.9933333333333,
+          "games_2024_25": 78
+        },
+        {
+          "player": "Desmond Bane",
+          "minutes_2024_25": 2205.225,
+          "games_2024_25": 69
+        },
+        {
+          "player": "Franz Wagner",
+          "minutes_2024_25": 2023.3066666666666,
+          "games_2024_25": 60
+        },
+        {
+          "player": "Goga Bitadze",
+          "minutes_2024_25": 1429.4616666666666,
+          "games_2024_25": 70
+        },
+        {
+          "player": "Jalen Suggs",
+          "minutes_2024_25": 1002.4533333333334,
+          "games_2024_25": 35
+        },
+        {
+          "player": "Jett Howard",
+          "minutes_2024_25": 701.1066666666667,
+          "games_2024_25": 60
+        },
+        {
+          "player": "Jonathan Isaac",
+          "minutes_2024_25": 1090.015,
+          "games_2024_25": 71
+        },
+        {
+          "player": "Moritz Wagner",
+          "minutes_2024_25": 564.1566666666666,
+          "games_2024_25": 30
+        },
+        {
+          "player": "Paolo Banchero",
+          "minutes_2024_25": 1581.53,
+          "games_2024_25": 46
+        },
+        {
+          "player": "Tristan da Silva",
+          "minutes_2024_25": 1628.6116666666667,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Wendell Carter Jr.",
+          "minutes_2024_25": 1758.2683333333334,
+          "games_2024_25": 68
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Caleb Houstan",
+          "minutes_2024_25": 787.99,
+          "games_2024_25": 58
+        },
+        {
+          "player": "Cory Joseph",
+          "minutes_2024_25": 611.7333333333333,
+          "games_2024_25": 50
+        },
+        {
+          "player": "Gary Harris",
+          "minutes_2024_25": 710.71,
+          "games_2024_25": 48
+        },
+        {
+          "player": "Trevelin Queen",
+          "minutes_2024_25": 430.28,
+          "games_2024_25": 31
+        }
+      ]
+    },
+    {
+      "team": "Minnesota Timberwolves",
+      "abbreviation": "MIN",
+      "season": "2025-26",
+      "rci": 0.871,
+      "returning_minutes_pct": 0.871,
+      "returning_player_count": 11,
+      "total_previous_players": 14,
+      "lost_player_count": 3,
+      "returning_players": [
+        {
+          "player": "Anthony Edwards",
+          "minutes_2024_25": 2871.0583333333334,
+          "games_2024_25": 79
+        },
+        {
+          "player": "Bones Hyland",
+          "minutes_2024_25": 238.77,
+          "games_2024_25": 24
+        },
+        {
+          "player": "Donte DiVincenzo",
+          "minutes_2024_25": 1605.7333333333333,
+          "games_2024_25": 62
+        },
+        {
+          "player": "Jaden McDaniels",
+          "minutes_2024_25": 2614.41,
+          "games_2024_25": 82
+        },
+        {
+          "player": "Jaylen Clark",
+          "minutes_2024_25": 521.9933333333333,
+          "games_2024_25": 40
+        },
+        {
+          "player": "Julius Randle",
+          "minutes_2024_25": 2225.5266666666666,
+          "games_2024_25": 69
+        },
+        {
+          "player": "Mike Conley",
+          "minutes_2024_25": 1755.85,
+          "games_2024_25": 71
+        },
+        {
+          "player": "Naz Reid",
+          "minutes_2024_25": 2200.116666666667,
+          "games_2024_25": 80
+        },
+        {
+          "player": "Rob Dillingham",
+          "minutes_2024_25": 515.975,
+          "games_2024_25": 49
+        },
+        {
+          "player": "Rudy Gobert",
+          "minutes_2024_25": 2388.423333333333,
+          "games_2024_25": 72
+        },
+        {
+          "player": "Terrence Shannon Jr.",
+          "minutes_2024_25": 338.8283333333333,
+          "games_2024_25": 32
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Josh Minott",
+          "minutes_2024_25": 276.275,
+          "games_2024_25": 46
+        },
+        {
+          "player": "Luka Garza",
+          "minutes_2024_25": 219.31,
+          "games_2024_25": 39
+        },
+        {
+          "player": "Nickeil Alexander-Walker",
+          "minutes_2024_25": 2073.1016666666665,
+          "games_2024_25": 82
+        }
+      ]
+    },
+    {
+      "team": "Toronto Raptors",
+      "abbreviation": "TOR",
+      "season": "2025-26",
+      "rci": 0.883,
+      "returning_minutes_pct": 0.883,
+      "returning_player_count": 12,
+      "total_previous_players": 15,
+      "lost_player_count": 3,
+      "returning_players": [
+        {
+          "player": "A.J. Lawson",
+          "minutes_2024_25": 486.41,
+          "games_2024_25": 26
+        },
+        {
+          "player": "Garrett Temple",
+          "minutes_2024_25": 226.76833333333335,
+          "games_2024_25": 28
+        },
+        {
+          "player": "Gradey Dick",
+          "minutes_2024_25": 1587.3733333333332,
+          "games_2024_25": 54
+        },
+        {
+          "player": "Immanuel Quickley",
+          "minutes_2024_25": 917.7533333333333,
+          "games_2024_25": 33
+        },
+        {
+          "player": "Ja'Kobe Walter",
+          "minutes_2024_25": 1103.235,
+          "games_2024_25": 52
+        },
+        {
+          "player": "Jakob Poeltl",
+          "minutes_2024_25": 1685.7483333333332,
+          "games_2024_25": 57
+        },
+        {
+          "player": "Jamal Shead",
+          "minutes_2024_25": 1466.825,
+          "games_2024_25": 75
+        },
+        {
+          "player": "Jamison Battle",
+          "minutes_2024_25": 1041.6783333333333,
+          "games_2024_25": 59
+        },
+        {
+          "player": "Jonathan Mogbo",
+          "minutes_2024_25": 1285.655,
+          "games_2024_25": 63
+        },
+        {
+          "player": "Ochai Agbaji",
+          "minutes_2024_25": 1738.67,
+          "games_2024_25": 64
+        },
+        {
+          "player": "RJ Barrett",
+          "minutes_2024_25": 1868.8033333333333,
+          "games_2024_25": 58
+        },
+        {
+          "player": "Scottie Barnes",
+          "minutes_2024_25": 2134.13,
+          "games_2024_25": 65
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Chris Boucher",
+          "minutes_2024_25": 862.3,
+          "games_2024_25": 50
+        },
+        {
+          "player": "Colin Castleton",
+          "minutes_2024_25": 431.99,
+          "games_2024_25": 26
+        },
+        {
+          "player": "Orlando Robinson",
+          "minutes_2024_25": 769.8016666666666,
+          "games_2024_25": 44
+        }
+      ]
+    },
+    {
+      "team": "Chicago Bulls",
+      "abbreviation": "CHI",
+      "season": "2025-26",
+      "rci": 0.924,
+      "returning_minutes_pct": 0.924,
+      "returning_player_count": 13,
+      "total_previous_players": 15,
+      "lost_player_count": 2,
+      "returning_players": [
+        {
+          "player": "Ayo Dosunmu",
+          "minutes_2024_25": 1393.8833333333334,
+          "games_2024_25": 46
+        },
+        {
+          "player": "Coby White",
+          "minutes_2024_25": 2450.2566666666667,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Dalen Terry",
+          "minutes_2024_25": 987.1783333333333,
+          "games_2024_25": 73
+        },
+        {
+          "player": "Jalen Smith",
+          "minutes_2024_25": 962.3833333333333,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Jevon Carter",
+          "minutes_2024_25": 320.5733333333333,
+          "games_2024_25": 36
+        },
+        {
+          "player": "Josh Giddey",
+          "minutes_2024_25": 2116.641666666667,
+          "games_2024_25": 70
+        },
+        {
+          "player": "Julian Phillips",
+          "minutes_2024_25": 1122.905,
+          "games_2024_25": 79
+        },
+        {
+          "player": "Kevin Huerter",
+          "minutes_2024_25": 1678.9933333333333,
+          "games_2024_25": 69
+        },
+        {
+          "player": "Matas Buzelis",
+          "minutes_2024_25": 1511.295,
+          "games_2024_25": 80
+        },
+        {
+          "player": "Nikola Vučević",
+          "minutes_2024_25": 2278.25,
+          "games_2024_25": 73
+        },
+        {
+          "player": "Patrick Williams",
+          "minutes_2024_25": 1576.3266666666666,
+          "games_2024_25": 63
+        },
+        {
+          "player": "Tre Jones",
+          "minutes_2024_25": 904.9716666666667,
+          "games_2024_25": 46
+        },
+        {
+          "player": "Zach Collins",
+          "minutes_2024_25": 977.06,
+          "games_2024_25": 64
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Lonzo Ball",
+          "minutes_2024_25": 777.03,
+          "games_2024_25": 35
+        },
+        {
+          "player": "Talen Horton-Tucker",
+          "minutes_2024_25": 723.695,
+          "games_2024_25": 58
+        }
+      ]
+    },
+    {
+      "team": "Golden State Warriors",
+      "abbreviation": "GSW",
+      "season": "2025-26",
+      "rci": 0.933,
+      "returning_minutes_pct": 0.933,
+      "returning_player_count": 12,
+      "total_previous_players": 13,
+      "lost_player_count": 1,
+      "returning_players": [
+        {
+          "player": "Brandin Podziemski",
+          "minutes_2024_25": 1716.3483333333334,
+          "games_2024_25": 64
+        },
+        {
+          "player": "Buddy Hield",
+          "minutes_2024_25": 1862.9883333333332,
+          "games_2024_25": 82
+        },
+        {
+          "player": "Draymond Green",
+          "minutes_2024_25": 1983.3066666666666,
+          "games_2024_25": 68
+        },
+        {
+          "player": "Gary Payton II",
+          "minutes_2024_25": 927.1766666666666,
+          "games_2024_25": 62
+        },
+        {
+          "player": "Gui Santos",
+          "minutes_2024_25": 761.5233333333333,
+          "games_2024_25": 56
+        },
+        {
+          "player": "Jimmy Butler III",
+          "minutes_2024_25": 1746.135,
+          "games_2024_25": 55
+        },
+        {
+          "player": "Jonathan Kuminga",
+          "minutes_2024_25": 1144.08,
+          "games_2024_25": 47
+        },
+        {
+          "player": "Moses Moody",
+          "minutes_2024_25": 1649.15,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Pat Spencer",
+          "minutes_2024_25": 249.61166666666668,
+          "games_2024_25": 39
+        },
+        {
+          "player": "Quinten Post",
+          "minutes_2024_25": 685.7566666666667,
+          "games_2024_25": 42
+        },
+        {
+          "player": "Stephen Curry",
+          "minutes_2024_25": 2252.45,
+          "games_2024_25": 70
+        },
+        {
+          "player": "Trayce Jackson-Davis",
+          "minutes_2024_25": 966.7866666666666,
+          "games_2024_25": 62
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Kevon Looney",
+          "minutes_2024_25": 1142.155,
+          "games_2024_25": 76
+        }
+      ]
+    },
+    {
+      "team": "Oklahoma City Thunder",
+      "abbreviation": "OKC",
+      "season": "2025-26",
+      "rci": 0.961,
+      "returning_minutes_pct": 0.961,
+      "returning_player_count": 14,
+      "total_previous_players": 16,
+      "lost_player_count": 2,
+      "returning_players": [
+        {
+          "player": "Aaron Wiggins",
+          "minutes_2024_25": 1743.9,
+          "games_2024_25": 76
+        },
+        {
+          "player": "Ajay Mitchell",
+          "minutes_2024_25": 596.955,
+          "games_2024_25": 36
+        },
+        {
+          "player": "Alex Caruso",
+          "minutes_2024_25": 1040.635,
+          "games_2024_25": 54
+        },
+        {
+          "player": "Branden Carlson",
+          "minutes_2024_25": 246.40333333333334,
+          "games_2024_25": 32
+        },
+        {
+          "player": "Cason Wallace",
+          "minutes_2024_25": 1876.26,
+          "games_2024_25": 68
+        },
+        {
+          "player": "Chet Holmgren",
+          "minutes_2024_25": 876.54,
+          "games_2024_25": 32
+        },
+        {
+          "player": "Isaiah Hartenstein",
+          "minutes_2024_25": 1589.6416666666667,
+          "games_2024_25": 57
+        },
+        {
+          "player": "Isaiah Joe",
+          "minutes_2024_25": 1603.9766666666667,
+          "games_2024_25": 74
+        },
+        {
+          "player": "Jalen Williams",
+          "minutes_2024_25": 2236.673333333333,
+          "games_2024_25": 69
+        },
+        {
+          "player": "Jaylin Williams",
+          "minutes_2024_25": 784.055,
+          "games_2024_25": 47
+        },
+        {
+          "player": "Kenrich Williams",
+          "minutes_2024_25": 1131.5383333333334,
+          "games_2024_25": 69
+        },
+        {
+          "player": "Luguentz Dort",
+          "minutes_2024_25": 2073.3,
+          "games_2024_25": 71
+        },
+        {
+          "player": "Ousmane Dieng",
+          "minutes_2024_25": 404.84166666666664,
+          "games_2024_25": 37
+        },
+        {
+          "player": "Shai Gilgeous-Alexander",
+          "minutes_2024_25": 2597.63,
+          "games_2024_25": 76
+        }
+      ],
+      "lost_players": [
+        {
+          "player": "Adam Flagler",
+          "minutes_2024_25": 202.965,
+          "games_2024_25": 37
+        },
+        {
+          "player": "Dillon Jones",
+          "minutes_2024_25": 551.4933333333333,
+          "games_2024_25": 54
+        }
+      ]
+    }
+  ]
+}

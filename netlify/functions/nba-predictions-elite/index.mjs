@@ -6,9 +6,11 @@
  * - Historical game data from GitHub raw
  * - Advanced stats: offRtg, defRtg, pace, Four Factors
  * - L10 rolling windows for recent performance
+ * - RCI adjustments for roster continuity (2025-26 season)
  */
 
 import { SPREAD_MODEL, TOTAL_MODEL } from '../_lib/nba/models-inline.mjs';
+import { applyRCIAdjustment, getRCISummary } from '../_lib/nba/rci-adjustments.mjs';
 
 /**
  * Fetch live Vegas lines from The Odds API
@@ -422,21 +424,38 @@ export default async (request, context) => {
       console.log(`[NBA Elite] Processing: ${away.team.abbreviation} @ ${home.team.abbreviation}`);
       
       // Calculate L3, L10, L20 stats for both teams (matching training data)
-      const homeL3 = calculateAdvancedStats(historicalGames, home.id, 3);
-      const homeL10 = calculateAdvancedStats(historicalGames, home.id, 10);
-      const homeL20 = calculateAdvancedStats(historicalGames, home.id, 20);
+      const homeL3Raw = calculateAdvancedStats(historicalGames, home.id, 3);
+      const homeL10Raw = calculateAdvancedStats(historicalGames, home.id, 10);
+      const homeL20Raw = calculateAdvancedStats(historicalGames, home.id, 20);
       
-      const awayL3 = calculateAdvancedStats(historicalGames, away.id, 3);
-      const awayL10 = calculateAdvancedStats(historicalGames, away.id, 10);
-      const awayL20 = calculateAdvancedStats(historicalGames, away.id, 20);
+      const awayL3Raw = calculateAdvancedStats(historicalGames, away.id, 3);
+      const awayL10Raw = calculateAdvancedStats(historicalGames, away.id, 10);
+      const awayL20Raw = calculateAdvancedStats(historicalGames, away.id, 20);
       
-      console.log(`[NBA Elite] ${home.team.abbreviation} games: L3=${homeL3.games}, L10=${homeL10.games}, L20=${homeL20.games}`);
+      console.log(`[NBA Elite] ${home.team.abbreviation} games: L3=${homeL3Raw.games}, L10=${homeL10Raw.games}, L20=${homeL20Raw.games}`);
       
       // Skip if not enough data (need at least 3 recent games)
-      if (homeL3.games < 3 || awayL3.games < 3) {
+      if (homeL3Raw.games < 3 || awayL3Raw.games < 3) {
         console.log(`[NBA Elite] Skipping ${away.team.abbreviation} @ ${home.team.abbreviation} - insufficient data`);
         continue;
       }
+      
+      // Apply RCI adjustments based on games played this season
+      const gamesPlayed = homeL10Raw.games; // Use L10 games as proxy for season progress
+      
+      const homeL3 = applyRCIAdjustment(homeL3Raw, home.team.abbreviation, gamesPlayed);
+      const homeL10 = applyRCIAdjustment(homeL10Raw, home.team.abbreviation, gamesPlayed);
+      const homeL20 = applyRCIAdjustment(homeL20Raw, home.team.abbreviation, gamesPlayed);
+      
+      const awayL3 = applyRCIAdjustment(awayL3Raw, away.team.abbreviation, gamesPlayed);
+      const awayL10 = applyRCIAdjustment(awayL10Raw, away.team.abbreviation, gamesPlayed);
+      const awayL20 = applyRCIAdjustment(awayL20Raw, away.team.abbreviation, gamesPlayed);
+      
+      // Log RCI adjustments for transparency
+      const homeRCI = getRCISummary(home.team.abbreviation, gamesPlayed);
+      const awayRCI = getRCISummary(away.team.abbreviation, gamesPlayed);
+      console.log(`[RCI] ${home.team.abbreviation}:`, homeRCI);
+      console.log(`[RCI] ${away.team.abbreviation}:`, awayRCI);
       
       // Build features with all windows (use L10 as primary for features object)
       const spreadFeatures = buildEliteFeatures(homeL10, awayL10);
@@ -515,12 +534,14 @@ export default async (request, context) => {
           home: {
             name: home.team.displayName,
             abbreviation: home.team.abbreviation,
-            record: home.records?.[0]?.summary || ''
+            record: home.records?.[0]?.summary || '',
+            rci: homeRCI
           },
           away: {
             name: away.team.displayName,
             abbreviation: away.team.abbreviation,
-            record: away.records?.[0]?.summary || ''
+            record: away.records?.[0]?.summary || '',
+            rci: awayRCI
           }
         },
         prediction: {
