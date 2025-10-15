@@ -114,22 +114,29 @@ const NBAPredictions = () => {
     const ineffs = [];
     
     for (const pred of preds) {
-      if (pred.edge?.spread && Math.abs(pred.edge.spread.edge) >= 3) {
-        ineffs.push({
-          ...pred,
-          market: 'SPREAD',
-          edge: pred.edge.spread.edge,
-          edgePercent: pred.edge.spread.edgePercent
-        });
-      }
-      
-      if (pred.edge?.total && Math.abs(pred.edge.total.edge) >= 3) {
-        ineffs.push({
-          ...pred,
-          market: 'TOTAL',
-          edge: pred.edge.total.edge,
-          edgePercent: pred.edge.total.edgePercent
-        });
+      // Extract inefficiencies from opportunities
+      if (pred.opportunities && pred.opportunities.length > 0) {
+        for (const opp of pred.opportunities) {
+          // Only include opportunities with significant edge (3+ points or 5%+)
+          const edgeValue = Math.abs(typeof opp.edge === 'number' ? opp.edge : parseFloat(opp.edge) || 0);
+          const edgePercent = opp.edgePercent || 0;
+          
+          if (edgeValue >= 3 || edgePercent >= 5) {
+            ineffs.push({
+              ...pred,
+              market: opp.market,
+              edge: edgeValue,
+              edgePercent: edgePercent,
+              pick: opp.pick,
+              modelLine: opp.modelLine,
+              vegasLine: opp.vegasLine,
+              units: opp.units,
+              book: opp.book,
+              betSize: opp.betSize,
+              kelly: opp.kelly
+            });
+          }
+        }
       }
     }
     
@@ -522,8 +529,15 @@ const NBAPredictions = () => {
 
       {activeTab === 'inefficiencies' && (
         <div className="inefficiencies-view">
-          <h2>Market Inefficiency Scanner</h2>
-          <p className="subtitle">Lines that are significantly off from our model</p>
+          <h2>🎯 Market Inefficiency Scanner</h2>
+          <p className="subtitle">Lines that are significantly off from our Elite Ensemble model</p>
+          
+          {inefficiencies.length === 0 && (
+            <div className="empty-state">
+              <p>No significant market inefficiencies detected today.</p>
+              <p className="note">We look for 3+ point edges on spreads and 5%+ probability edges.</p>
+            </div>
+          )}
           
           <div className="inefficiencies-list">
             {inefficiencies.map((ineff, i) => (
@@ -536,15 +550,19 @@ const NBAPredictions = () => {
                   {getEdgeBadge(ineff.edgePercent)}
                 </div>
                 
+                <div className="pick-display">
+                  <strong>Recommended Pick:</strong> {ineff.pick}
+                </div>
+                
                 <div className="comparison">
                   <div className="comp-col">
                     <span className="comp-label">Model Line</span>
-                    <span className="comp-value model">{ineff.market === 'SPREAD' ? ineff.predictedSpread : ineff.predictedTotal}</span>
+                    <span className="comp-value model">{ineff.modelLine}</span>
                   </div>
                   <div className="comp-arrow">→</div>
                   <div className="comp-col">
-                    <span className="comp-label">Market Line</span>
-                    <span className="comp-value market">{ineff.market === 'SPREAD' ? ineff.marketOdds.spread : ineff.marketOdds.total}</span>
+                    <span className="comp-label">Vegas Line</span>
+                    <span className="comp-value market">{ineff.vegasLine}</span>
                   </div>
                   <div className="comp-col">
                     <span className="comp-label">Edge</span>
@@ -552,9 +570,26 @@ const NBAPredictions = () => {
                   </div>
                 </div>
                 
+                <div className="betting-info">
+                  <div className="bet-row">
+                    <span className="label">Units:</span>
+                    <span className="value">{ineff.units || 'N/A'}</span>
+                  </div>
+                  <div className="bet-row">
+                    <span className="label">Book:</span>
+                    <span className="value">{ineff.book || 'N/A'}</span>
+                  </div>
+                  {ineff.betSize && (
+                    <div className="bet-row">
+                      <span className="label">Suggested:</span>
+                      <span className="value">${ineff.betSize}</span>
+                    </div>
+                  )}
+                </div>
+                
                 <div className="confidence-bar">
-                  <div className="bar-fill" style={{width: `${ineff.confidence}%`}}></div>
-                  <span className="bar-label">Confidence: {ineff.confidence}%</span>
+                  <div className="bar-fill" style={{width: `${ineff.confidence || 60}%`}}></div>
+                  <span className="bar-label">Confidence: {ineff.confidence || 60}%</span>
                 </div>
               </div>
             ))}
