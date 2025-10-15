@@ -513,6 +513,7 @@ export default async (request, context) => {
             pick: spreadPred > 0 ? `${home.team.abbreviation} ${gameVegasLines.spread.home}` : `${away.team.abbreviation} +${Math.abs(gameVegasLines.spread.home)}`,
             modelLine: spreadPred.toFixed(1),
             vegasLine: gameVegasLines.spread.home,
+            odds: gameVegasLines.spread.homePrice, // American odds
             edge: spreadEdge.edgePoints,
             edgePercent: spreadEdge.edgeProb,
             kelly: spreadEdge.kellyFraction,
@@ -528,11 +529,13 @@ export default async (request, context) => {
         const totalEdge = Math.abs(totalPred - gameVegasLines.total.line);
         
         if (totalEdge >= 4) { // Only show 4+ point edges on totals
+          const pickOver = totalPred > gameVegasLines.total.line;
           opportunities.push({
             market: 'Total',
-            pick: totalPred > gameVegasLines.total.line ? `Over ${gameVegasLines.total.line}` : `Under ${gameVegasLines.total.line}`,
+            pick: pickOver ? `Over ${gameVegasLines.total.line}` : `Under ${gameVegasLines.total.line}`,
             modelLine: totalPred.toFixed(1),
             vegasLine: gameVegasLines.total.line,
+            odds: pickOver ? gameVegasLines.total.overPrice : gameVegasLines.total.underPrice, // American odds
             edge: totalEdge.toFixed(1),
             edgePercent: null,
             kelly: null,

@@ -1030,3 +1030,14 @@
     gap: 0.75rem;
   }
 }
+
+/* Odds Badge */
+.odds-badge {
+  background: #10b981;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-left: 8px;
+}

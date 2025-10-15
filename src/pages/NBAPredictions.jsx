@@ -342,6 +342,8 @@ const NBAPredictions = () => {
                           {pred.vegasLines.spread.line > 0 ? 
                             `${pred.teams?.away?.abbreviation} -${pred.vegasLines.spread.line}` : 
                             `${pred.teams?.home?.abbreviation} -${Math.abs(pred.vegasLines.spread.line)}`}
+                          {' '}
+                          ({pred.vegasLines.spread.price > 0 ? '+' : ''}{pred.vegasLines.spread.price})
                           <span className="book-badge">{pred.vegasLines.spread.book}</span>
                         </span>
                       </div>
@@ -359,6 +361,8 @@ const NBAPredictions = () => {
                         <span className="label">Vegas Total:</span>
                         <span className="value">
                           {pred.vegasLines.total.line}
+                          {' '}
+                          (O: {pred.vegasLines.total.overPrice > 0 ? '+' : ''}{pred.vegasLines.total.overPrice} / U: {pred.vegasLines.total.underPrice > 0 ? '+' : ''}{pred.vegasLines.total.underPrice})
                           <span className="book-badge">{pred.vegasLines.total.book}</span>
                         </span>
                       </div>
@@ -393,6 +397,11 @@ const NBAPredictions = () => {
                       </div>
                       <div className="rec-pick">
                         {opp.pick}
+                        {opp.odds && (
+                          <span className="odds-badge">
+                            {' '}({opp.odds > 0 ? '+' : ''}{opp.odds})
+                          </span>
+                        )}
                       </div>
                       <div className="rec-details">
                         <div className="detail-item">
