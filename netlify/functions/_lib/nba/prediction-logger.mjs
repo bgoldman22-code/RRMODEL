@@ -37,17 +37,32 @@ export async function logNBAPrediction(game, prediction, rciData) {
       team: game.homeTeam,
       opponent: game.awayTeam,
       isHome: true,
-      rci: rciData.homeRCI || 0.75,
-      gamesPlayed: rciData.homeGamesPlayed || 0,
-      deltaOff: rciData.homeDeltaOff || 0,
-      deltaDef: rciData.homeDeltaDef || 0,
-      deltaNet: rciData.homeDeltaNet || 0,
-      capHit: rciData.homeCapHit || false,
-      baselineSpread: prediction.baselineSpread || 0,
-      rciSpread: prediction.spread || 0,
-      actualSpread: null,  // Will be updated after game
-      lineClose: game.closingLine || null,
-      notes: rciData.notes || ''
+        rci: safe(rciData.homeRCI, 0.75),
+        gamesPlayed: safe(rciData.homeGamesPlayed, 0),
+        deltaOff: safe(rciData.homeDeltaOff, 0),
+        deltaDef: safe(rciData.homeDeltaDef, 0),
+        deltaNet: deltaNetCapped,
+        injuryNet: injuryNetCapped,
+        capHit: safe(rciData.homeCapHit, false),
+        baselineSpread: safe(prediction.baselineSpread, 0),
+        rciSpread: safe(prediction.spread, 0),
+        actualSpread: null,  // Will be updated after game
+        lineClose: closingSpread,
+        closingMlFav,
+        closingMlDog,
+        modelProbHome,
+        impliedProbClose,
+        clv,
+        bestBook,
+        absErrBaseline,
+        absErrRCI,
+        configHash,
+        modelVersion,
+        dataSnapshotTs,
+        rngSeed,
+        cutoffTs,
+        preseason,
+        notes: safe(rciData.notes, '')
     };
 
     logger.logPrediction(logData);
