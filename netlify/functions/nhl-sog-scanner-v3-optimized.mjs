@@ -167,7 +167,11 @@ export async function handler(event, context) {
     }
     
     // Step 2: Fetch today's schedule
-    const today = new Date().toISOString().split('T')[0];
+    // NHL SCANNER V3.2 FIX: Use ET timezone for "today" since NHL operates in ET
+    const todayET = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
+    const [month, day, year] = todayET.split(/[\/,\s]/);
+    const today = `${year}-${month}-${day}`;
+    
     const scheduleUrl = `https://api-web.nhle.com/v1/schedule/${today}`;
     
     const scheduleResponse = await fetch(scheduleUrl);
@@ -188,8 +192,24 @@ export async function handler(event, context) {
       }
     }
     
-    // Filter to only today's games (but from full week data)
-    const games = allGames.filter(g => g.gameDate?.startsWith(today));
+    // Filter to games happening "today" in ET timezone
+    // NHL API changed from gameDate to startTimeUTC
+    // Late games (9:30 PM ET) show as next day in UTC, so we check venueTimezone
+    const games = allGames.filter(g => {
+      if (!g.startTimeUTC) return false;
+      
+      // Convert UTC time to ET to determine the game date
+      const gameTimeET = new Date(g.startTimeUTC).toLocaleString('en-US', { 
+        timeZone: 'America/New_York', 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit' 
+      });
+      const [gMonth, gDay, gYear] = gameTimeET.split(/[\/,\s]/);
+      const gameDate = `${gYear}-${gMonth}-${gDay}`;
+      
+      return gameDate === today;
+    });
     
     if (games.length === 0) {
       return {
