@@ -3,10 +3,6 @@
  * Returns mock predictions for now to get frontend working
  * TODO: Integrate real model once bundling issues resolved
  */
-D
-
-
-
 
 /**
  * Fetch market odds from TheOddsAPI
