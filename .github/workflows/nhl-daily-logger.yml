@@ -1,0 +1,70 @@
+name: NHL Daily Logger & Results
+
+on:
+  schedule:
+    # Log picks daily at 12pm ET (4pm UTC) - before games start
+    - cron: '0 16 * * *'
+    
+    # Update results at 2am ET (6am UTC) - after all games finish
+    - cron: '0 6 * * *'
+  
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  log-and-update:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main41  # Use your active branch
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      # Log today's picks (runs at 12pm ET)
+      - name: Log NHL picks
+        if: github.event.schedule == '0 16 * * *' || github.event_name == 'workflow_dispatch'
+        run: |
+          echo "📊 Fetching today's NHL picks..."
+          curl -s https://bgroundrobin.com/.netlify/functions/nhl-sog-scanner-v3-optimized | \
+            node scripts/nhl/manual-log-from-scanner.mjs || echo "No picks today or scanner unavailable"
+      
+      # Update results from yesterday's games (runs at 2am ET)
+      - name: Update NHL results
+        if: github.event.schedule == '0 6 * * *' || github.event_name == 'workflow_dispatch'
+        run: |
+          echo "🔄 Updating results from completed games..."
+          node scripts/nhl/update-results.mjs || echo "No pending results to update"
+      
+      # Commit and push changes
+      - name: Commit logs
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Add NHL logs
+          git add data/nhl/logs/*.csv || true
+          
+          # Check if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            HOUR=$(date -u +%H)
+            if [ "$HOUR" = "16" ]; then
+              git commit -m "🏒 Log NHL picks - $(date -u +%Y-%m-%d) [skip ci]"
+            else
+              git commit -m "📊 Update NHL results - $(date -u +%Y-%m-%d) [skip ci]"
+            fi
+            git push
+          fi
+      
+      # Generate performance summary (optional)
+      - name: Show dashboard
+        if: github.event.schedule == '0 6 * * *' || github.event_name == 'workflow_dispatch'
+        run: |
+          echo "📈 Performance Summary:"
+          node scripts/nhl/monitor-dashboard.mjs || echo "Not enough data for dashboard yet"
