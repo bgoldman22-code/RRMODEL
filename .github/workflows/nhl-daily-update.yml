@@ -1,0 +1,62 @@
+name: NHL Daily Results Update
+
+on:
+  schedule:
+    # Run daily at 9am ET (1pm UTC)
+    - cron: '0 13 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-nhl-results:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Get yesterday's date
+        id: date
+        run: echo "yesterday=$(date -d '1 day ago' '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+      
+      - name: Update NHL results
+        run: |
+          echo "📊 Fetching NHL results for ${{ steps.date.outputs.yesterday }}"
+          node scripts/nhl/update-results.mjs ${{ steps.date.outputs.yesterday }}
+      
+      - name: Show dashboard
+        run: |
+          echo "📈 NHL Performance Dashboard"
+          node scripts/nhl/monitor-dashboard.mjs
+      
+      - name: Check for alerts
+        run: |
+          # Parse dashboard output for critical alerts
+          DASHBOARD_OUTPUT=$(node scripts/nhl/monitor-dashboard.mjs)
+          if echo "$DASHBOARD_OUTPUT" | grep -q "🚨 CRITICAL"; then
+            echo "::warning::🚨 NHL model showing critical performance issues"
+          fi
+          if echo "$DASHBOARD_OUTPUT" | grep -q "⚠️ WARNING"; then
+            echo "::warning::⚠️ NHL model performance below threshold"
+          fi
+      
+      - name: Commit updated logs
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Check if there are changes to commit
+          if [[ -n $(git status -s data/nhl/logs/) ]]; then
+            git add data/nhl/logs/*.csv
+            git commit -m "📊 Update NHL results for ${{ steps.date.outputs.yesterday }} [skip ci]"
+            git push
+            echo "✅ NHL logs updated and pushed"
+          else
+            echo "ℹ️ No changes to commit"
+          fi
