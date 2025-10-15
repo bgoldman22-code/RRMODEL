@@ -11,6 +11,8 @@
 
 import { SPREAD_MODEL, TOTAL_MODEL } from '../_lib/nba/models-inline.mjs';
 import { applyRCIAdjustment, getRCISummary } from '../_lib/nba/rci-adjustments.mjs';
+import { getTeamInjuries } from '../_lib/nba/injuries.mjs';
+import { applyInjuryAdjustment, getInjurySummary, getInjuryAdvantage } from '../_lib/nba/injury-adjustments.mjs';
 
 /**
  * Fetch live Vegas lines from The Odds API
@@ -457,9 +459,48 @@ export default async (request, context) => {
       console.log(`[RCI] ${home.team.abbreviation}:`, homeRCI);
       console.log(`[RCI] ${away.team.abbreviation}:`, awayRCI);
       
-      // Build features with all windows (use L10 as primary for features object)
-      const spreadFeatures = buildEliteFeatures(homeL10, awayL10);
-      const totalFeatures = buildSimpleFeatures(homeL10, awayL10);
+      // Fetch and apply injury adjustments (separate from RCI)
+      let homeInjuries = [];
+      let awayInjuries = [];
+      let homeInjuryAdj = null;
+      let awayInjuryAdj = null;
+      let injuryAdvantage = null;
+      
+      try {
+        [homeInjuries, awayInjuries] = await Promise.all([
+          getTeamInjuries(home.team.abbreviation),
+          getTeamInjuries(away.team.abbreviation)
+        ]);
+        
+        // Apply injury adjustments on top of RCI-adjusted stats
+        const homeL10WithInjuries = applyInjuryAdjustment(homeL10, homeInjuries);
+        const awayL10WithInjuries = applyInjuryAdjustment(awayL10, awayInjuries);
+        
+        // Get injury summaries for logging and output
+        homeInjuryAdj = getInjurySummary(homeInjuries);
+        awayInjuryAdj = getInjurySummary(awayInjuries);
+        injuryAdvantage = getInjuryAdvantage(homeInjuries, awayInjuries);
+        
+        console.log(`[INJURY] ${home.team.abbreviation}:`, homeInjuryAdj);
+        console.log(`[INJURY] ${away.team.abbreviation}:`, awayInjuryAdj);
+        console.log(`[INJURY] Advantage:`, injuryAdvantage.advantage);
+        
+        // Use injury-adjusted stats for features
+        const spreadFeatures = buildEliteFeatures(homeL10WithInjuries, awayL10WithInjuries);
+        const totalFeatures = buildSimpleFeatures(homeL10WithInjuries, awayL10WithInjuries);
+      } catch (injuryError) {
+        console.log(`[INJURY] Error fetching injuries, using RCI-only adjustments:`, injuryError.message);
+        
+        // Fallback to RCI-only stats
+        var spreadFeatures = buildEliteFeatures(homeL10, awayL10);
+        var totalFeatures = buildSimpleFeatures(homeL10, awayL10);
+      }
+      
+      // Ensure features are defined (from either injury-adjusted or fallback)
+      if (typeof spreadFeatures === 'undefined') {
+        var spreadFeatures = buildEliteFeatures(homeL10, awayL10);
+        var totalFeatures = buildSimpleFeatures(homeL10, awayL10);
+      }
       
       // Predict
       const spreadPred = predict(SPREAD_MODEL, spreadFeatures);
@@ -535,15 +576,18 @@ export default async (request, context) => {
             name: home.team.displayName,
             abbreviation: home.team.abbreviation,
             record: home.records?.[0]?.summary || '',
-            rci: homeRCI
+            rci: homeRCI,
+            injuries: homeInjuryAdj
           },
           away: {
             name: away.team.displayName,
             abbreviation: away.team.abbreviation,
             record: away.records?.[0]?.summary || '',
-            rci: awayRCI
+            rci: awayRCI,
+            injuries: awayInjuryAdj
           }
         },
+        injuryReport: injuryAdvantage,
         prediction: {
           spread: {
             prediction: parseFloat(spreadPred.toFixed(1)),
