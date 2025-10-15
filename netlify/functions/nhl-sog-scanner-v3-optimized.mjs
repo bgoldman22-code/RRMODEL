@@ -13,8 +13,6 @@
  * - Live odds for accurate edge calculations
  */
 
-import { logNHLPredictions } from './_lib/nhl/prediction-logger.mjs';
-
 // Real odds fetching using The Odds API
 async function fetchNHLOdds() {
   const apiKey = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
@@ -293,17 +291,8 @@ export async function handler(event, context) {
     
     console.log(`✅ Generated ${opportunities.length} opportunities`);
     
-    // Log predictions to CSV for tracking
-    try {
-      await logNHLPredictions(opportunities, {
-        date: today,
-        usingRealOdds: !!realOddsData
-      });
-      console.log('📊 Predictions logged to CSV');
-    } catch (logError) {
-      console.error('⚠️ Failed to log predictions:', logError);
-      // Don't fail the request if logging fails
-    }
+    // TODO: Add logging once we fix Netlify path issues
+    // Logging disabled temporarily to fix 502 error
     
     return {
       statusCode: 200,
