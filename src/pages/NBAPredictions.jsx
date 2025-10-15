@@ -50,19 +50,19 @@ const NBAPredictions = () => {
       const data = await response.json();
       
       if (data.ok) {
-        // Check if preseason pause is active
+        // If preseason, display picks for UI/UX but exclude from analytics
         if (data.preseason) {
-          setPredictions([]);
-          setInefficiencies([]);
-          setKellyPortfolio({ bets: [], total: 0 });
-          setBetLadder({ bets: [], totalStake: 0, totalUnits: 0 });
-          setPreseasonMessage(data);
+          setPreseasonMessage({
+            message: 'Preseason – For Display Only. These picks do NOT affect model training, analytics, or bankroll. Use for UI/UX and curiosity only.',
+            ...data
+          });
+          setPredictions(data.predictions || []);
+          // Only process analytics on regular season games
+          processAnalytics((data.predictions || []).filter(p => !p.preseason));
         } else {
-          setPredictions(data.predictions);
           setPreseasonMessage(null);
-          
-          // Process advanced analytics
-          processAnalytics(data.predictions);
+          setPredictions(data.predictions || []);
+          processAnalytics(data.predictions || []);
         }
       }
     } catch (error) {
