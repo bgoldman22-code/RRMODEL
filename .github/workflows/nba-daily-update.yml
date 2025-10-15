@@ -1,0 +1,158 @@
+name: NBA Daily Data Update
+
+on:
+  # Run daily at 8:00 AM ET (12:00 PM UTC) during NBA season
+  schedule:
+    - cron: '0 12 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+# Prevent concurrent runs
+concurrency:
+  group: nba-data-update
+  cancel-in-progress: false
+
+jobs:
+  update-nba-data:
+    name: Update NBA Current Season Data
+    runs-on: ubuntu-latest
+    
+    # Only run during NBA season (October-June)
+    # Skip in July, August, September
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.schedule && 
+       (github.event.schedule == '0 12 * * *') && 
+       !(startsWith(github.event.schedule, '0 12 * 7') ||
+         startsWith(github.event.schedule, '0 12 * 8') ||
+         startsWith(github.event.schedule, '0 12 * 9')))
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm ci
+      
+      - name: ☁️ Update current season data
+        id: update
+        run: |
+          echo "Starting NBA data update..."
+          node scripts/nba/cloud/update-current-season.js
+          
+          # Check if files changed
+          if git diff --quiet data/nba/; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No data changes detected"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Data changes detected"
+          fi
+        env:
+          NODE_ENV: production
+      
+      - name: 📊 Generate update summary
+        if: steps.update.outputs.changed == 'true'
+        id: summary
+        run: |
+          # Count updated files
+          PLAYER_COUNT=$(jq '.players | length' data/nba/players/archive/player_seasons_2024_25.json 2>/dev/null || echo "0")
+          TEAM_COUNT=$(jq '.teams | length' data/nba/aggregates/archive/team_seasons_2024_25.json 2>/dev/null || echo "0")
+          RCI_COUNT=$(jq '.rosters | length' data/nba/rosters/archive/rosters_with_rci_2024_25.json 2>/dev/null || echo "0")
+          
+          echo "player_count=${PLAYER_COUNT}" >> $GITHUB_OUTPUT
+          echo "team_count=${TEAM_COUNT}" >> $GITHUB_OUTPUT
+          echo "rci_count=${RCI_COUNT}" >> $GITHUB_OUTPUT
+          
+          # Create summary
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## 🏀 NBA Data Update Summary
+          
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Season**: 2024-25
+          
+          ### Updated Data
+          - 👥 Players: ${PLAYER_COUNT}
+          - 🏀 Teams: ${TEAM_COUNT}
+          - 📈 RCI Calculations: ${RCI_COUNT}
+          
+          ### Changed Files
+          \`\`\`
+          $(git diff --name-only data/nba/)
+          \`\`\`
+          
+          ### Next Steps
+          - Changes will be committed and pushed
+          - Netlify will rebuild with updated data
+          - New predictions will use latest roster continuity metrics
+          EOF
+      
+      - name: 🔧 Configure Git
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: 💾 Commit changes
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          git add data/nba/players/archive/player_seasons_2024_25.json
+          git add data/nba/aggregates/archive/team_seasons_2024_25.json
+          git add data/nba/rosters/archive/rosters_with_rci_2024_25.json
+          
+          COMMIT_MSG="🤖 Auto-update NBA data ($(date -u +"%Y-%m-%d %H:%M UTC"))"
+          COMMIT_MSG="${COMMIT_MSG}\n\n"
+          COMMIT_MSG="${COMMIT_MSG}- Players: ${{ steps.summary.outputs.player_count }}\n"
+          COMMIT_MSG="${COMMIT_MSG}- Teams: ${{ steps.summary.outputs.team_count }}\n"
+          COMMIT_MSG="${COMMIT_MSG}- RCI: ${{ steps.summary.outputs.rci_count }}"
+          
+          git commit -m "${COMMIT_MSG}"
+      
+      - name: 🚀 Push changes
+        if: steps.update.outputs.changed == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+      
+      - name: ✅ Success notification
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          echo "✅ NBA data successfully updated and pushed"
+          echo "📊 Updated ${{ steps.summary.outputs.player_count }} players, ${{ steps.summary.outputs.team_count }} teams, ${{ steps.summary.outputs.rci_count }} rosters"
+      
+      - name: ⏭️ No changes notification
+        if: steps.update.outputs.changed == 'false'
+        run: |
+          echo "ℹ️ No data changes - skipping commit"
+          echo "This is normal if the season hasn't started or no games today"
+      
+      - name: ❌ Failure notification
+        if: failure()
+        run: |
+          echo "❌ NBA data update failed"
+          echo "Check logs above for error details"
+          echo "Stale data fallback may have been used"
+
+  # Optional: Notify on failure (if you have Slack/Discord webhook)
+  # notify-failure:
+  #   name: Notify on Failure
+  #   runs-on: ubuntu-latest
+  #   needs: update-nba-data
+  #   if: failure()
+  #   steps:
+  #     - name: Send notification
+  #       uses: 8398a7/action-slack@v3
+  #       with:
+  #         status: ${{ job.status }}
+  #         text: 'NBA data update failed'
+  #         webhook_url: ${{ secrets.SLACK_WEBHOOK }}
