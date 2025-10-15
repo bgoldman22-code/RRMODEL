@@ -368,38 +368,14 @@ export default async (request, context) => {
       });
     }
     
-    // 2. Detect if preseason - pause predictions for model integrity
+    // 2. Detect season type (preseason vs regular season)
     const isPreseason = espnData.events[0]?.season?.type === 1; // Type 1 = preseason, 2 = regular season, 3 = playoffs
     
     if (isPreseason) {
-      console.log('[NBA Elite] Preseason detected - predictions paused');
-      
-      return new Response(JSON.stringify({
-        ok: true,
-        games: espnData.events.length,
-        predictions: [],
-        preseason: true,
-        message: 'NBA Preseason - Elite Model Paused',
-        explanation: 'Our Elite Ensemble model (11.606 MAE) is trained exclusively on regular season data. Preseason games have different competitive intensity, experimental rotations, and strategic objectives that would corrupt model accuracy.',
-        regularSeasonStart: '2025-10-22',
-        note: 'Full predictions with Vegas lines, Kelly sizing, and edge analysis will resume on opening night.',
-        modelInfo: {
-          type: 'Elite Ensemble',
-          features: 55,
-          spreadMAE: 11.606,
-          totalMAE: 15.89,
-          status: 'Paused - Preseason',
-          trainedOn: 'Regular season games only'
-        }
-      }), {
-        headers: { 
-          'Content-Type': 'application/json',
-          'Cache-Control': 'max-age=300'
-        }
-      });
+      console.log('[NBA Elite] ⚠️  PRESEASON MODE - Predictions will be flagged as preseason (DO NOT track in regular season stats)');
+    } else {
+      console.log('[NBA Elite] Regular season detected - running full predictions');
     }
-    
-    console.log('[NBA Elite] Regular season detected - running full predictions');
     
     // 3. Load historical games from GitHub
     const dataUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nba/games/games_2024_25.json';
@@ -571,6 +547,7 @@ export default async (request, context) => {
         gameId: event.id,
         game: `${away.team.abbreviation} @ ${home.team.abbreviation}`,
         gameTime: event.date,
+        isPreseason,  // ⚠️ FLAG: Do not include preseason games in regular season performance tracking
         teams: {
           home: {
             name: home.team.displayName,
@@ -648,12 +625,15 @@ export default async (request, context) => {
       generated: new Date().toISOString(),
       games: predictions.length,
       predictions,
+      isPreseason,  // ⚠️ Frontend: Show preseason warning banner
+      preseasonWarning: isPreseason ? 'Preseason predictions are for observation only. Model is trained on regular season data. DO NOT track these results in regular season performance metrics.' : null,
       modelInfo: {
         type: 'Elite Ensemble',
         features: 55,
         spreadMAE: 11.606,
         totalMAE: 15.89,
-        dataSource: 'Netlify Blobs + ESPN'
+        dataSource: 'Netlify Blobs + ESPN',
+        status: isPreseason ? '⚠️ Preseason - Observation Only' : 'Regular Season - Full Tracking'
       }
     }), {
       headers: {
