@@ -1,0 +1,104 @@
+🏈 NFL RECEIVING PROPS - 3-SEASON BACKTEST (2022-2024)
+======================================================
+
+✅ Temporal validation functions loaded
+   - create_temporal_boundary()
+   - validate_temporal_safety()
+   - apply_temporal_filter()
+   - create_walkforward_splits()
+   - calculate_rolling_stats_safe()
+   - validate_backtest_split()
+
+📊 Backtest Configuration:
+Seasons: 2022, 2023, 2024Test weeks: 5-18 per seasonSimulations: 50,000Min games history: 3
+📡 Loading play-by-play data for 2022-2024...
+  Loading from cache...
+✅ Loaded 52,052 passing playsSeasons: 2022, 2023, 2024Receivers: 746
+📊 Creating player game logs...
+✅ Created 13,004 player-games
+🔄 Starting walk-forward backtest...
+
+============================================================SEASON 2022============================================================
+[1] Testing 2022 Week 5...Train: 1,037 player-games | Test: 251 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,028 predictions[2] Testing 2022 Week 6...Train: 1,288 player-games | Test: 219 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 988 predictions[3] Testing 2022 Week 7...Train: 1,507 player-games | Test: 226 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,025 predictions[4] Testing 2022 Week 8...Train: 1,733 player-games | Test: 243 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,087 predictions[5] Testing 2022 Week 9...Train: 1,976 player-games | Test: 221 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 993 predictions[6] Testing 2022 Week 10...Train: 2,197 player-games | Test: 222 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,072 predictions[7] Testing 2022 Week 11...Train: 2,419 player-games | Test: 223 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,068 predictions[8] Testing 2022 Week 12...Train: 2,642 player-games | Test: 250 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,156 predictions[9] Testing 2022 Week 13...Train: 2,892 player-games | Test: 246 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,206 predictions[10] Testing 2022 Week 14...Train: 3,138 player-games | Test: 215 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,011 predictions[11] Testing 2022 Week 15...Train: 3,353 player-games | Test: 255 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,207 predictions[12] Testing 2022 Week 16...Train: 3,608 player-games | Test: 250 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,211 predictions[13] Testing 2022 Week 17...Train: 3,858 player-games | Test: 239 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,145 predictions[14] Testing 2022 Week 18...Train: 4,097 player-games | Test: 256 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,191 predictions============================================================SEASON 2023============================================================
+[15] Testing 2023 Week 5...Train: 5,379 player-games | Test: 232 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,149 predictions[16] Testing 2023 Week 6...Train: 5,611 player-games | Test: 244 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,244 predictions[17] Testing 2023 Week 7...Train: 5,855 player-games | Test: 206 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,031 predictions[18] Testing 2023 Week 8...Train: 6,061 player-games | Test: 254 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,261 predictions[19] Testing 2023 Week 9...Train: 6,315 player-games | Test: 237 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,078 predictions[20] Testing 2023 Week 10...Train: 6,552 player-games | Test: 229 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,122 predictions[21] Testing 2023 Week 11...Train: 6,781 player-games | Test: 227 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,068 predictions[22] Testing 2023 Week 12...Train: 7,008 player-games | Test: 258 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,190 predictions[23] Testing 2023 Week 13...Train: 7,266 player-games | Test: 205 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 989 predictions[24] Testing 2023 Week 14...Train: 7,471 player-games | Test: 236 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,116 predictions[25] Testing 2023 Week 15...Train: 7,707 player-games | Test: 268 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,275 predictions[26] Testing 2023 Week 16...Train: 7,975 player-games | Test: 261 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,200 predictions[27] Testing 2023 Week 17...Train: 8,236 player-games | Test: 249 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,213 predictions[28] Testing 2023 Week 18...Train: 8,485 player-games | Test: 255 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,139 predictions============================================================SEASON 2024============================================================
+[29] Testing 2024 Week 5...Train: 9,731 player-games | Test: 212 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,089 predictions[30] Testing 2024 Week 6...Train: 9,943 player-games | Test: 215 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,124 predictions[31] Testing 2024 Week 7...Train: 10,158 player-games | Test: 231 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,180 predictions[32] Testing 2024 Week 8...Train: 10,389 player-games | Test: 260 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,266 predictions[33] Testing 2024 Week 9...Train: 10,649 player-games | Test: 241 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,191 predictions[34] Testing 2024 Week 10...Train: 10,890 player-games | Test: 211 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,060 predictions[35] Testing 2024 Week 11...Train: 11,101 player-games | Test: 233 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,149 predictions[36] Testing 2024 Week 12...Train: 11,334 player-games | Test: 208 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,105 predictions[37] Testing 2024 Week 13...Train: 11,542 player-games | Test: 251 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,308 predictions[38] Testing 2024 Week 14...Train: 11,793 player-games | Test: 205 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,035 predictions[39] Testing 2024 Week 15...Train: 11,998 player-games | Test: 251 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,288 predictions[40] Testing 2024 Week 16...Train: 12,249 player-games | Test: 254 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,245 predictions[41] Testing 2024 Week 17...Train: 12,503 player-games | Test: 254 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,220 predictions[42] Testing 2024 Week 18...Train: 12,757 player-games | Test: 247 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,071 predictions
+
+📊 COMBINING RESULTS
+====================
+
+Total predictions: 47,794Seasons: 2022, 2023, 2024Players: 523Props: receptions, receiving_yards
+💾 Saved to data/nfl_receiving_props/backtest_3season_2022_2024.rds
+🎯 PERFORMANCE ANALYSIS
+=======================
+
+📊 OVERALL PERFORMANCE:
+Total predictions: 47,794Hit rate: 36.9%Avg edge: -2.5%
+💰 PERFORMANCE BY EDGE THRESHOLD:
+============================================================ 
+
+============================================================
+
+📅 PERFORMANCE BY SEASON:
+============================================================ 
+
+============================================================
+
+📦 PERFORMANCE BY PROP TYPE:
+============================================================ 
+
+============================================================
+
+📈 CALIBRATION ANALYSIS:
+============================================================ 
+
+Probability Calibration (Edge >= 5%):
+
+Bin          |  Count |    Predicted |       Actual |       Diff
+---------------------------------------------------------------------- 
+
+Brier Score: 0.2125 (lower is better)  Reference: <0.20 = excellent, <0.25 = good, <0.30 = acceptable
+
+💾 Saved summary to data/nfl_receiving_props/backtest_3season_summary.json
+✅ 3-SEASON BACKTEST COMPLETE!
