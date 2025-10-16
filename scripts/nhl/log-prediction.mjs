@@ -177,19 +177,28 @@ export default class NHLPredictionLogger {
           hit = actualSOG < line ? 1 : 0;
         }
 
-        // Calculate ROI
+        // Calculate ROI using CLOSING odds (if available) or opening odds
+        const closingOdds = parseInt(pred.closing_odds) || odds;
         let roi = 0;
         if (hit === 1) {
-          // Win
-          roi = odds > 0 ? (odds / 100) : (100 / Math.abs(odds));
+          // Win: Calculate payout based on closing odds
+          roi = closingOdds > 0 ? (closingOdds / 100) : (100 / Math.abs(closingOdds));
         } else {
-          // Loss
+          // Loss: Always -1 unit
           roi = -1;
         }
 
         pred.actual_sog = actualSOG.toString();
         pred.hit = hit.toString();
         pred.roi = roi.toFixed(2);
+        
+        // Log which odds were used
+        if (pred.closing_odds) {
+          console.log(`  💰 ROI calculated using closing odds: ${closingOdds}`);
+        } else {
+          console.log(`  ⚠️ No closing odds - using opening: ${odds}`);
+        }
+        
         updated = true;
       }
       return pred;

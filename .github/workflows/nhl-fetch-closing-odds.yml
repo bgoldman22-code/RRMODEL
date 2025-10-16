@@ -1,0 +1,80 @@
+name: NHL Fetch Closing Odds
+
+on:
+  schedule:
+    # Run 30 minutes before typical NHL game times
+    # 6:30pm ET (22:30 UTC) - Before 7pm ET games
+    - cron: '30 22 * * *'
+    
+    # 9:30pm ET (01:30 UTC next day) - Before 10pm ET games  
+    - cron: '30 1 * * *'
+  
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  fetch-closing-odds:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main41
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Fetch closing odds
+        env:
+          THEODDS_API_KEY: ${{ secrets.THEODDS_API_KEY }}
+        run: |
+          echo "🎯 Fetching closing odds before games start..."
+          node scripts/nhl/fetch-closing-odds.mjs || echo "No games today or API unavailable"
+      
+      - name: Commit updated predictions
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Add predictions CSV with closing odds
+          git add data/nhl/logs/*.csv || true
+          
+          # Check if there are changes
+          if git diff --staged --quiet; then
+            echo "No closing odds updates"
+          else
+            git commit -m "💰 Update closing odds - $(date -u +%Y-%m-%d) [skip ci]"
+            git push
+            echo "✅ Closing odds updated"
+          fi
+      
+      - name: Show CLV summary
+        run: |
+          echo "📊 Closing Line Value Summary:"
+          node -e "
+            const fs = require('fs');
+            const csv = fs.readFileSync('data/nhl/logs/predictions_2024-25.csv', 'utf8');
+            const lines = csv.split('\n').slice(1);
+            const clvs = lines.map(l => {
+              const parts = l.split(',');
+              return parseFloat(parts[parts.length - 1]); // CLV is last column
+            }).filter(v => !isNaN(v));
+            
+            if (clvs.length === 0) {
+              console.log('   No CLV data yet');
+            } else {
+              const avg = clvs.reduce((a,b) => a+b, 0) / clvs.length;
+              const positive = clvs.filter(v => v > 0).length;
+              console.log(\`   Avg CLV: \${avg > 0 ? '+' : ''}\${avg.toFixed(1)}\`);
+              console.log(\`   Positive CLV: \${positive}/\${clvs.length} (\${(positive/clvs.length*100).toFixed(1)}%)\`);
+              if (avg > 5) {
+                console.log('   ✅ Excellent bet timing!');
+              } else if (avg > 0) {
+                console.log('   ✅ Good bet timing');
+              } else {
+                console.log('   ⚠️ Consider betting closer to game time');
+              }
+            }
+          "
