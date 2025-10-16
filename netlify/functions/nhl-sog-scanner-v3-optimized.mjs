@@ -272,6 +272,10 @@ export async function handler(event, context) {
       
       if (!homeTeam || !awayTeam) continue;
       
+      // Construct gameId in format: AWAY_HOME_DATE (for logging consistency)
+      const gameDate = game.gameDate || new Date().toISOString().split('T')[0];
+      const gameId = `${awayTeam}_${homeTeam}_${gameDate}`;
+      
       // Process both teams
       for (const teamAbbrev of [homeTeam, awayTeam]) {
         const roster = rosters[teamAbbrev];
@@ -296,7 +300,8 @@ export async function handler(event, context) {
             opponent,
             isHome,
             game.startTimeUTC,
-            realOddsMap
+            realOddsMap,
+            gameId  // Pass gameId for logging consistency
           );
           
           if (projection && projection.edge >= minEdge) {
@@ -359,7 +364,7 @@ export async function handler(event, context) {
  * Generate player projection (FAST - no individual API calls)
  * Now with real odds integration when available
  */
-function generatePlayerProjection(player, team, opponent, isHome, gameTime, realOddsMap) {
+function generatePlayerProjection(player, team, opponent, isHome, gameTime, realOddsMap, gameId) {
   try {
     const playerId = player.id;
     const playerName = `${player.firstName?.default || ''} ${player.lastName?.default || ''}`.trim();
@@ -438,6 +443,7 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime, real
             const confidence = Math.min(baseConfidence + 10, 90); // Real odds boost
             
             opportunities.push({
+              gameId,  // Include gameId for logging consistency
               playerId,
               playerName,
               position,
