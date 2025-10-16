@@ -258,7 +258,7 @@ for (season in BACKTEST_CONFIG$seasons) {
       # Test reception lines (BOTH over and under)
       for (line in BACKTEST_CONFIG$reception_lines) {
         model_prob_over <- mean(sims$receptions > line)
-        model_prob_under <- mean(sims$receptions < line)
+        model_prob_under <- 1 - model_prob_over  # Under = complement of over
         
         # Test OVER
         if (model_prob_over >= 0.15 && model_prob_over <= 0.85) {
@@ -326,7 +326,7 @@ for (season in BACKTEST_CONFIG$seasons) {
       # Test yards lines (BOTH over and under)
       for (line in BACKTEST_CONFIG$yards_lines) {
         model_prob_over <- mean(sims$yards > line)
-        model_prob_under <- mean(sims$yards < line)
+        model_prob_under <- 1 - model_prob_over  # Under = complement of over
         
         # Test OVER
         if (model_prob_over >= 0.15 && model_prob_over <= 0.85) {
