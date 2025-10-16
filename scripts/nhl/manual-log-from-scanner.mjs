@@ -51,9 +51,15 @@ async function readInput(args) {
  * Transform scanner opportunity to prediction format
  */
 function transformOpportunity(opp, date) {
+  // CRITICAL: Use gameId from scanner (already in AWAY_HOME_DATE format)
+  // Fallback construction is NOT reliable for away/home order
+  if (!opp.gameId) {
+    console.warn(`⚠️ Missing gameId for ${opp.playerName || opp.player} - scanner should provide this!`);
+  }
+  
   return {
     date: date || new Date().toISOString().split('T')[0],
-    gameId: opp.gameId || `${opp.team}_${opp.opponent}_${date}`,
+    gameId: opp.gameId || `${opp.team}_${opp.opponent}_${date}`, // Fallback (may be wrong)
     player: opp.playerName || opp.player,
     team: opp.team,
     opponent: opp.opponent,

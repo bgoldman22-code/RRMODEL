@@ -40,12 +40,15 @@ async function fetchNHLResults(date) {
         continue;
       }
       
-      const gameId = game.id.toString();
+      const nhlGameId = game.id.toString();
       const homeTeam = game.homeTeam.abbrev;
       const awayTeam = game.awayTeam.abbrev;
       
-      // Fetch box score for this game
-      const boxScoreUrl = `https://api-web.nhle.com/v1/gamecenter/${gameId}/boxscore`;
+      // Construct game ID in same format as predictions: AWAY_HOME_DATE
+      const gameId = `${awayTeam}_${homeTeam}_${dateStr}`;
+      
+      // Fetch box score for this game (using NHL numeric ID)
+      const boxScoreUrl = `https://api-web.nhle.com/v1/gamecenter/${nhlGameId}/boxscore`;
       const boxScoreResponse = await fetch(boxScoreUrl);
       
       if (!boxScoreResponse.ok) {
