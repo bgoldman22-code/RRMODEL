@@ -238,7 +238,7 @@ const PLAYER_DB = [
 ];
 
 // ============================================================================
-// FETCH REAL ODDS
+// FETCH REAL ODDS - EVENT-SPECIFIC PATTERN (like MLB/NBA)
 // ============================================================================
 
 async function fetchRealOdds() {
@@ -248,29 +248,67 @@ async function fetchRealOdds() {
   }
 
   try {
-    const url = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds?regions=us&markets=player_receptions,player_receiving_yards&oddsFormat=american&apiKey=${ODDS_API_KEY}`;
+    // Step 1: Get upcoming NFL events (games)
+    const eventsUrl = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events?regions=us&dateFormat=iso&apiKey=${ODDS_API_KEY}`;
+    console.log('📡 Fetching NFL events...');
     
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.warn(`Odds API error: ${response.status}`);
+    const eventsResponse = await fetch(eventsUrl);
+    if (!eventsResponse.ok) {
+      console.warn(`Events API error: ${eventsResponse.status}`);
       return null;
     }
 
-    const data = await response.json();
-    console.log(`✅ Fetched odds for ${data.length} games`);
+    const events = await eventsResponse.json();
+    console.log(`✅ Found ${events.length} upcoming NFL games`);
     
-    return processOdds(data);
+    if (events.length === 0) {
+      console.warn('⚠️  No upcoming games found');
+      return null;
+    }
+
+    // Step 2: For each event, fetch player props
+    console.log('📡 Fetching player props for each game...');
+    const oddsPromises = events.slice(0, 20).map(async (event) => {
+      try {
+        const propsUrl = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/${event.id}/odds?regions=us&markets=player_receptions,player_receiving_yards&oddsFormat=american&dateFormat=iso&apiKey=${ODDS_API_KEY}`;
+        
+        const propsResponse = await fetch(propsUrl);
+        if (!propsResponse.ok) return null;
+        
+        const propsData = await propsResponse.json();
+        return { event, props: propsData };
+      } catch (e) {
+        return null;
+      }
+    });
+
+    const oddsResults = await Promise.all(oddsPromises);
+    const validOdds = oddsResults.filter(Boolean);
+    
+    console.log(`✅ Fetched odds for ${validOdds.length} games`);
+    return processOdds(validOdds);
+    
   } catch (error) {
     console.warn(`Odds fetch failed: ${error.message}`);
     return null;
   }
 }
 
-function processOdds(gamesData) {
+function processOdds(gamesDataWithProps) {
   const oddsMap = new Map();
+  const PRIORITY_BOOKS = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'ESPN BET'];
 
-  for (const game of gamesData) {
-    for (const bookmaker of game.bookmakers || []) {
+  for (const gameData of gamesDataWithProps) {
+    const { event, props } = gameData;
+    
+    if (!props.bookmakers) continue;
+    
+    for (const bookmaker of props.bookmakers || []) {
+      const bookName = bookmaker.title || '';
+      
+      // Prioritize major books
+      const isPriorityBook = PRIORITY_BOOKS.some(b => bookName.includes(b));
+      
       for (const market of bookmaker.markets || []) {
         if (!['player_receptions', 'player_receiving_yards'].includes(market.key)) continue;
 
@@ -282,7 +320,13 @@ function processOdds(gamesData) {
           const key = `${player}_${line}`;
           
           if (!lineGroups[key]) {
-            lineGroups[key] = { player, line, market: market.key };
+            lineGroups[key] = { 
+              player, 
+              line, 
+              market: market.key,
+              event: event.home_team + ' vs ' + event.away_team,
+              commence_time: event.commence_time
+            };
           }
           
           if (outcome.name === 'Over') {
@@ -293,17 +337,20 @@ function processOdds(gamesData) {
           }
         }
 
-        // Store complete two-sided markets
+        // Store complete two-sided markets (prioritize major books)
         for (const [key, data] of Object.entries(lineGroups)) {
           if (data.overOdds && data.underOdds) {
-            oddsMap.set(key, data);
+            // Only overwrite if this is a priority book
+            if (!oddsMap.has(key) || isPriorityBook) {
+              oddsMap.set(key, data);
+            }
           }
         }
       }
     }
   }
 
-  console.log(`📊 Processed ${oddsMap.size} two-sided markets`);
+  console.log(`📊 Processed ${oddsMap.size} two-sided markets from ${gamesDataWithProps.length} games`);
   return oddsMap;
 }
 
@@ -327,7 +374,10 @@ export async function handler(event, context) {
     console.log('🏈 NFL ELITE RECEIVING PROPS SCANNER');
     console.log('=' .repeat(60));
 
-    const gameDate = '2025-10-20'; // Week 7
+    // Dynamic date - use today's date for schedule-aware detection
+    const now = new Date();
+    const gameDate = now.toISOString().slice(0, 10); // YYYY-MM-DD
+    
     const gameContext = {
       gameDate,
       spread: 0,
@@ -374,7 +424,8 @@ export async function handler(event, context) {
               model_prob: modelProb,
               edge: edgeOver,
               kelly: kellyFraction(modelProb, realMarket.overOdds),
-              fair_odds_model: decimalToAmerican(1 / modelProb)
+              fair_odds_model: decimalToAmerican(1 / modelProb),
+              has_real_odds: true
             });
           }
 
@@ -395,7 +446,53 @@ export async function handler(event, context) {
               model_prob: modelProbUnder,
               edge: edgeUnder,
               kelly: kellyFraction(modelProbUnder, realMarket.underOdds),
-              fair_odds_model: decimalToAmerican(1 / modelProbUnder)
+              fair_odds_model: decimalToAmerican(1 / modelProbUnder),
+              has_real_odds: true
+            });
+          }
+        } else if (!realOdds) {
+          // NO REAL ODDS AVAILABLE: Show model prices vs synthetic -110 market
+          // This lets you see what the model thinks even without API access
+          const syntheticMarketProb = 0.5238; // -110 implied (with vig)
+          
+          // OVER edge vs synthetic market
+          if (modelProb >= 0.58) { // 5%+ edge vs -110
+            opportunities.push({
+              player: player.name,
+              team: player.team,
+              prop: 'Receptions',
+              line,
+              side: 'OVER',
+              book: 'Model Pricing',
+              offered_odds: -110, // synthetic
+              market_prob_fair: 0.5, // fair 50/50 at -110/-110
+              model_prob_raw: modelProbRaw,
+              model_prob: modelProb,
+              edge: modelProb - syntheticMarketProb,
+              kelly: 0, // Don't bet without real odds
+              fair_odds_model: decimalToAmerican(1 / modelProb),
+              has_real_odds: false
+            });
+          }
+          
+          // UNDER edge vs synthetic market
+          const modelProbUnder = 1 - modelProb;
+          if (modelProbUnder >= 0.58) {
+            opportunities.push({
+              player: player.name,
+              team: player.team,
+              prop: 'Receptions',
+              line,
+              side: 'UNDER',
+              book: 'Model Pricing',
+              offered_odds: -110,
+              market_prob_fair: 0.5,
+              model_prob_raw: 1 - modelProbRaw,
+              model_prob: modelProbUnder,
+              edge: modelProbUnder - syntheticMarketProb,
+              kelly: 0,
+              fair_odds_model: decimalToAmerican(1 / modelProbUnder),
+              has_real_odds: false
             });
           }
         }
@@ -428,6 +525,7 @@ export async function handler(event, context) {
               model_prob_raw: modelProbRaw,
               model_prob: modelProb,
               edge: edgeOver,
+              has_real_odds: true,
               kelly: kellyFraction(modelProb, realMarket.overOdds),
               fair_odds_model: decimalToAmerican(1 / modelProb)
             });
@@ -450,7 +548,50 @@ export async function handler(event, context) {
               model_prob: modelProbUnder,
               edge: edgeUnder,
               kelly: kellyFraction(modelProbUnder, realMarket.underOdds),
-              fair_odds_model: decimalToAmerican(1 / modelProbUnder)
+              fair_odds_model: decimalToAmerican(1 / modelProbUnder),
+              has_real_odds: true
+            });
+          }
+        } else if (!realOdds) {
+          // NO REAL ODDS: Show model pricing vs synthetic -110
+          const syntheticMarketProb = 0.5238;
+          
+          if (modelProb >= 0.58) {
+            opportunities.push({
+              player: player.name,
+              team: player.team,
+              prop: 'Rec Yards',
+              line,
+              side: 'OVER',
+              book: 'Model Pricing',
+              offered_odds: -110,
+              market_prob_fair: 0.5,
+              model_prob_raw: modelProbRaw,
+              model_prob: modelProb,
+              edge: modelProb - syntheticMarketProb,
+              kelly: 0,
+              fair_odds_model: decimalToAmerican(1 / modelProb),
+              has_real_odds: false
+            });
+          }
+          
+          const modelProbUnder = 1 - modelProb;
+          if (modelProbUnder >= 0.58) {
+            opportunities.push({
+              player: player.name,
+              team: player.team,
+              prop: 'Rec Yards',
+              line,
+              side: 'UNDER',
+              book: 'Model Pricing',
+              offered_odds: -110,
+              market_prob_fair: 0.5,
+              model_prob_raw: 1 - modelProbRaw,
+              model_prob: modelProbUnder,
+              edge: modelProbUnder - syntheticMarketProb,
+              kelly: 0,
+              fair_odds_model: decimalToAmerican(1 / modelProbUnder),
+              has_real_odds: false
             });
           }
         }

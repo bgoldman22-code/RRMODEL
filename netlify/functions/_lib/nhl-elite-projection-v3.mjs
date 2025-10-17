@@ -48,30 +48,56 @@ const RINK_EFFECTS = {
 
 /**
  * Load cached player stats
+ * Tries multiple path resolutions for Netlify bundler compatibility
  */
 function loadPlayerStats() {
-  try {
-    const statsPath = path.join(__dirname, '../../../data/nhl/player_stats_20242025.json');
-    const data = JSON.parse(fs.readFileSync(statsPath, 'utf8'));
-    return data.players || [];
-  } catch (error) {
-    console.warn('⚠️ Could not load player stats cache:', error.message);
-    return [];
+  const possiblePaths = [
+    path.join(__dirname, '../../../data/nhl/player_stats_20242025.json'),
+    path.join(process.cwd(), 'data/nhl/player_stats_20242025.json'),
+    '/var/task/data/nhl/player_stats_20242025.json', // Netlify Lambda path
+  ];
+  
+  for (const statsPath of possiblePaths) {
+    try {
+      if (fs.existsSync(statsPath)) {
+        const data = JSON.parse(fs.readFileSync(statsPath, 'utf8'));
+        console.log(`✅ Loaded player stats from: ${statsPath}`);
+        return data.players || [];
+      }
+    } catch (error) {
+      // Try next path
+    }
   }
+  
+  console.warn('⚠️ Could not load player stats cache from any path');
+  return [];
 }
 
 /**
  * Load cached team stats
+ * Tries multiple path resolutions for Netlify bundler compatibility
  */
 function loadTeamStats() {
-  try {
-    const statsPath = path.join(__dirname, '../../../data/nhl/team_stats_20242025.json');
-    const data = JSON.parse(fs.readFileSync(statsPath, 'utf8'));
-    return data.teams || {};
-  } catch (error) {
-    console.warn('⚠️ Could not load team stats cache:', error.message);
-    return {};
+  const possiblePaths = [
+    path.join(__dirname, '../../../data/nhl/team_stats_20242025.json'),
+    path.join(process.cwd(), 'data/nhl/team_stats_20242025.json'),
+    '/var/task/data/nhl/team_stats_20242025.json',
+  ];
+  
+  for (const statsPath of possiblePaths) {
+    try {
+      if (fs.existsSync(statsPath)) {
+        const data = JSON.parse(fs.readFileSync(statsPath, 'utf8'));
+        console.log(`✅ Loaded team stats from: ${statsPath}`);
+        return data.teams || {};
+      }
+    } catch (error) {
+      // Try next path
+    }
   }
+  
+  console.warn('⚠️ Could not load team stats cache from any path');
+  return {};
 }
 
 /**
