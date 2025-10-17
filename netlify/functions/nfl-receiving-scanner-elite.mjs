@@ -373,6 +373,11 @@ export async function handler(event, context) {
   try {
     console.log('🏈 NFL ELITE RECEIVING PROPS SCANNER');
     console.log('=' .repeat(60));
+    console.log('🔑 API Key Check:');
+    console.log('   THEODDS_API_KEY exists?', !!process.env.THEODDS_API_KEY);
+    console.log('   ODDS_API_KEY exists?', !!process.env.ODDS_API_KEY);
+    console.log('   Final ODDS_API_KEY set?', !!ODDS_API_KEY);
+    console.log('   Key length:', ODDS_API_KEY?.length || 0);
 
     // Dynamic date - use today's date for schedule-aware detection
     const now = new Date();

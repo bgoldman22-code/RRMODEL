@@ -105,6 +105,25 @@ export default function NFLReceivingProps() {
         </p>
       </div>
 
+      {/* API Status Banner */}
+      {predictions.length > 0 && predictions.some(p => !p.has_real_odds) && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">
+                <strong>Model Pricing Mode:</strong> Showing model predictions vs synthetic -110 odds. 
+                Real odds API key may not be configured. Kelly staking disabled until real odds available.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stats Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white border rounded-lg p-4">
@@ -112,8 +131,13 @@ export default function NFLReceivingProps() {
           <div className="text-2xl font-bold">{predictions.length}</div>
         </div>
         <div className="bg-white border rounded-lg p-4">
-          <div className="text-sm text-gray-600 mb-1">Top 35 Bets</div>
-          <div className="text-2xl font-bold text-blue-600">{topPredictions.length}</div>
+          <div className="text-sm text-gray-600 mb-1">Real Odds</div>
+          <div className="text-2xl font-bold text-blue-600">
+            {predictions.filter(p => p.has_real_odds).length}
+          </div>
+          <div className="text-xs text-gray-500">
+            Model: {predictions.filter(p => !p.has_real_odds).length}
+          </div>
         </div>
         <div className="bg-white border rounded-lg p-4">
           <div className="text-sm text-gray-600 mb-1">Avg Edge</div>
@@ -251,9 +275,16 @@ export default function NFLReceivingProps() {
                   const kellyPct = (pred.kelly * 100).toFixed(1);
 
                   return (
-                    <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                    <tr key={idx} className={`hover:bg-gray-50 transition-colors ${
+                      !pred.has_real_odds ? 'bg-yellow-50' : ''
+                    }`}>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">#{idx + 1}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          #{idx + 1}
+                          {!pred.has_real_odds && (
+                            <span className="ml-1 text-xs text-yellow-600" title="Model pricing only">📊</span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">{pred.player}</div>
@@ -287,11 +318,18 @@ export default function NFLReceivingProps() {
                         <div className="text-sm font-medium text-gray-900">
                           {pred.offered_odds > 0 ? '+' : ''}{pred.offered_odds}
                         </div>
-                        <div className="text-xs text-gray-500">{pred.book || 'Market'}</div>
+                        <div className={`text-xs ${pred.has_real_odds ? 'text-gray-500' : 'text-yellow-600'}`}>
+                          {pred.book || 'Market'}
+                        </div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-blue-600">
+                        <div className={`text-sm font-semibold ${
+                          pred.has_real_odds ? 'text-blue-600' : 'text-gray-400'
+                        }`}>
                           {kellyPct}%
+                          {!pred.has_real_odds && (
+                            <div className="text-xs text-gray-500">N/A</div>
+                          )}
                         </div>
                       </td>
                     </tr>
