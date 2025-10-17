@@ -467,16 +467,24 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime, real
           
           // Only include if we have sufficient edge
           if (edge >= 3.0 && edge <= 25.0) {
-            // Calculate market-implied probability from odds
-            let marketProb;
-            if (odds >= 0) {
-              marketProb = 100 / (odds + 100);
+            // Calculate model's win probability using normal distribution
+            // Assume stddev = projection * 0.4 (typical for SOG)
+            const stddev = projectedSOG * 0.4;
+            const z = (projectedSOG - line) / stddev;
+            
+            // Normal CDF approximation for z-score
+            let winProb;
+            if (direction === 'OVER') {
+              // P(X > line) = 1 - CDF(z)
+              winProb = 0.5 * (1 + Math.tanh(z * 0.7978845608)); // Fast normal CDF approximation
             } else {
-              marketProb = Math.abs(odds) / (Math.abs(odds) + 100);
+              // P(X < line) = CDF(z)
+              winProb = 0.5 * (1 - Math.tanh(z * 0.7978845608));
             }
             
-            // Model probability = market prob + edge (as decimal)
-            const winProb = marketProb + (edge / 100);
+            // Clamp to reasonable range
+            winProb = Math.max(0.3, Math.min(0.85, winProb));
+            
             const kelly = calculateKelly(winProb, odds, variance);
             
             // Confidence adjustment
