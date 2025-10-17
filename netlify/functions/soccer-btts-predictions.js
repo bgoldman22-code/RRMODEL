@@ -9,7 +9,7 @@
  * - Kelly staking with uncertainty haircuts and odds quality gates
  * 
  * Features Used by Pros:
- * - xG/NPxG (opponent-adjusted, rolling)
+ * - NPxG (non-penalty xG) from Understat - opponent-adjusted, true process
  * - Tactical matchups (press intensity, high line vulnerability)
  * - Personnel impact (starting XI, GK downgrades)
  * - Schedule/travel factors
@@ -17,6 +17,8 @@
  * 
  * BTTS = 1 - P(X=0) - P(Y=0) + P(X=0,Y=0) using joint distribution
  */
+
+import { fetchTeamNPxG, fetchTeamRecentForm, calculateNPxGLambda, calculateNPxGConfidence } from './_lib/understat-npxg-fetcher.mjs';
 
 const LEAGUES = {
   'premier-league': {
@@ -172,73 +174,116 @@ function calculateTeamRatings(home, away, league) {
 
 /**
  * Calculate hierarchical attack rating A_t with state-space evolution
- * Integrates xG/NPxG, opponent-adjusted, with Kalman-style form updates
+ * ELITE VERSION: Uses NPxG as base process, blends season + home/away with shrinkage
  */
 function calculateAttackRating(team, league, shrinkage_k) {
-  // Multi-layer xG prioritization (NPxG > xG > goals)
+  // PRIORITY 1: Use NPxG data if available (from Understat integration)
+  if (team.npxg_data && team.npxg_data.npxg_for_per_game) {
+    const seasonNPxG = team.npxg_data.npxg_for_per_game;
+    const finishingRate = team.npxg_data.finishing_rate || 1.0;
+    const leagueAvg = league.goals_per_game / 2;
+    
+    // Blend season NPxG (65%) with venue-specific if available (35%)
+    let adjustedNPxG = seasonNPxG;
+    if (team.npxg_for_home && team.npxg_for_away) {
+      const homeRate = team.npxg_for_home / Math.max(team.games_home, 1);
+      const awayRate = team.npxg_for_away / Math.max(team.games_away, 1);
+      const venueRate = (homeRate + awayRate) / 2;
+      adjustedNPxG = 0.65 * seasonNPxG + 0.35 * venueRate;
+    }
+    
+    // Apply finishing multiplier (hot/cold streaks matter!)
+    const finalRate = adjustedNPxG * finishingRate;
+    
+    // Hierarchical shrinkage (less needed with NPxG - already opponent-adjusted)
+    const totalGames = team.npxg_data.games || 7;
+    const shrunkRate = shrinkToLeaguePrior(finalRate, totalGames, leagueAvg, shrinkage_k * 0.7);
+    
+    // Log-scale rating
+    const logRating = Math.log(Math.max(0.1, shrunkRate)) - Math.log(leagueAvg);
+    const maxDeviation = 2 * Math.sqrt(league.attack_variance);
+    return Math.max(-maxDeviation, Math.min(maxDeviation, logRating));
+  }
+  
+  // FALLBACK: Use old xG/goals method if no NPxG
   const homeXG = team.npxg_for_home || team.xg_for_home || team.goals_scored_home || 0;
   const awayXG = team.npxg_for_away || team.xg_for_away || team.goals_scored_away || 0;
   const homeGames = Math.max(team.games_home, 1);
   const awayGames = Math.max(team.games_away, 1);
   
-  // Opponent-adjusted rates (weight by opponent defensive quality)
   const homeRate = applyOpponentAdjustment(homeXG / homeGames, team.home_opponent_def_avg || 1.0);
-  const awayRate = applyOpponentAdjustment(awayXG / awayGames, team.away_opponent_def_avg || 1.0);
+  const awayRate = applyOpponentAdjustment(awayXG / awayGames, team.away_opponent_att_avg || 1.0);
   
-  // State-space form evolution (Kalman-style: recent performance vs season trend)
-  const currentFormWeight = 0.35; // Weight recent 5-game form higher
+  const currentFormWeight = 0.35;
   const formAdjustedHome = applyKalmanForm(homeRate, team.recent_attack_form_home || homeRate, currentFormWeight);
   const formAdjustedAway = applyKalmanForm(awayRate, team.recent_attack_form_away || awayRate, currentFormWeight);
   
-  // Combined venue-weighted rate
   const combinedRate = (formAdjustedHome + formAdjustedAway) / 2;
   const leagueAvg = league.goals_per_game / 2;
   
-  // Hierarchical shrinkage to league prior
   const totalGames = (team.games_home || 0) + (team.games_away || 0);
   const shrunkRate = shrinkToLeaguePrior(combinedRate, totalGames, leagueAvg, shrinkage_k);
   
-  // Convert to log-scale rating A_t (centered on 0, σ²=attack_variance)
   const logRating = Math.log(Math.max(0.1, shrunkRate)) - Math.log(leagueAvg);
-  
-  // Apply league variance bounds
-  const maxDeviation = 2 * Math.sqrt(league.attack_variance); // ±2σ
+  const maxDeviation = 2 * Math.sqrt(league.attack_variance);
   return Math.max(-maxDeviation, Math.min(maxDeviation, logRating));
 }
 
 /**
  * Calculate hierarchical defense rating D_t with state-space evolution
+ * ELITE VERSION: Uses NPxG Against as base defensive process
  * Higher D_t = worse defense (allows more goals)
  */
 function calculateDefenseRating(team, league, shrinkage_k) {
-  // Multi-layer xGA prioritization (NPxGA > xGA > goals_conceded)
+  // PRIORITY 1: Use NPxG Against data if available
+  if (team.npxg_data && team.npxg_data.npxg_against_per_game) {
+    const seasonNPxGA = team.npxg_data.npxg_against_per_game;
+    const defensiveRate = team.npxg_data.defensive_rate || 1.0;
+    const leagueAvg = league.goals_per_game / 2;
+    
+    // Blend season NPxGA (65%) with venue-specific (35%)
+    let adjustedNPxGA = seasonNPxGA;
+    if (team.npxga_home && team.npxga_away) {
+      const homeRate = team.npxga_home / Math.max(team.games_home, 1);
+      const awayRate = team.npxga_away / Math.max(team.games_away, 1);
+      const venueRate = (homeRate + awayRate) / 2;
+      adjustedNPxGA = 0.65 * seasonNPxGA + 0.35 * venueRate;
+    }
+    
+    // Apply defensive rate multiplier (conceding more/less than xG)
+    const finalRate = adjustedNPxGA * defensiveRate;
+    
+    // Hierarchical shrinkage (less needed with NPxG)
+    const totalGames = team.npxg_data.games || 7;
+    const shrunkRate = shrinkToLeaguePrior(finalRate, totalGames, leagueAvg, shrinkage_k * 0.7);
+    
+    // Log-scale rating (higher = worse defense)
+    const logRating = Math.log(Math.max(0.1, shrunkRate)) - Math.log(leagueAvg);
+    const maxDeviation = 2 * Math.sqrt(league.defense_variance);
+    return Math.max(-maxDeviation, Math.min(maxDeviation, logRating));
+  }
+  
+  // FALLBACK: Use old xGA/goals_conceded method
   const homeXGA = team.npxga_home || team.xga_home || team.goals_conceded_home || 0;
   const awayXGA = team.npxga_away || team.xga_away || team.goals_conceded_away || 0;
   const homeGames = Math.max(team.games_home, 1);
   const awayGames = Math.max(team.games_away, 1);
   
-  // Opponent-adjusted rates (weight by opponent attacking quality)
   const homeRate = applyOpponentAdjustment(homeXGA / homeGames, team.home_opponent_att_avg || 1.0);
   const awayRate = applyOpponentAdjustment(awayXGA / awayGames, team.away_opponent_att_avg || 1.0);
   
-  // State-space form evolution for defensive performance
   const currentFormWeight = 0.35;
   const formAdjustedHome = applyKalmanForm(homeRate, team.recent_defense_form_home || homeRate, currentFormWeight);
   const formAdjustedAway = applyKalmanForm(awayRate, team.recent_defense_form_away || awayRate, currentFormWeight);
   
-  // Combined venue-weighted rate  
   const combinedRate = (formAdjustedHome + formAdjustedAway) / 2;
   const leagueAvg = league.goals_per_game / 2;
   
-  // Hierarchical shrinkage to league prior
   const totalGames = (team.games_home || 0) + (team.games_away || 0);
   const shrunkRate = shrinkToLeaguePrior(combinedRate, totalGames, leagueAvg, shrinkage_k);
   
-  // Convert to log-scale rating D_t (centered on 0, higher = worse defense)
   const logRating = Math.log(Math.max(0.1, shrunkRate)) - Math.log(leagueAvg);
-  
-  // Apply league variance bounds
-  const maxDeviation = 2 * Math.sqrt(league.defense_variance); // ±2σ
+  const maxDeviation = 2 * Math.sqrt(league.defense_variance);
   return Math.max(-maxDeviation, Math.min(maxDeviation, logRating));
 }
 
@@ -3670,9 +3715,28 @@ exports.handler = async (event, context) => {
       };
     }
     
-    const predictions = fixtures.map(fixture => {
+    const predictions = await Promise.all(fixtures.map(async (fixture) => {
       const homeTeam = findTeamStatsLive(fixture.home_team);
       const awayTeam = findTeamStatsLive(fixture.away_team);
+      
+      // ELITE UPGRADE: Fetch NPxG data from Understat for both teams
+      try {
+        const [homeNPxG, awayNPxG] = await Promise.all([
+          fetchTeamNPxG(fixture.home_team, league, leagueConfig.season.split('-')[0]),
+          fetchTeamNPxG(fixture.away_team, league, leagueConfig.season.split('-')[0])
+        ]);
+        
+        // Attach NPxG data to team objects for use in rating calculations
+        if (homeTeam && homeNPxG) {
+          homeTeam.npxg_data = homeNPxG;
+        }
+        if (awayTeam && awayNPxG) {
+          awayTeam.npxg_data = awayNPxG;
+        }
+      } catch (error) {
+        console.warn(`Failed to fetch NPxG data for ${fixture.home_team} vs ${fixture.away_team}:`, error.message);
+        // Continue with fallback data (existing goals/xG)
+      }
       
       // Note: Real team strength data (from Football-Data.co.uk) is already blended
       // into `combinedTeamStats` via `fetchLiveTeamStats` -> `combineSeasonalData`.
@@ -4021,7 +4085,7 @@ exports.handler = async (event, context) => {
           away_btts_rate: awayTeam.btts_rate_away || 0.48
         }
       };
-    });
+    }));
 
     // CRITICAL FIX: Filter out past matches before returning
     const now = new Date();
