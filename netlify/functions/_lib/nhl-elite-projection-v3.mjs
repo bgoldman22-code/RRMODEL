@@ -47,30 +47,51 @@ const RINK_EFFECTS = {
 };
 
 /**
- * Load cached player stats
- * Tries multiple path resolutions for Netlify bundler compatibility
+ * Load cached player stats from Netlify Blobs
+ * 155 IQ SOLUTION: Use Blobs instead of file system (no Lambda path issues)
  */
-function loadPlayerStats() {
-  const possiblePaths = [
-    path.join(__dirname, '../../../data/nhl/player_stats_20242025.json'),
-    path.join(process.cwd(), 'data/nhl/player_stats_20242025.json'),
-    '/var/task/data/nhl/player_stats_20242025.json', // Netlify Lambda path
-  ];
-  
-  for (const statsPath of possiblePaths) {
-    try {
-      if (fs.existsSync(statsPath)) {
-        const data = JSON.parse(fs.readFileSync(statsPath, 'utf8'));
-        console.log(`✅ Loaded player stats from: ${statsPath}`);
-        return data.players || [];
-      }
-    } catch (error) {
-      // Try next path
+async function loadPlayerStats() {
+  try {
+    const { getStore } = await import('@netlify/blobs');
+    const store = getStore('nhl-stats');
+    
+    const data = await store.get('player_stats_20242025', { type: 'json' });
+    
+    if (data && data.players) {
+      console.log(`✅ Loaded ${data.players.length} players from Netlify Blobs`);
+      return data.players;
     }
+    
+    console.warn('⚠️ No player data in Netlify Blobs');
+    return [];
+  } catch (error) {
+    console.warn('⚠️ Could not load player stats from Blobs:', error.message);
+    return [];
   }
-  
-  console.warn('⚠️ Could not load player stats cache from any path');
-  return [];
+}
+
+/**
+ * Load cached team stats from Netlify Blobs
+ * 155 IQ SOLUTION: Use Blobs instead of file system (no Lambda path issues)
+ */
+async function loadTeamStats() {
+  try {
+    const { getStore } = await import('@netlify/blobs');
+    const store = getStore('nhl-stats');
+    
+    const data = await store.get('team_stats_20242025', { type: 'json' });
+    
+    if (data && data.teams) {
+      console.log(`✅ Loaded ${Object.keys(data.teams).length} teams from Netlify Blobs`);
+      return data.teams;
+    }
+    
+    console.warn('⚠️ No team data in Netlify Blobs');
+    return {};
+  } catch (error) {
+    console.warn('⚠️ Could not load team stats from Blobs:', error.message);
+    return {};
+  }
 }
 
 /**
@@ -103,8 +124,8 @@ function loadTeamStats() {
 /**
  * Find player in cache by ID or name
  */
-function findPlayer(playerId, playerName, team) {
-  const players = loadPlayerStats();
+async function findPlayer(playerId, playerName, team) {
+  const players = await loadPlayerStats();
   
   // Try by ID first
   let player = players.find(p => p.playerId === playerId);
@@ -123,8 +144,8 @@ function findPlayer(playerId, playerName, team) {
 /**
  * Get team defensive strength
  */
-function getTeamDefense(teamAbbrev) {
-  const teams = loadTeamStats();
+async function getTeamDefense(teamAbbrev) {
+  const teams = await loadTeamStats();
   const team = teams[teamAbbrev];
   
   if (!team) return { defensiveRating: 1.0, shotsAgainstPerGame: 30.0 };
@@ -216,9 +237,9 @@ function calculateExpectedTOI(player) {
 /**
  * CORE ELITE PROJECTION
  */
-export function projectSOGElite(playerId, playerName, team, opponent, isHome, venue) {
+export async function projectSOGElite(playerId, playerName, team, opponent, isHome, venue) {
   // Load player data
-  const player = findPlayer(playerId, playerName, team);
+  const player = await findPlayer(playerId, playerName, team);
   
   if (!player) {
     console.warn(`⚠️ Player not found in cache: ${playerName} (${team})`);
@@ -232,7 +253,7 @@ export function projectSOGElite(playerId, playerName, team, opponent, isHome, ve
   }
   
   // Load opponent defense
-  const oppDefense = getTeamDefense(opponent);
+  const oppDefense = await getTeamDefense(opponent);
   
   // === STEP 1: BASE PROJECTION (RECENCY-WEIGHTED) ===
   let baseSOG = calculateWeightedSOGAverage(player);

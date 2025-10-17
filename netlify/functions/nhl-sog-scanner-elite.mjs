@@ -342,7 +342,7 @@ export async function handler(event, context) {
           const playerName = `${player.firstName?.default || ''} ${player.lastName?.default || ''}`.trim();
           
           // Generate ELITE projection
-          const projection = projectSOGElite(
+          const projection = await projectSOGElite(
             player.id,
             playerName,
             teamAbbrev,

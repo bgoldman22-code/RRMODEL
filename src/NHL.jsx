@@ -17,7 +17,7 @@ export default function NHL() {
   
   // Fetch opportunities on mount
   useEffect(() => {
-    fetchOpportunities();
+    fetchPredictions();
   }, []);
   
   const fetchPredictions = async () => {
@@ -54,7 +54,8 @@ export default function NHL() {
   };
   
   const handleRefresh = () => {
-    fetchOpportunities();
+    setScanning(true);
+    fetchPredictions();
   };
   
   // Sort handler
