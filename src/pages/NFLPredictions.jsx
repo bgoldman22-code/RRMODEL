@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { getCurrentNFLWeek } from '../utils/nflWeek.js';
 import { loadPredictionsWithPolling } from '../lib/fetchPredictions.js';
+import { autoLockStartedGames, mergeLockedPicks, getLockedGamesSummary } from '../utils/lockManager.js';
 
 /**
  * NFL Predictions Page with Live Odds Display and Parlay Suggestions
@@ -660,7 +661,22 @@ export default function NFLPredictions() {
         }
       });
       
-      setRows(Array.isArray(data.rows) ? data.rows : []);
+      // 🔒 AUTO-LOCK: Lock any games that have already started
+      const lockedPicks = autoLockStartedGames(season, week, data.rows);
+      
+      // 🔒 MERGE: Replace predictions with locked versions for started games
+      const mergedRows = mergeLockedPicks(season, week, data.rows);
+      
+      // Log locked games summary
+      const lockSummary = getLockedGamesSummary(season, week);
+      if (lockSummary.count > 0) {
+        console.log(`🔒 ${lockSummary.count} game(s) locked for Week ${week}`);
+        lockSummary.games.forEach(g => {
+          console.log(`   ${g.gameId}: Locked at ${new Date(g.lockedAt).toLocaleString()} ${g.autoLocked ? '(auto)' : ''}`);
+        });
+      }
+      
+      setRows(Array.isArray(mergedRows) ? mergedRows : []);
       setParlaySuggestions(data.parlaySuggestions || []);
       setParlayMetadata(data.parlayMetadata || {});
       setMeta(data.meta || null);
@@ -1223,9 +1239,14 @@ export default function NFLPredictions() {
                 });
 
                 return (
-                  <tr key={r.gameId || idx} className="border-t border-neutral-200 hover:bg-neutral-25">
+                  <tr key={r.gameId || idx} className={`border-t border-neutral-200 hover:bg-neutral-25 ${r.isLocked ? 'bg-blue-50' : ''}`}>
                     <td className="px-4 py-3 font-medium">
                       <div className="flex items-center gap-2">
+                        {r.isLocked && (
+                          <span className="text-blue-600" title={`Picks locked at ${new Date(r.lockedAt).toLocaleString()}${r.autoLocked ? ' (auto-locked when game started)' : ''}`}>
+                            🔒
+                          </span>
+                        )}
                         <span>{fmt(r.matchup)}</span>
                         {hasSignificantInjuryImpact(r.teamStats?.away) && (
                           <span className="text-xs" title={`${r.away_team} significantly affected by injuries (${Math.abs(r.teamStats.away.injuryImpact?.totalImpact || 0).toFixed(1)} pts)`}>
@@ -1265,7 +1286,12 @@ export default function NFLPredictions() {
                               <div>{r.away_team}: {fmtOdds(odds.display?.h2h?.away || odds.moneyline?.away) || '—'}</div>
                               <div>{r.home_team}: {fmtOdds(odds.display?.h2h?.home || odds.moneyline?.home) || '—'}</div>
                               {odds.display_book && (
-                                <div className="text-gray-400 text-[10px]">via {odds.display_book}</div>
+                                <div className="text-gray-400 text-[10px]">
+                                  via {odds.display_book}
+                                  {r.usingClosingOdds && (
+                                    <span className="text-blue-600 ml-1">(Closing)</span>
+                                  )}
+                                </div>
                               )}
                             </div>
                           )}
@@ -1295,7 +1321,12 @@ export default function NFLPredictions() {
                       )}
                       {/* Show display book for transparency */}
                       {r.odds?.display_book && (
-                        <div className="text-gray-400 text-[10px] mt-1">via {r.odds.display_book}</div>
+                        <div className="text-gray-400 text-[10px] mt-1">
+                          via {r.odds.display_book}
+                          {r.usingClosingOdds && (
+                            <span className="text-blue-600 ml-1">(Closing)</span>
+                          )}
+                        </div>
                       )}
                     </td>
                     
@@ -1321,7 +1352,12 @@ export default function NFLPredictions() {
                           />
                           {/* Show display book for transparency */}
                           {r.odds?.display_book && (
-                            <div className="text-gray-400 text-[10px] mt-1">via {r.odds.display_book}</div>
+                            <div className="text-gray-400 text-[10px] mt-1">
+                              via {r.odds.display_book}
+                              {r.usingClosingOdds && (
+                                <span className="text-blue-600 ml-1">(Closing)</span>
+                              )}
+                            </div>
                           )}
                         </>
                       ) : '—'}
