@@ -7,9 +7,13 @@
  * instead of trying to read from file system in Lambda environment.
  */
 
-const { getStore } = require('@netlify/blobs');
-const fs = require('fs');
-const path = require('path');
+import { getStore } from '@netlify/blobs';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function uploadNHLData() {
   try {
@@ -51,7 +55,7 @@ async function uploadNHLData() {
     console.log('🎉 SUCCESS! NHL data uploaded to Netlify Blobs');
     console.log('   Store name: nhl-stats');
     console.log('   Keys: player_stats_20242025, team_stats_20242025');
-    console.log('\nNext: Update nhl-elite-projection-v3.mjs to read from Blobs');
+    console.log('\nNext: Elite NHL scanner will now work without 502 errors!');
     
   } catch (error) {
     console.error('❌ Error uploading NHL data:', error.message);
@@ -60,9 +64,5 @@ async function uploadNHLData() {
   }
 }
 
-// Run if called directly
-if (require.main === module) {
-  uploadNHLData();
-}
-
-module.exports = { uploadNHLData };
+// Run the upload
+uploadNHLData();

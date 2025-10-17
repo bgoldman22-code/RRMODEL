@@ -14,14 +14,9 @@
  * - Individual player quality differentials
  * 
  * NO position baselines. Every player gets custom projection.
+ * 
+ * DATA STORAGE: Uses Netlify Blobs (155 IQ solution, no file system deps)
  */
-
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 /**
  * RINK SCORER BIAS - Some arenas systematically over/under-count SOG
@@ -92,33 +87,6 @@ async function loadTeamStats() {
     console.warn('⚠️ Could not load team stats from Blobs:', error.message);
     return {};
   }
-}
-
-/**
- * Load cached team stats
- * Tries multiple path resolutions for Netlify bundler compatibility
- */
-function loadTeamStats() {
-  const possiblePaths = [
-    path.join(__dirname, '../../../data/nhl/team_stats_20242025.json'),
-    path.join(process.cwd(), 'data/nhl/team_stats_20242025.json'),
-    '/var/task/data/nhl/team_stats_20242025.json',
-  ];
-  
-  for (const statsPath of possiblePaths) {
-    try {
-      if (fs.existsSync(statsPath)) {
-        const data = JSON.parse(fs.readFileSync(statsPath, 'utf8'));
-        console.log(`✅ Loaded team stats from: ${statsPath}`);
-        return data.teams || {};
-      }
-    } catch (error) {
-      // Try next path
-    }
-  }
-  
-  console.warn('⚠️ Could not load team stats cache from any path');
-  return {};
 }
 
 /**
