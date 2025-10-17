@@ -80,6 +80,10 @@ export default function NFLReceivingProps() {
         <div className="bg-red-50 border border-red-200 rounded-lg p-6">
           <h2 className="text-xl font-bold text-red-800 mb-2">⚠️ Error Loading Predictions</h2>
           <p className="text-red-600 mb-4">{error}</p>
+          <details className="mt-2 mb-4">
+            <summary className="text-sm text-red-700 cursor-pointer">Debug Info</summary>
+            <pre className="text-xs text-red-600 mt-2 overflow-auto">{JSON.stringify({ error, predictions }, null, 2)}</pre>
+          </details>
           <button
             onClick={fetchPredictions}
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
@@ -190,8 +194,21 @@ export default function NFLReceivingProps() {
 
       {/* Predictions Table */}
       {topPredictions.length === 0 ? (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <p className="text-yellow-800">No predictions found matching your filters</p>
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <p className="text-yellow-800 text-center mb-4">No predictions found matching your filters</p>
+          <details className="text-sm text-yellow-900">
+            <summary className="cursor-pointer font-medium">Debug Info</summary>
+            <div className="mt-2 space-y-2">
+              <p>Total predictions loaded: {predictions.length}</p>
+              <p>After filters: {filteredPredictions.length}</p>
+              <p>Current filters: {JSON.stringify(filters, null, 2)}</p>
+              {predictions.length > 0 && (
+                <pre className="text-xs overflow-auto mt-2 bg-white p-2 rounded">
+                  {JSON.stringify(predictions.slice(0, 2), null, 2)}
+                </pre>
+              )}
+            </div>
+          </details>
         </div>
       ) : (
         <div className="bg-white border rounded-lg overflow-hidden">
@@ -286,17 +303,6 @@ export default function NFLReceivingProps() {
         </div>
       )}
 
-      {/* Footer Info */}
-      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-900 mb-2">📊 About This Model</h3>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>• <strong>Elite 3-Stage Cascade:</strong> Targets (NegBin) → Receptions (Beta-Binomial) → Yards (Lognormal)</li>
-          <li>• <strong>Data Source:</strong> Player stats + game context (20k simulations per prop)</li>
-          <li>• <strong>Temporal Safety:</strong> 100% leak-proof walk-forward validation</li>
-          <li>• <strong>Expected Performance:</strong> 54-56% win rate, +4-6% ROI (validated on 3 seasons)</li>
-          <li>• <strong>Kelly %:</strong> Fractional Kelly (25% of full Kelly) for bankroll management</li>
-        </ul>
-      </div>
     </div>
   );
 }
