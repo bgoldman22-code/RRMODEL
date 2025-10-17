@@ -26,12 +26,12 @@ export default function NHL() {
     setScanning(true);
     
     try {
-      // v3.1 Optimized: Real player stats + production-grade projections
+      // ELITE V3: ZINB projections + recency weighting + opponent adjustments
       const params = new URLSearchParams({
-        minEdge: '3.0'
+        minEdge: '5.0'
       });
       
-      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-v3-optimized?${params}`);
+      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-elite?${params}`);
       
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
