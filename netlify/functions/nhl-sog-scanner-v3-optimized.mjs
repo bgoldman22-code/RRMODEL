@@ -467,8 +467,16 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime, real
           
           // Only include if we have sufficient edge
           if (edge >= 3.0 && edge <= 25.0) {
-            // Kelly calculation with proper odds adjustment
-            const winProb = 0.5 + (edge / 200); // Convert edge to win probability
+            // Calculate market-implied probability from odds
+            let marketProb;
+            if (odds >= 0) {
+              marketProb = 100 / (odds + 100);
+            } else {
+              marketProb = Math.abs(odds) / (Math.abs(odds) + 100);
+            }
+            
+            // Model probability = market prob + edge (as decimal)
+            const winProb = marketProb + (edge / 100);
             const kelly = calculateKelly(winProb, odds, variance);
             
             // Confidence adjustment
