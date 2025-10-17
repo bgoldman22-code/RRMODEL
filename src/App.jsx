@@ -8,6 +8,7 @@ import NflTd from "./pages/NflTd";  // Simple TD system
 import NFLTouchdownPropsComprehensive from "./pages/NFLTouchdownPropsComprehensive";  // Advanced TD system
 import NFLPredictions from "./pages/NFLPredictions";
 import PredictionsTest from "./pages/PredictionsTest";  // Enhanced Split View Test Page
+import NFLReceivingProps from "./pages/NFLReceivingProps";  // Elite Receiving Props
 import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
 import NHL from "./NHL";  // Elite NHL SOG Props
 import NBAPredictions from "./pages/NBAPredictions";  // Elite NBA Betting System
@@ -68,6 +69,7 @@ export default function App() {
     nfl: {
       label: 'NFL',
       items: [
+        { label: 'Receiving Props 🎯', path: '/nfl-receiving-props' },
         { label: 'TD Advanced', path: '/nfl-td-comprehensive' },
         { label: 'Game Predictions', path: '/predictions' }
       ]
@@ -118,6 +120,7 @@ export default function App() {
           <Route path="/mlb-hits2" element={<MLB_HITS2 />} />
           <Route path="/hrr" element={<HRR />} />
           {/* CHANGED: Removed simple NFL TD route */}
+          <Route path="/nfl-receiving-props" element={<NFLReceivingProps />} />
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/predictions" element={<NFLPredictions />} />
           <Route path="/predictionstest" element={<PredictionsTest />} />

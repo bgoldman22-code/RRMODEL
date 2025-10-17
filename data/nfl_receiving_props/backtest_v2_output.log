@@ -37,3 +37,68 @@ Seasons: 2022, 2023, 2024Test weeks: 5-18 per seasonSimulations: 50,000Min games
 [15] Testing 2023 Week 5...Train: 5,379 player-games | Test: 232 player-games  ✅ Temporal safety validated (using week numbers)
 ✅ Generated 2,290 predictions[16] Testing 2023 Week 6...Train: 5,611 player-games | Test: 244 player-games  ✅ Temporal safety validated (using week numbers)
 ✅ Generated 2,486 predictions[17] Testing 2023 Week 7...Train: 5,855 player-games | Test: 206 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,066 predictions[18] Testing 2023 Week 8...Train: 6,061 player-games | Test: 254 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,534 predictions[19] Testing 2023 Week 9...Train: 6,315 player-games | Test: 237 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,156 predictions[20] Testing 2023 Week 10...Train: 6,552 player-games | Test: 229 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,240 predictions[21] Testing 2023 Week 11...Train: 6,781 player-games | Test: 227 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,140 predictions[22] Testing 2023 Week 12...Train: 7,008 player-games | Test: 258 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,376 predictions[23] Testing 2023 Week 13...Train: 7,266 player-games | Test: 205 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 1,982 predictions[24] Testing 2023 Week 14...Train: 7,471 player-games | Test: 236 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,226 predictions[25] Testing 2023 Week 15...Train: 7,707 player-games | Test: 268 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,552 predictions[26] Testing 2023 Week 16...Train: 7,975 player-games | Test: 261 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,400 predictions[27] Testing 2023 Week 17...Train: 8,236 player-games | Test: 249 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,436 predictions[28] Testing 2023 Week 18...Train: 8,485 player-games | Test: 255 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,286 predictions============================================================SEASON 2024============================================================
+[29] Testing 2024 Week 5...Train: 9,731 player-games | Test: 212 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,180 predictions[30] Testing 2024 Week 6...Train: 9,943 player-games | Test: 215 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,244 predictions[31] Testing 2024 Week 7...Train: 10,158 player-games | Test: 231 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,354 predictions[32] Testing 2024 Week 8...Train: 10,389 player-games | Test: 260 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,528 predictions[33] Testing 2024 Week 9...Train: 10,649 player-games | Test: 241 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,382 predictions[34] Testing 2024 Week 10...Train: 10,890 player-games | Test: 211 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,120 predictions[35] Testing 2024 Week 11...Train: 11,101 player-games | Test: 233 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,298 predictions[36] Testing 2024 Week 12...Train: 11,334 player-games | Test: 208 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,204 predictions[37] Testing 2024 Week 13...Train: 11,542 player-games | Test: 251 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,612 predictions[38] Testing 2024 Week 14...Train: 11,793 player-games | Test: 205 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,068 predictions[39] Testing 2024 Week 15...Train: 11,998 player-games | Test: 251 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,570 predictions[40] Testing 2024 Week 16...Train: 12,249 player-games | Test: 254 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,500 predictions[41] Testing 2024 Week 17...Train: 12,503 player-games | Test: 254 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,438 predictions[42] Testing 2024 Week 18...Train: 12,757 player-games | Test: 247 player-games  ✅ Temporal safety validated (using week numbers)
+✅ Generated 2,146 predictions
+
+📊 COMBINING RESULTS
+====================
+
+Total predictions: 95,590Seasons: 2022, 2023, 2024Players: 523Props: receptions, receiving_yards
+💾 Saved to data/nfl_receiving_props/backtest_3season_2022_2024.rds
+🎯 PERFORMANCE ANALYSIS
+=======================
+
+📊 OVERALL PERFORMANCE:
+Total predictions: 95,590Hit rate: 50.0%Avg edge: -2.5%
+💰 PERFORMANCE BY EDGE THRESHOLD:
+============================================================ 
+
+============================================================
+
+📅 PERFORMANCE BY SEASON:
+============================================================ 
+
+============================================================
+
+📦 PERFORMANCE BY PROP TYPE:
+============================================================ 
+
+============================================================
+
+📈 CALIBRATION ANALYSIS:
+============================================================ 
+
+Probability Calibration (Edge >= 5%):
+
+Bin          |  Count |    Predicted |       Actual |       Diff
+---------------------------------------------------------------------- 
+
+Brier Score: 0.2126 (lower is better)  Reference: <0.20 = excellent, <0.25 = good, <0.30 = acceptable
+
+💾 Saved summary to data/nfl_receiving_props/backtest_3season_summary.json
+✅ 3-SEASON BACKTEST COMPLETE!
