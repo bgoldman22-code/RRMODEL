@@ -20,6 +20,44 @@ import { projectSOGElite, calculateZINBProbability } from './_lib/nhl-elite-proj
 const NHL_API_BASE = 'https://api-web.nhle.com/v1';
 
 /**
+ * Calculate Kelly Criterion bet size (odds-adjusted)
+ * 
+ * Kelly % = (bp - q) / b
+ * where:
+ *   p = win probability (model)
+ *   q = lose probability (1 - p)
+ *   b = net payout ratio
+ * 
+ * For negative odds (-175): b = 100 / |odds| = 100/175 = 0.571
+ * For positive odds (+125): b = odds / 100 = 125/100 = 1.25
+ * 
+ * Cap at 3% of bankroll (fractional Kelly for safety)
+ */
+function calculateKelly(modelProb, americanOdds) {
+  const p = modelProb;
+  const q = 1 - p;
+  
+  // Calculate payout ratio based on odds
+  let b;
+  if (americanOdds < 0) {
+    // Favorites: Risk |odds| to win 100
+    b = 100 / Math.abs(americanOdds);
+  } else {
+    // Underdogs: Risk 100 to win odds
+    b = americanOdds / 100;
+  }
+  
+  // Kelly formula: (bp - q) / b
+  const kelly = (b * p - q) / b;
+  
+  // Cap at 3% of bankroll (fractional Kelly = 0.25x full Kelly, max 12%)
+  // But we're being conservative with 3% hard cap
+  const cappedKelly = Math.max(0, Math.min(kelly * 0.25, 0.03));
+  
+  return cappedKelly;
+}
+
+/**
  * Fetch real odds from The Odds API
  */
 async function fetchNHLOdds() {
@@ -366,7 +404,7 @@ export async function handler(event, context) {
                   // Edge & EV
                   edge: edge.toFixed(1),
                   ev: ((modelProb * (odds > 0 ? odds/100 : 100/Math.abs(odds)) - (1 - modelProb)) * 100).toFixed(1),
-                  kelly: Math.min((edge / 400), 0.03).toFixed(4),
+                  kelly: calculateKelly(modelProb, odds).toFixed(4),
                   
                   // Metadata
                   confidence: modelProb > 0.60 ? 'high' : (modelProb > 0.55 ? 'medium' : 'low'),
@@ -424,7 +462,7 @@ export async function handler(event, context) {
                   
                   edge: edge.toFixed(1),
                   ev: ((modelProb * (simulatedOdds > 0 ? simulatedOdds/100 : 100/Math.abs(simulatedOdds)) - (1 - modelProb)) * 100).toFixed(1),
-                  kelly: Math.min((edge / 400), 0.03).toFixed(4),
+                  kelly: calculateKelly(modelProb, simulatedOdds).toFixed(4),
                   
                   confidence: modelProb > 0.60 ? 'high' : (modelProb > 0.55 ? 'medium' : 'low'),
                   streak: projection.metadata.streak,
