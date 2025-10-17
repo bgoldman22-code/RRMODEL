@@ -18,7 +18,7 @@ export default function NFLReceivingProps() {
   const fetchPredictions = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/.netlify/functions/nfl-receiving-scanner');
+      const response = await fetch('/.netlify/functions/nfl-receiving-scanner-elite');
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -230,8 +230,8 @@ export default function NFLReceivingProps() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {topPredictions.map((pred, idx) => {
-                  const kellyPct = (pred.edge * (pred.model_prob * 1.91 - (1 - pred.model_prob)) / 1.91) * 100;
-                  const fractionalKelly = Math.max(0, kellyPct * 0.25); // Quarter Kelly
+                  // Use Kelly from the model (already calculated correctly)
+                  const kellyPct = (pred.kelly * 100).toFixed(1);
 
                   return (
                     <tr key={idx} className="hover:bg-gray-50 transition-colors">
@@ -243,20 +243,18 @@ export default function NFLReceivingProps() {
                         <div className="text-xs text-gray-500">{pred.team}</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {pred.prop === 'receptions' ? 'Receptions' : 'Rec Yards'}
-                        </div>
+                        <div className="text-sm text-gray-900">{pred.prop}</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">{pred.line}</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs font-semibold rounded ${
-                          pred.side === 'over'
+                          pred.side === 'OVER'
                             ? 'bg-green-100 text-green-800'
                             : 'bg-red-100 text-red-800'
                         }`}>
-                          {pred.side.toUpperCase()}
+                          {pred.side}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
@@ -266,15 +264,17 @@ export default function NFLReceivingProps() {
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{(pred.model_prob * 100).toFixed(1)}%</div>
+                        <div className="text-xs text-gray-500">Fair: {(pred.market_prob_fair * 100).toFixed(1)}%</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
-                          {pred.fair_odds > 0 ? '+' : ''}{pred.fair_odds}
+                          {pred.offered_odds > 0 ? '+' : ''}{pred.offered_odds}
                         </div>
+                        <div className="text-xs text-gray-500">{pred.book || 'Market'}</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="text-sm font-semibold text-blue-600">
-                          {fractionalKelly.toFixed(1)}%
+                          {kellyPct}%
                         </div>
                       </td>
                     </tr>
@@ -290,8 +290,8 @@ export default function NFLReceivingProps() {
       <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h3 className="font-semibold text-blue-900 mb-2">📊 About This Model</h3>
         <ul className="text-sm text-blue-800 space-y-1">
-          <li>• <strong>3-Stage Cascade:</strong> Targets (Poisson) → Receptions (Binomial) → Yards (Gamma)</li>
-          <li>• <strong>Data Source:</strong> nflfastR play-by-play (50k simulations per player)</li>
+          <li>• <strong>Elite 3-Stage Cascade:</strong> Targets (NegBin) → Receptions (Beta-Binomial) → Yards (Lognormal)</li>
+          <li>• <strong>Data Source:</strong> Player stats + game context (20k simulations per prop)</li>
           <li>• <strong>Temporal Safety:</strong> 100% leak-proof walk-forward validation</li>
           <li>• <strong>Expected Performance:</strong> 54-56% win rate, +4-6% ROI (validated on 3 seasons)</li>
           <li>• <strong>Kelly %:</strong> Fractional Kelly (25% of full Kelly) for bankroll management</li>
