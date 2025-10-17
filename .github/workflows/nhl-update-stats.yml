@@ -1,0 +1,60 @@
+name: NHL Daily Stats Refresh
+
+on:
+  schedule:
+    # Run daily at 10am ET (2pm UTC) - after morning skates
+    - cron: '0 14 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Update player stats
+        run: |
+          echo "👥 Fetching NHL player stats..."
+          node scripts/nhl/update-player-stats.mjs
+      
+      - name: Update team stats
+        run: |
+          echo "📊 Fetching NHL team stats..."
+          node scripts/nhl/update-team-stats.mjs
+      
+      - name: Show summary
+        run: |
+          echo "📈 Stats Update Summary:"
+          if [ -f data/nhl/player_stats_20242025.json ]; then
+            PLAYER_COUNT=$(cat data/nhl/player_stats_20242025.json | grep -o '"playerId"' | wc -l)
+            echo "✅ Player stats: $PLAYER_COUNT players"
+          fi
+          if [ -f data/nhl/team_stats_20242025.json ]; then
+            TEAM_COUNT=$(cat data/nhl/team_stats_20242025.json | grep -o '"teamAbbrev"' | wc -l)
+            echo "✅ Team stats: $TEAM_COUNT teams"
+          fi
+      
+      - name: Commit updated stats
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Check if there are changes to commit
+          if [[ -n $(git status -s data/nhl/) ]]; then
+            git add data/nhl/player_stats_*.json
+            git add data/nhl/team_stats_*.json
+            git commit -m "📊 Daily NHL stats refresh [skip ci]"
+            git push
+            echo "✅ Stats updated and pushed"
+          else
+            echo "ℹ️ No changes to commit"
+          fi
