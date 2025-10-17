@@ -20,18 +20,13 @@ export default function NHL() {
     fetchOpportunities();
   }, []);
   
-  const fetchOpportunities = async () => {
-    setLoading(true);
-    setError(null);
-    setScanning(true);
-    
+  const fetchPredictions = async () => {
     try {
-      // ELITE V3: ZINB projections + recency weighting + opponent adjustments
-      const params = new URLSearchParams({
-        minEdge: '5.0'
-      });
+      setLoading(true);
+      setError(null);
       
-      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-elite?${params}`);
+      const params = new URLSearchParams({ dateRange: 'today' });
+      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-v3-optimized?${params}`);
       
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
