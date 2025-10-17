@@ -11,7 +11,47 @@
  * - The Odds API for live NHL player props
  * - Real shots on goal lines from sportsbooks
  * - Live odds for accurate edge calculations
+ * 
+ * KELLY CRITERION:
+ * - Proper odds-adjusted formula: (bp - q) / b
+ * - Accounts for payout ratio differences
+ * - Fractional Kelly 0.25x with 3% hard cap
+ * - Variance-adjusted for high uncertainty scenarios
  */
+
+/**
+ * Calculate Kelly Criterion stake with proper odds adjustment
+ * @param {number} modelProb - Model's probability (0-1)
+ * @param {number} americanOdds - American odds format (+150, -200, etc)
+ * @param {number} variance - Projection variance for penalty (optional)
+ * @returns {number} Kelly fraction (0-0.03)
+ */
+function calculateKelly(modelProb, americanOdds, variance = 0) {
+  const p = modelProb;
+  const q = 1 - p;
+  
+  // Convert American odds to payout ratio
+  let b;
+  if (americanOdds >= 0) {
+    b = americanOdds / 100; // +150 = 1.5x payout
+  } else {
+    b = 100 / Math.abs(americanOdds); // -200 = 0.5x payout
+  }
+  
+  // Kelly formula: (bp - q) / b
+  let kelly = (b * p - q) / b;
+  
+  // Variance penalty for high uncertainty
+  if (variance > 0) {
+    kelly *= (1 - Math.min(variance / 5, 0.3));
+  }
+  
+  // Fractional Kelly (0.25x) for risk management
+  kelly *= 0.25;
+  
+  // Hard cap at 3% of bankroll
+  return Math.max(0, Math.min(kelly, 0.03));
+}
 
 // Real odds fetching using The Odds API
 async function fetchNHLOdds() {
@@ -427,16 +467,9 @@ function generatePlayerProjection(player, team, opponent, isHome, gameTime, real
           
           // Only include if we have sufficient edge
           if (edge >= 3.0 && edge <= 25.0) {
-            // Kelly calculation
-            const oddsDecimal = odds > 0 ? (odds / 100) + 1 : (100 / Math.abs(odds)) + 1;
-            const winProb = 0.5 + (edge / 200);
-            const b = oddsDecimal - 1;
-            const q = 1 - winProb;
-            
-            let kelly = (b * winProb - q) / b;
-            kelly *= (1 - Math.min(variance / 5, 0.3)); // Variance penalty
-            kelly *= 0.25; // Fractional Kelly
-            kelly = Math.max(0, Math.min(kelly, 0.05));
+            // Kelly calculation with proper odds adjustment
+            const winProb = 0.5 + (edge / 200); // Convert edge to win probability
+            const kelly = calculateKelly(winProb, odds, variance);
             
             // Confidence adjustment
             const baseConfidence = position === 'C' ? 78 : position === 'D' ? 72 : 75;
