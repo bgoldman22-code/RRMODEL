@@ -1,19 +1,25 @@
 #!/usr/bin/env node
 
 /**
- * Fetch NFL Receiving Props Odds from The Odds API
- * Markets: player_receptions, player_receiving_yards
- * For backtest: Compare model probabilities vs real market odds
+ * Fetch real-time odds for NFL receiving props from The Odds API
+ * 
+ * Markets: player_receptions, player_reception_yds (FIXED: was player_receiving_yards)
+ * 
+ * Output: JSON file with current odds for all available props
  */
 
 import fetch from 'node-fetch';
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const API_KEY = process.env.THEODDS_API_KEY;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const API_KEY = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
 const SPORT = 'americanfootball_nfl';
 const REGIONS = 'us';
-const MARKETS = 'player_receptions,player_receiving_yards';
+const MARKETS = 'player_receptions,player_reception_yds'; // FIXED: Use correct market keys
 const ODDS_FORMAT = 'american';
 
 if (!API_KEY) {
@@ -79,7 +85,7 @@ function parsePlayerProps(gameData) {
   
   for (const bookmaker of gameData.bookmakers) {
     for (const market of bookmaker.markets || []) {
-      const marketType = market.key; // 'player_receptions' or 'player_receiving_yards'
+      const marketType = market.key; // 'player_receptions' or 'player_reception_yds'
       
       for (const outcome of market.outcomes || []) {
         const playerName = outcome.description;
@@ -170,7 +176,7 @@ async function main() {
     
     // Group by market
     const receptions = bestOdds.filter(p => p.market === 'player_receptions');
-    const yards = bestOdds.filter(p => p.market === 'player_receiving_yards');
+    const yards = bestOdds.filter(p => p.market === 'player_reception_yds'); // FIXED
     
     console.log(`📦 BY MARKET:\n`);
     console.log(`   Receptions: ${receptions.length} props`);

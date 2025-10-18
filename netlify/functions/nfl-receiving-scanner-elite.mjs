@@ -270,7 +270,8 @@ async function fetchRealOdds() {
     console.log('📡 Fetching player props for each game...');
     const oddsPromises = events.slice(0, 20).map(async (event) => {
       try {
-        const propsUrl = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/${event.id}/odds?regions=us&markets=player_receptions,player_receiving_yards&oddsFormat=american&dateFormat=iso&apiKey=${ODDS_API_KEY}`;
+        // FIXED: Use correct market keys - player_reception_yds (not player_receiving_yards)
+        const propsUrl = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/${event.id}/odds?regions=us&markets=player_receptions,player_reception_yds&oddsFormat=american&dateFormat=iso&apiKey=${ODDS_API_KEY}`;
         
         const propsResponse = await fetch(propsUrl);
         if (!propsResponse.ok) return null;
@@ -310,7 +311,8 @@ function processOdds(gamesDataWithProps) {
       const isPriorityBook = PRIORITY_BOOKS.some(b => bookName.includes(b));
       
       for (const market of bookmaker.markets || []) {
-        if (!['player_receptions', 'player_receiving_yards'].includes(market.key)) continue;
+        // FIXED: Use correct market keys - player_reception_yds (not player_receiving_yards)
+        if (!['player_receptions', 'player_reception_yds'].includes(market.key)) continue;
 
         // Group by player + line to get both sides
         const lineGroups = {};
@@ -460,8 +462,8 @@ export async function handler(event, context) {
           // This lets you see what the model thinks even without API access
           const syntheticMarketProb = 0.5238; // -110 implied (with vig)
           
-          // OVER edge vs synthetic market
-          if (modelProb >= 0.58) { // 5%+ edge vs -110
+          // OVER edge vs synthetic market - LOWERED THRESHOLD FOR TESTING
+          if (modelProb >= 0.55) { // 2.5%+ edge vs -110 (testing mode - was 0.58 for 5%+)
             opportunities.push({
               player: player.name,
               team: player.team,
@@ -480,9 +482,9 @@ export async function handler(event, context) {
             });
           }
           
-          // UNDER edge vs synthetic market
+          // UNDER edge vs synthetic market - LOWERED THRESHOLD FOR TESTING
           const modelProbUnder = 1 - modelProb;
-          if (modelProbUnder >= 0.58) {
+          if (modelProbUnder >= 0.55) { // 2.5%+ edge vs -110 (testing mode - was 0.58 for 5%+)
             opportunities.push({
               player: player.name,
               team: player.team,
@@ -512,7 +514,8 @@ export async function handler(event, context) {
         const oddsKey = `${player.name}_${line}`;
         const realMarket = realOdds?.get(oddsKey);
 
-        if (realMarket && realMarket.market === 'player_receiving_yards') {
+        // FIXED: Use correct market key - player_reception_yds
+        if (realMarket && realMarket.market === 'player_reception_yds') {
           const { pOver, pUnder } = removeVig(realMarket.overOdds, realMarket.underOdds);
 
           // OVER
@@ -561,7 +564,8 @@ export async function handler(event, context) {
           // NO REAL ODDS: Show model pricing vs synthetic -110
           const syntheticMarketProb = 0.5238;
           
-          if (modelProb >= 0.58) {
+          // LOWERED THRESHOLD FOR TESTING - was 0.58 for 5%+, now 0.55 for 2.5%+
+          if (modelProb >= 0.55) {
             opportunities.push({
               player: player.name,
               team: player.team,
@@ -581,7 +585,8 @@ export async function handler(event, context) {
           }
           
           const modelProbUnder = 1 - modelProb;
-          if (modelProbUnder >= 0.58) {
+          // LOWERED THRESHOLD FOR TESTING - was 0.58 for 5%+, now 0.55 for 2.5%+
+          if (modelProbUnder >= 0.55) {
             opportunities.push({
               player: player.name,
               team: player.team,
@@ -609,6 +614,8 @@ export async function handler(event, context) {
     console.log(`✅ Generated ${opportunities.length} opportunities`);
     console.log(`   Top edge: ${(opportunities[0]?.edge * 100 || 0).toFixed(1)}%`);
     console.log(`   Avg edge: ${(opportunities.reduce((sum, o) => sum + o.edge, 0) / Math.max(1, opportunities.length) * 100).toFixed(1)}%`);
+    console.log(`   Threshold: 55% (2.5% edge) in synthetic mode`);
+    console.log(`   Players processed: ${PLAYER_DB.length}`);
 
     return {
       statusCode: 200,
