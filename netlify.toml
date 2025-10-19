@@ -28,9 +28,7 @@
   included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
   external_node_modules = []
 
-[functions."nfl-receiving-scanner-elite"]
-  included_files = ["data/nfl/ssot/**", "netlify/functions/_lib/ssot-loader.mjs", "netlify/functions/_lib/elite-pricing-engine.mjs"]
-  external_node_modules = ["@netlify/blobs", "node-fetch"]
+# nfl-receiving-scanner-elite will use global [functions] config
 
 [build.environment]
   NODE_VERSION = "20"
