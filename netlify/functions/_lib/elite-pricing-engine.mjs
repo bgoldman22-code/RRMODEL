@@ -331,6 +331,9 @@ export const DEFAULT_CALIBRATION = {
 // ============================================================================
 
 export function estimateParameters(player, gameContext) {
+  // Clean helper (prevent NaN poisoning)
+  const clean = x => (typeof x === 'number' && isFinite(x) && x > 0) ? x : null;
+  
   const {
     avgTargets,
     targetVariance,
@@ -343,8 +346,16 @@ export function estimateParameters(player, gameContext) {
   
   const { spread, weather, opponent } = gameContext;
   
+  // Safeguard all inputs with reasonable defaults
+  const safeTargets = clean(avgTargets) ?? 5.0;
+  const safeTargetVar = clean(targetVariance) ?? safeTargets * 1.3;
+  const safeCatchRate = clean(avgCatchRate) ?? 0.65;
+  const safeCatchVar = clean(catchRateVariance) ?? (safeCatchRate * (1 - safeCatchRate) * 0.15);
+  const safeYPC = clean(avgYardsPerCatch) ?? 10.0;  // League-average fallback (not 0)
+  const safeADOT = clean(aDOT) ?? safeYPC;
+  
   // Targets: adjust for game script
-  let adjustedTargets = avgTargets;
+  let adjustedTargets = safeTargets;
   if (spread > 7) {
     // Team losing big → more pass volume
     adjustedTargets *= 1.08;
@@ -356,19 +367,19 @@ export function estimateParameters(player, gameContext) {
   // NegBin parameters
   const targetParams = negBinFromMoments(
     adjustedTargets,
-    targetVariance || adjustedTargets * 1.3
+    safeTargetVar
   );
   
   // Beta-Binomial parameters
   const catchParams = betaFromMoments(
-    avgCatchRate,
-    catchRateVariance || (avgCatchRate * (1 - avgCatchRate) * 0.15)
+    safeCatchRate,
+    safeCatchVar
   );
   
-  // Lognormal parameters (yards per catch)
-  const baseSigma = 0.45 + 0.015 * Math.max(0, aDOT - 9);
+  // Lognormal parameters (yards per catch) - safeguarded against NaN
+  const baseSigma = 0.45 + 0.015 * Math.max(0, safeADOT - 9);
   const yardsPerCatchSigma = Math.min(0.9, baseSigma);
-  const muYPC = Math.max(3, avgYardsPerCatch);
+  const muYPC = Math.max(3, safeYPC);
   const yardsPerCatchMu = Math.log(muYPC) - 0.5 * yardsPerCatchSigma ** 2;
   
   return {
