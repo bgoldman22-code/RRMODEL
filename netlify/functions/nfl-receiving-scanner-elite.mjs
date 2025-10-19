@@ -419,6 +419,19 @@ async function fetchRealOdds() {
 }
 
 // ============================================================================
+// WEEK DETECTION
+// ============================================================================
+
+function getCurrentWeek() {
+  const now = new Date();
+  const seasonStart = new Date('2025-09-04'); // NFL 2025 season start
+  const diffTime = now.getTime() - seasonStart.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const week = Math.floor(diffDays / 7) + 1;
+  return Math.max(1, Math.min(18, week)); // Clamp to valid week range
+}
+
+// ============================================================================
 // GENERATE OPPORTUNITIES
 // ============================================================================
 
@@ -458,8 +471,11 @@ export async function handler(event, context) {
     let ssot = null;
     if (USE_SSOT) {
       try {
-        const WEEK = parseInt(process.env.NFL_WEEK || '8', 10);
+        // Auto-detect current week (can be overridden via env var for testing)
+        const WEEK = parseInt(process.env.NFL_WEEK || getCurrentWeek().toString(), 10);
         const SEASON = parseInt(process.env.NFL_SEASON || '2025', 10);
+        console.log(`📅 Auto-detected Week ${WEEK}, ${SEASON} (override via NFL_WEEK env var)`);
+        
         ssot = await loadSSOT(WEEK, SEASON);
         if (ssot) {
           console.log(`✅ Loaded SSOT: Week ${ssot.week}, ${ssot.players?.length || 0} players, generated ${ssot.generated_at}`);
