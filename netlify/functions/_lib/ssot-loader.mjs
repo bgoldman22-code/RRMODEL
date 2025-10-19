@@ -12,26 +12,28 @@
  * - Soft clipping (±7% per factor, ±12% combined) via tanh
  * 
  * FIXED: Beta mean-shifting (v1.1) - now properly shifts catch rate mean, not just concentration
+ * v2.0: Migrated to Netlify Blobs for reliable serverless storage (no import.meta.url issues)
  */
 
-import fs from 'fs/promises';
+import { getStore } from '@netlify/blobs';
 
 /**
- * Load SSOT JSON for a given week/season
- * Uses import.meta.url for portable path resolution in bundled functions
+ * Load SSOT JSON for a given week/season from Netlify Blobs
  */
 export async function loadSSOT(week, season = 2025) {
-  // Allow override via env var (for CI/containers)
-  const candidate = process.env.SSOT_DIR
-    ? `${process.env.SSOT_DIR}/week_${week}_${season}.json`
-    : new URL(
-        `../../../data/nfl/ssot/week_${week}_${season}.json`,
-        import.meta.url
-      ).pathname;
+  const key = `week_${week}_${season}`;
+  
+  console.log(`[SSOT Loader] Loading from Netlify Blobs: ${key}`);
   
   try {
-    console.log(`[SSOT Loader] Attempting to load from: ${candidate}`);
-    const data = await fs.readFile(candidate, 'utf8');
+    const store = getStore('nfl-receiving-ssot');
+    const data = await store.get(key, { type: 'text' });
+    
+    if (!data) {
+      console.warn(`⚠️  SSOT not found in blobs: ${key}`);
+      return null;
+    }
+    
     const ssot = JSON.parse(data);
     
     // Validate schema version
