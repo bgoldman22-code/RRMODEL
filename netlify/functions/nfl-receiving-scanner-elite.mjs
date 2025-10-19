@@ -454,15 +454,40 @@ export async function handler(event, context) {
       opponent: null
     };
 
+    // Load SSOT if enabled (feature flag)
+    let ssot = null;
+    if (USE_SSOT) {
+      try {
+        const WEEK = parseInt(process.env.NFL_WEEK || '8', 10);
+        const SEASON = parseInt(process.env.NFL_SEASON || '2025', 10);
+        ssot = await loadSSOT(WEEK, SEASON);
+        if (ssot) {
+          console.log(`✅ Loaded SSOT: Week ${ssot.week}, ${ssot.players?.length || 0} players, generated ${ssot.generated_at}`);
+        } else {
+          console.warn('⚠️  SSOT load failed, falling back to PLAYER_DB');
+        }
+      } catch (err) {
+        console.warn(`⚠️  SSOT load error: ${err.message}, falling back to PLAYER_DB`);
+      }
+    }
+
+    // Select player source: SSOT (production) or PLAYER_DB (legacy)
+    const playerSource = USE_SSOT ? (ssot?.players || PLAYER_DB) : PLAYER_DB;
+    console.log(`📋 Player source: ${USE_SSOT ? 'SSOT' : 'PLAYER_DB'} (${playerSource.length} players)`);
+
     // Fetch real odds
     const realOdds = await fetchRealOdds();
     const opportunities = [];
     const MIN_EDGE = realOdds ? 0.05 : 0.025;
 
     // Process each player
-    for (const player of PLAYER_DB) {
-      const params = estimateParameters(player, gameContext);
-      const playerKey = canon(player.name);  // Use canonical name with alias resolution
+    for (const player of playerSource) {
+      // Convert SSOT player to params, or estimate from PLAYER_DB
+      const params = USE_SSOT && ssot ? playerToParams(player) : estimateParameters(player, gameContext);
+      const playerName = player.name || player.player_name;
+      const playerTeam = player.team || player.current_team;
+      const playerMatchup = player.matchup || `${playerTeam} vs OPP`;
+      const playerKey = canon(playerName);  // Use canonical name with alias resolution
 
       // Receptions props
       const recLines = [3.5, 4.5, 5.5, 6.5, 7.5];
