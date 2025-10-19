@@ -4,7 +4,7 @@
  * Body: { "key": "week_7_2025", "data": {...} }
  */
 
-import { getStore } from '@netlify/blobs';
+import { createClient } from '@netlify/blobs';
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -24,12 +24,27 @@ export const handler = async (event) => {
       };
     }
 
-    const store = getStore('nfl-receiving-ssot');
+    // Use explicit credentials
+    const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
+    const token = process.env.NETLIFY_API_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
+    
+    if (!siteID || !token) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Netlify Blobs credentials not configured' })
+      };
+    }
+    
+    const client = createClient({ siteID, token });
+    const storeName = 'nfl-receiving-ssot';
+    const store = client.store ? client.store(storeName) : client;
+    
     const ssotStr = typeof data === 'string' ? data : JSON.stringify(data);
     const ssot = JSON.parse(ssotStr);
     
     // Store the SSOT
-    await store.set(key, ssotStr, {
+    const setMethod = store.set || ((k, v, opts) => client.set(`${storeName}/${k}`, v, opts));
+    await setMethod(key, ssotStr, {
       metadata: {
         week: ssot.week.toString(),
         season: ssot.season.toString(),
