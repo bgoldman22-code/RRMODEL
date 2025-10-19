@@ -6,13 +6,11 @@
 import { getStore } from '@netlify/blobs';
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const handler = async (event) => {
   try {
-    const SSOT_DIR = path.join(__dirname, '../../data/nfl/ssot');
+    // In Netlify Functions, files are in /var/task
+    const SSOT_DIR = '/var/task/data/nfl/ssot';
     const store = getStore('nfl-receiving-ssot');
     
     // Read all SSOT files
