@@ -29,11 +29,8 @@ export async function loadSSOT(week, season = 2025) {
         import.meta.url
       ).pathname;
   
-  console.log(`[SSOT Loader] Attempting to load from: ${candidate}`);
-  console.log(`[SSOT Loader] SSOT_DIR env var: ${process.env.SSOT_DIR || 'not set'}`);
-  console.log(`[SSOT Loader] import.meta.url: ${import.meta.url}`);
-  
   try {
+    console.log(`[SSOT Loader] Attempting to load from: ${candidate}`);
     const data = await fs.readFile(candidate, 'utf8');
     const ssot = JSON.parse(data);
     
