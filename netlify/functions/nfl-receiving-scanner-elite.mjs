@@ -297,7 +297,7 @@ async function fetchRealOdds() {
     console.log('📡 Fetching player props for each game...');
     const oddsResults = await Promise.all(events.slice(0, 25).map(async (ev) => {
       try {
-        const url = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/${ev.id}/odds?regions=us&markets=player_receptions,player_receiving_yards&oddsFormat=american&dateFormat=iso&apiKey=${ODDS_API_KEY}`;
+        const url = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/${ev.id}/odds?regions=us&markets=player_receptions,player_reception_yds&oddsFormat=american&dateFormat=iso&apiKey=${ODDS_API_KEY}`;
         const r = await fetch(url);
         if (!r.ok) return null;
         const data = await r.json();
@@ -562,7 +562,7 @@ export async function handler(event, context) {
               data_source: USE_SSOT ? 'SSOT' : 'PLAYER_DB'
             });
           }
-        } else if (!realOdds) {
+        } else if (!realOdds || realOdds.size === 0) {
           // NO REAL ODDS AVAILABLE: Show model prices vs synthetic -110 market
           const syntheticMarketProb = 0.5238; // -110 implied (with vig)
           
@@ -680,7 +680,7 @@ export async function handler(event, context) {
               data_source: USE_SSOT ? 'SSOT' : 'PLAYER_DB'
             });
           }
-        } else if (!realOdds) {
+        } else if (!realOdds || realOdds.size === 0) {
           // NO REAL ODDS: Show model pricing vs synthetic -110
           const syntheticMarketProb = 0.5238;
           
