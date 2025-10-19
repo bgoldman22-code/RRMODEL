@@ -358,7 +358,7 @@ ssot_json <- list(
     select(
       gsis_id,  # CRITICAL: Keep real GSIS ID
       player_slug,  # Slug for API keys
-      player_name,
+      full_name,  # Full name for The Odds API matching
       current_team,  # Use CURRENT team, not historical PBP team
       opp,
       is_home,
@@ -385,7 +385,7 @@ ssot_json <- list(
       list(
         player_id = row$player_slug,  # Use slug for API keys
         gsis_id = row$gsis_id,  # Real GSIS ID from nflfastR
-        name = row$player_name,
+        name = row$full_name,  # Full name for matching with The Odds API
         team = row$current_team,  # CURRENT team (e.g., NE not HOU for Diggs)
         pos = row$final_pos,
         opp = row$opp,
