@@ -20,7 +20,19 @@ library(rlang)    # For %||% null-coalescing operator
 
 # Configuration
 SEASON <- 2025
-WEEK <- 8  # Change this for different weeks
+
+# Auto-detect current week based on season start date (2025-09-04)
+getCurrentWeek <- function() {
+  season_start <- as.Date("2025-09-04")
+  today <- Sys.Date()
+  days_elapsed <- as.numeric(difftime(today, season_start, units = "days"))
+  week <- floor(days_elapsed / 7) + 1
+  return(max(1, min(18, week)))  # Clamp to valid range
+}
+
+WEEK <- getCurrentWeek()  # Auto-detect (or set manually for backtesting)
+cat(glue("📅 Auto-detected: Week {WEEK} (change manually if needed)\n"))
+
 EB_TAU <- 0.35  # Empirical Bayes weight (will optimize via backtest)
 CAP_PER_FACTOR <- 0.07
 CAP_COMBINED_MIN <- 0.88

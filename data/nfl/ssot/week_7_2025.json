@@ -1,0 +1,6574 @@
+{
+  "week": 7,
+  "season": 2025,
+  "generated_at": "2025-10-18T23:07:41-04:00",
+  "schema_version": 1,
+  "metadata": {
+    "total_players": 115,
+    "data_sources": ["nflfastR", "nflreadr"],
+    "eb_tau": 0.35,
+    "cap_settings": {
+      "per_factor_max": 0.07,
+      "combined_min": 0.88,
+      "combined_max": 1.12
+    },
+    "inputs_hash": "52d7c91c918f46347cde091cb8f2d42b"
+  },
+  "players": [
+    {
+      "player_id": "WAS-Z-ERTZ",
+      "gsis_id": "00-0030061",
+      "name": "Z.Ertz",
+      "team": "WAS",
+      "pos": "TE",
+      "opp": "DAL",
+      "is_home": false,
+      "matchup": "WAS @ DAL",
+      "context": {
+        "spread": -1.5,
+        "total": 53.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.6433,
+        "phi": 1.6252
+      },
+      "beta": {
+        "alpha": 36.1491,
+        "beta": 13.8509
+      },
+      "lognorm": {
+        "log_mu": 2.1732,
+        "log_sigma": 0.45
+      },
+      "adot": 7.2963,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "e5cc8878e9bb7f9392f27adcde0f0eb3"
+    },
+    {
+      "player_id": "LAC-K-ALLEN",
+      "gsis_id": "00-0030279",
+      "name": "K.Allen",
+      "team": "LAC",
+      "pos": "WR",
+      "opp": "IND",
+      "is_home": true,
+      "matchup": "LAC vs IND",
+      "context": {
+        "spread": 2.5,
+        "total": 48.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 8.395,
+        "phi": 2.9382
+      },
+      "beta": {
+        "alpha": 32.127,
+        "beta": 17.873
+      },
+      "lognorm": {
+        "log_mu": 2.1566,
+        "log_sigma": 0.45
+      },
+      "adot": 7.9412,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.0102,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "651a709f9e545e1f03e6a103e5bdd1d2"
+    },
+    {
+      "player_id": "KC-T-KELCE",
+      "gsis_id": "00-0030506",
+      "name": "T.Kelce",
+      "team": "KC",
+      "pos": "TE",
+      "opp": "LV",
+      "is_home": true,
+      "matchup": "KC vs LV",
+      "context": {
+        "spread": 11.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.3183,
+        "phi": 2.2114
+      },
+      "beta": {
+        "alpha": 38.3825,
+        "beta": 11.6175
+      },
+      "lognorm": {
+        "log_mu": 2.3093,
+        "log_sigma": 0.45
+      },
+      "adot": 5.2162,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "2c48bc76228ddf1bfb30ead6c0c39b25"
+    },
+    {
+      "player_id": "LA-D-ADAMS",
+      "gsis_id": "00-0031381",
+      "name": "D.Adams",
+      "team": "LA",
+      "pos": "WR",
+      "opp": "JAX",
+      "is_home": false,
+      "matchup": "LA @ JAX",
+      "context": {
+        "spread": 3,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 9.2483,
+        "phi": 3.2369
+      },
+      "beta": {
+        "alpha": 23.5551,
+        "beta": 26.4449
+      },
+      "lognorm": {
+        "log_mu": 2.6324,
+        "log_sigma": 0.45
+      },
+      "adot": 12.1455,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.93,
+          "yac_pct": 0.9991,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "3d6be6793dec0cd65af5eb51661b2df8"
+    },
+    {
+      "player_id": "TB-M-EVANS",
+      "gsis_id": "00-0031408",
+      "name": "M.Evans",
+      "team": "TB",
+      "pos": "WR",
+      "opp": "DET",
+      "is_home": false,
+      "matchup": "TB @ DET",
+      "context": {
+        "spread": -6,
+        "total": 52.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 9.3333,
+        "phi": 3.2667
+      },
+      "beta": {
+        "alpha": 25,
+        "beta": 25
+      },
+      "lognorm": {
+        "log_mu": 2.2013,
+        "log_sigma": 0.45
+      },
+      "adot": 11.8929,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "0e30d7db7bafbde6ec92fb1c545150d8"
+    },
+    {
+      "player_id": "NE-S-DIGGS",
+      "gsis_id": "00-0031588",
+      "name": "S.Diggs",
+      "team": "NE",
+      "pos": "WR",
+      "opp": "TEN",
+      "is_home": false,
+      "matchup": "NE @ TEN",
+      "context": {
+        "spread": 7,
+        "total": 42.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.1083,
+        "phi": 2.1379
+      },
+      "beta": {
+        "alpha": 43.2748,
+        "beta": 6.7252
+      },
+      "lognorm": {
+        "log_mu": 2.4086,
+        "log_sigma": 0.45
+      },
+      "adot": 8.4865,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.069,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "a91abf476681c040b986a2240deae37f"
+    },
+    {
+      "player_id": "MIA-D-WALLER",
+      "gsis_id": "00-0031610",
+      "name": "D.Waller",
+      "team": "MIA",
+      "pos": "TE",
+      "opp": "CLE",
+      "is_home": false,
+      "matchup": "MIA @ CLE",
+      "context": {
+        "spread": -2.5,
+        "total": 35.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4,
+        "phi": 1.4
+      },
+      "beta": {
+        "alpha": 41.6667,
+        "beta": 8.3333
+      },
+      "lognorm": {
+        "log_mu": 2.3583,
+        "log_sigma": 0.45
+      },
+      "adot": 11.0833,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9977,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "cde6e8b74ad55cd00a67d809001f27b8"
+    },
+    {
+      "player_id": "TB-S-SHEPARD",
+      "gsis_id": "00-0032385",
+      "name": "S.Shepard",
+      "team": "TB",
+      "pos": "WR",
+      "opp": "DET",
+      "is_home": false,
+      "matchup": "TB @ DET",
+      "context": {
+        "spread": -6,
+        "total": 52.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.395,
+        "phi": 1.5383
+      },
+      "beta": {
+        "alpha": 36.2037,
+        "beta": 13.7963
+      },
+      "lognorm": {
+        "log_mu": 2.4419,
+        "log_sigma": 0.45
+      },
+      "adot": 9.6296,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "1413e0cfbb8b76cb25b807262dda0c9f"
+    },
+    {
+      "player_id": "SF-D-ROBINSON",
+      "gsis_id": "00-0032775",
+      "name": "D.Robinson",
+      "team": "SF",
+      "pos": "WR",
+      "opp": "ATL",
+      "is_home": true,
+      "matchup": "SF vs ATL",
+      "context": {
+        "spread": 1.5,
+        "total": 47.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4,
+        "phi": 1.4
+      },
+      "beta": {
+        "alpha": 25,
+        "beta": 25
+      },
+      "lognorm": {
+        "log_mu": 2.7417,
+        "log_sigma": 0.45
+      },
+      "adot": 14.3333,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.93,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "0d587cf8bdf01051c36b232d671c1a18"
+    },
+    {
+      "player_id": "MIA-T-HILL",
+      "gsis_id": "00-0033040",
+      "name": "T.Hill",
+      "team": "MIA",
+      "pos": "WR",
+      "opp": "CLE",
+      "is_home": false,
+      "matchup": "MIA @ CLE",
+      "context": {
+        "spread": -2.5,
+        "total": 35.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 7.25,
+        "phi": 2.5375
+      },
+      "beta": {
+        "alpha": 36.2069,
+        "beta": 13.7931
+      },
+      "lognorm": {
+        "log_mu": 2.434,
+        "log_sigma": 0.45
+      },
+      "adot": 13.7586,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0119,
+          "catch_pct": 1.0064,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "74ce733750509b297bd089ca4cc7346e"
+    },
+    {
+      "player_id": "NE-H-HENRY",
+      "gsis_id": "00-0033090",
+      "name": "H.Henry",
+      "team": "NE",
+      "pos": "TE",
+      "opp": "TEN",
+      "is_home": false,
+      "matchup": "NE @ TEN",
+      "context": {
+        "spread": 7,
+        "total": 42.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.9683,
+        "phi": 1.7389
+      },
+      "beta": {
+        "alpha": 33.1417,
+        "beta": 16.8583
+      },
+      "lognorm": {
+        "log_mu": 2.5102,
+        "log_sigma": 0.45
+      },
+      "adot": 9.4194,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.069,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "d15903b7490a1f69f7bfd65df80aeb79"
+    },
+    {
+      "player_id": "SF-C-MCCAFFREY",
+      "gsis_id": "00-0033280",
+      "name": "C.McCaffrey",
+      "team": "SF",
+      "pos": "RB",
+      "opp": "ATL",
+      "is_home": true,
+      "matchup": "SF vs ATL",
+      "context": {
+        "spread": 1.5,
+        "total": 47.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 10,
+        "phi": 3.5
+      },
+      "beta": {
+        "alpha": 37.8667,
+        "beta": 12.1333
+      },
+      "lognorm": {
+        "log_mu": 2.13,
+        "log_sigma": 0.45
+      },
+      "adot": 2.8667,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 0.93,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "1930ab06581cc2cfac0f4b0687f84cd2"
+    },
+    {
+      "player_id": "SF-K-BOURNE",
+      "gsis_id": "00-0033307",
+      "name": "K.Bourne",
+      "team": "SF",
+      "pos": "WR",
+      "opp": "ATL",
+      "is_home": true,
+      "matchup": "SF vs ATL",
+      "context": {
+        "spread": 1.5,
+        "total": 47.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.6,
+        "phi": 2.31
+      },
+      "beta": {
+        "alpha": 34.8485,
+        "beta": 15.1515
+      },
+      "lognorm": {
+        "log_mu": 2.6795,
+        "log_sigma": 0.45
+      },
+      "adot": 9.8485,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.9835,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "6b522987c77f9d1d57685268e0e7986b"
+    },
+    {
+      "player_id": "PIT-J-SMITH",
+      "gsis_id": "00-0033858",
+      "name": "J.Smith",
+      "team": "PIT",
+      "pos": "TE",
+      "opp": "CIN",
+      "is_home": false,
+      "matchup": "PIT @ CIN",
+      "context": {
+        "spread": 5.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4,
+        "phi": 1.4
+      },
+      "beta": {
+        "alpha": 42.5,
+        "beta": 7.5
+      },
+      "lognorm": {
+        "log_mu": 1.5542,
+        "log_sigma": 0.45
+      },
+      "adot": 1.1,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.969,
+          "catch_pct": 1.0285,
+          "yac_pct": 1.07,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "57eb309fb5caa3f14247c6e4e85a7470"
+    },
+    {
+      "player_id": "DEN-E-ENGRAM",
+      "gsis_id": "00-0033881",
+      "name": "E.Engram",
+      "team": "DEN",
+      "pos": "TE",
+      "opp": "NYG",
+      "is_home": true,
+      "matchup": "DEN vs NYG",
+      "context": {
+        "spread": 7,
+        "total": 40.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5,
+        "phi": 1.75
+      },
+      "beta": {
+        "alpha": 34,
+        "beta": 16
+      },
+      "lognorm": {
+        "log_mu": 1.9855,
+        "log_sigma": 0.45
+      },
+      "adot": 5.6,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.9786,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "024f13e931cb246ac1ec77e764b71704"
+    },
+    {
+      "player_id": "CLE-D-NJOKU",
+      "gsis_id": "00-0033885",
+      "name": "D.Njoku",
+      "team": "CLE",
+      "pos": "TE",
+      "opp": "MIA",
+      "is_home": true,
+      "matchup": "CLE vs MIA",
+      "context": {
+        "spread": 2.5,
+        "total": 35.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6,
+        "phi": 2.1
+      },
+      "beta": {
+        "alpha": 32.4306,
+        "beta": 17.5694
+      },
+      "lognorm": {
+        "log_mu": 2.156,
+        "log_sigma": 0.45
+      },
+      "adot": 6.0833,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "97428aa840761a07d4c7baab7c437563"
+    },
+    {
+      "player_id": "NO-A-KAMARA",
+      "gsis_id": "00-0033906",
+      "name": "A.Kamara",
+      "team": "NO",
+      "pos": "RB",
+      "opp": "CHI",
+      "is_home": false,
+      "matchup": "NO @ CHI",
+      "context": {
+        "spread": -3.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.4967,
+        "phi": 1.5738
+      },
+      "beta": {
+        "alpha": 42.0833,
+        "beta": 7.9167
+      },
+      "lognorm": {
+        "log_mu": 1.6089,
+        "log_sigma": 0.45
+      },
+      "adot": 1.3077,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.0569,
+          "yac_pct": 0.93,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "79129fc67086d662ebf52318bf87b368"
+    },
+    {
+      "player_id": "SEA-C-KUPP",
+      "gsis_id": "00-0033908",
+      "name": "C.Kupp",
+      "team": "SEA",
+      "pos": "WR",
+      "opp": "HOU",
+      "is_home": true,
+      "matchup": "SEA vs HOU",
+      "context": {
+        "spread": 3,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.4967,
+        "phi": 1.9238
+      },
+      "beta": {
+        "alpha": 36.0318,
+        "beta": 13.9682
+      },
+      "lognorm": {
+        "log_mu": 2.339,
+        "log_sigma": 0.45
+      },
+      "adot": 6.4062,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0532,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "cb8667de5efe061aa28fc5c83f579f41"
+    },
+    {
+      "player_id": "DEN-C-SUTTON",
+      "gsis_id": "00-0034348",
+      "name": "C.Sutton",
+      "team": "DEN",
+      "pos": "WR",
+      "opp": "NYG",
+      "is_home": true,
+      "matchup": "DEN vs NYG",
+      "context": {
+        "spread": 7,
+        "total": 40.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.5033,
+        "phi": 2.2762
+      },
+      "beta": {
+        "alpha": 33.7923,
+        "beta": 16.2077
+      },
+      "lognorm": {
+        "log_mu": 2.5761,
+        "log_sigma": 0.45
+      },
+      "adot": 12.15,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0259,
+          "catch_pct": 1.0661,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "3551b9fb76dba2fcf3f38073f702671f"
+    },
+    {
+      "player_id": "PHI-D-GOEDERT",
+      "gsis_id": "00-0034351",
+      "name": "D.Goedert",
+      "team": "PHI",
+      "pos": "TE",
+      "opp": "MIN",
+      "is_home": false,
+      "matchup": "PHI @ MIN",
+      "context": {
+        "spread": 1.5,
+        "total": 43.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.6,
+        "phi": 2.31
+      },
+      "beta": {
+        "alpha": 36.3636,
+        "beta": 13.6364
+      },
+      "lognorm": {
+        "log_mu": 2.2138,
+        "log_sigma": 0.45
+      },
+      "adot": 8.7273,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 0.9544,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "572232a5584d59cefb122f4bfec5a785"
+    },
+    {
+      "player_id": "HOU-D-SCHULTZ",
+      "gsis_id": "00-0034383",
+      "name": "D.Schultz",
+      "team": "HOU",
+      "pos": "TE",
+      "opp": "SEA",
+      "is_home": false,
+      "matchup": "HOU @ SEA",
+      "context": {
+        "spread": -3,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.4,
+        "phi": 1.89
+      },
+      "beta": {
+        "alpha": 38.8889,
+        "beta": 11.1111
+      },
+      "lognorm": {
+        "log_mu": 2.08,
+        "log_sigma": 0.45
+      },
+      "adot": 6.4815,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9977,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "2f68501ca691b4e42c23d3535c3af452"
+    },
+    {
+      "player_id": "HOU-C-KIRK",
+      "gsis_id": "00-0034775",
+      "name": "C.Kirk",
+      "team": "HOU",
+      "pos": "WR",
+      "opp": "SEA",
+      "is_home": false,
+      "matchup": "HOU @ SEA",
+      "context": {
+        "spread": -3,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.6667,
+        "phi": 1.9833
+      },
+      "beta": {
+        "alpha": 29.4118,
+        "beta": 20.5882
+      },
+      "lognorm": {
+        "log_mu": 2.2875,
+        "log_sigma": 0.45
+      },
+      "adot": 10.0625,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9977,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "606dec78d01dcab553d837822112ef2d"
+    },
+    {
+      "player_id": "CHI-D-MOORE",
+      "gsis_id": "00-0034827",
+      "name": "D.Moore",
+      "team": "CHI",
+      "pos": "WR",
+      "opp": "NO",
+      "is_home": true,
+      "matchup": "CHI vs NO",
+      "context": {
+        "spread": 3.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.2,
+        "phi": 1.82
+      },
+      "beta": {
+        "alpha": 36.5385,
+        "beta": 13.4615
+      },
+      "lognorm": {
+        "log_mu": 2.2724,
+        "log_sigma": 0.45
+      },
+      "adot": 8.7308,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.0138,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "df7a4244620a3ab085d6b0b5cb62064f"
+    },
+    {
+      "player_id": "TEN-C-RIDLEY",
+      "gsis_id": "00-0034837",
+      "name": "C.Ridley",
+      "team": "TEN",
+      "pos": "WR",
+      "opp": "NE",
+      "is_home": true,
+      "matchup": "TEN vs NE",
+      "context": {
+        "spread": -7,
+        "total": 42.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.6817,
+        "phi": 1.9886
+      },
+      "beta": {
+        "alpha": 22.6349,
+        "beta": 27.3651
+      },
+      "lognorm": {
+        "log_mu": 2.8667,
+        "log_sigma": 0.45
+      },
+      "adot": 12.7143,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "bca558f2b72d74f53e8b4352826f1798"
+    },
+    {
+      "player_id": "LV-J-MEYERS",
+      "gsis_id": "00-0034960",
+      "name": "J.Meyers",
+      "team": "LV",
+      "pos": "WR",
+      "opp": "KC",
+      "is_home": false,
+      "matchup": "LV @ KC",
+      "context": {
+        "spread": -11.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.9683,
+        "phi": 2.4389
+      },
+      "beta": {
+        "alpha": 33.055,
+        "beta": 16.945
+      },
+      "lognorm": {
+        "log_mu": 2.3183,
+        "log_sigma": 0.45
+      },
+      "adot": 9.3023,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "a2d5a20d54c128b825cfad4df1ae4796"
+    },
+    {
+      "player_id": "CAR-H-RENFROW",
+      "gsis_id": "00-0034983",
+      "name": "H.Renfrow",
+      "team": "CAR",
+      "pos": "WR",
+      "opp": "NYJ",
+      "is_home": false,
+      "matchup": "CAR @ NYJ",
+      "context": {
+        "spread": 1.5,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.2167,
+        "phi": 1.4758
+      },
+      "beta": {
+        "alpha": 30.125,
+        "beta": 19.875
+      },
+      "lognorm": {
+        "log_mu": 1.6833,
+        "log_sigma": 0.45
+      },
+      "adot": 7.4615,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.057,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "059945dd236a2de89cfedac5b6479f2e"
+    },
+    {
+      "player_id": "CHI-O-ZACCHEAUS",
+      "gsis_id": "00-0035208",
+      "name": "O.Zaccheaus",
+      "team": "CHI",
+      "pos": "WR",
+      "opp": "NO",
+      "is_home": true,
+      "matchup": "CHI vs NO",
+      "context": {
+        "spread": 3.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.8,
+        "phi": 2.03
+      },
+      "beta": {
+        "alpha": 27.5862,
+        "beta": 22.4138
+      },
+      "lognorm": {
+        "log_mu": 2.089,
+        "log_sigma": 0.45
+      },
+      "adot": 7.0714,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.0138,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "9daeb03ef5422daac3941d560d354a30"
+    },
+    {
+      "player_id": "MIN-T-HOCKENSON",
+      "gsis_id": "00-0035229",
+      "name": "T.Hockenson",
+      "team": "MIN",
+      "pos": "TE",
+      "opp": "PHI",
+      "is_home": true,
+      "matchup": "MIN vs PHI",
+      "context": {
+        "spread": -1.5,
+        "total": 43.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.8,
+        "phi": 1.68
+      },
+      "beta": {
+        "alpha": 39.5833,
+        "beta": 10.4167
+      },
+      "lognorm": {
+        "log_mu": 1.9847,
+        "log_sigma": 0.45
+      },
+      "adot": 4.4583,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9839,
+          "yac_pct": 0.93,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "b241c8b87420586b471d9e24c77e3288"
+    },
+    {
+      "player_id": "PIT-D-METCALF",
+      "gsis_id": "00-0035640",
+      "name": "D.Metcalf",
+      "team": "PIT",
+      "pos": "WR",
+      "opp": "CIN",
+      "is_home": false,
+      "matchup": "PIT @ CIN",
+      "context": {
+        "spread": 5.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.2,
+        "phi": 2.17
+      },
+      "beta": {
+        "alpha": 30.6452,
+        "beta": 19.3548
+      },
+      "lognorm": {
+        "log_mu": 2.8292,
+        "log_sigma": 0.45
+      },
+      "adot": 9.4194,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.0086,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "5c7d5951a2cadb5cc7b434d70822cfa1"
+    },
+    {
+      "player_id": "CIN-N-FANT",
+      "gsis_id": "00-0035644",
+      "name": "N.Fant",
+      "team": "CIN",
+      "pos": "TE",
+      "opp": "PIT",
+      "is_home": true,
+      "matchup": "CIN vs PIT",
+      "context": {
+        "spread": -5.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.5,
+        "phi": 1.575
+      },
+      "beta": {
+        "alpha": 44.4444,
+        "beta": 5.5556
+      },
+      "lognorm": {
+        "log_mu": 1.799,
+        "log_sigma": 0.45
+      },
+      "adot": 2.8333,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.9934,
+          "catch_pct": 0.93,
+          "yac_pct": 0.9679,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "8774afe071c4d1c36ee16467ff91147d"
+    },
+    {
+      "player_id": "WAS-T-MCLAURIN",
+      "gsis_id": "00-0035659",
+      "name": "T.McLaurin",
+      "team": "WAS",
+      "pos": "WR",
+      "opp": "DAL",
+      "is_home": false,
+      "matchup": "WAS @ DAL",
+      "context": {
+        "spread": -1.5,
+        "total": 53.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.6667,
+        "phi": 1.9833
+      },
+      "beta": {
+        "alpha": 29.4118,
+        "beta": 20.5882
+      },
+      "lognorm": {
+        "log_mu": 2.6001,
+        "log_sigma": 0.45
+      },
+      "adot": 14.3529,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.07,
+          "yac_pct": 1.07,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "606dec78d01dcab553d837822112ef2d"
+    },
+    {
+      "player_id": "KC-M-BROWN",
+      "gsis_id": "00-0035662",
+      "name": "M.Brown",
+      "team": "KC",
+      "pos": "WR",
+      "opp": "LV",
+      "is_home": true,
+      "matchup": "KC vs LV",
+      "context": {
+        "spread": 11.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.7267,
+        "phi": 2.3543
+      },
+      "beta": {
+        "alpha": 34.6591,
+        "beta": 15.3409
+      },
+      "lognorm": {
+        "log_mu": 2.2109,
+        "log_sigma": 0.45
+      },
+      "adot": 9.0227,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "292089f27b416834a141115fd8aca338"
+    },
+    {
+      "player_id": "PHI-A-BROWN",
+      "gsis_id": "00-0035676",
+      "name": "A.Brown",
+      "team": "PHI",
+      "pos": "WR",
+      "opp": "MIN",
+      "is_home": false,
+      "matchup": "PHI @ MIN",
+      "context": {
+        "spread": 1.5,
+        "total": 43.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 7.955,
+        "phi": 2.7842
+      },
+      "beta": {
+        "alpha": 27.601,
+        "beta": 22.399
+      },
+      "lognorm": {
+        "log_mu": 2.2969,
+        "log_sigma": 0.45
+      },
+      "adot": 11.0667,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 0.9544,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "28ee849e74dc46c70bbb20f682d171e3"
+    },
+    {
+      "player_id": "GB-J-JACOBS",
+      "gsis_id": "00-0035700",
+      "name": "J.Jacobs",
+      "team": "GB",
+      "pos": "RB",
+      "opp": "ARI",
+      "is_home": false,
+      "matchup": "GB @ ARI",
+      "context": {
+        "spread": 7,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.75,
+        "phi": 1.6625
+      },
+      "beta": {
+        "alpha": 39.4737,
+        "beta": 10.5263
+      },
+      "lognorm": {
+        "log_mu": 2.3612,
+        "log_sigma": 0.45
+      },
+      "adot": -1.2105,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.9856,
+          "catch_pct": 1.035,
+          "yac_pct": 0.93,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "6afa3429a2b0ed529d886317dd810bac"
+    },
+    {
+      "player_id": "WAS-D-SAMUEL",
+      "gsis_id": "00-0035719",
+      "name": "D.Samuel",
+      "team": "WAS",
+      "pos": "WR",
+      "opp": "DAL",
+      "is_home": false,
+      "matchup": "WAS @ DAL",
+      "context": {
+        "spread": -1.5,
+        "total": 53.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.9683,
+        "phi": 2.4389
+      },
+      "beta": {
+        "alpha": 40.0159,
+        "beta": 9.9841
+      },
+      "lognorm": {
+        "log_mu": 2.1078,
+        "log_sigma": 0.45
+      },
+      "adot": 6.6977,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "c8df255e58253fab3086ec0676a79edb"
+    },
+    {
+      "player_id": "NO-J-JOHNSON",
+      "gsis_id": "00-0036040",
+      "name": "J.Johnson",
+      "team": "NO",
+      "pos": "TE",
+      "opp": "CHI",
+      "is_home": false,
+      "matchup": "NO @ CHI",
+      "context": {
+        "spread": -3.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.8283,
+        "phi": 2.0399
+      },
+      "beta": {
+        "alpha": 34.9532,
+        "beta": 15.0468
+      },
+      "lognorm": {
+        "log_mu": 2.0972,
+        "log_sigma": 0.45
+      },
+      "adot": 6.0811,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9786,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "7fd5dcdabcdf956ff1fd58e4ca112ca2"
+    },
+    {
+      "player_id": "IND-M-PITTMAN",
+      "gsis_id": "00-0036252",
+      "name": "M.Pittman",
+      "team": "IND",
+      "pos": "WR",
+      "opp": "LAC",
+      "is_home": false,
+      "matchup": "IND @ LAC",
+      "context": {
+        "spread": -2.5,
+        "total": 48.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.5733,
+        "phi": 2.3007
+      },
+      "beta": {
+        "alpha": 34.7812,
+        "beta": 15.2188
+      },
+      "lognorm": {
+        "log_mu": 2.2202,
+        "log_sigma": 0.45
+      },
+      "adot": 8.7105,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.9413,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "98ddde6ce151f9fe1e34cd9c10bb4bbe"
+    },
+    {
+      "player_id": "SF-J-JENNINGS",
+      "gsis_id": "00-0036259",
+      "name": "J.Jennings",
+      "team": "SF",
+      "pos": "WR",
+      "opp": "ATL",
+      "is_home": true,
+      "matchup": "SF vs ATL",
+      "context": {
+        "spread": 1.5,
+        "total": 47.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.75,
+        "phi": 2.0125
+      },
+      "beta": {
+        "alpha": 21.7391,
+        "beta": 28.2609
+      },
+      "lognorm": {
+        "log_mu": 2.5183,
+        "log_sigma": 0.45
+      },
+      "adot": 10.1818,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.9835,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "35fd974a0d66c7611682cabfc93f31a9"
+    },
+    {
+      "player_id": "CHI-D-SWIFT",
+      "gsis_id": "00-0036275",
+      "name": "D.Swift",
+      "team": "CHI",
+      "pos": "RB",
+      "opp": "NO",
+      "is_home": true,
+      "matchup": "CHI vs NO",
+      "context": {
+        "spread": 3.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.2,
+        "phi": 1.47
+      },
+      "beta": {
+        "alpha": 35.7143,
+        "beta": 14.2857
+      },
+      "lognorm": {
+        "log_mu": 2.2146,
+        "log_sigma": 0.45
+      },
+      "adot": -0.9048,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.9963,
+          "catch_pct": 1.043,
+          "yac_pct": 1.07,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "2e1b4db6b8a3e1c783e8ece05b428771"
+    },
+    {
+      "player_id": "ATL-D-MOONEY",
+      "gsis_id": "00-0036309",
+      "name": "D.Mooney",
+      "team": "ATL",
+      "pos": "WR",
+      "opp": "SF",
+      "is_home": false,
+      "matchup": "ATL @ SF",
+      "context": {
+        "spread": -1.5,
+        "total": 47.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.3333,
+        "phi": 1.8667
+      },
+      "beta": {
+        "alpha": 21.875,
+        "beta": 28.125
+      },
+      "lognorm": {
+        "log_mu": 2.3223,
+        "log_sigma": 0.45
+      },
+      "adot": 11.125,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0039,
+          "catch_pct": 0.9856,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "6195128fec739160eed09d7b1b8fc141"
+    },
+    {
+      "player_id": "MIN-J-JEFFERSON",
+      "gsis_id": "00-0036322",
+      "name": "J.Jefferson",
+      "team": "MIN",
+      "pos": "WR",
+      "opp": "PHI",
+      "is_home": true,
+      "matchup": "MIN vs PHI",
+      "context": {
+        "spread": -1.5,
+        "total": 43.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 8.4,
+        "phi": 2.94
+      },
+      "beta": {
+        "alpha": 34.5238,
+        "beta": 15.4762
+      },
+      "lognorm": {
+        "log_mu": 2.6385,
+        "log_sigma": 0.45
+      },
+      "adot": 12.3333,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0532,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "a50d7e40226e4844ae050fe8dd2e949d"
+    },
+    {
+      "player_id": "CLE-J-JEUDY",
+      "gsis_id": "00-0036407",
+      "name": "J.Jeudy",
+      "team": "CLE",
+      "pos": "WR",
+      "opp": "MIA",
+      "is_home": true,
+      "matchup": "CLE vs MIA",
+      "context": {
+        "spread": 2.5,
+        "total": 35.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 8,
+        "phi": 2.8
+      },
+      "beta": {
+        "alpha": 20.1042,
+        "beta": 29.8958
+      },
+      "lognorm": {
+        "log_mu": 2.3719,
+        "log_sigma": 0.45
+      },
+      "adot": 13,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.07,
+          "yac_pct": 0.9361,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "e9147310e3a4239a03fe7fa732b91077"
+    },
+    {
+      "player_id": "CIN-T-HIGGINS",
+      "gsis_id": "00-0036410",
+      "name": "T.Higgins",
+      "team": "CIN",
+      "pos": "WR",
+      "opp": "PIT",
+      "is_home": true,
+      "matchup": "CIN vs PIT",
+      "context": {
+        "spread": -5.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.9617,
+        "phi": 2.0866
+      },
+      "beta": {
+        "alpha": 25.182,
+        "beta": 24.818
+      },
+      "lognorm": {
+        "log_mu": 2.409,
+        "log_sigma": 0.45
+      },
+      "adot": 13.3143,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.0548,
+          "yac_pct": 1.07,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "b7c562a52311c29903f0114976d3651c"
+    },
+    {
+      "player_id": "HOU-N-COLLINS",
+      "gsis_id": "00-0036554",
+      "name": "N.Collins",
+      "team": "HOU",
+      "pos": "WR",
+      "opp": "SEA",
+      "is_home": false,
+      "matchup": "HOU @ SEA",
+      "context": {
+        "spread": -3,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 7.2,
+        "phi": 2.52
+      },
+      "beta": {
+        "alpha": 30.5556,
+        "beta": 19.4444
+      },
+      "lognorm": {
+        "log_mu": 2.5507,
+        "log_sigma": 0.45
+      },
+      "adot": 11.0278,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9977,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "e1cf662acbfd0f46b264802b5a29f61b"
+    },
+    {
+      "player_id": "CAR-C-HUBBARD",
+      "gsis_id": "00-0036555",
+      "name": "C.Hubbard",
+      "team": "CAR",
+      "pos": "RB",
+      "opp": "NYJ",
+      "is_home": false,
+      "matchup": "CAR @ NYJ",
+      "context": {
+        "spread": 1.5,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.25,
+        "phi": 1.4875
+      },
+      "beta": {
+        "alpha": 38.2353,
+        "beta": 11.7647
+      },
+      "lognorm": {
+        "log_mu": 1.8771,
+        "log_sigma": 0.45
+      },
+      "adot": 0.5294,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0578,
+          "catch_pct": 0.9889,
+          "yac_pct": 1.07,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "f2b803815183099cc81a9c199751f490"
+    },
+    {
+      "player_id": "MIA-J-WADDLE",
+      "gsis_id": "00-0036613",
+      "name": "J.Waddle",
+      "team": "MIA",
+      "pos": "WR",
+      "opp": "CLE",
+      "is_home": false,
+      "matchup": "MIA @ CLE",
+      "context": {
+        "spread": -2.5,
+        "total": 35.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.7833,
+        "phi": 2.3742
+      },
+      "beta": {
+        "alpha": 36.0625,
+        "beta": 13.9375
+      },
+      "lognorm": {
+        "log_mu": 2.5221,
+        "log_sigma": 0.45
+      },
+      "adot": 11.225,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9977,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "ef96575bfbb6dc6b5c7aa130cb9eaf74"
+    },
+    {
+      "player_id": "JAX-D-BROWN",
+      "gsis_id": "00-0036626",
+      "name": "D.Brown",
+      "team": "JAX",
+      "pos": "WR",
+      "opp": "LA",
+      "is_home": true,
+      "matchup": "JAX vs LA",
+      "context": {
+        "spread": -3,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.6,
+        "phi": 1.61
+      },
+      "beta": {
+        "alpha": 30.4348,
+        "beta": 19.5652
+      },
+      "lognorm": {
+        "log_mu": 2.2295,
+        "log_sigma": 0.45
+      },
+      "adot": 12.2174,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.931,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "e97497a399bfa6030782104cf4392729"
+    },
+    {
+      "player_id": "CIN-J-CHASE",
+      "gsis_id": "00-0036900",
+      "name": "J.Chase",
+      "team": "CIN",
+      "pos": "WR",
+      "opp": "PIT",
+      "is_home": true,
+      "matchup": "CIN vs PIT",
+      "context": {
+        "spread": -5.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 9.815,
+        "phi": 3.4352
+      },
+      "beta": {
+        "alpha": 37.4089,
+        "beta": 12.5911
+      },
+      "lognorm": {
+        "log_mu": 2.3066,
+        "log_sigma": 0.45
+      },
+      "adot": 9.6316,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "3cd25f85a3b011299f5071d703c535be"
+    },
+    {
+      "player_id": "PHI-D-SMITH",
+      "gsis_id": "00-0036912",
+      "name": "D.Smith",
+      "team": "PHI",
+      "pos": "WR",
+      "opp": "MIN",
+      "is_home": false,
+      "matchup": "PHI @ MIN",
+      "context": {
+        "spread": 1.5,
+        "total": 43.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.21,
+        "phi": 2.1735
+      },
+      "beta": {
+        "alpha": 39.9684,
+        "beta": 10.0316
+      },
+      "lognorm": {
+        "log_mu": 2.3236,
+        "log_sigma": 0.45
+      },
+      "adot": 9.8,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 0.9544,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "76024f1c46be6787c4a5855dbc4458d6"
+    },
+    {
+      "player_id": "PIT-K-GAINWELL",
+      "gsis_id": "00-0036919",
+      "name": "K.Gainwell",
+      "team": "PIT",
+      "pos": "RB",
+      "opp": "CIN",
+      "is_home": false,
+      "matchup": "PIT @ CIN",
+      "context": {
+        "spread": 5.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.4,
+        "phi": 1.54
+      },
+      "beta": {
+        "alpha": 43.1818,
+        "beta": 6.8182
+      },
+      "lognorm": {
+        "log_mu": 1.3238,
+        "log_sigma": 0.45
+      },
+      "adot": -0.8636,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.969,
+          "catch_pct": 1.0285,
+          "yac_pct": 1.07,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "2b768bf55d169e5e901a9372e5b495f2"
+    },
+    {
+      "player_id": "DET-A-ST-BROWN",
+      "gsis_id": "00-0036963",
+      "name": "A.St. Brown",
+      "team": "DET",
+      "pos": "WR",
+      "opp": "TB",
+      "is_home": true,
+      "matchup": "DET vs TB",
+      "context": {
+        "spread": 6,
+        "total": 52.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 8.675,
+        "phi": 3.0362
+      },
+      "beta": {
+        "alpha": 43.5948,
+        "beta": 6.4052
+      },
+      "lognorm": {
+        "log_mu": 2.2318,
+        "log_sigma": 0.45
+      },
+      "adot": 7.0392,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0442,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "fecb3ea0f116f9e9648385b79c17ec29"
+    },
+    {
+      "player_id": "ATL-K-PITTS",
+      "gsis_id": "00-0036970",
+      "name": "K.Pitts",
+      "team": "ATL",
+      "pos": "TE",
+      "opp": "SF",
+      "is_home": false,
+      "matchup": "ATL @ SF",
+      "context": {
+        "spread": -1.5,
+        "total": 47.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.6,
+        "phi": 1.96
+      },
+      "beta": {
+        "alpha": 41.0714,
+        "beta": 8.9286
+      },
+      "lognorm": {
+        "log_mu": 2.1704,
+        "log_sigma": 0.45
+      },
+      "adot": 5.3571,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0039,
+          "catch_pct": 0.9856,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "330c720b7bf274f185c9b4d079645f09"
+    },
+    {
+      "player_id": "DAL-J-WILLIAMS",
+      "gsis_id": "00-0036997",
+      "name": "J.Williams",
+      "team": "DAL",
+      "pos": "RB",
+      "opp": "WAS",
+      "is_home": true,
+      "matchup": "DAL vs WAS",
+      "context": {
+        "spread": 1.5,
+        "total": 53.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.7833,
+        "phi": 1.6742
+      },
+      "beta": {
+        "alpha": 39.5357,
+        "beta": 10.4643
+      },
+      "lognorm": {
+        "log_mu": 1.2151,
+        "log_sigma": 0.45
+      },
+      "adot": -1.25,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.969,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "08a71d95b641ddab87fae39fe1089259"
+    },
+    {
+      "player_id": "SF-J-TONGES",
+      "gsis_id": "00-0037112",
+      "name": "J.Tonges",
+      "team": "SF",
+      "pos": "TE",
+      "opp": "ATL",
+      "is_home": true,
+      "matchup": "SF vs ATL",
+      "context": {
+        "spread": 1.5,
+        "total": 47.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.8533,
+        "phi": 2.0487
+      },
+      "beta": {
+        "alpha": 36.3164,
+        "beta": 13.6836
+      },
+      "lognorm": {
+        "log_mu": 2.1124,
+        "log_sigma": 0.45
+      },
+      "adot": 4.7059,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 0.93,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "89d3bad2f023a67a077e542c1c41e69f"
+    },
+    {
+      "player_id": "ATL-D-LONDON",
+      "gsis_id": "00-0037238",
+      "name": "D.London",
+      "team": "ATL",
+      "pos": "WR",
+      "opp": "SF",
+      "is_home": false,
+      "matchup": "ATL @ SF",
+      "context": {
+        "spread": -1.5,
+        "total": 47.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 10.6,
+        "phi": 3.71
+      },
+      "beta": {
+        "alpha": 32.0755,
+        "beta": 17.9245
+      },
+      "lognorm": {
+        "log_mu": 2.4292,
+        "log_sigma": 0.45
+      },
+      "adot": 9.9434,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0039,
+          "catch_pct": 0.9856,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "906fd13e525e9256df2ead5f65e22380"
+    },
+    {
+      "player_id": "NO-C-OLAVE",
+      "gsis_id": "00-0037239",
+      "name": "C.Olave",
+      "team": "NO",
+      "pos": "WR",
+      "opp": "CHI",
+      "is_home": false,
+      "matchup": "NO @ CHI",
+      "context": {
+        "spread": -3.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 10.5033,
+        "phi": 3.6762
+      },
+      "beta": {
+        "alpha": 30.7851,
+        "beta": 19.2149
+      },
+      "lognorm": {
+        "log_mu": 2.0792,
+        "log_sigma": 0.45
+      },
+      "adot": 8.6094,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9786,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "058e83de76443921658f5f5aa3305e63"
+    },
+    {
+      "player_id": "DET-J-WILLIAMS",
+      "gsis_id": "00-0037240",
+      "name": "J.Williams",
+      "team": "DET",
+      "pos": "WR",
+      "opp": "TB",
+      "is_home": true,
+      "matchup": "DET vs TB",
+      "context": {
+        "spread": 6,
+        "total": 52.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.6433,
+        "phi": 1.6252
+      },
+      "beta": {
+        "alpha": 29.6234,
+        "beta": 20.3766
+      },
+      "lognorm": {
+        "log_mu": 2.8008,
+        "log_sigma": 0.45
+      },
+      "adot": 16.7857,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9534,
+          "yac_pct": 1.07,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "cecaa1a6ba267277c128871214951584"
+    },
+    {
+      "player_id": "DAL-G-PICKENS",
+      "gsis_id": "00-0037247",
+      "name": "G.Pickens",
+      "team": "DAL",
+      "pos": "WR",
+      "opp": "WAS",
+      "is_home": true,
+      "matchup": "DAL vs WAS",
+      "context": {
+        "spread": 1.5,
+        "total": 53.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 8.28,
+        "phi": 2.898
+      },
+      "beta": {
+        "alpha": 33.2008,
+        "beta": 16.7992
+      },
+      "lognorm": {
+        "log_mu": 2.7105,
+        "log_sigma": 0.45
+      },
+      "adot": 12.1042,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 1.07,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "68cf14c7373b273c63152c81f3c7de48"
+    },
+    {
+      "player_id": "MIN-J-NAILOR",
+      "gsis_id": "00-0037291",
+      "name": "J.Nailor",
+      "team": "MIN",
+      "pos": "WR",
+      "opp": "PHI",
+      "is_home": true,
+      "matchup": "MIN vs PHI",
+      "context": {
+        "spread": -1.5,
+        "total": 43.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.4,
+        "phi": 1.54
+      },
+      "beta": {
+        "alpha": 25,
+        "beta": 25
+      },
+      "lognorm": {
+        "log_mu": 2.3395,
+        "log_sigma": 0.45
+      },
+      "adot": 10.0476,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "1ec1ca465169997c8129faaf07fe46d5"
+    },
+    {
+      "player_id": "NO-R-SHAHEED",
+      "gsis_id": "00-0037545",
+      "name": "R.Shaheed",
+      "team": "NO",
+      "pos": "WR",
+      "opp": "CHI",
+      "is_home": false,
+      "matchup": "NO @ CHI",
+      "context": {
+        "spread": -3.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.79,
+        "phi": 2.0265
+      },
+      "beta": {
+        "alpha": 36.4352,
+        "beta": 13.5648
+      },
+      "lognorm": {
+        "log_mu": 2.4523,
+        "log_sigma": 0.45
+      },
+      "adot": 10.8889,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9786,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "93a728e2d7617682994470e6fc594e2f"
+    },
+    {
+      "player_id": "IND-A-PIERCE",
+      "gsis_id": "00-0037664",
+      "name": "A.Pierce",
+      "team": "IND",
+      "pos": "WR",
+      "opp": "LAC",
+      "is_home": false,
+      "matchup": "IND @ LAC",
+      "context": {
+        "spread": -2.5,
+        "total": 48.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.25,
+        "phi": 1.4875
+      },
+      "beta": {
+        "alpha": 32.3529,
+        "beta": 17.6471
+      },
+      "lognorm": {
+        "log_mu": 2.8899,
+        "log_sigma": 0.45
+      },
+      "adot": 19.2353,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0291,
+          "catch_pct": 0.93,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "2871e8409e9ec7be7dd904a13279e284"
+    },
+    {
+      "player_id": "NYJ-G-WILSON",
+      "gsis_id": "00-0037740",
+      "name": "G.Wilson",
+      "team": "NYJ",
+      "pos": "WR",
+      "opp": "CAR",
+      "is_home": true,
+      "matchup": "NYJ vs CAR",
+      "context": {
+        "spread": -1.5,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 9.465,
+        "phi": 3.3127
+      },
+      "beta": {
+        "alpha": 31.3242,
+        "beta": 18.6758
+      },
+      "lognorm": {
+        "log_mu": 2.2569,
+        "log_sigma": 0.45
+      },
+      "adot": 8.6607,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "d35200d75e797ed802af80691bd34d95"
+    },
+    {
+      "player_id": "ARI-T-MCBRIDE",
+      "gsis_id": "00-0037744",
+      "name": "T.McBride",
+      "team": "ARI",
+      "pos": "TE",
+      "opp": "GB",
+      "is_home": true,
+      "matchup": "ARI vs GB",
+      "context": {
+        "spread": -7,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 8.8217,
+        "phi": 3.0876
+      },
+      "beta": {
+        "alpha": 35.0182,
+        "beta": 14.9818
+      },
+      "lognorm": {
+        "log_mu": 2.1314,
+        "log_sigma": 0.45
+      },
+      "adot": 6.3585,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.9794,
+          "catch_pct": 0.9728,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "fe694ca23dd7994330431386af8ca05a"
+    },
+    {
+      "player_id": "TEN-C-OKONKWO",
+      "gsis_id": "00-0037809",
+      "name": "C.Okonkwo",
+      "team": "TEN",
+      "pos": "TE",
+      "opp": "NE",
+      "is_home": true,
+      "matchup": "TEN vs NE",
+      "context": {
+        "spread": -7,
+        "total": 42.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.07,
+        "phi": 1.7745
+      },
+      "beta": {
+        "alpha": 38.3782,
+        "beta": 11.6218
+      },
+      "lognorm": {
+        "log_mu": 2.165,
+        "log_sigma": 0.45
+      },
+      "adot": 3.7,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.9792,
+          "catch_pct": 1.07,
+          "yac_pct": 1.07,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "1af556b9ce585bb51b9d5ea059842c80"
+    },
+    {
+      "player_id": "GB-R-DOUBS",
+      "gsis_id": "00-0037816",
+      "name": "R.Doubs",
+      "team": "GB",
+      "pos": "WR",
+      "opp": "ARI",
+      "is_home": false,
+      "matchup": "GB @ ARI",
+      "context": {
+        "spread": 7,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.6,
+        "phi": 1.96
+      },
+      "beta": {
+        "alpha": 32.1429,
+        "beta": 17.8571
+      },
+      "lognorm": {
+        "log_mu": 2.4637,
+        "log_sigma": 0.45
+      },
+      "adot": 12.8571,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.022,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "072424dbe9dd25eefaebbff08ad7982d"
+    },
+    {
+      "player_id": "PIT-C-AUSTIN",
+      "gsis_id": "00-0037837",
+      "name": "C.Austin",
+      "team": "PIT",
+      "pos": "WR",
+      "opp": "CIN",
+      "is_home": false,
+      "matchup": "PIT @ CIN",
+      "context": {
+        "spread": 5.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.25,
+        "phi": 1.4875
+      },
+      "beta": {
+        "alpha": 29.4118,
+        "beta": 20.5882
+      },
+      "lognorm": {
+        "log_mu": 2.5306,
+        "log_sigma": 0.45
+      },
+      "adot": 14.5882,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0017,
+          "catch_pct": 1.0194,
+          "yac_pct": 0.9486,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "0a1226b85d00b40bb1e4bf469e436f84"
+    },
+    {
+      "player_id": "DAL-J-FERGUSON",
+      "gsis_id": "00-0038041",
+      "name": "J.Ferguson",
+      "team": "DAL",
+      "pos": "TE",
+      "opp": "WAS",
+      "is_home": true,
+      "matchup": "DAL vs WAS",
+      "context": {
+        "spread": 1.5,
+        "total": 53.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 8.675,
+        "phi": 3.0362
+      },
+      "beta": {
+        "alpha": 43.2059,
+        "beta": 6.7941
+      },
+      "lognorm": {
+        "log_mu": 1.8499,
+        "log_sigma": 0.45
+      },
+      "adot": 4.3333,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.969,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "c28263893a0764dbeb56db8da1e70db2"
+    },
+    {
+      "player_id": "KC-T-THORNTON",
+      "gsis_id": "00-0038104",
+      "name": "T.Thornton",
+      "team": "KC",
+      "pos": "WR",
+      "opp": "LV",
+      "is_home": true,
+      "matchup": "KC vs LV",
+      "context": {
+        "spread": 11.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5,
+        "phi": 1.75
+      },
+      "beta": {
+        "alpha": 26,
+        "beta": 24
+      },
+      "lognorm": {
+        "log_mu": 2.9396,
+        "log_sigma": 0.45
+      },
+      "adot": 23.92,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0596,
+          "catch_pct": 1.0424,
+          "yac_pct": 1.07,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "ed3e02fa2b883218d3d4746f1c824cb0"
+    },
+    {
+      "player_id": "NYG-W-ROBINSON",
+      "gsis_id": "00-0038117",
+      "name": "W.Robinson",
+      "team": "NYG",
+      "pos": "WR",
+      "opp": "DEN",
+      "is_home": false,
+      "matchup": "NYG @ DEN",
+      "context": {
+        "spread": -7,
+        "total": 40.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.7517,
+        "phi": 2.3631
+      },
+      "beta": {
+        "alpha": 35.1848,
+        "beta": 14.8152
+      },
+      "lognorm": {
+        "log_mu": 2.4142,
+        "log_sigma": 0.45
+      },
+      "adot": 8.8537,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "45bcb4f6866f4291eb029b872412c0a0"
+    },
+    {
+      "player_id": "NYJ-B-HALL",
+      "gsis_id": "00-0038120",
+      "name": "B.Hall",
+      "team": "NYJ",
+      "pos": "RB",
+      "opp": "CAR",
+      "is_home": true,
+      "matchup": "NYJ vs CAR",
+      "context": {
+        "spread": -1.5,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.8,
+        "phi": 1.68
+      },
+      "beta": {
+        "alpha": 35.4167,
+        "beta": 14.5833
+      },
+      "lognorm": {
+        "log_mu": 2.0762,
+        "log_sigma": 0.45
+      },
+      "adot": 1.5417,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9802,
+          "yac_pct": 0.9927,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "66d88b7721852cab5a90344c29a3db44"
+    },
+    {
+      "player_id": "TB-C-OTTON",
+      "gsis_id": "00-0038129",
+      "name": "C.Otton",
+      "team": "TB",
+      "pos": "TE",
+      "opp": "DET",
+      "is_home": false,
+      "matchup": "TB @ DET",
+      "context": {
+        "spread": -6,
+        "total": 52.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.4,
+        "phi": 1.54
+      },
+      "beta": {
+        "alpha": 34.0909,
+        "beta": 15.9091
+      },
+      "lognorm": {
+        "log_mu": 2.3027,
+        "log_sigma": 0.45
+      },
+      "adot": 6.2273,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "fc0daa14783105a5526c854b8a032d6c"
+    },
+    {
+      "player_id": "ATL-B-ROBINSON",
+      "gsis_id": "00-0038542",
+      "name": "B.Robinson",
+      "team": "ATL",
+      "pos": "RB",
+      "opp": "SF",
+      "is_home": false,
+      "matchup": "ATL @ SF",
+      "context": {
+        "spread": -1.5,
+        "total": 47.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.2,
+        "phi": 2.17
+      },
+      "beta": {
+        "alpha": 38.7097,
+        "beta": 11.2903
+      },
+      "lognorm": {
+        "log_mu": 2.5437,
+        "log_sigma": 0.45
+      },
+      "adot": 1.5806,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.0566,
+          "yac_pct": 0.93,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "cb22acef28b11943e13cd3a73af4181c"
+    },
+    {
+      "player_id": "SEA-J-SMITH-NJIGBA",
+      "gsis_id": "00-0038543",
+      "name": "J.Smith-Njigba",
+      "team": "SEA",
+      "pos": "WR",
+      "opp": "HOU",
+      "is_home": true,
+      "matchup": "SEA vs HOU",
+      "context": {
+        "spread": 3,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 9.0767,
+        "phi": 3.1768
+      },
+      "beta": {
+        "alpha": 37.8052,
+        "beta": 12.1948
+      },
+      "lognorm": {
+        "log_mu": 2.7224,
+        "log_sigma": 0.45
+      },
+      "adot": 13,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.93,
+          "yac_pct": 0.9649,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "557e65ad5f4fb238a67a2799efa1a30b"
+    },
+    {
+      "player_id": "LAC-Q-JOHNSTON",
+      "gsis_id": "00-0038544",
+      "name": "Q.Johnston",
+      "team": "LAC",
+      "pos": "WR",
+      "opp": "IND",
+      "is_home": true,
+      "matchup": "LAC vs IND",
+      "context": {
+        "spread": 2.5,
+        "total": 48.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 8,
+        "phi": 2.8
+      },
+      "beta": {
+        "alpha": 32.5,
+        "beta": 17.5
+      },
+      "lognorm": {
+        "log_mu": 2.5729,
+        "log_sigma": 0.45
+      },
+      "adot": 12.075,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9442,
+          "yac_pct": 1.07,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "fffd4d68429f9e1b7b65cb53368e9d28"
+    },
+    {
+      "player_id": "LV-T-TUCKER",
+      "gsis_id": "00-0038563",
+      "name": "T.Tucker",
+      "team": "LV",
+      "pos": "WR",
+      "opp": "KC",
+      "is_home": false,
+      "matchup": "LV @ KC",
+      "context": {
+        "spread": -11.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.675,
+        "phi": 1.9862
+      },
+      "beta": {
+        "alpha": 36.4697,
+        "beta": 13.5303
+      },
+      "lognorm": {
+        "log_mu": 2.5692,
+        "log_sigma": 0.45
+      },
+      "adot": 10.2424,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "2ee191bfc4ead3e961927cad2cbd3c1d"
+    },
+    {
+      "player_id": "CIN-C-BROWN",
+      "gsis_id": "00-0038597",
+      "name": "C.Brown",
+      "team": "CIN",
+      "pos": "RB",
+      "opp": "PIT",
+      "is_home": true,
+      "matchup": "CIN vs PIT",
+      "context": {
+        "spread": -5.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.2483,
+        "phi": 1.4869
+      },
+      "beta": {
+        "alpha": 40.3182,
+        "beta": 9.6818
+      },
+      "lognorm": {
+        "log_mu": 1.5489,
+        "log_sigma": 0.45
+      },
+      "adot": 0.75,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.9934,
+          "catch_pct": 0.93,
+          "yac_pct": 0.9679,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "ba0c1fa2842c3e6b9a984c54a02998fd"
+    },
+    {
+      "player_id": "JAX-P-WASHINGTON",
+      "gsis_id": "00-0038606",
+      "name": "P.Washington",
+      "team": "JAX",
+      "pos": "WR",
+      "opp": "LA",
+      "is_home": true,
+      "matchup": "JAX vs LA",
+      "context": {
+        "spread": -3,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.2,
+        "phi": 1.82
+      },
+      "beta": {
+        "alpha": 25,
+        "beta": 25
+      },
+      "lognorm": {
+        "log_mu": 2.3772,
+        "log_sigma": 0.45
+      },
+      "adot": 11.16,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "bb3df612b5a37b83ab40c224b1ed3e53"
+    },
+    {
+      "player_id": "CIN-A-IOSIVAS",
+      "gsis_id": "00-0038619",
+      "name": "A.Iosivas",
+      "team": "CIN",
+      "pos": "WR",
+      "opp": "PIT",
+      "is_home": true,
+      "matchup": "CIN vs PIT",
+      "context": {
+        "spread": -5.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.25,
+        "phi": 1.4875
+      },
+      "beta": {
+        "alpha": 23.5294,
+        "beta": 26.4706
+      },
+      "lognorm": {
+        "log_mu": 2.6151,
+        "log_sigma": 0.45
+      },
+      "adot": 8.8235,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "6ed74989c1442fcae318eff9561777c0"
+    },
+    {
+      "player_id": "NE-D-DOUGLAS",
+      "gsis_id": "00-0038621",
+      "name": "D.Douglas",
+      "team": "NE",
+      "pos": "WR",
+      "opp": "TEN",
+      "is_home": false,
+      "matchup": "NE @ TEN",
+      "context": {
+        "spread": 7,
+        "total": 42.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4,
+        "phi": 1.4
+      },
+      "beta": {
+        "alpha": 25,
+        "beta": 25
+      },
+      "lognorm": {
+        "log_mu": 2.2113,
+        "log_sigma": 0.45
+      },
+      "adot": 5.95,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.069,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "0d587cf8bdf01051c36b232d671c1a18"
+    },
+    {
+      "player_id": "JAX-B-STRANGE",
+      "gsis_id": "00-0038935",
+      "name": "B.Strange",
+      "team": "JAX",
+      "pos": "TE",
+      "opp": "LA",
+      "is_home": true,
+      "matchup": "JAX vs LA",
+      "context": {
+        "spread": -3,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.8,
+        "phi": 1.68
+      },
+      "beta": {
+        "alpha": 41.6667,
+        "beta": 8.3333
+      },
+      "lognorm": {
+        "log_mu": 2.2211,
+        "log_sigma": 0.45
+      },
+      "adot": 5.5417,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "f17b50f5b93103a6910fbde1cae65b2e"
+    },
+    {
+      "player_id": "DEN-M-MIMS",
+      "gsis_id": "00-0038976",
+      "name": "M.Mims",
+      "team": "DEN",
+      "pos": "WR",
+      "opp": "NYG",
+      "is_home": true,
+      "matchup": "DEN vs NYG",
+      "context": {
+        "spread": 7,
+        "total": 40.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4,
+        "phi": 1.4
+      },
+      "beta": {
+        "alpha": 33.0417,
+        "beta": 16.9583
+      },
+      "lognorm": {
+        "log_mu": 2.1752,
+        "log_sigma": 0.45
+      },
+      "adot": 12.75,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0259,
+          "catch_pct": 1.0661,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "1961fe784a34bd5524d8f39aeb6df730"
+    },
+    {
+      "player_id": "CLE-C-TILLMAN",
+      "gsis_id": "00-0038979",
+      "name": "C.Tillman",
+      "team": "CLE",
+      "pos": "WR",
+      "opp": "MIA",
+      "is_home": true,
+      "matchup": "CLE vs MIA",
+      "context": {
+        "spread": 2.5,
+        "total": 35.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5,
+        "phi": 1.75
+      },
+      "beta": {
+        "alpha": 27.5,
+        "beta": 22.5
+      },
+      "lognorm": {
+        "log_mu": 2.1643,
+        "log_sigma": 0.45
+      },
+      "adot": 9.3,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "d83f0ae52111774c907a5c9c6c564ed6"
+    },
+    {
+      "player_id": "GB-T-KRAFT",
+      "gsis_id": "00-0038996",
+      "name": "T.Kraft",
+      "team": "GB",
+      "pos": "TE",
+      "opp": "ARI",
+      "is_home": false,
+      "matchup": "GB @ ARI",
+      "context": {
+        "spread": 7,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.4,
+        "phi": 1.54
+      },
+      "beta": {
+        "alpha": 40.9091,
+        "beta": 9.0909
+      },
+      "lognorm": {
+        "log_mu": 2.5994,
+        "log_sigma": 0.45
+      },
+      "adot": 6,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.93,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "1f15da16eb556acf77ef4498833dff76"
+    },
+    {
+      "player_id": "IND-J-DOWNS",
+      "gsis_id": "00-0038997",
+      "name": "J.Downs",
+      "team": "IND",
+      "pos": "WR",
+      "opp": "LAC",
+      "is_home": false,
+      "matchup": "IND @ LAC",
+      "context": {
+        "spread": -2.5,
+        "total": 48.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.8533,
+        "phi": 2.0487
+      },
+      "beta": {
+        "alpha": 38.4013,
+        "beta": 11.5987
+      },
+      "lognorm": {
+        "log_mu": 2.0287,
+        "log_sigma": 0.45
+      },
+      "adot": 6.7647,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.9413,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "c1c9d45e3c26198fd362b3ae7c61ff72"
+    },
+    {
+      "player_id": "MIA-D-ACHANE",
+      "gsis_id": "00-0039040",
+      "name": "D.Achane",
+      "team": "MIA",
+      "pos": "RB",
+      "opp": "CLE",
+      "is_home": false,
+      "matchup": "MIA @ CLE",
+      "context": {
+        "spread": -2.5,
+        "total": 35.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.4967,
+        "phi": 2.2738
+      },
+      "beta": {
+        "alpha": 38.185,
+        "beta": 11.815
+      },
+      "lognorm": {
+        "log_mu": 1.7667,
+        "log_sigma": 0.45
+      },
+      "adot": -0.1053,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.9996,
+          "yac_pct": 0.9745,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "ca29ac7ff93b8d8650f445752532f297"
+    },
+    {
+      "player_id": "DET-S-LAPORTA",
+      "gsis_id": "00-0039065",
+      "name": "S.LaPorta",
+      "team": "DET",
+      "pos": "TE",
+      "opp": "TB",
+      "is_home": true,
+      "matchup": "DET vs TB",
+      "context": {
+        "spread": 6,
+        "total": 52.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.255,
+        "phi": 1.8392
+      },
+      "beta": {
+        "alpha": 40.1894,
+        "beta": 9.8106
+      },
+      "lognorm": {
+        "log_mu": 2.4154,
+        "log_sigma": 0.45
+      },
+      "adot": 5.8485,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0442,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "b6a599222642abf61da4d7ef299777a0"
+    },
+    {
+      "player_id": "LA-P-NACUA",
+      "gsis_id": "00-0039075",
+      "name": "P.Nacua",
+      "team": "LA",
+      "pos": "WR",
+      "opp": "JAX",
+      "is_home": false,
+      "matchup": "LA @ JAX",
+      "context": {
+        "spread": 3,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 10.8217,
+        "phi": 3.7876
+      },
+      "beta": {
+        "alpha": 41.2593,
+        "beta": 8.7407
+      },
+      "lognorm": {
+        "log_mu": 2.3218,
+        "log_sigma": 0.45
+      },
+      "adot": 9.6615,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.0177,
+          "yac_pct": 0.9978,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "fa40d8faf8761154794c841b06ea62c0"
+    },
+    {
+      "player_id": "NYG-M-NABERS",
+      "gsis_id": "00-0039337",
+      "name": "M.Nabers",
+      "team": "NYG",
+      "pos": "WR",
+      "opp": "DEN",
+      "is_home": false,
+      "matchup": "NYG @ DEN",
+      "context": {
+        "spread": -7,
+        "total": 40.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 8.75,
+        "phi": 3.0625
+      },
+      "beta": {
+        "alpha": 25.7143,
+        "beta": 24.2857
+      },
+      "lognorm": {
+        "log_mu": 2.6105,
+        "log_sigma": 0.45
+      },
+      "adot": 15.8571,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "9b1426c7ffad6bebf6604d251f8f52e8"
+    },
+    {
+      "player_id": "LV-B-BOWERS",
+      "gsis_id": "00-0039338",
+      "name": "B.Bowers",
+      "team": "LV",
+      "pos": "TE",
+      "opp": "KC",
+      "is_home": false,
+      "matchup": "LV @ KC",
+      "context": {
+        "spread": -11.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 7,
+        "phi": 2.45
+      },
+      "beta": {
+        "alpha": 33.9286,
+        "beta": 16.0714
+      },
+      "lognorm": {
+        "log_mu": 2.3762,
+        "log_sigma": 0.45
+      },
+      "adot": 6.4444,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "b1d98475fb9792decb3414616a8c0006"
+    },
+    {
+      "player_id": "CAR-X-LEGETTE",
+      "gsis_id": "00-0039342",
+      "name": "X.Legette",
+      "team": "CAR",
+      "pos": "WR",
+      "opp": "NYJ",
+      "is_home": false,
+      "matchup": "CAR @ NYJ",
+      "context": {
+        "spread": 1.5,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5,
+        "phi": 1.75
+      },
+      "beta": {
+        "alpha": 20,
+        "beta": 30
+      },
+      "lognorm": {
+        "log_mu": 1.7313,
+        "log_sigma": 0.45
+      },
+      "adot": 7.2,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.057,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "786c81b6cb6ead5559023ebd74b04953"
+    },
+    {
+      "player_id": "CAR-J-SANDERS",
+      "gsis_id": "00-0039356",
+      "name": "J.Sanders",
+      "team": "CAR",
+      "pos": "TE",
+      "opp": "NYJ",
+      "is_home": false,
+      "matchup": "CAR @ NYJ",
+      "context": {
+        "spread": 1.5,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.6667,
+        "phi": 1.6333
+      },
+      "beta": {
+        "alpha": 39.2857,
+        "beta": 10.7143
+      },
+      "lognorm": {
+        "log_mu": 2.0226,
+        "log_sigma": 0.45
+      },
+      "adot": 7,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.057,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "18019a27cb2bab122117beda9cd13233"
+    },
+    {
+      "player_id": "TB-B-IRVING",
+      "gsis_id": "00-0039361",
+      "name": "B.Irving",
+      "team": "TB",
+      "pos": "RB",
+      "opp": "DET",
+      "is_home": false,
+      "matchup": "TB @ DET",
+      "context": {
+        "spread": -6,
+        "total": 52.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.75,
+        "phi": 1.6625
+      },
+      "beta": {
+        "alpha": 49,
+        "beta": 1
+      },
+      "lognorm": {
+        "log_mu": 2.217,
+        "log_sigma": 0.45
+      },
+      "adot": -2.1579,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9831,
+          "yac_pct": 0.9519,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "833afcaac1193b7fcf7e0e60de9586c2"
+    },
+    {
+      "player_id": "NYG-T-TRACY",
+      "gsis_id": "00-0039384",
+      "name": "T.Tracy",
+      "team": "NYG",
+      "pos": "RB",
+      "opp": "DEN",
+      "is_home": false,
+      "matchup": "NYG @ DEN",
+      "context": {
+        "spread": -7,
+        "total": 40.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.3333,
+        "phi": 1.5167
+      },
+      "beta": {
+        "alpha": 30.7692,
+        "beta": 19.2308
+      },
+      "lognorm": {
+        "log_mu": 1.8083,
+        "log_sigma": 0.45
+      },
+      "adot": -0.6154,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9309,
+          "yac_pct": 1.0174,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "e7071ab20df2927c2b3508a84f41e8bf"
+    },
+    {
+      "player_id": "DAL-R-FLOURNOY",
+      "gsis_id": "00-0039410",
+      "name": "R.Flournoy",
+      "team": "DAL",
+      "pos": "WR",
+      "opp": "WAS",
+      "is_home": true,
+      "matchup": "DAL vs WAS",
+      "context": {
+        "spread": 1.5,
+        "total": 53.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5,
+        "phi": 1.75
+      },
+      "beta": {
+        "alpha": 32.5,
+        "beta": 17.5
+      },
+      "lognorm": {
+        "log_mu": 2.5212,
+        "log_sigma": 0.45
+      },
+      "adot": 6.7,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "40f5b67d8f68653c5331749d4ed962e7"
+    },
+    {
+      "player_id": "NYG-T-JOHNSON",
+      "gsis_id": "00-0039847",
+      "name": "T.Johnson",
+      "team": "NYG",
+      "pos": "TE",
+      "opp": "DEN",
+      "is_home": false,
+      "matchup": "NYG @ DEN",
+      "context": {
+        "spread": -7,
+        "total": 40.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.4267,
+        "phi": 1.5493
+      },
+      "beta": {
+        "alpha": 33.4239,
+        "beta": 16.5761
+      },
+      "lognorm": {
+        "log_mu": 1.9089,
+        "log_sigma": 0.45
+      },
+      "adot": 6.3077,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "68cc413de6b202cd1023cd58614a1553"
+    },
+    {
+      "player_id": "ARI-M-HARRISON",
+      "gsis_id": "00-0039849",
+      "name": "M.Harrison",
+      "team": "ARI",
+      "pos": "WR",
+      "opp": "GB",
+      "is_home": true,
+      "matchup": "ARI vs GB",
+      "context": {
+        "spread": -7,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.6433,
+        "phi": 1.9752
+      },
+      "beta": {
+        "alpha": 31.6544,
+        "beta": 18.3456
+      },
+      "lognorm": {
+        "log_mu": 2.6385,
+        "log_sigma": 0.45
+      },
+      "adot": 12.1176,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9307,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "28161dcb2b51ec7a8a760fbd581006ed"
+    },
+    {
+      "player_id": "DEN-T-FRANKLIN",
+      "gsis_id": "00-0039868",
+      "name": "T.Franklin",
+      "team": "DEN",
+      "pos": "WR",
+      "opp": "NYG",
+      "is_home": true,
+      "matchup": "DEN vs NYG",
+      "context": {
+        "spread": 7,
+        "total": 40.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.1783,
+        "phi": 2.1624
+      },
+      "beta": {
+        "alpha": 32.3714,
+        "beta": 17.6286
+      },
+      "lognorm": {
+        "log_mu": 2.2434,
+        "log_sigma": 0.45
+      },
+      "adot": 8.8056,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.9786,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "b304e5d2fe71b42fc9f94bcce1b12920"
+    },
+    {
+      "player_id": "MIA-M-WASHINGTON",
+      "gsis_id": "00-0039880",
+      "name": "M.Washington",
+      "team": "MIA",
+      "pos": "WR",
+      "opp": "CLE",
+      "is_home": false,
+      "matchup": "MIA @ CLE",
+      "context": {
+        "spread": -2.5,
+        "total": 35.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.1083,
+        "phi": 1.4379
+      },
+      "beta": {
+        "alpha": 33.05,
+        "beta": 16.95
+      },
+      "lognorm": {
+        "log_mu": 1.4,
+        "log_sigma": 0.45
+      },
+      "adot": 4.48,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.9996,
+          "yac_pct": 0.9745,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "f28267135c3e70b0e518c710d07951a6"
+    },
+    {
+      "player_id": "JAX-B-THOMAS",
+      "gsis_id": "00-0039893",
+      "name": "B.Thomas",
+      "team": "JAX",
+      "pos": "WR",
+      "opp": "LA",
+      "is_home": true,
+      "matchup": "JAX vs LA",
+      "context": {
+        "spread": -3,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 8.07,
+        "phi": 2.8245
+      },
+      "beta": {
+        "alpha": 26.0671,
+        "beta": 23.9329
+      },
+      "lognorm": {
+        "log_mu": 2.535,
+        "log_sigma": 0.45
+      },
+      "adot": 12.2917,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.931,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "48e378b8609e3377ec821eceffb57d73"
+    },
+    {
+      "player_id": "KC-X-WORTHY",
+      "gsis_id": "00-0039894",
+      "name": "X.Worthy",
+      "team": "KC",
+      "pos": "WR",
+      "opp": "LV",
+      "is_home": true,
+      "matchup": "KC vs LV",
+      "context": {
+        "spread": 11.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.5,
+        "phi": 1.925
+      },
+      "beta": {
+        "alpha": 29.5455,
+        "beta": 20.4545
+      },
+      "lognorm": {
+        "log_mu": 2.3105,
+        "log_sigma": 0.45
+      },
+      "adot": 13.9545,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.0596,
+          "catch_pct": 1.0424,
+          "yac_pct": 1.07,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "9032b6bfe93c36686d14c2a3deb2b292"
+    },
+    {
+      "player_id": "LAC-L-MCCONKEY",
+      "gsis_id": "00-0039915",
+      "name": "L.McConkey",
+      "team": "LAC",
+      "pos": "WR",
+      "opp": "IND",
+      "is_home": true,
+      "matchup": "LAC vs IND",
+      "context": {
+        "spread": 2.5,
+        "total": 48.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 7.0383,
+        "phi": 2.4634
+      },
+      "beta": {
+        "alpha": 32.4863,
+        "beta": 17.5137
+      },
+      "lognorm": {
+        "log_mu": 2.3028,
+        "log_sigma": 0.45
+      },
+      "adot": 8.1628,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.0102,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "28b3eb3af42c82a266be40efbc8dbfeb"
+    },
+    {
+      "player_id": "SF-R-PEARSALL",
+      "gsis_id": "00-0039916",
+      "name": "R.Pearsall",
+      "team": "SF",
+      "pos": "WR",
+      "opp": "ATL",
+      "is_home": true,
+      "matchup": "SF vs ATL",
+      "context": {
+        "spread": 1.5,
+        "total": 47.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 7.25,
+        "phi": 2.5375
+      },
+      "beta": {
+        "alpha": 34.4828,
+        "beta": 15.5172
+      },
+      "lognorm": {
+        "log_mu": 2.7523,
+        "log_sigma": 0.45
+      },
+      "adot": 16,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.93,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "79eabe8e21c724df9914537ae3720f38"
+    },
+    {
+      "player_id": "CHI-R-ODUNZE",
+      "gsis_id": "00-0039919",
+      "name": "R.Odunze",
+      "team": "CHI",
+      "pos": "WR",
+      "opp": "NO",
+      "is_home": true,
+      "matchup": "CHI vs NO",
+      "context": {
+        "spread": 3.5,
+        "total": 45.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 8.2,
+        "phi": 2.87
+      },
+      "beta": {
+        "alpha": 26.8293,
+        "beta": 23.1707
+      },
+      "lognorm": {
+        "log_mu": 2.6337,
+        "log_sigma": 0.45
+      },
+      "adot": 13.2,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "bc038ddcda199d2d5714bda90a514c9c"
+    },
+    {
+      "player_id": "ARI-T-BENSON",
+      "gsis_id": "00-0039921",
+      "name": "T.Benson",
+      "team": "ARI",
+      "pos": "RB",
+      "opp": "GB",
+      "is_home": true,
+      "matchup": "ARI vs GB",
+      "context": {
+        "spread": -7,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4,
+        "phi": 1.4
+      },
+      "beta": {
+        "alpha": 40.625,
+        "beta": 9.375
+      },
+      "lognorm": {
+        "log_mu": 1.4927,
+        "log_sigma": 0.45
+      },
+      "adot": -1.375,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.0385,
+          "yac_pct": 0.93,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "1433ed5e2b0d925dbea55dde856309b3"
+    },
+    {
+      "player_id": "CAR-T-MCMILLAN",
+      "gsis_id": "00-0040124",
+      "name": "T.McMillan",
+      "team": "CAR",
+      "pos": "WR",
+      "opp": "NYJ",
+      "is_home": false,
+      "matchup": "CAR @ NYJ",
+      "context": {
+        "spread": 1.5,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 7.93,
+        "phi": 2.7755
+      },
+      "beta": {
+        "alpha": 28.153,
+        "beta": 21.847
+      },
+      "lognorm": {
+        "log_mu": 2.5458,
+        "log_sigma": 0.45
+      },
+      "adot": 11.2917,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.057,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "fcd9575f6fc890e4fb3f8edfdae3d7a3"
+    },
+    {
+      "player_id": "IND-T-WARREN",
+      "gsis_id": "00-0040128",
+      "name": "T.Warren",
+      "team": "IND",
+      "pos": "TE",
+      "opp": "LAC",
+      "is_home": false,
+      "matchup": "IND @ LAC",
+      "context": {
+        "spread": -2.5,
+        "total": 48.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.6817,
+        "phi": 2.3386
+      },
+      "beta": {
+        "alpha": 35.0191,
+        "beta": 14.9809
+      },
+      "lognorm": {
+        "log_mu": 2.4614,
+        "log_sigma": 0.45
+      },
+      "adot": 6.4,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.9413,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "dbcfa8b12bea71b002a9f90616f9fe8d"
+    },
+    {
+      "player_id": "TB-E-EGBUKA",
+      "gsis_id": "00-0040129",
+      "name": "E.Egbuka",
+      "team": "TB",
+      "pos": "WR",
+      "opp": "DET",
+      "is_home": false,
+      "matchup": "TB @ DET",
+      "context": {
+        "spread": -6,
+        "total": 52.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 7.2483,
+        "phi": 2.5369
+      },
+      "beta": {
+        "alpha": 31.2854,
+        "beta": 18.7146
+      },
+      "lognorm": {
+        "log_mu": 2.7584,
+        "log_sigma": 0.45
+      },
+      "adot": 13.5476,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "eb8aecfdb0aa24322c5c7e81bfe7e814"
+    },
+    {
+      "player_id": "TEN-E-AYOMANOR",
+      "gsis_id": "00-0040170",
+      "name": "E.Ayomanor",
+      "team": "TEN",
+      "pos": "WR",
+      "opp": "NE",
+      "is_home": true,
+      "matchup": "TEN vs NE",
+      "context": {
+        "spread": -7,
+        "total": 42.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.5733,
+        "phi": 1.9507
+      },
+      "beta": {
+        "alpha": 25.9722,
+        "beta": 24.0278
+      },
+      "lognorm": {
+        "log_mu": 2.3638,
+        "log_sigma": 0.45
+      },
+      "adot": 13.6765,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "13+"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "bb8089106fa508e6ee806421a206115b"
+    },
+    {
+      "player_id": "LAC-O-GADSDEN",
+      "gsis_id": "00-0040189",
+      "name": "O.Gadsden",
+      "team": "LAC",
+      "pos": "TE",
+      "opp": "IND",
+      "is_home": true,
+      "matchup": "LAC vs IND",
+      "context": {
+        "spread": 2.5,
+        "total": 48.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.75,
+        "phi": 1.6625
+      },
+      "beta": {
+        "alpha": 39.4737,
+        "beta": 10.5263
+      },
+      "lognorm": {
+        "log_mu": 2.1605,
+        "log_sigma": 0.45
+      },
+      "adot": 6.6316,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 1.0102,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "6afa3429a2b0ed529d886317dd810bac"
+    },
+    {
+      "player_id": "CLE-H-FANNIN",
+      "gsis_id": "00-0040663",
+      "name": "H.Fannin",
+      "team": "CLE",
+      "pos": "TE",
+      "opp": "MIA",
+      "is_home": true,
+      "matchup": "CLE vs MIA",
+      "context": {
+        "spread": 2.5,
+        "total": 35.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 6.1467,
+        "phi": 2.1513
+      },
+      "beta": {
+        "alpha": 36.6198,
+        "beta": 13.3802
+      },
+      "lognorm": {
+        "log_mu": 2.1048,
+        "log_sigma": 0.45
+      },
+      "adot": 6.3684,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "c194b8588a097b8fdf6ae712298bdf19"
+    },
+    {
+      "player_id": "LAC-O-HAMPTON",
+      "gsis_id": "00-0040666",
+      "name": "O.Hampton",
+      "team": "LAC",
+      "pos": "RB",
+      "opp": "IND",
+      "is_home": true,
+      "matchup": "LAC vs IND",
+      "context": {
+        "spread": 2.5,
+        "total": 48.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.4,
+        "phi": 1.54
+      },
+      "beta": {
+        "alpha": 45.4545,
+        "beta": 4.5455
+      },
+      "lognorm": {
+        "log_mu": 1.8157,
+        "log_sigma": 0.45
+      },
+      "adot": -1.3182,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 0.9849,
+          "yac_pct": 0.9354,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "b3a7e001c3fd01d00968518b4a5ff0fa"
+    },
+    {
+      "player_id": "NYG-C-SKATTEBO",
+      "gsis_id": "00-0040715",
+      "name": "C.Skattebo",
+      "team": "NYG",
+      "pos": "RB",
+      "opp": "DEN",
+      "is_home": false,
+      "matchup": "NYG @ DEN",
+      "context": {
+        "spread": -7,
+        "total": 40.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.14,
+        "phi": 1.449
+      },
+      "beta": {
+        "alpha": 41.4015,
+        "beta": 8.5985
+      },
+      "lognorm": {
+        "log_mu": 1.9552,
+        "log_sigma": 0.45
+      },
+      "adot": -0.3333,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.9309,
+          "yac_pct": 1.0174,
+          "adot_bucket": "0-5"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "bf90b64d3b3f21f88a9690cf10f42f1e"
+    },
+    {
+      "player_id": "JAX-T-HUNTER",
+      "gsis_id": "00-0040718",
+      "name": "T.Hunter",
+      "team": "JAX",
+      "pos": "WR",
+      "opp": "LA",
+      "is_home": true,
+      "matchup": "JAX vs LA",
+      "context": {
+        "spread": -3,
+        "total": 44.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.9683,
+        "phi": 1.7389
+      },
+      "beta": {
+        "alpha": 31.6199,
+        "beta": 18.3801
+      },
+      "lognorm": {
+        "log_mu": 2.2504,
+        "log_sigma": 0.45
+      },
+      "adot": 7.5806,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 0.93,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "0dfbcbe9499159b4db620cedd5b7e344"
+    },
+    {
+      "player_id": "NYJ-M-TAYLOR",
+      "gsis_id": "00-0040736",
+      "name": "M.Taylor",
+      "team": "NYJ",
+      "pos": "TE",
+      "opp": "CAR",
+      "is_home": true,
+      "matchup": "NYJ vs CAR",
+      "context": {
+        "spread": -1.5,
+        "total": 41.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 5.28,
+        "phi": 1.848
+      },
+      "beta": {
+        "alpha": 34.819,
+        "beta": 15.181
+      },
+      "lognorm": {
+        "log_mu": 2.0136,
+        "log_sigma": 0.45
+      },
+      "adot": 5.6897,
+      "mods": {
+        "opp": {
+          "targets_pct": 1.07,
+          "catch_pct": 1.07,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "a573edf6b2f35f3ac7d6525fd392ea0a"
+    },
+    {
+      "player_id": "CLE-I-BOND",
+      "gsis_id": "00-0040782",
+      "name": "I.Bond",
+      "team": "CLE",
+      "pos": "WR",
+      "opp": "MIA",
+      "is_home": true,
+      "matchup": "CLE vs MIA",
+      "context": {
+        "spread": 2.5,
+        "total": 35.5,
+        "wind_mph": 0,
+        "precip_prob": 0,
+        "dome": false
+      },
+      "neg_bin": {
+        "mu": 4.5667,
+        "phi": 1.5983
+      },
+      "beta": {
+        "alpha": 20.75,
+        "beta": 29.25
+      },
+      "lognorm": {
+        "log_mu": 2.3322,
+        "log_sigma": 0.45
+      },
+      "adot": 11,
+      "mods": {
+        "opp": {
+          "targets_pct": 0.93,
+          "catch_pct": 0.93,
+          "yac_pct": 1.07,
+          "adot_bucket": "6-12"
+        },
+        "weather": {
+          "catch_pct": 1,
+          "cap": 1
+        },
+        "injury": {
+          "targets_delta": 0,
+          "uncertainty": 0
+        },
+        "snap_pct": {
+          "projected": 1,
+          "l5_avg": 1
+        }
+      },
+      "caps": {
+        "combined_min": 0.88,
+        "combined_max": 1.12,
+        "raw_multiplier": {},
+        "capped_multiplier": {}
+      },
+      "source_hash": "46dd5f6423fa9dc4f51f165566016e9a"
+    }
+  ]
+}
