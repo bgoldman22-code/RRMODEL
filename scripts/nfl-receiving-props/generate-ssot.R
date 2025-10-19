@@ -42,7 +42,7 @@ pbp <- load_pbp(2023:SEASON) %>%
     pass_attempt == 1
   )
 
-cat(glue("✅ Loaded {nrow(pbp):,} pass plays\n\n"))
+cat(glue("✅ Loaded {format(nrow(pbp), big.mark=',')} pass plays\n\n"))
 
 # ============================================================================
 # 2. EMPIRICAL BAYES PRIORS (season + recent)
@@ -196,6 +196,11 @@ cat("📅 Loading Week 8 schedule...\n")
 schedule <- nflreadr::load_schedules(SEASON) %>%
   filter(week == WEEK) %>%
   select(game_id, home_team, away_team, spread_line, total_line) %>%
+  mutate(
+    # Create both home and away rows before pivoting
+    home_opp = away_team,
+    away_opp = home_team
+  ) %>%
   pivot_longer(
     cols = c(home_team, away_team),
     names_to = "location",
@@ -203,7 +208,7 @@ schedule <- nflreadr::load_schedules(SEASON) %>%
   ) %>%
   mutate(
     is_home = location == "home_team",
-    opp = if_else(is_home, away_team, home_team),
+    opp = if_else(is_home, home_opp, away_opp),
     # CRITICAL: Team perspective spread (if home, keep spread_line; if away, flip it)
     # spread_line is home team spread (negative if home favored)
     spread = if_else(is_home, spread_line, -spread_line),
@@ -223,39 +228,16 @@ cat("📋 Loading canonical roster data (current teams + injuries)...\n")
 # Option 1: Load from canonical injuries/latest.json (includes depth charts + current teams)
 canonical_path <- file.path(getwd(), "data", "nfl", "injuries", "latest.json")
 
-if (file.exists(canonical_path)) {
-  canonical_data <- jsonlite::fromJSON(canonical_path, simplifyVector = FALSE)
-  
-  # Extract current team assignments from canonical source
-  canonical_rosters <- canonical_data$rosters %>%
-    map_dfr(function(team_roster) {
-      team_abbr <- team_roster$team
-      
-      team_roster$players %>%
-        map_dfr(function(p) {
-          tibble(
-            gsis_id = p$gsis_id,
-            canonical_team = team_abbr,
-            canonical_name = p$name,
-            canonical_pos = p$position,
-            depth_order = p$depth %||% 99,
-            injury_status = p$injury_status %||% "healthy"
-          )
-        })
-    })
-  
-  cat(glue("✅ Loaded {nrow(canonical_rosters)} players from canonical source\n"))
-} else {
-  cat("⚠️  Canonical roster file not found, falling back to nflreadr\n")
-  canonical_rosters <- tibble(
-    gsis_id = character(),
-    canonical_team = character(),
-    canonical_name = character(),
-    canonical_pos = character(),
-    depth_order = integer(),
-    injury_status = character()
-  )
-}
+# Skip canonical for now - use nflreadr only
+canonical_rosters <- tibble(
+  gsis_id = character(),
+  canonical_team = character(),
+  canonical_name = character(),
+  canonical_pos = character(),
+  depth_order = integer(),
+  injury_status = character()
+)
+cat("⚠️  Using nflreadr rosters only (canonical disabled)\n")
 
 # Option 2: Load nflreadr rosters as backup (for position/GSIS validation)
 rosters <- nflreadr::load_rosters(SEASON) %>%
