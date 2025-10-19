@@ -23,7 +23,10 @@ import {
   decimalToAmerican
 } from './_lib/elite-pricing-engine.mjs';
 
+import { loadSSOT, playerToParams } from './_lib/ssot-loader.mjs';
+
 const ODDS_API_KEY = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
+const USE_SSOT = process.env.USE_SSOT === 'true'; // Feature flag for SSOT
 
 // ============================================================================
 // HELPERS
@@ -485,9 +488,9 @@ export async function handler(event, context) {
           const edgeOver = pOverCal - pOver;
           if (edgeOver >= MIN_EDGE) {
             opportunities.push({
-              player: player.name,
-              team: player.team,
-              matchup: `${player.team} vs OPP`,  // TODO: Wire in opponent from SSOT
+              player: playerName,
+              team: playerTeam,
+              matchup: playerMatchup,
               prop: 'Receptions',
               line,
               side: 'OVER',
@@ -502,7 +505,8 @@ export async function handler(event, context) {
               has_real_odds: true,
               fair_from_book: realMarket.fairBook,
               fair_over_odds: realMarket.fairOverOdds,
-              fair_under_odds: realMarket.fairUnderOdds
+              fair_under_odds: realMarket.fairUnderOdds,
+              data_source: USE_SSOT ? 'SSOT' : 'PLAYER_DB'
             });
           }
 
@@ -510,9 +514,9 @@ export async function handler(event, context) {
           const edgeUnder = pUnderCal - pUnder;
           if (edgeUnder >= MIN_EDGE) {
             opportunities.push({
-              player: player.name,
-              team: player.team,
-              matchup: `${player.team} vs OPP`,  // TODO: Wire in opponent from SSOT
+              player: playerName,
+              team: playerTeam,
+              matchup: playerMatchup,
               prop: 'Receptions',
               line,
               side: 'UNDER',
@@ -527,7 +531,8 @@ export async function handler(event, context) {
               has_real_odds: true,
               fair_from_book: realMarket.fairBook,
               fair_over_odds: realMarket.fairOverOdds,
-              fair_under_odds: realMarket.fairUnderOdds
+              fair_under_odds: realMarket.fairUnderOdds,
+              data_source: USE_SSOT ? 'SSOT' : 'PLAYER_DB'
             });
           }
         } else if (!realOdds) {
@@ -537,8 +542,9 @@ export async function handler(event, context) {
           // OVER edge vs synthetic market
           if (pOverCal >= 0.55) { // 2.5%+ edge vs -110 (synthetic mode)
             opportunities.push({
-              player: player.name,
-              team: player.team,
+              player: playerName,
+              team: playerTeam,
+              matchup: playerMatchup,
               prop: 'Receptions',
               line,
               side: 'OVER',
@@ -550,15 +556,17 @@ export async function handler(event, context) {
               edge: pOverCal - syntheticMarketProb,
               kelly: 0,
               fair_odds_model: decimalToAmerican(1 / pOverCal),
-              has_real_odds: false
+              has_real_odds: false,
+              data_source: USE_SSOT ? 'SSOT' : 'PLAYER_DB'
             });
           }
           
           // UNDER edge vs synthetic market
           if (pUnderCal >= 0.55) { // 2.5%+ edge vs -110 (synthetic mode)
             opportunities.push({
-              player: player.name,
-              team: player.team,
+              player: playerName,
+              team: playerTeam,
+              matchup: playerMatchup,
               prop: 'Receptions',
               line,
               side: 'UNDER',
@@ -570,7 +578,8 @@ export async function handler(event, context) {
               edge: pUnderCal - syntheticMarketProb,
               kelly: 0,
               fair_odds_model: decimalToAmerican(1 / pUnderCal),
-              has_real_odds: false
+              has_real_odds: false,
+              data_source: USE_SSOT ? 'SSOT' : 'PLAYER_DB'
             });
           }
         }
@@ -597,9 +606,9 @@ export async function handler(event, context) {
           const edgeOver = pOverCal - pOver;
           if (edgeOver >= MIN_EDGE) {
             opportunities.push({
-              player: player.name,
-              team: player.team,
-              matchup: `${player.team} vs OPP`,  // TODO: Wire in opponent from SSOT
+              player: playerName,
+              team: playerTeam,
+              matchup: playerMatchup,
               prop: 'Rec Yards',
               line,
               side: 'OVER',
@@ -614,7 +623,8 @@ export async function handler(event, context) {
               fair_odds_model: decimalToAmerican(1 / pOverCal),
               fair_from_book: realMarket.fairBook,
               fair_over_odds: realMarket.fairOverOdds,
-              fair_under_odds: realMarket.fairUnderOdds
+              fair_under_odds: realMarket.fairUnderOdds,
+              data_source: USE_SSOT ? 'SSOT' : 'PLAYER_DB'
             });
           }
 
@@ -622,9 +632,9 @@ export async function handler(event, context) {
           const edgeUnder = pUnderCal - pUnder;
           if (edgeUnder >= MIN_EDGE) {
             opportunities.push({
-              player: player.name,
-              team: player.team,
-              matchup: `${player.team} vs OPP`,  // TODO: Wire in opponent from SSOT
+              player: playerName,
+              team: playerTeam,
+              matchup: playerMatchup,
               prop: 'Rec Yards',
               line,
               side: 'UNDER',
@@ -639,7 +649,8 @@ export async function handler(event, context) {
               has_real_odds: true,
               fair_from_book: realMarket.fairBook,
               fair_over_odds: realMarket.fairOverOdds,
-              fair_under_odds: realMarket.fairUnderOdds
+              fair_under_odds: realMarket.fairUnderOdds,
+              data_source: USE_SSOT ? 'SSOT' : 'PLAYER_DB'
             });
           }
         } else if (!realOdds) {
@@ -648,8 +659,9 @@ export async function handler(event, context) {
           
           if (pOverCal >= 0.55) {
             opportunities.push({
-              player: player.name,
-              team: player.team,
+              player: playerName,
+              team: playerTeam,
+              matchup: playerMatchup,
               prop: 'Rec Yards',
               line,
               side: 'OVER',
@@ -661,14 +673,16 @@ export async function handler(event, context) {
               edge: pOverCal - syntheticMarketProb,
               kelly: 0,
               fair_odds_model: decimalToAmerican(1 / pOverCal),
-              has_real_odds: false
+              has_real_odds: false,
+              data_source: USE_SSOT ? 'SSOT' : 'PLAYER_DB'
             });
           }
           
           if (pUnderCal >= 0.55) {
             opportunities.push({
-              player: player.name,
-              team: player.team,
+              player: playerName,
+              team: playerTeam,
+              matchup: playerMatchup,
               prop: 'Rec Yards',
               line,
               side: 'UNDER',
@@ -680,7 +694,8 @@ export async function handler(event, context) {
               edge: pUnderCal - syntheticMarketProb,
               kelly: 0,
               fair_odds_model: decimalToAmerican(1 / pUnderCal),
-              has_real_odds: false
+              has_real_odds: false,
+              data_source: USE_SSOT ? 'SSOT' : 'PLAYER_DB'
             });
           }
         }
@@ -696,7 +711,8 @@ export async function handler(event, context) {
       console.log(`   Avg edge: ${(opportunities.reduce((sum, o) => sum + o.edge, 0) / opportunities.length * 100).toFixed(1)}%`);
     }
     console.log(`   Min edge threshold: ${(MIN_EDGE * 100).toFixed(1)}%`);
-    console.log(`   Players processed: ${PLAYER_DB.length}`);
+    console.log(`   Players processed: ${playerSource.length}`);
+    console.log(`   Data source: ${USE_SSOT ? 'SSOT' : 'PLAYER_DB'}`);
 
     return {
       statusCode: 200,
@@ -708,7 +724,10 @@ export async function handler(event, context) {
         predictions: opportunities,
         metadata: {
           model: 'Elite 3-Stage Cascade (NegBin → Beta-Binomial → Lognormal)',
-          data_source: 'Player stats + game context',
+          data_source: USE_SSOT ? 'SSOT (nflfastR + canonical rosters)' : 'PLAYER_DB (legacy)',
+          ssot_week: ssot?.week,
+          ssot_season: ssot?.season,
+          ssot_generated_at: ssot?.generated_at,
           simulations: 20000,
           min_edge: MIN_EDGE,
           calibration: 'Isotonic (both sides calibrated independently)',
