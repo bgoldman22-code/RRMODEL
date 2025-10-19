@@ -15,7 +15,7 @@
  * v2.0: Migrated to Netlify Blobs for reliable serverless storage (no import.meta.url issues)
  */
 
-import { getStore } from '@netlify/blobs';
+import { createClient } from '@netlify/blobs';
 
 /**
  * Load SSOT JSON for a given week/season from Netlify Blobs
@@ -26,8 +26,20 @@ export async function loadSSOT(week, season = 2025) {
   console.log(`[SSOT Loader] Loading from Netlify Blobs: ${key}`);
   
   try {
-    const store = getStore('nfl-receiving-ssot');
-    const data = await store.get(key, { type: 'text' });
+    // Use explicit credentials (same pattern as blobs-explicit-nfl.js)
+    const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
+    const token = process.env.NETLIFY_API_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
+    
+    if (!siteID || !token) {
+      console.warn('⚠️  Netlify Blobs credentials not configured');
+      return null;
+    }
+    
+    const client = createClient({ siteID, token });
+    const storeName = 'nfl-receiving-ssot';
+    const store = client.store ? client.store(storeName) : client;
+    
+    const data = await (store.get ? store.get(key, { type: 'text' }) : client.get(`${storeName}/${key}`));
     
     if (!data) {
       console.warn(`⚠️  SSOT not found in blobs: ${key}`);
