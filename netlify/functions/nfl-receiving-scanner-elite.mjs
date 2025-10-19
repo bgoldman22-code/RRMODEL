@@ -478,7 +478,9 @@ export async function handler(event, context) {
     // Fetch real odds
     const realOdds = await fetchRealOdds();
     const opportunities = [];
-    const MIN_EDGE = realOdds ? 0.05 : 0.025;
+    // Only use strict 5% threshold if we actually have real odds markets
+    // If realOdds is empty (no props available yet), use 2.5% for model-only mode
+    const MIN_EDGE = (realOdds && realOdds.size > 0) ? 0.05 : 0.025;
 
     // Process each player
     for (const player of playerSource) {
