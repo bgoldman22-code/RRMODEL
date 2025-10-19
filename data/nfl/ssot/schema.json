@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NFL Receiving Props SSOT",
+  "type": "object",
+  "required": ["week", "generated_at", "schema_version", "players"],
+  "properties": {
+    "week": { "type": "integer", "minimum": 1, "maximum": 18 },
+    "season": { "type": "integer" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "schema_version": { "type": "integer", "const": 1 },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "total_players": { "type": "integer" },
+        "data_sources": { "type": "array", "items": { "type": "string" } },
+        "eb_tau": { "type": "number", "description": "Empirical Bayes smoothing weight" },
+        "cap_settings": {
+          "type": "object",
+          "properties": {
+            "per_factor_max": { "type": "number", "default": 0.07 },
+            "combined_min": { "type": "number", "default": 0.88 },
+            "combined_max": { "type": "number", "default": 1.12 }
+          }
+        }
+      }
+    },
+    "players": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["player_id", "team", "pos", "opp", "is_home", "neg_bin", "beta", "lognorm"],
+        "properties": {
+          "player_id": {
+            "type": "string",
+            "pattern": "^[A-Z]{2,3}-[A-Z0-9-]+$",
+            "description": "Format: TEAM-FIRSTNAME-LASTNAME",
+            "examples": ["DAL-CEEDEE-LAMB", "MIA-TYREEK-HILL"]
+          },
+          "gsis_id": { "type": "string", "description": "NFL GSIS ID for lookup" },
+          "team": { "type": "string", "pattern": "^[A-Z]{2,3}$" },
+          "pos": { "type": "string", "enum": ["WR", "TE", "RB"] },
+          "opp": { "type": "string", "pattern": "^[A-Z]{2,3}$" },
+          "is_home": { "type": "boolean" },
+          "context": {
+            "type": "object",
+            "properties": {
+              "spread": { "type": "number", "description": "Team spread (+ = underdog)" },
+              "total": { "type": "number" },
+              "wind_mph": { "type": "number", "minimum": 0 },
+              "precip_prob": { "type": "number", "minimum": 0, "maximum": 1 },
+              "dome": { "type": "boolean" }
+            }
+          },
+          "neg_bin": {
+            "type": "object",
+            "required": ["mu", "phi"],
+            "properties": {
+              "mu": { "type": "number", "minimum": 0, "description": "Expected targets" },
+              "phi": { "type": "number", "minimum": 0, "description": "Dispersion (0 = Poisson)" }
+            }
+          },
+          "beta": {
+            "type": "object",
+            "required": ["alpha", "beta"],
+            "properties": {
+              "alpha": { "type": "number", "minimum": 0 },
+              "beta": { "type": "number", "minimum": 0 }
+            }
+          },
+          "lognorm": {
+            "type": "object",
+            "required": ["log_mu", "log_sigma"],
+            "properties": {
+              "log_mu": { "type": "number" },
+              "log_sigma": { "type": "number", "minimum": 0 }
+            }
+          },
+          "adot": { "type": "number", "description": "Average depth of target" },
+          "mods": {
+            "type": "object",
+            "description": "Multiplicative adjustments (capped per factor)",
+            "properties": {
+              "opp": {
+                "type": "object",
+                "properties": {
+                  "targets_pct": { "type": "number", "minimum": 0.93, "maximum": 1.07 },
+                  "catch_pct": { "type": "number", "minimum": 0.93, "maximum": 1.07 },
+                  "yac_pct": { "type": "number", "minimum": 0.93, "maximum": 1.07 },
+                  "adot_bucket": { "type": "string", "enum": ["0-5", "6-12", "13+"] }
+                }
+              },
+              "weather": {
+                "type": "object",
+                "properties": {
+                  "catch_pct": { "type": "number", "minimum": 0.94, "maximum": 1.0 },
+                  "cap": { "type": "number", "minimum": 0.94, "maximum": 1.0 }
+                }
+              },
+              "injury": {
+                "type": "object",
+                "properties": {
+                  "targets_delta": { "type": "number", "description": "+/- targets from injury redistribution" },
+                  "uncertainty": { "type": "number", "minimum": 0, "maximum": 1, "description": "Variance multiplier" }
+                }
+              },
+              "snap_pct": {
+                "type": "object",
+                "properties": {
+                  "projected": { "type": "number", "minimum": 0, "maximum": 1 },
+                  "l5_avg": { "type": "number", "minimum": 0, "maximum": 1 }
+                }
+              }
+            }
+          },
+          "caps": {
+            "type": "object",
+            "properties": {
+              "combined_min": { "type": "number", "default": 0.88 },
+              "combined_max": { "type": "number", "default": 1.12 },
+              "raw_multiplier": { "type": "number", "description": "Pre-cap combined adjustment" },
+              "capped_multiplier": { "type": "number", "description": "Post-cap adjustment" }
+            }
+          },
+          "source_hash": { "type": "string", "description": "Hash for change detection" }
+        }
+      }
+    }
+  }
+}
