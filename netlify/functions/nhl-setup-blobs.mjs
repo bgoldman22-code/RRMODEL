@@ -9,41 +9,23 @@
 
 import { getStore } from '@netlify/blobs';
 
-export async function handler(event, context) {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/json'
-  };
-  
+export const handler = async (event) => {
   try {
-    console.log('🚀 NHL Blobs Setup - Starting data upload...');
+    console.log('🚀 Starting NHL Blobs setup...');
     
-    // Fetch player stats from GitHub raw
-    const playerStatsUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nhl/player_stats_20242025.json';
-    console.log(`📥 Fetching player stats from GitHub...`);
+    // Initialize Blobs store with explicit credentials (same pattern as working functions)
+    const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
+    const token = process.env.NETLIFY_API_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
+    const storeName = 'nhl-stats';
     
-    const playerResponse = await fetch(playerStatsUrl);
-    if (!playerResponse.ok) {
-      throw new Error(`Failed to fetch player stats: ${playerResponse.status}`);
+    let store;
+    if (siteID && token) {
+      console.log('✅ Using explicit Blobs credentials');
+      store = getStore({ name: storeName, siteID, token });
+    } else {
+      console.log('⚠️ Using default Blobs configuration');
+      store = getStore(storeName);
     }
-    
-    const playerStats = await playerResponse.json();
-    console.log(`✅ Loaded ${playerStats.players?.length || 0} players`);
-    
-    // Fetch team stats from GitHub raw
-    const teamStatsUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nhl/team_stats_20242025.json';
-    console.log(`📥 Fetching team stats from GitHub...`);
-    
-    const teamResponse = await fetch(teamStatsUrl);
-    if (!teamResponse.ok) {
-      throw new Error(`Failed to fetch team stats: ${teamResponse.status}`);
-    }
-    
-    const teamStats = await teamResponse.json();
-    console.log(`✅ Loaded ${Object.keys(teamStats.teams || {}).length} teams`);
-    
-    // Get Blobs store
-    const store = getStore('nhl-stats');
     
     // Upload player stats
     await store.set('player_stats_20242025', playerStats, {
