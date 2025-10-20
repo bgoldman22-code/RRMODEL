@@ -47,6 +47,7 @@ const RINK_EFFECTS = {
 async function loadPlayerStats() {
   // Return cache if fresh
   if (PLAYER_CACHE && CACHE_TIMESTAMP && (Date.now() - CACHE_TIMESTAMP < CACHE_TTL)) {
+    console.log(`♻️ Using cached ${PLAYER_CACHE.length} players`);
     return PLAYER_CACHE;
   }
   
@@ -59,14 +60,16 @@ async function loadPlayerStats() {
     if (data && data.players) {
       PLAYER_CACHE = data.players;
       CACHE_TIMESTAMP = Date.now();
-      console.log(`✅ Cached ${data.players.length} players`);
+      console.log(`✅ Loaded ${data.players.length} players from Netlify Blobs`);
       return PLAYER_CACHE;
     }
     
-    console.warn('⚠️ No player data in Netlify Blobs');
+    console.warn('⚠️ No player data in Netlify Blobs - data object exists but no players array');
+    console.warn('⚠️ Data keys:', data ? Object.keys(data) : 'null');
     return [];
   } catch (error) {
-    console.warn('⚠️ Could not load player stats:', error.message);
+    console.error('❌ Could not load player stats from Blobs:', error.message);
+    console.error('❌ This means elite projections will fail - upload data to Blobs!');
     return [];
   }
 }
