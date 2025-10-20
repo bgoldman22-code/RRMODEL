@@ -29,8 +29,8 @@ jobs:
       - name: Log NHL picks
         if: github.event.schedule == '0 16 * * *' || github.event_name == 'workflow_dispatch'
         run: |
-          echo "📊 Fetching today's NHL picks..."
-          curl -s https://bgroundrobin.com/.netlify/functions/nhl-sog-scanner-v3-optimized | \
+          echo "📊 Fetching today's NHL picks (ELITE MODEL V4)..."
+          curl -s https://bgroundrobin.com/.netlify/functions/nhl-sog-scanner-elite-fast | \
             node scripts/nhl/manual-log-from-scanner.mjs || echo "No picks today or scanner unavailable"
       
       # Update results from yesterday's games (runs at 2am ET)
