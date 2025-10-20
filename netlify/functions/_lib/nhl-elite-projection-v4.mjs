@@ -54,18 +54,39 @@ async function loadPlayerStats() {
   try {
     const { getStore } = await import('@netlify/blobs');
     const store = getStore('nhl-stats');
-    
-    const data = await store.get('player_stats_20242025', { type: 'json' });
-    
+
+    // Try Blobs first
+    let data = await store.get('player_stats_20242025', { type: 'json' });
+
+    // Fallback: fetch from GitHub and hydrate Blobs
+    if (!data || !data.players || data.players.length === 0) {
+      console.warn('⚠️ Player stats missing in Blobs. Fetching from GitHub (main42)…');
+      const ghUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main42/data/nhl/player_stats_20242025.json';
+      const resp = await fetch(ghUrl);
+      if (resp.ok) {
+        const ghData = await resp.json();
+        if (ghData && ghData.players && ghData.players.length > 0) {
+          try {
+            await store.setJSON('player_stats_20242025', ghData);
+            console.log(`📝 Wrote ${ghData.players.length} players to Blobs`);
+          } catch (e) {
+            console.warn('⚠️ Failed to persist player stats to Blobs:', e.message);
+          }
+          data = ghData;
+        }
+      } else {
+        console.warn('⚠️ GitHub fetch for player stats failed:', resp.status);
+      }
+    }
+
     if (data && data.players) {
       PLAYER_CACHE = data.players;
       CACHE_TIMESTAMP = Date.now();
-      console.log(`✅ Loaded ${data.players.length} players from Netlify Blobs`);
+      console.log(`✅ Loaded ${data.players.length} players (${data === null ? 'from GH' : 'from Blobs/GH'})`);
       return PLAYER_CACHE;
     }
-    
-    console.warn('⚠️ No player data in Netlify Blobs - data object exists but no players array');
-    console.warn('⚠️ Data keys:', data ? Object.keys(data) : 'null');
+
+    console.warn('⚠️ No player data available after Blobs+GitHub attempts');
     return [];
   } catch (error) {
     console.error('❌ Could not load player stats from Blobs:', error.message);
@@ -86,16 +107,38 @@ async function loadTeamStats() {
   try {
     const { getStore } = await import('@netlify/blobs');
     const store = getStore('nhl-stats');
-    
-    const data = await store.get('team_stats_20242025', { type: 'json' });
-    
+
+    // Try Blobs first
+    let data = await store.get('team_stats_20242025', { type: 'json' });
+
+    // Fallback: fetch from GitHub and hydrate Blobs
+    if (!data || !data.teams || Object.keys(data.teams).length === 0) {
+      console.warn('⚠️ Team stats missing in Blobs. Fetching from GitHub (main42)…');
+      const ghUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main42/data/nhl/team_stats_20242025.json';
+      const resp = await fetch(ghUrl);
+      if (resp.ok) {
+        const ghData = await resp.json();
+        if (ghData && ghData.teams && Object.keys(ghData.teams).length > 0) {
+          try {
+            await store.setJSON('team_stats_20242025', ghData);
+            console.log(`📝 Wrote ${Object.keys(ghData.teams).length} teams to Blobs`);
+          } catch (e) {
+            console.warn('⚠️ Failed to persist team stats to Blobs:', e.message);
+          }
+          data = ghData;
+        }
+      } else {
+        console.warn('⚠️ GitHub fetch for team stats failed:', resp.status);
+      }
+    }
+
     if (data && data.teams) {
       TEAM_CACHE = data.teams;
-      console.log(`✅ Cached ${Object.keys(data.teams).length} teams`);
+      console.log(`✅ Cached ${Object.keys(data.teams).length} teams (Blobs/GH)`);
       return TEAM_CACHE;
     }
-    
-    console.warn('⚠️ No team data in Netlify Blobs');
+
+    console.warn('⚠️ No team data available after Blobs+GitHub attempts');
     return {};
   } catch (error) {
     console.warn('⚠️ Could not load team stats:', error.message);
