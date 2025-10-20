@@ -36,6 +36,30 @@ export const handler = async (event) => {
       console.log('✅ Using explicit Blobs credentials');
     }
     
+    // Fetch player stats from GitHub
+    const playerStatsUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nhl/player_stats_20242025.json';
+    console.log(`📥 Fetching player stats from GitHub...`);
+    
+    const playerResponse = await fetch(playerStatsUrl);
+    if (!playerResponse.ok) {
+      throw new Error(`Failed to fetch player stats: ${playerResponse.status}`);
+    }
+    
+    const playerStats = await playerResponse.json();
+    console.log(`✅ Loaded ${playerStats.players?.length || 0} players`);
+    
+    // Fetch team stats from GitHub
+    const teamStatsUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nhl/team_stats_20242025.json';
+    console.log(`📥 Fetching team stats from GitHub...`);
+    
+    const teamResponse = await fetch(teamStatsUrl);
+    if (!teamResponse.ok) {
+      throw new Error(`Failed to fetch team stats: ${teamResponse.status}`);
+    }
+    
+    const teamStats = await teamResponse.json();
+    console.log(`✅ Loaded ${Object.keys(teamStats.teams || {}).length} teams`);
+    
     // Upload player stats
     await store.set('player_stats_20242025', playerStats, {
       metadata: {
