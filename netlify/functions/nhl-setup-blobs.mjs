@@ -13,18 +13,27 @@ export const handler = async (event) => {
   try {
     console.log('🚀 Starting NHL Blobs setup...');
     
-    // Initialize Blobs store with explicit credentials (same pattern as working functions)
-    const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
-    const token = process.env.NETLIFY_API_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
+    // Initialize Blobs store (use same pattern as _blobs.mjs helper)
     const storeName = 'nhl-stats';
-    
     let store;
-    if (siteID && token) {
-      console.log('✅ Using explicit Blobs credentials');
+    
+    try {
+      // Prefer implicit runtime context on Netlify Functions
+      console.log('⚙️ Trying automatic Netlify runtime context...');
+      store = getStore({ name: storeName });
+      console.log('✅ Using automatic Blobs context');
+    } catch (err) {
+      console.log('⚠️ Automatic context failed, trying explicit credentials...');
+      const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
+      const token = process.env.NETLIFY_API_TOKEN || process.env.NETLIFY_AUTH_TOKEN;
+      
+      if (!siteID || !token) {
+        const details = `HAS_SITE_ID=${!!siteID}, HAS_TOKEN=${!!token}`;
+        throw new Error(`Blobs unavailable. Detail: ${err?.name||''} ${err?.message||err} • ${details}`);
+      }
+      
       store = getStore({ name: storeName, siteID, token });
-    } else {
-      console.log('⚠️ Using default Blobs configuration');
-      store = getStore(storeName);
+      console.log('✅ Using explicit Blobs credentials');
     }
     
     // Upload player stats
