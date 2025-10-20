@@ -173,7 +173,8 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
     const { mu, r, pi, breakdown, metadata } = projection;
     
     // Check for real odds opportunities
-    const opportunities = [];
+  const opportunities = [];
+  let bestAny = null; // track best opportunity regardless of edge threshold
     
     if (realOddsMap && realOddsMap.size > 0) {
       for (const [key, oddsData] of realOddsMap.entries()) {
@@ -198,61 +199,68 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
           // Calculate edge
           const edge = winProb - impliedProb;
           const edgePercent = (edge / impliedProb) * 100;
-          
-          // Only include if we have 5%+ edge
+
+          // Build full opportunity object once
+          const oppObj = {
+            gameId,
+            playerId,
+            playerName,
+            position,
+            team,
+            opponent,
+            gameTime,
+            direction,
+            line,
+            odds,
+            projection: parseFloat(mu.toFixed(2)),
+            edge: parseFloat(edgePercent.toFixed(1)),
+            ev: parseFloat((edgePercent * 0.5).toFixed(1)),
+            confidence: Math.min(75 + edgePercent, 90),
+            kelly: parseFloat(calculateKelly(winProb, odds, r).toFixed(4)),
+            variance: parseFloat(r.toFixed(1)),
+            scratchRisk: parseFloat((pi * 100).toFixed(1)),
+            mlEnhanced: true,
+            dataSource: 'elite-zinb',
+            oddsSource: `${oddsData.bookmaker} (real)`,
+            bookmaker: oddsData.bookmaker,
+            modelProb: parseFloat(winProb.toFixed(3)),
+            impliedProb: parseFloat(impliedProb.toFixed(3)),
+            // Include breakdown for transparency
+            breakdown: {
+              seasonAvg: breakdown.seasonAvg,
+              L5avg: breakdown.L5avg,
+              weighted: breakdown.weightedBase,
+              finalProjection: breakdown.finalProjection,
+              adjustments: breakdown.adjustments
+            },
+            metadata: {
+              streak: metadata.streak,
+              ppUnit: metadata.ppUnit,
+              expectedTOI: metadata.expectedTOI,
+              oppDefense: metadata.oppDefenseRating,
+              gamesPlayed: metadata.gamesPlayed
+            }
+          };
+
+          // Track best-any always for fallback logic
+          if (!bestAny || oppObj.edge > bestAny.edge) {
+            bestAny = oppObj;
+          }
+
+          // Only include in strict list if we have 5%–30% edge
           if (edgePercent >= 5.0 && edgePercent <= 30.0) {
-            const kelly = calculateKelly(winProb, odds, r);
-            
-            opportunities.push({
-              gameId,
-              playerId,
-              playerName,
-              position,
-              team,
-              opponent,
-              gameTime,
-              direction,
-              line,
-              odds,
-              projection: parseFloat(mu.toFixed(2)),
-              edge: parseFloat(edgePercent.toFixed(1)),
-              ev: parseFloat((edgePercent * 0.5).toFixed(1)),
-              confidence: Math.min(75 + edgePercent, 90),
-              kelly: parseFloat(kelly.toFixed(4)),
-              variance: parseFloat(r.toFixed(1)),
-              scratchRisk: parseFloat((pi * 100).toFixed(1)),
-              mlEnhanced: true,
-              dataSource: 'elite-zinb',
-              oddsSource: `${oddsData.bookmaker} (real)`,
-              bookmaker: oddsData.bookmaker,
-              modelProb: parseFloat(winProb.toFixed(3)),
-              impliedProb: parseFloat(impliedProb.toFixed(3)),
-              
-              // Include breakdown for transparency
-              breakdown: {
-                seasonAvg: breakdown.seasonAvg,
-                L5avg: breakdown.L5avg,
-                weighted: breakdown.weightedBase,
-                finalProjection: breakdown.finalProjection,
-                adjustments: breakdown.adjustments
-              },
-              
-              metadata: {
-                streak: metadata.streak,
-                ppUnit: metadata.ppUnit,
-                expectedTOI: metadata.expectedTOI,
-                oppDefense: metadata.oppDefenseRating,
-                gamesPlayed: metadata.gamesPlayed
-              }
-            });
+            opportunities.push(oppObj);
           }
         }
       }
     }
     
-    // Return best opportunity or null
-    if (opportunities.length === 0) return null;
-    return opportunities.sort((a, b) => b.edge - a.edge)[0];
+    // Return best strict and best-any opportunity
+    if (opportunities.length === 0) {
+      return bestAny ? { bestAny } : null;
+    }
+    const bestStrict = opportunities.sort((a, b) => b.edge - a.edge)[0];
+    return { bestStrict, bestAny: bestAny || bestStrict };
     
   } catch (error) {
     console.warn(`⚠️ Error projecting ${player.firstName?.default} ${player.lastName?.default}:`, error.message);
@@ -391,7 +399,8 @@ export async function handler(event, context) {
     }
     
     // Step 4: Generate opportunities
-    const opportunities = [];
+  const opportunities = [];
+  const fallbackCandidates = [];
     
     for (const game of games) {
       const homeTeam = game.homeTeam?.abbrev;
@@ -423,7 +432,7 @@ export async function handler(event, context) {
             break;
           }
           
-          const opportunity = await generateEliteOpportunities(
+          const result = await generateEliteOpportunities(
             player,
             teamAbbrev,
             opponent,
@@ -433,9 +442,14 @@ export async function handler(event, context) {
             realOddsMap,
             gameId
           );
-          
-          if (opportunity && opportunity.edge >= minEdge) {
-            opportunities.push(opportunity);
+
+          if (result) {
+            if (result.bestStrict && result.bestStrict.edge >= minEdge) {
+              opportunities.push(result.bestStrict);
+            }
+            if (result.bestAny) {
+              fallbackCandidates.push(result.bestAny);
+            }
           }
         }
         
@@ -449,6 +463,29 @@ export async function handler(event, context) {
     
     // Sort by edge
     opportunities.sort((a, b) => b.edge - a.edge);
+
+    // Fallback: if no strict opportunities, return top-N best-any candidates
+    let usedFallback = false;
+    const FALLBACK_TOP_N = Math.max(1, parseInt((event.queryStringParameters || {}).fallbackTopN || '10', 10));
+    if (opportunities.length === 0 && fallbackCandidates.length > 0) {
+      // Deduplicate by player+line+direction to avoid duplicates across books
+      const keyOf = (o) => `${o.playerId}|${o.line}|${o.direction}`;
+      const seen = new Set();
+      const unique = [];
+      fallbackCandidates.sort((a, b) => b.edge - a.edge);
+      for (const c of fallbackCandidates) {
+        const k = keyOf(c);
+        if (!seen.has(k)) {
+          unique.push(c);
+          seen.add(k);
+        }
+        if (unique.length >= FALLBACK_TOP_N) break;
+      }
+      if (unique.length > 0) {
+        usedFallback = true;
+        opportunities.push(...unique);
+      }
+    }
     
     const executionTime = Date.now() - startTime;
     console.log(`✅ Generated ${opportunities.length} opportunities in ${executionTime}ms`);
@@ -464,6 +501,8 @@ export async function handler(event, context) {
           totalGames: games.length,
           realOddsLines: realOddsMap.size,
           usingEliteModel: true,
+          fallbackUsed: usedFallback,
+          fallbackTopN: usedFallback ? FALLBACK_TOP_N : 0,
           timestamp: new Date().toISOString()
         }
       })
