@@ -15,7 +15,7 @@
  * - Early returns if taking too long
  */
 
-import { projectSOGElite, calculateZINBProbability, preloadCache } from './_lib/nhl-elite-projection-v4.mjs';
+import { projectSOGElite, calculateZINBProbability, preloadCache, loadPlayerStats, loadTeamStats } from './_lib/nhl-elite-projection-v4.mjs';
 
 /**
  * Calculate Kelly Criterion stake with proper odds adjustment
@@ -326,7 +326,11 @@ export async function handler(event, context) {
     
     // Step 0: Preload player/team stats cache (critical for speed)
     await preloadCache();
-    console.log('✅ Cache preloaded');
+    const [playersLoaded, teamsLoaded] = await Promise.all([
+      loadPlayerStats(),
+      loadTeamStats()
+    ]);
+    console.log(`✅ Cache preloaded • players=${playersLoaded.length} • teams=${Object.keys(teamsLoaded).length}`);
     
     // Step 1: Fetch real odds (parallel with schedule)
     const oddsPromise = useRealOdds ? fetchNHLOdds() : Promise.resolve(null);
@@ -545,7 +549,9 @@ export async function handler(event, context) {
           diag: {
             playersScanned: diag_playersScanned,
             projectionsOk: diag_projectionsOk,
-            matchedCandidates: diag_matchedOdds
+            matchedCandidates: diag_matchedOdds,
+            playersLoaded: (playersLoaded || []).length,
+            teamsLoaded: teamsLoaded ? Object.keys(teamsLoaded).length : 0
           },
           timestamp: new Date().toISOString()
         }
