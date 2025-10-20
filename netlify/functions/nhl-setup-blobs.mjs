@@ -61,23 +61,11 @@ export const handler = async (event) => {
     console.log(`✅ Loaded ${Object.keys(teamStats.teams || {}).length} teams`);
     
     // Upload player stats
-    await store.set('player_stats_20242025', playerStats, {
-      metadata: {
-        uploaded: new Date().toISOString(),
-        playerCount: playerStats.players?.length || 0,
-        source: 'github-main41'
-      }
-    });
+    await store.setJSON('player_stats_20242025', playerStats);
     console.log(`✅ Uploaded player stats to Netlify Blobs`);
     
     // Upload team stats
-    await store.set('team_stats_20242025', teamStats, {
-      metadata: {
-        uploaded: new Date().toISOString(),
-        teamCount: Object.keys(teamStats.teams || {}).length,
-        source: 'github-main41'
-      }
-    });
+    await store.setJSON('team_stats_20242025', teamStats);
     console.log(`✅ Uploaded team stats to Netlify Blobs`);
     
     // Verify
