@@ -398,9 +398,13 @@ export async function handler(event, context) {
       throw new Error('Timeout: roster fetch took too long');
     }
     
-    // Step 4: Generate opportunities
+  // Step 4: Generate opportunities
   const opportunities = [];
   const fallbackCandidates = [];
+  // Diagnostics
+  let diag_playersScanned = 0;
+  let diag_projectionsOk = 0;
+  let diag_matchedOdds = 0;
     
     for (const game of games) {
       const homeTeam = game.homeTeam?.abbrev;
@@ -426,6 +430,7 @@ export async function handler(event, context) {
         ];
         
         for (const player of playersToProcess) {
+          diag_playersScanned++;
           // Timeout check every 5 players
           if (opportunities.length % 5 === 0 && Date.now() - startTime > TIMEOUT_MS) {
             console.warn('⏱️ Timeout approaching, returning partial results');
@@ -444,11 +449,14 @@ export async function handler(event, context) {
           );
 
           if (result) {
+            diag_projectionsOk++;
             if (result.bestStrict && result.bestStrict.edge >= minEdge) {
               opportunities.push(result.bestStrict);
+              diag_matchedOdds++;
             }
             if (result.bestAny) {
               fallbackCandidates.push(result.bestAny);
+              diag_matchedOdds++;
             }
           }
         }
@@ -487,7 +495,7 @@ export async function handler(event, context) {
       }
     }
     
-    const executionTime = Date.now() - startTime;
+  const executionTime = Date.now() - startTime;
     console.log(`✅ Generated ${opportunities.length} opportunities in ${executionTime}ms`);
     
     return {
@@ -503,6 +511,11 @@ export async function handler(event, context) {
           usingEliteModel: true,
           fallbackUsed: usedFallback,
           fallbackTopN: usedFallback ? FALLBACK_TOP_N : 0,
+          diag: {
+            playersScanned: diag_playersScanned,
+            projectionsOk: diag_projectionsOk,
+            matchedCandidates: diag_matchedOdds
+          },
           timestamp: new Date().toISOString()
         }
       })

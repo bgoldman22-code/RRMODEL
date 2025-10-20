@@ -276,15 +276,19 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
     return null;
   }
   
-  if (!player.season || player.season.gamesPlayed < 3) {
-    console.warn(`⚠️ ${playerName} insufficient games: ${player.season?.gamesPlayed || 0}`);
-    return null;
+  // If early season or missing season data, don't bail out; compute conservative projection
+  let earlySeason = false;
+  if (!player.season || (player.season.gamesPlayed ?? 0) < 3) {
+    earlySeason = true;
   }
   
   const oppDefense = await getTeamDefense(opponent);
   
   // Base projection (recency-weighted)
   let baseSOG = calculateWeightedSOGAverage(player);
+  if (earlySeason && (!isFinite(baseSOG) || baseSOG <= 0)) {
+    baseSOG = 2.5; // conservative default
+  }
   
   // Hot/cold streak
   const streak = detectStreak(player.recentGames);
@@ -332,7 +336,10 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
   baseSOG *= qualityMultiplier;
   
   // Position-specific variance
-  const dispersion = player.position === 'D' ? 3.5 : 2.4;
+  let dispersion = player.position === 'D' ? 3.5 : 2.4;
+  if (earlySeason) {
+    dispersion *= 1.2; // increase variance when data sparse
+  }
   
   // Scratch risk
   let scratchRisk = 0.02;
@@ -381,7 +388,8 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
       expectedTOI: expectedTOI.toFixed(1),
       oppDefenseRating: oppDefense.defensiveRating.toFixed(2),
       gamesPlayed: player.season.gamesPlayed,
-      scratchRisk: (scratchRisk * 100).toFixed(1) + '%'
+      scratchRisk: (scratchRisk * 100).toFixed(1) + '%',
+      earlySeason
     }
   };
 }
