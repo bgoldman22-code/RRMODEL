@@ -62,7 +62,7 @@ export const handler = async (event) => {
     
     return {
       statusCode: 200,
-      headers,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         success: true,
         message: '🎉 NHL stats uploaded to Netlify Blobs successfully!',
@@ -84,7 +84,7 @@ export const handler = async (event) => {
     
     return {
       statusCode: 500,
-      headers,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         success: false,
         error: error.message,
