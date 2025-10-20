@@ -1,5 +1,6 @@
 // src/NHL.jsx
-// Elite NHL SOG Props Interface - Professional Sharp Betting Tool v3.0
+// Elite NHL SOG Props Interface - Professional Sharp Betting Tool v4.0
+// ELITE PROJECTION ENGINE: Individual player stats, opponent defense, streaks, TOI, PP deployment
 
 import React, { useState, useEffect } from 'react';
 
@@ -11,7 +12,7 @@ export default function NHL() {
   const [metadata, setMetadata] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: 'edge', direction: 'desc' });
   
-  // Fixed settings for v3.0 (no user customization)
+  // Fixed settings for v4.0 Elite (no user customization)
   const BANKROLL = 5000;
   const UNIT_SIZE = 20; // $20 per unit
   
@@ -26,7 +27,7 @@ export default function NHL() {
       setError(null);
       
       const params = new URLSearchParams({ dateRange: 'today' });
-      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-v3-optimized?${params}`);
+      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-elite-fast?${params}`);
       
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -109,11 +110,11 @@ export default function NHL() {
               <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                 🏒 NHL SOG Props
               <span className="text-sm font-normal text-blue-400 bg-blue-500/20 px-3 py-1 rounded-full">
-                v3.1 Fast {metadata?.usingRealOdds ? '🎯' : '⚡'}
+                v4.0 Elite {metadata?.usingEliteModel ? '�️' : '🎯'}
               </span>
               </h1>
               <p className="text-gray-400 mt-1">
-                Real NHL Players • Fast Execution • {metadata?.usingRealOdds ? 'Real Odds API' : 'Position-Optimized'} • Timeout-Free
+                Elite Projections • Individual Stats • {metadata?.usingRealOdds ? 'Real Odds API' : 'Opponent Defense'} • ZINB Probability
               </p>
             </div>
             

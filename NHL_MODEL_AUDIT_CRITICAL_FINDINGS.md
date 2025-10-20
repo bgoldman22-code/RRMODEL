@@ -1,4 +1,4 @@
-# 🚨 NHL MODEL AUDIT - CRITICAL FINDINGS
+U# 🚨 NHL MODEL AUDIT - CRITICAL FINDINGS
 
 **Date:** October 20, 2025  
 **Analyst:** System Audit  
