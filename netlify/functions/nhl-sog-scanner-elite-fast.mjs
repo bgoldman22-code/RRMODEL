@@ -107,8 +107,21 @@ function processRealOdds(oddsData) {
   
   let totalOutcomes = 0;
   
+  // Helper: map event team names to NHL abbrevs
+  const TEAM_ABBREV = {
+    'Anaheim Ducks':'ANA','Boston Bruins':'BOS','Buffalo Sabres':'BUF','Carolina Hurricanes':'CAR','Columbus Blue Jackets':'CBJ',
+    'Calgary Flames':'CGY','Chicago Blackhawks':'CHI','Colorado Avalanche':'COL','Dallas Stars':'DAL','Detroit Red Wings':'DET',
+    'Edmonton Oilers':'EDM','Florida Panthers':'FLA','Los Angeles Kings':'LAK','Minnesota Wild':'MIN','Montreal Canadiens':'MTL',
+    'New Jersey Devils':'NJD','Nashville Predators':'NSH','New York Islanders':'NYI','New York Rangers':'NYR','Ottawa Senators':'OTT',
+    'Philadelphia Flyers':'PHI','Pittsburgh Penguins':'PIT','Seattle Kraken':'SEA','San Jose Sharks':'SJS','St. Louis Blues':'STL',
+    'Tampa Bay Lightning':'TBL','Toronto Maple Leafs':'TOR','Utah Hockey Club':'UTA','Vancouver Canucks':'VAN','Vegas Golden Knights':'VGK',
+    'Winnipeg Jets':'WPG','Washington Capitals':'WSH'
+  };
+
   for (const gameData of oddsData) {
     const { event, props } = gameData;
+    const homeAbbrev = TEAM_ABBREV[event?.home_team] || null;
+    const awayAbbrev = TEAM_ABBREV[event?.away_team] || null;
     if (!props.bookmakers) continue;
     
     for (const bookmaker of props.bookmakers) {
@@ -140,7 +153,8 @@ function processRealOdds(oddsData) {
               line,
               odds,
               direction,
-              bookmaker: bookName
+              bookmaker: bookName,
+              teams: [homeAbbrev, awayAbbrev].filter(Boolean)
             });
           }
         }
@@ -172,14 +186,31 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
     
     const { mu, r, pi, breakdown, metadata } = projection;
     
+    // Name normalization for robust matching
+    const normalize = (s) => (s || '').toLowerCase().replace(/[^a-z\s]/g, '').replace(/\s+/g, ' ').trim();
+    const first = (player.firstName?.default || '').trim();
+    const last = (player.lastName?.default || '').trim();
+    const fullName = `${first} ${last}`.trim();
+    const nameForms = new Set([
+      normalize(fullName),
+      normalize(`${first.charAt(0)} ${last}`),
+      normalize(`${first.charAt(0)}. ${last}`)
+    ]);
+
     // Check for real odds opportunities
   const opportunities = [];
   let bestAny = null; // track best opportunity regardless of edge threshold
     
     if (realOddsMap && realOddsMap.size > 0) {
       for (const [key, oddsData] of realOddsMap.entries()) {
-        if (oddsData.playerName.toLowerCase().includes(playerName.toLowerCase()) ||
-            playerName.toLowerCase().includes(oddsData.playerName.toLowerCase())) {
+        // Require team match to reduce false joins
+        if (oddsData.teams && oddsData.teams.length > 0 && !oddsData.teams.includes(team)) {
+          continue;
+        }
+
+        const oddsNameN = normalize(oddsData.playerName);
+        const match = nameForms.has(oddsNameN) || oddsNameN.includes(normalize(last));
+        if (match) {
           
           const line = oddsData.line;
           const odds = oddsData.odds;
