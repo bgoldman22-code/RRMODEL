@@ -62,6 +62,8 @@ async function fetchNHLOdds() {
     const events = await eventsResponse.json();
     const todayEvents = events.filter(event => event.commence_time?.startsWith(today));
     
+    console.log(`📅 Found ${events.length} total events, ${todayEvents.length} for today (${today})`);
+    
     if (todayEvents.length === 0) return null;
     
     // Limit to 5 games max for speed
@@ -69,16 +71,24 @@ async function fetchNHLOdds() {
       try {
         const propsUrl = `https://api.the-odds-api.com/v4/sports/icehockey_nhl/events/${event.id}/odds?regions=us&markets=player_shots_on_goal&oddsFormat=american&dateFormat=iso&apiKey=${apiKey}`;
         const propsResponse = await fetch(propsUrl);
-        if (!propsResponse.ok) return null;
+        if (!propsResponse.ok) {
+          console.log(`⚠️ Props not available for event ${event.id}: ${propsResponse.status}`);
+          return null;
+        }
         const propsData = await propsResponse.json();
+        const bookmakerCount = propsData.bookmakers?.length || 0;
+        console.log(`📊 Event ${event.home_team} vs ${event.away_team}: ${bookmakerCount} bookmakers with SOG props`);
         return { event, props: propsData };
       } catch (e) {
+        console.log(`❌ Error fetching props for ${event.id}:`, e.message);
         return null;
       }
     });
     
     const oddsResults = await Promise.all(oddsPromises);
-    return oddsResults.filter(Boolean);
+    const validResults = oddsResults.filter(Boolean);
+    console.log(`✅ Got valid odds data for ${validResults.length}/${todayEvents.length} games`);
+    return validResults;
     
   } catch (error) {
     console.warn('⚠️ Odds API error:', error.message);
@@ -94,6 +104,8 @@ function processRealOdds(oddsData) {
   
   const playerOddsMap = new Map();
   const PRIORITY_BOOKS = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'ESPN BET'];
+  
+  let totalOutcomes = 0;
   
   for (const gameData of oddsData) {
     const { event, props } = gameData;
@@ -118,6 +130,8 @@ function processRealOdds(oddsData) {
           
           if (!playerName || isNaN(line) || !odds) continue;
           
+          totalOutcomes++;
+          
           const key = `${playerName}_${line}_${direction}`;
           
           if (!playerOddsMap.has(key)) {
@@ -133,6 +147,8 @@ function processRealOdds(oddsData) {
       }
     }
   }
+  
+  console.log(`🎯 Processed ${totalOutcomes} total prop outcomes into ${playerOddsMap.size} unique player props`);
   
   return playerOddsMap;
 }
