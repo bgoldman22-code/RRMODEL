@@ -191,7 +191,9 @@ function calculateAdvancedStats(games, teamId, window = 10) {
   
   let stats = {
     pace: 0, offRtg: 0, defRtg: 0, efg: 0, ts: 0,
-    tovPct: 0, orbPct: 0, ftFga: 0, wins: 0, games: 0
+    tovPct: 0, orbPct: 0, ftFga: 0, wins: 0, games: 0,
+    // NEW: Stats needed for TOTAL_MODEL
+    fgPct: 0, fg3Pct: 0, ftPct: 0, rebounds: 0, assists: 0, turnovers: 0
   };
   
   for (const game of teamGames) {
@@ -219,6 +221,14 @@ function calculateAdvancedStats(games, teamId, window = 10) {
     const totalRebs = teamStats.offRebounds + oppStats.defRebounds;
     stats.orbPct += totalRebs > 0 ? teamStats.offRebounds / totalRebs : 0.25;
     stats.ftFga += teamStats.fga > 0 ? teamStats.fta / teamStats.fga : 0.22;
+    
+    // NEW: Additional stats for total model
+    stats.fgPct += teamStats.fga > 0 ? teamStats.fgm / teamStats.fga : 0.47;
+    stats.fg3Pct += teamStats.fg3a > 0 ? teamStats.fg3m / teamStats.fg3a : 0.36;
+    stats.ftPct += teamStats.fta > 0 ? teamStats.ftm / teamStats.fta : 0.78;
+    stats.rebounds += (teamStats.offRebounds || 0) + (teamStats.defRebounds || 0);
+    stats.assists += teamStats.assists || 0;
+    stats.turnovers += teamStats.turnovers || 0;
     
     if (teamScore > oppScore) stats.wins++;
     stats.games++;
@@ -306,25 +316,25 @@ function buildEliteFeatures(homeStats, awayStats) {
  */
 function buildSimpleFeatures(homeStats, awayStats) {
   return {
-    home_l10_fgPct: homeStats.efg,
-    home_l10_fg3Pct: homeStats.ts - homeStats.efg,
-    home_l10_ftPct: 0.77,
-    home_l10_rebounds: 43,
-    home_l10_assists: 25,
-    home_l10_turnovers: homeStats.tovPct * 100,
+    home_l10_fgPct: homeStats.fgPct || homeStats.efg || 0.47,
+    home_l10_fg3Pct: homeStats.fg3Pct || (homeStats.ts - homeStats.efg) || 0.36,
+    home_l10_ftPct: homeStats.ftPct || 0.77,
+    home_l10_rebounds: homeStats.rebounds || 43,
+    home_l10_assists: homeStats.assists || 25,
+    home_l10_turnovers: homeStats.turnovers || (homeStats.tovPct * 100) || 13.5,
     
-    away_l10_fgPct: awayStats.efg,
-    away_l10_fg3Pct: awayStats.ts - awayStats.efg,
-    away_l10_ftPct: 0.77,
-    away_l10_rebounds: 43,
-    away_l10_assists: 25,
-    away_l10_turnovers: awayStats.tovPct * 100,
+    away_l10_fgPct: awayStats.fgPct || awayStats.efg || 0.47,
+    away_l10_fg3Pct: awayStats.fg3Pct || (awayStats.ts - awayStats.efg) || 0.36,
+    away_l10_ftPct: awayStats.ftPct || 0.77,
+    away_l10_rebounds: awayStats.rebounds || 43,
+    away_l10_assists: awayStats.assists || 25,
+    away_l10_turnovers: awayStats.turnovers || (awayStats.tovPct * 100) || 13.5,
     
-    fgPct_diff: homeStats.efg - awayStats.efg,
-    fg3Pct_diff: 0,
-    rebounds_diff: 0,
-    assists_diff: 0,
-    turnovers_diff: (awayStats.tovPct - homeStats.tovPct) * 100,
+    fgPct_diff: (homeStats.fgPct || homeStats.efg || 0.47) - (awayStats.fgPct || awayStats.efg || 0.47),
+    fg3Pct_diff: (homeStats.fg3Pct || 0.36) - (awayStats.fg3Pct || 0.36),
+    rebounds_diff: (homeStats.rebounds || 43) - (awayStats.rebounds || 43),
+    assists_diff: (homeStats.assists || 25) - (awayStats.assists || 25),
+    turnovers_diff: (awayStats.turnovers || awayStats.tovPct * 100 || 13.5) - (homeStats.turnovers || homeStats.tovPct * 100 || 13.5),
     home_court: 1
   };
 }
