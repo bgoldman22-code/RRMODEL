@@ -14,8 +14,10 @@
  * - Graceful degradation if elite stats unavailable
  * - Early returns if taking too long
  * 
- * SOLUTION: CommonJS with dynamic import() for ES module dependencies
+ * SOLUTION: CommonJS with wrapper to access ESM lib safely
  */
+
+const elite = require('./_lib/nhl-elite-projection-v4.cjs');
 
 /**
  * Calculate Kelly Criterion stake with proper odds adjustment
@@ -320,18 +322,15 @@ exports.handler = async (event, context) => {
   try {
     console.log('🚀 NHL Elite Scanner V4.0 starting...');
     
-    // Dynamic import to avoid ES module bundling errors
-    const { projectSOGElite, calculateZINBProbability, preloadCache, loadPlayerStats, loadTeamStats } = await import('./_lib/nhl-elite-projection-v4.mjs');
-    
     const queryParams = event.queryStringParameters || {};
     const minEdge = parseFloat(queryParams.minEdge) || 0.05;
     const useRealOdds = queryParams.useRealOdds !== 'false';
     
     // Step 0: Preload player/team stats cache (critical for speed)
-    await preloadCache();
+    await elite.preloadCache();
     const [playersLoaded, teamsLoaded] = await Promise.all([
-      loadPlayerStats(),
-      loadTeamStats()
+      elite.loadPlayerStats(),
+      elite.loadTeamStats()
     ]);
     console.log(`✅ Cache preloaded • players=${playersLoaded.length} • teams=${Object.keys(teamsLoaded).length}`);
     
@@ -484,8 +483,8 @@ exports.handler = async (event, context) => {
             venue,
             realOddsMap,
             gameId,
-            projectSOGElite,
-            calculateZINBProbability
+            elite.projectSOGElite,
+            elite.calculateZINBProbability
           );
 
           if (result) {
@@ -496,84 +495,51 @@ exports.handler = async (event, context) => {
             }
             if (result.bestAny) {
               fallbackCandidates.push(result.bestAny);
-              diag_matchedOdds++;
             }
           }
         }
-        
-        // Break outer loop if timeout
-        if (Date.now() - startTime > TIMEOUT_MS) break;
       }
-      
-      // Break game loop if timeout
-      if (Date.now() - startTime > TIMEOUT_MS) break;
     }
-    
-    // Sort by edge
-    opportunities.sort((a, b) => b.edge - a.edge);
 
-    // Fallback: if no strict opportunities, return top-N best-any candidates
-    let usedFallback = false;
-    const FALLBACK_TOP_N = Math.max(1, parseInt((event.queryStringParameters || {}).fallbackTopN || '10', 10));
-    if (opportunities.length === 0 && fallbackCandidates.length > 0) {
-      // Deduplicate by player+line+direction to avoid duplicates across books
-      const keyOf = (o) => `${o.playerId}|${o.line}|${o.direction}`;
-      const seen = new Set();
-      const unique = [];
-      fallbackCandidates.sort((a, b) => b.edge - a.edge);
-      for (const c of fallbackCandidates) {
-        const k = keyOf(c);
-        if (!seen.has(k)) {
-          unique.push(c);
-          seen.add(k);
-        }
-        if (unique.length >= FALLBACK_TOP_N) break;
-      }
-      if (unique.length > 0) {
-        usedFallback = true;
-        opportunities.push(...unique);
-      }
+    // Deduplicate and fallback logic if no strict opps
+    const keyOf = (o) => `${o.playerId}|${o.team}|${o.line}|${o.direction}`;
+    const uniqMap = new Map();
+    for (const o of opportunities) {
+      if (!uniqMap.has(keyOf(o))) uniqMap.set(keyOf(o), o);
     }
-    
-  const executionTime = Date.now() - startTime;
-    console.log(`✅ Generated ${opportunities.length} opportunities in ${executionTime}ms`);
-    
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        opportunities,
-        metadata: {
-          version: '4.0-elite-fast',
-          executionTime: `${executionTime}ms`,
-          totalGames: games.length,
-          realOddsLines: realOddsMap.size,
-          usingEliteModel: true,
-          fallbackUsed: usedFallback,
-          fallbackTopN: usedFallback ? FALLBACK_TOP_N : 0,
-          diag: {
-            playersScanned: diag_playersScanned,
-            projectionsOk: diag_projectionsOk,
-            matchedCandidates: diag_matchedOdds,
-            playersLoaded: (playersLoaded || []).length,
-            teamsLoaded: teamsLoaded ? Object.keys(teamsLoaded).length : 0
-          },
-          timestamp: new Date().toISOString()
-        }
-      })
-    };
-    
-  } catch (error) {
-    console.error('❌ Scanner error:', error);
-    
-    return {
-      statusCode: error.message.includes('Timeout') ? 504 : 500,
-      headers,
-      body: JSON.stringify({
-        error: error.message,
+    let uniqueOpps = Array.from(uniqMap.values());
+
+    let fallbackUsed = false;
+    if (uniqueOpps.length === 0 && fallbackCandidates.length > 0) {
+      const fbMap = new Map();
+      for (const o of fallbackCandidates) {
+        const k = keyOf(o);
+        if (!fbMap.has(k) || fbMap.get(k).edge < o.edge) fbMap.set(k, o);
+      }
+      const sorted = Array.from(fbMap.values()).sort((a, b) => b.edge - a.edge);
+      uniqueOpps = sorted.slice(0, 10); // default top 10
+      fallbackUsed = true;
+    }
+
+    const resp = {
+      opportunities: uniqueOpps,
+      metadata: {
         version: '4.0-elite-fast',
+        fallbackUsed,
+        diag: {
+          playersScanned: diag_playersScanned,
+          projectionsOk: diag_projectionsOk,
+          matchedCandidates: diag_matchedOdds,
+          playersLoaded: playersLoaded.length,
+          teamsLoaded: Object.keys(teamsLoaded).length
+        },
         timestamp: new Date().toISOString()
-      })
+      }
     };
+
+    return { statusCode: 200, headers, body: JSON.stringify(resp) };
+  } catch (error) {
+    console.error('❌ Elite scanner error:', error);
+    return { statusCode: 500, headers, body: JSON.stringify({ error: error.message }) };
   }
-}
+};

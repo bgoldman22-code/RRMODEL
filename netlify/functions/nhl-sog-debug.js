@@ -5,6 +5,9 @@
  * SOLUTION: CommonJS with dynamic import() for ES module dependencies
  */
 
+// Use CJS wrapper to avoid ESM parse issues in Netlify runtime
+const elite = require('./_lib/nhl-elite-projection-v4.cjs');
+
 exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -20,13 +23,10 @@ exports.handler = async (event, context) => {
     const startTime = Date.now();
     console.log('🔍 Debug: Starting data load');
 
-    // Dynamic import to avoid ES module bundling errors
-    const { loadPlayerStats, loadTeamStats, projectSOGElite } = await import('./_lib/nhl-elite-projection-v4.mjs');
-
-    // Step 1: Load stats
+    // Step 1: Load stats via wrapper
     const [players, teams] = await Promise.all([
-      loadPlayerStats(),
-      loadTeamStats()
+      elite.loadPlayerStats(),
+      elite.loadTeamStats()
     ]);
 
     const loadTime = Date.now() - startTime;
@@ -38,7 +38,7 @@ exports.handler = async (event, context) => {
       const samplePlayer = players.find(p => p.team === 'NYR' && p.position !== 'G');
       if (samplePlayer) {
         console.log(`🧪 Testing projection for ${samplePlayer.name}`);
-        sampleProjection = await projectSOGElite(
+        sampleProjection = await elite.projectSOGElite(
           samplePlayer.playerId,
           samplePlayer.name,
           samplePlayer.team,
@@ -57,7 +57,7 @@ exports.handler = async (event, context) => {
       month: '2-digit', 
       day: '2-digit' 
     });
-    const [month, day, year] = todayET.split(/[\/,\s]/);
+    const [month, day, year] = todayET.split(/[\/\,\s]/);
     const today = `${year}-${month}-${day}`;
     
     const scheduleUrl = `https://api-web.nhle.com/v1/schedule/${today}`;
