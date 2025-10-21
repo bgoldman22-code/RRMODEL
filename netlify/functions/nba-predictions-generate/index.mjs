@@ -98,9 +98,21 @@ function getBestOdds(bookmakers, market) {
 /**
  * Calculate edge (model prediction vs market)
  */
-function calculateEdge(modelPrediction, marketLine) {
+function calculateEdge(modelPrediction, marketLine, isTotal = false) {
   if (!marketLine) return null;
-  // Edge calculation must account for sign and team
+  
+  if (isTotal) {
+    // For totals, it's simple: just compare the predicted total vs the Vegas total
+    const edge = Math.abs(modelPrediction - marketLine);
+    const edgePercent = (edge / marketLine) * 100;
+    return {
+      edge,
+      edgePercent,
+      modelFavors: modelPrediction > marketLine ? 'OVER' : 'UNDER'
+    };
+  }
+  
+  // For spreads, edge calculation must account for sign and team
   // If both modelPrediction and marketLine are for the same team (e.g., both OKC -), just subtract
   // If marketLine is for the other team, flip sign
   // For NBA, modelPrediction is always for home team (e.g., OKC -15.3 means home OKC favored by 15.3)
@@ -315,7 +327,7 @@ function integrateMarketOdds(predictions, oddsMap) {
       const overLine = Object.values(totals).find(t => t.name === 'Over');
       if (overLine) {
         marketTotal = overLine.point;
-        totalEdge = calculateEdge(pred.predictedTotal, marketTotal);
+        totalEdge = calculateEdge(pred.predictedTotal, marketTotal, true); // Pass true for isTotal
       }
     }
     
