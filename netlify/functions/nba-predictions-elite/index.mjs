@@ -578,63 +578,172 @@ export default async (request, context) => {
       // Calculate edges and Kelly sizing
       const opportunities = [];
       
-      // Spread opportunity
+      // ELITE BETTING STRATEGY: Evaluate all market types and recommend the best EV play
+      
+      // 1. SPREAD OPPORTUNITY
+      let spreadOpp = null;
       if (gameVegasLines.spread?.home != null && gameVegasLines.spread?.homePrice != null) {
-        // Convert model prediction to Vegas convention (negative = home favored)
-        // Model outputs positive for home favored, Vegas uses negative
         const modelSpreadVegasConvention = -spreadPred;
         
         const spreadEdge = calculateEdgeAndKelly(
           modelSpreadVegasConvention,
-          gameVegasLines.spread.home,       // Point spread (e.g., -5.5)
-          gameVegasLines.spread.homePrice,  // American odds (e.g., -110)
+          gameVegasLines.spread.home,
+          gameVegasLines.spread.homePrice,
           winProb
         );
         
-        if (spreadEdge && spreadEdge.edgePoints >= 3) { // Only show 3+ point edges
-          // Determine which side to bet based on model vs Vegas
+        if (spreadEdge && spreadEdge.edgePoints >= 3) {
           const betHome = spreadPred > gameVegasLines.spread.home;
           const pickTeam = betHome ? home.team.abbreviation : away.team.abbreviation;
           const pickLine = betHome ? gameVegasLines.spread.home : -gameVegasLines.spread.home;
           const pickSign = pickLine >= 0 ? '+' : '';
           
-          opportunities.push({
+          spreadOpp = {
             market: 'Spread',
             pick: `${pickTeam} ${pickSign}${pickLine}`,
             modelLine: spreadPred.toFixed(1),
             vegasLine: gameVegasLines.spread.home,
-            odds: gameVegasLines.spread.homePrice, // American odds for display
+            odds: gameVegasLines.spread.homePrice,
             edge: spreadEdge.edgePoints,
             edgePercent: spreadEdge.edgePercent,
             kelly: spreadEdge.kellyFraction,
             betSize: spreadEdge.betSize,
             units: spreadEdge.units,
-            book: gameVegasLines.spread.book
-          });
+            book: gameVegasLines.spread.book,
+            expectedValue: spreadEdge.edgePercent * spreadEdge.betSize // EV in dollars
+          };
         }
       }
       
-      // Total opportunity  
+      // 2. MONEYLINE OPPORTUNITY (for close games or high confidence)
+      let moneylineOpp = null;
+      if (gameVegasLines.moneyline?.home != null && gameVegasLines.moneyline?.away != null) {
+        // Determine which side has value
+        const homeML = gameVegasLines.moneyline.home;
+        const awayML = gameVegasLines.moneyline.away;
+        
+        // Convert moneyline to implied probability
+        const homeImpliedProb = homeML > 0 
+          ? 100 / (homeML + 100) 
+          : Math.abs(homeML) / (Math.abs(homeML) + 100);
+        const awayImpliedProb = awayML > 0
+          ? 100 / (awayML + 100)
+          : Math.abs(awayML) / (Math.abs(awayML) + 100);
+        
+        // Model win probability (already calculated)
+        const homeWinProb = winProb;
+        const awayWinProb = 1 - winProb;
+        
+        // Edge in probability terms
+        const homeMLEdge = homeWinProb - homeImpliedProb;
+        const awayMLEdge = awayWinProb - awayImpliedProb;
+        
+        // Pick the side with positive edge (if any)
+        if (homeMLEdge > 0.03 || awayMLEdge > 0.03) { // 3% edge minimum
+          const pickHome = homeMLEdge > awayMLEdge;
+          const pickOdds = pickHome ? homeML : awayML;
+          const pickProb = pickHome ? homeWinProb : awayWinProb;
+          const pickEdge = pickHome ? homeMLEdge : awayMLEdge;
+          
+          const mlKelly = calculateEdgeAndKelly(
+            pickProb * 100, // Convert to 0-100 scale
+            pickProb > 0.5 ? -100 : 100, // Dummy value, we use pickProb directly
+            pickOdds,
+            pickProb
+          );
+          
+          if (mlKelly) {
+            moneylineOpp = {
+              market: 'Moneyline',
+              pick: pickHome ? home.team.abbreviation : away.team.abbreviation,
+              modelWinProb: (pickProb * 100).toFixed(1) + '%',
+              impliedProb: ((pickHome ? homeImpliedProb : awayImpliedProb) * 100).toFixed(1) + '%',
+              odds: pickOdds,
+              edge: (pickEdge * 100).toFixed(1) + '%',
+              edgePercent: pickEdge * 100,
+              kelly: mlKelly.kellyFraction,
+              betSize: mlKelly.betSize,
+              units: mlKelly.units,
+              book: gameVegasLines.moneyline.book,
+              expectedValue: pickEdge * 100 * mlKelly.betSize
+            };
+          }
+        }
+      }
+      
+      // 3. TEAM TOTALS (if we have the lines)
+      let teamTotalOpp = null;
+      // Home team total
+      const homeTeamTotal = homeExpectedPts;
+      const awayTeamTotal = awayExpectedPts;
+      
+      // Note: Most books don't provide team totals via API, but we can project them
+      // For now, we calculate but don't show unless we have actual lines
+      
+      // 4. TOTAL OPPORTUNITY  
+      let totalOpp = null;
       if (gameVegasLines.total?.line != null) {
         const totalEdge = Math.abs(totalPred - gameVegasLines.total.line);
         
-        if (totalEdge >= 4) { // Only show 4+ point edges on totals
+        if (totalEdge >= 4) {
           const pickOver = totalPred > gameVegasLines.total.line;
-          opportunities.push({
+          const totalOdds = pickOver ? gameVegasLines.total.overPrice : gameVegasLines.total.underPrice;
+          
+          // Rough Kelly for totals (simplified)
+          const totalImpliedProb = Math.abs(totalOdds) / (Math.abs(totalOdds) + 100);
+          const totalEdgePercent = (totalEdge / gameVegasLines.total.line) * 100;
+          
+          totalOpp = {
             market: 'Total',
             pick: pickOver ? `Over ${gameVegasLines.total.line}` : `Under ${gameVegasLines.total.line}`,
             modelLine: totalPred.toFixed(1),
             vegasLine: gameVegasLines.total.line,
-            odds: pickOver ? gameVegasLines.total.overPrice : gameVegasLines.total.underPrice, // American odds
+            odds: totalOdds,
             edge: totalEdge.toFixed(1),
-            edgePercent: null,
-            kelly: null,
+            edgePercent: totalEdgePercent,
+            kelly: null, // Would need more sophisticated total prob model
             betSize: null,
             units: null,
-            book: gameVegasLines.total.book
-          });
+            book: gameVegasLines.total.book,
+            expectedValue: totalEdgePercent * 50 // Rough estimate
+          };
         }
       }
+      
+      // ELITE DECISION: Recommend the best EV play(s)
+      // Priority: 1) Best EV/Kelly 2) Spread if close game 3) ML if blowout 4) Total if both
+      
+      const allOpps = [spreadOpp, moneylineOpp, totalOpp].filter(Boolean);
+      
+      // Sort by expected value (EV)
+      allOpps.sort((a, b) => (b.expectedValue || 0) - (a.expectedValue || 0));
+      
+      // Add top 2 opportunities (or all if fewer)
+      opportunities.push(...allOpps.slice(0, 2));
+      
+      // Store team totals for advanced users
+      const teamTotals = {
+        home: {
+          team: home.team.abbreviation,
+          projection: homeExpectedPts.toFixed(1),
+          factors: {
+            offRtg: homeL10.offRtg.toFixed(1),
+            vsDefense: awayL10.defRtg.toFixed(1),
+            adjustment: homeDefAdj.toFixed(3),
+            pace: avgPace.toFixed(1)
+          }
+        },
+        away: {
+          team: away.team.abbreviation,
+          projection: awayExpectedPts.toFixed(1),
+          factors: {
+            offRtg: awayL10.offRtg.toFixed(1),
+            vsDefense: homeL10.defRtg.toFixed(1),
+            adjustment: awayDefAdj.toFixed(3),
+            pace: avgPace.toFixed(1)
+          }
+        }
+      };
       
       predictions.push({
         gameId: event.id,
@@ -707,7 +816,8 @@ export default async (request, context) => {
             book: gameVegasLines.moneyline.book
           } : null
         },
-        opportunities
+        opportunities,
+        teamTotals // NEW: Individual team scoring projections
       });
     }
     
