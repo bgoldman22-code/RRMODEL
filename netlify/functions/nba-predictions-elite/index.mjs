@@ -496,9 +496,19 @@ export default async (request, context) => {
         var totalFeatures = buildSimpleFeatures(homeL10, awayL10);
       }
       
-      // Predict
+      // Predict spread
       const spreadPred = predict(SPREAD_MODEL, spreadFeatures);
-      const totalPred = predict(TOTAL_MODEL, totalFeatures);
+      
+      // ELITE Total: Combine offensive ratings with pace (per-100-possessions method)
+      // This accounts for team-specific pace AND offensive efficiency
+      const avgPace = (homeL10.pace + awayL10.pace) / 2;
+      const totalFromOffense = (homeL10.offRtg + awayL10.offRtg) * (avgPace / 100);
+      
+      // Also run the model prediction for comparison
+      const totalPredModel = predict(TOTAL_MODEL, totalFeatures);
+      
+      // Blend: 70% pace-based (more reliable with our data), 30% model
+      const totalPred = 0.7 * totalFromOffense + 0.3 * totalPredModel;
       
       // Calculate confidence
       const netRtgDiff = Math.abs(homeL10.netRtg - awayL10.netRtg);
