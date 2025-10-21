@@ -331,33 +331,38 @@ function addBettingRecommendations(predictions) {
     
     // Spread recommendations
     if (pred.edge?.spread && pred.edge.spread.edgePercent > 5 && pred.confidence > 60) {
+      // Calculate Kelly and Units
+      const kellyObj = pred.marketOdds.spread ? calculateKelly(pred.homeWinProb / 100, pred.marketOdds.spread) : null;
       recommendations.push({
         market: 'Spread',
         pick: pred.edge.spread.modelFavors === 'OVER' ? 
-          pred.game.split(' @ ')[1] : pred.game.split(' @ ')[0],
+          `${pred.game.split(' @ ')[1]} ${pred.marketOdds.spread > 0 ? '+' : ''}${pred.marketOdds.spread}` : `${pred.game.split(' @ ')[0]} ${pred.marketOdds.spread > 0 ? '+' : ''}${pred.marketOdds.spread}`,
         line: pred.marketOdds.spread,
         edge: pred.edge.spread.edge,
         edgePercent: pred.edge.spread.edgePercent,
         confidence: pred.confidence,
         rating: pred.edge.spread.edgePercent > 10 ? '⭐⭐⭐' : 
-                pred.edge.spread.edgePercent > 7 ? '⭐⭐' : '⭐'
+                pred.edge.spread.edgePercent > 7 ? '⭐⭐' : '⭐',
+        units: kellyObj ? (kellyObj.fractionalKelly / 100).toFixed(2) : null,
+        kellyPercent: kellyObj ? kellyObj.fractionalKelly.toFixed(2) : null
       });
     }
-    
     // Total recommendations
     if (pred.edge?.total && pred.edge.total.edgePercent > 3 && pred.confidence > 55) {
+      const kellyObj = pred.marketOdds.total ? calculateKelly(pred.homeWinProb / 100, pred.marketOdds.total) : null;
       recommendations.push({
         market: 'Total',
-        pick: pred.edge.total.modelFavors,
+        pick: `${pred.edge.total.modelFavors} ${pred.marketOdds.total}`,
         line: pred.marketOdds.total,
         edge: pred.edge.total.edge,
         edgePercent: pred.edge.total.edgePercent,
         confidence: pred.confidence,
         rating: pred.edge.total.edgePercent > 8 ? '⭐⭐⭐' : 
-                pred.edge.total.edgePercent > 5 ? '⭐⭐' : '⭐'
+                pred.edge.total.edgePercent > 5 ? '⭐⭐' : '⭐',
+        units: kellyObj ? (kellyObj.fractionalKelly / 100).toFixed(2) : null,
+        kellyPercent: kellyObj ? kellyObj.fractionalKelly.toFixed(2) : null
       });
     }
-    
     return {
       ...pred,
       recommendations
