@@ -129,7 +129,7 @@ async function fetchVegasLines(gameIds, isPreseason = false) {
  * Calculate edge and Kelly bet sizing with PROPER American odds
  * NOTE: vegasLine is the POINT SPREAD, americanOdds is the PRICE (e.g., -110)
  */
-function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, bankroll = 5000) {
+function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, bankroll = 5000, seasonAdj = 1.0) {
   if (!vegasLine || !americanOdds) return null;
   
   // Edge in points (both are from home team perspective)
@@ -153,8 +153,11 @@ function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, ba
   const q = 1 - modelProb;
   const kelly = b > 0 ? (b * modelProb - q) / b : 0;
   
-  // Cap at 5% of bankroll (quarter Kelly for safety)
-  const kellyFraction = Math.min(Math.max(kelly * 0.25, 0), 0.05);
+  // Apply season adjustment to Kelly (reduce betting early season)
+  const adjustedKelly = kelly * seasonAdj;
+  
+  // Cap at 5% of bankroll (quarter Kelly for safety), then apply season adjustment
+  const kellyFraction = Math.min(Math.max(adjustedKelly * 0.25, 0), 0.05);
   const betSize = Math.round(bankroll * kellyFraction);
   
   return {
@@ -162,7 +165,8 @@ function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, ba
     edgePercent: parseFloat(edgePercent.toFixed(1)),
     kellyFraction: parseFloat((kellyFraction * 100).toFixed(2)),
     betSize,
-    units: parseFloat((betSize / 10).toFixed(1)) // $10/unit
+    units: parseFloat((betSize / 10).toFixed(1)), // $10/unit
+    seasonAdjusted: seasonAdj < 1.0 // Flag if early season reduced sizing
   };
 }
 
@@ -561,12 +565,31 @@ export default async (request, context) => {
       // Blend: 70% matchup-adjusted, 30% model
       const totalPred = 0.7 * totalFromMatchup + 0.3 * totalPredModel;
       
-      // Calculate confidence
+      // Calculate base confidence
       const netRtgDiff = Math.abs(homeL10.netRtg - awayL10.netRtg);
       let confidence = 60;
       if (netRtgDiff > 8) confidence += 15;
       else if (netRtgDiff > 5) confidence += 10;
       else if (netRtgDiff > 3) confidence += 5;
+      
+      // EARLY SEASON ADJUSTMENT: Reduce confidence based on sample size
+      // First 5-10 games are learning period, model needs data to stabilize
+      const avgGames = (homeL10.games + awayL10.games) / 2;
+      let seasonAdjustment = 1.0; // Full confidence multiplier
+      let seasonNote = null;
+      
+      if (avgGames < 5) {
+        seasonAdjustment = 0.5; // 50% confidence - very early season
+        seasonNote = 'EARLY SEASON: First 5 games. Model learning current form. Reduce unit sizing.';
+      } else if (avgGames < 10) {
+        seasonAdjustment = 0.75; // 75% confidence - still early
+        seasonNote = 'EARLY SEASON: Games 5-10. Model stabilizing. Consider smaller units.';
+      } else if (avgGames < 15) {
+        seasonAdjustment = 0.9; // 90% confidence - getting there
+        seasonNote = 'Model confidence building. Normal unit sizing after 15 games.';
+      }
+      
+      confidence = Math.floor(confidence * seasonAdjustment);
       
       // Win probability from spread
       const winProb = 1 / (1 + Math.exp(-spreadPred / 10));
@@ -589,7 +612,9 @@ export default async (request, context) => {
           modelSpreadVegasConvention,
           gameVegasLines.spread.home,
           gameVegasLines.spread.homePrice,
-          winProb
+          winProb,
+          5000,
+          seasonAdjustment // Apply early season sizing reduction
         );
         
         if (spreadEdge && spreadEdge.edgePoints >= 3) {
@@ -649,7 +674,9 @@ export default async (request, context) => {
             pickProb * 100, // Convert to 0-100 scale
             pickProb > 0.5 ? -100 : 100, // Dummy value, we use pickProb directly
             pickOdds,
-            pickProb
+            pickProb,
+            5000,
+            seasonAdjustment // Apply early season sizing reduction
           );
           
           if (mlKelly) {
@@ -782,7 +809,8 @@ export default async (request, context) => {
             home: parseFloat((winProb * 100).toFixed(1)),
             away: parseFloat(((1 - winProb) * 100).toFixed(1))
           },
-          confidence
+          confidence,
+          seasonNote // Early season warning if applicable
         },
         features: {
           homeL10: {
