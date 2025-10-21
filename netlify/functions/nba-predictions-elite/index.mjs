@@ -126,32 +126,33 @@ async function fetchVegasLines(gameIds, isPreseason = false) {
 }
 
 /**
- * Calculate edge and Kelly bet sizing
+ * Calculate edge and Kelly bet sizing with PROPER American odds
+ * NOTE: vegasLine is the POINT SPREAD, americanOdds is the PRICE (e.g., -110)
  */
-function calculateEdgeAndKelly(modelPred, vegasLine, modelProb, bankroll = 5000) {
-  if (!vegasLine) return null;
+function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, bankroll = 5000) {
+  if (!vegasLine || !americanOdds) return null;
   
-  // Edge in points
+  // Edge in points (comparing model prediction to Vegas line)
   const edgePoints = Math.abs(modelPred - vegasLine);
   
-  // Convert American odds to implied probability
-  const vegasProb = vegasLine > 0 ? 100 / (vegasLine + 100) : Math.abs(vegasLine) / (Math.abs(vegasLine) + 100);
+  // Convert American odds to decimal for Kelly calculation
+  const decimalOdds = americanOdds > 0 ? (americanOdds / 100) + 1 : (100 / Math.abs(americanOdds)) + 1;
   
-  // Edge in probability terms
-  const edgeProb = modelProb - vegasProb;
-  
-  // Kelly criterion: f = (bp - q) / b where b = net odds, p = win prob, q = lose prob
-  const decimalOdds = vegasLine > 0 ? (vegasLine / 100) + 1 : (100 / Math.abs(vegasLine)) + 1;
+  // Kelly criterion: f = (bp - q) / b where b = net odds (decimal - 1), p = win prob, q = lose prob
   const b = decimalOdds - 1;
-  const kelly = edgeProb > 0 ? (b * modelProb - (1 - modelProb)) / b : 0;
+  const q = 1 - modelProb;
+  const kelly = b > 0 ? (b * modelProb - q) / b : 0;
   
   // Cap at 5% of bankroll (quarter Kelly for safety)
   const kellyFraction = Math.min(Math.max(kelly * 0.25, 0), 0.05);
   const betSize = Math.round(bankroll * kellyFraction);
   
+  // Edge in percent terms (points / abs(vegasLine))
+  const edgePercent = (edgePoints / Math.abs(vegasLine || 1)) * 100;
+  
   return {
     edgePoints: parseFloat(edgePoints.toFixed(1)),
-    edgeProb: parseFloat((edgeProb * 100).toFixed(1)),
+    edgePercent: parseFloat(edgePercent.toFixed(1)),
     kellyFraction: parseFloat((kellyFraction * 100).toFixed(2)),
     betSize,
     units: parseFloat((betSize / 10).toFixed(1)) // $10/unit
@@ -500,22 +501,29 @@ export default async (request, context) => {
       const opportunities = [];
       
       // Spread opportunity
-      if (gameVegasLines.spread?.home != null) {
+      if (gameVegasLines.spread?.home != null && gameVegasLines.spread?.homePrice != null) {
         const spreadEdge = calculateEdgeAndKelly(
           spreadPred,
-          gameVegasLines.spread.home,
+          gameVegasLines.spread.home,       // Point spread (e.g., -5.5)
+          gameVegasLines.spread.homePrice,  // American odds (e.g., -110)
           winProb
         );
         
         if (spreadEdge && spreadEdge.edgePoints >= 3) { // Only show 3+ point edges
+          // Determine which side to bet based on model vs Vegas
+          const betHome = spreadPred > gameVegasLines.spread.home;
+          const pickTeam = betHome ? home.team.abbreviation : away.team.abbreviation;
+          const pickLine = betHome ? gameVegasLines.spread.home : -gameVegasLines.spread.home;
+          const pickSign = pickLine >= 0 ? '+' : '';
+          
           opportunities.push({
             market: 'Spread',
-            pick: spreadPred > 0 ? `${home.team.abbreviation} ${gameVegasLines.spread.home}` : `${away.team.abbreviation} +${Math.abs(gameVegasLines.spread.home)}`,
+            pick: `${pickTeam} ${pickSign}${pickLine}`,
             modelLine: spreadPred.toFixed(1),
             vegasLine: gameVegasLines.spread.home,
-            odds: gameVegasLines.spread.homePrice, // American odds
+            odds: gameVegasLines.spread.homePrice, // American odds for display
             edge: spreadEdge.edgePoints,
-            edgePercent: spreadEdge.edgeProb,
+            edgePercent: spreadEdge.edgePercent,
             kelly: spreadEdge.kellyFraction,
             betSize: spreadEdge.betSize,
             units: spreadEdge.units,
