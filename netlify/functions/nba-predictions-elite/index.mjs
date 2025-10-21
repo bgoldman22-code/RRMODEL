@@ -40,6 +40,7 @@ async function fetchVegasLines(gameIds, isPreseason = false) {
     
     const data = await response.json();
     console.log('[NBA Elite] Odds API returned:', data?.length || 0, 'games');
+    console.log('[NBA Elite] Remaining requests:', response.headers.get('x-requests-remaining'));
     
     const linesMap = {};
     
@@ -115,6 +116,73 @@ async function fetchVegasLines(gameIds, isPreseason = false) {
       
       linesMap[key] = bestLines;
     }
+    
+    // STEP 2: Fetch team totals for each game (requires separate API call per event)
+    // Team totals are in "Additional Markets" and require /events/{eventId}/odds endpoint
+    console.log('[NBA Elite] Fetching team totals for', data?.length || 0, 'games...');
+    
+    for (const game of data || []) {
+      const awayAbbrev = teamAbbrevMap[game.away_team];
+      const homeAbbrev = teamAbbrevMap[game.home_team];
+      const key = `${awayAbbrev}_${homeAbbrev}`;
+      
+      if (!linesMap[key]) continue;
+      
+      try {
+        // Fetch team totals from event-specific endpoint
+        const eventUrl = `https://api.the-odds-api.com/v4/sports/${sportKey}/events/${game.id}/odds?apiKey=${ODDS_API_KEY}&regions=us&markets=team_totals&oddsFormat=american`;
+        const eventResponse = await fetch(eventUrl);
+        
+        if (eventResponse.ok) {
+          const eventData = await eventResponse.json();
+          
+          // Find best team total lines
+          for (const book of eventData.bookmakers || []) {
+            for (const market of book.markets || []) {
+              if (market.key === 'team_totals') {
+                const homeTeamTotalOver = market.outcomes.find(o => 
+                  o.name === game.home_team && o.description === 'Over'
+                );
+                const homeTeamTotalUnder = market.outcomes.find(o => 
+                  o.name === game.home_team && o.description === 'Under'
+                );
+                const awayTeamTotalOver = market.outcomes.find(o => 
+                  o.name === game.away_team && o.description === 'Over'
+                );
+                const awayTeamTotalUnder = market.outcomes.find(o => 
+                  o.name === game.away_team && o.description === 'Under'
+                );
+                
+                if (homeTeamTotalOver && homeTeamTotalUnder) {
+                  linesMap[key].teamTotals = linesMap[key].teamTotals || {};
+                  linesMap[key].teamTotals.home = {
+                    line: homeTeamTotalOver.point,
+                    overPrice: homeTeamTotalOver.price,
+                    underPrice: homeTeamTotalUnder.price,
+                    book: book.key
+                  };
+                }
+                
+                if (awayTeamTotalOver && awayTeamTotalUnder) {
+                  linesMap[key].teamTotals = linesMap[key].teamTotals || {};
+                  linesMap[key].teamTotals.away = {
+                    line: awayTeamTotalOver.point,
+                    overPrice: awayTeamTotalOver.price,
+                    underPrice: awayTeamTotalUnder.price,
+                    book: book.key
+                  };
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log(`[NBA Elite] Failed to fetch team totals for ${key}:`, err.message);
+      }
+    }
+    
+    const gamesWithTeamTotals = Object.values(linesMap).filter(g => g.teamTotals).length;
+    console.log(`[NBA Elite] Found team totals for ${gamesWithTeamTotals} games`);
     
     console.log(`[NBA Elite] Fetched Vegas lines for ${Object.keys(linesMap).length} games`);
     return linesMap;
@@ -840,13 +908,67 @@ export default async (request, context) => {
       }
       
       // 3. TEAM TOTALS (if we have the lines)
-      let teamTotalOpp = null;
+      const teamTotalOpps = [];
+      
       // Home team total
       const homeTeamTotal = homeExpectedPts;
       const awayTeamTotal = awayExpectedPts;
       
-      // Note: Most books don't provide team totals via API, but we can project them
-      // For now, we calculate but don't show unless we have actual lines
+      if (gameVegasLines.teamTotals?.home) {
+        const homeTeamEdge = Math.abs(homeTeamTotal - gameVegasLines.teamTotals.home.line);
+        
+        if (homeTeamEdge >= 3) {
+          const pickOver = homeTeamTotal > gameVegasLines.teamTotals.home.line;
+          const homeTeamOdds = pickOver ? gameVegasLines.teamTotals.home.overPrice : gameVegasLines.teamTotals.home.underPrice;
+          
+          const homeTeamImpliedProb = Math.abs(homeTeamOdds) / (Math.abs(homeTeamOdds) + 100);
+          const homeTeamEdgePercent = (homeTeamEdge / gameVegasLines.teamTotals.home.line) * 100;
+          
+          teamTotalOpps.push({
+            market: 'Team Total',
+            team: home.team.displayName,
+            pick: pickOver ? `Over ${gameVegasLines.teamTotals.home.line}` : `Under ${gameVegasLines.teamTotals.home.line}`,
+            modelLine: homeTeamTotal.toFixed(1),
+            vegasLine: gameVegasLines.teamTotals.home.line,
+            odds: homeTeamOdds,
+            edge: homeTeamEdge.toFixed(1),
+            edgePercent: homeTeamEdgePercent,
+            kelly: null,
+            betSize: null,
+            units: null,
+            book: gameVegasLines.teamTotals.home.book,
+            expectedValue: homeTeamEdgePercent * 40 // Slightly less than game total
+          });
+        }
+      }
+      
+      if (gameVegasLines.teamTotals?.away) {
+        const awayTeamEdge = Math.abs(awayTeamTotal - gameVegasLines.teamTotals.away.line);
+        
+        if (awayTeamEdge >= 3) {
+          const pickOver = awayTeamTotal > gameVegasLines.teamTotals.away.line;
+          const awayTeamOdds = pickOver ? gameVegasLines.teamTotals.away.overPrice : gameVegasLines.teamTotals.away.underPrice;
+          
+          const awayTeamImpliedProb = Math.abs(awayTeamOdds) / (Math.abs(awayTeamOdds) + 100);
+          const awayTeamEdgePercent = (awayTeamEdge / gameVegasLines.teamTotals.away.line) * 100;
+          
+          teamTotalOpps.push({
+            market: 'Team Total',
+            team: away.team.displayName,
+            pick: pickOver ? `Over ${gameVegasLines.teamTotals.away.line}` : `Under ${gameVegasLines.teamTotals.away.line}`,
+            modelLine: awayTeamTotal.toFixed(1),
+            vegasLine: gameVegasLines.teamTotals.away.line,
+            odds: awayTeamOdds,
+            edge: awayTeamEdge.toFixed(1),
+            edgePercent: awayTeamEdgePercent,
+            kelly: null,
+            betSize: null,
+            units: null,
+            book: gameVegasLines.teamTotals.away.book,
+            expectedValue: awayTeamEdgePercent * 40
+          });
+        }
+      }
       
       // 4. TOTAL OPPORTUNITY  
       let totalOpp = null;
@@ -879,15 +1001,15 @@ export default async (request, context) => {
       }
       
       // ELITE DECISION: Recommend the best EV play(s)
-      // Priority: 1) Best EV/Kelly 2) Spread if close game 3) ML if blowout 4) Total if both
+      // Priority: 1) Best EV/Kelly 2) Spread if close game 3) ML if blowout 4) Total/Team Total if both
       
-      const allOpps = [spreadOpp, moneylineOpp, totalOpp].filter(Boolean);
+      const allOpps = [spreadOpp, moneylineOpp, totalOpp, ...teamTotalOpps].filter(Boolean);
       
       // Sort by expected value (EV)
       allOpps.sort((a, b) => (b.expectedValue || 0) - (a.expectedValue || 0));
       
-      // Add top 2 opportunities (or all if fewer)
-      opportunities.push(...allOpps.slice(0, 2));
+      // Add top 3 opportunities (or all if fewer)
+      opportunities.push(...allOpps.slice(0, 3));
       
       // Store team totals for advanced users
       const teamTotals = {
