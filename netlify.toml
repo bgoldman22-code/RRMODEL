@@ -30,11 +30,11 @@
 
 # NHL SOG Scanner - disable bundling completely to preserve ES modules
 [functions."nhl-sog-scanner-elite-fast"]
-  node_bundler = "esbuild"
+  node_bundler = "zisi"
   included_files = ["netlify/functions/_lib/**"]
 
 [functions."nhl-sog-debug"]
-  node_bundler = "esbuild"
+  node_bundler = "zisi"
   included_files = ["netlify/functions/_lib/**"]
 
 # nfl-receiving-scanner-elite will use global [functions] config
