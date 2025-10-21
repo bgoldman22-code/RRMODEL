@@ -476,6 +476,16 @@ function gamma(z) {
   return (z - 1) * gamma(z - 1);
 }
 
+// Named exports for direct import
+export {
+  projectSOGElite,
+  calculateZINBProbability,
+  preloadCache,
+  loadPlayerStats,
+  loadTeamStats
+};
+
+// Default export for compatibility
 export default {
   projectSOGElite,
   calculateZINBProbability,
