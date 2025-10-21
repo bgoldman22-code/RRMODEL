@@ -71,50 +71,164 @@ async function fetchVegasLines(gameIds, isPreseason = false) {
       // Key by abbreviations to match ESPN data
       const key = `${awayAbbrev}_${homeAbbrev}`;
       
-      const bestLines = {
-        spread: { home: null, away: null, book: null },
-        total: { over: null, under: null, line: null, book: null },
-        moneyline: { home: null, away: null, book: null }
-      };
+      // CRITICAL: Use same-book pairs for fair pricing to avoid phantom midpoint bias
+      // We'll collect all books' pairs, find the tightest (lowest vig), and use that for edge calc
+      // Then separately track the best single-sided odds for placement
       
-      // Find best lines across books
+      const spreadPairs = [];
+      const totalPairs = [];
+      const mlPairs = [];
+      
+      // Collect same-book pairs from each bookmaker
       for (const book of game.bookmakers || []) {
+        let spreadPair = null;
+        let totalPair = null;
+        let mlPair = null;
+        
         for (const market of book.markets || []) {
           if (market.key === 'spreads') {
             const homeSpread = market.outcomes.find(o => o.name === game.home_team);
-            if (homeSpread && (!bestLines.spread.home || homeSpread.price > bestLines.spread.home.price)) {
-              bestLines.spread = {
-                home: homeSpread.point,
+            const awaySpread = market.outcomes.find(o => o.name === game.away_team);
+            if (homeSpread && awaySpread) {
+              spreadPair = {
+                book: book.key,
+                homeLine: homeSpread.point,
                 homePrice: homeSpread.price,
-                book: book.key
+                awayLine: awaySpread.point,
+                awayPrice: awaySpread.price,
+                vig: Math.abs(homeSpread.price) + Math.abs(awaySpread.price) - 200
               };
             }
           }
           else if (market.key === 'totals') {
             const over = market.outcomes.find(o => o.name === 'Over');
-            if (over) {
-              bestLines.total = {
+            const under = market.outcomes.find(o => o.name === 'Under');
+            if (over && under) {
+              totalPair = {
+                book: book.key,
                 line: over.point,
                 overPrice: over.price,
-                underPrice: market.outcomes.find(o => o.name === 'Under')?.price,
-                book: book.key
+                underPrice: under.price,
+                vig: Math.abs(over.price) + Math.abs(under.price) - 200
               };
             }
           }
           else if (market.key === 'h2h') {
             const homeMl = market.outcomes.find(o => o.name === game.home_team);
-            if (homeMl) {
-              bestLines.moneyline = {
-                home: homeMl.price,
-                away: market.outcomes.find(o => o.name === game.away_team)?.price,
-                book: book.key
+            const awayMl = market.outcomes.find(o => o.name === game.away_team);
+            if (homeMl && awayMl) {
+              mlPair = {
+                book: book.key,
+                homePrice: homeMl.price,
+                awayPrice: awayMl.price,
+                // Vig calc for moneyline is more complex, approximate
+                vig: 0 // Will use implied prob method
               };
+              // Calculate implied probabilities
+              const homeImplied = homeMl.price < 0 
+                ? Math.abs(homeMl.price) / (Math.abs(homeMl.price) + 100)
+                : 100 / (homeMl.price + 100);
+              const awayImplied = awayMl.price < 0
+                ? Math.abs(awayMl.price) / (Math.abs(awayMl.price) + 100)
+                : 100 / (awayMl.price + 100);
+              mlPair.vig = (homeImplied + awayImplied - 1) * 100;
             }
           }
         }
+        
+        if (spreadPair) spreadPairs.push(spreadPair);
+        if (totalPair) totalPairs.push(totalPair);
+        if (mlPair) mlPairs.push(mlPair);
       }
       
-      linesMap[key] = bestLines;
+      // Find tightest pairs (lowest vig) for FAIR PRICING (edge calculation)
+      const fairSpread = spreadPairs.length > 0 
+        ? spreadPairs.reduce((best, curr) => curr.vig < best.vig ? curr : best)
+        : null;
+      
+      const fairTotal = totalPairs.length > 0
+        ? totalPairs.reduce((best, curr) => curr.vig < best.vig ? curr : best)
+        : null;
+      
+      const fairML = mlPairs.length > 0
+        ? mlPairs.reduce((best, curr) => curr.vig < best.vig ? curr : best)
+        : null;
+      
+      // Find best single-sided odds for PLACEMENT (where to actually bet)
+      let bestSpreadPrice = null;
+      let bestTotalPrice = null;
+      let bestMLPrice = null;
+      
+      for (const pair of spreadPairs) {
+        if (!bestSpreadPrice || pair.homePrice > bestSpreadPrice.homePrice) {
+          bestSpreadPrice = { ...pair };
+        }
+      }
+      
+      for (const pair of totalPairs) {
+        if (!bestTotalPrice || pair.overPrice > bestTotalPrice.overPrice) {
+          bestTotalPrice = { ...pair };
+        }
+      }
+      
+      for (const pair of mlPairs) {
+        if (!bestMLPrice || pair.homePrice > bestMLPrice.homePrice) {
+          bestMLPrice = { ...pair };
+        }
+      }
+      
+      // Store both fair (for edge calc) and best (for placement)
+      linesMap[key] = {
+        spread: {
+          // Fair pair (same book, tightest vig) - use for EDGE calculation
+          fair: fairSpread ? {
+            homeLine: fairSpread.homeLine,
+            awayLine: fairSpread.awayLine,
+            homePrice: fairSpread.homePrice,
+            awayPrice: fairSpread.awayPrice,
+            book: fairSpread.book,
+            vig: fairSpread.vig
+          } : null,
+          // Best placement odds (may be different book)
+          placement: bestSpreadPrice ? {
+            homeLine: bestSpreadPrice.homeLine,
+            homePrice: bestSpreadPrice.homePrice,
+            book: bestSpreadPrice.book
+          } : null
+        },
+        total: {
+          // Fair pair (same book, tightest vig)
+          fair: fairTotal ? {
+            line: fairTotal.line,
+            overPrice: fairTotal.overPrice,
+            underPrice: fairTotal.underPrice,
+            book: fairTotal.book,
+            vig: fairTotal.vig
+          } : null,
+          // Best placement odds
+          placement: bestTotalPrice ? {
+            line: bestTotalPrice.line,
+            overPrice: bestTotalPrice.overPrice,
+            underPrice: bestTotalPrice.underPrice,
+            book: bestTotalPrice.book
+          } : null
+        },
+        moneyline: {
+          // Fair pair (same book, lowest vig)
+          fair: fairML ? {
+            homePrice: fairML.homePrice,
+            awayPrice: fairML.awayPrice,
+            book: fairML.book,
+            vig: fairML.vig
+          } : null,
+          // Best placement odds
+          placement: bestMLPrice ? {
+            homePrice: bestMLPrice.homePrice,
+            awayPrice: bestMLPrice.awayPrice,
+            book: bestMLPrice.book
+          } : null
+        }
+      };
     }
     
     // STEP 2: Fetch team totals for each game (requires separate API call per event)
@@ -136,7 +250,10 @@ async function fetchVegasLines(gameIds, isPreseason = false) {
         if (eventResponse.ok) {
           const eventData = await eventResponse.json();
           
-          // Find best team total lines
+          // Collect same-book pairs for team totals (same logic as above)
+          const homeTeamTotalPairs = [];
+          const awayTeamTotalPairs = [];
+          
           for (const book of eventData.bookmakers || []) {
             for (const market of book.markets || []) {
               if (market.key === 'team_totals') {
@@ -154,26 +271,71 @@ async function fetchVegasLines(gameIds, isPreseason = false) {
                 );
                 
                 if (homeTeamTotalOver && homeTeamTotalUnder) {
-                  linesMap[key].teamTotals = linesMap[key].teamTotals || {};
-                  linesMap[key].teamTotals.home = {
+                  homeTeamTotalPairs.push({
+                    book: book.key,
                     line: homeTeamTotalOver.point,
                     overPrice: homeTeamTotalOver.price,
                     underPrice: homeTeamTotalUnder.price,
-                    book: book.key
-                  };
+                    vig: Math.abs(homeTeamTotalOver.price) + Math.abs(homeTeamTotalUnder.price) - 200
+                  });
                 }
                 
                 if (awayTeamTotalOver && awayTeamTotalUnder) {
-                  linesMap[key].teamTotals = linesMap[key].teamTotals || {};
-                  linesMap[key].teamTotals.away = {
+                  awayTeamTotalPairs.push({
+                    book: book.key,
                     line: awayTeamTotalOver.point,
                     overPrice: awayTeamTotalOver.price,
                     underPrice: awayTeamTotalUnder.price,
-                    book: book.key
-                  };
+                    vig: Math.abs(awayTeamTotalOver.price) + Math.abs(awayTeamTotalUnder.price) - 200
+                  });
                 }
               }
             }
+          }
+          
+          // Find tightest pairs and best placement odds
+          if (homeTeamTotalPairs.length > 0) {
+            const fairHomeTT = homeTeamTotalPairs.reduce((best, curr) => curr.vig < best.vig ? curr : best);
+            const bestHomeTT = homeTeamTotalPairs.reduce((best, curr) => curr.overPrice > best.overPrice ? curr : best);
+            
+            linesMap[key].teamTotals = linesMap[key].teamTotals || {};
+            linesMap[key].teamTotals.home = {
+              fair: {
+                line: fairHomeTT.line,
+                overPrice: fairHomeTT.overPrice,
+                underPrice: fairHomeTT.underPrice,
+                book: fairHomeTT.book,
+                vig: fairHomeTT.vig
+              },
+              placement: {
+                line: bestHomeTT.line,
+                overPrice: bestHomeTT.overPrice,
+                underPrice: bestHomeTT.underPrice,
+                book: bestHomeTT.book
+              }
+            };
+          }
+          
+          if (awayTeamTotalPairs.length > 0) {
+            const fairAwayTT = awayTeamTotalPairs.reduce((best, curr) => curr.vig < best.vig ? curr : best);
+            const bestAwayTT = awayTeamTotalPairs.reduce((best, curr) => curr.overPrice > best.overPrice ? curr : best);
+            
+            linesMap[key].teamTotals = linesMap[key].teamTotals || {};
+            linesMap[key].teamTotals.away = {
+              fair: {
+                line: fairAwayTT.line,
+                overPrice: fairAwayTT.overPrice,
+                underPrice: fairAwayTT.underPrice,
+                book: fairAwayTT.book,
+                vig: fairAwayTT.vig
+              },
+              placement: {
+                line: bestAwayTT.line,
+                overPrice: bestAwayTT.overPrice,
+                underPrice: bestAwayTT.underPrice,
+                book: bestAwayTT.book
+              }
+            };
           }
         }
       } catch (err) {
@@ -814,36 +976,49 @@ export default async (request, context) => {
       
       // 1. SPREAD OPPORTUNITY
       let spreadOpp = null;
-      if (gameVegasLines.spread?.home != null && gameVegasLines.spread?.homePrice != null) {
+      if (gameVegasLines.spread?.fair?.homeLine != null) {
         const modelSpreadVegasConvention = -spreadPred;
+        
+        // CRITICAL: Use FAIR pair (same book, tightest vig) for edge calculation
+        const fairLine = gameVegasLines.spread.fair.homeLine;
+        const fairHomePrice = gameVegasLines.spread.fair.homePrice;
+        const fairAwayPrice = gameVegasLines.spread.fair.awayPrice;
         
         const spreadEdge = calculateEdgeAndKelly(
           modelSpreadVegasConvention,
-          gameVegasLines.spread.home,
-          gameVegasLines.spread.homePrice,
+          fairLine,
+          fairHomePrice, // Use fair price for edge calc
           winProb,
           5000,
           seasonAdjustment // Apply early season sizing reduction
         );
         
         if (spreadEdge && spreadEdge.edgePoints >= 3) {
-          const betHome = spreadPred > gameVegasLines.spread.home;
+          const betHome = spreadPred > fairLine;
           const pickTeam = betHome ? home.team.abbreviation : away.team.abbreviation;
-          const pickLine = betHome ? gameVegasLines.spread.home : -gameVegasLines.spread.home;
+          
+          // Use PLACEMENT odds (best available price) for actual bet recommendation
+          const placementLine = gameVegasLines.spread.placement?.homeLine || fairLine;
+          const placementPrice = gameVegasLines.spread.placement?.homePrice || fairHomePrice;
+          const placementBook = gameVegasLines.spread.placement?.book || gameVegasLines.spread.fair.book;
+          
+          const pickLine = betHome ? placementLine : -placementLine;
           const pickSign = pickLine >= 0 ? '+' : '';
           
           spreadOpp = {
             market: 'Spread',
             pick: `${pickTeam} ${pickSign}${pickLine}`,
             modelLine: spreadPred.toFixed(1),
-            vegasLine: gameVegasLines.spread.home,
-            odds: gameVegasLines.spread.homePrice,
+            vegasLine: fairLine, // Show fair line for transparency
+            odds: placementPrice, // Use placement price
             edge: spreadEdge.edgePoints,
             edgePercent: spreadEdge.edgePercent,
             kelly: spreadEdge.kellyFraction,
             betSize: spreadEdge.betSize,
             units: spreadEdge.units,
-            book: gameVegasLines.spread.book,
+            book: placementBook,
+            fairBook: gameVegasLines.spread.fair.book, // Track which book was used for fair calc
+            fairVig: gameVegasLines.spread.fair.vig.toFixed(1), // Log vig for audit
             expectedValue: spreadEdge.edgePercent * spreadEdge.betSize // EV in dollars
           };
         }
@@ -851,31 +1026,37 @@ export default async (request, context) => {
       
       // 2. MONEYLINE OPPORTUNITY (for close games or high confidence)
       let moneylineOpp = null;
-      if (gameVegasLines.moneyline?.home != null && gameVegasLines.moneyline?.away != null) {
-        // Determine which side has value
-        const homeML = gameVegasLines.moneyline.home;
-        const awayML = gameVegasLines.moneyline.away;
+      if (gameVegasLines.moneyline?.fair?.homePrice != null) {
+        // Use FAIR pair (same book, lowest vig) for edge calculation
+        const fairHomeML = gameVegasLines.moneyline.fair.homePrice;
+        const fairAwayML = gameVegasLines.moneyline.fair.awayPrice;
         
         // Convert moneyline to implied probability
-        const homeImpliedProb = homeML > 0 
-          ? 100 / (homeML + 100) 
-          : Math.abs(homeML) / (Math.abs(homeML) + 100);
-        const awayImpliedProb = awayML > 0
-          ? 100 / (awayML + 100)
-          : Math.abs(awayML) / (Math.abs(awayML) + 100);
+        const homeImpliedProb = fairHomeML > 0 
+          ? 100 / (fairHomeML + 100) 
+          : Math.abs(fairHomeML) / (Math.abs(fairHomeML) + 100);
+        const awayImpliedProb = fairAwayML > 0
+          ? 100 / (fairAwayML + 100)
+          : Math.abs(fairAwayML) / (Math.abs(fairAwayML) + 100);
         
         // Model win probability (already calculated)
         const homeWinProb = winProb;
         const awayWinProb = 1 - winProb;
         
-        // Edge in probability terms
+        // Edge in probability terms (using fair odds)
         const homeMLEdge = homeWinProb - homeImpliedProb;
         const awayMLEdge = awayWinProb - awayImpliedProb;
         
         // Pick the side with positive edge (if any)
         if (homeMLEdge > 0.03 || awayMLEdge > 0.03) { // 3% edge minimum
           const pickHome = homeMLEdge > awayMLEdge;
-          const pickOdds = pickHome ? homeML : awayML;
+          
+          // Use PLACEMENT odds (best available) for actual bet
+          const placementHomeML = gameVegasLines.moneyline.placement?.homePrice || fairHomeML;
+          const placementAwayML = gameVegasLines.moneyline.placement?.awayPrice || fairAwayML;
+          const placementBook = gameVegasLines.moneyline.placement?.book || gameVegasLines.moneyline.fair.book;
+          
+          const pickOdds = pickHome ? placementHomeML : placementAwayML;
           const pickProb = pickHome ? homeWinProb : awayWinProb;
           const pickEdge = pickHome ? homeMLEdge : awayMLEdge;
           
@@ -894,13 +1075,15 @@ export default async (request, context) => {
               pick: pickHome ? home.team.abbreviation : away.team.abbreviation,
               modelWinProb: (pickProb * 100).toFixed(1) + '%',
               impliedProb: ((pickHome ? homeImpliedProb : awayImpliedProb) * 100).toFixed(1) + '%',
-              odds: pickOdds,
+              odds: pickOdds, // Placement odds
               edge: (pickEdge * 100).toFixed(1) + '%',
               edgePercent: pickEdge * 100,
               kelly: mlKelly.kellyFraction,
               betSize: mlKelly.betSize,
               units: mlKelly.units,
-              book: gameVegasLines.moneyline.book,
+              book: placementBook,
+              fairBook: gameVegasLines.moneyline.fair.book,
+              fairVig: gameVegasLines.moneyline.fair.vig.toFixed(1),
               expectedValue: pickEdge * 100 * mlKelly.betSize
             };
           }
@@ -914,57 +1097,75 @@ export default async (request, context) => {
       const homeTeamTotal = homeExpectedPts;
       const awayTeamTotal = awayExpectedPts;
       
-      if (gameVegasLines.teamTotals?.home) {
-        const homeTeamEdge = Math.abs(homeTeamTotal - gameVegasLines.teamTotals.home.line);
+      if (gameVegasLines.teamTotals?.home?.fair) {
+        const fairLine = gameVegasLines.teamTotals.home.fair.line;
+        const homeTeamEdge = Math.abs(homeTeamTotal - fairLine);
         
         if (homeTeamEdge >= 3) {
-          const pickOver = homeTeamTotal > gameVegasLines.teamTotals.home.line;
-          const homeTeamOdds = pickOver ? gameVegasLines.teamTotals.home.overPrice : gameVegasLines.teamTotals.home.underPrice;
+          const pickOver = homeTeamTotal > fairLine;
           
-          const homeTeamImpliedProb = Math.abs(homeTeamOdds) / (Math.abs(homeTeamOdds) + 100);
-          const homeTeamEdgePercent = (homeTeamEdge / gameVegasLines.teamTotals.home.line) * 100;
+          // Use fair odds for edge, placement odds for bet
+          const fairOdds = pickOver ? gameVegasLines.teamTotals.home.fair.overPrice : gameVegasLines.teamTotals.home.fair.underPrice;
+          const placementOdds = pickOver 
+            ? (gameVegasLines.teamTotals.home.placement?.overPrice || fairOdds)
+            : (gameVegasLines.teamTotals.home.placement?.underPrice || fairOdds);
+          const placementBook = gameVegasLines.teamTotals.home.placement?.book || gameVegasLines.teamTotals.home.fair.book;
+          
+          const homeTeamImpliedProb = Math.abs(fairOdds) / (Math.abs(fairOdds) + 100);
+          const homeTeamEdgePercent = (homeTeamEdge / fairLine) * 100;
           
           teamTotalOpps.push({
             market: 'Team Total',
             team: home.team.displayName,
-            pick: pickOver ? `Over ${gameVegasLines.teamTotals.home.line}` : `Under ${gameVegasLines.teamTotals.home.line}`,
+            pick: pickOver ? `Over ${fairLine}` : `Under ${fairLine}`,
             modelLine: homeTeamTotal.toFixed(1),
-            vegasLine: gameVegasLines.teamTotals.home.line,
-            odds: homeTeamOdds,
+            vegasLine: fairLine,
+            odds: placementOdds, // Placement odds
             edge: homeTeamEdge.toFixed(1),
             edgePercent: homeTeamEdgePercent,
             kelly: null,
             betSize: null,
             units: null,
-            book: gameVegasLines.teamTotals.home.book,
+            book: placementBook,
+            fairBook: gameVegasLines.teamTotals.home.fair.book,
+            fairVig: gameVegasLines.teamTotals.home.fair.vig.toFixed(1),
             expectedValue: homeTeamEdgePercent * 40 // Slightly less than game total
           });
         }
       }
       
-      if (gameVegasLines.teamTotals?.away) {
-        const awayTeamEdge = Math.abs(awayTeamTotal - gameVegasLines.teamTotals.away.line);
+      if (gameVegasLines.teamTotals?.away?.fair) {
+        const fairLine = gameVegasLines.teamTotals.away.fair.line;
+        const awayTeamEdge = Math.abs(awayTeamTotal - fairLine);
         
         if (awayTeamEdge >= 3) {
-          const pickOver = awayTeamTotal > gameVegasLines.teamTotals.away.line;
-          const awayTeamOdds = pickOver ? gameVegasLines.teamTotals.away.overPrice : gameVegasLines.teamTotals.away.underPrice;
+          const pickOver = awayTeamTotal > fairLine;
           
-          const awayTeamImpliedProb = Math.abs(awayTeamOdds) / (Math.abs(awayTeamOdds) + 100);
-          const awayTeamEdgePercent = (awayTeamEdge / gameVegasLines.teamTotals.away.line) * 100;
+          // Use fair odds for edge, placement odds for bet
+          const fairOdds = pickOver ? gameVegasLines.teamTotals.away.fair.overPrice : gameVegasLines.teamTotals.away.fair.underPrice;
+          const placementOdds = pickOver 
+            ? (gameVegasLines.teamTotals.away.placement?.overPrice || fairOdds)
+            : (gameVegasLines.teamTotals.away.placement?.underPrice || fairOdds);
+          const placementBook = gameVegasLines.teamTotals.away.placement?.book || gameVegasLines.teamTotals.away.fair.book;
+          
+          const awayTeamImpliedProb = Math.abs(fairOdds) / (Math.abs(fairOdds) + 100);
+          const awayTeamEdgePercent = (awayTeamEdge / fairLine) * 100;
           
           teamTotalOpps.push({
             market: 'Team Total',
             team: away.team.displayName,
-            pick: pickOver ? `Over ${gameVegasLines.teamTotals.away.line}` : `Under ${gameVegasLines.teamTotals.away.line}`,
+            pick: pickOver ? `Over ${fairLine}` : `Under ${fairLine}`,
             modelLine: awayTeamTotal.toFixed(1),
-            vegasLine: gameVegasLines.teamTotals.away.line,
-            odds: awayTeamOdds,
+            vegasLine: fairLine,
+            odds: placementOdds, // Placement odds
             edge: awayTeamEdge.toFixed(1),
             edgePercent: awayTeamEdgePercent,
             kelly: null,
             betSize: null,
             units: null,
-            book: gameVegasLines.teamTotals.away.book,
+            book: placementBook,
+            fairBook: gameVegasLines.teamTotals.away.fair.book,
+            fairVig: gameVegasLines.teamTotals.away.fair.vig.toFixed(1),
             expectedValue: awayTeamEdgePercent * 40
           });
         }
@@ -972,29 +1173,38 @@ export default async (request, context) => {
       
       // 4. TOTAL OPPORTUNITY  
       let totalOpp = null;
-      if (gameVegasLines.total?.line != null) {
-        const totalEdge = Math.abs(totalPred - gameVegasLines.total.line);
+      if (gameVegasLines.total?.fair?.line != null) {
+        const fairLine = gameVegasLines.total.fair.line;
+        const totalEdge = Math.abs(totalPred - fairLine);
         
         if (totalEdge >= 4) {
-          const pickOver = totalPred > gameVegasLines.total.line;
-          const totalOdds = pickOver ? gameVegasLines.total.overPrice : gameVegasLines.total.underPrice;
+          const pickOver = totalPred > fairLine;
+          
+          // Use fair odds for edge, placement odds for bet
+          const fairOdds = pickOver ? gameVegasLines.total.fair.overPrice : gameVegasLines.total.fair.underPrice;
+          const placementOdds = pickOver 
+            ? (gameVegasLines.total.placement?.overPrice || fairOdds)
+            : (gameVegasLines.total.placement?.underPrice || fairOdds);
+          const placementBook = gameVegasLines.total.placement?.book || gameVegasLines.total.fair.book;
           
           // Rough Kelly for totals (simplified)
-          const totalImpliedProb = Math.abs(totalOdds) / (Math.abs(totalOdds) + 100);
-          const totalEdgePercent = (totalEdge / gameVegasLines.total.line) * 100;
+          const totalImpliedProb = Math.abs(fairOdds) / (Math.abs(fairOdds) + 100);
+          const totalEdgePercent = (totalEdge / fairLine) * 100;
           
           totalOpp = {
             market: 'Total',
-            pick: pickOver ? `Over ${gameVegasLines.total.line}` : `Under ${gameVegasLines.total.line}`,
+            pick: pickOver ? `Over ${fairLine}` : `Under ${fairLine}`,
             modelLine: totalPred.toFixed(1),
-            vegasLine: gameVegasLines.total.line,
-            odds: totalOdds,
+            vegasLine: fairLine,
+            odds: placementOdds, // Placement odds
             edge: totalEdge.toFixed(1),
             edgePercent: totalEdgePercent,
             kelly: null, // Would need more sophisticated total prob model
             betSize: null,
             units: null,
-            book: gameVegasLines.total.book,
+            book: placementBook,
+            fairBook: gameVegasLines.total.fair.book,
+            fairVig: gameVegasLines.total.fair.vig.toFixed(1),
             expectedValue: totalEdgePercent * 50 // Rough estimate
           };
         }
@@ -1097,21 +1307,27 @@ export default async (request, context) => {
           }
         },
         vegasLines: {
-          spread: gameVegasLines.spread?.home != null ? {
-            line: gameVegasLines.spread.home,
-            price: gameVegasLines.spread.homePrice,
-            book: gameVegasLines.spread.book
+          spread: gameVegasLines.spread?.fair?.homeLine != null ? {
+            line: gameVegasLines.spread.fair.homeLine,
+            price: gameVegasLines.spread.fair.homePrice,
+            fairBook: gameVegasLines.spread.fair.book,
+            placementBook: gameVegasLines.spread.placement?.book,
+            vig: gameVegasLines.spread.fair.vig
           } : null,
-          total: gameVegasLines.total?.line != null ? {
-            line: gameVegasLines.total.line,
-            overPrice: gameVegasLines.total.overPrice,
-            underPrice: gameVegasLines.total.underPrice,
-            book: gameVegasLines.total.book
+          total: gameVegasLines.total?.fair?.line != null ? {
+            line: gameVegasLines.total.fair.line,
+            overPrice: gameVegasLines.total.fair.overPrice,
+            underPrice: gameVegasLines.total.fair.underPrice,
+            fairBook: gameVegasLines.total.fair.book,
+            placementBook: gameVegasLines.total.placement?.book,
+            vig: gameVegasLines.total.fair.vig
           } : null,
-          moneyline: gameVegasLines.moneyline?.home != null ? {
-            home: gameVegasLines.moneyline.home,
-            away: gameVegasLines.moneyline.away,
-            book: gameVegasLines.moneyline.book
+          moneyline: gameVegasLines.moneyline?.fair?.homePrice != null ? {
+            home: gameVegasLines.moneyline.fair.homePrice,
+            away: gameVegasLines.moneyline.fair.awayPrice,
+            fairBook: gameVegasLines.moneyline.fair.book,
+            placementBook: gameVegasLines.moneyline.placement?.book,
+            vig: gameVegasLines.moneyline.fair.vig
           } : null
         },
         opportunities,
