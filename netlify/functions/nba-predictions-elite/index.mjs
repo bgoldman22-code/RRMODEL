@@ -994,7 +994,23 @@ export default async (request, context) => {
         );
         
         if (spreadEdge && spreadEdge.edgePoints >= 3) {
-          const betHome = spreadPred > fairLine;
+          // CRITICAL: Determine which side to bet
+          // Both modelSpreadVegasConvention and fairLine are from HOME team's perspective
+          // Negative = home favored, Positive = away favored
+          // 
+          // Example 1: Model has LAL -0.6 (home favored), Vegas has LAL +2.5 (away favored)
+          //   → Model is more bullish on home than Vegas → Bet home (LAL)
+          //   → -0.6 < +2.5 → betHome = TRUE ✅
+          //
+          // Example 2: Model has OKC -15.8, Vegas has OKC -6.5
+          //   → Model is more bullish on home than Vegas → Bet home (OKC)
+          //   → -15.8 < -6.5 → betHome = TRUE ✅
+          //
+          // Example 3: Model has Team +3.0 (away favored), Vegas has Team -2.0 (home favored)
+          //   → Model is less bullish on home than Vegas → Bet away
+          //   → +3.0 > -2.0 → betHome = FALSE ✅
+          
+          const betHome = modelSpreadVegasConvention < fairLine;
           const pickTeam = betHome ? home.team.abbreviation : away.team.abbreviation;
           
           // Use PLACEMENT odds (best available price) for actual bet recommendation
@@ -1002,6 +1018,10 @@ export default async (request, context) => {
           const placementPrice = gameVegasLines.spread.placement?.homePrice || fairHomePrice;
           const placementBook = gameVegasLines.spread.placement?.book || gameVegasLines.spread.fair.book;
           
+          // Pick line is what we're actually betting
+          // If betting home and line is negative (home favored), we take that
+          // If betting home and line is positive (away favored), we take the home side (positive)
+          // If betting away, flip the sign
           const pickLine = betHome ? placementLine : -placementLine;
           const pickSign = pickLine >= 0 ? '+' : '';
           
