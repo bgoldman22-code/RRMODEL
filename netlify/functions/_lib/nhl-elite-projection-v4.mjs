@@ -164,14 +164,29 @@ async function findPlayer(playerId, playerName, team) {
   const players = await loadPlayerStats();
   
   // Try by ID first
-  let player = players.find(p => p.playerId === playerId);
+  const pidNum = playerId != null ? Number(playerId) : NaN;
+  let player = players.find(p => Number(p.playerId) === pidNum);
   
   // Fallback: name + team
   if (!player && playerName && team) {
-    const nameLower = playerName.toLowerCase();
-    player = players.find(p => 
-      p.name.toLowerCase().includes(nameLower) && p.team === team
-    );
+    const normalize = (s) => (s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z\s]/g, '').replace(/\s+/g, ' ').trim();
+    const [firstRaw, ...rest] = (playerName || '').split(' ');
+    const first = normalize(firstRaw);
+    const last = normalize(rest.join(' '));
+    const full = normalize(playerName);
+
+    player = players.find(p => {
+      if ((p.team || '') !== team) return false;
+      const pn = normalize(p.name || '');
+      // Match full name, or last name match with optional first initial
+      if (pn === full) return true;
+      if (last && pn.endsWith(' ' + last)) {
+        if (!first) return true;
+        const pFirst = pn.split(' ')[0];
+        return pFirst && (pFirst === first || pFirst.charAt(0) === first.charAt(0));
+      }
+      return false;
+    });
   }
   
   return player;
