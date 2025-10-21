@@ -1,1 +1,48 @@
-[]
+[
+  {
+    "gameId": "401809243",
+    "date": "2025-10-21T23:30Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "25",
+      "name": "Oklahoma City Thunder",
+      "abbreviation": "OKC",
+      "score": "0",
+      "record": "0-0"
+    },
+    "awayTeam": {
+      "id": "10",
+      "name": "Houston Rockets",
+      "abbreviation": "HOU",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "Paycom Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401809244",
+    "date": "2025-10-22T02:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "13",
+      "name": "Los Angeles Lakers",
+      "abbreviation": "LAL",
+      "score": "0",
+      "record": "0-0"
+    },
+    "awayTeam": {
+      "id": "9",
+      "name": "Golden State Warriors",
+      "abbreviation": "GS",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "crypto.com Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  }
+]
