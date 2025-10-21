@@ -1,9 +1,9 @@
 /**
  * NHL SOG DEBUG ENDPOINT
  * Minimal endpoint to verify data loading and basic projection flow
+ * 
+ * BUNDLER FIX: Using dynamic imports to avoid ES module require() errors
  */
-
-import { loadPlayerStats, loadTeamStats, projectSOGElite } from './_lib/nhl-elite-projection-v4.mjs';
 
 export async function handler(event, context) {
   const headers = {
@@ -19,6 +19,9 @@ export async function handler(event, context) {
   try {
     const startTime = Date.now();
     console.log('🔍 Debug: Starting data load');
+
+    // Dynamic import to avoid ES module bundling errors
+    const { loadPlayerStats, loadTeamStats, projectSOGElite } = await import('./_lib/nhl-elite-projection-v4.mjs');
 
     // Step 1: Load stats
     const [players, teams] = await Promise.all([

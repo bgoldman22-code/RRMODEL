@@ -13,9 +13,9 @@
  * - 10-second timeout protection
  * - Graceful degradation if elite stats unavailable
  * - Early returns if taking too long
+ * 
+ * BUNDLER FIX: Using dynamic imports to avoid ES module require() errors
  */
-
-import { projectSOGElite, calculateZINBProbability, preloadCache, loadPlayerStats, loadTeamStats } from './_lib/nhl-elite-projection-v4.mjs';
 
 /**
  * Calculate Kelly Criterion stake with proper odds adjustment
@@ -170,7 +170,7 @@ function processRealOdds(oddsData) {
 /**
  * Generate opportunities using elite projection
  */
-async function generateEliteOpportunities(player, team, opponent, isHome, gameTime, venue, realOddsMap, gameId) {
+async function generateEliteOpportunities(player, team, opponent, isHome, gameTime, venue, realOddsMap, gameId, projectSOGElite, calculateZINBProbability) {
   try {
     const playerId = player.id;
     const playerName = `${player.firstName?.default || ''} ${player.lastName?.default || ''}`.trim();
@@ -319,6 +319,9 @@ export async function handler(event, context) {
   
   try {
     console.log('🚀 NHL Elite Scanner V4.0 starting...');
+    
+    // Dynamic import to avoid ES module bundling errors
+    const { projectSOGElite, calculateZINBProbability, preloadCache, loadPlayerStats, loadTeamStats } = await import('./_lib/nhl-elite-projection-v4.mjs');
     
     const queryParams = event.queryStringParameters || {};
     const minEdge = parseFloat(queryParams.minEdge) || 0.05;
@@ -480,7 +483,9 @@ export async function handler(event, context) {
             game.startTimeUTC,
             venue,
             realOddsMap,
-            gameId
+            gameId,
+            projectSOGElite,
+            calculateZINBProbability
           );
 
           if (result) {
