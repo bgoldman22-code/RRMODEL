@@ -23,12 +23,13 @@ const RINK_EFFECTS = {
   'Honda Center': 0.94
 };
 
+const { getStore } = require('@netlify/blobs');
+
 async function loadPlayerStats() {
   if (PLAYER_CACHE && CACHE_TIMESTAMP && (Date.now() - CACHE_TIMESTAMP < CACHE_TTL)) {
     return PLAYER_CACHE;
   }
   try {
-    const { getStore } = await import('@netlify/blobs');
     const store = getStore('nhl-stats');
     let data = await store.get('player_stats_20242025', { type: 'json' });
     if (!data || !data.players || data.players.length === 0) {
@@ -58,7 +59,6 @@ async function loadTeamStats() {
     return TEAM_CACHE;
   }
   try {
-    const { getStore } = await import('@netlify/blobs');
     const store = getStore('nhl-stats');
     let data = await store.get('team_stats_20242025', { type: 'json' });
     if (!data || !data.teams || Object.keys(data.teams).length === 0) {
