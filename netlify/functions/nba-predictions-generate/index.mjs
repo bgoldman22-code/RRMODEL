@@ -333,11 +333,23 @@ function addBettingRecommendations(predictions) {
     if (pred.edge?.spread && pred.edge.spread.edgePercent > 5 && pred.confidence > 60) {
       // Calculate Kelly and Units
       const kellyObj = pred.marketOdds.spread ? calculateKelly(pred.homeWinProb / 100, pred.marketOdds.spread) : null;
+      // Determine which team the spread applies to and always show sign
+      const homeAbbr = pred.game.split(' @ ')[1];
+      const awayAbbr = pred.game.split(' @ ')[0];
+      const lineVal = pred.marketOdds.spread;
+      const lineSign = lineVal > 0 ? `+${lineVal}` : `${lineVal}`;
+      // If market spread is negative, it's favorite; positive is underdog
+      // Use Vegas line sign, not model edge
+      let pickTeam = null;
+      if (lineVal < 0) {
+        pickTeam = `${homeAbbr} ${lineSign}`;
+      } else {
+        pickTeam = `${awayAbbr} ${lineSign}`;
+      }
       recommendations.push({
         market: 'Spread',
-        pick: pred.edge.spread.modelFavors === 'OVER' ? 
-          `${pred.game.split(' @ ')[1]} ${pred.marketOdds.spread > 0 ? '+' : ''}${pred.marketOdds.spread}` : `${pred.game.split(' @ ')[0]} ${pred.marketOdds.spread > 0 ? '+' : ''}${pred.marketOdds.spread}`,
-        line: pred.marketOdds.spread,
+        pick: pickTeam,
+        line: lineVal,
         edge: pred.edge.spread.edge,
         edgePercent: pred.edge.spread.edgePercent,
         confidence: pred.confidence,
