@@ -327,12 +327,25 @@ exports.handler = async (event, context) => {
     const useRealOdds = queryParams.useRealOdds !== 'false';
     
     // Step 0: Preload player/team stats cache (critical for speed)
+    console.log('[NHL] Step 0: Preloading cache...');
     await elite.preloadCache();
-    const [playersLoaded, teamsLoaded] = await Promise.all([
-      elite.loadPlayerStats(),
-      elite.loadTeamStats()
-    ]);
-    console.log(`✅ Cache preloaded • players=${playersLoaded.length} • teams=${Object.keys(teamsLoaded).length}`);
+    
+    console.log('[NHL] Loading player stats...');
+    const playersLoaded = await elite.loadPlayerStats();
+    console.log(`[NHL] Players loaded: ${playersLoaded ? playersLoaded.length : 0}`);
+    
+    console.log('[NHL] Loading team stats...');
+    const teamsLoaded = await elite.loadTeamStats();
+    console.log(`[NHL] Teams loaded: ${teamsLoaded ? Object.keys(teamsLoaded).length : 0}`);
+    
+    if (!playersLoaded || playersLoaded.length === 0) {
+      console.error('[NHL] ❌ No player stats loaded! Check Netlify Blobs and GitHub fallback.');
+    }
+    if (!teamsLoaded || Object.keys(teamsLoaded).length === 0) {
+      console.error('[NHL] ❌ No team stats loaded! Check Netlify Blobs and GitHub fallback.');
+    }
+    
+    console.log(`✅ Cache preloaded • players=${playersLoaded ? playersLoaded.length : 0} • teams=${teamsLoaded ? Object.keys(teamsLoaded).length : 0}`);
     
     // Step 1: Fetch real odds (parallel with schedule)
     const oddsPromise = useRealOdds ? fetchNHLOdds() : Promise.resolve(null);
@@ -530,8 +543,8 @@ exports.handler = async (event, context) => {
           playersScanned: diag_playersScanned,
           projectionsOk: diag_projectionsOk,
           matchedCandidates: diag_matchedOdds,
-          playersLoaded: playersLoaded.length,
-          teamsLoaded: Object.keys(teamsLoaded).length
+          playersLoaded: playersLoaded ? playersLoaded.length : 0,
+          teamsLoaded: teamsLoaded ? Object.keys(teamsLoaded).length : 0
         },
         timestamp: new Date().toISOString()
       }
