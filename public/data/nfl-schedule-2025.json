@@ -1633,6 +1633,8 @@
     "gametime": "19:00",
     "away_team": "TB",
     "home_team": "DET",
+    "away_score": 9,
+    "home_score": 24,
     "game_type": "REG",
     "roof": "dome",
     "surface": "fieldturf"
@@ -1645,9 +1647,13 @@
     "gametime": "22:00",
     "away_team": "HOU",
     "home_team": "SEA",
+    "away_score": 19,
+    "home_score": 27,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": "fieldturf"
+    "surface": "fieldturf",
+    "temp": 56,
+    "wind": 5
   },
   {
     "week": 8,
