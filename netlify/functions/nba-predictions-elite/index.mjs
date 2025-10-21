@@ -355,6 +355,147 @@ function buildEliteFeatures(homeStats, awayStats) {
 }
 
 /**
+ * Generate human-readable key factors explaining the pick
+ */
+function generateKeyFactors(home, away, homeL10, awayL10, spreadPred, totalPred, homeExpectedPts, awayExpectedPts, homeInjuries, awayInjuries, opportunities) {
+  const factors = [];
+  
+  // 1. MATCHUP ADVANTAGE (most important for spread/ML)
+  const offensiveMatchup = {
+    home: { off: homeL10.offRtg, vsDefense: awayL10.defRtg },
+    away: { off: awayL10.offRtg, vsDefense: homeL10.defRtg }
+  };
+  
+  // Find the biggest mismatch
+  const homeOffVsAwayDef = homeL10.offRtg - awayL10.defRtg;
+  const awayOffVsHomeDef = awayL10.offRtg - homeL10.defRtg;
+  
+  if (Math.abs(homeOffVsAwayDef) > 10 || Math.abs(awayOffVsHomeDef) > 10) {
+    if (homeOffVsAwayDef > 10) {
+      factors.push({
+        label: '🔥 Offensive Mismatch',
+        value: `${home.team.abbreviation} elite offense (${homeL10.offRtg.toFixed(1)}) vs ${away.team.abbreviation} weak defense (${awayL10.defRtg.toFixed(1)})`,
+        impact: 'FAVOR_HOME'
+      });
+    } else if (homeOffVsAwayDef < -10) {
+      factors.push({
+        label: '🛡️ Defensive Edge',
+        value: `${away.team.abbreviation} defense (${awayL10.defRtg.toFixed(1)}) locks down ${home.team.abbreviation} offense (${homeL10.offRtg.toFixed(1)})`,
+        impact: 'FAVOR_AWAY'
+      });
+    }
+    
+    if (awayOffVsHomeDef > 10) {
+      factors.push({
+        label: '🔥 Road Offense Advantage',
+        value: `${away.team.abbreviation} offense (${awayL10.offRtg.toFixed(1)}) vs ${home.team.abbreviation} poor defense (${homeL10.defRtg.toFixed(1)})`,
+        impact: 'FAVOR_AWAY'
+      });
+    } else if (awayOffVsHomeDef < -10) {
+      factors.push({
+        label: '🛡️ Home Defense Dominance',
+        value: `${home.team.abbreviation} defense (${homeL10.defRtg.toFixed(1)}) shuts down ${away.team.abbreviation} (${awayL10.offRtg.toFixed(1)})`,
+        impact: 'FAVOR_HOME'
+      });
+    }
+  }
+  
+  // 2. PACE & TEMPO (important for totals)
+  const totalOpp = opportunities.find(o => o.market === 'Total');
+  if (totalOpp) {
+    const avgPace = (homeL10.pace + awayL10.pace) / 2;
+    const leaguePace = 100;
+    
+    if (avgPace > 103) {
+      factors.push({
+        label: '⚡ Fast Pace Game',
+        value: `Combined pace ${avgPace.toFixed(1)} (League avg: 100) = More possessions`,
+        impact: totalOpp.pick.includes('Over') ? 'SUPPORTS_PICK' : 'OPPOSES_PICK'
+      });
+    } else if (avgPace < 97) {
+      factors.push({
+        label: '🐌 Slow Pace Game',
+        value: `Combined pace ${avgPace.toFixed(1)} (League avg: 100) = Fewer possessions`,
+        impact: totalOpp.pick.includes('Under') ? 'SUPPORTS_PICK' : 'OPPOSES_PICK'
+      });
+    }
+  }
+  
+  // 3. RECENT FORM
+  const homeForm = homeL10.winPct;
+  const awayForm = awayL10.winPct;
+  
+  if (homeForm > 0.7 || awayForm > 0.7 || homeForm < 0.3 || awayForm < 0.3) {
+    if (homeForm > 0.7) {
+      factors.push({
+        label: '📈 Home Team Hot',
+        value: `${home.team.abbreviation} ${Math.round(homeForm * homeL10.games)}-${Math.round((1-homeForm) * homeL10.games)} last ${homeL10.games} (${(homeForm * 100).toFixed(0)}%)`,
+        impact: 'FAVOR_HOME'
+      });
+    } else if (homeForm < 0.3) {
+      factors.push({
+        label: '📉 Home Team Cold',
+        value: `${home.team.abbreviation} ${Math.round(homeForm * homeL10.games)}-${Math.round((1-homeForm) * homeL10.games)} last ${homeL10.games} (${(homeForm * 100).toFixed(0)}%)`,
+        impact: 'FAVOR_AWAY'
+      });
+    }
+    
+    if (awayForm > 0.7) {
+      factors.push({
+        label: '📈 Road Team Hot',
+        value: `${away.team.abbreviation} ${Math.round(awayForm * awayL10.games)}-${Math.round((1-awayForm) * awayL10.games)} last ${awayL10.games} (${(awayForm * 100).toFixed(0)}%)`,
+        impact: 'FAVOR_AWAY'
+      });
+    } else if (awayForm < 0.3) {
+      factors.push({
+        label: '📉 Road Team Cold',
+        value: `${away.team.abbreviation} ${Math.round(awayForm * awayL10.games)}-${Math.round((1-awayForm) * awayL10.games)} last ${awayL10.games} (${(awayForm * 100).toFixed(0)}%)`,
+        impact: 'FAVOR_HOME'
+      });
+    }
+  }
+  
+  // 4. INJURY IMPACT
+  if (homeInjuries && homeInjuries.count > 0 && homeInjuries.severity !== 'NONE') {
+    factors.push({
+      label: '🏥 Home Injuries',
+      value: `${home.team.abbreviation}: ${homeInjuries.players} (${homeInjuries.impact})`,
+      impact: 'FAVOR_AWAY',
+      detail: `Offense -${Math.abs(homeInjuries.deltaOff).toFixed(1)}, Defense -${Math.abs(homeInjuries.deltaDef).toFixed(1)}`
+    });
+  }
+  
+  if (awayInjuries && awayInjuries.count > 0 && awayInjuries.severity !== 'NONE') {
+    factors.push({
+      label: '🏥 Away Injuries',
+      value: `${away.team.abbreviation}: ${awayInjuries.players} (${awayInjuries.impact})`,
+      impact: 'FAVOR_HOME',
+      detail: `Offense -${Math.abs(awayInjuries.deltaOff).toFixed(1)}, Defense -${Math.abs(awayInjuries.deltaDef).toFixed(1)}`
+    });
+  }
+  
+  // 5. PROJECTED SCORING (for totals)
+  if (totalOpp) {
+    factors.push({
+      label: '🎯 Expected Scoring',
+      value: `${home.team.abbreviation} ${homeExpectedPts.toFixed(0)} - ${away.team.abbreviation} ${awayExpectedPts.toFixed(0)} = ${(homeExpectedPts + awayExpectedPts).toFixed(0)} total`,
+      impact: 'INFO',
+      detail: `Vegas: ${totalOpp.vegasLine} (${totalOpp.edge} pt diff)`
+    });
+  }
+  
+  // Sort by impact/importance and return top 3-4
+  const priorityOrder = ['🔥', '🛡️', '🏥', '📈', '📉', '⚡', '🐌', '🎯'];
+  factors.sort((a, b) => {
+    const aIcon = a.label.substring(0, 2);
+    const bIcon = b.label.substring(0, 2);
+    return priorityOrder.indexOf(aIcon) - priorityOrder.indexOf(bIcon);
+  });
+  
+  return factors.slice(0, 4); // Top 4 most important factors
+}
+
+/**
  * Build simple features for total model
  */
 function buildSimpleFeatures(homeStats, awayStats) {
@@ -812,6 +953,13 @@ export default async (request, context) => {
           confidence,
           seasonNote // Early season warning if applicable
         },
+        keyFactors: generateKeyFactors(
+          home, away, homeL10, awayL10, 
+          spreadPred, totalPred, 
+          homeExpectedPts, awayExpectedPts,
+          homeInjuryAdj, awayInjuryAdj,
+          opportunities
+        ),
         features: {
           homeL10: {
             netRtg: homeL10.netRtg.toFixed(1),
