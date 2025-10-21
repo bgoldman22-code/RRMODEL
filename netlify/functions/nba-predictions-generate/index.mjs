@@ -100,10 +100,21 @@ function getBestOdds(bookmakers, market) {
  */
 function calculateEdge(modelPrediction, marketLine) {
   if (!marketLine) return null;
-  
-  const edge = Math.abs(modelPrediction - marketLine);
+  // Edge calculation must account for sign and team
+  // If both modelPrediction and marketLine are for the same team (e.g., both OKC -), just subtract
+  // If marketLine is for the other team, flip sign
+  // For NBA, modelPrediction is always for home team (e.g., OKC -15.3 means home OKC favored by 15.3)
+  // marketLine is for the favorite team, so if marketLine < 0, it's for home; if > 0, it's for away
+  let edge = null;
+  if (marketLine < 0) {
+    // Vegas line is for home team
+    edge = modelPrediction - marketLine;
+  } else {
+    // Vegas line is for away team, flip sign of modelPrediction
+    edge = (-modelPrediction) - marketLine;
+  }
+  edge = Math.abs(edge);
   const edgePercent = (edge / Math.abs(marketLine)) * 100;
-  
   return {
     edge,
     edgePercent,
