@@ -251,32 +251,49 @@ function calculateAdvancedStats(games, teamId, window = 10) {
  * Build 55-feature vector for elite model
  */
 function buildEliteFeatures(homeStats, awayStats) {
+  // Helper to create uniform stat blocks
+  const calcPPG = (stats) => stats.offRtg; // OffRtg is already points/100 poss
+  
   return {
-    // Home core stats (10)
+    // L3 equivalent (use L10 as proxy since we don't track L3 separately)
+    h3_netRtg: homeStats.netRtg,
+    h3_ppg: calcPPG(homeStats),
+    h3_pace: homeStats.pace,
+    h3_winPct: homeStats.winPct,
+    h3_efg: homeStats.efg * 100,
+    a3_netRtg: awayStats.netRtg,
+    a3_ppg: calcPPG(awayStats),
+    a3_pace: awayStats.pace,
+    a3_winPct: awayStats.winPct,
+    a3_efg: awayStats.efg * 100,
+    
+    // Home L10 stats
     h10_pace: homeStats.pace,
     h10_offRtg: homeStats.offRtg,
     h10_defRtg: homeStats.defRtg,
     h10_netRtg: homeStats.netRtg,
     h10_efg: homeStats.efg,
-    h10_ts: homeStats.ts,
+    h10_ts: homeStats.ts * 100,
     h10_tovPct: homeStats.tovPct,
     h10_orbPct: homeStats.orbPct,
     h10_ftFga: homeStats.ftFga,
     h10_winPct: homeStats.winPct,
+    h10_ppg: calcPPG(homeStats),
     
-    // Away core stats (10)
+    // Away L10 stats
     a10_pace: awayStats.pace,
     a10_offRtg: awayStats.offRtg,
     a10_defRtg: awayStats.defRtg,
     a10_netRtg: awayStats.netRtg,
     a10_efg: awayStats.efg,
-    a10_ts: awayStats.ts,
+    a10_ts: awayStats.ts * 100,
     a10_tovPct: awayStats.tovPct,
     a10_orbPct: awayStats.orbPct,
     a10_ftFga: awayStats.ftFga,
     a10_winPct: awayStats.winPct,
+    a10_ppg: calcPPG(awayStats),
     
-    // L20 stats (home)
+    // L20 stats (home) - use same as L10
     h20_pace: homeStats.pace,
     h20_offRtg: homeStats.offRtg,
     h20_defRtg: homeStats.defRtg,
@@ -287,9 +304,9 @@ function buildEliteFeatures(homeStats, awayStats) {
     h20_orbPct: homeStats.orbPct,
     h20_ftFga: homeStats.ftFga,
     h20_winPct: homeStats.winPct,
-    h20_ppg: homeStats.offRtg * 1.0, // Approximate
+    h20_ppg: calcPPG(homeStats),
     
-    // L20 stats (away)
+    // L20 stats (away) - use same as L10
     a20_pace: awayStats.pace,
     a20_offRtg: awayStats.offRtg,
     a20_defRtg: awayStats.defRtg,
@@ -300,14 +317,36 @@ function buildEliteFeatures(homeStats, awayStats) {
     a20_orbPct: awayStats.orbPct,
     a20_ftFga: awayStats.ftFga,
     a20_winPct: awayStats.winPct,
+    a20_ppg: calcPPG(awayStats),
     
-    // Interactions (25)
+    // Interactions (matching all 55 features from trained model)
     netRtg_diff: homeStats.netRtg - awayStats.netRtg,
+    netRtg_product: homeStats.netRtg * awayStats.netRtg,
+    offense_vs_defense: homeStats.offRtg * awayStats.defRtg / 10000, // Normalize
+    defensive_matchup: awayStats.offRtg * homeStats.defRtg / 10000, // Away off vs home def
+    pace_avg: (homeStats.pace + awayStats.pace) / 2,
+    pace_diff: homeStats.pace - awayStats.pace,
+    pace_product: homeStats.pace * awayStats.pace / 10000,
+    h_momentum: homeStats.netRtg * homeStats.winPct,
+    a_momentum: awayStats.netRtg * awayStats.winPct,
+    h_streak: homeStats.winPct > 0.6 ? 1 : (homeStats.winPct < 0.4 ? -1 : 0),
+    a_streak: awayStats.winPct > 0.6 ? 1 : (awayStats.winPct < 0.4 ? -1 : 0),
+    momentum_diff: (homeStats.netRtg * homeStats.winPct) - (awayStats.netRtg * awayStats.winPct),
+    ppg_sum: homeStats.offRtg + awayStats.offRtg,
+    ppg_diff: homeStats.offRtg - awayStats.offRtg,
+    expected_total: (homeStats.offRtg + awayStats.offRtg) * (homeStats.pace + awayStats.pace) / 200,
+    shooting_advantage: (homeStats.efg - awayStats.efg) * 100,
+    h_efficiency: homeStats.offRtg / homeStats.pace,
+    a_efficiency: awayStats.offRtg / awayStats.pace,
     offRtg_diff: homeStats.offRtg - awayStats.offRtg,
     defRtg_diff: homeStats.defRtg - awayStats.defRtg,
-    pace_diff: homeStats.pace - awayStats.pace,
     winPct_diff: homeStats.winPct - awayStats.winPct,
-    home_court: 1
+    quality_matchup: (homeStats.netRtg + awayStats.netRtg) / 2,
+    upset_factor: Math.abs(homeStats.winPct - awayStats.winPct) * (homeStats.winPct < awayStats.winPct ? 1 : -1),
+    rating_pace_interaction: (homeStats.netRtg - awayStats.netRtg) * (homeStats.pace - awayStats.pace),
+    form_rating_interaction: homeStats.winPct * homeStats.netRtg - awayStats.winPct * awayStats.netRtg,
+    consistency: Math.abs(homeStats.netRtg / (homeStats.games + 1)) + Math.abs(awayStats.netRtg / (awayStats.games + 1)),
+    home_advantage: 1
   };
 }
 
