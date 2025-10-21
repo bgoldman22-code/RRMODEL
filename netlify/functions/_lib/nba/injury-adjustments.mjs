@@ -9,6 +9,8 @@
  * - Position-weighted impact
  * - Stacking penalties for multiple injuries
  * - Status-based severity (Out > Doubtful > Questionable)
+ * - Position cluster capacity caps (GPT Feedback Fix #3)
+ * - Multi-injury uncertainty escalation
  */
 
 // Impact constants (conservative priors - Phase 2 optimization)
@@ -29,18 +31,45 @@ const INJURY_IMPACT = {
     'C': 1.1,   // Rim protection + rebounding important
   },
   
+  // Position cluster capacity caps (NEW: GPT Feedback Fix #3)
+  // Prevent runaway minutes redistribution when multiple players in same cluster are out
+  POSITION_CLUSTER_CAPS: {
+    'GUARDS': 5.0,    // PG + SG combined max impact
+    'WINGS': 4.5,     // SF max impact
+    'BIGS': 5.0       // PF + C combined max impact
+  },
+  
   // Stacking penalty (multiple injuries hurt more than linear)
   STACKING_MULTIPLIER: 1.15, // Each additional injury is 15% worse
   
   // Max impact cap (prevent extreme adjustments)
   MAX_IMPACT: 8.0, // Max 8 pts/100 for catastrophic injury situation
+  
+  // Multi-injury uncertainty multiplier (NEW: GPT Feedback Fix #3)
+  // When 2+ rotation players out, increase prediction uncertainty
+  UNCERTAINTY_ESCALATION: {
+    1: 1.0,  // No change
+    2: 1.2,  // 20% more uncertain
+    3: 1.5,  // 50% more uncertain
+    4: 2.0   // 100% more uncertain (chaos)
+  }
 };
+
+// Position cluster mapping
+function getPositionCluster(position) {
+  if (!position) return null;
+  const pos = position.toUpperCase();
+  if (pos === 'PG' || pos === 'SG' || pos === 'G') return 'GUARDS';
+  if (pos === 'SF' || pos === 'F') return 'WINGS';
+  if (pos === 'PF' || pos === 'C') return 'BIGS';
+  return 'WINGS'; // Default to wings for unknown
+}
 
 /**
  * Calculate injury adjustment for a team
  * 
  * @param {Array} injuries - List of team injuries from injuries.mjs
- * @returns {Object} { deltaOff, deltaDef, severity, details }
+ * @returns {Object} { deltaOff, deltaDef, severity, details, uncertaintyMultiplier }
  */
 export function calculateInjuryAdjustment(injuries) {
   if (!injuries || injuries.length === 0) {
@@ -49,12 +78,20 @@ export function calculateInjuryAdjustment(injuries) {
       deltaDef: 0,
       severity: 'NONE',
       count: 0,
-      details: []
+      details: [],
+      uncertaintyMultiplier: 1.0
     };
   }
   
   let totalImpact = 0;
   const details = [];
+  
+  // Track impact by position cluster (NEW: GPT Feedback Fix #3)
+  const clusterImpact = {
+    'GUARDS': 0,
+    'WINGS': 0,
+    'BIGS': 0
+  };
   
   // Calculate base impact for each injury
   injuries.forEach((injury, index) => {
@@ -63,18 +100,49 @@ export function calculateInjuryAdjustment(injuries) {
     const stackingPenalty = Math.pow(INJURY_IMPACT.STACKING_MULTIPLIER, index);
     
     const injuryImpact = statusImpact * positionWeight * stackingPenalty;
+    
+    // Track by cluster
+    const cluster = getPositionCluster(injury.position);
+    if (cluster) {
+      clusterImpact[cluster] += injuryImpact;
+    }
+    
     totalImpact += injuryImpact;
     
     details.push({
       player: injury.playerName,
       position: injury.position,
+      cluster: cluster,
       status: injury.status,
       impact: injuryImpact.toFixed(2)
     });
   });
   
+  // Apply position cluster caps (NEW: GPT Feedback Fix #3)
+  // Prevent runaway minutes redistribution when multiple players in same cluster out
+  let cappedImpact = 0;
+  let capApplied = false;
+  
+  Object.keys(clusterImpact).forEach(cluster => {
+    const clusterMax = INJURY_IMPACT.POSITION_CLUSTER_CAPS[cluster];
+    if (clusterImpact[cluster] > clusterMax) {
+      cappedImpact += clusterMax;
+      capApplied = true;
+      console.log(`[Injury] ${cluster} cluster cap applied: ${clusterImpact[cluster].toFixed(2)} → ${clusterMax}`);
+    } else {
+      cappedImpact += clusterImpact[cluster];
+    }
+  });
+  
+  // Use the lower of total or capped (cluster caps protect against runaway)
+  totalImpact = Math.min(totalImpact, cappedImpact);
+  
   // Cap at max impact
   totalImpact = Math.min(totalImpact, INJURY_IMPACT.MAX_IMPACT);
+  
+  // Calculate uncertainty multiplier (NEW: GPT Feedback Fix #3)
+  // More injuries = more uncertain predictions
+  const uncertaintyMultiplier = INJURY_IMPACT.UNCERTAINTY_ESCALATION[Math.min(injuries.length, 4)] || 2.0;
   
   // Split impact between offense and defense (60/40 split typical)
   // Injuries hurt offense more (lost scoring/playmaking)
@@ -90,7 +158,10 @@ export function calculateInjuryAdjustment(injuries) {
     severity,
     count: injuries.length,
     details,
-    rawImpact: totalImpact
+    rawImpact: totalImpact,
+    clusterImpact, // Include cluster breakdown for audit
+    capApplied,    // Flag if cluster cap was triggered
+    uncertaintyMultiplier // Return for use in confidence/Kelly adjustments
   };
 }
 
