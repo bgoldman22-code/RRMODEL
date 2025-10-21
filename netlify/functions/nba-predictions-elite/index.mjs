@@ -499,16 +499,28 @@ export default async (request, context) => {
       // Predict spread
       const spreadPred = predict(SPREAD_MODEL, spreadFeatures);
       
-      // ELITE Total: Combine offensive ratings with pace (per-100-possessions method)
-      // This accounts for team-specific pace AND offensive efficiency
+      // ELITE Total: Opponent-adjusted offensive projections
+      // Account for defensive matchup quality
+      const leagueAvgDefRtg = 114.5; // NBA league average
       const avgPace = (homeL10.pace + awayL10.pace) / 2;
-      const totalFromOffense = (homeL10.offRtg + awayL10.offRtg) * (avgPace / 100);
+      
+      // Home team scoring: Adjust for away team's defense
+      // If facing weak defense (115), score more. If facing elite (106), score less.
+      const homeDefAdj = awayL10.defRtg / leagueAvgDefRtg;
+      const homeExpectedPts = homeL10.offRtg * homeDefAdj * (avgPace / 100);
+      
+      // Away team scoring: Adjust for home team's defense
+      const awayDefAdj = homeL10.defRtg / leagueAvgDefRtg;
+      const awayExpectedPts = awayL10.offRtg * awayDefAdj * (avgPace / 100);
+      
+      // Total from matchup-adjusted projections
+      const totalFromMatchup = homeExpectedPts + awayExpectedPts;
       
       // Also run the model prediction for comparison
       const totalPredModel = predict(TOTAL_MODEL, totalFeatures);
       
-      // Blend: 70% pace-based (more reliable with our data), 30% model
-      const totalPred = 0.7 * totalFromOffense + 0.3 * totalPredModel;
+      // Blend: 70% matchup-adjusted, 30% model
+      const totalPred = 0.7 * totalFromMatchup + 0.3 * totalPredModel;
       
       // Calculate confidence
       const netRtgDiff = Math.abs(homeL10.netRtg - awayL10.netRtg);
