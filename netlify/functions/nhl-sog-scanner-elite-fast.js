@@ -14,7 +14,7 @@
  * - Graceful degradation if elite stats unavailable
  * - Early returns if taking too long
  * 
- * BUNDLER FIX: Using dynamic imports to avoid ES module require() errors
+ * SOLUTION: CommonJS with dynamic import() for ES module dependencies
  */
 
 /**
@@ -302,7 +302,7 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
 /**
  * Main handler
  */
-export async function handler(event, context) {
+exports.handler = async (event, context) => {
   const startTime = Date.now();
   const TIMEOUT_MS = 9000; // 9 second safety margin (Netlify has 10s limit)
   
