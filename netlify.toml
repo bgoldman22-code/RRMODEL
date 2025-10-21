@@ -28,6 +28,15 @@
   included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
   external_node_modules = []
 
+# NHL SOG Scanner - use nft bundler to preserve ES module imports
+[functions."nhl-sog-scanner-elite-fast"]
+  node_bundler = "nft"
+  included_files = ["netlify/functions/_lib/nhl-*.mjs"]
+
+[functions."nhl-sog-debug"]
+  node_bundler = "nft"
+  included_files = ["netlify/functions/_lib/nhl-*.mjs"]
+
 # nfl-receiving-scanner-elite will use global [functions] config
 
 [build.environment]
