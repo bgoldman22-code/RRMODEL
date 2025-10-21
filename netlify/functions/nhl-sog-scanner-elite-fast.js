@@ -17,7 +17,7 @@
  * SOLUTION: CommonJS with wrapper to access ESM lib safely
  */
 
-const elite = require('./_lib/nhl-elite-projection-v4.cjs');
+const elite = require('./_lib/nhl-elite-projection-v4.cjs.js');
 
 /**
  * Calculate Kelly Criterion stake with proper odds adjustment

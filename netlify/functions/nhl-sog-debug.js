@@ -5,8 +5,8 @@
  * SOLUTION: CommonJS with dynamic import() for ES module dependencies
  */
 
-// Use CJS wrapper to avoid ESM parse issues in Netlify runtime
-const elite = require('./_lib/nhl-elite-projection-v4.cjs');
+// Use CJS implementation to avoid ESM parse issues entirely
+const elite = require('./_lib/nhl-elite-projection-v4.cjs.js');
 
 exports.handler = async (event, context) => {
   const headers = {
