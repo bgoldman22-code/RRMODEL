@@ -14,8 +14,6 @@
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs", "node-fetch"]
   included_files = ["public/**", "data/nba/**", "data/nfl/ssot/**", "netlify/functions/_lib/**"]
-  # Ensure Functions runtime uses Node 20 (separate from build image)
-  node_version = "20"
 
 # Phase 1 Speed Optimization: Slim bundles per function
 [functions."nfl-predictions-get"]
@@ -32,13 +30,11 @@
 
 # NHL SOG Scanner - disable bundling completely to preserve ES modules
 [functions."nhl-sog-scanner-elite-fast"]
-  node_bundler = "none"
-  node_version = "20"
+  node_bundler = "esbuild"
   included_files = ["netlify/functions/_lib/**"]
 
 [functions."nhl-sog-debug"]
-  node_bundler = "none"
-  node_version = "20"
+  node_bundler = "esbuild"
   included_files = ["netlify/functions/_lib/**"]
 
 # nfl-receiving-scanner-elite will use global [functions] config
