@@ -69,22 +69,39 @@ async function fetchMarketOdds(games) {
 
 /**
  * Calculate best available odds across all books
+ * Returns both display book (for consistency) and best prices per outcome
  */
 function getBestOdds(bookmakers, market) {
   if (!bookmakers || bookmakers.length === 0) return null;
   
-  const allOdds = [];
+  const PRIORITY_BOOKS = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars'];
   
+  const allOdds = [];
+  let displayBook = null;
+  
+  // Find priority book for display
+  for (const priorityName of PRIORITY_BOOKS) {
+    const book = bookmakers.find(b => b.title === priorityName || b.key === priorityName.toLowerCase());
+    if (book) {
+      const marketData = book.markets.find(m => m.key === market);
+      if (marketData) {
+        displayBook = { bookmaker: priorityName, outcomes: marketData.outcomes };
+        break;
+      }
+    }
+  }
+  
+  // Collect all odds for best price finding
   for (const book of bookmakers) {
     const marketData = book.markets.find(m => m.key === market);
     if (marketData) {
-      allOdds.push(...marketData.outcomes);
+      allOdds.push(...marketData.outcomes.map(o => ({ ...o, bookmaker: book.title })));
     }
   }
   
   if (allOdds.length === 0) return null;
   
-  // Find best odds for each outcome
+  // Find best price for each outcome (highest for + odds, least negative for - odds)
   const best = {};
   for (const outcome of allOdds) {
     if (!best[outcome.name] || outcome.price > best[outcome.name].price) {
@@ -92,7 +109,7 @@ function getBestOdds(bookmakers, market) {
     }
   }
   
-  return best;
+  return { display: displayBook, best };
 }
 
 /**
@@ -135,14 +152,14 @@ function calculateEdge(modelPrediction, marketLine, isTotal = false) {
 }
 
 /**
- * Calculate Kelly Criterion bet sizing
+ * Calculate Kelly Criterion bet sizing with proper American odds
  */
-function calculateKelly(winProb, odds, fraction = 0.25) {
+function calculateKelly(winProb, americanOdds, fraction = 0.25) {
   // Convert American odds to decimal
-  const decimalOdds = odds > 0 ? (odds / 100) + 1 : (100 / Math.abs(odds)) + 1;
+  const decimalOdds = americanOdds > 0 ? (americanOdds / 100) + 1 : (100 / Math.abs(americanOdds)) + 1;
   
   // Kelly formula: (bp - q) / b
-  // b = decimal odds - 1
+  // b = decimal odds - 1 (net payout per dollar)
   // p = win probability
   // q = lose probability (1 - p)
   const b = decimalOdds - 1;
@@ -151,7 +168,7 @@ function calculateKelly(winProb, odds, fraction = 0.25) {
   
   const kelly = (b * p - q) / b;
   
-  // Apply fractional Kelly for safety
+  // Apply fractional Kelly for safety (default 25% = quarter Kelly)
   const fractionalKelly = Math.max(0, kelly * fraction);
   
   return {
@@ -306,28 +323,42 @@ function integrateMarketOdds(predictions, oddsMap) {
       return { ...pred, marketOdds: null, edge: null };
     }
     
-    // Get best spreads and totals
-    const spreads = getBestOdds(odds, 'spreads');
-    const totals = getBestOdds(odds, 'totals');
+    // Get best spreads and totals with display and best prices
+    const spreadsData = getBestOdds(odds, 'spreads');
+    const totalsData = getBestOdds(odds, 'totals');
     
     let marketSpread = null;
     let marketTotal = null;
     let spreadEdge = null;
     let totalEdge = null;
     
-    if (spreads) {
-      const homeSpread = Object.values(spreads).find(s => s.name === pred.game.split(' @ ')[1]);
-      if (homeSpread) {
-        marketSpread = homeSpread.point;
-        spreadEdge = calculateEdge(pred.predictedSpread, marketSpread);
+    // Extract home team name for matching
+    const homeTeamName = pred.game.split(' @ ')[1];
+    
+    if (spreadsData && spreadsData.best) {
+      // Find home team spread (has the point and price)
+      const homeSpreadOutcome = spreadsData.best[homeTeamName];
+      if (homeSpreadOutcome) {
+        marketSpread = {
+          point: homeSpreadOutcome.point,
+          price: homeSpreadOutcome.price || -110, // American odds (usually -110)
+          bookmaker: homeSpreadOutcome.bookmaker
+        };
+        spreadEdge = calculateEdge(pred.predictedSpread, homeSpreadOutcome.point, false);
       }
     }
     
-    if (totals) {
-      const overLine = Object.values(totals).find(t => t.name === 'Over');
-      if (overLine) {
-        marketTotal = overLine.point;
-        totalEdge = calculateEdge(pred.predictedTotal, marketTotal, true); // Pass true for isTotal
+    if (totalsData && totalsData.best) {
+      const overOutcome = totalsData.best['Over'];
+      const underOutcome = totalsData.best['Under'];
+      if (overOutcome) {
+        marketTotal = {
+          point: overOutcome.point,
+          overPrice: overOutcome.price || -110,
+          underPrice: underOutcome?.price || -110,
+          bookmaker: overOutcome.bookmaker
+        };
+        totalEdge = calculateEdge(pred.predictedTotal, overOutcome.point, true); // Pass true for isTotal
       }
     }
     
@@ -346,62 +377,89 @@ function integrateMarketOdds(predictions, oddsMap) {
 }
 
 /**
- * Add betting recommendations
+ * Add betting recommendations with proper odds and Kelly calculation
  */
 function addBettingRecommendations(predictions) {
   return predictions.map(pred => {
     const recommendations = [];
     
     // Spread recommendations
-    if (pred.edge?.spread && pred.edge.spread.edgePercent > 5 && pred.confidence > 60) {
-      // Calculate Kelly and Units
-      const kellyObj = pred.marketOdds.spread ? calculateKelly(pred.homeWinProb / 100, pred.marketOdds.spread) : null;
-      // NFL-style spread pick logic: always show team and line with correct sign
+    if (pred.edge?.spread && pred.edge.spread.edgePercent > 5 && pred.confidence > 60 && pred.marketOdds?.spread) {
+      const spreadData = pred.marketOdds.spread;
       const homeAbbr = pred.game.split(' @ ')[1];
       const awayAbbr = pred.game.split(' @ ')[0];
-      const lineVal = pred.marketOdds.spread;
-      let pickTeam = null;
-      // Find which team the line applies to by sign convention
-      // If line is negative, it's the favorite (home or away)
-      // If line is positive, it's the underdog
-      // Use the Vegas line and team, always show sign
-      if (lineVal < 0) {
-        // Favorite: find which team matches the Vegas line
-        // If home is favorite, show homeAbbr -lineVal
-        pickTeam = `${homeAbbr} ${lineVal}`;
+      
+      // Determine which side to bet based on model vs Vegas
+      // Model prediction is for home team (positive = home favored, negative = away favored)
+      // Vegas line is also for home team (negative = home favored, positive = home underdog)
+      
+      let pickTeam, pickLine, pickOdds, betProb;
+      
+      if (pred.predictedSpread > spreadData.point) {
+        // Model has home team doing better than Vegas (bet home)
+        pickTeam = `${homeAbbr} ${spreadData.point > 0 ? '+' : ''}${spreadData.point}`;
+        pickLine = spreadData.point;
+        pickOdds = spreadData.price;
+        betProb = pred.homeWinProb / 100;
       } else {
-        // Underdog: show awayAbbr +lineVal
-        pickTeam = `${awayAbbr} +${Math.abs(lineVal)}`;
+        // Model has away team doing better than Vegas (bet away)
+        const awayLine = -spreadData.point; // Flip the line for away team
+        pickTeam = `${awayAbbr} ${awayLine > 0 ? '+' : ''}${awayLine}`;
+        pickLine = awayLine;
+        pickOdds = spreadData.price; // Usually -110 for both sides
+        betProb = pred.awayWinProb / 100;
       }
+      
+      // Calculate Kelly with AMERICAN ODDS (not point spread)
+      const kellyObj = calculateKelly(betProb, pickOdds);
+      
       recommendations.push({
         market: 'Spread',
         pick: pickTeam,
-        line: lineVal,
+        line: pickLine,
+        odds: pickOdds,
         edge: pred.edge.spread.edge,
-        edgePercent: pred.edge.spread.edgePercent,
+        edgePercent: pred.edge.spread.edgePercent.toFixed(1),
         confidence: pred.confidence,
         rating: pred.edge.spread.edgePercent > 10 ? '⭐⭐⭐' : 
                 pred.edge.spread.edgePercent > 7 ? '⭐⭐' : '⭐',
         units: kellyObj ? (kellyObj.fractionalKelly / 100).toFixed(2) : null,
-        kellyPercent: kellyObj ? kellyObj.fractionalKelly.toFixed(2) : null
+        kellyPercent: kellyObj ? kellyObj.fractionalKelly.toFixed(2) : null,
+        bookmaker: spreadData.bookmaker
       });
     }
+    
     // Total recommendations
-    if (pred.edge?.total && pred.edge.total.edgePercent > 3 && pred.confidence > 55) {
-      const kellyObj = pred.marketOdds.total ? calculateKelly(pred.homeWinProb / 100, pred.marketOdds.total) : null;
+    if (pred.edge?.total && pred.edge.total.edgePercent > 3 && pred.confidence > 55 && pred.marketOdds?.total) {
+      const totalData = pred.marketOdds.total;
+      const isOver = pred.edge.total.modelFavors === 'OVER';
+      
+      // Determine probability for the side we're betting
+      // For totals, use a simple 50/50 base adjusted by confidence
+      // In a more sophisticated system, you'd model Over/Under probabilities separately
+      const baseTotalProb = 0.50;
+      const confidenceAdj = (pred.confidence - 50) / 100 * 0.2; // Max 20% adjustment
+      const betProb = baseTotalProb + (isOver ? confidenceAdj : -confidenceAdj);
+      
+      const pickOdds = isOver ? totalData.overPrice : totalData.underPrice;
+      const kellyObj = calculateKelly(Math.max(0.01, Math.min(0.99, betProb)), pickOdds);
+      
       recommendations.push({
         market: 'Total',
-        pick: `${pred.edge.total.modelFavors} ${pred.marketOdds.total}`,
-        line: pred.marketOdds.total,
+        pick: `${pred.edge.total.modelFavors} ${totalData.point}`,
+        line: totalData.point,
+        odds: pickOdds,
         edge: pred.edge.total.edge,
-        edgePercent: pred.edge.total.edgePercent,
+        edgePercent: pred.edge.total.edgePercent.toFixed(1),
         confidence: pred.confidence,
         rating: pred.edge.total.edgePercent > 8 ? '⭐⭐⭐' : 
                 pred.edge.total.edgePercent > 5 ? '⭐⭐' : '⭐',
         units: kellyObj ? (kellyObj.fractionalKelly / 100).toFixed(2) : null,
-        kellyPercent: kellyObj ? kellyObj.fractionalKelly.toFixed(2) : null
+        kellyPercent: kellyObj ? kellyObj.fractionalKelly.toFixed(2) : null,
+        bookmaker: totalData.bookmaker
       });
     }
+    
     return {
       ...pred,
       recommendations
