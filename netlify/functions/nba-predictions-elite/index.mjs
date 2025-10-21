@@ -132,8 +132,18 @@ async function fetchVegasLines(gameIds, isPreseason = false) {
 function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, bankroll = 5000) {
   if (!vegasLine || !americanOdds) return null;
   
-  // Edge in points (comparing model prediction to Vegas line)
+  // Edge in points (both are from home team perspective)
+  // Example: Model OKC -15.3, Vegas OKC -6.5 → Edge = |(-15.3) - (-6.5)| = 8.8 points
   const edgePoints = Math.abs(modelPred - vegasLine);
+  
+  // Convert American odds to implied probability for edge calculation
+  const vegasImpliedProb = americanOdds > 0 
+    ? 100 / (americanOdds + 100) 
+    : Math.abs(americanOdds) / (Math.abs(americanOdds) + 100);
+  
+  // Edge in probability terms (model prob vs market prob)
+  const edgeProb = modelProb - vegasImpliedProb;
+  const edgePercent = edgeProb * 100;
   
   // Convert American odds to decimal for Kelly calculation
   const decimalOdds = americanOdds > 0 ? (americanOdds / 100) + 1 : (100 / Math.abs(americanOdds)) + 1;
@@ -146,9 +156,6 @@ function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, ba
   // Cap at 5% of bankroll (quarter Kelly for safety)
   const kellyFraction = Math.min(Math.max(kelly * 0.25, 0), 0.05);
   const betSize = Math.round(bankroll * kellyFraction);
-  
-  // Edge in percent terms (points / abs(vegasLine))
-  const edgePercent = (edgePoints / Math.abs(vegasLine || 1)) * 100;
   
   return {
     edgePoints: parseFloat(edgePoints.toFixed(1)),
@@ -502,8 +509,12 @@ export default async (request, context) => {
       
       // Spread opportunity
       if (gameVegasLines.spread?.home != null && gameVegasLines.spread?.homePrice != null) {
+        // Convert model prediction to Vegas convention (negative = home favored)
+        // Model outputs positive for home favored, Vegas uses negative
+        const modelSpreadVegasConvention = -spreadPred;
+        
         const spreadEdge = calculateEdgeAndKelly(
-          spreadPred,
+          modelSpreadVegasConvention,
           gameVegasLines.spread.home,       // Point spread (e.g., -5.5)
           gameVegasLines.spread.homePrice,  // American odds (e.g., -110)
           winProb
