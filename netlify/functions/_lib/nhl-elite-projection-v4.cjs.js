@@ -29,57 +29,101 @@ async function loadPlayerStats() {
   if (PLAYER_CACHE && CACHE_TIMESTAMP && (Date.now() - CACHE_TIMESTAMP < CACHE_TTL)) {
     return PLAYER_CACHE;
   }
+  
+  let data = null;
+  
+  // Try Netlify Blobs first (with error handling)
   try {
     const store = getStore('nhl-stats');
-    let data = await store.get('player_stats_20242025', { type: 'json' });
-    if (!data || !data.players || data.players.length === 0) {
+    data = await store.get('player_stats_20242025', { type: 'json' });
+  } catch (blobError) {
+    console.warn('⚠️ Blobs access failed for player stats, will use GitHub fallback:', blobError.message);
+  }
+  
+  // If no valid data from blobs, fetch from GitHub
+  if (!data || !data.players || data.players.length === 0) {
+    try {
       const ghUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main42/data/nhl/player_stats_20242025.json';
       const resp = await fetch(ghUrl);
       if (resp.ok) {
         const ghData = await resp.json();
         if (ghData && ghData.players && ghData.players.length > 0) {
-          try { await store.setJSON('player_stats_20242025', ghData); } catch {}
+          console.log(`✅ Loaded ${ghData.players.length} players from GitHub`);
           data = ghData;
+          // Try to cache in blobs for next time (non-blocking)
+          try {
+            const store = getStore('nhl-stats');
+            await store.setJSON('player_stats_20242025', ghData);
+          } catch (e) {
+            console.warn('Could not cache to blobs:', e.message);
+          }
         }
+      } else {
+        console.error(`❌ GitHub fetch failed: ${resp.status}`);
       }
+    } catch (ghError) {
+      console.error('❌ GitHub fallback failed:', ghError.message);
     }
-    if (data && data.players) {
-      PLAYER_CACHE = data.players;
-      CACHE_TIMESTAMP = Date.now();
-      return PLAYER_CACHE;
-    }
-    return [];
-  } catch {
-    return [];
   }
+  
+  if (data && data.players) {
+    PLAYER_CACHE = data.players;
+    CACHE_TIMESTAMP = Date.now();
+    return PLAYER_CACHE;
+  }
+  
+  console.error('❌ No player data available from any source');
+  return [];
 }
 
 async function loadTeamStats() {
   if (TEAM_CACHE && CACHE_TIMESTAMP && (Date.now() - CACHE_TIMESTAMP < CACHE_TTL)) {
     return TEAM_CACHE;
   }
+  
+  let data = null;
+  
+  // Try Netlify Blobs first (with error handling)
   try {
     const store = getStore('nhl-stats');
-    let data = await store.get('team_stats_20242025', { type: 'json' });
-    if (!data || !data.teams || Object.keys(data.teams).length === 0) {
+    data = await store.get('team_stats_20242025', { type: 'json' });
+  } catch (blobError) {
+    console.warn('⚠️ Blobs access failed for team stats, will use GitHub fallback:', blobError.message);
+  }
+  
+  // If no valid data from blobs, fetch from GitHub
+  if (!data || !data.teams || Object.keys(data.teams).length === 0) {
+    try {
       const ghUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main42/data/nhl/team_stats_20242025.json';
       const resp = await fetch(ghUrl);
       if (resp.ok) {
         const ghData = await resp.json();
         if (ghData && ghData.teams && Object.keys(ghData.teams).length > 0) {
-          try { await store.setJSON('team_stats_20242025', ghData); } catch {}
+          console.log(`✅ Loaded ${Object.keys(ghData.teams).length} teams from GitHub`);
           data = ghData;
+          // Try to cache in blobs for next time (non-blocking)
+          try {
+            const store = getStore('nhl-stats');
+            await store.setJSON('team_stats_20242025', ghData);
+          } catch (e) {
+            console.warn('Could not cache to blobs:', e.message);
+          }
         }
+      } else {
+        console.error(`❌ GitHub fetch failed: ${resp.status}`);
       }
+    } catch (ghError) {
+      console.error('❌ GitHub fallback failed:', ghError.message);
     }
-    if (data && data.teams) {
-      TEAM_CACHE = data.teams;
-      return TEAM_CACHE;
-    }
-    return {};
-  } catch {
-    return {};
   }
+  
+  if (data && data.teams) {
+    TEAM_CACHE = data.teams;
+    return TEAM_CACHE;
+  }
+  
+  console.error('❌ No team data available from any source');
+  return {};
 }
 
 async function preloadCache() {
