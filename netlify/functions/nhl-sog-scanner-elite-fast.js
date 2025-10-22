@@ -108,16 +108,37 @@ async function fetchNHLOdds() {
   }
   
   try {
-    const today = new Date().toISOString().split('T')[0];
+    // Get today's date in ET timezone (not UTC!)
+    const todayET = new Date().toLocaleString('en-US', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    const [month, day, year] = todayET.split(/[\/,\s]/);
+    const today = `${year}-${month}-${day}`;
+    
     const eventsUrl = `https://api.the-odds-api.com/v4/sports/icehockey_nhl/events?regions=us&dateFormat=iso&apiKey=${apiKey}`;
     
     const eventsResponse = await fetch(eventsUrl);
     if (!eventsResponse.ok) return null;
     
     const events = await eventsResponse.json();
-    const todayEvents = events.filter(event => event.commence_time?.startsWith(today));
     
-    console.log(`📅 Found ${events.length} total events, ${todayEvents.length} for today (${today})`);
+    // Filter events by ET date (convert UTC to ET for comparison)
+    const todayEvents = events.filter(event => {
+      if (!event.commence_time) return false;
+      const gameTimeET = new Date(event.commence_time).toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+      const [gMonth, gDay, gYear] = gameTimeET.split(/[\/,\s]/);
+      return `${gYear}-${gMonth}-${gDay}` === today;
+    });
+    
+    console.log(`📅 Found ${events.length} total events, ${todayEvents.length} for today (${today} ET)`);
     
     if (todayEvents.length === 0) return null;
     
