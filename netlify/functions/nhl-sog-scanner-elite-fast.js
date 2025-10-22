@@ -105,7 +105,8 @@ function processRealOdds(oddsData) {
   if (!oddsData) return new Map();
   
   const playerOddsMap = new Map();
-  const PRIORITY_BOOKS = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'ESPN BET'];
+  // Books to check for NHL SOG props
+  const PRIORITY_BOOKS = ['FanDuel', 'DraftKings', 'Fanatics', 'Caesars', 'ESPN BET', 'BetMGM'];
   
   let totalOutcomes = 0;
   
