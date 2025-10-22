@@ -191,6 +191,7 @@ function detectStreak(recentGames) {
 
 function calculateWeightedSOGAverage(player) {
   if (!player || !player.season) return 2.5;
+  
   const seasonAvg = parseFloat(player.season.shotsPerGame) || 2.5;
   
   // Defensive fallback: If L5/L10 are zero/missing, use seasonAvg
@@ -201,7 +202,40 @@ function calculateWeightedSOGAverage(player) {
   let L10avg = parseFloat(player.L10?.shots);
   if (!L10avg || L10avg === 0) L10avg = seasonAvg;
   
-  return (seasonAvg * 0.60) + (L5avg * 0.30) + (L10avg * 0.10);
+  // ELITE: Regress recent form toward season average based on sample size
+  // Small samples = trust season more, large samples = trust recent more
+  const gamesPlayed = player.season.gamesPlayed || 0;
+  const L5games = player.L5?.games || 0;
+  const L10games = player.L10?.games || 0;
+  
+  // Calculate confidence weights based on sample size
+  // More games = more confidence in recent form
+  let seasonWeight = 0.60;
+  let L5weight = 0.30;
+  let L10weight = 0.10;
+  
+  // If small sample (< 10 games), regress harder toward league average
+  if (gamesPlayed < 10) {
+    const leagueAvgSOG = player.position === 'D' ? 1.8 : 2.2;
+    const regressionFactor = (10 - gamesPlayed) / 10; // 0.0 to 1.0
+    seasonAvg = (seasonAvg * (1 - regressionFactor)) + (leagueAvgSOG * regressionFactor);
+  }
+  
+  // If L5 has fewer than 5 games, reduce its weight
+  if (L5games < 5) {
+    const confidence = L5games / 5;
+    L5weight = 0.30 * confidence;
+    seasonWeight += 0.30 * (1 - confidence); // Shift weight to season
+  }
+  
+  // If L10 has fewer than 10 games, reduce its weight
+  if (L10games < 10) {
+    const confidence = L10games / 10;
+    L10weight = 0.10 * confidence;
+    seasonWeight += 0.10 * (1 - confidence);
+  }
+  
+  return (seasonAvg * seasonWeight) + (L5avg * L5weight) + (L10avg * L10weight);
 }
 
 function determinePPUnit(player) {
@@ -216,11 +250,30 @@ function determinePPUnit(player) {
 
 function calculateExpectedTOI(player) {
   if (!player || !player.season) return 15.0;
+  
   const seasonTOI = player.season.avgToi || '0:00';
   const [mins, secs] = seasonTOI.split(':');
   const seasonMins = parseInt(mins) + (parseInt(secs) / 60);
+  
+  // If season TOI is unavailable or zero, use position-based estimates
+  if (seasonMins === 0 || !isFinite(seasonMins)) {
+    // Estimate based on role indicators
+    const ppPoints = player.season.powerPlayPoints || 0;
+    const gamesPlayed = player.season.gamesPlayed || 1;
+    const ppRate = ppPoints / gamesPlayed;
+    
+    if (player.position === 'D') {
+      return ppRate > 0.25 ? 22.0 : ppRate > 0.10 ? 18.0 : 15.0;
+    } else {
+      return ppRate > 0.35 ? 18.0 : ppRate > 0.15 ? 15.0 : 12.0;
+    }
+  }
+  
   const L5toi = parseFloat(player.L5?.toi) || seasonMins;
-  return (L5toi * 0.70) + (seasonMins * 0.30);
+  
+  // ELITE: Weight recent TOI but don't let it dominate
+  // TOI is sticky - coaches don't drastically change ice time game-to-game
+  return (L5toi * 0.40) + (seasonMins * 0.60);
 }
 
 async function projectSOGElite(playerId, playerName, team, opponent, isHome, venue) {
@@ -242,24 +295,91 @@ async function projectSOGElite(playerId, playerName, team, opponent, isHome, ven
   baseSOG *= rinkEffect;
   const oppAdjustment = 2 - (oppDefense.defensiveRating || 1.0);
   baseSOG *= oppAdjustment;
+  
+  // ELITE TOI Adjustment: Shot rate increases with less TOI (higher intensity)
+  // Don't linearly scale - use diminishing returns
   const expectedTOI = calculateExpectedTOI(player);
   const leagueavgTOI = player.position === 'D' ? 20.0 : 16.0;
-  const toiFactor = expectedTOI / leagueavgTOI;
+  const toiRatio = expectedTOI / leagueavgTOI;
+  
+  // Cap TOI adjustment impact - don't let it dominate projection
+  // Lower TOI often means higher-intensity shifts (shot rate per minute increases)
+  let toiFactor;
+  if (toiRatio >= 1.0) {
+    // Above-average TOI: Linear bonus up to +15%
+    toiFactor = 1.0 + Math.min((toiRatio - 1.0) * 0.5, 0.15);
+  } else {
+    // Below-average TOI: Diminishing penalty (square root)
+    // 0.75 TOI ratio = 0.87 factor (13% penalty, not 25%)
+    // 0.50 TOI ratio = 0.71 factor (29% penalty, not 50%)
+    toiFactor = 0.5 + (Math.sqrt(toiRatio) * 0.5);
+  }
+  
   baseSOG *= toiFactor;
+  
   const ppUnit = determinePPUnit(player);
   let ppBoost = 0;
   if (ppUnit === 'PP1') ppBoost = player.position === 'D' ? 0.4 : 0.6;
   else if (ppUnit === 'PP2') ppBoost = player.position === 'D' ? 0.2 : 0.3;
   ppBoost *= (1.05 - (oppDefense.penaltyKillPct || 0.8) * 0.5);
   baseSOG += ppBoost;
+  
+  // ELITE: Player archetype modeling (Shooter vs Playmaker vs Grinder)
   const pointsPerGame = parseFloat(player.season.pointsPerGame) || 0;
-  let qualityMultiplier = 1.0;
-  if (pointsPerGame >= 0.9) qualityMultiplier = 1.08;
-  else if (pointsPerGame >= 0.6) qualityMultiplier = 1.04;
-  else if (pointsPerGame >= 0.3) qualityMultiplier = 1.00;
-  else qualityMultiplier = 0.92;
-  baseSOG *= qualityMultiplier;
+  const shotsPerGame = parseFloat(player.season.shotsPerGame) || 0;
+  const goalsPerGame = (player.season.goals || 0) / (player.season.gamesPlayed || 1);
+  
+  // Calculate shooting percentage (quality indicator)
+  const shootingPct = player.season.shootingPct || 0;
+  
+  // Identify player archetype
+  let archetypeMultiplier = 1.0;
+  
+  // High-volume shooters (3+ SOG/game) get bonus
+  if (shotsPerGame >= 3.5) {
+    archetypeMultiplier = 1.10; // Elite shooter
+  } else if (shotsPerGame >= 3.0) {
+    archetypeMultiplier = 1.06; // Volume shooter
+  } else if (shotsPerGame >= 2.5) {
+    archetypeMultiplier = 1.02; // Above-average
+  } else if (shotsPerGame < 1.5 && pointsPerGame > 0.6) {
+    // Playmaker (low shots, high points) - they create, don't shoot
+    archetypeMultiplier = 0.95;
+  } else if (shotsPerGame < 1.2) {
+    // Grinder/defensive player
+    archetypeMultiplier = 0.90;
+  }
+  
+  // Shooting percentage adjustment (quality over quantity)
+  // High shooting % = taking quality shots, likely to maintain shot volume
+  if (shootingPct > 0.15 && shotsPerGame > 2.0) {
+    archetypeMultiplier *= 1.04; // Quality shooter bonus
+  }
+  
+  baseSOG *= archetypeMultiplier;
+  
+  // ELITE: Dynamic dispersion based on player consistency
+  // Analyze recent game variance to set appropriate dispersion
   let dispersion = player.position === 'D' ? 3.5 : 2.4;
+  
+  if (player.recentGames && player.recentGames.length >= 5) {
+    const recentShots = player.recentGames.slice(0, 5).map(g => g.shots || 0);
+    const mean = recentShots.reduce((a, b) => a + b, 0) / recentShots.length;
+    
+    // Calculate coefficient of variation (CV)
+    const variance = recentShots.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / recentShots.length;
+    const stdDev = Math.sqrt(variance);
+    const cv = mean > 0 ? stdDev / mean : 1.0;
+    
+    // High CV = inconsistent player = higher dispersion
+    // Low CV = consistent player = lower dispersion
+    if (cv > 1.2) {
+      dispersion *= 1.15; // Very inconsistent
+    } else if (cv < 0.6) {
+      dispersion *= 0.85; // Very consistent
+    }
+  }
+  
   if (earlySeason) dispersion *= 1.2;
   let scratchRisk = 0.02;
   if (player.season.gamesPlayed < (player.L10?.games || 10) * 1.5) scratchRisk = 0.08;
