@@ -284,8 +284,21 @@ async function projectSOGElite(playerId, playerName, team, opponent, isHome, ven
 }
 
 function calculateZINBProbability(mu, r, pi, line, direction) {
-  if (direction === 'UNDER') return calculateZINBCDF(mu, r, pi, line);
-  return 1 - calculateZINBCDF(mu, r, pi, line - 0.01);
+  // For UNDER X.5: We want P(X <= X) where X is floor(line)
+  // Example: UNDER 1.5 means we win if actual is 0, 1 (X <= 1)
+  // So we need CDF(floor(line)) = CDF(1)
+  //
+  // For OVER X.5: We want P(X > X) = P(X >= X+1) = 1 - P(X <= X)
+  // Example: OVER 1.5 means we win if actual is 2, 3, 4... (X >= 2)
+  // So we need 1 - CDF(floor(line)) = 1 - CDF(1)
+  
+  const threshold = Math.floor(line);
+  
+  if (direction === 'UNDER') {
+    return calculateZINBCDF(mu, r, pi, threshold);
+  } else {
+    return 1 - calculateZINBCDF(mu, r, pi, threshold);
+  }
 }
 
 function calculateZINBCDF(mu, r, pi, k) {
