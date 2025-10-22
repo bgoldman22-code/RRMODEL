@@ -533,9 +533,30 @@ exports.handler = async (event, context) => {
       uniqueOpps = sorted.slice(0, 10); // default top 10
       fallbackUsed = true;
     }
+    
+    // ALWAYS provide top 15 candidates for debugging/verification
+    // This helps verify the model is working correctly
+    const allCandidatesMap = new Map();
+    for (const o of fallbackCandidates) {
+      const k = keyOf(o);
+      if (!allCandidatesMap.has(k) || allCandidatesMap.get(k).edge < o.edge) {
+        allCandidatesMap.set(k, o);
+      }
+    }
+    const top15Candidates = Array.from(allCandidatesMap.values())
+      .sort((a, b) => b.edge - a.edge)
+      .slice(0, 15)
+      .map(o => ({
+        ...o,
+        meetsThreshold: o.edge >= minEdge * 100 // Mark which ones would be recommended
+      }));
 
     const resp = {
       opportunities: uniqueOpps,
+      debug: {
+        top15Candidates,
+        note: "Top 15 opportunities by edge, regardless of threshold. Use 'meetsThreshold' to see which would be recommended bets."
+      },
       metadata: {
         version: '4.0-elite-fast',
         fallbackUsed,
