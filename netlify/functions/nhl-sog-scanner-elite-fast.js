@@ -347,20 +347,25 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
           // Get FAIR probability (vig removed) for edge calculation
           const fairData = getFairProbability(playerName, line, direction, realOddsPairs);
           
-          // Skip if no fair pair available or vig too high
-          if (!fairData.hasPair) {
-            continue; // Can't calculate true edge without vig removal
+          // Calculate implied prob for reference/fallback
+          const impliedProb = oddsToImpliedProb(odds);
+          
+          // Use fair prob if available, otherwise fall back to implied (with warning flag)
+          let fairProb, vigPct, usingFairProb;
+          if (fairData.hasPair && fairData.fairProb) {
+            fairProb = fairData.fairProb;
+            vigPct = fairData.vigPct;
+            usingFairProb = true;
+          } else {
+            // Fallback: Use implied prob (includes vig, less accurate)
+            fairProb = impliedProb;
+            vigPct = null;
+            usingFairProb = false;
           }
           
-          const fairProb = fairData.fairProb;
-          const vigPct = fairData.vigPct;
-          
-          // Calculate edge vs FAIR probability (not implied with vig)
+          // Calculate edge vs fair probability
           const edge = winProb - fairProb;
           const edgePercent = (edge / fairProb) * 100;
-          
-          // Also calc implied prob for reference
-          const impliedProb = oddsToImpliedProb(odds);
 
           // Build full opportunity object once
           const oppObj = {
@@ -388,8 +393,9 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
             modelProb: parseFloat(winProb.toFixed(3)),
             fairProb: parseFloat(fairProb.toFixed(3)),
             impliedProb: parseFloat(impliedProb.toFixed(3)),
-            vigPct: parseFloat(vigPct.toFixed(2)),
-            fairBook: fairData.book,
+            vigPct: vigPct ? parseFloat(vigPct.toFixed(2)) : null,
+            fairBook: fairData.book || null,
+            usingFairProb: usingFairProb,
             // Include breakdown for transparency
             breakdown: {
               seasonAvg: breakdown.seasonAvg,
