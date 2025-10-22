@@ -18,8 +18,8 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { fetchWithRetry } from '../../netlify/functions/_lib/nba/fetch-with-retry.mjs';
-import { validateTeamStats, validatePlayerStats, validateRCI } from '../../netlify/functions/_lib/nba/validate-schema.mjs';
+import { fetchWithRetry } from '../../../netlify/functions/_lib/nba/fetch-with-retry.mjs';
+import { validateTeamStats, validatePlayerStats, validateRCI } from '../../../netlify/functions/_lib/nba/validate-schema.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

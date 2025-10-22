@@ -280,8 +280,9 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
             bestAny = oppObj;
           }
 
-          // Only include in strict list if we have 5%–30% edge
-          if (edgePercent >= 5.0 && edgePercent <= 30.0) {
+          // Only include in strict list if we have >= 5% edge
+          // Removed upper bound - high edges are GOOD, not suspicious!
+          if (edgePercent >= 5.0) {
             opportunities.push(oppObj);
           }
         }
