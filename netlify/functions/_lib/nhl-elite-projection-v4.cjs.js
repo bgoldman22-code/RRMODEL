@@ -217,13 +217,14 @@ function calculateExpectedTOI(player) {
 }
 
 async function projectSOGElite(playerId, playerName, team, opponent, isHome, venue) {
-  const player = await findPlayer(playerId, playerName, team);
-  if (!player) {
-    console.log(`🔍 Elite projection: Player not found in stats - ${playerName} (${team}, ID: ${playerId})`);
-    return null;
-  }
-  let earlySeason = false;
-  if (!player.season || (player.season.gamesPlayed ?? 0) < 3) earlySeason = true;
+  try {
+    const player = await findPlayer(playerId, playerName, team);
+    if (!player) {
+      console.log(`🔍 Elite projection: Player not found in stats - ${playerName} (${team}, ID: ${playerId})`);
+      return null;
+    }
+    let earlySeason = false;
+    if (!player.season || (player.season.gamesPlayed ?? 0) < 3) earlySeason = true;
   const oppDefense = await getTeamDefense(opponent);
   let baseSOG = calculateWeightedSOGAverage(player);
   if (earlySeason && (!isFinite(baseSOG) || baseSOG <= 0)) baseSOG = 2.5;
@@ -291,6 +292,10 @@ async function projectSOGElite(playerId, playerName, team, opponent, isHome, ven
       earlySeason
     }
   };
+  } catch (error) {
+    console.log(`⚠️ Error projecting ${playerName}: ${error.message}`);
+    return null;
+  }
 }
 
 function calculateZINBProbability(mu, r, pi, line, direction) {
