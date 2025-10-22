@@ -193,11 +193,46 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
     const first = (player.firstName?.default || '').trim();
     const last = (player.lastName?.default || '').trim();
     const fullName = `${first} ${last}`.trim();
-    const nameForms = new Set([
-      normalize(fullName),
-      normalize(`${first.charAt(0)} ${last}`),
-      normalize(`${first.charAt(0)}. ${last}`)
-    ]);
+    
+    /**
+     * Smart name matching to avoid false positives (e.g., Luke Hughes vs Jack Hughes)
+     * Returns true only if:
+     * 1. Exact full name match
+     * 2. First initial + last name match (but only if odds name is also abbreviated)
+     * 3. Both names contain same first initial AND exact last name
+     */
+    const smartNameMatch = (oddsName) => {
+      const oddsNorm = normalize(oddsName);
+      const firstNorm = normalize(first);
+      const lastNorm = normalize(last);
+      const fullNorm = normalize(fullName);
+      
+      // Exact full name match (best case)
+      if (oddsNorm === fullNorm) return true;
+      
+      // Split odds name into parts
+      const oddsParts = oddsNorm.split(' ').filter(p => p.length > 0);
+      if (oddsParts.length < 2) return false;
+      
+      const oddsFirst = oddsParts[0];
+      const oddsLast = oddsParts[oddsParts.length - 1];
+      
+      // Last names must match exactly
+      if (oddsLast !== lastNorm) return false;
+      
+      // First name/initial must match
+      // Allow: "luke" matches "l", "l." matches "luke", "luke" matches "luke"
+      const firstInitial = firstNorm.charAt(0);
+      const oddsFirstInitial = oddsFirst.charAt(0);
+      
+      if (firstInitial !== oddsFirstInitial) return false;
+      
+      // If odds uses full first name, our first name must match exactly
+      if (oddsFirst.length > 2 && oddsFirst !== firstNorm) return false;
+      
+      // If odds uses initial, we accept it (already checked last name + first initial match)
+      return true;
+    };
 
     // Check for real odds opportunities
   const opportunities = [];
@@ -210,8 +245,7 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
           continue;
         }
 
-        const oddsNameN = normalize(oddsData.playerName);
-        const match = nameForms.has(oddsNameN) || oddsNameN.includes(normalize(last));
+        const match = smartNameMatch(oddsData.playerName);
         if (match) {
           
           const line = oddsData.line;
