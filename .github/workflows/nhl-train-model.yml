@@ -1,0 +1,90 @@
+name: NHL Model Training Pipeline
+
+on:
+  # Run weekly on Sundays at 3am ET (7am UTC)
+  schedule:
+    - cron: '0 7 * * 0'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  train-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180 # 3 hours max
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Check for existing historical data
+        id: check-data
+        run: |
+          if [ -f data/nhl/historical_game_data.json ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✅ Historical data exists, will skip fetching"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Historical data not found, will fetch"
+          fi
+      
+      - name: Fetch historical game data (if needed)
+        if: steps.check-data.outputs.exists == 'false'
+        run: |
+          echo "📥 Fetching historical game data..."
+          echo "⏱️ This will take 30-60 minutes..."
+          node scripts/nhl/historical-data-fetcher.mjs
+      
+      - name: Fit parameters using MLE
+        run: |
+          echo "🧠 Fitting parameters using Maximum Likelihood Estimation..."
+          node scripts/nhl/fit-parameters.mjs
+      
+      - name: Run backtest validation
+        run: |
+          echo "🎯 Running backtest validation..."
+          node scripts/nhl/backtest-engine.mjs
+      
+      - name: Generate training report
+        run: |
+          echo "📊 Generating training report..."
+          if [ -f data/nhl/training_report.json ]; then
+            echo "✅ Training complete!"
+            cat data/nhl/training_report.json | head -50
+          fi
+      
+      - name: Commit learned parameters
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Add all generated files
+          git add data/nhl/historical_game_data.json || true
+          git add data/nhl/learned_parameters.json || true
+          git add data/nhl/backtest_results.json || true
+          git add data/nhl/training_report.json || true
+          
+          # Check if there are changes
+          if [[ -n $(git status -s data/nhl/) ]]; then
+            git commit -m "🧠 Weekly model training - updated learned parameters [skip ci]"
+            git push
+            echo "✅ Learned parameters updated and pushed"
+          else
+            echo "ℹ️ No changes to commit"
+          fi
+      
+      - name: Upload training artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: training-results
+          path: |
+            data/nhl/learned_parameters.json
+            data/nhl/backtest_results.json
+            data/nhl/training_report.json
+          retention-days: 30

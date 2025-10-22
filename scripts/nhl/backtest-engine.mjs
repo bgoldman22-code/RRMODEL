@@ -23,12 +23,20 @@ const __dirname = path.dirname(__filename);
  */
 function loadHistoricalData() {
   const dataPath = path.join(__dirname, '../../data/nhl/historical_game_data.json');
+  const testDataPath = path.join(__dirname, '../../data/nhl/test_game_data.json');
   
-  if (!fs.existsSync(dataPath)) {
-    throw new Error('Historical data not found. Run historical-data-fetcher.mjs first.');
+  // Try full data first, fall back to test data
+  let targetPath = dataPath;
+  if (!fs.existsSync(dataPath) && fs.existsSync(testDataPath)) {
+    console.log('⚠️ Using test data (historical_game_data.json not found)');
+    targetPath = testDataPath;
   }
   
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+  if (!fs.existsSync(targetPath)) {
+    throw new Error('No data found. Run historical-data-fetcher.mjs or quick-test-training.mjs first.');
+  }
+  
+  const data = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
   return data.games;
 }
 
@@ -135,19 +143,22 @@ function runBacktest(games, params) {
 }
 
 /**
- * Analyze backtest results
+ * Analyze backtest results - FOCUSED ON ACTUAL OUTCOMES
  */
 function analyzeResults(predictions) {
-  console.log('📈 Backtest Results:');
-  console.log('-'.repeat(70));
+  console.log('📈 Backtest Results vs ACTUAL GAME OUTCOMES:');
+  console.log('='.repeat(70));
   
-  // Overall accuracy
+  // ========== OVERALL ACCURACY ==========
   const avgError = mean(predictions.map(p => p.error));
   const avgErrorPct = mean(predictions.map(p => p.errorPct));
   const medianError = median(predictions.map(p => p.error));
+  const rmse = Math.sqrt(mean(predictions.map(p => Math.pow(p.error, 2))));
   
-  console.log(`  Mean Absolute Error: ${avgError.toFixed(3)} shots`);
+  console.log('\n📊 ACCURACY METRICS:');
+  console.log(`  Mean Absolute Error (MAE): ${avgError.toFixed(3)} shots`);
   console.log(`  Median Absolute Error: ${medianError.toFixed(3)} shots`);
+  console.log(`  Root Mean Squared Error (RMSE): ${rmse.toFixed(3)} shots`);
   console.log(`  Mean Error %: ${(avgErrorPct * 100).toFixed(1)}%`);
   
   // Correlation between predicted and actual
@@ -155,74 +166,189 @@ function analyzeResults(predictions) {
   const actual = predictions.map(p => p.actual);
   const correlation = pearsonCorrelation(predicted, actual);
   
-  console.log(`  Correlation (predicted vs actual): ${correlation.toFixed(3)}`);
+  console.log(`  Pearson Correlation: ${correlation.toFixed(3)}`);
   
-  // Bias check (are we over/under predicting?)
+  if (correlation < 0.5) {
+    console.log(`    ⚠️ LOW CORRELATION - model has weak predictive power`);
+  } else if (correlation > 0.6) {
+    console.log(`    ✅ STRONG CORRELATION - model is highly predictive`);
+  }
+  
+  // ========== BIAS ANALYSIS ==========
   const avgProjection = mean(predicted);
   const avgActual = mean(actual);
   const bias = avgProjection - avgActual;
+  const biasPercent = avgActual > 0 ? (bias / avgActual) * 100 : 0;
   
-  console.log(`  Bias: ${bias > 0 ? '+' : ''}${bias.toFixed(3)} (${bias > 0 ? 'over' : 'under'}predicting)`);
+  console.log('\n📐 BIAS CHECK:');
+  console.log(`  Average Projection: ${avgProjection.toFixed(3)} shots`);
+  console.log(`  Average Actual: ${avgActual.toFixed(3)} shots`);
+  console.log(`  Bias: ${bias > 0 ? '+' : ''}${bias.toFixed(3)} shots (${biasPercent > 0 ? '+' : ''}${biasPercent.toFixed(1)}%)`);
   
-  // Accuracy by projection range
+  if (Math.abs(bias) < 0.05) {
+    console.log(`    ✅ WELL CALIBRATED - minimal bias`);
+  } else if (Math.abs(bias) < 0.15) {
+    console.log(`    ⚠️ SLIGHT BIAS - consider recalibration`);
+  } else {
+    console.log(`    🚨 SIGNIFICANT BIAS - needs correction`);
+  }
+  
+  // ========== DIRECTIONAL ANALYSIS ==========
+  const overProjections = predictions.filter(p => p.projection > p.actual);
+  const underProjections = predictions.filter(p => p.projection < p.actual);
+  const exactProjections = predictions.filter(p => Math.abs(p.projection - p.actual) < 0.1);
+  
+  console.log('\n🎯 DIRECTIONAL ACCURACY:');
+  console.log(`  Over-projected: ${overProjections.length} (${(overProjections.length/predictions.length*100).toFixed(1)}%)`);
+  console.log(`    Avg over-projection: +${mean(overProjections.map(p => p.projection - p.actual)).toFixed(3)} shots`);
+  console.log(`  Under-projected: ${underProjections.length} (${(underProjections.length/predictions.length*100).toFixed(1)}%)`);
+  console.log(`    Avg under-projection: ${mean(underProjections.map(p => p.projection - p.actual)).toFixed(3)} shots`);
+  console.log(`  Near-exact (±0.1): ${exactProjections.length} (${(exactProjections.length/predictions.length*100).toFixed(1)}%)`);
+  
+  // ========== STRATIFIED MAE BY PROJECTION LEVEL ==========
   const ranges = [
-    { name: 'Low (< 2.0)', min: 0, max: 2.0 },
-    { name: 'Medium (2.0-3.0)', min: 2.0, max: 3.0 },
-    { name: 'High (3.0-4.0)', min: 3.0, max: 4.0 },
-    { name: 'Very High (> 4.0)', min: 4.0, max: 999 }
+    { name: 'Very Low (< 1.5)', min: 0, max: 1.5 },
+    { name: 'Low (1.5-2.5)', min: 1.5, max: 2.5 },
+    { name: 'Medium (2.5-3.5)', min: 2.5, max: 3.5 },
+    { name: 'High (3.5-4.5)', min: 3.5, max: 4.5 },
+    { name: 'Very High (> 4.5)', min: 4.5, max: 999 }
   ];
   
-  console.log('\n  Accuracy by projection range:');
+  console.log('\n📈 MAE BY PROJECTION LEVEL:');
   ranges.forEach(range => {
     const inRange = predictions.filter(p => p.projection >= range.min && p.projection < range.max);
     if (inRange.length === 0) return;
     
-    const avgErr = mean(inRange.map(p => p.error));
-    console.log(`    ${range.name}: ${avgErr.toFixed(3)} MAE (n=${inRange.length})`);
+    const mae = mean(inRange.map(p => p.error));
+    const avgProj = mean(inRange.map(p => p.projection));
+    const avgActual = mean(inRange.map(p => p.actual));
+    const rangeBias = avgProj - avgActual;
+    
+    console.log(`  ${range.name}:`);
+    console.log(`    MAE: ${mae.toFixed(3)} | Bias: ${rangeBias > 0 ? '+' : ''}${rangeBias.toFixed(3)} | n=${inRange.length}`);
   });
   
-  // Simulated betting performance
-  console.log('\n  Simulated betting (if we had odds):');
+  // ========== ACCURACY BY ACTUAL OUTCOME ==========
+  const actualRanges = [
+    { name: '0-1 shots', min: 0, max: 1 },
+    { name: '1-2 shots', min: 1, max: 2 },
+    { name: '2-3 shots', min: 2, max: 3 },
+    { name: '3-4 shots', min: 3, max: 4 },
+    { name: '4+ shots', min: 4, max: 999 }
+  ];
   
-  // Simulate OVER bets where projection > 2.5
-  const overBets = predictions.filter(p => p.projection > 2.5);
-  const overWins = overBets.filter(p => p.actual > 2.5).length;
-  const overWinRate = overBets.length > 0 ? overWins / overBets.length : 0;
+  console.log('\n🎲 MAE BY ACTUAL OUTCOME:');
+  actualRanges.forEach(range => {
+    const inRange = predictions.filter(p => p.actual >= range.min && p.actual < range.max);
+    if (inRange.length === 0) return;
+    
+    const mae = mean(inRange.map(p => p.error));
+    const avgProj = mean(inRange.map(p => p.projection));
+    
+    console.log(`  ${range.name}: MAE=${mae.toFixed(3)} | Avg Proj=${avgProj.toFixed(2)} | n=${inRange.length}`);
+  });
   
-  console.log(`    OVER 2.5 bets: ${overWinRate.toFixed(1)}% win rate (${overWins}/${overBets.length})`);
+  // ========== CONFIDENCE CALIBRATION ==========
+  console.log('\n🔍 CONFIDENCE CALIBRATION:');
   
-  // Simulate UNDER bets where projection < 2.5
-  const underBets = predictions.filter(p => p.projection < 2.5);
-  const underWins = underBets.filter(p => p.actual < 2.5).length;
-  const underWinRate = underBets.length > 0 ? underWins / underBets.length : 0;
+  // "High confidence" = projection significantly different from league avg (2.5)
+  const highConfOvers = predictions.filter(p => p.projection >= 3.5);
+  const highConfUnders = predictions.filter(p => p.projection <= 1.5);
+  const lowConf = predictions.filter(p => p.projection > 2.0 && p.projection < 3.0);
   
-  console.log(`    UNDER 2.5 bets: ${underWinRate.toFixed(1)}% win rate (${underWins}/${underBets.length})`);
+  if (highConfOvers.length > 0) {
+    const mae = mean(highConfOvers.map(p => p.error));
+    const avgProj = mean(highConfOvers.map(p => p.projection));
+    const avgActual = mean(highConfOvers.map(p => p.actual));
+    console.log(`  High proj (≥3.5): MAE=${mae.toFixed(3)} | Proj=${avgProj.toFixed(2)} vs Actual=${avgActual.toFixed(2)} | n=${highConfOvers.length}`);
+  }
   
-  // High confidence bets (projection > 0.5 away from line)
-  const highConfOver = predictions.filter(p => p.projection > 3.0);
-  const highConfOverWins = highConfOver.filter(p => p.actual > 2.5).length;
-  const highConfOverRate = highConfOver.length > 0 ? highConfOverWins / highConfOver.length : 0;
+  if (highConfUnders.length > 0) {
+    const mae = mean(highConfUnders.map(p => p.error));
+    const avgProj = mean(highConfUnders.map(p => p.projection));
+    const avgActual = mean(highConfUnders.map(p => p.actual));
+    console.log(`  Low proj (≤1.5): MAE=${mae.toFixed(3)} | Proj=${avgProj.toFixed(2)} vs Actual=${avgActual.toFixed(2)} | n=${highConfUnders.length}`);
+  }
   
-  console.log(`    High conf OVER (proj > 3.0): ${highConfOverRate.toFixed(1)}% win rate (${highConfOverWins}/${highConfOver.length})`);
+  if (lowConf.length > 0) {
+    const mae = mean(lowConf.map(p => p.error));
+    console.log(`  Medium proj (2.0-3.0): MAE=${mae.toFixed(3)} | n=${lowConf.length}`);
+  }
   
-  const highConfUnder = predictions.filter(p => p.projection < 2.0);
-  const highConfUnderWins = highConfUnder.filter(p => p.actual < 2.5).length;
-  const highConfUnderRate = highConfUnder.length > 0 ? highConfUnderWins / highConfUnder.length : 0;
+  // ========== SUMMARY SCORE ==========
+  const modelScore = calculateModelScore(avgError, correlation, Math.abs(bias));
   
-  console.log(`    High conf UNDER (proj < 2.0): ${highConfUnderRate.toFixed(1)}% win rate (${highConfUnderWins}/${highConfUnder.length})`);
+  console.log('\n⭐ MODEL QUALITY SCORE:');
+  console.log(`  Score: ${modelScore.toFixed(1)}/100`);
+  if (modelScore >= 80) {
+    console.log(`  ✅ ELITE - Ready for real money`);
+  } else if (modelScore >= 70) {
+    console.log(`  ✅ STRONG - Good predictive power`);
+  } else if (modelScore >= 60) {
+    console.log(`  ⚠️ MODERATE - Needs improvement`);
+  } else {
+    console.log(`  🚨 WEAK - Not ready for betting`);
+  }
   
   return {
     totalPredictions: predictions.length,
     meanAbsoluteError: avgError,
     medianAbsoluteError: medianError,
+    rmse,
     meanErrorPct: avgErrorPct,
     correlation,
     bias,
-    overBetWinRate: overWinRate,
-    underBetWinRate: underWinRate,
-    highConfOverWinRate: highConfOverRate,
-    highConfUnderWinRate: highConfUnderRate
+    biasPercent,
+    overProjectionCount: overProjections.length,
+    underProjectionCount: underProjections.length,
+    modelScore
   };
+}
+
+/**
+ * Calculate overall model quality score
+ */
+function calculateModelScore(mae, correlation, absBias) {
+  // Lower MAE is better (0.5 = excellent, 1.0 = good, 1.5 = ok)
+  const maeScore = Math.max(0, 100 - (mae * 40));
+  
+  // Higher correlation is better (0.7 = excellent, 0.5 = good, 0.3 = weak)
+  const corrScore = correlation * 100;
+  
+  // Lower bias is better (0.05 = excellent, 0.15 = ok, 0.3 = bad)
+  const biasScore = Math.max(0, 100 - (absBias * 300));
+  
+  // Weighted average (MAE and correlation most important)
+  return (maeScore * 0.4) + (corrScore * 0.4) + (biasScore * 0.2);
+}
+
+/**
+ * Generate error distribution for visualization
+ */
+function generateErrorDistribution(predictions) {
+  // Group errors into buckets
+  const buckets = {};
+  
+  predictions.forEach(p => {
+    const errorBucket = Math.round(p.error * 2) / 2; // 0.5 increments
+    if (!buckets[errorBucket]) {
+      buckets[errorBucket] = 0;
+    }
+    buckets[errorBucket]++;
+  });
+  
+  // Convert to sorted array
+  const distribution = Object.keys(buckets)
+    .map(k => ({ error: parseFloat(k), count: buckets[k] }))
+    .sort((a, b) => a.error - b.error);
+  
+  console.log('\n📊 ERROR DISTRIBUTION:');
+  distribution.forEach(d => {
+    const bar = '█'.repeat(Math.ceil(d.count / 10));
+    console.log(`  ${d.error.toFixed(1)} shots: ${bar} (${d.count})`);
+  });
+  
+  return distribution;
 }
 
 /**
@@ -279,13 +405,17 @@ async function runCompleteBacktest() {
   // Analyze results
   const results = analyzeResults(predictions);
   
+  // Generate error distribution
+  const errorDistribution = generateErrorDistribution(predictions);
+  
   // Save results
   const output = {
     version: '1.0',
     generatedAt: new Date().toISOString(),
     parameters: params,
     results,
-    predictions: predictions.slice(0, 1000) // Save first 1000 for inspection
+    errorDistribution,
+    samplePredictions: predictions.slice(0, 100) // Save first 100 for inspection
   };
   
   const outputPath = path.join(__dirname, '../../data/nhl/backtest_results.json');

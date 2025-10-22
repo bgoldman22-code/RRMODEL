@@ -23,7 +23,8 @@ const __dirname = path.dirname(__filename);
 const NHL_API_BASE = 'https://api-web.nhle.com/v1';
 
 // Fetch data from these seasons (more data = better fits)
-const TRAINING_SEASONS = ['20232024', '20242025', '20252026'];
+// 4 seasons for comprehensive backtest
+const TRAINING_SEASONS = ['20212022', '20222023', '20232024', '20242025'];
 
 // Rate limiting
 const DELAY_MS = 100; // 10 requests/second
@@ -193,12 +194,16 @@ async function fetchHistoricalData() {
     const players = await getSeasonRoster(season);
     console.log(`Found ${players.length} players\n`);
     
-    // Sample for testing (remove this for production)
-    // const samplePlayers = players.slice(0, 50); // REMOVE THIS LINE FOR FULL DATA
-    
     let processed = 0;
+    let errors = 0;
+    const maxErrors = 50; // Stop if too many errors (API issues)
     
     for (const playerId of players) {
+      // Stop if too many errors
+      if (errors > maxErrors) {
+        console.error(`\n⚠️ Stopping due to ${errors} errors - API may have issues`);
+        break;
+      }
       try {
         // Fetch player info
         const playerInfo = await fetchPlayerInfo(playerId);
@@ -226,11 +231,12 @@ async function fetchHistoricalData() {
         processed++;
         
         if (processed % 50 === 0) {
-          console.log(`  Progress: ${processed}/${players.length} players | ${totalGames.toLocaleString()} games collected`);
+          console.log(`  Progress: ${processed}/${players.length} players | ${totalGames.toLocaleString()} games | ${errors} errors`);
         }
         
       } catch (error) {
         console.error(`❌ Error processing player ${playerId}:`, error.message);
+        errors++;
       }
     }
     

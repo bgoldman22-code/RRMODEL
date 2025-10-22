@@ -25,13 +25,21 @@ const __dirname = path.dirname(__filename);
  */
 function loadHistoricalData() {
   const dataPath = path.join(__dirname, '../../data/nhl/historical_game_data.json');
+  const testDataPath = path.join(__dirname, '../../data/nhl/test_game_data.json');
   
-  if (!fs.existsSync(dataPath)) {
-    throw new Error('Historical data not found. Run historical-data-fetcher.mjs first.');
+  // Try full data first, fall back to test data
+  let targetPath = dataPath;
+  if (!fs.existsSync(dataPath) && fs.existsSync(testDataPath)) {
+    console.log('⚠️ Using test data (historical_game_data.json not found)');
+    targetPath = testDataPath;
   }
   
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-  console.log(`📊 Loaded ${data.totalGames.toLocaleString()} games from ${data.seasons.join(', ')}`);
+  if (!fs.existsSync(targetPath)) {
+    throw new Error('No data found. Run historical-data-fetcher.mjs or quick-test-training.mjs first.');
+  }
+  
+  const data = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+  console.log(`📊 Loaded ${data.totalGames?.toLocaleString() || data.games?.length.toLocaleString()} games from ${data.seasons?.join(', ') || 'unknown seasons'}`);
   
   return data.games;
 }

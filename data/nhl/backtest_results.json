@@ -1,0 +1,1185 @@
+{
+  "version": "1.0",
+  "generatedAt": "2025-10-22T18:24:32.092Z",
+  "parameters": {
+    "version": "1.0",
+    "generatedAt": "2025-10-22T18:24:19.356Z",
+    "trainingGames": 2862,
+    "homeAwayEffects": {
+      "EDM": {
+        "homeMultiplier": 1.186433313396338,
+        "awayMultiplier": 1,
+        "homeSampleSize": 146,
+        "awaySampleSize": 149,
+        "homeAvgShots": 3.3835616438356166,
+        "awayAvgShots": 2.8322147651006713
+      },
+      "TOR": {
+        "homeMultiplier": 1.0493112384521763,
+        "awayMultiplier": 1,
+        "homeSampleSize": 145,
+        "awaySampleSize": 153,
+        "homeAvgShots": 3.303448275862069,
+        "awayAvgShots": 3.150326797385621
+      },
+      "TBL": {
+        "homeMultiplier": 1.001606486030445,
+        "awayMultiplier": 1,
+        "homeSampleSize": 79,
+        "awaySampleSize": 80,
+        "homeAvgShots": 3.5569620253164556,
+        "awayAvgShots": 3.625
+      },
+      "COL": {
+        "homeMultiplier": 1.0228710463002209,
+        "awayMultiplier": 1,
+        "homeSampleSize": 161,
+        "awaySampleSize": 157,
+        "homeAvgShots": 3.7888198757763973,
+        "awayAvgShots": 3.770700636942675
+      },
+      "VAN": {
+        "homeMultiplier": 1.1259568088592615,
+        "awayMultiplier": 1,
+        "homeSampleSize": 74,
+        "awaySampleSize": 72,
+        "homeAvgShots": 2.310810810810811,
+        "awayAvgShots": 2.013888888888889
+      },
+      "NYR": {
+        "homeMultiplier": 1.0614406797296065,
+        "awayMultiplier": 1,
+        "homeSampleSize": 175,
+        "awaySampleSize": 169,
+        "homeAvgShots": 2.96,
+        "awayAvgShots": 2.7041420118343193
+      },
+      "BOS": {
+        "homeMultiplier": 1.1080556169917881,
+        "awayMultiplier": 1,
+        "homeSampleSize": 100,
+        "awaySampleSize": 87,
+        "homeAvgShots": 1.6,
+        "awayAvgShots": 1.4942528735632183
+      },
+      "VGK": {
+        "homeMultiplier": 1.1851728256898821,
+        "awayMultiplier": 1,
+        "homeSampleSize": 43,
+        "awaySampleSize": 36,
+        "homeAvgShots": 2.5348837209302326,
+        "awayAvgShots": 2.1944444444444446
+      },
+      "SJS": {
+        "homeMultiplier": 0.7021007790612889,
+        "awayMultiplier": 1,
+        "homeSampleSize": 22,
+        "awaySampleSize": 26,
+        "homeAvgShots": 1.9090909090909092,
+        "awayAvgShots": 2.730769230769231
+      },
+      "CAR": {
+        "homeMultiplier": 1.0523291286519003,
+        "awayMultiplier": 1,
+        "homeSampleSize": 136,
+        "awaySampleSize": 133,
+        "homeAvgShots": 2.3970588235294117,
+        "awayAvgShots": 2.2406015037593985
+      },
+      "NJD": {
+        "homeMultiplier": 1.1337886117656701,
+        "awayMultiplier": 1,
+        "homeSampleSize": 81,
+        "awaySampleSize": 82,
+        "homeAvgShots": 2.8395061728395063,
+        "awayAvgShots": 2.4146341463414633
+      },
+      "PIT": {
+        "homeMultiplier": 1.1040148064572606,
+        "awayMultiplier": 1,
+        "homeSampleSize": 64,
+        "awaySampleSize": 66,
+        "homeAvgShots": 1.3125,
+        "awayAvgShots": 1.1666666666666667
+      },
+      "CHI": {
+        "homeMultiplier": 1.1140764828388103,
+        "awayMultiplier": 1,
+        "homeSampleSize": 28,
+        "awaySampleSize": 28,
+        "homeAvgShots": 1.8928571428571428,
+        "awayAvgShots": 1.75
+      },
+      "CBJ": {
+        "homeMultiplier": 1.022295139740497,
+        "awayMultiplier": 1,
+        "homeSampleSize": 19,
+        "awaySampleSize": 21,
+        "homeAvgShots": 2.1052631578947367,
+        "awayAvgShots": 2.1904761904761907
+      },
+      "DET": {
+        "homeMultiplier": 0.9135670513240728,
+        "awayMultiplier": 1,
+        "homeSampleSize": 82,
+        "awaySampleSize": 82,
+        "homeAvgShots": 2.817073170731707,
+        "awayAvgShots": 3.048780487804878
+      },
+      "FLA": {
+        "homeMultiplier": 1.0684761207561675,
+        "awayMultiplier": 1,
+        "homeSampleSize": 84,
+        "awaySampleSize": 82,
+        "homeAvgShots": 2.8214285714285716,
+        "awayAvgShots": 2.6951219512195124
+      }
+    },
+    "venueEffects": {
+      "Ball Arena": 1.08,
+      "T-Mobile Arena": 1.02,
+      "Climate Pledge Arena": 1.01
+    },
+    "toiRelationship": {
+      "curve": {
+        "veryLow": {
+          "avgToi": 8.382692307692306,
+          "avgShots": 1.1538461538461537,
+          "shotRatePerMinute": 0.13764624913971096,
+          "sampleSize": 26
+        },
+        "low": {
+          "avgToi": 11.621846846846848,
+          "avgShots": 1.6081081081081081,
+          "shotRatePerMinute": 0.1383694114455146,
+          "sampleSize": 74
+        },
+        "medium": {
+          "avgToi": 15.524767932489453,
+          "avgShots": 2.0556962025316454,
+          "shotRatePerMinute": 0.1324139730442983,
+          "sampleSize": 395
+        },
+        "high": {
+          "avgToi": 19.139961175818087,
+          "avgShots": 2.598169717138103,
+          "shotRatePerMinute": 0.13574581961120677,
+          "sampleSize": 1202
+        },
+        "veryHigh": {
+          "avgToi": 23.370131004366826,
+          "avgShots": 3.2733624454148473,
+          "shotRatePerMinute": 0.14006607172219973,
+          "sampleSize": 1145
+        }
+      },
+      "powerLaw": {
+        "exponent": 1.4181986691922475,
+        "coefficient": 0.028414949068322166
+      }
+    },
+    "powerPlayBoost": {
+      "overallBoost": 0,
+      "pp1AvgShots": 0,
+      "pp2AvgShots": 0,
+      "baselineAvgShots": 2.750524109014675,
+      "pp1Boost": 0,
+      "pp2Boost": 0
+    },
+    "streakEffects": {
+      "hotMultiplier": 1.4126838235294117,
+      "coldMultiplier": 0.5081340020576132,
+      "hotThreshold": 4,
+      "coldThreshold": 1,
+      "hotSampleSize": 425,
+      "coldSampleSize": 162
+    },
+    "dispersionParams": {
+      "forward": 1.1405321489691438,
+      "defense": 1.095446748173706
+    },
+    "confidenceLevel": "HIGH",
+    "lastUpdated": "2025-10-22T18:24:19.359Z"
+  },
+  "results": {
+    "totalPredictions": 2662,
+    "meanAbsoluteError": 1.7101265081133554,
+    "medianAbsoluteError": 1.5313768321025392,
+    "rmse": 2.0818023227301206,
+    "meanErrorPct": 0.7659599907869706,
+    "correlation": 0.4217722899546712,
+    "bias": 1.0280521610977287,
+    "biasPercent": 37.4732966293599,
+    "overProjectionCount": 1959,
+    "underProjectionCount": 703,
+    "modelScore": 29.50886746837316
+  },
+  "errorDistribution": [
+    {
+      "error": 0,
+      "count": 219
+    },
+    {
+      "error": 0.5,
+      "count": 448
+    },
+    {
+      "error": 1,
+      "count": 452
+    },
+    {
+      "error": 1.5,
+      "count": 368
+    },
+    {
+      "error": 2,
+      "count": 361
+    },
+    {
+      "error": 2.5,
+      "count": 294
+    },
+    {
+      "error": 3,
+      "count": 229
+    },
+    {
+      "error": 3.5,
+      "count": 141
+    },
+    {
+      "error": 4,
+      "count": 76
+    },
+    {
+      "error": 4.5,
+      "count": 37
+    },
+    {
+      "error": 5,
+      "count": 15
+    },
+    {
+      "error": 5.5,
+      "count": 11
+    },
+    {
+      "error": 6,
+      "count": 5
+    },
+    {
+      "error": 6.5,
+      "count": 3
+    },
+    {
+      "error": 7,
+      "count": 2
+    },
+    {
+      "error": 8.5,
+      "count": 1
+    }
+  ],
+  "samplePredictions": [
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-10-08",
+      "projection": 2.831126444273525,
+      "actual": 2,
+      "error": 0.8311264442735249,
+      "errorPct": 0.41556322213676244
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-10-11",
+      "projection": 2.2885314946128994,
+      "actual": 2,
+      "error": 0.2885314946128994,
+      "errorPct": 0.1442657473064497
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-10-12",
+      "projection": 2.009569734190309,
+      "actual": 2,
+      "error": 0.009569734190308932,
+      "errorPct": 0.004784867095154466
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-10-15",
+      "projection": 2.713098042781268,
+      "actual": 3,
+      "error": 0.28690195721873213,
+      "errorPct": 0.09563398573957738
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-10-17",
+      "projection": 2.2503970131214195,
+      "actual": 3,
+      "error": 0.7496029868785805,
+      "errorPct": 0.24986766229286017
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-10-19",
+      "projection": 2.453928625652667,
+      "actual": 3,
+      "error": 0.5460713743473331,
+      "errorPct": 0.18202379144911104
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-10-22",
+      "projection": 2.2388143814860624,
+      "actual": 2,
+      "error": 0.23881438148606238,
+      "errorPct": 0.11940719074303119
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-10-25",
+      "projection": 2.285250396100905,
+      "actual": 4,
+      "error": 1.714749603899095,
+      "errorPct": 0.42868740097477376
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-10-26",
+      "projection": 2.061710542811533,
+      "actual": 1,
+      "error": 1.0617105428115332,
+      "errorPct": 1.0617105428115332
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-10-28",
+      "projection": 2.1072163034203344,
+      "actual": 2,
+      "error": 0.10721630342033439,
+      "errorPct": 0.053608151710167196
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-10-31",
+      "projection": 2.477869640396083,
+      "actual": 2,
+      "error": 0.47786964039608293,
+      "errorPct": 0.23893482019804146
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-11-02",
+      "projection": 2.8772107006782868,
+      "actual": 1,
+      "error": 1.8772107006782868,
+      "errorPct": 1.8772107006782868
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-11-03",
+      "projection": 2.093183346881953,
+      "actual": 4,
+      "error": 1.9068166531180468,
+      "errorPct": 0.4767041632795117
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-11-06",
+      "projection": 2.888611926072866,
+      "actual": 3,
+      "error": 0.11138807392713401,
+      "errorPct": 0.03712935797571134
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-11-07",
+      "projection": 2.6040374645124595,
+      "actual": 1,
+      "error": 1.6040374645124595,
+      "errorPct": 1.6040374645124595
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-11-10",
+      "projection": 2.930290149416455,
+      "actual": 1,
+      "error": 1.930290149416455,
+      "errorPct": 1.930290149416455
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-11-14",
+      "projection": 1.940665277475932,
+      "actual": 1,
+      "error": 0.9406652774759321,
+      "errorPct": 0.9406652774759321
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-11-19",
+      "projection": 3.031032171551265,
+      "actual": 1,
+      "error": 2.031032171551265,
+      "errorPct": 2.031032171551265
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-11-21",
+      "projection": 2.4460049355614637,
+      "actual": 3,
+      "error": 0.5539950644385363,
+      "errorPct": 0.1846650214795121
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-11-23",
+      "projection": 2.1813405887974917,
+      "actual": 1,
+      "error": 1.1813405887974917,
+      "errorPct": 1.1813405887974917
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-11-27",
+      "projection": 2.378959901873121,
+      "actual": 3,
+      "error": 0.6210400981268789,
+      "errorPct": 0.20701336604229295
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-11-29",
+      "projection": 2.9933750327137676,
+      "actual": 2,
+      "error": 0.9933750327137676,
+      "errorPct": 0.4966875163568838
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-01",
+      "projection": 2.9889343484170006,
+      "actual": 0,
+      "error": 2.9889343484170006,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-02",
+      "projection": 2.400872568910098,
+      "actual": 2,
+      "error": 0.4008725689100978,
+      "errorPct": 0.2004362844550489
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-04",
+      "projection": 3.0057526390053266,
+      "actual": 0,
+      "error": 3.0057526390053266,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-07",
+      "projection": 2.4499658360012626,
+      "actual": 1,
+      "error": 1.4499658360012626,
+      "errorPct": 1.4499658360012626
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-09",
+      "projection": 2.320982887733056,
+      "actual": 1,
+      "error": 1.3209828877330558,
+      "errorPct": 1.3209828877330558
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-12",
+      "projection": 2.3463157847150877,
+      "actual": 1,
+      "error": 1.3463157847150877,
+      "errorPct": 1.3463157847150877
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-14",
+      "projection": 2.2885314946128994,
+      "actual": 3,
+      "error": 0.7114685053871006,
+      "errorPct": 0.23715616846236687
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-15",
+      "projection": 1.7114624904954923,
+      "actual": 4,
+      "error": 2.2885375095045077,
+      "errorPct": 0.5721343773761269
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-17",
+      "projection": 2.9637591693390783,
+      "actual": 2,
+      "error": 0.9637591693390783,
+      "errorPct": 0.4818795846695392
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-19",
+      "projection": 2.593806883412913,
+      "actual": 3,
+      "error": 0.4061931165870871,
+      "errorPct": 0.13539770552902905
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-21",
+      "projection": 2.3426918371927496,
+      "actual": 0,
+      "error": 2.3426918371927496,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-23",
+      "projection": 2.5853677749151465,
+      "actual": 3,
+      "error": 0.41463222508485353,
+      "errorPct": 0.13821074169495118
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-27",
+      "projection": 2.5370125379863224,
+      "actual": 0,
+      "error": 2.5370125379863224,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-29",
+      "projection": 2.1620495466977903,
+      "actual": 1,
+      "error": 1.1620495466977903,
+      "errorPct": 1.1620495466977903
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2024-12-31",
+      "projection": 2.9135977371497614,
+      "actual": 2,
+      "error": 0.9135977371497614,
+      "errorPct": 0.4567988685748807
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-01-03",
+      "projection": 2.269740505388593,
+      "actual": 1,
+      "error": 1.2697405053885928,
+      "errorPct": 1.2697405053885928
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-01-05",
+      "projection": 3.056374029565947,
+      "actual": 1,
+      "error": 2.056374029565947,
+      "errorPct": 2.056374029565947
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-01-08",
+      "projection": 2.797542875663325,
+      "actual": 1,
+      "error": 1.797542875663325,
+      "errorPct": 1.797542875663325
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-01-10",
+      "projection": 1.5683063568350597,
+      "actual": 1,
+      "error": 0.5683063568350597,
+      "errorPct": 0.5683063568350597
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-01-11",
+      "projection": 1.9144344325772529,
+      "actual": 2,
+      "error": 0.08556556742274712,
+      "errorPct": 0.04278278371137356
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-01-13",
+      "projection": 2.120167224234732,
+      "actual": 1,
+      "error": 1.120167224234732,
+      "errorPct": 1.120167224234732
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-01-16",
+      "projection": 1.6135592974668864,
+      "actual": 2,
+      "error": 0.3864407025331136,
+      "errorPct": 0.1932203512665568
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-01-18",
+      "projection": 1.7940133776768168,
+      "actual": 2,
+      "error": 0.2059866223231832,
+      "errorPct": 0.1029933111615916
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-01-20",
+      "projection": 2.5616335455455266,
+      "actual": 1,
+      "error": 1.5616335455455266,
+      "errorPct": 1.5616335455455266
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-01-25",
+      "projection": 1.5844245224824243,
+      "actual": 0,
+      "error": 1.5844245224824243,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-01-28",
+      "projection": 3.024580216128403,
+      "actual": 0,
+      "error": 3.024580216128403,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-02-01",
+      "projection": 1.7598053552958128,
+      "actual": 0,
+      "error": 1.7598053552958128,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-02-04",
+      "projection": 2.0164990576951185,
+      "actual": 3,
+      "error": 0.9835009423048815,
+      "errorPct": 0.3278336474349605
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-02-06",
+      "projection": 2.5073896678157177,
+      "actual": 3,
+      "error": 0.4926103321842823,
+      "errorPct": 0.16420344406142742
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-02-08",
+      "projection": 2.835185703241631,
+      "actual": 5,
+      "error": 2.164814296758369,
+      "errorPct": 0.4329628593516738
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-02-22",
+      "projection": 2.306543413733399,
+      "actual": 2,
+      "error": 0.3065434137333991,
+      "errorPct": 0.15327170686669955
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-02-25",
+      "projection": 2.191991270980837,
+      "actual": 0,
+      "error": 2.191991270980837,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-02-27",
+      "projection": 1.6639396645055402,
+      "actual": 3,
+      "error": 1.3360603354944598,
+      "errorPct": 0.44535344516481995
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-01",
+      "projection": 1.9990724715241013,
+      "actual": 0,
+      "error": 1.9990724715241013,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-02",
+      "projection": 3.1623182657681492,
+      "actual": 3,
+      "error": 0.16231826576814923,
+      "errorPct": 0.054106088589383074
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-04",
+      "projection": 2.093183346881953,
+      "actual": 4,
+      "error": 1.9068166531180468,
+      "errorPct": 0.4767041632795117
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-06",
+      "projection": 2.0928974636973434,
+      "actual": 1,
+      "error": 1.0928974636973434,
+      "errorPct": 1.0928974636973434
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-09",
+      "projection": 2.947074898780159,
+      "actual": 2,
+      "error": 0.9470748987801589,
+      "errorPct": 0.47353744939007947
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-11",
+      "projection": 3.096868622713654,
+      "actual": 3,
+      "error": 0.09686862271365415,
+      "errorPct": 0.032289540904551384
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-14",
+      "projection": 2.362976970697072,
+      "actual": 3,
+      "error": 0.6370230293029282,
+      "errorPct": 0.21234100976764272
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-15",
+      "projection": 2.353568632555712,
+      "actual": 3,
+      "error": 0.6464313674442881,
+      "errorPct": 0.21547712248142936
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-20",
+      "projection": 2.7396198685319764,
+      "actual": 1,
+      "error": 1.7396198685319764,
+      "errorPct": 1.7396198685319764
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-22",
+      "projection": 2.459472070377949,
+      "actual": 2,
+      "error": 0.4594720703779491,
+      "errorPct": 0.22973603518897456
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-23",
+      "projection": 2.2133384514883536,
+      "actual": 3,
+      "error": 0.7866615485116464,
+      "errorPct": 0.2622205161705488
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-25",
+      "projection": 3.4323052802326077,
+      "actual": 2,
+      "error": 1.4323052802326077,
+      "errorPct": 0.7161526401163039
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-28",
+      "projection": 2.344172308760353,
+      "actual": 3,
+      "error": 0.6558276912396468,
+      "errorPct": 0.2186092304132156
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-03-30",
+      "projection": 2.704970543325269,
+      "actual": 2,
+      "error": 0.7049705433252691,
+      "errorPct": 0.35248527166263455
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-04-02",
+      "projection": 2.8193061345299353,
+      "actual": 0,
+      "error": 2.8193061345299353,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-04-04",
+      "projection": 2.773830885829911,
+      "actual": 3,
+      "error": 0.226169114170089,
+      "errorPct": 0.075389704723363
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-04-05",
+      "projection": 2.411828202781212,
+      "actual": 4,
+      "error": 1.5881717972187879,
+      "errorPct": 0.39704294930469697
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-04-08",
+      "projection": 2.2347465183231323,
+      "actual": 1,
+      "error": 1.2347465183231323,
+      "errorPct": 1.2347465183231323
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-04-10",
+      "projection": 2.1001963689864986,
+      "actual": 1,
+      "error": 1.1001963689864986,
+      "errorPct": 1.1001963689864986
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-04-13",
+      "projection": 2.553433030699938,
+      "actual": 2,
+      "error": 0.5534330306999382,
+      "errorPct": 0.2767165153499691
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-04-16",
+      "projection": 2.9312519768587086,
+      "actual": 2,
+      "error": 0.9312519768587086,
+      "errorPct": 0.4656259884293543
+    },
+    {
+      "playerId": 8475791,
+      "playerName": "Taylor Hall",
+      "gameDate": "2025-04-17",
+      "projection": 2.1600851934085665,
+      "actual": 1,
+      "error": 1.1600851934085665,
+      "errorPct": 1.1600851934085665
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-04",
+      "projection": 5.19365704196551,
+      "actual": 5,
+      "error": 0.19365704196551015,
+      "errorPct": 0.03873140839310203
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-06",
+      "projection": 5.775720537228221,
+      "actual": 5,
+      "error": 0.7757205372282208,
+      "errorPct": 0.15514410744564416
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-07",
+      "projection": 5.488351147286997,
+      "actual": 6,
+      "error": 0.5116488527130034,
+      "errorPct": 0.08527480878550057
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-09",
+      "projection": 6.673875275867629,
+      "actual": 4,
+      "error": 2.673875275867629,
+      "errorPct": 0.6684688189669072
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-14",
+      "projection": 5.112007178736988,
+      "actual": 4,
+      "error": 1.112007178736988,
+      "errorPct": 0.278001794684247
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-16",
+      "projection": 5.957505416520535,
+      "actual": 5,
+      "error": 0.9575054165205348,
+      "errorPct": 0.19150108330410695
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-18",
+      "projection": 5.772919989800495,
+      "actual": 6,
+      "error": 0.2270800101995052,
+      "errorPct": 0.0378466683665842
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-20",
+      "projection": 5.604596726220397,
+      "actual": 7,
+      "error": 1.3954032737796034,
+      "errorPct": 0.19934332482565761
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-22",
+      "projection": 5.20200057945035,
+      "actual": 4,
+      "error": 1.2020005794503499,
+      "errorPct": 0.30050014486258747
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-24",
+      "projection": 5.019161891215048,
+      "actual": 3,
+      "error": 2.019161891215048,
+      "errorPct": 0.6730539637383494
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-27",
+      "projection": 4.737973236279505,
+      "actual": 6,
+      "error": 1.2620267637204954,
+      "errorPct": 0.2103377939534159
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-28",
+      "projection": 5.848235071753205,
+      "actual": 5,
+      "error": 0.848235071753205,
+      "errorPct": 0.169647014350641
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-11-30",
+      "projection": 6.348584562815182,
+      "actual": 8,
+      "error": 1.6514154371848182,
+      "errorPct": 0.20642692964810228
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-12-02",
+      "projection": 5.470534711914576,
+      "actual": 6,
+      "error": 0.529465288085424,
+      "errorPct": 0.088244214680904
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-12-04",
+      "projection": 4.671672316408043,
+      "actual": 6,
+      "error": 1.328327683591957,
+      "errorPct": 0.22138794726532618
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-12-06",
+      "projection": 5.313597900780178,
+      "actual": 3,
+      "error": 2.313597900780178,
+      "errorPct": 0.7711993002600593
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-12-07",
+      "projection": 6.067369993028102,
+      "actual": 6,
+      "error": 0.06736999302810176,
+      "errorPct": 0.011228332171350294
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-12-09",
+      "projection": 5.316844112694082,
+      "actual": 5,
+      "error": 0.3168441126940822,
+      "errorPct": 0.06336882253881644
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-12-12",
+      "projection": 7.133486654728413,
+      "actual": 0,
+      "error": 7.133486654728413,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-12-14",
+      "projection": 5.49429375378017,
+      "actual": 3,
+      "error": 2.4942937537801697,
+      "errorPct": 0.8314312512600566
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-12-16",
+      "projection": 5.793824148272128,
+      "actual": 6,
+      "error": 0.20617585172787223,
+      "errorPct": 0.03436264195464537
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-12-19",
+      "projection": 4.31284356180225,
+      "actual": 3,
+      "error": 1.31284356180225,
+      "errorPct": 0.43761452060075
+    },
+    {
+      "playerId": 8476453,
+      "playerName": "Nikita Kucherov",
+      "gameDate": "2023-12-21",
+      "projection": 4.379477707963266,
+      "actual": 5,
+      "error": 0.6205222920367337,
+      "errorPct": 0.12410445840734674
+    }
+  ]
+}

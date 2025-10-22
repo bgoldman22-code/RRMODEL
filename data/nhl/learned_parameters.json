@@ -1,0 +1,200 @@
+{
+  "version": "1.0",
+  "generatedAt": "2025-10-22T18:24:19.356Z",
+  "trainingGames": 2862,
+  "homeAwayEffects": {
+    "EDM": {
+      "homeMultiplier": 1.186433313396338,
+      "awayMultiplier": 1,
+      "homeSampleSize": 146,
+      "awaySampleSize": 149,
+      "homeAvgShots": 3.3835616438356166,
+      "awayAvgShots": 2.8322147651006713
+    },
+    "TOR": {
+      "homeMultiplier": 1.0493112384521763,
+      "awayMultiplier": 1,
+      "homeSampleSize": 145,
+      "awaySampleSize": 153,
+      "homeAvgShots": 3.303448275862069,
+      "awayAvgShots": 3.150326797385621
+    },
+    "TBL": {
+      "homeMultiplier": 1.001606486030445,
+      "awayMultiplier": 1,
+      "homeSampleSize": 79,
+      "awaySampleSize": 80,
+      "homeAvgShots": 3.5569620253164556,
+      "awayAvgShots": 3.625
+    },
+    "COL": {
+      "homeMultiplier": 1.0228710463002209,
+      "awayMultiplier": 1,
+      "homeSampleSize": 161,
+      "awaySampleSize": 157,
+      "homeAvgShots": 3.7888198757763973,
+      "awayAvgShots": 3.770700636942675
+    },
+    "VAN": {
+      "homeMultiplier": 1.1259568088592615,
+      "awayMultiplier": 1,
+      "homeSampleSize": 74,
+      "awaySampleSize": 72,
+      "homeAvgShots": 2.310810810810811,
+      "awayAvgShots": 2.013888888888889
+    },
+    "NYR": {
+      "homeMultiplier": 1.0614406797296065,
+      "awayMultiplier": 1,
+      "homeSampleSize": 175,
+      "awaySampleSize": 169,
+      "homeAvgShots": 2.96,
+      "awayAvgShots": 2.7041420118343193
+    },
+    "BOS": {
+      "homeMultiplier": 1.1080556169917881,
+      "awayMultiplier": 1,
+      "homeSampleSize": 100,
+      "awaySampleSize": 87,
+      "homeAvgShots": 1.6,
+      "awayAvgShots": 1.4942528735632183
+    },
+    "VGK": {
+      "homeMultiplier": 1.1851728256898821,
+      "awayMultiplier": 1,
+      "homeSampleSize": 43,
+      "awaySampleSize": 36,
+      "homeAvgShots": 2.5348837209302326,
+      "awayAvgShots": 2.1944444444444446
+    },
+    "SJS": {
+      "homeMultiplier": 0.7021007790612889,
+      "awayMultiplier": 1,
+      "homeSampleSize": 22,
+      "awaySampleSize": 26,
+      "homeAvgShots": 1.9090909090909092,
+      "awayAvgShots": 2.730769230769231
+    },
+    "CAR": {
+      "homeMultiplier": 1.0523291286519003,
+      "awayMultiplier": 1,
+      "homeSampleSize": 136,
+      "awaySampleSize": 133,
+      "homeAvgShots": 2.3970588235294117,
+      "awayAvgShots": 2.2406015037593985
+    },
+    "NJD": {
+      "homeMultiplier": 1.1337886117656701,
+      "awayMultiplier": 1,
+      "homeSampleSize": 81,
+      "awaySampleSize": 82,
+      "homeAvgShots": 2.8395061728395063,
+      "awayAvgShots": 2.4146341463414633
+    },
+    "PIT": {
+      "homeMultiplier": 1.1040148064572606,
+      "awayMultiplier": 1,
+      "homeSampleSize": 64,
+      "awaySampleSize": 66,
+      "homeAvgShots": 1.3125,
+      "awayAvgShots": 1.1666666666666667
+    },
+    "CHI": {
+      "homeMultiplier": 1.1140764828388103,
+      "awayMultiplier": 1,
+      "homeSampleSize": 28,
+      "awaySampleSize": 28,
+      "homeAvgShots": 1.8928571428571428,
+      "awayAvgShots": 1.75
+    },
+    "CBJ": {
+      "homeMultiplier": 1.022295139740497,
+      "awayMultiplier": 1,
+      "homeSampleSize": 19,
+      "awaySampleSize": 21,
+      "homeAvgShots": 2.1052631578947367,
+      "awayAvgShots": 2.1904761904761907
+    },
+    "DET": {
+      "homeMultiplier": 0.9135670513240728,
+      "awayMultiplier": 1,
+      "homeSampleSize": 82,
+      "awaySampleSize": 82,
+      "homeAvgShots": 2.817073170731707,
+      "awayAvgShots": 3.048780487804878
+    },
+    "FLA": {
+      "homeMultiplier": 1.0684761207561675,
+      "awayMultiplier": 1,
+      "homeSampleSize": 84,
+      "awaySampleSize": 82,
+      "homeAvgShots": 2.8214285714285716,
+      "awayAvgShots": 2.6951219512195124
+    }
+  },
+  "venueEffects": {
+    "Ball Arena": 1.08,
+    "T-Mobile Arena": 1.02,
+    "Climate Pledge Arena": 1.01
+  },
+  "toiRelationship": {
+    "curve": {
+      "veryLow": {
+        "avgToi": 8.382692307692306,
+        "avgShots": 1.1538461538461537,
+        "shotRatePerMinute": 0.13764624913971096,
+        "sampleSize": 26
+      },
+      "low": {
+        "avgToi": 11.621846846846848,
+        "avgShots": 1.6081081081081081,
+        "shotRatePerMinute": 0.1383694114455146,
+        "sampleSize": 74
+      },
+      "medium": {
+        "avgToi": 15.524767932489453,
+        "avgShots": 2.0556962025316454,
+        "shotRatePerMinute": 0.1324139730442983,
+        "sampleSize": 395
+      },
+      "high": {
+        "avgToi": 19.139961175818087,
+        "avgShots": 2.598169717138103,
+        "shotRatePerMinute": 0.13574581961120677,
+        "sampleSize": 1202
+      },
+      "veryHigh": {
+        "avgToi": 23.370131004366826,
+        "avgShots": 3.2733624454148473,
+        "shotRatePerMinute": 0.14006607172219973,
+        "sampleSize": 1145
+      }
+    },
+    "powerLaw": {
+      "exponent": 1.4181986691922475,
+      "coefficient": 0.028414949068322166
+    }
+  },
+  "powerPlayBoost": {
+    "overallBoost": 0,
+    "pp1AvgShots": 0,
+    "pp2AvgShots": 0,
+    "baselineAvgShots": 2.750524109014675,
+    "pp1Boost": 0,
+    "pp2Boost": 0
+  },
+  "streakEffects": {
+    "hotMultiplier": 1.4126838235294117,
+    "coldMultiplier": 0.5081340020576132,
+    "hotThreshold": 4,
+    "coldThreshold": 1,
+    "hotSampleSize": 425,
+    "coldSampleSize": 162
+  },
+  "dispersionParams": {
+    "forward": 1.1405321489691438,
+    "defense": 1.095446748173706
+  },
+  "confidenceLevel": "HIGH",
+  "lastUpdated": "2025-10-22T18:24:19.359Z"
+}
