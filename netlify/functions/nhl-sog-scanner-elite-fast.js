@@ -20,6 +20,59 @@
 const elite = require('./_lib/nhl-elite-projection-v4.cjs.js');
 
 /**
+ * ELITE VIG REMOVAL HELPERS
+ * Removes bookmaker margin to get fair probabilities
+ */
+function oddsToImpliedProb(americanOdds) {
+  if (americanOdds >= 0) {
+    return 100 / (americanOdds + 100);
+  } else {
+    return Math.abs(americanOdds) / (Math.abs(americanOdds) + 100);
+  }
+}
+
+function removeVig(overOdds, underOdds) {
+  const overImplied = oddsToImpliedProb(overOdds);
+  const underImplied = oddsToImpliedProb(underOdds);
+  const total = overImplied + underImplied;
+  
+  // Normalize to remove vig
+  const overNoVig = overImplied / total;
+  const underNoVig = underImplied / total;
+  const vigPct = ((total - 1.0) * 100);
+  
+  return { overProb: overNoVig, underProb: underNoVig, vigPct };
+}
+
+function getFairProbability(playerName, line, direction, oddsPairsMap) {
+  // Try to find a same-book pair for this player+line
+  // Prefer books in quality order
+  const BOOK_PRIORITY = ['FanDuel', 'DraftKings', 'Fanatics', 'Caesars', 'ESPN BET', 'BetMGM'];
+  
+  for (const book of BOOK_PRIORITY) {
+    const key = `${playerName}_${line}_${book}`;
+    const pair = oddsPairsMap.get(key);
+    
+    if (pair && pair.overOdds && pair.underOdds) {
+      const { overProb, underProb, vigPct } = removeVig(pair.overOdds, pair.underOdds);
+      
+      // Guard: Skip if vig > 7% (suspicious market)
+      if (vigPct > 7.0) continue;
+      
+      return {
+        fairProb: direction === 'OVER' ? overProb : underProb,
+        vigPct,
+        book: pair.bookmaker,
+        hasPair: true
+      };
+    }
+  }
+  
+  // Fallback: No pair found, return null (we'll skip edge calc)
+  return { fairProb: null, vigPct: null, book: null, hasPair: false };
+}
+
+/**
  * Calculate Kelly Criterion stake with proper odds adjustment
  */
 function calculateKelly(modelProb, americanOdds, variance = 0) {
@@ -99,14 +152,21 @@ async function fetchNHLOdds() {
 }
 
 /**
- * Process real odds into usable map
+ * PROCESS REAL ODDS FROM THE ODDS API
+ * Returns TWO Maps:
+ * 1. playerOddsMap: Single-side odds for best placement (keyed by PLAYER_LINE_DIRECTION)
+ * 2. playerPairsMap: Both-side pairs for vig removal (keyed by PLAYER_LINE_BOOK)
  */
 function processRealOdds(oddsData) {
-  if (!oddsData) return new Map();
+  if (!oddsData) return { singles: new Map(), pairs: new Map() };
   
-  const playerOddsMap = new Map();
+  const playerOddsMap = new Map(); // Best single-sided odds
+  const playerPairsMap = new Map(); // OVER+UNDER pairs for vig removal
+  
   // Books to check for NHL SOG props
   const PRIORITY_BOOKS = ['FanDuel', 'DraftKings', 'Fanatics', 'Caesars', 'ESPN BET', 'BetMGM'];
+  // Market aliases to catch all SOG prop variations
+  const MARKET_ALIASES = new Set(['player_shots_on_goal', 'player_shots', 'shots_on_goal']);
   
   let totalOutcomes = 0;
   
@@ -134,7 +194,11 @@ function processRealOdds(oddsData) {
       if (!PRIORITY_BOOKS.some(b => bookName.includes(b))) continue;
       
       for (const market of bookmaker.markets) {
-        if (market.key !== 'player_shots_on_goal') continue;
+        // Check if market key matches any alias
+        if (!MARKET_ALIASES.has(market.key)) continue;
+        
+        // Collect outcomes by player+line to build pairs
+        const tempPairs = new Map(); // Key: "PLAYER_LINE"
         
         for (const outcome of market.outcomes || []) {
           if (!outcome.description) continue;
@@ -148,10 +212,10 @@ function processRealOdds(oddsData) {
           
           totalOutcomes++;
           
-          const key = `${playerName}_${line}_${direction}`;
-          
-          if (!playerOddsMap.has(key)) {
-            playerOddsMap.set(key, {
+          // Store single-sided odds for placement (best available)
+          const singleKey = `${playerName}_${line}_${direction}`;
+          if (!playerOddsMap.has(singleKey)) {
+            playerOddsMap.set(singleKey, {
               playerName,
               line,
               odds,
@@ -160,20 +224,44 @@ function processRealOdds(oddsData) {
               teams: [homeAbbrev, awayAbbrev].filter(Boolean)
             });
           }
+          
+          // Build pairs for vig removal
+          const pairKey = `${playerName}_${line}`;
+          if (!tempPairs.has(pairKey)) {
+            tempPairs.set(pairKey, { playerName, line, bookmaker: bookName });
+          }
+          const pair = tempPairs.get(pairKey);
+          if (direction === 'OVER') pair.overOdds = odds;
+          if (direction === 'UNDER') pair.underOdds = odds;
+        }
+        
+        // Save complete pairs (both OVER and UNDER available)
+        for (const [pairKey, pair] of tempPairs.entries()) {
+          if (pair.overOdds && pair.underOdds) {
+            const fullKey = `${pair.playerName}_${pair.line}_${pair.bookmaker}`;
+            playerPairsMap.set(fullKey, {
+              playerName: pair.playerName,
+              line: pair.line,
+              bookmaker: pair.bookmaker,
+              overOdds: pair.overOdds,
+              underOdds: pair.underOdds,
+              teams: [homeAbbrev, awayAbbrev].filter(Boolean)
+            });
+          }
         }
       }
     }
   }
   
-  console.log(`🎯 Processed ${totalOutcomes} total prop outcomes into ${playerOddsMap.size} unique player props`);
+  console.log(`🎯 Processed ${totalOutcomes} total prop outcomes into ${playerOddsMap.size} unique player props (${playerPairsMap.size} complete pairs)`);
   
-  return playerOddsMap;
+  return { singles: playerOddsMap, pairs: playerPairsMap };
 }
 
 /**
  * Generate opportunities using elite projection
  */
-async function generateEliteOpportunities(player, team, opponent, isHome, gameTime, venue, realOddsMap, gameId, projectSOGElite, calculateZINBProbability) {
+async function generateEliteOpportunities(player, team, opponent, isHome, gameTime, venue, realOddsMap, realOddsPairs, gameId, projectSOGElite, calculateZINBProbability) {
   try {
     const playerId = player.id;
     const playerName = `${player.firstName?.default || ''} ${player.lastName?.default || ''}`.trim();
@@ -256,17 +344,23 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
           // Calculate win probability using ZINB
           const winProb = calculateZINBProbability(mu, r, pi, line, direction);
           
-          // Calculate implied probability from odds
-          let impliedProb;
-          if (odds >= 0) {
-            impliedProb = 100 / (odds + 100);
-          } else {
-            impliedProb = Math.abs(odds) / (Math.abs(odds) + 100);
+          // Get FAIR probability (vig removed) for edge calculation
+          const fairData = getFairProbability(playerName, line, direction, realOddsPairs);
+          
+          // Skip if no fair pair available or vig too high
+          if (!fairData.hasPair) {
+            continue; // Can't calculate true edge without vig removal
           }
           
-          // Calculate edge
-          const edge = winProb - impliedProb;
-          const edgePercent = (edge / impliedProb) * 100;
+          const fairProb = fairData.fairProb;
+          const vigPct = fairData.vigPct;
+          
+          // Calculate edge vs FAIR probability (not implied with vig)
+          const edge = winProb - fairProb;
+          const edgePercent = (edge / fairProb) * 100;
+          
+          // Also calc implied prob for reference
+          const impliedProb = oddsToImpliedProb(odds);
 
           // Build full opportunity object once
           const oppObj = {
@@ -292,7 +386,10 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
             oddsSource: `${oddsData.bookmaker} (real)`,
             bookmaker: oddsData.bookmaker,
             modelProb: parseFloat(winProb.toFixed(3)),
+            fairProb: parseFloat(fairProb.toFixed(3)),
             impliedProb: parseFloat(impliedProb.toFixed(3)),
+            vigPct: parseFloat(vigPct.toFixed(2)),
+            fairBook: fairData.book,
             // Include breakdown for transparency
             breakdown: {
               seasonAvg: breakdown.seasonAvg,
@@ -332,7 +429,9 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
     return { bestStrict, bestAny: bestAny || bestStrict };
     
   } catch (error) {
-    console.warn(`⚠️ Error projecting ${player.firstName?.default} ${player.lastName?.default}:`, error.message);
+    const name = `${player.firstName?.default || ''} ${player.lastName?.default || ''}`.trim();
+    console.log(`⚠️ Error in generateEliteOpportunities for ${name}: ${error.message}`);
+    console.log(`   Stack: ${error.stack?.split('\n')[0]}`);
     return null;
   }
 }
@@ -476,8 +575,8 @@ exports.handler = async (event, context) => {
       if (result) rosters[result.team] = result.roster;
     }
     
-    const realOddsMap = processRealOdds(realOddsData);
-    console.log(`✅ Fetched ${Object.keys(rosters).length} rosters, ${realOddsMap.size} odds lines`);
+    const { singles: realOddsMap, pairs: realOddsPairs } = processRealOdds(realOddsData);
+    console.log(`✅ Fetched ${Object.keys(rosters).length} rosters, ${realOddsMap.size} odds lines, ${realOddsPairs.size} pairs`);
     
     // Timeout check
     if (Date.now() - startTime > TIMEOUT_MS) {
@@ -531,6 +630,7 @@ exports.handler = async (event, context) => {
             game.startTimeUTC,
             venue,
             realOddsMap,
+            realOddsPairs,
             gameId,
             elite.projectSOGElite,
             elite.calculateZINBProbability
