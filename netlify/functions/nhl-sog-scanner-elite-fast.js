@@ -361,7 +361,15 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
           
           const line = oddsData.line;
           const odds = oddsData.odds;
-          const direction = oddsData.direction;
+          
+          // CRITICAL: Choose direction based on projection vs line, NOT from odds data
+          // If projection > line, bet OVER. If projection < line, bet UNDER.
+          const direction = mu > line ? 'OVER' : 'UNDER';
+          
+          // Skip if odds direction doesn't match our chosen direction
+          if (direction !== oddsData.direction) {
+            continue;
+          }
           
           // Calculate win probability using ZINB
           const winProb = calculateZINBProbability(mu, r, pi, line, direction);
