@@ -192,8 +192,15 @@ function detectStreak(recentGames) {
 function calculateWeightedSOGAverage(player) {
   if (!player || !player.season) return 2.5;
   const seasonAvg = parseFloat(player.season.shotsPerGame) || 2.5;
-  const L5avg = parseFloat(player.L5?.shots) || seasonAvg;
-  const L10avg = parseFloat(player.L10?.shots) || seasonAvg;
+  
+  // Defensive fallback: If L5/L10 are zero/missing, use seasonAvg
+  // This handles cases where game log API returns empty data
+  let L5avg = parseFloat(player.L5?.shots);
+  if (!L5avg || L5avg === 0) L5avg = seasonAvg;
+  
+  let L10avg = parseFloat(player.L10?.shots);
+  if (!L10avg || L10avg === 0) L10avg = seasonAvg;
+  
   return (seasonAvg * 0.60) + (L5avg * 0.30) + (L10avg * 0.10);
 }
 
