@@ -181,7 +181,7 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
     // Get elite projection
     const projection = await projectSOGElite(playerId, playerName, team, opponent, isHome, venue);
     
-    // If elite projection failed, skip this player
+    // If elite projection failed, return null with reason logged upstream
     if (!projection) {
       return null;
     }
@@ -544,6 +544,10 @@ exports.handler = async (event, context) => {
             if (result.bestAny) {
               fallbackCandidates.push(result.bestAny);
             }
+          } else {
+            // Log projection failures to diagnose why elite engine fails
+            const playerName = `${player.firstName?.default || ''} ${player.lastName?.default || ''}`.trim();
+            console.log(`❌ Elite projection failed: ${playerName} (${teamAbbrev}) - ID: ${player.id}`);
           }
         }
       }

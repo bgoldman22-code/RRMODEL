@@ -135,6 +135,7 @@ async function findPlayer(playerId, playerName, team) {
   const players = await loadPlayerStats();
   const pidNum = playerId != null ? Number(playerId) : NaN;
   let player = players.find(p => Number(p.playerId) === pidNum);
+  
   if (!player && playerName && team) {
     const normalize = (s) => (s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z\s]/g, '').replace(/\s+/g, ' ').trim();
     const [firstRaw, ...rest] = (playerName || '').split(' ');
@@ -152,7 +153,13 @@ async function findPlayer(playerId, playerName, team) {
       }
       return false;
     });
+    
+    if (!player) {
+      // Player name search failed - log for debugging
+      console.log(`🔍 findPlayer failed: ${playerName} (${team}, ID: ${playerId}) - tried ${players.length} players`);
+    }
   }
+  
   return player;
 }
 
@@ -211,7 +218,10 @@ function calculateExpectedTOI(player) {
 
 async function projectSOGElite(playerId, playerName, team, opponent, isHome, venue) {
   const player = await findPlayer(playerId, playerName, team);
-  if (!player) return null;
+  if (!player) {
+    console.log(`🔍 Elite projection: Player not found in stats - ${playerName} (${team}, ID: ${playerId})`);
+    return null;
+  }
   let earlySeason = false;
   if (!player.season || (player.season.gamesPlayed ?? 0) < 3) earlySeason = true;
   const oppDefense = await getTeamDefense(opponent);
