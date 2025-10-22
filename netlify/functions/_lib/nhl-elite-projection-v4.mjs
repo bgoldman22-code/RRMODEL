@@ -56,18 +56,18 @@ async function loadPlayerStats() {
     const store = getStore('nhl-stats');
 
     // Try Blobs first
-    let data = await store.get('player_stats_20242025', { type: 'json' });
+    let data = await store.get('player_stats_20252026', { type: 'json' });
 
     // Fallback: fetch from GitHub and hydrate Blobs
     if (!data || !data.players || data.players.length === 0) {
       console.warn('⚠️ Player stats missing in Blobs. Fetching from GitHub (main42)…');
-      const ghUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main42/data/nhl/player_stats_20242025.json';
+      const ghUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main42/data/nhl/player_stats_20252026.json';
       const resp = await fetch(ghUrl);
       if (resp.ok) {
         const ghData = await resp.json();
         if (ghData && ghData.players && ghData.players.length > 0) {
           try {
-            await store.setJSON('player_stats_20242025', ghData);
+            await store.setJSON('player_stats_20252026', ghData);
             console.log(`📝 Wrote ${ghData.players.length} players to Blobs`);
           } catch (e) {
             console.warn('⚠️ Failed to persist player stats to Blobs:', e.message);

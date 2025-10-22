@@ -23,7 +23,7 @@ async function uploadStats() {
     const store = getStore('nhl-stats');
     
     // Read player stats
-    const playerStatsPath = path.join(__dirname, '../../data/nhl/player_stats_20242025.json');
+    const playerStatsPath = path.join(__dirname, '../../data/nhl/player_stats_20252026.json');
     console.log(`📂 Reading player stats from: ${playerStatsPath}`);
     
     if (!fs.existsSync(playerStatsPath)) {
@@ -36,7 +36,7 @@ async function uploadStats() {
     console.log(`✅ Loaded ${playerStats.players?.length || 0} players`);
     
     // Upload player stats
-    await store.set('player_stats_20242025', playerStats, {
+    await store.set('player_stats_20252026', playerStats, {
       metadata: {
         uploaded: new Date().toISOString(),
         playerCount: playerStats.players?.length || 0
@@ -46,7 +46,7 @@ async function uploadStats() {
     console.log(`✅ Uploaded player stats to Netlify Blobs\n`);
     
     // Read team stats
-    const teamStatsPath = path.join(__dirname, '../../data/nhl/team_stats_20242025.json');
+    const teamStatsPath = path.join(__dirname, '../../data/nhl/team_stats_20252026.json');
     console.log(`📂 Reading team stats from: ${teamStatsPath}`);
     
     if (!fs.existsSync(teamStatsPath)) {
@@ -59,7 +59,7 @@ async function uploadStats() {
     console.log(`✅ Loaded ${Object.keys(teamStats.teams || {}).length} teams`);
     
     // Upload team stats
-    await store.set('team_stats_20242025', teamStats, {
+    await store.set('team_stats_20252026', teamStats, {
       metadata: {
         uploaded: new Date().toISOString(),
         teamCount: Object.keys(teamStats.teams || {}).length
@@ -70,8 +70,8 @@ async function uploadStats() {
     
     // Verify
     console.log('🔍 Verifying upload...');
-    const playerVerify = await store.get('player_stats_20242025', { type: 'json' });
-    const teamVerify = await store.get('team_stats_20242025', { type: 'json' });
+    const playerVerify = await store.get('player_stats_20252026', { type: 'json' });
+    const teamVerify = await store.get('team_stats_20252026', { type: 'json' });
     
     console.log(`✅ Player stats verified: ${playerVerify?.players?.length || 0} players`);
     console.log(`✅ Team stats verified: ${Object.keys(teamVerify?.teams || {}).length} teams`);

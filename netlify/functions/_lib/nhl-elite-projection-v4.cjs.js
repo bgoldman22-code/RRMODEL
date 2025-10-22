@@ -35,7 +35,7 @@ async function loadPlayerStats() {
   // Try Netlify Blobs first (with error handling)
   try {
     const store = getStore('nhl-stats');
-    data = await store.get('player_stats_20242025', { type: 'json' });
+    data = await store.get('player_stats_20252026', { type: 'json' });
   } catch (blobError) {
     console.warn('⚠️ Blobs access failed for player stats, will use GitHub fallback:', blobError.message);
   }
@@ -43,7 +43,7 @@ async function loadPlayerStats() {
   // If no valid data from blobs, fetch from GitHub
   if (!data || !data.players || data.players.length === 0) {
     try {
-      const ghUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main42/data/nhl/player_stats_20242025.json';
+      const ghUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main42/data/nhl/player_stats_20252026.json';
       const resp = await fetch(ghUrl);
       if (resp.ok) {
         const ghData = await resp.json();
@@ -53,7 +53,7 @@ async function loadPlayerStats() {
           // Try to cache in blobs for next time (non-blocking)
           try {
             const store = getStore('nhl-stats');
-            await store.setJSON('player_stats_20242025', ghData);
+            await store.setJSON('player_stats_20252026', ghData);
           } catch (e) {
             console.warn('Could not cache to blobs:', e.message);
           }

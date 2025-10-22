@@ -34,12 +34,12 @@ jobs:
       - name: Show summary
         run: |
           echo "📈 Stats Update Summary:"
-          if [ -f data/nhl/player_stats_20242025.json ]; then
-            PLAYER_COUNT=$(cat data/nhl/player_stats_20242025.json | grep -o '"playerId"' | wc -l)
+          if [ -f data/nhl/player_stats_20252026.json ]; then
+            PLAYER_COUNT=$(cat data/nhl/player_stats_20252026.json | grep -o '"playerId"' | wc -l)
             echo "✅ Player stats: $PLAYER_COUNT players"
           fi
-          if [ -f data/nhl/team_stats_20242025.json ]; then
-            TEAM_COUNT=$(cat data/nhl/team_stats_20242025.json | grep -o '"teamAbbrev"' | wc -l)
+          if [ -f data/nhl/team_stats_20252026.json ]; then
+            TEAM_COUNT=$(cat data/nhl/team_stats_20252026.json | grep -o '"teamAbbrev"' | wc -l)
             echo "✅ Team stats: $TEAM_COUNT teams"
           fi
       

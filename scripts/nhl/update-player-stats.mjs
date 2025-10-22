@@ -19,7 +19,7 @@ const __dirname = path.dirname(__filename);
 
 const NHL_API_BASE = 'https://api-web.nhle.com/v1';
 const NHL_STATS_API = 'https://api.nhle.com/stats/rest/en';
-const CURRENT_SEASON = '20242025';
+const CURRENT_SEASON = '20252026';
 
 // All 32 NHL teams
 const NHL_TEAMS = [
