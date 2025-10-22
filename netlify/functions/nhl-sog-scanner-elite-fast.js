@@ -174,7 +174,8 @@ function processRealOdds(oddsData) {
   const TEAM_ABBREV = {
     'Anaheim Ducks':'ANA','Boston Bruins':'BOS','Buffalo Sabres':'BUF','Carolina Hurricanes':'CAR','Columbus Blue Jackets':'CBJ',
     'Calgary Flames':'CGY','Chicago Blackhawks':'CHI','Colorado Avalanche':'COL','Dallas Stars':'DAL','Detroit Red Wings':'DET',
-    'Edmonton Oilers':'EDM','Florida Panthers':'FLA','Los Angeles Kings':'LAK','Minnesota Wild':'MIN','Montreal Canadiens':'MTL',
+    'Edmonton Oilers':'EDM','Florida Panthers':'FLA','Los Angeles Kings':'LAK','Minnesota Wild':'MIN',
+    'Montreal Canadiens':'MTL','Montréal Canadiens':'MTL', // API uses both variants
     'New Jersey Devils':'NJD','Nashville Predators':'NSH','New York Islanders':'NYI','New York Rangers':'NYR','Ottawa Senators':'OTT',
     'Philadelphia Flyers':'PHI','Pittsburgh Penguins':'PIT','Seattle Kraken':'SEA','San Jose Sharks':'SJS','St. Louis Blues':'STL',
     'Tampa Bay Lightning':'TBL','Toronto Maple Leafs':'TOR','Utah Hockey Club':'UTA','Vancouver Canucks':'VAN','Vegas Golden Knights':'VGK',
@@ -584,6 +585,15 @@ exports.handler = async (event, context) => {
     const { singles: realOddsMap, pairs: realOddsPairs } = processRealOdds(realOddsData);
     console.log(`✅ Fetched ${Object.keys(rosters).length} rosters, ${realOddsMap.size} odds lines, ${realOddsPairs.size} pairs`);
     
+    // Determine which teams actually have odds data
+    const teamsWithOdds = new Set();
+    for (const oddsData of realOddsMap.values()) {
+      if (oddsData.teams) {
+        oddsData.teams.forEach(t => t && teamsWithOdds.add(t));
+      }
+    }
+    console.log(`📊 Teams with odds data: ${Array.from(teamsWithOdds).join(', ')}`);
+    
     // Timeout check
     if (Date.now() - startTime > TIMEOUT_MS) {
       throw new Error('Timeout: roster fetch took too long');
@@ -607,9 +617,22 @@ exports.handler = async (event, context) => {
       const gameDate = game.gameDate || new Date().toISOString().split('T')[0];
       const gameId = `${awayTeam}_${homeTeam}_${gameDate}`;
       
+      // Skip games with no odds data
+      const gameHasOdds = teamsWithOdds.has(homeTeam) || teamsWithOdds.has(awayTeam);
+      if (!gameHasOdds) {
+        console.log(`⏭️ Skipping ${awayTeam} @ ${homeTeam} - no odds data available`);
+        continue;
+      }
+      
       for (const teamAbbrev of [homeTeam, awayTeam]) {
         const roster = rosters[teamAbbrev];
         if (!roster) continue;
+        
+        // Skip teams without odds
+        if (!teamsWithOdds.has(teamAbbrev)) {
+          console.log(`⏭️ Skipping ${teamAbbrev} roster - no odds for this team`);
+          continue;
+        }
         
         const isHome = teamAbbrev === homeTeam;
         const opponent = isHome ? awayTeam : homeTeam;
