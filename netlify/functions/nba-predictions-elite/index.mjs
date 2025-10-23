@@ -413,7 +413,8 @@ function calculateAdvancedStats(games, teamId, window = 10) {
       g.homeTeam === teamId || g.awayTeam === teamId
     )
     .filter(g => g.homeScore != null && g.awayScore != null)
-    .slice(-window);
+    .sort((a, b) => new Date(a.date) - new Date(b.date)) // ELITE: Sort by date ascending
+    .slice(-window); // Take most recent N games
   
   if (teamGames.length === 0) {
     return {
@@ -809,16 +810,31 @@ export default async (request, context) => {
       console.log('[NBA Elite] Regular season detected - running full predictions');
     }
     
-    // 3. Load historical games from GitHub
-    const dataUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nba/games/games_2025_26.json';
-    const dataResponse = await fetch(dataUrl);
+    // 3. Load historical games from GitHub (ELITE: Multi-season fallback for early season)
+    const currentSeasonUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nba/games/games_2025_26.json';
+    const lastSeasonUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nba/games/games_2024_25.json';
     
-    if (!dataResponse.ok) {
-      throw new Error(`Failed to fetch historical data: ${dataResponse.status}`);
+    const [currentResponse, lastResponse] = await Promise.all([
+      fetch(currentSeasonUrl),
+      fetch(lastSeasonUrl)
+    ]);
+    
+    if (!currentResponse.ok) {
+      throw new Error(`Failed to fetch current season data: ${currentResponse.status}`);
     }
     
-    const historicalGames = await dataResponse.json();
-    console.log(`[NBA Elite] Loaded ${historicalGames.length} historical games`);
+    const currentSeasonGames = await currentResponse.json();
+    let lastSeasonGames = [];
+    
+    if (lastResponse.ok) {
+      lastSeasonGames = await lastResponse.json();
+      console.log(`[NBA Elite] Loaded ${lastSeasonGames.length} games from 2024-25 (fallback)`);
+    }
+    
+    // ELITE: Combine current + last season for early season predictions
+    // This gives teams full L20 stats even with only 1-2 games played this season
+    const historicalGames = [...currentSeasonGames, ...lastSeasonGames];
+    console.log(`[NBA Elite] Total historical games: ${historicalGames.length} (${currentSeasonGames.length} current + ${lastSeasonGames.length} previous)`);
     
     // 4. Fetch live Vegas lines (use correct endpoint for season type)
     const vegasLines = await fetchVegasLines(espnData.events.map(e => e.id), isPreseason);
@@ -844,10 +860,22 @@ export default async (request, context) => {
       
       console.log(`[NBA Elite] ${home.team.abbreviation} games: L3=${homeL3Raw.games}, L10=${homeL10Raw.games}, L20=${homeL20Raw.games}`);
       
-      // Skip if not enough data (need at least 3 recent games)
-      if (homeL3Raw.games < 3 || awayL3Raw.games < 3) {
-        console.log(`[NBA Elite] Skipping ${away.team.abbreviation} @ ${home.team.abbreviation} - insufficient data`);
-        continue;
+      // ELITE: Count CURRENT SEASON games only for confidence adjustment
+      const currentSeasonGamesHome = currentSeasonGames.filter(g => 
+        g.homeTeamId === home.id || g.awayTeamId === home.id ||
+        g.homeTeam === home.team.abbreviation || g.awayTeam === home.team.abbreviation
+      ).length;
+      
+      const currentSeasonGamesAway = currentSeasonGames.filter(g =>
+        g.homeTeamId === away.id || g.awayTeamId === away.id ||
+        g.homeTeam === away.team.abbreviation || g.awayTeam === away.team.abbreviation
+      ).length;
+      
+      const avgCurrentSeasonGames = (currentSeasonGamesHome + currentSeasonGamesAway) / 2;
+      
+      // Early season warning - but DON'T skip predictions
+      if (avgCurrentSeasonGames < 5) {
+        console.log(`[NBA Elite] ⚠️  Early season (avg ${avgCurrentSeasonGames.toFixed(1)} games) - using last season data for baseline`);
       }
       
       // Apply RCI adjustments based on games played this season
@@ -944,20 +972,21 @@ export default async (request, context) => {
       else if (netRtgDiff > 3) confidence += 5;
       
       // EARLY SEASON ADJUSTMENT: Reduce confidence based on sample size
+      // ELITE: Early season confidence adjustment based on CURRENT SEASON games only
       // First 5-10 games are learning period, model needs data to stabilize
-      const avgGames = (homeL10.games + awayL10.games) / 2;
+      // Using avgCurrentSeasonGames (calculated above) instead of L10 games
       let seasonAdjustment = 1.0; // Full confidence multiplier
       let seasonNote = null;
       
-      if (avgGames < 5) {
+      if (avgCurrentSeasonGames < 5) {
         seasonAdjustment = 0.5; // 50% confidence - very early season
-        seasonNote = 'EARLY SEASON: First 5 games. Model learning current form. Reduce unit sizing.';
-      } else if (avgGames < 10) {
+        seasonNote = `EARLY SEASON: ${avgCurrentSeasonGames.toFixed(0)} games. Using last season baseline. HALF units.`;
+      } else if (avgCurrentSeasonGames < 10) {
         seasonAdjustment = 0.75; // 75% confidence - still early
-        seasonNote = 'EARLY SEASON: Games 5-10. Model stabilizing. Consider smaller units.';
-      } else if (avgGames < 15) {
+        seasonNote = `EARLY SEASON: ${avgCurrentSeasonGames.toFixed(0)} games. Model stabilizing. 3/4 units.`;
+      } else if (avgCurrentSeasonGames < 15) {
         seasonAdjustment = 0.9; // 90% confidence - getting there
-        seasonNote = 'Model confidence building. Normal unit sizing after 15 games.';
+        seasonNote = `Model confidence building (${avgCurrentSeasonGames.toFixed(0)} games). Normal units after 15.`;
       }
       
       confidence = Math.floor(confidence * seasonAdjustment);
