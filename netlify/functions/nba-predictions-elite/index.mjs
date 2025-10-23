@@ -810,7 +810,7 @@ export default async (request, context) => {
     }
     
     // 3. Load historical games from GitHub
-    const dataUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nba/games/games_2024_25.json';
+    const dataUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nba/games/games_2025_26.json';
     const dataResponse = await fetch(dataUrl);
     
     if (!dataResponse.ok) {

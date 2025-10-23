@@ -42,7 +42,7 @@ jobs:
       
       - name: Collect yesterday's games (Ultimate Collector)
         run: |
-          python scripts/collect-nba-ultimate.py 2024-25 ${{ steps.check_games.outputs.date_yesterday }} ${{ steps.check_games.outputs.date_today }}
+          python scripts/collect-nba-ultimate.py 2025-26 ${{ steps.check_games.outputs.date_yesterday }} ${{ steps.check_games.outputs.date_today }}
         continue-on-error: true
       
       - name: Commit and push data

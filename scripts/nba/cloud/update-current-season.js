@@ -25,8 +25,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Current season (update each year)
-const CURRENT_SEASON = '2024-25';
-const CURRENT_SEASON_YEAR = 2025; // BBRef uses end year
+const CURRENT_SEASON = '2025-26';
+const CURRENT_SEASON_YEAR = 2026; // BBRef uses end year
 
 // NBA Stats API endpoints
 const NBA_API_BASE = 'https://stats.nba.com/stats';

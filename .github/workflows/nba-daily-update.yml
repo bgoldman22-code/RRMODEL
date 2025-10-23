@@ -65,9 +65,9 @@ jobs:
         id: summary
         run: |
           # Count updated files
-          PLAYER_COUNT=$(jq '.players | length' data/nba/players/archive/player_seasons_2024_25.json 2>/dev/null || echo "0")
-          TEAM_COUNT=$(jq '.teams | length' data/nba/aggregates/archive/team_seasons_2024_25.json 2>/dev/null || echo "0")
-          RCI_COUNT=$(jq '.rosters | length' data/nba/rosters/archive/rosters_with_rci_2024_25.json 2>/dev/null || echo "0")
+          PLAYER_COUNT=$(jq '.players | length' data/nba/players/archive/player_seasons_2025_26.json 2>/dev/null || echo "0")
+          TEAM_COUNT=$(jq '.teams | length' data/nba/aggregates/archive/team_seasons_2025_26.json 2>/dev/null || echo "0")
+          RCI_COUNT=$(jq '.rosters | length' data/nba/rosters/archive/rosters_with_rci_2025_26.json 2>/dev/null || echo "0")
           
           echo "player_count=${PLAYER_COUNT}" >> $GITHUB_OUTPUT
           echo "team_count=${TEAM_COUNT}" >> $GITHUB_OUTPUT
@@ -78,7 +78,7 @@ jobs:
           ## 🏀 NBA Data Update Summary
           
           **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          **Season**: 2024-25
+          **Season**: 2025-26
           
           ### Updated Data
           - 👥 Players: ${PLAYER_COUNT}
@@ -105,9 +105,9 @@ jobs:
       - name: 💾 Commit changes
         if: steps.update.outputs.changed == 'true'
         run: |
-          git add data/nba/players/archive/player_seasons_2024_25.json
-          git add data/nba/aggregates/archive/team_seasons_2024_25.json
-          git add data/nba/rosters/archive/rosters_with_rci_2024_25.json
+          git add data/nba/players/archive/player_seasons_2025_26.json
+          git add data/nba/aggregates/archive/team_seasons_2025_26.json
+          git add data/nba/rosters/archive/rosters_with_rci_2025_26.json
           
           COMMIT_MSG="🤖 Auto-update NBA data ($(date -u +"%Y-%m-%d %H:%M UTC"))"
           COMMIT_MSG="${COMMIT_MSG}\n\n"
