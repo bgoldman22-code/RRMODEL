@@ -1,194 +1,2647 @@
-{
-  "ARI": {
-    "QB": ["Kyler Murray", "Jacoby Brissett"],
-    "RB": ["James Conner", "Trey Benson", "Emari Demercado"],
-    "WR": ["Marvin Harrison Jr.", "Michael Wilson", "Zay Jones", "Greg Dortch"],
-    "TE": ["Trey McBride", "Elijah Higgins"]
+[{
+
+  {  "ARI": {
+
+    "team": "Arizona Cardinals",    "QB": ["Kyler Murray", "Jacoby Brissett"],
+
+    "QB": [    "RB": ["James Conner", "Trey Benson", "Emari Demercado"],
+
+      {    "WR": ["Marvin Harrison Jr.", "Michael Wilson", "Zay Jones", "Greg Dortch"],
+
+        "rank": "19",    "TE": ["Trey McBride", "Elijah Higgins"]
+
+        "name": "Kyler Murray"  },
+
+      },  "ATL": {
+
+      {    "QB": ["Michael Penix Jr.", "Kirk Cousins"],
+
+        "rank": "36",    "RB": ["Bijan Robinson", "Tyler Allgeier"],
+
+        "name": "Jacoby Brissett"    "WR": ["Drake London", "Darnell Mooney", "Ray-Ray McCloud III", "Chris Blair"],
+
+      }    "TE": ["Kyle Pitts Sr."]
+
+    ],  },
+
+    "RB": [  "BAL": {
+
+      {    "QB": ["Lamar Jackson", "Cooper Rush"],
+
+        "rank": "36",    "RB": ["Derrick Henry", "Justice Hill", "Rasheen Ali", "Keaton Mitchell", "D'Ernest Johnson"],
+
+        "name": "Trey Benson"    "WR": ["Zay Flowers", "Rashod Bateman", "DeAndre Hopkins", "Devontez Walker", "Tylan Wallace"],
+
+      },    "TE": ["Mark Andrews", "Charlie Kolar", "Isaiah Likely"]
+
+      {  },
+
+        "rank": "52",  "BUF": {
+
+        "name": "Zonovan Knight"    "QB": ["Josh Allen", "Mitchell Trubisky"],
+
+      },    "RB": ["James Cook III", "Ray Davis", "Ty Johnson"],
+
+      {    "WR": ["Keon Coleman", "Khalil Shakir", "Joshua Palmer", "Elijah Moore", "Curtis Samuel", "Tyrell Shavers", "Gabe Davis"],
+
+        "rank": "56",    "TE": ["Dalton Kincaid", "Dawson Knox"]
+
+        "name": "Michael Carter"  },
+
+      },  "CAR": {
+
+      {    "QB": ["Bryce Young", "Andy Dalton", "Hendon Hooker"],
+
+        "rank": "74",    "RB": ["Chuba Hubbard", "Rico Dowdle", "Trevor Etienne"],
+
+        "name": "Emari Demercado"    "WR": ["Tetairoa McMillan", "Xavier Legette", "Hunter Renfrow", "Brycen Tremayne", "Jalen Coker", "Jimmy Horn Jr."],
+
+      }    "TE": ["Ja'Tavion Sanders", "Tommy Tremble", "Mitchell Evans"]
+
+    ],  },
+
+    "WR": [  "CHI": {
+
+      {    "QB": ["Caleb Williams", "Tyson Bagent"],
+
+        "rank": "36",    "RB": ["D'Andre Swift", "Kyle Monangai", "Roschon Johnson"],
+
+        "name": "Marvin Harrison Jr."    "WR": ["Rome Odunze", "DJ Moore", "Olamide Zaccheaus", "Luther Burden III"],
+
+      },    "TE": ["Colston Loveland", "Cole Kmet"]
+
+      {  },
+
+        "rank": "85",  "CIN": {
+
+        "name": "Michael Wilson"    "QB": ["Jake Browning", "Joe Burrow"],
+
+      },    "RB": ["Chase Brown", "Samaje Perine", "Tahj Brooks"],
+
+      {    "WR": ["Ja'Marr Chase", "Tee Higgins", "Andrei Iosivas", "Mitchell Tinsley", "Jermaine Burton"],
+
+        "rank": "125",    "TE": ["Mike Gesicki", "Noah Fant", "Drew Sample", "Tanner Hudson"]
+
+        "name": "Zay Jones"  },
+
+      }  "CLE": {
+
+    ],    "QB": ["Joe Flacco", "Dillon Gabriel", "Shedeur Sanders", "Deshaun Watson"],
+
+    "TE": [    "RB": ["Quinshon Judkins", "Dylan Sampson", "Jerome Ford", "Raheim Sanders"],
+
+      {    "WR": ["Jerry Jeudy", "Cedric Tillman", "Isaiah Bond", "Jamari Thrash", "DeAndre Carter", "Malachi Corley"],
+
+        "rank": "1",    "TE": ["Harold Fannin Jr.", "David Njoku"]
+
+        "name": "Trey McBride"  },
+
+      },  "DAL": {
+
+      {    "QB": ["Dak Prescott", "Joe Milton III"],
+
+        "rank": "63",    "RB": ["Javonte Williams", "Miles Sanders", "Hunter Luepke", "Jaydon Blue", "Phil Mafah"],
+
+        "name": "Elijah Higgins"    "WR": ["CeeDee Lamb", "George Pickens", "KaVontae Turpin", "Jalen Tolbert", "Jonathan Mingo"],
+
+      }    "TE": ["Jake Ferguson", "Luke Schoonmaker"]
+
+    ]  },
+
+  },  "DEN": {
+
+  {    "QB": ["Bo Nix", "Jarrett Stidham"],
+
+    "team": "",    "RB": ["J.K. Dobbins", "RJ Harvey", "Tyler Badie", "Jaleel McLaughlin", "Adam Prentice"],
+
+    "QB": [],    "WR": ["Courtland Sutton", "Troy Franklin", "Marvin Mims Jr.", "Pat Bryant"],
+
+    "RB": [],    "TE": ["Evan Engram", "Adam Trautman", "Lucas Krull"]
+
+    "WR": [],  },
+
+    "TE": []  "DET": {
+
+  },    "QB": ["Jared Goff", "Kyle Allen"],
+
+  {    "RB": ["Jahmyr Gibbs", "David Montgomery", "Craig Reynolds", "Sione Vaki"],
+
+    "team": "Atlanta Falcons",    "WR": ["Amon-Ra St. Brown", "Jameson Williams", "Isaac TeSlaa", "Kalif Raymond"],
+
+    "QB": [    "TE": ["Sam LaPorta", "Brock Wright"]
+
+      {  },
+
+        "rank": "15",  "GB": {
+
+        "name": "Michael Penix Jr."    "QB": ["Jordan Love", "Malik Willis"],
+
+      },    "RB": ["Josh Jacobs", "Chris Brooks", "Emanuel Wilson", "MarShawn Lloyd"],
+
+      {    "WR": ["Romeo Doubs", "Matthew Golden", "Dontayvion Wicks", "Savion Williams", "Jayden Reed", "Christian Watson"],
+
+        "rank": "31",    "TE": ["Tucker Kraft", "Luke Musgrave", "John FitzPatrick"]
+
+        "name": "Kirk Cousins"  },
+
+      }  "HOU": {
+
+    ],    "QB": ["C.J. Stroud", "Davis Mills"],
+
+    "RB": [    "RB": ["Nick Chubb", "Woody Marks", "Dameon Pierce", "Dare Ogunbowale", "Joe Mixon"],
+
+      {    "WR": ["Nico Collins", "Christian Kirk", "Jayden Higgins", "Xavier Hutchinson", "Jaylin Noel", "Tank Dell"],
+
+        "rank": "2",    "TE": ["Dalton Schultz", "Harrison Bryant", "Cade Stover"]
+
+        "name": "Bijan Robinson"  },
+
+      },  "IND": {
+
+      {    "QB": ["Daniel Jones", "Anthony Richardson Sr."],
+
+        "rank": "25",    "RB": ["Jonathan Taylor", "DJ Giddens", "Tyler Goodson"],
+
+        "name": "Tyler Allgeier"    "WR": ["Michael Pittman Jr.", "Josh Downs", "Alec Pierce", "Adonai Mitchell"],
+
+      }    "TE": ["Tyler Warren", "Mo Alie-Cox"]
+
+    ],  },
+
+    "WR": [  "JAX": {
+
+      {    "QB": ["Trevor Lawrence", "Nick Mullens"],
+
+        "rank": "5",    "RB": ["Travis Etienne Jr.", "Bhayshul Tuten", "LeQuint Allen Jr.", "Ja'Quinden Jackson"],
+
+        "name": "Drake London"    "WR": ["Brian Thomas Jr.", "Travis Hunter", "Dyami Brown", "Parker Washington", "Tim Patrick"],
+
+      },    "TE": ["Brenton Strange", "Hunter Long", "Johnny Mundt"]
+
+      {  },
+
+        "rank": "38",  "KC": {
+
+        "name": "Darnell Mooney"    "QB": ["Patrick Mahomes II", "Gardner Minshew II"],
+
+      },    "RB": ["Isiah Pacheco", "Kareem Hunt", "Brashard Smith", "Elijah Mitchell", "Carson Steele", "Clyde Edwards-Helaire"],
+
+      {    "WR": ["Marquise Brown", "Tyquan Thornton", "Xavier Worthy", "JuJu Smith-Schuster", "Rashee Rice", "Jalen Royals"],
+
+        "rank": "107",    "TE": ["Travis Kelce", "Noah Gray", "Jared Wiley", "Robert Tonyan"]
+
+        "name": "Casey Washington"  },
+
+      },  "LAC": {
+
+      {    "QB": ["Justin Herbert", "Trey Lance"],
+
+        "rank": "108",    "RB": ["Omarion Hampton", "Najee Harris", "Hassan Haskins", "Kimani Vidal"],
+
+        "name": "David Sills V"    "WR": ["Ladd McConkey", "Keenan Allen", "Quentin Johnston", "Tre Harris", "KeAndre Lambert-Smith"],
+
+      },    "TE": ["Will Dissly", "Tyler Conklin", "Oronde Gadsden II"]
+
+      {  },
+
+        "rank": "134",  "LAR": {
+
+        "name": "KhaDarel Hodge"    "QB": ["Matthew Stafford", "Jimmy Garoppolo"],
+
+      },    "RB": ["Kyren Williams", "Blake Corum", "Jarquez Hunter", "Ronnie Rivers"],
+
+      {    "WR": ["Puka Nacua", "Davante Adams", "Tutu Atwell", "Jordan Whittington"],
+
+        "rank": "136",    "TE": ["Tyler Higbee", "Terrance Ferguson", "Davis Allen", "Colby Parkinson"]
+
+        "name": "Jamal Agnew"  },
+
+      }  "LV": {
+
+    ],    "QB": ["Geno Smith", "Kenny Pickett", "Aidan O'Connell"],
+
+    "TE": [    "RB": ["Ashton Jeanty", "Zamir White", "Dylan Laube", "Raheem Mostert"],
+
+      {    "WR": ["Jakobi Meyers", "Tre Tucker", "Dont'e Thornton Jr.", "Jack Bech"],
+
+        "rank": "9",    "TE": ["Brock Bowers", "Michael Mayer"]
+
+        "name": "Kyle Pitts Sr."  },
+
+      },  "MIA": {
+
+      {    "QB": ["Tua Tagovailoa", "Zach Wilson", "Quinn Ewers"],
+
+        "rank": "60",    "RB": ["De'Von Achane", "Ollie Gordon II", "Jaylen Wright", "Alec Ingold"],
+
+        "name": "Charlie Woerner"    "WR": ["Tyreek Hill", "Jaylen Waddle", "Malik Washington", "Nick Westbrook-Ikhine", "Theo Wease Jr."],
+
+      },    "TE": ["Tanner Conner", "Julian Hill", "Darren Waller", "Greg Dulcich"]
+
+      {  },
+
+        "rank": "81",  "MIN": {
+
+        "name": "Teagan Quitoriano"    "QB": ["Carson Wentz", "J.J. McCarthy"],
+
+      }    "RB": ["Jordan Mason", "Cam Akers", "Xazavian Valladay", "Aaron Jones Sr.", "Ty Chandler"],
+
+    ]    "WR": ["Justin Jefferson", "Jalen Nailor", "Adam Thielen", "Zavier Scott", "Tai Felton", "Jordan Addison"],
+
+  },    "TE": ["T.J. Hockenson", "Josh Oliver"]
+
+  {  },
+
+    "team": "",  "NE": {
+
+    "QB": [],    "QB": ["Drake Maye", "Joshua Dobbs"],
+
+    "RB": [],    "RB": ["Rhamondre Stevenson", "TreVeyon Henderson", "Antonio Gibson"],
+
+    "WR": [],    "WR": ["Stefon Diggs", "Kayshon Boutte", "DeMario Douglas", "Mack Hollins", "Kyle Williams", "Efton Chism III"],
+
+    "TE": []    "TE": ["Hunter Henry", "Austin Hooper"]
+
+  },  },
+
+  {  "NO": {
+
+    "team": "Baltimore Ravens",    "QB": ["Spencer Rattler", "Tyler Shough"],
+
+    "QB": [    "RB": ["Alvin Kamara", "Kendre Miller", "Devin Neal", "Chris Tyree"],
+
+      {    "WR": ["Chris Olave", "Rashid Shaheed", "Brandin Cooks", "Devaughn Vele"],
+
+        "rank": "3",    "TE": ["Juwan Johnson", "Taysom Hill", "Foster Moreau"]
+
+        "name": "Lamar Jackson"  },
+
+      },  "NYG": {
+
+      {    "QB": ["Russell Wilson", "Jaxson Dart", "Jameis Winston"],
+
+        "rank": "32",    "RB": ["Cam Skattebo", "Tyrone Tracy Jr.", "Devin Singletary"],
+
+        "name": "Cooper Rush"    "WR": ["Malik Nabers", "Wan'Dale Robinson", "Darius Slayton", "Jalin Hyatt"],
+
+      },    "TE": ["Theo Johnson", "Daniel Bellinger"]
+
+      {  },
+
+        "rank": "36",  "NYJ": {
+
+        "name": "Tyler Huntley"    "QB": ["Tyrod Taylor", "Justin Fields"],
+
+      }    "RB": ["Breece Hall", "Braelon Allen", "Isaiah Davis"],
+
+    ],    "WR": ["Garrett Wilson", "Tyler Johnson", "Allen Lazard", "Arian Smith", "Josh Reynolds"],
+
+    "RB": [    "TE": ["Mason Taylor", "Jeremy Ruckert", "Stone Smartt", "Jelani Woods"]
+
+      {  },
+
+        "rank": "4",  "PHI": {
+
+        "name": "Derrick Henry"    "QB": ["Jalen Hurts", "Tanner McKee", "Sam Howell"],
+
+      },    "RB": ["Saquon Barkley", "A.J. Dillon", "Tank Bigsby", "Will Shipley"],
+
+      {    "WR": ["A.J. Brown", "DeVonta Smith", "Jahan Dotson", "Javon Baker"],
+
+        "rank": "39",    "TE": ["Dallas Goedert", "Grant Calcaterra", "Kylen Granson"]
+
+        "name": "Justice Hill"  },
+
+      },  "PIT": {
+
+      {    "QB": ["Aaron Rodgers", "Mason Rudolph", "Will Howard"],
+
+        "rank": "60",    "RB": ["Jaylen Warren", "Kenneth Gainwell", "Kaleb Johnson", "Trey Sermon"],
+
+        "name": "Keaton Mitchell"    "WR": ["DK Metcalf", "Calvin Austin III", "Roman Wilson", "Ben Skowronek", "Scotty Miller"],
+
+      },    "TE": ["Jonnu Smith", "Pat Freiermuth", "Darnell Washington"]
+
+      {  },
+
+        "rank": "82",  "SF": {
+
+        "name": "Patrick Ricard"    "QB": ["Mac Jones", "Brock Purdy"],
+
+      },    "RB": ["Christian McCaffrey", "Brian Robinson Jr.", "Isaac Guerendo", "Sincere McCormick", "Kyle Juszczyk", "Jordan James"],
+
+      {    "WR": ["Jauan Jennings", "Ricky Pearsall", "Kendrick Bourne", "Marquez Valdes-Scantling", "Russell Gage Jr.", "Brandon Aiyuk", "Demarcus Robinson", "Skyy Moore", "Jacob Cowing", "Jordan Watkins"],
+
+        "rank": "93",    "TE": ["Jake Tonges", "Luke Farrell", "George Kittle"]
+
+        "name": "Rasheen Ali"  },
+
+      }  "SEA": {
+
+    ],    "QB": ["Sam Darnold", "Jalen Milroe", "Drew Lock"],
+
+    "WR": [    "RB": ["Kenneth Walker III", "Zach Charbonnet", "George Holani", "Damien Martinez"],
+
+      {    "WR": ["Jaxon Smith-Njigba", "Cooper Kupp", "Tory Horton", "Jake Bobo", "Ricky White III"],
+
+        "rank": "9",    "TE": ["AJ Barner", "Elijah Arroyo"]
+
+        "name": "Zay Flowers"  },
+
+      },  "TB": {
+
+      {    "QB": ["Baker Mayfield", "Teddy Bridgewater"],
+
+        "rank": "44",    "RB": ["Bucky Irving", "Rachaad White", "Sean Tucker"],
+
+        "name": "Rashod Bateman"    "WR": ["Mike Evans", "Emeka Egbuka", "Sterling Shepard", "Tez Johnson", "Chris Godwin Jr.", "Jalen McMillan"],
+
+      },    "TE": ["Cade Otton", "Payne Durham"]
+
+      {  },
+
+        "rank": "66",  "TEN": {
+
+        "name": "DeAndre Hopkins"    "QB": ["Cam Ward"],
+
+      },    "RB": ["Tony Pollard", "Julius Chestnut", "Jordan Mims", "Tyjae Spears", "Kalel Mullings"],
+
+      {    "WR": ["Calvin Ridley", "Elic Ayomanor", "Tyler Lockett", "Chimere Dike", "Xavier Restrepo", "Van Jefferson"],
+
+        "rank": "102",    "TE": ["Chig Okonkwo", "Gunnar Helm"]
+
+        "name": "Devontez Walker"  },
+
+      },  "WAS": {
+
+      {    "QB": ["Jayden Daniels", "Marcus Mariota"],
+
+        "rank": "115",    "RB": ["Jacory Croskey-Merritt", "Jeremy McNichols", "Chris Rodriguez Jr.", "Donovan Edwards"],
+
+        "name": "Tylan Wallace"    "WR": ["Deebo Samuel Sr.", "Terry McLaurin", "Noah Brown", "Jaylin Lane", "Luke McCaffrey"],
+
+      }    "TE": ["Zach Ertz", "Ben Sinnott", "John Bates"]
+
+    ],  }
+
+    "TE": [}
+
+      {
+        "rank": "10",
+        "name": "Mark Andrews"
+      },
+      {
+        "rank": "23",
+        "name": "Isaiah Likely"
+      },
+      {
+        "rank": "50",
+        "name": "Charlie Kolar"
+      },
+      {
+        "rank": "83",
+        "name": "Zaire Mitchell-Paden"
+      }
+    ]
   },
-  "ATL": {
-    "QB": ["Michael Penix Jr.", "Kirk Cousins"],
-    "RB": ["Bijan Robinson", "Tyler Allgeier"],
-    "WR": ["Drake London", "Darnell Mooney", "Ray-Ray McCloud III", "Chris Blair"],
-    "TE": ["Kyle Pitts Sr."]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "BAL": {
-    "QB": ["Lamar Jackson", "Cooper Rush"],
-    "RB": ["Derrick Henry", "Justice Hill", "Rasheen Ali", "Keaton Mitchell", "D'Ernest Johnson"],
-    "WR": ["Zay Flowers", "Rashod Bateman", "DeAndre Hopkins", "Devontez Walker", "Tylan Wallace"],
-    "TE": ["Mark Andrews", "Charlie Kolar", "Isaiah Likely"]
+  {
+    "team": "Buffalo Bills",
+    "QB": [
+      {
+        "rank": "2",
+        "name": "Josh Allen"
+      },
+      {
+        "rank": "40",
+        "name": "Mitchell Trubisky"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "6",
+        "name": "James Cook III"
+      },
+      {
+        "rank": "51",
+        "name": "Ray Davis"
+      },
+      {
+        "rank": "53",
+        "name": "Ty Johnson"
+      },
+      {
+        "rank": "91",
+        "name": "Reggie Gilliam"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "30",
+        "name": "Khalil Shakir"
+      },
+      {
+        "rank": "34",
+        "name": "Keon Coleman"
+      },
+      {
+        "rank": "81",
+        "name": "Elijah Moore"
+      },
+      {
+        "rank": "95",
+        "name": "Joshua Palmer"
+      },
+      {
+        "rank": "98",
+        "name": "Tyrell Shavers"
+      },
+      {
+        "rank": "103",
+        "name": "Curtis Samuel"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "8",
+        "name": "Dalton Kincaid"
+      },
+      {
+        "rank": "33",
+        "name": "Dawson Knox"
+      },
+      {
+        "rank": "54",
+        "name": "Jackson Hawes"
+      }
+    ]
   },
-  "BUF": {
-    "QB": ["Josh Allen", "Mitchell Trubisky"],
-    "RB": ["James Cook III", "Ray Davis", "Ty Johnson"],
-    "WR": ["Keon Coleman", "Khalil Shakir", "Joshua Palmer", "Elijah Moore", "Curtis Samuel", "Tyrell Shavers", "Gabe Davis"],
-    "TE": ["Dalton Kincaid", "Dawson Knox"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "CAR": {
-    "QB": ["Bryce Young", "Andy Dalton", "Hendon Hooker"],
-    "RB": ["Chuba Hubbard", "Rico Dowdle", "Trevor Etienne"],
-    "WR": ["Tetairoa McMillan", "Xavier Legette", "Hunter Renfrow", "Brycen Tremayne", "Jalen Coker", "Jimmy Horn Jr."],
-    "TE": ["Ja'Tavion Sanders", "Tommy Tremble", "Mitchell Evans"]
+  {
+    "team": "Carolina Panthers",
+    "QB": [
+      {
+        "rank": "22",
+        "name": "Andy Dalton"
+      },
+      {
+        "rank": "34",
+        "name": "Bryce Young"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "21",
+        "name": "Rico Dowdle"
+      },
+      {
+        "rank": "26",
+        "name": "Chuba Hubbard"
+      },
+      {
+        "rank": "66",
+        "name": "Trevor Etienne"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "16",
+        "name": "Tetairoa McMillan"
+      },
+      {
+        "rank": "46",
+        "name": "Xavier Legette"
+      },
+      {
+        "rank": "53",
+        "name": "Jalen Coker"
+      },
+      {
+        "rank": "94",
+        "name": "Jimmy Horn Jr."
+      },
+      {
+        "rank": "122",
+        "name": "Brycen Tremayne"
+      },
+      {
+        "rank": "123",
+        "name": "Hunter Renfrow"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "29",
+        "name": "Ja'Tavion Sanders"
+      },
+      {
+        "rank": "31",
+        "name": "Tommy Tremble"
+      },
+      {
+        "rank": "41",
+        "name": "Mitchell Evans"
+      }
+    ]
   },
-  "CHI": {
-    "QB": ["Caleb Williams", "Tyson Bagent"],
-    "RB": ["D'Andre Swift", "Kyle Monangai", "Roschon Johnson"],
-    "WR": ["Rome Odunze", "DJ Moore", "Olamide Zaccheaus", "Luther Burden III"],
-    "TE": ["Colston Loveland", "Cole Kmet"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "CIN": {
-    "QB": ["Jake Browning", "Joe Burrow"],
-    "RB": ["Chase Brown", "Samaje Perine", "Tahj Brooks"],
-    "WR": ["Ja'Marr Chase", "Tee Higgins", "Andrei Iosivas", "Mitchell Tinsley", "Jermaine Burton"],
-    "TE": ["Mike Gesicki", "Noah Fant", "Drew Sample", "Tanner Hudson"]
+  {
+    "team": "Chicago Bears",
+    "QB": [
+      {
+        "rank": "11",
+        "name": "Caleb Williams"
+      },
+      {
+        "rank": "48",
+        "name": "Tyson Bagent"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "14",
+        "name": "D'Andre Swift"
+      },
+      {
+        "rank": "30",
+        "name": "Kyle Monangai"
+      },
+      {
+        "rank": "64",
+        "name": "Roschon Johnson"
+      },
+      {
+        "rank": "88",
+        "name": "Travis Homer"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "10",
+        "name": "Rome Odunze"
+      },
+      {
+        "rank": "31",
+        "name": "DJ Moore"
+      },
+      {
+        "rank": "51",
+        "name": "Olamide Zaccheaus"
+      },
+      {
+        "rank": "59",
+        "name": "Luther Burden III"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "22",
+        "name": "Colston Loveland"
+      },
+      {
+        "rank": "35",
+        "name": "Cole Kmet"
+      },
+      {
+        "rank": "59",
+        "name": "Durham Smythe"
+      },
+      {
+        "rank": "74",
+        "name": "Stephen Carlson"
+      }
+    ]
   },
-  "CLE": {
-    "QB": ["Joe Flacco", "Dillon Gabriel", "Shedeur Sanders", "Deshaun Watson"],
-    "RB": ["Quinshon Judkins", "Dylan Sampson", "Jerome Ford", "Raheim Sanders"],
-    "WR": ["Jerry Jeudy", "Cedric Tillman", "Isaiah Bond", "Jamari Thrash", "DeAndre Carter", "Malachi Corley"],
-    "TE": ["Harold Fannin Jr.", "David Njoku"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "DAL": {
-    "QB": ["Dak Prescott", "Joe Milton III"],
-    "RB": ["Javonte Williams", "Miles Sanders", "Hunter Luepke", "Jaydon Blue", "Phil Mafah"],
-    "WR": ["CeeDee Lamb", "George Pickens", "KaVontae Turpin", "Jalen Tolbert", "Jonathan Mingo"],
-    "TE": ["Jake Ferguson", "Luke Schoonmaker"]
+  {
+    "team": "Cincinnati Bengals",
+    "QB": [
+      {
+        "rank": "14",
+        "name": "Joe Flacco"
+      },
+      {
+        "rank": "33",
+        "name": "Jake Browning"
+      },
+      {
+        "rank": "-",
+        "name": "Joe Burrow"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "16",
+        "name": "Chase Brown"
+      },
+      {
+        "rank": "42",
+        "name": "Samaje Perine"
+      },
+      {
+        "rank": "67",
+        "name": "Tahj Brooks"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "1",
+        "name": "Ja'Marr Chase"
+      },
+      {
+        "rank": "17",
+        "name": "Tee Higgins"
+      },
+      {
+        "rank": "64",
+        "name": "Andrei Iosivas"
+      },
+      {
+        "rank": "133",
+        "name": "Mitch Tinsley"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "24",
+        "name": "Noah Fant"
+      },
+      {
+        "rank": "48",
+        "name": "Drew Sample"
+      },
+      {
+        "rank": "63",
+        "name": "Tanner Hudson"
+      },
+      {
+        "rank": "71",
+        "name": "Cam Grandy"
+      },
+      {
+        "rank": "-",
+        "name": "Mike Gesicki"
+      }
+    ]
   },
-  "DEN": {
-    "QB": ["Bo Nix", "Jarrett Stidham"],
-    "RB": ["J.K. Dobbins", "RJ Harvey", "Tyler Badie", "Jaleel McLaughlin", "Adam Prentice"],
-    "WR": ["Courtland Sutton", "Troy Franklin", "Marvin Mims Jr.", "Pat Bryant"],
-    "TE": ["Evan Engram", "Adam Trautman", "Lucas Krull"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "DET": {
-    "QB": ["Jared Goff", "Kyle Allen"],
-    "RB": ["Jahmyr Gibbs", "David Montgomery", "Craig Reynolds", "Sione Vaki"],
-    "WR": ["Amon-Ra St. Brown", "Jameson Williams", "Isaac TeSlaa", "Kalif Raymond"],
-    "TE": ["Sam LaPorta", "Brock Wright"]
+  {
+    "team": "Cleveland Browns",
+    "QB": [
+      {
+        "rank": "24",
+        "name": "Dillon Gabriel"
+      },
+      {
+        "rank": "50",
+        "name": "Shedeur Sanders"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "10",
+        "name": "Quinshon Judkins"
+      },
+      {
+        "rank": "47",
+        "name": "Jerome Ford"
+      },
+      {
+        "rank": "52",
+        "name": "Dylan Sampson"
+      },
+      {
+        "rank": "-",
+        "name": "Raheim Sanders"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "40",
+        "name": "Jerry Jeudy"
+      },
+      {
+        "rank": "55",
+        "name": "Isaiah Bond"
+      },
+      {
+        "rank": "100",
+        "name": "Jamari Thrash"
+      },
+      {
+        "rank": "114",
+        "name": "Malachi Corley"
+      },
+      {
+        "rank": "119",
+        "name": "Gage Larvadain"
+      },
+      {
+        "rank": "-",
+        "name": "Cedric Tillman"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "12",
+        "name": "Harold Fannin Jr."
+      },
+      {
+        "rank": "34",
+        "name": "David Njoku"
+      },
+      {
+        "rank": "56",
+        "name": "Blake Whiteheart"
+      }
+    ]
   },
-  "GB": {
-    "QB": ["Jordan Love", "Malik Willis"],
-    "RB": ["Josh Jacobs", "Chris Brooks", "Emanuel Wilson", "MarShawn Lloyd"],
-    "WR": ["Romeo Doubs", "Matthew Golden", "Dontayvion Wicks", "Savion Williams", "Jayden Reed", "Christian Watson"],
-    "TE": ["Tucker Kraft", "Luke Musgrave", "John FitzPatrick"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "HOU": {
-    "QB": ["C.J. Stroud", "Davis Mills"],
-    "RB": ["Nick Chubb", "Woody Marks", "Dameon Pierce", "Dare Ogunbowale", "Joe Mixon"],
-    "WR": ["Nico Collins", "Christian Kirk", "Jayden Higgins", "Xavier Hutchinson", "Jaylin Noel", "Tank Dell"],
-    "TE": ["Dalton Schultz", "Harrison Bryant", "Cade Stover"]
+  {
+    "team": "Dallas Cowboys",
+    "QB": [
+      {
+        "rank": "9",
+        "name": "Dak Prescott"
+      },
+      {
+        "rank": "37",
+        "name": "Joe Milton III"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "9",
+        "name": "Javonte Williams"
+      },
+      {
+        "rank": "49",
+        "name": "Jaydon Blue"
+      },
+      {
+        "rank": "71",
+        "name": "Hunter Luepke"
+      },
+      {
+        "rank": "85",
+        "name": "Malik Davis"
+      },
+      {
+        "rank": "-",
+        "name": "Phil Mafah"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "3",
+        "name": "CeeDee Lamb"
+      },
+      {
+        "rank": "14",
+        "name": "George Pickens"
+      },
+      {
+        "rank": "70",
+        "name": "KaVontae Turpin"
+      },
+      {
+        "rank": "85",
+        "name": "Jalen Tolbert"
+      },
+      {
+        "rank": "99",
+        "name": "Ryan Flournoy"
+      },
+      {
+        "rank": "121",
+        "name": "Jonathan Mingo"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "4",
+        "name": "Jake Ferguson"
+      },
+      {
+        "rank": "44",
+        "name": "Luke Schoonmaker"
+      },
+      {
+        "rank": "70",
+        "name": "Brevyn Spann-Ford"
+      }
+    ]
   },
-  "IND": {
-    "QB": ["Daniel Jones", "Anthony Richardson Sr."],
-    "RB": ["Jonathan Taylor", "DJ Giddens", "Tyler Goodson"],
-    "WR": ["Michael Pittman Jr.", "Josh Downs", "Alec Pierce", "Adonai Mitchell"],
-    "TE": ["Tyler Warren", "Mo Alie-Cox"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "JAX": {
-    "QB": ["Trevor Lawrence", "Nick Mullens"],
-    "RB": ["Travis Etienne Jr.", "Bhayshul Tuten", "LeQuint Allen Jr.", "Ja'Quinden Jackson"],
-    "WR": ["Brian Thomas Jr.", "Travis Hunter", "Dyami Brown", "Parker Washington", "Tim Patrick"],
-    "TE": ["Brenton Strange", "Hunter Long", "Johnny Mundt"]
+  {
+    "team": "Denver Broncos",
+    "QB": [
+      {
+        "rank": "6",
+        "name": "Bo Nix"
+      },
+      {
+        "rank": "42",
+        "name": "Jarrett Stidham"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "15",
+        "name": "J.K. Dobbins"
+      },
+      {
+        "rank": "32",
+        "name": "RJ Harvey"
+      },
+      {
+        "rank": "54",
+        "name": "Tyler Badie"
+      },
+      {
+        "rank": "74",
+        "name": "Adam Prentice"
+      },
+      {
+        "rank": "-",
+        "name": "Jaleel McLaughlin"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "6",
+        "name": "Courtland Sutton"
+      },
+      {
+        "rank": "35",
+        "name": "Troy Franklin"
+      },
+      {
+        "rank": "36",
+        "name": "Marvin Mims Jr."
+      },
+      {
+        "rank": "80",
+        "name": "Pat Bryant"
+      },
+      {
+        "rank": "135",
+        "name": "Trent Sherfield Sr."
+      }
+    ],
+    "TE": [
+      {
+        "rank": "20",
+        "name": "Evan Engram"
+      },
+      {
+        "rank": "42",
+        "name": "Nate Adkins"
+      },
+      {
+        "rank": "46",
+        "name": "Adam Trautman"
+      }
+    ]
   },
-  "KC": {
-    "QB": ["Patrick Mahomes II", "Gardner Minshew II"],
-    "RB": ["Isiah Pacheco", "Kareem Hunt", "Brashard Smith", "Elijah Mitchell", "Carson Steele", "Clyde Edwards-Helaire"],
-    "WR": ["Marquise Brown", "Tyquan Thornton", "Xavier Worthy", "JuJu Smith-Schuster", "Rashee Rice", "Jalen Royals"],
-    "TE": ["Travis Kelce", "Noah Gray", "Jared Wiley", "Robert Tonyan"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "LAC": {
-    "QB": ["Justin Herbert", "Trey Lance"],
-    "RB": ["Omarion Hampton", "Najee Harris", "Hassan Haskins", "Kimani Vidal"],
-    "WR": ["Ladd McConkey", "Keenan Allen", "Quentin Johnston", "Tre Harris", "KeAndre Lambert-Smith"],
-    "TE": ["Will Dissly", "Tyler Conklin", "Oronde Gadsden II"]
+  {
+    "team": "Detroit Lions",
+    "QB": [
+      {
+        "rank": "15",
+        "name": "Jared Goff"
+      },
+      {
+        "rank": "56",
+        "name": "Kyle Allen"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "3",
+        "name": "Jahmyr Gibbs"
+      },
+      {
+        "rank": "24",
+        "name": "David Montgomery"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "6",
+        "name": "Amon-Ra St. Brown"
+      },
+      {
+        "rank": "35",
+        "name": "Jameson Williams"
+      },
+      {
+        "rank": "73",
+        "name": "Isaac TeSlaa"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "6",
+        "name": "Sam LaPorta"
+      }
+    ]
   },
-  "LAR": {
-    "QB": ["Matthew Stafford", "Jimmy Garoppolo"],
-    "RB": ["Kyren Williams", "Blake Corum", "Jarquez Hunter", "Ronnie Rivers"],
-    "WR": ["Puka Nacua", "Davante Adams", "Tutu Atwell", "Jordan Whittington"],
-    "TE": ["Tyler Higbee", "Terrance Ferguson", "Davis Allen", "Colby Parkinson"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "LV": {
-    "QB": ["Geno Smith", "Kenny Pickett", "Aidan O'Connell"],
-    "RB": ["Ashton Jeanty", "Zamir White", "Dylan Laube", "Raheem Mostert"],
-    "WR": ["Jakobi Meyers", "Tre Tucker", "Dont'e Thornton Jr.", "Jack Bech"],
-    "TE": ["Brock Bowers", "Michael Mayer"]
+  {
+    "team": "Green Bay Packers",
+    "QB": [
+      {
+        "rank": "12",
+        "name": "Jordan Love"
+      },
+      {
+        "rank": "39",
+        "name": "Malik Willis"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "5",
+        "name": "Josh Jacobs"
+      },
+      {
+        "rank": "44",
+        "name": "Emanuel Wilson"
+      },
+      {
+        "rank": "61",
+        "name": "Chris Brooks"
+      },
+      {
+        "rank": "77",
+        "name": "MarShawn Lloyd"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "25",
+        "name": "Romeo Doubs"
+      },
+      {
+        "rank": "27",
+        "name": "Matthew Golden"
+      },
+      {
+        "rank": "75",
+        "name": "Christian Watson"
+      },
+      {
+        "rank": "96",
+        "name": "Dontayvion Wicks"
+      },
+      {
+        "rank": "106",
+        "name": "Malik Heath"
+      },
+      {
+        "rank": "111",
+        "name": "Savion Williams"
+      },
+      {
+        "rank": "139",
+        "name": "Bo Melton"
+      },
+      {
+        "rank": "-",
+        "name": "Jayden Reed"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "2",
+        "name": "Tucker Kraft"
+      },
+      {
+        "rank": "43",
+        "name": "Luke Musgrave"
+      },
+      {
+        "rank": "57",
+        "name": "John FitzPatrick"
+      }
+    ]
   },
-  "MIA": {
-    "QB": ["Tua Tagovailoa", "Zach Wilson", "Quinn Ewers"],
-    "RB": ["De'Von Achane", "Ollie Gordon II", "Jaylen Wright", "Alec Ingold"],
-    "WR": ["Tyreek Hill", "Jaylen Waddle", "Malik Washington", "Nick Westbrook-Ikhine", "Theo Wease Jr."],
-    "TE": ["Tanner Conner", "Julian Hill", "Darren Waller", "Greg Dulcich"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "MIN": {
-    "QB": ["Carson Wentz", "J.J. McCarthy"],
-    "RB": ["Jordan Mason", "Cam Akers", "Xazavian Valladay", "Aaron Jones Sr.", "Ty Chandler"],
-    "WR": ["Justin Jefferson", "Jalen Nailor", "Adam Thielen", "Zavier Scott", "Tai Felton", "Jordan Addison"],
-    "TE": ["T.J. Hockenson", "Josh Oliver"]
+  {
+    "team": "Houston Texans",
+    "QB": [
+      {
+        "rank": "19",
+        "name": "C.J. Stroud"
+      },
+      {
+        "rank": "49",
+        "name": "Davis Mills"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "28",
+        "name": "Woody Marks"
+      },
+      {
+        "rank": "29",
+        "name": "Nick Chubb"
+      },
+      {
+        "rank": "70",
+        "name": "Dare Ogunbowale"
+      },
+      {
+        "rank": "83",
+        "name": "Dameon Pierce"
+      },
+      {
+        "rank": "-",
+        "name": "Joe Mixon"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "47",
+        "name": "Jayden Higgins"
+      },
+      {
+        "rank": "52",
+        "name": "Jaylin Noel"
+      },
+      {
+        "rank": "57",
+        "name": "Xavier Hutchinson"
+      },
+      {
+        "rank": "83",
+        "name": "Nico Collins"
+      },
+      {
+        "rank": "90",
+        "name": "Christian Kirk"
+      },
+      {
+        "rank": "105",
+        "name": "Braxton Berrios"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "11",
+        "name": "Dalton Schultz"
+      },
+      {
+        "rank": "51",
+        "name": "Harrison Bryant"
+      },
+      {
+        "rank": "79",
+        "name": "Brenden Bates"
+      },
+      {
+        "rank": "-",
+        "name": "Cade Stover"
+      }
+    ]
   },
-  "NE": {
-    "QB": ["Drake Maye", "Joshua Dobbs"],
-    "RB": ["Rhamondre Stevenson", "TreVeyon Henderson", "Antonio Gibson"],
-    "WR": ["Stefon Diggs", "Kayshon Boutte", "DeMario Douglas", "Mack Hollins", "Kyle Williams", "Efton Chism III"],
-    "TE": ["Hunter Henry", "Austin Hooper"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "NO": {
-    "QB": ["Spencer Rattler", "Tyler Shough"],
-    "RB": ["Alvin Kamara", "Kendre Miller", "Devin Neal", "Chris Tyree"],
-    "WR": ["Chris Olave", "Rashid Shaheed", "Brandin Cooks", "Devaughn Vele"],
-    "TE": ["Juwan Johnson", "Taysom Hill", "Foster Moreau"]
+  {
+    "team": "Indianapolis Colts",
+    "QB": [
+      {
+        "rank": "8",
+        "name": "Daniel Jones"
+      },
+      {
+        "rank": "44",
+        "name": "Riley Leonard"
+      },
+      {
+        "rank": "-",
+        "name": "Anthony Richardson Sr."
+      }
+    ],
+    "RB": [
+      {
+        "rank": "1",
+        "name": "Jonathan Taylor"
+      },
+      {
+        "rank": "62",
+        "name": "DJ Giddens"
+      },
+      {
+        "rank": "75",
+        "name": "Tyler Goodson"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "24",
+        "name": "Michael Pittman Jr."
+      },
+      {
+        "rank": "29",
+        "name": "Alec Pierce"
+      },
+      {
+        "rank": "48",
+        "name": "Josh Downs"
+      },
+      {
+        "rank": "97",
+        "name": "Adonai Mitchell"
+      },
+      {
+        "rank": "113",
+        "name": "Anthony Gould"
+      },
+      {
+        "rank": "124",
+        "name": "Ashton Dulin"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "1",
+        "name": "Tyler Warren"
+      },
+      {
+        "rank": "45",
+        "name": "Mo Alie-Cox"
+      },
+      {
+        "rank": "65",
+        "name": "Drew Ogletree"
+      }
+    ]
   },
-  "NYG": {
-    "QB": ["Russell Wilson", "Jaxson Dart", "Jameis Winston"],
-    "RB": ["Cam Skattebo", "Tyrone Tracy Jr.", "Devin Singletary"],
-    "WR": ["Malik Nabers", "Wan'Dale Robinson", "Darius Slayton", "Jalin Hyatt"],
-    "TE": ["Theo Johnson", "Daniel Bellinger"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "NYJ": {
-    "QB": ["Tyrod Taylor", "Justin Fields"],
-    "RB": ["Breece Hall", "Braelon Allen", "Isaiah Davis"],
-    "WR": ["Garrett Wilson", "Tyler Johnson", "Allen Lazard", "Arian Smith", "Josh Reynolds"],
-    "TE": ["Mason Taylor", "Jeremy Ruckert", "Stone Smartt", "Jelani Woods"]
+  {
+    "team": "Jacksonville Jaguars",
+    "QB": [
+      {
+        "rank": "21",
+        "name": "Trevor Lawrence"
+      },
+      {
+        "rank": "61",
+        "name": "Nick Mullens"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "21",
+        "name": "Travis Etienne Jr."
+      },
+      {
+        "rank": "44",
+        "name": "Bhayshul Tuten"
+      },
+      {
+        "rank": "85",
+        "name": "LeQuint Allen Jr."
+      }
+    ],
+    "WR": [
+      {
+        "rank": "22",
+        "name": "Brian Thomas Jr."
+      },
+      {
+        "rank": "38",
+        "name": "Travis Hunter"
+      },
+      {
+        "rank": "80",
+        "name": "Dyami Brown"
+      },
+      {
+        "rank": "99",
+        "name": "Parker Washington"
+      },
+      {
+        "rank": "128",
+        "name": "Tim Patrick"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "32",
+        "name": "Brenton Strange"
+      },
+      {
+        "rank": "48",
+        "name": "Hunter Long"
+      }
+    ]
   },
-  "PHI": {
-    "QB": ["Jalen Hurts", "Tanner McKee", "Sam Howell"],
-    "RB": ["Saquon Barkley", "A.J. Dillon", "Tank Bigsby", "Will Shipley"],
-    "WR": ["A.J. Brown", "DeVonta Smith", "Jahan Dotson", "Javon Baker"],
-    "TE": ["Dallas Goedert", "Grant Calcaterra", "Kylen Granson"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "PIT": {
-    "QB": ["Aaron Rodgers", "Mason Rudolph", "Will Howard"],
-    "RB": ["Jaylen Warren", "Kenneth Gainwell", "Kaleb Johnson", "Trey Sermon"],
-    "WR": ["DK Metcalf", "Calvin Austin III", "Roman Wilson", "Ben Skowronek", "Scotty Miller"],
-    "TE": ["Jonnu Smith", "Pat Freiermuth", "Darnell Washington"]
+  {
+    "team": "Kansas City Chiefs",
+    "QB": [
+      {
+        "rank": "1",
+        "name": "Patrick Mahomes II"
+      },
+      {
+        "rank": "-",
+        "name": "Gardner Minshew II"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "23",
+        "name": "Isiah Pacheco"
+      },
+      {
+        "rank": "38",
+        "name": "Brashard Smith"
+      },
+      {
+        "rank": "46",
+        "name": "Kareem Hunt"
+      },
+      {
+        "rank": "-",
+        "name": "Elijah Mitchell"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "4",
+        "name": "Rashee Rice"
+      },
+      {
+        "rank": "21",
+        "name": "Xavier Worthy"
+      },
+      {
+        "rank": "50",
+        "name": "Marquise Brown"
+      },
+      {
+        "rank": "71",
+        "name": "Tyquan Thornton"
+      },
+      {
+        "rank": "72",
+        "name": "JuJu Smith-Schuster"
+      },
+      {
+        "rank": "-",
+        "name": "Jalen Royals"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "6",
+        "name": "Travis Kelce"
+      },
+      {
+        "rank": "36",
+        "name": "Noah Gray"
+      },
+      {
+        "rank": "72",
+        "name": "Robert Tonyan"
+      },
+      {
+        "rank": "-",
+        "name": "Jared Wiley"
+      }
+    ]
   },
-  "SF": {
-    "QB": ["Mac Jones", "Brock Purdy"],
-    "RB": ["Christian McCaffrey", "Brian Robinson Jr.", "Isaac Guerendo", "Sincere McCormick", "Kyle Juszczyk", "Jordan James"],
-    "WR": ["Jauan Jennings", "Ricky Pearsall", "Kendrick Bourne", "Marquez Valdes-Scantling", "Russell Gage Jr.", "Brandon Aiyuk", "Demarcus Robinson", "Skyy Moore", "Jacob Cowing", "Jordan Watkins"],
-    "TE": ["Jake Tonges", "Luke Farrell", "George Kittle"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "SEA": {
-    "QB": ["Sam Darnold", "Jalen Milroe", "Drew Lock"],
-    "RB": ["Kenneth Walker III", "Zach Charbonnet", "George Holani", "Damien Martinez"],
-    "WR": ["Jaxon Smith-Njigba", "Cooper Kupp", "Tory Horton", "Jake Bobo", "Ricky White III"],
-    "TE": ["AJ Barner", "Elijah Arroyo"]
+  {
+    "team": "Los Angeles Chargers",
+    "QB": [
+      {
+        "rank": "10",
+        "name": "Justin Herbert"
+      },
+      {
+        "rank": "-",
+        "name": "Trey Lance"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "19",
+        "name": "Kimani Vidal"
+      },
+      {
+        "rank": "56",
+        "name": "Nyheim Hines"
+      },
+      {
+        "rank": "78",
+        "name": "Jaret Patterson"
+      },
+      {
+        "rank": "86",
+        "name": "Amar Johnson"
+      },
+      {
+        "rank": "94",
+        "name": "Trayveon Williams"
+      },
+      {
+        "rank": "-",
+        "name": "Omarion Hampton"
+      },
+      {
+        "rank": "-",
+        "name": "Hassan Haskins"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "13",
+        "name": "Ladd McConkey"
+      },
+      {
+        "rank": "18",
+        "name": "Quentin Johnston"
+      },
+      {
+        "rank": "22",
+        "name": "Keenan Allen"
+      },
+      {
+        "rank": "79",
+        "name": "Tre Harris"
+      },
+      {
+        "rank": "132",
+        "name": "Derius Davis"
+      },
+      {
+        "rank": "-",
+        "name": "KeAndre Lambert-Smith"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "7",
+        "name": "Oronde Gadsden II"
+      },
+      {
+        "rank": "55",
+        "name": "Tyler Conklin"
+      },
+      {
+        "rank": "67",
+        "name": "Tucker Fisk"
+      },
+      {
+        "rank": "-",
+        "name": "Will Dissly"
+      }
+    ]
   },
-  "TB": {
-    "QB": ["Baker Mayfield", "Teddy Bridgewater"],
-    "RB": ["Bucky Irving", "Rachaad White", "Sean Tucker"],
-    "WR": ["Mike Evans", "Emeka Egbuka", "Sterling Shepard", "Tez Johnson", "Chris Godwin Jr.", "Jalen McMillan"],
-    "TE": ["Cade Otton", "Payne Durham"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   },
-  "TEN": {
-    "QB": ["Cam Ward"],
-    "RB": ["Tony Pollard", "Julius Chestnut", "Jordan Mims", "Tyjae Spears", "Kalel Mullings"],
-    "WR": ["Calvin Ridley", "Elic Ayomanor", "Tyler Lockett", "Chimere Dike", "Xavier Restrepo", "Van Jefferson"],
-    "TE": ["Chig Okonkwo", "Gunnar Helm"]
+  {
+    "team": "Los Angeles Rams",
+    "QB": [
+      {
+        "rank": "14",
+        "name": "Matthew Stafford"
+      },
+      {
+        "rank": "47",
+        "name": "Jimmy Garoppolo"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "9",
+        "name": "Kyren Williams"
+      },
+      {
+        "rank": "48",
+        "name": "Blake Corum"
+      },
+      {
+        "rank": "75",
+        "name": "Jarquez Hunter"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "2",
+        "name": "Puka Nacua"
+      },
+      {
+        "rank": "10",
+        "name": "Davante Adams"
+      },
+      {
+        "rank": "94",
+        "name": "Jordan Whittington"
+      },
+      {
+        "rank": "101",
+        "name": "Tutu Atwell"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "36",
+        "name": "Tyler Higbee"
+      },
+      {
+        "rank": "42",
+        "name": "Terrance Ferguson"
+      },
+      {
+        "rank": "52",
+        "name": "Colby Parkinson"
+      }
+    ]
   },
-  "WAS": {
-    "QB": ["Jayden Daniels", "Marcus Mariota"],
-    "RB": ["Jacory Croskey-Merritt", "Jeremy McNichols", "Chris Rodriguez Jr.", "Donovan Edwards"],
-    "WR": ["Deebo Samuel Sr.", "Terry McLaurin", "Noah Brown", "Jaylin Lane", "Luke McCaffrey"],
-    "TE": ["Zach Ertz", "Ben Sinnott", "John Bates"]
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "Las Vegas Raiders",
+    "QB": [
+      {
+        "rank": "30",
+        "name": "Geno Smith"
+      },
+      {
+        "rank": "45",
+        "name": "Kenny Pickett"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "14",
+        "name": "Ashton Jeanty"
+      },
+      {
+        "rank": "87",
+        "name": "Raheem Mostert"
+      },
+      {
+        "rank": "90",
+        "name": "Zamir White"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "45",
+        "name": "Jakobi Meyers"
+      },
+      {
+        "rank": "57",
+        "name": "Tre Tucker"
+      },
+      {
+        "rank": "83",
+        "name": "Jack Bech"
+      },
+      {
+        "rank": "93",
+        "name": "Dont'e Thornton Jr."
+      }
+    ],
+    "TE": [
+      {
+        "rank": "5",
+        "name": "Brock Bowers"
+      },
+      {
+        "rank": "37",
+        "name": "Michael Mayer"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "Miami Dolphins",
+    "QB": [
+      {
+        "rank": "26",
+        "name": "Tua Tagovailoa"
+      },
+      {
+        "rank": "29",
+        "name": "Quinn Ewers"
+      },
+      {
+        "rank": "45",
+        "name": "Zach Wilson"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "8",
+        "name": "De'Von Achane"
+      },
+      {
+        "rank": "43",
+        "name": "Ollie Gordon II"
+      },
+      {
+        "rank": "68",
+        "name": "Jaylen Wright"
+      },
+      {
+        "rank": "69",
+        "name": "Alec Ingold"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "20",
+        "name": "Jaylen Waddle"
+      },
+      {
+        "rank": "54",
+        "name": "Malik Washington"
+      },
+      {
+        "rank": "68",
+        "name": "Nick Westbrook-Ikhine"
+      },
+      {
+        "rank": "112",
+        "name": "Dee Eskridge"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "38",
+        "name": "Tanner Conner"
+      },
+      {
+        "rank": "39",
+        "name": "Julian Hill"
+      },
+      {
+        "rank": "64",
+        "name": "Greg Dulcich"
+      },
+      {
+        "rank": "-",
+        "name": "Darren Waller"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "Minnesota Vikings",
+    "QB": [
+      {
+        "rank": "18",
+        "name": "Carson Wentz"
+      },
+      {
+        "rank": "35",
+        "name": "Max Brosmer"
+      },
+      {
+        "rank": "-",
+        "name": "J.J. McCarthy"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "17",
+        "name": "Jordan Mason"
+      },
+      {
+        "rank": "33",
+        "name": "Aaron Jones Sr."
+      },
+      {
+        "rank": "65",
+        "name": "Zavier Scott"
+      },
+      {
+        "rank": "87",
+        "name": "Cam Akers"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "2",
+        "name": "Justin Jefferson"
+      },
+      {
+        "rank": "19",
+        "name": "Jordan Addison"
+      },
+      {
+        "rank": "63",
+        "name": "Jalen Nailor"
+      },
+      {
+        "rank": "104",
+        "name": "Adam Thielen"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "17",
+        "name": "T.J. Hockenson"
+      },
+      {
+        "rank": "40",
+        "name": "Josh Oliver"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "New England Patriots",
+    "QB": [
+      {
+        "rank": "7",
+        "name": "Drake Maye"
+      },
+      {
+        "rank": "30",
+        "name": "Joshua Dobbs"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "24",
+        "name": "Rhamondre Stevenson"
+      },
+      {
+        "rank": "36",
+        "name": "TreVeyon Henderson"
+      },
+      {
+        "rank": "72",
+        "name": "Terrell Jennings"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "23",
+        "name": "Stefon Diggs"
+      },
+      {
+        "rank": "39",
+        "name": "Kayshon Boutte"
+      },
+      {
+        "rank": "65",
+        "name": "DeMario Douglas"
+      },
+      {
+        "rank": "74",
+        "name": "Mack Hollins"
+      },
+      {
+        "rank": "109",
+        "name": "Kyle Williams"
+      },
+      {
+        "rank": "141",
+        "name": "Efton Chism III"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "14",
+        "name": "Hunter Henry"
+      },
+      {
+        "rank": "37",
+        "name": "Austin Hooper"
+      },
+      {
+        "rank": "78",
+        "name": "Jack Westover"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "New Orleans Saints",
+    "QB": [
+      {
+        "rank": "20",
+        "name": "Spencer Rattler"
+      },
+      {
+        "rank": "41",
+        "name": "Tyler Shough"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "20",
+        "name": "Alvin Kamara"
+      },
+      {
+        "rank": "50",
+        "name": "Devin Neal"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "12",
+        "name": "Chris Olave"
+      },
+      {
+        "rank": "26",
+        "name": "Rashid Shaheed"
+      },
+      {
+        "rank": "76",
+        "name": "Brandin Cooks"
+      },
+      {
+        "rank": "101",
+        "name": "Devaughn Vele"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "19",
+        "name": "Juwan Johnson"
+      },
+      {
+        "rank": "28",
+        "name": "Taysom Hill"
+      },
+      {
+        "rank": "52",
+        "name": "Foster Moreau"
+      },
+      {
+        "rank": "69",
+        "name": "Jack Stoll"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "New York Giants",
+    "QB": [
+      {
+        "rank": "13",
+        "name": "Jaxson Dart"
+      },
+      {
+        "rank": "38",
+        "name": "Russell Wilson"
+      },
+      {
+        "rank": "-",
+        "name": "Jameis Winston"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "12",
+        "name": "Cam Skattebo"
+      },
+      {
+        "rank": "37",
+        "name": "Tyrone Tracy Jr."
+      },
+      {
+        "rank": "59",
+        "name": "Devin Singletary"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "33",
+        "name": "Wan'Dale Robinson"
+      },
+      {
+        "rank": "69",
+        "name": "Lil'Jordan Humphrey"
+      },
+      {
+        "rank": "77",
+        "name": "Darius Slayton"
+      },
+      {
+        "rank": "78",
+        "name": "Jalin Hyatt"
+      },
+      {
+        "rank": "117",
+        "name": "Ray-Ray McCloud III"
+      },
+      {
+        "rank": "126",
+        "name": "Beaux Collins"
+      },
+      {
+        "rank": "138",
+        "name": "Gunner Olszewski"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "18",
+        "name": "Theo Johnson"
+      },
+      {
+        "rank": "32",
+        "name": "Daniel Bellinger"
+      },
+      {
+        "rank": "73",
+        "name": "Chris Manhertz"
+      },
+      {
+        "rank": "84",
+        "name": "Thomas Fidone II"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "New York Jets",
+    "QB": [
+      {
+        "rank": "21",
+        "name": "Tyrod Taylor"
+      },
+      {
+        "rank": "28",
+        "name": "Justin Fields"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "13",
+        "name": "Breece Hall"
+      },
+      {
+        "rank": "35",
+        "name": "Isaiah Davis"
+      },
+      {
+        "rank": "84",
+        "name": "Kene Nwangwu"
+      },
+      {
+        "rank": "95",
+        "name": "Khalil Herbert"
+      },
+      {
+        "rank": "-",
+        "name": "Braelon Allen"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "49",
+        "name": "Josh Reynolds"
+      },
+      {
+        "rank": "82",
+        "name": "Allen Lazard"
+      },
+      {
+        "rank": "88",
+        "name": "Arian Smith"
+      },
+      {
+        "rank": "91",
+        "name": "Tyler Johnson"
+      },
+      {
+        "rank": "93",
+        "name": "Garrett Wilson"
+      },
+      {
+        "rank": "137",
+        "name": "Isaiah Williams"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "13",
+        "name": "Mason Taylor"
+      },
+      {
+        "rank": "47",
+        "name": "Jeremy Ruckert"
+      },
+      {
+        "rank": "75",
+        "name": "Andrew Beck"
+      },
+      {
+        "rank": "85",
+        "name": "Stone Smartt"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "Philadelphia Eagles",
+    "QB": [
+      {
+        "rank": "4",
+        "name": "Jalen Hurts"
+      },
+      {
+        "rank": "43",
+        "name": "Tanner McKee"
+      },
+      {
+        "rank": "-",
+        "name": "Sam Howell"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "7",
+        "name": "Saquon Barkley"
+      },
+      {
+        "rank": "57",
+        "name": "Will Shipley"
+      },
+      {
+        "rank": "58",
+        "name": "Tank Bigsby"
+      },
+      {
+        "rank": "80",
+        "name": "A.J. Dillon"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "7",
+        "name": "A.J. Brown"
+      },
+      {
+        "rank": "15",
+        "name": "DeVonta Smith"
+      },
+      {
+        "rank": "89",
+        "name": "Jahan Dotson"
+      },
+      {
+        "rank": "125",
+        "name": "John Metchie III"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "5",
+        "name": "Dallas Goedert"
+      },
+      {
+        "rank": "61",
+        "name": "Kylen Granson"
+      },
+      {
+        "rank": "77",
+        "name": "Cameron Latu"
+      },
+      {
+        "rank": "-",
+        "name": "Grant Calcaterra"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "Pittsburgh Steelers",
+    "QB": [
+      {
+        "rank": "16",
+        "name": "Aaron Rodgers"
+      },
+      {
+        "rank": "46",
+        "name": "Mason Rudolph"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "18",
+        "name": "Jaylen Warren"
+      },
+      {
+        "rank": "34",
+        "name": "Kenneth Gainwell"
+      },
+      {
+        "rank": "55",
+        "name": "Kaleb Johnson"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "11",
+        "name": "DK Metcalf"
+      },
+      {
+        "rank": "62",
+        "name": "Calvin Austin III"
+      },
+      {
+        "rank": "84",
+        "name": "Roman Wilson"
+      },
+      {
+        "rank": "128",
+        "name": "Scotty Miller"
+      },
+      {
+        "rank": "131",
+        "name": "Ben Skowronek"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "21",
+        "name": "Jonnu Smith"
+      },
+      {
+        "rank": "26",
+        "name": "Darnell Washington"
+      },
+      {
+        "rank": "27",
+        "name": "Pat Freiermuth"
+      },
+      {
+        "rank": "66",
+        "name": "Connor Heyward"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "Seattle Seahawks",
+    "QB": [
+      {
+        "rank": "18",
+        "name": "Sam Darnold"
+      },
+      {
+        "rank": "46",
+        "name": "Jalen Milroe"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "25",
+        "name": "Kenneth Walker III"
+      },
+      {
+        "rank": "33",
+        "name": "Zach Charbonnet"
+      },
+      {
+        "rank": "94",
+        "name": "George Holani"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "3",
+        "name": "Jaxon Smith-Njigba"
+      },
+      {
+        "rank": "59",
+        "name": "Cooper Kupp"
+      },
+      {
+        "rank": "72",
+        "name": "Tory Horton"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "29",
+        "name": "AJ Barner"
+      },
+      {
+        "rank": "31",
+        "name": "Elijah Arroyo"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "San Francisco 49ers",
+    "QB": [
+      {
+        "rank": "23",
+        "name": "Mac Jones"
+      },
+      {
+        "rank": "27",
+        "name": "Brock Purdy"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "3",
+        "name": "Christian McCaffrey"
+      },
+      {
+        "rank": "41",
+        "name": "Brian Robinson Jr."
+      },
+      {
+        "rank": "63",
+        "name": "Kyle Juszczyk"
+      },
+      {
+        "rank": "79",
+        "name": "Isaac Guerendo"
+      },
+      {
+        "rank": "90",
+        "name": "Sincere McCormick"
+      },
+      {
+        "rank": "-",
+        "name": "Jordan James"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "32",
+        "name": "Jauan Jennings"
+      },
+      {
+        "rank": "42",
+        "name": "Kendrick Bourne"
+      },
+      {
+        "rank": "87",
+        "name": "Ricky Pearsall"
+      },
+      {
+        "rank": "92",
+        "name": "Demarcus Robinson"
+      },
+      {
+        "rank": "130",
+        "name": "Skyy Moore"
+      },
+      {
+        "rank": "140",
+        "name": "Russell Gage Jr."
+      },
+      {
+        "rank": "-",
+        "name": "Brandon Aiyuk"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "3",
+        "name": "George Kittle"
+      },
+      {
+        "rank": "49",
+        "name": "Jake Tonges"
+      },
+      {
+        "rank": "58",
+        "name": "Luke Farrell"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "Tampa Bay Buccaneers",
+    "QB": [
+      {
+        "rank": "5",
+        "name": "Baker Mayfield"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "11",
+        "name": "Rachaad White"
+      },
+      {
+        "rank": "40",
+        "name": "Sean Tucker"
+      },
+      {
+        "rank": "76",
+        "name": "Bucky Irving"
+      },
+      {
+        "rank": "81",
+        "name": "Josh Williams"
+      },
+      {
+        "rank": "92",
+        "name": "Owen Wright"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "8",
+        "name": "Emeka Egbuka"
+      },
+      {
+        "rank": "41",
+        "name": "Tez Johnson"
+      },
+      {
+        "rank": "45",
+        "name": "Sterling Shepard"
+      },
+      {
+        "rank": "73",
+        "name": "Kameron Johnson"
+      },
+      {
+        "rank": "110",
+        "name": "Chris Godwin Jr."
+      },
+      {
+        "rank": "116",
+        "name": "Ryan Miller"
+      },
+      {
+        "rank": "-",
+        "name": "Mike Evans"
+      },
+      {
+        "rank": "-",
+        "name": "Jalen McMillan"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "15",
+        "name": "Cade Otton"
+      },
+      {
+        "rank": "68",
+        "name": "Payne Durham"
+      },
+      {
+        "rank": "76",
+        "name": "Devin Culp"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "Tennessee Titans",
+    "QB": [
+      {
+        "rank": "25",
+        "name": "Cam Ward"
+      },
+      {
+        "rank": "47",
+        "name": "Brandon Allen"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "27",
+        "name": "Tony Pollard"
+      },
+      {
+        "rank": "31",
+        "name": "Tyjae Spears"
+      },
+      {
+        "rank": "73",
+        "name": "Julius Chestnut"
+      },
+      {
+        "rank": "-",
+        "name": "Kalel Mullings"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "43",
+        "name": "Elic Ayomanor"
+      },
+      {
+        "rank": "56",
+        "name": "Van Jefferson"
+      },
+      {
+        "rank": "58",
+        "name": "Chimere Dike"
+      },
+      {
+        "rank": "86",
+        "name": "Calvin Ridley"
+      },
+      {
+        "rank": "120",
+        "name": "Mason Kinsey"
+      },
+      {
+        "rank": "127",
+        "name": "Xavier Restrepo"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "25",
+        "name": "Chig Okonkwo"
+      },
+      {
+        "rank": "30",
+        "name": "Gunnar Helm"
+      },
+      {
+        "rank": "80",
+        "name": "David Martin-Robinson"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "Washington Commanders",
+    "QB": [
+      {
+        "rank": "17",
+        "name": "Marcus Mariota"
+      },
+      {
+        "rank": "-",
+        "name": "Jayden Daniels"
+      }
+    ],
+    "RB": [
+      {
+        "rank": "22",
+        "name": "Jacory Croskey-Merritt"
+      },
+      {
+        "rank": "45",
+        "name": "Jeremy McNichols"
+      },
+      {
+        "rank": "48",
+        "name": "Chris Rodriguez Jr."
+      },
+      {
+        "rank": "89",
+        "name": "Donovan Edwards"
+      }
+    ],
+    "WR": [
+      {
+        "rank": "28",
+        "name": "Deebo Samuel Sr."
+      },
+      {
+        "rank": "37",
+        "name": "Terry McLaurin"
+      },
+      {
+        "rank": "60",
+        "name": "Jaylin Lane"
+      },
+      {
+        "rank": "61",
+        "name": "Chris Moore"
+      },
+      {
+        "rank": "67",
+        "name": "Luke McCaffrey"
+      },
+      {
+        "rank": "118",
+        "name": "Robbie Chosen"
+      },
+      {
+        "rank": "142",
+        "name": "Ja'Corey Brooks"
+      },
+      {
+        "rank": "-",
+        "name": "Noah Brown"
+      }
+    ],
+    "TE": [
+      {
+        "rank": "16",
+        "name": "Zach Ertz"
+      },
+      {
+        "rank": "53",
+        "name": "John Bates"
+      },
+      {
+        "rank": "62",
+        "name": "Ben Sinnott"
+      },
+      {
+        "rank": "82",
+        "name": "Colson Yankoff"
+      }
+    ]
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
+  },
+  {
+    "team": "",
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": []
   }
-}
+]
