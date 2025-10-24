@@ -72,3 +72,8 @@
 [[scheduled.functions]]
   name = "nfl-odds-snapshot"
   cron = "*/5 * * * *"
+
+# NHL Stats Refresh - populate Netlify Blobs with player/team stats daily at 10am ET (14:00 UTC)
+[[scheduled.functions]]
+  name = "nhl-stats-refresh"
+  cron = "0 14 * * *"

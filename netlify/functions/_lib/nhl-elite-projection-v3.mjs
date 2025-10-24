@@ -44,13 +44,18 @@ const RINK_EFFECTS = {
 /**
  * Load cached player stats from Netlify Blobs
  * 155 IQ SOLUTION: Use Blobs instead of file system (no Lambda path issues)
+ * FALLBACK: Try local JSON file for development/testing
  */
 async function loadPlayerStats() {
   try {
     const { getStore } = await import('@netlify/blobs');
     const store = getStore('nhl-stats');
     
-    const data = await store.get('player_stats_20242025', { type: 'json' });
+    // Try 2025-26 season first, then fallback to 2024-25
+    let data = await store.get('player_stats_20252026', { type: 'json' });
+    if (!data || !data.players) {
+      data = await store.get('player_stats_20242025', { type: 'json' });
+    }
     
     if (data && data.players) {
       console.log(`✅ Loaded ${data.players.length} players from Netlify Blobs`);
@@ -61,6 +66,27 @@ async function loadPlayerStats() {
     return [];
   } catch (error) {
     console.warn('⚠️ Could not load player stats from Blobs:', error.message);
+    
+    // FALLBACK: Try loading from local file system (for local testing)
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const { fileURLToPath } = await import('url');
+      
+      const __dirname = path.dirname(fileURLToPath(import.meta.url));
+      const localPath = path.join(__dirname, '../../../data/nhl/player_stats_20252026.json');
+      
+      if (fs.existsSync(localPath)) {
+        const fileData = JSON.parse(fs.readFileSync(localPath, 'utf8'));
+        if (fileData && fileData.players) {
+          console.log(`✅ Loaded ${fileData.players.length} players from LOCAL FILE (fallback)`);
+          return fileData.players;
+        }
+      }
+    } catch (fallbackError) {
+      console.warn('⚠️ Local file fallback also failed:', fallbackError.message);
+    }
+    
     return [];
   }
 }
@@ -68,23 +94,29 @@ async function loadPlayerStats() {
 /**
  * Load cached team stats from Netlify Blobs
  * 155 IQ SOLUTION: Use Blobs instead of file system (no Lambda path issues)
+ * FALLBACK: Use defaults for development/testing
  */
 async function loadTeamStats() {
   try {
     const { getStore } = await import('@netlify/blobs');
     const store = getStore('nhl-stats');
     
-    const data = await store.get('team_stats_20242025', { type: 'json' });
+    // Try 2025-26 season first, then fallback to 2024-25
+    let data = await store.get('team_stats_20252026', { type: 'json' });
+    if (!data || !data.teams) {
+      data = await store.get('team_stats_20242025', { type: 'json' });
+    }
     
     if (data && data.teams) {
       console.log(`✅ Loaded ${Object.keys(data.teams).length} teams from Netlify Blobs`);
       return data.teams;
     }
     
-    console.warn('⚠️ No team data in Netlify Blobs');
+    console.warn('⚠️ No team data in Netlify Blobs, using defaults');
     return {};
   } catch (error) {
     console.warn('⚠️ Could not load team stats from Blobs:', error.message);
+    console.warn('⚠️ Using default team stats (all teams = league average)');
     return {};
   }
 }

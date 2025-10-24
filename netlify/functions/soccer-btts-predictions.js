@@ -257,8 +257,9 @@ function calculateDefenseRating(team, league, shrinkage_k) {
     const totalGames = team.npxg_data.games || 7;
     const shrunkRate = shrinkToLeaguePrior(finalRate, totalGames, leagueAvg, shrinkage_k * 0.7);
     
-    // Log-scale rating (higher = worse defense)
-    const logRating = Math.log(Math.max(0.1, shrunkRate)) - Math.log(leagueAvg);
+    // FIXED: Log-scale rating (higher = worse defense, so INVERT the ratio)
+    // Good defense (low xGA) should give POSITIVE rating to subtract more from opponent's lambda
+    const logRating = Math.log(leagueAvg) - Math.log(Math.max(0.1, shrunkRate));
     const maxDeviation = 2 * Math.sqrt(league.defense_variance);
     return Math.max(-maxDeviation, Math.min(maxDeviation, logRating));
   }
@@ -282,7 +283,9 @@ function calculateDefenseRating(team, league, shrinkage_k) {
   const totalGames = (team.games_home || 0) + (team.games_away || 0);
   const shrunkRate = shrinkToLeaguePrior(combinedRate, totalGames, leagueAvg, shrinkage_k);
   
-  const logRating = Math.log(Math.max(0.1, shrunkRate)) - Math.log(leagueAvg);
+  // FIXED: Log-scale rating - INVERTED so higher = worse defense (matches formula usage)
+  // Good defense (low goals conceded) should give POSITIVE rating
+  const logRating = Math.log(leagueAvg) - Math.log(Math.max(0.1, shrunkRate));
   const maxDeviation = 2 * Math.sqrt(league.defense_variance);
   return Math.max(-maxDeviation, Math.min(maxDeviation, logRating));
 }
@@ -3991,15 +3994,29 @@ exports.handler = async (event, context) => {
             name: homeTeam.team || 'Home Team',
             recent_form: (() => {
               if (homeTeam.recent_form_attack && homeTeam.recent_form_defense) {
-                return `${(homeTeam.recent_form_attack * 100).toFixed(0)}% ATT | ${(homeTeam.recent_form_defense * 100).toFixed(0)}% DEF`;
+                // Convert strength ratings (where 1.0 = league average) to display percentages
+                // Attack: directly multiply by 100
+                const attackPct = Math.round(homeTeam.recent_form_attack * 100);
+                // Defense: ALSO directly multiply by 100 (1.64 defense strength = 164% = very good)
+                // This shows defense as "% of league average strength" not "% goals conceded"
+                const defensePct = Math.round(homeTeam.recent_form_defense * 100);
+                return `${attackPct}% ATT | ${defensePct}% DEF`;
               } else {
                 // Calculate from actual goal statistics if missing
                 let totalGoalsScored = homeTeam.goals_scored_home + (homeTeam.goals_scored_away || 0);
                 let totalGames = homeTeam.games_home + (homeTeam.games_away || 0);
                 let totalGoalsConceded = homeTeam.goals_conceded_home + (homeTeam.goals_conceded_away || 0);
                 
-                let attackPercent = totalGames > 0 ? Math.min(95, Math.max(15, Math.round((totalGoalsScored / totalGames) * 40))) : 55;
-                let defensePercent = totalGames > 0 ? Math.min(90, Math.max(25, Math.round(100 - (totalGoalsConceded / totalGames) * 35))) : 65;
+                // Attack: goals per game as % of league average (1.4 goals = 100%)
+                const leagueAvgGoals = 1.4;
+                const goalsPerGame = totalGames > 0 ? totalGoalsScored / totalGames : leagueAvgGoals;
+                const attackPercent = Math.round((goalsPerGame / leagueAvgGoals) * 100);
+                
+                // Defense: INVERSE of goals conceded (fewer conceded = higher %)
+                // 0.69 conceded vs 1.4 avg = 1.4/0.69 = 203% but cap at 200%
+                const concedPerGame = totalGames > 0 ? totalGoalsConceded / totalGames : leagueAvgGoals;
+                const defensePercent = Math.min(200, Math.max(50, Math.round((leagueAvgGoals / concedPerGame) * 100)));
+                
                 return `${attackPercent}% ATT | ${defensePercent}% DEF`;
               }
             })(),
@@ -4013,15 +4030,25 @@ exports.handler = async (event, context) => {
             name: awayTeam.team || 'Away Team',
             recent_form: (() => {
               if (awayTeam.recent_form_attack && awayTeam.recent_form_defense) {
-                return `${(awayTeam.recent_form_attack * 100).toFixed(0)}% ATT | ${(awayTeam.recent_form_defense * 100).toFixed(0)}% DEF`;
+                // Convert strength ratings to display percentages (same as home team)
+                const attackPct = Math.round(awayTeam.recent_form_attack * 100);
+                const defensePct = Math.round(awayTeam.recent_form_defense * 100);
+                return `${attackPct}% ATT | ${defensePct}% DEF`;
               } else {
                 // Calculate from actual goal statistics if missing
                 let totalGoalsScored = awayTeam.goals_scored_away + (awayTeam.goals_scored_home || 0);
                 let totalGames = awayTeam.games_away + (awayTeam.games_home || 0);
                 let totalGoalsConceded = awayTeam.goals_conceded_away + (awayTeam.goals_conceded_home || 0);
                 
-                let attackPercent = totalGames > 0 ? Math.min(95, Math.max(15, Math.round((totalGoalsScored / totalGames) * 40))) : 50;
-                let defensePercent = totalGames > 0 ? Math.min(90, Math.max(25, Math.round(100 - (totalGoalsConceded / totalGames) * 35))) : 60;
+                // Attack: goals per game as % of league average
+                const leagueAvgGoals = 1.4;
+                const goalsPerGame = totalGames > 0 ? totalGoalsScored / totalGames : leagueAvgGoals;
+                const attackPercent = Math.round((goalsPerGame / leagueAvgGoals) * 100);
+                
+                // Defense: INVERSE of goals conceded
+                const concedPerGame = totalGames > 0 ? totalGoalsConceded / totalGames : leagueAvgGoals;
+                const defensePercent = Math.min(200, Math.max(50, Math.round((leagueAvgGoals / concedPerGame) * 100)));
+                
                 return `${attackPercent}% ATT | ${defensePercent}% DEF`;
               }
             })(),
