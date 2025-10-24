@@ -18,7 +18,9 @@ export default async function handler(req, context) {
           exists: !!data,
           playerCount: data?.players?.length || 0,
           size: JSON.stringify(data || {}).length,
-          samplePlayer: data?.players?.[0]?.playerName || 'none'
+          samplePlayer: data?.players?.[0]?.name || data?.players?.[0]?.playerName || 'none',
+          firstPlayerKeys: data?.players?.[0] ? Object.keys(data.players[0]).slice(0, 10) : [],
+          dataKeys: data ? Object.keys(data) : []
         };
       } catch (err) {
         results[season] = {
