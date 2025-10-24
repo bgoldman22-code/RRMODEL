@@ -26,13 +26,18 @@ jobs:
           echo "👥 Fetching NHL player stats..."
           node scripts/nhl/update-player-stats.mjs
       
+      - name: Verify historical files exist
+        run: |
+          echo "📋 Checking for historical season files..."
+          ls -lh data/nhl/player_stats_*.json || echo "No season files found"
+      
       - name: Upload to Netlify Blobs
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
-          echo "☁️  Uploading to Netlify Blobs..."
-          node scripts/nhl/upload-to-blobs.mjs || echo "⚠️  Blobs upload failed (continuing anyway)"
+          echo "☁️  Uploading ALL seasons to Netlify Blobs..."
+          node scripts/nhl/upload-to-blobs.mjs
       
       - name: Update team stats
         run: |
