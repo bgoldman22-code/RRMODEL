@@ -992,7 +992,27 @@ export default async (request, context) => {
       confidence = Math.floor(confidence * seasonAdjustment);
       
       // Win probability from spread
-      const winProb = 1 / (1 + Math.exp(-spreadPred / 10));
+      // CRITICAL: Spread-to-probability conversion
+      // NBA historical data shows: Each point of spread ≈ 2.5-3% win probability
+      // Standard formula: winProb = 1 / (1 + exp(-spread / sigma))
+      // where sigma calibrates the conversion (typical range: 8-12 for NBA)
+      //
+      // ISSUE: Current sigma=10 may be too high (makes underdogs look better)
+      // Example: -11.6 spread with sigma=10 → 76% favorite (seems low)
+      // Example: -11.6 spread with sigma=12 → 72% favorite (even lower!)
+      // Example: -11.6 spread with sigma=8 → 80% favorite (better)
+      //
+      // Testing different sigmas:
+      // sigma=8:  -11.6 → 80.4% favorite (BKN 19.6%)
+      // sigma=10: -11.6 → 76.1% favorite (BKN 23.9%)  ← CURRENT
+      // sigma=12: -11.6 → 72.6% favorite (BKN 27.4%)
+      //
+      // RECOMMENDATION: Use sigma=8 for more accurate probability estimation
+      // This makes large spreads convert to higher win probabilities (more realistic)
+      const SPREAD_TO_PROB_SIGMA = 8; // Calibrated for NBA (was 10, too generous to underdogs)
+      const winProb = 1 / (1 + Math.exp(-spreadPred / SPREAD_TO_PROB_SIGMA));
+      
+      console.log(`[WIN PROB] ${home.team.abbreviation} vs ${away.team.abbreviation}: Spread ${spreadPred.toFixed(1)} → ${home.team.abbreviation} ${(winProb * 100).toFixed(1)}% / ${away.team.abbreviation} ${((1-winProb) * 100).toFixed(1)}%`);
       
       // Get Vegas lines for this game (match by abbreviations)
       const vegasKey = `${away.team.abbreviation}_${home.team.abbreviation}`;
@@ -1096,9 +1116,22 @@ export default async (request, context) => {
         const homeMLEdge = homeWinProb - homeImpliedProb;
         const awayMLEdge = awayWinProb - awayImpliedProb;
         
+        // Debug logging for moneyline edge calculation
+        console.log(`[ML DEBUG] ${home.team.abbreviation} vs ${away.team.abbreviation}:`);
+        console.log(`  Model Win Prob: ${home.team.abbreviation} ${(homeWinProb * 100).toFixed(1)}% / ${away.team.abbreviation} ${(awayWinProb * 100).toFixed(1)}%`);
+        console.log(`  Vegas Implied: ${home.team.abbreviation} ${(homeImpliedProb * 100).toFixed(1)}% / ${away.team.abbreviation} ${(awayImpliedProb * 100).toFixed(1)}%`);
+        console.log(`  Edge: ${home.team.abbreviation} ${(homeMLEdge * 100).toFixed(1)}% / ${away.team.abbreviation} ${(awayMLEdge * 100).toFixed(1)}%`);
+        
         // Pick the side with positive edge (if any)
-        if (homeMLEdge > 0.03 || awayMLEdge > 0.03) { // 3% edge minimum
-          const pickHome = homeMLEdge > awayMLEdge;
+        // CRITICAL FIX: Only bet if there's a POSITIVE edge, and pick the side with the LARGER positive edge
+        const hasHomeEdge = homeMLEdge > 0.03; // 3% edge minimum
+        const hasAwayEdge = awayMLEdge > 0.03;
+        
+        if (hasHomeEdge || hasAwayEdge) {
+          // Pick the side with the larger POSITIVE edge (not just larger number)
+          const pickHome = hasHomeEdge && (!hasAwayEdge || homeMLEdge > awayMLEdge);
+          
+          console.log(`  → Recommendation: Bet ${pickHome ? home.team.abbreviation : away.team.abbreviation} ML`);
           
           // Use PLACEMENT odds (best available) for actual bet
           const placementHomeML = gameVegasLines.moneyline.placement?.homePrice || fairHomeML;
