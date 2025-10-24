@@ -74,6 +74,7 @@ function getFairProbability(playerName, line, direction, oddsPairsMap) {
 
 /**
  * Calculate Kelly Criterion stake with proper odds adjustment
+ * CONSERVATIVE sizing until model proves profitable
  */
 function calculateKelly(modelProb, americanOdds, variance = 0) {
   const p = modelProb;
@@ -92,8 +93,9 @@ function calculateKelly(modelProb, americanOdds, variance = 0) {
     kelly *= (1 - Math.min(variance / 5, 0.3));
   }
   
+  // Ultra-conservative: 1/4 Kelly capped at 3 units max (0.012 * 250 = 3.0)
   kelly *= 0.25;
-  return Math.max(0, Math.min(kelly, 0.03));
+  return Math.max(0, Math.min(kelly, 0.012));
 }
 
 /**
@@ -362,14 +364,9 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
           const line = oddsData.line;
           const odds = oddsData.odds;
           
-          // CRITICAL: Choose direction based on projection vs line, NOT from odds data
-          // If projection > line, bet OVER. If projection < line, bet UNDER.
-          const direction = mu > line ? 'OVER' : 'UNDER';
-          
-          // Skip if odds direction doesn't match our chosen direction
-          if (direction !== oddsData.direction) {
-            continue;
-          }
+          // FIXED: Use whatever direction the book offers
+          // We'll calculate edge for the available line and pick it if profitable
+          const direction = oddsData.direction;
           
           // Calculate win probability using ZINB
           const winProb = calculateZINBProbability(mu, r, pi, line, direction);
@@ -394,8 +391,10 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
           }
           
           // Calculate edge vs fair probability
+          // FIXED: Use absolute percentage points, not ratio
+          // Example: 60% model vs 50% fair = +10% edge (not +20%)
           const edge = winProb - fairProb;
-          const edgePercent = (edge / fairProb) * 100;
+          const edgePercent = edge * 100; // Convert to percentage points
 
           // Build full opportunity object once
           const oppObj = {

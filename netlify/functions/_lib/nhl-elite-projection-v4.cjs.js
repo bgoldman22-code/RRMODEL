@@ -405,7 +405,7 @@ async function projectSOGElite(playerId, playerName, team, opponent, isHome, ven
         oppDefense: oppAdjustment,
         toi: toiFactor,
         ppBoost: ppBoost,
-        quality: qualityMultiplier
+        quality: archetypeMultiplier
       },
       finalProjection: baseSOG
     },
