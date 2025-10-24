@@ -284,7 +284,7 @@
     async function generateV2() {
       try {
         document.getElementById('btnV2').disabled = true;
-        setStatus('🔄 Generating V2 predictions with HAD (this may take 1-2 minutes)...', 'loading');
+        setStatus('🔄 Starting V2 generation in background...', 'loading');
         
         const response = await fetch('/.netlify/functions/nfl-predictions-generate-v2', {
           method: 'GET',
@@ -295,18 +295,39 @@
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        const text = await response.text();
-        if (!text || text.trim() === '') {
-          throw new Error('Empty response from server');
+        const data = await response.json();
+        
+        if (data.status === 'triggered') {
+          setStatus(`✅ ${data.message}. ${data.note}`, 'success');
+          
+          // Auto-load after 90 seconds
+          setTimeout(async () => {
+            setStatus('🔄 Auto-loading V2 predictions...', 'loading');
+            try {
+              const v2Response = await fetch('/.netlify/functions/nfl-predictions-get-v2');
+              const v2Text = await v2Response.text();
+              if (v2Text && v2Text.trim() !== '') {
+                v2Data = JSON.parse(v2Text);
+                renderV2(v2Data);
+                if (v1Data) {
+                  renderSummary();
+                }
+                setStatus('✅ V2 predictions loaded successfully!', 'success');
+              } else {
+                setStatus('⏳ V2 still generating, click "Load & Compare" in 30 seconds', 'loading');
+              }
+            } catch (err) {
+              setStatus('⏳ V2 still generating, click "Load & Compare" to retry', 'loading');
+            }
+          }, 90000); // 90 seconds
+          
+        } else {
+          throw new Error(data.message || 'Unknown error');
         }
         
-        const data = JSON.parse(text);
-        v2Data = data;
-        renderV2(data);
-        setStatus('✅ V2 predictions generated successfully', 'success');
       } catch (error) {
         console.error('V2 Generation Error:', error);
-        setStatus(`❌ V2 generation failed: ${error.message}. Try "Load & Compare" instead.`, 'error');
+        setStatus(`❌ V2 trigger failed: ${error.message}`, 'error');
       } finally {
         document.getElementById('btnV2').disabled = false;
       }
