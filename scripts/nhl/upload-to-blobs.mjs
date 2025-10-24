@@ -30,13 +30,14 @@ async function uploadToBlobs() {
   
   // Get credentials from environment
   const siteID = process.env.NETLIFY_SITE_ID;
-  const token = process.env.NETLIFY_AUTH_TOKEN || process.env.NETLIFY_TOKEN;
+  const token = process.env.NETLIFY_AUTH_TOKEN || process.env.NETLIFY_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
   
   if (!siteID || !token) {
     console.error('❌ Missing Netlify credentials');
     console.log('\n💡 Set environment variables:');
     console.log('   export NETLIFY_SITE_ID=your_site_id');
-    console.log('   export NETLIFY_AUTH_TOKEN=your_auth_token');
+    console.log('   export NETLIFY_TOKEN=your_token');
+    console.log('   (or NETLIFY_AUTH_TOKEN or NETLIFY_BLOBS_TOKEN)');
     console.log('\n   Or run via GitHub Action with secrets configured');
     process.exit(1);
   }
