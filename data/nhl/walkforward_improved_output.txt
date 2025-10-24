@@ -1,0 +1,1405 @@
+╔════════════════════════════════════════════════════════════════════╗
+║                                                                    ║
+║       🚶 NHL WALK-FORWARD BACKTEST - IMPROVED MODEL               ║
+║                                                                    ║
+╚════════════════════════════════════════════════════════════════════╝
+
+NEW FEATURES:
+  ✓ Position-specific baselines (D vs C vs L vs R)
+  ✓ Exponential recency weighting (L3 > L10)
+  ✓ Shots/TOI efficiency rate
+  ✓ Opponent defensive strength
+  ✓ Bias correction (-8%)
+
+📂 Loading historical data...
+✅ Loaded 169,847 games
+
+📅 Sorting games chronologically...
+   Range: 2021-10-12 → 2025-04-17
+
+🚶 Starting walk-forward backtest...
+   Training window: 1000 games minimum
+   Refit interval: 500 games
+   Test window: 500 games
+
+🔄 Cycle 1: Training on 1,000 games (up to 2021-10-16)
+   Testing on 500 games (2021-10-16 → 2021-10-19)
+   ✅ Cycle 1: 36 predictions made (skipped 377 no-history, 1 null-projection)
+
+🔄 Cycle 2: Training on 1,500 games (up to 2021-10-19)
+   Testing on 500 games (2021-10-19 → 2021-10-21)
+   ✅ Cycle 2: 193 predictions made (skipped 277 no-history, 3 null-projection)
+
+🔄 Cycle 3: Training on 2,000 games (up to 2021-10-21)
+   Testing on 500 games (2021-10-21 → 2021-10-23)
+   ✅ Cycle 3: 380 predictions made (skipped 94 no-history, 4 null-projection)
+
+🔄 Cycle 4: Training on 2,500 games (up to 2021-10-23)
+   Testing on 500 games (2021-10-23 → 2021-10-25)
+   ✅ Cycle 4: 444 predictions made (skipped 50 no-history, 4 null-projection)
+
+🔄 Cycle 5: Training on 3,000 games (up to 2021-10-25)
+   Testing on 500 games (2021-10-25 → 2021-10-27)
+   ✅ Cycle 5: 461 predictions made (skipped 37 no-history, 1 null-projection)
+
+🔄 Cycle 6: Training on 3,500 games (up to 2021-10-27)
+   Testing on 500 games (2021-10-27 → 2021-10-29)
+   ✅ Cycle 6: 463 predictions made (skipped 29 no-history, 6 null-projection)
+
+🔄 Cycle 7: Training on 4,000 games (up to 2021-10-29)
+   Testing on 500 games (2021-10-29 → 2021-10-31)
+   ✅ Cycle 7: 452 predictions made (skipped 46 no-history, 0 null-projection)
+
+🔄 Cycle 8: Training on 4,500 games (up to 2021-10-31)
+   Testing on 500 games (2021-10-31 → 2021-11-03)
+   ✅ Cycle 8: 464 predictions made (skipped 34 no-history, 0 null-projection)
+
+🔄 Cycle 9: Training on 5,000 games (up to 2021-11-03)
+   Testing on 500 games (2021-11-03 → 2021-11-05)
+   ✅ Cycle 9: 465 predictions made (skipped 34 no-history, 1 null-projection)
+
+🔄 Cycle 10: Training on 5,500 games (up to 2021-11-05)
+   Testing on 500 games (2021-11-05 → 2021-11-06)
+   ✅ Cycle 10: 473 predictions made (skipped 25 no-history, 1 null-projection)
+
+🔄 Cycle 11: Training on 6,000 games (up to 2021-11-06)
+   Testing on 500 games (2021-11-06 → 2021-11-09)
+   ✅ Cycle 11: 485 predictions made (skipped 13 no-history, 0 null-projection)
+
+🔄 Cycle 12: Training on 6,500 games (up to 2021-11-09)
+   Testing on 500 games (2021-11-09 → 2021-11-11)
+   ✅ Cycle 12: 472 predictions made (skipped 22 no-history, 0 null-projection)
+
+🔄 Cycle 13: Training on 7,000 games (up to 2021-11-11)
+   Testing on 500 games (2021-11-11 → 2021-11-13)
+   ✅ Cycle 13: 473 predictions made (skipped 21 no-history, 0 null-projection)
+
+🔄 Cycle 14: Training on 7,500 games (up to 2021-11-13)
+   Testing on 500 games (2021-11-13 → 2021-11-14)
+   ✅ Cycle 14: 467 predictions made (skipped 23 no-history, 2 null-projection)
+
+🔄 Cycle 15: Training on 8,000 games (up to 2021-11-14)
+   Testing on 500 games (2021-11-14 → 2021-11-17)
+   ✅ Cycle 15: 484 predictions made (skipped 13 no-history, 1 null-projection)
+
+🔄 Cycle 16: Training on 8,500 games (up to 2021-11-17)
+   Testing on 500 games (2021-11-17 → 2021-11-19)
+   ✅ Cycle 16: 487 predictions made (skipped 11 no-history, 0 null-projection)
+
+🔄 Cycle 17: Training on 9,000 games (up to 2021-11-19)
+   Testing on 500 games (2021-11-19 → 2021-11-21)
+   ✅ Cycle 17: 485 predictions made (skipped 15 no-history, 0 null-projection)
+
+🔄 Cycle 18: Training on 9,500 games (up to 2021-11-21)
+   Testing on 500 games (2021-11-21 → 2021-11-24)
+   ✅ Cycle 18: 485 predictions made (skipped 14 no-history, 1 null-projection)
+
+🔄 Cycle 19: Training on 10,000 games (up to 2021-11-24)
+   Testing on 500 games (2021-11-24 → 2021-11-26)
+   ✅ Cycle 19: 479 predictions made (skipped 21 no-history, 0 null-projection)
+
+🔄 Cycle 20: Training on 10,500 games (up to 2021-11-26)
+   Testing on 500 games (2021-11-26 → 2021-11-27)
+   ✅ Cycle 20: 487 predictions made (skipped 12 no-history, 0 null-projection)
+
+🔄 Cycle 21: Training on 11,000 games (up to 2021-11-27)
+   Testing on 500 games (2021-11-27 → 2021-11-29)
+   ✅ Cycle 21: 491 predictions made (skipped 9 no-history, 0 null-projection)
+
+🔄 Cycle 22: Training on 11,500 games (up to 2021-11-29)
+   Testing on 500 games (2021-11-29 → 2021-12-01)
+   ✅ Cycle 22: 486 predictions made (skipped 14 no-history, 0 null-projection)
+
+🔄 Cycle 23: Training on 12,000 games (up to 2021-12-01)
+   Testing on 500 games (2021-12-01 → 2021-12-03)
+   ✅ Cycle 23: 489 predictions made (skipped 11 no-history, 0 null-projection)
+
+🔄 Cycle 24: Training on 12,500 games (up to 2021-12-03)
+   Testing on 500 games (2021-12-03 → 2021-12-05)
+   ✅ Cycle 24: 485 predictions made (skipped 15 no-history, 0 null-projection)
+
+🔄 Cycle 25: Training on 13,000 games (up to 2021-12-05)
+   Testing on 500 games (2021-12-05 → 2021-12-07)
+   ✅ Cycle 25: 488 predictions made (skipped 9 no-history, 0 null-projection)
+
+🔄 Cycle 26: Training on 13,500 games (up to 2021-12-07)
+   Testing on 500 games (2021-12-07 → 2021-12-09)
+   ✅ Cycle 26: 490 predictions made (skipped 10 no-history, 0 null-projection)
+
+🔄 Cycle 27: Training on 14,000 games (up to 2021-12-09)
+   Testing on 500 games (2021-12-09 → 2021-12-11)
+   ✅ Cycle 27: 486 predictions made (skipped 12 no-history, 1 null-projection)
+
+🔄 Cycle 28: Training on 14,500 games (up to 2021-12-11)
+   Testing on 500 games (2021-12-11 → 2021-12-12)
+   ✅ Cycle 28: 489 predictions made (skipped 11 no-history, 0 null-projection)
+
+🔄 Cycle 29: Training on 15,000 games (up to 2021-12-12)
+   Testing on 500 games (2021-12-12 → 2021-12-14)
+   ✅ Cycle 29: 480 predictions made (skipped 17 no-history, 0 null-projection)
+
+🔄 Cycle 30: Training on 15,500 games (up to 2021-12-14)
+   Testing on 500 games (2021-12-14 → 2021-12-17)
+   ✅ Cycle 30: 475 predictions made (skipped 24 no-history, 0 null-projection)
+
+🔄 Cycle 31: Training on 16,000 games (up to 2021-12-17)
+   Testing on 500 games (2021-12-17 → 2021-12-20)
+   ✅ Cycle 31: 471 predictions made (skipped 23 no-history, 2 null-projection)
+
+🔄 Cycle 32: Training on 16,500 games (up to 2021-12-20)
+   Testing on 500 games (2021-12-20 → 2021-12-30)
+   ✅ Cycle 32: 471 predictions made (skipped 21 no-history, 0 null-projection)
+
+🔄 Cycle 33: Training on 17,000 games (up to 2021-12-30)
+   Testing on 500 games (2021-12-30 → 2022-01-01)
+   ✅ Cycle 33: 477 predictions made (skipped 20 no-history, 1 null-projection)
+
+🔄 Cycle 34: Training on 17,500 games (up to 2022-01-01)
+   Testing on 500 games (2022-01-01 → 2022-01-04)
+   ✅ Cycle 34: 483 predictions made (skipped 16 no-history, 0 null-projection)
+
+🔄 Cycle 35: Training on 18,000 games (up to 2022-01-04)
+   Testing on 500 games (2022-01-04 → 2022-01-06)
+   ✅ Cycle 35: 481 predictions made (skipped 16 no-history, 0 null-projection)
+
+🔄 Cycle 36: Training on 18,500 games (up to 2022-01-06)
+   Testing on 500 games (2022-01-06 → 2022-01-08)
+   ✅ Cycle 36: 481 predictions made (skipped 19 no-history, 0 null-projection)
+
+🔄 Cycle 37: Training on 19,000 games (up to 2022-01-08)
+   Testing on 500 games (2022-01-08 → 2022-01-12)
+   ✅ Cycle 37: 486 predictions made (skipped 13 no-history, 0 null-projection)
+
+🔄 Cycle 38: Training on 19,500 games (up to 2022-01-12)
+   Testing on 500 games (2022-01-12 → 2022-01-14)
+   ✅ Cycle 38: 480 predictions made (skipped 19 no-history, 1 null-projection)
+
+🔄 Cycle 39: Training on 20,000 games (up to 2022-01-14)
+   Testing on 500 games (2022-01-14 → 2022-01-16)
+   ✅ Cycle 39: 487 predictions made (skipped 13 no-history, 0 null-projection)
+
+🔄 Cycle 40: Training on 20,500 games (up to 2022-01-16)
+   Testing on 500 games (2022-01-16 → 2022-01-18)
+   ✅ Cycle 40: 493 predictions made (skipped 4 no-history, 1 null-projection)
+
+🔄 Cycle 41: Training on 21,000 games (up to 2022-01-18)
+   Testing on 500 games (2022-01-18 → 2022-01-21)
+   ✅ Cycle 41: 486 predictions made (skipped 11 no-history, 1 null-projection)
+
+🔄 Cycle 42: Training on 21,500 games (up to 2022-01-21)
+   Testing on 500 games (2022-01-21 → 2022-01-22)
+   ✅ Cycle 42: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 43: Training on 22,000 games (up to 2022-01-22)
+   Testing on 500 games (2022-01-22 → 2022-01-24)
+   ✅ Cycle 43: 493 predictions made (skipped 5 no-history, 1 null-projection)
+
+🔄 Cycle 44: Training on 22,500 games (up to 2022-01-24)
+   Testing on 500 games (2022-01-24 → 2022-01-26)
+   ✅ Cycle 44: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 45: Training on 23,000 games (up to 2022-01-26)
+   Testing on 500 games (2022-01-26 → 2022-01-28)
+   ✅ Cycle 45: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 46: Training on 23,500 games (up to 2022-01-28)
+   Testing on 500 games (2022-01-28 → 2022-01-30)
+   ✅ Cycle 46: 490 predictions made (skipped 10 no-history, 0 null-projection)
+
+🔄 Cycle 47: Training on 24,000 games (up to 2022-01-30)
+   Testing on 500 games (2022-01-30 → 2022-02-01)
+   ✅ Cycle 47: 494 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 48: Training on 24,500 games (up to 2022-02-01)
+   Testing on 500 games (2022-02-01 → 2022-02-08)
+   ✅ Cycle 48: 485 predictions made (skipped 11 no-history, 1 null-projection)
+
+🔄 Cycle 49: Training on 25,000 games (up to 2022-02-08)
+   Testing on 500 games (2022-02-08 → 2022-02-10)
+   ✅ Cycle 49: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 50: Training on 25,500 games (up to 2022-02-10)
+   Testing on 500 games (2022-02-10 → 2022-02-12)
+   ✅ Cycle 50: 493 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 51: Training on 26,000 games (up to 2022-02-12)
+   Testing on 500 games (2022-02-12 → 2022-02-15)
+   ✅ Cycle 51: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 52: Training on 26,500 games (up to 2022-02-15)
+   Testing on 500 games (2022-02-15 → 2022-02-17)
+   ✅ Cycle 52: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 53: Training on 27,000 games (up to 2022-02-17)
+   Testing on 500 games (2022-02-17 → 2022-02-19)
+   ✅ Cycle 53: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 54: Training on 27,500 games (up to 2022-02-19)
+   Testing on 500 games (2022-02-19 → 2022-02-22)
+   ✅ Cycle 54: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 55: Training on 28,000 games (up to 2022-02-22)
+   Testing on 500 games (2022-02-22 → 2022-02-24)
+   ✅ Cycle 55: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 56: Training on 28,500 games (up to 2022-02-24)
+   Testing on 500 games (2022-02-24 → 2022-02-26)
+   ✅ Cycle 56: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 57: Training on 29,000 games (up to 2022-02-26)
+   Testing on 500 games (2022-02-26 → 2022-02-28)
+   ✅ Cycle 57: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 58: Training on 29,500 games (up to 2022-02-28)
+   Testing on 500 games (2022-02-28 → 2022-03-02)
+   ✅ Cycle 58: 494 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 59: Training on 30,000 games (up to 2022-03-02)
+   Testing on 500 games (2022-03-02 → 2022-03-04)
+   ✅ Cycle 59: 495 predictions made (skipped 4 no-history, 1 null-projection)
+
+🔄 Cycle 60: Training on 30,500 games (up to 2022-03-04)
+   Testing on 500 games (2022-03-04 → 2022-03-06)
+   ✅ Cycle 60: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 61: Training on 31,000 games (up to 2022-03-06)
+   Testing on 500 games (2022-03-06 → 2022-03-08)
+   ✅ Cycle 61: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 62: Training on 31,500 games (up to 2022-03-08)
+   Testing on 500 games (2022-03-08 → 2022-03-10)
+   ✅ Cycle 62: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 63: Training on 32,000 games (up to 2022-03-10)
+   Testing on 500 games (2022-03-10 → 2022-03-12)
+   ✅ Cycle 63: 495 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 64: Training on 32,500 games (up to 2022-03-12)
+   Testing on 500 games (2022-03-12 → 2022-03-13)
+   ✅ Cycle 64: 488 predictions made (skipped 10 no-history, 0 null-projection)
+
+🔄 Cycle 65: Training on 33,000 games (up to 2022-03-13)
+   Testing on 500 games (2022-03-13 → 2022-03-15)
+   ✅ Cycle 65: 495 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 66: Training on 33,500 games (up to 2022-03-15)
+   Testing on 500 games (2022-03-15 → 2022-03-17)
+   ✅ Cycle 66: 494 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 67: Training on 34,000 games (up to 2022-03-17)
+   Testing on 500 games (2022-03-17 → 2022-03-19)
+   ✅ Cycle 67: 495 predictions made (skipped 4 no-history, 1 null-projection)
+
+🔄 Cycle 68: Training on 34,500 games (up to 2022-03-19)
+   Testing on 500 games (2022-03-19 → 2022-03-21)
+   ✅ Cycle 68: 495 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 69: Training on 35,000 games (up to 2022-03-21)
+   Testing on 500 games (2022-03-21 → 2022-03-23)
+   ✅ Cycle 69: 495 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 70: Training on 35,500 games (up to 2022-03-23)
+   Testing on 500 games (2022-03-23 → 2022-03-25)
+   ✅ Cycle 70: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 71: Training on 36,000 games (up to 2022-03-25)
+   Testing on 500 games (2022-03-25 → 2022-03-26)
+   ✅ Cycle 71: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 72: Training on 36,500 games (up to 2022-03-26)
+   Testing on 500 games (2022-03-26 → 2022-03-29)
+   ✅ Cycle 72: 495 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 73: Training on 37,000 games (up to 2022-03-29)
+   Testing on 500 games (2022-03-29 → 2022-03-31)
+   ✅ Cycle 73: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 74: Training on 37,500 games (up to 2022-03-31)
+   Testing on 500 games (2022-03-31 → 2022-04-01)
+   ✅ Cycle 74: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 75: Training on 38,000 games (up to 2022-04-01)
+   Testing on 500 games (2022-04-01 → 2022-04-03)
+   ✅ Cycle 75: 493 predictions made (skipped 7 no-history, 0 null-projection)
+
+🔄 Cycle 76: Training on 38,500 games (up to 2022-04-03)
+   Testing on 500 games (2022-04-03 → 2022-04-05)
+   ✅ Cycle 76: 493 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 77: Training on 39,000 games (up to 2022-04-05)
+   Testing on 500 games (2022-04-05 → 2022-04-07)
+   ✅ Cycle 77: 493 predictions made (skipped 6 no-history, 1 null-projection)
+
+🔄 Cycle 78: Training on 39,500 games (up to 2022-04-07)
+   Testing on 500 games (2022-04-07 → 2022-04-09)
+   ✅ Cycle 78: 495 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 79: Training on 40,000 games (up to 2022-04-09)
+   Testing on 500 games (2022-04-09 → 2022-04-10)
+   ✅ Cycle 79: 498 predictions made (skipped 1 no-history, 1 null-projection)
+
+🔄 Cycle 80: Training on 40,500 games (up to 2022-04-10)
+   Testing on 500 games (2022-04-10 → 2022-04-12)
+   ✅ Cycle 80: 494 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 81: Training on 41,000 games (up to 2022-04-12)
+   Testing on 500 games (2022-04-12 → 2022-04-14)
+   ✅ Cycle 81: 494 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 82: Training on 41,500 games (up to 2022-04-14)
+   Testing on 500 games (2022-04-14 → 2022-04-16)
+   ✅ Cycle 82: 492 predictions made (skipped 8 no-history, 0 null-projection)
+
+🔄 Cycle 83: Training on 42,000 games (up to 2022-04-16)
+   Testing on 500 games (2022-04-16 → 2022-04-18)
+   ✅ Cycle 83: 493 predictions made (skipped 7 no-history, 0 null-projection)
+
+🔄 Cycle 84: Training on 42,500 games (up to 2022-04-18)
+   Testing on 500 games (2022-04-18 → 2022-04-20)
+   ✅ Cycle 84: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 85: Training on 43,000 games (up to 2022-04-20)
+   Testing on 500 games (2022-04-20 → 2022-04-22)
+   ✅ Cycle 85: 494 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 86: Training on 43,500 games (up to 2022-04-22)
+   Testing on 500 games (2022-04-22 → 2022-04-24)
+   ✅ Cycle 86: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 87: Training on 44,000 games (up to 2022-04-24)
+   Testing on 500 games (2022-04-24 → 2022-04-26)
+   ✅ Cycle 87: 494 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 88: Training on 44,500 games (up to 2022-04-26)
+   Testing on 500 games (2022-04-26 → 2022-04-27)
+   ✅ Cycle 88: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 89: Training on 45,000 games (up to 2022-04-27)
+   Testing on 500 games (2022-04-27 → 2022-04-29)
+   ✅ Cycle 89: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 90: Training on 45,500 games (up to 2022-04-29)
+   Testing on 500 games (2022-04-29 → 2022-10-11)
+   ✅ Cycle 90: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 91: Training on 46,000 games (up to 2022-10-11)
+   Testing on 500 games (2022-10-11 → 2022-10-13)
+   ✅ Cycle 91: 471 predictions made (skipped 26 no-history, 0 null-projection)
+
+🔄 Cycle 92: Training on 46,500 games (up to 2022-10-13)
+   Testing on 500 games (2022-10-13 → 2022-10-15)
+   ✅ Cycle 92: 476 predictions made (skipped 20 no-history, 0 null-projection)
+
+🔄 Cycle 93: Training on 47,000 games (up to 2022-10-15)
+   Testing on 500 games (2022-10-15 → 2022-10-17)
+   ✅ Cycle 93: 482 predictions made (skipped 16 no-history, 0 null-projection)
+
+🔄 Cycle 94: Training on 47,500 games (up to 2022-10-17)
+   Testing on 500 games (2022-10-17 → 2022-10-20)
+   ✅ Cycle 94: 489 predictions made (skipped 8 no-history, 2 null-projection)
+
+🔄 Cycle 95: Training on 48,000 games (up to 2022-10-20)
+   Testing on 500 games (2022-10-20 → 2022-10-22)
+   ✅ Cycle 95: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 96: Training on 48,500 games (up to 2022-10-22)
+   Testing on 500 games (2022-10-22 → 2022-10-23)
+   ✅ Cycle 96: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 97: Training on 49,000 games (up to 2022-10-23)
+   Testing on 500 games (2022-10-23 → 2022-10-25)
+   ✅ Cycle 97: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 98: Training on 49,500 games (up to 2022-10-25)
+   Testing on 500 games (2022-10-25 → 2022-10-27)
+   ✅ Cycle 98: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 99: Training on 50,000 games (up to 2022-10-27)
+   Testing on 500 games (2022-10-27 → 2022-10-29)
+   ✅ Cycle 99: 492 predictions made (skipped 7 no-history, 0 null-projection)
+
+🔄 Cycle 100: Training on 50,500 games (up to 2022-10-29)
+   Testing on 500 games (2022-10-29 → 2022-10-31)
+   ✅ Cycle 100: 496 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 101: Training on 51,000 games (up to 2022-10-31)
+   Testing on 500 games (2022-10-31 → 2022-11-02)
+   ✅ Cycle 101: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 102: Training on 51,500 games (up to 2022-11-02)
+   Testing on 500 games (2022-11-02 → 2022-11-04)
+   ✅ Cycle 102: 497 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 103: Training on 52,000 games (up to 2022-11-04)
+   Testing on 500 games (2022-11-04 → 2022-11-05)
+   ✅ Cycle 103: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 104: Training on 52,500 games (up to 2022-11-05)
+   Testing on 500 games (2022-11-05 → 2022-11-08)
+   ✅ Cycle 104: 491 predictions made (skipped 7 no-history, 1 null-projection)
+
+🔄 Cycle 105: Training on 53,000 games (up to 2022-11-08)
+   Testing on 500 games (2022-11-08 → 2022-11-10)
+   ✅ Cycle 105: 491 predictions made (skipped 8 no-history, 0 null-projection)
+
+🔄 Cycle 106: Training on 53,500 games (up to 2022-11-10)
+   Testing on 500 games (2022-11-10 → 2022-11-12)
+   ✅ Cycle 106: 495 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 107: Training on 54,000 games (up to 2022-11-12)
+   Testing on 500 games (2022-11-12 → 2022-11-14)
+   ✅ Cycle 107: 494 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 108: Training on 54,500 games (up to 2022-11-14)
+   Testing on 500 games (2022-11-14 → 2022-11-17)
+   ✅ Cycle 108: 491 predictions made (skipped 8 no-history, 0 null-projection)
+
+🔄 Cycle 109: Training on 55,000 games (up to 2022-11-17)
+   Testing on 500 games (2022-11-17 → 2022-11-19)
+   ✅ Cycle 109: 491 predictions made (skipped 9 no-history, 0 null-projection)
+
+🔄 Cycle 110: Training on 55,500 games (up to 2022-11-19)
+   Testing on 500 games (2022-11-19 → 2022-11-19)
+   ✅ Cycle 110: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 111: Training on 56,000 games (up to 2022-11-19)
+   Testing on 500 games (2022-11-19 → 2022-11-22)
+   ✅ Cycle 111: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 112: Training on 56,500 games (up to 2022-11-22)
+   Testing on 500 games (2022-11-22 → 2022-11-23)
+   ✅ Cycle 112: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 113: Training on 57,000 games (up to 2022-11-23)
+   Testing on 500 games (2022-11-23 → 2022-11-26)
+   ✅ Cycle 113: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 114: Training on 57,500 games (up to 2022-11-26)
+   Testing on 500 games (2022-11-26 → 2022-11-28)
+   ✅ Cycle 114: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 115: Training on 58,000 games (up to 2022-11-28)
+   Testing on 500 games (2022-11-28 → 2022-11-30)
+   ✅ Cycle 115: 496 predictions made (skipped 3 no-history, 1 null-projection)
+
+🔄 Cycle 116: Training on 58,500 games (up to 2022-11-30)
+   Testing on 500 games (2022-11-30 → 2022-12-01)
+   ✅ Cycle 116: 496 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 117: Training on 59,000 games (up to 2022-12-01)
+   Testing on 500 games (2022-12-01 → 2022-12-03)
+   ✅ Cycle 117: 495 predictions made (skipped 4 no-history, 1 null-projection)
+
+🔄 Cycle 118: Training on 59,500 games (up to 2022-12-03)
+   Testing on 500 games (2022-12-03 → 2022-12-06)
+   ✅ Cycle 118: 495 predictions made (skipped 3 no-history, 1 null-projection)
+
+🔄 Cycle 119: Training on 60,000 games (up to 2022-12-06)
+   Testing on 500 games (2022-12-06 → 2022-12-07)
+   ✅ Cycle 119: 488 predictions made (skipped 9 no-history, 1 null-projection)
+
+🔄 Cycle 120: Training on 60,500 games (up to 2022-12-07)
+   Testing on 500 games (2022-12-07 → 2022-12-09)
+   ✅ Cycle 120: 494 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 121: Training on 61,000 games (up to 2022-12-09)
+   Testing on 500 games (2022-12-09 → 2022-12-11)
+   ✅ Cycle 121: 496 predictions made (skipped 3 no-history, 1 null-projection)
+
+🔄 Cycle 122: Training on 61,500 games (up to 2022-12-11)
+   Testing on 500 games (2022-12-11 → 2022-12-13)
+   ✅ Cycle 122: 492 predictions made (skipped 7 no-history, 0 null-projection)
+
+🔄 Cycle 123: Training on 62,000 games (up to 2022-12-13)
+   Testing on 500 games (2022-12-13 → 2022-12-15)
+   ✅ Cycle 123: 493 predictions made (skipped 7 no-history, 0 null-projection)
+
+🔄 Cycle 124: Training on 62,500 games (up to 2022-12-15)
+   Testing on 500 games (2022-12-15 → 2022-12-17)
+   ✅ Cycle 124: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 125: Training on 63,000 games (up to 2022-12-17)
+   Testing on 500 games (2022-12-17 → 2022-12-19)
+   ✅ Cycle 125: 497 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 126: Training on 63,500 games (up to 2022-12-19)
+   Testing on 500 games (2022-12-19 → 2022-12-20)
+   ✅ Cycle 126: 496 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 127: Training on 64,000 games (up to 2022-12-20)
+   Testing on 500 games (2022-12-20 → 2022-12-22)
+   ✅ Cycle 127: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 128: Training on 64,500 games (up to 2022-12-22)
+   Testing on 500 games (2022-12-22 → 2022-12-27)
+   ✅ Cycle 128: 494 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 129: Training on 65,000 games (up to 2022-12-27)
+   Testing on 500 games (2022-12-27 → 2022-12-29)
+   ✅ Cycle 129: 495 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 130: Training on 65,500 games (up to 2022-12-29)
+   Testing on 500 games (2022-12-29 → 2022-12-30)
+   ✅ Cycle 130: 494 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 131: Training on 66,000 games (up to 2022-12-30)
+   Testing on 500 games (2022-12-30 → 2023-01-01)
+   ✅ Cycle 131: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 132: Training on 66,500 games (up to 2023-01-01)
+   Testing on 500 games (2023-01-01 → 2023-01-03)
+   ✅ Cycle 132: 497 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 133: Training on 67,000 games (up to 2023-01-03)
+   Testing on 500 games (2023-01-03 → 2023-01-05)
+   ✅ Cycle 133: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 134: Training on 67,500 games (up to 2023-01-05)
+   Testing on 500 games (2023-01-05 → 2023-01-07)
+   ✅ Cycle 134: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 135: Training on 68,000 games (up to 2023-01-07)
+   Testing on 500 games (2023-01-07 → 2023-01-10)
+   ✅ Cycle 135: 497 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 136: Training on 68,500 games (up to 2023-01-10)
+   Testing on 500 games (2023-01-10 → 2023-01-12)
+   ✅ Cycle 136: 495 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 137: Training on 69,000 games (up to 2023-01-12)
+   Testing on 500 games (2023-01-12 → 2023-01-13)
+   ✅ Cycle 137: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 138: Training on 69,500 games (up to 2023-01-13)
+   Testing on 500 games (2023-01-13 → 2023-01-14)
+   ✅ Cycle 138: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 139: Training on 70,000 games (up to 2023-01-14)
+   Testing on 500 games (2023-01-14 → 2023-01-17)
+   ✅ Cycle 139: 497 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 140: Training on 70,500 games (up to 2023-01-17)
+   Testing on 500 games (2023-01-17 → 2023-01-19)
+   ✅ Cycle 140: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 141: Training on 71,000 games (up to 2023-01-19)
+   Testing on 500 games (2023-01-19 → 2023-01-21)
+   ✅ Cycle 141: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 142: Training on 71,500 games (up to 2023-01-21)
+   Testing on 500 games (2023-01-21 → 2023-01-22)
+   ✅ Cycle 142: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 143: Training on 72,000 games (up to 2023-01-22)
+   Testing on 500 games (2023-01-22 → 2023-01-24)
+   ✅ Cycle 143: 496 predictions made (skipped 3 no-history, 1 null-projection)
+
+🔄 Cycle 144: Training on 72,500 games (up to 2023-01-24)
+   Testing on 500 games (2023-01-24 → 2023-01-26)
+   ✅ Cycle 144: 493 predictions made (skipped 6 no-history, 1 null-projection)
+
+🔄 Cycle 145: Training on 73,000 games (up to 2023-01-26)
+   Testing on 500 games (2023-01-26 → 2023-01-28)
+   ✅ Cycle 145: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 146: Training on 73,500 games (up to 2023-01-28)
+   Testing on 500 games (2023-01-28 → 2023-01-31)
+   ✅ Cycle 146: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 147: Training on 74,000 games (up to 2023-01-31)
+   Testing on 500 games (2023-01-31 → 2023-02-07)
+   ✅ Cycle 147: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 148: Training on 74,500 games (up to 2023-02-07)
+   Testing on 500 games (2023-02-07 → 2023-02-11)
+   ✅ Cycle 148: 498 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 149: Training on 75,000 games (up to 2023-02-11)
+   Testing on 500 games (2023-02-11 → 2023-02-12)
+   ✅ Cycle 149: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 150: Training on 75,500 games (up to 2023-02-12)
+   Testing on 500 games (2023-02-12 → 2023-02-14)
+   ✅ Cycle 150: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 151: Training on 76,000 games (up to 2023-02-14)
+   Testing on 500 games (2023-02-14 → 2023-02-16)
+   ✅ Cycle 151: 498 predictions made (skipped 1 no-history, 1 null-projection)
+
+🔄 Cycle 152: Training on 76,500 games (up to 2023-02-16)
+   Testing on 500 games (2023-02-16 → 2023-02-18)
+   ✅ Cycle 152: 497 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 153: Training on 77,000 games (up to 2023-02-18)
+   Testing on 500 games (2023-02-18 → 2023-02-20)
+   ✅ Cycle 153: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 154: Training on 77,500 games (up to 2023-02-20)
+   Testing on 500 games (2023-02-20 → 2023-02-22)
+   ✅ Cycle 154: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 155: Training on 78,000 games (up to 2023-02-22)
+   Testing on 500 games (2023-02-22 → 2023-02-24)
+   ✅ Cycle 155: 496 predictions made (skipped 3 no-history, 1 null-projection)
+
+🔄 Cycle 156: Training on 78,500 games (up to 2023-02-24)
+   Testing on 500 games (2023-02-24 → 2023-02-25)
+   ✅ Cycle 156: 496 predictions made (skipped 3 no-history, 1 null-projection)
+
+🔄 Cycle 157: Training on 79,000 games (up to 2023-02-25)
+   Testing on 500 games (2023-02-25 → 2023-02-28)
+   ✅ Cycle 157: 496 predictions made (skipped 2 no-history, 2 null-projection)
+
+🔄 Cycle 158: Training on 79,500 games (up to 2023-02-28)
+   Testing on 500 games (2023-02-28 → 2023-03-02)
+   ✅ Cycle 158: 496 predictions made (skipped 3 no-history, 1 null-projection)
+
+🔄 Cycle 159: Training on 80,000 games (up to 2023-03-02)
+   Testing on 500 games (2023-03-02 → 2023-03-03)
+   ✅ Cycle 159: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 160: Training on 80,500 games (up to 2023-03-03)
+   Testing on 500 games (2023-03-03 → 2023-03-05)
+   ✅ Cycle 160: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 161: Training on 81,000 games (up to 2023-03-05)
+   Testing on 500 games (2023-03-05 → 2023-03-07)
+   ✅ Cycle 161: 496 predictions made (skipped 3 no-history, 1 null-projection)
+
+🔄 Cycle 162: Training on 81,500 games (up to 2023-03-07)
+   Testing on 500 games (2023-03-07 → 2023-03-09)
+   ✅ Cycle 162: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 163: Training on 82,000 games (up to 2023-03-09)
+   Testing on 500 games (2023-03-09 → 2023-03-11)
+   ✅ Cycle 163: 494 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 164: Training on 82,500 games (up to 2023-03-11)
+   Testing on 500 games (2023-03-11 → 2023-03-12)
+   ✅ Cycle 164: 496 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 165: Training on 83,000 games (up to 2023-03-12)
+   Testing on 500 games (2023-03-12 → 2023-03-14)
+   ✅ Cycle 165: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 166: Training on 83,500 games (up to 2023-03-14)
+   Testing on 500 games (2023-03-14 → 2023-03-16)
+   ✅ Cycle 166: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 167: Training on 84,000 games (up to 2023-03-16)
+   Testing on 500 games (2023-03-16 → 2023-03-18)
+   ✅ Cycle 167: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 168: Training on 84,500 games (up to 2023-03-18)
+   Testing on 500 games (2023-03-18 → 2023-03-20)
+   ✅ Cycle 168: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 169: Training on 85,000 games (up to 2023-03-20)
+   Testing on 500 games (2023-03-20 → 2023-03-21)
+   ✅ Cycle 169: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 170: Training on 85,500 games (up to 2023-03-21)
+   Testing on 500 games (2023-03-21 → 2023-03-23)
+   ✅ Cycle 170: 494 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 171: Training on 86,000 games (up to 2023-03-23)
+   Testing on 500 games (2023-03-23 → 2023-03-25)
+   ✅ Cycle 171: 496 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 172: Training on 86,500 games (up to 2023-03-25)
+   Testing on 500 games (2023-03-25 → 2023-03-27)
+   ✅ Cycle 172: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 173: Training on 87,000 games (up to 2023-03-27)
+   Testing on 500 games (2023-03-27 → 2023-03-29)
+   ✅ Cycle 173: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 174: Training on 87,500 games (up to 2023-03-29)
+   Testing on 500 games (2023-03-30 → 2023-03-31)
+   ✅ Cycle 174: 495 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 175: Training on 88,000 games (up to 2023-03-31)
+   Testing on 500 games (2023-03-31 → 2023-04-02)
+   ✅ Cycle 175: 490 predictions made (skipped 9 no-history, 1 null-projection)
+
+🔄 Cycle 176: Training on 88,500 games (up to 2023-04-02)
+   Testing on 500 games (2023-04-02 → 2023-04-04)
+   ✅ Cycle 176: 488 predictions made (skipped 9 no-history, 2 null-projection)
+
+🔄 Cycle 177: Training on 89,000 games (up to 2023-04-04)
+   Testing on 500 games (2023-04-04 → 2023-04-06)
+   ✅ Cycle 177: 494 predictions made (skipped 5 no-history, 1 null-projection)
+
+🔄 Cycle 178: Training on 89,500 games (up to 2023-04-06)
+   Testing on 500 games (2023-04-06 → 2023-04-08)
+   ✅ Cycle 178: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 179: Training on 90,000 games (up to 2023-04-08)
+   Testing on 500 games (2023-04-08 → 2023-04-09)
+   ✅ Cycle 179: 493 predictions made (skipped 7 no-history, 0 null-projection)
+
+🔄 Cycle 180: Training on 90,500 games (up to 2023-04-09)
+   Testing on 500 games (2023-04-09 → 2023-04-11)
+   ✅ Cycle 180: 493 predictions made (skipped 7 no-history, 0 null-projection)
+
+🔄 Cycle 181: Training on 91,000 games (up to 2023-04-11)
+   Testing on 500 games (2023-04-11 → 2023-04-13)
+   ✅ Cycle 181: 486 predictions made (skipped 14 no-history, 0 null-projection)
+
+🔄 Cycle 182: Training on 91,500 games (up to 2023-04-13)
+   Testing on 500 games (2023-04-13 → 2023-10-11)
+   ✅ Cycle 182: 480 predictions made (skipped 18 no-history, 2 null-projection)
+
+🔄 Cycle 183: Training on 92,000 games (up to 2023-10-11)
+   Testing on 500 games (2023-10-11 → 2023-10-14)
+   ✅ Cycle 183: 477 predictions made (skipped 15 no-history, 1 null-projection)
+
+🔄 Cycle 184: Training on 92,500 games (up to 2023-10-14)
+   Testing on 500 games (2023-10-14 → 2023-10-17)
+   ✅ Cycle 184: 490 predictions made (skipped 8 no-history, 0 null-projection)
+
+🔄 Cycle 185: Training on 93,000 games (up to 2023-10-17)
+   Testing on 500 games (2023-10-17 → 2023-10-20)
+   ✅ Cycle 185: 491 predictions made (skipped 7 no-history, 0 null-projection)
+
+🔄 Cycle 186: Training on 93,500 games (up to 2023-10-20)
+   Testing on 500 games (2023-10-20 → 2023-10-24)
+   ✅ Cycle 186: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 187: Training on 94,000 games (up to 2023-10-24)
+   Testing on 500 games (2023-10-24 → 2023-10-26)
+   ✅ Cycle 187: 494 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 188: Training on 94,500 games (up to 2023-10-26)
+   Testing on 500 games (2023-10-26 → 2023-10-28)
+   ✅ Cycle 188: 497 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 189: Training on 95,000 games (up to 2023-10-28)
+   Testing on 500 games (2023-10-28 → 2023-11-01)
+   ✅ Cycle 189: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 190: Training on 95,500 games (up to 2023-11-01)
+   Testing on 500 games (2023-11-01 → 2023-11-04)
+   ✅ Cycle 190: 495 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 191: Training on 96,000 games (up to 2023-11-04)
+   Testing on 500 games (2023-11-04 → 2023-11-07)
+   ✅ Cycle 191: 495 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 192: Training on 96,500 games (up to 2023-11-07)
+   Testing on 500 games (2023-11-07 → 2023-11-09)
+   ✅ Cycle 192: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 193: Training on 97,000 games (up to 2023-11-09)
+   Testing on 500 games (2023-11-09 → 2023-11-11)
+   ✅ Cycle 193: 498 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 194: Training on 97,500 games (up to 2023-11-11)
+   Testing on 500 games (2023-11-11 → 2023-11-15)
+   ✅ Cycle 194: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 195: Training on 98,000 games (up to 2023-11-15)
+   Testing on 500 games (2023-11-15 → 2023-11-18)
+   ✅ Cycle 195: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 196: Training on 98,500 games (up to 2023-11-18)
+   Testing on 500 games (2023-11-18 → 2023-11-22)
+   ✅ Cycle 196: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 197: Training on 99,000 games (up to 2023-11-22)
+   Testing on 500 games (2023-11-22 → 2023-11-24)
+   ✅ Cycle 197: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 198: Training on 99,500 games (up to 2023-11-24)
+   Testing on 500 games (2023-11-24 → 2023-11-26)
+   ✅ Cycle 198: 498 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 199: Training on 100,000 games (up to 2023-11-26)
+   Testing on 500 games (2023-11-26 → 2023-11-30)
+   ✅ Cycle 199: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 200: Training on 100,500 games (up to 2023-11-30)
+   Testing on 500 games (2023-11-30 → 2023-12-02)
+   ✅ Cycle 200: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 201: Training on 101,000 games (up to 2023-12-02)
+   Testing on 500 games (2023-12-02 → 2023-12-05)
+   ✅ Cycle 201: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 202: Training on 101,500 games (up to 2023-12-05)
+   Testing on 500 games (2023-12-05 → 2023-12-07)
+   ✅ Cycle 202: 493 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 203: Training on 102,000 games (up to 2023-12-07)
+   Testing on 500 games (2023-12-07 → 2023-12-10)
+   ✅ Cycle 203: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 204: Training on 102,500 games (up to 2023-12-10)
+   Testing on 500 games (2023-12-10 → 2023-12-12)
+   ✅ Cycle 204: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 205: Training on 103,000 games (up to 2023-12-12)
+   Testing on 500 games (2023-12-12 → 2023-12-16)
+   ✅ Cycle 205: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 206: Training on 103,500 games (up to 2023-12-16)
+   Testing on 500 games (2023-12-16 → 2023-12-18)
+   ✅ Cycle 206: 499 predictions made (skipped 0 no-history, 1 null-projection)
+
+🔄 Cycle 207: Training on 104,000 games (up to 2023-12-18)
+   Testing on 500 games (2023-12-18 → 2023-12-21)
+   ✅ Cycle 207: 499 predictions made (skipped 0 no-history, 1 null-projection)
+
+🔄 Cycle 208: Training on 104,500 games (up to 2023-12-21)
+   Testing on 500 games (2023-12-21 → 2023-12-23)
+   ✅ Cycle 208: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 209: Training on 105,000 games (up to 2023-12-23)
+   Testing on 500 games (2023-12-23 → 2023-12-27)
+   ✅ Cycle 209: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 210: Training on 105,500 games (up to 2023-12-27)
+   Testing on 500 games (2023-12-27 → 2023-12-30)
+   ✅ Cycle 210: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 211: Training on 106,000 games (up to 2023-12-30)
+   Testing on 500 games (2023-12-30 → 2024-01-02)
+   ✅ Cycle 211: 498 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 212: Training on 106,500 games (up to 2024-01-02)
+   Testing on 500 games (2024-01-02 → 2024-01-04)
+   ✅ Cycle 212: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 213: Training on 107,000 games (up to 2024-01-04)
+   Testing on 500 games (2024-01-04 → 2024-01-07)
+   ✅ Cycle 213: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 214: Training on 107,500 games (up to 2024-01-07)
+   Testing on 500 games (2024-01-07 → 2024-01-11)
+   ✅ Cycle 214: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 215: Training on 108,000 games (up to 2024-01-11)
+   Testing on 500 games (2024-01-11 → 2024-01-13)
+   ✅ Cycle 215: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 216: Training on 108,500 games (up to 2024-01-13)
+   Testing on 500 games (2024-01-13 → 2024-01-15)
+   ✅ Cycle 216: 499 predictions made (skipped 0 no-history, 1 null-projection)
+
+🔄 Cycle 217: Training on 109,000 games (up to 2024-01-15)
+   Testing on 500 games (2024-01-15 → 2024-01-18)
+   ✅ Cycle 217: 496 predictions made (skipped 1 no-history, 2 null-projection)
+
+🔄 Cycle 218: Training on 109,500 games (up to 2024-01-18)
+   Testing on 500 games (2024-01-18 → 2024-01-21)
+   ✅ Cycle 218: 497 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 219: Training on 110,000 games (up to 2024-01-21)
+   Testing on 500 games (2024-01-21 → 2024-01-24)
+   ✅ Cycle 219: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 220: Training on 110,500 games (up to 2024-01-24)
+   Testing on 500 games (2024-01-24 → 2024-01-27)
+   ✅ Cycle 220: 498 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 221: Training on 111,000 games (up to 2024-01-27)
+   Testing on 500 games (2024-01-27 → 2024-01-31)
+   ✅ Cycle 221: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 222: Training on 111,500 games (up to 2024-01-31)
+   Testing on 500 games (2024-01-31 → 2024-02-08)
+   ✅ Cycle 222: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 223: Training on 112,000 games (up to 2024-02-08)
+   Testing on 500 games (2024-02-08 → 2024-02-11)
+   ✅ Cycle 223: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 224: Training on 112,500 games (up to 2024-02-11)
+   Testing on 500 games (2024-02-11 → 2024-02-15)
+   ✅ Cycle 224: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 225: Training on 113,000 games (up to 2024-02-15)
+   Testing on 500 games (2024-02-15 → 2024-02-17)
+   ✅ Cycle 225: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 226: Training on 113,500 games (up to 2024-02-17)
+   Testing on 500 games (2024-02-17 → 2024-02-20)
+   ✅ Cycle 226: 493 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 227: Training on 114,000 games (up to 2024-02-20)
+   Testing on 500 games (2024-02-20 → 2024-02-22)
+   ✅ Cycle 227: 494 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 228: Training on 114,500 games (up to 2024-02-22)
+   Testing on 500 games (2024-02-22 → 2024-02-24)
+   ✅ Cycle 228: 494 predictions made (skipped 4 no-history, 1 null-projection)
+
+🔄 Cycle 229: Training on 115,000 games (up to 2024-02-24)
+   Testing on 500 games (2024-02-24 → 2024-02-27)
+   ✅ Cycle 229: 498 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 230: Training on 115,500 games (up to 2024-02-27)
+   Testing on 500 games (2024-02-27 → 2024-03-01)
+   ✅ Cycle 230: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 231: Training on 116,000 games (up to 2024-03-01)
+   Testing on 500 games (2024-03-01 → 2024-03-03)
+   ✅ Cycle 231: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 232: Training on 116,500 games (up to 2024-03-03)
+   Testing on 500 games (2024-03-03 → 2024-03-07)
+   ✅ Cycle 232: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 233: Training on 117,000 games (up to 2024-03-07)
+   Testing on 500 games (2024-03-07 → 2024-03-09)
+   ✅ Cycle 233: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 234: Training on 117,500 games (up to 2024-03-09)
+   Testing on 500 games (2024-03-09 → 2024-03-12)
+   ✅ Cycle 234: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 235: Training on 118,000 games (up to 2024-03-12)
+   Testing on 500 games (2024-03-12 → 2024-03-14)
+   ✅ Cycle 235: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 236: Training on 118,500 games (up to 2024-03-14)
+   Testing on 500 games (2024-03-14 → 2024-03-16)
+   ✅ Cycle 236: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 237: Training on 119,000 games (up to 2024-03-16)
+   Testing on 500 games (2024-03-16 → 2024-03-19)
+   ✅ Cycle 237: 497 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 238: Training on 119,500 games (up to 2024-03-19)
+   Testing on 500 games (2024-03-19 → 2024-03-22)
+   ✅ Cycle 238: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 239: Training on 120,000 games (up to 2024-03-22)
+   Testing on 500 games (2024-03-22 → 2024-03-24)
+   ✅ Cycle 239: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 240: Training on 120,500 games (up to 2024-03-24)
+   Testing on 500 games (2024-03-24 → 2024-03-28)
+   ✅ Cycle 240: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 241: Training on 121,000 games (up to 2024-03-28)
+   Testing on 500 games (2024-03-28 → 2024-03-30)
+   ✅ Cycle 241: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 242: Training on 121,500 games (up to 2024-03-30)
+   Testing on 500 games (2024-03-30 → 2024-04-02)
+   ✅ Cycle 242: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 243: Training on 122,000 games (up to 2024-04-02)
+   Testing on 500 games (2024-04-02 → 2024-04-04)
+   ✅ Cycle 243: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 244: Training on 122,500 games (up to 2024-04-04)
+   Testing on 500 games (2024-04-04 → 2024-04-07)
+   ✅ Cycle 244: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 245: Training on 123,000 games (up to 2024-04-07)
+   Testing on 500 games (2024-04-07 → 2024-04-09)
+   ✅ Cycle 245: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 246: Training on 123,500 games (up to 2024-04-09)
+   Testing on 500 games (2024-04-09 → 2024-04-12)
+   ✅ Cycle 246: 493 predictions made (skipped 4 no-history, 2 null-projection)
+
+🔄 Cycle 247: Training on 124,000 games (up to 2024-04-12)
+   Testing on 500 games (2024-04-12 → 2024-04-15)
+   ✅ Cycle 247: 495 predictions made (skipped 3 no-history, 2 null-projection)
+
+🔄 Cycle 248: Training on 124,500 games (up to 2024-04-15)
+   Testing on 500 games (2024-04-15 → 2024-04-18)
+   ✅ Cycle 248: 488 predictions made (skipped 10 no-history, 0 null-projection)
+
+🔄 Cycle 249: Training on 125,000 games (up to 2024-04-18)
+   Testing on 500 games (2024-04-18 → 2024-10-10)
+   ✅ Cycle 249: 477 predictions made (skipped 20 no-history, 0 null-projection)
+
+🔄 Cycle 250: Training on 125,500 games (up to 2024-10-10)
+   Testing on 500 games (2024-10-10 → 2024-10-12)
+   ✅ Cycle 250: 476 predictions made (skipped 23 no-history, 0 null-projection)
+
+🔄 Cycle 251: Training on 126,000 games (up to 2024-10-12)
+   Testing on 500 games (2024-10-12 → 2024-10-14)
+   ✅ Cycle 251: 476 predictions made (skipped 22 no-history, 0 null-projection)
+
+🔄 Cycle 252: Training on 126,500 games (up to 2024-10-14)
+   Testing on 500 games (2024-10-14 → 2024-10-15)
+   ✅ Cycle 252: 488 predictions made (skipped 12 no-history, 0 null-projection)
+
+🔄 Cycle 253: Training on 127,000 games (up to 2024-10-15)
+   Testing on 500 games (2024-10-15 → 2024-10-17)
+   ✅ Cycle 253: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 254: Training on 127,500 games (up to 2024-10-17)
+   Testing on 500 games (2024-10-17 → 2024-10-19)
+   ✅ Cycle 254: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 255: Training on 128,000 games (up to 2024-10-19)
+   Testing on 500 games (2024-10-19 → 2024-10-22)
+   ✅ Cycle 255: 495 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 256: Training on 128,500 games (up to 2024-10-22)
+   Testing on 500 games (2024-10-22 → 2024-10-24)
+   ✅ Cycle 256: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 257: Training on 129,000 games (up to 2024-10-24)
+   Testing on 500 games (2024-10-24 → 2024-10-26)
+   ✅ Cycle 257: 496 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 258: Training on 129,500 games (up to 2024-10-26)
+   Testing on 500 games (2024-10-26 → 2024-10-28)
+   ✅ Cycle 258: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 259: Training on 130,000 games (up to 2024-10-28)
+   Testing on 500 games (2024-10-28 → 2024-10-30)
+   ✅ Cycle 259: 497 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 260: Training on 130,500 games (up to 2024-10-30)
+   Testing on 500 games (2024-10-30 → 2024-11-02)
+   ✅ Cycle 260: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 261: Training on 131,000 games (up to 2024-11-02)
+   Testing on 500 games (2024-11-02 → 2024-11-03)
+   ✅ Cycle 261: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 262: Training on 131,500 games (up to 2024-11-03)
+   Testing on 500 games (2024-11-03 → 2024-11-05)
+   ✅ Cycle 262: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 263: Training on 132,000 games (up to 2024-11-05)
+   Testing on 500 games (2024-11-05 → 2024-11-07)
+   ✅ Cycle 263: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 264: Training on 132,500 games (up to 2024-11-07)
+   Testing on 500 games (2024-11-07 → 2024-11-09)
+   ✅ Cycle 264: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 265: Training on 133,000 games (up to 2024-11-09)
+   Testing on 500 games (2024-11-09 → 2024-11-12)
+   ✅ Cycle 265: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 266: Training on 133,500 games (up to 2024-11-12)
+   Testing on 500 games (2024-11-12 → 2024-11-14)
+   ✅ Cycle 266: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 267: Training on 134,000 games (up to 2024-11-14)
+   Testing on 500 games (2024-11-14 → 2024-11-16)
+   ✅ Cycle 267: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 268: Training on 134,500 games (up to 2024-11-16)
+   Testing on 500 games (2024-11-16 → 2024-11-18)
+   ✅ Cycle 268: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 269: Training on 135,000 games (up to 2024-11-18)
+   Testing on 500 games (2024-11-18 → 2024-11-21)
+   ✅ Cycle 269: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 270: Training on 135,500 games (up to 2024-11-21)
+   Testing on 500 games (2024-11-21 → 2024-11-23)
+   ✅ Cycle 270: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 271: Training on 136,000 games (up to 2024-11-23)
+   Testing on 500 games (2024-11-23 → 2024-11-25)
+   ✅ Cycle 271: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 272: Training on 136,500 games (up to 2024-11-25)
+   Testing on 500 games (2024-11-25 → 2024-11-27)
+   ✅ Cycle 272: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 273: Training on 137,000 games (up to 2024-11-27)
+   Testing on 500 games (2024-11-27 → 2024-11-29)
+   ✅ Cycle 273: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 274: Training on 137,500 games (up to 2024-11-29)
+   Testing on 500 games (2024-11-29 → 2024-11-30)
+   ✅ Cycle 274: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 275: Training on 138,000 games (up to 2024-11-30)
+   Testing on 500 games (2024-11-30 → 2024-12-02)
+   ✅ Cycle 275: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 276: Training on 138,500 games (up to 2024-12-02)
+   Testing on 500 games (2024-12-02 → 2024-12-04)
+   ✅ Cycle 276: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 277: Training on 139,000 games (up to 2024-12-04)
+   Testing on 500 games (2024-12-04 → 2024-12-06)
+   ✅ Cycle 277: 498 predictions made (skipped 1 no-history, 1 null-projection)
+
+🔄 Cycle 278: Training on 139,500 games (up to 2024-12-06)
+   Testing on 500 games (2024-12-06 → 2024-12-08)
+   ✅ Cycle 278: 496 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 279: Training on 140,000 games (up to 2024-12-08)
+   Testing on 500 games (2024-12-08 → 2024-12-10)
+   ✅ Cycle 279: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 280: Training on 140,500 games (up to 2024-12-10)
+   Testing on 500 games (2024-12-10 → 2024-12-12)
+   ✅ Cycle 280: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 281: Training on 141,000 games (up to 2024-12-12)
+   Testing on 500 games (2024-12-12 → 2024-12-14)
+   ✅ Cycle 281: 497 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 282: Training on 141,500 games (up to 2024-12-14)
+   Testing on 500 games (2024-12-14 → 2024-12-17)
+   ✅ Cycle 282: 497 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 283: Training on 142,000 games (up to 2024-12-17)
+   Testing on 500 games (2024-12-17 → 2024-12-19)
+   ✅ Cycle 283: 498 predictions made (skipped 1 no-history, 1 null-projection)
+
+🔄 Cycle 284: Training on 142,500 games (up to 2024-12-19)
+   Testing on 500 games (2024-12-19 → 2024-12-20)
+   ✅ Cycle 284: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 285: Training on 143,000 games (up to 2024-12-20)
+   Testing on 500 games (2024-12-20 → 2024-12-22)
+   ✅ Cycle 285: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 286: Training on 143,500 games (up to 2024-12-22)
+   Testing on 500 games (2024-12-22 → 2024-12-23)
+   ✅ Cycle 286: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 287: Training on 144,000 games (up to 2024-12-23)
+   Testing on 500 games (2024-12-23 → 2024-12-28)
+   ✅ Cycle 287: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 288: Training on 144,500 games (up to 2024-12-28)
+   Testing on 500 games (2024-12-28 → 2024-12-29)
+   ✅ Cycle 288: 498 predictions made (skipped 1 no-history, 1 null-projection)
+
+🔄 Cycle 289: Training on 145,000 games (up to 2024-12-29)
+   Testing on 500 games (2024-12-29 → 2024-12-31)
+   ✅ Cycle 289: 499 predictions made (skipped 0 no-history, 1 null-projection)
+
+🔄 Cycle 290: Training on 145,500 games (up to 2024-12-31)
+   Testing on 500 games (2024-12-31 → 2025-01-02)
+   ✅ Cycle 290: 497 predictions made (skipped 1 no-history, 2 null-projection)
+
+🔄 Cycle 291: Training on 146,000 games (up to 2025-01-02)
+   Testing on 500 games (2025-01-02 → 2025-01-04)
+   ✅ Cycle 291: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 292: Training on 146,500 games (up to 2025-01-04)
+   Testing on 500 games (2025-01-04 → 2025-01-07)
+   ✅ Cycle 292: 498 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 293: Training on 147,000 games (up to 2025-01-07)
+   Testing on 500 games (2025-01-07 → 2025-01-09)
+   ✅ Cycle 293: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 294: Training on 147,500 games (up to 2025-01-09)
+   Testing on 500 games (2025-01-09 → 2025-01-11)
+   ✅ Cycle 294: 497 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 295: Training on 148,000 games (up to 2025-01-11)
+   Testing on 500 games (2025-01-11 → 2025-01-12)
+   ✅ Cycle 295: 498 predictions made (skipped 1 no-history, 1 null-projection)
+
+🔄 Cycle 296: Training on 148,500 games (up to 2025-01-12)
+   Testing on 500 games (2025-01-12 → 2025-01-14)
+   ✅ Cycle 296: 498 predictions made (skipped 1 no-history, 1 null-projection)
+
+🔄 Cycle 297: Training on 149,000 games (up to 2025-01-14)
+   Testing on 500 games (2025-01-14 → 2025-01-16)
+   ✅ Cycle 297: 497 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 298: Training on 149,500 games (up to 2025-01-16)
+   Testing on 500 games (2025-01-16 → 2025-01-18)
+   ✅ Cycle 298: 497 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 299: Training on 150,000 games (up to 2025-01-18)
+   Testing on 500 games (2025-01-18 → 2025-01-20)
+   ✅ Cycle 299: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 300: Training on 150,500 games (up to 2025-01-20)
+   Testing on 500 games (2025-01-20 → 2025-01-22)
+   ✅ Cycle 300: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 301: Training on 151,000 games (up to 2025-01-22)
+   Testing on 500 games (2025-01-22 → 2025-01-24)
+   ✅ Cycle 301: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 302: Training on 151,500 games (up to 2025-01-24)
+   Testing on 500 games (2025-01-24 → 2025-01-26)
+   ✅ Cycle 302: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 303: Training on 152,000 games (up to 2025-01-26)
+   Testing on 500 games (2025-01-26 → 2025-01-28)
+   ✅ Cycle 303: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 304: Training on 152,500 games (up to 2025-01-28)
+   Testing on 500 games (2025-01-28 → 2025-01-30)
+   ✅ Cycle 304: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 305: Training on 153,000 games (up to 2025-01-30)
+   Testing on 500 games (2025-01-30 → 2025-02-01)
+   ✅ Cycle 305: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 306: Training on 153,500 games (up to 2025-02-01)
+   Testing on 500 games (2025-02-01 → 2025-02-04)
+   ✅ Cycle 306: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 307: Training on 154,000 games (up to 2025-02-04)
+   Testing on 500 games (2025-02-04 → 2025-02-06)
+   ✅ Cycle 307: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 308: Training on 154,500 games (up to 2025-02-06)
+   Testing on 500 games (2025-02-06 → 2025-02-08)
+   ✅ Cycle 308: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 309: Training on 155,000 games (up to 2025-02-08)
+   Testing on 500 games (2025-02-08 → 2025-02-22)
+   ✅ Cycle 309: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 310: Training on 155,500 games (up to 2025-02-22)
+   Testing on 500 games (2025-02-22 → 2025-02-23)
+   ✅ Cycle 310: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 311: Training on 156,000 games (up to 2025-02-23)
+   Testing on 500 games (2025-02-23 → 2025-02-25)
+   ✅ Cycle 311: 498 predictions made (skipped 1 no-history, 1 null-projection)
+
+🔄 Cycle 312: Training on 156,500 games (up to 2025-02-25)
+   Testing on 500 games (2025-02-25 → 2025-02-27)
+   ✅ Cycle 312: 496 predictions made (skipped 3 no-history, 1 null-projection)
+
+🔄 Cycle 313: Training on 157,000 games (up to 2025-02-27)
+   Testing on 500 games (2025-02-27 → 2025-03-01)
+   ✅ Cycle 313: 499 predictions made (skipped 0 no-history, 1 null-projection)
+
+🔄 Cycle 314: Training on 157,500 games (up to 2025-03-01)
+   Testing on 500 games (2025-03-01 → 2025-03-02)
+   ✅ Cycle 314: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 315: Training on 158,000 games (up to 2025-03-02)
+   Testing on 500 games (2025-03-02 → 2025-03-04)
+   ✅ Cycle 315: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 316: Training on 158,500 games (up to 2025-03-04)
+   Testing on 500 games (2025-03-04 → 2025-03-06)
+   ✅ Cycle 316: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 317: Training on 159,000 games (up to 2025-03-06)
+   Testing on 500 games (2025-03-06 → 2025-03-08)
+   ✅ Cycle 317: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 318: Training on 159,500 games (up to 2025-03-08)
+   Testing on 500 games (2025-03-08 → 2025-03-10)
+   ✅ Cycle 318: 498 predictions made (skipped 1 no-history, 1 null-projection)
+
+🔄 Cycle 319: Training on 160,000 games (up to 2025-03-10)
+   Testing on 500 games (2025-03-10 → 2025-03-12)
+   ✅ Cycle 319: 498 predictions made (skipped 0 no-history, 2 null-projection)
+
+🔄 Cycle 320: Training on 160,500 games (up to 2025-03-12)
+   Testing on 500 games (2025-03-12 → 2025-03-14)
+   ✅ Cycle 320: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 321: Training on 161,000 games (up to 2025-03-14)
+   Testing on 500 games (2025-03-14 → 2025-03-16)
+   ✅ Cycle 321: 499 predictions made (skipped 1 no-history, 0 null-projection)
+
+🔄 Cycle 322: Training on 161,500 games (up to 2025-03-16)
+   Testing on 500 games (2025-03-16 → 2025-03-18)
+   ✅ Cycle 322: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 323: Training on 162,000 games (up to 2025-03-18)
+   Testing on 500 games (2025-03-18 → 2025-03-20)
+   ✅ Cycle 323: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 324: Training on 162,500 games (up to 2025-03-20)
+   Testing on 500 games (2025-03-20 → 2025-03-22)
+   ✅ Cycle 324: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 325: Training on 163,000 games (up to 2025-03-22)
+   Testing on 500 games (2025-03-22 → 2025-03-24)
+   ✅ Cycle 325: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 326: Training on 163,500 games (up to 2025-03-24)
+   Testing on 500 games (2025-03-24 → 2025-03-26)
+   ✅ Cycle 326: 500 predictions made (skipped 0 no-history, 0 null-projection)
+
+🔄 Cycle 327: Training on 164,000 games (up to 2025-03-26)
+   Testing on 500 games (2025-03-26 → 2025-03-28)
+   ✅ Cycle 327: 497 predictions made (skipped 2 no-history, 1 null-projection)
+
+🔄 Cycle 328: Training on 164,500 games (up to 2025-03-28)
+   Testing on 500 games (2025-03-28 → 2025-03-29)
+   ✅ Cycle 328: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 329: Training on 165,000 games (up to 2025-03-29)
+   Testing on 500 games (2025-03-29 → 2025-04-01)
+   ✅ Cycle 329: 497 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 330: Training on 165,500 games (up to 2025-04-01)
+   Testing on 500 games (2025-04-01 → 2025-04-03)
+   ✅ Cycle 330: 493 predictions made (skipped 6 no-history, 0 null-projection)
+
+🔄 Cycle 331: Training on 166,000 games (up to 2025-04-03)
+   Testing on 500 games (2025-04-03 → 2025-04-05)
+   ✅ Cycle 331: 495 predictions made (skipped 5 no-history, 0 null-projection)
+
+🔄 Cycle 332: Training on 166,500 games (up to 2025-04-05)
+   Testing on 500 games (2025-04-05 → 2025-04-06)
+   ✅ Cycle 332: 496 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 333: Training on 167,000 games (up to 2025-04-06)
+   Testing on 500 games (2025-04-06 → 2025-04-08)
+   ✅ Cycle 333: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 334: Training on 167,500 games (up to 2025-04-08)
+   Testing on 500 games (2025-04-08 → 2025-04-10)
+   ✅ Cycle 334: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 335: Training on 168,000 games (up to 2025-04-10)
+   Testing on 500 games (2025-04-10 → 2025-04-12)
+   ✅ Cycle 335: 498 predictions made (skipped 2 no-history, 0 null-projection)
+
+🔄 Cycle 336: Training on 168,500 games (up to 2025-04-12)
+   Testing on 500 games (2025-04-12 → 2025-04-14)
+   ✅ Cycle 336: 495 predictions made (skipped 4 no-history, 0 null-projection)
+
+🔄 Cycle 337: Training on 169,000 games (up to 2025-04-14)
+   Testing on 500 games (2025-04-14 → 2025-04-16)
+   ✅ Cycle 337: 495 predictions made (skipped 3 no-history, 0 null-projection)
+
+🔄 Cycle 338: Training on 169,500 games (up to 2025-04-16)
+   Testing on 347 games (2025-04-16 → 2025-04-17)
+   ✅ Cycle 338: 341 predictions made (skipped 6 no-history, 0 null-projection)
+
+═══════════════════════════════════════════════════════════════════
+📊 IMPROVED MODEL BACKTEST RESULTS
+═══════════════════════════════════════════════════════════════════
+
+Total Predictions: 166,029
+Cycles: 338
+
+📊 Accuracy Metrics:
+   MAE: 1.141 shots
+   Bias: +0.020 shots
+   Correlation: 0.425
+
+🔍 VALIDATION (No Look-Ahead Bias):
+   MAE < 1.0: ❌ FAIL
+   Correlation > 0.55: ❌ FAIL
+   Bias < 0.15: ✅ PASS
+
+⚠️  Model needs more improvement
+
+📈 IMPROVEMENT vs BASELINE:
+   Baseline MAE: 1.319
+   Improved MAE: 1.141 (13.5% better)
+   Baseline Correlation: 0.411
+   Improved Correlation: 0.425 (3.3% better)
+   Baseline Bias: +0.450
+   Improved Bias: +0.020 (95.5% better)
+
+💾 Results saved to: /Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nhl/walkforward_backtest_improved_results.json
+

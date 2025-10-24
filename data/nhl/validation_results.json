@@ -1,0 +1,168 @@
+{
+  "validationDate": "2025-10-23T17:38:43.917Z",
+  "dataRange": {
+    "start": "2024-12-05",
+    "end": "2025-04-17"
+  },
+  "overall": {
+    "bets": 215,
+    "winRate": 46.51162790697674,
+    "roi": -11.514728682170542,
+    "profit": -24.756666666666668
+  },
+  "segments": [
+    {
+      "name": "Under pred 3.0-3.5",
+      "pass1Bets": 6,
+      "pass1WinRate": 83.3,
+      "pass1ROI": 39.7,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    },
+    {
+      "name": "Under edge 0.8-1.0",
+      "pass1Bets": 11,
+      "pass1WinRate": 81.8,
+      "pass1ROI": 38.5,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    },
+    {
+      "name": "U1.5 pred 1.3-1.5",
+      "pass1Bets": 5,
+      "pass1WinRate": 60,
+      "pass1ROI": 26,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    },
+    {
+      "name": "U3.5 pred < 2.5",
+      "pass1Bets": 9,
+      "pass1WinRate": 77.8,
+      "pass1ROI": 25.4,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    },
+    {
+      "name": "Under 3.5 (all)",
+      "pass1Bets": 20,
+      "pass1WinRate": 75,
+      "pass1ROI": 24.9,
+      "valBets": 22,
+      "valWinRate": 50,
+      "valROI": -6.697727272727273,
+      "valProfit": -1.4735,
+      "status": "❌ FAILED"
+    },
+    {
+      "name": "Under edge < 0.2",
+      "pass1Bets": 23,
+      "pass1WinRate": 65.2,
+      "pass1ROI": 19.9,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    },
+    {
+      "name": "U3.5 edge > 0.5",
+      "pass1Bets": 14,
+      "pass1WinRate": 71.4,
+      "pass1ROI": 18.6,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    },
+    {
+      "name": "Under pred 2.5-3.0",
+      "pass1Bets": 13,
+      "pass1WinRate": 69.2,
+      "pass1ROI": 19,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    },
+    {
+      "name": "Under edge 0.4-0.6",
+      "pass1Bets": 20,
+      "pass1WinRate": 65,
+      "pass1ROI": 13.7,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    },
+    {
+      "name": "U2.5 pred < 2.0",
+      "pass1Bets": 7,
+      "pass1WinRate": 71.4,
+      "pass1ROI": 10.9,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    },
+    {
+      "name": "Under pred 2.0-2.5",
+      "pass1Bets": 32,
+      "pass1WinRate": 62.5,
+      "pass1ROI": 8.8,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    },
+    {
+      "name": "Under edge 0.6-0.8",
+      "pass1Bets": 14,
+      "pass1WinRate": 64.3,
+      "pass1ROI": 8.3,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    },
+    {
+      "name": "Under edge 0.2-0.4",
+      "pass1Bets": 31,
+      "pass1WinRate": 61.3,
+      "pass1ROI": 6.1,
+      "valBets": 0,
+      "valWinRate": 0,
+      "valROI": 0,
+      "valProfit": 0,
+      "status": "⚠️  NO DATA"
+    }
+  ],
+  "summary": {
+    "confirmed": 0,
+    "weaker": 0,
+    "failed": 1,
+    "noData": 12,
+    "profitableCount": 0,
+    "totalValidationBets": 0,
+    "totalValidationProfit": 0,
+    "avgValidationROI": 0
+  }
+}

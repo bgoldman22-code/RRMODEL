@@ -1,0 +1,36 @@
+{
+  "dataset": {
+    "totalBets": 8565
+  },
+  "selection": {
+    "count": 132
+  },
+  "flat": {
+    "total": 132,
+    "wins": 72,
+    "losses": 60,
+    "staked": 72.59999999999982,
+    "profit": 20.789999999999964,
+    "roi": 0.28636363636363654,
+    "avgOdds": 2.358636363636363,
+    "shareOver": 0,
+    "shareUnder": 1,
+    "roiPct": 28.64
+  },
+  "kelly": {
+    "total": 132,
+    "wins": 72,
+    "losses": 60,
+    "staked": 21.640067914938744,
+    "profit": 6.772444627809515,
+    "roi": 0.31295856623140755,
+    "avgOdds": 2.358636363636363,
+    "shareOver": 0,
+    "shareUnder": 1,
+    "roiPct": 31.3
+  },
+  "exposureTarget": {
+    "under": 0.55,
+    "over": 0.45
+  }
+}

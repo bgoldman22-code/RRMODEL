@@ -1,0 +1,396 @@
+{
+  "fetchedAt": "2025-10-24T12:59:04.780Z",
+  "dates": 235,
+  "games": 19302,
+  "gamesWithOdds": 8573,
+  "creditsUsed": 7007,
+  "errors": 0,
+  "oddsAvailabilityRate": "44.4%",
+  "sampleGames": [
+    {
+      "date": "2024-02-05",
+      "gameDate": "2024-02-05",
+      "playerId": 8481524,
+      "playerName": "Bowen Byram",
+      "team": "COL",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 1,
+      "oddsAvailable": false,
+      "oddsCount": 0,
+      "odds": [],
+      "eventId": "32d66545af5b369c7303d515c6e5126c",
+      "timestamp": "2024-02-05T11:55:38Z"
+    },
+    {
+      "date": "2024-02-05",
+      "gameDate": "2024-02-05",
+      "playerId": 8479525,
+      "playerName": "Ross Colton",
+      "team": "COL",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 0,
+      "oddsAvailable": false,
+      "oddsCount": 0,
+      "odds": [],
+      "eventId": "32d66545af5b369c7303d515c6e5126c",
+      "timestamp": "2024-02-05T11:55:38Z"
+    },
+    {
+      "date": "2024-02-05",
+      "gameDate": "2024-02-05",
+      "playerId": 8477476,
+      "playerName": "Artturi Lehkonen",
+      "team": "COL",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 1,
+      "oddsAvailable": false,
+      "oddsCount": 0,
+      "odds": [],
+      "eventId": "32d66545af5b369c7303d515c6e5126c",
+      "timestamp": "2024-02-05T11:55:38Z"
+    },
+    {
+      "date": "2024-02-05",
+      "gameDate": "2024-02-05",
+      "playerId": 8477492,
+      "playerName": "Nathan MacKinnon",
+      "team": "COL",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 7,
+      "oddsAvailable": true,
+      "oddsCount": 9,
+      "odds": [
+        {
+          "bookmaker": "betrivers",
+          "line": 4.5,
+          "overPrice": 2.35,
+          "underPrice": 1.56,
+          "lastUpdate": "2024-02-05T11:54:09Z"
+        },
+        {
+          "bookmaker": "unibet_us",
+          "line": 4.5,
+          "overPrice": 2.35,
+          "underPrice": 1.56,
+          "lastUpdate": "2024-02-05T11:55:19Z"
+        },
+        {
+          "bookmaker": "williamhill_us",
+          "line": 3.5,
+          "overPrice": 1.61,
+          "underPrice": 2.11,
+          "lastUpdate": "2024-02-05T11:55:47Z"
+        },
+        {
+          "bookmaker": "fanduel",
+          "line": 3.5,
+          "overPrice": 1.64,
+          "underPrice": 2.2,
+          "lastUpdate": "2024-02-05T11:52:04Z"
+        },
+        {
+          "bookmaker": "draftkings",
+          "line": 3.5,
+          "overPrice": 1.6,
+          "underPrice": 2.3,
+          "lastUpdate": "2024-02-05T11:55:53Z"
+        },
+        {
+          "bookmaker": "betmgm",
+          "line": 3.5,
+          "overPrice": 1.62,
+          "underPrice": 2.15,
+          "lastUpdate": "2024-02-05T11:55:31Z"
+        },
+        {
+          "bookmaker": "wynnbet",
+          "line": 4.5,
+          "overPrice": 2.22,
+          "underPrice": 1.41,
+          "lastUpdate": "2024-02-05T11:55:42Z"
+        },
+        {
+          "bookmaker": "betonlineag",
+          "line": 3.5,
+          "overPrice": 1.65,
+          "underPrice": 2.19,
+          "lastUpdate": "2024-02-05T11:55:03Z"
+        },
+        {
+          "bookmaker": "pointsbetus",
+          "line": 3.5,
+          "overPrice": 1.61,
+          "underPrice": 2.15,
+          "lastUpdate": "2024-02-05T11:55:00Z"
+        }
+      ],
+      "eventId": "32d66545af5b369c7303d515c6e5126c",
+      "timestamp": "2024-02-05T11:55:38Z"
+    },
+    {
+      "date": "2024-02-05",
+      "gameDate": "2024-02-05",
+      "playerId": 8481186,
+      "playerName": "Logan O'Connor",
+      "team": "COL",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 2,
+      "oddsAvailable": false,
+      "oddsCount": 0,
+      "odds": [],
+      "eventId": "32d66545af5b369c7303d515c6e5126c",
+      "timestamp": "2024-02-05T11:55:38Z"
+    },
+    {
+      "date": "2024-02-05",
+      "gameDate": "2024-02-05",
+      "playerId": 8478420,
+      "playerName": "Mikko Rantanen",
+      "team": "COL",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 1,
+      "oddsAvailable": true,
+      "oddsCount": 9,
+      "odds": [
+        {
+          "bookmaker": "betrivers",
+          "line": 3.5,
+          "overPrice": 2.45,
+          "underPrice": 1.53,
+          "lastUpdate": "2024-02-05T11:54:09Z"
+        },
+        {
+          "bookmaker": "unibet_us",
+          "line": 3.5,
+          "overPrice": 2.45,
+          "underPrice": 1.53,
+          "lastUpdate": "2024-02-05T11:55:19Z"
+        },
+        {
+          "bookmaker": "williamhill_us",
+          "line": 2.5,
+          "overPrice": 1.55,
+          "underPrice": 2.23,
+          "lastUpdate": "2024-02-05T11:55:47Z"
+        },
+        {
+          "bookmaker": "fanduel",
+          "line": 2.5,
+          "overPrice": 1.6,
+          "underPrice": 2.26,
+          "lastUpdate": "2024-02-05T11:52:04Z"
+        },
+        {
+          "bookmaker": "draftkings",
+          "line": 2.5,
+          "overPrice": 1.57,
+          "underPrice": 2.35,
+          "lastUpdate": "2024-02-05T11:55:53Z"
+        },
+        {
+          "bookmaker": "betmgm",
+          "line": 2.5,
+          "overPrice": 1.54,
+          "underPrice": 2.3,
+          "lastUpdate": "2024-02-05T11:55:31Z"
+        },
+        {
+          "bookmaker": "wynnbet",
+          "line": 3.5,
+          "overPrice": 2.22,
+          "underPrice": 1.41,
+          "lastUpdate": "2024-02-05T11:55:42Z"
+        },
+        {
+          "bookmaker": "betonlineag",
+          "line": 2.5,
+          "overPrice": 1.59,
+          "underPrice": 2.29,
+          "lastUpdate": "2024-02-05T11:55:03Z"
+        },
+        {
+          "bookmaker": "pointsbetus",
+          "line": 2.5,
+          "overPrice": 1.5,
+          "underPrice": 2.35,
+          "lastUpdate": "2024-02-05T11:55:00Z"
+        }
+      ],
+      "eventId": "32d66545af5b369c7303d515c6e5126c",
+      "timestamp": "2024-02-05T11:55:38Z"
+    },
+    {
+      "date": "2024-02-05",
+      "gameDate": "2024-02-05",
+      "playerId": 8477425,
+      "playerName": "Miles Wood",
+      "team": "COL",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 4,
+      "oddsAvailable": true,
+      "oddsCount": 6,
+      "odds": [
+        {
+          "bookmaker": "williamhill_us",
+          "line": 1.5,
+          "overPrice": 1.52,
+          "underPrice": 2.3,
+          "lastUpdate": "2024-02-05T11:55:47Z"
+        },
+        {
+          "bookmaker": "fanduel",
+          "line": 1.5,
+          "overPrice": 1.52,
+          "underPrice": 2.46,
+          "lastUpdate": "2024-02-05T11:52:04Z"
+        },
+        {
+          "bookmaker": "draftkings",
+          "line": 1.5,
+          "overPrice": 1.53,
+          "underPrice": 2.45,
+          "lastUpdate": "2024-02-05T11:55:53Z"
+        },
+        {
+          "bookmaker": "betmgm",
+          "line": 1.5,
+          "overPrice": 1.53,
+          "underPrice": 2.4,
+          "lastUpdate": "2024-02-05T11:55:31Z"
+        },
+        {
+          "bookmaker": "betonlineag",
+          "line": 1.5,
+          "overPrice": 1.53,
+          "underPrice": 2.43,
+          "lastUpdate": "2024-02-05T11:55:03Z"
+        },
+        {
+          "bookmaker": "pointsbetus",
+          "line": 1.5,
+          "overPrice": 1.48,
+          "underPrice": 2.45,
+          "lastUpdate": "2024-02-05T11:55:00Z"
+        }
+      ],
+      "eventId": "32d66545af5b369c7303d515c6e5126c",
+      "timestamp": "2024-02-05T11:55:38Z"
+    },
+    {
+      "date": "2024-02-05",
+      "gameDate": "2024-02-05",
+      "playerId": 8479398,
+      "playerName": "Samuel Girard",
+      "team": "COL",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 2,
+      "oddsAvailable": false,
+      "oddsCount": 0,
+      "odds": [],
+      "eventId": "32d66545af5b369c7303d515c6e5126c",
+      "timestamp": "2024-02-05T11:55:38Z"
+    },
+    {
+      "date": "2024-02-05",
+      "gameDate": "2024-02-05",
+      "playerId": 8480069,
+      "playerName": "Cale Makar",
+      "team": "COL",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 1,
+      "oddsAvailable": true,
+      "oddsCount": 9,
+      "odds": [
+        {
+          "bookmaker": "betrivers",
+          "line": 2.5,
+          "overPrice": 1.57,
+          "underPrice": 2.3,
+          "lastUpdate": "2024-02-05T11:54:09Z"
+        },
+        {
+          "bookmaker": "unibet_us",
+          "line": 2.5,
+          "overPrice": 1.57,
+          "underPrice": 2.3,
+          "lastUpdate": "2024-02-05T11:55:19Z"
+        },
+        {
+          "bookmaker": "williamhill_us",
+          "line": 2.5,
+          "overPrice": 1.65,
+          "underPrice": 2.06,
+          "lastUpdate": "2024-02-05T11:55:47Z"
+        },
+        {
+          "bookmaker": "fanduel",
+          "line": 2.5,
+          "overPrice": 1.68,
+          "underPrice": 2.14,
+          "lastUpdate": "2024-02-05T11:52:04Z"
+        },
+        {
+          "bookmaker": "draftkings",
+          "line": 2.5,
+          "overPrice": 1.69,
+          "underPrice": 2.14,
+          "lastUpdate": "2024-02-05T11:55:53Z"
+        },
+        {
+          "bookmaker": "betmgm",
+          "line": 2.5,
+          "overPrice": 1.67,
+          "underPrice": 2.1,
+          "lastUpdate": "2024-02-05T11:55:31Z"
+        },
+        {
+          "bookmaker": "wynnbet",
+          "line": 2.5,
+          "overPrice": 1.49,
+          "underPrice": 2.03,
+          "lastUpdate": "2024-02-05T11:55:42Z"
+        },
+        {
+          "bookmaker": "betonlineag",
+          "line": 2.5,
+          "overPrice": 1.68,
+          "underPrice": 2.14,
+          "lastUpdate": "2024-02-05T11:55:03Z"
+        },
+        {
+          "bookmaker": "pointsbetus",
+          "line": 2.5,
+          "overPrice": 1.62,
+          "underPrice": 2.1,
+          "lastUpdate": "2024-02-05T11:55:00Z"
+        }
+      ],
+      "eventId": "32d66545af5b369c7303d515c6e5126c",
+      "timestamp": "2024-02-05T11:55:38Z"
+    },
+    {
+      "date": "2024-02-05",
+      "gameDate": "2024-02-05",
+      "playerId": 8476312,
+      "playerName": "Josh Manson",
+      "team": "COL",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 1,
+      "oddsAvailable": false,
+      "oddsCount": 0,
+      "odds": [],
+      "eventId": "32d66545af5b369c7303d515c6e5126c",
+      "timestamp": "2024-02-05T11:55:38Z"
+    }
+  ]
+}

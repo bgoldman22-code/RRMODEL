@@ -26,6 +26,14 @@ jobs:
           echo "👥 Fetching NHL player stats..."
           node scripts/nhl/update-player-stats.mjs
       
+      - name: Upload to Netlify Blobs
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          echo "☁️  Uploading to Netlify Blobs..."
+          node scripts/nhl/upload-to-blobs.mjs || echo "⚠️  Blobs upload failed (continuing anyway)"
+      
       - name: Update team stats
         run: |
           echo "📊 Fetching NHL team stats..."

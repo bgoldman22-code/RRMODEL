@@ -1,0 +1,422 @@
+{
+  "fetchedAt": "2025-10-23T18:37:27.998Z",
+  "dates": 95,
+  "games": 235,
+  "gamesWithOdds": 216,
+  "creditsUsed": 2185,
+  "errors": 0,
+  "oddsAvailabilityRate": "91.9%",
+  "sampleGames": [
+    {
+      "date": "2024-02-12",
+      "gameDate": "2024-02-12",
+      "playerId": 8482109,
+      "playerName": "Alexis Lafrenière",
+      "team": "NYR",
+      "opponent": "CGY",
+      "isHome": true,
+      "actualShots": 3,
+      "oddsAvailable": true,
+      "oddsCount": 1,
+      "odds": [
+        {
+          "bookmaker": "fanduel",
+          "line": 2.5,
+          "overPrice": 2,
+          "underPrice": 1.77,
+          "lastUpdate": "2024-02-12T11:53:55Z"
+        }
+      ],
+      "eventId": "5ba549bcd9883930b9172d7d7d1505cd",
+      "timestamp": "2024-02-12T11:55:38Z"
+    },
+    {
+      "date": "2024-02-13",
+      "gameDate": "2024-02-13",
+      "playerId": 8481540,
+      "playerName": "Cole Caufield",
+      "team": "MTL",
+      "opponent": "ANA",
+      "isHome": true,
+      "actualShots": 8,
+      "oddsAvailable": true,
+      "oddsCount": 5,
+      "odds": [
+        {
+          "bookmaker": "draftkings",
+          "line": 3.5,
+          "overPrice": 1.87,
+          "underPrice": 1.87,
+          "lastUpdate": "2024-02-13T11:52:32Z"
+        },
+        {
+          "bookmaker": "betmgm",
+          "line": 3.5,
+          "overPrice": 1.83,
+          "underPrice": 1.87,
+          "lastUpdate": "2024-02-13T11:55:15Z"
+        },
+        {
+          "bookmaker": "williamhill_us",
+          "line": 3.5,
+          "overPrice": 1.76,
+          "underPrice": 1.9,
+          "lastUpdate": "2024-02-13T11:54:40Z"
+        },
+        {
+          "bookmaker": "pointsbetus",
+          "line": 3.5,
+          "overPrice": 1.8,
+          "underPrice": 1.87,
+          "lastUpdate": "2024-02-13T11:54:47Z"
+        },
+        {
+          "bookmaker": "betonlineag",
+          "line": 3.5,
+          "overPrice": 1.9,
+          "underPrice": 1.86,
+          "lastUpdate": "2024-02-13T11:56:00Z"
+        }
+      ],
+      "eventId": "6569cd1f7f9ab29bc4d697e97abe710c",
+      "timestamp": "2024-02-13T11:55:39Z"
+    },
+    {
+      "date": "2024-02-13",
+      "gameDate": "2024-02-13",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "LAK",
+      "opponent": "BUF",
+      "isHome": false,
+      "actualShots": 4,
+      "oddsAvailable": true,
+      "oddsCount": 4,
+      "odds": [
+        {
+          "bookmaker": "draftkings",
+          "line": 1.5,
+          "overPrice": 1.6,
+          "underPrice": 2.3,
+          "lastUpdate": "2024-02-13T11:54:32Z"
+        },
+        {
+          "bookmaker": "williamhill_us",
+          "line": 1.5,
+          "overPrice": 1.59,
+          "underPrice": 2.15,
+          "lastUpdate": "2024-02-13T11:54:11Z"
+        },
+        {
+          "bookmaker": "betmgm",
+          "line": 1.5,
+          "overPrice": 1.61,
+          "underPrice": 2.25,
+          "lastUpdate": "2024-02-13T11:53:29Z"
+        },
+        {
+          "bookmaker": "pointsbetus",
+          "line": 1.5,
+          "overPrice": 1.53,
+          "underPrice": 2.25,
+          "lastUpdate": "2024-02-13T11:54:54Z"
+        }
+      ],
+      "eventId": "4a1d1db3fd1f32806b8ac1c343df8a2b",
+      "timestamp": "2024-02-13T11:55:39Z"
+    },
+    {
+      "date": "2024-02-13",
+      "gameDate": "2024-02-13",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "STL",
+      "isHome": true,
+      "actualShots": 3,
+      "oddsAvailable": true,
+      "oddsCount": 4,
+      "odds": [
+        {
+          "bookmaker": "draftkings",
+          "line": 4.5,
+          "overPrice": 2.2,
+          "underPrice": 1.67,
+          "lastUpdate": "2024-02-13T11:55:06Z"
+        },
+        {
+          "bookmaker": "williamhill_us",
+          "line": 4.5,
+          "overPrice": 2.06,
+          "underPrice": 1.65,
+          "lastUpdate": "2024-02-13T11:54:10Z"
+        },
+        {
+          "bookmaker": "betmgm",
+          "line": 4.5,
+          "overPrice": 2.15,
+          "underPrice": 1.62,
+          "lastUpdate": "2024-02-13T11:55:34Z"
+        },
+        {
+          "bookmaker": "pointsbetus",
+          "line": 4.5,
+          "overPrice": 2.05,
+          "underPrice": 1.65,
+          "lastUpdate": "2024-02-13T11:54:54Z"
+        }
+      ],
+      "eventId": "2b412f941b302c23109d18a8f9eabfcd",
+      "timestamp": "2024-02-13T11:55:39Z"
+    },
+    {
+      "date": "2024-02-13",
+      "gameDate": "2024-02-13",
+      "playerId": 8470613,
+      "playerName": "Brent Burns",
+      "team": "CAR",
+      "opponent": "DAL",
+      "isHome": false,
+      "actualShots": 4,
+      "oddsAvailable": true,
+      "oddsCount": 5,
+      "odds": [
+        {
+          "bookmaker": "draftkings",
+          "line": 2.5,
+          "overPrice": 1.83,
+          "underPrice": 1.91,
+          "lastUpdate": "2024-02-13T11:54:22Z"
+        },
+        {
+          "bookmaker": "williamhill_us",
+          "line": 2.5,
+          "overPrice": 1.79,
+          "underPrice": 1.87,
+          "lastUpdate": "2024-02-13T11:54:44Z"
+        },
+        {
+          "bookmaker": "betmgm",
+          "line": 2.5,
+          "overPrice": 1.83,
+          "underPrice": 1.91,
+          "lastUpdate": "2024-02-13T11:55:20Z"
+        },
+        {
+          "bookmaker": "betonlineag",
+          "line": 2.5,
+          "overPrice": 1.87,
+          "underPrice": 1.89,
+          "lastUpdate": "2024-02-13T11:54:32Z"
+        },
+        {
+          "bookmaker": "pointsbetus",
+          "line": 2.5,
+          "overPrice": 1.77,
+          "underPrice": 1.91,
+          "lastUpdate": "2024-02-13T11:54:49Z"
+        }
+      ],
+      "eventId": "aeb3b98f0dc0b6a28856b7834d65d1d5",
+      "timestamp": "2024-02-13T11:55:39Z"
+    },
+    {
+      "date": "2024-02-13",
+      "gameDate": "2024-02-13",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "EDM",
+      "isHome": false,
+      "actualShots": 4,
+      "oddsAvailable": true,
+      "oddsCount": 4,
+      "odds": [
+        {
+          "bookmaker": "draftkings",
+          "line": 2.5,
+          "overPrice": 2.35,
+          "underPrice": 1.57,
+          "lastUpdate": "2024-02-13T11:54:38Z"
+        },
+        {
+          "bookmaker": "williamhill_us",
+          "line": 2.5,
+          "overPrice": 2.23,
+          "underPrice": 1.55,
+          "lastUpdate": "2024-02-13T11:54:27Z"
+        },
+        {
+          "bookmaker": "betmgm",
+          "line": 2.5,
+          "overPrice": 2.3,
+          "underPrice": 1.57,
+          "lastUpdate": "2024-02-13T11:55:15Z"
+        },
+        {
+          "bookmaker": "pointsbetus",
+          "line": 2.5,
+          "overPrice": 2.25,
+          "underPrice": 1.56,
+          "lastUpdate": "2024-02-13T11:54:22Z"
+        }
+      ],
+      "eventId": "8760f787798c7ec29c8e899ce151e2a9",
+      "timestamp": "2024-02-13T11:55:39Z"
+    },
+    {
+      "date": "2024-02-14",
+      "gameDate": "2024-02-14",
+      "playerId": 8482079,
+      "playerName": "Marco Rossi",
+      "team": "MIN",
+      "opponent": "ARI",
+      "isHome": false,
+      "actualShots": 3,
+      "oddsAvailable": true,
+      "oddsCount": 6,
+      "odds": [
+        {
+          "bookmaker": "draftkings",
+          "line": 1.5,
+          "overPrice": 1.69,
+          "underPrice": 2.14,
+          "lastUpdate": "2024-02-14T11:55:06Z"
+        },
+        {
+          "bookmaker": "betonlineag",
+          "line": 1.5,
+          "overPrice": 1.65,
+          "underPrice": 2.18,
+          "lastUpdate": "2024-02-14T11:55:29Z"
+        },
+        {
+          "bookmaker": "betmgm",
+          "line": 1.5,
+          "overPrice": 1.65,
+          "underPrice": 2.15,
+          "lastUpdate": "2024-02-14T11:55:06Z"
+        },
+        {
+          "bookmaker": "williamhill_us",
+          "line": 1.5,
+          "overPrice": 1.61,
+          "underPrice": 2.11,
+          "lastUpdate": "2024-02-14T11:55:11Z"
+        },
+        {
+          "bookmaker": "fanduel",
+          "line": 1.5,
+          "overPrice": 1.64,
+          "underPrice": 2.2,
+          "lastUpdate": "2024-02-14T11:54:50Z"
+        },
+        {
+          "bookmaker": "pointsbetus",
+          "line": 1.5,
+          "overPrice": 1.62,
+          "underPrice": 2.1,
+          "lastUpdate": "2024-02-14T11:55:28Z"
+        }
+      ],
+      "eventId": "69d24b8915c8e663a4a3986e66363df5",
+      "timestamp": "2024-02-14T11:55:39Z"
+    },
+    {
+      "date": "2024-02-15",
+      "gameDate": "2024-02-15",
+      "playerId": 8482110,
+      "playerName": "Dawson Mercer",
+      "team": "NJD",
+      "opponent": "LAK",
+      "isHome": true,
+      "actualShots": 1,
+      "oddsAvailable": false,
+      "oddsCount": 0,
+      "odds": [],
+      "eventId": "7e4845ee143e747044db9331a3b3f2a3",
+      "timestamp": "2024-02-15T11:55:38Z"
+    },
+    {
+      "date": "2024-02-15",
+      "gameDate": "2024-02-15",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "VAN",
+      "isHome": false,
+      "actualShots": 2,
+      "oddsAvailable": true,
+      "oddsCount": 5,
+      "odds": [
+        {
+          "bookmaker": "betrivers",
+          "line": 2.5,
+          "overPrice": 1.88,
+          "underPrice": 1.88,
+          "lastUpdate": "2024-02-15T11:54:55Z"
+        },
+        {
+          "bookmaker": "unibet_us",
+          "line": 2.5,
+          "overPrice": 1.88,
+          "underPrice": 1.88,
+          "lastUpdate": "2024-02-15T11:54:13Z"
+        },
+        {
+          "bookmaker": "betonlineag",
+          "line": 2.5,
+          "overPrice": 2.1,
+          "underPrice": 1.7,
+          "lastUpdate": "2024-02-15T11:55:37Z"
+        },
+        {
+          "bookmaker": "draftkings",
+          "line": 2.5,
+          "overPrice": 2.1,
+          "underPrice": 1.71,
+          "lastUpdate": "2024-02-15T11:54:53Z"
+        },
+        {
+          "bookmaker": "betmgm",
+          "line": 2.5,
+          "overPrice": 2.05,
+          "underPrice": 1.69,
+          "lastUpdate": "2024-02-15T11:54:59Z"
+        }
+      ],
+      "eventId": "ed83975a19303fc8afb1d88c96af8c3a",
+      "timestamp": "2024-02-15T11:55:38Z"
+    },
+    {
+      "date": "2024-02-15",
+      "gameDate": "2024-02-15",
+      "playerId": 8481542,
+      "playerName": "Moritz Seider",
+      "team": "DET",
+      "opponent": "VAN",
+      "isHome": false,
+      "actualShots": 1,
+      "oddsAvailable": true,
+      "oddsCount": 2,
+      "odds": [
+        {
+          "bookmaker": "betrivers",
+          "line": 1.5,
+          "overPrice": 1.77,
+          "underPrice": 2,
+          "lastUpdate": "2024-02-15T11:54:55Z"
+        },
+        {
+          "bookmaker": "unibet_us",
+          "line": 1.5,
+          "overPrice": 1.77,
+          "underPrice": 2,
+          "lastUpdate": "2024-02-15T11:54:13Z"
+        }
+      ],
+      "eventId": "ed83975a19303fc8afb1d88c96af8c3a",
+      "timestamp": "2024-02-15T11:55:38Z"
+    }
+  ]
+}

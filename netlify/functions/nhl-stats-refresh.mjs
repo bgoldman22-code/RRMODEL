@@ -154,6 +154,10 @@ export async function handler(event, context) {
   const startTime = Date.now();
   const allPlayers = [];
   
+  // Check if running as background/scheduled function
+  const isScheduled = context?.clientContext?.custom?.netlify === 'scheduled';
+  const timeLimit = isScheduled ? 600000 : 9000; // 10 min for scheduled, 9 sec for HTTP
+  
   try {
     // Fetch all rosters
     console.log('📋 Fetching team rosters...');
@@ -163,8 +167,18 @@ export async function handler(event, context) {
     
     console.log(`✅ Fetched ${validRosters.length} rosters`);
     
+    // For HTTP requests, only process first 8 teams to avoid timeout
+    const teamsToProcess = isScheduled ? validRosters : validRosters.slice(0, 8);
+    console.log(`⏱️  Processing ${teamsToProcess.length} teams (${isScheduled ? 'scheduled' : 'HTTP'} mode)`);
+    
     // Process each team's skaters
-    for (const roster of validRosters) {
+    for (const roster of teamsToProcess) {
+      // Check time limit
+      if (Date.now() - startTime > timeLimit) {
+        console.log('⏰ Time limit reached, saving partial data...');
+        break;
+      }
+      
       const skaters = [
         ...roster.forwards.map(p => ({ ...p, position: p.positionCode || 'F', team: roster.team })),
         ...roster.defensemen.map(p => ({ ...p, position: p.positionCode || 'D', team: roster.team }))

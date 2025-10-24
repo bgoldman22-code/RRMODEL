@@ -1,0 +1,112 @@
+🏒 NHL Historical Game Data Fetcher
+======================================================================
+Training Seasons: 20212022, 20222023, 20232024, 20242025
+This will take 30-60 minutes depending on API rate limits...
+
+
+📅 Processing 20212022...
+----------------------------------------------------------------------
+📋 Fetching roster for 20212022...
+✅ Found 973 players for 20212022
+Found 973 players
+
+  Progress: 50/973 players | 2,379 games | 0 errors
+  Progress: 100/973 players | 4,620 games | 0 errors
+  Progress: 150/973 players | 7,423 games | 0 errors
+  Progress: 200/973 players | 9,806 games | 0 errors
+  Progress: 250/973 players | 12,086 games | 0 errors
+  Progress: 300/973 players | 14,517 games | 0 errors
+  Progress: 350/973 players | 16,980 games | 0 errors
+  Progress: 400/973 players | 19,223 games | 0 errors
+  Progress: 450/973 players | 21,623 games | 0 errors
+  Progress: 500/973 players | 23,687 games | 0 errors
+  Progress: 550/973 players | 26,028 games | 0 errors
+  Progress: 600/973 players | 28,582 games | 0 errors
+  Progress: 650/973 players | 30,722 games | 0 errors
+  Progress: 700/973 players | 32,838 games | 0 errors
+  Progress: 750/973 players | 35,328 games | 0 errors
+  Progress: 800/973 players | 37,724 games | 0 errors
+  Progress: 850/973 players | 40,284 games | 0 errors
+  Progress: 900/973 players | 42,610 games | 0 errors
+  Progress: 950/973 players | 44,843 games | 0 errors
+
+✅ 20212022 complete: 45,881 total games
+
+📅 Processing 20222023...
+----------------------------------------------------------------------
+📋 Fetching roster for 20222023...
+✅ Found 927 players for 20222023
+Found 927 players
+
+  Progress: 50/927 players | 48,423 games | 0 errors
+  Progress: 100/927 players | 51,005 games | 0 errors
+  Progress: 150/927 players | 53,901 games | 0 errors
+  Progress: 200/927 players | 55,997 games | 0 errors
+  Progress: 250/927 players | 58,269 games | 0 errors
+  Progress: 300/927 players | 60,645 games | 0 errors
+  Progress: 350/927 players | 63,365 games | 0 errors
+  Progress: 400/927 players | 66,103 games | 0 errors
+  Progress: 450/927 players | 68,377 games | 0 errors
+  Progress: 500/927 players | 70,666 games | 0 errors
+  Progress: 550/927 players | 73,304 games | 0 errors
+  Progress: 600/927 players | 76,090 games | 0 errors
+  Progress: 650/927 players | 78,428 games | 0 errors
+  Progress: 700/927 players | 81,135 games | 0 errors
+  Progress: 750/927 players | 83,359 games | 0 errors
+  Progress: 800/927 players | 86,012 games | 0 errors
+  Progress: 850/927 players | 88,145 games | 0 errors
+  Progress: 900/927 players | 90,462 games | 0 errors
+
+✅ 20222023 complete: 91,919 total games
+
+📅 Processing 20232024...
+----------------------------------------------------------------------
+📋 Fetching roster for 20232024...
+✅ Found 584 players for 20232024
+Found 584 players
+
+  Progress: 50/584 players | 94,591 games | 0 errors
+  Progress: 100/584 players | 97,417 games | 0 errors
+  Progress: 150/584 players | 100,017 games | 0 errors
+  Progress: 200/584 players | 102,818 games | 0 errors
+  Progress: 250/584 players | 105,831 games | 0 errors
+  Progress: 300/584 players | 108,904 games | 0 errors
+  Progress: 350/584 players | 111,299 games | 0 errors
+  Progress: 400/584 players | 114,590 games | 0 errors
+  Progress: 450/584 players | 117,801 games | 0 errors
+  Progress: 500/584 players | 120,662 games | 0 errors
+  Progress: 550/584 players | 122,924 games | 0 errors
+
+✅ 20232024 complete: 125,113 total games
+
+📅 Processing 20242025...
+----------------------------------------------------------------------
+📋 Fetching roster for 20242025...
+✅ Found 768 players for 20242025
+Found 768 players
+
+  Progress: 50/768 players | 128,313 games | 0 errors
+  Progress: 100/768 players | 131,523 games | 0 errors
+  Progress: 150/768 players | 134,382 games | 0 errors
+  Progress: 200/768 players | 137,496 games | 0 errors
+  Progress: 250/768 players | 140,439 games | 0 errors
+  Progress: 300/768 players | 143,485 games | 0 errors
+  Progress: 350/768 players | 146,474 games | 0 errors
+  Progress: 500/768 players | 154,501 games | 0 errors
+  Progress: 550/768 players | 157,568 games | 0 errors
+  Progress: 600/768 players | 160,772 games | 0 errors
+  Progress: 650/768 players | 163,279 games | 0 errors
+  Progress: 700/768 players | 166,253 games | 0 errors
+  Progress: 750/768 players | 169,054 games | 0 errors
+
+✅ 20242025 complete: 169,847 total games
+
+======================================================================
+🎉 Data collection complete!
+Total games collected: 169,847
+Unique players: 1242
+
+💾 Saved to: /Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nhl/historical_game_data.json
+File size: 74,032 KB
+
+✅ Done!

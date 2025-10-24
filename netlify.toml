@@ -77,3 +77,8 @@
 [[scheduled.functions]]
   name = "nhl-stats-refresh"
   cron = "0 14 * * *"
+
+# NHL Stats Refresh configuration - allow longer execution time
+[functions."nhl-stats-refresh"]
+  included_files = []
+  external_node_modules = ["@netlify/blobs"]

@@ -1,138 +1,274 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-10-22T18:24:32.092Z",
+  "generatedAt": "2025-10-23T12:40:53.463Z",
   "parameters": {
     "version": "1.0",
-    "generatedAt": "2025-10-22T18:24:19.356Z",
-    "trainingGames": 2862,
+    "generatedAt": "2025-10-22T19:06:57.905Z",
+    "trainingGames": 169847,
     "homeAwayEffects": {
-      "EDM": {
-        "homeMultiplier": 1.186433313396338,
+      "ANA": {
+        "homeMultiplier": 1.0477711427365033,
         "awayMultiplier": 1,
-        "homeSampleSize": 146,
-        "awaySampleSize": 149,
-        "homeAvgShots": 3.3835616438356166,
-        "awayAvgShots": 2.8322147651006713
-      },
-      "TOR": {
-        "homeMultiplier": 1.0493112384521763,
-        "awayMultiplier": 1,
-        "homeSampleSize": 145,
-        "awaySampleSize": 153,
-        "homeAvgShots": 3.303448275862069,
-        "awayAvgShots": 3.150326797385621
-      },
-      "TBL": {
-        "homeMultiplier": 1.001606486030445,
-        "awayMultiplier": 1,
-        "homeSampleSize": 79,
-        "awaySampleSize": 80,
-        "homeAvgShots": 3.5569620253164556,
-        "awayAvgShots": 3.625
-      },
-      "COL": {
-        "homeMultiplier": 1.0228710463002209,
-        "awayMultiplier": 1,
-        "homeSampleSize": 161,
-        "awaySampleSize": 157,
-        "homeAvgShots": 3.7888198757763973,
-        "awayAvgShots": 3.770700636942675
-      },
-      "VAN": {
-        "homeMultiplier": 1.1259568088592615,
-        "awayMultiplier": 1,
-        "homeSampleSize": 74,
-        "awaySampleSize": 72,
-        "homeAvgShots": 2.310810810810811,
-        "awayAvgShots": 2.013888888888889
-      },
-      "NYR": {
-        "homeMultiplier": 1.0614406797296065,
-        "awayMultiplier": 1,
-        "homeSampleSize": 175,
-        "awaySampleSize": 169,
-        "homeAvgShots": 2.96,
-        "awayAvgShots": 2.7041420118343193
-      },
-      "BOS": {
-        "homeMultiplier": 1.1080556169917881,
-        "awayMultiplier": 1,
-        "homeSampleSize": 100,
-        "awaySampleSize": 87,
-        "homeAvgShots": 1.6,
-        "awayAvgShots": 1.4942528735632183
-      },
-      "VGK": {
-        "homeMultiplier": 1.1851728256898821,
-        "awayMultiplier": 1,
-        "homeSampleSize": 43,
-        "awaySampleSize": 36,
-        "homeAvgShots": 2.5348837209302326,
-        "awayAvgShots": 2.1944444444444446
-      },
-      "SJS": {
-        "homeMultiplier": 0.7021007790612889,
-        "awayMultiplier": 1,
-        "homeSampleSize": 22,
-        "awaySampleSize": 26,
-        "homeAvgShots": 1.9090909090909092,
-        "awayAvgShots": 2.730769230769231
-      },
-      "CAR": {
-        "homeMultiplier": 1.0523291286519003,
-        "awayMultiplier": 1,
-        "homeSampleSize": 136,
-        "awaySampleSize": 133,
-        "homeAvgShots": 2.3970588235294117,
-        "awayAvgShots": 2.2406015037593985
-      },
-      "NJD": {
-        "homeMultiplier": 1.1337886117656701,
-        "awayMultiplier": 1,
-        "homeSampleSize": 81,
-        "awaySampleSize": 82,
-        "homeAvgShots": 2.8395061728395063,
-        "awayAvgShots": 2.4146341463414633
+        "homeSampleSize": 2637,
+        "awaySampleSize": 2642,
+        "homeAvgShots": 1.639362912400455,
+        "awayAvgShots": 1.5673732021196063
       },
       "PIT": {
-        "homeMultiplier": 1.1040148064572606,
+        "homeMultiplier": 1.0574089610918322,
         "awayMultiplier": 1,
-        "homeSampleSize": 64,
-        "awaySampleSize": 66,
-        "homeAvgShots": 1.3125,
-        "awayAvgShots": 1.1666666666666667
+        "homeSampleSize": 2668,
+        "awaySampleSize": 2681,
+        "homeAvgShots": 1.9441529235382309,
+        "awayAvgShots": 1.8299142111152555
       },
-      "CHI": {
-        "homeMultiplier": 1.1140764828388103,
+      "MIN": {
+        "homeMultiplier": 1.015541648506599,
         "awayMultiplier": 1,
-        "homeSampleSize": 28,
-        "awaySampleSize": 28,
-        "homeAvgShots": 1.8928571428571428,
-        "awayAvgShots": 1.75
+        "homeSampleSize": 2788,
+        "awaySampleSize": 2793,
+        "homeAvgShots": 1.742826398852224,
+        "awayAvgShots": 1.7092731829573935
       },
-      "CBJ": {
-        "homeMultiplier": 1.022295139740497,
+      "PHI": {
+        "homeMultiplier": 1.0804099329467245,
         "awayMultiplier": 1,
-        "homeSampleSize": 19,
-        "awaySampleSize": 21,
-        "homeAvgShots": 2.1052631578947367,
-        "awayAvgShots": 2.1904761904761907
+        "homeSampleSize": 2738,
+        "awaySampleSize": 2749,
+        "homeAvgShots": 1.7611395178962745,
+        "awayAvgShots": 1.6242269916333212
       },
-      "DET": {
-        "homeMultiplier": 0.9135670513240728,
+      "BOS": {
+        "homeMultiplier": 1.0551509041136582,
         "awayMultiplier": 1,
-        "homeSampleSize": 82,
-        "awaySampleSize": 82,
-        "homeAvgShots": 2.817073170731707,
-        "awayAvgShots": 3.048780487804878
+        "homeSampleSize": 2611,
+        "awaySampleSize": 2641,
+        "homeAvgShots": 1.8314821907315204,
+        "awayAvgShots": 1.733434305187429
+      },
+      "COL": {
+        "homeMultiplier": 1.042444966968586,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2590,
+        "awaySampleSize": 2600,
+        "homeAvgShots": 1.9509652509652509,
+        "awayAvgShots": 1.871923076923077
+      },
+      "TBL": {
+        "homeMultiplier": 1.067710424728754,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2692,
+        "awaySampleSize": 2684,
+        "homeAvgShots": 1.7578008915304606,
+        "awayAvgShots": 1.6445603576751118
+      },
+      "SEA": {
+        "homeMultiplier": 1.0282314190936308,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2742,
+        "awaySampleSize": 2740,
+        "homeAvgShots": 1.662290299051787,
+        "awayAvgShots": 1.6156934306569344
+      },
+      "OTT": {
+        "homeMultiplier": 1.0857986710552432,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2716,
+        "awaySampleSize": 2718,
+        "homeAvgShots": 1.8604565537555229,
+        "awayAvgShots": 1.7130242825607065
+      },
+      "BUF": {
+        "homeMultiplier": 1.0949208041231602,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2619,
+        "awaySampleSize": 2610,
+        "homeAvgShots": 1.7850324551355479,
+        "awayAvgShots": 1.6310344827586207
+      },
+      "VGK": {
+        "homeMultiplier": 1.0513190666886896,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2765,
+        "awaySampleSize": 2751,
+        "homeAvgShots": 1.8079566003616636,
+        "awayAvgShots": 1.7273718647764449
       },
       "FLA": {
-        "homeMultiplier": 1.0684761207561675,
+        "homeMultiplier": 1.1289609923224742,
         "awayMultiplier": 1,
-        "homeSampleSize": 84,
-        "awaySampleSize": 82,
-        "homeAvgShots": 2.8214285714285716,
-        "awayAvgShots": 2.6951219512195124
+        "homeSampleSize": 2665,
+        "awaySampleSize": 2650,
+        "homeAvgShots": 2.1302063789868666,
+        "awayAvgShots": 1.8826415094339624
+      },
+      "LAK": {
+        "homeMultiplier": 1.0380427239158907,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2792,
+        "awaySampleSize": 2788,
+        "homeAvgShots": 1.8219914040114613,
+        "awayAvgShots": 1.7496413199426113
+      },
+      "CGY": {
+        "homeMultiplier": 1.0228628616801354,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2704,
+        "awaySampleSize": 2703,
+        "homeAvgShots": 1.9230769230769231,
+        "awayAvgShots": 1.8705142434332223
+      },
+      "CHI": {
+        "homeMultiplier": 1.0753203545845864,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2455,
+        "awaySampleSize": 2466,
+        "homeAvgShots": 1.6122199592668025,
+        "awayAvgShots": 1.4959448499594485
+      },
+      "MTL": {
+        "homeMultiplier": 1.0597167252736757,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2745,
+        "awaySampleSize": 2739,
+        "homeAvgShots": 1.606193078324226,
+        "awayAvgShots": 1.5177071924059875
+      },
+      "VAN": {
+        "homeMultiplier": 0.9784604098548,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2716,
+        "awaySampleSize": 2722,
+        "homeAvgShots": 1.634020618556701,
+        "awayAvgShots": 1.674504041146216
+      },
+      "CAR": {
+        "homeMultiplier": 1.0118579646507093,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2733,
+        "awaySampleSize": 2734,
+        "homeAvgShots": 1.8796194657885108,
+        "awayAvgShots": 1.8606437454279443
+      },
+      "CBJ": {
+        "homeMultiplier": 1.0084359481609593,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2714,
+        "awaySampleSize": 2725,
+        "homeAvgShots": 1.687177597641857,
+        "awayAvgShots": 1.6715596330275229
+      },
+      "SJS": {
+        "homeMultiplier": 1.0319103742504663,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2617,
+        "awaySampleSize": 2621,
+        "homeAvgShots": 1.6010699273977838,
+        "awayAvgShots": 1.5501716901945821
+      },
+      "DAL": {
+        "homeMultiplier": 1.0257199760402302,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2665,
+        "awaySampleSize": 2672,
+        "homeAvgShots": 1.7455909943714822,
+        "awayAvgShots": 1.6946107784431137
+      },
+      "DET": {
+        "homeMultiplier": 1.0581898282030304,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2722,
+        "awaySampleSize": 2717,
+        "homeAvgShots": 1.6377663482733285,
+        "awayAvgShots": 1.549871181450129
+      },
+      "NJD": {
+        "homeMultiplier": 0.9965104771749752,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2739,
+        "awaySampleSize": 2735,
+        "homeAvgShots": 1.7619569185834245,
+        "awayAvgShots": 1.76672760511883
+      },
+      "STL": {
+        "homeMultiplier": 0.9970689696829333,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2788,
+        "awaySampleSize": 2797,
+        "homeAvgShots": 1.6226685796269726,
+        "awayAvgShots": 1.627457990704326
+      },
+      "EDM": {
+        "homeMultiplier": 1.0638669938080776,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2706,
+        "awaySampleSize": 2700,
+        "homeAvgShots": 1.9693274205469327,
+        "awayAvgShots": 1.8488888888888888
+      },
+      "NYR": {
+        "homeMultiplier": 1.0514448230636424,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2812,
+        "awaySampleSize": 2809,
+        "homeAvgShots": 1.7489331436699858,
+        "awayAvgShots": 1.6642933428266287
+      },
+      "WPG": {
+        "homeMultiplier": 1.063047296148861,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2871,
+        "awaySampleSize": 2873,
+        "homeAvgShots": 1.7425983977708115,
+        "awayAvgShots": 1.6380090497737556
+      },
+      "NSH": {
+        "homeMultiplier": 1.0422035148604238,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2660,
+        "awaySampleSize": 2664,
+        "homeAvgShots": 1.743984962406015,
+        "awayAvgShots": 1.6734234234234233
+      },
+      "NYI": {
+        "homeMultiplier": 1.0347169161907286,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2770,
+        "awaySampleSize": 2775,
+        "homeAvgShots": 1.7310469314079422,
+        "awayAvgShots": 1.6695495495495496
+      },
+      "TOR": {
+        "homeMultiplier": 1.022877584695573,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2719,
+        "awaySampleSize": 2731,
+        "homeAvgShots": 1.8304523721956603,
+        "awayAvgShots": 1.7846942511900403
+      },
+      "WSH": {
+        "homeMultiplier": 1.0236583067534124,
+        "awayMultiplier": 1,
+        "homeSampleSize": 2757,
+        "awaySampleSize": 2762,
+        "homeAvgShots": 1.6800870511425463,
+        "awayAvgShots": 1.6278059377262852
+      },
+      "ARI": {
+        "homeMultiplier": 0.9993594275704963,
+        "awayMultiplier": 1,
+        "homeSampleSize": 252,
+        "awaySampleSize": 281,
+        "homeAvgShots": 1.4206349206349207,
+        "awayAvgShots": 1.4341637010676156
+      },
+      "UTA": {
+        "homeMultiplier": 1.089527079507275,
+        "awayMultiplier": 1,
+        "homeSampleSize": 702,
+        "awaySampleSize": 704,
+        "homeAvgShots": 1.688034188034188,
+        "awayAvgShots": 1.5426136363636365
       }
     },
     "venueEffects": {
@@ -143,1043 +279,1063 @@
     "toiRelationship": {
       "curve": {
         "veryLow": {
-          "avgToi": 8.382692307692306,
-          "avgShots": 1.1538461538461537,
-          "shotRatePerMinute": 0.13764624913971096,
-          "sampleSize": 26
+          "avgToi": 8.350110832829508,
+          "avgShots": 0.8079281457811556,
+          "shotRatePerMinute": 0.09675657748214368,
+          "sampleSize": 11579
         },
         "low": {
-          "avgToi": 11.621846846846848,
-          "avgShots": 1.6081081081081081,
-          "shotRatePerMinute": 0.1383694114455146,
-          "sampleSize": 74
+          "avgToi": 11.654217946495605,
+          "avgShots": 1.1631998613277865,
+          "shotRatePerMinute": 0.0998093451373593,
+          "sampleSize": 23076
         },
         "medium": {
-          "avgToi": 15.524767932489453,
-          "avgShots": 2.0556962025316454,
-          "shotRatePerMinute": 0.1324139730442983,
-          "sampleSize": 395
+          "avgToi": 15.110913070669087,
+          "avgShots": 1.6015881137832357,
+          "shotRatePerMinute": 0.10598883775540904,
+          "sampleSize": 52767
         },
         "high": {
-          "avgToi": 19.139961175818087,
-          "avgShots": 2.598169717138103,
-          "shotRatePerMinute": 0.13574581961120677,
-          "sampleSize": 1202
+          "avgToi": 18.87537491679401,
+          "avgShots": 2.027741884960257,
+          "shotRatePerMinute": 0.1074278997847143,
+          "sampleSize": 51078
         },
         "veryHigh": {
-          "avgToi": 23.370131004366826,
-          "avgShots": 3.2733624454148473,
-          "shotRatePerMinute": 0.14006607172219973,
-          "sampleSize": 1145
+          "avgToi": 23.31069094150267,
+          "avgShots": 2.2652845635811434,
+          "shotRatePerMinute": 0.09717792446675186,
+          "sampleSize": 30292
         }
       },
       "powerLaw": {
-        "exponent": 1.4181986691922475,
-        "coefficient": 0.028414949068322166
+        "exponent": 1.2356057444418467,
+        "coefficient": 0.03230298784181796
       }
     },
     "powerPlayBoost": {
       "overallBoost": 0,
       "pp1AvgShots": 0,
       "pp2AvgShots": 0,
-      "baselineAvgShots": 2.750524109014675,
+      "baselineAvgShots": 1.7293740837341842,
       "pp1Boost": 0,
       "pp2Boost": 0
     },
     "streakEffects": {
-      "hotMultiplier": 1.4126838235294117,
-      "coldMultiplier": 0.5081340020576132,
+      "hotMultiplier": 1.7845577774358612,
+      "coldMultiplier": 0.5866367023669082,
       "hotThreshold": 4,
       "coldThreshold": 1,
-      "hotSampleSize": 425,
-      "coldSampleSize": 162
+      "hotSampleSize": 5444,
+      "coldSampleSize": 47568
     },
     "dispersionParams": {
-      "forward": 1.1405321489691438,
-      "defense": 1.095446748173706
+      "forward": 1.1002156249836472,
+      "defense": 1.078466914053043
     },
     "confidenceLevel": "HIGH",
-    "lastUpdated": "2025-10-22T18:24:19.359Z"
+    "lastUpdated": "2025-10-22T19:06:57.906Z"
   },
   "results": {
-    "totalPredictions": 2662,
-    "meanAbsoluteError": 1.7101265081133554,
-    "medianAbsoluteError": 1.5313768321025392,
-    "rmse": 2.0818023227301206,
-    "meanErrorPct": 0.7659599907869706,
-    "correlation": 0.4217722899546712,
-    "bias": 1.0280521610977287,
-    "biasPercent": 37.4732966293599,
-    "overProjectionCount": 1959,
-    "underProjectionCount": 703,
-    "modelScore": 29.50886746837316
+    "totalPredictions": 158659,
+    "meanAbsoluteError": 1.2818428433675049,
+    "medianAbsoluteError": 1.10986792776766,
+    "rmse": 1.5991008258153732,
+    "meanErrorPct": 0.5049954645944824,
+    "correlation": 0.402140019364955,
+    "bias": 0.5645160219126686,
+    "biasPercent": 32.34148832429112,
+    "overProjectionCount": 108986,
+    "underProjectionCount": 49673,
+    "modelScore": 35.57611528071813
   },
   "errorDistribution": [
     {
       "error": 0,
-      "count": 219
+      "count": 18459
     },
     {
       "error": 0.5,
-      "count": 448
+      "count": 36296
     },
     {
       "error": 1,
-      "count": 452
+      "count": 33594
     },
     {
       "error": 1.5,
-      "count": 368
+      "count": 27742
     },
     {
       "error": 2,
-      "count": 361
+      "count": 18717
     },
     {
       "error": 2.5,
-      "count": 294
+      "count": 11656
     },
     {
       "error": 3,
-      "count": 229
+      "count": 6455
     },
     {
       "error": 3.5,
-      "count": 141
+      "count": 2849
     },
     {
       "error": 4,
-      "count": 76
+      "count": 1287
     },
     {
       "error": 4.5,
-      "count": 37
+      "count": 707
     },
     {
       "error": 5,
-      "count": 15
+      "count": 421
     },
     {
       "error": 5.5,
-      "count": 11
+      "count": 221
     },
     {
       "error": 6,
-      "count": 5
+      "count": 118
     },
     {
       "error": 6.5,
-      "count": 3
+      "count": 72
     },
     {
       "error": 7,
-      "count": 2
+      "count": 36
+    },
+    {
+      "error": 7.5,
+      "count": 15
+    },
+    {
+      "error": 8,
+      "count": 5
     },
     {
       "error": 8.5,
+      "count": 6
+    },
+    {
+      "error": 9,
+      "count": 1
+    },
+    {
+      "error": 9.5,
+      "count": 1
+    },
+    {
+      "error": 10,
       "count": 1
     }
   ],
   "samplePredictions": [
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-10-08",
-      "projection": 2.831126444273525,
-      "actual": 2,
-      "error": 0.8311264442735249,
-      "errorPct": 0.41556322213676244
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-11-11",
+      "projection": 1.498369104026026,
+      "actual": 0,
+      "error": 1.498369104026026,
+      "errorPct": 0
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-10-11",
-      "projection": 2.2885314946128994,
-      "actual": 2,
-      "error": 0.2885314946128994,
-      "errorPct": 0.1442657473064497
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-11-15",
+      "projection": 1.1174831497426267,
+      "actual": 0,
+      "error": 1.1174831497426267,
+      "errorPct": 0
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-10-12",
-      "projection": 2.009569734190309,
-      "actual": 2,
-      "error": 0.009569734190308932,
-      "errorPct": 0.004784867095154466
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-10-15",
-      "projection": 2.713098042781268,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-11-16",
+      "projection": 1.666892358237295,
       "actual": 3,
-      "error": 0.28690195721873213,
-      "errorPct": 0.09563398573957738
+      "error": 1.333107641762705,
+      "errorPct": 0.4443692139209017
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-10-17",
-      "projection": 2.2503970131214195,
-      "actual": 3,
-      "error": 0.7496029868785805,
-      "errorPct": 0.24986766229286017
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-11-20",
+      "projection": 1.4614564136221009,
+      "actual": 1,
+      "error": 0.4614564136221009,
+      "errorPct": 0.4614564136221009
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-10-19",
-      "projection": 2.453928625652667,
-      "actual": 3,
-      "error": 0.5460713743473331,
-      "errorPct": 0.18202379144911104
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-10-22",
-      "projection": 2.2388143814860624,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-11-21",
+      "projection": 1.605484633805507,
       "actual": 2,
-      "error": 0.23881438148606238,
-      "errorPct": 0.11940719074303119
+      "error": 0.3945153661944929,
+      "errorPct": 0.19725768309724645
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-10-25",
-      "projection": 2.285250396100905,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-12-04",
+      "projection": 1.1693258528153259,
+      "actual": 2,
+      "error": 0.8306741471846741,
+      "errorPct": 0.41533707359233707
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-12-05",
+      "projection": 1.153312249442933,
+      "actual": 1,
+      "error": 0.1533122494429331,
+      "errorPct": 0.1533122494429331
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-12-07",
+      "projection": 1.397443608338399,
+      "actual": 0,
+      "error": 1.397443608338399,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-12-09",
+      "projection": 1.2821540857741192,
+      "actual": 1,
+      "error": 0.28215408577411916,
+      "errorPct": 0.28215408577411916
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-12-11",
+      "projection": 0.9766366930608594,
+      "actual": 0,
+      "error": 0.9766366930608594,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-12-14",
+      "projection": 1.4064266873907993,
+      "actual": 0,
+      "error": 1.4064266873907993,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-12-16",
+      "projection": 1.4599052098891558,
+      "actual": 1,
+      "error": 0.45990520988915584,
+      "errorPct": 0.45990520988915584
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-12-19",
+      "projection": 1.3414223069297184,
+      "actual": 3,
+      "error": 1.6585776930702816,
+      "errorPct": 0.5528592310234272
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2021-12-30",
+      "projection": 1.7247617205371848,
+      "actual": 2,
+      "error": 0.2752382794628152,
+      "errorPct": 0.1376191397314076
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-01-01",
+      "projection": 1.7151599513281726,
+      "actual": 0,
+      "error": 1.7151599513281726,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-01-13",
+      "projection": 1.3796805440348803,
+      "actual": 2,
+      "error": 0.6203194559651197,
+      "errorPct": 0.31015972798255986
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-01-15",
+      "projection": 1.3536425997985282,
+      "actual": 1,
+      "error": 0.3536425997985282,
+      "errorPct": 0.3536425997985282
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-01-17",
+      "projection": 1.6848220653368187,
+      "actual": 0,
+      "error": 1.6848220653368187,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-01-18",
+      "projection": 1.1390297577450894,
+      "actual": 2,
+      "error": 0.8609702422549106,
+      "errorPct": 0.4304851211274553
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-01-21",
+      "projection": 1.4707702230630577,
+      "actual": 1,
+      "error": 0.4707702230630577,
+      "errorPct": 0.4707702230630577
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-01-22",
+      "projection": 1.4243146698888522,
+      "actual": 2,
+      "error": 0.5756853301111478,
+      "errorPct": 0.2878426650555739
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-01-25",
+      "projection": 1.4614564136221009,
+      "actual": 3,
+      "error": 1.5385435863778991,
+      "errorPct": 0.5128478621259663
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-01-27",
+      "projection": 1.3536425997985282,
+      "actual": 1,
+      "error": 0.3536425997985282,
+      "errorPct": 0.3536425997985282
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-01-30",
+      "projection": 1.3398962578749343,
+      "actual": 2,
+      "error": 0.6601037421250657,
+      "errorPct": 0.33005187106253286
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-02-01",
+      "projection": 1.3766123540772572,
+      "actual": 2,
+      "error": 0.6233876459227428,
+      "errorPct": 0.3116938229613714
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-02-02",
+      "projection": 1.3216095810456425,
+      "actual": 1,
+      "error": 0.3216095810456425,
+      "errorPct": 0.3216095810456425
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-02-09",
+      "projection": 1.2274468704213988,
+      "actual": 1,
+      "error": 0.22744687042139877,
+      "errorPct": 0.22744687042139877
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-02-11",
+      "projection": 1.1649885728625917,
+      "actual": 0,
+      "error": 1.1649885728625917,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-02-12",
+      "projection": 1.2479151615066306,
+      "actual": 2,
+      "error": 0.7520848384933694,
+      "errorPct": 0.3760424192466847
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-02-15",
+      "projection": 1.2523096010250816,
+      "actual": 1,
+      "error": 0.2523096010250816,
+      "errorPct": 0.2523096010250816
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-02-17",
+      "projection": 1.4568037452839433,
+      "actual": 1,
+      "error": 0.4568037452839433,
+      "errorPct": 0.4568037452839433
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-02-20",
+      "projection": 1.089888799869172,
+      "actual": 2,
+      "error": 0.910111200130828,
+      "errorPct": 0.455055600065414
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-02-22",
+      "projection": 1.498369104026026,
+      "actual": 2,
+      "error": 0.5016308959739739,
+      "errorPct": 0.25081544798698696
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-02-24",
+      "projection": 1.1505532349626708,
+      "actual": 1,
+      "error": 0.1505532349626708,
+      "errorPct": 0.1505532349626708
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-02-26",
+      "projection": 0.5405362315267302,
+      "actual": 0,
+      "error": 0.5405362315267302,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-11",
+      "projection": 1.154795302388553,
+      "actual": 2,
+      "error": 0.8452046976114469,
+      "errorPct": 0.42260234880572345
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-13",
+      "projection": 1.2339099466459722,
+      "actual": 0,
+      "error": 1.2339099466459722,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-15",
+      "projection": 1.4379534444524873,
+      "actual": 3,
+      "error": 1.5620465555475127,
+      "errorPct": 0.5206821851825042
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-17",
+      "projection": 1.2890437534666281,
+      "actual": 1,
+      "error": 0.28904375346662814,
+      "errorPct": 0.28904375346662814
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-19",
+      "projection": 1.4863182395520709,
+      "actual": 1,
+      "error": 0.4863182395520709,
+      "errorPct": 0.4863182395520709
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-20",
+      "projection": 1.3215359586321078,
+      "actual": 2,
+      "error": 0.6784640413678922,
+      "errorPct": 0.3392320206839461
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-22",
+      "projection": 1.5771033250657045,
+      "actual": 1,
+      "error": 0.5771033250657045,
+      "errorPct": 0.5771033250657045
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-24",
+      "projection": 1.613385411642543,
+      "actual": 1,
+      "error": 0.613385411642543,
+      "errorPct": 0.613385411642543
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-26",
+      "projection": 1.3675796849911626,
+      "actual": 2,
+      "error": 0.6324203150088374,
+      "errorPct": 0.3162101575044187
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-27",
+      "projection": 1.5425469779873437,
+      "actual": 0,
+      "error": 1.5425469779873437,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-29",
+      "projection": 1.4998855430584668,
+      "actual": 1,
+      "error": 0.4998855430584668,
+      "errorPct": 0.4998855430584668
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-03-31",
+      "projection": 1.5834019325948023,
+      "actual": 0,
+      "error": 1.5834019325948023,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-01",
+      "projection": 1.5317980282275385,
+      "actual": 0,
+      "error": 1.5317980282275385,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-03",
+      "projection": 1.5914005381670668,
+      "actual": 0,
+      "error": 1.5914005381670668,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-05",
+      "projection": 1.3422926547413232,
+      "actual": 0,
+      "error": 1.3422926547413232,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-08",
+      "projection": 1.5241882106960727,
+      "actual": 1,
+      "error": 0.5241882106960727,
+      "errorPct": 0.5241882106960727
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-09",
+      "projection": 1.4229240843780602,
+      "actual": 2,
+      "error": 0.5770759156219398,
+      "errorPct": 0.2885379578109699
+    },
+    {
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-12",
+      "projection": 1.7761426306387145,
       "actual": 4,
-      "error": 1.714749603899095,
-      "errorPct": 0.42868740097477376
+      "error": 2.2238573693612853,
+      "errorPct": 0.5559643423403213
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-10-26",
-      "projection": 2.061710542811533,
-      "actual": 1,
-      "error": 1.0617105428115332,
-      "errorPct": 1.0617105428115332
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-10-28",
-      "projection": 2.1072163034203344,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-14",
+      "projection": 1.271386091027002,
       "actual": 2,
-      "error": 0.10721630342033439,
-      "errorPct": 0.053608151710167196
+      "error": 0.7286139089729979,
+      "errorPct": 0.36430695448649897
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-10-31",
-      "projection": 2.477869640396083,
-      "actual": 2,
-      "error": 0.47786964039608293,
-      "errorPct": 0.23893482019804146
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-11-02",
-      "projection": 2.8772107006782868,
-      "actual": 1,
-      "error": 1.8772107006782868,
-      "errorPct": 1.8772107006782868
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-11-03",
-      "projection": 2.093183346881953,
-      "actual": 4,
-      "error": 1.9068166531180468,
-      "errorPct": 0.4767041632795117
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-11-06",
-      "projection": 2.888611926072866,
-      "actual": 3,
-      "error": 0.11138807392713401,
-      "errorPct": 0.03712935797571134
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-11-07",
-      "projection": 2.6040374645124595,
-      "actual": 1,
-      "error": 1.6040374645124595,
-      "errorPct": 1.6040374645124595
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-11-10",
-      "projection": 2.930290149416455,
-      "actual": 1,
-      "error": 1.930290149416455,
-      "errorPct": 1.930290149416455
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-11-14",
-      "projection": 1.940665277475932,
-      "actual": 1,
-      "error": 0.9406652774759321,
-      "errorPct": 0.9406652774759321
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-11-19",
-      "projection": 3.031032171551265,
-      "actual": 1,
-      "error": 2.031032171551265,
-      "errorPct": 2.031032171551265
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-11-21",
-      "projection": 2.4460049355614637,
-      "actual": 3,
-      "error": 0.5539950644385363,
-      "errorPct": 0.1846650214795121
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-11-23",
-      "projection": 2.1813405887974917,
-      "actual": 1,
-      "error": 1.1813405887974917,
-      "errorPct": 1.1813405887974917
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-11-27",
-      "projection": 2.378959901873121,
-      "actual": 3,
-      "error": 0.6210400981268789,
-      "errorPct": 0.20701336604229295
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-11-29",
-      "projection": 2.9933750327137676,
-      "actual": 2,
-      "error": 0.9933750327137676,
-      "errorPct": 0.4966875163568838
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-01",
-      "projection": 2.9889343484170006,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-15",
+      "projection": 1.3200557020731185,
       "actual": 0,
-      "error": 2.9889343484170006,
+      "error": 1.3200557020731185,
       "errorPct": 0
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-02",
-      "projection": 2.400872568910098,
-      "actual": 2,
-      "error": 0.4008725689100978,
-      "errorPct": 0.2004362844550489
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-04",
-      "projection": 3.0057526390053266,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-17",
+      "projection": 1.2449871729551798,
       "actual": 0,
-      "error": 3.0057526390053266,
+      "error": 1.2449871729551798,
       "errorPct": 0
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-07",
-      "projection": 2.4499658360012626,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-19",
+      "projection": 1.4413153334337467,
       "actual": 1,
-      "error": 1.4499658360012626,
-      "errorPct": 1.4499658360012626
+      "error": 0.44131533343374674,
+      "errorPct": 0.44131533343374674
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-09",
-      "projection": 2.320982887733056,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-21",
+      "projection": 1.591281914150764,
       "actual": 1,
-      "error": 1.3209828877330558,
-      "errorPct": 1.3209828877330558
+      "error": 0.5912819141507639,
+      "errorPct": 0.5912819141507639
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-12",
-      "projection": 2.3463157847150877,
-      "actual": 1,
-      "error": 1.3463157847150877,
-      "errorPct": 1.3463157847150877
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-14",
-      "projection": 2.2885314946128994,
-      "actual": 3,
-      "error": 0.7114685053871006,
-      "errorPct": 0.23715616846236687
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-15",
-      "projection": 1.7114624904954923,
-      "actual": 4,
-      "error": 2.2885375095045077,
-      "errorPct": 0.5721343773761269
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-17",
-      "projection": 2.9637591693390783,
-      "actual": 2,
-      "error": 0.9637591693390783,
-      "errorPct": 0.4818795846695392
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-19",
-      "projection": 2.593806883412913,
-      "actual": 3,
-      "error": 0.4061931165870871,
-      "errorPct": 0.13539770552902905
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-21",
-      "projection": 2.3426918371927496,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-23",
+      "projection": 1.5074721206112085,
       "actual": 0,
-      "error": 2.3426918371927496,
+      "error": 1.5074721206112085,
       "errorPct": 0
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-23",
-      "projection": 2.5853677749151465,
-      "actual": 3,
-      "error": 0.41463222508485353,
-      "errorPct": 0.13821074169495118
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-27",
-      "projection": 2.5370125379863224,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-24",
+      "projection": 1.3398962578749343,
       "actual": 0,
-      "error": 2.5370125379863224,
+      "error": 1.3398962578749343,
       "errorPct": 0
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-29",
-      "projection": 2.1620495466977903,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-28",
+      "projection": 1.6086440573798155,
       "actual": 1,
-      "error": 1.1620495466977903,
-      "errorPct": 1.1620495466977903
+      "error": 0.6086440573798155,
+      "errorPct": 0.6086440573798155
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2024-12-31",
-      "projection": 2.9135977371497614,
+      "playerId": 8465009,
+      "playerName": "Zdeno Chara",
+      "gameDate": "2022-04-29",
+      "projection": 1.4614564136221009,
       "actual": 2,
-      "error": 0.9135977371497614,
-      "errorPct": 0.4567988685748807
+      "error": 0.5385435863778991,
+      "errorPct": 0.26927179318894956
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-01-03",
-      "projection": 2.269740505388593,
-      "actual": 1,
-      "error": 1.2697405053885928,
-      "errorPct": 1.2697405053885928
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-01-05",
-      "projection": 3.056374029565947,
-      "actual": 1,
-      "error": 2.056374029565947,
-      "errorPct": 2.056374029565947
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-01-08",
-      "projection": 2.797542875663325,
-      "actual": 1,
-      "error": 1.797542875663325,
-      "errorPct": 1.797542875663325
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-01-10",
-      "projection": 1.5683063568350597,
-      "actual": 1,
-      "error": 0.5683063568350597,
-      "errorPct": 0.5683063568350597
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-01-11",
-      "projection": 1.9144344325772529,
-      "actual": 2,
-      "error": 0.08556556742274712,
-      "errorPct": 0.04278278371137356
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-01-13",
-      "projection": 2.120167224234732,
-      "actual": 1,
-      "error": 1.120167224234732,
-      "errorPct": 1.120167224234732
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-01-16",
-      "projection": 1.6135592974668864,
-      "actual": 2,
-      "error": 0.3864407025331136,
-      "errorPct": 0.1932203512665568
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-01-18",
-      "projection": 1.7940133776768168,
-      "actual": 2,
-      "error": 0.2059866223231832,
-      "errorPct": 0.1029933111615916
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-01-20",
-      "projection": 2.5616335455455266,
-      "actual": 1,
-      "error": 1.5616335455455266,
-      "errorPct": 1.5616335455455266
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-01-25",
-      "projection": 1.5844245224824243,
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2021-11-27",
+      "projection": 0.676078150283699,
       "actual": 0,
-      "error": 1.5844245224824243,
+      "error": 0.676078150283699,
       "errorPct": 0
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-01-28",
-      "projection": 3.024580216128403,
-      "actual": 0,
-      "error": 3.024580216128403,
-      "errorPct": 0
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-02-01",
-      "projection": 1.7598053552958128,
-      "actual": 0,
-      "error": 1.7598053552958128,
-      "errorPct": 0
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-02-04",
-      "projection": 2.0164990576951185,
-      "actual": 3,
-      "error": 0.9835009423048815,
-      "errorPct": 0.3278336474349605
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-02-06",
-      "projection": 2.5073896678157177,
-      "actual": 3,
-      "error": 0.4926103321842823,
-      "errorPct": 0.16420344406142742
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-02-08",
-      "projection": 2.835185703241631,
-      "actual": 5,
-      "error": 2.164814296758369,
-      "errorPct": 0.4329628593516738
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-02-22",
-      "projection": 2.306543413733399,
-      "actual": 2,
-      "error": 0.3065434137333991,
-      "errorPct": 0.15327170686669955
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-02-25",
-      "projection": 2.191991270980837,
-      "actual": 0,
-      "error": 2.191991270980837,
-      "errorPct": 0
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-02-27",
-      "projection": 1.6639396645055402,
-      "actual": 3,
-      "error": 1.3360603354944598,
-      "errorPct": 0.44535344516481995
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-01",
-      "projection": 1.9990724715241013,
-      "actual": 0,
-      "error": 1.9990724715241013,
-      "errorPct": 0
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-02",
-      "projection": 3.1623182657681492,
-      "actual": 3,
-      "error": 0.16231826576814923,
-      "errorPct": 0.054106088589383074
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-04",
-      "projection": 2.093183346881953,
-      "actual": 4,
-      "error": 1.9068166531180468,
-      "errorPct": 0.4767041632795117
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-06",
-      "projection": 2.0928974636973434,
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2021-11-30",
+      "projection": 1.1246753982019537,
       "actual": 1,
-      "error": 1.0928974636973434,
-      "errorPct": 1.0928974636973434
+      "error": 0.12467539820195372,
+      "errorPct": 0.12467539820195372
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-09",
-      "projection": 2.947074898780159,
-      "actual": 2,
-      "error": 0.9470748987801589,
-      "errorPct": 0.47353744939007947
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-11",
-      "projection": 3.096868622713654,
-      "actual": 3,
-      "error": 0.09686862271365415,
-      "errorPct": 0.032289540904551384
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-14",
-      "projection": 2.362976970697072,
-      "actual": 3,
-      "error": 0.6370230293029282,
-      "errorPct": 0.21234100976764272
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-15",
-      "projection": 2.353568632555712,
-      "actual": 3,
-      "error": 0.6464313674442881,
-      "errorPct": 0.21547712248142936
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-20",
-      "projection": 2.7396198685319764,
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2021-12-02",
+      "projection": 0.7031270143947042,
       "actual": 1,
-      "error": 1.7396198685319764,
-      "errorPct": 1.7396198685319764
+      "error": 0.29687298560529585,
+      "errorPct": 0.29687298560529585
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-22",
-      "projection": 2.459472070377949,
-      "actual": 2,
-      "error": 0.4594720703779491,
-      "errorPct": 0.22973603518897456
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2021-12-04",
+      "projection": 1.182359299260588,
+      "actual": 1,
+      "error": 0.18235929926058803,
+      "errorPct": 0.18235929926058803
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-23",
-      "projection": 2.2133384514883536,
-      "actual": 3,
-      "error": 0.7866615485116464,
-      "errorPct": 0.2622205161705488
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2021-12-10",
+      "projection": 0.9629955405505028,
+      "actual": 1,
+      "error": 0.03700445944949715,
+      "errorPct": 0.03700445944949715
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-25",
-      "projection": 3.4323052802326077,
-      "actual": 2,
-      "error": 1.4323052802326077,
-      "errorPct": 0.7161526401163039
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2021-12-12",
+      "projection": 1.0970869675365515,
+      "actual": 1,
+      "error": 0.09708696753655155,
+      "errorPct": 0.09708696753655155
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-28",
-      "projection": 2.344172308760353,
-      "actual": 3,
-      "error": 0.6558276912396468,
-      "errorPct": 0.2186092304132156
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-03-30",
-      "projection": 2.704970543325269,
-      "actual": 2,
-      "error": 0.7049705433252691,
-      "errorPct": 0.35248527166263455
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-04-02",
-      "projection": 2.8193061345299353,
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2021-12-14",
+      "projection": 1.495305921838514,
       "actual": 0,
-      "error": 2.8193061345299353,
+      "error": 1.495305921838514,
       "errorPct": 0
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-04-04",
-      "projection": 2.773830885829911,
-      "actual": 3,
-      "error": 0.226169114170089,
-      "errorPct": 0.075389704723363
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-04-05",
-      "projection": 2.411828202781212,
-      "actual": 4,
-      "error": 1.5881717972187879,
-      "errorPct": 0.39704294930469697
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-04-08",
-      "projection": 2.2347465183231323,
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2021-12-16",
+      "projection": 1.0187671600872272,
       "actual": 1,
-      "error": 1.2347465183231323,
-      "errorPct": 1.2347465183231323
+      "error": 0.01876716008722723,
+      "errorPct": 0.01876716008722723
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-04-10",
-      "projection": 2.1001963689864986,
-      "actual": 1,
-      "error": 1.1001963689864986,
-      "errorPct": 1.1001963689864986
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-04-13",
-      "projection": 2.553433030699938,
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-01-04",
+      "projection": 1.136564727589935,
       "actual": 2,
-      "error": 0.5534330306999382,
-      "errorPct": 0.2767165153499691
+      "error": 0.8634352724100649,
+      "errorPct": 0.43171763620503245
     },
     {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-04-16",
-      "projection": 2.9312519768587086,
-      "actual": 2,
-      "error": 0.9312519768587086,
-      "errorPct": 0.4656259884293543
-    },
-    {
-      "playerId": 8475791,
-      "playerName": "Taylor Hall",
-      "gameDate": "2025-04-17",
-      "projection": 2.1600851934085665,
-      "actual": 1,
-      "error": 1.1600851934085665,
-      "errorPct": 1.1600851934085665
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-04",
-      "projection": 5.19365704196551,
-      "actual": 5,
-      "error": 0.19365704196551015,
-      "errorPct": 0.03873140839310203
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-06",
-      "projection": 5.775720537228221,
-      "actual": 5,
-      "error": 0.7757205372282208,
-      "errorPct": 0.15514410744564416
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-07",
-      "projection": 5.488351147286997,
-      "actual": 6,
-      "error": 0.5116488527130034,
-      "errorPct": 0.08527480878550057
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-09",
-      "projection": 6.673875275867629,
-      "actual": 4,
-      "error": 2.673875275867629,
-      "errorPct": 0.6684688189669072
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-14",
-      "projection": 5.112007178736988,
-      "actual": 4,
-      "error": 1.112007178736988,
-      "errorPct": 0.278001794684247
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-16",
-      "projection": 5.957505416520535,
-      "actual": 5,
-      "error": 0.9575054165205348,
-      "errorPct": 0.19150108330410695
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-18",
-      "projection": 5.772919989800495,
-      "actual": 6,
-      "error": 0.2270800101995052,
-      "errorPct": 0.0378466683665842
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-20",
-      "projection": 5.604596726220397,
-      "actual": 7,
-      "error": 1.3954032737796034,
-      "errorPct": 0.19934332482565761
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-22",
-      "projection": 5.20200057945035,
-      "actual": 4,
-      "error": 1.2020005794503499,
-      "errorPct": 0.30050014486258747
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-24",
-      "projection": 5.019161891215048,
-      "actual": 3,
-      "error": 2.019161891215048,
-      "errorPct": 0.6730539637383494
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-27",
-      "projection": 4.737973236279505,
-      "actual": 6,
-      "error": 1.2620267637204954,
-      "errorPct": 0.2103377939534159
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-28",
-      "projection": 5.848235071753205,
-      "actual": 5,
-      "error": 0.848235071753205,
-      "errorPct": 0.169647014350641
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-11-30",
-      "projection": 6.348584562815182,
-      "actual": 8,
-      "error": 1.6514154371848182,
-      "errorPct": 0.20642692964810228
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-12-02",
-      "projection": 5.470534711914576,
-      "actual": 6,
-      "error": 0.529465288085424,
-      "errorPct": 0.088244214680904
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-12-04",
-      "projection": 4.671672316408043,
-      "actual": 6,
-      "error": 1.328327683591957,
-      "errorPct": 0.22138794726532618
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-12-06",
-      "projection": 5.313597900780178,
-      "actual": 3,
-      "error": 2.313597900780178,
-      "errorPct": 0.7711993002600593
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-12-07",
-      "projection": 6.067369993028102,
-      "actual": 6,
-      "error": 0.06736999302810176,
-      "errorPct": 0.011228332171350294
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-12-09",
-      "projection": 5.316844112694082,
-      "actual": 5,
-      "error": 0.3168441126940822,
-      "errorPct": 0.06336882253881644
-    },
-    {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-12-12",
-      "projection": 7.133486654728413,
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-01-06",
+      "projection": 1.0225714060318178,
       "actual": 0,
-      "error": 7.133486654728413,
+      "error": 1.0225714060318178,
       "errorPct": 0
     },
     {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-12-14",
-      "projection": 5.49429375378017,
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-01-08",
+      "projection": 0.7253241733188446,
+      "actual": 0,
+      "error": 0.7253241733188446,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-01-21",
+      "projection": 1.0526119250052433,
+      "actual": 1,
+      "error": 0.052611925005243254,
+      "errorPct": 0.052611925005243254
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-01-29",
+      "projection": 1.1226961644421436,
+      "actual": 2,
+      "error": 0.8773038355578564,
+      "errorPct": 0.4386519177789282
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-01-31",
+      "projection": 0.943868489805222,
+      "actual": 0,
+      "error": 0.943868489805222,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-03-15",
+      "projection": 0.8256078518505988,
+      "actual": 0,
+      "error": 0.8256078518505988,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-03-17",
+      "projection": 0.7785010703504199,
+      "actual": 1,
+      "error": 0.22149892964958007,
+      "errorPct": 0.22149892964958007
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-03-18",
+      "projection": 1.0490691577879272,
+      "actual": 1,
+      "error": 0.0490691577879272,
+      "errorPct": 0.0490691577879272
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-03-29",
+      "projection": 0.9646547811403302,
+      "actual": 0,
+      "error": 0.9646547811403302,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-03-31",
+      "projection": 0.9723505062706835,
+      "actual": 0,
+      "error": 0.9723505062706835,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-04-03",
+      "projection": 0.9248150660735571,
+      "actual": 2,
+      "error": 1.075184933926443,
+      "errorPct": 0.5375924669632215
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-04-21",
+      "projection": 1.134581518330677,
+      "actual": 0,
+      "error": 1.134581518330677,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-04-26",
+      "projection": 0.8852181606976466,
+      "actual": 0,
+      "error": 0.8852181606976466,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-04-28",
+      "projection": 1.0208094988662195,
+      "actual": 2,
+      "error": 0.9791905011337805,
+      "errorPct": 0.48959525056689024
+    },
+    {
+      "playerId": 8466138,
+      "playerName": "Joe Thornton",
+      "gameDate": "2022-04-29",
+      "projection": 1.3597608579452451,
+      "actual": 1,
+      "error": 0.35976085794524515,
+      "errorPct": 0.35976085794524515
+    },
+    {
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-04",
+      "projection": 1.5644450951293556,
+      "actual": 2,
+      "error": 0.4355549048706444,
+      "errorPct": 0.2177774524353222
+    },
+    {
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-06",
+      "projection": 1.513656087213502,
       "actual": 3,
-      "error": 2.4942937537801697,
-      "errorPct": 0.8314312512600566
+      "error": 1.486343912786498,
+      "errorPct": 0.49544797092883264
     },
     {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-12-16",
-      "projection": 5.793824148272128,
-      "actual": 6,
-      "error": 0.20617585172787223,
-      "errorPct": 0.03436264195464537
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-08",
+      "projection": 1.7370114835080308,
+      "actual": 1,
+      "error": 0.7370114835080308,
+      "errorPct": 0.7370114835080308
     },
     {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-12-19",
-      "projection": 4.31284356180225,
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-10",
+      "projection": 2.219972537877386,
+      "actual": 1,
+      "error": 1.219972537877386,
+      "errorPct": 1.219972537877386
+    },
+    {
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-12",
+      "projection": 1.5794435379384864,
+      "actual": 1,
+      "error": 0.5794435379384864,
+      "errorPct": 0.5794435379384864
+    },
+    {
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-13",
+      "projection": 1.2251670587822112,
+      "actual": 2,
+      "error": 0.7748329412177888,
+      "errorPct": 0.3874164706088944
+    },
+    {
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-16",
+      "projection": 1.621583414993393,
+      "actual": 1,
+      "error": 0.621583414993393,
+      "errorPct": 0.621583414993393
+    },
+    {
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-18",
+      "projection": 1.122404309748898,
+      "actual": 2,
+      "error": 0.877595690251102,
+      "errorPct": 0.438797845125551
+    },
+    {
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-20",
+      "projection": 1.5674425994040704,
       "actual": 3,
-      "error": 1.31284356180225,
-      "errorPct": 0.43761452060075
+      "error": 1.4325574005959296,
+      "errorPct": 0.47751913353197656
     },
     {
-      "playerId": 8476453,
-      "playerName": "Nikita Kucherov",
-      "gameDate": "2023-12-21",
-      "projection": 4.379477707963266,
-      "actual": 5,
-      "error": 0.6205222920367337,
-      "errorPct": 0.12410445840734674
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-21",
+      "projection": 1.7191089652988378,
+      "actual": 0,
+      "error": 1.7191089652988378,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-24",
+      "projection": 2.3464708717275617,
+      "actual": 2,
+      "error": 0.34647087172756175,
+      "errorPct": 0.17323543586378087
+    },
+    {
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-26",
+      "projection": 1.2929225629848307,
+      "actual": 3,
+      "error": 1.7070774370151693,
+      "errorPct": 0.5690258123383898
+    },
+    {
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-11-28",
+      "projection": 1.4885413471596707,
+      "actual": 0,
+      "error": 1.4885413471596707,
+      "errorPct": 0
+    },
+    {
+      "playerId": 8469455,
+      "playerName": "Jason Spezza",
+      "gameDate": "2021-12-01",
+      "projection": 1.4307107724025958,
+      "actual": 1,
+      "error": 0.4307107724025958,
+      "errorPct": 0.4307107724025958
     }
   ]
 }

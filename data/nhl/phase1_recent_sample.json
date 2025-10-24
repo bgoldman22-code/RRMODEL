@@ -1,0 +1,64 @@
+{
+  "phase": 1,
+  "strategy": "stratified_random_recent",
+  "note": "Filtered to post-May 2023 dates only (when player props became available)",
+  "generatedAt": "2025-10-23T16:05:00.000Z",
+  "totalDates": 8,
+  "expectedGames": 2915,
+  "estimatedCredits": {
+    "perDate": 1,
+    "perGame": 10,
+    "total": 29158,
+    "note": "8 dates × 1 + 2915 games × 10 = 29,158 credits"
+  },
+  "dates": [
+    {
+      "date": "2023-10-28",
+      "games": 241,
+      "season": "2023",
+      "period": "early"
+    },
+    {
+      "date": "2023-12-02",
+      "games": 320,
+      "season": "2023",
+      "period": "early"
+    },
+    {
+      "date": "2023-12-16",
+      "games": 331,
+      "season": "2023",
+      "period": "mid"
+    },
+    {
+      "date": "2023-12-23",
+      "games": 350,
+      "season": "2023",
+      "period": "mid"
+    },
+    {
+      "date": "2024-10-17",
+      "games": 378,
+      "season": "2024",
+      "period": "early"
+    },
+    {
+      "date": "2024-11-16",
+      "games": 405,
+      "season": "2024",
+      "period": "early"
+    },
+    {
+      "date": "2024-12-14",
+      "games": 510,
+      "season": "2024",
+      "period": "mid"
+    },
+    {
+      "date": "2024-12-21",
+      "games": 379,
+      "season": "2024",
+      "period": "mid"
+    }
+  ]
+}

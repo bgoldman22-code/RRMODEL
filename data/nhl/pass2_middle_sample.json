@@ -1,0 +1,2179 @@
+{
+  "sampleType": "pass2_middle_expanded",
+  "description": "Expanded middle period sample (Feb-Dec 2024) for comprehensive trend analysis",
+  "created": "2025-10-23T17:45:27.264Z",
+  "budget": 5000,
+  "strategy": "Even temporal sampling with maximum player diversity",
+  "games": [
+    {
+      "gameDate": "2024-02-12",
+      "playerId": 8482109,
+      "playerName": "Alexis Lafrenière",
+      "team": "NYR",
+      "opponent": "CGY",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-13",
+      "playerId": 8470613,
+      "playerName": "Brent Burns",
+      "team": "CAR",
+      "opponent": "DAL",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-02-13",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "STL",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-13",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "EDM",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-02-13",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "LAK",
+      "opponent": "BUF",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-02-13",
+      "playerId": 8481540,
+      "playerName": "Cole Caufield",
+      "team": "MTL",
+      "opponent": "ANA",
+      "isHome": true,
+      "actualShots": 8
+    },
+    {
+      "gameDate": "2024-02-14",
+      "playerId": 8482079,
+      "playerName": "Marco Rossi",
+      "team": "MIN",
+      "opponent": "ARI",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-15",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "VAN",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-02-15",
+      "playerId": 8481542,
+      "playerName": "Moritz Seider",
+      "team": "DET",
+      "opponent": "VAN",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-02-15",
+      "playerId": 8482110,
+      "playerName": "Dawson Mercer",
+      "team": "NJD",
+      "opponent": "LAK",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-02-17",
+      "playerId": 8480188,
+      "playerName": "Fabian Zetterlund",
+      "team": "SJS",
+      "opponent": "CBJ",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-02-17",
+      "playerId": 8475172,
+      "playerName": "Nazem Kadri",
+      "team": "CGY",
+      "opponent": "DET",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-17",
+      "playerId": 8476887,
+      "playerName": "Filip Forsberg",
+      "team": "NSH",
+      "opponent": "STL",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-17",
+      "playerId": 8477956,
+      "playerName": "David Pastrnak",
+      "team": "BOS",
+      "opponent": "LAK",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-02-17",
+      "playerId": 8480208,
+      "playerName": "Drake Batherson",
+      "team": "OTT",
+      "opponent": "CHI",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-02-19",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "STL",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-02-19",
+      "playerId": 8479385,
+      "playerName": "Jordan Kyrou",
+      "team": "STL",
+      "opponent": "TOR",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-02-19",
+      "playerId": 8479542,
+      "playerName": "Brandon Hagel",
+      "team": "TBL",
+      "opponent": "OTT",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-02-19",
+      "playerId": 8480027,
+      "playerName": "Jason Robertson",
+      "team": "DAL",
+      "opponent": "BOS",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-19",
+      "playerId": 8480208,
+      "playerName": "Drake Batherson",
+      "team": "OTT",
+      "opponent": "TBL",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-02-19",
+      "playerId": 8481542,
+      "playerName": "Moritz Seider",
+      "team": "DET",
+      "opponent": "SEA",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-19",
+      "playerId": 8482079,
+      "playerName": "Marco Rossi",
+      "team": "MIN",
+      "opponent": "VAN",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-02-20",
+      "playerId": 8475151,
+      "playerName": "Kyle Palmieri",
+      "team": "NYI",
+      "opponent": "PIT",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-02-20",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "LAK",
+      "opponent": "CBJ",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-20",
+      "playerId": 8482079,
+      "playerName": "Marco Rossi",
+      "team": "MIN",
+      "opponent": "WPG",
+      "isHome": false,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-02-20",
+      "playerId": 8482109,
+      "playerName": "Alexis Lafrenière",
+      "team": "NYR",
+      "opponent": "DAL",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-22",
+      "playerId": 8475151,
+      "playerName": "Kyle Palmieri",
+      "team": "NYI",
+      "opponent": "STL",
+      "isHome": false,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-02-22",
+      "playerId": 8481542,
+      "playerName": "Moritz Seider",
+      "team": "DET",
+      "opponent": "COL",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-02-22",
+      "playerId": 8482078,
+      "playerName": "Lucas Raymond",
+      "team": "DET",
+      "opponent": "COL",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-02-22",
+      "playerId": 8482110,
+      "playerName": "Dawson Mercer",
+      "team": "NJD",
+      "opponent": "NYR",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-02-24",
+      "playerId": 8480188,
+      "playerName": "Fabian Zetterlund",
+      "team": "SJS",
+      "opponent": "NSH",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-24",
+      "playerId": 8475745,
+      "playerName": "Charlie Coyle",
+      "team": "BOS",
+      "opponent": "VAN",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-02-24",
+      "playerId": 8470613,
+      "playerName": "Brent Burns",
+      "team": "CAR",
+      "opponent": "DAL",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-02-24",
+      "playerId": 8475151,
+      "playerName": "Kyle Palmieri",
+      "team": "NYI",
+      "opponent": "TBL",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-02-24",
+      "playerId": 8475172,
+      "playerName": "Nazem Kadri",
+      "team": "CGY",
+      "opponent": "EDM",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-24",
+      "playerId": 8479542,
+      "playerName": "Brandon Hagel",
+      "team": "TBL",
+      "opponent": "NYI",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-02-24",
+      "playerId": 8480018,
+      "playerName": "Nick Suzuki",
+      "team": "MTL",
+      "opponent": "NJD",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-02-24",
+      "playerId": 8481542,
+      "playerName": "Moritz Seider",
+      "team": "DET",
+      "opponent": "STL",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-02-24",
+      "playerId": 8482109,
+      "playerName": "Alexis Lafrenière",
+      "team": "NYR",
+      "opponent": "PHI",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-02-25",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "CHI",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-02-25",
+      "playerId": 8482109,
+      "playerName": "Alexis Lafrenière",
+      "team": "NYR",
+      "opponent": "CBJ",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-02-25",
+      "playerId": 8482110,
+      "playerName": "Dawson Mercer",
+      "team": "NJD",
+      "opponent": "TBL",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-02-26",
+      "playerId": 8480208,
+      "playerName": "Drake Batherson",
+      "team": "OTT",
+      "opponent": "WSH",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-02-27",
+      "playerId": 8476887,
+      "playerName": "Filip Forsberg",
+      "team": "NSH",
+      "opponent": "OTT",
+      "isHome": true,
+      "actualShots": 6
+    },
+    {
+      "gameDate": "2024-02-27",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "WSH",
+      "isHome": true,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-02-28",
+      "playerId": 8475170,
+      "playerName": "Brayden Schenn",
+      "team": "STL",
+      "opponent": "EDM",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-02-29",
+      "playerId": 8474578,
+      "playerName": "Erik Karlsson",
+      "team": "PIT",
+      "opponent": "SEA",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-02-29",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "ARI",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-02",
+      "playerId": 8475745,
+      "playerName": "Charlie Coyle",
+      "team": "BOS",
+      "opponent": "NYI",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-03-02",
+      "playerId": 8476389,
+      "playerName": "Vincent Trocheck",
+      "team": "NYR",
+      "opponent": "TOR",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-02",
+      "playerId": 8476887,
+      "playerName": "Filip Forsberg",
+      "team": "NSH",
+      "opponent": "COL",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-02",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "NYR",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-03-02",
+      "playerId": 8480018,
+      "playerName": "Nick Suzuki",
+      "team": "MTL",
+      "opponent": "TBL",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-03-02",
+      "playerId": 8481540,
+      "playerName": "Cole Caufield",
+      "team": "MTL",
+      "opponent": "TBL",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-03-04",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "BOS",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-04",
+      "playerId": 8482109,
+      "playerName": "Alexis Lafrenière",
+      "team": "NYR",
+      "opponent": "FLA",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-05",
+      "playerId": 8479385,
+      "playerName": "Jordan Kyrou",
+      "team": "STL",
+      "opponent": "NYI",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-03-07",
+      "playerId": 8474578,
+      "playerName": "Erik Karlsson",
+      "team": "PIT",
+      "opponent": "WSH",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-07",
+      "playerId": 8478440,
+      "playerName": "Dylan Strome",
+      "team": "WSH",
+      "opponent": "PIT",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-07",
+      "playerId": 8481540,
+      "playerName": "Cole Caufield",
+      "team": "MTL",
+      "opponent": "CAR",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-03-08",
+      "playerId": 8480027,
+      "playerName": "Jason Robertson",
+      "team": "DAL",
+      "opponent": "ANA",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-09",
+      "playerId": 8477956,
+      "playerName": "David Pastrnak",
+      "team": "BOS",
+      "opponent": "PIT",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-09",
+      "playerId": 8480208,
+      "playerName": "Drake Batherson",
+      "team": "OTT",
+      "opponent": "SJS",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-09",
+      "playerId": 8481542,
+      "playerName": "Moritz Seider",
+      "team": "DET",
+      "opponent": "VGK",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-03-10",
+      "playerId": 8476887,
+      "playerName": "Filip Forsberg",
+      "team": "NSH",
+      "opponent": "MIN",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-11",
+      "playerId": 8475151,
+      "playerName": "Kyle Palmieri",
+      "team": "NYI",
+      "opponent": "LAK",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-11",
+      "playerId": 8475170,
+      "playerName": "Brayden Schenn",
+      "team": "STL",
+      "opponent": "BOS",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-03-11",
+      "playerId": 8476389,
+      "playerName": "Vincent Trocheck",
+      "team": "NYR",
+      "opponent": "NJD",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-11",
+      "playerId": 8478440,
+      "playerName": "Dylan Strome",
+      "team": "WSH",
+      "opponent": "WPG",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-03-12",
+      "playerId": 8482109,
+      "playerName": "Alexis Lafrenière",
+      "team": "NYR",
+      "opponent": "CAR",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-13",
+      "playerId": 8478440,
+      "playerName": "Dylan Strome",
+      "team": "WSH",
+      "opponent": "EDM",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-03-14",
+      "playerId": 8478440,
+      "playerName": "Dylan Strome",
+      "team": "WSH",
+      "opponent": "SEA",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-03-14",
+      "playerId": 8480018,
+      "playerName": "Nick Suzuki",
+      "team": "MTL",
+      "opponent": "BOS",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-14",
+      "playerId": 8481540,
+      "playerName": "Cole Caufield",
+      "team": "MTL",
+      "opponent": "BOS",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-16",
+      "playerId": 8474578,
+      "playerName": "Erik Karlsson",
+      "team": "PIT",
+      "opponent": "NYR",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-16",
+      "playerId": 8475170,
+      "playerName": "Brayden Schenn",
+      "team": "STL",
+      "opponent": "MIN",
+      "isHome": true,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-03-16",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "LAK",
+      "opponent": "DAL",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-03-16",
+      "playerId": 8479542,
+      "playerName": "Brandon Hagel",
+      "team": "TBL",
+      "opponent": "FLA",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-03-16",
+      "playerId": 8481540,
+      "playerName": "Cole Caufield",
+      "team": "MTL",
+      "opponent": "CGY",
+      "isHome": false,
+      "actualShots": 7
+    },
+    {
+      "gameDate": "2024-03-17",
+      "playerId": 8475170,
+      "playerName": "Brayden Schenn",
+      "team": "STL",
+      "opponent": "ANA",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-03-17",
+      "playerId": 8476389,
+      "playerName": "Vincent Trocheck",
+      "team": "NYR",
+      "opponent": "NYI",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-18",
+      "playerId": 8475172,
+      "playerName": "Nazem Kadri",
+      "team": "CGY",
+      "opponent": "WSH",
+      "isHome": true,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-03-18",
+      "playerId": 8478440,
+      "playerName": "Dylan Strome",
+      "team": "WSH",
+      "opponent": "CGY",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-03-19",
+      "playerId": 8480018,
+      "playerName": "Nick Suzuki",
+      "team": "MTL",
+      "opponent": "EDM",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-03-20",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "LAK",
+      "opponent": "MIN",
+      "isHome": true,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-03-20",
+      "playerId": 8480027,
+      "playerName": "Jason Robertson",
+      "team": "DAL",
+      "opponent": "ARI",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-03-21",
+      "playerId": 8482110,
+      "playerName": "Dawson Mercer",
+      "team": "NJD",
+      "opponent": "WPG",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-23",
+      "playerId": 8480188,
+      "playerName": "Fabian Zetterlund",
+      "team": "SJS",
+      "opponent": "CHI",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-23",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "EDM",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-23",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "NSH",
+      "isHome": false,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-03-23",
+      "playerId": 8479385,
+      "playerName": "Jordan Kyrou",
+      "team": "STL",
+      "opponent": "MIN",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-03-23",
+      "playerId": 8482109,
+      "playerName": "Alexis Lafrenière",
+      "team": "NYR",
+      "opponent": "FLA",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-24",
+      "playerId": 8475172,
+      "playerName": "Nazem Kadri",
+      "team": "CGY",
+      "opponent": "BUF",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-03-24",
+      "playerId": 8481540,
+      "playerName": "Cole Caufield",
+      "team": "MTL",
+      "opponent": "SEA",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-03-24",
+      "playerId": 8482110,
+      "playerName": "Dawson Mercer",
+      "team": "NJD",
+      "opponent": "NYI",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-03-28",
+      "playerId": 8474578,
+      "playerName": "Erik Karlsson",
+      "team": "PIT",
+      "opponent": "CBJ",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-28",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "CAR",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-28",
+      "playerId": 8482109,
+      "playerName": "Alexis Lafrenière",
+      "team": "NYR",
+      "opponent": "COL",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-29",
+      "playerId": 8482110,
+      "playerName": "Dawson Mercer",
+      "team": "NJD",
+      "opponent": "BUF",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-30",
+      "playerId": 8475745,
+      "playerName": "Charlie Coyle",
+      "team": "BOS",
+      "opponent": "WSH",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-30",
+      "playerId": 8474578,
+      "playerName": "Erik Karlsson",
+      "team": "PIT",
+      "opponent": "CBJ",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-30",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "FLA",
+      "isHome": false,
+      "actualShots": 6
+    },
+    {
+      "gameDate": "2024-03-30",
+      "playerId": 8480018,
+      "playerName": "Nick Suzuki",
+      "team": "MTL",
+      "opponent": "CAR",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-03-30",
+      "playerId": 8480027,
+      "playerName": "Jason Robertson",
+      "team": "DAL",
+      "opponent": "SEA",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-03-30",
+      "playerId": 8482078,
+      "playerName": "Lucas Raymond",
+      "team": "DET",
+      "opponent": "FLA",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-04-02",
+      "playerId": 8480018,
+      "playerName": "Nick Suzuki",
+      "team": "MTL",
+      "opponent": "FLA",
+      "isHome": true,
+      "actualShots": 6
+    },
+    {
+      "gameDate": "2024-04-02",
+      "playerId": 8482079,
+      "playerName": "Marco Rossi",
+      "team": "MIN",
+      "opponent": "OTT",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-04-03",
+      "playerId": 8476389,
+      "playerName": "Vincent Trocheck",
+      "team": "NYR",
+      "opponent": "NJD",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-04-04",
+      "playerId": 8474578,
+      "playerName": "Erik Karlsson",
+      "team": "PIT",
+      "opponent": "WSH",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-04-04",
+      "playerId": 8480208,
+      "playerName": "Drake Batherson",
+      "team": "OTT",
+      "opponent": "FLA",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-04-04",
+      "playerId": 8482079,
+      "playerName": "Marco Rossi",
+      "team": "MIN",
+      "opponent": "COL",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-04-05",
+      "playerId": 8481542,
+      "playerName": "Moritz Seider",
+      "team": "DET",
+      "opponent": "NYR",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-04-06",
+      "playerId": 8475151,
+      "playerName": "Kyle Palmieri",
+      "team": "NYI",
+      "opponent": "NSH",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-04-06",
+      "playerId": 8479542,
+      "playerName": "Brandon Hagel",
+      "team": "TBL",
+      "opponent": "PIT",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-04-06",
+      "playerId": 8480208,
+      "playerName": "Drake Batherson",
+      "team": "OTT",
+      "opponent": "NJD",
+      "isHome": true,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-04-07",
+      "playerId": 8470613,
+      "playerName": "Brent Burns",
+      "team": "CAR",
+      "opponent": "CBJ",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-04-07",
+      "playerId": 8476887,
+      "playerName": "Filip Forsberg",
+      "team": "NSH",
+      "opponent": "NJD",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-04-07",
+      "playerId": 8480027,
+      "playerName": "Jason Robertson",
+      "team": "DAL",
+      "opponent": "COL",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-04-09",
+      "playerId": 8480188,
+      "playerName": "Fabian Zetterlund",
+      "team": "SJS",
+      "opponent": "CGY",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-04-09",
+      "playerId": 8481540,
+      "playerName": "Cole Caufield",
+      "team": "MTL",
+      "opponent": "PHI",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-04-09",
+      "playerId": 8481542,
+      "playerName": "Moritz Seider",
+      "team": "DET",
+      "opponent": "WSH",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-04-09",
+      "playerId": 8482079,
+      "playerName": "Marco Rossi",
+      "team": "MIN",
+      "opponent": "COL",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-04-10",
+      "playerId": 8475170,
+      "playerName": "Brayden Schenn",
+      "team": "STL",
+      "opponent": "CHI",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-04-11",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "LAK",
+      "opponent": "CGY",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-04-11",
+      "playerId": 8479542,
+      "playerName": "Brandon Hagel",
+      "team": "TBL",
+      "opponent": "OTT",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-04-11",
+      "playerId": 8480027,
+      "playerName": "Jason Robertson",
+      "team": "DAL",
+      "opponent": "WPG",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-04-11",
+      "playerId": 8480208,
+      "playerName": "Drake Batherson",
+      "team": "OTT",
+      "opponent": "TBL",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-04-13",
+      "playerId": 8482079,
+      "playerName": "Marco Rossi",
+      "team": "MIN",
+      "opponent": "SJS",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-04-14",
+      "playerId": 8470613,
+      "playerName": "Brent Burns",
+      "team": "CAR",
+      "opponent": "CHI",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-04-15",
+      "playerId": 8474578,
+      "playerName": "Erik Karlsson",
+      "team": "PIT",
+      "opponent": "NSH",
+      "isHome": true,
+      "actualShots": 7
+    },
+    {
+      "gameDate": "2024-04-15",
+      "playerId": 8482110,
+      "playerName": "Dawson Mercer",
+      "team": "NJD",
+      "opponent": "NYI",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-04-16",
+      "playerId": 8480208,
+      "playerName": "Drake Batherson",
+      "team": "OTT",
+      "opponent": "BOS",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-04-16",
+      "playerId": 8482078,
+      "playerName": "Lucas Raymond",
+      "team": "DET",
+      "opponent": "MTL",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-04-17",
+      "playerId": 8479385,
+      "playerName": "Jordan Kyrou",
+      "team": "STL",
+      "opponent": "DAL",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-10-04",
+      "playerId": 8482110,
+      "playerName": "Dawson Mercer",
+      "team": "NJD",
+      "opponent": "BUF",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-10-08",
+      "playerId": 8479385,
+      "playerName": "Jordan Kyrou",
+      "team": "STL",
+      "opponent": "SEA",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-10-09",
+      "playerId": 8474578,
+      "playerName": "Erik Karlsson",
+      "team": "PIT",
+      "opponent": "NYR",
+      "isHome": true,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-10-10",
+      "playerId": 8475170,
+      "playerName": "Brayden Schenn",
+      "team": "STL",
+      "opponent": "SJS",
+      "isHome": false,
+      "actualShots": 7
+    },
+    {
+      "gameDate": "2024-10-10",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "PIT",
+      "isHome": true,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-10-10",
+      "playerId": 8479385,
+      "playerName": "Jordan Kyrou",
+      "team": "STL",
+      "opponent": "SJS",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-10-10",
+      "playerId": 8482078,
+      "playerName": "Lucas Raymond",
+      "team": "DET",
+      "opponent": "PIT",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-10-12",
+      "playerId": 8480188,
+      "playerName": "Fabian Zetterlund",
+      "team": "SJS",
+      "opponent": "ANA",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-10-14",
+      "playerId": 8477956,
+      "playerName": "David Pastrnak",
+      "team": "BOS",
+      "opponent": "FLA",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-10-15",
+      "playerId": 8479385,
+      "playerName": "Jordan Kyrou",
+      "team": "STL",
+      "opponent": "MIN",
+      "isHome": true,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-10-15",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "WSH",
+      "opponent": "VGK",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-10-16",
+      "playerId": 8475745,
+      "playerName": "Charlie Coyle",
+      "team": "BOS",
+      "opponent": "COL",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-10-16",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "LAK",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-10-16",
+      "playerId": 8477956,
+      "playerName": "David Pastrnak",
+      "team": "BOS",
+      "opponent": "COL",
+      "isHome": false,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-10-17",
+      "playerId": 8475151,
+      "playerName": "Kyle Palmieri",
+      "team": "NYI",
+      "opponent": "STL",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-10-17",
+      "playerId": 8476389,
+      "playerName": "Vincent Trocheck",
+      "team": "NYR",
+      "opponent": "DET",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-10-17",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "WSH",
+      "opponent": "DAL",
+      "isHome": true,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-10-19",
+      "playerId": 8470613,
+      "playerName": "Brent Burns",
+      "team": "CAR",
+      "opponent": "STL",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-10-19",
+      "playerId": 8482079,
+      "playerName": "Marco Rossi",
+      "team": "MIN",
+      "opponent": "CBJ",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-10-22",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "CBJ",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-10-22",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "NYI",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-10-22",
+      "playerId": 8480027,
+      "playerName": "Jason Robertson",
+      "team": "DAL",
+      "opponent": "BUF",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-10-22",
+      "playerId": 8481542,
+      "playerName": "Moritz Seider",
+      "team": "DET",
+      "opponent": "NYI",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-10-24",
+      "playerId": 8475172,
+      "playerName": "Nazem Kadri",
+      "team": "CGY",
+      "opponent": "CAR",
+      "isHome": true,
+      "actualShots": 7
+    },
+    {
+      "gameDate": "2024-10-26",
+      "playerId": 8474578,
+      "playerName": "Erik Karlsson",
+      "team": "PIT",
+      "opponent": "VAN",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-10-26",
+      "playerId": 8475172,
+      "playerName": "Nazem Kadri",
+      "team": "CGY",
+      "opponent": "WPG",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-10-26",
+      "playerId": 8476887,
+      "playerName": "Filip Forsberg",
+      "team": "NSH",
+      "opponent": "CBJ",
+      "isHome": true,
+      "actualShots": 7
+    },
+    {
+      "gameDate": "2024-10-26",
+      "playerId": 8477956,
+      "playerName": "David Pastrnak",
+      "team": "BOS",
+      "opponent": "TOR",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-10-26",
+      "playerId": 8482079,
+      "playerName": "Marco Rossi",
+      "team": "MIN",
+      "opponent": "PHI",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-10-27",
+      "playerId": 8480018,
+      "playerName": "Nick Suzuki",
+      "team": "MTL",
+      "opponent": "PHI",
+      "isHome": false,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-10-27",
+      "playerId": 8482078,
+      "playerName": "Lucas Raymond",
+      "team": "DET",
+      "opponent": "EDM",
+      "isHome": true,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-10-28",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "WPG",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-10-29",
+      "playerId": 8475170,
+      "playerName": "Brayden Schenn",
+      "team": "STL",
+      "opponent": "OTT",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-10-29",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "WSH",
+      "opponent": "NYR",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-10-30",
+      "playerId": 8479542,
+      "playerName": "Brandon Hagel",
+      "team": "TBL",
+      "opponent": "COL",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-10-30",
+      "playerId": 8481542,
+      "playerName": "Moritz Seider",
+      "team": "DET",
+      "opponent": "WPG",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-10-31",
+      "playerId": 8477956,
+      "playerName": "David Pastrnak",
+      "team": "BOS",
+      "opponent": "CAR",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-10-31",
+      "playerId": 8480018,
+      "playerName": "Nick Suzuki",
+      "team": "MTL",
+      "opponent": "WSH",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-10-31",
+      "playerId": 8481540,
+      "playerName": "Cole Caufield",
+      "team": "MTL",
+      "opponent": "WSH",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-01",
+      "playerId": 8482110,
+      "playerName": "Dawson Mercer",
+      "team": "NJD",
+      "opponent": "CGY",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-02",
+      "playerId": 8480188,
+      "playerName": "Fabian Zetterlund",
+      "team": "SJS",
+      "opponent": "VAN",
+      "isHome": true,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-11-02",
+      "playerId": 8475745,
+      "playerName": "Charlie Coyle",
+      "team": "BOS",
+      "opponent": "PHI",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-02",
+      "playerId": 8478440,
+      "playerName": "Dylan Strome",
+      "team": "WSH",
+      "opponent": "CBJ",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-02",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "BUF",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-02",
+      "playerId": 8480208,
+      "playerName": "Drake Batherson",
+      "team": "OTT",
+      "opponent": "SEA",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-11-03",
+      "playerId": 8475151,
+      "playerName": "Kyle Palmieri",
+      "team": "NYI",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-03",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "WSH",
+      "opponent": "CAR",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-05",
+      "playerId": 8480188,
+      "playerName": "Fabian Zetterlund",
+      "team": "SJS",
+      "opponent": "CBJ",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-05",
+      "playerId": 8470613,
+      "playerName": "Brent Burns",
+      "team": "CAR",
+      "opponent": "PHI",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-05",
+      "playerId": 8477956,
+      "playerName": "David Pastrnak",
+      "team": "BOS",
+      "opponent": "TOR",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-05",
+      "playerId": 8479385,
+      "playerName": "Jordan Kyrou",
+      "team": "STL",
+      "opponent": "TBL",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-06",
+      "playerId": 8478440,
+      "playerName": "Dylan Strome",
+      "team": "WSH",
+      "opponent": "NSH",
+      "isHome": true,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-11-07",
+      "playerId": 8475172,
+      "playerName": "Nazem Kadri",
+      "team": "CGY",
+      "opponent": "BOS",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-07",
+      "playerId": 8476887,
+      "playerName": "Filip Forsberg",
+      "team": "NSH",
+      "opponent": "FLA",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-11-07",
+      "playerId": 8481540,
+      "playerName": "Cole Caufield",
+      "team": "MTL",
+      "opponent": "NJD",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-08",
+      "playerId": 8482078,
+      "playerName": "Lucas Raymond",
+      "team": "DET",
+      "opponent": "TOR",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-11-09",
+      "playerId": 8475745,
+      "playerName": "Charlie Coyle",
+      "team": "BOS",
+      "opponent": "OTT",
+      "isHome": true,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-11-09",
+      "playerId": 8470613,
+      "playerName": "Brent Burns",
+      "team": "CAR",
+      "opponent": "COL",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-09",
+      "playerId": 8476887,
+      "playerName": "Filip Forsberg",
+      "team": "NSH",
+      "opponent": "UTA",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-09",
+      "playerId": 8477956,
+      "playerName": "David Pastrnak",
+      "team": "BOS",
+      "opponent": "OTT",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-09",
+      "playerId": 8482110,
+      "playerName": "Dawson Mercer",
+      "team": "NJD",
+      "opponent": "NYI",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-11-11",
+      "playerId": 8480188,
+      "playerName": "Fabian Zetterlund",
+      "team": "SJS",
+      "opponent": "PHI",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-11",
+      "playerId": 8480027,
+      "playerName": "Jason Robertson",
+      "team": "DAL",
+      "opponent": "PIT",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-12",
+      "playerId": 8475151,
+      "playerName": "Kyle Palmieri",
+      "team": "NYI",
+      "opponent": "EDM",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-13",
+      "playerId": 8470613,
+      "playerName": "Brent Burns",
+      "team": "CAR",
+      "opponent": "UTA",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-13",
+      "playerId": 8482078,
+      "playerName": "Lucas Raymond",
+      "team": "DET",
+      "opponent": "PIT",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-14",
+      "playerId": 8480188,
+      "playerName": "Fabian Zetterlund",
+      "team": "SJS",
+      "opponent": "NYR",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-14",
+      "playerId": 8476389,
+      "playerName": "Vincent Trocheck",
+      "team": "NYR",
+      "opponent": "SJS",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-14",
+      "playerId": 8480018,
+      "playerName": "Nick Suzuki",
+      "team": "MTL",
+      "opponent": "MIN",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-14",
+      "playerId": 8482079,
+      "playerName": "Marco Rossi",
+      "team": "MIN",
+      "opponent": "MTL",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-15",
+      "playerId": 8475172,
+      "playerName": "Nazem Kadri",
+      "team": "CGY",
+      "opponent": "NSH",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-16",
+      "playerId": 8475745,
+      "playerName": "Charlie Coyle",
+      "team": "BOS",
+      "opponent": "STL",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-16",
+      "playerId": 8475170,
+      "playerName": "Brayden Schenn",
+      "team": "STL",
+      "opponent": "BOS",
+      "isHome": false,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-11-16",
+      "playerId": 8480208,
+      "playerName": "Drake Batherson",
+      "team": "OTT",
+      "opponent": "CAR",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-11-16",
+      "playerId": 8482078,
+      "playerName": "Lucas Raymond",
+      "team": "DET",
+      "opponent": "LAK",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-17",
+      "playerId": 8476389,
+      "playerName": "Vincent Trocheck",
+      "team": "NYR",
+      "opponent": "SEA",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-17",
+      "playerId": 8478440,
+      "playerName": "Dylan Strome",
+      "team": "WSH",
+      "opponent": "VGK",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-11-17",
+      "playerId": 8479385,
+      "playerName": "Jordan Kyrou",
+      "team": "STL",
+      "opponent": "CAR",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-11-18",
+      "playerId": 8475745,
+      "playerName": "Charlie Coyle",
+      "team": "BOS",
+      "opponent": "CBJ",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-18",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "WSH",
+      "opponent": "UTA",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-18",
+      "playerId": 8481540,
+      "playerName": "Cole Caufield",
+      "team": "MTL",
+      "opponent": "EDM",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-18",
+      "playerId": 8482078,
+      "playerName": "Lucas Raymond",
+      "team": "DET",
+      "opponent": "SJS",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-19",
+      "playerId": 8476389,
+      "playerName": "Vincent Trocheck",
+      "team": "NYR",
+      "opponent": "VAN",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-19",
+      "playerId": 8482109,
+      "playerName": "Alexis Lafrenière",
+      "team": "NYR",
+      "opponent": "VAN",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-11-20",
+      "playerId": 8480027,
+      "playerName": "Jason Robertson",
+      "team": "DAL",
+      "opponent": "SJS",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-21",
+      "playerId": 8475172,
+      "playerName": "Nazem Kadri",
+      "team": "CGY",
+      "opponent": "NYR",
+      "isHome": true,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-21",
+      "playerId": 8476389,
+      "playerName": "Vincent Trocheck",
+      "team": "NYR",
+      "opponent": "CGY",
+      "isHome": false,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-11-21",
+      "playerId": 8479542,
+      "playerName": "Brandon Hagel",
+      "team": "TBL",
+      "opponent": "CBJ",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-11-23",
+      "playerId": 8475170,
+      "playerName": "Brayden Schenn",
+      "team": "STL",
+      "opponent": "NYI",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-23",
+      "playerId": 8477956,
+      "playerName": "David Pastrnak",
+      "team": "BOS",
+      "opponent": "DET",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-23",
+      "playerId": 8479542,
+      "playerName": "Brandon Hagel",
+      "team": "TBL",
+      "opponent": "DAL",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-11-25",
+      "playerId": 8475151,
+      "playerName": "Kyle Palmieri",
+      "team": "NYI",
+      "opponent": "DET",
+      "isHome": true,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-25",
+      "playerId": 8476887,
+      "playerName": "Filip Forsberg",
+      "team": "NSH",
+      "opponent": "NJD",
+      "isHome": false,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-11-25",
+      "playerId": 8479337,
+      "playerName": "Alex DeBrincat",
+      "team": "DET",
+      "opponent": "NYI",
+      "isHome": false,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-11-26",
+      "playerId": 8475745,
+      "playerName": "Charlie Coyle",
+      "team": "BOS",
+      "opponent": "VAN",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-27",
+      "playerId": 8479400,
+      "playerName": "Pierre-Luc Dubois",
+      "team": "WSH",
+      "opponent": "TBL",
+      "isHome": false,
+      "actualShots": 0
+    },
+    {
+      "gameDate": "2024-11-29",
+      "playerId": 8470613,
+      "playerName": "Brent Burns",
+      "team": "CAR",
+      "opponent": "FLA",
+      "isHome": true,
+      "actualShots": 5
+    },
+    {
+      "gameDate": "2024-11-29",
+      "playerId": 8478440,
+      "playerName": "Dylan Strome",
+      "team": "WSH",
+      "opponent": "NYI",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-29",
+      "playerId": 8479542,
+      "playerName": "Brandon Hagel",
+      "team": "TBL",
+      "opponent": "NSH",
+      "isHome": false,
+      "actualShots": 2
+    },
+    {
+      "gameDate": "2024-11-30",
+      "playerId": 8480188,
+      "playerName": "Fabian Zetterlund",
+      "team": "SJS",
+      "opponent": "SEA",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-30",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "TBL",
+      "isHome": false,
+      "actualShots": 4
+    },
+    {
+      "gameDate": "2024-11-30",
+      "playerId": 8480208,
+      "playerName": "Drake Batherson",
+      "team": "OTT",
+      "opponent": "LAK",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-11-30",
+      "playerId": 8482109,
+      "playerName": "Alexis Lafrenière",
+      "team": "NYR",
+      "opponent": "MTL",
+      "isHome": true,
+      "actualShots": 3
+    },
+    {
+      "gameDate": "2024-12-03",
+      "playerId": 8470613,
+      "playerName": "Brent Burns",
+      "team": "CAR",
+      "opponent": "SEA",
+      "isHome": true,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-12-03",
+      "playerId": 8481542,
+      "playerName": "Moritz Seider",
+      "team": "DET",
+      "opponent": "BOS",
+      "isHome": false,
+      "actualShots": 1
+    },
+    {
+      "gameDate": "2024-12-04",
+      "playerId": 8477939,
+      "playerName": "William Nylander",
+      "team": "TOR",
+      "opponent": "NSH",
+      "isHome": true,
+      "actualShots": 2
+    }
+  ],
+  "stats": {
+    "totalGames": 240,
+    "uniqueDates": 95,
+    "uniquePlayers": 25,
+    "dateRange": {
+      "start": "2024-02-12",
+      "end": "2024-12-04"
+    },
+    "estimatedCost": 2495
+  }
+}

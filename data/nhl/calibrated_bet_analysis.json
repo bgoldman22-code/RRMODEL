@@ -1,0 +1,1725 @@
+{
+  "summary": {
+    "totalBets": 170,
+    "wins": 93,
+    "losses": 77,
+    "winRate": 54.7,
+    "totalStaked": 170,
+    "totalProfit": -4.449999999999999,
+    "roi": -2.62
+  },
+  "byType": {
+    "over": {
+      "bets": 82,
+      "wins": 42,
+      "profit": -5.149999999999999
+    },
+    "under": {
+      "bets": 88,
+      "wins": 51,
+      "profit": 0.700000000000002
+    }
+  },
+  "bets": [
+    {
+      "player": "Filip Forsberg",
+      "date": "2023-10-10",
+      "predicted": 2.153343828894518,
+      "line": 2.5,
+      "actual": 6,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Cole Caufield",
+      "date": "2023-10-11",
+      "predicted": 3.763996822744916,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Nazem Kadri",
+      "date": "2023-10-11",
+      "predicted": 2.327387994029524,
+      "line": 3.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.5900000000000001
+    },
+    {
+      "player": "Dawson Mercer",
+      "date": "2023-10-12",
+      "predicted": 1.5939507262850385,
+      "line": 1.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.74
+    },
+    {
+      "player": "Vincent Trocheck",
+      "date": "2023-10-12",
+      "predicted": 1.7459182134821765,
+      "line": 2.5,
+      "actual": 4,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Jason Robertson",
+      "date": "2023-10-12",
+      "predicted": 3.489667503667622,
+      "line": 3.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.74
+    },
+    {
+      "player": "Nazem Kadri",
+      "date": "2023-10-14",
+      "predicted": 2.1102219631557237,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 1.35
+    },
+    {
+      "player": "Cole Caufield",
+      "date": "2023-10-14",
+      "predicted": 3.5954363147952826,
+      "line": 3.5,
+      "actual": 5,
+      "betSide": "over",
+      "won": true,
+      "profit": 1.1400000000000001
+    },
+    {
+      "player": "Nick Suzuki",
+      "date": "2023-10-14",
+      "predicted": 2.260883498450409,
+      "line": 1.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Brandon Hagel",
+      "date": "2023-10-14",
+      "predicted": 2.1571923895994303,
+      "line": 2.5,
+      "actual": 4,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "William Nylander",
+      "date": "2023-10-14",
+      "predicted": 4.417152894550607,
+      "line": 3.5,
+      "actual": 6,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.8
+    },
+    {
+      "player": "Pierre-Luc Dubois",
+      "date": "2023-10-14",
+      "predicted": 2.538633153816058,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Brandon Hagel",
+      "date": "2023-10-15",
+      "predicted": 2.2658961749331312,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Cole Caufield",
+      "date": "2023-10-17",
+      "predicted": 3.6439139112526573,
+      "line": 3.5,
+      "actual": 5,
+      "betSide": "over",
+      "won": true,
+      "profit": 1.1
+    },
+    {
+      "player": "Nick Suzuki",
+      "date": "2023-10-17",
+      "predicted": 2.1019862779218226,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.5700000000000001
+    },
+    {
+      "player": "Kyle Palmieri",
+      "date": "2023-10-17",
+      "predicted": 2.4320929839325847,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Brent Burns",
+      "date": "2023-10-17",
+      "predicted": 3.4503149011467293,
+      "line": 3.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6699999999999999
+    },
+    {
+      "player": "Drake Batherson",
+      "date": "2023-10-18",
+      "predicted": 2.332845335956291,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.95
+    },
+    {
+      "player": "Lucas Raymond",
+      "date": "2023-10-18",
+      "predicted": 2.026535559563285,
+      "line": 1.5,
+      "actual": 0,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "William Nylander",
+      "date": "2023-10-19",
+      "predicted": 4.334576302698402,
+      "line": 3.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Jason Robertson",
+      "date": "2023-10-19",
+      "predicted": 2.3506660249738576,
+      "line": 3.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.69
+    },
+    {
+      "player": "Dawson Mercer",
+      "date": "2023-10-20",
+      "predicted": 1.3914092606814596,
+      "line": 1.5,
+      "actual": 0,
+      "betSide": "under",
+      "won": true,
+      "profit": 1
+    },
+    {
+      "player": "Drake Batherson",
+      "date": "2023-10-21",
+      "predicted": 1.8358747731770955,
+      "line": 2.5,
+      "actual": 0,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.8300000000000001
+    },
+    {
+      "player": "Nick Suzuki",
+      "date": "2023-10-21",
+      "predicted": 2.065863581821202,
+      "line": 1.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.51
+    },
+    {
+      "player": "Brandon Hagel",
+      "date": "2023-10-21",
+      "predicted": 2.5190185773103053,
+      "line": 2.5,
+      "actual": 0,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Filip Forsberg",
+      "date": "2023-10-21",
+      "predicted": 3.8054266936794034,
+      "line": 3.5,
+      "actual": 5,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.8700000000000001
+    },
+    {
+      "player": "Filip Forsberg",
+      "date": "2023-10-24",
+      "predicted": 4.184069473643894,
+      "line": 3.5,
+      "actual": 4,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.9099999999999999
+    },
+    {
+      "player": "David Pastrnak",
+      "date": "2023-10-26",
+      "predicted": 4.485503956800271,
+      "line": 4.5,
+      "actual": 9,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Brent Burns",
+      "date": "2023-10-26",
+      "predicted": 2.4099196487093737,
+      "line": 2.5,
+      "actual": 6,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Erik Karlsson",
+      "date": "2023-10-26",
+      "predicted": 2.1925574062427873,
+      "line": 2.5,
+      "actual": 0,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.77
+    },
+    {
+      "player": "Brandon Hagel",
+      "date": "2023-10-26",
+      "predicted": 1.808442282214444,
+      "line": 2.5,
+      "actual": 4,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Brent Burns",
+      "date": "2023-10-27",
+      "predicted": 3.402174104734019,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.6699999999999999
+    },
+    {
+      "player": "Kyle Palmieri",
+      "date": "2023-10-28",
+      "predicted": 1.950519624701969,
+      "line": 2.5,
+      "actual": 4,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Vincent Trocheck",
+      "date": "2023-10-28",
+      "predicted": 1.4521947546198546,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Nazem Kadri",
+      "date": "2023-10-29",
+      "predicted": 2.213812379904326,
+      "line": 3.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6200000000000001
+    },
+    {
+      "player": "Jason Robertson",
+      "date": "2023-11-01",
+      "predicted": 2.5172752132922787,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Jordan Kyrou",
+      "date": "2023-11-01",
+      "predicted": 3.32781222110842,
+      "line": 3.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.5700000000000001
+    },
+    {
+      "player": "Drake Batherson",
+      "date": "2023-11-02",
+      "predicted": 2.024734949823402,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "David Pastrnak",
+      "date": "2023-11-02",
+      "predicted": 4.829185043256719,
+      "line": 4.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Filip Forsberg",
+      "date": "2023-11-02",
+      "predicted": 2.613375077078395,
+      "line": 3.5,
+      "actual": 5,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Lucas Raymond",
+      "date": "2023-11-04",
+      "predicted": 1.6827823546608038,
+      "line": 1.5,
+      "actual": 5,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.77
+    },
+    {
+      "player": "Dylan Strome",
+      "date": "2023-11-04",
+      "predicted": 1.8291310447256748,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6200000000000001
+    },
+    {
+      "player": "Drake Batherson",
+      "date": "2023-11-04",
+      "predicted": 2.1594734566077833,
+      "line": 2.5,
+      "actual": 4,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Fabian Zetterlund",
+      "date": "2023-11-04",
+      "predicted": 1.4612681189232826,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.53
+    },
+    {
+      "player": "Charlie Coyle",
+      "date": "2023-11-06",
+      "predicted": 1.097187664148629,
+      "line": 1.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.8200000000000001
+    },
+    {
+      "player": "Nick Suzuki",
+      "date": "2023-11-07",
+      "predicted": 2.5638253947789584,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": true,
+      "profit": 1.4500000000000002
+    },
+    {
+      "player": "Alex DeBrincat",
+      "date": "2023-11-07",
+      "predicted": 3.5358081917397213,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Moritz Seider",
+      "date": "2023-11-07",
+      "predicted": 1.740828900295217,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.8799999999999999
+    },
+    {
+      "player": "William Nylander",
+      "date": "2023-11-08",
+      "predicted": 4.5288825459001405,
+      "line": 3.5,
+      "actual": 5,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.77
+    },
+    {
+      "player": "Alex DeBrincat",
+      "date": "2023-11-11",
+      "predicted": 3.798213596554456,
+      "line": 3.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Brandon Hagel",
+      "date": "2023-11-11",
+      "predicted": 1.6687182014157278,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.51
+    },
+    {
+      "player": "Jordan Kyrou",
+      "date": "2023-11-11",
+      "predicted": 4.0024711485522415,
+      "line": 3.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Fabian Zetterlund",
+      "date": "2023-11-12",
+      "predicted": 1.5589162276312742,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6699999999999999
+    },
+    {
+      "player": "Fabian Zetterlund",
+      "date": "2023-11-14",
+      "predicted": 1.7186906395655173,
+      "line": 2.5,
+      "actual": 0,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6499999999999999
+    },
+    {
+      "player": "Brandon Hagel",
+      "date": "2023-11-18",
+      "predicted": 2.091035603446259,
+      "line": 2.5,
+      "actual": 0,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6000000000000001
+    },
+    {
+      "player": "Brent Burns",
+      "date": "2023-11-18",
+      "predicted": 2.315441966362686,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.95
+    },
+    {
+      "player": "Vincent Trocheck",
+      "date": "2023-11-18",
+      "predicted": 1.9818570241152078,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6200000000000001
+    },
+    {
+      "player": "Jason Robertson",
+      "date": "2023-11-20",
+      "predicted": 3.7611849807396354,
+      "line": 3.5,
+      "actual": 0,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Erik Karlsson",
+      "date": "2023-11-22",
+      "predicted": 3.4010896061441267,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.78
+    },
+    {
+      "player": "Jordan Kyrou",
+      "date": "2023-11-22",
+      "predicted": 2.6361995844922532,
+      "line": 3.5,
+      "actual": 5,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Nazem Kadri",
+      "date": "2023-11-22",
+      "predicted": 2.4166507512204998,
+      "line": 3.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6699999999999999
+    },
+    {
+      "player": "Nazem Kadri",
+      "date": "2023-11-24",
+      "predicted": 2.318364310254022,
+      "line": 3.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6000000000000001
+    },
+    {
+      "player": "David Pastrnak",
+      "date": "2023-11-25",
+      "predicted": 4.637816044752943,
+      "line": 4.5,
+      "actual": 6,
+      "betSide": "over",
+      "won": true,
+      "profit": 1.1
+    },
+    {
+      "player": "Cole Caufield",
+      "date": "2023-11-25",
+      "predicted": 3.910086099862161,
+      "line": 3.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Nick Suzuki",
+      "date": "2023-11-25",
+      "predicted": 1.5742370646060189,
+      "line": 1.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Kyle Palmieri",
+      "date": "2023-11-25",
+      "predicted": 2.240596506732987,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.74
+    },
+    {
+      "player": "Alex DeBrincat",
+      "date": "2023-11-26",
+      "predicted": 2.5128928925487712,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Jordan Kyrou",
+      "date": "2023-11-26",
+      "predicted": 3.387794297359988,
+      "line": 3.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6699999999999999
+    },
+    {
+      "player": "Fabian Zetterlund",
+      "date": "2023-11-27",
+      "predicted": 2.634799734379599,
+      "line": 2.5,
+      "actual": 6,
+      "betSide": "over",
+      "won": true,
+      "profit": 1.1
+    },
+    {
+      "player": "Dylan Strome",
+      "date": "2023-11-29",
+      "predicted": 1.7107210604129317,
+      "line": 1.5,
+      "actual": 0,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Lucas Raymond",
+      "date": "2023-11-30",
+      "predicted": 2.0128963264723656,
+      "line": 1.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Brandon Hagel",
+      "date": "2023-11-30",
+      "predicted": 2.5684564137279513,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Kyle Palmieri",
+      "date": "2023-11-30",
+      "predicted": 1.8954637596170325,
+      "line": 1.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.5700000000000001
+    },
+    {
+      "player": "Dylan Strome",
+      "date": "2023-11-30",
+      "predicted": 1.477380243491604,
+      "line": 2.5,
+      "actual": 0,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6000000000000001
+    },
+    {
+      "player": "Vincent Trocheck",
+      "date": "2023-12-02",
+      "predicted": 2.608222585126723,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": true,
+      "profit": 1.04
+    },
+    {
+      "player": "Kyle Palmieri",
+      "date": "2023-12-02",
+      "predicted": 2.00462010603216,
+      "line": 2.5,
+      "actual": 0,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.5700000000000001
+    },
+    {
+      "player": "David Pastrnak",
+      "date": "2023-12-02",
+      "predicted": 4.355019423487403,
+      "line": 4.5,
+      "actual": 10,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "William Nylander",
+      "date": "2023-12-02",
+      "predicted": 4.408154407658168,
+      "line": 3.5,
+      "actual": 7,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.6200000000000001
+    },
+    {
+      "player": "Brent Burns",
+      "date": "2023-12-02",
+      "predicted": 2.5068062727648743,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Alex DeBrincat",
+      "date": "2023-12-02",
+      "predicted": 3.6051342278420115,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Nick Suzuki",
+      "date": "2023-12-02",
+      "predicted": 1.6433334788998382,
+      "line": 1.5,
+      "actual": 4,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.5700000000000001
+    },
+    {
+      "player": "David Pastrnak",
+      "date": "2023-12-03",
+      "predicted": 5.19424904926458,
+      "line": 5.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6200000000000001
+    },
+    {
+      "player": "Nick Suzuki",
+      "date": "2023-12-04",
+      "predicted": 1.9345962562017984,
+      "line": 2.5,
+      "actual": 4,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Vincent Trocheck",
+      "date": "2023-12-05",
+      "predicted": 3.9082467957026186,
+      "line": 2.5,
+      "actual": 5,
+      "betSide": "over",
+      "won": true,
+      "profit": 1.1
+    },
+    {
+      "player": "Kyle Palmieri",
+      "date": "2023-12-07",
+      "predicted": 1.3777001466271472,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Cole Caufield",
+      "date": "2023-12-10",
+      "predicted": 4.325096140574723,
+      "line": 3.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Filip Forsberg",
+      "date": "2023-12-10",
+      "predicted": 2.5806499073376785,
+      "line": 3.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 1.1400000000000001
+    },
+    {
+      "player": "Lucas Raymond",
+      "date": "2023-12-11",
+      "predicted": 2.0958374433682776,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.53
+    },
+    {
+      "player": "Brandon Hagel",
+      "date": "2023-12-12",
+      "predicted": 1.9437142594893912,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Fabian Zetterlund",
+      "date": "2023-12-12",
+      "predicted": 3.6543470981181296,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Charlie Coyle",
+      "date": "2023-12-13",
+      "predicted": 1.822660851302368,
+      "line": 1.5,
+      "actual": 0,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Lucas Raymond",
+      "date": "2023-12-14",
+      "predicted": 2.0530728037424484,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.6699999999999999
+    },
+    {
+      "player": "Charlie Coyle",
+      "date": "2023-12-15",
+      "predicted": 1.655832936254706,
+      "line": 1.5,
+      "actual": 4,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.51
+    },
+    {
+      "player": "Filip Forsberg",
+      "date": "2023-12-15",
+      "predicted": 2.531193367692885,
+      "line": 3.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.55
+    },
+    {
+      "player": "Marco Rossi",
+      "date": "2023-12-16",
+      "predicted": 1.5918959978285454,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.6200000000000001
+    },
+    {
+      "player": "Vincent Trocheck",
+      "date": "2023-12-16",
+      "predicted": 3.9156071004386237,
+      "line": 2.5,
+      "actual": 5,
+      "betSide": "over",
+      "won": true,
+      "profit": 1.0499999999999998
+    },
+    {
+      "player": "Jordan Kyrou",
+      "date": "2023-12-16",
+      "predicted": 2.0422435925709888,
+      "line": 3.5,
+      "actual": 9,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Pierre-Luc Dubois",
+      "date": "2023-12-16",
+      "predicted": 1.2614317459699838,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Erik Karlsson",
+      "date": "2023-12-18",
+      "predicted": 3.820899953001229,
+      "line": 2.5,
+      "actual": 4,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.77
+    },
+    {
+      "player": "Cole Caufield",
+      "date": "2023-12-18",
+      "predicted": 3.844071343942758,
+      "line": 3.5,
+      "actual": 0,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Jordan Kyrou",
+      "date": "2023-12-19",
+      "predicted": 3.8345859607748385,
+      "line": 3.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Lucas Raymond",
+      "date": "2023-12-20",
+      "predicted": 1.9161063819814743,
+      "line": 1.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Dylan Strome",
+      "date": "2023-12-20",
+      "predicted": 2.3580843151570865,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6699999999999999
+    },
+    {
+      "player": "Brent Burns",
+      "date": "2023-12-21",
+      "predicted": 1.1543486952047648,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Cole Caufield",
+      "date": "2023-12-21",
+      "predicted": 3.5366280727167827,
+      "line": 3.5,
+      "actual": 4,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.8799999999999999
+    },
+    {
+      "player": "Lucas Raymond",
+      "date": "2023-12-22",
+      "predicted": 1.94294111407685,
+      "line": 1.5,
+      "actual": 4,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.6699999999999999
+    },
+    {
+      "player": "David Pastrnak",
+      "date": "2023-12-23",
+      "predicted": 5.679381890314379,
+      "line": 4.5,
+      "actual": 4,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "William Nylander",
+      "date": "2023-12-23",
+      "predicted": 4.464898609690039,
+      "line": 4.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6000000000000001
+    },
+    {
+      "player": "Alex DeBrincat",
+      "date": "2023-12-23",
+      "predicted": 3.4969997530487515,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.72
+    },
+    {
+      "player": "Jordan Kyrou",
+      "date": "2023-12-23",
+      "predicted": 3.7727481128855582,
+      "line": 3.5,
+      "actual": 7,
+      "betSide": "over",
+      "won": true,
+      "profit": 1.0499999999999998
+    },
+    {
+      "player": "Brayden Schenn",
+      "date": "2023-12-23",
+      "predicted": 1.0402980501784216,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "William Nylander",
+      "date": "2023-12-27",
+      "predicted": 4.260376147616393,
+      "line": 3.5,
+      "actual": 4,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.71
+    },
+    {
+      "player": "Erik Karlsson",
+      "date": "2023-12-27",
+      "predicted": 3.3393182399625614,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Jason Robertson",
+      "date": "2023-12-27",
+      "predicted": 3.958827387025887,
+      "line": 3.5,
+      "actual": 5,
+      "betSide": "over",
+      "won": true,
+      "profit": 1.2999999999999998
+    },
+    {
+      "player": "Brayden Schenn",
+      "date": "2023-12-27",
+      "predicted": 1.2237856940317562,
+      "line": 1.5,
+      "actual": 4,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Pierre-Luc Dubois",
+      "date": "2023-12-27",
+      "predicted": 1.6316720046843742,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6000000000000001
+    },
+    {
+      "player": "Brent Burns",
+      "date": "2023-12-28",
+      "predicted": 2.481117722299707,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.9099999999999999
+    },
+    {
+      "player": "Nick Suzuki",
+      "date": "2023-12-28",
+      "predicted": 3.546326682301054,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.7
+    },
+    {
+      "player": "Moritz Seider",
+      "date": "2023-12-29",
+      "predicted": 1.539207917895295,
+      "line": 1.5,
+      "actual": 0,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Vincent Trocheck",
+      "date": "2023-12-29",
+      "predicted": 2.2821555107047327,
+      "line": 2.5,
+      "actual": 4,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Nick Suzuki",
+      "date": "2023-12-30",
+      "predicted": 3.34566577475963,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Marco Rossi",
+      "date": "2023-12-31",
+      "predicted": 1.9427936939353414,
+      "line": 2.5,
+      "actual": 0,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.51
+    },
+    {
+      "player": "Charlie Coyle",
+      "date": "2023-12-31",
+      "predicted": 1.3889236727019083,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Moritz Seider",
+      "date": "2024-01-02",
+      "predicted": 0.9409722942657528,
+      "line": 1.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 1.4
+    },
+    {
+      "player": "Dylan Strome",
+      "date": "2024-01-03",
+      "predicted": 1.4252828689930084,
+      "line": 1.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 1.2000000000000002
+    },
+    {
+      "player": "David Pastrnak",
+      "date": "2024-01-04",
+      "predicted": 4.620918535805995,
+      "line": 4.5,
+      "actual": 7,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.8300000000000001
+    },
+    {
+      "player": "Nazem Kadri",
+      "date": "2024-01-04",
+      "predicted": 3.497110615858619,
+      "line": 3.5,
+      "actual": 5,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Moritz Seider",
+      "date": "2024-01-04",
+      "predicted": 0.8700606988968707,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Charlie Coyle",
+      "date": "2024-01-06",
+      "predicted": 1.643650206113111,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.69
+    },
+    {
+      "player": "Erik Karlsson",
+      "date": "2024-01-08",
+      "predicted": 1.5080916073692405,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.5700000000000001
+    },
+    {
+      "player": "Charlie Coyle",
+      "date": "2024-01-08",
+      "predicted": 1.477646234596477,
+      "line": 1.5,
+      "actual": 4,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "David Pastrnak",
+      "date": "2024-01-08",
+      "predicted": 4.444038950957629,
+      "line": 4.5,
+      "actual": 4,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.8200000000000001
+    },
+    {
+      "player": "Drake Batherson",
+      "date": "2024-01-09",
+      "predicted": 2.0075545217559183,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.7
+    },
+    {
+      "player": "Alex DeBrincat",
+      "date": "2024-01-11",
+      "predicted": 2.3518946732879558,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 1
+    },
+    {
+      "player": "Erik Karlsson",
+      "date": "2024-01-11",
+      "predicted": 1.614756578389321,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.69
+    },
+    {
+      "player": "Drake Batherson",
+      "date": "2024-01-13",
+      "predicted": 2.1048308476835826,
+      "line": 2.5,
+      "actual": 6,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Jordan Kyrou",
+      "date": "2024-01-13",
+      "predicted": 4.013581495137448,
+      "line": 3.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Kyle Palmieri",
+      "date": "2024-01-13",
+      "predicted": 1.7187226715911417,
+      "line": 1.5,
+      "actual": 0,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Vincent Trocheck",
+      "date": "2024-01-14",
+      "predicted": 3.978756743798458,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.6399999999999999
+    },
+    {
+      "player": "Erik Karlsson",
+      "date": "2024-01-15",
+      "predicted": 2.357287794556858,
+      "line": 2.5,
+      "actual": 4,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Dylan Strome",
+      "date": "2024-01-16",
+      "predicted": 1.0818642078857172,
+      "line": 2.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Charlie Coyle",
+      "date": "2024-01-18",
+      "predicted": 2.4173780826801003,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.7
+    },
+    {
+      "player": "Marco Rossi",
+      "date": "2024-01-18",
+      "predicted": 1.6271574263391886,
+      "line": 1.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.6200000000000001
+    },
+    {
+      "player": "Brayden Schenn",
+      "date": "2024-01-18",
+      "predicted": 1.5192653407096974,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.6699999999999999
+    },
+    {
+      "player": "Dylan Strome",
+      "date": "2024-01-18",
+      "predicted": 1.2742646047242998,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Filip Forsberg",
+      "date": "2024-01-18",
+      "predicted": 4.065609046472436,
+      "line": 3.5,
+      "actual": 6,
+      "betSide": "over",
+      "won": true,
+      "profit": 1.0499999999999998
+    },
+    {
+      "player": "Moritz Seider",
+      "date": "2024-01-19",
+      "predicted": 1.1711110281223094,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Marco Rossi",
+      "date": "2024-01-19",
+      "predicted": 1.6482221340102767,
+      "line": 1.5,
+      "actual": 0,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Kyle Palmieri",
+      "date": "2024-01-19",
+      "predicted": 1.8683406311882327,
+      "line": 2.5,
+      "actual": 5,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Filip Forsberg",
+      "date": "2024-01-20",
+      "predicted": 4.283679224136118,
+      "line": 3.5,
+      "actual": 3,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Jason Robertson",
+      "date": "2024-01-23",
+      "predicted": 2.3395198969044957,
+      "line": 3.5,
+      "actual": 5,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Drake Batherson",
+      "date": "2024-01-23",
+      "predicted": 1.6000125474660636,
+      "line": 2.5,
+      "actual": 0,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.8799999999999999
+    },
+    {
+      "player": "Fabian Zetterlund",
+      "date": "2024-01-23",
+      "predicted": 3.898014791898442,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "David Pastrnak",
+      "date": "2024-01-24",
+      "predicted": 5.710884447441017,
+      "line": 4.5,
+      "actual": 5,
+      "betSide": "over",
+      "won": true,
+      "profit": 1
+    },
+    {
+      "player": "Moritz Seider",
+      "date": "2024-01-25",
+      "predicted": 1.3541121145197073,
+      "line": 1.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 1.1
+    },
+    {
+      "player": "Nazem Kadri",
+      "date": "2024-01-25",
+      "predicted": 3.499160330607249,
+      "line": 3.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.73
+    },
+    {
+      "player": "Jordan Kyrou",
+      "date": "2024-01-26",
+      "predicted": 2.0353673488591153,
+      "line": 3.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.55
+    },
+    {
+      "player": "Jason Robertson",
+      "date": "2024-01-27",
+      "predicted": 3.9888272234478017,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Brent Burns",
+      "date": "2024-01-27",
+      "predicted": 3.377306309081474,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Erik Karlsson",
+      "date": "2024-01-27",
+      "predicted": 2.2852268407148335,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.8
+    },
+    {
+      "player": "Alex DeBrincat",
+      "date": "2024-01-31",
+      "predicted": 1.404246289504436,
+      "line": 2.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.74
+    },
+    {
+      "player": "Kyle Palmieri",
+      "date": "2024-02-05",
+      "predicted": 4.041676149580723,
+      "line": 2.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Cole Caufield",
+      "date": "2024-02-06",
+      "predicted": 3.6504357646918604,
+      "line": 3.5,
+      "actual": 4,
+      "betSide": "over",
+      "won": true,
+      "profit": 0.94
+    },
+    {
+      "player": "Dawson Mercer",
+      "date": "2024-02-06",
+      "predicted": 1.6143063518852028,
+      "line": 1.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Brayden Schenn",
+      "date": "2024-02-10",
+      "predicted": 1.551418505144221,
+      "line": 1.5,
+      "actual": 1,
+      "betSide": "over",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Nazem Kadri",
+      "date": "2024-02-10",
+      "predicted": 2.6407516466956684,
+      "line": 3.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6200000000000001
+    },
+    {
+      "player": "Jason Robertson",
+      "date": "2024-02-10",
+      "predicted": 2.3616434256082157,
+      "line": 3.5,
+      "actual": 1,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.5700000000000001
+    },
+    {
+      "player": "William Nylander",
+      "date": "2024-02-10",
+      "predicted": 4.050617646721545,
+      "line": 4.5,
+      "actual": 3,
+      "betSide": "under",
+      "won": true,
+      "profit": 0.6000000000000001
+    },
+    {
+      "player": "Pierre-Luc Dubois",
+      "date": "2024-02-10",
+      "predicted": 1.1472221678659362,
+      "line": 1.5,
+      "actual": 2,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    },
+    {
+      "player": "Vincent Trocheck",
+      "date": "2024-02-12",
+      "predicted": 1.8811643841550258,
+      "line": 2.5,
+      "actual": 5,
+      "betSide": "under",
+      "won": false,
+      "profit": -1
+    }
+  ]
+}

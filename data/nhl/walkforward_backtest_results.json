@@ -1,0 +1,25 @@
+{
+  "totalPredictions": 166029,
+  "cycles": 338,
+  "config": {
+    "MIN_TRAINING_GAMES": 1000,
+    "REFIT_INTERVAL": 500,
+    "TEST_WINDOW": 500,
+    "MIN_PLAYER_HISTORY": 3
+  },
+  "metrics": {
+    "mae": 1.319118014375127,
+    "bias": 0.4498490694015663,
+    "correlation": 0.4113191123710358
+  },
+  "validation": {
+    "maePass": false,
+    "corrPass": false,
+    "biasPass": false
+  },
+  "metadata": {
+    "method": "walk-forward (expanding window)",
+    "leakagePrevention": "chronological order, past-only training",
+    "timestamp": "2025-10-23T13:27:21.949Z"
+  }
+}
