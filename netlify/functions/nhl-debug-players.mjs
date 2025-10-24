@@ -229,7 +229,7 @@ export async function handler(event) {
       headers,
       body: JSON.stringify({
         summary: {
-          playersTestedTestedested: TEST_PLAYERS.length,
+          playersTested: TEST_PLAYERS.length,
           withProjections,
           withOdds,
           totalOddsLines: oddsMap.size
