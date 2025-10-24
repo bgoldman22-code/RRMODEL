@@ -1,6 +1,8 @@
 # ✅ HISTORICAL ODDS PIPELINE READY
 
-## What We Built
+## What We Bu```bash
+THEODDS_API_KEY=your_api_key_here \
+  node scripts/nhl/fetch-historical-odds.mjs
 
 Successfully implemented proper TheOddsAPI historical odds fetching with smart player sampling strategy.
 
@@ -48,8 +50,7 @@ Successfully implemented proper TheOddsAPI historical odds fetching with smart p
 
 ### Option A: Run Full Sample Now (RECOMMENDED)
 ```bash
-THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b \
-  node scripts/nhl/fetch-historical-odds-v2.mjs \
+node scripts/nhl/fetch-historical-odds-v2.mjs \
   --sample=smart_player_sample.json \
   --execute
 ```
@@ -67,8 +68,7 @@ THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b \
 ### Option B: Run Partial First
 Test with 20 dates first (~140 credits, 10 minutes):
 ```bash
-THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b \
-  node scripts/nhl/fetch-historical-odds-v2.mjs \
+node scripts/nhl/fetch-historical-odds-v2.mjs \
   --sample=smart_player_sample.json \
   --limit=20 \
   --execute

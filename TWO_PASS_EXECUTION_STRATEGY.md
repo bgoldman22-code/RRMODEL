@@ -1,4 +1,6 @@
-# 🎯 TWO-PASS EXECUTION STRATEGY
+# 🎯 TWO-PASS EXECU```bash
+THEODDS_API_KEY=your_api_key_here \
+  node scripts/nhl/fetch-historical-odds.mjsN STRATEGY
 
 ## Overview
 
@@ -18,8 +20,7 @@ Get quick read on model profitability before committing to full validation.
 
 ### Execute
 ```bash
-THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b \
-  node scripts/nhl/fetch-historical-odds-v2.mjs \
+node scripts/nhl/fetch-historical-odds-v2.mjs \
   --sample=smart_player_sample_pass1.json \
   --execute
 ```
@@ -54,8 +55,7 @@ Full statistical validation with larger sample size and more recent data.
 
 ### Execute (only if Pass 1 passes gate)
 ```bash
-THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b \
-  node scripts/nhl/fetch-historical-odds-v2.mjs \
+node scripts/nhl/fetch-historical-odds-v2.mjs \
   --sample=smart_player_sample_pass2.json \
   --execute
 ```
@@ -143,8 +143,7 @@ Run Pass 1:
 ```bash
 cd /Users/brentgoldman/Desktop/REPO33/RRMODEL
 
-THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b \
-  node scripts/nhl/fetch-historical-odds-v2.mjs \
+node scripts/nhl/fetch-historical-odds-v2.mjs \
   --sample=smart_player_sample_pass1.json \
   --execute
 ```

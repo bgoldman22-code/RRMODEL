@@ -111,11 +111,9 @@ node scripts/nhl/generate-phase1-sample.mjs
 
 ### Step 3: Fetch Phase 1 odds 📡
 ```bash
-THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b \
-  node scripts/nhl/fetch-historical-odds.mjs \
-  --sample=phase1_sample_dates.json
-
-# Takes ~30 min, costs 1,500-3,000 credits
+```bash
+THEODDS_API_KEY=your_api_key_here \
+  node scripts/nhl/create-validation-sample.mjs# Takes ~30 min, costs 1,500-3,000 credits
 ```
 
 ### Step 4: Market backtest 📊
@@ -139,8 +137,7 @@ node scripts/nhl/market-backtest.mjs --data=phase1
 node scripts/nhl/generate-phase2-sample.mjs
 
 # Fetch Phase 2 odds
-THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b \
-  node scripts/nhl/fetch-historical-odds.mjs \
+node scripts/nhl/fetch-historical-odds.mjs \
   --sample=phase2_sample_dates.json
 
 # Final market backtest with full 15k predictions

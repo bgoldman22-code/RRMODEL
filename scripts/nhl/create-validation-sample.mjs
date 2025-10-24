@@ -125,7 +125,7 @@ console.log('🎯 NEXT STEP');
 console.log('═══════════════════════════════════════════════════════════════════\n');
 
 console.log('Execute validation sample fetch:');
-console.log(`  THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b \\`);
+console.log(`  THEODDS_API_KEY=your_api_key_here \\`);
 console.log(`    node scripts/nhl/fetch-historical-odds-v2.mjs \\`);
 console.log(`    --sample=validation_sample.json \\`);
 console.log(`    --execute\n`);

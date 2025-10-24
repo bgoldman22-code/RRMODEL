@@ -178,7 +178,7 @@ console.log(`   Dates: ${totalDates}`);
 console.log(`   Credits: ${totalCost} (${((totalCost / 100000) * 100).toFixed(1)}% of 100k limit)\n`);
 
 console.log('Execute expanded middle sample fetch:');
-console.log(`  THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b \\`);
+console.log(`  THEODDS_API_KEY=your_api_key_here \\`);
 console.log(`    node scripts/nhl/fetch-historical-odds-v2.mjs \\`);
 console.log(`    --sample=pass2_middle_sample.json \\`);
 console.log(`    --execute\n`);

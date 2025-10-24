@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '../..');
 
 // API Configuration
-const API_KEY = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY || 'c5d3fe15e6c5be83b2acd8695cff012b';
+const API_KEY = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
 const BASE_URL = 'https://api.the-odds-api.com/v4';
 
 // Sampling strategy
