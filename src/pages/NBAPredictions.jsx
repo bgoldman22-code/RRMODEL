@@ -413,52 +413,6 @@ const NBAPredictions = () => {
                           <span className="book-badge">{pred.vegasLines.total.book}</span>
                         </span>
                       </div>
-                      
-                      {/* Kelly Sizing for Total */}
-                      {(() => {
-                        const kellySizing = calculateTotalKelly(
-                          pred.prediction?.total?.prediction,
-                          pred.vegasLines.total.line,
-                          pred.vegasLines.total.overPrice,
-                          pred.vegasLines.total.underPrice
-                        );
-                        
-                        if (kellySizing) {
-                          return (
-                            <div className="bet-recommendation" style={{
-                              marginTop: '8px',
-                              padding: '8px',
-                              background: '#f0fdf4',
-                              border: '1px solid #86efac',
-                              borderRadius: '4px'
-                            }}>
-                              <div className="detail-row" style={{marginBottom: '4px'}}>
-                                <span className="label" style={{fontWeight: '600', color: '#15803d'}}>
-                                  💰 Recommended:
-                                </span>
-                                <span className="value" style={{fontWeight: '700', color: '#15803d'}}>
-                                  {kellySizing.pick} {kellySizing.line}
-                                </span>
-                              </div>
-                              <div style={{display: 'flex', gap: '12px', fontSize: '13px'}}>
-                                <span>
-                                  <strong>Units:</strong> {kellySizing.units}U
-                                </span>
-                                <span>
-                                  <strong>Edge:</strong> {kellySizing.edge} pts
-                                </span>
-                                <span>
-                                  <strong>Confidence:</strong> {kellySizing.confidence}%
-                                </span>
-                                <span>
-                                  <strong>Odds:</strong> {kellySizing.odds > 0 ? '+' : ''}{kellySizing.odds}
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      })()}
                     </div>
                   )}
                   

@@ -1,0 +1,1391 @@
+{
+  "generatedAt": "2025-10-24T15:57:16.099Z",
+  "weeksAnalyzed": [
+    "week1",
+    "week2",
+    "week3",
+    "week4",
+    "week5",
+    "week6",
+    "week7",
+    "week8"
+  ],
+  "stats": {
+    "highConfidence": 423,
+    "mediumConfidence": 62,
+    "lowConfidence": 61,
+    "neverHealthy": 0,
+    "anomalies": [
+      {
+        "player": "Trey Benson",
+        "team": "Arizona Cardinals",
+        "position": "RB",
+        "manual": 4,
+        "calculated": 1,
+        "status": "active",
+        "reason": "Manual baseline (4) differs from calculated HAD (1)"
+      },
+      {
+        "player": "Ray Davis",
+        "team": "Buffalo Bills",
+        "position": "RB",
+        "manual": 3,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Ty Johnson",
+        "team": "Buffalo Bills",
+        "position": "RB",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Xavier Legette",
+        "team": "Carolina Panthers",
+        "position": "WR",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Hunter Renfrow",
+        "team": "Carolina Panthers",
+        "position": "WR",
+        "had": 2,
+        "current": 5,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "Olamide Zaccheaus",
+        "team": "Chicago Bears",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Colston Loveland",
+        "team": "Chicago Bears",
+        "position": "TE",
+        "manual": 2,
+        "calculated": 1,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (1)"
+      },
+      {
+        "player": "Cole Kmet",
+        "team": "Chicago Bears",
+        "position": "TE",
+        "manual": 1,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Jake Browning",
+        "team": "Cincinnati Bengals",
+        "position": "QB",
+        "manual": 2,
+        "calculated": 1,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (1)"
+      },
+      {
+        "player": "Mike Gesicki",
+        "team": "Cincinnati Bengals",
+        "position": "TE",
+        "had": 1,
+        "current": 5,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "Noah Fant",
+        "team": "Cincinnati Bengals",
+        "position": "TE",
+        "manual": 1,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Drew Sample",
+        "team": "Cincinnati Bengals",
+        "position": "TE",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Shedeur Sanders",
+        "team": "Cleveland Browns",
+        "position": "QB",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Cedric Tillman",
+        "team": "Cleveland Browns",
+        "position": "WR",
+        "had": 1,
+        "current": 4,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "Miles Sanders",
+        "team": "Dallas Cowboys",
+        "position": "RB",
+        "had": 2,
+        "current": 4,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "Jaydon Blue",
+        "team": "Dallas Cowboys",
+        "position": "RB",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "CeeDee Lamb",
+        "team": "Dallas Cowboys",
+        "position": "WR",
+        "manual": 1,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (2)"
+      },
+      {
+        "player": "George Pickens",
+        "team": "Dallas Cowboys",
+        "position": "WR",
+        "manual": 2,
+        "calculated": 1,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (1)"
+      },
+      {
+        "player": "Jalen Tolbert",
+        "team": "Dallas Cowboys",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Emanuel Wilson",
+        "team": "Green Bay Packers",
+        "position": "RB",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Matthew Golden",
+        "team": "Green Bay Packers",
+        "position": "WR",
+        "manual": 1,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Romeo Doubs",
+        "team": "Green Bay Packers",
+        "position": "WR",
+        "manual": 2,
+        "calculated": 1,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (1)"
+      },
+      {
+        "player": "Jayden Higgins",
+        "team": "Houston Texans",
+        "position": "WR",
+        "had": 3,
+        "current": 1,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "Xavier Hutchinson",
+        "team": "Houston Texans",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Jaylin Noel",
+        "team": "Houston Texans",
+        "position": "WR",
+        "had": 5,
+        "current": 2,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "Cade Stover",
+        "team": "Houston Texans",
+        "position": "TE",
+        "had": 2,
+        "current": 4,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "Harrison Bryant",
+        "team": "Houston Texans",
+        "position": "TE",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "DJ Giddens",
+        "team": "Indianapolis Colts",
+        "position": "RB",
+        "manual": 3,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Parker Washington",
+        "team": "Jacksonville Jaguars",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Hunter Long",
+        "team": "Jacksonville Jaguars",
+        "position": "TE",
+        "manual": 1,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Marquise Brown",
+        "team": "Kansas City Chiefs",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 1,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (1)"
+      },
+      {
+        "player": "Xavier Worthy",
+        "team": "Kansas City Chiefs",
+        "position": "WR",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Omarion Hampton",
+        "team": "Los Angeles Chargers",
+        "position": "RB",
+        "had": 1,
+        "current": 4,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "Kimani Vidal",
+        "team": "Los Angeles Chargers",
+        "position": "RB",
+        "manual": 1,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Quentin Johnston",
+        "team": "Los Angeles Chargers",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Jordan Whittington",
+        "team": "Los Angeles Rams",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Raheem Mostert",
+        "team": "Las Vegas Raiders",
+        "position": "RB",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Dylan Laube",
+        "team": "Las Vegas Raiders",
+        "position": "RB",
+        "manual": 3,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Jack Bech",
+        "team": "Las Vegas Raiders",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Zach Wilson",
+        "team": "Miami Dolphins",
+        "position": "QB",
+        "manual": 3,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Quinn Ewers",
+        "team": "Miami Dolphins",
+        "position": "QB",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Tanner Conner",
+        "team": "Miami Dolphins",
+        "position": "TE",
+        "manual": 2,
+        "calculated": 1,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (1)"
+      },
+      {
+        "player": "Julian Hill",
+        "team": "Miami Dolphins",
+        "position": "TE",
+        "manual": 1,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (2)"
+      },
+      {
+        "player": "J.J. McCarthy",
+        "team": "Minnesota Vikings",
+        "position": "QB",
+        "manual": 1,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Carson Wentz",
+        "team": "Minnesota Vikings",
+        "position": "QB",
+        "manual": 2,
+        "calculated": 1,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (1)"
+      },
+      {
+        "player": "TreVeyon Henderson",
+        "team": "New England Patriots",
+        "position": "RB",
+        "manual": 2,
+        "calculated": 1,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (1)"
+      },
+      {
+        "player": "Rhamondre Stevenson",
+        "team": "New England Patriots",
+        "position": "RB",
+        "manual": 1,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Mack Hollins",
+        "team": "New England Patriots",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Devin Neal",
+        "team": "New Orleans Saints",
+        "position": "RB",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Darius Slayton",
+        "team": "New York Giants",
+        "position": "WR",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Jalin Hyatt",
+        "team": "New York Giants",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Braelon Allen",
+        "team": "New York Jets",
+        "position": "RB",
+        "had": 2,
+        "current": 5,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "Arian Smith",
+        "team": "New York Jets",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Will Shipley",
+        "team": "Philadelphia Eagles",
+        "position": "RB",
+        "manual": 2,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Grant Calcaterra",
+        "team": "Philadelphia Eagles",
+        "position": "TE",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Drew Lock",
+        "team": "Seattle Seahawks",
+        "position": "QB",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Isaac Guerendo",
+        "team": "San Francisco 49ers",
+        "position": "RB",
+        "manual": 3,
+        "calculated": 4,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (4)"
+      },
+      {
+        "player": "Ricky Pearsall",
+        "team": "San Francisco 49ers",
+        "position": "WR",
+        "manual": 2,
+        "calculated": 1,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (1)"
+      },
+      {
+        "player": "Jauan Jennings",
+        "team": "San Francisco 49ers",
+        "position": "WR",
+        "manual": 1,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Bucky Irving",
+        "team": "Tampa Bay Buccaneers",
+        "position": "RB",
+        "had": 1,
+        "current": 3,
+        "status": "out",
+        "reason": "⭐ DEPTH DROP DUE TO INJURY - Will use manual_baseline=1 for impact (not current=3)"
+      },
+      {
+        "player": "Sterling Shepard",
+        "team": "Tampa Bay Buccaneers",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Tez Johnson",
+        "team": "Tampa Bay Buccaneers",
+        "position": "WR",
+        "had": 4,
+        "current": 2,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "Julius Chestnut",
+        "team": "Tennessee Titans",
+        "position": "RB",
+        "manual": 3,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Tyler Lockett",
+        "team": "Tennessee Titans",
+        "position": "WR",
+        "had": 3,
+        "current": 5,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "Jeremy McNichols",
+        "team": "Washington Commanders",
+        "position": "RB",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Terry McLaurin",
+        "team": "Washington Commanders",
+        "position": "WR",
+        "manual": 1,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Noah Brown",
+        "team": "Washington Commanders",
+        "position": "WR",
+        "had": 3,
+        "current": 5,
+        "status": "active",
+        "reason": "Large depth change while healthy - possible trade/benching/promotion"
+      },
+      {
+        "player": "John Bates",
+        "team": "Washington Commanders",
+        "position": "TE",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Rashee Rice",
+        "team": "Kansas City Chiefs",
+        "position": "WR",
+        "manual": 1,
+        "calculated": 5,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (5)"
+      },
+      {
+        "player": "Zavier Scott",
+        "team": "Minnesota Vikings",
+        "position": "RB",
+        "manual": 3,
+        "calculated": 2,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (2)"
+      },
+      {
+        "player": "Foster Moreau",
+        "team": "New Orleans Saints",
+        "position": "TE",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "George Kittle",
+        "team": "San Francisco 49ers",
+        "position": "TE",
+        "manual": 1,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Tyjae Spears",
+        "team": "Tennessee Titans",
+        "position": "RB",
+        "manual": 2,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (2) differs from calculated HAD (3)"
+      },
+      {
+        "player": "Van Jefferson",
+        "team": "Tennessee Titans",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 5,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (5)"
+      },
+      {
+        "player": "Chris Moore",
+        "team": "Washington Commanders",
+        "position": "WR",
+        "manual": 3,
+        "calculated": 5,
+        "status": "active",
+        "reason": "Manual baseline (3) differs from calculated HAD (5)"
+      },
+      {
+        "player": "Zonovan Knight",
+        "team": "Arizona Cardinals",
+        "position": "RB",
+        "manual": 1,
+        "calculated": 3,
+        "status": "active",
+        "reason": "Manual baseline (1) differs from calculated HAD (3)"
+      }
+    ]
+  },
+  "anomalies": [
+    {
+      "player": "Trey Benson",
+      "team": "Arizona Cardinals",
+      "position": "RB",
+      "manual": 4,
+      "calculated": 1,
+      "status": "active",
+      "reason": "Manual baseline (4) differs from calculated HAD (1)"
+    },
+    {
+      "player": "Ray Davis",
+      "team": "Buffalo Bills",
+      "position": "RB",
+      "manual": 3,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Ty Johnson",
+      "team": "Buffalo Bills",
+      "position": "RB",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Xavier Legette",
+      "team": "Carolina Panthers",
+      "position": "WR",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Hunter Renfrow",
+      "team": "Carolina Panthers",
+      "position": "WR",
+      "had": 2,
+      "current": 5,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "Olamide Zaccheaus",
+      "team": "Chicago Bears",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Colston Loveland",
+      "team": "Chicago Bears",
+      "position": "TE",
+      "manual": 2,
+      "calculated": 1,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (1)"
+    },
+    {
+      "player": "Cole Kmet",
+      "team": "Chicago Bears",
+      "position": "TE",
+      "manual": 1,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Jake Browning",
+      "team": "Cincinnati Bengals",
+      "position": "QB",
+      "manual": 2,
+      "calculated": 1,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (1)"
+    },
+    {
+      "player": "Mike Gesicki",
+      "team": "Cincinnati Bengals",
+      "position": "TE",
+      "had": 1,
+      "current": 5,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "Noah Fant",
+      "team": "Cincinnati Bengals",
+      "position": "TE",
+      "manual": 1,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Drew Sample",
+      "team": "Cincinnati Bengals",
+      "position": "TE",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Shedeur Sanders",
+      "team": "Cleveland Browns",
+      "position": "QB",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Cedric Tillman",
+      "team": "Cleveland Browns",
+      "position": "WR",
+      "had": 1,
+      "current": 4,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "Miles Sanders",
+      "team": "Dallas Cowboys",
+      "position": "RB",
+      "had": 2,
+      "current": 4,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "Jaydon Blue",
+      "team": "Dallas Cowboys",
+      "position": "RB",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "CeeDee Lamb",
+      "team": "Dallas Cowboys",
+      "position": "WR",
+      "manual": 1,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (2)"
+    },
+    {
+      "player": "George Pickens",
+      "team": "Dallas Cowboys",
+      "position": "WR",
+      "manual": 2,
+      "calculated": 1,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (1)"
+    },
+    {
+      "player": "Jalen Tolbert",
+      "team": "Dallas Cowboys",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Emanuel Wilson",
+      "team": "Green Bay Packers",
+      "position": "RB",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Matthew Golden",
+      "team": "Green Bay Packers",
+      "position": "WR",
+      "manual": 1,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Romeo Doubs",
+      "team": "Green Bay Packers",
+      "position": "WR",
+      "manual": 2,
+      "calculated": 1,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (1)"
+    },
+    {
+      "player": "Jayden Higgins",
+      "team": "Houston Texans",
+      "position": "WR",
+      "had": 3,
+      "current": 1,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "Xavier Hutchinson",
+      "team": "Houston Texans",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Jaylin Noel",
+      "team": "Houston Texans",
+      "position": "WR",
+      "had": 5,
+      "current": 2,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "Cade Stover",
+      "team": "Houston Texans",
+      "position": "TE",
+      "had": 2,
+      "current": 4,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "Harrison Bryant",
+      "team": "Houston Texans",
+      "position": "TE",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "DJ Giddens",
+      "team": "Indianapolis Colts",
+      "position": "RB",
+      "manual": 3,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Parker Washington",
+      "team": "Jacksonville Jaguars",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Hunter Long",
+      "team": "Jacksonville Jaguars",
+      "position": "TE",
+      "manual": 1,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Marquise Brown",
+      "team": "Kansas City Chiefs",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 1,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (1)"
+    },
+    {
+      "player": "Xavier Worthy",
+      "team": "Kansas City Chiefs",
+      "position": "WR",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Omarion Hampton",
+      "team": "Los Angeles Chargers",
+      "position": "RB",
+      "had": 1,
+      "current": 4,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "Kimani Vidal",
+      "team": "Los Angeles Chargers",
+      "position": "RB",
+      "manual": 1,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Quentin Johnston",
+      "team": "Los Angeles Chargers",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Jordan Whittington",
+      "team": "Los Angeles Rams",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Raheem Mostert",
+      "team": "Las Vegas Raiders",
+      "position": "RB",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Dylan Laube",
+      "team": "Las Vegas Raiders",
+      "position": "RB",
+      "manual": 3,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Jack Bech",
+      "team": "Las Vegas Raiders",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Zach Wilson",
+      "team": "Miami Dolphins",
+      "position": "QB",
+      "manual": 3,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Quinn Ewers",
+      "team": "Miami Dolphins",
+      "position": "QB",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Tanner Conner",
+      "team": "Miami Dolphins",
+      "position": "TE",
+      "manual": 2,
+      "calculated": 1,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (1)"
+    },
+    {
+      "player": "Julian Hill",
+      "team": "Miami Dolphins",
+      "position": "TE",
+      "manual": 1,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (2)"
+    },
+    {
+      "player": "J.J. McCarthy",
+      "team": "Minnesota Vikings",
+      "position": "QB",
+      "manual": 1,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Carson Wentz",
+      "team": "Minnesota Vikings",
+      "position": "QB",
+      "manual": 2,
+      "calculated": 1,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (1)"
+    },
+    {
+      "player": "TreVeyon Henderson",
+      "team": "New England Patriots",
+      "position": "RB",
+      "manual": 2,
+      "calculated": 1,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (1)"
+    },
+    {
+      "player": "Rhamondre Stevenson",
+      "team": "New England Patriots",
+      "position": "RB",
+      "manual": 1,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Mack Hollins",
+      "team": "New England Patriots",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Devin Neal",
+      "team": "New Orleans Saints",
+      "position": "RB",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Darius Slayton",
+      "team": "New York Giants",
+      "position": "WR",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Jalin Hyatt",
+      "team": "New York Giants",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Braelon Allen",
+      "team": "New York Jets",
+      "position": "RB",
+      "had": 2,
+      "current": 5,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "Arian Smith",
+      "team": "New York Jets",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Will Shipley",
+      "team": "Philadelphia Eagles",
+      "position": "RB",
+      "manual": 2,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Grant Calcaterra",
+      "team": "Philadelphia Eagles",
+      "position": "TE",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Drew Lock",
+      "team": "Seattle Seahawks",
+      "position": "QB",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Isaac Guerendo",
+      "team": "San Francisco 49ers",
+      "position": "RB",
+      "manual": 3,
+      "calculated": 4,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (4)"
+    },
+    {
+      "player": "Ricky Pearsall",
+      "team": "San Francisco 49ers",
+      "position": "WR",
+      "manual": 2,
+      "calculated": 1,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (1)"
+    },
+    {
+      "player": "Jauan Jennings",
+      "team": "San Francisco 49ers",
+      "position": "WR",
+      "manual": 1,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Bucky Irving",
+      "team": "Tampa Bay Buccaneers",
+      "position": "RB",
+      "had": 1,
+      "current": 3,
+      "status": "out",
+      "reason": "⭐ DEPTH DROP DUE TO INJURY - Will use manual_baseline=1 for impact (not current=3)"
+    },
+    {
+      "player": "Sterling Shepard",
+      "team": "Tampa Bay Buccaneers",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Tez Johnson",
+      "team": "Tampa Bay Buccaneers",
+      "position": "WR",
+      "had": 4,
+      "current": 2,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "Julius Chestnut",
+      "team": "Tennessee Titans",
+      "position": "RB",
+      "manual": 3,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Tyler Lockett",
+      "team": "Tennessee Titans",
+      "position": "WR",
+      "had": 3,
+      "current": 5,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "Jeremy McNichols",
+      "team": "Washington Commanders",
+      "position": "RB",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Terry McLaurin",
+      "team": "Washington Commanders",
+      "position": "WR",
+      "manual": 1,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Noah Brown",
+      "team": "Washington Commanders",
+      "position": "WR",
+      "had": 3,
+      "current": 5,
+      "status": "active",
+      "reason": "Large depth change while healthy - possible trade/benching/promotion"
+    },
+    {
+      "player": "John Bates",
+      "team": "Washington Commanders",
+      "position": "TE",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Rashee Rice",
+      "team": "Kansas City Chiefs",
+      "position": "WR",
+      "manual": 1,
+      "calculated": 5,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (5)"
+    },
+    {
+      "player": "Zavier Scott",
+      "team": "Minnesota Vikings",
+      "position": "RB",
+      "manual": 3,
+      "calculated": 2,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (2)"
+    },
+    {
+      "player": "Foster Moreau",
+      "team": "New Orleans Saints",
+      "position": "TE",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "George Kittle",
+      "team": "San Francisco 49ers",
+      "position": "TE",
+      "manual": 1,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Tyjae Spears",
+      "team": "Tennessee Titans",
+      "position": "RB",
+      "manual": 2,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (2) differs from calculated HAD (3)"
+    },
+    {
+      "player": "Van Jefferson",
+      "team": "Tennessee Titans",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 5,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (5)"
+    },
+    {
+      "player": "Chris Moore",
+      "team": "Washington Commanders",
+      "position": "WR",
+      "manual": 3,
+      "calculated": 5,
+      "status": "active",
+      "reason": "Manual baseline (3) differs from calculated HAD (5)"
+    },
+    {
+      "player": "Zonovan Knight",
+      "team": "Arizona Cardinals",
+      "position": "RB",
+      "manual": 1,
+      "calculated": 3,
+      "status": "active",
+      "reason": "Manual baseline (1) differs from calculated HAD (3)"
+    }
+  ]
+}
