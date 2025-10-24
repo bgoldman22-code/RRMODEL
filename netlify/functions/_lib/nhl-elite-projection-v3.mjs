@@ -146,8 +146,17 @@ async function loadTeamStats() {
 async function findPlayer(playerId, playerName, team) {
   const allSeasons = await loadPlayerStats();
   
+  // Debug: Log what seasons we have
+  const availableSeasons = Object.keys(allSeasons);
+  console.log(`📊 Available seasons in Blobs: ${availableSeasons.join(', ')}`);
+  for (const season of availableSeasons) {
+    console.log(`   ${season}: ${allSeasons[season]?.length || 0} players`);
+  }
+  
   // Get current season (2025-26) player first
   const currentSeasonPlayers = allSeasons['20252026'] || [];
+  console.log(`🔍 Looking for player ${playerId} (${playerName}) in 2025-26: ${currentSeasonPlayers.length} players available`);
+  
   let currentPlayer = currentSeasonPlayers.find(p => p.playerId === playerId);
   
   // Fallback: try by name + team in current season
@@ -156,9 +165,16 @@ async function findPlayer(playerId, playerName, team) {
     currentPlayer = currentSeasonPlayers.find(p => 
       p.name.toLowerCase().includes(nameLower) && p.team === team
     );
+    
+    if (currentPlayer) {
+      console.log(`✅ Found ${playerName} by name match in current season`);
+    }
   }
   
-  if (!currentPlayer) return null;
+  if (!currentPlayer) {
+    console.warn(`⚠️ Player ${playerName} (ID: ${playerId}) not found in current season 2025-26`);
+    return null;
+  }
   
   // Enhance with historical career data
   const careerSeasons = [];
