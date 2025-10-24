@@ -28,7 +28,20 @@ async function uploadToBlobs() {
   console.log(`🔄 Uploading ${SEASONS.length} NHL season(s) to Netlify Blobs...`);
   console.log(`   Seasons: ${SEASONS.join(', ')}\n`);
   
-  const store = getStore('nhl-stats');
+  // Get credentials from environment
+  const siteID = process.env.NETLIFY_SITE_ID;
+  const token = process.env.NETLIFY_AUTH_TOKEN || process.env.NETLIFY_TOKEN;
+  
+  if (!siteID || !token) {
+    console.error('❌ Missing Netlify credentials');
+    console.log('\n💡 Set environment variables:');
+    console.log('   export NETLIFY_SITE_ID=your_site_id');
+    console.log('   export NETLIFY_AUTH_TOKEN=your_auth_token');
+    console.log('\n   Or run via GitHub Action with secrets configured');
+    process.exit(1);
+  }
+  
+  const store = getStore({ name: 'nhl-stats', siteID, token });
   let successCount = 0;
   let totalSize = 0;
   
