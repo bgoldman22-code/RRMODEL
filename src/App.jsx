@@ -11,6 +11,7 @@ import PredictionsTest from "./pages/PredictionsTest";  // Enhanced Split View T
 import NFLReceivingProps from "./pages/NFLReceivingProps";  // Elite Receiving Props
 import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
 import NHL from "./NHL";  // Elite NHL SOG Props
+import NHLV2 from "./NHLV2";  // NHL SOG Props - Calibrated Policy V2
 import NBAPredictions from "./pages/NBAPredictions";  // Elite NBA Betting System
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
@@ -83,7 +84,8 @@ export default function App() {
     nhl: {
       label: 'NHL',
       items: [
-        { label: 'SOG Props (Elite Model)', path: '/nhl-sog' }
+        { label: 'SOG Props (Elite Model)', path: '/nhl-sog' },
+        { label: 'SOG Props V2 (Calibrated Policy) 📊', path: '/nhl-sog-v2' }
       ]
     },
     nba: {
@@ -126,6 +128,7 @@ export default function App() {
           <Route path="/predictionstest" element={<PredictionsTest />} />
           <Route path="/soccer-btts" element={<SoccerBTTS />} />
           <Route path="/nhl-sog" element={<NHL />} />
+          <Route path="/nhl-sog-v2" element={<NHLV2 />} />
           <Route path="/nba-predictions" element={<NBAPredictions />} />
         </Routes>
       </div>
