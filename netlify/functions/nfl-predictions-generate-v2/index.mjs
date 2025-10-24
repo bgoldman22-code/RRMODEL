@@ -843,7 +843,7 @@ function calculateDefaultInjuryImpact(position, teamCode) {
   };
 }
 
-async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1) {
+async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1, hadData = null) {
   const teamInjuries = injuries.teams?.[teamCode] || {};
 
   // FALLBACK NORMALIZATION: If legacy fields (qb_name, *_injuries) are absent but a raw
@@ -2379,8 +2379,8 @@ async function generateAdvancedPredictions(games, season) {
             normalized: awayInj._normalized_legacy_fields === true
         });
       }
-      homeScoreData = await applyInjuryAdjustments(homeScoreData, homeCode, injuries, currentWeek);
-      awayScoreData = await applyInjuryAdjustments(awayScoreData, awayCode, injuries, currentWeek);
+      homeScoreData = await applyInjuryAdjustments(homeScoreData, homeCode, injuries, currentWeek, hadData);
+      awayScoreData = await applyInjuryAdjustments(awayScoreData, awayCode, injuries, currentWeek, hadData);
       
       // v4.1 SAFEGUARDS: Apply depth chart safeguards to injury impacts
       if (homeScoreData.injuryAnalysis?.adjustments?.length > 0) {
