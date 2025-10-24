@@ -2261,14 +2261,18 @@ async function generateAdvancedPredictions(games, season) {
     
     // V2 ENHANCEMENT: Load HAD data for injury depth override
     try {
-      const { readFile } = await import('fs/promises');
-      const { resolve } = await import('path');
-      const hadPath = resolve(process.cwd(), 'public/healthy-average-depth.json');
-      const hadRaw = await readFile(hadPath, 'utf-8');
-      const hadJson = JSON.parse(hadRaw);
+      // In Netlify Functions, fetch from the deployed public URL
+      const baseUrl = process.env.URL || 'https://bgroundrobin.com';
+      const hadUrl = `${baseUrl}/healthy-average-depth.json`;
       
-      // Convert to lookup object (already in correct format from HAD calculator)
-      hadData = hadJson;
+      console.log(`📊 Fetching HAD data from ${hadUrl}...`);
+      
+      const hadResponse = await fetch(hadUrl);
+      if (!hadResponse.ok) {
+        throw new Error(`HTTP ${hadResponse.status}: ${hadResponse.statusText}`);
+      }
+      
+      hadData = await hadResponse.json();
       
       const playerCount = Object.keys(hadData).length;
       console.log(`📊 HAD loaded: ${playerCount} players with tracked depth data`);
