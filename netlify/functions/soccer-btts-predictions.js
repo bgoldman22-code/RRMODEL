@@ -3331,8 +3331,8 @@ function calculateFormFactor(recentRate, seasonRate) {
  */
 async function fetchRealTeamStrengths(league) {
   const LEAGUE_URLS = {
-    'premier-league': 'https://www.football-data.co.uk/mmz4281/2425/E0.csv', // Premier League 2024-25
-    'bundesliga': 'https://www.football-data.co.uk/mmz4281/2425/D1.csv',
+    'premier-league': 'https://www.football-data.co.uk/mmz4281/2526/E0.csv', // Premier League 2025-26
+    'bundesliga': 'https://www.football-data.co.uk/mmz4281/2526/D1.csv', // Bundesliga 2025-26
     'champions-league': null // UCL not available via this source
   };
   
