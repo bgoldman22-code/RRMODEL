@@ -210,11 +210,15 @@
     </div>
 
     <div class="controls">
-      <button onclick="generateV1()" id="btnV1">Generate V1 (Current)</button>
-      <button onclick="generateV2()" id="btnV2">Generate V2 (HAD)</button>
-      <button onclick="loadComparison()" id="btnLoad">Load & Compare</button>
+      <button onclick="loadComparison()" id="btnLoad">📊 Load & Compare (Recommended)</button>
       <button onclick="showDifferencesOnly()" id="btnDiff">Show Differences Only</button>
+      <button onclick="generateV1()" id="btnV1">🔄 Regenerate V1</button>
+      <button onclick="generateV2()" id="btnV2">🔄 Regenerate V2</button>
       <div id="status"></div>
+      <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 6px; font-size: 0.9em;">
+        💡 <strong>Tip:</strong> Use "Load & Compare" to view cached predictions (fast). 
+        Regenerate buttons may take 1-2 minutes and can timeout.
+      </div>
     </div>
 
     <div class="summary-stats" id="summaryStats" style="display:none;">
@@ -249,16 +253,29 @@
     async function generateV1() {
       try {
         document.getElementById('btnV1').disabled = true;
-        setStatus('🔄 Generating V1 predictions...', 'loading');
+        setStatus('🔄 Generating V1 predictions (this may take 1-2 minutes)...', 'loading');
         
-        const response = await fetch('/.netlify/functions/nfl-predictions-generate');
-        const data = await response.json();
+        const response = await fetch('/.netlify/functions/nfl-predictions-generate', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
         
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const text = await response.text();
+        if (!text || text.trim() === '') {
+          throw new Error('Empty response from server');
+        }
+        
+        const data = JSON.parse(text);
         v1Data = data;
         renderV1(data);
         setStatus('✅ V1 predictions generated successfully', 'success');
       } catch (error) {
-        setStatus(`❌ Error generating V1: ${error.message}`, 'error');
+        console.error('V1 Generation Error:', error);
+        setStatus(`❌ V1 generation failed. Try "Load & Compare" instead to use cached predictions.`, 'error');
       } finally {
         document.getElementById('btnV1').disabled = false;
       }
@@ -267,16 +284,29 @@
     async function generateV2() {
       try {
         document.getElementById('btnV2').disabled = true;
-        setStatus('🔄 Generating V2 predictions with HAD...', 'loading');
+        setStatus('🔄 Generating V2 predictions with HAD (this may take 1-2 minutes)...', 'loading');
         
-        const response = await fetch('/.netlify/functions/nfl-predictions-generate-v2');
-        const data = await response.json();
+        const response = await fetch('/.netlify/functions/nfl-predictions-generate-v2', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
         
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const text = await response.text();
+        if (!text || text.trim() === '') {
+          throw new Error('Empty response from server');
+        }
+        
+        const data = JSON.parse(text);
         v2Data = data;
         renderV2(data);
         setStatus('✅ V2 predictions generated successfully', 'success');
       } catch (error) {
-        setStatus(`❌ Error generating V2: ${error.message}`, 'error');
+        console.error('V2 Generation Error:', error);
+        setStatus(`❌ V2 generation failed: ${error.message}. Try "Load & Compare" instead.`, 'error');
       } finally {
         document.getElementById('btnV2').disabled = false;
       }
@@ -292,8 +322,27 @@
           fetch('/.netlify/functions/nfl-predictions-get-v2')
         ]);
 
-        v1Data = await v1Response.json();
-        v2Data = await v2Response.json();
+        if (!v1Response.ok) {
+          throw new Error(`V1 fetch failed: ${v1Response.status} ${v1Response.statusText}`);
+        }
+        
+        if (!v2Response.ok) {
+          throw new Error(`V2 fetch failed: ${v2Response.status} ${v2Response.statusText}`);
+        }
+
+        const v1Text = await v1Response.text();
+        const v2Text = await v2Response.text();
+        
+        if (!v1Text || v1Text.trim() === '') {
+          throw new Error('V1 returned empty response');
+        }
+        
+        if (!v2Text || v2Text.trim() === '') {
+          throw new Error('V2 returned empty response - predictions may not be generated yet. Try "Regenerate V2" first.');
+        }
+
+        v1Data = JSON.parse(v1Text);
+        v2Data = JSON.parse(v2Text);
 
         renderV1(v1Data);
         renderV2(v2Data);
@@ -301,6 +350,7 @@
 
         setStatus('✅ Loaded and compared V1 vs V2', 'success');
       } catch (error) {
+        console.error('Load Comparison Error:', error);
         setStatus(`❌ Error loading: ${error.message}`, 'error');
       } finally {
         document.getElementById('btnLoad').disabled = false;
