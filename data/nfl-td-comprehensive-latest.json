@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2025-10-23T16:49:15Z",
+    "generated_at": "2025-10-25T14:38:11Z",
     "season": 2025,
     "week": 8,
-    "total_players": 581,
+    "total_players": 582,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -2299,7 +2299,7 @@
     {
       "player_id": "00-0034407",
       "name": "R.McCloud",
-      "team": "ATL",
+      "team": "NYG",
       "position": "WR",
       "opponent": "TBD",
       "is_home": true,
@@ -9679,14 +9679,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.15,
+      "multiple_td_prob": 0.141,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.028,
+      "multiple_value_score": 0.0245,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.15
+      "multiple_td": 0.1412
     },
     {
       "player_id": "00-0038996",
@@ -11380,14 +11380,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.15,
+      "multiple_td_prob": 0.133,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.028,
+      "multiple_value_score": 0.0213,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.15
+      "multiple_td": 0.1333
     },
     {
       "player_id": "00-0039916",
@@ -12100,6 +12100,27 @@
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.935,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
+      "player_id": "00-0040727",
+      "name": "T.Harris",
+      "team": "LAC",
+      "position": "WR",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "WR",
+      "anytime_td_prob": 0.85,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.35,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.85,
       "first_td": 0,
       "multiple_td": 0
     },
