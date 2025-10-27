@@ -1,0 +1,104 @@
+name: NBA Generate Predictions Daily
+
+on:
+  # Run daily at 9:00 AM ET (1:00 PM UTC) - after data collection at 8 AM
+  schedule:
+    - cron: '0 13 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+# Prevent concurrent runs
+concurrency:
+  group: nba-predictions-generate
+  cancel-in-progress: false
+
+jobs:
+  generate-predictions:
+    name: Generate NBA Predictions
+    runs-on: ubuntu-latest
+    
+    # Only run during NBA season (October-June)
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.schedule && 
+       !(github.event.schedule == '0 13 * 7 *' ||
+         github.event.schedule == '0 13 * 8 *' ||
+         github.event.schedule == '0 13 * 9 *'))
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: 🏀 Generate NBA predictions
+        id: generate
+        run: |
+          echo "Triggering NBA prediction generation..."
+          
+          # Call Netlify function to generate predictions
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X POST \
+            "https://rrmodel.netlify.app/.netlify/functions/nba-predictions-generate" \
+            -H "Content-Type: application/json")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n-1)
+          
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          
+          if [ "$HTTP_CODE" -eq 200 ]; then
+            echo "success=true" >> $GITHUB_OUTPUT
+            GAMES=$(echo "$BODY" | jq -r '.games // 0')
+            echo "games=$GAMES" >> $GITHUB_OUTPUT
+            echo "✅ Successfully generated predictions for $GAMES games"
+          else
+            echo "success=false" >> $GITHUB_OUTPUT
+            echo "❌ Failed to generate predictions (HTTP $HTTP_CODE)"
+            exit 1
+          fi
+      
+      - name: 📊 Generate summary
+        if: steps.generate.outputs.success == 'true'
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## 🏀 NBA Predictions Generated
+          
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Games**: ${{ steps.generate.outputs.games }}
+          **Status**: ✅ Success
+          
+          ### Features Applied
+          - ✅ 2025-26 season data (L5/L10/L20 stats)
+          - ✅ Injury adjustments (position-weighted impacts)
+          - ✅ Market odds integration
+          - ✅ Betting edge calculations
+          - ✅ Depth chart analysis
+          
+          ### Injury System Active
+          - Position weights: PG=1.2x, SG=1.1x, SF=1.0x, PF=0.9x, C=1.1x
+          - Stacking penalties: 1.15x per additional injury
+          - Cluster caps: Guards=5.0, Wings=4.5, Bigs=5.0
+          - Uncertainty multipliers: 1.0x to 2.0x confidence reduction
+          
+          **Predictions available at**: https://rrmodel.netlify.app/nba-predictions
+          EOF
+      
+      - name: ❌ Failure notification
+        if: failure()
+        run: |
+          echo "❌ NBA prediction generation failed"
+          echo "Check Netlify function logs for details"
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## ❌ NBA Predictions Failed
+          
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          
+          The prediction generation failed. Possible causes:
+          - No games scheduled today
+          - API rate limits (ESPN, TheOddsAPI)
+          - Netlify function timeout
+          - Data collection not complete
+          
+          **Action**: Check Netlify function logs at https://app.netlify.com
+          EOF
