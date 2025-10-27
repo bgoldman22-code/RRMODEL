@@ -28,6 +28,14 @@
   included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
   external_node_modules = []
 
+[functions."nba-predictions-elite"]
+  included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
+  external_node_modules = ["@netlify/blobs", "node-fetch"]
+
+[functions."nba-predictions-generate"]
+  included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
+  external_node_modules = ["@netlify/blobs", "node-fetch"]
+
 # NHL SOG Scanner - disable bundling completely to preserve ES modules
 [functions."nhl-sog-scanner-elite-fast"]
   node_bundler = "zisi"
