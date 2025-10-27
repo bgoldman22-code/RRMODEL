@@ -96,7 +96,8 @@ export const PENALTY_FACTORS = {
  */
 export const STAKING_LIMITS = {
   // Per-bet limits
-  MAX_UNITS_PER_BET: 8.0,              // Absolute maximum (boosted from 5U for strongest bets)
+  MAX_UNITS_PER_BET: 8.0,              // Absolute maximum for ML/Spread
+  MAX_UNITS_TOTALS: 7.5,               // Max for elite totals (7U for standard)
   MAX_MULTIPLIER_VS_BASE: 3.0,         // Can't bet more than 3.0x Half-Kelly base (updated with cap)
   MIN_KELLY_RAW_THRESHOLD: 0.10,       // Don't bet if full Kelly < 0.10U
   MIN_UNITS_FLOOR: 0.25,               // Minimum bet size (if kelly base >= 0.15U)
@@ -106,9 +107,15 @@ export const STAKING_LIMITS = {
   MIN_MULTIPLIER: 0.7,                 // Can't reduce below 70% of base
   MAX_MULTIPLIER: 2.5,                 // Can't exceed 2.5x base
   
-  // Exposure guards
-  MAX_DAILY_STAKE_SUM: 12.0,           // Total units per day
-  MAX_EXPOSURE_PER_GAME: 5.0           // All markets on same game
+  // Exposure guards (450U bankroll)
+  MAX_DAILY_STAKE_SUM: 112.5,          // 25% of 450U bankroll
+  MAX_EXPOSURE_PER_GAME: 15.0,         // 10U ML/spread + 5U total
+  MAX_EXPOSURE_SIDES: 10.0,            // ML + Spread combined max 10U
+  
+  // High-stakes gate (CLV proxy required for bets >6U)
+  HIGH_STAKES_THRESHOLD: 6.0,          // Require CLV proxy above this
+  CLV_PROXY_LINE_MOVE_MIN: 0.5,        // Need line moved 0.5+ pts in our favor
+  CLV_PROXY_SMART_MONEY_MIN: 60        // Need 60%+ smart money (handle) on our side
 };
 
 /**
@@ -189,10 +196,69 @@ export function computeMultiplier(signals) {
 }
 
 /**
+ * Check CLV proxy gate for high-stakes bets (>6U)
+ * Since we don't have true CLV tracking, we use market signals as proxy:
+ * - Line moved in our favor (we're getting better number than open)
+ * - Smart money (high handle %, low ticket %) agrees with our side
+ * - No reverse steam (recent line movement against us)
+ */
+export function checkHighStakesCLVGate(proposedUnits, signals) {
+  // Only check if bet is above high-stakes threshold
+  if (proposedUnits <= STAKING_LIMITS.HIGH_STAKES_THRESHOLD) {
+    return { allowed: true, reason: 'Below high-stakes threshold' };
+  }
+  
+  const violations = [];
+  
+  // Check 1: Line moved in our favor
+  const hasLineMoveInFavor = (signals.lineMoveToward || 0) >= STAKING_LIMITS.CLV_PROXY_LINE_MOVE_MIN;
+  if (!hasLineMoveInFavor) {
+    violations.push({
+      type: 'LINE_MOVEMENT',
+      required: `>=${STAKING_LIMITS.CLV_PROXY_LINE_MOVE_MIN} pts in our favor`,
+      actual: signals.lineMoveToward || 0,
+      message: 'Line has not moved in our favor (no CLV proxy)'
+    });
+  }
+  
+  // Check 2: Smart money agrees (high handle %, indicating sharp action)
+  const hasSmartMoneySupport = (signals.handlePct || 0) >= STAKING_LIMITS.CLV_PROXY_SMART_MONEY_MIN;
+  if (!hasSmartMoneySupport) {
+    violations.push({
+      type: 'SMART_MONEY',
+      required: `>=${STAKING_LIMITS.CLV_PROXY_SMART_MONEY_MIN}% handle on our side`,
+      actual: signals.handlePct || 0,
+      message: 'Smart money not backing this side (no sharp support)'
+    });
+  }
+  
+  // Check 3: No reverse steam (line hasn't moved against us recently)
+  const hasReverseSteam = (signals.recentLineMoveAgainst || 0) > 0.3;
+  if (hasReverseSteam) {
+    violations.push({
+      type: 'REVERSE_STEAM',
+      threshold: '0.3 pts against us',
+      actual: signals.recentLineMoveAgainst || 0,
+      message: 'Line moving against us recently (reverse steam detected)'
+    });
+  }
+  
+  const allowed = violations.length === 0;
+  
+  return {
+    allowed,
+    violations,
+    reason: allowed 
+      ? `CLV proxy passed: line moved ${signals.lineMoveToward || 0} pts in favor, ${signals.handlePct || 0}% smart money`
+      : `High-stakes bet (${proposedUnits.toFixed(1)}U) blocked by CLV gate: ${violations.map(v => v.message).join('; ')}`
+  };
+}
+
+/**
  * Recommend units with full audit trail
  * This is the main function to call for bet sizing
  */
-export function recommendUnits(edgeProb, priceDec, signals, bankrollUnits = 10) {
+export function recommendUnits(edgeProb, priceDec, signals, bankrollUnits = 10, betType = 'spread') {
   // Calculate Kelly raw (full Kelly before 0.5x)
   const kellyRawU = calculateKellyRaw(edgeProb, priceDec, bankrollUnits);
   
@@ -221,9 +287,19 @@ export function recommendUnits(edgeProb, priceDec, signals, bankrollUnits = 10) 
   // Calculate raw stake (before caps)
   const rawStake = baseHalfKellyU * multiplier;
   
-  // Apply per-bet caps
+  // Apply market-specific caps
+  // Total bets: 7.5U max for elite (raw >8U), 7U for standard
+  // ML/Spread: 8U max individual
+  let capAbsolute;
+  if (betType === 'total') {
+    // Elite totals can go to 7.5U if raw Kelly suggests >8U
+    capAbsolute = rawStake >= 8.0 ? STAKING_LIMITS.MAX_UNITS_TOTALS : 7.0;
+  } else {
+    // ML and Spread use standard 8U max
+    capAbsolute = STAKING_LIMITS.MAX_UNITS_PER_BET;
+  }
+  
   const capVsBase = STAKING_LIMITS.MAX_MULTIPLIER_VS_BASE * baseHalfKellyU;
-  const capAbsolute = STAKING_LIMITS.MAX_UNITS_PER_BET;
   const cap = Math.min(capVsBase, capAbsolute);
   
   let finalUnits = Math.min(cap, rawStake);
@@ -233,6 +309,31 @@ export function recommendUnits(edgeProb, priceDec, signals, bankrollUnits = 10) 
       finalUnits > 0 && 
       finalUnits < STAKING_LIMITS.MIN_UNITS_FLOOR) {
     finalUnits = STAKING_LIMITS.MIN_UNITS_FLOOR;
+  }
+  
+  // Round to 0.1U for clean UX
+  finalUnits = Math.round(finalUnits * 10) / 10;
+  
+  // Check CLV proxy gate for high-stakes bets (>6U)
+  const clvGateCheck = checkHighStakesCLVGate(finalUnits, signals);
+  if (!clvGateCheck.allowed) {
+    return {
+      units: 0,
+      recommendation: 'PASS',
+      reason: clvGateCheck.reason,
+      violations: clvGateCheck.violations,
+      audit: {
+        kellyRawU: +kellyRawU.toFixed(3),
+        baseHalfKellyU: +baseHalfKellyU.toFixed(3),
+        rawMultiplier: +multiplierResult.rawMultiplier.toFixed(3),
+        clampedMultiplier: +multiplier.toFixed(3),
+        rawStake: +rawStake.toFixed(3),
+        proposedUnits: +finalUnits.toFixed(1),
+        betType,
+        clvGateFailed: true,
+        signals
+      }
+    };
   }
   
   // Determine recommendation tier
@@ -266,19 +367,26 @@ export function recommendUnits(edgeProb, priceDec, signals, bankrollUnits = 10) 
   if (multiplierResult.wasClampedLow) {
     reasons.push(`Multiplier floored at ${STAKING_LIMITS.MIN_MULTIPLIER}x`);
   }
+  if (clvGateCheck.reason && finalUnits > STAKING_LIMITS.HIGH_STAKES_THRESHOLD) {
+    reasons.push(`CLV proxy: ${clvGateCheck.reason}`);
+  }
   
   return {
-    units: +finalUnits.toFixed(2),
+    units: +finalUnits.toFixed(1),  // Round to 0.1U
     recommendation,
     reason: reasons.join(' | '),
+    betType,
     audit: {
       kellyRawU: +kellyRawU.toFixed(3),
       baseHalfKellyU: +baseHalfKellyU.toFixed(3),
       rawMultiplier: +multiplierResult.rawMultiplier.toFixed(3),
       clampedMultiplier: +multiplier.toFixed(3),
       rawStake: +rawStake.toFixed(3),
-      cap: +cap.toFixed(2),
-      finalUnits: +finalUnits.toFixed(2),
+      cap: +cap.toFixed(1),
+      finalUnits: +finalUnits.toFixed(1),
+      betType,
+      marketSpecificCap: capAbsolute,
+      clvGatePassed: clvGateCheck.allowed,
       appliedFactors: multiplierResult.appliedFactors,
       appliedPenalties: multiplierResult.appliedPenalties,
       signals
@@ -288,40 +396,67 @@ export function recommendUnits(edgeProb, priceDec, signals, bankrollUnits = 10) 
 
 /**
  * Check exposure guards (daily and per-game limits)
+ * Structure: 10U ML/spread combined, +5U total (15U max per game), 112.5U daily
  * Call this before finalizing a bet to ensure you're not over-exposed
  */
-export function checkExposureLimits(proposedUnits, existingBets, gameId, date) {
+export function checkExposureLimits(proposedUnits, proposedBetType, existingBets, gameId, date) {
   // Calculate daily total
   const dailyBets = existingBets.filter(bet => bet.date === date);
   const dailyTotal = dailyBets.reduce((sum, bet) => sum + bet.units, 0);
   const newDailyTotal = dailyTotal + proposedUnits;
   
-  // Calculate per-game total
+  // Calculate per-game totals by market type
   const gameBets = existingBets.filter(bet => bet.gameId === gameId);
   const gameTotal = gameBets.reduce((sum, bet) => sum + bet.units, 0);
   const newGameTotal = gameTotal + proposedUnits;
   
+  // Separate ML/spread from totals
+  const sidesTotal = gameBets
+    .filter(bet => bet.betType === 'moneyline' || bet.betType === 'spread')
+    .reduce((sum, bet) => sum + bet.units, 0);
+  const totalsTotal = gameBets
+    .filter(bet => bet.betType === 'total')
+    .reduce((sum, bet) => sum + bet.units, 0);
+  
+  const newSidesTotal = proposedBetType === 'total' ? sidesTotal : sidesTotal + proposedUnits;
+  const newTotalsTotal = proposedBetType === 'total' ? totalsTotal + proposedUnits : totalsTotal;
+  
   const violations = [];
   
+  // Check daily limit (112.5U = 25% of 450U bankroll)
   if (newDailyTotal > STAKING_LIMITS.MAX_DAILY_STAKE_SUM) {
     violations.push({
       type: 'DAILY_LIMIT',
-      current: dailyTotal,
-      proposed: proposedUnits,
-      newTotal: newDailyTotal,
+      current: +dailyTotal.toFixed(1),
+      proposed: +proposedUnits.toFixed(1),
+      newTotal: +newDailyTotal.toFixed(1),
       limit: STAKING_LIMITS.MAX_DAILY_STAKE_SUM,
-      excess: newDailyTotal - STAKING_LIMITS.MAX_DAILY_STAKE_SUM
+      excess: +(newDailyTotal - STAKING_LIMITS.MAX_DAILY_STAKE_SUM).toFixed(1)
     });
   }
   
+  // Check per-game total limit (15U = 10U sides + 5U totals)
   if (newGameTotal > STAKING_LIMITS.MAX_EXPOSURE_PER_GAME) {
     violations.push({
       type: 'GAME_LIMIT',
-      current: gameTotal,
-      proposed: proposedUnits,
-      newTotal: newGameTotal,
+      current: +gameTotal.toFixed(1),
+      proposed: +proposedUnits.toFixed(1),
+      newTotal: +newGameTotal.toFixed(1),
       limit: STAKING_LIMITS.MAX_EXPOSURE_PER_GAME,
-      excess: newGameTotal - STAKING_LIMITS.MAX_EXPOSURE_PER_GAME
+      excess: +(newGameTotal - STAKING_LIMITS.MAX_EXPOSURE_PER_GAME).toFixed(1)
+    });
+  }
+  
+  // Check ML/Spread combined limit (10U max)
+  if (newSidesTotal > STAKING_LIMITS.MAX_EXPOSURE_SIDES) {
+    violations.push({
+      type: 'SIDES_LIMIT',
+      current: +sidesTotal.toFixed(1),
+      proposed: proposedBetType === 'total' ? 0 : +proposedUnits.toFixed(1),
+      newTotal: +newSidesTotal.toFixed(1),
+      limit: STAKING_LIMITS.MAX_EXPOSURE_SIDES,
+      excess: +(newSidesTotal - STAKING_LIMITS.MAX_EXPOSURE_SIDES).toFixed(1),
+      message: 'ML + Spread combined cannot exceed 10U per game'
     });
   }
   
@@ -329,16 +464,28 @@ export function checkExposureLimits(proposedUnits, existingBets, gameId, date) {
     allowed: violations.length === 0,
     violations,
     dailyUsage: {
-      current: dailyTotal,
-      proposed: newDailyTotal,
+      current: +dailyTotal.toFixed(1),
+      proposed: +newDailyTotal.toFixed(1),
       limit: STAKING_LIMITS.MAX_DAILY_STAKE_SUM,
-      remaining: Math.max(0, STAKING_LIMITS.MAX_DAILY_STAKE_SUM - newDailyTotal)
+      remaining: +Math.max(0, STAKING_LIMITS.MAX_DAILY_STAKE_SUM - newDailyTotal).toFixed(1)
     },
     gameUsage: {
-      current: gameTotal,
-      proposed: newGameTotal,
+      current: +gameTotal.toFixed(1),
+      proposed: +newGameTotal.toFixed(1),
       limit: STAKING_LIMITS.MAX_EXPOSURE_PER_GAME,
-      remaining: Math.max(0, STAKING_LIMITS.MAX_EXPOSURE_PER_GAME - newGameTotal)
+      remaining: +Math.max(0, STAKING_LIMITS.MAX_EXPOSURE_PER_GAME - newGameTotal).toFixed(1)
+    },
+    sidesUsage: {
+      current: +sidesTotal.toFixed(1),
+      proposed: +newSidesTotal.toFixed(1),
+      limit: STAKING_LIMITS.MAX_EXPOSURE_SIDES,
+      remaining: +Math.max(0, STAKING_LIMITS.MAX_EXPOSURE_SIDES - newSidesTotal).toFixed(1)
+    },
+    totalsUsage: {
+      current: +totalsTotal.toFixed(1),
+      proposed: +newTotalsTotal.toFixed(1),
+      limit: 5.0,  // Totals get +5U on top of sides
+      remaining: +Math.max(0, 5.0 - newTotalsTotal).toFixed(1)
     }
   };
 }
@@ -423,6 +570,7 @@ export default {
   calculateHalfKellyBase,
   computeMultiplier,
   checkExposureLimits,
+  checkHighStakesCLVGate,
   buildSignalsFromContext,
   trackPerformance,
   MULTIPLIER_FACTORS,

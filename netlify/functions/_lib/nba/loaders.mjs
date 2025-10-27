@@ -61,7 +61,7 @@ export async function loadTeamInfo() {
  * @param {string} seasonType - "Regular Season" or "Playoffs"
  * @param {string} measureType - "Base", "Advanced", "Four Factors", etc.
  */
-export async function fetchTeamStats(season = '2024-25', seasonType = 'Regular Season', measureType = 'Base') {
+export async function fetchTeamStats(season = '2025-26', seasonType = 'Regular Season', measureType = 'Base') {
   try {
     const params = new URLSearchParams({
       Season: season,

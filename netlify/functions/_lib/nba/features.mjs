@@ -17,7 +17,7 @@ import { fetchTeamStats, fetchTeamLastGames, calculateRecentForm, loadTeamInfo }
  * FORM FEATURES (20)
  * Recent performance across multiple time windows
  */
-export async function calculateFormFeatures(teamId, season = '2024-25') {
+export async function calculateFormFeatures(teamId, season = '2025-26') {
   const features = {};
   
   try {
@@ -259,7 +259,7 @@ export function calculateContextFeatures(game, teamId) {
  * CLUTCH FEATURES (8)
  * Performance in close games and 4th quarter
  */
-export async function calculateClutchFeatures(teamId, season = '2024-25') {
+export async function calculateClutchFeatures(teamId, season = '2025-26') {
   const features = {};
   
   try {
@@ -287,7 +287,7 @@ export async function calculateClutchFeatures(teamId, season = '2024-25') {
  * MASTER FEATURE BUILDER
  * Combines all 83 features for a team
  */
-export async function buildTeamFeatures(teamId, game = null, season = '2024-25') {
+export async function buildTeamFeatures(teamId, game = null, season = '2025-26') {
   console.log(`[Features] Building features for team ${teamId}`);
   
   try {

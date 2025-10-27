@@ -13,8 +13,8 @@ import {
   applyTeamGlobalCaps,          // Gap B: Team caps + interaction bumps
   SOURCE_PRIORITY               // For debugging
 } from '../_lib/canonical-availability-v5.mjs';
-// Kelly Hybrid Staking: Explicit staking system
-import { recommendUnits } from '../_lib/kelly-hybrid-staking.mjs';
+// Kelly Hybrid Staking: Explicit staking system with exposure guards
+import { recommendUnits, checkExposureLimits } from '../_lib/kelly-hybrid-staking.mjs';
 // ENHANCED: Comprehensive EPA database (300+ players) + Return Boost System
 import { getPlayerEPA, calculateQualityBackupMultiplier, REPLACEMENT_LEVEL_EPA } from '../_lib/comprehensive-player-epa.js';
 import { getAllReturnBoosts, savePriorWeekSnapshot } from '../_lib/return-boost-system.js';
@@ -2127,7 +2127,7 @@ function calculateRecommendedUnits(confidence, edge, betType = 'straight', avail
         : (100 / Math.abs(marketOdds)) + 1;
     }
     
-    let kellyResult = recommendUnits(edgeProb, priceDec, signals, 10);
+    let kellyResult = recommendUnits(edgeProb, priceDec, signals, 10, betType);
     
     // NEW RULE: Apply reduced Kelly fractions for moneylines
     // 0.25× Kelly for ≤ −300, 0.30× Kelly for others
