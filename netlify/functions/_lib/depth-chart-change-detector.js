@@ -187,7 +187,7 @@ function loadDepthChart(week, year = 2025) {
  * Normalize player names for comparison
  */
 function normalizeName(name) {
-  if (!name) return '';
+  if (!name || typeof name !== 'string') return '';
   
   // Handle suffix variations (Jr., Sr., II, III, IV)
   return name
@@ -247,6 +247,12 @@ function detectQBChanges(currentWeekChart, previousWeekChart) {
     const currentQB = currentDepth.QB[0];
     const previousQB = previousDepth.QB[0];
     
+    // Safety check: ensure both are valid strings
+    if (typeof currentQB !== 'string' || typeof previousQB !== 'string') {
+      console.warn(`⚠️ Invalid QB data for ${teamCode}: current=${currentQB}, previous=${previousQB}`);
+      continue;
+    }
+    
     // Check if QB changed
     if (!namesMatch(currentQB, previousQB)) {
       const currentEPA = getQBEPA(currentQB);
@@ -304,6 +310,12 @@ function detectRB1Changes(currentWeekChart, previousWeekChart) {
     
     const currentRB = currentDepth.RB[0];
     const previousRB = previousDepth.RB[0];
+    
+    // Safety check: ensure both are valid strings
+    if (typeof currentRB !== 'string' || typeof previousRB !== 'string') {
+      console.warn(`⚠️ Invalid RB data for ${teamCode}: current=${currentRB}, previous=${previousRB}`);
+      continue;
+    }
     
     if (!namesMatch(currentRB, previousRB)) {
       // Estimate based on name recognition (elite RBs)
@@ -363,6 +375,12 @@ function detectWR1Changes(currentWeekChart, previousWeekChart) {
     
     const currentWR = currentDepth.WR[0];
     const previousWR = previousDepth.WR[0];
+    
+    // Safety check: ensure both are valid strings
+    if (typeof currentWR !== 'string' || typeof previousWR !== 'string') {
+      console.warn(`⚠️ Invalid WR data for ${teamCode}: current=${currentWR}, previous=${previousWR}`);
+      continue;
+    }
     
     if (!namesMatch(currentWR, previousWR)) {
       // WR EPA is more volatile, smaller impact than QB/RB
