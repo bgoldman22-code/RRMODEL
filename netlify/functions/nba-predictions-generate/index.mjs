@@ -8,7 +8,8 @@
 import { getStore } from '@netlify/blobs';
 import { fetchTodaysGames, loadTeamInfo } from '../_lib/nba/loaders.mjs';
 import { buildTeamFeatures, buildMatchupFeatures } from '../_lib/nba/features.mjs';
-import { getGameInjuryReport } from '../_lib/nba/injuries.mjs';
+import { getGameInjuryReport, getTeamInjuries } from '../_lib/nba/injuries.mjs';
+import { calculateInjuryAdjustment } from '../_lib/nba/injury-adjustments.mjs';
 import { compareDepth, getProjectedLineup } from '../_lib/nba/depth.mjs';
 import EnsembleModel from '../_lib/nba/models/ensemble.mjs';
 
@@ -215,6 +216,19 @@ async function generatePredictions(games, models) {
         ...matchupFeatures
       };
       
+      // Calculate injury adjustments for both teams
+      let homeInjuryAdj = { deltaOff: 0, deltaDef: 0, severity: 'NONE', uncertaintyMultiplier: 1.0 };
+      let awayInjuryAdj = { deltaOff: 0, deltaDef: 0, severity: 'NONE', uncertaintyMultiplier: 1.0 };
+      
+      if (injuryReport) {
+        if (injuryReport.homeTeam.details && injuryReport.homeTeam.details.length > 0) {
+          homeInjuryAdj = calculateInjuryAdjustment(injuryReport.homeTeam.details);
+        }
+        if (injuryReport.awayTeam.details && injuryReport.awayTeam.details.length > 0) {
+          awayInjuryAdj = calculateInjuryAdjustment(injuryReport.awayTeam.details);
+        }
+      }
+      
       // Get predictions
       let spreadPred, totalPred, confidence;
       
@@ -242,6 +256,23 @@ async function generatePredictions(games, models) {
         const awayConsistency = Math.abs(awayFeatures.L10_netRating / (awayFeatures.L10_netRating + 0.1));
         confidence = Math.min(75, 50 + (homeConsistency + awayConsistency) * 10);
       }
+      
+      // Apply injury adjustments to predictions
+      // deltaOff/deltaDef are in points per 100 possessions
+      // Adjust spread: home gets better if away injured, worse if home injured
+      const homeNetInjuryImpact = homeInjuryAdj.deltaOff + homeInjuryAdj.deltaDef;
+      const awayNetInjuryImpact = awayInjuryAdj.deltaOff + awayInjuryAdj.deltaDef;
+      const injurySpreadAdjustment = awayNetInjuryImpact - homeNetInjuryImpact;
+      spreadPred += injurySpreadAdjustment;
+      
+      // Adjust total: reduce when either team has injuries
+      const avgPace = (homeFeatures.L10_pace + awayFeatures.L10_pace) / 2;
+      const totalInjuryAdjustment = (homeInjuryAdj.deltaOff + awayInjuryAdj.deltaOff) * (avgPace / 100);
+      totalPred += totalInjuryAdjustment;
+      
+      // Reduce confidence when injuries add uncertainty
+      const maxUncertaintyMultiplier = Math.max(homeInjuryAdj.uncertaintyMultiplier, awayInjuryAdj.uncertaintyMultiplier);
+      confidence = confidence / maxUncertaintyMultiplier;
       
       // Calculate win probability
       const winProb = 1 / (1 + Math.exp(-spreadPred / 10));
@@ -278,16 +309,35 @@ async function generatePredictions(games, models) {
             impact: injuryReport.homeTeam.impact,
             count: injuryReport.homeTeam.count,
             advantage: injuryReport.homeTeam.advantage,
-            details: injuryReport.homeTeam.details
+            details: injuryReport.homeTeam.details,
+            adjustment: {
+              deltaOff: parseFloat(homeInjuryAdj.deltaOff.toFixed(2)),
+              deltaDef: parseFloat(homeInjuryAdj.deltaDef.toFixed(2)),
+              severity: homeInjuryAdj.severity,
+              spreadImpact: parseFloat((-homeNetInjuryImpact).toFixed(1)),
+              totalImpact: parseFloat((homeInjuryAdj.deltaOff * (avgPace / 100)).toFixed(1))
+            }
           },
           away: {
             impact: injuryReport.awayTeam.impact,
             count: injuryReport.awayTeam.count,
             advantage: injuryReport.awayTeam.advantage,
-            details: injuryReport.awayTeam.details
+            details: injuryReport.awayTeam.details,
+            adjustment: {
+              deltaOff: parseFloat(awayInjuryAdj.deltaOff.toFixed(2)),
+              deltaDef: parseFloat(awayInjuryAdj.deltaDef.toFixed(2)),
+              severity: awayInjuryAdj.severity,
+              spreadImpact: parseFloat(awayNetInjuryImpact.toFixed(1)),
+              totalImpact: parseFloat((awayInjuryAdj.deltaOff * (avgPace / 100)).toFixed(1))
+            }
           },
           differential: injuryReport.differential,
-          summary: injuryReport.summary
+          summary: injuryReport.summary,
+          predictionAdjustment: {
+            spread: parseFloat(injurySpreadAdjustment.toFixed(1)),
+            total: parseFloat(totalInjuryAdjustment.toFixed(1)),
+            confidenceReduction: parseFloat(((1 - 1/maxUncertaintyMultiplier) * 100).toFixed(1))
+          }
         } : null,
         
         depth: depthComparison ? {
