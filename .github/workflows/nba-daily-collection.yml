@@ -25,9 +25,19 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
       
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
       - name: Install Python dependencies
         run: |
           pip install requests pandas
+      
+      - name: Install Node.js dependencies
+        run: |
+          npm install
       
       - name: Check for new games
         id: check_games
@@ -45,14 +55,20 @@ jobs:
           python scripts/collect-nba-ultimate.py 2025-26 ${{ steps.check_games.outputs.date_yesterday }} ${{ steps.check_games.outputs.date_today }}
         continue-on-error: true
       
+      - name: Calculate advanced stats (Comprehensive)
+        run: |
+          node scripts/collect-nba-comprehensive.js 2025-26
+        continue-on-error: true
+      
       - name: Commit and push data
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
           # Check if there are changes
-          if [ -n "$(git status --porcelain data/nba/games/)" ]; then
+          if [ -n "$(git status --porcelain data/nba/)" ]; then
             git add data/nba/games/
+            git add data/nba/advanced/
             git commit -m "🏀 NBA Data Update: $(date +%Y-%m-%d)"
             git push origin main41
             echo "✅ Data updated and pushed"

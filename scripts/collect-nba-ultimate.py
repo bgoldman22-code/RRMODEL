@@ -285,6 +285,69 @@ class ESPNCollector:
         print(f"✅ Collected injuries for {len(injuries_by_team)} teams")
         return injuries_by_team
     
+    def collect_box_score(self, game_id: str) -> Optional[Dict]:
+        """
+        Fetch box score stats for a completed game.
+        Returns dict with homeStats and awayStats containing box score data.
+        """
+        url = f"{ESPN_BASE}/summary"
+        params = {'event': game_id}
+        
+        data = safe_fetch(url, params=params)
+        if not data or 'boxscore' not in data:
+            return None
+        
+        boxscore = data.get('boxscore', {})
+        teams = boxscore.get('teams', [])
+        
+        if len(teams) < 2:
+            return None
+        
+        # Extract stats for both teams
+        stats = {}
+        for team_data in teams:
+            team_id = str(team_data.get('team', {}).get('id'))
+            team_stats = team_data.get('statistics', [])
+            
+            # Parse statistics array into dict
+            parsed_stats = {}
+            for stat in team_stats:
+                name = stat.get('name')
+                value = stat.get('displayValue')
+                
+                # Convert to numeric where possible
+                try:
+                    if '-' in value:  # Handle "39-85" format
+                        made, attempted = value.split('-')
+                        parsed_stats[f"{name.lower().replace(' ', '')}"] = int(made)
+                        parsed_stats[f"{name.lower().replace(' ', '')}a"] = int(attempted)
+                    elif '.' in value:
+                        parsed_stats[name.lower().replace(' ', '')] = float(value)
+                    else:
+                        parsed_stats[name.lower().replace(' ', '')] = int(value)
+                except:
+                    parsed_stats[name.lower().replace(' ', '')] = value
+            
+            # Map ESPN stat names to our format
+            stats[team_id] = {
+                'fgm': parsed_stats.get('fieldgoalsmade', parsed_stats.get('fgm', 0)),
+                'fga': parsed_stats.get('fieldgoalsmadea', parsed_stats.get('fga', 0)),
+                'fg3m': parsed_stats.get('threepointersmade', parsed_stats.get('fg3m', 0)),
+                'fg3a': parsed_stats.get('threepointersmadea', parsed_stats.get('fg3a', 0)),
+                'ftm': parsed_stats.get('freethrowsmade', parsed_stats.get('ftm', 0)),
+                'fta': parsed_stats.get('freethrowsmadea', parsed_stats.get('fta', 0)),
+                'rebounds': parsed_stats.get('totalrebounds', parsed_stats.get('rebounds', 0)),
+                'offRebounds': parsed_stats.get('offensiverebounds', parsed_stats.get('offrebounds', 0)),
+                'defRebounds': parsed_stats.get('defensiverebounds', parsed_stats.get('defrebounds', 0)),
+                'assists': parsed_stats.get('assists', 0),
+                'steals': parsed_stats.get('steals', 0),
+                'blocks': parsed_stats.get('blocks', 0),
+                'turnovers': parsed_stats.get('turnovers', 0),
+                'fouls': parsed_stats.get('fouls', parsed_stats.get('personalfouls', 0))
+            }
+        
+        return stats
+    
     def collect_scoreboard(self, date: str) -> List[Dict]:
         """
         Collect games/scores for a specific date.
@@ -305,7 +368,7 @@ class ESPNCollector:
             home_team = next((c for c in competitors if c.get('homeAway') == 'home'), {})
             away_team = next((c for c in competitors if c.get('homeAway') == 'away'), {})
             
-            games.append({
+            game_data = {
                 'gameId': event.get('id'),
                 'date': event.get('date'),
                 'status': event.get('status', {}).get('type', {}).get('name'),
@@ -325,7 +388,23 @@ class ESPNCollector:
                 },
                 'venue': competition.get('venue', {}).get('fullName'),
                 'attendance': competition.get('attendance')
-            })
+            }
+            
+            # Fetch box score for completed games
+            status = event.get('status', {}).get('type', {}).get('name')
+            if status == 'STATUS_FINAL':
+                print(f"  📦 Fetching box score for game {event.get('id')}")
+                box_score = self.collect_box_score(event.get('id'))
+                if box_score:
+                    # Add stats to game data
+                    home_id = home_team.get('id')
+                    away_id = away_team.get('id')
+                    if home_id in box_score:
+                        game_data['homeStats'] = box_score[home_id]
+                    if away_id in box_score:
+                        game_data['awayStats'] = box_score[away_id]
+            
+            games.append(game_data)
         
         return games
 
@@ -410,11 +489,23 @@ class UltimateNBACollector:
         
         # Step 3: Collect game-by-game data
         print("\n📊 Step 3/4: Game-by-Game Data")
-        all_games = []
+        
+        # Load existing games first
+        games_file = GAMES_DIR / f"games_{season.replace('-', '_')}.json"
+        if games_file.exists():
+            with open(games_file, 'r') as f:
+                all_games = json.load(f)
+            print(f"  📂 Loaded {len(all_games)} existing games")
+            # Create a set of existing game IDs to avoid duplicates
+            existing_ids = {g['id'] for g in all_games if 'id' in g}
+        else:
+            all_games = []
+            existing_ids = set()
         
         current_date = datetime.strptime(start_date, '%Y-%m-%d')
         end = datetime.strptime(end_date, '%Y-%m-%d')
         dates_processed = 0
+        new_games_count = 0
         
         while current_date <= end:
             date_str = current_date.strftime('%Y%m%d')
@@ -427,6 +518,10 @@ class UltimateNBACollector:
                 
                 # Enrich each game
                 for game in games:
+                    # Skip if we already have this game
+                    if 'id' in game and game['id'] in existing_ids:
+                        continue
+                    
                     # Add altitude adjustment
                     game = self.schedule.add_altitude_adjustment(game)
                     
@@ -440,19 +535,23 @@ class UltimateNBACollector:
                         game['awayTeamStats'] = advanced_stats[away_id]
                     
                     all_games.append(game)
+                    new_games_count += 1
             
             current_date += timedelta(days=1)
             dates_processed += 1
             
             # Progress update every 30 days
             if dates_processed % 30 == 0:
-                print(f"  ⏳ Progress: {dates_processed} days processed, {len(all_games)} games collected")
+                print(f"  ⏳ Progress: {dates_processed} days processed, {new_games_count} new games collected")
+        
+        # Sort by date
+        all_games.sort(key=lambda g: g.get('date', ''))
         
         # Save games
-        games_file = GAMES_DIR / f"games_{season.replace('-', '_')}_complete.json"
         with open(games_file, 'w') as f:
             json.dump(all_games, f, indent=2)
         print(f"💾 Saved games: {games_file}")
+        print(f"  📊 Total games: {len(all_games)} ({new_games_count} new)")
         
         # Step 4: Collect current injuries (for predictions)
         print("\n📊 Step 4/4: Current Injuries")

@@ -950,21 +950,34 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
   if (teamInjuries.qb_name && teamInjuries.qb_status) {
     const qbStatus = normalizeStatus(teamInjuries.qb_status);
     
-    // PHASE 1: Get replacement QB from depth chart (position 2 = index 1)
+    // FIX: Find replacement QB from depth chart, but IGNORE injured QB's position
+    // The depth chart may have already moved the injured QB down, so we need to find
+    // the NEXT healthy QB after removing the injured player from consideration
     let replacementQB = null;
-    if (currentDepthChart?.[teamCode]?.QB?.[1]) {
-      replacementQB = currentDepthChart[teamCode].QB[1];
-      console.log(`  QB replacement: ${teamInjuries.qb_name} → ${replacementQB}`);
+    if (currentDepthChart?.[teamCode]?.QB) {
+      const qbDepth = currentDepthChart[teamCode].QB;
+      // Find first QB in depth chart who is NOT the injured player
+      for (let i = 0; i < qbDepth.length; i++) {
+        if (qbDepth[i] !== teamInjuries.qb_name) {
+          replacementQB = qbDepth[i];
+          console.log(`  QB replacement: ${teamInjuries.qb_name} (injured) → ${replacementQB} (depth position ${i + 1})`);
+          break;
+        }
+      }
+      
+      if (!replacementQB) {
+        console.warn(`  ⚠️ No replacement QB found for ${teamInjuries.qb_name}`);
+      }
     }
     
     const qbSources = [{
       type: 'INJURY_REPORT',
       status: qbStatus,          // CRITICAL: canonical mergeSource expects 'status'
       reason: 'injury',
-      isStarter: true,
-      depthOrder: 1,
+      isStarter: true,            // FIX: Always treat injured QB as starter (ignore depth chart)
+      depthOrder: 1,              // FIX: Force depth order 1 (injury report overrides depth chart)
       depthPosition: 1,
-      replacementPlayerName: replacementQB,  // ← PHASE 1 FIX: Actual replacement from depth chart
+      replacementPlayerName: replacementQB,  // First healthy QB from depth chart
       probPlay: qbStatus === 'out' ? 0 : (qbStatus === 'doubtful' ? 0.2 : (qbStatus === 'questionable' ? 0.55 : 1.0)),
       timestamp: now
     }];
@@ -1056,16 +1069,52 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
         }
       }
       
-      // Skip healthy players beyond depth 2
-      if (status === 'active' && depthPosition > 2) continue;
+      // ENHANCED: Check if player is actually a high-usage starter using EPA database
+      let isHighUsageStarter = false;
+      let adjustedDepthPosition = depthPosition;
+      try {
+        const { getPlayerEPA } = await import('../_lib/comprehensive-player-epa.js');
+        const playerData = getPlayerEPA(playerName, position);
+        
+        // If player has high usage (>= 50% snaps/targets), treat as starter regardless of depth chart
+        if (playerData && playerData.usage >= 0.50) {
+          isHighUsageStarter = true;
+          adjustedDepthPosition = 1; // Override depth chart if player is high-usage
+          console.log(`  ⭐ ${playerName} (${position}) identified as high-usage starter (${(playerData.usage * 100).toFixed(0)}% usage)`);
+        } else if (playerData) {
+          console.log(`  📊 ${playerName} (${position}) is backup/committee (${(playerData.usage * 100).toFixed(0)}% usage)`);
+        }
+      } catch (err) {
+        // Fallback to depth chart position if EPA database unavailable
+        console.log(`  ℹ️ Using depth chart for ${playerName} (EPA data unavailable)`);
+      }
       
-      // PHASE 1: Get replacement from depth chart (injured player's depth + 1)
+      // Skip healthy players beyond depth 2 (unless they're high-usage starters)
+      if (status === 'active' && depthPosition > 2 && !isHighUsageStarter) continue;
+      
+      // FIX: Find replacement from depth chart, skipping the injured player
+      // The depth chart may have already moved injured players down, so find the next healthy player
       let replacementPlayer = null;
-      if (currentDepthChart?.[teamCode]?.[position]?.[depthPosition]) {
-        // If player at depth 1 is out, depth 2 (index 1) becomes replacement
-        replacementPlayer = currentDepthChart[teamCode][position][depthPosition];
-        if (replacementPlayer && replacementPlayer !== playerName) {
-          console.log(`  ${position} replacement: ${playerName} → ${replacementPlayer}`);
+      if (currentDepthChart?.[teamCode]?.[position]) {
+        const posDepth = currentDepthChart[teamCode][position];
+        // Find first player in depth chart who is NOT the injured player
+        for (let i = 0; i < posDepth.length; i++) {
+          const candidate = posDepth[i];
+          if (candidate && candidate !== playerName) {
+            // Also skip if this candidate is ALSO on the injury report
+            const candidateIsInjured = injuryList.some(inj => inj.name === candidate && 
+              (normalizeStatus(inj.status) === 'out' || normalizeStatus(inj.status) === 'doubtful'));
+            
+            if (!candidateIsInjured) {
+              replacementPlayer = candidate;
+              console.log(`  ${position} replacement: ${playerName} (injured, usage-adjusted depth ${adjustedDepthPosition}) → ${replacementPlayer} (depth ${i + 1})`);
+              break;
+            }
+          }
+        }
+        
+        if (!replacementPlayer) {
+          console.warn(`  ⚠️ No healthy replacement found for ${playerName} (${position})`);
         }
       }
       
@@ -1073,10 +1122,10 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
         type: 'INJURY_REPORT',
         status: status,          // Provide canonical field
         reason: 'injury',
-        isStarter: depthPosition === 1,
-        depthOrder: depthPosition,
-        depthPosition: depthPosition,
-        replacementPlayerName: replacementPlayer,  // ← PHASE 1 FIX: Actual replacement from depth chart
+        isStarter: isHighUsageStarter || adjustedDepthPosition === 1,  // FIX: Use usage data to determine starter status
+        depthOrder: adjustedDepthPosition,
+        depthPosition: adjustedDepthPosition,
+        replacementPlayerName: replacementPlayer,  // First healthy player from depth chart
         probPlay: status === 'out' ? 0 : (status === 'doubtful' ? 0.2 : (status === 'questionable' ? 0.55 : 1.0)),
         timestamp: now
       }];
