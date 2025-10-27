@@ -93,7 +93,46 @@ const QB_EPA_TIERS = {
 };
 
 /**
+ * Team name to team code mapping
+ */
+const TEAM_NAME_TO_CODE = {
+  'Arizona Cardinals': 'ARI',
+  'Atlanta Falcons': 'ATL',
+  'Baltimore Ravens': 'BAL',
+  'Buffalo Bills': 'BUF',
+  'Carolina Panthers': 'CAR',
+  'Chicago Bears': 'CHI',
+  'Cincinnati Bengals': 'CIN',
+  'Cleveland Browns': 'CLE',
+  'Dallas Cowboys': 'DAL',
+  'Denver Broncos': 'DEN',
+  'Detroit Lions': 'DET',
+  'Green Bay Packers': 'GB',
+  'Houston Texans': 'HOU',
+  'Indianapolis Colts': 'IND',
+  'Jacksonville Jaguars': 'JAX',
+  'Kansas City Chiefs': 'KC',
+  'Las Vegas Raiders': 'LV',
+  'Los Angeles Chargers': 'LAC',
+  'Los Angeles Rams': 'LAR',
+  'Miami Dolphins': 'MIA',
+  'Minnesota Vikings': 'MIN',
+  'New England Patriots': 'NE',
+  'New Orleans Saints': 'NO',
+  'New York Giants': 'NYG',
+  'New York Jets': 'NYJ',
+  'Philadelphia Eagles': 'PHI',
+  'Pittsburgh Steelers': 'PIT',
+  'San Francisco 49ers': 'SF',
+  'Seattle Seahawks': 'SEA',
+  'Tampa Bay Buccaneers': 'TB',
+  'Tennessee Titans': 'TEN',
+  'Washington Commanders': 'WAS'
+};
+
+/**
  * Load depth chart for a specific week/year
+ * Returns object keyed by team code (e.g., { BAL: { QB: [...], RB: [...] } })
  */
 function loadDepthChart(week, year = 2025) {
   try {
@@ -112,7 +151,32 @@ function loadDepthChart(week, year = 2025) {
     }
     
     const data = fs.readFileSync(depthChartPath, 'utf8');
-    return JSON.parse(data);
+    const rawData = JSON.parse(data);
+    
+    // Transform array format to object keyed by team code
+    const depthChartByCode = {};
+    
+    for (const teamData of rawData) {
+      const teamName = teamData.team;
+      const teamCode = TEAM_NAME_TO_CODE[teamName];
+      
+      if (!teamCode) {
+        console.warn(`⚠️ Unknown team name: ${teamName}`);
+        continue;
+      }
+      
+      // Copy position arrays (QB, RB, WR, TE, etc.)
+      depthChartByCode[teamCode] = {
+        QB: teamData.QB || [],
+        RB: teamData.RB || [],
+        WR: teamData.WR || [],
+        TE: teamData.TE || []
+      };
+    }
+    
+    console.log(`✅ Loaded depth charts for ${Object.keys(depthChartByCode).length} teams (Week ${week})`);
+    
+    return depthChartByCode;
   } catch (error) {
     console.error(`❌ Error loading depth chart for week ${week}:`, error.message);
     return null;

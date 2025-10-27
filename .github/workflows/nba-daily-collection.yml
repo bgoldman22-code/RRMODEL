@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: main41
+          ref: main42
           fetch-depth: 1
       
       - name: Setup Python
@@ -70,7 +70,7 @@ jobs:
             git add data/nba/games/
             git add data/nba/advanced/
             git commit -m "🏀 NBA Data Update: $(date +%Y-%m-%d)"
-            git push origin main41
+            git push origin main42
             echo "✅ Data updated and pushed"
           else
             echo "ℹ️ No new data to commit"
