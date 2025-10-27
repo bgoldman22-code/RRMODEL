@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Elite V2 - API Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #0a0e27;
+            color: #fff;
+        }
+        h1 {
+            color: #00ff88;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+        }
+        .error {
+            background: #ff4444;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .game {
+            background: #1a1f3a;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #00ff88;
+        }
+        .game-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .prediction {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .stat {
+            background: #0f1629;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        .stat-label {
+            color: #888;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        .confidence {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .confidence.HIGH { background: #00ff88; color: #000; }
+        .confidence.MEDIUM { background: #ffa500; color: #000; }
+        .confidence.LOW { background: #ff4444; color: #fff; }
+    </style>
+</head>
+<body>
+    <h1>🏀 NBA Elite V2 - API Test</h1>
+    <div class="subtitle">
+        Powered by NBA Stats API • Live L5/L10/L20 Data • No GitHub Dependencies
+    </div>
+
+    <div id="content">
+        <div class="loading">Loading predictions...</div>
+    </div>
+
+    <script>
+        async function loadPredictions() {
+            const content = document.getElementById('content');
+            
+            try {
+                const response = await fetch('/.netlify/functions/nba-predictions-elite-v2');
+                const data = await response.json();
+
+                if (!data.ok || !data.predictions || data.predictions.length === 0) {
+                    content.innerHTML = `
+                        <div class="error">
+                            ${data.message || 'No games available'}
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                
+                for (const pred of data.predictions) {
+                    const confidenceClass = pred.confidence > 65 ? 'HIGH' : pred.confidence > 50 ? 'MEDIUM' : 'LOW';
+                    
+                    html += `
+                        <div class="game">
+                            <div class="game-header">
+                                ${pred.game}
+                                <span class="confidence ${confidenceClass}">${pred.confidence}% Confidence</span>
+                            </div>
+                            
+                            <div class="prediction">
+                                <div class="stat">
+                                    <div class="stat-label">Predicted Spread</div>
+                                    <div class="stat-value">${pred.predictedSpread > 0 ? '+' : ''}${pred.predictedSpread}</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-label">Predicted Total</div>
+                                    <div class="stat-value">${pred.predictedTotal.toFixed(1)}</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-label">Home Win Prob</div>
+                                    <div class="stat-value">${pred.homeWinProb.toFixed(1)}%</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-label">Data Source</div>
+                                    <div class="stat-value" style="font-size: 14px;">
+                                        NBA Stats API<br>
+                                        <span style="color: #00ff88; font-size: 12px;">✅ Live 2025-26</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                content.innerHTML = html;
+
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="error">
+                        <strong>Error loading predictions:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        loadPredictions();
+    </script>
+</body>
+</html>
