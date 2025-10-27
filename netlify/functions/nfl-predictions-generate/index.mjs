@@ -3332,6 +3332,76 @@ export default async (request, context) => {
 
     const result = await generateAdvancedPredictions(games, season);
     
+    // ========================================
+    // EXPOSURE CHECKING: Enforce daily/per-game limits
+    // ========================================
+    console.log('\n🔍 [EXPOSURE] Checking exposure limits...');
+    const publishedBets = [];
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    let blockedCount = 0;
+    
+    if (result.predictions && result.predictions.length > 0) {
+      const allPredictions = [...result.predictions];
+      result.predictions = []; // Reset, will rebuild with only allowed bets
+      
+      for (const prediction of allPredictions) {
+        // Determine betType from market
+        let betType = 'spread';
+        const market = (prediction.market || '').toLowerCase();
+        if (market === 'moneyline' || market === 'ml') {
+          betType = 'moneyline';
+        } else if (market === 'total' || market === 'over' || market === 'under' || market === 'ou') {
+          betType = 'total';
+        }
+        
+        const proposedUnits = prediction.recommended_units || 0;
+        const gameId = prediction.game_id || prediction.gameId || `${prediction.away_team}_${prediction.home_team}`;
+        
+        // Check exposure limits
+        const exposureCheck = checkExposureLimits(
+          proposedUnits,
+          betType,
+          publishedBets,
+          gameId,
+          today
+        );
+        
+        if (!exposureCheck.allowed) {
+          console.warn(`🚫 [EXPOSURE] Blocked: ${prediction.pick} (${proposedUnits.toFixed(1)}U ${betType})`);
+          console.warn(`   Violations:`, exposureCheck.violations.map(v => `${v.type}: ${v.message || v.excess.toFixed(1) + 'U over limit'}`).join(', '));
+          blockedCount++;
+          continue; // Skip this bet
+        }
+        
+        // Bet passed exposure checks - publish it
+        publishedBets.push({
+          units: proposedUnits,
+          betType,
+          gameId,
+          date: today
+        });
+        
+        result.predictions.push(prediction);
+        
+        // Log exposure usage (only for first 3 bets to avoid spam)
+        if (publishedBets.length <= 3) {
+          console.log(`✅ [EXPOSURE] Published: ${prediction.pick} (${proposedUnits.toFixed(1)}U ${betType})`);
+          console.log(`   Daily: ${exposureCheck.dailyUsage.proposed.toFixed(1)}/${exposureCheck.dailyUsage.limit}U | Remaining: ${exposureCheck.dailyUsage.remaining.toFixed(1)}U`);
+          console.log(`   Game: ${exposureCheck.gameUsage.proposed.toFixed(1)}/${exposureCheck.gameUsage.limit}U | Remaining: ${exposureCheck.gameUsage.remaining.toFixed(1)}U`);
+          console.log(`   Sides: ${exposureCheck.sidesUsage.proposed.toFixed(1)}/${exposureCheck.sidesUsage.limit}U | Totals: ${exposureCheck.totalsUsage.proposed.toFixed(1)}/5.0U`);
+        }
+      }
+      
+      console.log(`\n📊 [EXPOSURE SUMMARY]`);
+      console.log(`   Total bets analyzed: ${allPredictions.length}`);
+      console.log(`   Bets published: ${result.predictions.length}`);
+      console.log(`   Bets blocked: ${blockedCount}`);
+      if (publishedBets.length > 0) {
+        const totalUnits = publishedBets.reduce((sum, bet) => sum + bet.units, 0);
+        console.log(`   Total exposure: ${totalUnits.toFixed(1)}U / 112.5U daily limit`);
+      }
+    }
+    
     // LIVE SITE INTEGRATION: Always save to blob storage when we have predictions
     let blobData = null;
     if (result.predictions && result.predictions.length > 0) {
