@@ -110,7 +110,7 @@ export async function fetchTeamStats(season = '2025-26', seasonType = 'Regular S
 /**
  * Fetch player stats from NBA Stats API
  */
-export async function fetchPlayerStats(season = '2024-25', seasonType = 'Regular Season') {
+export async function fetchPlayerStats(season = '2025-26', seasonType = 'Regular Season') {
   try {
     const params = new URLSearchParams({
       Season: season,
@@ -214,7 +214,7 @@ export async function fetchTodaysGames(date = null) {
 /**
  * Fetch team's last N games
  */
-export async function fetchTeamLastGames(teamId, season = '2024-25', lastN = 10) {
+export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10) {
   try {
     const params = new URLSearchParams({
       Season: season,
@@ -276,7 +276,7 @@ export async function fetchInjuries() {
 /**
  * Calculate team's last N games stats
  */
-export async function calculateRecentForm(teamId, season = '2024-25', windows = [5, 10, 20]) {
+export async function calculateRecentForm(teamId, season = '2025-26', windows = [5, 10, 20]) {
   try {
     const form = {};
     
