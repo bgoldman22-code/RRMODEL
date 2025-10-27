@@ -811,8 +811,8 @@ export default async (request, context) => {
     }
     
     // 3. Load historical games from GitHub (ELITE: Multi-season fallback for early season)
-    const currentSeasonUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nba/games/games_2025_26.json';
-    const lastSeasonUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main41/data/nba/games/games_2024_25.json';
+    const currentSeasonUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main42/data/nba/games/games_2025_26.json';
+    const lastSeasonUrl = 'https://raw.githubusercontent.com/bgoldman22-code/RRMODEL/main42/data/nba/games/games_2024_25.json';
     
     const [currentResponse, lastResponse] = await Promise.all([
       fetch(currentSeasonUrl),
