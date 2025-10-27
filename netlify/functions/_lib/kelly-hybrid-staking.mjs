@@ -96,8 +96,8 @@ export const PENALTY_FACTORS = {
  */
 export const STAKING_LIMITS = {
   // Per-bet limits
-  MAX_UNITS_PER_BET: 3.0,              // Absolute maximum
-  MAX_MULTIPLIER_VS_BASE: 2.5,         // Can't bet more than 2.5x Half-Kelly base
+  MAX_UNITS_PER_BET: 8.0,              // Absolute maximum (boosted from 5U for strongest bets)
+  MAX_MULTIPLIER_VS_BASE: 3.0,         // Can't bet more than 3.0x Half-Kelly base (updated with cap)
   MIN_KELLY_RAW_THRESHOLD: 0.10,       // Don't bet if full Kelly < 0.10U
   MIN_UNITS_FLOOR: 0.25,               // Minimum bet size (if kelly base >= 0.15U)
   MIN_BASE_FOR_FLOOR: 0.15,            // Only apply floor if base >= this

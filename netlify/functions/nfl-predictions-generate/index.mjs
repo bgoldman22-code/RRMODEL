@@ -154,10 +154,11 @@ function shouldSkipBet(prediction, gameContext = {}, marketOdds = null) {
 }
 
 // Moneyline bet skip logic 
-function shouldSkipMoneylineBet(mlPick, gameContext = {}, marketOdds = null, confidence = null, edge = null, winProbability = null) {
-  // CORRECTED KELLY FILTER: Use breakeven probability from odds
-  // For +X odds: breakeven = 1/(1 + X/100)  [e.g., +150 → 40%, +200 → 33.3%]
-  // For -X odds: breakeven = X/(X + 100)     [e.g., -200 → 66.7%]
+function shouldSkipMoneylineBet(mlPick, gameContext = {}, marketOdds = null, confidence = null, edge = null, winProbability = null, opponentQBEPA = null) {
+  // NEW RULE: Require confidence ≥ 65% and implied edge ≥ 5%
+  if (confidence !== null && confidence < 65) {
+    return { skip: true, reason: `confidence_${confidence.toFixed(1)}%<65%` };
+  }
   
   if (marketOdds !== null && winProbability !== null) {
     const american = marketOdds;
@@ -169,15 +170,24 @@ function shouldSkipMoneylineBet(mlPick, gameContext = {}, marketOdds = null, con
     const modelP = winProbability / 100;
     const evPercent = modelP - breakeven;
     
-    // Allow if +EV with at least 1% edge over breakeven
-    if (evPercent >= 0.01) {
-      return { skip: false, reason: `+EV_${(evPercent * 100).toFixed(1)}%_over_breakeven` };
+    // NEW RULE: Require minimum 5% implied edge
+    if (evPercent < 0.05) {
+      return { skip: true, reason: `edge_${(evPercent * 100).toFixed(1)}%<5%` };
     }
     
-    // Block if insufficient EV
-    if (evPercent < 0.01) {
-      return { skip: true, reason: `insufficient_ev_${(evPercent * 100).toFixed(1)}%` };
+    // NEW RULE: Heavy favorites (worse than -300) need extra criteria
+    if (american <= -300) {
+      // Need either 6%+ edge OR opponent QB EPA ≤ league avg
+      const leagueAvgQBEPA = 0.0; // Approximate league average EPA per play
+      const hasExtraEdge = evPercent >= 0.06;
+      const hasPoorOpponentQB = opponentQBEPA !== null && opponentQBEPA <= leagueAvgQBEPA;
+      
+      if (!hasExtraEdge && !hasPoorOpponentQB) {
+        return { skip: true, reason: `heavy_fav_${american}_needs_edge≥6%_or_poor_opp_QB` };
+      }
     }
+    
+    return { skip: false, reason: `conf_${confidence.toFixed(0)}%_edge_${(evPercent * 100).toFixed(1)}%` };
   }
   
   // Skip extreme dogs unless edge ≥ 5%
@@ -219,15 +229,22 @@ function shouldSkipTotalBet(totalPick, totalDiff, gameContext = {}, marketOdds =
 }
 
 // Push detection logic for spread bets
-function shouldSkipSpreadBet(spreadPick, marginDiff, gameContext = {}, marketOdds = null, confidence = null, edge = null) {
+function shouldSkipSpreadBet(spreadPick, marginDiff, gameContext = {}, marketOdds = null, confidence = null, edge = null, spreadLine = null) {
   // Push predictions should always be no-bet
   if (spreadPick === 'push' || Math.abs(marginDiff) < 0.5) {
     return { skip: true, reason: "push_prediction" };
   }
   
-  // PRIMARY RULE: Bet if model margin vs line differs by ≥ 2.5 points
   const pointDiff = Math.abs(marginDiff);
+  const absSpread = Math.abs(spreadLine || 0);
   
+  // NEW RULE: Small spreads need more edge
+  // If spread < 3 points, require at least 3 points of edge
+  if (absSpread < 3 && pointDiff < 3) {
+    return { skip: true, reason: `small_spread_${absSpread.toFixed(1)}_needs_edge≥3.0pts_got_${pointDiff.toFixed(1)}pts` };
+  }
+  
+  // PRIMARY RULE: Bet if model margin vs line differs by ≥ 2.5 points
   if (pointDiff < 2.5) {
     return { skip: true, reason: `margin_diff_${pointDiff.toFixed(1)}pts<2.5pts` };
   }
@@ -1826,7 +1843,8 @@ async function generateParlayComponents(games, predictions) {
         )
       };
       const sanityCheck = pred.predictions?.elite?.sanityCheck || null;
-      let unitInfo = calculateRecommendedUnits(mlPick.confidence, mlPick.edge, 'straight', availabilityData, sanityCheck);
+      const mlOdds = pred.odds?.moneyline?.pick_odds || null;
+      let unitInfo = calculateRecommendedUnits(mlPick.confidence, mlPick.edge, 'moneyline', availabilityData, sanityCheck, mlOdds);
       
       // PHASE 2: Apply line movement gates (with safe defaults)
       const gameId = game.game_id || `${game.away_team}_${game.home_team}`;
@@ -2027,7 +2045,7 @@ async function generateParlayComponents(games, predictions) {
 }
 
 // Kelly Hybrid Staking Integration
-function calculateRecommendedUnits(confidence, edge, betType = 'straight', availabilityData = null, sanityCheck = null) {
+function calculateRecommendedUnits(confidence, edge, betType = 'straight', availabilityData = null, sanityCheck = null, marketOdds = null) {
   // For parlays, always use small units
   if (betType === 'parlay') {
     return edge >= 8 ? 0.5 : 0.25;
@@ -2052,10 +2070,25 @@ function calculateRecommendedUnits(confidence, edge, betType = 'straight', avail
   try {
     // Convert confidence % to probability
     const edgeProb = confidence / 100;
-    // Assume -110 odds (1.909 decimal)
-    const priceDec = 1.909;
+    // Assume -110 odds (1.909 decimal) or use actual odds if available
+    let priceDec = 1.909;
+    if (marketOdds !== null) {
+      priceDec = marketOdds > 0 
+        ? (marketOdds / 100) + 1 
+        : (100 / Math.abs(marketOdds)) + 1;
+    }
     
     let kellyResult = recommendUnits(edgeProb, priceDec, signals, 10);
+    
+    // NEW RULE: Apply reduced Kelly fractions for moneylines
+    // 0.25× Kelly for ≤ −300, 0.30× Kelly for others
+    if (betType === 'moneyline' && marketOdds !== null) {
+      const originalUnits = kellyResult.units;
+      const kellyFraction = marketOdds <= -300 ? 0.25 : 0.30;
+      kellyResult.units *= kellyFraction;
+      console.log(`📊 ML Kelly adjustment (${kellyFraction}×): ${originalUnits.toFixed(2)}U → ${kellyResult.units.toFixed(2)}U`);
+      kellyResult.reasoning = (kellyResult.reason || '') + ` | ML ${kellyFraction}× Kelly`;
+    }
     
     // SAFEGUARD: Apply 35% haircut if sanity check alert fires
     if (sanityCheck?.alert) {
@@ -2096,6 +2129,13 @@ function calculateRecommendedUnits(confidence, edge, betType = 'straight', avail
       units = 1.0;
       tier = 'standard';
       reasoning = 'flat unit (fallback)';
+    }
+    
+    // Apply moneyline Kelly fraction to fallback too
+    if (betType === 'moneyline' && marketOdds !== null) {
+      const kellyFraction = marketOdds <= -300 ? 0.25 : 0.30;
+      units *= kellyFraction;
+      reasoning += ` | ML ${kellyFraction}× Kelly`;
     }
     
     // Apply sanity haircut to fallback too
@@ -2635,8 +2675,13 @@ async function generateAdvancedPredictions(games, season) {
     const baseMLConfidence = calculateConfidence(mlModelProb, mlMarketProb, mlEdge, avgConfidence, avgEvidence, scoreDifference, 'moneyline', gameContext);
     mlConfidence = Math.round(baseMLConfidence * publicBiasAdjustment);
     
+    // Get opponent QB EPA for moneyline filter (heavy favorite check)
+    const opponentQBEPA = mlPick === homeCode 
+      ? (awayMetrics?.core?.off_epa || null)  // Home is favored, check away offense EPA
+      : (homeMetrics?.core?.off_epa || null);  // Away is favored, check home offense EPA
+    
     // Add moneyline skip check using best-book edge
-    const mlSkipCheck = shouldSkipMoneylineBet(mlPick, gameContext, realOdds, mlConfidence, mlEdge * 100);
+    const mlSkipCheck = shouldSkipMoneylineBet(mlPick, gameContext, realOdds, mlConfidence, mlEdge * 100, mlModelProb, opponentQBEPA);
 
     // Spread predictions with structured odds integration
     const marketSpread = hasLiveOdds ? (realOdds.spread_line || 0) : 0;
@@ -2765,7 +2810,9 @@ async function generateAdvancedPredictions(games, season) {
     }
     
     // Use spread-specific skip check with enhanced edge
-    const spreadSkipCheck = shouldSkipSpreadBet(spreadPick, marginDifference, gameContext, realOdds, spreadConfidence, spreadEdge);
+    // Determine the spread line for the picked team
+    const pickedTeamSpreadLine = spreadPick === homeCode ? (realOdds.spread_line || 0) : -(realOdds.spread_line || 0);
+    const spreadSkipCheck = shouldSkipSpreadBet(spreadPick, marginDifference, gameContext, realOdds, spreadConfidence, spreadEdge, pickedTeamSpreadLine);
 
     // Enhanced total calculations
     const predictedTotal = calculateTotalPrediction(homeMetrics, awayMetrics, marketSpread, homeScoreData.specialTeams, awayScoreData.specialTeams);
