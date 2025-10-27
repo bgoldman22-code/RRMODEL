@@ -62,6 +62,141 @@ import {
   SITUATIONAL_THRESHOLDS 
 } from '../_lib/situational-epa-filters-v4.mjs';
 
+// ========================================
+// DEPTH CHART & INJURY PROCESSING UTILITIES
+// ========================================
+
+/**
+ * Position-specific usage thresholds for starter detection
+ * Standardized to use TEAM SHARE (not position share within WR room, etc.)
+ * 
+ * Usage field meanings:
+ * - RB: Snap share (team offensive snaps) - 50%+ = workhorse/RB1
+ * - WR: Team target share (% of team's total targets) - 22%+ = WR1/WR2
+ * - TE: Team target share (% of team's total targets) - 15%+ = TE1
+ */
+const USAGE_THRESHOLDS = {
+  RB: { type: 'snapShare', min: 0.50 },      // 50%+ snap share = RB1/workhorse
+  WR: { type: 'teamTargetShare', min: 0.22 }, // 22%+ team target share = WR1/WR2
+  TE: { type: 'teamTargetShare', min: 0.15 }  // 15%+ team target share = TE1
+};
+
+/**
+ * Check if player qualifies as high-usage starter based on EPA database
+ * @param {Object} playerData - From comprehensive-player-epa.js
+ * @param {string} pos - Position (RB, WR, TE)
+ * @returns {boolean} True if player meets usage threshold for position
+ */
+function isHighUsageStarter(playerData, pos) {
+  if (!playerData) return false;
+  
+  const threshold = USAGE_THRESHOLDS[pos] || { type: 'snapShare', min: 0.50 };
+  
+  // Get the correct usage field based on position type
+  const usageValue = threshold.type === 'teamTargetShare' 
+    ? (playerData.teamTargetShare ?? playerData.usage)
+    : (playerData.snapShare ?? playerData.usage);
+  
+  return (usageValue ?? 0) >= threshold.min;
+}
+
+/**
+ * Convert injury status to probability of playing (graded, not binary)
+ * Position-specific because QB is binary position, skill positions have snap counts
+ * @param {string} pos - Position (QB, RB, WR, TE)
+ * @param {string} status - Injury status (out, doubtful, questionable, active)
+ * @returns {number} Probability of playing (0.0 to 0.95)
+ */
+function statusToProbPlay(pos, status) {
+  const s = (status || '').toLowerCase();
+  
+  if (s === 'out' || s === 'o') return 0.0;
+  
+  if (s === 'doubtful' || s === 'd') {
+    // QB is binary (either plays full or doesn't play)
+    // Skill positions can play limited snaps
+    return pos === 'QB' ? 0.10 : 0.20;
+  }
+  
+  if (s === 'questionable' || s === 'q') {
+    return pos === 'QB' ? 0.60 : 0.70;
+  }
+  
+  // Active but recently injured
+  return 0.95;
+}
+
+/**
+ * Expected snap count scale for limited returns
+ * Used to scale EPA calculations when player is active but on pitch count
+ * @param {string} pos - Position
+ * @param {string} status - Injury status
+ * @returns {number} Snap scale multiplier (0.5 to 1.0)
+ */
+function expectedSnapScale(pos, status) {
+  const s = (status || '').toLowerCase();
+  
+  if (s === 'questionable' || s === 'q') {
+    // QB plays full or doesn't play (binary position)
+    // Skill positions often limited to ~70% snaps
+    return pos === 'QB' ? 1.0 : 0.7;
+  }
+  
+  if (s === 'doubtful' || s === 'd') {
+    return pos === 'QB' ? 1.0 : 0.5;
+  }
+  
+  return 1.0; // Full snaps
+}
+
+/**
+ * Build filtered depth chart excluding injured players
+ * Automatically recomposes roles: if WR1+WR2 out, WR3 becomes new WR1
+ * @param {string} teamCode - Team abbreviation
+ * @param {string} pos - Position
+ * @param {Object} depthChart - Weekly depth chart
+ * @param {Array} injuryList - Injury report for this position
+ * @returns {Array} Filtered depth list where [0]=new starter after injuries
+ */
+function filteredDepthList(teamCode, pos, depthChart, injuryList) {
+  // Build set of injured players (probPlay < 0.5)
+  const injured = new Set();
+  for (const injury of (injuryList || [])) {
+    const status = injury.status || injury.injury_status;
+    const probPlay = statusToProbPlay(pos, status);
+    
+    if (probPlay < 0.5) {
+      injured.add(injury.name);
+    }
+  }
+  
+  // Filter depth chart to exclude injured
+  const fullDepth = depthChart?.[teamCode]?.[pos] || [];
+  const filtered = fullDepth.filter(player => player && !injured.has(player));
+  
+  // Filtered list automatically recomposes roles:
+  // If WR depth = [Jefferson, Addison, Nailor] and Jefferson out:
+  // Filtered = [Addison, Nailor] where Addison is now WR1 (index 0)
+  
+  return filtered;
+}
+
+/**
+ * Pick replacement player from filtered depth list
+ * @param {string} teamCode - Team
+ * @param {string} pos - Position
+ * @param {string} injuredName - Player who is injured
+ * @param {Object} depthChart - Weekly depth chart
+ * @param {Array} injuryList - Injury report
+ * @returns {string|null} Replacement player name or null if none available
+ */
+function pickReplacement(teamCode, pos, injuredName, depthChart, injuryList) {
+  const filtered = filteredDepthList(teamCode, pos, depthChart, injuryList);
+  
+  // First healthy non-injured candidate
+  return filtered.find(player => player !== injuredName) || null;
+}
+
 // v4.1 PRODUCTION SAFEGUARDS: Helper function for EPA filtering
 function applySituationalEPAFilters(homeMetrics, awayMetrics, game) {
   const results = { home: null, away: null };
@@ -950,25 +1085,20 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
   if (teamInjuries.qb_name && teamInjuries.qb_status) {
     const qbStatus = normalizeStatus(teamInjuries.qb_status);
     
-    // FIX: Find replacement QB from depth chart, but IGNORE injured QB's position
-    // The depth chart may have already moved the injured QB down, so we need to find
-    // the NEXT healthy QB after removing the injured player from consideration
-    let replacementQB = null;
-    if (currentDepthChart?.[teamCode]?.QB) {
-      const qbDepth = currentDepthChart[teamCode].QB;
-      // Find first QB in depth chart who is NOT the injured player
-      for (let i = 0; i < qbDepth.length; i++) {
-        if (qbDepth[i] !== teamInjuries.qb_name) {
-          replacementQB = qbDepth[i];
-          console.log(`  QB replacement: ${teamInjuries.qb_name} (injured) → ${replacementQB} (depth position ${i + 1})`);
-          break;
-        }
-      }
-      
-      if (!replacementQB) {
-        console.warn(`  ⚠️ No replacement QB found for ${teamInjuries.qb_name}`);
-      }
+    // Use pickReplacement() to find healthy QB from filtered depth chart
+    const replacementQB = pickReplacement(teamCode, 'QB', teamInjuries.qb_name, currentDepthChart, [{ name: teamInjuries.qb_name, status: qbStatus }]);
+    
+    if (replacementQB) {
+      console.log(`  QB replacement: ${teamInjuries.qb_name} (${qbStatus}) → ${replacementQB}`);
+    } else {
+      console.warn(`  ⚠️ No replacement QB found for ${teamInjuries.qb_name}`);
     }
+    
+    // Calculate graded probPlay and snap scale
+    const probPlay = statusToProbPlay('QB', qbStatus);
+    const snapScale = expectedSnapScale('QB', qbStatus);
+    
+    console.log(`  📊 QB availability: probPlay=${probPlay.toFixed(2)}, snapScale=${snapScale.toFixed(2)}`);
     
     const qbSources = [{
       type: 'INJURY_REPORT',
@@ -977,8 +1107,9 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
       isStarter: true,            // FIX: Always treat injured QB as starter (ignore depth chart)
       depthOrder: 1,              // FIX: Force depth order 1 (injury report overrides depth chart)
       depthPosition: 1,
-      replacementPlayerName: replacementQB,  // First healthy QB from depth chart
-      probPlay: qbStatus === 'out' ? 0 : (qbStatus === 'doubtful' ? 0.2 : (qbStatus === 'questionable' ? 0.55 : 1.0)),
+      replacementPlayerName: replacementQB,  // Healthy QB from filtered depth chart
+      probPlay: probPlay,         // Graded probability (0.0-0.95) instead of binary
+      snapScale: snapScale,       // Snap count scaling for limited returns
       timestamp: now
     }];
     
@@ -1069,17 +1200,18 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
         }
       }
       
-      // ENHANCED: Check if player is actually a high-usage starter using EPA database
-      let isHighUsageStarter = false;
+      // ENHANCED: Check if player is high-usage starter using EPA database and position-specific thresholds
+      let isStarter = depthPosition === 1; // Default from injury report
       let adjustedDepthPosition = depthPosition;
+      
       try {
         const { getPlayerEPA } = await import('../_lib/comprehensive-player-epa.js');
         const playerData = getPlayerEPA(playerName, position);
         
-        // If player has high usage (>= 50% snaps/targets), treat as starter regardless of depth chart
-        if (playerData && playerData.usage >= 0.50) {
-          isHighUsageStarter = true;
-          adjustedDepthPosition = 1; // Override depth chart if player is high-usage
+        // Use position-specific usage thresholds (RB: 50%, WR: 22%, TE: 15%)
+        if (playerData && isHighUsageStarter(playerData, position)) {
+          isStarter = true;
+          adjustedDepthPosition = 1; // Override depth chart - player is true starter by usage
           console.log(`  ⭐ ${playerName} (${position}) identified as high-usage starter (${(playerData.usage * 100).toFixed(0)}% usage)`);
         } else if (playerData) {
           console.log(`  📊 ${playerName} (${position}) is backup/committee (${(playerData.usage * 100).toFixed(0)}% usage)`);
@@ -1090,43 +1222,33 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
       }
       
       // Skip healthy players beyond depth 2 (unless they're high-usage starters)
-      if (status === 'active' && depthPosition > 2 && !isHighUsageStarter) continue;
+      if (status === 'active' && depthPosition > 2 && !isStarter) continue;
       
-      // FIX: Find replacement from depth chart, skipping the injured player
-      // The depth chart may have already moved injured players down, so find the next healthy player
-      let replacementPlayer = null;
-      if (currentDepthChart?.[teamCode]?.[position]) {
-        const posDepth = currentDepthChart[teamCode][position];
-        // Find first player in depth chart who is NOT the injured player
-        for (let i = 0; i < posDepth.length; i++) {
-          const candidate = posDepth[i];
-          if (candidate && candidate !== playerName) {
-            // Also skip if this candidate is ALSO on the injury report
-            const candidateIsInjured = injuryList.some(inj => inj.name === candidate && 
-              (normalizeStatus(inj.status) === 'out' || normalizeStatus(inj.status) === 'doubtful'));
-            
-            if (!candidateIsInjured) {
-              replacementPlayer = candidate;
-              console.log(`  ${position} replacement: ${playerName} (injured, usage-adjusted depth ${adjustedDepthPosition}) → ${replacementPlayer} (depth ${i + 1})`);
-              break;
-            }
-          }
-        }
-        
-        if (!replacementPlayer) {
-          console.warn(`  ⚠️ No healthy replacement found for ${playerName} (${position})`);
-        }
+      // Use pickReplacement() to find healthy replacement from filtered depth chart
+      const replacementPlayer = pickReplacement(teamCode, position, playerName, currentDepthChart, positionInjuries);
+      
+      if (replacementPlayer) {
+        console.log(`  ${position} replacement: ${playerName} (${status}, usage-adjusted depth ${adjustedDepthPosition}) → ${replacementPlayer}`);
+      } else {
+        console.warn(`  ⚠️ No healthy replacement found for ${playerName} (${position})`);
       }
+      
+      // Calculate graded probPlay and snap scale
+      const probPlay = statusToProbPlay(position, status);
+      const snapScale = expectedSnapScale(position, status);
+      
+      console.log(`  📊 ${position} availability: probPlay=${probPlay.toFixed(2)}, snapScale=${snapScale.toFixed(2)}`);
       
       const sources = [{
         type: 'INJURY_REPORT',
         status: status,          // Provide canonical field
         reason: 'injury',
-        isStarter: isHighUsageStarter || adjustedDepthPosition === 1,  // FIX: Use usage data to determine starter status
+        isStarter: isStarter,    // Based on usage data + depth chart
         depthOrder: adjustedDepthPosition,
         depthPosition: adjustedDepthPosition,
-        replacementPlayerName: replacementPlayer,  // First healthy player from depth chart
-        probPlay: status === 'out' ? 0 : (status === 'doubtful' ? 0.2 : (status === 'questionable' ? 0.55 : 1.0)),
+        replacementPlayerName: replacementPlayer,  // Healthy player from filtered depth chart
+        probPlay: probPlay,      // Graded probability (0.0-0.95) instead of binary
+        snapScale: snapScale,    // Snap count scaling for limited returns
         timestamp: now
       }];
       
