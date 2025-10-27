@@ -1455,6 +1455,74 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
     console.warn(`⚠️ Return boost calculation failed for ${teamCode}: ${err.message}`);
   }
   
+  // ==================================================
+  // DEPTH CHART CHANGE DETECTION (NEW)
+  // ==================================================
+  // Detect non-injury personnel changes (benching, promotion, etc.)
+  console.log(`📊 Checking depth chart changes for ${teamCode}, Week ${weekNumber}...`);
+  
+  try {
+    const { getDepthChartImpactsForTeam } = await import('../_lib/depth-chart-change-detector.js');
+    const depthChartChanges = getDepthChartImpactsForTeam(teamCode, weekNumber, 2025);
+    
+    if (depthChartChanges && depthChartChanges.hasPersonnelChanges) {
+      console.log(`✅ Found personnel changes for ${teamCode}`);
+      
+      // QB change (benching, promotion, etc.)
+      if (depthChartChanges.qbChange) {
+        const qbChange = depthChartChanges.qbChange;
+        totalDelta += qbChange.spreadImpact;
+        
+        injuryAnalysis.adjustments.push({
+          player: qbChange.currentStarter,
+          name: qbChange.currentStarter,
+          position: 'QB',
+          status: 'DEPTH_CHANGE',
+          impact: qbChange.spreadImpact,
+          epaImpact: qbChange.epaDelta,
+          confidence: qbChange.confidence,
+          reason: `QB change: ${qbChange.previousStarter} → ${qbChange.currentStarter} (${qbChange.reason})`,
+          isDepthChartChange: true,
+          previousStarter: qbChange.previousStarter
+        });
+        
+        console.log(`🔄 QB change: ${qbChange.previousStarter} → ${qbChange.currentStarter}`);
+        console.log(`   Impact: ${qbChange.spreadImpact > 0 ? '+' : ''}${qbChange.spreadImpact.toFixed(2)} points (${qbChange.reason})`);
+      }
+      
+      // RB1 change
+      if (depthChartChanges.rb1Change) {
+        const rbChange = depthChartChanges.rb1Change;
+        totalDelta += rbChange.spreadImpact;
+        
+        injuryAnalysis.adjustments.push({
+          player: rbChange.currentStarter,
+          name: rbChange.currentStarter,
+          position: 'RB',
+          status: 'DEPTH_CHANGE',
+          impact: rbChange.spreadImpact,
+          epaImpact: rbChange.epaDelta,
+          confidence: rbChange.confidence,
+          reason: `RB1 change: ${rbChange.previousStarter} → ${rbChange.currentStarter} (${rbChange.reason})`,
+          isDepthChartChange: true,
+          previousStarter: rbChange.previousStarter
+        });
+        
+        console.log(`🔄 RB1 change: ${rbChange.previousStarter} → ${rbChange.currentStarter}`);
+        console.log(`   Impact: ${rbChange.spreadImpact > 0 ? '+' : ''}${rbChange.spreadImpact.toFixed(2)} points`);
+      }
+      
+      injuryAnalysis.totalDepthChartImpact = depthChartChanges.totalSpreadImpact;
+      injuryAnalysis.totalImpact = totalDelta; // Update total with depth chart changes
+      
+      console.log(`📈 Total depth chart impact for ${teamCode}: ${depthChartChanges.totalSpreadImpact > 0 ? '+' : ''}${depthChartChanges.totalSpreadImpact.toFixed(2)} points`);
+    } else {
+      console.log(`ℹ️ No significant depth chart changes for ${teamCode}`);
+    }
+  } catch (err) {
+    console.warn(`⚠️ Depth chart change detection failed for ${teamCode}: ${err.message}`);
+  }
+  
   return {
     score: scoreData.score + totalDelta,
     confidence: scoreData.confidence * injuryAnalysis.confidence,
