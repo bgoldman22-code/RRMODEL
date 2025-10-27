@@ -32,6 +32,10 @@
   included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
   external_node_modules = ["@netlify/blobs", "node-fetch"]
 
+[functions."nba-predictions-elite-v2"]
+  included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
+  external_node_modules = ["@netlify/blobs", "node-fetch"]
+
 [functions."nba-predictions-generate"]
   included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
   external_node_modules = ["@netlify/blobs", "node-fetch"]

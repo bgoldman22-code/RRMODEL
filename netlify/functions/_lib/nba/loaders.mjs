@@ -212,22 +212,27 @@ export async function fetchTodaysGames(date = null) {
 }
 
 /**
- * Fetch team's last N games
+ * Fetch team's last N games with advanced stats
+ * Returns all metrics needed for elite model (85 features)
  */
 export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10) {
   try {
-    const params = new URLSearchParams({
+    // Fetch Advanced stats (pace, offRtg, defRtg, eFG%, TS%, etc.)
+    const advancedParams = new URLSearchParams({
       Season: season,
       SeasonType: 'Regular Season',
       TeamID: teamId,
-      MeasureType: 'Base',
-      PerMode: 'Totals',
+      MeasureType: 'Advanced',
+      PerMode: 'PerGame',
       LastNGames: lastN
     });
     
-    const url = `${NBA_STATS_BASE}/teamdashboardbygeneralsplits?${params}`;
+    const advancedUrl = `${NBA_STATS_BASE}/teamdashboardbygeneralsplits?${advancedParams}`;
     
-    const response = await fetch(url, { headers: NBA_HEADERS });
+    // Add rate limiting
+    await new Promise(resolve => setTimeout(resolve, 600));
+    
+    const response = await fetch(advancedUrl, { headers: NBA_HEADERS });
     
     if (!response.ok) {
       throw new Error(`NBA API error: ${response.status}`);
@@ -239,12 +244,36 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
     
     if (rows.length === 0) return null;
     
-    const stats = {};
+    const rawStats = {};
     headers.forEach((header, i) => {
-      stats[header] = rows[0][i];
+      rawStats[header] = rows[0][i];
     });
     
-    return stats;
+    // Map to elite model format
+    return {
+      games: rawStats.GP || 0,
+      wins: rawStats.W || 0,
+      losses: rawStats.L || 0,
+      winPct: rawStats.W_PCT || 0,
+      pace: rawStats.PACE || 100,
+      offRtg: rawStats.OFF_RATING || 114.5,
+      defRtg: rawStats.DEF_RATING || 114.5,
+      netRtg: rawStats.NET_RATING || 0,
+      efg: rawStats.EFG_PCT || 0.535,
+      ts: rawStats.TS_PCT || 0.575,
+      tovPct: rawStats.TM_TOV_PCT || 0.138,
+      orbPct: rawStats.OREB_PCT || 0.25,
+      ftFga: rawStats.FTA_RATE || 0.22,
+      // Additional stats for total model
+      fgPct: rawStats.FG_PCT || 0.47,
+      fg3Pct: rawStats.FG3_PCT || 0.36,
+      ftPct: rawStats.FT_PCT || 0.78,
+      rebounds: rawStats.REB || 0,
+      assists: rawStats.AST || 0,
+      turnovers: rawStats.TOV || 0,
+      offRebounds: rawStats.OREB || 0,
+      defRebounds: rawStats.DREB || 0
+    };
     
   } catch (error) {
     console.error('[NBA] Error fetching team last games:', error);
@@ -270,6 +299,25 @@ export async function fetchInjuries() {
   } catch (error) {
     console.error('[NBA] Error fetching injuries:', error);
     return [];
+  }
+}
+
+/**
+ * Fetch team's rolling window stats (L5, L10, L20)
+ * Optimized for elite model - gets all windows in parallel
+ */
+export async function fetchTeamRollingStats(teamId, season = '2025-26') {
+  try {
+    const [l5, l10, l20] = await Promise.all([
+      fetchTeamLastGames(teamId, season, 5),
+      fetchTeamLastGames(teamId, season, 10),
+      fetchTeamLastGames(teamId, season, 20)
+    ]);
+    
+    return { l5, l10, l20 };
+  } catch (error) {
+    console.error('[NBA] Error fetching rolling stats:', error);
+    return { l5: null, l10: null, l20: null };
   }
 }
 

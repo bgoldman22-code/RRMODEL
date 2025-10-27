@@ -1471,45 +1471,61 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
       // QB change (benching, promotion, etc.)
       if (depthChartChanges.qbChange) {
         const qbChange = depthChartChanges.qbChange;
-        totalDelta += qbChange.spreadImpact;
         
-        injuryAnalysis.adjustments.push({
-          player: qbChange.currentStarter,
-          name: qbChange.currentStarter,
-          position: 'QB',
-          status: 'DEPTH_CHANGE',
-          impact: qbChange.spreadImpact,
-          epaImpact: qbChange.epaDelta,
-          confidence: qbChange.confidence,
-          reason: `QB change: ${qbChange.previousStarter} → ${qbChange.currentStarter} (${qbChange.reason})`,
-          isDepthChartChange: true,
-          previousStarter: qbChange.previousStarter
-        });
-        
-        console.log(`🔄 QB change: ${qbChange.previousStarter} → ${qbChange.currentStarter}`);
-        console.log(`   Impact: ${qbChange.spreadImpact > 0 ? '+' : ''}${qbChange.spreadImpact.toFixed(2)} points (${qbChange.reason})`);
+        // DEDUPLICATION: Skip if this change is due to injury (already counted)
+        const qbInjuryDetected = teamInjuries.qb_name && normalizeStatus(teamInjuries.qb_status) === 'out';
+        if (qbInjuryDetected) {
+          console.log(`⏭️ Skipping QB depth chart change (already counted via injury system: ${teamInjuries.qb_name} OUT)`);
+        } else {
+          totalDelta += qbChange.spreadImpact;
+          
+          injuryAnalysis.adjustments.push({
+            player: qbChange.currentStarter,
+            name: qbChange.currentStarter,
+            position: 'QB',
+            status: 'DEPTH_CHANGE',
+            impact: qbChange.spreadImpact,
+            epaImpact: qbChange.epaDelta,
+            confidence: qbChange.confidence,
+            reason: `QB change: ${qbChange.previousStarter} → ${qbChange.currentStarter} (${qbChange.reason})`,
+            isDepthChartChange: true,
+            previousStarter: qbChange.previousStarter
+          });
+          
+          console.log(`🔄 QB change: ${qbChange.previousStarter} → ${qbChange.currentStarter}`);
+          console.log(`   Impact: ${qbChange.spreadImpact > 0 ? '+' : ''}${qbChange.spreadImpact.toFixed(2)} points (${qbChange.reason})`);
+        }
       }
       
       // RB1 change
       if (depthChartChanges.rb1Change) {
         const rbChange = depthChartChanges.rb1Change;
-        totalDelta += rbChange.spreadImpact;
         
-        injuryAnalysis.adjustments.push({
-          player: rbChange.currentStarter,
-          name: rbChange.currentStarter,
-          position: 'RB',
-          status: 'DEPTH_CHANGE',
-          impact: rbChange.spreadImpact,
-          epaImpact: rbChange.epaDelta,
-          confidence: rbChange.confidence,
-          reason: `RB1 change: ${rbChange.previousStarter} → ${rbChange.currentStarter} (${rbChange.reason})`,
-          isDepthChartChange: true,
-          previousStarter: rbChange.previousStarter
-        });
-        
-        console.log(`🔄 RB1 change: ${rbChange.previousStarter} → ${rbChange.currentStarter}`);
-        console.log(`   Impact: ${rbChange.spreadImpact > 0 ? '+' : ''}${rbChange.spreadImpact.toFixed(2)} points`);
+        // DEDUPLICATION: Skip if RB1 is OUT due to injury (already counted)
+        const rb1InjuryDetected = (teamInjuries.rb_injuries || []).some(rb => 
+          normalizeStatus(rb.status) === 'out' && rb.depthPosition === 1
+        );
+        if (rb1InjuryDetected) {
+          console.log(`⏭️ Skipping RB1 depth chart change (already counted via injury system)`);
+        } else {
+          totalDelta += rbChange.spreadImpact;
+          
+          injuryAnalysis.adjustments.push({
+            player: rbChange.currentStarter,
+            name: rbChange.currentStarter,
+            position: 'RB',
+            status: 'DEPTH_CHANGE',
+            impact: rbChange.spreadImpact,
+            epaImpact: rbChange.epaDelta,
+            confidence: rbChange.confidence,
+            reason: `RB1 change: ${rbChange.previousStarter} → ${rbChange.currentStarter} (${rbChange.reason})`,
+            isDepthChartChange: true,
+            previousStarter: rbChange.previousStarter
+          });
+          
+          console.log(`🔄 RB1 change: ${rbChange.previousStarter} → ${rbChange.currentStarter}`);
+          console.log(`   Impact: ${rbChange.spreadImpact > 0 ? '+' : ''}${rbChange.spreadImpact.toFixed(2)} points`);
+        }
       }
       
       injuryAnalysis.totalDepthChartImpact = depthChartChanges.totalSpreadImpact;
