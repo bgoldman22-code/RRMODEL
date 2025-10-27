@@ -9,9 +9,6 @@ import { promises as fs } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 // NBA Stats API base URLs
 const NBA_STATS_BASE = 'https://stats.nba.com/stats';
 const ESPN_BASE = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba';
@@ -32,6 +29,7 @@ const NBA_HEADERS = {
  */
 export async function loadTeamInfo() {
   try {
+    const __dirname = dirname(fileURLToPath(import.meta.url));
     const filePath = join(__dirname, '..', '..', '..', '..', 'data', 'nba', 'teams', 'team-info.json');
     const content = await fs.readFile(filePath, 'utf-8');
     const data = JSON.parse(content);
