@@ -109,32 +109,44 @@
                 let html = '';
                 
                 for (const pred of data.predictions) {
-                    const confidenceClass = pred.confidence > 65 ? 'HIGH' : pred.confidence > 50 ? 'MEDIUM' : 'LOW';
+                    const confidence = pred.prediction?.confidence || 0;
+                    const confidenceClass = confidence > 65 ? 'HIGH' : confidence > 50 ? 'MEDIUM' : 'LOW';
+                    
+                    // Extract values from nested structure
+                    const spread = pred.prediction?.spread?.prediction || 0;
+                    const total = pred.prediction?.total?.prediction || 0;
+                    const homeWinProb = pred.prediction?.winProbability?.home || 0;
+                    const favorite = pred.prediction?.spread?.favorite || 'home';
+                    
+                    // Format spread display
+                    const spreadDisplay = favorite === 'home' 
+                        ? (spread > 0 ? `-${spread}` : `+${Math.abs(spread)}`)
+                        : (spread > 0 ? `+${spread}` : `-${Math.abs(spread)}`);
                     
                     html += `
                         <div class="game">
                             <div class="game-header">
                                 ${pred.game}
-                                <span class="confidence ${confidenceClass}">${pred.confidence}% Confidence</span>
+                                <span class="confidence ${confidenceClass}">${confidence}% Confidence</span>
                             </div>
                             
                             <div class="prediction">
                                 <div class="stat">
                                     <div class="stat-label">Predicted Spread</div>
-                                    <div class="stat-value">${pred.predictedSpread > 0 ? '+' : ''}${pred.predictedSpread}</div>
+                                    <div class="stat-value">${spreadDisplay}</div>
                                 </div>
                                 <div class="stat">
                                     <div class="stat-label">Predicted Total</div>
-                                    <div class="stat-value">${pred.predictedTotal.toFixed(1)}</div>
+                                    <div class="stat-value">${total.toFixed(1)}</div>
                                 </div>
                                 <div class="stat">
                                     <div class="stat-label">Home Win Prob</div>
-                                    <div class="stat-value">${pred.homeWinProb.toFixed(1)}%</div>
+                                    <div class="stat-value">${homeWinProb.toFixed(1)}%</div>
                                 </div>
                                 <div class="stat">
                                     <div class="stat-label">Data Source</div>
                                     <div class="stat-value" style="font-size: 14px;">
-                                        NBA Stats API<br>
+                                        ESPN + NBA CDN<br>
                                         <span style="color: #00ff88; font-size: 12px;">✅ Live 2025-26</span>
                                     </div>
                                 </div>
