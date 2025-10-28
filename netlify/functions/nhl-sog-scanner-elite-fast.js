@@ -347,11 +347,15 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
       return true;
     };
 
-    // Check for real odds opportunities
+    // Check for real odds opportunities - EVALUATE BOTH OVER AND UNDER
   const opportunities = [];
   let bestAny = null; // track best opportunity regardless of edge threshold
+  
+  // Group odds by player+line to ensure we evaluate both sides
+  const playerLineMap = new Map(); // Key: "PLAYER_LINE"
     
     if (realOddsMap && realOddsMap.size > 0) {
+      // First pass: Group all odds by player+line
       for (const [key, oddsData] of realOddsMap.entries()) {
         // Require team match to reduce false joins
         if (oddsData.teams && oddsData.teams.length > 0 && !oddsData.teams.includes(team)) {
@@ -360,13 +364,29 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
 
         const match = smartNameMatch(oddsData.playerName);
         if (match) {
+          const playerLineKey = `${oddsData.playerName}_${oddsData.line}`;
+          if (!playerLineMap.has(playerLineKey)) {
+            playerLineMap.set(playerLineKey, { line: oddsData.line, sides: {} });
+          }
+          const group = playerLineMap.get(playerLineKey);
+          group.sides[oddsData.direction] = {
+            odds: oddsData.odds,
+            bookmaker: oddsData.bookmaker
+          };
+        }
+      }
+      
+      // Second pass: Evaluate BOTH OVER and UNDER for each player+line
+      for (const [playerLineKey, group] of playerLineMap.entries()) {
+        const line = group.line;
+        
+        // Evaluate both directions and pick the best
+        for (const direction of ['OVER', 'UNDER']) {
+          const sideData = group.sides[direction];
+          if (!sideData) continue; // Skip if this side not available
           
-          const line = oddsData.line;
-          const odds = oddsData.odds;
-          
-          // FIXED: Use whatever direction the book offers
-          // We'll calculate edge for the available line and pick it if profitable
-          const direction = oddsData.direction;
+          const odds = sideData.odds;
+          const bookmaker = sideData.bookmaker;
           
           // Calculate win probability using ZINB
           const winProb = calculateZINBProbability(mu, r, pi, line, direction);
@@ -391,12 +411,10 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
           }
           
           // Calculate edge vs fair probability
-          // FIXED: Use absolute percentage points, not ratio
-          // Example: 60% model vs 50% fair = +10% edge (not +20%)
           const edge = winProb - fairProb;
           const edgePercent = edge * 100; // Convert to percentage points
 
-          // Build full opportunity object once
+          // Build full opportunity object
           const oppObj = {
             gameId,
             playerId,
@@ -417,8 +435,8 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
             scratchRisk: parseFloat((pi * 100).toFixed(1)),
             mlEnhanced: true,
             dataSource: 'elite-zinb',
-            oddsSource: `${oddsData.bookmaker} (real)`,
-            bookmaker: oddsData.bookmaker,
+            oddsSource: `${bookmaker} (real)`,
+            bookmaker: bookmaker,
             modelProb: parseFloat(winProb.toFixed(3)),
             fairProb: parseFloat(fairProb.toFixed(3)),
             impliedProb: parseFloat(impliedProb.toFixed(3)),
@@ -448,7 +466,6 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
           }
 
           // Only include in strict list if we have >= 5% edge
-          // Removed upper bound - high edges are GOOD, not suspicious!
           if (edgePercent >= 5.0) {
             opportunities.push(oppObj);
           }
