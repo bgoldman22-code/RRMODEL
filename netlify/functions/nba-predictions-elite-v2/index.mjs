@@ -1,13 +1,13 @@
 /**
- * NBA Elite Predictions V2 - Batched Stats.nba.com Version
+ * NBA Elite Predictions V2 - ESPN + NBA CDN Hybrid
  * 
  * IMPROVEMENTS OVER V1:
- * - Uses batched stats.nba.com leaguedashteamstats (6 calls for all 30 teams!)
+ * - Uses ESPN team schedule for recent game IDs (reliable!)
+ * - Uses NBA CDN boxscores for detailed stats (works great!)
  * - ESPN abbreviation normalization (GS→GSW, SA→SAS, NO→NOP, etc.)
  * - In-memory team data (no fs.readFile failures in serverless)
  * - Always current season data (no stale fallbacks to 2024-25)
- * - Proper headers for stats.nba.com access
- * - Fast and reliable (6 API calls total vs per-team loops)
+ * - Fallback to score-based estimation when boxscore unavailable
  * 
  * KEEPS FROM V1:
  * - Elite Ensemble model (11.606 MAE spread, 85 features)
@@ -17,16 +17,17 @@
  * - Injury adjustments (position-weighted)
  * 
  * ARCHITECTURE:
- * - ESPN for schedule (reliable, includes team names/records)
- * - stats.nba.com for advanced stats (batched league-wide LastNGames)
- * - The Odds API for live lines (optional)
+ * - ESPN for schedule (reliable, team names/records, game IDs)
+ * - NBA CDN for boxscores (detailed stats when available)
+ * - Calculate advanced stats ourselves from boxscore data
+ * - No dependency on broken stats.nba.com (500 errors)
  */
 
 import { SPREAD_MODEL, TOTAL_MODEL } from '../_lib/nba/models-inline.mjs';
 import { applyRCIAdjustment, getRCISummary } from '../_lib/nba/rci-adjustments.mjs';
 import { getTeamInjuries } from '../_lib/nba/injuries.mjs';
 import { applyInjuryAdjustment, getInjurySummary, getInjuryAdvantage } from '../_lib/nba/injury-adjustments.mjs';
-import { fetchTeamRollingStats, loadTeamInfo, fetchAllLeagueWindows } from '../_lib/nba/loaders.mjs';
+import { fetchTeamRollingStats, loadTeamInfo } from '../_lib/nba/loaders.mjs';
 
 /**
  * Default stats when API data unavailable (fallback)
@@ -805,7 +806,7 @@ function predict(model, features) {
  */
 export default async (request, context) => {
   try {
-    console.log('[NBA Elite V2] Starting predictions with batched stats.nba.com...');
+    console.log('[NBA Elite V2] Starting predictions with ESPN + NBA CDN hybrid...');
     
     // 1. Fetch today's games from ESPN
     const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
@@ -841,15 +842,10 @@ export default async (request, context) => {
     const teamInfo = loadTeamInfo();
     console.log('[NBA Elite V2] Loaded team info:', Object.keys(teamInfo.byAbbr).length, 'teams');
     
-    // 4. Fetch ALL league-wide windows ONCE (6 API calls for all 30 teams - super efficient!)
-    console.log('[NBA Elite V2] 🚀 Fetching league-wide L5/L10/L20 stats (6 batched calls)...');
-    const leagueWindows = await fetchAllLeagueWindows('2025-26');
-    console.log('[NBA Elite V2] ✅ League windows ready for', leagueWindows.size, 'teams');
-    
-    // 5. Fetch live Vegas lines (use correct endpoint for season type)
+    // 4. Fetch live Vegas lines (use correct endpoint for season type)
     const vegasLines = await fetchVegasLines(espnData.events.map(e => e.id), isPreseason);
     
-    // 6. Generate predictions
+    // 5. Generate predictions
     const predictions = [];
     
     for (const event of espnData.events) {
@@ -885,10 +881,10 @@ export default async (request, context) => {
         
         console.log(`[NBA Elite V2] ✅ Matched: ${away.team.abbreviation} (ID ${awayTeamData.id}) @ ${home.team.abbreviation} (ID ${homeTeamData.id})`);
         
-        // V2: Fetch L5/L10/L20 stats using pre-fetched league windows (NO additional API calls!)
+        // V2: Fetch L5/L10/L20 stats using ESPN schedule + NBA CDN boxscores
         const [homeStats, awayStats] = await Promise.all([
-          fetchTeamRollingStats(homeTeamData.id, '2025-26', leagueWindows),
-          fetchTeamRollingStats(awayTeamData.id, '2025-26', leagueWindows)
+          fetchTeamRollingStats(homeTeamData.id, '2025-26'),
+          fetchTeamRollingStats(awayTeamData.id, '2025-26')
         ]);
       
       // Use L10 as baseline, with L5 and L20 for specific features

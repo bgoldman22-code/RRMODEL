@@ -173,163 +173,275 @@ export async function fetchTodaysGames(date = null) {
 }
 
 /**
- * Fetch league-wide stats for a specific window (L5, L10, L20)
- * Uses stats.nba.com leaguedashteamstats with LastNGames parameter
- * Returns map keyed by TeamID for fast lookups
+ * Fetch team's recent games from ESPN schedule
+ * Returns array of completed games with IDs
  * 
- * @param {string} measureType - 'Advanced' or 'Four Factors'
- * @param {number} lastN - 5, 10, or 20
- * @param {string} season - '2025-26'
- * @returns {Promise<Map<number, object>>} - Map of teamId → stats
+ * @param {string} espnTeamId - ESPN team ID (1-30)
+ * @param {number} limit - Max games to return
+ * @returns {Promise<Array>} - Array of game objects
  */
-export async function fetchLeagueWindow(measureType = 'Advanced', lastN = 10, season = '2025-26') {
+async function fetchTeamSchedule(espnTeamId, limit = 20) {
   try {
-    const params = new URLSearchParams({
-      Season: season,
-      SeasonType: 'Regular Season',
-      MeasureType: measureType,
-      PerMode: 'PerGame',
-      LastNGames: lastN.toString(),
-      PaceAdjust: 'N',
-      Rank: 'N',
-      LeagueID: '00'
-    });
+    const url = `${ESPN_BASE}/teams/${espnTeamId}/schedule`;
     
-    const url = `${NBA_STATS_BASE}/leaguedashteamstats?${params}`;
-    
-    console.log(`[NBA] Fetching league-wide ${measureType} (L${lastN})...`);
-    
-    const response = await rateLimitedFetch(url, { headers: NBA_STATS_HEADERS });
+    const response = await fetch(url);
     
     if (!response.ok) {
-      console.error(`[NBA] API error for ${measureType} L${lastN}:`, response.status, response.statusText);
-      return new Map();
+      console.error(`[NBA] ESPN schedule error for team ${espnTeamId}:`, response.status);
+      return [];
     }
     
     const data = await response.json();
+    const events = data.events || [];
     
-    // Parse result set
-    const headers = data.resultSets[0].headers;
-    const rows = data.resultSets[0].rowSet;
+    // Filter to completed games only
+    const completed = events
+      .filter(e => e.competitions?.[0]?.status?.type?.completed === true)
+      .slice(-limit); // Get most recent N games
     
-    const statsMap = new Map();
-    
-    for (const row of rows) {
-      const stats = {};
-      headers.forEach((header, i) => {
-        stats[header] = row[i];
-      });
+    return completed.map(event => {
+      const comp = event.competitions[0];
+      const home = comp.competitors.find(c => c.homeAway === 'home');
+      const away = comp.competitors.find(c => c.homeAway === 'away');
       
-      // Key by TEAM_ID for fast lookups
-      if (stats.TEAM_ID) {
-        statsMap.set(stats.TEAM_ID, stats);
-      }
-    }
-    
-    console.log(`[NBA] ✅ Loaded ${statsMap.size} teams (${measureType} L${lastN})`);
-    
-    return statsMap;
-    
-  } catch (error) {
-    console.error(`[NBA] Error fetching league window (${measureType} L${lastN}):`, error);
-    return new Map();
-  }
-}
-
-/**
- * Fetch all league-wide windows in parallel (6 API calls total)
- * Returns organized by team ID with all windows available
- * 
- * @param {string} season - '2025-26'
- * @returns {Promise<Map<number, {advanced: {l5, l10, l20}, fourFactors: {l5, l10, l20}}>>}
- */
-export async function fetchAllLeagueWindows(season = '2025-26') {
-  try {
-    console.log('[NBA] 📊 Fetching all league-wide windows (6 calls)...');
-    
-    // Fetch all 6 windows in parallel
-    const [
-      advL5, advL10, advL20,
-      ffL5, ffL10, ffL20
-    ] = await Promise.all([
-      fetchLeagueWindow('Advanced', 5, season),
-      fetchLeagueWindow('Advanced', 10, season),
-      fetchLeagueWindow('Advanced', 20, season),
-      fetchLeagueWindow('Four Factors', 5, season),
-      fetchLeagueWindow('Four Factors', 10, season),
-      fetchLeagueWindow('Four Factors', 20, season)
-    ]);
-    
-    // Organize by team ID
-    const teamWindows = new Map();
-    
-    for (const team of NBA_TEAMS) {
-      const teamId = team.id;
-      
-      teamWindows.set(teamId, {
-        advanced: {
-          l5: advL5.get(teamId) || null,
-          l10: advL10.get(teamId) || null,
-          l20: advL20.get(teamId) || null
+      return {
+        espnId: event.id,
+        date: event.date,
+        homeTeam: {
+          abbr: normalizeAbbr(home.team.abbreviation),
+          score: parseInt(home.score?.value || home.score || 0)
         },
-        fourFactors: {
-          l5: ffL5.get(teamId) || null,
-          l10: ffL10.get(teamId) || null,
-          l20: ffL20.get(teamId) || null
+        awayTeam: {
+          abbr: normalizeAbbr(away.team.abbreviation),
+          score: parseInt(away.score?.value || away.score || 0)
         }
-      });
-    }
-    
-    console.log(`[NBA] ✅ Organized windows for ${teamWindows.size} teams`);
-    
-    return teamWindows;
+      };
+    });
     
   } catch (error) {
-    console.error('[NBA] Error fetching all league windows:', error);
+    console.error(`[NBA] Error fetching schedule for team ${espnTeamId}:`, error);
+    return [];
+  }
+}
+
+/**
+ * Map ESPN team ID to NBA team ID
+ * ESPN uses different IDs than NBA (1-30 vs 1610612737+)
+ */
+const ESPN_TO_NBA_TEAM_ID = {
+  1: 1610612737,  // ATL
+  2: 1610612738,  // BOS
+  17: 1610612751, // BKN
+  30: 1610612766, // CHA
+  4: 1610612741,  // CHI
+  5: 1610612739,  // CLE
+  6: 1610612742,  // DAL
+  7: 1610612743,  // DEN
+  8: 1610612765,  // DET
+  9: 1610612744,  // GSW
+  10: 1610612745, // HOU
+  11: 1610612754, // IND
+  12: 1610612746, // LAC
+  13: 1610612747, // LAL
+  29: 1610612763, // MEM
+  14: 1610612748, // MIA
+  15: 1610612749, // MIL
+  16: 1610612750, // MIN
+  3: 1610612740,  // NOP
+  18: 1610612752, // NYK
+  25: 1610612760, // OKC
+  19: 1610612753, // ORL
+  20: 1610612755, // PHI
+  21: 1610612756, // PHX
+  22: 1610612757, // POR
+  23: 1610612758, // SAC
+  24: 1610612759, // SAS
+  28: 1610612761, // TOR
+  26: 1610612762, // UTA
+  27: 1610612764  // WAS
+};
+
+/**
+ * Get ESPN team ID from NBA team ID
+ */
+function getEspnTeamId(nbaTeamId) {
+  for (const [espnId, nbaId] of Object.entries(ESPN_TO_NBA_TEAM_ID)) {
+    if (nbaId === nbaTeamId) {
+      return espnId;
+    }
+  }
+  return null;
+}
+
+/**
+ * Fetch NBA CDN game IDs from today's scoreboard
+ * Builds a mapping of team abbr pairs + date → NBA game ID
+ */
+async function fetchNbaGameIdMap() {
+  try {
+    // Fetch last 7 days of scoreboards to build game ID map
+    const gameIdMap = new Map();
+    const today = new Date();
+    
+    for (let daysBack = 0; daysBack < 30; daysBack++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - daysBack);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      // Try today's scoreboard for today, otherwise skip (historical blocked)
+      if (daysBack === 0) {
+        const url = `${NBA_CDN_BASE}/scoreboard/todaysScoreboard_00.json`;
+        const response = await fetch(url, { headers: NBA_CDN_HEADERS });
+        
+        if (response.ok) {
+          const data = await response.json();
+          const games = data.scoreboard?.games || [];
+          
+          for (const game of games) {
+            const key = `${game.awayTeam.teamTricode}_${game.homeTeam.teamTricode}_${dateStr}`;
+            gameIdMap.set(key, game.gameId);
+          }
+        }
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 100)); // Rate limit
+    }
+    
+    return gameIdMap;
+    
+  } catch (error) {
+    console.error('[NBA] Error building game ID map:', error);
     return new Map();
   }
 }
 
 /**
- * Convert raw API stats to our model format
- * Combines Advanced and Four Factors into unified stats object
+ * Fetch boxscore from NBA CDN
  * 
- * @param {object} advanced - Advanced stats from API
- * @param {object} fourFactors - Four Factors stats from API  
- * @returns {object} - Unified stats matching our model interface
+ * @param {string} nbaGameId - NBA CDN game ID (e.g., "0022500123")
+ * @returns {Promise<object|null>} - Boxscore data or null
  */
-function convertToModelStats(advanced, fourFactors) {
-  if (!advanced && !fourFactors) {
+async function fetchBoxscore(nbaGameId) {
+  try {
+    const url = `${NBA_CDN_BASE}/boxscore/boxscore_${nbaGameId}.json`;
+    
+    const response = await rateLimitedFetch(url, { headers: NBA_CDN_HEADERS });
+    
+    if (!response.ok) {
+      return null;
+    }
+    
+    const data = await response.json();
+    return data.game || null;
+    
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Calculate advanced stats from boxscore data
+ * 
+ * @param {object} boxscore - NBA CDN boxscore game object
+ * @param {string} teamTricode - Team abbreviation (3 letters)
+ * @returns {object} - Calculated stats
+ */
+function calculateBoxscoreStats(boxscore, teamTricode) {
+  const isHome = boxscore.homeTeam.teamTricode === teamTricode;
+  const team = isHome ? boxscore.homeTeam : boxscore.awayTeam;
+  const opp = isHome ? boxscore.awayTeam : boxscore.homeTeam;
+  
+  const stats = team.statistics || {};
+  const oppStats = opp.statistics || {};
+  
+  // Extract raw stats
+  const pts = stats.points || 0;
+  const oppPts = oppStats.points || 0;
+  const fgm = stats.fieldGoalsMade || 0;
+  const fga = stats.fieldGoalsAttempted || 1;
+  const fg3m = stats.threePointersMade || 0;
+  const ftm = stats.freeThrowsMade || 0;
+  const fta = stats.freeThrowsAttempted || 0;
+  const oreb = stats.reboundsOffensive || 0;
+  const dreb = stats.reboundsDefensive || 0;
+  const tov = stats.turnovers || 0;
+  const oppDreb = oppStats.reboundsDefensive || 0;
+  const oppOreb = oppStats.reboundsOffensive || 0;
+  
+  // Calculate possessions (standard formula)
+  const possessions = fga - oreb + tov + (0.44 * fta);
+  const oppPossessions = (oppStats.fieldGoalsAttempted || 1) - oppOreb + (oppStats.turnovers || 0) + (0.44 * (oppStats.freeThrowsAttempted || 0));
+  
+  // Advanced metrics
+  const pace = possessions; // Per game basis
+  const offRtg = possessions > 0 ? (pts / possessions) * 100 : 114.5;
+  const defRtg = oppPossessions > 0 ? (oppPts / oppPossessions) * 100 : 114.5;
+  const netRtg = offRtg - defRtg;
+  
+  // Four Factors
+  const efg = fga > 0 ? (fgm + 0.5 * fg3m) / fga : 0.535;
+  const ts = (fga + 0.44 * fta) > 0 ? pts / (2 * (fga + 0.44 * fta)) : 0.575;
+  const tovPct = possessions > 0 ? tov / possessions : 0.138;
+  const orbPct = (oreb + oppDreb) > 0 ? oreb / (oreb + oppDreb) : 0.25;
+  const ftFga = fga > 0 ? fta / fga : 0.22;
+  
+  return {
+    pts,
+    oppPts,
+    possessions,
+    pace,
+    offRtg,
+    defRtg,
+    netRtg,
+    efg,
+    ts,
+    tovPct,
+    orbPct,
+    ftFga,
+    fgPct: fga > 0 ? fgm / fga : 0.47,
+    fg3Pct: fg3m > 0 ? fg3m / (stats.threePointersAttempted || 1) : 0.36,
+    ftPct: fta > 0 ? ftm / fta : 0.78
+  };
+}
+
+/**
+ * Aggregate stats across multiple games
+ * 
+ * @param {Array} gameStats - Array of per-game stats objects
+ * @returns {object} - Aggregated stats
+ */
+function aggregateStats(gameStats) {
+  if (!gameStats || gameStats.length === 0) {
     return null;
   }
   
-  // Get games played (should be same in both)
-  const games = advanced?.GP || fourFactors?.GP || 0;
-  const wins = advanced?.W || fourFactors?.W || 0;
-  const losses = advanced?.L || fourFactors?.L || 0;
+  const games = gameStats.length;
+  const totalPts = gameStats.reduce((sum, g) => sum + g.pts, 0);
+  const totalOppPts = gameStats.reduce((sum, g) => sum + g.oppPts, 0);
+  const totalPoss = gameStats.reduce((sum, g) => sum + g.possessions, 0);
   
-  // Extract stats from Advanced
-  const pace = advanced?.PACE || 100;
-  const offRtg = advanced?.OFF_RATING || 114.5;
-  const defRtg = advanced?.DEF_RATING || 114.5;
-  const netRtg = advanced?.NET_RATING || 0;
+  // Average stats
+  const pace = totalPoss / games;
+  const offRtg = totalPoss > 0 ? (totalPts / totalPoss) * 100 : 114.5;
+  const defRtg = totalPoss > 0 ? (totalOppPts / totalPoss) * 100 : 114.5;
+  const netRtg = offRtg - defRtg;
   
-  // Extract stats from Four Factors
-  const efg = fourFactors?.EFG_PCT || 0.535;
-  const tovPct = fourFactors?.TM_TOV_PCT || 0.138;
-  const orbPct = fourFactors?.OREB_PCT || 0.25;
-  const ftFga = fourFactors?.FTA_RATE || 0.22;
+  // Average Four Factors
+  const efg = gameStats.reduce((sum, g) => sum + g.efg, 0) / games;
+  const ts = gameStats.reduce((sum, g) => sum + g.ts, 0) / games;
+  const tovPct = gameStats.reduce((sum, g) => sum + g.tovPct, 0) / games;
+  const orbPct = gameStats.reduce((sum, g) => sum + g.orbPct, 0) / games;
+  const ftFga = gameStats.reduce((sum, g) => sum + g.ftFga, 0) / games;
   
-  // Calculate additional stats
+  // Count wins/losses
+  const wins = gameStats.filter(g => g.pts > g.oppPts).length;
+  const losses = games - wins;
   const winPct = games > 0 ? wins / games : 0.5;
   
-  // True shooting (approximate if not in API)
-  const ts = advanced?.TS_PCT || 0.575;
-  
-  // Base shooting stats (if available)
-  const fgPct = fourFactors?.FG_PCT || 0.47;
-  const fg3Pct = fourFactors?.FG3_PCT || 0.36;
-  const ftPct = fourFactors?.FT_PCT || 0.78;
+  // Shooting percentages
+  const fgPct = gameStats.reduce((sum, g) => sum + g.fgPct, 0) / games;
+  const fg3Pct = gameStats.reduce((sum, g) => sum + g.fg3Pct, 0) / games;
+  const ftPct = gameStats.reduce((sum, g) => sum + g.ftPct, 0) / games;
   
   return {
     games,
@@ -348,52 +460,142 @@ function convertToModelStats(advanced, fourFactors) {
     fgPct,
     fg3Pct,
     ftPct,
-    rebounds: 0,  // Not critical for model
+    rebounds: 0,
     assists: 0,
     turnovers: 0
   };
 }
 
 /**
- * Fetch team's last N games stats (DEPRECATED - use fetchTeamRollingStats instead)
- * Kept for backwards compatibility
+ * Fetch team's last N games and calculate advanced stats
+ * Uses ESPN schedule + NBA CDN boxscores
+ * 
+ * @param {number} teamId - NBA team ID
+ * @param {string} season - '2025-26'
+ * @param {number} lastN - Number of games
+ * @returns {Promise<object|null>} - Aggregated stats
  */
 export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10) {
-  console.log(`[NBA] ⚠️  fetchTeamLastGames is deprecated - use fetchAllLeagueWindows for better performance`);
-  return null;
+  try {
+    // Get ESPN team ID
+    const espnTeamId = getEspnTeamId(teamId);
+    if (!espnTeamId) {
+      console.error(`[NBA] No ESPN ID mapping for NBA team ${teamId}`);
+      return null;
+    }
+    
+    // Get team abbreviation
+    const team = NBA_TEAMS.find(t => t.id === teamId);
+    if (!team) {
+      console.error(`[NBA] Unknown team ID: ${teamId}`);
+      return null;
+    }
+    
+    console.log(`[NBA] Fetching last ${lastN} games for ${team.abbreviation} (ESPN ID: ${espnTeamId})...`);
+    
+    // Fetch team's recent games from ESPN
+    const recentGames = await fetchTeamSchedule(espnTeamId, lastN);
+    
+    if (recentGames.length === 0) {
+      console.log(`[NBA] No completed games found for ${team.abbreviation}`);
+      return null;
+    }
+    
+    console.log(`[NBA] Found ${recentGames.length} completed games for ${team.abbreviation}`);
+    
+    // Build game ID map from today's scoreboard
+    const gameIdMap = await fetchNbaGameIdMap();
+    
+    // Fetch boxscores and calculate stats
+    const gameStats = [];
+    
+    for (const game of recentGames.slice(-lastN)) {
+      // Try to find NBA CDN game ID
+      const dateStr = game.date.split('T')[0];
+      const key1 = `${game.awayTeam.abbr}_${game.homeTeam.abbr}_${dateStr}`;
+      const key2 = `${game.homeTeam.abbr}_${game.awayTeam.abbr}_${dateStr}`; // Try reverse
+      
+      let nbaGameId = gameIdMap.get(key1) || gameIdMap.get(key2);
+      
+      if (!nbaGameId) {
+        // Fallback: calculate stats from ESPN score data
+        const isHome = game.homeTeam.abbr === team.abbreviation;
+        const pts = isHome ? game.homeTeam.score : game.awayTeam.score;
+        const oppPts = isHome ? game.awayTeam.score : game.homeTeam.score;
+        
+        // Estimate possessions from score (rough approximation)
+        const estimatedPoss = (pts + oppPts) / 2.2; // Average NBA possessions ~100
+        
+        gameStats.push({
+          pts,
+          oppPts,
+          possessions: estimatedPoss,
+          pace: estimatedPoss,
+          offRtg: (pts / estimatedPoss) * 100,
+          defRtg: (oppPts / estimatedPoss) * 100,
+          netRtg: ((pts - oppPts) / estimatedPoss) * 100,
+          efg: 0.535,     // Use league average when boxscore unavailable
+          ts: 0.575,
+          tovPct: 0.138,
+          orbPct: 0.25,
+          ftFga: 0.22,
+          fgPct: 0.47,
+          fg3Pct: 0.36,
+          ftPct: 0.78
+        });
+        
+        continue;
+      }
+      
+      // Fetch boxscore from NBA CDN
+      const boxscore = await fetchBoxscore(nbaGameId);
+      
+      if (boxscore) {
+        const stats = calculateBoxscoreStats(boxscore, team.abbreviation);
+        gameStats.push(stats);
+      }
+      
+      // Rate limit
+      await new Promise(resolve => setTimeout(resolve, 150));
+    }
+    
+    if (gameStats.length === 0) {
+      console.log(`[NBA] No valid game stats for ${team.abbreviation}`);
+      return null;
+    }
+    
+    // Aggregate stats across games
+    const aggregated = aggregateStats(gameStats);
+    
+    console.log(`[NBA] ✅ ${team.abbreviation} L${lastN}: ${aggregated.games} games, OffRtg=${aggregated.offRtg.toFixed(1)}, DefRtg=${aggregated.defRtg.toFixed(1)}`);
+    
+    return aggregated;
+    
+  } catch (error) {
+    console.error(`[NBA] Error fetching team last games for ${teamId}:`, error);
+    return null;
+  }
 }
 
 /**
  * Fetch team's rolling window stats (L5, L10, L20)
- * NOW USES LEAGUE-WIDE BATCH CALLS (6 API calls for all 30 teams)
- * Much more efficient than per-team fetching
+ * Uses ESPN + NBA CDN approach
  * 
  * @param {number} teamId - NBA team ID
  * @param {string} season - '2025-26'
- * @param {Map} leagueWindows - Pre-fetched league windows (optional, for efficiency)
+ * @param {Map} leagueWindows - DEPRECATED (not used in CDN approach)
  * @returns {Promise<{l5, l10, l20}>}
  */
 export async function fetchTeamRollingStats(teamId, season = '2025-26', leagueWindows = null) {
   try {
-    // If league windows not provided, fetch them (inefficient for multiple teams)
-    const windows = leagueWindows || await fetchAllLeagueWindows(season);
+    console.log(`[NBA] 📊 Fetching rolling stats for team ${teamId}...`);
     
-    const teamData = windows.get(teamId);
-    
-    if (!teamData) {
-      console.error(`[NBA] ❌ No data found for team ${teamId}`);
-      return { l5: null, l10: null, l20: null };
-    }
-    
-    // Merge Advanced + Four Factors for each window
-    const l5 = convertToModelStats(teamData.advanced.l5, teamData.fourFactors.l5);
-    const l10 = convertToModelStats(teamData.advanced.l10, teamData.fourFactors.l10);
-    const l20 = convertToModelStats(teamData.advanced.l20, teamData.fourFactors.l20);
-    
-    // Log games to verify data
-    if (l10) {
-      console.log(`[NBA] Team ${teamId} L10: ${l10.games} games, OffRtg=${l10.offRtg.toFixed(1)}, DefRtg=${l10.defRtg.toFixed(1)}`);
-    }
+    // Fetch all windows in parallel
+    const [l5, l10, l20] = await Promise.all([
+      fetchTeamLastGames(teamId, season, 5),
+      fetchTeamLastGames(teamId, season, 10),
+      fetchTeamLastGames(teamId, season, 20)
+    ]);
     
     return { l5, l10, l20 };
     
