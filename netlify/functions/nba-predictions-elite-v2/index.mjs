@@ -1,10 +1,11 @@
 /**
- * NBA Elite Predictions V2 - ESPN API Version  
+ * NBA Elite Predictions V2 - NBA CDN API Version
  * 
  * IMPROVEMENTS OVER V1:
- * - Uses ESPN schedule + box score data (not broken GitHub files!)
+ * - Uses NBA CDN scoreboard + boxscore data (not broken GitHub files!)
  * - Always current season data (no stale fallbacks to 2024-25)
- * - Handles early season better (ESPN has full historical context)
+ * - Single namespace: NBA CDN throughout (no ESPN/NBA ID mismatches)
+ * - Handles early season better (NBA CDN has full historical context)
  * - Faster and more reliable
  * 
  * KEEPS FROM V1:
@@ -13,6 +14,8 @@
  * - L5/L10/L20 rolling windows for recent performance
  * - RCI adjustments for roster continuity
  * - Injury adjustments (position-weighted)
+ * 
+ * FIX (Oct 28): Updated loaders.mjs to use NBA CDN scoreboard instead of ESPN
  */
 
 import { SPREAD_MODEL, TOTAL_MODEL } from '../_lib/nba/models-inline.mjs';
