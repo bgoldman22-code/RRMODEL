@@ -1,11 +1,11 @@
 /**
- * NBA Elite Predictions V2 - API-Powered Version
+ * NBA Elite Predictions V2 - ESPN API Version  
  * 
  * IMPROVEMENTS OVER V1:
- * - Uses NBA Stats API for live L5/L10/L20 data (not GitHub box scores)
+ * - Uses ESPN schedule + box score data (not broken GitHub files!)
  * - Always current season data (no stale fallbacks to 2024-25)
- * - Handles early season better (API has historical context)
- * - Faster (no GitHub raw file fetching)
+ * - Handles early season better (ESPN has full historical context)
+ * - Faster and more reliable
  * 
  * KEEPS FROM V1:
  * - Elite Ensemble model (11.606 MAE spread, 85 features)
