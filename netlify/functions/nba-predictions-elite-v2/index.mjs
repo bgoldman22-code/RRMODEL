@@ -841,26 +841,27 @@ export default async (request, context) => {
     const predictions = [];
     
     for (const event of espnData.events) {
-      const comp = event.competitions[0];
-      const home = comp.competitors.find(c => c.homeAway === 'home');
-      const away = comp.competitors.find(c => c.homeAway === 'away');
-      
-      console.log(`[NBA Elite V2] Processing: ${away.team.abbreviation} @ ${home.team.abbreviation}`);
-      
-      // Get team IDs for NBA Stats API
-      const homeTeamData = teamInfo.byAbbr[home.team.abbreviation];
-      const awayTeamData = teamInfo.byAbbr[away.team.abbreviation];
-      
-      if (!homeTeamData || !awayTeamData) {
-        console.log(`[NBA Elite V2] ⚠️  Missing team data for ${home.team.abbreviation} or ${away.team.abbreviation}`);
-        continue;
-      }
-      
-      // V2: Fetch L5/L10/L20 stats from NBA Stats API (live data, not GitHub box scores!)
-      const [homeStats, awayStats] = await Promise.all([
-        fetchTeamRollingStats(homeTeamData.id, '2025-26'),
-        fetchTeamRollingStats(awayTeamData.id, '2025-26')
-      ]);
+      try {
+        const comp = event.competitions[0];
+        const home = comp.competitors.find(c => c.homeAway === 'home');
+        const away = comp.competitors.find(c => c.homeAway === 'away');
+        
+        console.log(`[NBA Elite V2] Processing: ${away.team.abbreviation} @ ${home.team.abbreviation}`);
+        
+        // Get team IDs for NBA Stats API
+        const homeTeamData = teamInfo.byAbbr[home.team.abbreviation];
+        const awayTeamData = teamInfo.byAbbr[away.team.abbreviation];
+        
+        if (!homeTeamData || !awayTeamData) {
+          console.log(`[NBA Elite V2] ⚠️  Missing team data for ${home.team.abbreviation} or ${away.team.abbreviation}`);
+          continue;
+        }
+        
+        // V2: Fetch L5/L10/L20 stats from NBA Stats API (live data, not GitHub box scores!)
+        const [homeStats, awayStats] = await Promise.all([
+          fetchTeamRollingStats(homeTeamData.id, '2025-26'),
+          fetchTeamRollingStats(awayTeamData.id, '2025-26')
+        ]);
       
       // Use L10 as baseline, with L5 and L20 for specific features
       const homeL3Raw = homeStats.l5 || getDefaultStats();  // Use L5 as proxy for L3
@@ -1419,9 +1420,14 @@ export default async (request, context) => {
         opportunities,
         teamTotals // NEW: Individual team scoring projections
       });
+      } catch (gameError) {
+        console.error(`[NBA Elite V2] Error processing ${away?.team?.abbreviation || '?'} @ ${home?.team?.abbreviation || '?'}:`, gameError.message);
+        console.error(`[NBA Elite V2] Stack:`, gameError.stack);
+        // Continue to next game instead of failing entire function
+      }
     }
     
-    console.log(`[NBA Elite] Generated ${predictions.length} predictions`);
+    console.log(`[NBA Elite V2] Generated ${predictions.length} predictions`);
     
     return new Response(JSON.stringify({
       ok: true,

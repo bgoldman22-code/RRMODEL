@@ -21,7 +21,7 @@
   included_files = []  # GET needs no data files, only reads from blobs
 
 [functions."nfl-predictions-generate"]
-  included_files = ["data/nfl/**", "netlify/functions/_lib/nfl-*.mjs", "netlify/functions/_lib/*-nfl.js", "netlify/functions/_lib/*-nfl.mjs", "netlify/functions/_lib/csv-snapshot.mjs"]
+  included_files = ["data/nfl/**", "public/history/**", "netlify/functions/_lib/nfl-*.mjs", "netlify/functions/_lib/*-nfl.js", "netlify/functions/_lib/*-nfl.mjs", "netlify/functions/_lib/csv-snapshot.mjs", "netlify/functions/_lib/depth-chart-change-detector.js"]
   external_node_modules = ["@netlify/blobs", "node-fetch"]
 
 [functions."nba-predictions-simple"]
