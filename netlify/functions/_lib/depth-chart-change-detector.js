@@ -412,6 +412,69 @@ function detectWR1Changes(currentWeekChart, previousWeekChart) {
 }
 
 /**
+ * Detect TE1 changes (top tight end)
+ * Approach mirrors WR1 with slightly smaller baseline impact
+ */
+function detectTE1Changes(currentWeekChart, previousWeekChart) {
+  const changes = [];
+  
+  if (!currentWeekChart || !previousWeekChart) {
+    return { changes: [], error: 'Missing depth chart data' };
+  }
+  
+  for (const [teamCode, currentDepth] of Object.entries(currentWeekChart)) {
+    const previousDepth = previousWeekChart[teamCode];
+    
+    if (!currentDepth?.TE?.[0] || !previousDepth?.TE?.[0]) {
+      continue;
+    }
+    
+    const currentTE = currentDepth.TE[0];
+    const previousTE = previousDepth.TE[0];
+    
+    // Safety check: ensure both are valid strings
+    if (typeof currentTE !== 'string' || typeof previousTE !== 'string') {
+      console.warn(`⚠️ Invalid TE data for ${teamCode}: current=${currentTE}, previous=${previousTE}`);
+      continue;
+    }
+    
+    if (!namesMatch(currentTE, previousTE)) {
+      // TE impact ~0.6x WR1 impact (fewer targets but higher value per touch)
+      const baseImpact = 0.6;
+      const epaDelta = -0.02; // Conservative estimate for TE downgrade
+      const spreadImpact = epaDelta * 6 * baseImpact; // ~6 targets/game for TE1
+      
+      if (Math.abs(spreadImpact) > 0.2) {
+        changes.push({
+          team: teamCode,
+          position: 'TE1',
+          previousStarter: previousTE,
+          currentStarter: currentTE,
+          epaDelta: epaDelta,
+          spreadImpact: spreadImpact,
+          totalImpact: spreadImpact * 0.6,
+          confidence: 0.55,
+          reason: 'TE1 upgrade/demotion',
+          isSignificant: Math.abs(spreadImpact) > 1.0
+        });
+      }
+    }
+  }
+  
+  return {
+    changes,
+    totalChanges: changes.length,
+    significantChanges: changes.filter(c => c.isSignificant).length
+  };
+}
+
+/**
+ * Get all depth chart changes for current week vs previous week
+ */
+function getDepthChartChanges(currentWeek, year = 2025) {
+}
+
+/**
  * Main function: Analyze all personnel changes week-over-week
  */
 export async function analyzeDepthChartChanges(currentWeek, year = 2025) {
@@ -441,11 +504,13 @@ export async function analyzeDepthChartChanges(currentWeek, year = 2025) {
   const qbChanges = detectQBChanges(currentChart, previousChart);
   const rb1Changes = detectRB1Changes(currentChart, previousChart);
   const wr1Changes = detectWR1Changes(currentChart, previousChart);
+  const te1Changes = detectTE1Changes(currentChart, previousChart);
   
   // Aggregate all significant changes
   const allSignificantChanges = [
     ...qbChanges.changes.filter(c => c.isSignificant),
-    ...rb1Changes.changes.filter(c => c.isSignificant)
+    ...rb1Changes.changes.filter(c => c.isSignificant),
+    ...te1Changes.changes.filter(c => c.isSignificant)
   ];
   
   return {
@@ -457,12 +522,14 @@ export async function analyzeDepthChartChanges(currentWeek, year = 2025) {
     qbChanges,
     rb1Changes,
     wr1Changes,
+    te1Changes,
     summary: {
-      totalChanges: qbChanges.totalChanges + rb1Changes.totalChanges + wr1Changes.totalChanges,
+      totalChanges: qbChanges.totalChanges + rb1Changes.totalChanges + wr1Changes.totalChanges + te1Changes.totalChanges,
       significantChanges: allSignificantChanges.length,
       qbChanges: qbChanges.totalChanges,
       rb1Changes: rb1Changes.totalChanges,
-      wr1Changes: wr1Changes.totalChanges
+      wr1Changes: wr1Changes.totalChanges,
+      te1Changes: te1Changes.totalChanges
     },
     significantImpacts: allSignificantChanges.sort((a, b) => a.spreadImpact - b.spreadImpact)
   };
@@ -482,11 +549,15 @@ export function getDepthChartImpactsForTeam(teamCode, currentWeek, year = 2025) 
   
   const qbChanges = detectQBChanges(currentChart, previousChart);
   const rb1Changes = detectRB1Changes(currentChart, previousChart);
+  const wr1Changes = detectWR1Changes(currentChart, previousChart);
+  const te1Changes = detectTE1Changes(currentChart, previousChart);
   
   const teamQBChange = qbChanges.changes.find(c => c.team === teamCode);
   const teamRBChange = rb1Changes.changes.find(c => c.team === teamCode);
+  const teamWRChange = wr1Changes.changes.find(c => c.team === teamCode);
+  const teamTEChange = te1Changes.changes.find(c => c.team === teamCode);
   
-  if (!teamQBChange && !teamRBChange) {
+  if (!teamQBChange && !teamRBChange && !teamWRChange && !teamTEChange) {
     return null;
   }
   
@@ -495,8 +566,18 @@ export function getDepthChartImpactsForTeam(teamCode, currentWeek, year = 2025) 
     hasPersonnelChanges: true,
     qbChange: teamQBChange || null,
     rb1Change: teamRBChange || null,
-    totalSpreadImpact: (teamQBChange?.spreadImpact || 0) + (teamRBChange?.spreadImpact || 0),
-    totalTotalImpact: (teamQBChange?.totalImpact || 0) + (teamRBChange?.totalImpact || 0)
+    wr1Change: teamWRChange || null,
+    te1Change: teamTEChange || null,
+    totalSpreadImpact: 
+      (teamQBChange?.spreadImpact || 0) + 
+      (teamRBChange?.spreadImpact || 0) +
+      (teamWRChange?.spreadImpact || 0) +
+      (teamTEChange?.spreadImpact || 0),
+    totalTotalImpact: 
+      (teamQBChange?.totalImpact || 0) + 
+      (teamRBChange?.totalImpact || 0) +
+      (teamWRChange?.totalImpact || 0) +
+      (teamTEChange?.totalImpact || 0)
   };
 }
 
@@ -505,6 +586,7 @@ export {
   detectQBChanges,
   detectRB1Changes,
   detectWR1Changes,
+  detectTE1Changes,
   getQBEPA,
   QB_EPA_TIERS
 };

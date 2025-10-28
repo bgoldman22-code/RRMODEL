@@ -1528,6 +1528,68 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
         }
       }
       
+      // WR1 change (dedup if already counted via injury system)
+      if (depthChartChanges.wr1Change) {
+        const wrChange = depthChartChanges.wr1Change;
+        
+        // DEDUPLICATION: Skip if WR1 is OUT due to injury (already counted)
+        const wr1InjuryDetected = (teamInjuries.wr_injuries || []).some(wr => 
+          normalizeStatus(wr.status) === 'out' && wr.depthPosition === 1
+        );
+        if (wr1InjuryDetected) {
+          console.log(`⏭️ Skipping WR1 depth chart change (already counted via injury system)`);
+        } else {
+          totalDelta += wrChange.spreadImpact;
+          
+          injuryAnalysis.adjustments.push({
+            player: wrChange.currentStarter,
+            name: wrChange.currentStarter,
+            position: 'WR1',
+            status: 'DEPTH_CHANGE',
+            impact: wrChange.spreadImpact,
+            epaImpact: wrChange.epaDelta,
+            confidence: wrChange.confidence,
+            reason: `WR1 change: ${wrChange.previousStarter} → ${wrChange.currentStarter} (${wrChange.reason})`,
+            isDepthChartChange: true,
+            previousStarter: wrChange.previousStarter
+          });
+          
+          console.log(`🔄 WR1 change: ${wrChange.previousStarter} → ${wrChange.currentStarter}`);
+          console.log(`   Impact: ${wrChange.spreadImpact > 0 ? '+' : ''}${wrChange.spreadImpact.toFixed(2)} points`);
+        }
+      }
+      
+      // TE1 change (dedup if already counted via injury system)
+      if (depthChartChanges.te1Change) {
+        const teChange = depthChartChanges.te1Change;
+        
+        // DEDUPLICATION: Skip if TE1 is OUT due to injury (already counted)
+        const te1InjuryDetected = (teamInjuries.te_injuries || []).some(te => 
+          normalizeStatus(te.status) === 'out' && te.depthPosition === 1
+        );
+        if (te1InjuryDetected) {
+          console.log(`⏭️ Skipping TE1 depth chart change (already counted via injury system)`);
+        } else {
+          totalDelta += teChange.spreadImpact;
+          
+          injuryAnalysis.adjustments.push({
+            player: teChange.currentStarter,
+            name: teChange.currentStarter,
+            position: 'TE1',
+            status: 'DEPTH_CHANGE',
+            impact: teChange.spreadImpact,
+            epaImpact: teChange.epaDelta,
+            confidence: teChange.confidence,
+            reason: `TE1 change: ${teChange.previousStarter} → ${teChange.currentStarter} (${teChange.reason})`,
+            isDepthChartChange: true,
+            previousStarter: teChange.previousStarter
+          });
+          
+          console.log(`🔄 TE1 change: ${teChange.previousStarter} → ${teChange.currentStarter}`);
+          console.log(`   Impact: ${teChange.spreadImpact > 0 ? '+' : ''}${teChange.spreadImpact.toFixed(2)} points`);
+        }
+      }
+      
       injuryAnalysis.totalDepthChartImpact = depthChartChanges.totalSpreadImpact;
       injuryAnalysis.totalImpact = totalDelta; // Update total with depth chart changes
       
