@@ -302,6 +302,14 @@ async function generateEliteOpportunities(player, team, opponent, isHome, gameTi
     
     const { mu, r, pi, breakdown, metadata } = projection;
     
+    // GPT SURGICAL FIX: Filter out high DNP risk players
+    // This prevents model calibration issues from DNP vs on-ice zero conflation
+    const scratchRisk = parseFloat((metadata?.scratchRisk || '0%').replace('%', '')) / 100;
+    if (scratchRisk > 0.10) {  // 10% DNP threshold
+      console.log(`🚫 Skipping ${playerName}: High DNP risk (${(scratchRisk * 100).toFixed(1)}%)`);
+      return null;
+    }
+    
     // Name normalization for robust matching
     const normalize = (s) => (s || '').toLowerCase().replace(/[^a-z\s]/g, '').replace(/\s+/g, ' ').trim();
     const first = (player.firstName?.default || '').trim();

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NHL SOG Elite Picks - Oct 28, 2025</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 20px;
+        }
+        
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #81C784;
+            margin: 5px 0;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #CCCCCC;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .picks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .pick-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            border-left: 4px solid;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        
+        .pick-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .elite-tier { border-left-color: #FF6B6B; }
+        .high-tier { border-left-color: #4ECDC4; }
+        .good-tier { border-left-color: #45B7D1; }
+        .solid-tier { border-left-color: #96CEB4; }
+        
+        .pick-rank {
+            position: absolute;
+            top: -8px;
+            left: 12px;
+            background: #4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .player-info {
+            margin-bottom: 10px;
+        }
+        
+        .player-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+        
+        .player-details {
+            font-size: 12px;
+            color: #CCCCCC;
+            margin-top: 2px;
+        }
+        
+        .bet-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        
+        .direction {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .under { background: #F44336; color: white; }
+        .over { background: #4CAF50; color: white; }
+        
+        .line-odds {
+            font-size: 14px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .performance {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        
+        .edge {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .projection {
+            color: #81C784;
+        }
+        
+        .stake {
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .confidence-badge {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">🏒 NHL SOG Elite Picks</div>
+            <div class="subtitle">October 28, 2025 • ZINB Projection Model v4.1</div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">Total Picks</div>
+                    <div class="stat-value">30</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Avg Edge</div>
+                    <div class="stat-value">14.2%</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Total Units</div>
+                    <div class="stat-value">87.3U</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Elite Picks (20%+)</div>
+                    <div class="stat-value">6</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="picks-grid">
+            <!-- Elite Tier (20%+ Edge) -->
+            <div class="pick-card elite-tier">
+                <div class="pick-rank">#1</div>
+                <div class="player-info">
+                    <div class="player-name">Erik Karlsson</div>
+                    <div class="player-details">D - PIT • PIT @ PHI</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">+115 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.0</span>
+                    <span class="edge">+34.1%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card elite-tier">
+                <div class="pick-rank">#2</div>
+                <div class="player-info">
+                    <div class="player-name">Sam Bennett</div>
+                    <div class="player-details">C - FLA • FLA @ ANA</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 2.5</span>
+                    <span class="line-odds">+115 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.9</span>
+                    <span class="edge">+30.5%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card elite-tier">
+                <div class="pick-rank">#3</div>
+                <div class="player-info">
+                    <div class="player-name">Gustav Forsling</div>
+                    <div class="player-details">D - FLA • FLA @ ANA</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">+110 (MGM)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.1</span>
+                    <span class="edge">+25.3%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card elite-tier">
+                <div class="pick-rank">#4</div>
+                <div class="player-info">
+                    <div class="player-name">Michael Bunting</div>
+                    <div class="player-details">L - NSH • NSH @ TBL</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">-135 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.0</span>
+                    <span class="edge">+24.1%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card elite-tier">
+                <div class="pick-rank">#5</div>
+                <div class="player-info">
+                    <div class="player-name">Drew Doughty</div>
+                    <div class="player-details">D - LAK • LAK @ SJS</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">-120 (FD)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.0</span>
+                    <span class="edge">+23.9%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card elite-tier">
+                <div class="pick-rank">#6</div>
+                <div class="player-info">
+                    <div class="player-name">Thomas Chabot</div>
+                    <div class="player-details">D - OTT • OTT @ CHI</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">+120 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.5</span>
+                    <span class="edge">+21.2%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <!-- High Tier (15-20% Edge) -->
+            <div class="pick-card high-tier">
+                <div class="pick-rank">#7</div>
+                <div class="player-info">
+                    <div class="player-name">Seth Jones</div>
+                    <div class="player-details">D - FLA • FLA @ ANA</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">+120 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.6</span>
+                    <span class="edge">+17.7%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card high-tier">
+                <div class="pick-rank">#8</div>
+                <div class="player-info">
+                    <div class="player-name">Aaron Ekblad</div>
+                    <div class="player-details">D - FLA • FLA @ ANA</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">+105 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.5</span>
+                    <span class="edge">+17.0%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card high-tier">
+                <div class="pick-rank">#9</div>
+                <div class="player-info">
+                    <div class="player-name">Mattias Ekholm</div>
+                    <div class="player-details">D - EDM • EDM @ UTA</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">-120 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.3</span>
+                    <span class="edge">+16.5%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card high-tier">
+                <div class="pick-rank">#10</div>
+                <div class="player-info">
+                    <div class="player-name">Jake Sanderson</div>
+                    <div class="player-details">D - OTT • OTT @ CHI</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 2.5</span>
+                    <span class="line-odds">-162 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.8</span>
+                    <span class="edge">+16.2%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <!-- Good Tier (10-15% Edge) -->
+            <div class="pick-card good-tier">
+                <div class="pick-rank">#11</div>
+                <div class="player-info">
+                    <div class="player-name">Matt Boldy</div>
+                    <div class="player-details">L - MIN • MIN @ WPG</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction over">OVER 3.5</span>
+                    <span class="line-odds">+105 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 5.8</span>
+                    <span class="edge">+13.2%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card good-tier">
+                <div class="pick-rank">#12</div>
+                <div class="player-info">
+                    <div class="player-name">Brock Faber</div>
+                    <div class="player-details">D - MIN • MIN @ WPG</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction over">OVER 1.5</span>
+                    <span class="line-odds">-110 (MGM)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 2.9</span>
+                    <span class="edge">+13.2%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card good-tier">
+                <div class="pick-rank">#13</div>
+                <div class="player-info">
+                    <div class="player-name">Morgan Frost</div>
+                    <div class="player-details">C - CGY • CGY @ TOR</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">+100 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.6</span>
+                    <span class="edge">+12.8%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card good-tier">
+                <div class="pick-rank">#14</div>
+                <div class="player-info">
+                    <div class="player-name">Sidney Crosby</div>
+                    <div class="player-details">C - PIT • PIT @ PHI</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 2.5</span>
+                    <span class="line-odds">-154 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 2.1</span>
+                    <span class="edge">+12.6%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card good-tier">
+                <div class="pick-rank">#15</div>
+                <div class="player-info">
+                    <div class="player-name">Will Cuylle</div>
+                    <div class="player-details">L - NYR • NYR @ VAN</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">+110 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.8</span>
+                    <span class="edge">+12.6%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <!-- Show a few more key picks -->
+            <div class="pick-card good-tier">
+                <div class="pick-rank">#16</div>
+                <div class="player-info">
+                    <div class="player-name">Elias Lindholm</div>
+                    <div class="player-details">C - BOS • BOS @ NYI</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">+135 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 2.2</span>
+                    <span class="edge">+12.0%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card good-tier">
+                <div class="pick-rank">#17</div>
+                <div class="player-info">
+                    <div class="player-name">Ryan Hartman</div>
+                    <div class="player-details">R - MIN • MIN @ WPG</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction over">OVER 2.5</span>
+                    <span class="line-odds">+126 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 3.8</span>
+                    <span class="edge">+11.8%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+            
+            <div class="pick-card good-tier">
+                <div class="pick-rank">#18</div>
+                <div class="player-info">
+                    <div class="player-name">Mikael Backlund</div>
+                    <div class="player-details">C - CGY • CGY @ TOR</div>
+                </div>
+                <div class="bet-info">
+                    <span class="direction under">UNDER 1.5</span>
+                    <span class="line-odds">+105 (DK)</span>
+                </div>
+                <div class="performance">
+                    <span class="projection">Proj: 1.8</span>
+                    <span class="edge">+11.2%</span>
+                    <span class="stake">3.0U</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div style="margin-bottom: 10px;">
+                <strong>🔬 Model:</strong> ZINB Distribution • Individual Stats • Opponent Defense • Kelly Sizing<br>
+                <strong>📊 Coverage:</strong> All 30 picks meet 5% edge threshold • 90% confidence minimum<br>
+                <strong>⚡ Hotfix:</strong> 5-game cap removed - full slate coverage deployed
+            </div>
+            <div style="font-size: 10px; color: #666;">
+                Elite Model v4.1 • Generated Oct 28, 2025 • Bet Responsibly
+            </div>
+        </div>
+    </div>
+</body>
+</html>

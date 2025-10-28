@@ -381,9 +381,21 @@ async function projectSOGElite(playerId, playerName, team, opponent, isHome, ven
   }
   
   if (earlySeason) dispersion *= 1.2;
+  
+  // SEPARATE: DNP risk vs structural zero-inflation
   let scratchRisk = 0.02;
   if (player.season.gamesPlayed < (player.L10?.games || 10) * 1.5) scratchRisk = 0.08;
   if (pointsPerGame < 0.2) scratchRisk = 0.05;
+  
+  // Structural zero-inflation (conditional on playing)
+  const pi_play = Math.max(0, Math.min(0.35,
+    (player.position === 'D' ? 0.06 : 0.03) +           // Defensemen have more zero games
+    (expectedTOI < 12 ? 0.08 : 0) +                     // Low ice time = more zeros
+    (ppUnit === 0 ? 0.05 : 0) +                         // No PP time = more zeros
+    (archetypeMultiplier < 0.95 ? 0.04 : 0) +           // Role players = more zeros
+    (streak?.type === 'cold' ? 0.02 : 0)                // Cold streaks = more zeros
+  ));
+  
   return {
     playerId: player.playerId,
     playerName: player.name,
@@ -392,7 +404,7 @@ async function projectSOGElite(playerId, playerName, team, opponent, isHome, ven
     opponent,
     mu: Math.max(0.5, baseSOG),
     r: dispersion,
-    pi: scratchRisk,
+    pi: pi_play,  // ✅ Only structural zeros (conditional on playing)
     breakdown: {
       seasonAvg: parseFloat(player.season.shotsPerGame) || 0,
       L5avg: parseFloat(player.L5?.shots) || 0,
@@ -415,7 +427,9 @@ async function projectSOGElite(playerId, playerName, team, opponent, isHome, ven
       expectedTOI: expectedTOI.toFixed(1),
       oppDefenseRating: (oppDefense.defensiveRating || 1.0).toFixed(2),
       gamesPlayed: player.season.gamesPlayed,
-      scratchRisk: (scratchRisk * 100).toFixed(1) + '%',
+      scratchRisk: (scratchRisk * 100).toFixed(1) + '%',  // DNP probability
+      playProbability: ((1 - scratchRisk) * 100).toFixed(1) + '%',  // Prob of playing
+      structuralZeros: (pi_play * 100).toFixed(1) + '%',  // On-ice zero inflation
       earlySeason
     }
   };
