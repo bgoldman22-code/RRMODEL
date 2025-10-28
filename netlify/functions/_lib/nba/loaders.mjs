@@ -635,6 +635,67 @@ export async function fetchInjuries() {
 }
 
 /**
+ * Fetch team stats (LEGACY - for backwards compatibility with features.mjs)
+ * Returns league-average stats
+ */
+export async function fetchTeamStats(season = '2025-26', seasonType = 'Regular Season', measureType = 'Base') {
+  console.log(`[NBA] ⚠️  fetchTeamStats is deprecated - returning league averages`);
+  
+  // Return league average stats for backwards compatibility
+  return [{
+    TEAM_ID: 0,
+    TEAM_NAME: 'League Average',
+    GP: 10,
+    W: 5,
+    L: 5,
+    PTS: 114.5,
+    FG_PCT: 0.47,
+    FG3_PCT: 0.36,
+    FT_PCT: 0.78,
+    REB: 43,
+    AST: 25,
+    TOV: 14,
+    STL: 8,
+    BLK: 5,
+    PF: 20
+  }];
+}
+
+/**
+ * Calculate recent form (LEGACY - for backwards compatibility with features.mjs)
+ * Uses fetchTeamLastGames under the hood
+ */
+export async function calculateRecentForm(teamId, season = '2025-26', windows = [5, 10, 20]) {
+  try {
+    const form = {};
+    
+    for (const n of windows) {
+      const stats = await fetchTeamLastGames(teamId, season, n);
+      if (stats) {
+        form[`L${n}`] = {
+          games: stats.games,
+          wins: stats.wins,
+          losses: stats.losses,
+          winPct: stats.winPct,
+          pts: stats.pace * stats.offRtg / 100,
+          ptsAllowed: stats.pace * stats.defRtg / 100,
+          netRating: stats.netRtg,
+          pace: stats.pace,
+          offRating: stats.offRtg,
+          defRating: stats.defRtg
+        };
+      }
+    }
+    
+    return form;
+    
+  } catch (error) {
+    console.error('[NBA] Error calculating recent form:', error);
+    return {};
+  }
+}
+
+/**
  * Rate limit helper - prevents hammering stats.nba.com
  * CRITICAL: stats.nba.com will block if requests too frequent
  */
