@@ -12,7 +12,6 @@
 
 [functions]
   node_bundler = "esbuild"
-  node_module_format = "esm"
   external_node_modules = ["@netlify/blobs", "node-fetch"]
   included_files = ["public/**", "data/nba/**", "data/nfl/ssot/**", "netlify/functions/_lib/**"]
 
