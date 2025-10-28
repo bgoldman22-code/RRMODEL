@@ -67,6 +67,60 @@
             font-weight: bold;
             color: #00ff88;
         }
+        .recommendations {
+            margin-top: 20px;
+            padding: 15px;
+            background: #0f1629;
+            border-radius: 8px;
+            border-left: 3px solid #ffa500;
+        }
+        .rec-header {
+            color: #ffa500;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .bet-rec {
+            background: #1a1f3a;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 3px solid #00ff88;
+        }
+        .bet-rec.skip {
+            border-left-color: #ff4444;
+        }
+        .bet-rec.low-edge {
+            border-left-color: #ffa500;
+        }
+        .pick-summary {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 15px;
+        }
+        .vegas-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .vegas-stat {
+            background: #0a0e27;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .vegas-label {
+            color: #888;
+            font-size: 11px;
+        }
+        .vegas-value {
+            color: #fff;
+            font-weight: bold;
+        }
+        .edge-positive { color: #00ff88; }
+        .edge-negative { color: #ff4444; }
         .confidence {
             display: inline-block;
             padding: 4px 12px;
@@ -123,12 +177,66 @@
                         ? (spread > 0 ? `-${spread}` : `+${Math.abs(spread)}`)
                         : (spread > 0 ? `+${spread}` : `-${Math.abs(spread)}`);
                     
+                    // Determine pick recommendation
+                    const homeTeam = pred.game.split(' @ ')[1];
+                    const awayTeam = pred.game.split(' @ ')[0];
+                    const favoriteName = favorite === 'home' ? homeTeam : awayTeam;
+                    const pickSummary = `Model Pick: ${favoriteName} ${Math.abs(spread)} (${homeWinProb.toFixed(1)}% home win prob)`;
+                    
+                    // Process betting opportunities
+                    let betRecommendations = '';
+                    if (pred.opportunities && pred.opportunities.length > 0) {
+                        for (const opp of pred.opportunities) {
+                            const edgeClass = opp.edge > 10 ? 'bet-rec' : opp.edge > 5 ? 'bet-rec low-edge' : 'bet-rec skip';
+                            const edgeColor = opp.edge > 5 ? 'edge-positive' : 'edge-negative';
+                            
+                            betRecommendations += `
+                                <div class="${edgeClass}">
+                                    <strong>${opp.market}: ${opp.pick}</strong>
+                                    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                                        <span>Edge: <span class="${edgeColor}">${opp.edge}%</span></span>
+                                        <span>Odds: ${opp.odds > 0 ? '+' : ''}${opp.odds}</span>
+                                        <span>${opp.book}</span>
+                                    </div>
+                                    ${opp.units ? `<div style="color: #00ff88; font-size: 12px;">Rec: ${opp.units} units</div>` : ''}
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    // Vegas lines info
+                    let vegasInfo = '';
+                    if (pred.vegasLines) {
+                        vegasInfo = `
+                            <div class="vegas-info">
+                                <div class="vegas-stat">
+                                    <div class="vegas-label">Vegas Spread</div>
+                                    <div class="vegas-value">${pred.vegasLines.spread?.line || 'N/A'}</div>
+                                </div>
+                                <div class="vegas-stat">
+                                    <div class="vegas-label">Vegas Total</div>
+                                    <div class="vegas-value">${pred.vegasLines.total?.line || 'N/A'}</div>
+                                </div>
+                                <div class="vegas-stat">
+                                    <div class="vegas-label">Home ML</div>
+                                    <div class="vegas-value">${pred.vegasLines.moneyline?.home > 0 ? '+' : ''}${pred.vegasLines.moneyline?.home || 'N/A'}</div>
+                                </div>
+                                <div class="vegas-stat">
+                                    <div class="vegas-label">Away ML</div>
+                                    <div class="vegas-value">${pred.vegasLines.moneyline?.away > 0 ? '+' : ''}${pred.vegasLines.moneyline?.away || 'N/A'}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
                     html += `
                         <div class="game">
                             <div class="game-header">
                                 ${pred.game}
                                 <span class="confidence ${confidenceClass}">${confidence}% Confidence</span>
                             </div>
+                            
+                            <div class="pick-summary">${pickSummary}</div>
                             
                             <div class="prediction">
                                 <div class="stat">
@@ -151,6 +259,15 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            ${vegasInfo}
+                            
+                            ${betRecommendations ? `
+                                <div class="recommendations">
+                                    <div class="rec-header">🎯 Betting Recommendations</div>
+                                    ${betRecommendations}
+                                </div>
+                            ` : ''}
                         </div>
                     `;
                 }
