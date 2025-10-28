@@ -227,25 +227,39 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
     
     const advancedUrl = `${NBA_STATS_BASE}/teamdashboardbygeneralsplits?${advancedParams}`;
     
+    console.log(`[NBA] Fetching L${lastN} stats for team ${teamId}...`);
+    
     // Add rate limiting
     await new Promise(resolve => setTimeout(resolve, 600));
     
     const response = await fetch(advancedUrl, { headers: NBA_HEADERS });
     
     if (!response.ok) {
+      console.error(`[NBA] API error: ${response.status} ${response.statusText}`);
       throw new Error(`NBA API error: ${response.status}`);
     }
     
     const data = await response.json();
+    
+    if (!data.resultSets || !data.resultSets[0]) {
+      console.error('[NBA] No resultSets in API response');
+      return null;
+    }
+    
     const headers = data.resultSets[0].headers;
     const rows = data.resultSets[0].rowSet;
     
-    if (rows.length === 0) return null;
+    if (rows.length === 0) {
+      console.log(`[NBA] ⚠️ No stats found for team ${teamId} L${lastN}`);
+      return null;
+    }
     
     const rawStats = {};
     headers.forEach((header, i) => {
       rawStats[header] = rows[0][i];
     });
+    
+    console.log(`[NBA] ✅ Fetched L${lastN} stats for team ${teamId}: ${rawStats.GP || 0} games`);
     
     // Map to elite model format
     return {
@@ -306,15 +320,21 @@ export async function fetchInjuries() {
  */
 export async function fetchTeamRollingStats(teamId, season = '2025-26') {
   try {
+    console.log(`[NBA] 📊 Fetching rolling stats for team ${teamId}...`);
+    
     const [l5, l10, l20] = await Promise.all([
       fetchTeamLastGames(teamId, season, 5),
       fetchTeamLastGames(teamId, season, 10),
       fetchTeamLastGames(teamId, season, 20)
     ]);
     
+    if (!l5 && !l10 && !l20) {
+      console.error(`[NBA] ❌ All rolling windows failed for team ${teamId}`);
+    }
+    
     return { l5, l10, l20 };
   } catch (error) {
-    console.error('[NBA] Error fetching rolling stats:', error);
+    console.error(`[NBA] Error fetching rolling stats for team ${teamId}:`, error);
     return { l5: null, l10: null, l20: null };
   }
 }
