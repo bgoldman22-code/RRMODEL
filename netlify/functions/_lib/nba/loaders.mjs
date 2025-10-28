@@ -1,147 +1,115 @@
 /**
- * NBA Data Loaders - Elite Pipeline
+ * NBA Data Loaders - Elite Pipeline V2
  * 
- * Fetches data from NBA Stats API, ESPN, and other sources
- * Implements caching, rate limiting, and fallback strategies
+ * Uses batched stats.nba.com leaguedashteamstats for L5/L10/L20 windows
+ * ESPN for schedule, in-memory team data (no filesystem reads in serverless)
+ * Implements proper headers, rate limiting, and fallback strategies
  */
 
 import { promises as fs } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-// NBA CDN API base URLs (much more reliable than stats.nba.com!)
+// API base URLs
+const NBA_STATS_BASE = 'https://stats.nba.com/stats';
 const NBA_CDN_BASE = 'https://cdn.nba.com/static/json/liveData';
 const ESPN_BASE = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba';
 
-// Simple headers for CDN (no auth needed!)
-const NBA_HEADERS = {
+// Headers for stats.nba.com (CRITICAL - required for access)
+const NBA_STATS_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+  'Accept': 'application/json, text/plain, */*',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Accept-Encoding': 'gzip, deflate, br',
+  'Origin': 'https://www.nba.com',
+  'Referer': 'https://www.nba.com/',
+  'Connection': 'keep-alive',
+  'x-nba-stats-origin': 'stats',
+  'x-nba-stats-token': 'true'
+};
+
+// Simple headers for CDN
+const NBA_CDN_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
   'Accept': 'application/json'
 };
 
+// ESPN abbreviation normalization (GS→GSW, SA→SAS, etc.)
+const ESPN_TO_NBA_ABBR = {
+  'GS': 'GSW',
+  'SA': 'SAS', 
+  'NO': 'NOP',
+  'NY': 'NYK',
+  'PHO': 'PHX',
+  'UTAH': 'UTA'
+};
+
 /**
- * Load team information (local file)
+ * Normalize ESPN abbreviation to NBA standard
  */
-export async function loadTeamInfo() {
+function normalizeAbbr(abbr) {
+  return ESPN_TO_NBA_ABBR[abbr] || abbr;
+}
+
+// In-memory team data (30 teams) - avoids fs.readFile in serverless
+const NBA_TEAMS = [
+  { id: 1610612737, abbreviation: 'ATL', name: 'Atlanta Hawks' },
+  { id: 1610612738, abbreviation: 'BOS', name: 'Boston Celtics' },
+  { id: 1610612751, abbreviation: 'BKN', name: 'Brooklyn Nets' },
+  { id: 1610612766, abbreviation: 'CHA', name: 'Charlotte Hornets' },
+  { id: 1610612741, abbreviation: 'CHI', name: 'Chicago Bulls' },
+  { id: 1610612739, abbreviation: 'CLE', name: 'Cleveland Cavaliers' },
+  { id: 1610612742, abbreviation: 'DAL', name: 'Dallas Mavericks' },
+  { id: 1610612743, abbreviation: 'DEN', name: 'Denver Nuggets' },
+  { id: 1610612765, abbreviation: 'DET', name: 'Detroit Pistons' },
+  { id: 1610612744, abbreviation: 'GSW', name: 'Golden State Warriors' },
+  { id: 1610612745, abbreviation: 'HOU', name: 'Houston Rockets' },
+  { id: 1610612754, abbreviation: 'IND', name: 'Indiana Pacers' },
+  { id: 1610612746, abbreviation: 'LAC', name: 'LA Clippers' },
+  { id: 1610612747, abbreviation: 'LAL', name: 'Los Angeles Lakers' },
+  { id: 1610612763, abbreviation: 'MEM', name: 'Memphis Grizzlies' },
+  { id: 1610612748, abbreviation: 'MIA', name: 'Miami Heat' },
+  { id: 1610612749, abbreviation: 'MIL', name: 'Milwaukee Bucks' },
+  { id: 1610612750, abbreviation: 'MIN', name: 'Minnesota Timberwolves' },
+  { id: 1610612740, abbreviation: 'NOP', name: 'New Orleans Pelicans' },
+  { id: 1610612752, abbreviation: 'NYK', name: 'New York Knicks' },
+  { id: 1610612760, abbreviation: 'OKC', name: 'Oklahoma City Thunder' },
+  { id: 1610612753, abbreviation: 'ORL', name: 'Orlando Magic' },
+  { id: 1610612755, abbreviation: 'PHI', name: 'Philadelphia 76ers' },
+  { id: 1610612756, abbreviation: 'PHX', name: 'Phoenix Suns' },
+  { id: 1610612757, abbreviation: 'POR', name: 'Portland Trail Blazers' },
+  { id: 1610612758, abbreviation: 'SAC', name: 'Sacramento Kings' },
+  { id: 1610612759, abbreviation: 'SAS', name: 'San Antonio Spurs' },
+  { id: 1610612761, abbreviation: 'TOR', name: 'Toronto Raptors' },
+  { id: 1610612762, abbreviation: 'UTA', name: 'Utah Jazz' },
+  { id: 1610612764, abbreviation: 'WAS', name: 'Washington Wizards' }
+];
+
+
+/**
+ * Load team information (in-memory, no filesystem reads)
+ */
+export function loadTeamInfo() {
   try {
-    const __dirname = dirname(fileURLToPath(import.meta.url));
-    const filePath = join(__dirname, '..', '..', '..', '..', 'data', 'nba', 'teams', 'team-info.json');
-    const content = await fs.readFile(filePath, 'utf-8');
-    const data = JSON.parse(content);
-    
-    // Create lookup maps
+    // Build lookup maps
     const byAbbr = {};
     const byId = {};
     const byName = {};
     
-    for (const team of data.teams) {
+    for (const team of NBA_TEAMS) {
       byAbbr[team.abbreviation] = team;
       byId[team.id] = team;
       byName[team.name] = team;
+      // Also add lowercase variants for fuzzy matching
+      byName[team.name.toLowerCase()] = team;
     }
     
-    return { teams: data.teams, byAbbr, byId, byName };
+    console.log(`[NBA] ✅ Loaded ${NBA_TEAMS.length} teams (in-memory)`);
+    
+    return { teams: NBA_TEAMS, byAbbr, byId, byName };
   } catch (error) {
-    console.error('Error loading team info:', error);
+    console.error('[NBA] Error loading team info:', error);
     return { teams: [], byAbbr: {}, byId: {}, byName: {} };
-  }
-}
-
-/**
- * Fetch team stats from NBA Stats API
- * 
- * @param {string} season - Season in format "2024-25"
- * @param {string} seasonType - "Regular Season" or "Playoffs"
- * @param {string} measureType - "Base", "Advanced", "Four Factors", etc.
- */
-export async function fetchTeamStats(season = '2025-26', seasonType = 'Regular Season', measureType = 'Base') {
-  try {
-    const params = new URLSearchParams({
-      Season: season,
-      SeasonType: seasonType,
-      MeasureType: measureType,
-      PerMode: 'PerGame',
-      PaceAdjust: 'N',
-      Rank: 'N',
-      LeagueID: '00'
-    });
-    
-    const url = `${NBA_STATS_BASE}/leaguedashteamstats?${params}`;
-    
-    console.log('[NBA] Fetching team stats:', { season, measureType });
-    
-    const response = await fetch(url, { headers: NBA_HEADERS });
-    
-    if (!response.ok) {
-      throw new Error(`NBA API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // Parse result set
-    const headers = data.resultSets[0].headers;
-    const rows = data.resultSets[0].rowSet;
-    
-    const teams = rows.map(row => {
-      const team = {};
-      headers.forEach((header, i) => {
-        team[header] = row[i];
-      });
-      return team;
-    });
-    
-    console.log(`[NBA] ✅ Loaded ${teams.length} teams (${measureType})`);
-    
-    return teams;
-    
-  } catch (error) {
-    console.error('[NBA] Error fetching team stats:', error);
-    return [];
-  }
-}
-
-/**
- * Fetch player stats from NBA Stats API
- */
-export async function fetchPlayerStats(season = '2025-26', seasonType = 'Regular Season') {
-  try {
-    const params = new URLSearchParams({
-      Season: season,
-      SeasonType: seasonType,
-      PerMode: 'PerGame',
-      LeagueID: '00'
-    });
-    
-    const url = `${NBA_STATS_BASE}/leaguedashplayerstats?${params}`;
-    
-    console.log('[NBA] Fetching player stats:', { season });
-    
-    const response = await fetch(url, { headers: NBA_HEADERS });
-    
-    if (!response.ok) {
-      throw new Error(`NBA API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    const headers = data.resultSets[0].headers;
-    const rows = data.resultSets[0].rowSet;
-    
-    const players = rows.map(row => {
-      const player = {};
-      headers.forEach((header, i) => {
-        player[header] = row[i];
-      });
-      return player;
-    }).filter(p => p.MIN > 10); // Filter: Must average >10 min per game
-    
-    console.log(`[NBA] ✅ Loaded ${players.length} players with >10 MPG`);
-    
-    return players;
-    
-  } catch (error) {
-    console.error('[NBA] Error fetching player stats:', error);
-    return [];
   }
 }
 
@@ -178,14 +146,14 @@ export async function fetchTodaysGames(date = null) {
         homeTeam: {
           id: homeTeam.team.id,
           name: homeTeam.team.displayName,
-          abbreviation: homeTeam.team.abbreviation,
+          abbreviation: normalizeAbbr(homeTeam.team.abbreviation),  // Normalize ESPN abbr
           score: parseInt(homeTeam.score) || 0,
           record: homeTeam.records?.[0]?.summary || '0-0'
         },
         awayTeam: {
           id: awayTeam.team.id,
           name: awayTeam.team.displayName,
-          abbreviation: awayTeam.team.abbreviation,
+          abbreviation: normalizeAbbr(awayTeam.team.abbreviation),  // Normalize ESPN abbr
           score: parseInt(awayTeam.score) || 0,
           record: awayTeam.records?.[0]?.summary || '0-0'
         },
@@ -205,65 +173,233 @@ export async function fetchTodaysGames(date = null) {
 }
 
 /**
- * Helper: Fetch NBA CDN today's scoreboard
- */
-async function fetchNbaCdnTodaysScoreboard() {
-  const url = `${NBA_CDN_BASE}/scoreboard/todaysScoreboard_00.json`;
-  const res = await fetch(url, { headers: NBA_HEADERS });
-  if (!res.ok) {
-    console.log(`[NBA] Today's scoreboard unavailable`);
-    return null;
-  }
-  return res.json();
-}
-
-/**
- * Helper: Convert Date to YYYYMMDD string
- */
-function toYmd(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}${m}${day}`;
-}
-
-/**
- * Fetch team's last N games using NBA CDN today's scoreboard for recent, ESPN for historical
- * Returns all metrics needed for elite model (85 features)
+ * Fetch league-wide stats for a specific window (L5, L10, L20)
+ * Uses stats.nba.com leaguedashteamstats with LastNGames parameter
+ * Returns map keyed by TeamID for fast lookups
  * 
- * NOTE: NBA CDN only has todaysScoreboard, not historical. For completed games,
- * we scan backwards from today looking at daily NBA CDN scoreboards until we have enough.
+ * @param {string} measureType - 'Advanced' or 'Four Factors'
+ * @param {number} lastN - 5, 10, or 20
+ * @param {string} season - '2025-26'
+ * @returns {Promise<Map<number, object>>} - Map of teamId → stats
  */
-export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10) {
+export async function fetchLeagueWindow(measureType = 'Advanced', lastN = 10, season = '2025-26') {
   try {
-    console.log(`[NBA] 📊 Attempting to fetch last ${lastN} games for team ${teamId}...`);
-    console.log(`[NBA] ⚠️  NBA CDN historical scoreboards return 403 Forbidden`);
-    console.log(`[NBA] ⚠️  Cannot fetch game-by-game stats - returning null for fallback handling`);
+    const params = new URLSearchParams({
+      Season: season,
+      SeasonType: 'Regular Season',
+      MeasureType: measureType,
+      PerMode: 'PerGame',
+      LastNGames: lastN.toString(),
+      PaceAdjust: 'N',
+      Rank: 'N',
+      LeagueID: '00'
+    });
     
-    // NOTE: NBA CDN only has todaysScoreboard_00.json which works
-    // But scoreboard_{YYYYMMDD}.json returns 403 for any historical date
-    // We need either:
-    // 1. ESPN team ID → NBA team ID mapping to use ESPN game data
-    // 2. Different API source for historical games
-    // 3. Use V1's GitHub JSON files (but those have null scores currently)
+    const url = `${NBA_STATS_BASE}/leaguedashteamstats?${params}`;
     
-    return null;
+    console.log(`[NBA] Fetching league-wide ${measureType} (L${lastN})...`);
     
-    /* ORIGINAL LOGIC BELOW - KEEPING FOR REFERENCE
-    const nbaGameIds = [];
-    const maxDaysBack = 60;
+    const response = await rateLimitedFetch(url, { headers: NBA_STATS_HEADERS });
     
-    for (let daysBack = 1; daysBack <= maxDaysBack && nbaGameIds.length < lastN; daysBack++) {
-      const dt = new Date();
-      dt.setDate(dt.getDate() - daysBack);
-      const ymd = toYmd(dt);
+    if (!response.ok) {
+      console.error(`[NBA] API error for ${measureType} L${lastN}:`, response.status, response.statusText);
+      return new Map();
+    }
+    
+    const data = await response.json();
+    
+    // Parse result set
+    const headers = data.resultSets[0].headers;
+    const rows = data.resultSets[0].rowSet;
+    
+    const statsMap = new Map();
+    
+    for (const row of rows) {
+      const stats = {};
+      headers.forEach((header, i) => {
+        stats[header] = row[i];
+      });
       
-      ... rest of logic would go here ...
-    */
+      // Key by TEAM_ID for fast lookups
+      if (stats.TEAM_ID) {
+        statsMap.set(stats.TEAM_ID, stats);
+      }
+    }
+    
+    console.log(`[NBA] ✅ Loaded ${statsMap.size} teams (${measureType} L${lastN})`);
+    
+    return statsMap;
     
   } catch (error) {
-    console.error(`[NBA] Error fetching team last games for ${teamId}:`, error.message);
+    console.error(`[NBA] Error fetching league window (${measureType} L${lastN}):`, error);
+    return new Map();
+  }
+}
+
+/**
+ * Fetch all league-wide windows in parallel (6 API calls total)
+ * Returns organized by team ID with all windows available
+ * 
+ * @param {string} season - '2025-26'
+ * @returns {Promise<Map<number, {advanced: {l5, l10, l20}, fourFactors: {l5, l10, l20}}>>}
+ */
+export async function fetchAllLeagueWindows(season = '2025-26') {
+  try {
+    console.log('[NBA] 📊 Fetching all league-wide windows (6 calls)...');
+    
+    // Fetch all 6 windows in parallel
+    const [
+      advL5, advL10, advL20,
+      ffL5, ffL10, ffL20
+    ] = await Promise.all([
+      fetchLeagueWindow('Advanced', 5, season),
+      fetchLeagueWindow('Advanced', 10, season),
+      fetchLeagueWindow('Advanced', 20, season),
+      fetchLeagueWindow('Four Factors', 5, season),
+      fetchLeagueWindow('Four Factors', 10, season),
+      fetchLeagueWindow('Four Factors', 20, season)
+    ]);
+    
+    // Organize by team ID
+    const teamWindows = new Map();
+    
+    for (const team of NBA_TEAMS) {
+      const teamId = team.id;
+      
+      teamWindows.set(teamId, {
+        advanced: {
+          l5: advL5.get(teamId) || null,
+          l10: advL10.get(teamId) || null,
+          l20: advL20.get(teamId) || null
+        },
+        fourFactors: {
+          l5: ffL5.get(teamId) || null,
+          l10: ffL10.get(teamId) || null,
+          l20: ffL20.get(teamId) || null
+        }
+      });
+    }
+    
+    console.log(`[NBA] ✅ Organized windows for ${teamWindows.size} teams`);
+    
+    return teamWindows;
+    
+  } catch (error) {
+    console.error('[NBA] Error fetching all league windows:', error);
+    return new Map();
+  }
+}
+
+/**
+ * Convert raw API stats to our model format
+ * Combines Advanced and Four Factors into unified stats object
+ * 
+ * @param {object} advanced - Advanced stats from API
+ * @param {object} fourFactors - Four Factors stats from API  
+ * @returns {object} - Unified stats matching our model interface
+ */
+function convertToModelStats(advanced, fourFactors) {
+  if (!advanced && !fourFactors) {
     return null;
+  }
+  
+  // Get games played (should be same in both)
+  const games = advanced?.GP || fourFactors?.GP || 0;
+  const wins = advanced?.W || fourFactors?.W || 0;
+  const losses = advanced?.L || fourFactors?.L || 0;
+  
+  // Extract stats from Advanced
+  const pace = advanced?.PACE || 100;
+  const offRtg = advanced?.OFF_RATING || 114.5;
+  const defRtg = advanced?.DEF_RATING || 114.5;
+  const netRtg = advanced?.NET_RATING || 0;
+  
+  // Extract stats from Four Factors
+  const efg = fourFactors?.EFG_PCT || 0.535;
+  const tovPct = fourFactors?.TM_TOV_PCT || 0.138;
+  const orbPct = fourFactors?.OREB_PCT || 0.25;
+  const ftFga = fourFactors?.FTA_RATE || 0.22;
+  
+  // Calculate additional stats
+  const winPct = games > 0 ? wins / games : 0.5;
+  
+  // True shooting (approximate if not in API)
+  const ts = advanced?.TS_PCT || 0.575;
+  
+  // Base shooting stats (if available)
+  const fgPct = fourFactors?.FG_PCT || 0.47;
+  const fg3Pct = fourFactors?.FG3_PCT || 0.36;
+  const ftPct = fourFactors?.FT_PCT || 0.78;
+  
+  return {
+    games,
+    wins,
+    losses,
+    winPct,
+    pace,
+    offRtg,
+    defRtg,
+    netRtg,
+    efg,
+    ts,
+    tovPct,
+    orbPct,
+    ftFga,
+    fgPct,
+    fg3Pct,
+    ftPct,
+    rebounds: 0,  // Not critical for model
+    assists: 0,
+    turnovers: 0
+  };
+}
+
+/**
+ * Fetch team's last N games stats (DEPRECATED - use fetchTeamRollingStats instead)
+ * Kept for backwards compatibility
+ */
+export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10) {
+  console.log(`[NBA] ⚠️  fetchTeamLastGames is deprecated - use fetchAllLeagueWindows for better performance`);
+  return null;
+}
+
+/**
+ * Fetch team's rolling window stats (L5, L10, L20)
+ * NOW USES LEAGUE-WIDE BATCH CALLS (6 API calls for all 30 teams)
+ * Much more efficient than per-team fetching
+ * 
+ * @param {number} teamId - NBA team ID
+ * @param {string} season - '2025-26'
+ * @param {Map} leagueWindows - Pre-fetched league windows (optional, for efficiency)
+ * @returns {Promise<{l5, l10, l20}>}
+ */
+export async function fetchTeamRollingStats(teamId, season = '2025-26', leagueWindows = null) {
+  try {
+    // If league windows not provided, fetch them (inefficient for multiple teams)
+    const windows = leagueWindows || await fetchAllLeagueWindows(season);
+    
+    const teamData = windows.get(teamId);
+    
+    if (!teamData) {
+      console.error(`[NBA] ❌ No data found for team ${teamId}`);
+      return { l5: null, l10: null, l20: null };
+    }
+    
+    // Merge Advanced + Four Factors for each window
+    const l5 = convertToModelStats(teamData.advanced.l5, teamData.fourFactors.l5);
+    const l10 = convertToModelStats(teamData.advanced.l10, teamData.fourFactors.l10);
+    const l20 = convertToModelStats(teamData.advanced.l20, teamData.fourFactors.l20);
+    
+    // Log games to verify data
+    if (l10) {
+      console.log(`[NBA] Team ${teamId} L10: ${l10.games} games, OffRtg=${l10.offRtg.toFixed(1)}, DefRtg=${l10.defRtg.toFixed(1)}`);
+    }
+    
+    return { l5, l10, l20 };
+    
+  } catch (error) {
+    console.error(`[NBA] Error fetching rolling stats for team ${teamId}:`, error);
+    return { l5: null, l10: null, l20: null };
   }
 }
 
@@ -272,13 +408,21 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
  */
 export async function fetchInjuries() {
   try {
-    // ESPN doesn't have a dedicated injuries endpoint, so we'll parse from team pages
-    // For v1, we'll implement a simple scraper or use a third-party API
+    console.log('[NBA] Fetching injuries (using ESPN injury report)');
     
-    console.log('[NBA] Fetching injuries (placeholder for v1)');
+    // ESPN injury endpoint
+    const url = `${ESPN_BASE}/injuries`;
+    const response = await fetch(url);
     
-    // TODO: Implement injury scraping or integrate with RotoWire API
-    // For now, return empty array
+    if (!response.ok) {
+      console.log('[NBA] Injuries endpoint unavailable');
+      return [];
+    }
+    
+    const data = await response.json();
+    
+    // Parse injury data
+    // TODO: Implement full parser when needed
     
     return [];
     
@@ -289,67 +433,8 @@ export async function fetchInjuries() {
 }
 
 /**
- * Fetch team's rolling window stats (L5, L10, L20)
- * Optimized for elite model - gets all windows in parallel
- */
-export async function fetchTeamRollingStats(teamId, season = '2025-26') {
-  try {
-    console.log(`[NBA] 📊 Fetching rolling stats for team ${teamId}...`);
-    
-    const [l5, l10, l20] = await Promise.all([
-      fetchTeamLastGames(teamId, season, 5),
-      fetchTeamLastGames(teamId, season, 10),
-      fetchTeamLastGames(teamId, season, 20)
-    ]);
-    
-    if (!l5 && !l10 && !l20) {
-      console.error(`[NBA] ❌ All rolling windows failed for team ${teamId}`);
-    }
-    
-    // Ensure we don't pass undefined/NaN downstream:
-    const safe = (x) => x && Number.isFinite(x.games) && x.games > 0 ? x : null;
-    return { l5: safe(l5), l10: safe(l10), l20: safe(l20) };
-  } catch (error) {
-    console.error(`[NBA] Error fetching rolling stats for team ${teamId}:`, error);
-    return { l5: null, l10: null, l20: null };
-  }
-}
-
-/**
- * Calculate team's last N games stats
- */
-export async function calculateRecentForm(teamId, season = '2025-26', windows = [5, 10, 20]) {
-  try {
-    const form = {};
-    
-    for (const n of windows) {
-      const stats = await fetchTeamLastGames(teamId, season, n);
-      if (stats) {
-        form[`L${n}`] = {
-          games: stats.GP,
-          wins: stats.W,
-          losses: stats.L,
-          winPct: stats.W / stats.GP,
-          pts: stats.PTS / stats.GP,
-          ptsAllowed: stats.OPP_PTS / stats.GP,
-          netRating: ((stats.PTS - stats.OPP_PTS) / stats.GP) * 100 / 100,
-          pace: stats.POSS / stats.GP,
-          offRating: (stats.PTS / stats.POSS) * 100,
-          defRating: (stats.OPP_PTS / stats.POSS) * 100
-        };
-      }
-    }
-    
-    return form;
-    
-  } catch (error) {
-    console.error('[NBA] Error calculating recent form:', error);
-    return {};
-  }
-}
-
-/**
- * Rate limit helper - prevents hammering NBA Stats API
+ * Rate limit helper - prevents hammering stats.nba.com
+ * CRITICAL: stats.nba.com will block if requests too frequent
  */
 let lastRequestTime = 0;
 const MIN_REQUEST_INTERVAL = 600; // 600ms between requests
@@ -360,6 +445,7 @@ export async function rateLimitedFetch(url, options = {}) {
   
   if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
     const waitTime = MIN_REQUEST_INTERVAL - timeSinceLastRequest;
+    console.log(`[NBA] Rate limiting: waiting ${waitTime}ms...`);
     await new Promise(resolve => setTimeout(resolve, waitTime));
   }
   

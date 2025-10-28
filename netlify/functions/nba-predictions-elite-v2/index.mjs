@@ -1,12 +1,13 @@
 /**
- * NBA Elite Predictions V2 - NBA CDN API Version
+ * NBA Elite Predictions V2 - Batched Stats.nba.com Version
  * 
  * IMPROVEMENTS OVER V1:
- * - Uses NBA CDN scoreboard + boxscore data (not broken GitHub files!)
+ * - Uses batched stats.nba.com leaguedashteamstats (6 calls for all 30 teams!)
+ * - ESPN abbreviation normalization (GS→GSW, SA→SAS, NO→NOP, etc.)
+ * - In-memory team data (no fs.readFile failures in serverless)
  * - Always current season data (no stale fallbacks to 2024-25)
- * - Single namespace: NBA CDN throughout (no ESPN/NBA ID mismatches)
- * - Handles early season better (NBA CDN has full historical context)
- * - Faster and more reliable
+ * - Proper headers for stats.nba.com access
+ * - Fast and reliable (6 API calls total vs per-team loops)
  * 
  * KEEPS FROM V1:
  * - Elite Ensemble model (11.606 MAE spread, 85 features)
@@ -15,14 +16,17 @@
  * - RCI adjustments for roster continuity
  * - Injury adjustments (position-weighted)
  * 
- * FIX (Oct 28): Updated loaders.mjs to use NBA CDN scoreboard instead of ESPN
+ * ARCHITECTURE:
+ * - ESPN for schedule (reliable, includes team names/records)
+ * - stats.nba.com for advanced stats (batched league-wide LastNGames)
+ * - The Odds API for live lines (optional)
  */
 
 import { SPREAD_MODEL, TOTAL_MODEL } from '../_lib/nba/models-inline.mjs';
 import { applyRCIAdjustment, getRCISummary } from '../_lib/nba/rci-adjustments.mjs';
 import { getTeamInjuries } from '../_lib/nba/injuries.mjs';
 import { applyInjuryAdjustment, getInjurySummary, getInjuryAdvantage } from '../_lib/nba/injury-adjustments.mjs';
-import { fetchTeamRollingStats, loadTeamInfo } from '../_lib/nba/loaders.mjs';
+import { fetchTeamRollingStats, loadTeamInfo, fetchAllLeagueWindows } from '../_lib/nba/loaders.mjs';
 
 /**
  * Default stats when API data unavailable (fallback)
@@ -801,7 +805,7 @@ function predict(model, features) {
  */
 export default async (request, context) => {
   try {
-    console.log('[NBA Elite V2] Starting predictions with NBA Stats API...');
+    console.log('[NBA Elite V2] Starting predictions with batched stats.nba.com...');
     
     // 1. Fetch today's games from ESPN
     const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
@@ -833,14 +837,19 @@ export default async (request, context) => {
       console.log('[NBA Elite V2] Regular season detected - running full predictions');
     }
     
-    // 3. Load team info for ID lookups
-    const teamInfo = await loadTeamInfo();
+    // 3. Load team info (in-memory, no fs.readFile)
+    const teamInfo = loadTeamInfo();
     console.log('[NBA Elite V2] Loaded team info:', Object.keys(teamInfo.byAbbr).length, 'teams');
     
-    // 4. Fetch live Vegas lines (use correct endpoint for season type)
+    // 4. Fetch ALL league-wide windows ONCE (6 API calls for all 30 teams - super efficient!)
+    console.log('[NBA Elite V2] 🚀 Fetching league-wide L5/L10/L20 stats (6 batched calls)...');
+    const leagueWindows = await fetchAllLeagueWindows('2025-26');
+    console.log('[NBA Elite V2] ✅ League windows ready for', leagueWindows.size, 'teams');
+    
+    // 5. Fetch live Vegas lines (use correct endpoint for season type)
     const vegasLines = await fetchVegasLines(espnData.events.map(e => e.id), isPreseason);
     
-    // 5. Generate predictions
+    // 6. Generate predictions
     const predictions = [];
     
     for (const event of espnData.events) {
@@ -851,19 +860,35 @@ export default async (request, context) => {
         
         console.log(`[NBA Elite V2] Processing: ${away.team.abbreviation} @ ${home.team.abbreviation}`);
         
-        // Get team IDs for NBA Stats API
-        const homeTeamData = teamInfo.byAbbr[home.team.abbreviation];
-        const awayTeamData = teamInfo.byAbbr[away.team.abbreviation];
+        // Get team IDs for NBA Stats API (with abbreviation normalization)
+        // ESPN uses GS, SA, NO, NY, PHO, UTAH
+        // NBA uses GSW, SAS, NOP, NYK, PHX, UTA
+        let homeTeamData = teamInfo.byAbbr[home.team.abbreviation];
+        let awayTeamData = teamInfo.byAbbr[away.team.abbreviation];
+        
+        // Fallback to name lookup if abbreviation fails
+        if (!homeTeamData) {
+          console.log(`[NBA Elite V2] ⚠️  Abbreviation '${home.team.abbreviation}' not found, trying name lookup...`);
+          homeTeamData = teamInfo.byName[home.team.displayName] || teamInfo.byName[home.team.displayName.toLowerCase()];
+        }
+        
+        if (!awayTeamData) {
+          console.log(`[NBA Elite V2] ⚠️  Abbreviation '${away.team.abbreviation}' not found, trying name lookup...`);
+          awayTeamData = teamInfo.byName[away.team.displayName] || teamInfo.byName[away.team.displayName.toLowerCase()];
+        }
         
         if (!homeTeamData || !awayTeamData) {
-          console.log(`[NBA Elite V2] ⚠️  Missing team data for ${home.team.abbreviation} or ${away.team.abbreviation}`);
+          console.error(`[NBA Elite V2] ❌ Missing team data for ${home.team.abbreviation} (${home.team.displayName}) or ${away.team.abbreviation} (${away.team.displayName})`);
+          console.error(`[NBA Elite V2] Available abbreviations:`, Object.keys(teamInfo.byAbbr).join(', '));
           continue;
         }
         
-        // V2: Fetch L5/L10/L20 stats from NBA Stats API (live data, not GitHub box scores!)
+        console.log(`[NBA Elite V2] ✅ Matched: ${away.team.abbreviation} (ID ${awayTeamData.id}) @ ${home.team.abbreviation} (ID ${homeTeamData.id})`);
+        
+        // V2: Fetch L5/L10/L20 stats using pre-fetched league windows (NO additional API calls!)
         const [homeStats, awayStats] = await Promise.all([
-          fetchTeamRollingStats(homeTeamData.id, '2025-26'),
-          fetchTeamRollingStats(awayTeamData.id, '2025-26')
+          fetchTeamRollingStats(homeTeamData.id, '2025-26', leagueWindows),
+          fetchTeamRollingStats(awayTeamData.id, '2025-26', leagueWindows)
         ]);
       
       // Use L10 as baseline, with L5 and L20 for specific features
