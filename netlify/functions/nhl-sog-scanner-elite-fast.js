@@ -144,8 +144,9 @@ async function fetchNHLOdds() {
     
     if (todayEvents.length === 0) return null;
     
-    // Limit to 5 games max for speed
-    const oddsPromises = todayEvents.slice(0, 5).map(async (event) => {
+    // Process all games (no arbitrary limit)
+    // Will naturally respect Netlify 10s timeout, but don't artificially cap coverage
+    const oddsPromises = todayEvents.map(async (event) => {
       try {
         const propsUrl = `https://api.the-odds-api.com/v4/sports/icehockey_nhl/events/${event.id}/odds?regions=us&markets=player_shots_on_goal&oddsFormat=american&dateFormat=iso&apiKey=${apiKey}`;
         const propsResponse = await fetch(propsUrl);
