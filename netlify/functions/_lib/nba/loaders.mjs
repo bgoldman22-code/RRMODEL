@@ -205,60 +205,81 @@ export async function fetchTodaysGames(date = null) {
 }
 
 /**
- * Fetch team's last N games using ESPN scoreboards + NBA CDN boxscores
+ * Helper: Fetch NBA CDN scoreboard for a specific date
+ */
+async function fetchNbaCdnScoreboard(dateYmd) {
+  const url = `${NBA_CDN_BASE}/scoreboard/scoreboard_${dateYmd}.json`;
+  const res = await fetch(url, { headers: NBA_HEADERS });
+  if (!res.ok) {
+    console.log(`[NBA] Scoreboard ${dateYmd} unavailable`);
+    return null;
+  }
+  return res.json();
+}
+
+/**
+ * Helper: Convert Date to YYYYMMDD string
+ */
+function toYmd(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}${m}${day}`;
+}
+
+/**
+ * Fetch team's last N games using NBA CDN scoreboard + boxscores
  * Returns all metrics needed for elite model (85 features)
  * 
  * Two-step process:
- * 1. Scan ESPN daily scoreboards backwards to find completed game IDs for this team
+ * 1. Scan NBA CDN scoreboards backwards to find completed NBA game IDs for this team
  * 2. Fetch detailed box scores from NBA CDN API for each game
  */
 export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10) {
   try {
-    console.log(`[NBA] 📊 Fetching last ${lastN} games for team ${teamId} via ESPN + NBA CDN...`);
+    console.log(`[NBA] 📊 Fetching last ${lastN} games for team ${teamId} via NBA CDN...`);
     
-    // STEP 1: Find game IDs by scanning recent ESPN scoreboards
-    const gameIds = [];
-    const maxDaysBack = 45;
+    // STEP 1: Find NBA game IDs by scanning NBA CDN scoreboards
+    const nbaGameIds = [];
+    const maxDaysBack = 60;
     
-    for (let daysBack = 1; daysBack <= maxDaysBack && gameIds.length < lastN; daysBack++) {
-      const date = new Date();
-      date.setDate(date.getDate() - daysBack);
-      const dateStr = date.toISOString().split('T')[0].replace(/-/g, '');
+    for (let daysBack = 1; daysBack <= maxDaysBack && nbaGameIds.length < lastN; daysBack++) {
+      const dt = new Date();
+      dt.setDate(dt.getDate() - daysBack);
+      const ymd = toYmd(dt);
       
       try {
-        const scoreboardUrl = `${ESPN_BASE}/scoreboard?dates=${dateStr}`;
-        const response = await fetch(scoreboardUrl);
-        if (!response.ok) continue;
+        const sb = await fetchNbaCdnScoreboard(ymd);
+        if (!sb?.scoreboard?.games?.length) continue;
         
-        const data = await response.json();
-        for (const event of data.events || []) {
-          if (!event.status?.type?.completed) continue;
+        for (const g of sb.scoreboard.games) {
+          const home = g.homeTeam;
+          const away = g.awayTeam;
+          const completed = g.gameStatus === 3 || g.gameStatusText?.toLowerCase()?.includes('final');
+          if (!completed) continue;
           
-          const comp = event.competitions?.[0];
-          if (!comp) continue;
-          
-          const home = comp.competitors?.find(c => c.homeAway === 'home');
-          const away = comp.competitors?.find(c => c.homeAway === 'away');
-          
-          if (home?.id === String(teamId) || away?.id === String(teamId)) {
-            gameIds.push(event.id);
+          // NBA CDN uses numeric teamId; ensure same type
+          const tid = parseInt(teamId, 10);
+          if (home?.teamId === tid || away?.teamId === tid) {
+            nbaGameIds.push(g.gameId); // e.g., "0022500001"
+            if (nbaGameIds.length >= lastN) break;
           }
         }
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(r => setTimeout(r, 120));
       } catch (err) {
-        console.log(`[NBA] Scoreboard error for ${dateStr}: ${err.message}`);
+        console.log(`[NBA] Scoreboard error ${ymd}: ${err.message}`);
       }
     }
     
-    if (gameIds.length === 0) {
+    if (!nbaGameIds.length) {
       console.log(`[NBA] ⚠️ No completed games found for team ${teamId}`);
       return null;
     }
     
-    const recentGames = gameIds.slice(0, lastN);
+    const recentGames = nbaGameIds.slice(0, lastN);
     console.log(`[NBA] Found ${recentGames.length} games, fetching NBA CDN boxscores...`);
     
-    // STEP 2: Fetch NBA CDN boxscores
+    // STEP 2: Fetch NBA CDN boxscores (using NBA gameIds ✅)
     let totalStats = {
       games: 0, wins: 0, points: 0, pointsAllowed: 0, possessions: 0,
       fgm: 0, fga: 0, fg3m: 0, fg3a: 0, ftm: 0, fta: 0,
@@ -279,7 +300,7 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
         const game = boxData.game;
         if (!game) continue;
         
-        const isHome = game.homeTeam?.teamId === parseInt(teamId);
+        const isHome = game.homeTeam?.teamId === parseInt(teamId, 10);
         const team = isHome ? game.homeTeam : game.awayTeam;
         const opp = isHome ? game.awayTeam : game.homeTeam;
         
@@ -313,12 +334,12 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
     }
     
     const g = totalStats.games;
-    if (g === 0) {
-      console.log(`[NBA] ⚠️ No valid CDN boxscores for team ${teamId}`);
+    if (!g || g <= 0) {
+      console.log(`[NBA] ⚠️ No valid boxscores aggregated for team ${teamId}`);
       return null;
     }
     
-    // STEP 3: Calculate advanced metrics
+    // STEP 3: Calculate advanced metrics (safe because g > 0)
     const pace = (totalStats.possessions / g / 48) * 48;
     const offRtg = (totalStats.points / totalStats.possessions) * 100;
     const defRtg = (totalStats.pointsAllowed / totalStats.possessions) * 100;
@@ -401,7 +422,9 @@ export async function fetchTeamRollingStats(teamId, season = '2025-26') {
       console.error(`[NBA] ❌ All rolling windows failed for team ${teamId}`);
     }
     
-    return { l5, l10, l20 };
+    // Ensure we don't pass undefined/NaN downstream:
+    const safe = (x) => x && Number.isFinite(x.games) && x.games > 0 ? x : null;
+    return { l5: safe(l5), l10: safe(l10), l20: safe(l20) };
   } catch (error) {
     console.error(`[NBA] Error fetching rolling stats for team ${teamId}:`, error);
     return { l5: null, l10: null, l20: null };
