@@ -1,7 +1,8 @@
-// Reverted to morning baseline version (fe960db) with canonical availability integration and original odds fetch structure.
+// Reverted to morning baseline version (fe960db) with canonical availability integration and ODDS-FIRST probability engine.
 import fs from 'fs/promises';
 import { fetchPlayerPropOdds } from '../../../scripts/fetch-player-prop-odds.js';
-import { calculateRealisticTDProbabilities, buildPlayerAvailability } from './td-probability-engine.mjs';
+import { buildPlayerAvailability } from './td-probability-engine.mjs';
+import { buildSimpleTDProbability, findBestOdds, calculateEdge } from './td-odds-first-engine.mjs';
 
 // Team name mapping for schedule normalization (matches NFL predictions approach)
 function getTeamAbbreviation(fullName) {
@@ -252,45 +253,24 @@ async function generateTDPredictions(games, season='2025', weekNumber){
         weather: null  // TODO: Add weather data
       };
       
-      // USE R PIPELINE PROBABILITIES if available (they're already sophisticated)
-      // Otherwise fall back to canonical availability calculation
-      let tdProbs;
-      if (basePlayer.anytime_td?.probability && basePlayer.first_td?.probability) {
-        // R pipeline has pre-calculated probabilities - use them!
-        tdProbs = {
-          anytime: basePlayer.anytime_td.probability,
-          first: basePlayer.first_td.probability,
-          multiple: basePlayer.multiple_td?.probability || Math.pow(basePlayer.anytime_td.probability, 1.5) * 0.75,
-          confidence: (basePlayer.anytime_td.confidence || 50) / 100,
-          factors: {
-            base: basePlayer.anytime_td.probability,
-            availability: availability?.probPlay || 1.0,
-            data_source: 'r_pipeline_pre_calculated',
-            ...basePlayer.key_factors
-          }
-        };
-        
-        // Adjust for availability if player is questionable/out
-        if (availability?.probPlay < 1.0) {
-          const availabilityAdjustment = availability.probPlay * (0.7 + availability.probPlay * 0.3);
-          tdProbs.anytime *= availabilityAdjustment;
-          tdProbs.first *= availabilityAdjustment;
-          tdProbs.multiple *= availabilityAdjustment;
-        }
-      } else {
-        // No R pipeline data - calculate from scratch
-        tdProbs = calculateRealisticTDProbabilities(
-          basePlayer,
-          availability,
-          gameContext
-        );
-        tdProbs.factors.data_source = 'canonical_availability_calculated';
-      }
-
-      // Join odds by player name (case-insensitive)
+      // USE ODDS-FIRST APPROACH: Build probability from depth + team + matchup
+      // This avoids the stale/corrupted R pipeline data
+      const depthPosition = availability?.depthOrder || basePlayer.depth_chart_position || 1;
+      const tdProbs = buildSimpleTDProbability(basePlayer, depthPosition, availability);
+      
+      // Find best odds for this player
       const oddsEntry = oddsByPlayer[basePlayer.name] || 
                        oddsByPlayer[basePlayer.name.toUpperCase()] || 
                        oddsByPlayer[basePlayer.name.toLowerCase()] || null;
+      
+      const anytimeOdds = findBestOdds(oddsEntry, 'player_anytime_td');
+      const firstOdds = findBestOdds(oddsEntry, 'player_1st_td');
+      const multipleOdds = findBestOdds(oddsEntry, 'player_tds_over');
+      
+      // Calculate edges
+      const anytimeEdge = anytimeOdds ? calculateEdge(tdProbs.anytime, anytimeOdds.bestOdds) : { edge: null, ev: null, impliedProb: null };
+      const firstEdge = firstOdds ? calculateEdge(tdProbs.first, firstOdds.bestOdds) : { edge: null, ev: null, impliedProb: null };
+      const multipleEdge = multipleOdds ? calculateEdge(tdProbs.multiple, multipleOdds.bestOdds) : { edge: null, ev: null, impliedProb: null };
       
       // Convert American odds to implied probability
       function impliedProbFromAmerican(american) {
@@ -344,9 +324,39 @@ async function generateTDPredictions(games, season='2025', weekNumber){
         depth_chart_position: availability?.depthOrder || basePlayer.depth_chart_position || 1,
         injury_status: availability?.status || 'active',
         prob_play: availability?.probPlay || 1.0,
-        anytime_td: marketBlock(tdProbs.anytime, oddsEntry?.player_anytime_td),
-        first_td: marketBlock(tdProbs.first, oddsEntry?.player_1st_td),
-        multiple_td: marketBlock(tdProbs.multiple, oddsEntry?.player_tds_over),
+        anytime_td: {
+          probability: Number(tdProbs.anytime.toFixed(4)),
+          best_odds: anytimeOdds?.bestOdds || null,
+          best_book: anytimeOdds?.bestBook || null,
+          books_count: anytimeOdds?.booksCount || 0,
+          books: oddsEntry?.player_anytime_td?.books || {},
+          implied_prob: anytimeEdge.impliedProb ? Number(anytimeEdge.impliedProb.toFixed(4)) : null,
+          edge: anytimeEdge.edge ? Number(anytimeEdge.edge.toFixed(4)) : null,
+          ev: anytimeEdge.ev ? Number(anytimeEdge.ev.toFixed(4)) : null,
+          odds_qualified: (anytimeOdds?.booksCount || 0) >= 2
+        },
+        first_td: {
+          probability: Number(tdProbs.first.toFixed(4)),
+          best_odds: firstOdds?.bestOdds || null,
+          best_book: firstOdds?.bestBook || null,
+          books_count: firstOdds?.booksCount || 0,
+          books: oddsEntry?.player_1st_td?.books || {},
+          implied_prob: firstEdge.impliedProb ? Number(firstEdge.impliedProb.toFixed(4)) : null,
+          edge: firstEdge.edge ? Number(firstEdge.edge.toFixed(4)) : null,
+          ev: firstEdge.ev ? Number(firstEdge.ev.toFixed(4)) : null,
+          odds_qualified: (firstOdds?.booksCount || 0) >= 2
+        },
+        multiple_td: {
+          probability: Number(tdProbs.multiple.toFixed(4)),
+          best_odds: multipleOdds?.bestOdds || null,
+          best_book: multipleOdds?.bestBook || null,
+          books_count: multipleOdds?.booksCount || 0,
+          books: oddsEntry?.player_tds_over?.books || {},
+          implied_prob: multipleEdge.impliedProb ? Number(multipleEdge.impliedProb.toFixed(4)) : null,
+          edge: multipleEdge.edge ? Number(multipleEdge.edge.toFixed(4)) : null,
+          ev: multipleEdge.ev ? Number(multipleEdge.ev.toFixed(4)) : null,
+          odds_qualified: (multipleOdds?.booksCount || 0) >= 2
+        },
         key_factors: {
           red_zone_targets: basePlayer.redZoneMetrics?.targets || basePlayer.red_zone_targets || 0,
           red_zone_carries: basePlayer.redZoneMetrics?.carries || basePlayer.red_zone_carries || 0,
