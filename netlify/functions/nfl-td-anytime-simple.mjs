@@ -5,9 +5,22 @@
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-const ODDS_API_KEY = process.env.ODDS_API_KEY || 'c5d3fe15e6c5be83b2acd8695cff012b';
+// API key MUST be set in Netlify environment variables
+const ODDS_API_KEY = process.env.THEODDS_API_KEY;
 
 export async function handler(event) {
+  // Validate API key is present
+  if (!ODDS_API_KEY) {
+    console.error('❌ THEODDS_API_KEY not set in environment variables');
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        success: false,
+        error: 'API key not configured'
+      })
+    };
+  }
+  
   try {
     console.log('🏈 Simple Anytime TD API called');
     
