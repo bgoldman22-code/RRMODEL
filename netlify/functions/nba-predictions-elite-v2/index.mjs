@@ -941,6 +941,41 @@ export default async (request, context) => {
     console.log('[NBA Elite V2] Pre-fetch complete. Cached stats for:', Object.keys(statsCache).length, 'teams');
     console.log('[NBA V2] Teams in cache:', Object.keys(statsCache).sort().join(', '));
     
+    // PROOF 1: Source audit - track where stats came from
+    console.log('\n[AUDIT] === SOURCE TRACKING ===');
+    for (const team of Object.keys(statsCache).sort()) {
+      const l10Src = statsCache[team]?.l10?.source || 'unknown';
+      const l20Src = statsCache[team]?.l20?.source || 'unknown';
+      console.log(`[AUDIT] ${team}: L10=${l10Src}, L20=${l20Src}`);
+    }
+    
+    // PROOF 2: Identity check - detect shared object references
+    console.log('\n[AUDIT] === OBJECT IDENTITY CHECKS ===');
+    const teams = Object.keys(statsCache).sort();
+    if (teams.includes('HOU') && teams.includes('TOR')) {
+      console.log(`[AUDIT] HOU===TOR: ${statsCache.HOU === statsCache.TOR}`);
+      console.log(`[AUDIT] HOU.l10===TOR.l10: ${statsCache.HOU?.l10 === statsCache.TOR?.l10}`);
+    }
+    if (teams.includes('CLE') && teams.includes('BOS')) {
+      console.log(`[AUDIT] CLE===BOS: ${statsCache.CLE === statsCache.BOS}`);
+      console.log(`[AUDIT] CLE.l10===BOS.l10: ${statsCache.CLE?.l10 === statsCache.BOS?.l10}`);
+    }
+    if (teams.includes('ATL') && teams.includes('BKN')) {
+      console.log(`[AUDIT] ATL===BKN: ${statsCache.ATL === statsCache.BKN}`);
+      console.log(`[AUDIT] ATL.l10===BKN.l10: ${statsCache.ATL?.l10 === statsCache.BKN?.l10}`);
+    }
+    
+    // PROOF 3: Value fingerprint - show actual numbers for clustered teams
+    console.log('\n[AUDIT] === L10 VALUES (Clustered Teams) ===');
+    const clusteredTeams = ['HOU', 'TOR', 'CLE', 'BOS', 'ORL', 'DET', 'ATL', 'BKN', 'SAC', 'CHI', 'IND', 'DAL'];
+    for (const team of clusteredTeams) {
+      if (statsCache[team]?.l10) {
+        const l10 = statsCache[team].l10;
+        console.log(`[AUDIT] ${team}: offRtg=${l10.offRtg?.toFixed(1)}, defRtg=${l10.defRtg?.toFixed(1)}, netRtg=${l10.netRtg?.toFixed(1)}, ts=${l10.ts?.toFixed(3)}, efg=${l10.efg?.toFixed(3)}`);
+      }
+    }
+    console.log('');
+    
     // GUARD: Fail fast if cache didn't populate correctly
     const cachedCount = Object.keys(statsCache).length;
     if (cachedCount < allTeams.size) {
