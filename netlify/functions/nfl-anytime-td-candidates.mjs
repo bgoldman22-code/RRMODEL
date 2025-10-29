@@ -44,8 +44,9 @@ export async function handler(event) {
     console.log(`🔄 Calling comprehensive TD predictions for Week ${week}...`);
     const response = await comprehensiveHandler(comprehensiveRequest, {});
     
-    // Parse the comprehensive response
-    const comprehensiveData = await response.json();
+    // Parse the comprehensive response (Response object from Netlify function)
+    const responseText = await response.text();
+    const comprehensiveData = JSON.parse(responseText);
     
     if (!comprehensiveData.success) {
       throw new Error(comprehensiveData.message || 'Comprehensive predictions failed');
