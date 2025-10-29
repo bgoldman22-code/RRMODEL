@@ -256,19 +256,31 @@ async function generateTDPredictions(games, season='2025', weekNumber){
   let oddsByPlayer = {};
   let usedCache = false;
   const cached = await loadCachedOdds();
-  if (cached) { oddsByPlayer = cached; usedCache = true; }
+  if (cached) { 
+    oddsByPlayer = cached; 
+    usedCache = true; 
+    console.log(`✅ Using cached odds: ${Object.keys(cached).length} players`);
+  }
   if (!usedCache) {
     try {
       console.log('🔄 Fetching fresh player prop odds from TheOddsAPI...');
+      console.log(`🔑 ODDS_API_KEY present: ${!!process.env.ODDS_API_KEY}`);
       const fresh = await Promise.race([
         fetchPlayerPropOdds(),
         new Promise((_,rej)=>setTimeout(()=>rej(new Error('Odds fetch timeout after 8s')),8000))
       ]);
-      oddsByPlayer = fresh; saveCachedOdds(fresh).catch(()=>{});
-    } catch(e){ console.warn('⚠️ Fresh odds fetch failed, continuing without odds:', e.message); }
+      oddsByPlayer = fresh; 
+      saveCachedOdds(fresh).catch(()=>{});
+      console.log(`✅ Fetched fresh odds: ${Object.keys(fresh).length} players`);
+    } catch(e){ 
+      console.error('❌ Fresh odds fetch failed, continuing without odds:', e.message);
+      console.error('   Stack:', e.stack);
+    }
   } else {
     fetchPlayerPropOdds().then(o=>saveCachedOdds(o).catch(()=>{})).catch(()=>{});
   }
+  
+  console.log(`📊 Total players with odds data: ${Object.keys(oddsByPlayer).length}`);
   console.log('=== NFL TD REALISTIC PREDICTIONS (CANONICAL AVAILABILITY) ===');
   const [playerData, depthCharts, injuryReports] = await Promise.all([
     loadPlayerData(),
@@ -332,6 +344,11 @@ async function generateTDPredictions(games, season='2025', weekNumber){
       const oddsEntry = oddsByPlayer[basePlayer.name] || 
                        oddsByPlayer[basePlayer.name.toUpperCase()] || 
                        oddsByPlayer[basePlayer.name.toLowerCase()] || null;
+      
+      // Log odds match for first few players to debug
+      if (Object.keys(gamePlayerPredictions).length < 3) {
+        console.log(`🔍 Player: ${basePlayer.name}, Odds found: ${!!oddsEntry}, Books: ${oddsEntry ? Object.keys(oddsEntry.player_anytime_td?.books || {}).length : 0}`);
+      }
       
       const anytimeOdds = findBestOdds(oddsEntry, 'player_anytime_td');
       const firstOdds = findBestOdds(oddsEntry, 'player_1st_td');
