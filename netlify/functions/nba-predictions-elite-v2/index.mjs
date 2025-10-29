@@ -556,7 +556,7 @@ function buildEliteFeatures(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20) 
     h10_offRtg: homeL10.offRtg,
     h10_defRtg: homeL10.defRtg,
     h10_netRtg: homeL10.netRtg,
-    h10_efg: homeL10.efg,
+    h10_efg: homeL10.efg * 100,  // FIXED: Consistent scaling with L3
     h10_ts: homeL10.ts * 100,
     h10_tovPct: homeL10.tovPct,
     h10_orbPct: homeL10.orbPct,
@@ -569,7 +569,7 @@ function buildEliteFeatures(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20) 
     a10_offRtg: awayL10.offRtg,
     a10_defRtg: awayL10.defRtg,
     a10_netRtg: awayL10.netRtg,
-    a10_efg: awayL10.efg,
+    a10_efg: awayL10.efg * 100,  // FIXED: Consistent scaling with L3
     a10_ts: awayL10.ts * 100,
     a10_tovPct: awayL10.tovPct,
     a10_orbPct: awayL10.orbPct,
@@ -582,8 +582,8 @@ function buildEliteFeatures(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20) 
     h20_offRtg: homeL20.offRtg,
     h20_defRtg: homeL20.defRtg,
     h20_netRtg: homeL20.netRtg,
-    h20_efg: homeL20.efg,
-    h20_ts: homeL20.ts,
+    h20_efg: homeL20.efg * 100,  // FIXED: Consistent scaling with L3/L10
+    h20_ts: homeL20.ts * 100,    // FIXED: Consistent scaling with L3/L10
     h20_tovPct: homeL20.tovPct,
     h20_orbPct: homeL20.orbPct,
     h20_ftFga: homeL20.ftFga,
@@ -595,8 +595,8 @@ function buildEliteFeatures(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20) 
     a20_offRtg: awayL20.offRtg,
     a20_defRtg: awayL20.defRtg,
     a20_netRtg: awayL20.netRtg,
-    a20_efg: awayL20.efg,
-    a20_ts: awayL20.ts,
+    a20_efg: awayL20.efg * 100,  // FIXED: Consistent scaling with L3/L10
+    a20_ts: awayL20.ts * 100,    // FIXED: Consistent scaling with L3/L10
     a20_tovPct: awayL20.tovPct,
     a20_orbPct: awayL20.orbPct,
     a20_ftFga: awayL20.ftFga,
