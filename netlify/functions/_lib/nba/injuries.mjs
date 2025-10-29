@@ -22,16 +22,21 @@ export async function fetchInjuries() {
     
     const injuries = [];
     
-    for (const team of data.teams || []) {
+    // ESPN API changed structure: data.injuries[] instead of data.teams[]
+    for (const team of data.injuries || []) {
+      const teamAbbr = team.displayName?.includes(' ') 
+        ? team.displayName.split(' ').pop().substring(0, 3).toUpperCase() 
+        : null;
+      
       for (const injury of team.injuries || []) {
         injuries.push({
           playerId: injury.athlete?.id,
           playerName: injury.athlete?.displayName,
-          team: team.team?.abbreviation,
-          teamId: team.team?.id,
+          team: injury.athlete?.team?.abbreviation || teamAbbr,
+          teamId: injury.athlete?.team?.id,
           position: injury.athlete?.position?.abbreviation,
           status: injury.status, // 'Out', 'Questionable', 'Doubtful', 'Day-To-Day'
-          type: injury.type, // 'Injury', 'Illness', 'Personal', 'Rest'
+          type: injury.type?.description || injury.type, // 'Injury', 'Illness', 'Personal', 'Rest'
           description: injury.longComment || injury.shortComment,
           date: injury.date,
           dateModified: injury.dateModified,
