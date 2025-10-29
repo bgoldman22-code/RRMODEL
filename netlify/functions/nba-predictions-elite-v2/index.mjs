@@ -30,6 +30,27 @@ import { applyInjuryAdjustment, getInjurySummary, getInjuryAdvantage } from '../
 import { fetchTeamRollingStats, loadTeamInfo } from '../_lib/nba/loaders.mjs';
 
 /**
+ * ESPN → NBA abbreviation normalization
+ * ESPN uses: GS, SA, NO, NY, PHO, UTAH
+ * NBA uses: GSW, SAS, NOP, NYK, PHX, UTA
+ */
+const ESPN_TO_NBA_ABBR = {
+  'GS': 'GSW',
+  'SA': 'SAS',
+  'NO': 'NOP',
+  'NY': 'NYK',
+  'PHO': 'PHX',
+  'UTAH': 'UTA'
+};
+
+/**
+ * Normalize ESPN abbreviation to NBA abbreviation
+ */
+function normalizeAbbr(abbr) {
+  return ESPN_TO_NBA_ABBR[abbr] || abbr;
+}
+
+/**
  * Default stats when API data unavailable (fallback)
  */
 function getDefaultStats() {
@@ -788,14 +809,29 @@ function buildSimpleFeatures(homeStats, awayStats) {
 function predict(model, features) {
   const { weights, bias, means, stds } = model;
   
-  // Normalize and predict
+  // Track missing features
   let pred = bias;
+  let missing = 0;
+  
   for (const [key, weight] of Object.entries(weights)) {
-    const value = features[key] || 0;
-    const mean = means[key] || 0;
-    const std = stds[key] || 1;
+    if (!(key in features)) { 
+      missing++; 
+      continue; 
+    }
+    const value = features[key];
+    if (!Number.isFinite(value)) { 
+      missing++; 
+      continue; 
+    }
+    const mean = means[key] ?? 0;
+    const std = stds[key] ?? 1;
     const normalized = std > 0 ? (value - mean) / std : 0;
     pred += weight * normalized;
+  }
+  
+  // Guard against low-information feature vectors
+  if (missing > 8) { // ~15% of 55 features
+    throw new Error(`[NBA V2] Feature vector low information (missing=${missing}/55 features)`);
   }
   
   return pred;
@@ -852,8 +888,9 @@ export default async (request, context) => {
       const comp = event.competitions[0];
       const home = comp.competitors.find(c => c.homeAway === 'home');
       const away = comp.competitors.find(c => c.homeAway === 'away');
-      allTeams.add(home.team.abbreviation);
-      allTeams.add(away.team.abbreviation);
+      // Normalize ESPN abbreviations to NBA abbreviations
+      allTeams.add(normalizeAbbr(home.team.abbreviation));
+      allTeams.add(normalizeAbbr(away.team.abbreviation));
     }
     
     // Fetch ALL team stats in parallel (20 teams max, 3 requests each = 60 total, but all parallel)
@@ -861,20 +898,28 @@ export default async (request, context) => {
     const injuryCache = {};
     
     await Promise.all(
-      Array.from(allTeams).map(async (abbr) => {
+      Array.from(allTeams).map(async (nbaAbbr) => {
         try {
-          const teamData = teamInfo.byAbbr[abbr] || teamInfo.byName[abbr];
+          const teamData = teamInfo.byAbbr[nbaAbbr];
           if (teamData) {
-            statsCache[abbr] = await fetchTeamRollingStats(teamData.id, '2025-26');
+            statsCache[nbaAbbr] = await fetchTeamRollingStats(teamData.id, '2025-26');
+          } else {
+            console.warn(`[NBA Elite V2] ⚠️  No team data found for: ${nbaAbbr}`);
           }
-          injuryCache[abbr] = await getTeamInjuries(abbr);
+          injuryCache[nbaAbbr] = await getTeamInjuries(nbaAbbr);
         } catch (err) {
-          console.error(`[NBA Elite V2] Error pre-fetching ${abbr}:`, err.message);
+          console.error(`[NBA Elite V2] Error pre-fetching ${nbaAbbr}:`, err.message);
         }
       })
     );
     
     console.log('[NBA Elite V2] Pre-fetch complete. Cached stats for:', Object.keys(statsCache).length, 'teams');
+    
+    // GUARD: Fail fast if cache didn't populate correctly
+    const cachedCount = Object.keys(statsCache).length;
+    if (cachedCount < allTeams.size) {
+      throw new Error(`[NBA V2] Stats cache incomplete: ${cachedCount}/${allTeams.size} teams. Abbreviation mapping likely failed.`);
+    }
     
     // 5. Generate predictions
     const predictions = [];
@@ -887,34 +932,25 @@ export default async (request, context) => {
         
         console.log(`[NBA Elite V2] Processing: ${away.team.abbreviation} @ ${home.team.abbreviation}`);
         
-        // Get team IDs for NBA Stats API (with abbreviation normalization)
-        // ESPN uses GS, SA, NO, NY, PHO, UTAH
-        // NBA uses GSW, SAS, NOP, NYK, PHX, UTA
-        let homeTeamData = teamInfo.byAbbr[home.team.abbreviation];
-        let awayTeamData = teamInfo.byAbbr[away.team.abbreviation];
+        // Normalize abbreviations for consistent lookups
+        const homeAbbr = normalizeAbbr(home.team.abbreviation);
+        const awayAbbr = normalizeAbbr(away.team.abbreviation);
         
-        // Fallback to name lookup if abbreviation fails
-        if (!homeTeamData) {
-          console.log(`[NBA Elite V2] ⚠️  Abbreviation '${home.team.abbreviation}' not found, trying name lookup...`);
-          homeTeamData = teamInfo.byName[home.team.displayName] || teamInfo.byName[home.team.displayName.toLowerCase()];
-        }
-        
-        if (!awayTeamData) {
-          console.log(`[NBA Elite V2] ⚠️  Abbreviation '${away.team.abbreviation}' not found, trying name lookup...`);
-          awayTeamData = teamInfo.byName[away.team.displayName] || teamInfo.byName[away.team.displayName.toLowerCase()];
-        }
+        // Get team IDs for NBA Stats API (using normalized abbreviations)
+        const homeTeamData = teamInfo.byAbbr[homeAbbr];
+        const awayTeamData = teamInfo.byAbbr[awayAbbr];
         
         if (!homeTeamData || !awayTeamData) {
-          console.error(`[NBA Elite V2] ❌ Missing team data for ${home.team.abbreviation} (${home.team.displayName}) or ${away.team.abbreviation} (${away.team.displayName})`);
+          console.error(`[NBA Elite V2] ❌ Missing team data for ${homeAbbr} or ${awayAbbr} (ESPN: ${home.team.abbreviation} / ${away.team.abbreviation})`);
           console.error(`[NBA Elite V2] Available abbreviations:`, Object.keys(teamInfo.byAbbr).join(', '));
           continue;
         }
         
-        console.log(`[NBA Elite V2] ✅ Matched: ${away.team.abbreviation} (ID ${awayTeamData.id}) @ ${home.team.abbreviation} (ID ${homeTeamData.id})`);
+        console.log(`[NBA Elite V2] ✅ Matched: ${awayAbbr} (ID ${awayTeamData.id}) @ ${homeAbbr} (ID ${homeTeamData.id})`);
         
         // V2: Use cached stats instead of fetching per game
-        const homeStats = statsCache[home.team.abbreviation] || { l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
-        const awayStats = statsCache[away.team.abbreviation] || { l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
+        const homeStats = statsCache[homeAbbr] || { l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
+        const awayStats = statsCache[awayAbbr] || { l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
       
       // Use L10 as baseline, with L5 and L20 for specific features
       const homeL3Raw = homeStats.l5 || getDefaultStats();  // Use L5 as proxy for L3
@@ -941,19 +977,19 @@ export default async (request, context) => {
       const homeGamesPlayed = homeL10Raw.games; // Home team's current season games
       const awayGamesPlayed = awayL10Raw.games; // Away team's current season games
       
-      const homeL3 = applyRCIAdjustment(homeL3Raw, home.team.abbreviation, homeGamesPlayed);
-      const homeL10 = applyRCIAdjustment(homeL10Raw, home.team.abbreviation, homeGamesPlayed);
-      const homeL20 = applyRCIAdjustment(homeL20Raw, home.team.abbreviation, homeGamesPlayed);
+      const homeL3 = applyRCIAdjustment(homeL3Raw, homeAbbr, homeGamesPlayed);
+      const homeL10 = applyRCIAdjustment(homeL10Raw, homeAbbr, homeGamesPlayed);
+      const homeL20 = applyRCIAdjustment(homeL20Raw, homeAbbr, homeGamesPlayed);
       
-      const awayL3 = applyRCIAdjustment(awayL3Raw, away.team.abbreviation, awayGamesPlayed);
-      const awayL10 = applyRCIAdjustment(awayL10Raw, away.team.abbreviation, awayGamesPlayed);
-      const awayL20 = applyRCIAdjustment(awayL20Raw, away.team.abbreviation, awayGamesPlayed);
+      const awayL3 = applyRCIAdjustment(awayL3Raw, awayAbbr, awayGamesPlayed);
+      const awayL10 = applyRCIAdjustment(awayL10Raw, awayAbbr, awayGamesPlayed);
+      const awayL20 = applyRCIAdjustment(awayL20Raw, awayAbbr, awayGamesPlayed);
       
       // Log RCI adjustments for transparency
-      const homeRCI = getRCISummary(home.team.abbreviation, homeGamesPlayed);
-      const awayRCI = getRCISummary(away.team.abbreviation, awayGamesPlayed);
-      console.log(`[RCI] ${home.team.abbreviation}:`, homeRCI);
-      console.log(`[RCI] ${away.team.abbreviation}:`, awayRCI);
+      const homeRCI = getRCISummary(homeAbbr, homeGamesPlayed);
+      const awayRCI = getRCISummary(awayAbbr, awayGamesPlayed);
+      console.log(`[RCI] ${homeAbbr}:`, homeRCI);
+      console.log(`[RCI] ${awayAbbr}:`, awayRCI);
       
       // Fetch and apply injury adjustments (separate from RCI)
       let homeInjuries = [];
@@ -964,8 +1000,8 @@ export default async (request, context) => {
       
       try {
         // Use cached injuries instead of fetching per game
-        homeInjuries = injuryCache[home.team.abbreviation] || [];
-        awayInjuries = injuryCache[away.team.abbreviation] || [];
+        homeInjuries = injuryCache[homeAbbr] || [];
+        awayInjuries = injuryCache[awayAbbr] || [];
         
         // Apply injury adjustments on top of RCI-adjusted stats for all windows
         const homeL3WithInjuries = applyInjuryAdjustment(homeL3, homeInjuries);
@@ -1551,6 +1587,19 @@ export default async (request, context) => {
         status: isPreseason ? '⚠️ Preseason - Observation Only' : 'Regular Season - Full Tracking'
       }
     };
+    
+    // GUARD: Detect spread variance collapse
+    if (predictions.length > 0) {
+      const spreads = predictions.map(p => p.prediction.spread.prediction);
+      const mean = spreads.reduce((a, b) => a + b, 0) / spreads.length;
+      const stdev = Math.sqrt(spreads.reduce((s, x) => s + (x - mean) ** 2, 0) / spreads.length);
+      
+      console.log(`[NBA V2] Spread variance check: stdev=${stdev.toFixed(2)}, min=${Math.min(...spreads).toFixed(1)}, max=${Math.max(...spreads).toFixed(1)}`);
+      
+      if (stdev < 1.0) {
+        throw new Error(`[NBA V2] Spread variance collapsed (stdev=${stdev.toFixed(2)}) – check prefetch + feature inputs`);
+      }
+    }
     
     const jsonString = JSON.stringify(responseData);
     const sizeInKB = (jsonString.length / 1024).toFixed(2);
