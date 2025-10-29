@@ -3,7 +3,6 @@
  * Fetches odds from The Odds API and calculates edge using our model
  */
 
-import { buildSimpleTDProbability } from './nfl-td-comprehensive-predictions/td-odds-first-engine.mjs';
 import fs from 'fs/promises';
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
@@ -35,6 +34,43 @@ async function loadPlayerData() {
     console.warn('⚠️ Could not load player data, edge calculation will be limited:', error.message);
     return { players: [] };
   }
+}
+
+// Simple model probability calculation (inline version to avoid import issues)
+function calculateModelProbability(player, opponent) {
+  const { position, team, depth_chart_position, key_factors } = player;
+  
+  // Position baselines
+  const BASELINES = {
+    'RB': depth_chart_position === 1 ? 0.52 : 0.28,
+    'WR': depth_chart_position === 1 ? 0.42 : depth_chart_position === 2 ? 0.28 : 0.16,
+    'TE': depth_chart_position === 1 ? 0.36 : 0.14,
+    'QB': 0.15
+  };
+  
+  // Team quality multipliers
+  const TEAM_QUALITY = {
+    'KC': 1.35, 'BUF': 1.32, 'SF': 1.28, 'MIA': 1.26, 'DAL': 1.24, 'PHI': 1.22,
+    'DET': 1.20, 'BAL': 1.18, 'CIN': 1.15, 'LAC': 1.12, 'MIN': 1.10, 'HOU': 1.08,
+    'GB': 1.05, 'LAR': 1.02, 'SEA': 1.00, 'ATL': 0.98, 'TB': 0.96, 'JAX': 0.92,
+    'NO': 0.90, 'IND': 0.88, 'NYJ': 0.85, 'PIT': 0.83, 'CLE': 0.80, 'TEN': 0.78,
+    'LV': 0.75, 'DEN': 0.73, 'WAS': 0.72, 'CHI': 0.70, 'NE': 0.68, 'NYG': 0.65,
+    'CAR': 0.63, 'ARI': 0.60
+  };
+  
+  // Defensive matchup (easier/harder vs position)
+  const DEFENSIVE_MATCHUP = {
+    'RB': { 'CAR': 1.35, 'ARI': 1.30, 'NYG': 1.28, 'DET': 0.55, 'PHI': 0.60, 'KC': 0.58 },
+    'WR': { 'LV': 1.35, 'CAR': 1.32, 'TEN': 1.28, 'DET': 0.55, 'PHI': 0.58, 'KC': 0.60 },
+    'TE': { 'ARI': 1.35, 'LV': 1.32, 'CAR': 1.28, 'DET': 0.55, 'PHI': 0.58, 'KC': 0.60 }
+  };
+  
+  const baseline = BASELINES[position] || 0.12;
+  const teamFactor = TEAM_QUALITY[team] || 1.0;
+  const defenseFactor = (DEFENSIVE_MATCHUP[position] && DEFENSIVE_MATCHUP[position][opponent]) || 1.0;
+  const snapFactor = (key_factors?.snap_percentage || 75) / 75;
+  
+  return Math.min(0.95, baseline * teamFactor * defenseFactor * snapFactor);
 }
 
 export async function handler(event) {
@@ -138,15 +174,9 @@ export async function handler(event) {
               playerTeam = team;
               opponent = team === homeTeam ? awayTeam : homeTeam;
               
-              // Calculate model probability using our engine
+              // Calculate model probability using inline function
               try {
-                const tdProbs = buildSimpleTDProbability(
-                  { position: matchedPlayer.position, team: playerTeam },
-                  matchedPlayer.depth_chart_position || 1,
-                  { status: 'active', snap_pct: matchedPlayer.key_factors?.snap_percentage || 75 },
-                  opponent
-                );
-                modelProb = tdProbs.anytime;
+                modelProb = calculateModelProbability(matchedPlayer, opponent);
                 edge = modelProb - impliedProb;
               } catch (err) {
                 console.warn(`⚠️ Could not calculate model prob for ${player.name}:`, err.message);

@@ -1579,7 +1579,9 @@ export default async (request, context) => {
             line: parseFloat(Math.abs(spreadPred).toFixed(1)),
             display: spreadPred > 0 
               ? `${home.team.abbreviation} -${Math.abs(spreadPred).toFixed(1)}`
-              : `${away.team.abbreviation} -${Math.abs(spreadPred).toFixed(1)}`
+              : spreadPred < 0
+                ? `${away.team.abbreviation} -${Math.abs(spreadPred).toFixed(1)}`
+                : `${home.team.abbreviation} ${spreadPred.toFixed(1)}`
           },
           total: {
             prediction: parseFloat(totalPred.toFixed(1)),
@@ -1588,7 +1590,9 @@ export default async (request, context) => {
           },
           winProbability: {
             home: parseFloat((winProb * 100).toFixed(1)),
-            away: parseFloat(((1 - winProb) * 100).toFixed(1))
+            away: parseFloat(((1 - winProb) * 100).toFixed(1)),
+            favoriteTeam: winProb > 0.5 ? home.team.abbreviation : away.team.abbreviation,
+            favoritePercent: parseFloat((Math.max(winProb, 1 - winProb) * 100).toFixed(1))
           },
           confidence,
           seasonNote // Early season warning if applicable
@@ -1639,6 +1643,12 @@ export default async (request, context) => {
           moneyline: gameVegasLines.moneyline?.fair?.homePrice != null ? {
             home: gameVegasLines.moneyline.fair.homePrice,
             away: gameVegasLines.moneyline.fair.awayPrice,
+            homeDisplay: gameVegasLines.moneyline.fair.homePrice > 0 
+              ? `${home.team.abbreviation} +${gameVegasLines.moneyline.fair.homePrice}`
+              : `${home.team.abbreviation} ${gameVegasLines.moneyline.fair.homePrice}`,
+            awayDisplay: gameVegasLines.moneyline.fair.awayPrice > 0 
+              ? `${away.team.abbreviation} +${gameVegasLines.moneyline.fair.awayPrice}`
+              : `${away.team.abbreviation} ${gameVegasLines.moneyline.fair.awayPrice}`,
             fairBook: gameVegasLines.moneyline.fair.book,
             placementBook: gameVegasLines.moneyline.placement?.book,
             vig: gameVegasLines.moneyline.fair.vig
