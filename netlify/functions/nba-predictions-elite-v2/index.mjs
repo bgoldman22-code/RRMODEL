@@ -1142,6 +1142,7 @@ export default async (request, context) => {
             kelly: spreadEdge.kellyFraction,
             betSize: spreadEdge.betSize,
             units: spreadEdge.units,
+            confidence, // Add confidence level
             book: placementBook,
             fairBook: gameVegasLines.spread.fair.book, // Track which book was used for fair calc
             fairVig: gameVegasLines.spread.fair.vig.toFixed(1), // Log vig for audit
@@ -1220,6 +1221,7 @@ export default async (request, context) => {
               kelly: mlKelly.kellyFraction,
               betSize: mlKelly.betSize,
               units: mlKelly.units,
+              confidence, // Add confidence level
               book: placementBook,
               fairBook: gameVegasLines.moneyline.fair.book,
               fairVig: gameVegasLines.moneyline.fair.vig.toFixed(1),
@@ -1330,6 +1332,23 @@ export default async (request, context) => {
           const totalImpliedProb = Math.abs(fairOdds) / (Math.abs(fairOdds) + 100);
           const totalEdgePercent = (totalEdge / fairLine) * 100;
           
+          // Estimate total probability based on edge (simplified model)
+          // If model predicts Over by 5 points on a 220 line, that's ~2.3% difference
+          // Convert edge to rough probability estimate: larger edge = higher confidence
+          const totalModelProb = pickOver 
+            ? 0.5 + (totalEdge / fairLine) * 0.5  // Edge boosts probability from 50%
+            : 0.5 + (totalEdge / fairLine) * 0.5;
+          
+          // Calculate Kelly for totals
+          const totalKelly = calculateEdgeAndKelly(
+            totalModelProb * 100,
+            totalModelProb > 0.5 ? -110 : 110, // Dummy, we use actual odds
+            placementOdds,
+            totalModelProb,
+            5000,
+            seasonAdjustment
+          );
+          
           totalOpp = {
             market: 'Total',
             pick: pickOver ? `Over ${fairLine}` : `Under ${fairLine}`,
@@ -1338,9 +1357,10 @@ export default async (request, context) => {
             odds: placementOdds, // Placement odds
             edge: totalEdge.toFixed(1),
             edgePercent: totalEdgePercent,
-            kelly: null, // Would need more sophisticated total prob model
-            betSize: null,
-            units: null,
+            kelly: totalKelly.kellyFraction,
+            betSize: totalKelly.betSize,
+            units: totalKelly.units,
+            confidence, // Add confidence level
             book: placementBook,
             fairBook: gameVegasLines.total.fair.book,
             fairVig: gameVegasLines.total.fair.vig.toFixed(1),
