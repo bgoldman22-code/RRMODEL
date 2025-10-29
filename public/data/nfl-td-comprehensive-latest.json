@@ -3,7 +3,7 @@
   "metadata": {
     "model": "realistic-canonical-availability-v1",
     "data_source": "live_data_with_canonical_availability",
-    "generated_at": "2025-10-29T13:48:06.732Z",
+    "generated_at": "2025-10-29T14:02:25.331Z",
     "games_processed": 14,
     "total_players": 513,
     "uses_canonical_availability": true,
@@ -228,13 +228,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.26,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0040198",
@@ -393,13 +399,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.18,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033376",
@@ -503,13 +515,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.18,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038454",
@@ -558,13 +576,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.18,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0032688",
@@ -888,13 +912,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.26,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0030564",
@@ -943,13 +973,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.18,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0031235",
@@ -1163,13 +1199,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.18,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036630",
@@ -1273,13 +1315,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.18,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039792",
@@ -1383,13 +1431,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.18,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037838",
@@ -1438,13 +1492,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.18,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038046",
@@ -1603,13 +1663,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.18,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0031785",
@@ -2001,7 +2067,7 @@
         "total_players": 36,
         "high_confidence_count": 27,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -2113,13 +2179,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.15,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033009",
@@ -2278,13 +2350,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.15,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036900",
@@ -2333,13 +2411,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.15,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038576",
@@ -2443,13 +2527,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.15,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038839",
@@ -2553,13 +2643,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.15,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034829",
@@ -2608,13 +2704,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.15,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034970",
@@ -2773,13 +2875,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.15,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033925",
@@ -2883,13 +2991,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.7,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036297",
@@ -3048,13 +3162,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.7,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034827",
@@ -3103,13 +3223,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.7,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036326",
@@ -3213,13 +3339,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.7,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0040735",
@@ -3378,13 +3510,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.7,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035100",
@@ -3433,13 +3571,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.15,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036442",
@@ -3488,13 +3632,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.15,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034779",
@@ -3873,13 +4023,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.7,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039918",
@@ -3928,13 +4084,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.7,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0031101",
@@ -4161,7 +4323,7 @@
         "total_players": 39,
         "high_confidence_count": 14,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -4273,13 +4435,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.2,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039139",
@@ -4328,13 +4496,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.2,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0032918",
@@ -4603,13 +4777,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.1,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0032464",
@@ -4658,13 +4838,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.2,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033375",
@@ -4829,13 +5015,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.2,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0040669",
@@ -4884,13 +5076,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.2,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034487",
@@ -5049,13 +5247,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.1,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037291",
@@ -5104,13 +5308,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.1,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038994",
@@ -5159,13 +5369,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.1,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036754",
@@ -5269,13 +5485,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.2,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033246",
@@ -5379,13 +5601,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.1,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035249",
@@ -5434,13 +5662,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.1,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033106",
@@ -5489,13 +5723,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.2,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034869",
@@ -5599,13 +5839,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.1,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0032165",
@@ -6109,13 +6355,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.05,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036265",
@@ -6219,13 +6471,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.05,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038797",
@@ -6274,13 +6532,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.05,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037816",
@@ -6329,13 +6593,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.05,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038124",
@@ -6384,13 +6654,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.05,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038393",
@@ -6439,13 +6715,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.05,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038465",
@@ -6549,13 +6831,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.05,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037306",
@@ -6714,13 +7002,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.05,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039144",
@@ -6769,13 +7063,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.05,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036139",
@@ -6824,13 +7124,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.63,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036555",
@@ -6879,13 +7185,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.63,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0030035",
@@ -7044,13 +7356,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.63,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035216",
@@ -7154,13 +7472,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.63,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039491",
@@ -7209,13 +7533,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.63,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034830",
@@ -7319,13 +7649,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.63,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039356",
@@ -7374,13 +7710,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.63,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036264",
@@ -7429,13 +7771,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.05,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038128",
@@ -7484,13 +7832,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.05,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037091",
@@ -7759,13 +8113,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.63,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0032052",
@@ -8047,7 +8407,7 @@
         "total_players": 36,
         "high_confidence_count": 9,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -8104,13 +8464,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.08,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033897",
@@ -8159,13 +8525,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.08,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034791",
@@ -8214,13 +8586,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.08,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034959",
@@ -8324,13 +8702,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.08,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0030431",
@@ -8489,13 +8873,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.08,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037614",
@@ -8654,13 +9044,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.08,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036556",
@@ -8874,13 +9270,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.73,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038794",
@@ -8929,13 +9331,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.73,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039373",
@@ -9094,13 +9502,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.73,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035406",
@@ -9314,13 +9728,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.73,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036422",
@@ -9369,13 +9789,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.73,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037539",
@@ -9534,13 +9960,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.08,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036992",
@@ -9644,13 +10076,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.73,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0029764",
@@ -9767,7 +10205,7 @@
         "total_players": 31,
         "high_confidence_count": 10,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -9824,13 +10262,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.98,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038542",
@@ -9879,13 +10323,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.98,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034407",
@@ -10099,13 +10549,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.98,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037238",
@@ -10154,13 +10610,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.98,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035806",
@@ -10319,13 +10781,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.68,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037286",
@@ -10539,13 +11007,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.68,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036345",
@@ -10704,13 +11178,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.68,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038621",
@@ -10759,13 +11239,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.68,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039880",
@@ -10924,13 +11410,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.68,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033090",
@@ -10979,13 +11471,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.68,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033439",
@@ -11584,13 +12082,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.68,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0030062",
@@ -11982,7 +12486,7 @@
         "total_players": 40,
         "high_confidence_count": 7,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -12094,13 +12598,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.28,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035973",
@@ -12259,13 +12769,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.28,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036259",
@@ -12314,13 +12830,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.28,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036261",
@@ -12369,13 +12891,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.28,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038647",
@@ -12479,13 +13007,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.28,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033288",
@@ -12534,13 +13068,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.28,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033576",
@@ -12699,13 +13239,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.28,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033308",
@@ -12809,13 +13355,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.65,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039384",
@@ -12974,13 +13526,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.65,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036165",
@@ -13139,13 +13697,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.65,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039337",
@@ -13414,13 +13978,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.65,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033949",
@@ -13524,13 +14094,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.28,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036409",
@@ -14032,7 +14608,7 @@
         "total_players": 37,
         "high_confidence_count": 13,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -14089,13 +14665,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.88,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036984",
@@ -14199,13 +14781,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.88,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0030578",
@@ -14364,13 +14952,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.83,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037228",
@@ -14419,13 +15013,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.83,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039299",
@@ -14694,13 +15294,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.88,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038997",
@@ -14749,13 +15355,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.88,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033536",
@@ -14859,13 +15471,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.83,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036415",
@@ -15299,13 +15917,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.83,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036894",
@@ -15354,13 +15978,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.83,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037304",
@@ -15464,13 +16094,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.83,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035289",
@@ -15574,13 +16210,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.88,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039164",
@@ -15972,7 +16614,7 @@
         "total_players": 35,
         "high_confidence_count": 8,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -16139,13 +16781,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.12,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039391",
@@ -16194,13 +16842,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.12,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0040666",
@@ -16249,13 +16903,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.12,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0030279",
@@ -16304,13 +16964,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.12,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0032543",
@@ -16634,13 +17300,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.12,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038573",
@@ -16744,13 +17416,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.12,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035261",
@@ -16799,13 +17477,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.78,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039032",
@@ -16854,13 +17538,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.78,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033895",
@@ -17129,13 +17819,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.78,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036182",
@@ -17294,13 +17990,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.78,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0032394",
@@ -17404,13 +18106,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.78,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038589",
@@ -17569,13 +18277,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.12,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0030070",
@@ -18517,7 +19231,7 @@
         "total_players": 46,
         "high_confidence_count": 20,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -18794,13 +19508,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.9,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033948",
@@ -19619,13 +20339,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.9,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037545",
@@ -19674,13 +20400,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.9,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038612",
@@ -19839,13 +20571,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.9,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033110",
@@ -20169,13 +20907,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.9,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036741",
@@ -20677,7 +21421,7 @@
         "total_players": 39,
         "high_confidence_count": 14,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -20844,13 +21588,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.92,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0029239",
@@ -21064,13 +21814,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.75,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0040122",
@@ -21119,13 +21875,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.75,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033572",
@@ -21394,13 +22156,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.92,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038606",
@@ -21449,13 +22217,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.92,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039893",
@@ -21614,13 +22388,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.92,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038935",
@@ -21669,13 +22449,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.92,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034960",
@@ -21724,13 +22510,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.75,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036183",
@@ -21889,13 +22681,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.75,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0040164",
@@ -21999,13 +22797,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.75,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039338",
@@ -22054,13 +22858,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.75,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036971",
@@ -22109,13 +22919,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.92,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036972",
@@ -22452,7 +23268,7 @@
         "total_players": 32,
         "high_confidence_count": 3,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -22619,13 +23435,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.35,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036360",
@@ -22729,13 +23551,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.35,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0030513",
@@ -22839,13 +23667,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.32,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035657",
@@ -23004,13 +23838,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.32,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033857",
@@ -23059,13 +23899,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.35,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034386",
@@ -23334,13 +24180,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.35,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039067",
@@ -23389,13 +24241,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.35,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039894",
@@ -23444,13 +24302,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.35,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0031544",
@@ -23554,13 +24418,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.32,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036980",
@@ -23609,13 +24479,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.32,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037261",
@@ -23664,13 +24540,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.32,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038679",
@@ -23774,13 +24656,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.32,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0030506",
@@ -23829,13 +24717,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.35,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0032062",
@@ -23939,13 +24833,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.35,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035689",
@@ -23994,13 +24894,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.32,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0036590",
@@ -24104,13 +25010,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.32,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0040194",
@@ -24159,13 +25071,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.32,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033873",
@@ -24269,13 +25187,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.32,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034387",
@@ -24502,7 +25426,7 @@
         "total_players": 37,
         "high_confidence_count": 31,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -24614,13 +25538,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0032211",
@@ -24834,13 +25764,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038752",
@@ -24944,13 +25880,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0033699",
@@ -25054,13 +25996,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.72,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037746",
@@ -25219,13 +26167,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.72,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039793",
@@ -25274,13 +26228,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0031941",
@@ -25384,13 +26344,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.72,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035208",
@@ -25494,13 +26460,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.72,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035719",
@@ -25604,13 +26576,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.72,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0030061",
@@ -25659,13 +26637,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.72,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0031260",
@@ -25934,13 +26918,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.72,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037077",
@@ -26044,13 +27034,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.72,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034571",
@@ -26332,7 +27328,7 @@
         "total_players": 33,
         "high_confidence_count": 8,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }
@@ -26499,13 +27495,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.24,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038738",
@@ -26719,13 +27721,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.24,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037247",
@@ -26774,13 +27782,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.24,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037666",
@@ -26829,13 +27843,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.24,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037801",
@@ -26884,13 +27904,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.24,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038640",
@@ -26994,13 +28020,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.24,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038547",
@@ -27269,13 +28301,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.6,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038705",
@@ -27324,13 +28362,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.6,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039921",
@@ -27379,13 +28423,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.6,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.52,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0035500",
@@ -27599,13 +28649,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.6,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039849",
@@ -27709,13 +28765,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.6,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.36,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0039041",
@@ -27819,13 +28881,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.24,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0034968",
@@ -28094,13 +29162,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 0.6,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.15,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0038582",
@@ -28437,7 +29511,7 @@
         "total_players": 38,
         "high_confidence_count": 13,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }

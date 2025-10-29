@@ -381,25 +381,33 @@ function findPlayerInjury(playerName, team, injuryReports) {
  * Find player depth chart position
  */
 function findPlayerDepth(playerName, position, team, depthCharts) {
-  if (!depthCharts || !depthCharts[team]) return null;
+  if (!depthCharts || !depthCharts[team]) {
+    // DEBUG: Log why we're failing
+    if (team === 'DAL' && position === 'WR') {
+      console.log(`DEBUG findPlayerDepth: team=${team}, player=${playerName}, position=${position}, hasDepthCharts=${!!depthCharts}, hasTeam=${!!depthCharts?.[team]}, teams=${Object.keys(depthCharts || {}).slice(0,5).join(',')}`);
+    }
+    return null;
+  }
   
   const teamDepth = depthCharts[team];
   const positionDepth = teamDepth[position] || [];
   
-  const normalizedName = playerName.toLowerCase().trim().replace(/\./g, '');
+  // Normalize: lowercase, trim, replace periods with space (e.g., "C.Lamb" -> "c lamb")
+  const normalizedName = playerName.toLowerCase().trim().replace(/\./g, ' ').replace(/\s+/g, ' ');
   
   for (let i = 0; i < positionDepth.length; i++) {
-    const depthName = (positionDepth[i] || '').toLowerCase().trim();
+    const depthName = (positionDepth[i] || '').toLowerCase().trim().replace(/\s+/g, ' ');
     
     // Exact match
-    if (depthName === normalizedName || depthName.includes(normalizedName)) {
+    if (depthName === normalizedName) {
+      console.log(`✅ MATCH: ${playerName} matched ${positionDepth[i]} at depth ${i+1}`);
       return {
         position: i + 1,
         timestamp: teamDepth.timestamp || Date.now()
       };
     }
     
-    // Try initial + last name match (e.g., "C.Lamb" matches "CeeDee Lamb")
+    // Try last name + first initial match (e.g., "c lamb" matches "ceedee lamb")
     const depthParts = depthName.split(' ');
     const nameParts = normalizedName.split(' ');
     if (depthParts.length >= 2 && nameParts.length >= 2) {
@@ -410,6 +418,20 @@ function findPlayerDepth(playerName, position, team, depthCharts) {
       
       // Match if last names match and first initials match
       if (depthLastName === nameLastName && depthFirstInitial === nameFirstInitial) {
+        console.log(`✅ MATCH (initial): ${playerName} matched ${positionDepth[i]} at depth ${i+1}`);
+        return {
+          position: i + 1,
+          timestamp: teamDepth.timestamp || Date.now()
+        };
+      }
+    }
+    
+    // Try partial match on last name only (fallback)
+    if (normalizedName.includes(' ') && depthName.includes(' ')) {
+      const nameLastWord = normalizedName.split(' ').pop();
+      const depthLastWord = depthName.split(' ').pop();
+      if (nameLastWord === depthLastWord && nameLastWord.length > 3) {
+        console.log(`✅ MATCH (lastname): ${playerName} matched ${positionDepth[i]} at depth ${i+1}`);
         return {
           position: i + 1,
           timestamp: teamDepth.timestamp || Date.now()

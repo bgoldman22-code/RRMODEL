@@ -878,32 +878,32 @@ export default async (request, context) => {
           continue;
         }
         
-        console.log(`[NBA Elite V2] Processing: ${away.team.abbreviation} @ ${home.team.abbreviation}`);
+        console.log(`[NBA Elite V2] Processing: ${away?.team?.abbreviation || 'UNKNOWN'} @ ${home?.team?.abbreviation || 'UNKNOWN'}`);
         
         // Get team IDs for NBA Stats API (with abbreviation normalization)
         // ESPN uses GS, SA, NO, NY, PHO, UTAH
         // NBA uses GSW, SAS, NOP, NYK, PHX, UTA
-        let homeTeamData = teamInfo.byAbbr[home.team.abbreviation];
-        let awayTeamData = teamInfo.byAbbr[away.team.abbreviation];
+        let homeTeamData = teamInfo.byAbbr[home?.team?.abbreviation];
+        let awayTeamData = teamInfo.byAbbr[away?.team?.abbreviation];
         
         // Fallback to name lookup if abbreviation fails
-        if (!homeTeamData) {
+        if (!homeTeamData && home?.team?.displayName) {
           console.log(`[NBA Elite V2] ⚠️  Abbreviation '${home.team.abbreviation}' not found, trying name lookup...`);
           homeTeamData = teamInfo.byName[home.team.displayName] || teamInfo.byName[home.team.displayName.toLowerCase()];
         }
         
-        if (!awayTeamData) {
+        if (!awayTeamData && away?.team?.displayName) {
           console.log(`[NBA Elite V2] ⚠️  Abbreviation '${away.team.abbreviation}' not found, trying name lookup...`);
           awayTeamData = teamInfo.byName[away.team.displayName] || teamInfo.byName[away.team.displayName.toLowerCase()];
         }
         
         if (!homeTeamData || !awayTeamData) {
-          console.error(`[NBA Elite V2] ❌ Missing team data for ${home.team.abbreviation} (${home.team.displayName}) or ${away.team.abbreviation} (${away.team.displayName})`);
+          console.error(`[NBA Elite V2] ❌ Missing team data for ${home?.team?.abbreviation} (${home?.team?.displayName}) or ${away?.team?.abbreviation} (${away?.team?.displayName})`);
           console.error(`[NBA Elite V2] Available abbreviations:`, Object.keys(teamInfo.byAbbr).join(', '));
           continue;
         }
         
-        console.log(`[NBA Elite V2] ✅ Matched: ${away.team.abbreviation} (ID ${awayTeamData.id}) @ ${home.team.abbreviation} (ID ${homeTeamData.id})`);
+        console.log(`[NBA Elite V2] ✅ Matched: ${away?.team?.abbreviation} (ID ${awayTeamData.id}) @ ${home?.team?.abbreviation} (ID ${homeTeamData.id})`);
         
         // V2: Fetch L5/L10/L20 stats using ESPN schedule + NBA CDN boxscores
         const [homeStats, awayStats] = await Promise.all([
@@ -920,8 +920,8 @@ export default async (request, context) => {
       const awayL10Raw = awayStats.l10 || getDefaultStats();
       const awayL20Raw = awayStats.l20 || getDefaultStats();
       
-      console.log(`[NBA Elite V2] ${home.team.abbreviation} games: L5=${homeL3Raw.games}, L10=${homeL10Raw.games}, L20=${homeL20Raw.games}`);
-      console.log(`[NBA Elite V2] ${away.team.abbreviation} games: L5=${awayL3Raw.games}, L10=${awayL10Raw.games}, L20=${awayL20Raw.games}`);
+      console.log(`[NBA Elite V2] ${home?.team?.abbreviation} games: L5=${homeL3Raw.games}, L10=${homeL10Raw.games}, L20=${homeL20Raw.games}`);
+      console.log(`[NBA Elite V2] ${away?.team?.abbreviation} games: L5=${awayL3Raw.games}, L10=${awayL10Raw.games}, L20=${awayL20Raw.games}`);
       
       // ELITE: Count CURRENT SEASON games only for confidence adjustment
       const avgCurrentSeasonGames = (homeL10Raw.games + awayL10Raw.games) / 2;
@@ -938,15 +938,15 @@ export default async (request, context) => {
       const homeL10 = applyRCIAdjustment(homeL10Raw, home.team.abbreviation, gamesPlayed);
       const homeL20 = applyRCIAdjustment(homeL20Raw, home.team.abbreviation, gamesPlayed);
       
-      const awayL3 = applyRCIAdjustment(awayL3Raw, away.team.abbreviation, gamesPlayed);
-      const awayL10 = applyRCIAdjustment(awayL10Raw, away.team.abbreviation, gamesPlayed);
-      const awayL20 = applyRCIAdjustment(awayL20Raw, away.team.abbreviation, gamesPlayed);
+      const awayL3 = applyRCIAdjustment(awayL3Raw, away?.team?.abbreviation, gamesPlayed);
+      const awayL10 = applyRCIAdjustment(awayL10Raw, away?.team?.abbreviation, gamesPlayed);
+      const awayL20 = applyRCIAdjustment(awayL20Raw, away?.team?.abbreviation, gamesPlayed);
       
       // Log RCI adjustments for transparency
-      const homeRCI = getRCISummary(home.team.abbreviation, gamesPlayed);
-      const awayRCI = getRCISummary(away.team.abbreviation, gamesPlayed);
-      console.log(`[RCI] ${home.team.abbreviation}:`, homeRCI);
-      console.log(`[RCI] ${away.team.abbreviation}:`, awayRCI);
+      const homeRCI = getRCISummary(home?.team?.abbreviation, gamesPlayed);
+      const awayRCI = getRCISummary(away?.team?.abbreviation, gamesPlayed);
+      console.log(`[RCI] ${home?.team?.abbreviation}:`, homeRCI);
+      console.log(`[RCI] ${away?.team?.abbreviation}:`, awayRCI);
       
       // Fetch and apply injury adjustments (separate from RCI)
       let homeInjuries = [];
@@ -958,7 +958,7 @@ export default async (request, context) => {
       try {
         [homeInjuries, awayInjuries] = await Promise.all([
           getTeamInjuries(home.team.abbreviation),
-          getTeamInjuries(away.team.abbreviation)
+          getTeamInjuries(away?.team?.abbreviation)
         ]);
         
         // Apply injury adjustments on top of RCI-adjusted stats
@@ -971,7 +971,7 @@ export default async (request, context) => {
         injuryAdvantage = getInjuryAdvantage(homeInjuries, awayInjuries);
         
         console.log(`[INJURY] ${home.team.abbreviation}:`, homeInjuryAdj);
-        console.log(`[INJURY] ${away.team.abbreviation}:`, awayInjuryAdj);
+        console.log(`[INJURY] ${away?.team?.abbreviation}:`, awayInjuryAdj);
         console.log(`[INJURY] Advantage:`, injuryAdvantage.advantage);
         
         // Use injury-adjusted stats for features
@@ -1420,13 +1420,13 @@ export default async (request, context) => {
           confidence,
           seasonNote // Early season warning if applicable
         },
-        keyFactors: [], // Temporarily disabled to debug: generateKeyFactors(
-          // home, away, homeL10, awayL10, 
-          // spreadPred, totalPred, 
-          // homeExpectedPts, awayExpectedPts,
-          // homeInjuryAdj, awayInjuryAdj,
-          // opportunities
-        // ),
+        keyFactors: (home && away) ? generateKeyFactors(
+          home, away, homeL10, awayL10, 
+          spreadPred, totalPred, 
+          homeExpectedPts, awayExpectedPts,
+          homeInjuryAdj, awayInjuryAdj,
+          opportunities
+        ) : [],
         features: {
           homeL10: {
             netRtg: homeL10.netRtg.toFixed(1),
