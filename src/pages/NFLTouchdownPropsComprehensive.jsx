@@ -5,6 +5,16 @@ import { ElitePlayerModel } from '../lib/nfl/elitePlayerModel.js';
 import { oddsService } from '../lib/nfl/oddsService.js';
 import { getCurrentNFLWeekFromData } from '../utils/nflWeek.js';
 
+// Helper: Determine TD scoring path for player
+function determineTDPath(player) {
+  const rzTargets = player.red_zone_targets || player.redZoneTargets || 0;
+  const rzCarries = player.red_zone_carries || player.redZoneCarries || 0;
+  
+  if (rzTargets + rzCarries > 5) return 'red_zone';
+  if (player.position === 'WR' && (player.target_share || player.targetShare || 0) > 0.20) return 'explosive';
+  return 'mixed';
+}
+
 const NFLTouchdownPropsComprehensive = () => {
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -99,21 +109,18 @@ const NFLTouchdownPropsComprehensive = () => {
         throw new Error(`Cannot load Week ${week} schedule: ${err.message}`);
       }
       
-      // STEP 2: Call the REAL comprehensive predictions API with the schedule
-      const apiUrl = `/.netlify/functions/nfl-td-comprehensive-predictions?week=${week}&season=${season}`;
-      console.log('🎯 Calling REAL TD predictions API:', apiUrl);
+      // STEP 2: Call the CORRECT anytime TD candidates API (not raw comprehensive)
+      // This endpoint has ALL the transformation logic: depth charts, odds, probabilities
+      const todayDate = new Date().toISOString().split('T')[0];
+      const apiUrl = `/.netlify/functions/nfl-anytime-td-candidates?date=${todayDate}`;
+      console.log('🎯 Calling CORRECT TD candidates API (with depth/odds processing):', apiUrl);
       
       let tdPredictions = null;
       try {
-        // POST the games to the comprehensive predictions function
+        // GET the processed candidates (depth charts + odds + probabilities)
         const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            games: weekGames,
-            season: season,
-            week: week
-          })
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
         });
         
         if (!response.ok) {
@@ -121,69 +128,77 @@ const NFLTouchdownPropsComprehensive = () => {
         }
         
         const data = await response.json();
-        if (!data.success || !data.predictions) {
-          throw new Error('Invalid API response format');
+        if (!data.ok || !data.candidates) {
+          throw new Error('Invalid API response format - candidates missing');
         }
         
-        tdPredictions = data.predictions;
-        console.log(`✅ REAL API: Generated predictions for ${tdPredictions.length} games`);
+        tdPredictions = data.candidates; // Use 'candidates' not 'predictions'
+        console.log(`✅ CANDIDATES API: Got ${tdPredictions.length} processed candidates with depth/odds`);
         
       } catch (apiError) {
-        console.error('❌ Real API failed:', apiError);
-        throw new Error(`TD predictions API failed: ${apiError.message}`);
+        console.error('❌ Candidates API failed:', apiError);
+        throw new Error(`TD candidates API failed: ${apiError.message}`);
       }
       
-      // STEP 3: Flatten game predictions into player list
-      let players = [];
-      for (const gamePrediction of tdPredictions) {
-        if (gamePrediction.players && Array.isArray(gamePrediction.players)) {
-          // Add game context to each player
-          gamePrediction.players.forEach(player => {
-            players.push({
-              ...player,
-              home_team: gamePrediction.home_team,
-              away_team: gamePrediction.away_team,
-              game_id: gamePrediction.game_id
-            });
-          });
+      // STEP 3: Candidates are already flattened with all context, just map to expected format
+      let players = tdPredictions.map(candidate => ({
+        // Player info
+        player_id: candidate.playerId,
+        name: candidate.playerName,
+        team: candidate.team,
+        opponent: candidate.opponent,
+        position: candidate.position,
+        
+        // Depth info (NOW POPULATED!)
+        depth_chart_position: candidate.depth || 1,
+        
+        // Market data (NOW WITH REAL ODDS!)
+        anytime_td: {
+          probability: candidate.anytimeTd?.probability || 0,
+          best_odds: candidate.anytimeTd?.bestOdds || null,
+          edge: candidate.anytimeTd?.edge || 0,
+          confidence: candidate.anytimeTd?.confidence || 0,
+          value: candidate.anytimeTd?.ev || 0
+        },
+        first_td: {
+          probability: candidate.firstTd?.probability || 0,
+          best_odds: candidate.firstTd?.bestOdds || null,
+          edge: candidate.firstTd?.edge || 0,
+          confidence: candidate.firstTd?.confidence || 0,
+          value: candidate.firstTd?.ev || 0
+        },
+        multiple_td: {
+          probability: candidate.multipleTd?.probability || 0,
+          best_odds: candidate.multipleTd?.bestOdds || null,
+          edge: candidate.multipleTd?.edge || 0,
+          confidence: candidate.multipleTd?.confidence || 0,
+          value: candidate.multipleTd?.ev || 0
+        },
+        
+        // Game context
+        game_id: candidate.gameId,
+        is_home: candidate.isHome,
+        matchup_display: `${candidate.team} vs ${candidate.opponent}`,
+        is_active_current_week: true,
+        
+        // Key factors (from SSOT if available)
+        key_factors: {
+          snap_percentage: candidate.snapShare || 0.75,
+          red_zone_efficiency: candidate.redZoneTargets ? candidate.redZoneTargets / 10 : 0.25,
+          consistency_score: 0.7
+        },
+        
+        // Model metadata
+        model_metadata: {
+          primary_td_path: determineTDPath(candidate),
+          data_reliability: candidate.anytimeTd?.dataReliability || 0.8
         }
-      }
+      }));
       
-      console.log(`✅ Extracted ${players.length} total players from API predictions`);
+      console.log(`✅ Mapped ${players.length} candidates to UI format with depth/odds/edge data`);
       
-      console.log(`✅ Extracted ${players.length} total players from API predictions`);
-      
-      // STEP 4: Add game/team context from schedule
-      const teamMatchups = {};
-      weekGames.forEach(game => {
-        teamMatchups[game.home_team] = { 
-          opponent: game.away_team, 
-          isHome: true,
-          game_id: game.game_id 
-        };
-        teamMatchups[game.away_team] = { 
-          opponent: game.home_team, 
-          isHome: false,
-          game_id: game.game_id 
-        };
-      });
-      
-      // Enhance players with matchup display
-      const enhancedPlayers = players.map(player => {
-        const matchupInfo = teamMatchups[player.team] || { opponent: 'TBD', isHome: false };
-        return {
-          ...player,
-          opponent: matchupInfo.opponent,
-          is_home: matchupInfo.isHome,
-          matchup_display: `${player.team} vs ${matchupInfo.opponent}`,
-          is_active_current_week: true // All players from API are active
-        };
-      });
-      
-      console.log(`✅ Enhanced ${enhancedPlayers.length} players with matchup context`);
-      
-      // STEP 5: Transform API data structure to match frontend expectations
-      const transformedPredictions = enhancedPlayers.map(player => {
+      // STEP 4: Final transformation for UI display
+      const transformedPredictions = players.map(player => {
         // The API returns: anytime_td.probability, anytime_td.best_odds, etc.
         // Frontend expects: same structure (we already fixed this!)
         
