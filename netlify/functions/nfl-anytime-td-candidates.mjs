@@ -13,15 +13,45 @@ async function getWeekGamesFromSchedule(date, weekMode) {
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   let week = Math.max(1, Math.min(18, Math.floor(diffDays / 7) + 1));
   
-  // CRITICAL FIX: If today is after Sunday of current week but before Thursday of next week,
-  // use NEXT week (because current week games are over, no odds available)
-  const dayOfWeek = targetDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
-  if (dayOfWeek >= 1 && dayOfWeek <= 3) {
-    // Monday-Wednesday: Current week games are over, fetch next week
-    week = Math.min(18, week + 1);
-    console.log(`📅 Date ${date} is ${['Sun','Mon','Tue','Wed'][dayOfWeek]} - using NEXT week (${week}) because current week games are complete`);
-  } else {
-    console.log(`📅 Date ${date} maps to Week ${week}`);
+  // SMART WEEK LOGIC: Check if current week has upcoming games
+  // Load schedule to see if current week games are in the future
+  try {
+    const fs = await import('fs');
+    const schedulePaths = [
+      'public/data/nfl-schedule-2025.json',
+      '/opt/buildhome/repo/public/data/nfl-schedule-2025.json',
+      '/var/task/public/data/nfl-schedule-2025.json',
+      process.cwd() + '/public/data/nfl-schedule-2025.json'
+    ];
+    
+    let schedule = null;
+    for (const path of schedulePaths) {
+      try {
+        const content = fs.readFileSync(path, 'utf8');
+        schedule = JSON.parse(content);
+        break;
+      } catch (e) {
+        continue;
+      }
+    }
+    
+    if (schedule) {
+      // Check if current week has games in the future
+      const currentWeekGames = schedule.filter(g => g.week === week);
+      const upcomingGames = currentWeekGames.filter(g => new Date(g.gameday) > targetDate);
+      
+      if (upcomingGames.length > 0) {
+        console.log(`📅 Week ${week} has ${upcomingGames.length} upcoming games - staying on Week ${week}`);
+      } else {
+        // Current week games are over, advance to next week
+        week = Math.min(18, week + 1);
+        console.log(`📅 Week ${week - 1} games complete - advancing to Week ${week}`);
+      }
+    } else {
+      console.log(`⚠️ Could not load schedule, using Week ${week}`);
+    }
+  } catch (error) {
+    console.error('Error checking schedule:', error);
   }
   
   return { season, week };
