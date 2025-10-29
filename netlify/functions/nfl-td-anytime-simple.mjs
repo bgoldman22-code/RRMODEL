@@ -33,8 +33,8 @@ export async function handler(event) {
     
     const allPlayers = [];
     
-    // For each event, get player TD odds
-    for (const event of events.slice(0, 5)) {  // Limit to 5 games for speed
+    // For each event, get player TD odds (ALL Week 9 games)
+    for (const event of events) {
       console.log(`Fetching odds for ${event.away_team} @ ${event.home_team}`);
       
       const oddsUrl = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/${event.id}/odds?markets=player_anytime_td&regions=us&oddsFormat=american&bookmakers=draftkings,fanduel,betmgm&apiKey=${ODDS_API_KEY}`;
