@@ -3,7 +3,7 @@
 // One source of truth per player-week, prevents all double-counting
 // Integrates: Inactives, Injury Reports, Depth Charts, Snap Share, Market Shocks
 
-import { getQBEPA, QB_EPA_TIERS } from './depth-chart-change-detector.js';
+import { getQBEPA, QB_EPA_TIERS } from './depth-chart-change-detector.mjs';
 
 /**
  * Normalize timestamp to Unix milliseconds

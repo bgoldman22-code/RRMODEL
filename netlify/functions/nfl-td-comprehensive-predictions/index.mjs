@@ -252,12 +252,40 @@ async function generateTDPredictions(games, season='2025', weekNumber){
         weather: null  // TODO: Add weather data
       };
       
-      // Calculate REALISTIC probabilities using canonical availability
-      const tdProbs = calculateRealisticTDProbabilities(
-        basePlayer,
-        availability,
-        gameContext
-      );
+      // USE R PIPELINE PROBABILITIES if available (they're already sophisticated)
+      // Otherwise fall back to canonical availability calculation
+      let tdProbs;
+      if (basePlayer.anytime_td?.probability && basePlayer.first_td?.probability) {
+        // R pipeline has pre-calculated probabilities - use them!
+        tdProbs = {
+          anytime: basePlayer.anytime_td.probability,
+          first: basePlayer.first_td.probability,
+          multiple: basePlayer.multiple_td?.probability || Math.pow(basePlayer.anytime_td.probability, 1.5) * 0.75,
+          confidence: (basePlayer.anytime_td.confidence || 50) / 100,
+          factors: {
+            base: basePlayer.anytime_td.probability,
+            availability: availability?.probPlay || 1.0,
+            data_source: 'r_pipeline_pre_calculated',
+            ...basePlayer.key_factors
+          }
+        };
+        
+        // Adjust for availability if player is questionable/out
+        if (availability?.probPlay < 1.0) {
+          const availabilityAdjustment = availability.probPlay * (0.7 + availability.probPlay * 0.3);
+          tdProbs.anytime *= availabilityAdjustment;
+          tdProbs.first *= availabilityAdjustment;
+          tdProbs.multiple *= availabilityAdjustment;
+        }
+      } else {
+        // No R pipeline data - calculate from scratch
+        tdProbs = calculateRealisticTDProbabilities(
+          basePlayer,
+          availability,
+          gameContext
+        );
+        tdProbs.factors.data_source = 'canonical_availability_calculated';
+      }
 
       // Join odds by player name (case-insensitive)
       const oddsEntry = oddsByPlayer[basePlayer.name] || 

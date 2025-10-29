@@ -3,7 +3,7 @@
 // Identical to canonical-availability-v5.mjs but with HAD override logic
 // Allows A/B testing HAD system without affecting V1 predictions
 
-import { getQBEPA, QB_EPA_TIERS } from './depth-chart-change-detector.js';
+import { getQBEPA, QB_EPA_TIERS } from './depth-chart-change-detector.mjs';
 
 /**
  * Normalize timestamp to Unix milliseconds

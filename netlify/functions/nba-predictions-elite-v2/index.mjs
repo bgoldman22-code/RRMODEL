@@ -851,8 +851,23 @@ export default async (request, context) => {
     for (const event of espnData.events) {
       try {
         const comp = event.competitions[0];
+        
+        // Validate competitors exist
+        if (!comp.competitors || comp.competitors.length < 2) {
+          console.error(`[NBA Elite V2] ❌ Invalid competitors data for event ${event.id}`);
+          continue;
+        }
+        
         const home = comp.competitors.find(c => c.homeAway === 'home');
         const away = comp.competitors.find(c => c.homeAway === 'away');
+        
+        // Validate home/away teams found
+        if (!home || !away) {
+          console.error(`[NBA Elite V2] ❌ Missing home/away teams for event ${event.id}`, {
+            competitors: comp.competitors.map(c => ({ homeAway: c.homeAway, team: c.team?.abbreviation }))
+          });
+          continue;
+        }
         
         console.log(`[NBA Elite V2] Processing: ${away.team.abbreviation} @ ${home.team.abbreviation}`);
         
