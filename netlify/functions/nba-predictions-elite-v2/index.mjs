@@ -1470,7 +1470,7 @@ export default async (request, context) => {
         teamTotals // NEW: Individual team scoring projections
       });
       } catch (gameError) {
-        console.error(`[NBA Elite V2] Error processing ${away?.team?.abbreviation || '?'} @ ${home?.team?.abbreviation || '?'}:`, gameError.message);
+        console.error(`[NBA Elite V2] Error processing game ${event?.id}:`, gameError.message);
         console.error(`[NBA Elite V2] Stack:`, gameError.stack);
         // Continue to next game instead of failing entire function
       }
