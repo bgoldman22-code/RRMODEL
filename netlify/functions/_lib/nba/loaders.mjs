@@ -529,6 +529,7 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
         
         // Use team-specific priors (regressed 70% team + 30% league) from 2024-25 season
         const prior = getRegressedPrior(team.abbreviation);
+        console.log(`[NBA FALLBACK] ${team.abbreviation} using prior: efg=${prior.efg.toFixed(3)}, ts=${prior.ts.toFixed(3)}, offRtg=${prior.offRtg.toFixed(1)}`);
         
         gameStats.push({
           pts,
@@ -601,7 +602,14 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
     // Aggregate stats across games
     const aggregated = aggregateStats(gameStats);
     
-    console.log(`[NBA] ✅ ${team.abbreviation} L${lastN}: ${aggregated.games} games, OffRtg=${aggregated.offRtg.toFixed(1)}, DefRtg=${aggregated.defRtg.toFixed(1)}`);
+    // Tag with source for debugging
+    aggregated.source = 'mixed'; // Will be cdn, fallback, or mixed
+    const cdnCount = gameStats.filter(g => g.source === 'cdn').length;
+    const fallbackCount = gameStats.filter(g => g.source === 'fallback').length;
+    if (cdnCount === gameStats.length) aggregated.source = 'cdn';
+    else if (fallbackCount === gameStats.length) aggregated.source = 'fallback';
+    
+    console.log(`[NBA] ✅ ${team.abbreviation} L${lastN}: ${aggregated.games} games, OffRtg=${aggregated.offRtg.toFixed(1)}, DefRtg=${aggregated.defRtg.toFixed(1)}, Source=${aggregated.source} (${cdnCount} CDN, ${fallbackCount} fallback)`);
     
     return aggregated;
     

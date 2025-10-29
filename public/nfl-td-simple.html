@@ -275,7 +275,9 @@
                         <th>Game</th>
                         <th class="center">Best Odds</th>
                         <th class="center">Books</th>
-                        <th class="center">Probability</th>
+                        <th class="center">Implied %</th>
+                        <th class="center">Model %</th>
+                        <th class="center">Edge</th>
                         <th class="center">Action</th>
                     </tr>
                 </thead>
@@ -320,7 +322,7 @@
                 
                 // Update stats
                 const games = new Set(data.players.map(p => p.game)).size;
-                const strongBets = data.players.filter(p => p.probability >= 0.5).length;
+                const strongBets = data.players.filter(p => p.edge !== null && p.edge > 0.05).length;
                 
                 document.getElementById('totalPlayers').textContent = data.count;
                 document.getElementById('gamesCount').textContent = games;
@@ -333,21 +335,44 @@
                 data.players.forEach(player => {
                     const row = document.createElement('tr');
                     
-                    const prob = player.probability;
-                    const probClass = prob >= 0.6 ? 'prob-high' : prob >= 0.4 ? 'prob-medium' : 'prob-low';
+                    const impliedProb = player.implied_probability || 0;
+                    const modelProb = player.model_probability;
+                    const edge = player.edge;
+                    
+                    const impliedProbClass = impliedProb >= 0.6 ? 'prob-high' : impliedProb >= 0.4 ? 'prob-medium' : 'prob-low';
                     const oddsClass = player.bestOdds < 0 ? 'odds-good' : 'odds-bad';
                     
                     let action = '';
                     let actionClass = '';
-                    if (prob >= 0.6) {
-                        action = '🔥 BET';
-                        actionClass = 'action-bet';
-                    } else if (prob >= 0.4) {
-                        action = '👀 WATCH';
-                        actionClass = 'action-watch';
+                    if (edge !== null) {
+                        if (edge > 0.05) {
+                            action = '🔥 BET';
+                            actionClass = 'action-bet';
+                        } else if (edge > 0) {
+                            action = '👀 WATCH';
+                            actionClass = 'action-watch';
+                        } else {
+                            action = 'PASS';
+                            actionClass = 'action-pass';
+                        }
                     } else {
-                        action = 'PASS';
-                        actionClass = 'action-pass';
+                        // Fall back to implied prob if no model
+                        if (impliedProb >= 0.6) {
+                            action = '👀 WATCH';
+                            actionClass = 'action-watch';
+                        } else {
+                            action = 'PASS';
+                            actionClass = 'action-pass';
+                        }
+                    }
+                    
+                    // Format edge display
+                    let edgeDisplay = '-';
+                    let edgeClass = '';
+                    if (edge !== null) {
+                        const edgePct = (edge * 100).toFixed(1);
+                        edgeDisplay = `${edge > 0 ? '+' : ''}${edgePct}%`;
+                        edgeClass = edge > 0.05 ? 'prob-high' : edge > 0 ? 'prob-medium' : 'prob-low';
                     }
                     
                     row.innerHTML = `
@@ -371,7 +396,13 @@
                             <span class="books-badge">${player.books_count} books</span>
                         </td>
                         <td class="center">
-                            <span class="${probClass}">${(prob * 100).toFixed(1)}%</span>
+                            <span class="${impliedProbClass}">${(impliedProb * 100).toFixed(1)}%</span>
+                        </td>
+                        <td class="center">
+                            <span class="${modelProb !== null ? 'prob-high' : ''}">${modelProb !== null ? (modelProb * 100).toFixed(1) + '%' : '-'}</span>
+                        </td>
+                        <td class="center">
+                            <span class="${edgeClass}">${edgeDisplay}</span>
                         </td>
                         <td class="center">
                             <span class="${actionClass}">${action}</span>

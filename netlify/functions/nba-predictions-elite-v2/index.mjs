@@ -1103,11 +1103,11 @@ export default async (request, context) => {
         console.log(`[INJURY] Advantage:`, injuryAdvantage.advantage);
         
         // Use injury-adjusted stats for features
-        const spreadFeatures = buildEliteFeatures(
+        var spreadFeatures = buildEliteFeatures(
           homeL3WithInjuries, homeL10WithInjuries, homeL20WithInjuries,
           awayL3WithInjuries, awayL10WithInjuries, awayL20WithInjuries
         );
-        const totalFeatures = buildSimpleFeatures(homeL10WithInjuries, awayL10WithInjuries);
+        var totalFeatures = buildSimpleFeatures(homeL10WithInjuries, awayL10WithInjuries);
       } catch (injuryError) {
         console.log(`[INJURY] Error fetching injuries, using RCI-only adjustments:`, injuryError.message);
         
