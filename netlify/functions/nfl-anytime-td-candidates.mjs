@@ -11,9 +11,19 @@ async function getWeekGamesFromSchedule(date, weekMode) {
   const seasonStart = new Date('2025-09-04');
   const diffTime = targetDate.getTime() - seasonStart.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  const week = Math.max(1, Math.min(18, Math.floor(diffDays / 7) + 1));
+  let week = Math.max(1, Math.min(18, Math.floor(diffDays / 7) + 1));
   
-  console.log(`📅 Date ${date} maps to Week ${week}`);
+  // CRITICAL FIX: If today is after Sunday of current week but before Thursday of next week,
+  // use NEXT week (because current week games are over, no odds available)
+  const dayOfWeek = targetDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+  if (dayOfWeek >= 1 && dayOfWeek <= 3) {
+    // Monday-Wednesday: Current week games are over, fetch next week
+    week = Math.min(18, week + 1);
+    console.log(`📅 Date ${date} is ${['Sun','Mon','Tue','Wed'][dayOfWeek]} - using NEXT week (${week}) because current week games are complete`);
+  } else {
+    console.log(`📅 Date ${date} maps to Week ${week}`);
+  }
+  
   return { season, week };
 }
 
