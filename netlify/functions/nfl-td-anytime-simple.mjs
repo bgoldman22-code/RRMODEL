@@ -5,13 +5,13 @@
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-// API key MUST be set in Netlify environment variables
-const ODDS_API_KEY = process.env.THEODDS_API_KEY;
+// Use existing ODDS_API_KEY environment variable
+const ODDS_API_KEY = process.env.ODDS_API_KEY;
 
 export async function handler(event) {
   // Validate API key is present
   if (!ODDS_API_KEY) {
-    console.error('❌ THEODDS_API_KEY not set in environment variables');
+    console.error('❌ ODDS_API_KEY not set in environment variables');
     return {
       statusCode: 500,
       body: JSON.stringify({
