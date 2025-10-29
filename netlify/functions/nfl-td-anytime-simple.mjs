@@ -108,8 +108,19 @@ export async function handler(event) {
       for (const player of Object.values(playerOdds)) {
         // Get unique bookmaker count and best odds
         const uniqueBooks = [...new Set(player.bookmakers)].length;
+        
+        // Best odds: for negative odds (favorites), least negative is best
+        // for positive odds (underdogs), most positive is best
+        // Math.max works for both! -210 > -230, and +150 > +120
         const bestOdds = Math.max(...player.allOdds);
-        const impliedProb = oddsToProb(bestOdds);
+        
+        // Calculate implied probability from American odds
+        let impliedProb = 0;
+        if (bestOdds > 0) {
+          impliedProb = 100 / (bestOdds + 100);
+        } else if (bestOdds < 0) {
+          impliedProb = Math.abs(bestOdds) / (Math.abs(bestOdds) + 100);
+        }
         
         if (uniqueBooks >= 2) {  // Only players with 2+ books
           // Try to find player in R data to get model prediction
