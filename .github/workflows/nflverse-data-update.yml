@@ -21,7 +21,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        ref: main41
+        ref: main42
 
     - name: Set up R
       uses: r-lib/actions/setup-r@v2
@@ -153,16 +153,16 @@ jobs:
           
           # Pull any remote changes before pushing
           echo "🔄 Pulling remote changes before push..."
-          git pull origin main41 --rebase || {
+          git pull origin main42 --rebase || {
             echo "⚠️ Rebase conflict detected, attempting merge strategy..."
-            git pull origin main41 --no-rebase -X ours || {
+            git pull origin main42 --no-rebase -X ours || {
               echo "❌ Cannot resolve conflicts automatically"
               git status
               exit 1
             }
           }
           
-          git push origin main41
+          git push origin main42
           echo "✅ Data updated and pushed"
         fi
 
