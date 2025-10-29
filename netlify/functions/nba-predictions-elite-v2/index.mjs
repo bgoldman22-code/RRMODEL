@@ -23,6 +23,7 @@
  * - No dependency on broken stats.nba.com (500 errors)
  */
 
+import { createHash } from 'crypto';
 import { SPREAD_MODEL, TOTAL_MODEL } from '../_lib/nba/models-inline.mjs';
 import { applyRCIAdjustment, getRCISummary } from '../_lib/nba/rci-adjustments.mjs';
 import { getTeamInjuries } from '../_lib/nba/injuries.mjs';
@@ -529,6 +530,25 @@ function calculateAdvancedStats(games, teamId, window = 10) {
   stats.winPct = stats.games > 0 ? stats.wins / stats.games : 0.50;
   
   return stats;
+}
+
+/**
+ * Generate feature fingerprint to detect identical feature vectors
+ */
+function getFeatureFingerprint(features) {
+  const keys = Object.keys(features).sort();
+  const parts = keys.map(k => {
+    const val = features[k];
+    if (val == null) return `${k}:NULL`;
+    if (!Number.isFinite(val)) return `${k}:NaN`;
+    return `${k}:${val.toFixed(6)}`;
+  });
+  const signature = parts.join('|');
+  const hash = createHash('md5').update(signature).digest('hex').substring(0, 8);
+  
+  // Return sample for logging (first 5 features)
+  const sample = parts.slice(0, 5).join(', ') + '...';
+  return { hash, signature: sample };
 }
 
 /**
@@ -1059,14 +1079,17 @@ export default async (request, context) => {
         var totalFeatures = buildSimpleFeatures(homeL10, awayL10);
       }
       
-      // DEBUG: Log features for first 3 games
+      // DIAGNOSTIC: Feature fingerprint to detect identical vectors
+      const fingerprint = getFeatureFingerprint(spreadFeatures);
+      console.log(`[NBA V2] ${awayAbbr}@${homeAbbr} feature hash: ${fingerprint.hash}`);
+      
+      // DEBUG: Log raw stats for clustering games
       if (predictions.length < 3) {
-        console.log(`\n[DEBUG] ${away.team.abbreviation} @ ${home.team.abbreviation} Features:`);
-        console.log('  h10_netRtg:', spreadFeatures.h10_netRtg);
-        console.log('  a10_netRtg:', spreadFeatures.a10_netRtg);
-        console.log('  netRtg_diff:', spreadFeatures.netRtg_diff);
-        console.log('  h20_netRtg:', spreadFeatures.h20_netRtg);
-        console.log('  a20_netRtg:', spreadFeatures.a20_netRtg);
+        console.log(`[DEBUG RAW] ${awayAbbr}@${homeAbbr}:`, {
+          homeL10: { netRtg: homeL10.netRtg, efg: homeL10.efg, ts: homeL10.ts, games: homeL10.games },
+          awayL10: { netRtg: awayL10.netRtg, efg: awayL10.efg, ts: awayL10.ts, games: awayL10.games }
+        });
+        console.log(`[DEBUG FEATURES] Sample:`, fingerprint.signature);
       }
       
       // Predict spread
@@ -1548,6 +1571,7 @@ export default async (request, context) => {
             games: awayL10.games
           }
         },
+        featureHash: fingerprint.hash,  // Add feature fingerprint for debugging
         vegasLines: {
           spread: gameVegasLines.spread?.fair?.homeLine != null ? {
             line: gameVegasLines.spread.fair.homeLine,
@@ -1607,16 +1631,32 @@ export default async (request, context) => {
       }
     };
     
-    // GUARD: Detect spread variance collapse
+    // GUARD: Detect spread variance collapse (size-aware threshold)
     if (predictions.length > 0) {
-      const spreads = predictions.map(p => p.prediction.spread.prediction);
+      const spreads = predictions.map(p => Math.abs(p.prediction.spread.prediction));
       const mean = spreads.reduce((a, b) => a + b, 0) / spreads.length;
-      const stdev = Math.sqrt(spreads.reduce((s, x) => s + (x - mean) ** 2, 0) / spreads.length);
+      const variance = spreads.reduce((s, x) => s + Math.pow(x - mean, 2), 0) / spreads.length;
+      const stdev = Math.sqrt(variance);
+      const min = Math.min(...spreads);
+      const max = Math.max(...spreads);
+      const range = max - min;
       
-      console.log(`[NBA V2] Spread variance check: stdev=${stdev.toFixed(2)}, min=${Math.min(...spreads).toFixed(1)}, max=${Math.max(...spreads).toFixed(1)}`);
+      // Size-aware threshold: larger slates should have more variance
+      const targetStdev = Math.max(1.5, 0.5 * Math.sqrt(predictions.length + 4));
       
-      if (stdev < 1.0) {
-        throw new Error(`[NBA V2] Spread variance collapsed (stdev=${stdev.toFixed(2)}) – check prefetch + feature inputs`);
+      console.log(`[NBA V2] Spread variance: stdev=${stdev.toFixed(2)} (target=${targetStdev.toFixed(2)}), range=${range.toFixed(1)} (${min.toFixed(1)} to ${max.toFixed(1)}), mean=${mean.toFixed(1)}`);
+      
+      // Check for duplicate feature hashes (indicates identical inputs)
+      const hashes = predictions.map(p => p.featureHash).filter(h => h);
+      const uniqueHashes = new Set(hashes);
+      if (uniqueHashes.size < hashes.length) {
+        const dupeCount = hashes.length - uniqueHashes.size;
+        console.warn(`[NBA V2] ⚠️  ${dupeCount} games have duplicate feature vectors (identical inputs)`);
+      }
+      
+      if (stdev < targetStdev) {
+        const clustered = spreads.filter(s => Math.abs(s - mean) < 1.0).length;
+        throw new Error(`[NBA V2] Spread variance collapsed: stdev=${stdev.toFixed(2)} < target ${targetStdev.toFixed(2)} (${clustered}/${spreads.length} games clustered near ${mean.toFixed(1)})`);
       }
     }
     
