@@ -715,21 +715,21 @@ function generateKeyFactors(home, away, homeL10, awayL10, spreadPred, totalPred,
   }
   
   // 4. INJURY IMPACT
-  if (homeInjuries && homeInjuries.count > 0 && homeInjuries.severity !== 'NONE') {
+  if (homeInjuryAdj && homeInjuryAdj.count > 0 && homeInjuryAdj.severity !== 'NONE') {
     factors.push({
       label: '🏥 Home Injuries',
-      value: `${home.team.abbreviation}: ${homeInjuries.players} (${homeInjuries.impact})`,
+      value: `${home.team.abbreviation}: ${homeInjuryAdj.players} (${homeInjuryAdj.impact})`,
       impact: 'FAVOR_AWAY',
-      detail: `Offense -${Math.abs(homeInjuries.deltaOff).toFixed(1)}, Defense -${Math.abs(homeInjuries.deltaDef).toFixed(1)}`
+      detail: `Offense -${Math.abs(homeInjuryAdj.deltaOff).toFixed(1)}, Defense -${Math.abs(homeInjuryAdj.deltaDef).toFixed(1)}`
     });
   }
   
-  if (awayInjuries && awayInjuries.count > 0 && awayInjuries.severity !== 'NONE') {
+  if (awayInjuryAdj && awayInjuryAdj.count > 0 && awayInjuryAdj.severity !== 'NONE') {
     factors.push({
       label: '🏥 Away Injuries',
-      value: `${away.team.abbreviation}: ${awayInjuries.players} (${awayInjuries.impact})`,
+      value: `${away.team.abbreviation}: ${awayInjuryAdj.players} (${awayInjuryAdj.impact})`,
       impact: 'FAVOR_HOME',
-      detail: `Offense -${Math.abs(awayInjuries.deltaOff).toFixed(1)}, Defense -${Math.abs(awayInjuries.deltaDef).toFixed(1)}`
+      detail: `Offense -${Math.abs(awayInjuryAdj.deltaOff).toFixed(1)}, Defense -${Math.abs(awayInjuryAdj.deltaDef).toFixed(1)}`
     });
   }
   
