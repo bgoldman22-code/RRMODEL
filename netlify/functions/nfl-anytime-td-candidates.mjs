@@ -56,17 +56,27 @@ export async function handler(event) {
     
     for (const game of comprehensiveData.predictions || []) {
       for (const player of game.players || []) {
-        // Only include players with positive EV or high probability
+        // Only include players with positive EV or reasonable probability
         const anytimeData = player.anytime_td || {};
         const prob = anytimeData.probability;
         const edge = anytimeData.edge;
         const hasOdds = anytimeData.books_count > 0;
         
-        // Include if: has +EV, or high prob with odds, or top 30% prob overall
+        // Include if: 
+        // - Has +EV (even small)
+        // - Has odds AND prob >20%
+        // - Top starters (prob >30%) - catches RB1s, WR1s in all offenses
+        // - Skill positions in top 2 depth spots with >15% - catches TE1s, WR2s in bad offenses
+        // - QBs with >8% (mobile QBs who rush TDs)
+        const isTopDepth = ['RB', 'WR', 'TE'].includes(player.position) && player.depth_chart_position <= 2;
+        const isMobileQB = player.position === 'QB' && prob > 0.08;
+        
         const includePlayer = (
           (edge != null && edge > 0) ||
-          (hasOdds && prob > 0.30) ||
-          (prob > 0.40)
+          (hasOdds && prob > 0.20) ||
+          (prob > 0.30) ||
+          (isTopDepth && prob > 0.15) ||
+          isMobileQB
         );
         
         if (!includePlayer) continue;

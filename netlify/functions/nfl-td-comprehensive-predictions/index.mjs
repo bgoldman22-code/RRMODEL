@@ -93,6 +93,17 @@ async function loadDepthCharts(season, week) {
       const raw = await fs.readFile(filePath, 'utf8');
       const data = JSON.parse(raw);
       console.log(`✅ Loaded depth charts for Week ${week}`);
+      
+      // Transform list format to keyed-by-team format
+      if (Array.isArray(data)) {
+        const byTeam = {};
+        for (const teamData of data) {
+          const teamAbbr = getTeamAbbreviation(teamData.team);
+          byTeam[teamAbbr] = teamData;
+        }
+        return byTeam;
+      }
+      
       return data;
     } catch (error) {
       continue;

@@ -1411,13 +1411,13 @@ export default async (request, context) => {
           confidence,
           seasonNote // Early season warning if applicable
         },
-        keyFactors: generateKeyFactors(
-          home, away, homeL10, awayL10, 
-          spreadPred, totalPred, 
-          homeExpectedPts, awayExpectedPts,
-          homeInjuryAdj, awayInjuryAdj,
-          opportunities
-        ),
+        keyFactors: [], // Temporarily disabled to debug: generateKeyFactors(
+          // home, away, homeL10, awayL10, 
+          // spreadPred, totalPred, 
+          // homeExpectedPts, awayExpectedPts,
+          // homeInjuryAdj, awayInjuryAdj,
+          // opportunities
+        // ),
         features: {
           homeL10: {
             netRtg: homeL10.netRtg.toFixed(1),
