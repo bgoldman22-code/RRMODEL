@@ -937,19 +937,21 @@ export default async (request, context) => {
       }
       
       // Apply RCI adjustments based on games played this season
-      const gamesPlayed = homeL10Raw.games; // Use L10 games as proxy for season progress
+      // Each team uses their own games played for RCI adjustment
+      const homeGamesPlayed = homeL10Raw.games; // Home team's current season games
+      const awayGamesPlayed = awayL10Raw.games; // Away team's current season games
       
-      const homeL3 = applyRCIAdjustment(homeL3Raw, home.team.abbreviation, gamesPlayed);
-      const homeL10 = applyRCIAdjustment(homeL10Raw, home.team.abbreviation, gamesPlayed);
-      const homeL20 = applyRCIAdjustment(homeL20Raw, home.team.abbreviation, gamesPlayed);
+      const homeL3 = applyRCIAdjustment(homeL3Raw, home.team.abbreviation, homeGamesPlayed);
+      const homeL10 = applyRCIAdjustment(homeL10Raw, home.team.abbreviation, homeGamesPlayed);
+      const homeL20 = applyRCIAdjustment(homeL20Raw, home.team.abbreviation, homeGamesPlayed);
       
-      const awayL3 = applyRCIAdjustment(awayL3Raw, away.team.abbreviation, gamesPlayed);
-      const awayL10 = applyRCIAdjustment(awayL10Raw, away.team.abbreviation, gamesPlayed);
-      const awayL20 = applyRCIAdjustment(awayL20Raw, away.team.abbreviation, gamesPlayed);
+      const awayL3 = applyRCIAdjustment(awayL3Raw, away.team.abbreviation, awayGamesPlayed);
+      const awayL10 = applyRCIAdjustment(awayL10Raw, away.team.abbreviation, awayGamesPlayed);
+      const awayL20 = applyRCIAdjustment(awayL20Raw, away.team.abbreviation, awayGamesPlayed);
       
       // Log RCI adjustments for transparency
-      const homeRCI = getRCISummary(home.team.abbreviation, gamesPlayed);
-      const awayRCI = getRCISummary(away.team.abbreviation, gamesPlayed);
+      const homeRCI = getRCISummary(home.team.abbreviation, homeGamesPlayed);
+      const awayRCI = getRCISummary(away.team.abbreviation, awayGamesPlayed);
       console.log(`[RCI] ${home.team.abbreviation}:`, homeRCI);
       console.log(`[RCI] ${away.team.abbreviation}:`, awayRCI);
       
