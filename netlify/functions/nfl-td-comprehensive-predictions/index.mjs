@@ -140,6 +140,52 @@ async function loadInjuryReports(season, week) {
   return {};
 }
 
+// Build player roster from depth charts (FRESH DATA - no stale players!)
+function buildPlayersFromDepthCharts(depthCharts, games) {
+  const players = {};
+  let playerCounter = 0;
+  
+  // Get teams playing this week
+  const teamsPlaying = new Set();
+  for (const game of games) {
+    const homeTeam = getTeamAbbreviation(game.homeTeam || game.home_team) || game.homeTeam || game.home_team;
+    const awayTeam = getTeamAbbreviation(game.awayTeam || game.away_team) || game.awayTeam || game.away_team;
+    teamsPlaying.add(homeTeam);
+    teamsPlaying.add(awayTeam);
+  }
+  
+  // Build from depth charts for teams playing this week
+  for (const [teamAbbr, teamDepth] of Object.entries(depthCharts)) {
+    if (!teamsPlaying.has(teamAbbr)) continue;
+    
+    // Iterate through positions
+    for (const position of ['QB', 'RB', 'WR', 'TE']) {
+      const positionDepth = teamDepth[position] || [];
+      for (let depth = 0; depth < positionDepth.length; depth++) {
+        const playerName = positionDepth[depth];
+        if (!playerName) continue;
+        
+        const playerId = `${teamAbbr}_${position}_${playerCounter++}`;
+        players[playerId] = {
+          player_id: playerId,
+          name: playerName,
+          position: position,
+          team: teamAbbr,
+          depth_chart_position: depth + 1,  // 1-indexed
+          // Minimal data - will be enhanced by availability + odds
+          snap_share: undefined,
+          target_share: undefined,
+          red_zone_share: undefined,
+          games_played: 4  // Assume mid-season
+        };
+      }
+    }
+  }
+  
+  console.log(`✅ Built player roster from depth charts: ${Object.keys(players).length} players`);
+  return players;
+}
+
 // Generate minimal player roster from game schedule (fallback)
 function generateMinimalPlayerRoster(games) {
   const players = {};
@@ -229,9 +275,22 @@ async function generateTDPredictions(games, season='2025', weekNumber){
     loadDepthCharts(season, weekNumber),
     loadInjuryReports(season, weekNumber)
   ]);
+  
+  // CRITICAL FIX: Build player roster from DEPTH CHARTS, not stale player data
+  // This ensures we only analyze CURRENT roster players who are actually active
   let players = {};
-  if (playerData?.players) players = playerData.players; else players = generateMinimalPlayerRoster(games);
-  const dataSource = playerData ? 'live_data_with_canonical_availability' : 'generated_minimal';
+  if (Object.keys(depthCharts).length > 0) {
+    console.log('✅ Building player roster from depth charts (FRESH DATA)');
+    players = buildPlayersFromDepthCharts(depthCharts, games);
+  } else if (playerData?.players) {
+    console.warn('⚠️ Using stale player data file (depth charts unavailable)');
+    players = playerData.players;
+  } else {
+    console.warn('⚠️ Using generated minimal roster (no depth charts or player data)');
+    players = generateMinimalPlayerRoster(games);
+  }
+  const dataSource = Object.keys(depthCharts).length > 0 ? 'depth_chart_fresh' : 
+                     playerData ? 'player_data_stale' : 'generated_minimal';
   const allPredictions = [];
   
   for (const game of games) {

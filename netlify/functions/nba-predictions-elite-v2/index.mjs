@@ -1430,7 +1430,10 @@ export default async (request, context) => {
           spread: {
             prediction: parseFloat(spreadPred.toFixed(1)),
             favorite: spreadPred > 0 ? 'home' : 'away',
-            line: parseFloat(Math.abs(spreadPred).toFixed(1))
+            line: parseFloat(Math.abs(spreadPred).toFixed(1)),
+            display: spreadPred > 0 
+              ? `${home.team.abbreviation} -${Math.abs(spreadPred).toFixed(1)}`
+              : `${away.team.abbreviation} -${Math.abs(spreadPred).toFixed(1)}`
           },
           total: {
             prediction: parseFloat(totalPred.toFixed(1)),
@@ -1471,7 +1474,12 @@ export default async (request, context) => {
             price: gameVegasLines.spread.fair.homePrice,
             fairBook: gameVegasLines.spread.fair.book,
             placementBook: gameVegasLines.spread.placement?.book,
-            vig: gameVegasLines.spread.fair.vig
+            vig: gameVegasLines.spread.fair.vig,
+            display: gameVegasLines.spread.fair.homeLine > 0
+              ? `${home.team.abbreviation} +${gameVegasLines.spread.fair.homeLine}`
+              : gameVegasLines.spread.fair.homeLine < 0
+                ? `${home.team.abbreviation} ${gameVegasLines.spread.fair.homeLine}`
+                : `${home.team.abbreviation} ${gameVegasLines.spread.fair.homeLine}`
           } : null,
           total: gameVegasLines.total?.fair?.line != null ? {
             line: gameVegasLines.total.fair.line,
