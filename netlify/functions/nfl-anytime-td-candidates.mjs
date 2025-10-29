@@ -85,37 +85,61 @@ export async function handler(event) {
         // Calculate EV for UI display
         const EV = edge; // Already calculated in comprehensive
         
+        // Get first_td and multiple_td data too
+        const firstTdData = player.first_td || {};
+        const multipleTdData = player.multiple_td || {};
+        
         candidates.push({
-          name: player.name,
+          // Player info (UI expects these exact field names!)
+          playerName: player.name,
+          playerId: player.player_id,
           position: player.position,
           team: player.team,
           opponent: game.home_team === player.team ? game.away_team : game.home_team,
           isHome: game.home_team === player.team,
+          gameId: game.game_id,
           
-          // Model probability (0-1 decimal)
-          modelProb: prob,
+          // Depth info (UI expects 'depth' not 'depthChartPosition')
+          depth: player.depth_chart_position,
           
-          // Market data
-          bestOdds: anytimeData.best_odds,
-          bestBook: anytimeData.best_book,
-          booksCount: anytimeData.books_count,
-          impliedProb: anytimeData.implied_prob,
+          // Market data - anytime TD (UI expects nested anytimeTd object)
+          anytimeTd: {
+            probability: prob,
+            bestOdds: anytimeData.best_odds,
+            bestBook: anytimeData.best_book,
+            edge: edge,
+            ev: EV,
+            confidence: anytimeData.books_count > 1 ? 80 : 60,
+            impliedProb: anytimeData.implied_prob,
+            booksCount: anytimeData.books_count
+          },
           
-          // Edge & EV
-          edge: edge,
-          EV: EV,
+          // First TD market
+          firstTd: {
+            probability: firstTdData.probability || 0,
+            bestOdds: firstTdData.best_odds || null,
+            bestBook: firstTdData.best_book || null,
+            edge: firstTdData.edge || 0,
+            ev: firstTdData.edge || 0,
+            confidence: firstTdData.books_count > 1 ? 80 : 60,
+            booksCount: firstTdData.books_count || 0
+          },
+          
+          // Multiple TD market
+          multipleTd: {
+            probability: multipleTdData.probability || 0,
+            bestOdds: multipleTdData.best_odds || null,
+            bestBook: multipleTdData.best_book || null,
+            edge: multipleTdData.edge || 0,
+            ev: multipleTdData.edge || 0,
+            confidence: multipleTdData.books_count > 1 ? 80 : 60,
+            booksCount: multipleTdData.books_count || 0
+          },
           
           // Additional context
-          depthChartPosition: player.depth_chart_position,
           injuryStatus: player.injury_status,
           probPlay: player.prob_play,
-          
-          // Key factors for analysis
-          keyFactors: player.key_factors || {},
-          
-          // Metadata
-          hasOdds: hasOdds,
-          oddsQualified: anytimeData.odds_qualified || false
+          keyFactors: player.key_factors || {}
         });
       }
     }
