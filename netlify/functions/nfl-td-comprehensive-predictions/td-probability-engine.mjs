@@ -336,7 +336,7 @@ export function buildPlayerAvailability(player, team, week, injuryReports, depth
   if (depthData) {
     sources.push({
       type: 'DEPTH_CHART',
-      depthPosition: depthData.position,
+      depthOrder: depthData.position,  // Use depthOrder not depthPosition
       isStarter: depthData.position === 1,
       timestamp: depthData.timestamp || Date.now()
     });
@@ -381,13 +381,7 @@ function findPlayerInjury(playerName, team, injuryReports) {
  * Find player depth chart position
  */
 function findPlayerDepth(playerName, position, team, depthCharts) {
-  if (!depthCharts || !depthCharts[team]) {
-    // DEBUG: Log why we're failing
-    if (team === 'DAL' && position === 'WR') {
-      console.log(`DEBUG findPlayerDepth: team=${team}, player=${playerName}, position=${position}, hasDepthCharts=${!!depthCharts}, hasTeam=${!!depthCharts?.[team]}, teams=${Object.keys(depthCharts || {}).slice(0,5).join(',')}`);
-    }
-    return null;
-  }
+  if (!depthCharts || !depthCharts[team]) return null;
   
   const teamDepth = depthCharts[team];
   const positionDepth = teamDepth[position] || [];
@@ -400,7 +394,6 @@ function findPlayerDepth(playerName, position, team, depthCharts) {
     
     // Exact match
     if (depthName === normalizedName) {
-      console.log(`✅ MATCH: ${playerName} matched ${positionDepth[i]} at depth ${i+1}`);
       return {
         position: i + 1,
         timestamp: teamDepth.timestamp || Date.now()
@@ -418,7 +411,6 @@ function findPlayerDepth(playerName, position, team, depthCharts) {
       
       // Match if last names match and first initials match
       if (depthLastName === nameLastName && depthFirstInitial === nameFirstInitial) {
-        console.log(`✅ MATCH (initial): ${playerName} matched ${positionDepth[i]} at depth ${i+1}`);
         return {
           position: i + 1,
           timestamp: teamDepth.timestamp || Date.now()
@@ -431,7 +423,6 @@ function findPlayerDepth(playerName, position, team, depthCharts) {
       const nameLastWord = normalizedName.split(' ').pop();
       const depthLastWord = depthName.split(' ').pop();
       if (nameLastWord === depthLastWord && nameLastWord.length > 3) {
-        console.log(`✅ MATCH (lastname): ${playerName} matched ${positionDepth[i]} at depth ${i+1}`);
         return {
           position: i + 1,
           timestamp: teamDepth.timestamp || Date.now()

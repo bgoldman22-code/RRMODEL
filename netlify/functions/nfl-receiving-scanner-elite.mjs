@@ -25,7 +25,7 @@ import {
 
 import { loadSSOT, playerToParams } from './_lib/ssot-loader.mjs';
 
-const ODDS_API_KEY = process.env.THEODDS_API_KEY || process.env.ODDS_API_KEY;
+const ODDS_API_KEY = process.env.ODDS_API_KEY || process.env.THEODDS_API_KEY;
 const USE_SSOT = process.env.USE_SSOT === 'true'; // Feature flag for SSOT
 
 // ============================================================================
