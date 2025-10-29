@@ -551,57 +551,33 @@ function buildEliteFeatures(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20) 
     a3_winPct: awayL3.winPct,
     a3_efg: awayL3.efg * 100,
     
-    // Home L10 stats
+    // Home L10 stats (model only has: pace, ppg, netRtg, winPct, ts - NO efg!)
     h10_pace: homeL10.pace,
-    h10_offRtg: homeL10.offRtg,
-    h10_defRtg: homeL10.defRtg,
-    h10_netRtg: homeL10.netRtg,
-    h10_efg: homeL10.efg * 100,  // FIXED: Consistent scaling with L3
-    h10_ts: homeL10.ts * 100,
-    h10_tovPct: homeL10.tovPct,
-    h10_orbPct: homeL10.orbPct,
-    h10_ftFga: homeL10.ftFga,
-    h10_winPct: homeL10.winPct,
     h10_ppg: calcPPG(homeL10),
+    h10_netRtg: homeL10.netRtg,
+    h10_winPct: homeL10.winPct,
+    h10_ts: homeL10.ts * 100,  // Model expects 0-100 scale (mean=57.9)
     
-    // Away L10 stats
+    // Away L10 stats (model only has: pace, ppg, netRtg, winPct, ts - NO efg!)
     a10_pace: awayL10.pace,
-    a10_offRtg: awayL10.offRtg,
-    a10_defRtg: awayL10.defRtg,
-    a10_netRtg: awayL10.netRtg,
-    a10_efg: awayL10.efg * 100,  // FIXED: Consistent scaling with L3
-    a10_ts: awayL10.ts * 100,
-    a10_tovPct: awayL10.tovPct,
-    a10_orbPct: awayL10.orbPct,
-    a10_ftFga: awayL10.ftFga,
-    a10_winPct: awayL10.winPct,
     a10_ppg: calcPPG(awayL10),
+    a10_netRtg: awayL10.netRtg,
+    a10_winPct: awayL10.winPct,
+    a10_ts: awayL10.ts * 100,  // Model expects 0-100 scale (mean=58.0)
     
-    // L20 stats (home)
+    // L20 stats - home (model only has: pace, ppg, netRtg, offRtg, defRtg - NO efg, NO ts!)
     h20_pace: homeL20.pace,
+    h20_ppg: calcPPG(homeL20),
+    h20_netRtg: homeL20.netRtg,
     h20_offRtg: homeL20.offRtg,
     h20_defRtg: homeL20.defRtg,
-    h20_netRtg: homeL20.netRtg,
-    h20_efg: homeL20.efg * 100,  // FIXED: Consistent scaling with L3/L10
-    h20_ts: homeL20.ts * 100,    // FIXED: Consistent scaling with L3/L10
-    h20_tovPct: homeL20.tovPct,
-    h20_orbPct: homeL20.orbPct,
-    h20_ftFga: homeL20.ftFga,
-    h20_winPct: homeL20.winPct,
-    h20_ppg: calcPPG(homeL20),
     
-    // L20 stats (away)
+    // L20 stats - away (model only has: pace, ppg, netRtg, offRtg, defRtg - NO efg, NO ts!)
     a20_pace: awayL20.pace,
+    a20_ppg: calcPPG(awayL20),
+    a20_netRtg: awayL20.netRtg,
     a20_offRtg: awayL20.offRtg,
     a20_defRtg: awayL20.defRtg,
-    a20_netRtg: awayL20.netRtg,
-    a20_efg: awayL20.efg * 100,  // FIXED: Consistent scaling with L3/L10
-    a20_ts: awayL20.ts * 100,    // FIXED: Consistent scaling with L3/L10
-    a20_tovPct: awayL20.tovPct,
-    a20_orbPct: awayL20.orbPct,
-    a20_ftFga: awayL20.ftFga,
-    a20_winPct: awayL20.winPct,
-    a20_ppg: calcPPG(awayL20),
     
     // Interactions (use L10 as primary for interactions)
     netRtg_diff: homeL10.netRtg - awayL10.netRtg,
