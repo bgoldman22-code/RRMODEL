@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2025-10-28T16:52:03Z",
+    "generated_at": "2025-10-29T16:37:51Z",
     "season": 2025,
     "week": 9,
-    "total_players": 589,
+    "total_players": 590,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -640,7 +640,7 @@
     {
       "player_id": "00-0032211",
       "name": "T.Lockett",
-      "team": "TEN",
+      "team": "LV",
       "position": "WR",
       "opponent": "TBD",
       "is_home": true,
@@ -5447,6 +5447,27 @@
       "multiple_td": 0
     },
     {
+      "player_id": "00-0036527",
+      "name": "D.Turner",
+      "team": "LV",
+      "position": "WR",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "WR",
+      "anytime_td_prob": 0.85,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.35,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.85,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
       "player_id": "00-0036550",
       "name": "R.Bateman",
       "team": "BAL",
@@ -9460,7 +9481,7 @@
     {
       "player_id": "00-0038809",
       "name": "B.Sims",
-      "team": "GB",
+      "team": "MIN",
       "position": "TE",
       "opponent": "TBD",
       "is_home": true,
