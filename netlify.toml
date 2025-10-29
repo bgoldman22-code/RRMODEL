@@ -57,6 +57,12 @@
   included_files = ["public/**", "data/nfl/**", "netlify/functions/nfl-td-comprehensive-predictions/**"]
   external_node_modules = ["@netlify/blobs", "node-fetch"]
 
+# nfl-td-anytime-simple - standalone simple TD API with edge calculation
+[functions."nfl-td-anytime-simple"]
+  node_bundler = "esbuild"
+  included_files = ["public/nfl-anytime-td-player-data.json"]
+  external_node_modules = ["node-fetch"]
+
 # nfl-td-comprehensive-predictions - core TD engine
 [functions."nfl-td-comprehensive-predictions"]
   node_bundler = "esbuild"
