@@ -1453,12 +1453,13 @@ export default async (request, context) => {
     
     console.log(`[NBA Elite V2] Generated ${predictions.length} predictions`);
     
-    return new Response(JSON.stringify({
+    // Calculate response size before sending
+    const responseData = {
       ok: true,
       generated: new Date().toISOString(),
       games: predictions.length,
       predictions,
-      isPreseason,  // ⚠️ Frontend: Show preseason warning banner
+      isPreseason,
       preseasonWarning: isPreseason ? 'Preseason predictions are for observation only. Model is trained on regular season data. DO NOT track these results in regular season performance metrics.' : null,
       modelInfo: {
         type: 'Elite Ensemble',
@@ -1468,10 +1469,17 @@ export default async (request, context) => {
         dataSource: 'Netlify Blobs + ESPN',
         status: isPreseason ? '⚠️ Preseason - Observation Only' : 'Regular Season - Full Tracking'
       }
-    }), {
+    };
+    
+    const jsonString = JSON.stringify(responseData);
+    const sizeInKB = (jsonString.length / 1024).toFixed(2);
+    console.log(`[NBA Elite V2] Response size: ${sizeInKB} KB`);
+    
+    return new Response(jsonString, {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'max-age=300'
+        'Cache-Control': 'max-age=300',
+        'Content-Length': String(jsonString.length)
       }
     });
     
