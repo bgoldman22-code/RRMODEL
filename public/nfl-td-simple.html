@@ -303,7 +303,7 @@
             
             try {
                 console.log('🎯 Fetching anytime TD odds...');
-                const response = await fetch('/.netlify/functions/nfl-td-anytime-simple');
+                const response = await fetch('/.netlify/functions/nfl-td-test-simple');
                 
                 if (!response.ok) {
                     throw new Error(`API returned ${response.status}`);
