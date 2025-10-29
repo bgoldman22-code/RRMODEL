@@ -340,10 +340,25 @@ async function generateTDPredictions(games, season='2025', weekNumber){
       const depthPosition = availability?.depthOrder || basePlayer.depth_chart_position || 1;
       const tdProbs = buildSimpleTDProbability(basePlayer, depthPosition, availability);
       
-      // Find best odds for this player
-      const oddsEntry = oddsByPlayer[basePlayer.name] || 
-                       oddsByPlayer[basePlayer.name.toUpperCase()] || 
-                       oddsByPlayer[basePlayer.name.toLowerCase()] || null;
+      // Find best odds for this player with fuzzy matching for suffixes
+      function findPlayerOdds(playerName, oddsDict) {
+        // Try exact match first
+        if (oddsDict[playerName]) return oddsDict[playerName];
+        if (oddsDict[playerName.toUpperCase()]) return oddsDict[playerName.toUpperCase()];
+        if (oddsDict[playerName.toLowerCase()]) return oddsDict[playerName.toLowerCase()];
+        
+        // Try without suffix (III, Jr., Sr., II, IV)
+        const nameWithoutSuffix = playerName.replace(/\s+(III|Jr\.|Sr\.|II|IV)$/i, '').trim();
+        if (nameWithoutSuffix !== playerName) {
+          if (oddsDict[nameWithoutSuffix]) return oddsDict[nameWithoutSuffix];
+          if (oddsDict[nameWithoutSuffix.toUpperCase()]) return oddsDict[nameWithoutSuffix.toUpperCase()];
+          if (oddsDict[nameWithoutSuffix.toLowerCase()]) return oddsDict[nameWithoutSuffix.toLowerCase()];
+        }
+        
+        return null;
+      }
+      
+      const oddsEntry = findPlayerOdds(basePlayer.name, oddsByPlayer);
       
       // Log odds match for first few players to debug
       if (Object.keys(gamePlayerPredictions).length < 3) {
