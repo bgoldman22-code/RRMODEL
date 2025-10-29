@@ -845,6 +845,37 @@ export default async (request, context) => {
     // 4. Fetch live Vegas lines (use correct endpoint for season type)
     const vegasLines = await fetchVegasLines(espnData.events.map(e => e.id), isPreseason);
     
+    // 4.5. Pre-fetch all team rolling stats and injuries ONCE (avoid 80+ API calls)
+    console.log('[NBA Elite V2] Pre-fetching team stats and injuries for all games...');
+    const allTeams = new Set();
+    for (const event of espnData.events) {
+      const comp = event.competitions[0];
+      const home = comp.competitors.find(c => c.homeAway === 'home');
+      const away = comp.competitors.find(c => c.homeAway === 'away');
+      allTeams.add(home.team.abbreviation);
+      allTeams.add(away.team.abbreviation);
+    }
+    
+    // Fetch ALL team stats in parallel (20 teams max, 3 requests each = 60 total, but all parallel)
+    const statsCache = {};
+    const injuryCache = {};
+    
+    await Promise.all(
+      Array.from(allTeams).map(async (abbr) => {
+        try {
+          const teamData = teamInfo.byAbbr[abbr] || teamInfo.byName[abbr];
+          if (teamData) {
+            statsCache[abbr] = await fetchTeamRollingStats(teamData.id, '2025-26');
+          }
+          injuryCache[abbr] = await getTeamInjuries(abbr);
+        } catch (err) {
+          console.error(`[NBA Elite V2] Error pre-fetching ${abbr}:`, err.message);
+        }
+      })
+    );
+    
+    console.log('[NBA Elite V2] Pre-fetch complete. Cached stats for:', Object.keys(statsCache).length, 'teams');
+    
     // 5. Generate predictions
     const predictions = [];
     
@@ -881,11 +912,9 @@ export default async (request, context) => {
         
         console.log(`[NBA Elite V2] ✅ Matched: ${away.team.abbreviation} (ID ${awayTeamData.id}) @ ${home.team.abbreviation} (ID ${homeTeamData.id})`);
         
-        // V2: Fetch L5/L10/L20 stats using ESPN schedule + NBA CDN boxscores
-        const [homeStats, awayStats] = await Promise.all([
-          fetchTeamRollingStats(homeTeamData.id, '2025-26'),
-          fetchTeamRollingStats(awayTeamData.id, '2025-26')
-        ]);
+        // V2: Use cached stats instead of fetching per game
+        const homeStats = statsCache[home.team.abbreviation] || { l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
+        const awayStats = statsCache[away.team.abbreviation] || { l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
       
       // Use L10 as baseline, with L5 and L20 for specific features
       const homeL3Raw = homeStats.l5 || getDefaultStats();  // Use L5 as proxy for L3
@@ -932,10 +961,9 @@ export default async (request, context) => {
       let injuryAdvantage = null;
       
       try {
-        [homeInjuries, awayInjuries] = await Promise.all([
-          getTeamInjuries(home.team.abbreviation),
-          getTeamInjuries(away.team.abbreviation)
-        ]);
+        // Use cached injuries instead of fetching per game
+        homeInjuries = injuryCache[home.team.abbreviation] || [];
+        awayInjuries = injuryCache[away.team.abbreviation] || [];
         
         // Apply injury adjustments on top of RCI-adjusted stats
         const homeL10WithInjuries = applyInjuryAdjustment(homeL10, homeInjuries);
