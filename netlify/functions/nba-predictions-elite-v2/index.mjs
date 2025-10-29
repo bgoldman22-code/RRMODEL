@@ -939,11 +939,14 @@ export default async (request, context) => {
     );
     
     console.log('[NBA Elite V2] Pre-fetch complete. Cached stats for:', Object.keys(statsCache).length, 'teams');
+    console.log('[NBA V2] Teams in cache:', Object.keys(statsCache).sort().join(', '));
     
     // GUARD: Fail fast if cache didn't populate correctly
     const cachedCount = Object.keys(statsCache).length;
     if (cachedCount < allTeams.size) {
-      throw new Error(`[NBA V2] Stats cache incomplete: ${cachedCount}/${allTeams.size} teams. Abbreviation mapping likely failed.`);
+      const missing = [...allTeams].filter(t => !statsCache[t]);
+      console.error('[NBA V2] Missing from cache:', missing.join(', '));
+      throw new Error(`[NBA V2] Stats cache incomplete: ${cachedCount}/${allTeams.size} teams. Missing: ${missing.join(', ')}`);
     }
     
     // 5. Generate predictions
@@ -978,8 +981,13 @@ export default async (request, context) => {
         const awayStats = statsCache[awayAbbr] || { l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
       
       // DEBUG: Check if we're using cached data or defaults
-      console.log(`[DEBUG CACHE] ${homeAbbr}: cached=${!!statsCache[homeAbbr]}, L10.netRtg=${homeStats.l10?.netRtg}`);
-      console.log(`[DEBUG CACHE] ${awayAbbr}: cached=${!!statsCache[awayAbbr]}, L10.netRtg=${awayStats.l10?.netRtg}`);
+      if (!statsCache[homeAbbr]) {
+        console.warn(`[NBA V2] ⚠️  ${homeAbbr} NOT IN CACHE - using defaults (will cause clustering)`);
+      }
+      if (!statsCache[awayAbbr]) {
+        console.warn(`[NBA V2] ⚠️  ${awayAbbr} NOT IN CACHE - using defaults (will cause clustering)`);
+      }
+      console.log(`[DEBUG CACHE] ${homeAbbr}: cached=${!!statsCache[homeAbbr]}, ${awayAbbr}: cached=${!!statsCache[awayAbbr]}`);
       
       // Use L10 as baseline, with L5 and L20 for specific features
       const homeL3Raw = homeStats.l5 || getDefaultStats();  // Use L5 as proxy for L3
