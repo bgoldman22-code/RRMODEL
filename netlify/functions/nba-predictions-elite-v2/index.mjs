@@ -513,102 +513,102 @@ function calculateAdvancedStats(games, teamId, window = 10) {
 /**
  * Build 55-feature vector for elite model
  */
-function buildEliteFeatures(homeStats, awayStats) {
+function buildEliteFeatures(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20) {
   // Helper to create uniform stat blocks
   const calcPPG = (stats) => stats.offRtg; // OffRtg is already points/100 poss
   
   return {
-    // L3 equivalent (use L10 as proxy since we don't track L3 separately)
-    h3_netRtg: homeStats.netRtg,
-    h3_ppg: calcPPG(homeStats),
-    h3_pace: homeStats.pace,
-    h3_winPct: homeStats.winPct,
-    h3_efg: homeStats.efg * 100,
-    a3_netRtg: awayStats.netRtg,
-    a3_ppg: calcPPG(awayStats),
-    a3_pace: awayStats.pace,
-    a3_winPct: awayStats.winPct,
-    a3_efg: awayStats.efg * 100,
+    // L3 (L5) stats
+    h3_netRtg: homeL3.netRtg,
+    h3_ppg: calcPPG(homeL3),
+    h3_pace: homeL3.pace,
+    h3_winPct: homeL3.winPct,
+    h3_efg: homeL3.efg * 100,
+    a3_netRtg: awayL3.netRtg,
+    a3_ppg: calcPPG(awayL3),
+    a3_pace: awayL3.pace,
+    a3_winPct: awayL3.winPct,
+    a3_efg: awayL3.efg * 100,
     
     // Home L10 stats
-    h10_pace: homeStats.pace,
-    h10_offRtg: homeStats.offRtg,
-    h10_defRtg: homeStats.defRtg,
-    h10_netRtg: homeStats.netRtg,
-    h10_efg: homeStats.efg,
-    h10_ts: homeStats.ts * 100,
-    h10_tovPct: homeStats.tovPct,
-    h10_orbPct: homeStats.orbPct,
-    h10_ftFga: homeStats.ftFga,
-    h10_winPct: homeStats.winPct,
-    h10_ppg: calcPPG(homeStats),
+    h10_pace: homeL10.pace,
+    h10_offRtg: homeL10.offRtg,
+    h10_defRtg: homeL10.defRtg,
+    h10_netRtg: homeL10.netRtg,
+    h10_efg: homeL10.efg,
+    h10_ts: homeL10.ts * 100,
+    h10_tovPct: homeL10.tovPct,
+    h10_orbPct: homeL10.orbPct,
+    h10_ftFga: homeL10.ftFga,
+    h10_winPct: homeL10.winPct,
+    h10_ppg: calcPPG(homeL10),
     
     // Away L10 stats
-    a10_pace: awayStats.pace,
-    a10_offRtg: awayStats.offRtg,
-    a10_defRtg: awayStats.defRtg,
-    a10_netRtg: awayStats.netRtg,
-    a10_efg: awayStats.efg,
-    a10_ts: awayStats.ts * 100,
-    a10_tovPct: awayStats.tovPct,
-    a10_orbPct: awayStats.orbPct,
-    a10_ftFga: awayStats.ftFga,
-    a10_winPct: awayStats.winPct,
-    a10_ppg: calcPPG(awayStats),
+    a10_pace: awayL10.pace,
+    a10_offRtg: awayL10.offRtg,
+    a10_defRtg: awayL10.defRtg,
+    a10_netRtg: awayL10.netRtg,
+    a10_efg: awayL10.efg,
+    a10_ts: awayL10.ts * 100,
+    a10_tovPct: awayL10.tovPct,
+    a10_orbPct: awayL10.orbPct,
+    a10_ftFga: awayL10.ftFga,
+    a10_winPct: awayL10.winPct,
+    a10_ppg: calcPPG(awayL10),
     
-    // L20 stats (home) - use same as L10
-    h20_pace: homeStats.pace,
-    h20_offRtg: homeStats.offRtg,
-    h20_defRtg: homeStats.defRtg,
-    h20_netRtg: homeStats.netRtg,
-    h20_efg: homeStats.efg,
-    h20_ts: homeStats.ts,
-    h20_tovPct: homeStats.tovPct,
-    h20_orbPct: homeStats.orbPct,
-    h20_ftFga: homeStats.ftFga,
-    h20_winPct: homeStats.winPct,
-    h20_ppg: calcPPG(homeStats),
+    // L20 stats (home)
+    h20_pace: homeL20.pace,
+    h20_offRtg: homeL20.offRtg,
+    h20_defRtg: homeL20.defRtg,
+    h20_netRtg: homeL20.netRtg,
+    h20_efg: homeL20.efg,
+    h20_ts: homeL20.ts,
+    h20_tovPct: homeL20.tovPct,
+    h20_orbPct: homeL20.orbPct,
+    h20_ftFga: homeL20.ftFga,
+    h20_winPct: homeL20.winPct,
+    h20_ppg: calcPPG(homeL20),
     
-    // L20 stats (away) - use same as L10
-    a20_pace: awayStats.pace,
-    a20_offRtg: awayStats.offRtg,
-    a20_defRtg: awayStats.defRtg,
-    a20_netRtg: awayStats.netRtg,
-    a20_efg: awayStats.efg,
-    a20_ts: awayStats.ts,
-    a20_tovPct: awayStats.tovPct,
-    a20_orbPct: awayStats.orbPct,
-    a20_ftFga: awayStats.ftFga,
-    a20_winPct: awayStats.winPct,
-    a20_ppg: calcPPG(awayStats),
+    // L20 stats (away)
+    a20_pace: awayL20.pace,
+    a20_offRtg: awayL20.offRtg,
+    a20_defRtg: awayL20.defRtg,
+    a20_netRtg: awayL20.netRtg,
+    a20_efg: awayL20.efg,
+    a20_ts: awayL20.ts,
+    a20_tovPct: awayL20.tovPct,
+    a20_orbPct: awayL20.orbPct,
+    a20_ftFga: awayL20.ftFga,
+    a20_winPct: awayL20.winPct,
+    a20_ppg: calcPPG(awayL20),
     
-    // Interactions (matching all 55 features from trained model)
-    netRtg_diff: homeStats.netRtg - awayStats.netRtg,
-    netRtg_product: homeStats.netRtg * awayStats.netRtg,
-    offense_vs_defense: homeStats.offRtg * awayStats.defRtg / 10000, // Normalize
-    defensive_matchup: awayStats.offRtg * homeStats.defRtg / 10000, // Away off vs home def
-    pace_avg: (homeStats.pace + awayStats.pace) / 2,
-    pace_diff: homeStats.pace - awayStats.pace,
-    pace_product: homeStats.pace * awayStats.pace / 10000,
-    h_momentum: homeStats.netRtg * homeStats.winPct,
-    a_momentum: awayStats.netRtg * awayStats.winPct,
-    h_streak: homeStats.winPct > 0.6 ? 1 : (homeStats.winPct < 0.4 ? -1 : 0),
-    a_streak: awayStats.winPct > 0.6 ? 1 : (awayStats.winPct < 0.4 ? -1 : 0),
-    momentum_diff: (homeStats.netRtg * homeStats.winPct) - (awayStats.netRtg * awayStats.winPct),
-    ppg_sum: homeStats.offRtg + awayStats.offRtg,
-    ppg_diff: homeStats.offRtg - awayStats.offRtg,
-    expected_total: (homeStats.offRtg + awayStats.offRtg) * (homeStats.pace + awayStats.pace) / 200,
-    shooting_advantage: (homeStats.efg - awayStats.efg) * 100,
-    h_efficiency: homeStats.offRtg / homeStats.pace,
-    a_efficiency: awayStats.offRtg / awayStats.pace,
-    offRtg_diff: homeStats.offRtg - awayStats.offRtg,
-    defRtg_diff: homeStats.defRtg - awayStats.defRtg,
-    winPct_diff: homeStats.winPct - awayStats.winPct,
-    quality_matchup: (homeStats.netRtg + awayStats.netRtg) / 2,
-    upset_factor: Math.abs(homeStats.winPct - awayStats.winPct) * (homeStats.winPct < awayStats.winPct ? 1 : -1),
-    rating_pace_interaction: (homeStats.netRtg - awayStats.netRtg) * (homeStats.pace - awayStats.pace),
-    form_rating_interaction: homeStats.winPct * homeStats.netRtg - awayStats.winPct * awayStats.netRtg,
-    consistency: Math.abs(homeStats.netRtg / (homeStats.games + 1)) + Math.abs(awayStats.netRtg / (awayStats.games + 1)),
+    // Interactions (use L10 as primary for interactions)
+    netRtg_diff: homeL10.netRtg - awayL10.netRtg,
+    netRtg_product: homeL10.netRtg * awayL10.netRtg,
+    offense_vs_defense: homeL10.offRtg * awayL10.defRtg / 10000, // Normalize
+    defensive_matchup: awayL10.offRtg * homeL10.defRtg / 10000, // Away off vs home def
+    pace_avg: (homeL10.pace + awayL10.pace) / 2,
+    pace_diff: homeL10.pace - awayL10.pace,
+    pace_product: homeL10.pace * awayL10.pace / 10000,
+    h_momentum: homeL10.netRtg * homeL10.winPct,
+    a_momentum: awayL10.netRtg * awayL10.winPct,
+    h_streak: homeL10.winPct > 0.6 ? 1 : (homeL10.winPct < 0.4 ? -1 : 0),
+    a_streak: awayL10.winPct > 0.6 ? 1 : (awayL10.winPct < 0.4 ? -1 : 0),
+    momentum_diff: (homeL10.netRtg * homeL10.winPct) - (awayL10.netRtg * awayL10.winPct),
+    ppg_sum: homeL10.offRtg + awayL10.offRtg,
+    ppg_diff: homeL10.offRtg - awayL10.offRtg,
+    expected_total: (homeL10.offRtg + awayL10.offRtg) * (homeL10.pace + awayL10.pace) / 200,
+    shooting_advantage: (homeL10.efg - awayL10.efg) * 100,
+    h_efficiency: homeL10.offRtg / homeL10.pace,
+    a_efficiency: awayL10.offRtg / awayL10.pace,
+    offRtg_diff: homeL10.offRtg - awayL10.offRtg,
+    defRtg_diff: homeL10.defRtg - awayL10.defRtg,
+    winPct_diff: homeL10.winPct - awayL10.winPct,
+    quality_matchup: (homeL10.netRtg + awayL10.netRtg) / 2,
+    upset_factor: Math.abs(homeL10.winPct - awayL10.winPct) * (homeL10.winPct < awayL10.winPct ? 1 : -1),
+    rating_pace_interaction: (homeL10.netRtg - awayL10.netRtg) * (homeL10.pace - awayL10.pace),
+    form_rating_interaction: homeL10.winPct * homeL10.netRtg - awayL10.winPct * awayL10.netRtg,
+    consistency: Math.abs(homeL10.netRtg / (homeL10.games + 1)) + Math.abs(awayL10.netRtg / (awayL10.games + 1)),
     home_advantage: 1
   };
 }
@@ -967,9 +967,13 @@ export default async (request, context) => {
         homeInjuries = injuryCache[home.team.abbreviation] || [];
         awayInjuries = injuryCache[away.team.abbreviation] || [];
         
-        // Apply injury adjustments on top of RCI-adjusted stats
+        // Apply injury adjustments on top of RCI-adjusted stats for all windows
+        const homeL3WithInjuries = applyInjuryAdjustment(homeL3, homeInjuries);
         const homeL10WithInjuries = applyInjuryAdjustment(homeL10, homeInjuries);
+        const homeL20WithInjuries = applyInjuryAdjustment(homeL20, homeInjuries);
+        const awayL3WithInjuries = applyInjuryAdjustment(awayL3, awayInjuries);
         const awayL10WithInjuries = applyInjuryAdjustment(awayL10, awayInjuries);
+        const awayL20WithInjuries = applyInjuryAdjustment(awayL20, awayInjuries);
         
         // Get injury summaries for logging and output
         homeInjuryAdj = getInjurySummary(homeInjuries);
@@ -981,19 +985,22 @@ export default async (request, context) => {
         console.log(`[INJURY] Advantage:`, injuryAdvantage.advantage);
         
         // Use injury-adjusted stats for features
-        const spreadFeatures = buildEliteFeatures(homeL10WithInjuries, awayL10WithInjuries);
+        const spreadFeatures = buildEliteFeatures(
+          homeL3WithInjuries, homeL10WithInjuries, homeL20WithInjuries,
+          awayL3WithInjuries, awayL10WithInjuries, awayL20WithInjuries
+        );
         const totalFeatures = buildSimpleFeatures(homeL10WithInjuries, awayL10WithInjuries);
       } catch (injuryError) {
         console.log(`[INJURY] Error fetching injuries, using RCI-only adjustments:`, injuryError.message);
         
         // Fallback to RCI-only stats
-        var spreadFeatures = buildEliteFeatures(homeL10, awayL10);
+        var spreadFeatures = buildEliteFeatures(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20);
         var totalFeatures = buildSimpleFeatures(homeL10, awayL10);
       }
       
       // Ensure features are defined (from either injury-adjusted or fallback)
       if (typeof spreadFeatures === 'undefined') {
-        var spreadFeatures = buildEliteFeatures(homeL10, awayL10);
+        var spreadFeatures = buildEliteFeatures(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20);
         var totalFeatures = buildSimpleFeatures(homeL10, awayL10);
       }
       
