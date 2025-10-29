@@ -61,7 +61,7 @@ export function getRCIAdjustment(teamAbbr, gamesPlayed = 0) {
  * @param {Object} stats - Team stats object with offRtg, defRtg
  * @param {string} teamAbbr - Team abbreviation
  * @param {number} gamesPlayed - Games played this season
- * @returns {Object} - Adjusted stats
+ * @returns {Object} - Adjusted stats (preserves all original fields)
  */
 export function applyRCIAdjustment(stats, teamAbbr, gamesPlayed = 0) {
   const abbr = teamAbbr === 'GS' ? 'GS' : teamAbbr;
@@ -70,12 +70,12 @@ export function applyRCIAdjustment(stats, teamAbbr, gamesPlayed = 0) {
   // Use core implementation
   const adjusted = applyRCIToStats(stats, rci, gamesPlayed);
   
+  // Return ALL original stats plus RCI adjustments
   return {
-    offRtg: adjusted.offRtg,
+    ...stats, // Preserve all original fields (efg, ts, tovPct, winPct, etc.)
+    offRtg: adjusted.offRtg,  // Override with RCI-adjusted values
     defRtg: adjusted.defRtg,
     netRtg: adjusted.netRtg,
-    pace: adjusted.pace,
-    games: adjusted.games,
     rciAdjustment: {
       deltaOff: adjusted._rciDeltaOff,
       deltaDef: adjusted._rciDeltaDef,
