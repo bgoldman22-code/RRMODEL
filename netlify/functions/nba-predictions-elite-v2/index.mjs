@@ -878,6 +878,35 @@ export default async (request, context) => {
     const teamInfo = loadTeamInfo();
     console.log('[NBA Elite V2] Loaded team info:', Object.keys(teamInfo.byAbbr).length, 'teams');
     
+    // 3.5. VERIFY MODEL SCALE EXPECTATIONS (run once per deployment)
+    console.log('═══════════════════════════════════════════════════════════════');
+    console.log('[NBA V2] 🔍 MODEL SCALE VERIFICATION');
+    const sampleFeatures = ['h10_efg', 'h10_ts', 'a10_efg', 'a10_ts', 'h10_tovPct', 'h20_efg'];
+    const meanSample = {};
+    sampleFeatures.forEach(k => {
+      if (SPREAD_MODEL.means[k] != null) {
+        meanSample[k] = SPREAD_MODEL.means[k].toFixed(6);
+      }
+    });
+    console.log('[NBA V2] Training means sample:', meanSample);
+    
+    const efgMean = SPREAD_MODEL.means['h10_efg'];
+    if (efgMean != null) {
+      if (efgMean > 10) {
+        console.log('[NBA V2] ✅ Model trained on 0-100 SCALE (h10_efg mean =', efgMean.toFixed(2), ')');
+        console.log('[NBA V2] 📋 Feature construction MUST multiply efg/ts by 100');
+      } else if (efgMean > 1) {
+        console.log('[NBA V2] ⚠️  AMBIGUOUS SCALE (h10_efg mean =', efgMean.toFixed(3), ')');
+        console.warn('[NBA V2] Cannot determine if model expects 0-1 or 0-100 scale');
+      } else {
+        console.log('[NBA V2] ✅ Model trained on 0-1 SCALE (h10_efg mean =', efgMean.toFixed(4), ')');
+        console.log('[NBA V2] 📋 Feature construction should NOT multiply efg/ts by 100');
+      }
+    } else {
+      console.warn('[NBA V2] ⚠️  h10_efg mean not found in model - cannot verify scale');
+    }
+    console.log('═══════════════════════════════════════════════════════════════');
+    
     // 4. Fetch live Vegas lines (use correct endpoint for season type)
     const vegasLines = await fetchVegasLines(espnData.events.map(e => e.id), isPreseason);
     

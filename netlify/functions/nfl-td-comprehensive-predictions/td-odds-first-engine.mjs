@@ -41,9 +41,59 @@ const TEAM_QUALITY = {
 };
 
 /**
- * Build simple but accurate TD probability from depth + team + matchup
+ * Defensive matchup ratings - how much easier/harder vs different defenses
+ * Based on TDs allowed vs position (2024-2025 season)
+ * 1.0 = average, >1.0 = easier matchup, <1.0 = harder matchup
  */
-export function buildSimpleTDProbability(player, depthChartPosition, availability) {
+const DEFENSIVE_MATCHUP_VS_RB = {
+  // RB-friendly defenses (allow more rushing TDs)
+  'CAR': 1.35, 'ARI': 1.30, 'NYG': 1.28, 'NE': 1.25, 'WAS': 1.22,
+  'LV': 1.20, 'TEN': 1.18, 'JAX': 1.15, 'CHI': 1.12, 'IND': 1.10,
+  
+  // Average defenses
+  'ATL': 1.05, 'TB': 1.03, 'NO': 1.00, 'LAR': 0.98, 'LAC': 0.96,
+  'SEA': 0.94, 'MIN': 0.92, 'CIN': 0.90,
+  
+  // Tough vs RBs
+  'GB': 0.88, 'MIA': 0.85, 'NYJ': 0.82, 'DAL': 0.80, 'HOU': 0.78,
+  'DEN': 0.75, 'PIT': 0.73, 'CLE': 0.70, 'BAL': 0.68, 'SF': 0.65,
+  'BUF': 0.63, 'PHI': 0.60, 'KC': 0.58, 'DET': 0.55
+};
+
+const DEFENSIVE_MATCHUP_VS_WR = {
+  // WR-friendly defenses (allow more passing TDs)
+  'LV': 1.35, 'CAR': 1.32, 'TEN': 1.28, 'JAX': 1.25, 'ARI': 1.22,
+  'WAS': 1.20, 'CHI': 1.18, 'NYG': 1.15, 'IND': 1.12, 'NE': 1.10,
+  
+  // Average defenses
+  'CIN': 1.05, 'ATL': 1.03, 'NO': 1.00, 'TB': 0.98, 'LAC': 0.96,
+  'HOU': 0.94, 'SEA': 0.92, 'MIN': 0.90,
+  
+  // Tough vs WRs
+  'LAR': 0.88, 'GB': 0.85, 'MIA': 0.82, 'DAL': 0.80, 'DEN': 0.78,
+  'CLE': 0.75, 'PIT': 0.73, 'NYJ': 0.70, 'BAL': 0.68, 'BUF': 0.65,
+  'SF': 0.63, 'KC': 0.60, 'PHI': 0.58, 'DET': 0.55
+};
+
+const DEFENSIVE_MATCHUP_VS_TE = {
+  // TE-friendly defenses (allow more TE TDs)
+  'ARI': 1.35, 'LV': 1.32, 'CAR': 1.28, 'NYG': 1.25, 'WAS': 1.22,
+  'JAX': 1.20, 'TEN': 1.18, 'CHI': 1.15, 'IND': 1.12, 'ATL': 1.10,
+  
+  // Average defenses
+  'TB': 1.05, 'NO': 1.03, 'NE': 1.00, 'LAC': 0.98, 'CIN': 0.96,
+  'SEA': 0.94, 'HOU': 0.92, 'MIN': 0.90,
+  
+  // Tough vs TEs
+  'LAR': 0.88, 'GB': 0.85, 'MIA': 0.82, 'DAL': 0.80, 'DEN': 0.78,
+  'NYJ': 0.75, 'CLE': 0.73, 'PIT': 0.70, 'BAL': 0.68, 'BUF': 0.65,
+  'SF': 0.63, 'KC': 0.60, 'PHI': 0.58, 'DET': 0.55
+};
+
+/**
+ * Build simple but accurate TD probability from depth + team + matchup + DEFENSE
+ */
+export function buildSimpleTDProbability(player, depthChartPosition, availability, opponent) {
   const { position, team } = player;
   const depth = depthChartPosition || 1;
   
@@ -64,6 +114,22 @@ export function buildSimpleTDProbability(player, depthChartPosition, availabilit
   // Adjust for team quality
   const teamFactor = TEAM_QUALITY[team] || 1.0;
   
+  // Adjust for defensive matchup (NEW!)
+  let defenseFactor = 1.0;
+  if (opponent) {
+    if (position === 'RB') {
+      defenseFactor = DEFENSIVE_MATCHUP_VS_RB[opponent] || 1.0;
+    } else if (position === 'WR') {
+      defenseFactor = DEFENSIVE_MATCHUP_VS_WR[opponent] || 1.0;
+    } else if (position === 'TE') {
+      defenseFactor = DEFENSIVE_MATCHUP_VS_TE[opponent] || 1.0;
+    }
+    // QB rushing TDs use RB defensive ratings
+    else if (position === 'QB') {
+      defenseFactor = DEFENSIVE_MATCHUP_VS_RB[opponent] || 1.0;
+    }
+  }
+  
   // Adjust for availability (injury status)
   let availabilityFactor = 1.0;
   if (availability) {
@@ -78,8 +144,8 @@ export function buildSimpleTDProbability(player, depthChartPosition, availabilit
     }
   }
   
-  const anytimeProb = baseline.anytime * teamFactor * availabilityFactor;
-  const firstProb = baseline.first * teamFactor * availabilityFactor;
+  const anytimeProb = baseline.anytime * teamFactor * defenseFactor * availabilityFactor;
+  const firstProb = baseline.first * teamFactor * defenseFactor * availabilityFactor;
   
   // Multiple TDs follow power law
   const multipleProb = Math.pow(anytimeProb, 1.4) * 0.80;
@@ -91,9 +157,11 @@ export function buildSimpleTDProbability(player, depthChartPosition, availabilit
     factors: {
       baseline_anytime: baseline.anytime,
       team_quality: teamFactor,
+      defensive_matchup: defenseFactor,
       availability: availabilityFactor,
       depth: depth,
-      data_source: 'odds_first_simple_model'
+      opponent: opponent || 'unknown',
+      data_source: 'odds_first_simple_model_v2'
     }
   };
 }

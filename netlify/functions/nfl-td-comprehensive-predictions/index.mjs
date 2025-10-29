@@ -397,10 +397,11 @@ async function generateTDPredictions(games, season='2025', weekNumber){
         weather: null  // TODO: Add weather data
       };
       
-      // USE ODDS-FIRST APPROACH: Build probability from depth + team + matchup
+      // USE ODDS-FIRST APPROACH: Build probability from depth + team + matchup + OPPONENT DEFENSE
       // This avoids the stale/corrupted R pipeline data
       const depthPosition = availability?.depthOrder || basePlayer.depth_chart_position || 1;
-      const tdProbs = buildSimpleTDProbability(basePlayer, depthPosition, availability);
+      const tdProbs = buildSimpleTDProbability(basePlayer, depthPosition, availability, opponent);
+
       
       // Find best odds for this player with fuzzy matching for suffixes
       function findPlayerOdds(playerName, oddsDict) {
