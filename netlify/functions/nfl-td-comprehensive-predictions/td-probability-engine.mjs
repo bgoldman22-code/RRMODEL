@@ -386,15 +386,35 @@ function findPlayerDepth(playerName, position, team, depthCharts) {
   const teamDepth = depthCharts[team];
   const positionDepth = teamDepth[position] || [];
   
-  const normalizedName = playerName.toLowerCase().trim();
+  const normalizedName = playerName.toLowerCase().trim().replace(/\./g, '');
   
   for (let i = 0; i < positionDepth.length; i++) {
     const depthName = (positionDepth[i] || '').toLowerCase().trim();
+    
+    // Exact match
     if (depthName === normalizedName || depthName.includes(normalizedName)) {
       return {
         position: i + 1,
         timestamp: teamDepth.timestamp || Date.now()
       };
+    }
+    
+    // Try initial + last name match (e.g., "C.Lamb" matches "CeeDee Lamb")
+    const depthParts = depthName.split(' ');
+    const nameParts = normalizedName.split(' ');
+    if (depthParts.length >= 2 && nameParts.length >= 2) {
+      const depthLastName = depthParts[depthParts.length - 1];
+      const nameLastName = nameParts[nameParts.length - 1];
+      const depthFirstInitial = depthParts[0][0];
+      const nameFirstInitial = nameParts[0][0];
+      
+      // Match if last names match and first initials match
+      if (depthLastName === nameLastName && depthFirstInitial === nameFirstInitial) {
+        return {
+          position: i + 1,
+          timestamp: teamDepth.timestamp || Date.now()
+        };
+      }
     }
   }
   

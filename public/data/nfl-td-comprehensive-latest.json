@@ -3,7 +3,7 @@
   "metadata": {
     "model": "realistic-canonical-availability-v1",
     "data_source": "live_data_with_canonical_availability",
-    "generated_at": "2025-10-29T13:46:17.487Z",
+    "generated_at": "2025-10-29T13:48:06.732Z",
     "games_processed": 14,
     "total_players": 513,
     "uses_canonical_availability": true,
@@ -4768,13 +4768,19 @@
             "snap_share": 0.6,
             "target_share": 0.15,
             "team_quality": 1.2,
-            "availability_confidence": 0.75,
+            "availability_confidence": 0.8,
             "baseline_anytime": 0.42,
             "availability": 1,
             "depth": 1,
             "data_source": "odds_first_simple_model"
           },
-          "canonical_availability": null
+          "canonical_availability": {
+            "status": "active",
+            "prob_play": 1,
+            "depth_order": 1,
+            "confidence": 0.8,
+            "source": null
+          }
         },
         {
           "player_id": "00-0037240",
@@ -6046,7 +6052,7 @@
         "total_players": 34,
         "high_confidence_count": 20,
         "data_source": "live_data_with_canonical_availability",
-        "has_canonical_availability": false,
+        "has_canonical_availability": true,
         "has_injury_data": false,
         "has_depth_charts": true
       }

@@ -858,6 +858,15 @@ export default async (request, context) => {
           continue;
         }
         
+        // Debug: Log the exact competitors structure
+        console.log(`[NBA Elite V2] DEBUG competitors for event ${event.id}:`, 
+          JSON.stringify(comp.competitors.map(c => ({ 
+            homeAway: c.homeAway, 
+            team: c.team?.abbreviation,
+            teamName: c.team?.displayName
+          })), null, 2)
+        );
+        
         const home = comp.competitors.find(c => c.homeAway === 'home');
         const away = comp.competitors.find(c => c.homeAway === 'away');
         
