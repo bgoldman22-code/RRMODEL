@@ -36,18 +36,14 @@ const NBAPredictionsV2 = () => {
     const spread = pred.prediction?.spread?.prediction || 0;
     const total = pred.prediction?.total?.prediction || 0;
     const homeWinProb = pred.prediction?.winProbability?.home || 0;
-    const favorite = pred.prediction?.spread?.favorite || 'home';
+    const favoriteTeam = pred.prediction?.winProbability?.favoriteTeam || pred.teams?.home?.abbreviation || '';
+    const favoritePercent = pred.prediction?.winProbability?.favoritePercent || 0;
     
-    // Format spread display
-    const spreadDisplay = favorite === 'home' 
-      ? (spread > 0 ? `-${spread}` : `+${Math.abs(spread)}`)
-      : (spread > 0 ? `+${spread}` : `-${Math.abs(spread)}`);
+    // Use display strings from API
+    const spreadDisplay = pred.prediction?.spread?.display || `${spread.toFixed(1)}`;
     
-    // Determine pick recommendation
-    const homeTeam = pred.game.split(' @ ')[1];
-    const awayTeam = pred.game.split(' @ ')[0];
-    const favoriteName = favorite === 'home' ? homeTeam : awayTeam;
-    const pickSummary = `Model Pick: ${favoriteName} ${Math.abs(spread)} (${homeWinProb.toFixed(1)}% home win prob)`;
+    // Determine pick recommendation with team abbreviations
+    const pickSummary = `Model Pick: ${spreadDisplay} (${favoriteTeam} ${favoritePercent.toFixed(1)}% win prob)`;
     
     // Process betting opportunities
     const betRecommendations = pred.opportunities?.map((opp, idx) => {
@@ -86,8 +82,8 @@ const NBAPredictionsV2 = () => {
             <div className="stat-value">{total.toFixed(1)}</div>
           </div>
           <div className="stat">
-            <div className="stat-label">Home Win Prob</div>
-            <div className="stat-value">{homeWinProb.toFixed(1)}%</div>
+            <div className="stat-label">{favoriteTeam} Win Prob</div>
+            <div className="stat-value">{favoritePercent.toFixed(1)}%</div>
           </div>
           <div className="stat">
             <div className="stat-label">Data Source</div>
@@ -102,22 +98,22 @@ const NBAPredictionsV2 = () => {
           <div className="vegas-info">
             <div className="vegas-stat">
               <div className="vegas-label">Vegas Spread</div>
-              <div className="vegas-value">{pred.vegasLines.spread?.line || 'N/A'}</div>
+              <div className="vegas-value">{pred.vegasLines.spread?.display || 'N/A'}</div>
             </div>
             <div className="vegas-stat">
               <div className="vegas-label">Vegas Total</div>
               <div className="vegas-value">{pred.vegasLines.total?.line || 'N/A'}</div>
             </div>
             <div className="vegas-stat">
-              <div className="vegas-label">Home ML</div>
+              <div className="vegas-label">{pred.teams?.home?.abbreviation || 'Home'} ML</div>
               <div className="vegas-value">
-                {pred.vegasLines.moneyline?.home > 0 ? '+' : ''}{pred.vegasLines.moneyline?.home || 'N/A'}
+                {pred.vegasLines.moneyline?.homeDisplay || 'N/A'}
               </div>
             </div>
             <div className="vegas-stat">
-              <div className="vegas-label">Away ML</div>
+              <div className="vegas-label">{pred.teams?.away?.abbreviation || 'Away'} ML</div>
               <div className="vegas-value">
-                {pred.vegasLines.moneyline?.away > 0 ? '+' : ''}{pred.vegasLines.moneyline?.away || 'N/A'}
+                {pred.vegasLines.moneyline?.awayDisplay || 'N/A'}
               </div>
             </div>
           </div>
