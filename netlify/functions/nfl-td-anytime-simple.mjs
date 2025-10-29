@@ -52,30 +52,29 @@ export async function handler(event) {
           if (!playerOdds[playerName]) {
             playerOdds[playerName] = {
               name: playerName,
-              odds: [],
-              bestOdds: outcome.price,
-              books: 1
+              allOdds: [],
+              bookmakers: []
             };
-          } else {
-            playerOdds[playerName].odds.push(outcome.price);
-            if (outcome.price > playerOdds[playerName].bestOdds) {
-              playerOdds[playerName].bestOdds = outcome.price;
-            }
-            playerOdds[playerName].books++;
           }
+          playerOdds[playerName].allOdds.push(outcome.price);
+          playerOdds[playerName].bookmakers.push(bookmaker.key);
         }
       }
       
       // Convert to array and add game context
       for (const player of Object.values(playerOdds)) {
-        if (player.books >= 2) {  // Only players with 2+ books
+        // Get unique bookmaker count and best odds
+        const uniqueBooks = [...new Set(player.bookmakers)].length;
+        const bestOdds = Math.max(...player.allOdds);
+        
+        if (uniqueBooks >= 2) {  // Only players with 2+ books
           allPlayers.push({
             name: player.name,
             game: `${event.away_team} @ ${event.home_team}`,
-            bestOdds: player.bestOdds,
-            books_count: player.books,
+            bestOdds: bestOdds,
+            books_count: uniqueBooks,
             odds_qualified: true,
-            probability: oddsToProb(player.bestOdds),
+            probability: oddsToProb(bestOdds),
             commence_time: event.commence_time
           });
         }
