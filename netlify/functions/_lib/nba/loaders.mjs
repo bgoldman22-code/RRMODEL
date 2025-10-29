@@ -9,6 +9,7 @@
 import { promises as fs } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { getRegressedPrior } from './team-priors-2024-25.mjs';
 
 // API base URLs
 const NBA_STATS_BASE = 'https://stats.nba.com/stats';
@@ -526,6 +527,9 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
         // Estimate possessions from score (rough approximation)
         const estimatedPoss = (pts + oppPts) / 2.2; // Average NBA possessions ~100
         
+        // Use team-specific priors (regressed 70% team + 30% league) from 2024-25 season
+        const prior = getRegressedPrior(team.abbreviation);
+        
         gameStats.push({
           pts,
           oppPts,
@@ -534,12 +538,12 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
           offRtg: (pts / estimatedPoss) * 100,
           defRtg: (oppPts / estimatedPoss) * 100,
           netRtg: ((pts - oppPts) / estimatedPoss) * 100,
-          efg: 0.535,     // Use league average when boxscore unavailable
-          ts: 0.575,
-          tovPct: 0.138,
-          orbPct: 0.25,
-          ftFga: 0.22,
-          fgPct: 0.47,
+          efg: prior.efg,     // Team-specific prior, not flat league average
+          ts: prior.ts,
+          tovPct: prior.tovPct,
+          orbPct: prior.orbPct,
+          ftFga: prior.ftRate,
+          fgPct: prior.efg / 1.1, // Approximate FG% from eFG%
           fg3Pct: 0.36,
           ftPct: 0.78
         });
@@ -554,14 +558,17 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
         const stats = calculateBoxscoreStats(boxscore, team.abbreviation);
         gameStats.push(stats);
       } else {
-        // Fallback: CDN fetch failed, use score estimation
-        console.log(`[NBA] CDN boxscore unavailable for ${nbaGameId}, using score estimation`);
+        // Fallback: CDN fetch failed, use score estimation with team-specific priors
+        console.log(`[NBA] CDN boxscore unavailable for ${nbaGameId}, using score estimation with team priors`);
         const isHome = game.homeTeam.abbr === team.abbreviation;
         const pts = isHome ? game.homeTeam.score : game.awayTeam.score;
         const oppPts = isHome ? game.awayTeam.score : game.homeTeam.score;
         
         // Estimate possessions from score
         const estimatedPoss = (pts + oppPts) / 2.2;
+        
+        // Use team-specific priors (regressed 70% team + 30% league) from 2024-25 season
+        const prior = getRegressedPrior(team.abbreviation);
         
         gameStats.push({
           pts,
@@ -571,12 +578,12 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
           offRtg: (pts / estimatedPoss) * 100,
           defRtg: (oppPts / estimatedPoss) * 100,
           netRtg: ((pts - oppPts) / estimatedPoss) * 100,
-          efg: 0.535,     // League average when boxscore unavailable
-          ts: 0.575,
-          tovPct: 0.138,
-          orbPct: 0.25,
-          ftFga: 0.22,
-          fgPct: 0.47,
+          efg: prior.efg,     // Team-specific prior, not flat league average
+          ts: prior.ts,
+          tovPct: prior.tovPct,
+          orbPct: prior.orbPct,
+          ftFga: prior.ftRate,
+          fgPct: prior.efg / 1.1, // Approximate FG% from eFG%
           fg3Pct: 0.36,
           ftPct: 0.78
         });
