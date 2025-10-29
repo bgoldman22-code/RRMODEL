@@ -141,7 +141,8 @@ async function loadInjuryReports(season, week) {
 }
 
 // Build player roster from depth charts (FRESH DATA - no stale players!)
-function buildPlayersFromDepthCharts(depthCharts, games) {
+// Then enrich with R pipeline stats where available
+function buildPlayersFromDepthCharts(depthCharts, games, rPipelineData = null) {
   const players = {};
   let playerCounter = 0;
   
@@ -166,17 +167,28 @@ function buildPlayersFromDepthCharts(depthCharts, games) {
         if (!playerName) continue;
         
         const playerId = `${teamAbbr}_${position}_${playerCounter++}`;
+        
+        // Try to find R pipeline stats for this player (fuzzy match)
+        let rStats = null;
+        if (rPipelineData?.players) {
+          rStats = findPlayerInRData(playerName, teamAbbr, rPipelineData.players);
+        }
+        
+        // Build player with R stats if available, otherwise use defaults
         players[playerId] = {
           player_id: playerId,
           name: playerName,
           position: position,
           team: teamAbbr,
           depth_chart_position: depth + 1,  // 1-indexed
-          // Minimal data - will be enhanced by availability + odds
-          snap_share: undefined,
-          target_share: undefined,
-          red_zone_share: undefined,
-          games_played: 4  // Assume mid-season
+          // Use R pipeline stats if available, otherwise undefined (will use defaults)
+          snap_share: rStats?.key_factors?.snap_percentage,
+          target_share: rStats?.key_factors?.target_share,
+          red_zone_share: rStats?.key_factors?.red_zone_efficiency,
+          red_zone_targets: rStats?.key_factors?.red_zone_targets || 0,
+          red_zone_carries: rStats?.key_factors?.red_zone_carries || 0,
+          consistency_score: rStats?.key_factors?.consistency_score,
+          games_played: 8  // Week 9 = 8 games played
         };
       }
     }
@@ -184,6 +196,50 @@ function buildPlayersFromDepthCharts(depthCharts, games) {
   
   console.log(`✅ Built player roster from depth charts: ${Object.keys(players).length} players`);
   return players;
+}
+
+// Fuzzy match player from depth chart to R pipeline data
+function findPlayerInRData(playerName, team, rPlayers) {
+  if (!rPlayers || !playerName) return null;
+  
+  // Normalize name for matching (remove suffixes, lowercase)
+  const normalize = (name) => {
+    return name
+      .replace(/\s+(III|Jr\.|Sr\.|II|IV)$/i, '')  // Remove suffixes
+      .replace(/[^a-zA-Z\s]/g, '')  // Remove special chars
+      .toLowerCase()
+      .trim();
+  };
+  
+  const normalizedSearch = normalize(playerName);
+  
+  // Try exact match first
+  for (const [playerId, player] of Object.entries(rPlayers)) {
+    if (!player.name || player.team !== team) continue;
+    
+    const normalizedPlayer = normalize(player.name);
+    if (normalizedPlayer === normalizedSearch) {
+      return player;
+    }
+  }
+  
+  // Try partial match (last name match)
+  const searchLastName = normalizedSearch.split(' ').pop();
+  for (const [playerId, player] of Object.entries(rPlayers)) {
+    if (!player.name || player.team !== team) continue;
+    
+    const playerLastName = normalize(player.name).split(' ').pop();
+    if (searchLastName === playerLastName && searchLastName.length > 3) {
+      // Last name match + same team (but verify first initial matches)
+      const searchFirst = normalizedSearch.charAt(0);
+      const playerFirst = normalize(player.name).charAt(0);
+      if (searchFirst === playerFirst) {
+        return player;
+      }
+    }
+  }
+  
+  return null;
 }
 
 // Generate minimal player roster from game schedule (fallback)
@@ -290,10 +346,16 @@ async function generateTDPredictions(games, season='2025', weekNumber){
   
   // CRITICAL FIX: Build player roster from DEPTH CHARTS, not stale player data
   // This ensures we only analyze CURRENT roster players who are actually active
+  // Then enrich with R pipeline stats for real player insights
   let players = {};
   if (Object.keys(depthCharts).length > 0) {
     console.log('✅ Building player roster from depth charts (FRESH DATA)');
-    players = buildPlayersFromDepthCharts(depthCharts, games);
+    console.log('📊 Enriching with R pipeline stats for player insights...');
+    players = buildPlayersFromDepthCharts(depthCharts, games, playerData);
+    
+    // Count how many players got R stats
+    const playersWithRStats = Object.values(players).filter(p => p.snap_share !== undefined).length;
+    console.log(`   ${playersWithRStats}/${Object.keys(players).length} players matched to R pipeline stats`);
   } else if (playerData?.players) {
     console.warn('⚠️ Using stale player data file (depth charts unavailable)');
     players = playerData.players;
