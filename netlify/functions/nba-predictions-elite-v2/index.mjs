@@ -952,6 +952,10 @@ export default async (request, context) => {
         const homeStats = statsCache[homeAbbr] || { l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
         const awayStats = statsCache[awayAbbr] || { l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
       
+      // DEBUG: Check if we're using cached data or defaults
+      console.log(`[DEBUG CACHE] ${homeAbbr}: cached=${!!statsCache[homeAbbr]}, L10.netRtg=${homeStats.l10?.netRtg}`);
+      console.log(`[DEBUG CACHE] ${awayAbbr}: cached=${!!statsCache[awayAbbr]}, L10.netRtg=${awayStats.l10?.netRtg}`);
+      
       // Use L10 as baseline, with L5 and L20 for specific features
       const homeL3Raw = homeStats.l5 || getDefaultStats();  // Use L5 as proxy for L3
       const homeL10Raw = homeStats.l10 || getDefaultStats();
@@ -984,6 +988,16 @@ export default async (request, context) => {
       const awayL3 = applyRCIAdjustment(awayL3Raw, awayAbbr, awayGamesPlayed);
       const awayL10 = applyRCIAdjustment(awayL10Raw, awayAbbr, awayGamesPlayed);
       const awayL20 = applyRCIAdjustment(awayL20Raw, awayAbbr, awayGamesPlayed);
+      
+      // DEBUG: Log raw feature values to diagnose clustering
+      console.log(`[DEBUG ${homeAbbr}@${awayAbbr}] Raw L10 before RCI:`, {
+        home: { netRtg: homeL10Raw?.netRtg, efg: homeL10Raw?.efg, ts: homeL10Raw?.ts, games: homeL10Raw?.games },
+        away: { netRtg: awayL10Raw?.netRtg, efg: awayL10Raw?.efg, ts: awayL10Raw?.ts, games: awayL10Raw?.games }
+      });
+      console.log(`[DEBUG ${homeAbbr}@${awayAbbr}] Post-RCI L10:`, {
+        home: { netRtg: homeL10?.netRtg, efg: homeL10?.efg, ts: homeL10?.ts },
+        away: { netRtg: awayL10?.netRtg, efg: awayL10?.efg, ts: awayL10?.ts }
+      });
       
       // Log RCI adjustments for transparency
       const homeRCI = getRCISummary(homeAbbr, homeGamesPlayed);
