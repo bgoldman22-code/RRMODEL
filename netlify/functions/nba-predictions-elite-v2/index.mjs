@@ -1004,8 +1004,24 @@ export default async (request, context) => {
         var totalFeatures = buildSimpleFeatures(homeL10, awayL10);
       }
       
+      // DEBUG: Log features for first 3 games
+      if (predictions.length < 3) {
+        console.log(`\n[DEBUG] ${away.team.abbreviation} @ ${home.team.abbreviation} Features:`);
+        console.log('  h10_netRtg:', spreadFeatures.h10_netRtg);
+        console.log('  a10_netRtg:', spreadFeatures.a10_netRtg);
+        console.log('  netRtg_diff:', spreadFeatures.netRtg_diff);
+        console.log('  h20_netRtg:', spreadFeatures.h20_netRtg);
+        console.log('  a20_netRtg:', spreadFeatures.a20_netRtg);
+      }
+      
       // Predict spread
       const spreadPred = predict(SPREAD_MODEL, spreadFeatures);
+      
+      // DEBUG: Log prediction
+      if (predictions.length < 3) {
+        console.log('  RAW PREDICTION:', spreadPred);
+        console.log('  ROUNDED:', parseFloat(spreadPred.toFixed(1)));
+      }
       
       // ELITE Total: Opponent-adjusted offensive projections
       // Account for defensive matchup quality
