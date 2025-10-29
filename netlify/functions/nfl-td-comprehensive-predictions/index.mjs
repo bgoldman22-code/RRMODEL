@@ -424,7 +424,6 @@ async function generateTDPredictions(games, season='2025', weekNumber){
 // Helper to load schedule from committed JSON (correct paths for Netlify deployment)  
 async function getScheduleFromFile(season, week) {
   console.log(`🔍 DEBUG: Current working directory: ${process.cwd()}`);
-  console.log(`🔍 DEBUG: Function __dirname equivalent: ${new URL('.', import.meta.url).pathname}`);
   
   const possiblePaths = [
     'public/data/nfl-schedule-2025.json',  // Local development
