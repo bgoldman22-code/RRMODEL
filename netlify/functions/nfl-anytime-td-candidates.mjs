@@ -121,7 +121,9 @@ export async function handler(event) {
             ev: EV,
             confidence: anytimeData.books_count > 1 ? 80 : 60,
             impliedProb: anytimeData.implied_prob,
-            booksCount: anytimeData.books_count
+            booksCount: anytimeData.books_count,
+            books_count: anytimeData.books_count, // UI expects snake_case
+            odds_qualified: anytimeData.odds_qualified || (anytimeData.books_count >= 2)
           },
           
           // First TD market
@@ -132,7 +134,9 @@ export async function handler(event) {
             edge: firstTdData.edge || 0,
             ev: firstTdData.edge || 0,
             confidence: firstTdData.books_count > 1 ? 80 : 60,
-            booksCount: firstTdData.books_count || 0
+            booksCount: firstTdData.books_count || 0,
+            books_count: firstTdData.books_count || 0,
+            odds_qualified: (firstTdData.books_count || 0) >= 2
           },
           
           // Multiple TD market
@@ -143,7 +147,9 @@ export async function handler(event) {
             edge: multipleTdData.edge || 0,
             ev: multipleTdData.edge || 0,
             confidence: multipleTdData.books_count > 1 ? 80 : 60,
-            booksCount: multipleTdData.books_count || 0
+            booksCount: multipleTdData.books_count || 0,
+            books_count: multipleTdData.books_count || 0,
+            odds_qualified: (multipleTdData.books_count || 0) >= 2
           },
           
           // Additional context
