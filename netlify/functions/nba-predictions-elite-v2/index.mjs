@@ -715,21 +715,21 @@ function generateKeyFactors(home, away, homeL10, awayL10, spreadPred, totalPred,
   }
   
   // 4. INJURY IMPACT
-  if (homeInjuryAdj && homeInjuryAdj.count > 0 && homeInjuryAdj.severity !== 'NONE') {
+  if (homeInjuries && homeInjuries.count > 0 && homeInjuries.severity !== 'NONE') {
     factors.push({
       label: '🏥 Home Injuries',
-      value: `${home.team.abbreviation}: ${homeInjuryAdj.players} (${homeInjuryAdj.impact})`,
+      value: `${home.team.abbreviation}: ${homeInjuries.players} (${homeInjuries.impact})`,
       impact: 'FAVOR_AWAY',
-      detail: `Offense -${Math.abs(homeInjuryAdj.deltaOff).toFixed(1)}, Defense -${Math.abs(homeInjuryAdj.deltaDef).toFixed(1)}`
+      detail: `Offense -${Math.abs(homeInjuries.deltaOff).toFixed(1)}, Defense -${Math.abs(homeInjuries.deltaDef).toFixed(1)}`
     });
   }
   
-  if (awayInjuryAdj && awayInjuryAdj.count > 0 && awayInjuryAdj.severity !== 'NONE') {
+  if (awayInjuries && awayInjuries.count > 0 && awayInjuries.severity !== 'NONE') {
     factors.push({
       label: '🏥 Away Injuries',
-      value: `${away.team.abbreviation}: ${awayInjuryAdj.players} (${awayInjuryAdj.impact})`,
+      value: `${away.team.abbreviation}: ${awayInjuries.players} (${awayInjuries.impact})`,
       impact: 'FAVOR_HOME',
-      detail: `Offense -${Math.abs(awayInjuryAdj.deltaOff).toFixed(1)}, Defense -${Math.abs(awayInjuryAdj.deltaDef).toFixed(1)}`
+      detail: `Offense -${Math.abs(awayInjuries.deltaOff).toFixed(1)}, Defense -${Math.abs(awayInjuries.deltaDef).toFixed(1)}`
     });
   }
   
@@ -807,7 +807,6 @@ function predict(model, features) {
 export default async (request, context) => {
   try {
     console.log('[NBA Elite V2] Starting predictions with ESPN + NBA CDN hybrid...');
-    console.log('[NBA Elite V2] 🔧 Version: 2025-10-29 10:15 EDT - Added optional chaining fixes');
     
     // 1. Fetch today's games from ESPN
     const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
@@ -852,59 +851,35 @@ export default async (request, context) => {
     for (const event of espnData.events) {
       try {
         const comp = event.competitions[0];
-        
-        // Validate competitors exist
-        if (!comp.competitors || comp.competitors.length < 2) {
-          console.error(`[NBA Elite V2] ❌ Invalid competitors data for event ${event.id}`);
-          continue;
-        }
-        
-        // Debug: Log the exact competitors structure
-        console.log(`[NBA Elite V2] DEBUG competitors for event ${event.id}:`, 
-          JSON.stringify(comp.competitors.map(c => ({ 
-            homeAway: c.homeAway, 
-            team: c.team?.abbreviation,
-            teamName: c.team?.displayName
-          })), null, 2)
-        );
-        
         const home = comp.competitors.find(c => c.homeAway === 'home');
         const away = comp.competitors.find(c => c.homeAway === 'away');
         
-        // Validate home/away teams found
-        if (!home || !away) {
-          console.error(`[NBA Elite V2] ❌ Missing home/away teams for event ${event.id}`, {
-            competitors: comp.competitors.map(c => ({ homeAway: c.homeAway, team: c.team?.abbreviation }))
-          });
-          continue;
-        }
-        
-        console.log(`[NBA Elite V2] Processing: ${away?.team?.abbreviation || 'UNKNOWN'} @ ${home?.team?.abbreviation || 'UNKNOWN'}`);
+        console.log(`[NBA Elite V2] Processing: ${away.team.abbreviation} @ ${home.team.abbreviation}`);
         
         // Get team IDs for NBA Stats API (with abbreviation normalization)
         // ESPN uses GS, SA, NO, NY, PHO, UTAH
         // NBA uses GSW, SAS, NOP, NYK, PHX, UTA
-        let homeTeamData = teamInfo.byAbbr[home?.team?.abbreviation];
-        let awayTeamData = teamInfo.byAbbr[away?.team?.abbreviation];
+        let homeTeamData = teamInfo.byAbbr[home.team.abbreviation];
+        let awayTeamData = teamInfo.byAbbr[away.team.abbreviation];
         
         // Fallback to name lookup if abbreviation fails
-        if (!homeTeamData && home?.team?.displayName) {
+        if (!homeTeamData) {
           console.log(`[NBA Elite V2] ⚠️  Abbreviation '${home.team.abbreviation}' not found, trying name lookup...`);
           homeTeamData = teamInfo.byName[home.team.displayName] || teamInfo.byName[home.team.displayName.toLowerCase()];
         }
         
-        if (!awayTeamData && away?.team?.displayName) {
+        if (!awayTeamData) {
           console.log(`[NBA Elite V2] ⚠️  Abbreviation '${away.team.abbreviation}' not found, trying name lookup...`);
           awayTeamData = teamInfo.byName[away.team.displayName] || teamInfo.byName[away.team.displayName.toLowerCase()];
         }
         
         if (!homeTeamData || !awayTeamData) {
-          console.error(`[NBA Elite V2] ❌ Missing team data for ${home?.team?.abbreviation} (${home?.team?.displayName}) or ${away?.team?.abbreviation} (${away?.team?.displayName})`);
+          console.error(`[NBA Elite V2] ❌ Missing team data for ${home.team.abbreviation} (${home.team.displayName}) or ${away.team.abbreviation} (${away.team.displayName})`);
           console.error(`[NBA Elite V2] Available abbreviations:`, Object.keys(teamInfo.byAbbr).join(', '));
           continue;
         }
         
-        console.log(`[NBA Elite V2] ✅ Matched: ${away?.team?.abbreviation} (ID ${awayTeamData.id}) @ ${home?.team?.abbreviation} (ID ${homeTeamData.id})`);
+        console.log(`[NBA Elite V2] ✅ Matched: ${away.team.abbreviation} (ID ${awayTeamData.id}) @ ${home.team.abbreviation} (ID ${homeTeamData.id})`);
         
         // V2: Fetch L5/L10/L20 stats using ESPN schedule + NBA CDN boxscores
         const [homeStats, awayStats] = await Promise.all([
@@ -921,8 +896,8 @@ export default async (request, context) => {
       const awayL10Raw = awayStats.l10 || getDefaultStats();
       const awayL20Raw = awayStats.l20 || getDefaultStats();
       
-      console.log(`[NBA Elite V2] ${home?.team?.abbreviation} games: L5=${homeL3Raw.games}, L10=${homeL10Raw.games}, L20=${homeL20Raw.games}`);
-      console.log(`[NBA Elite V2] ${away?.team?.abbreviation} games: L5=${awayL3Raw.games}, L10=${awayL10Raw.games}, L20=${awayL20Raw.games}`);
+      console.log(`[NBA Elite V2] ${home.team.abbreviation} games: L5=${homeL3Raw.games}, L10=${homeL10Raw.games}, L20=${homeL20Raw.games}`);
+      console.log(`[NBA Elite V2] ${away.team.abbreviation} games: L5=${awayL3Raw.games}, L10=${awayL10Raw.games}, L20=${awayL20Raw.games}`);
       
       // ELITE: Count CURRENT SEASON games only for confidence adjustment
       const avgCurrentSeasonGames = (homeL10Raw.games + awayL10Raw.games) / 2;
@@ -939,15 +914,15 @@ export default async (request, context) => {
       const homeL10 = applyRCIAdjustment(homeL10Raw, home.team.abbreviation, gamesPlayed);
       const homeL20 = applyRCIAdjustment(homeL20Raw, home.team.abbreviation, gamesPlayed);
       
-      const awayL3 = applyRCIAdjustment(awayL3Raw, away?.team?.abbreviation, gamesPlayed);
-      const awayL10 = applyRCIAdjustment(awayL10Raw, away?.team?.abbreviation, gamesPlayed);
-      const awayL20 = applyRCIAdjustment(awayL20Raw, away?.team?.abbreviation, gamesPlayed);
+      const awayL3 = applyRCIAdjustment(awayL3Raw, away.team.abbreviation, gamesPlayed);
+      const awayL10 = applyRCIAdjustment(awayL10Raw, away.team.abbreviation, gamesPlayed);
+      const awayL20 = applyRCIAdjustment(awayL20Raw, away.team.abbreviation, gamesPlayed);
       
       // Log RCI adjustments for transparency
-      const homeRCI = getRCISummary(home?.team?.abbreviation, gamesPlayed);
-      const awayRCI = getRCISummary(away?.team?.abbreviation, gamesPlayed);
-      console.log(`[RCI] ${home?.team?.abbreviation}:`, homeRCI);
-      console.log(`[RCI] ${away?.team?.abbreviation}:`, awayRCI);
+      const homeRCI = getRCISummary(home.team.abbreviation, gamesPlayed);
+      const awayRCI = getRCISummary(away.team.abbreviation, gamesPlayed);
+      console.log(`[RCI] ${home.team.abbreviation}:`, homeRCI);
+      console.log(`[RCI] ${away.team.abbreviation}:`, awayRCI);
       
       // Fetch and apply injury adjustments (separate from RCI)
       let homeInjuries = [];
@@ -959,7 +934,7 @@ export default async (request, context) => {
       try {
         [homeInjuries, awayInjuries] = await Promise.all([
           getTeamInjuries(home.team.abbreviation),
-          getTeamInjuries(away?.team?.abbreviation)
+          getTeamInjuries(away.team.abbreviation)
         ]);
         
         // Apply injury adjustments on top of RCI-adjusted stats
@@ -972,7 +947,7 @@ export default async (request, context) => {
         injuryAdvantage = getInjuryAdvantage(homeInjuries, awayInjuries);
         
         console.log(`[INJURY] ${home.team.abbreviation}:`, homeInjuryAdj);
-        console.log(`[INJURY] ${away?.team?.abbreviation}:`, awayInjuryAdj);
+        console.log(`[INJURY] ${away.team.abbreviation}:`, awayInjuryAdj);
         console.log(`[INJURY] Advantage:`, injuryAdvantage.advantage);
         
         // Use injury-adjusted stats for features
@@ -1066,10 +1041,10 @@ export default async (request, context) => {
       const SPREAD_TO_PROB_SIGMA = 8; // Calibrated for NBA (was 10, too generous to underdogs)
       const winProb = 1 / (1 + Math.exp(-spreadPred / SPREAD_TO_PROB_SIGMA));
       
-      console.log(`[WIN PROB] ${home?.team?.abbreviation} vs ${away?.team?.abbreviation}: Spread ${spreadPred.toFixed(1)} → ${home?.team?.abbreviation} ${(winProb * 100).toFixed(1)}% / ${away?.team?.abbreviation} ${((1-winProb) * 100).toFixed(1)}%`);
+      console.log(`[WIN PROB] ${home.team.abbreviation} vs ${away.team.abbreviation}: Spread ${spreadPred.toFixed(1)} → ${home.team.abbreviation} ${(winProb * 100).toFixed(1)}% / ${away.team.abbreviation} ${((1-winProb) * 100).toFixed(1)}%`);
       
       // Get Vegas lines for this game (match by abbreviations)
-      const vegasKey = `${away?.team?.abbreviation}_${home?.team?.abbreviation}`;
+      const vegasKey = `${away.team.abbreviation}_${home.team.abbreviation}`;
       const gameVegasLines = vegasLines[vegasKey] || {};
       
       // Calculate edges and Kelly sizing
@@ -1114,7 +1089,7 @@ export default async (request, context) => {
           //   → +3.0 > -2.0 → betHome = FALSE ✅
           
           const betHome = modelSpreadVegasConvention < fairLine;
-          const pickTeam = betHome ? home?.team?.abbreviation : away?.team?.abbreviation;
+          const pickTeam = betHome ? home.team.abbreviation : away.team.abbreviation;
           
           // Use PLACEMENT odds (best available price) for actual bet recommendation
           const placementLine = gameVegasLines.spread.placement?.homeLine || fairLine;
@@ -1171,10 +1146,10 @@ export default async (request, context) => {
         const awayMLEdge = awayWinProb - awayImpliedProb;
         
         // Debug logging for moneyline edge calculation
-        console.log(`[ML DEBUG] ${home?.team?.abbreviation} vs ${away?.team?.abbreviation}:`);
-        console.log(`  Model Win Prob: ${home?.team?.abbreviation} ${(homeWinProb * 100).toFixed(1)}% / ${away?.team?.abbreviation} ${(awayWinProb * 100).toFixed(1)}%`);
-        console.log(`  Vegas Implied: ${home?.team?.abbreviation} ${(homeImpliedProb * 100).toFixed(1)}% / ${away?.team?.abbreviation} ${(awayImpliedProb * 100).toFixed(1)}%`);
-        console.log(`  Edge: ${home?.team?.abbreviation} ${(homeMLEdge * 100).toFixed(1)}% / ${away?.team?.abbreviation} ${(awayMLEdge * 100).toFixed(1)}%`);
+        console.log(`[ML DEBUG] ${home.team.abbreviation} vs ${away.team.abbreviation}:`);
+        console.log(`  Model Win Prob: ${home.team.abbreviation} ${(homeWinProb * 100).toFixed(1)}% / ${away.team.abbreviation} ${(awayWinProb * 100).toFixed(1)}%`);
+        console.log(`  Vegas Implied: ${home.team.abbreviation} ${(homeImpliedProb * 100).toFixed(1)}% / ${away.team.abbreviation} ${(awayImpliedProb * 100).toFixed(1)}%`);
+        console.log(`  Edge: ${home.team.abbreviation} ${(homeMLEdge * 100).toFixed(1)}% / ${away.team.abbreviation} ${(awayMLEdge * 100).toFixed(1)}%`);
         
         // Pick the side with positive edge (if any)
         // CRITICAL FIX: Only bet if there's a POSITIVE edge, and pick the side with the LARGER positive edge
@@ -1185,7 +1160,7 @@ export default async (request, context) => {
           // Pick the side with the larger POSITIVE edge (not just larger number)
           const pickHome = hasHomeEdge && (!hasAwayEdge || homeMLEdge > awayMLEdge);
           
-          console.log(`  → Recommendation: Bet ${pickHome ? home?.team?.abbreviation : away?.team?.abbreviation} ML`);
+          console.log(`  → Recommendation: Bet ${pickHome ? home.team.abbreviation : away.team.abbreviation} ML`);
           
           // Use PLACEMENT odds (best available) for actual bet
           const placementHomeML = gameVegasLines.moneyline.placement?.homePrice || fairHomeML;
@@ -1208,7 +1183,7 @@ export default async (request, context) => {
           if (mlKelly) {
             moneylineOpp = {
               market: 'Moneyline',
-              pick: pickHome ? home?.team?.abbreviation : away?.team?.abbreviation,
+              pick: pickHome ? home.team.abbreviation : away.team.abbreviation,
               modelWinProb: (pickProb * 100).toFixed(1) + '%',
               impliedProb: ((pickHome ? homeImpliedProb : awayImpliedProb) * 100).toFixed(1) + '%',
               odds: pickOdds, // Placement odds
@@ -1370,7 +1345,7 @@ export default async (request, context) => {
           }
         },
         away: {
-          team: away?.team?.abbreviation,
+          team: away.team.abbreviation,
           projection: awayExpectedPts.toFixed(1),
           factors: {
             offRtg: awayL10.offRtg.toFixed(1),
@@ -1383,7 +1358,7 @@ export default async (request, context) => {
       
       predictions.push({
         gameId: event.id,
-        game: `${away?.team?.abbreviation} @ ${home?.team?.abbreviation}`,
+        game: `${away.team.abbreviation} @ ${home.team.abbreviation}`,
         gameTime: event.date,
         isPreseason,  // ⚠️ FLAG: Do not include preseason games in regular season performance tracking
         teams: {
@@ -1421,13 +1396,13 @@ export default async (request, context) => {
           confidence,
           seasonNote // Early season warning if applicable
         },
-        keyFactors: (home && away) ? generateKeyFactors(
+        keyFactors: generateKeyFactors(
           home, away, homeL10, awayL10, 
           spreadPred, totalPred, 
           homeExpectedPts, awayExpectedPts,
           homeInjuryAdj, awayInjuryAdj,
           opportunities
-        ) : [],
+        ),
         features: {
           homeL10: {
             netRtg: homeL10.netRtg.toFixed(1),
@@ -1470,7 +1445,7 @@ export default async (request, context) => {
         teamTotals // NEW: Individual team scoring projections
       });
       } catch (gameError) {
-        console.error(`[NBA Elite V2] Error processing game ${event?.id}:`, gameError.message);
+        console.error(`[NBA Elite V2] Error processing ${away?.team?.abbreviation || '?'} @ ${home?.team?.abbreviation || '?'}:`, gameError.message);
         console.error(`[NBA Elite V2] Stack:`, gameError.stack);
         // Continue to next game instead of failing entire function
       }
