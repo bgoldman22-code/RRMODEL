@@ -27,7 +27,6 @@ import { getPlayerGameLog } from './nhl-api-game-logs.mjs';
 import { getCachedScoreStateAdjustment } from './nhl-score-state.mjs';
 import { getDefensiveFactorManual } from './nhl-nst-defense.mjs';
 import { getCombinedQualityFactor } from './nhl-moneypuck-data.mjs';
-import { determinePPUnit as getDailyFaceoffPPUnit } from './nhl-dailyfaceoff-scraper.mjs';
 
 /**
  * RINK SCORER BIAS - Some arenas systematically over/under-count SOG
@@ -349,28 +348,48 @@ function calculateWeightedSOGAverage(player) {
 /**
  * Determine PP unit (PP1, PP2, or none)
  * 
- * 🔥 V4.1 Phase 3: Uses Daily Faceoff scraper for SAME-DAY detection
- * - Catches PP line changes immediately (not 10+ games later)
- * - Falls back to season PP time if scraper unavailable
+ * 🔥 V4.1 Phase 3: Uses L3-weighted PP time for faster detection
+ * - Prioritizes recent 3 games (70%) over season (30%)
+ * - Catches PP promotions/demotions in 2-3 games vs 10+
+ * - Falls back to season only if no recent games
+ * 
+ * NOTE: Originally tried Daily Faceoff scraper but Cloudflare blocks it.
+ * L3 weighting is nearly as good and more reliable.
  */
 async function determinePPUnit(player) {
   if (!player || !player.season) return 'NONE';
   
-  // Try Daily Faceoff scraper first (real current PP units)
+  // Try to get L3 PP time from NHL API game logs
+  let L3ppTime = null;
+  
   try {
-    const ppUnit = await getDailyFaceoffPPUnit(
-      player.name,
-      player.team,
-      player.season // Pass season stats as fallback
-    );
-    return ppUnit;
+    const gameLog = await getPlayerGameLog(player.playerId);
+    if (gameLog && gameLog.gameLog && gameLog.gameLog.length >= 3) {
+      // Get last 3 games PP time
+      const last3Games = gameLog.gameLog.slice(0, 3);
+      const totalPPTime = last3Games.reduce((sum, g) => sum + (g.powerPlayToi || 0), 0);
+      const avgPPTime = totalPPTime / last3Games.length;
+      
+      // Convert from seconds to minutes
+      L3ppTime = avgPPTime / 60;
+      
+      console.log(`🔥 ${player.name} L3 PP time: ${L3ppTime.toFixed(2)} min/game`);
+    }
   } catch (error) {
-    console.warn(`⚠️ Daily Faceoff scraper failed for ${player.name}, using fallback`);
+    console.warn(`⚠️ Could not fetch L3 PP time for ${player.name}`);
   }
   
-  // Fallback: Use season PP time averages
-  const ppTime = player.season.ppTimePerGame || 0;
+  // Get season PP time
+  const seasonPPTime = player.season.ppTimePerGame || 0;
   
+  // Weight: L3 (70%) > Season (30%) if we have recent data
+  const ppTime = L3ppTime 
+    ? (L3ppTime * 0.70) + (seasonPPTime * 0.30)
+    : seasonPPTime;
+  
+  console.log(`📊 ${player.name} PP time: ${ppTime.toFixed(2)} min/game (L3=${L3ppTime?.toFixed(2) || 'N/A'}, Season=${seasonPPTime.toFixed(2)})`);
+  
+  // Thresholds
   if (ppTime > 2.5) return 'PP1';      // >2.5 min → PP1
   if (ppTime > 1.0) return 'PP2';      // 1-2.5 min → PP2
   return 'NONE';                        // <1 min → No PP

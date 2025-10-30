@@ -7,7 +7,7 @@
  * ✅ Opponent defensive adjustments
  * ✅ Hot/cold streak detection
  * ✅ Individual player quality differentials
- * ✅ PP unit intelligence (Daily Faceoff real-time scraper)
+ * ✅ PP unit intelligence (L3-weighted detection)
  * ✅ Venue scorer bias corrections
  * ✅ Real odds from The Odds API
  * ✅ Proper edge calculation with vig removal
@@ -17,7 +17,6 @@
  */
 
 import { projectSOGElite, calculateZINBProbability } from './_lib/nhl-elite-projection-v3.mjs';
-import { warmPPLineCache } from './_lib/nhl-dailyfaceoff-scraper.mjs';
 
 const NHL_API_BASE = 'https://api-web.nhle.com/v1';
 
@@ -293,12 +292,6 @@ export async function handler(event, context) {
   try {
     console.log('🏒 NHL Elite Scanner V3 - TRULY ELITE');
     console.log('=' .repeat(60));
-    
-    // 🔥 V4.1 Phase 3: Warm PP line cache (non-blocking, fire-and-forget)
-    // This pre-fetches Daily Faceoff lines for all 32 teams
-    warmPPLineCache().catch(err => 
-      console.warn('⚠️ PP line cache warming failed (will use fallbacks):', err.message)
-    );
     
     // Parse query params
     const params = event.queryStringParameters || {};
