@@ -26,6 +26,7 @@
 import { getPlayerGameLog } from './nhl-api-game-logs.mjs';
 import { getCachedScoreStateAdjustment } from './nhl-score-state.mjs';
 import { getDefensiveFactorManual } from './nhl-nst-defense.mjs';
+import { getCombinedQualityFactor } from './nhl-moneypuck-data.mjs';
 
 /**
  * RINK SCORER BIAS - Some arenas systematically over/under-count SOG
@@ -466,6 +467,12 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
   const oppDefense5v5 = getDefensiveFactorManual(opponent, '5v5');
   baseSOG *= oppDefense5v5;
   
+  // === STEP 5B: OPPONENT SHOT QUALITY (MoneyPuck xG) ===
+  // Refines defense with xG, Fenwick, high danger shot data
+  // Team might allow many shots but low quality (good defense)
+  const oppQuality5v5 = await getCombinedQualityFactor(opponent, '5v5');
+  baseSOG *= oppQuality5v5;
+  
   // === STEP 6: TOI ADJUSTMENT ===
   const expectedTOI = calculateExpectedTOI(player);
   const leagueavgTOI = player.position === 'D' ? 20.0 : 16.0;
@@ -485,7 +492,8 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
   
   // Adjust for opponent PK strength (PP state)
   const oppDefensePP = getDefensiveFactorManual(opponent, 'PP');
-  ppBoost *= oppDefensePP;
+  const oppQualityPP = await getCombinedQualityFactor(opponent, 'PK');
+  ppBoost *= oppDefensePP * oppQualityPP;
   
   baseSOG += ppBoost;
   
@@ -548,8 +556,10 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
         streak: streak.factor,
         homeAway: isHome ? 1.08 : 0.94,
         venue: rinkEffect,
-        oppDefense5v5: oppDefense5v5,  // 🔥 Strength-state specific
-        oppDefensePP: oppDefensePP,    // 🔥 Separate PK factor
+        oppDefense5v5: oppDefense5v5,      // 🔥 NST shot quantity
+        oppQuality5v5: oppQuality5v5,      // 🔥 MoneyPuck xG quality
+        oppDefensePP: oppDefensePP,        // 🔥 NST PK shot quantity
+        oppQualityPP: oppQualityPP,        // 🔥 MoneyPuck PK quality
         toi: toiFactor,
         ppBoost: ppBoost,
         quality: qualityMultiplier,
@@ -563,8 +573,10 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
       streak: streak.type,
       ppUnit,
       expectedTOI: expectedTOI.toFixed(1),
-      oppDefense5v5: oppDefense5v5.toFixed(3),  // 🔥 Updated
-      oppDefensePP: oppDefensePP.toFixed(3),    // 🔥 Updated
+      oppDefense5v5: oppDefense5v5.toFixed(3),
+      oppQuality5v5: oppQuality5v5.toFixed(3),  // 🔥 xG quality
+      oppDefensePP: oppDefensePP.toFixed(3),
+      oppQualityPP: oppQualityPP.toFixed(3),    // 🔥 xG quality
       gamesPlayed: player.season.gamesPlayed,
       scratchRisk: (scratchRisk * 100).toFixed(1) + '%'
     }
