@@ -113,10 +113,10 @@
   included_files = []
   external_node_modules = ["@netlify/blobs"]
 
-# NBA Player Props Daily Predictions - runs at 7am UTC (2am EST, 11pm PST)
+# NBA Player Props Daily Predictions - runs at 7am Eastern (11am UTC during DST, 12pm UTC during standard time)
 [[scheduled.functions]]
   name = "generate-daily-predictions"
-  cron = "0 7 * * *"
+  cron = "0 11 * * *"
 
 [functions."generate-daily-predictions"]
   node_bundler = "esbuild"

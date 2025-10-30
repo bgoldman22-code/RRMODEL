@@ -1,10 +1,10 @@
 /**
  * Netlify Scheduled Function - Daily NBA Predictions Generator
  * 
- * Runs daily at 7:00 AM UTC (2:00 AM EST / 11:00 PM PST)
- * Generates predictions for games starting within next 18 hours
+ * Runs daily at 7:00 AM Eastern Time
+ * Schedule: 0 11 * * * (11am UTC = 7am EDT, note: will be 6am EST after Nov 3)
  * 
- * Schedule: 0 7 * * * (cron format)
+ * Generates predictions for games starting within next 18 hours
  * 
  * Environment Variables Required:
  * - ODDS_API_KEY: TheOddsAPI key (set in Netlify dashboard)
@@ -322,5 +322,5 @@ export default async (req, context) => {
 };
 
 export const config = {
-  schedule: "0 7 * * *"  // Daily at 7:00 AM UTC
+  schedule: "0 11 * * *"  // Daily at 11:00 AM UTC (7:00 AM EDT / 6:00 AM EST after Nov 3)
 };
