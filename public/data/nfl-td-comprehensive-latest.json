@@ -1,12 +1,33 @@
 {
   "metadata": {
-    "generated_at": "2025-10-29T16:53:00Z",
+    "generated_at": "2025-10-30T16:48:47Z",
     "season": 2025,
     "week": 9,
-    "total_players": 590,
+    "total_players": 591,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
+    {
+      "player_id": "00-0024243",
+      "name": "M.Lewis",
+      "team": "DEN",
+      "position": "TE",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "TE",
+      "anytime_td_prob": 0.765,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.3075,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.765,
+      "first_td": 0,
+      "multiple_td": 0
+    },
     {
       "player_id": "00-0026158",
       "name": "J.Flacco",
@@ -3496,7 +3517,7 @@
     {
       "player_id": "00-0035253",
       "name": "C.Gardner-Johnson",
-      "team": "BAL",
+      "team": "CHI",
       "position": "DB",
       "opponent": "TBD",
       "is_home": true,
