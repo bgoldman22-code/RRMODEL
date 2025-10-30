@@ -27,6 +27,7 @@ import { getPlayerGameLog } from './nhl-api-game-logs.mjs';
 import { getCachedScoreStateAdjustment } from './nhl-score-state.mjs';
 import { getDefensiveFactorManual } from './nhl-nst-defense.mjs';
 import { getCombinedQualityFactor } from './nhl-moneypuck-data.mjs';
+import { determinePPUnit as getDailyFaceoffPPUnit } from './nhl-dailyfaceoff-scraper.mjs';
 
 /**
  * RINK SCORER BIAS - Some arenas systematically over/under-count SOG
@@ -347,21 +348,32 @@ function calculateWeightedSOGAverage(player) {
 
 /**
  * Determine PP unit (PP1, PP2, or none)
+ * 
+ * 🔥 V4.1 Phase 3: Uses Daily Faceoff scraper for SAME-DAY detection
+ * - Catches PP line changes immediately (not 10+ games later)
+ * - Falls back to season PP time if scraper unavailable
  */
-function determinePPUnit(player) {
+async function determinePPUnit(player) {
   if (!player || !player.season) return 'NONE';
   
-  const ppPoints = player.season.powerPlayPoints || 0;
-  const gamesPlayed = player.season.gamesPlayed || 1;
-  const ppPointsPerGame = ppPoints / gamesPlayed;
+  // Try Daily Faceoff scraper first (real current PP units)
+  try {
+    const ppUnit = await getDailyFaceoffPPUnit(
+      player.name,
+      player.team,
+      player.season // Pass season stats as fallback
+    );
+    return ppUnit;
+  } catch (error) {
+    console.warn(`⚠️ Daily Faceoff scraper failed for ${player.name}, using fallback`);
+  }
   
-  // PP1: significant PP production
-  if (ppPointsPerGame >= 0.25) return 'PP1';
+  // Fallback: Use season PP time averages
+  const ppTime = player.season.ppTimePerGame || 0;
   
-  // PP2: some PP production
-  if (ppPointsPerGame >= 0.10) return 'PP2';
-  
-  return 'NONE';
+  if (ppTime > 2.5) return 'PP1';      // >2.5 min → PP1
+  if (ppTime > 1.0) return 'PP2';      // 1-2.5 min → PP2
+  return 'NONE';                        // <1 min → No PP
 }
 
 /**
@@ -485,7 +497,7 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
   baseSOG *= toiFactor;
   
   // === STEP 7: POWER PLAY BOOST ===
-  const ppUnit = determinePPUnit(player);
+  const ppUnit = await determinePPUnit(player);  // 🔥 V4.1: Now uses Daily Faceoff scraper
   let ppBoost = 0;
   
   if (ppUnit === 'PP1') {
