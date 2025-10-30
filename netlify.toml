@@ -23,9 +23,16 @@
 # Rebuild trigger - 2025-10-30 14:45:00
 
 [functions."nfl-predictions-generate"]
-  included_files = ["data/nfl/**", "public/history/**", "netlify/functions/_lib/nfl-*.mjs", "netlify/functions/_lib/*-nfl.js", "netlify/functions/_lib/*-nfl.mjs", "netlify/functions/_lib/csv-snapshot.mjs", "netlify/functions/_lib/depth-chart-change-detector.js"]
+  included_files = [
+    "data/nfl/**",
+    "public/history/**",
+    "netlify/functions/_lib/nfl-*.mjs",
+    "netlify/functions/_lib/*-nfl.js",
+    "netlify/functions/_lib/*-nfl.mjs",
+    "netlify/functions/_lib/csv-snapshot.mjs",
+    "netlify/functions/_lib/depth-chart-change-detector.js"
+  ]
   external_node_modules = ["@netlify/blobs", "node-fetch"]
-
 [functions."nba-predictions-simple"]
   included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
   external_node_modules = []
@@ -56,19 +63,8 @@
 # nfl-anytime-td-candidates - proxy to comprehensive with transformation
 [functions."nfl-anytime-td-candidates"]
   node_bundler = "esbuild"
+  node_bundler = "esbuild"
   included_files = ["public/**", "data/nfl/**", "netlify/functions/nfl-td-comprehensive-predictions/**"]
-  external_node_modules = ["@netlify/blobs", "node-fetch"]
-
-# nfl-td-anytime-simple - standalone simple TD API with edge calculation
-[functions."nfl-td-anytime-simple"]
-  node_bundler = "esbuild"
-  included_files = ["public/nfl-anytime-td-player-data.json"]
-  external_node_modules = ["node-fetch"]
-
-# nfl-td-comprehensive-predictions - core TD engine
-[functions."nfl-td-comprehensive-predictions"]
-  node_bundler = "esbuild"
-  included_files = ["public/**", "data/nfl/**", "scripts/fetch-player-prop-odds.js"]
   external_node_modules = ["@netlify/blobs", "node-fetch"]
 
 [build.environment]
