@@ -5,7 +5,7 @@
  * with model probabilities and edges from comprehensive predictions
  */
 
-import candidatesHandler from './nfl-anytime-td-candidates.mjs';
+import { handler as candidatesHandler } from './nfl-anytime-td-candidates.mjs';
 
 export async function handler(event, context) {
   const headers = {
@@ -34,7 +34,7 @@ export async function handler(event, context) {
       }
     };
     
-    const response = await candidatesHandler.handler(candidatesEvent, context);
+    const response = await candidatesHandler(candidatesEvent, context);
     const responseData = JSON.parse(response.body);
     
     if (!responseData.success) {

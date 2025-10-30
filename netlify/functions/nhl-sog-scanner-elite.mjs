@@ -379,7 +379,7 @@ export async function handler(event, context) {
     // Step 4: Generate elite projections
     console.log('🧠 Generating ELITE projections...');
     
-    const opportunities = [];
+    let opportunities = [];
     
     for (const game of games) {
       const homeTeam = game.homeTeam?.abbrev;
