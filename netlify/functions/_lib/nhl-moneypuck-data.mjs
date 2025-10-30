@@ -287,22 +287,27 @@ export async function getHighDangerFactor(opponent, strengthState = '5v5') {
  * This gives more complete picture than just SA/60
  */
 export async function getCombinedQualityFactor(opponent, strengthState = '5v5') {
-  const [quality, pace, hd] = await Promise.all([
-    getShotQualityFactor(opponent, strengthState),
-    getFenwickPaceFactor(opponent, strengthState),
-    getHighDangerFactor(opponent, strengthState)
-  ]);
-  
-  // Weighted combination
-  const combined = (quality * 0.60) + (pace * 0.25) + (hd * 0.15);
-  
-  console.log(
-    `🎲 ${opponent} ${strengthState} combined quality: ` +
-    `xG ${quality.toFixed(3)} × Fenwick ${pace.toFixed(3)} × HD ${hd.toFixed(3)} ` +
-    `= ${combined.toFixed(3)}x`
-  );
-  
-  return combined;
+  try {
+    const [quality, pace, hd] = await Promise.all([
+      getShotQualityFactor(opponent, strengthState),
+      getFenwickPaceFactor(opponent, strengthState),
+      getHighDangerFactor(opponent, strengthState)
+    ]);
+    
+    // Weighted combination
+    const combined = (quality * 0.60) + (pace * 0.25) + (hd * 0.15);
+    
+    console.log(
+      `🎲 ${opponent} ${strengthState} combined quality: ` +
+      `xG ${quality.toFixed(3)} × Fenwick ${pace.toFixed(3)} × HD ${hd.toFixed(3)} ` +
+      `= ${combined.toFixed(3)}x`
+    );
+    
+    return combined;
+  } catch (error) {
+    console.error(`❌ MoneyPuck combined quality failed for ${opponent} ${strengthState}:`, error.message);
+    return 1.0; // Fallback to neutral
+  }
 }
 
 /**

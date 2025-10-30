@@ -470,7 +470,12 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
   // === STEP 5B: OPPONENT SHOT QUALITY (MoneyPuck xG) ===
   // Refines defense with xG, Fenwick, high danger shot data
   // Team might allow many shots but low quality (good defense)
-  const oppQuality5v5 = await getCombinedQualityFactor(opponent, '5v5');
+  let oppQuality5v5 = 1.0;
+  try {
+    oppQuality5v5 = await getCombinedQualityFactor(opponent, '5v5');
+  } catch (error) {
+    console.warn(`⚠️ MoneyPuck 5v5 quality failed for ${opponent}, using 1.0x:`, error.message);
+  }
   baseSOG *= oppQuality5v5;
   
   // === STEP 6: TOI ADJUSTMENT ===
@@ -492,7 +497,12 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
   
   // Adjust for opponent PK strength (PP state)
   const oppDefensePP = getDefensiveFactorManual(opponent, 'PP');
-  const oppQualityPP = await getCombinedQualityFactor(opponent, 'PK');
+  let oppQualityPP = 1.0;
+  try {
+    oppQualityPP = await getCombinedQualityFactor(opponent, 'PK');
+  } catch (error) {
+    console.warn(`⚠️ MoneyPuck PK quality failed for ${opponent}, using 1.0x:`, error.message);
+  }
   ppBoost *= oppDefensePP * oppQualityPP;
   
   baseSOG += ppBoost;
