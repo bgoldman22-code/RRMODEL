@@ -18,16 +18,12 @@
 
 import { getStore } from '@netlify/blobs';
 import fetch from 'node-fetch';
-import { gzip, gunzip } from 'zlib';
-import { promisify } from 'util';
-
-const gzipAsync = promisify(gzip);
-const gunzipAsync = promisify(gunzip);
 
 const DAYS_TO_FETCH = 30;
 const RATE_LIMIT_MS = 500;
 const MAX_RETRIES = 3;
-const SEASON_START = new Date('2024-10-01'); // Adjust per season
+const HISTORICAL_START = new Date('2024-10-01'); // Early season
+const CURRENT_START = new Date('2025-01-01'); // Recent games split
 
 /**
  * Sleep helper
@@ -117,19 +113,20 @@ export default async (req, context) => {
     // Get Netlify Blobs store
     const store = getStore('nba-data');
     
-    // Load existing boxscores from Blob (gzip compressed)
+    // Load existing boxscores from both Blobs (no decompression needed)
     let existingBoxscores = [];
     try {
-      const blob = await store.get('player-boxscores-current');
-      if (blob) {
-        const arrayBuffer = await blob.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const decompressed = await gunzipAsync(buffer);
-        existingBoxscores = JSON.parse(decompressed.toString());
-        console.log(`📁 Loaded ${existingBoxscores.length} existing entries from Blob`);
-      }
+      const [historicalData, currentData] = await Promise.all([
+        store.get('player-boxscores-historical', { type: 'json' }),
+        store.get('player-boxscores-current', { type: 'json' })
+      ]);
+      
+      if (historicalData) existingBoxscores.push(...historicalData);
+      if (currentData) existingBoxscores.push(...currentData);
+      
+      console.log(`📁 Loaded ${existingBoxscores.length} existing entries from Blobs`);
     } catch (error) {
-      console.log('📁 No existing data in Blob (first run)');
+      console.log('📁 No existing data in Blobs (first run)');
     }
     
     // Create map of existing games
@@ -186,26 +183,34 @@ export default async (req, context) => {
     // Merge and filter
     const allBoxscores = [...existingBoxscores, ...newEntries];
     
-    // Keep only current season games
-    const filteredBoxscores = allBoxscores.filter(b => 
-      new Date(b.date) >= SEASON_START
-    );
+    // Split into historical and current based on date
+    const historicalBoxscores = allBoxscores.filter(b => {
+      const date = new Date(b.date);
+      return date >= HISTORICAL_START && date < CURRENT_START;
+    });
+    
+    const currentBoxscores = allBoxscores.filter(b => {
+      const date = new Date(b.date);
+      return date >= CURRENT_START;
+    });
     
     // Sort by date (newest first)
-    filteredBoxscores.sort((a, b) => new Date(b.date) - new Date(a.date));
+    historicalBoxscores.sort((a, b) => new Date(b.date) - new Date(a.date));
+    currentBoxscores.sort((a, b) => new Date(b.date) - new Date(a.date));
     
-    // Compress and save to Blob (must compress to fit in 10MB limit)
-    const jsonString = JSON.stringify(filteredBoxscores);
-    const compressed = await gzipAsync(jsonString);
+    // Save both blobs (Netlify handles compression automatically)
+    console.log(`\n📤 Saving to Blobs...`);
+    console.log(`   Historical (Oct-Dec 2024): ${historicalBoxscores.length} entries`);
+    console.log(`   Current (Jan 2025+): ${currentBoxscores.length} entries`);
     
-    console.log(`🗜️  Compressing: ${(jsonString.length / 1024 / 1024).toFixed(2)}MB → ${(compressed.length / 1024 / 1024).toFixed(2)}MB`);
-    
-    await store.set('player-boxscores-current', compressed);
+    await Promise.all([
+      store.set('player-boxscores-historical', JSON.stringify(historicalBoxscores)),
+      store.set('player-boxscores-current', JSON.stringify(currentBoxscores))
+    ]);
     
     console.log('\n✅ UPDATE COMPLETE');
-    console.log(`📊 Total entries in Blob: ${filteredBoxscores.length}`);
+    console.log(`📊 Total entries in Blobs: ${historicalBoxscores.length + currentBoxscores.length}`);
     console.log(`📊 New entries added: ${newEntries.length}`);
-    console.log(`📊 Old entries removed: ${allBoxscores.length - filteredBoxscores.length}`);
     
     return new Response(JSON.stringify({
       success: true,

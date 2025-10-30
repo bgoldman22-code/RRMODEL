@@ -19,10 +19,6 @@ import fetch from 'node-fetch';
 import { writeFile } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { gunzip } from 'zlib';
-import { promisify } from 'util';
-
-const gunzipAsync = promisify(gunzip);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -149,20 +145,20 @@ export default async (req, context) => {
     console.log('📥 Loading boxscores from Netlify Blobs...');
     const store = getStore('nba-data');
     
-    // Read blob (gzip compressed)
-    const blob = await store.get('player-boxscores-current');
+    // Read both blobs (no decompression needed - Netlify handles it automatically)
+    const [historicalData, currentData] = await Promise.all([
+      store.get('player-boxscores-historical', { type: 'json' }),
+      store.get('player-boxscores-current', { type: 'json' })
+    ]);
     
-    if (!blob) {
-      throw new Error('No boxscores found in Netlify Blobs. Run update-boxscores-daily first.');
+    if (!historicalData || !currentData) {
+      throw new Error('No boxscores found in Netlify Blobs. Run seed-blobs-locally first.');
     }
     
-    // Convert to buffer and decompress gzipped data
-    const arrayBuffer = await blob.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const decompressed = await gunzipAsync(buffer);
-    const boxscores = JSON.parse(decompressed.toString());
+    // Merge both datasets
+    const boxscores = [...historicalData, ...currentData];
     
-    console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blob (decompressed from ${(buffer.length / 1024 / 1024).toFixed(2)}MB)`);
+    console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blobs (${historicalData.length} historical + ${currentData.length} current)`);
 
     // Fetch upcoming games
     const gamesUrl = `${BASE_URL}/sports/${SPORT}/odds/?apiKey=${API_KEY}&regions=${REGIONS}&oddsFormat=${ODDS_FORMAT}`;
