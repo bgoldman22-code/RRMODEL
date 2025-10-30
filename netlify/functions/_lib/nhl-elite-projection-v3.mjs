@@ -13,10 +13,17 @@
  * - Score effects & pace adjustments
  * - Individual player quality differentials
  * 
+ * 🔥 V4.1 UPGRADES:
+ * - Real-time NHL API game logs (6hr cache)
+ * - TOI trend weighting (L3 > L10 > Season)
+ * - ZINB dispersion recalibration
+ * 
  * NO position baselines. Every player gets custom projection.
  * 
  * DATA STORAGE: Uses Netlify Blobs (155 IQ solution, no file system deps)
  */
+
+import { getPlayerGameLog } from './nhl-api-game-logs.mjs';
 
 /**
  * RINK SCORER BIAS - Some arenas systematically over/under-count SOG
@@ -357,24 +364,43 @@ function determinePPUnit(player) {
 /**
  * Calculate expected TOI based on recent games
  */
-function calculateExpectedTOI(player) {
+async function calculateExpectedTOI(player) {
   if (!player || !player.season) return 15.0; // 15 mins default
+  
+  // 🔥 V4.1: Try fetching real-time game log from NHL API first
+  let L3toi = null, L10toi = null;
+  
+  if (player.playerId) {
+    try {
+      const realTimeGameLog = await getPlayerGameLog(player.playerId, player.name, true);
+      if (realTimeGameLog) {
+        L3toi = realTimeGameLog.L3?.toi ? parseFloat(realTimeGameLog.L3.toi) : null;
+        L10toi = realTimeGameLog.L10?.toi ? parseFloat(realTimeGameLog.L10.toi) : null;
+        
+        if (L3toi) {
+          console.log(`📡 Using real-time TOI for ${player.name}: L3=${L3toi}, L10=${L10toi}`);
+        }
+      }
+    } catch (error) {
+      console.warn(`⚠️ Failed to fetch real-time game log for ${player.name}, using cached data`);
+    }
+  }
+  
+  // Fallback to cached player JSON data if API fetch failed
+  if (!L3toi) {
+    L3toi = player.L5?.toi ? parseFloat(player.L5.toi) : null; // L5 as proxy for L3
+  }
+  if (!L10toi) {
+    L10toi = player.L10?.toi ? parseFloat(player.L10.toi) : null;
+  }
   
   // Parse season TOI
   const seasonTOI = player.season.avgToi || '0:00';
   const [mins, secs] = seasonTOI.split(':');
   const seasonMins = parseInt(mins) + (parseInt(secs) / 60);
   
-  // Get recent TOI from game logs
-  const L5toi = player.L5?.toi ? parseFloat(player.L5.toi) : null;
-  const L10toi = player.L10?.toi ? parseFloat(player.L10.toi) : null;
-  
   // 🔥 ELITE UPGRADE: L3 > L10 > Season weighting
   // Catches role changes 8-10 games faster than season average
-  
-  // Calculate L3 from L5 (approximate - true L3 would need individual games)
-  // L5 is close proxy for L3 in most cases
-  const L3toi = L5toi;
   
   // Adaptive weighting based on available data
   if (L3toi && L10toi && seasonMins) {
@@ -389,8 +415,8 @@ function calculateExpectedTOI(player) {
   } else if (L10toi && seasonMins) {
     // No recent data: L10 (60%) > Season (40%)
     return (L10toi * 0.60) + (seasonMins * 0.40);
-  } else if (L5toi) {
-    return L5toi;
+  } else if (L3toi) {
+    return L3toi;
   }
   
   // Fallback to season or position default
