@@ -58,6 +58,74 @@ function calculateKelly(modelProb, americanOdds) {
 }
 
 /**
+ * Apply correlation-aware position sizing to opportunities from same game
+ * 
+ * When multiple picks are from the same game, they share game-level variance
+ * (pace, penalties, score effects). Apply progressive penalties to later picks.
+ * 
+ * Strategy:
+ * - 1st pick from game: Full Kelly units (0% penalty)
+ * - 2nd pick: -17% correlation penalty  
+ * - 3rd pick: -33% penalty
+ * - 4th pick: -50% penalty
+ * - 5th+ picks: -67% penalty
+ * 
+ * Picks are sorted by edge within each game (strongest first gets priority).
+ */
+function applyExposureManagement(opportunities) {
+  // Group opportunities by gameId
+  const gameGroups = {};
+  opportunities.forEach(opp => {
+    if (!gameGroups[opp.gameId]) gameGroups[opp.gameId] = [];
+    gameGroups[opp.gameId].push(opp);
+  });
+  
+  // Apply correlation penalties within each game
+  Object.keys(gameGroups).forEach(gameId => {
+    const gamePicks = gameGroups[gameId];
+    
+    // Sort by edge within each game (strongest first)
+    gamePicks.sort((a, b) => parseFloat(b.edge) - parseFloat(a.edge));
+    
+    gamePicks.forEach((pick, index) => {
+      const baseKelly = parseFloat(pick.kelly);
+      let adjustedUnits = Math.min(3.0, baseKelly * 100); // Convert Kelly % to units (max 3U)
+      
+      // Apply progressive correlation penalty
+      if (index === 0) {
+        // First pick: Full units (no penalty)
+        pick.correlationPenalty = 0;
+        pick.adjustedUnits = adjustedUnits;
+      } else if (index === 1) {
+        // Second pick: -17% correlation penalty
+        pick.correlationPenalty = 0.17;
+        pick.adjustedUnits = adjustedUnits * 0.83;
+      } else if (index === 2) {
+        // Third pick: -33% penalty
+        pick.correlationPenalty = 0.33;
+        pick.adjustedUnits = adjustedUnits * 0.67;
+      } else if (index === 3) {
+        // Fourth pick: -50% penalty
+        pick.correlationPenalty = 0.50;
+        pick.adjustedUnits = adjustedUnits * 0.50;
+      } else {
+        // Fifth+ picks: -67% penalty (minimal exposure)
+        pick.correlationPenalty = 0.67;
+        pick.adjustedUnits = adjustedUnits * 0.33;
+      }
+      
+      // Cap adjusted units at 0.5-3.0 range
+      pick.adjustedUnits = Math.max(0.5, Math.min(3.0, pick.adjustedUnits));
+      
+      // Add display metadata
+      pick.correlationGroup = `Game ${index + 1}/${gamePicks.length}`;
+    });
+  });
+  
+  return opportunities;
+}
+
+/**
  * Fetch real odds from The Odds API
  */
 async function fetchNHLOdds() {
@@ -482,6 +550,10 @@ export async function handler(event, context) {
     
     // Sort by edge
     opportunities.sort((a, b) => parseFloat(b.edge) - parseFloat(a.edge));
+    
+    // === EXPOSURE MANAGEMENT: Smart Position Sizing ===
+    // Apply correlation penalty for multiple picks in same game
+    opportunities = applyExposureManagement(opportunities);
     
     console.log(`✅ Generated ${opportunities.length} elite opportunities`);
     console.log(`📊 Real odds: ${opportunities.filter(o => o.usingRealOdds).length}`);
