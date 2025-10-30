@@ -38,7 +38,7 @@ const MAX_RETRIES = 3;
 
 // CLI args
 const args = process.argv.slice(2);
-const apiKey = args.find(arg => arg.startsWith('--api-key='))?.split('=')[1];
+const apiKey = args.find(arg => arg.startsWith('--api-key='))?.split('=')[1] || process.env.ODDS_API_KEY;
 const season = args.find(arg => arg.startsWith('--season='))?.split('=')[1] || '2024';
 const startDate = args.find(arg => arg.startsWith('--start-date='))?.split('=')[1];
 const endDate = args.find(arg => arg.startsWith('--end-date='))?.split('=')[1];
@@ -46,7 +46,7 @@ const outputPath = args.find(arg => arg.startsWith('--output='))?.split('=')[1] 
   path.join(__dirname, `../../data/nba/historical-odds-${season}.json`);
 
 if (!apiKey) {
-  console.error('❌ ERROR: --api-key required');
+  console.error('❌ ERROR: --api-key required (use --api-key=KEY or set ODDS_API_KEY env var)');
   console.log('\nUsage:');
   console.log('  node collect-historical-odds-v2.js \\');
   console.log('    --api-key=YOUR_KEY \\');
