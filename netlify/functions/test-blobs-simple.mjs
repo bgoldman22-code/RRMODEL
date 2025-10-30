@@ -5,25 +5,32 @@
 import { getStore } from '@netlify/blobs';
 
 export default async (req, context) => {
-  console.log('🧪 Simple Blobs test...');
+  console.log('🧪 Simple Blobs test - reading both blobs...');
   
   try {
     const store = getStore('nba-data');
     
-    // Try the simplest possible read
-    const data = await store.get('player-boxscores-current');
+    // Read both blobs using the { type: 'json' } pattern
+    const [historicalData, currentData] = await Promise.all([
+      store.get('player-boxscores-historical', { type: 'json' }),
+      store.get('player-boxscores-current', { type: 'json' })
+    ]);
     
-    console.log('Data type:', typeof data);
-    console.log('Data constructor:', data?.constructor?.name);
+    console.log('Historical entries:', historicalData?.length || 0);
+    console.log('Current entries:', currentData?.length || 0);
+    
+    const totalEntries = (historicalData?.length || 0) + (currentData?.length || 0);
     
     return new Response(JSON.stringify({
       success: true,
-      dataExists: !!data,
-      dataType: typeof data,
-      dataConstructor: data?.constructor?.name,
-      hasArrayBuffer: typeof data?.arrayBuffer === 'function',
-      hasText: typeof data?.text === 'function',
-      message: 'Blob retrieved successfully'
+      historicalExists: !!historicalData,
+      currentExists: !!currentData,
+      historicalEntries: historicalData?.length || 0,
+      currentEntries: currentData?.length || 0,
+      totalEntries,
+      sampleHistorical: historicalData?.[0] || null,
+      sampleCurrent: currentData?.[0] || null,
+      message: 'Both blobs read successfully with { type: "json" }'
     }, null, 2), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
