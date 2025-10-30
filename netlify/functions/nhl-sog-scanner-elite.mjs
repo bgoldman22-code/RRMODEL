@@ -17,6 +17,7 @@
  */
 
 import { projectSOGElite, calculateZINBProbability } from './_lib/nhl-elite-projection-v3.mjs';
+import { logScannerRun } from './_lib/nhl-prediction-logger.mjs';
 
 const NHL_API_BASE = 'https://api-web.nhle.com/v1';
 
@@ -559,6 +560,12 @@ export async function handler(event, context) {
     console.log(`✅ Generated ${opportunities.length} elite opportunities`);
     console.log(`📊 Real odds: ${opportunities.filter(o => o.usingRealOdds).length}`);
     console.log(`🎯 Top edge: ${opportunities[0]?.edge || 0}%`);
+    
+    // 📝 LOG ALL PREDICTIONS for historical tracking & ML training
+    // Fire-and-forget (don't block response)
+    logScannerRun(opportunities, games).catch(err => 
+      console.warn('⚠️ Prediction logging failed (non-critical):', err.message)
+    );
     
     return {
       statusCode: 200,
