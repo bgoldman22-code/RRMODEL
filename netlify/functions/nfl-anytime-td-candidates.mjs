@@ -139,6 +139,11 @@ export async function handler(event) {
           isHome: game.home_team === player.team,
           gameId: game.game_id,
           
+          // Game time info
+          gameday: game.gameday,
+          gametime: game.gametime,
+          weekday: game.weekday,
+          
           // Depth info (UI expects 'depth' not 'depthChartPosition')
           depth: player.depth_chart_position,
           

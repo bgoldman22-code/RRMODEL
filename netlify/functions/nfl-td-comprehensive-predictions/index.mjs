@@ -547,6 +547,9 @@ async function generateTDPredictions(games, season='2025', weekNumber){
       game_id: game.game_id,
       home_team: homeTeamAbbr,
       away_team: awayTeamAbbr,
+      gameday: game.gameday,
+      gametime: game.gametime,
+      weekday: game.weekday,
       players: gamePlayerPredictions,
       metadata: {
         total_players: gamePlayerPredictions.length,

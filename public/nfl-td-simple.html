@@ -382,13 +382,7 @@
                     </td>
                     <td>
                         <div class="game-info">${player.game}</div>
-                        <div class="game-info">${new Date(player.commence_time).toLocaleDateString('en-US', { 
-                            weekday: 'short', 
-                            month: 'short', 
-                            day: 'numeric',
-                            hour: 'numeric',
-                            minute: '2-digit'
-                        })}</div>
+                        <div class="game-info">${player.weekday || ''}, ${player.gameday || ''} ${player.gametime || ''}</div>
                     </td>
                     <td class="center">
                         <span class="${oddsClass}">${player.bestOdds > 0 ? '+' : ''}${player.bestOdds}</span>
@@ -471,13 +465,7 @@
                         </td>
                         <td>
                             <div class="game-info">${player.game}</div>
-                            <div class="game-info">${new Date(player.commence_time).toLocaleDateString('en-US', { 
-                                weekday: 'short', 
-                                month: 'short', 
-                                day: 'numeric',
-                                hour: 'numeric',
-                                minute: '2-digit'
-                            })}</div>
+                            <div class="game-info">${player.weekday || ''}, ${player.gameday || ''} ${player.gametime || ''}</div>
                         </td>
                         <td class="center">
                             <span class="${oddsClass}">${player.bestOdds > 0 ? '+' : ''}${player.bestOdds}</span>
