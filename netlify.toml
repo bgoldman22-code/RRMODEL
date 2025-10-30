@@ -19,7 +19,8 @@
 # Phase 1 Speed Optimization: Slim bundles per function
 [functions."nfl-predictions-get"]
   external_node_modules = ["@netlify/blobs"]
-  included_files = []  # GET needs no data files, only reads from blobs
+  included_files = []
+# Rebuild trigger - 2025-10-30 14:45:00
 
 [functions."nfl-predictions-generate"]
   included_files = ["data/nfl/**", "public/history/**", "netlify/functions/_lib/nfl-*.mjs", "netlify/functions/_lib/*-nfl.js", "netlify/functions/_lib/*-nfl.mjs", "netlify/functions/_lib/csv-snapshot.mjs", "netlify/functions/_lib/depth-chart-change-detector.js"]
