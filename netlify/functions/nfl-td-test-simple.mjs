@@ -1,77 +1,102 @@
 /**
- * TEST: Ultra-simple TD API to verify deployment works
+ * NFL TD SCANNER - Full Week View
+ * 
+ * Shows all anytime TD opportunities for the current week
+ * with model probabilities and edges from comprehensive predictions
  */
 
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+import candidatesHandler from './nfl-anytime-td-candidates.mjs';
 
-const ODDS_API_KEY = process.env.ODDS_API_KEY;
-
-export async function handler(event) {
-  if (!ODDS_API_KEY) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ success: false, error: 'No API key' })
-    };
+export async function handler(event, context) {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json'
+  };
+  
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers, body: '' };
   }
   
   try {
-    // Get NFL events
-    const eventsUrl = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events?apiKey=${ODDS_API_KEY}`;
-    const eventsRes = await fetch(eventsUrl);
-    const events = await eventsRes.json();
+    console.log('🏈 NFL TD Scanner - Fetching full week predictions...');
     
-    const allPlayers = [];
+    // Get current week's comprehensive predictions
+    const params = event.queryStringParameters || {};
+    const date = params.date || new Date().toISOString().split('T')[0];
     
-    // Get first game only for testing
-    const event = events[0];
-    if (!event) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ success: true, players: [], count: 0 })
-      };
-    }
-    
-    const oddsUrl = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/${event.id}/odds?markets=player_anytime_td&regions=us&oddsFormat=american&bookmakers=draftkings,fanduel&apiKey=${ODDS_API_KEY}`;
-    const oddsRes = await fetch(oddsUrl);
-    const oddsData = await oddsRes.json();
-    
-    // Process odds
-    for (const bookmaker of oddsData.bookmakers || []) {
-      const market = bookmaker.markets?.find(m => m.key === 'player_anytime_td');
-      if (!market) continue;
-      
-      for (const outcome of market.outcomes || []) {
-        const impliedProb = outcome.price < 0 
-          ? Math.abs(outcome.price) / (Math.abs(outcome.price) + 100)
-          : 100 / (outcome.price + 100);
-          
-        allPlayers.push({
-          name: outcome.description,
-          game: `${event.away_team} @ ${event.home_team}`,
-          bestOdds: outcome.price,
-          books_count: 1,
-          implied_probability: impliedProb,
-          model_probability: null,
-          edge: null
-        });
+    // Call candidates handler (which wraps comprehensive predictions)
+    const candidatesEvent = {
+      ...event,
+      queryStringParameters: {
+        date,
+        mode: 'week' // Get full week of games
       }
+    };
+    
+    const response = await candidatesHandler.handler(candidatesEvent, context);
+    const responseData = JSON.parse(response.body);
+    
+    if (!responseData.success) {
+      throw new Error(responseData.message || 'Failed to get predictions');
     }
+    
+    console.log(`✅ Got ${responseData.candidates?.length || 0} candidates`);
+    
+    // Transform candidates to simple display format
+    const players = (responseData.candidates || []).map(c => {
+      const anytimeData = c.anytimeTd || {};
+      const gameKey = `${c.opponent} @ ${c.team}`;
+      
+      return {
+        name: c.playerName,
+        position: c.position,
+        team: c.team,
+        opponent: c.opponent,
+        game: c.isHome ? `${c.opponent} @ ${c.team}` : `${c.team} @ ${c.opponent}`,
+        commence_time: responseData.games?.find(g => g.game_id === c.gameId)?.gameday || new Date().toISOString(),
+        bestOdds: anytimeData.bestOdds,
+        bestBook: anytimeData.bestBook,
+        books_count: anytimeData.books_count || 0,
+        implied_probability: anytimeData.impliedProb,
+        model_probability: anytimeData.probability,
+        edge: anytimeData.edge,
+        depth: c.depth
+      };
+    });
+    
+    // Sort by edge descending (nulls last)
+    players.sort((a, b) => {
+      if (a.edge == null && b.edge == null) return (b.model_probability || 0) - (a.model_probability || 0);
+      if (a.edge == null) return 1;
+      if (b.edge == null) return -1;
+      return b.edge - a.edge;
+    });
     
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         success: true,
-        count: allPlayers.length,
-        players: allPlayers,
+        count: players.length,
+        players,
+        week: responseData.week,
+        season: responseData.season,
         generated_at: new Date().toISOString()
       })
     };
     
   } catch (error) {
+    console.error('❌ TD Scanner error:', error);
+    
     return {
       statusCode: 500,
-      body: JSON.stringify({ success: false, error: error.message })
+      headers,
+      body: JSON.stringify({
+        success: false,
+        error: error.message,
+        generated_at: new Date().toISOString()
+      })
     };
   }
 }
