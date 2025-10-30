@@ -242,5 +242,3 @@ export async function handler(event) {
     };
   }
 }
-
-export { handler };
