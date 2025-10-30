@@ -158,7 +158,7 @@ export async function handler(event) {
           impliedProb = Math.abs(bestOdds) / (Math.abs(bestOdds) + 100);
         }
         
-        if (uniqueBooks >= 2) {  // Only players with 2+ books
+        if (uniqueBooks >= 1) {  // Show players with 1+ books (changed from 2+)
           // Try to find player in R data to get model prediction
           let modelProb = null;
           let edge = null;
