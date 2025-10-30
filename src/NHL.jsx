@@ -1,4 +1,4 @@
-// src/NHL.jsx
+it was doing this occasionally before teh AWS outage. I think tha outage is all resolved now. // src/NHL.jsx
 // Elite NHL SOG Props Interface - Professional Sharp Betting Tool v4.0
 // ELITE PROJECTION ENGINE: Individual player stats, opponent defense, streaks, TOI, PP deployment
 
@@ -27,7 +27,7 @@ export default function NHL() {
       setError(null);
       
       const params = new URLSearchParams({ dateRange: 'today' });
-      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-elite-fast?${params}`);
+      const response = await fetch(`/.netlify/functions/nhl-sog-scanner-elite?${params}`);
       
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
