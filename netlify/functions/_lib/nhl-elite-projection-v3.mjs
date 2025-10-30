@@ -25,6 +25,7 @@
 
 import { getPlayerGameLog } from './nhl-api-game-logs.mjs';
 import { getCachedScoreStateAdjustment } from './nhl-score-state.mjs';
+import { getDefensiveFactorManual } from './nhl-nst-defense.mjs';
 
 /**
  * RINK SCORER BIAS - Some arenas systematically over/under-count SOG
@@ -459,10 +460,11 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
   const rinkEffect = RINK_EFFECTS[venue] || 1.0;
   baseSOG *= rinkEffect;
   
-  // === STEP 5: OPPONENT DEFENSIVE STRENGTH ===
+  // === STEP 5: OPPONENT DEFENSIVE STRENGTH (5v5) ===
   // Strong defense suppresses shots
-  const oppAdjustment = 2 - oppDefense.defensiveRating; // 1.2 defense → 0.8x multiplier
-  baseSOG *= oppAdjustment;
+  // Now using Natural Stat Trick strength-state data
+  const oppDefense5v5 = getDefensiveFactorManual(opponent, '5v5');
+  baseSOG *= oppDefense5v5;
   
   // === STEP 6: TOI ADJUSTMENT ===
   const expectedTOI = calculateExpectedTOI(player);
@@ -481,8 +483,9 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
     ppBoost = player.position === 'D' ? 0.2 : 0.3;
   }
   
-  // Adjust for opponent PK strength
-  ppBoost *= (1.05 - oppDefense.penaltyKillPct * 0.5);
+  // Adjust for opponent PK strength (PP state)
+  const oppDefensePP = getDefensiveFactorManual(opponent, 'PP');
+  ppBoost *= oppDefensePP;
   
   baseSOG += ppBoost;
   
@@ -545,11 +548,12 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
         streak: streak.factor,
         homeAway: isHome ? 1.08 : 0.94,
         venue: rinkEffect,
-        oppDefense: oppAdjustment,
+        oppDefense5v5: oppDefense5v5,  // 🔥 Strength-state specific
+        oppDefensePP: oppDefensePP,    // 🔥 Separate PK factor
         toi: toiFactor,
         ppBoost: ppBoost,
         quality: qualityMultiplier,
-        scoreState: scoreStateAdjustment  // 🔥 NEW
+        scoreState: scoreStateAdjustment
       },
       
       finalProjection: baseSOG
@@ -559,7 +563,8 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
       streak: streak.type,
       ppUnit,
       expectedTOI: expectedTOI.toFixed(1),
-      oppDefenseRating: oppDefense.defensiveRating.toFixed(2),
+      oppDefense5v5: oppDefense5v5.toFixed(3),  // 🔥 Updated
+      oppDefensePP: oppDefensePP.toFixed(3),    // 🔥 Updated
       gamesPlayed: player.season.gamesPlayed,
       scratchRisk: (scratchRisk * 100).toFixed(1) + '%'
     }
