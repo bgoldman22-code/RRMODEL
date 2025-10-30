@@ -1,4 +1,4 @@
-it was doing this occasionally before teh AWS outage. I think tha outage is all resolved now. // src/NHL.jsx
+// src/NHL.jsx
 // Elite NHL SOG Props Interface - Professional Sharp Betting Tool v4.0
 // ELITE PROJECTION ENGINE: Individual player stats, opponent defense, streaks, TOI, PP deployment
 
