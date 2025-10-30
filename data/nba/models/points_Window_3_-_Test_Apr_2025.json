@@ -1,0 +1,29 @@
+{
+  "type": "points",
+  "baseline": 15.08695652173913,
+  "weights": {
+    "season_ppg": 0.6358968625809432,
+    "L10_fga": 0.6355462318454307,
+    "L10_ppg": 0.6334345417629251,
+    "L5_fga": 0.6186868059656019,
+    "L5_ppg": 0.6075269135512632,
+    "L10_fta": 0.5338188982665854,
+    "L5_fta": 0.51176145747624,
+    "L10_minutes": 0.47555781506098854,
+    "L5_minutes": 0.4601843424119736,
+    "season_apg": 0.4009882576732803
+  },
+  "featureNames": [
+    "season_ppg",
+    "L10_fga",
+    "L10_ppg",
+    "L5_fga",
+    "L5_ppg",
+    "L10_fta",
+    "L5_fta",
+    "L10_minutes",
+    "L5_minutes",
+    "season_apg"
+  ],
+  "trainingSize": 1978
+}

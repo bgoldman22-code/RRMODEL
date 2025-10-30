@@ -1,0 +1,29 @@
+{
+  "type": "pure_l5_baseline",
+  "version": "v3",
+  "description": "Pure L5 average with zero adjustments. Unbiased empirical baseline.",
+  "windows": [
+    {
+      "window": "Feb 2025",
+      "mae": 5.480144404332132,
+      "rmse": 7.43547939211815,
+      "r2": 0.3512802547614853,
+      "samples": 277
+    },
+    {
+      "window": "Mar 2025",
+      "mae": null,
+      "rmse": null,
+      "r2": null,
+      "samples": 0
+    },
+    {
+      "window": "Apr 2025",
+      "mae": null,
+      "rmse": null,
+      "r2": null,
+      "samples": 0
+    }
+  ],
+  "createdAt": "2025-10-30T17:49:46.924Z"
+}

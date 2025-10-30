@@ -1,0 +1,22 @@
+{
+  "generated": "2025-10-30T18:36:29.598Z",
+  "count": 0,
+  "models": {
+    "rebounds": {
+      "status": "profitable",
+      "winRate": 62.5,
+      "roi": 19.3
+    },
+    "assists": {
+      "status": "profitable",
+      "winRate": 66.7,
+      "roi": 27.3
+    }
+  },
+  "thresholds": {
+    "edge": 4,
+    "confidence": 0.6,
+    "kelly": 0.01
+  },
+  "predictions": []
+}

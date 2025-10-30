@@ -3,8 +3,20 @@
 /**
  * Master Pipeline - NBA Player Props
  * 
- * Runs complete pipeline once data collection completes:
- * 1. Wait for data files
+ * Runs complete pipeline once dat  try {
+    const { stdout, stderr } = await execAsync(
+     try {
+    const { stdout, stderr } = await execAsync(
+      `node scripts/nba/backtest-leak-free.js --data ${FEATURES_FILE} --models data/nba/models/ --output ${BACKTEST_FILE}`,
+      { maxBuffer: 50 * 1024 * 1024 }
+    ); scripts/nba/build-leak-free-features.js --odds ${ODDS_FILE} --boxscores ${BOXSCORE_FILE} --output ${FEATURES_FILE}`,
+      { maxBuffer: 50 * 1024 * 1024 }
+    );tion completes:
+ *  try {
+    const { stdout, stderr } = await execAsync(
+      `node scripts/nba/train-walk-forward.js --data ${FEATURES_FILE} --output data/nba/models/`,
+      { maxBuffer: 50 * 1024 * 1024 }
+    );t for data files
  * 2. Build leak-free features
  * 3. Train walk-forward models
  * 4. Run backtest

@@ -489,23 +489,11 @@ class UltimateNBACollector:
         
         # Step 3: Collect game-by-game data
         print("\n📊 Step 3/4: Game-by-Game Data")
-        
-        # Load existing games first
-        games_file = GAMES_DIR / f"games_{season.replace('-', '_')}.json"
-        if games_file.exists():
-            with open(games_file, 'r') as f:
-                all_games = json.load(f)
-            print(f"  📂 Loaded {len(all_games)} existing games")
-            # Create a set of existing game IDs to avoid duplicates
-            existing_ids = {g['id'] for g in all_games if 'id' in g}
-        else:
-            all_games = []
-            existing_ids = set()
+        all_games = []
         
         current_date = datetime.strptime(start_date, '%Y-%m-%d')
         end = datetime.strptime(end_date, '%Y-%m-%d')
         dates_processed = 0
-        new_games_count = 0
         
         while current_date <= end:
             date_str = current_date.strftime('%Y%m%d')
@@ -518,10 +506,6 @@ class UltimateNBACollector:
                 
                 # Enrich each game
                 for game in games:
-                    # Skip if we already have this game
-                    if 'id' in game and game['id'] in existing_ids:
-                        continue
-                    
                     # Add altitude adjustment
                     game = self.schedule.add_altitude_adjustment(game)
                     
@@ -535,23 +519,19 @@ class UltimateNBACollector:
                         game['awayTeamStats'] = advanced_stats[away_id]
                     
                     all_games.append(game)
-                    new_games_count += 1
             
             current_date += timedelta(days=1)
             dates_processed += 1
             
             # Progress update every 30 days
             if dates_processed % 30 == 0:
-                print(f"  ⏳ Progress: {dates_processed} days processed, {new_games_count} new games collected")
-        
-        # Sort by date
-        all_games.sort(key=lambda g: g.get('date', ''))
+                print(f"  ⏳ Progress: {dates_processed} days processed, {len(all_games)} games collected")
         
         # Save games
+        games_file = GAMES_DIR / f"games_{season.replace('-', '_')}.json"
         with open(games_file, 'w') as f:
             json.dump(all_games, f, indent=2)
         print(f"💾 Saved games: {games_file}")
-        print(f"  📊 Total games: {len(all_games)} ({new_games_count} new)")
         
         # Step 4: Collect current injuries (for predictions)
         print("\n📊 Step 4/4: Current Injuries")

@@ -37,7 +37,7 @@ console.log('   Every prediction validated: features < game_date\n');
 // Load data
 console.log('📂 Loading data...');
 const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-console.log(`✅ Loaded ${data.length} player-game samples\n');
+console.log(`✅ Loaded ${data.length} player-game samples\n`);
 
 // Define test windows
 const windows = [
@@ -71,10 +71,9 @@ const MIN_KELLY = 0.01; // Need 1%+ Kelly fraction
  */
 function loadModels(windowPrefix) {
   const models = {
-    minutes: JSON.parse(fs.readFileSync(path.join(modelsDir, `minutes_${windowPrefix}.json`), 'utf8')),
-    points_rate: JSON.parse(fs.readFileSync(path.join(modelsDir, `points_rate_${windowPrefix}.json`), 'utf8')),
-    rebounds_rate: JSON.parse(fs.readFileSync(path.join(modelsDir, `rebounds_rate_${windowPrefix}.json`), 'utf8')),
-    assists_rate: JSON.parse(fs.readFileSync(path.join(modelsDir, `assists_rate_${windowPrefix}.json`), 'utf8'))
+    points: JSON.parse(fs.readFileSync(path.join(modelsDir, `points_${windowPrefix}.json`), 'utf8')),
+    rebounds: JSON.parse(fs.readFileSync(path.join(modelsDir, `rebounds_${windowPrefix}.json`), 'utf8')),
+    assists: JSON.parse(fs.readFileSync(path.join(modelsDir, `assists_${windowPrefix}.json`), 'utf8'))
   };
   
   return models;
@@ -120,58 +119,35 @@ function predict(model, features) {
 }
 
 /**
- * Two-stage prediction: minutes × rate
+ * Make direct prediction using PURE L5 logic (v3 - zero adjustments)
  */
-function predictStat(models, features, statType) {
+function predictStat(model, features, statType) {
   const f = features;
   
-  // Prepare feature vector
-  const featureVector = {
-    L5_ppg: f.L5_ppg || 0,
-    L5_rpg: f.L5_rpg || 0,
-    L5_apg: f.L5_apg || 0,
-    L5_minutes: f.L5_minutes || 0,
-    L5_fga: f.L5_fga || 0,
-    L5_fta: f.L5_fta || 0,
-    L10_ppg: f.L10_ppg || 0,
-    L10_rpg: f.L10_rpg || 0,
-    L10_apg: f.L10_apg || 0,
-    L10_minutes: f.L10_minutes || 0,
-    L10_fga: f.L10_fga || 0,
-    L10_fta: f.L10_fta || 0,
-    season_ppg: f.season_ppg || 0,
-    season_rpg: f.season_rpg || 0,
-    season_apg: f.season_apg || 0,
-    home: f.home || 0,
-    rest_days: f.rest_days || 1,
-    back_to_back: f.back_to_back || 0,
-    opp_ppg_allowed: f.opp_ppg_allowed || 110,
-    opp_pace: f.opp_pace || 30,
-    games_played: f.games_played_season || 0
-  };
-  
-  // Stage 1: Predict minutes
-  const predictedMinutes = predict(models.minutes, featureVector);
-  
-  // Stage 2: Predict rate
-  let rateModel;
+  // PURE L5: Use L5 average with fallback chain ONLY
+  let base;
   if (statType === 'points') {
-    rateModel = models.points_rate;
+    base = f.L5_ppg ?? f.L10_ppg ?? f.season_ppg ?? 10;
   } else if (statType === 'rebounds') {
-    rateModel = models.rebounds_rate;
+    base = f.L5_rpg ?? f.L10_rpg ?? f.season_rpg ?? 5;
   } else if (statType === 'assists') {
-    rateModel = models.assists_rate;
+    base = f.L5_apg ?? f.L10_apg ?? f.season_apg ?? 3;
   }
   
-  const predictedRate = predict(rateModel, featureVector);
+  // NO ADJUSTMENTS - pure empirical recent average
+  let prediction = base;
   
-  // Final prediction: minutes × rate
-  const prediction = predictedMinutes * predictedRate;
+  // Constrain to reasonable physical limits only
+  if (statType === 'points') {
+    prediction = Math.max(0, Math.min(60, prediction));
+  } else if (statType === 'rebounds') {
+    prediction = Math.max(0, Math.min(25, prediction));
+  } else if (statType === 'assists') {
+    prediction = Math.max(0, Math.min(20, prediction));
+  }
   
   return {
-    prediction,
-    minutes: predictedMinutes,
-    rate: predictedRate
+    prediction
   };
 }
 
@@ -234,9 +210,8 @@ function backtestWindow(window) {
   console.log(`📅 BACKTESTING: ${window.name}`);
   console.log('='.repeat(60));
   
-  // Load models for this window
-  const models = loadModels(window.modelPrefix);
-  console.log(`✅ Loaded models for ${window.name}\n`);
+  // No model loading needed for pure L5 baseline - prediction logic is inline
+  console.log(`✅ Using PURE L5 baseline (zero adjustments)\n`);
   
   // Filter test data
   const testData = data.filter(d => 
@@ -269,16 +244,16 @@ function backtestWindow(window) {
       continue;
     }
     
-    // Make predictions
-    const pointsPred = predictStat(models, sample.features, 'points');
-    const reboundsPred = predictStat(models, sample.features, 'rebounds');
-    const assistsPred = predictStat(models, sample.features, 'assists');
+    // Make predictions (pure L5 logic - no model needed!)
+    const pointsPred = predictStat(null, sample.features, 'points');
+    const reboundsPred = predictStat(null, sample.features, 'rebounds');
+    const assistsPred = predictStat(null, sample.features, 'assists');
     
     // Evaluate betting decisions
-    if (sample.line_points) {
+    if (sample.vegas_lines?.points) {
       const decision = calculateBettingDecision(
         pointsPred.prediction,
-        sample.line_points,
+        sample.vegas_lines.points,
         sample.actual_points
       );
       if (decision) {
@@ -291,10 +266,10 @@ function backtestWindow(window) {
       }
     }
     
-    if (sample.line_rebounds) {
+    if (sample.vegas_lines?.rebounds) {
       const decision = calculateBettingDecision(
         reboundsPred.prediction,
-        sample.line_rebounds,
+        sample.vegas_lines.rebounds,
         sample.actual_rebounds
       );
       if (decision) {
@@ -307,10 +282,10 @@ function backtestWindow(window) {
       }
     }
     
-    if (sample.line_assists) {
+    if (sample.vegas_lines?.assists) {
       const decision = calculateBettingDecision(
         assistsPred.prediction,
-        sample.line_assists,
+        sample.vegas_lines.assists,
         sample.actual_assists
       );
       if (decision) {

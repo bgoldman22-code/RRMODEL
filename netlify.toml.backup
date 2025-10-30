@@ -19,7 +19,8 @@
 # Phase 1 Speed Optimization: Slim bundles per function
 [functions."nfl-predictions-get"]
   external_node_modules = ["@netlify/blobs"]
-  included_files = []  # GET needs no data files, only reads from blobs
+  included_files = []
+# Rebuild trigger - 2025-10-30 14:45:00
 
 [functions."nfl-predictions-generate"]
   included_files = ["data/nfl/**", "public/history/**", "netlify/functions/_lib/nfl-*.mjs", "netlify/functions/_lib/*-nfl.js", "netlify/functions/_lib/*-nfl.mjs", "netlify/functions/_lib/csv-snapshot.mjs", "netlify/functions/_lib/depth-chart-change-detector.js"]
@@ -51,6 +52,24 @@
   included_files = ["netlify/functions/_lib/**"]
 
 # nfl-receiving-scanner-elite will use global [functions] config
+
+# nfl-anytime-td-candidates - proxy to comprehensive with transformation
+[functions."nfl-anytime-td-candidates"]
+  node_bundler = "esbuild"
+  included_files = ["public/**", "data/nfl/**", "netlify/functions/nfl-td-comprehensive-predictions/**"]
+  external_node_modules = ["@netlify/blobs", "node-fetch"]
+
+# nfl-td-anytime-simple - standalone simple TD API with edge calculation
+[functions."nfl-td-anytime-simple"]
+  node_bundler = "esbuild"
+  included_files = ["public/nfl-anytime-td-player-data.json"]
+  external_node_modules = ["node-fetch"]
+
+# nfl-td-comprehensive-predictions - core TD engine
+[functions."nfl-td-comprehensive-predictions"]
+  node_bundler = "esbuild"
+  included_files = ["public/**", "data/nfl/**", "scripts/fetch-player-prop-odds.js"]
+  external_node_modules = ["@netlify/blobs", "node-fetch"]
 
 [build.environment]
   NODE_VERSION = "20"
@@ -95,3 +114,5 @@
 [functions."nhl-stats-refresh"]
   included_files = []
   external_node_modules = ["@netlify/blobs"]
+# Trigger deploy - Wed Oct 29 14:17:20 EDT 2025
+# Rebuild 1761762717

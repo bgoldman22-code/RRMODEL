@@ -46,7 +46,6 @@ export async function handler(event, context) {
     // Transform candidates to simple display format
     const players = (responseData.candidates || []).map(c => {
       const anytimeData = c.anytimeTd || {};
-      const gameKey = `${c.opponent} @ ${c.team}`;
       
       return {
         name: c.playerName,
@@ -54,10 +53,10 @@ export async function handler(event, context) {
         team: c.team,
         opponent: c.opponent,
         game: c.isHome ? `${c.opponent} @ ${c.team}` : `${c.team} @ ${c.opponent}`,
-        commence_time: responseData.games?.find(g => g.game_id === c.gameId)?.gameday || new Date().toISOString(),
+        commence_time: c.commenceTime || c.gameTime || new Date().toISOString(),
         bestOdds: anytimeData.bestOdds,
         bestBook: anytimeData.bestBook,
-        books_count: anytimeData.books_count || 0,
+        books_count: anytimeData.booksCount || 0,
         implied_probability: anytimeData.impliedProb,
         model_probability: anytimeData.probability,
         edge: anytimeData.edge,

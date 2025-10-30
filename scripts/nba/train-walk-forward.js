@@ -126,23 +126,21 @@ function prepareFeatures(data, modelType) {
   const features = [];
   
   for (const sample of data) {
-    // Skip if missing required data
-    if (!sample.features || sample.games_played_season < 5) continue;
+    // Skip if missing required data or insufficient games
+    if (!sample.features || !sample.features.games_played_season || sample.features.games_played_season < 5) continue;
     
-    let target, prediction;
+    let target;
     
-    if (modelType === 'minutes') {
-      target = sample.actual_minutes;
-      if (!target || target === 0) continue;
-    } else if (modelType === 'points_rate') {
-      target = sample.actual_minutes > 0 ? sample.actual_points / sample.actual_minutes : null;
-      if (!target || sample.actual_minutes < 10) continue;
-    } else if (modelType === 'rebounds_rate') {
-      target = sample.actual_minutes > 0 ? sample.actual_rebounds / sample.actual_minutes : null;
-      if (!target || sample.actual_minutes < 10) continue;
-    } else if (modelType === 'assists_rate') {
-      target = sample.actual_minutes > 0 ? sample.actual_assists / sample.actual_minutes : null;
-      if (!target || sample.actual_minutes < 10) continue;
+    // DIRECT PREDICTION: Predict total stat, not rate
+    if (modelType === 'points') {
+      target = sample.actual_points;
+      if (!target && target !== 0) continue;
+    } else if (modelType === 'rebounds') {
+      target = sample.actual_rebounds;
+      if (!target && target !== 0) continue;
+    } else if (modelType === 'assists') {
+      target = sample.actual_assists;
+      if (!target && target !== 0) continue;
     }
     
     if (target === null || isNaN(target)) continue;
@@ -328,24 +326,19 @@ async function trainAllModels() {
     // Train models for this window
     const windowResults = {};
     
-    // 1. Minutes model
-    windowResults.minutes = await trainXGBoostModel(
-      trainData, testData, 'minutes', window.name, outputDir
+    // 1. Points model (direct prediction)
+    windowResults.points = await trainXGBoostModel(
+      trainData, testData, 'points', window.name, outputDir
     );
     
-    // 2. Points rate model
-    windowResults.points_rate = await trainXGBoostModel(
-      trainData, testData, 'points_rate', window.name, outputDir
+    // 2. Rebounds model (direct prediction)
+    windowResults.rebounds = await trainXGBoostModel(
+      trainData, testData, 'rebounds', window.name, outputDir
     );
     
-    // 3. Rebounds rate model
-    windowResults.rebounds_rate = await trainXGBoostModel(
-      trainData, testData, 'rebounds_rate', window.name, outputDir
-    );
-    
-    // 4. Assists rate model
-    windowResults.assists_rate = await trainXGBoostModel(
-      trainData, testData, 'assists_rate', window.name, outputDir
+    // 3. Assists model (direct prediction)
+    windowResults.assists = await trainXGBoostModel(
+      trainData, testData, 'assists', window.name, outputDir
     );
     
     allResults[window.name] = windowResults;
@@ -359,10 +352,9 @@ async function trainAllModels() {
       trainSamples: trainData.length,
       testSamples: testData.length,
       results: {
-        minutes: windowResults.minutes.testResults,
-        points_rate: windowResults.points_rate.testResults,
-        rebounds_rate: windowResults.rebounds_rate.testResults,
-        assists_rate: windowResults.assists_rate.testResults
+        points: windowResults.points.testResults,
+        rebounds: windowResults.rebounds.testResults,
+        assists: windowResults.assists.testResults
       }
     }, null, 2));
   }
@@ -374,10 +366,9 @@ async function trainAllModels() {
   
   for (const [windowName, results] of Object.entries(allResults)) {
     console.log(`\n${windowName}:`);
-    console.log(`  Minutes:  MAE=${results.minutes.testResults.mae.toFixed(2)}, R²=${results.minutes.testResults.r2.toFixed(3)}`);
-    console.log(`  Points:   MAE=${results.points_rate.testResults.mae.toFixed(3)}, R²=${results.points_rate.testResults.r2.toFixed(3)}`);
-    console.log(`  Rebounds: MAE=${results.rebounds_rate.testResults.mae.toFixed(3)}, R²=${results.rebounds_rate.testResults.r2.toFixed(3)}`);
-    console.log(`  Assists:  MAE=${results.assists_rate.testResults.mae.toFixed(3)}, R²=${results.assists_rate.testResults.r2.toFixed(3)}`);
+    console.log(`  Points:   MAE=${results.points.testResults.mae.toFixed(2)}, R²=${results.points.testResults.r2.toFixed(3)}`);
+    console.log(`  Rebounds: MAE=${results.rebounds.testResults.mae.toFixed(2)}, R²=${results.rebounds.testResults.r2.toFixed(3)}`);
+    console.log(`  Assists:  MAE=${results.assists.testResults.mae.toFixed(2)}, R²=${results.assists.testResults.r2.toFixed(3)}`);
   }
   
   console.log(`\n💾 All models saved to: ${outputDir}`);

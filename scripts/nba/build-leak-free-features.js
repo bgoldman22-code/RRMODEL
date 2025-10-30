@@ -66,7 +66,8 @@ console.log(`   Last game: ${boxscores[boxscores.length - 1]?.gameDate}\n`);
 function calculateRollingStat(playerId, beforeDate, window, stat) {
   const playerGames = boxscores.filter(g => 
     g.playerId === playerId && 
-    new Date(g.gameDate) < new Date(beforeDate) // CRITICAL: < not <=
+    new Date(g.gameDate) < new Date(beforeDate) && // CRITICAL: < not <=
+    (g.minutes || 0) > 0 // CRITICAL: Exclude scratches/DNPs (0 minutes)
   );
   
   if (playerGames.length === 0) return null;
@@ -136,37 +137,38 @@ function buildFeaturesForGame(playerGame, vegasLine) {
   
   // Calculate rolling stats (L5, L10, L20)
   const L5_ppg = calculateRollingStat(playerId, gameDate, 5, 'points');
-  const L5_rpg = calculateRollingStat(playerId, gameDate, 5, 'reboundsTotal');
+  const L5_rpg = calculateRollingStat(playerId, gameDate, 5, 'rebounds');
   const L5_apg = calculateRollingStat(playerId, gameDate, 5, 'assists');
-  const L5_minutes = calculateRollingStat(playerId, gameDate, 5, 'minutesCalculated');
-  const L5_fga = calculateRollingStat(playerId, gameDate, 5, 'fieldGoalsAttempted');
-  const L5_fta = calculateRollingStat(playerId, gameDate, 5, 'freeThrowsAttempted');
+  const L5_minutes = calculateRollingStat(playerId, gameDate, 5, 'minutes');
+  const L5_fga = calculateRollingStat(playerId, gameDate, 5, 'fga');
+  const L5_fta = calculateRollingStat(playerId, gameDate, 5, 'fta');
   
   const L10_ppg = calculateRollingStat(playerId, gameDate, 10, 'points');
-  const L10_rpg = calculateRollingStat(playerId, gameDate, 10, 'reboundsTotal');
+  const L10_rpg = calculateRollingStat(playerId, gameDate, 10, 'rebounds');
   const L10_apg = calculateRollingStat(playerId, gameDate, 10, 'assists');
-  const L10_minutes = calculateRollingStat(playerId, gameDate, 10, 'minutesCalculated');
-  const L10_fga = calculateRollingStat(playerId, gameDate, 10, 'fieldGoalsAttempted');
-  const L10_fta = calculateRollingStat(playerId, gameDate, 10, 'freeThrowsAttempted');
+  const L10_minutes = calculateRollingStat(playerId, gameDate, 10, 'minutes');
+  const L10_fga = calculateRollingStat(playerId, gameDate, 10, 'fga');
+  const L10_fta = calculateRollingStat(playerId, gameDate, 10, 'fta');
   
   const L20_ppg = calculateRollingStat(playerId, gameDate, 20, 'points');
-  const L20_rpg = calculateRollingStat(playerId, gameDate, 20, 'reboundsTotal');
+  const L20_rpg = calculateRollingStat(playerId, gameDate, 20, 'rebounds');
   const L20_apg = calculateRollingStat(playerId, gameDate, 20, 'assists');
   
-  // Season totals up to this date
-  const season_ppg = priorGames.length > 0 
-    ? priorGames.reduce((sum, g) => sum + (g.points || 0), 0) / priorGames.length
+  // Season totals up to this date (EXCLUDE SCRATCHES/DNPS)
+  const gamesPlayed = priorGames.filter(g => (g.minutes || 0) > 0);
+  const season_ppg = gamesPlayed.length > 0 
+    ? gamesPlayed.reduce((sum, g) => sum + (g.points || 0), 0) / gamesPlayed.length
     : null;
-  const season_rpg = priorGames.length > 0
-    ? priorGames.reduce((sum, g) => sum + (g.reboundsTotal || 0), 0) / priorGames.length
+  const season_rpg = gamesPlayed.length > 0
+    ? gamesPlayed.reduce((sum, g) => sum + (g.rebounds || 0), 0) / gamesPlayed.length
     : null;
-  const season_apg = priorGames.length > 0
-    ? priorGames.reduce((sum, g) => sum + (g.assists || 0), 0) / priorGames.length
+  const season_apg = gamesPlayed.length > 0
+    ? gamesPlayed.reduce((sum, g) => sum + (g.assists || 0), 0) / gamesPlayed.length
     : null;
   
   // Opponent stats (calculated from games BEFORE this date)
   const opp_ppg_allowed = calculateOpponentStat(opponentId, gameDate, 'points');
-  const opp_pace = calculateOpponentStat(opponentId, gameDate, 'minutesCalculated');
+  const opp_pace = calculateOpponentStat(opponentId, gameDate, 'minutes');
   
   // Rest days
   const restDays = priorGames.length > 0
@@ -205,9 +207,9 @@ function buildFeaturesForGame(playerGame, vegasLine) {
     
     // Actual results (for backtesting)
     actual_points: playerGame.points,
-    actual_rebounds: playerGame.reboundsTotal,
+    actual_rebounds: playerGame.rebounds,
     actual_assists: playerGame.assists,
-    actual_minutes: playerGame.minutesCalculated,
+    actual_minutes: playerGame.minutes,
     
     // Leak-free features
     features: {

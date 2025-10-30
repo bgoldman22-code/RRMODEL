@@ -1,0 +1,46 @@
+🏀 NBA Player Props - Walk-Forward Training
+==========================================
+
+⚠️  CRITICAL: Progressive validation for honest metrics
+   Each test period uses model trained ONLY on prior data
+
+📂 Loading training data...
+✅ Loaded 2466 player-game samples
+
+📊 Walk-Forward Windows:
+
+Window 1 - Test Feb 2025:
+  Train: 2024-10-22 to 2025-01-31 (2189 samples)
+  Test:  2025-02-01 to 2025-02-28 (277 samples)
+
+Window 2 - Test Mar 2025:
+  Train: 2024-10-22 to 2025-02-28 (2466 samples)
+  Test:  2025-03-01 to 2025-03-31 (0 samples)
+
+Window 3 - Test Apr 2025:
+  Train: 2024-10-22 to 2025-03-31 (2466 samples)
+  Test:  2025-04-01 to 2025-04-13 (0 samples)
+
+
+============================================================
+📅 Window 1 - Test Feb 2025
+============================================================
+
+📊 Data split:
+  Training: 2189 samples
+  Testing: 277 samples
+
+🚀 Training minutes model for Window 1 - Test Feb 2025...
+  ✅ Prepared 0 training samples
+  ✅ Prepared 0 test samples
+  🧠 Training simple boosted model...
+
+💥 Training failed: TypeError: Cannot convert undefined or null to object
+    at Function.keys (<anonymous>)
+    at trainSimpleModel (file:///Users/brentgoldman/Desktop/REPO33/RRMODEL/scripts/nba/train-walk-forward.js:207:31)
+    at trainXGBoostModel (file:///Users/brentgoldman/Desktop/REPO33/RRMODEL/scripts/nba/train-walk-forward.js:105:17)
+    at trainAllModels (file:///Users/brentgoldman/Desktop/REPO33/RRMODEL/scripts/nba/train-walk-forward.js:332:35)
+    at file:///Users/brentgoldman/Desktop/REPO33/RRMODEL/scripts/nba/train-walk-forward.js:390:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:647:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)

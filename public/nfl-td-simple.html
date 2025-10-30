@@ -276,9 +276,9 @@
                         <th class="center">Best Odds</th>
                         <th class="center">Books</th>
                         <th class="center">Implied %</th>
-                        <th class="center">Model %</th>
-                        <th class="center">Edge</th>
-                        <th class="center">Action</th>
+                        <th class="center sortable" onclick="sortTable('model')" style="cursor: pointer;">Model % <span id="sort-model">▼</span></th>
+                        <th class="center sortable" onclick="sortTable('edge')" style="cursor: pointer;">Edge <span id="sort-edge"></span></th>
+                        <th class="center sortable" onclick="sortTable('action')" style="cursor: pointer;">Action <span id="sort-action"></span></th>
                     </tr>
                 </thead>
                 <tbody id="playerRows">
@@ -290,45 +290,135 @@
     <button class="refresh-btn" onclick="loadData()">🔄 Refresh</button>
     
     <script>
+        let allPlayers = [];
+        let currentSort = { column: 'edge', direction: 'desc' };
+        
+        function sortTable(column) {
+            // Toggle direction if clicking same column
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'desc' ? 'asc' : 'desc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'desc';
+            }
+            
+            // Update sort indicators
+            document.querySelectorAll('[id^="sort-"]').forEach(el => el.textContent = '');
+            document.getElementById(`sort-${column}`).textContent = currentSort.direction === 'desc' ? '▼' : '▲';
+            
+            // Sort the players array
+            allPlayers.sort((a, b) => {
+                let aVal, bVal;
+                
+                if (column === 'model') {
+                    aVal = a.model_probability || -1;
+                    bVal = b.model_probability || -1;
+                } else if (column === 'edge') {
+                    aVal = a.edge || -999;
+                    bVal = b.edge || -999;
+                } else if (column === 'action') {
+                    // Sort by edge for action (BET > WATCH > PASS)
+                    aVal = a.edge || -999;
+                    bVal = b.edge || -999;
+                }
+                
+                return currentSort.direction === 'desc' ? bVal - aVal : aVal - bVal;
+            });
+            
+            // Re-render the table
+            renderTable();
+        }
+        
+        function renderTable() {
+            const tbody = document.getElementById('playerRows');
+            tbody.innerHTML = '';
+            
+            allPlayers.forEach(player => {
+                const row = document.createElement('tr');
+                
+                const impliedProb = player.implied_probability || 0;
+                const modelProb = player.model_probability;
+                const edge = player.edge;
+                
+                // Determine odds coloring
+                let oddsClass = '';
+                if (player.bestOdds > 0) {
+                    if (player.bestOdds >= 300) oddsClass = 'odds-long';
+                    else if (player.bestOdds >= 150) oddsClass = 'odds-medium';
+                    else oddsClass = 'odds-short';
+                }
+                
+                // Implied prob coloring
+                let impliedProbClass = '';
+                if (impliedProb >= 0.4) impliedProbClass = 'prob-high';
+                else if (impliedProb >= 0.2) impliedProbClass = 'prob-medium';
+                else impliedProbClass = 'prob-low';
+                
+                // Determine action
+                let action = 'PASS';
+                let actionClass = 'action-pass';
+                if (edge !== null && modelProb !== null) {
+                    if (edge > 0.05) {
+                        action = '🔥 BET';
+                        actionClass = 'action-bet';
+                    } else if (edge > 0) {
+                        action = '👀 WATCH';
+                        actionClass = 'action-watch';
+                    }
+                }
+                
+                // Format edge display
+                let edgeDisplay = '-';
+                let edgeClass = '';
+                if (edge !== null) {
+                    const edgePct = (edge * 100).toFixed(1);
+                    edgeDisplay = `${edge > 0 ? '+' : ''}${edgePct}%`;
+                    edgeClass = edge > 0.05 ? 'prob-high' : edge > 0 ? 'prob-medium' : 'prob-low';
+                }
+                
+                row.innerHTML = `
+                    <td>
+                        <div class="player-name">${player.name}</div>
+                    </td>
+                    <td>
+                        <div class="game-info">${player.game}</div>
+                        <div class="game-info">${new Date(player.commence_time).toLocaleDateString('en-US', { 
+                            weekday: 'short', 
+                            month: 'short', 
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit'
+                        })}</div>
+                    </td>
+                    <td class="center">
+                        <span class="${oddsClass}">${player.bestOdds > 0 ? '+' : ''}${player.bestOdds}</span>
+                    </td>
+                    <td class="center">
+                        <span class="books-badge">${player.books_count} books</span>
+                    </td>
+                    <td class="center">
+                        <span class="${impliedProbClass}">${(impliedProb * 100).toFixed(1)}%</span>
+                    </td>
+                    <td class="center">
+                        <span class="${modelProb !== null ? 'prob-high' : ''}">${modelProb !== null ? (modelProb * 100).toFixed(1) + '%' : '-'}</span>
+                    </td>
+                    <td class="center">
+                        <span class="${edgeClass}">${edgeDisplay}</span>
+                    </td>
+                    <td class="center">
+                        <span class="${actionClass}">${action}</span>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
         async function loadData() {
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
             const tableContainer = document.getElementById('tableContainer');
             const stats = document.getElementById('stats');
-            
-            loading.style.display = 'block';
-            error.style.display = 'none';
-            tableContainer.style.display = 'none';
-            stats.style.display = 'none';
-            
-            try {
-                console.log('🎯 Fetching anytime TD odds...');
-                const response = await fetch('/.netlify/functions/nfl-td-test-simple');
-                
-                if (!response.ok) {
-                    throw new Error(`API returned ${response.status}`);
-                }
-                
-                const data = await response.json();
-                console.log('✅ Got data:', data);
-                
-                if (!data.success || !data.players) {
-                    throw new Error('Invalid API response');
-                }
-                
-                // Update timestamp
-                document.getElementById('timestamp').textContent = 
-                    `Last updated: ${new Date(data.generated_at).toLocaleString()}`;
-                
-                // Update stats
-                const games = new Set(data.players.map(p => p.game)).size;
-                const strongBets = data.players.filter(p => p.edge !== null && p.edge > 0.05).length;
-                
-                document.getElementById('totalPlayers').textContent = data.count;
-                document.getElementById('gamesCount').textContent = games;
-                document.getElementById('strongBets').textContent = strongBets;
-                
-                // Render table
                 const tbody = document.getElementById('playerRows');
                 tbody.innerHTML = '';
                 

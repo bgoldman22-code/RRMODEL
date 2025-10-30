@@ -1,0 +1,221 @@
+🤖 NBA Player Props - AUTO-RUNNER
+=================================
+
+Monitoring data collection...
+  Odds collector: PID 69450
+  Boxscore collector: PID 83569
+
+⏳ Step 0: Waiting for data collection...
+
+⏳ Monitoring collection progress...
+
+[11:25:31 AM] Check 1:
+  Odds: ⚪️ Stopped | File: N/A
+  Boxscores: ⚪️ Stopped | File: 18.0 MB
+[11:26:01 AM] Check 2:
+  Odds: ⚪️ Stopped | File: N/A
+  Boxscores: ⚪️ Stopped | File: 18.0 MB
+[11:26:31 AM] Check 3:
+  Odds: ⚪️ Stopped | File: N/A
+  Boxscores: ⚪️ Stopped | File: 18.0 MB
+[11:27:01 AM] Check 4:
+  Odds: ⚪️ Stopped | File: N/A
+  Boxscores: ⚪️ Stopped | File: 18.0 MB
+[11:27:31 AM] Check 5:
+  Odds: ⚪️ Stopped | File: N/A
+  Boxscores: ⚪️ Stopped | File: 18.0 MB
+[11:28:01 AM] Check 6:
+  Odds: ⚪️ Stopped | File: N/A
+  Boxscores: ⚪️ Stopped | File: 18.0 MB
+[11:28:31 AM] Check 7:
+  Odds: ⚪️ Stopped | File: N/A
+  Boxscores: ⚪️ Stopped | File: 18.0 MB
+[11:29:01 AM] Check 8:
+  Odds: ⚪️ Stopped | File: N/A
+  Boxscores: ⚪️ Stopped | File: 18.0 MB
+[11:29:31 AM] Check 9:
+  Odds: ⚪️ Stopped | File: N/A
+  Boxscores: ⚪️ Stopped | File: 18.0 MB
+[11:30:01 AM] Check 10:
+  Odds: ⚪️ Stopped | File: 19.1 MB
+  Boxscores: ⚪️ Stopped | File: 18.0[11:30:03 AM] Check 11:
+  Odds: ⚪️ Stopped | File: 19.1 MB
+  Boxsco✅ Files stable and ready!
+
+🔍 Validating collected data...
+
+✅ Odds data: 1547 games
+✅ Boxscore ✅ Files stable and ready!
+
+🔍 Validating collected data...
+
+✅ Odds data: 1547 games
+✅ Boxscore data: 26306 player-games
+✅ Unique players: 569
+
+
+============================================================
+🏀 NBA Player Props - LEAK-FREE Feature Engineering
+=================================================🏀 NBA Player Props - LEAK-FREE Feature Engineering
+===================================================
+
+⚠️  CRITICAL: Zero data leakage enforcement
+   For game on date D, using ONLY data from < D
+
+📂 Loading data...
+✅ Loaded 1547 games with odds
+✅ Loaded 26306 player-game records
+
+🔒 Enforcing temporal ordering...
+   First game: 2024-10-22
+   Last game: 2025-04-13
+
+🔗 Matching odds with player games...
+✅ Built odds lookup with 27222 entries
+
+⚙️  Building leak-free features for each player-game...
+   This will take a few minutes...
+
+   Processed 1000/26306 games (3.8%)
+   Processed 2000/26306 games (7.6%)
+   Processed 3000/26306 games (11.4%)
+   Processed 4000/26306 games (15.2%)
+   Processed 5000/26306 games (19.0%)
+   Processed 6000/26306 games (22.8%)
+   Processed 7000/26306 games (26.6%)
+   Processed 8000/26306 games (30.4%)
+   Processed 9000/26306 games (34.2%)
+   Processed 10000/26306 games (38.0%)
+   Processed 11000/26306 games (41.8%)
+   Processed 12000/26306 games (45.6%)
+   Processed 13000/26306 games (49.4%)
+   Processed 14000/26306 games (53.2%)
+   Processed 15000/26306 games (57.0%)
+   Processed 16000/26306 games (60.8%)
+   Processed 17000/26306 games (64.6%)
+   Processed 18000/26306 games (68.4%)
+   Processed 19000/26306 games (72.2%)
+   Processed 20000/26306 games (76.0%)
+   Processed 21000/26306 games (79.8%)
+   Processed 22000/26306 games (83.6%)
+   Processed 23000/26306 games (87.4%)
+   Processed 24000/26306 games (91.2%)
+   Processed 25000/26306 games (95.0%)
+   Processed 26000/26306 games (98.8%)
+
+✅ Processed 26306 player-games
+✅ Matched 2466 with Vegas lines
+✅ Passed 2466 leak-free validation checks
+
+💾 Saved training data to data/nba/training-data-leak-free.json
+
+📊 Dataset Statistics:
+   Total samples: 2466
+   Date range: 2024-10-22 to 2025-02-13
+   Points lines: 2466
+   Rebounds lines: 2466
+   Assists lines: 2466
+
+🎉 Leak-free feature engineering complete!
+   Ready for walk-forward validation training
+
+
+✅ Features built: 2466 samples
+
+
+============================================================
+🎯 STEP 2: Training Walk-Forward Models
+============================================================
+
+❌ Training failed: Command failed: node scripts/nba/train-walk-forward.js         --data data/nba/training-data-leak-free.json         --output data/nba/models/
+node:fs:441
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open '--data'
+    at Object.readFileSync (node:fs:441:20)
+    at file:///Users/brentgoldman/Desktop/REPO33/RRMODEL/scripts/nba/train-walk-forward.js:39:28
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:647:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '--data'
+}
+
+Node.js v22.18.0
+
+🏀 NBA Player Props - Walk-Forward Training
+==========================================
+
+⚠️  CRITICAL: Progressive validation for honest metrics
+   Each test period uses model trained ONLY on prior data
+
+📂 Loading training data...
+
+node:fs:441
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open '--data'
+    at Object.readFileSync (node:fs:441:20)
+    at file:///Users/brentgoldman/Desktop/REPO33/RRMODEL/scripts/nba/train-walk-forward.js:39:28
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:647:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '--data'
+}
+
+Node.js v22.18.0
+
+
+💥 Pipeline failed: Command failed: node scripts/nba/train-walk-forward.js         --data data/nba/training-data-leak-free.json         --output data/nba/models/
+node:fs:441
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open '--data'
+    at Object.readFileSync (node:fs:441:20)
+    at file:///Users/brentgoldman/Desktop/REPO33/RRMODEL/scripts/nba/train-walk-forward.js:39:28
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:647:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '--data'
+}
+
+Node.js v22.18.0
+
+Error: Command failed: node scripts/nba/train-walk-forward.js         --data data/nba/training-data-leak-free.json         --output data/nba/models/
+node:fs:441
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open '--data'
+    at Object.readFileSync (node:fs:441:20)
+    at file:///Users/brentgoldman/Desktop/REPO33/RRMODEL/scripts/nba/train-walk-forward.js:39:28
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:647:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '--data'
+}
+
+Node.js v22.18.0
+
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at ChildProcess.exithandler (node:child_process:417:12)
+    at ChildProcess.emit (node:events:518:28)
+    at maybeClose (node:internal/child_process:1101:16)
+    at Socket.<anonymous> (node:internal/child_process:456:11)
+    at Socket.emit (node:events:518:28)
+    at Pipe.<anonymous> (node:net:346:12)

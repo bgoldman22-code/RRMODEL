@@ -1,0 +1,29 @@
+{
+  "type": "rebounds_rate",
+  "baseline": 0.1870542475268711,
+  "weights": {
+    "L10_rpg": 0.584421367147242,
+    "season_rpg": 0.5769177293144356,
+    "L5_rpg": 0.5692264543413854,
+    "season_apg": -0.16717196117915023,
+    "L10_apg": -0.16206896552910638,
+    "L5_apg": -0.15382316226136492,
+    "L10_fga": -0.11239457815327833,
+    "L5_fga": -0.10364523296731946,
+    "L10_minutes": -0.10235642819569514,
+    "L5_minutes": -0.09870179516924289
+  },
+  "featureNames": [
+    "L10_rpg",
+    "season_rpg",
+    "L5_rpg",
+    "season_apg",
+    "L10_apg",
+    "L5_apg",
+    "L10_fga",
+    "L5_fga",
+    "L10_minutes",
+    "L5_minutes"
+  ],
+  "trainingSize": 1649
+}
