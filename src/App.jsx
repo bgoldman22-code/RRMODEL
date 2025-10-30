@@ -14,6 +14,7 @@ import NHL from "./NHL";  // Elite NHL SOG Props
 import NHLV2 from "./NHLV2";  // NHL SOG Props - Calibrated Policy V2
 import NBAPredictions from "./pages/NBAPredictions";  // Elite NBA Betting System V1 (Legacy)
 import NBAPredictionsV2 from "./pages/NBAPredictionsV2";  // Elite NBA Betting System V2
+import NBAPlayerProps from "./pages/NBAPlayerProps";  // NBA Player Props (Rebounds + Assists - PROFITABLE!)
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
@@ -92,6 +93,7 @@ export default function App() {
     nba: {
       label: 'NBA',
       items: [
+        { label: 'Player Props (R + A) 💰', path: '/nba-player-props' },
         { label: 'Elite Predictions V2 🔥', path: '/nba-predictions-v2' },
         { label: 'Market Scanner V2', path: '/nba-predictions-v2?tab=inefficiencies' },
         { label: 'Kelly Portfolio V2', path: '/nba-predictions-v2?tab=kelly' }
@@ -130,6 +132,7 @@ export default function App() {
           <Route path="/soccer-btts" element={<SoccerBTTS />} />
           <Route path="/nhl-sog" element={<NHL />} />
           <Route path="/nhl-sog-v2" element={<NHLV2 />} />
+          <Route path="/nba-player-props" element={<NBAPlayerProps />} />
           <Route path="/nba-predictions" element={<NBAPredictions />} />
           <Route path="/nba-predictions-v2" element={<NBAPredictionsV2 />} />
         </Routes>
