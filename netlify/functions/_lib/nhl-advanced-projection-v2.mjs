@@ -136,8 +136,10 @@ async function project5v5SOG(playerStats, gameLog, opponent, context) {
   const fatigueFactor = calculateFatigueFactor(context.restDays, context.travelDistance);
   mu5v5 *= fatigueFactor;
   
-  // Dispersion parameter (position-based)
-  const r5v5 = position === 'D' ? 3.5 : 2.8; // D-men more consistent
+  // 🔥 DISPERSION RECALIBRATION: Lower r = wider variance = less edge inflation
+  // Old: D=3.5, F=2.8 created tight distributions with inflated edges
+  // New: D=2.5, F=2.0 creates realistic variance for better edge accuracy
+  const r5v5 = position === 'D' ? 2.5 : 2.0; // D-men more consistent
   
   return { mu: Math.max(0, mu5v5), r: r5v5, pi: 0.02 }; // 2% zero-inflation at 5v5
 }
@@ -174,8 +176,9 @@ async function projectPPSOG(playerStats, gameLog, opponent, context) {
   const oppPKStrength = opponent.penaltyKillPct || 0.80;
   muPP *= (1.1 - oppPKStrength * 0.5); // Strong PKs suppress shots
   
-  // Dispersion (PP more variable than 5v5)
-  const rPP = 1.8;
+  // 🔥 DISPERSION RECALIBRATION: PP has high variance, lower r
+  // Old: 1.8 was too tight, New: 1.5 for realistic variance
+  const rPP = 1.5;
   
   return { mu: Math.max(0, muPP), r: rPP, pi: 0.05 };
 }
