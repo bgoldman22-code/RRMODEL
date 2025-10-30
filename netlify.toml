@@ -112,5 +112,16 @@
 [functions."nhl-stats-refresh"]
   included_files = []
   external_node_modules = ["@netlify/blobs"]
+
+# NBA Player Props Daily Predictions - runs at 7am UTC (2am EST, 11pm PST)
+[[scheduled.functions]]
+  name = "generate-daily-predictions"
+  cron = "0 7 * * *"
+
+[functions."generate-daily-predictions"]
+  node_bundler = "esbuild"
+  included_files = ["data/nba/**"]
+  external_node_modules = ["node-fetch"]
+
 # Trigger deploy - Wed Oct 29 14:17:20 EDT 2025
 # Rebuild 1761762717
