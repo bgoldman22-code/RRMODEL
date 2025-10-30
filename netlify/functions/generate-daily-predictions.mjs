@@ -16,12 +16,6 @@
 
 import { getStore } from '@netlify/blobs';
 import fetch from 'node-fetch';
-import { writeFile } from 'fs/promises';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // Configuration
 const API_KEY = process.env.ODDS_API_KEY;
