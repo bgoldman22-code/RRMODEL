@@ -24,6 +24,7 @@
  */
 
 import { getPlayerGameLog } from './nhl-api-game-logs.mjs';
+import { getCachedScoreStateAdjustment } from './nhl-score-state.mjs';
 
 /**
  * RINK SCORER BIAS - Some arenas systematically over/under-count SOG
@@ -497,12 +498,18 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
   
   baseSOG *= qualityMultiplier;
   
-  // === STEP 9: POSITION-SPECIFIC VARIANCE ===
+  // === STEP 9: SCORE STATE ADJUSTMENT ===
+  // 🔥 V4.1 UPGRADE: Account for game script effects
+  // Trailing teams shoot MORE, leading teams shoot LESS
+  const scoreStateAdjustment = await getCachedScoreStateAdjustment(team, opponent);
+  baseSOG *= scoreStateAdjustment;
+  
+  // === STEP 10: POSITION-SPECIFIC VARIANCE ===
   // Defensemen are more consistent (lower variance)
   // Forwards have higher variance (boom/bust)
   const dispersion = player.position === 'D' ? 3.5 : 2.4;
   
-  // === STEP 10: SCRATCH RISK (ZERO-INFLATION) ===
+  // === STEP 11: SCRATCH RISK (ZERO-INFLATION) ===
   // Bottom-6 players have higher scratch risk
   let scratchRisk = 0.02; // 2% baseline
   
@@ -541,7 +548,8 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
         oppDefense: oppAdjustment,
         toi: toiFactor,
         ppBoost: ppBoost,
-        quality: qualityMultiplier
+        quality: qualityMultiplier,
+        scoreState: scoreStateAdjustment  // 🔥 NEW
       },
       
       finalProjection: baseSOG
