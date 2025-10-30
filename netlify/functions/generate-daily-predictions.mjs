@@ -2,15 +2,7 @@
  * Netlify Scheduled Function - Daily NBA Predictions Generator
  * 
  * Runs daily at 7:00 AM Eastern Time
- * Schedu// Calculate rest days
-function calculateRestDays(boxscores, playerName, gameDate) {
-  const prevGames = boxscores
-    .filter(b => b.playerName === playerName && new Date(b.gameDate) < new Date(gameDate))
-    .sort((a, b) => new Date(b.gameDate) - new Date(a.gameDate));
-  
-  if (prevGames.length === 0) return 3;
-  
-  const lastGame = new Date(prevGames[0].gameDate);* * * (11am UTC = 7am EDT, 6am EST after Nov 3)
+ * Schedule: 0 11 * * * (11am UTC = 7am EDT, 6am EST after Nov 3)
  * 
  * Generates predictions for games starting within next 18 hours
  * 
@@ -58,7 +50,7 @@ function sleep(ms) {
 function calculatePlayerStats(boxscores, playerName, asOfDate) {
   const games = boxscores
     .filter(b => b.playerName === playerName && new Date(b.gameDate) < new Date(asOfDate))
-    .sort((a, b) => new Date(b.gameDate) - new Date(a.gameDate))
+    .sort((a, b) => new Date(b.gameDate) - new Date(a.date))
     .filter(b => b.minutes > 0);
 
   if (games.length < 5) return null;
@@ -128,8 +120,8 @@ function generatePrediction(stats, propType, isHome, restDays) {
 // Calculate rest days
 function calculateRestDays(playerName, gameDate, boxscores) {
   const prevGames = boxscores
-    .filter(b => b.player === playerName && new Date(b.date) < new Date(gameDate))
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+    .filter(b => b.playerName === playerName && new Date(b.gameDate) < new Date(gameDate))
+    .sort((a, b) => new Date(b.gameDate) - new Date(a.date));
   
   if (prevGames.length === 0) return 2;
   
