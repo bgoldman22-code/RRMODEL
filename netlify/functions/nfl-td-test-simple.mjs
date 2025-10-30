@@ -37,8 +37,8 @@ export async function handler(event, context) {
     const response = await candidatesHandler(candidatesEvent, context);
     const responseData = JSON.parse(response.body);
     
-    if (!responseData.success) {
-      throw new Error(responseData.message || 'Failed to get predictions');
+    if (!responseData.ok) {
+      throw new Error(responseData.error || 'Failed to get predictions');
     }
     
     console.log(`✅ Got ${responseData.candidates?.length || 0} candidates`);
@@ -80,8 +80,8 @@ export async function handler(event, context) {
         success: true,
         count: players.length,
         players,
-        week: responseData.week,
-        season: responseData.season,
+        week: responseData.info?.week,
+        season: responseData.info?.season,
         generated_at: new Date().toISOString()
       })
     };
