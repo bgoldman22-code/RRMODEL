@@ -23,7 +23,7 @@ const API_KEY = process.env.ODDS_API_KEY;
 const BASE_URL = 'https://api.the-odds-api.com/v4';
 const SPORT = 'basketball_nba';
 const REGIONS = 'us';
-const MARKETS = ['player_rebounds', 'player_assists']; // Excluding points - not profitable yet
+const MARKETS = ['player_points', 'player_rebounds', 'player_assists'];
 const BOOKMAKERS = 'draftkings,fanduel';
 const ODDS_FORMAT = 'american';
 
@@ -34,7 +34,6 @@ const MIN_KELLY = 0.01;
 
 // Paths
 const BOXSCORES_PATH = path.join(__dirname, '../../data/nba/player-boxscores-2024.json');
-const MODELS_PATH = path.join(__dirname, '../../data/nba/models-baseline');
 const OUTPUT_PATH = path.join(__dirname, '../../public/data/nba-player-props-live.json');
 
 if (!API_KEY) {
@@ -71,16 +70,6 @@ function loadBoxscores() {
   const data = JSON.parse(fs.readFileSync(BOXSCORES_PATH, 'utf-8'));
   console.log(`   ✅ Loaded ${data.length} boxscore entries`);
   return data;
-}
-
-// Load baseline models
-function loadModels() {
-  console.log('\n🤖 Loading baseline v2 models...');
-  const rebounds = JSON.parse(fs.readFileSync(path.join(MODELS_PATH, 'player_rebounds.json'), 'utf-8'));
-  const assists = JSON.parse(fs.readFileSync(path.join(MODELS_PATH, 'player_assists.json'), 'utf-8'));
-  console.log(`   ✅ Rebounds model loaded (${Object.keys(rebounds).length} players)`);
-  console.log(`   ✅ Assists model loaded (${Object.keys(assists).length} players)`);
-  return { rebounds, assists };
 }
 
 // Calculate player statistics from boxscores
@@ -170,24 +159,76 @@ function generatePrediction(stats, propType, isHome, restDays, opponentRank) {
 // Fetch today's NBA games
 async function fetchTodaysGames() {
   console.log('\n🔍 Fetching today\'s NBA games...');
-  const url = `${BASE_URL}/sports/${SPORT}/odds/?apiKey=${API_KEY}&regions=${REGIONS}&markets=${MARKETS.join(',')}&bookmakers=${BOOKMAKERS}&oddsFormat=${ODDS_FORMAT}`;
+  
+  // Step 1: Get upcoming games list
+  const gamesUrl = `${BASE_URL}/sports/${SPORT}/odds/?apiKey=${API_KEY}&regions=${REGIONS}&oddsFormat=${ODDS_FORMAT}`;
   
   try {
-    const response = await fetch(url);
-    const data = await response.json();
+    const response = await fetch(gamesUrl);
+    const games = await response.json();
     
     if (!response.ok) {
-      throw new Error(`API error: ${response.status} - ${JSON.stringify(data)}`);
+      throw new Error(`API error: ${response.status} - ${JSON.stringify(games)}`);
     }
 
-    console.log(`   ✅ Found ${data.length} games with player props`);
+    console.log(`   ✅ Found ${games.length} upcoming games`);
     
-    // Check remaining credits
-    const remaining = response.headers.get('x-requests-remaining');
-    const used = response.headers.get('x-requests-used');
+    // Filter to only games starting within next 18 hours
+    const now = new Date();
+    const eighteenHoursFromNow = new Date(now.getTime() + 18 * 60 * 60 * 1000);
+    const todaysGames = games.filter(game => {
+      const gameTime = new Date(game.commence_time);
+      return gameTime <= eighteenHoursFromNow;
+    });
+    
+    console.log(`   📅 ${todaysGames.length} games starting within next 18 hours`);
+    
+    let remaining = response.headers.get('x-requests-remaining');
+    let used = response.headers.get('x-requests-used');
     console.log(`   💰 Credits: ${used} used, ${remaining} remaining`);
     
-    return data;
+    // Step 2: Fetch player props for each game
+    const gamesWithProps = [];
+    
+    for (const game of todaysGames) {
+      console.log(`\n   📋 ${game.away_team} @ ${game.home_team}...`);
+      
+      // Fetch each market (player_rebounds, player_assists) for this event
+      const gameProps = { ...game, bookmakers: [] };
+      
+      for (const market of ['player_rebounds', 'player_assists']) { // Only profitable models
+        const propsUrl = `${BASE_URL}/sports/${SPORT}/events/${game.id}/odds/?apiKey=${API_KEY}&regions=${REGIONS}&markets=${market}&bookmakers=${BOOKMAKERS}&oddsFormat=${ODDS_FORMAT}`;
+        
+        await sleep(1000); // Rate limit
+        
+        try {
+          const propsResponse = await fetch(propsUrl);
+          const propsData = await propsResponse.json();
+          
+          if (propsResponse.ok && propsData.bookmakers && propsData.bookmakers.length > 0) {
+            gameProps.bookmakers.push(...propsData.bookmakers);
+            console.log(`      ✅ ${market}: ${propsData.bookmakers[0].markets[0].outcomes.length} players`);
+          } else {
+            console.log(`      ⚠️  ${market}: no data`);
+          }
+          
+          remaining = propsResponse.headers.get('x-requests-remaining');
+          used = propsResponse.headers.get('x-requests-used');
+          
+        } catch (error) {
+          console.log(`      ❌ ${market}: ${error.message}`);
+        }
+      }
+      
+      if (gameProps.bookmakers.length > 0) {
+        gamesWithProps.push(gameProps);
+      }
+    }
+    
+    console.log(`\n   ✅ ${gamesWithProps.length} games with player props`);
+    console.log(`   💰 Final credits: ${used} used, ${remaining} remaining`);
+    
+    return gamesWithProps;
   } catch (error) {
     console.error(`   ❌ Error fetching games: ${error.message}`);
     throw error;
@@ -208,7 +249,7 @@ function calculateRestDays(playerName, gameDate, boxscores) {
 }
 
 // Process games and generate predictions
-function processGames(games, boxscores, models) {
+function processGames(games, boxscores) {
   console.log('\n🎯 Generating predictions...');
   const predictions = [];
   const now = new Date().toISOString();
@@ -320,13 +361,12 @@ async function main() {
   try {
     // Load data
     const boxscores = loadBoxscores();
-    const models = loadModels();
 
     // Fetch today's games
     const games = await fetchTodaysGames();
 
     // Generate predictions
-    const predictions = processGames(games, boxscores, models);
+    const predictions = processGames(games, boxscores);
 
     // Sort by edge (highest first)
     predictions.sort((a, b) => b.edge - a.edge);
