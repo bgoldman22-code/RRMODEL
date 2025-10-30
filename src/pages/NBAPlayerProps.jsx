@@ -25,86 +25,32 @@ export default function NBAPlayerProps() {
     try {
       setLoading(true);
       
-      // In production, this would fetch from your API
-      // For now, we'll generate sample predictions based on the baseline v2 model
-      const samplePredictions = generateSamplePredictions();
+      // Fetch live predictions from generated data
+      const response = await fetch('/data/nba-player-props-live.json');
       
-      setPredictions(samplePredictions);
+      if (!response.ok) {
+        console.warn('Live predictions not available, using sample data');
+        setPredictions([]);
+        return;
+      }
+      
+      const data = await response.json();
+      setPredictions(data.predictions || []);
+      
     } catch (error) {
       console.error('Error loading predictions:', error);
+      setPredictions([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Generate sample predictions (replace with actual API call)
-  const generateSamplePredictions = () => {
-    const players = [
-      { name: 'Anthony Davis', team: 'LAL', opponent: 'GSW' },
-      { name: 'Domantas Sabonis', team: 'SAC', opponent: 'PHX' },
-      { name: 'Nikola Jokic', team: 'DEN', opponent: 'MIN' },
-      { name: 'Trae Young', team: 'ATL', opponent: 'NYK' },
-      { name: 'Tyrese Haliburton', team: 'IND', opponent: 'MIL' },
-      { name: 'Luka Doncic', team: 'DAL', opponent: 'BOS' }
-    ];
-
-    const predictions = [];
-    
-    players.forEach(player => {
-      // Rebounds prediction
-      if (Math.random() > 0.5) {
-        const rebPred = 8 + Math.random() * 6;
-        const rebLine = rebPred + (Math.random() - 0.5) * 3;
-        const rebEdge = Math.abs(rebPred - rebLine);
-        
-        if (rebEdge > 2) {
-          predictions.push({
-            player: player.name,
-            team: player.team,
-            opponent: player.opponent,
-            prop: 'rebounds',
-            prediction: rebPred.toFixed(1),
-            line: rebLine.toFixed(1),
-            edge: rebEdge.toFixed(1),
-            side: rebPred > rebLine ? 'OVER' : 'UNDER',
-            confidence: (0.6 + Math.random() * 0.15).toFixed(2),
-            odds: -110
-          });
-        }
-      }
-      
-      // Assists prediction
-      if (Math.random() > 0.5) {
-        const astPred = 5 + Math.random() * 6;
-        const astLine = astPred + (Math.random() - 0.5) * 3;
-        const astEdge = Math.abs(astPred - astLine);
-        
-        if (astEdge > 2) {
-          predictions.push({
-            player: player.name,
-            team: player.team,
-            opponent: player.opponent,
-            prop: 'assists',
-            prediction: astPred.toFixed(1),
-            line: astLine.toFixed(1),
-            edge: astEdge.toFixed(1),
-            side: astPred > astLine ? 'OVER' : 'UNDER',
-            confidence: (0.6 + Math.random() * 0.15).toFixed(2),
-            odds: -110
-          });
-        }
-      }
-    });
-    
-    return predictions;
-  };
-
   // Filter and sort predictions
   const filteredPredictions = predictions
-    .filter(p => filter === 'all' || p.prop === filter)
+    .filter(p => filter === 'all' || p.propType === filter)
     .sort((a, b) => {
-      if (sortBy === 'edge') return parseFloat(b.edge) - parseFloat(a.edge);
-      if (sortBy === 'confidence') return parseFloat(b.confidence) - parseFloat(a.confidence);
+      if (sortBy === 'edge') return Math.abs(b.edge) - Math.abs(a.edge);
+      if (sortBy === 'confidence') return b.confidence - a.confidence;
       if (sortBy === 'player') return a.player.localeCompare(b.player);
       return 0;
     });
@@ -205,22 +151,22 @@ export default function NBAPlayerProps() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      pred.prop === 'rebounds' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                      pred.propType === 'rebounds' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
                     }`}>
-                      {pred.prop.toUpperCase()}
+                      {pred.propType.toUpperCase()}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {pred.prediction}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {pred.line}
+                    {pred.vegasLine}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-3 py-1 text-xs font-bold rounded ${
-                      pred.side === 'OVER' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      pred.betSide === 'OVER' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
-                      {pred.side} {pred.odds}
+                      {pred.betSide} {pred.vegasOdds}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
@@ -231,10 +177,10 @@ export default function NBAPlayerProps() {
                       <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
                         <div
                           className="bg-green-600 h-2 rounded-full"
-                          style={{ width: `${parseFloat(pred.confidence) * 100}%` }}
+                          style={{ width: `${pred.confidence}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm text-gray-900">{(parseFloat(pred.confidence) * 100).toFixed(0)}%</span>
+                      <span className="text-sm text-gray-900">{pred.confidence}%</span>
                     </div>
                   </td>
                 </tr>
