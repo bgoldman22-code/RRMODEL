@@ -42,25 +42,33 @@ echo ""
 
 # Check API credits
 echo "💳 API Credits:"
-RESPONSE=$(curl -s "https://api.the-odds-api.com/v4/sports/?apiKey=c5d3fe15e6c5be83b2acd8695cff012b")
-USED=$(echo "$RESPONSE" | grep -o '"requests-used":[0-9]*' | grep -o '[0-9]*')
-REMAINING=$(echo "$RESPONSE" | grep -o '"requests-remaining":[0-9]*' | grep -o '[0-9]*')
-
-if [ -n "$USED" ]; then
-  echo "  Used: $USED"
-  echo "  Remaining: $REMAINING"
-  
-  # Calculate progress
-  START_USED=27368
-  CURRENT_DELTA=$((USED - START_USED))
-  EST_GAMES=$((CURRENT_DELTA / 14))  # ~14 credits per game
-  
-  echo "  Games collected (est): $EST_GAMES / ~1,230"
-  
-  PERCENT=$((EST_GAMES * 100 / 1230))
-  echo "  Progress: ${PERCENT}%"
+API_KEY="${ODDS_API_KEY:-${THEODDS_API_KEY}}"
+if [ -z "$API_KEY" ]; then
+  echo "  ⚠️  API key not set (set ODDS_API_KEY or THEODDS_API_KEY environment variable)"
 else
-  echo "  Could not fetch API status"
+  RESPONSE=$(curl -s "https://api.the-odds-api.com/v4/sports/?apiKey=${API_KEY}")
+  USED=$(echo "$RESPONSE" | grep -o '"requests-used":[0-9]*' | grep -o '[0-9]*')
+  REMAINING=$(echo "$RESPONSE" | grep -o '"requests-remaining":[0-9]*' | grep -o '[0-9]*')
+
+  USED=$(echo "$RESPONSE" | grep -o '"requests-used":[0-9]*' | grep -o '[0-9]*')
+  REMAINING=$(echo "$RESPONSE" | grep -o '"requests-remaining":[0-9]*' | grep -o '[0-9]*')
+
+  if [ -n "$USED" ]; then
+    echo "  Used: $USED"
+    echo "  Remaining: $REMAINING"
+    
+    # Calculate progress
+    START_USED=27368
+    CURRENT_DELTA=$((USED - START_USED))
+    EST_GAMES=$((CURRENT_DELTA / 14))  # ~14 credits per game
+    
+    echo "  Games collected (est): $EST_GAMES / ~1,230"
+    
+    PERCENT=$((EST_GAMES * 100 / 1230))
+    echo "  Progress: ${PERCENT}%"
+  else
+    echo "  Could not fetch API status"
+  fi
 fi
 
 echo ""
