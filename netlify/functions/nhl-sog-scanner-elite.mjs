@@ -18,6 +18,7 @@
 
 import { projectSOGElite, calculateZINBProbability } from './_lib/nhl-elite-projection-v3.mjs';
 import { logScannerRun } from './_lib/nhl-prediction-logger.mjs';
+import { getStore } from '@netlify/blobs';
 
 const NHL_API_BASE = 'https://api-web.nhle.com/v1';
 
@@ -298,17 +299,36 @@ export async function handler(event, context) {
     const params = event.queryStringParameters || {};
     const minEdge = parseFloat(params.minEdge) || 5.0;
     
-    // Step 1: Fetch today's schedule
+    // Step 1: Fetch today's schedule from cache (with fallback to NHL.com API)
     const today = new Date().toISOString().split('T')[0];
-    const scheduleUrl = `${NHL_API_BASE}/schedule/${today}`;
+    let allGames = [];
     
-    const scheduleResponse = await fetch(scheduleUrl);
-    if (!scheduleResponse.ok) {
-      throw new Error(`NHL schedule API failed: ${scheduleResponse.status}`);
+    try {
+      // Try to read from Netlify Blobs cache first
+      const store = getStore('nhl-schedule');
+      const cachedSchedule = await store.get(today, { type: 'json' });
+      
+      if (cachedSchedule && cachedSchedule.games) {
+        console.log(`✅ Using cached schedule from Blobs (${cachedSchedule.games.length} games)`);
+        allGames = cachedSchedule.games;
+      } else {
+        console.log('⚠️  No cached schedule found, fetching from NHL.com...');
+        throw new Error('Cache miss');
+      }
+    } catch (cacheError) {
+      // Fallback to NHL.com API if cache fails
+      console.log('📡 Fetching schedule from NHL.com API (fallback)');
+      const scheduleUrl = `${NHL_API_BASE}/schedule/${today}`;
+      const scheduleResponse = await fetch(scheduleUrl);
+      
+      if (!scheduleResponse.ok) {
+        throw new Error(`NHL schedule API failed: ${scheduleResponse.status}`);
+      }
+      
+      const schedule = await scheduleResponse.json();
+      allGames = schedule.gameWeek?.[0]?.games || [];
+      console.log(`✅ Fetched ${allGames.length} games from NHL.com API`);
     }
-    
-    const schedule = await scheduleResponse.json();
-    const allGames = schedule.gameWeek?.[0]?.games || [];
     
     // Filter to games actually today (in ET)
     const games = allGames.filter(g => {

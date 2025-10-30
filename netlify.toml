@@ -120,6 +120,15 @@
   included_files = []
   external_node_modules = ["@netlify/blobs"]
 
+# NHL Schedule Refresh - cache daily schedule at 4am ET (8am UTC during DST, 9am UTC standard time)
+[[scheduled.functions]]
+  name = "nhl-schedule-refresh"
+  cron = "0 8 * * *"
+
+[functions."nhl-schedule-refresh"]
+  included_files = []
+  external_node_modules = ["@netlify/blobs"]
+
 # NBA Boxscores Daily Update - runs at 10am UTC (6am EDT / 5am EST) - 1 hour before predictions
 [[scheduled.functions]]
   name = "update-boxscores-daily"
