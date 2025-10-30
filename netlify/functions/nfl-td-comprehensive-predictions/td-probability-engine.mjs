@@ -118,6 +118,74 @@ export function calculateRealisticTDProbabilities(player, availability, gameCont
   const { position, team, name } = player;
   const { opponent, isHome, weather } = gameContext;
   
+  // FILTERING: Remove players with no realistic TD upside
+  // Skip fullbacks (FBs average <0.5 TDs per season)
+  if (position === 'FB' || name.match(/Juszczyk|Ingold|Ricard|Prentice/i)) {
+    return {
+      anytime: 0.01,
+      first: 0.001,
+      multiple: 0.001,
+      confidence: 0.3,
+      filtered: true,
+      reason: 'fullback'
+    };
+  }
+  
+  // Skip players with minimal usage (RBs with <5 carries AND <2 targets per game)
+  const avgCarries = player.carries_per_game || player.rush_attempts_per_game || 0;
+  const avgTargets = player.targets_per_game || player.receiving_targets_per_game || 0;
+  const snapShare = player.snap_share || 0;
+  
+  if (position === 'RB' && avgCarries < 5 && avgTargets < 2 && snapShare < 0.15) {
+    return {
+      anytime: 0.02,
+      first: 0.002,
+      multiple: 0.001,
+      confidence: 0.3,
+      filtered: true,
+      reason: 'minimal_usage'
+    };
+  }
+  
+    // === CRITICAL FILTERS: Remove Non-Viable TD Scorers ===
+  
+  // Filter 1: Fullbacks (FBs almost never score - 2-3 TDs per 5 years)
+  const fullbackNames = ['Kyle Juszczyk', 'Patrick Ricard', 'Alec Ingold', 'C.J. Ham', 'Adam Prentice', 'Reggie Gilliam'];
+  if (fullbackNames.some(name => player.name?.includes(name))) {
+    return {
+      anytime: 0.02,
+      first: 0.002,
+      multiple: 0.001,
+      confidence: 0.2,
+      filtered: true,
+      reason: 'fullback'
+    };
+  }
+  
+  // Filter 2: RBs with near-zero usage (practice squad, healthy scratches)
+  if (position === 'RB' && avgCarries < 2 && snapShare < 0.15) {
+    return {
+      anytime: 0.03,
+      first: 0.003,
+      multiple: 0.001,
+      confidence: 0.3,
+      filtered: true,
+      reason: 'minimal_rb_usage'
+    };
+  }
+  
+  // Filter 3: WR/TE with near-zero usage (healthy scratches, practice squad)
+  if ((position === 'WR' || position === 'TE') && avgTargets < 1.5 && snapShare < 0.15) {
+    return {
+      anytime: 0.03,
+      first: 0.003,
+      multiple: 0.001,
+      confidence: 0.3,
+      filtered: true,
+      reason: 'minimal_usage'
+    };
+  }
+  
   // STEP 1: Get base probability from position and depth
   const baseProbability = getBaseProbability(player, availability);
   
