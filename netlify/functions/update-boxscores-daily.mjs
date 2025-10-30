@@ -79,8 +79,8 @@ function extractPlayerStats(game) {
     for (const player of teamPlayers) {
       if (player.played === '1') {
         players.push({
-          date: gameDate,
-          player: player.name,
+          gameDate: gameDate,  // Match existing data format
+          playerName: player.name,  // Match existing data format
           team: team.teamTricode,
           opponent: opponent.teamTricode,
           home: isHome,
@@ -132,7 +132,7 @@ export default async (req, context) => {
     // Create map of existing games
     const existingMap = new Map();
     for (const entry of existingBoxscores) {
-      const key = `${entry.date}_${entry.player}`;
+      const key = `${entry.gameDate}_${entry.playerName}`;
       existingMap.set(key, entry);
     }
     
@@ -163,7 +163,7 @@ export default async (req, context) => {
           const playerStats = extractPlayerStats(game);
           
           for (const stat of playerStats) {
-            const key = `${stat.date}_${stat.player}`;
+            const key = `${stat.gameDate}_${stat.playerName}`;
             if (!existingMap.has(key)) {
               newEntries.push(stat);
               existingMap.set(key, stat);
@@ -185,18 +185,18 @@ export default async (req, context) => {
     
     // Split into historical and current based on date
     const historicalBoxscores = allBoxscores.filter(b => {
-      const date = new Date(b.date);
+      const date = new Date(b.gameDate);
       return date >= HISTORICAL_START && date < CURRENT_START;
     });
     
     const currentBoxscores = allBoxscores.filter(b => {
-      const date = new Date(b.date);
+      const date = new Date(b.gameDate);
       return date >= CURRENT_START;
     });
     
     // Sort by date (newest first)
-    historicalBoxscores.sort((a, b) => new Date(b.date) - new Date(a.date));
-    currentBoxscores.sort((a, b) => new Date(b.date) - new Date(a.date));
+    historicalBoxscores.sort((a, b) => new Date(b.gameDate) - new Date(a.gameDate));
+    currentBoxscores.sort((a, b) => new Date(b.gameDate) - new Date(a.gameDate));
     
     // Save both blobs (Netlify handles compression automatically)
     console.log(`\n📤 Saving to Blobs...`);
