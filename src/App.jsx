@@ -73,7 +73,7 @@ export default function App() {
       label: 'NFL',
       items: [
         { label: 'Receiving Props 🎯', path: '/nfl-receiving-props' },
-        { label: 'TD Advanced', path: '/nfl-td-comprehensive' },
+        { label: 'Anytime TD Props 🏈', path: '/nfl-td-simple.html' },
         { label: 'Game Predictions', path: '/predictions' }
       ]
     },
