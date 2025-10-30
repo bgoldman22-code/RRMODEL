@@ -146,5 +146,5 @@
   included_files = ["data/nba/player-boxscores-2024.json"]  # Only needed for initial seed
   external_node_modules = ["@netlify/blobs"]
 
-# Trigger deploy - Wed Oct 29 14:17:20 EDT 2025
-# Rebuild 1761762717
+# Trigger deploy - Wed Oct 30 15:15:00 EDT 2025 - Force rebuild NFL TD functions
+# Rebuild 1761870900
