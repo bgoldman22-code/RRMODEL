@@ -19,6 +19,10 @@ import fetch from 'node-fetch';
 import { writeFile } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { gunzip } from 'zlib';
+import { promisify } from 'util';
+
+const gunzipAsync = promisify(gunzip);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -144,13 +148,20 @@ export default async (req, context) => {
     // Load boxscores from Netlify Blobs (updated daily at 10am UTC)
     console.log('📥 Loading boxscores from Netlify Blobs...');
     const store = getStore('nba-data');
-    const boxscores = await store.get('player-boxscores-current', { type: 'json' });
     
-    if (!boxscores || boxscores.length === 0) {
+    // Read as arrayBuffer since it's gzip compressed
+    const compressed = await store.get('player-boxscores-current', { type: 'arrayBuffer' });
+    
+    if (!compressed) {
       throw new Error('No boxscores found in Netlify Blobs. Run update-boxscores-daily first.');
     }
     
-    console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blob`);
+    // Decompress gzipped data
+    const buffer = Buffer.from(compressed);
+    const decompressed = await gunzipAsync(buffer);
+    const boxscores = JSON.parse(decompressed.toString());
+    
+    console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blob (decompressed from ${(compressed.byteLength / 1024 / 1024).toFixed(2)}MB)`);
 
     // Fetch upcoming games
     const gamesUrl = `${BASE_URL}/sports/${SPORT}/odds/?apiKey=${API_KEY}&regions=${REGIONS}&oddsFormat=${ODDS_FORMAT}`;

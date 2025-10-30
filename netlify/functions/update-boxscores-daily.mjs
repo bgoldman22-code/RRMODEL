@@ -18,6 +18,11 @@
 
 import { getStore } from '@netlify/blobs';
 import fetch from 'node-fetch';
+import { gzip, gunzip } from 'zlib';
+import { promisify } from 'util';
+
+const gzipAsync = promisify(gzip);
+const gunzipAsync = promisify(gunzip);
 
 const DAYS_TO_FETCH = 30;
 const RATE_LIMIT_MS = 500;
@@ -112,12 +117,14 @@ export default async (req, context) => {
     // Get Netlify Blobs store
     const store = getStore('nba-data');
     
-    // Load existing boxscores from Blob
+    // Load existing boxscores from Blob (gzip compressed)
     let existingBoxscores = [];
     try {
-      const existingData = await store.get('player-boxscores-current', { type: 'json' });
-      if (existingData) {
-        existingBoxscores = existingData;
+      const compressed = await store.get('player-boxscores-current', { type: 'arrayBuffer' });
+      if (compressed) {
+        const buffer = Buffer.from(compressed);
+        const decompressed = await gunzipAsync(buffer);
+        existingBoxscores = JSON.parse(decompressed.toString());
         console.log(`📁 Loaded ${existingBoxscores.length} existing entries from Blob`);
       }
     } catch (error) {
@@ -186,8 +193,13 @@ export default async (req, context) => {
     // Sort by date (newest first)
     filteredBoxscores.sort((a, b) => new Date(b.date) - new Date(a.date));
     
-    // Save to Blob
-    await store.set('player-boxscores-current', JSON.stringify(filteredBoxscores));
+    // Compress and save to Blob (must compress to fit in 10MB limit)
+    const jsonString = JSON.stringify(filteredBoxscores);
+    const compressed = await gzipAsync(jsonString);
+    
+    console.log(`🗜️  Compressing: ${(jsonString.length / 1024 / 1024).toFixed(2)}MB → ${(compressed.length / 1024 / 1024).toFixed(2)}MB`);
+    
+    await store.set('player-boxscores-current', compressed);
     
     console.log('\n✅ UPDATE COMPLETE');
     console.log(`📊 Total entries in Blob: ${filteredBoxscores.length}`);

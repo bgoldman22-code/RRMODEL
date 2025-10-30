@@ -3,6 +3,10 @@
  */
 
 import { getStore } from '@netlify/blobs';
+import { gunzip } from 'zlib';
+import { promisify } from 'util';
+
+const gunzipAsync = promisify(gunzip);
 
 export default async (req, context) => {
   console.log('🧪 Testing Netlify Blobs access...');
@@ -10,10 +14,10 @@ export default async (req, context) => {
   try {
     const store = getStore('nba-data');
     
-    // Try to read the boxscores
-    const boxscores = await store.get('player-boxscores-current', { type: 'json' });
+    // Read as arrayBuffer since it's gzipped
+    const compressed = await store.get('player-boxscores-current', { type: 'arrayBuffer' });
     
-    if (!boxscores) {
+    if (!compressed) {
       return new Response(JSON.stringify({
         success: false,
         error: 'No data found in Blobs',
@@ -25,6 +29,11 @@ export default async (req, context) => {
       });
     }
     
+    // Decompress
+    const buffer = Buffer.from(compressed);
+    const decompressed = await gunzipAsync(buffer);
+    const boxscores = JSON.parse(decompressed.toString());
+    
     const isArray = Array.isArray(boxscores);
     const count = isArray ? boxscores.length : 0;
     const sample = isArray && boxscores[0] ? boxscores[0] : null;
@@ -33,11 +42,14 @@ export default async (req, context) => {
       success: true,
       store: 'nba-data',
       key: 'player-boxscores-current',
+      compressed: true,
+      compressedSize: `${(compressed.byteLength / 1024 / 1024).toFixed(2)} MB`,
+      decompressedSize: `${(decompressed.length / 1024 / 1024).toFixed(2)} MB`,
       dataType: typeof boxscores,
       isArray,
       entryCount: count,
       sampleEntry: sample,
-      message: `✅ Successfully loaded ${count} boxscore entries from Netlify Blobs`
+      message: `✅ Successfully loaded ${count} boxscore entries from Netlify Blobs (gzip compressed)`
     }, null, 2), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
