@@ -2,20 +2,21 @@
  * Netlify Scheduled Function - Daily NBA Predictions Generator
  * 
  * Runs daily at 7:00 AM Eastern Time
- * Schedule: 0 11 * * * (11am UTC = 7am EDT, note: will be 6am EST after Nov 3)
+ * Schedule: 0 11 * * * (11am UTC = 7am EDT, 6am EST after Nov 3)
  * 
  * Generates predictions for games starting within next 18 hours
  * 
- * Data Source: NBA CDN API (fetches last 30 days of boxscores dynamically)
- * Fallback: Static player-boxscores-2024.json if CDN fails
+ * Data Source: Netlify Blobs (updated daily at 10am UTC by update-boxscores-daily.mjs)
+ * - Always fresh: includes last night's games
+ * - No rebuilds: data updates independently from code
  * 
  * Environment Variables Required:
  * - ODDS_API_KEY: TheOddsAPI key (set in Netlify dashboard)
  */
 
+import { getStore } from '@netlify/blobs';
 import fetch from 'node-fetch';
-import { writeFile, readFile } from 'fs/promises';
-import { existsSync } from 'fs';
+import { writeFile } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -140,10 +141,16 @@ export default async (req, context) => {
   }
 
   try {
-    // Load boxscores from data directory (updated daily by GitHub Actions)
-    const boxscoresPath = join(process.cwd(), 'data/nba/player-boxscores-2024.json');
-    const boxscores = JSON.parse(await readFile(boxscoresPath, 'utf-8'));
-    console.log(`✅ Loaded ${boxscores.length} boxscore entries`);
+    // Load boxscores from Netlify Blobs (updated daily at 10am UTC)
+    console.log('📥 Loading boxscores from Netlify Blobs...');
+    const store = getStore('nba-data');
+    const boxscores = await store.get('player-boxscores-current', { type: 'json' });
+    
+    if (!boxscores || boxscores.length === 0) {
+      throw new Error('No boxscores found in Netlify Blobs. Run update-boxscores-daily first.');
+    }
+    
+    console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blob`);
 
     // Fetch upcoming games
     const gamesUrl = `${BASE_URL}/sports/${SPORT}/odds/?apiKey=${API_KEY}&regions=${REGIONS}&oddsFormat=${ODDS_FORMAT}`;

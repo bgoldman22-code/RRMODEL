@@ -6,6 +6,19 @@
 data/nfl_r_pipeline/*.rds
 .env
 
+# Large NBA data files (stored in Netlify Blobs instead)
+# These update daily and should NOT be in Git - use Blobs!
+data/nba/player-boxscores-*.json
+data/nba/historical-odds-*.json
+data/nba/training-data-*.json
+data/nba/backtest-results*.json
+data/nba/checkpoints/
+data/nba/models-*/
+logs/
+
+# But keep example/seed files
+!data/nba/*-example.json
+
 # macOS
 .DS_Store
 

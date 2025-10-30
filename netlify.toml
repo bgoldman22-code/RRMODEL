@@ -120,15 +120,31 @@
   included_files = []
   external_node_modules = ["@netlify/blobs"]
 
-# NBA Player Props Daily Predictions - runs at 7am Eastern (11am UTC during DST, 12pm UTC during standard time)
+# NBA Boxscores Daily Update - runs at 10am UTC (6am EDT / 5am EST) - 1 hour before predictions
+[[scheduled.functions]]
+  name = "update-boxscores-daily"
+  cron = "0 10 * * *"
+
+[functions."update-boxscores-daily"]
+  node_bundler = "esbuild"
+  included_files = []  # Fetches from NBA CDN, no local files needed
+  external_node_modules = ["@netlify/blobs", "node-fetch"]
+
+# NBA Player Props Daily Predictions - runs at 11am UTC (7am EDT / 6am EST after Nov 3)
 [[scheduled.functions]]
   name = "generate-daily-predictions"
   cron = "0 11 * * *"
 
 [functions."generate-daily-predictions"]
   node_bundler = "esbuild"
-  included_files = ["data/nba/**"]
-  external_node_modules = ["node-fetch"]
+  included_files = []  # Reads from Netlify Blobs, no local files needed
+  external_node_modules = ["@netlify/blobs", "node-fetch"]
+
+# NBA Boxscores Seed (ONE-TIME USE) - manual trigger to upload initial data to Blobs
+[functions."seed-boxscores-to-blobs"]
+  node_bundler = "esbuild"
+  included_files = ["data/nba/player-boxscores-2024.json"]  # Only needed for initial seed
+  external_node_modules = ["@netlify/blobs"]
 
 # Trigger deploy - Wed Oct 29 14:17:20 EDT 2025
 # Rebuild 1761762717
