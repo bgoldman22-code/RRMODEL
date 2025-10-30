@@ -32,16 +32,25 @@ import { fetchTeamRollingStats, loadTeamInfo } from '../_lib/nba/loaders.mjs';
 
 /**
  * ESPN → NBA abbreviation normalization
- * ESPN uses: GS, SA, NO, NY, PHO, UTAH
- * NBA uses: GSW, SAS, NOP, NYK, PHX, UTA
+ * Comprehensive mapping for all 30 NBA teams
+ * ESPN uses different abbreviations for some teams than NBA Stats API
  */
 const ESPN_TO_NBA_ABBR = {
-  'GS': 'GSW',
-  'SA': 'SAS',
-  'NO': 'NOP',
-  'NY': 'NYK',
-  'PHO': 'PHX',
-  'UTAH': 'UTA'
+  // Teams where ESPN differs from NBA Stats API
+  'GS': 'GSW',      // Golden State Warriors
+  'SA': 'SAS',      // San Antonio Spurs
+  'NO': 'NOP',      // New Orleans Pelicans
+  'NY': 'NYK',      // New York Knicks
+  'PHO': 'PHX',     // Phoenix Suns
+  'UTAH': 'UTA',    // Utah Jazz
+  'WSH': 'WAS',     // Washington Wizards
+  
+  // All other teams match (explicit for validation)
+  'ATL': 'ATL', 'BOS': 'BOS', 'BKN': 'BKN', 'CHA': 'CHA', 'CHI': 'CHI',
+  'CLE': 'CLE', 'DAL': 'DAL', 'DEN': 'DEN', 'DET': 'DET', 'HOU': 'HOU',
+  'IND': 'IND', 'LAC': 'LAC', 'LAL': 'LAL', 'MEM': 'MEM', 'MIA': 'MIA',
+  'MIL': 'MIL', 'MIN': 'MIN', 'OKC': 'OKC', 'ORL': 'ORL', 'PHI': 'PHI',
+  'POR': 'POR', 'SAC': 'SAC', 'TOR': 'TOR'
 };
 
 /**
@@ -94,7 +103,7 @@ async function fetchVegasLines(gameIds, isPreseason = false) {
     
     const linesMap = {};
     
-    // Team name mapping (Odds API uses full names, we need to match with abbreviations)
+    // Team name mapping (Odds API uses full names, map to ESPN abbreviations for consistency)
     const teamAbbrevMap = {
       'Atlanta Hawks': 'ATL', 'Boston Celtics': 'BOS', 'Brooklyn Nets': 'BKN',
       'Charlotte Hornets': 'CHA', 'Chicago Bulls': 'CHI', 'Cleveland Cavaliers': 'CLE',
@@ -103,7 +112,7 @@ async function fetchVegasLines(gameIds, isPreseason = false) {
       'Los Angeles Clippers': 'LAC', 'Los Angeles Lakers': 'LAL', 'Memphis Grizzlies': 'MEM',
       'Miami Heat': 'MIA', 'Milwaukee Bucks': 'MIL', 'Minnesota Timberwolves': 'MIN',
       'New Orleans Pelicans': 'NO', 'New York Knicks': 'NY', 'Oklahoma City Thunder': 'OKC',
-      'Orlando Magic': 'ORL', 'Philadelphia 76ers': 'PHI', 'Phoenix Suns': 'PHX',
+      'Orlando Magic': 'ORL', 'Philadelphia 76ers': 'PHI', 'Phoenix Suns': 'PHO',
       'Portland Trail Blazers': 'POR', 'Sacramento Kings': 'SAC', 'San Antonio Spurs': 'SA',
       'Toronto Raptors': 'TOR', 'Utah Jazz': 'UTAH', 'Washington Wizards': 'WSH'
     };
