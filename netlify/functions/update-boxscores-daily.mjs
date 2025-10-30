@@ -120,9 +120,10 @@ export default async (req, context) => {
     // Load existing boxscores from Blob (gzip compressed)
     let existingBoxscores = [];
     try {
-      const compressed = await store.get('player-boxscores-current', { type: 'arrayBuffer' });
-      if (compressed) {
-        const buffer = Buffer.from(compressed);
+      const blob = await store.get('player-boxscores-current');
+      if (blob) {
+        const arrayBuffer = await blob.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
         const decompressed = await gunzipAsync(buffer);
         existingBoxscores = JSON.parse(decompressed.toString());
         console.log(`📁 Loaded ${existingBoxscores.length} existing entries from Blob`);

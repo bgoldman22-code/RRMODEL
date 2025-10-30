@@ -149,19 +149,20 @@ export default async (req, context) => {
     console.log('📥 Loading boxscores from Netlify Blobs...');
     const store = getStore('nba-data');
     
-    // Read as arrayBuffer since it's gzip compressed
-    const compressed = await store.get('player-boxscores-current', { type: 'arrayBuffer' });
+    // Read blob (gzip compressed)
+    const blob = await store.get('player-boxscores-current');
     
-    if (!compressed) {
+    if (!blob) {
       throw new Error('No boxscores found in Netlify Blobs. Run update-boxscores-daily first.');
     }
     
-    // Decompress gzipped data
-    const buffer = Buffer.from(compressed);
+    // Convert to buffer and decompress gzipped data
+    const arrayBuffer = await blob.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
     const decompressed = await gunzipAsync(buffer);
     const boxscores = JSON.parse(decompressed.toString());
     
-    console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blob (decompressed from ${(compressed.byteLength / 1024 / 1024).toFixed(2)}MB)`);
+    console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blob (decompressed from ${(buffer.length / 1024 / 1024).toFixed(2)}MB)`);
 
     // Fetch upcoming games
     const gamesUrl = `${BASE_URL}/sports/${SPORT}/odds/?apiKey=${API_KEY}&regions=${REGIONS}&oddsFormat=${ODDS_FORMAT}`;

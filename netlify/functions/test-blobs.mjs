@@ -14,10 +14,10 @@ export default async (req, context) => {
   try {
     const store = getStore('nba-data');
     
-    // Read as arrayBuffer since it's gzipped
-    const compressed = await store.get('player-boxscores-current', { type: 'arrayBuffer' });
+    // Read as blob since it's gzipped
+    const blob = await store.get('player-boxscores-current');
     
-    if (!compressed) {
+    if (!blob) {
       return new Response(JSON.stringify({
         success: false,
         error: 'No data found in Blobs',
@@ -29,8 +29,11 @@ export default async (req, context) => {
       });
     }
     
+    // Convert blob to buffer
+    const arrayBuffer = await blob.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    
     // Decompress
-    const buffer = Buffer.from(compressed);
     const decompressed = await gunzipAsync(buffer);
     const boxscores = JSON.parse(decompressed.toString());
     
@@ -43,7 +46,7 @@ export default async (req, context) => {
       store: 'nba-data',
       key: 'player-boxscores-current',
       compressed: true,
-      compressedSize: `${(compressed.byteLength / 1024 / 1024).toFixed(2)} MB`,
+      compressedSize: `${(buffer.length / 1024 / 1024).toFixed(2)} MB`,
       decompressedSize: `${(decompressed.length / 1024 / 1024).toFixed(2)} MB`,
       dataType: typeof boxscores,
       isArray,
