@@ -49,6 +49,13 @@
   node_bundler = "zisi"
   included_files = ["netlify/functions/_lib/**"]
 
+# NHL SOG Scanner V3 - uses top-level await, needs ESM format
+[functions."nhl-sog-scanner-v3"]
+  node_bundler = "esbuild"
+  included_files = ["netlify/functions/_lib/**"]
+  [functions."nhl-sog-scanner-v3".build]
+    format = "esm"
+
 # nfl-receiving-scanner-elite will use global [functions] config
 
 # nfl-anytime-td-candidates - proxy to comprehensive with transformation

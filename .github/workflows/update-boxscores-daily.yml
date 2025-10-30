@@ -1,0 +1,50 @@
+name: Update NBA Boxscores Daily
+
+on:
+  schedule:
+    # Run at 6am UTC (2am ET / 1am ET after DST) - before predictions run at 7am ET
+    - cron: '0 6 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-boxscores:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main42
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm install node-fetch
+      
+      - name: Fetch latest boxscores (last 30 days)
+        run: |
+          node scripts/nba/update-recent-boxscores.js \
+            --days 30 \
+            --output data/nba/player-boxscores-2024.json
+      
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --quiet data/nba/player-boxscores-2024.json || echo "changed=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit and push if changed
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add data/nba/player-boxscores-2024.json
+          git commit -m "chore: update boxscores with latest games [automated]"
+          git push
+      
+      - name: Trigger Netlify rebuild
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          echo "✅ Boxscores updated. Netlify will auto-deploy."

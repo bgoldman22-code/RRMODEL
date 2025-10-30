@@ -6,6 +6,9 @@
  * 
  * Generates predictions for games starting within next 18 hours
  * 
+ * Data Source: NBA CDN API (fetches last 30 days of boxscores dynamically)
+ * Fallback: Static player-boxscores-2024.json if CDN fails
+ * 
  * Environment Variables Required:
  * - ODDS_API_KEY: TheOddsAPI key (set in Netlify dashboard)
  */
@@ -137,7 +140,7 @@ export default async (req, context) => {
   }
 
   try {
-    // Load boxscores from data directory
+    // Load boxscores from data directory (updated daily by GitHub Actions)
     const boxscoresPath = join(process.cwd(), 'data/nba/player-boxscores-2024.json');
     const boxscores = JSON.parse(await readFile(boxscoresPath, 'utf-8'));
     console.log(`✅ Loaded ${boxscores.length} boxscore entries`);

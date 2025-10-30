@@ -1,9 +1,0 @@
-❌ ERROR: --api-key required
-
-Usage:
-  node collect-historical-odds-v2.js \
-    --api-key=YOUR_KEY \
-    --season=2024 \
-    --start-date=2024-10-22 \
-    --end-date=2025-04-13 \
-    --output=data/nba/odds.json

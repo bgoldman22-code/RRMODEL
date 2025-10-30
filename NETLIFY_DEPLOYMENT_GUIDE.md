@@ -37,7 +37,7 @@ Go to Netlify Dashboard → Site Settings → Environment Variables
 
 ✅ **Confirm `ODDS_API_KEY` is set**:
 ```
-ODDS_API_KEY = c5d3fe15e6c5be83b2acd8695cff012b
+ODDS_API_KEY = <your-odds-api-key-here>
 ```
 
 *(You mentioned this is already set - just verify it's there)*
@@ -143,7 +143,7 @@ Should show:
 ### Problem: "ODDS_API_KEY not set" error
 **Fix**:
 1. Netlify Dashboard → Site Settings → Environment Variables
-2. Add: `ODDS_API_KEY` = `c5d3fe15e6c5be83b2acd8695cff012b`
+2. Add: `ODDS_API_KEY` = `<your-odds-api-key-here>`
 3. Trigger re-deploy (push a commit or click "Trigger deploy" button)
 
 ---
