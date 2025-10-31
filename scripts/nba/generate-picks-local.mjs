@@ -42,6 +42,12 @@ function calculatePlayerStats(boxscores, playerName, asOfDate) {
 
   const L5 = games.slice(0, 5);
   const L10 = games.slice(0, 10);
+  
+  // Calculate minute variance (coefficient of variation)
+  const minuteValues = L10.map(g => g.minutes);
+  const avgMinutes = minuteValues.reduce((a, b) => a + b, 0) / minuteValues.length;
+  const minuteStdev = Math.sqrt(minuteValues.reduce((sq, n) => sq + Math.pow(n - avgMinutes, 2), 0) / minuteValues.length);
+  const minuteCV = (minuteStdev / avgMinutes) * 100;
 
   return {
     L5_rpg: L5.reduce((sum, g) => sum + g.rebounds, 0) / L5.length,
@@ -49,6 +55,8 @@ function calculatePlayerStats(boxscores, playerName, asOfDate) {
     L5_minutes: L5.reduce((sum, g) => sum + g.minutes, 0) / L5.length,
     L10_rpg: L10.reduce((sum, g) => sum + g.rebounds, 0) / L10.length,
     L10_apg: L10.reduce((sum, g) => sum + g.assists, 0) / L10.length,
+    avgMinutes,
+    minuteCV,
     L10_minutes: L10.reduce((sum, g) => sum + g.minutes, 0) / L10.length,
     season_rpg: games.reduce((sum, g) => sum + g.rebounds, 0) / games.length,
     season_apg: games.reduce((sum, g) => sum + g.assists, 0) / games.length,
@@ -102,7 +110,7 @@ function calculateRestDays(boxscores, playerName, gameDate) {
 }
 
 async function main() {
-  console.log('🏀 NBA Picks Generator - Local');
+  console.log('🏀 NBA Picks Generator - Local (Top 8 Minutes Filter)');
   
   if (!API_KEY) {
     console.error('❌ ODDS_API_KEY environment variable required');
@@ -113,6 +121,48 @@ async function main() {
   const boxscoresData = await readFile('/tmp/player-boxscores-2024.json', 'utf-8');
   const boxscores = JSON.parse(boxscoresData);
   console.log(`✅ Loaded ${boxscores.length} boxscore entries`);
+
+  // Calculate average minutes per player by team (last 10 games)
+  console.log('📊 Calculating rotation rankings...');
+  const playerMinutesByTeam = {};
+  
+  // Find the most recent date in the data
+  const mostRecentDate = new Date(Math.max(...boxscores.map(b => new Date(b.gameDate))));
+  const cutoffDate = new Date(mostRecentDate);
+  cutoffDate.setDate(cutoffDate.getDate() - 20); // Last 20 days from most recent data
+  
+  console.log(`   Using data from ${cutoffDate.toISOString().split('T')[0]} to ${mostRecentDate.toISOString().split('T')[0]}`);
+  
+  boxscores
+    .filter(b => new Date(b.gameDate) >= cutoffDate && b.minutes > 0)
+    .forEach(b => {
+      const key = `${b.playerName}|${b.teamTricode}`;
+      if (!playerMinutesByTeam[b.teamTricode]) {
+        playerMinutesByTeam[b.teamTricode] = {};
+      }
+      if (!playerMinutesByTeam[b.teamTricode][b.playerName]) {
+        playerMinutesByTeam[b.teamTricode][b.playerName] = [];
+      }
+      playerMinutesByTeam[b.teamTricode][b.playerName].push(b.minutes);
+    });
+  
+  // Get top 8 minutes players per team
+  const top8PlayersByTeam = {};
+  for (const [team, players] of Object.entries(playerMinutesByTeam)) {
+    const playerAvgs = Object.entries(players)
+      .map(([name, mins]) => ({
+        name,
+        avgMinutes: mins.reduce((a, b) => a + b, 0) / mins.length,
+        games: mins.length
+      }))
+      .filter(p => p.games >= 3) // At least 3 games
+      .sort((a, b) => b.avgMinutes - a.avgMinutes)
+      .slice(0, 8);
+    
+    top8PlayersByTeam[team] = new Set(playerAvgs.map(p => p.name));
+  }
+  
+  console.log(`✅ Identified top 8 rotation players for ${Object.keys(top8PlayersByTeam).length} teams`);
 
   // Fetch upcoming games
   const gamesUrl = `${BASE_URL}/sports/${SPORT}/odds/?apiKey=${API_KEY}&regions=${REGIONS}&oddsFormat=${ODDS_FORMAT}`;
@@ -183,6 +233,14 @@ async function main() {
           const stats = calculatePlayerStats(boxscores, playerName, gameDate);
           if (!stats) continue;
 
+          // FILTER: Only top 8 rotation players
+          const playerTeam = stats.last_game?.teamTricode;
+          if (!playerTeam || !top8PlayersByTeam[playerTeam]) continue;
+          if (!top8PlayersByTeam[playerTeam].has(playerName)) continue;
+          
+          // FILTER: Stable minutes only (less than 25% coefficient of variation)
+          if (stats.minuteCV > 25) continue;
+
           const isHome = game.home_team === stats.last_game?.team;
           const restDays = calculateRestDays(boxscores, playerName, gameDate);
           const prediction = generatePrediction(stats, propType, isHome, restDays);
@@ -247,15 +305,51 @@ async function main() {
     }
   }
 
+  // Deduplicate: Keep best line for each player/prop/pick combination
+  console.log(`\n🔍 Deduplicating picks...`);
+  const dedupMap = new Map();
+  
+  for (const pick of predictions) {
+    const key = `${pick.player}|${pick.prop}|${pick.pick}`;
+    
+    if (!dedupMap.has(key)) {
+      dedupMap.set(key, pick);
+    } else {
+      const existing = dedupMap.get(key);
+      
+      // For OVER: prefer higher line (harder to hit, more value)
+      // For UNDER: prefer lower line (harder to hit, more value)
+      let shouldReplace = false;
+      
+      if (pick.pick === 'Over') {
+        shouldReplace = parseFloat(pick.line) > parseFloat(existing.line);
+      } else if (pick.pick === 'Under') {
+        shouldReplace = parseFloat(pick.line) < parseFloat(existing.line);
+      }
+      
+      // If lines are equal, pick better edge
+      if (Math.abs(parseFloat(pick.line) - parseFloat(existing.line)) < 0.1) {
+        shouldReplace = parseFloat(pick.edge) > parseFloat(existing.edge);
+      }
+      
+      if (shouldReplace) {
+        dedupMap.set(key, pick);
+      }
+    }
+  }
+  
+  const uniquePredictions = Array.from(dedupMap.values());
+  console.log(`   Removed ${predictions.length - uniquePredictions.length} duplicate lines`);
+  
   // Sort by edge
-  predictions.sort((a, b) => parseFloat(b.edge) - parseFloat(a.edge));
+  uniquePredictions.sort((a, b) => parseFloat(b.edge) - parseFloat(a.edge));
 
-  console.log(`\n🎯 Found ${predictions.length} profitable picks`);
+  console.log(`\n🎯 Found ${uniquePredictions.length} profitable picks`);
 
   // Export to CSV
   const csv = [
     'Player,Prop,Line,Pick,Predicted,Odds,Edge%,Confidence%,Kelly%,Units,Book,Game,Time',
-    ...predictions.map(p => 
+    ...uniquePredictions.map(p => 
       `${p.player},${p.prop},${p.line},${p.pick},${p.predicted},${p.odds},${p.edge},${p.confidence},${p.kelly},${p.units},${p.book},"${p.game}",${p.gameTime}`
     )
   ].join('\n');
@@ -267,12 +361,12 @@ async function main() {
   const jsonOutput = {
     generated: new Date().toISOString(),
     games: todaysGames.length,
-    picks: predictions,
+    picks: uniquePredictions,
     summary: {
-      totalPicks: predictions.length,
-      avgEdge: (predictions.reduce((sum, p) => sum + parseFloat(p.edge), 0) / predictions.length).toFixed(1),
-      avgConfidence: (predictions.reduce((sum, p) => sum + parseFloat(p.confidence), 0) / predictions.length).toFixed(0),
-      totalUnits: predictions.reduce((sum, p) => sum + parseFloat(p.units), 0).toFixed(1)
+      totalPicks: uniquePredictions.length,
+      avgEdge: (uniquePredictions.reduce((sum, p) => sum + parseFloat(p.edge), 0) / uniquePredictions.length).toFixed(1),
+      avgConfidence: (uniquePredictions.reduce((sum, p) => sum + parseFloat(p.confidence), 0) / uniquePredictions.length).toFixed(0),
+      totalUnits: uniquePredictions.reduce((sum, p) => sum + parseFloat(p.units), 0).toFixed(1)
     }
   };
 
@@ -282,7 +376,7 @@ async function main() {
   console.log(`\n✅ CSV exported to: ${downloadsPath}`);
   console.log(`✅ JSON exported to: ${jsonPath}`);
   console.log(`\n📊 Top 5 Picks:`);
-  predictions.slice(0, 5).forEach((p, i) => {
+  uniquePredictions.slice(0, 5).forEach((p, i) => {
     console.log(`${i+1}. ${p.player} ${p.prop} ${p.pick} ${p.line} (${p.edge}% edge, ${p.units}U)`);
   });
 }

@@ -44,13 +44,19 @@ function sleep(ms) {
 function calculatePlayerStats(boxscores, playerName, asOfDate) {
   const games = boxscores
     .filter(b => b.playerName === playerName && new Date(b.gameDate) < new Date(asOfDate))
-    .sort((a, b) => new Date(b.gameDate) - new Date(a.date))
+    .sort((a, b) => new Date(b.gameDate) - new Date(a.gameDate))
     .filter(b => b.minutes > 0);
 
   if (games.length < 5) return null;
 
   const L5 = games.slice(0, 5);
   const L10 = games.slice(0, 10);
+  
+  // Calculate minute variance (coefficient of variation)
+  const minuteValues = L10.map(g => g.minutes);
+  const avgMinutes = minuteValues.reduce((a, b) => a + b, 0) / minuteValues.length;
+  const minuteStdev = Math.sqrt(minuteValues.reduce((sq, n) => sq + Math.pow(n - avgMinutes, 2), 0) / minuteValues.length);
+  const minuteCV = (minuteStdev / avgMinutes) * 100;
 
   return {
     L5_rpg: L5.reduce((sum, g) => sum + g.rebounds, 0) / L5.length,
@@ -58,6 +64,8 @@ function calculatePlayerStats(boxscores, playerName, asOfDate) {
     L5_minutes: L5.reduce((sum, g) => sum + g.minutes, 0) / L5.length,
     L10_rpg: L10.reduce((sum, g) => sum + g.rebounds, 0) / L10.length,
     L10_apg: L10.reduce((sum, g) => sum + g.assists, 0) / L10.length,
+    avgMinutes,
+    minuteCV,
     L10_minutes: L10.reduce((sum, g) => sum + g.minutes, 0) / L10.length,
     season_rpg: games.reduce((sum, g) => sum + g.rebounds, 0) / games.length,
     season_apg: games.reduce((sum, g) => sum + g.assists, 0) / games.length,
@@ -154,6 +162,45 @@ export default async (req, context) => {
     
     console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blobs (${historicalData.length} historical + ${currentData.length} current)`);
 
+    // Calculate top 8 rotation players per team (for filtering)
+    console.log('📊 Calculating rotation rankings...');
+    const playerMinutesByTeam = {};
+    
+    // Find the most recent date in the data
+    const mostRecentDate = new Date(Math.max(...boxscores.map(b => new Date(b.gameDate))));
+    const cutoffDate = new Date(mostRecentDate);
+    cutoffDate.setDate(cutoffDate.getDate() - 20); // Last 20 days from most recent data
+    
+    boxscores
+      .filter(b => new Date(b.gameDate) >= cutoffDate && b.minutes > 0)
+      .forEach(b => {
+        if (!playerMinutesByTeam[b.teamTricode]) {
+          playerMinutesByTeam[b.teamTricode] = {};
+        }
+        if (!playerMinutesByTeam[b.teamTricode][b.playerName]) {
+          playerMinutesByTeam[b.teamTricode][b.playerName] = [];
+        }
+        playerMinutesByTeam[b.teamTricode][b.playerName].push(b.minutes);
+      });
+    
+    // Get top 8 minutes players per team
+    const top8PlayersByTeam = {};
+    for (const [team, players] of Object.entries(playerMinutesByTeam)) {
+      const playerAvgs = Object.entries(players)
+        .map(([name, mins]) => ({
+          name,
+          avgMinutes: mins.reduce((a, b) => a + b, 0) / mins.length,
+          games: mins.length
+        }))
+        .filter(p => p.games >= 3) // At least 3 games
+        .sort((a, b) => b.avgMinutes - a.avgMinutes)
+        .slice(0, 8);
+      
+      top8PlayersByTeam[team] = new Set(playerAvgs.map(p => p.name));
+    }
+    
+    console.log(`✅ Identified top 8 rotation players for ${Object.keys(top8PlayersByTeam).length} teams`);
+
     // Fetch upcoming games
     const gamesUrl = `${BASE_URL}/sports/${SPORT}/odds/?apiKey=${API_KEY}&regions=${REGIONS}&oddsFormat=${ODDS_FORMAT}`;
     const response = await fetch(gamesUrl);
@@ -226,6 +273,14 @@ export default async (req, context) => {
             const stats = calculatePlayerStats(boxscores, playerName, gameDate);
             if (!stats || stats.games_played < 5) continue;
 
+            // FILTER: Only top 8 rotation players
+            const playerTeam = stats.last_game?.teamTricode;
+            if (!playerTeam || !top8PlayersByTeam[playerTeam]) continue;
+            if (!top8PlayersByTeam[playerTeam].has(playerName)) continue;
+            
+            // FILTER: Stable minutes only (less than 25% coefficient of variation)
+            if (stats.minuteCV > 25) continue;
+
             // Rough heuristic for home team
             const isHome = game.home_team.toLowerCase().includes(playerName.split(' ').slice(-1)[0].toLowerCase());
             const restDays = calculateRestDays(playerName, gameDate, boxscores);
@@ -288,11 +343,51 @@ export default async (req, context) => {
 
     predictions.sort((a, b) => b.edge - a.edge);
 
-    // Build output
+    // Deduplicate: Keep best line for each player/prop/pick combination
+    console.log(`\n🔍 Deduplicating picks...`);
+    const dedupMap = new Map();
+    
+    for (const pick of predictions) {
+      const key = `${pick.player}|${pick.prop.toUpperCase()}|${pick.betType}`;
+      
+      if (!dedupMap.has(key)) {
+        dedupMap.set(key, pick);
+      } else {
+        const existing = dedupMap.get(key);
+        
+        // For OVER: prefer higher line (harder to hit, more value)
+        // For UNDER: prefer lower line (harder to hit, more value)
+        let shouldReplace = false;
+        
+        if (pick.betType === 'OVER') {
+          shouldReplace = parseFloat(pick.line) > parseFloat(existing.line);
+        } else if (pick.betType === 'UNDER') {
+          shouldReplace = parseFloat(pick.line) < parseFloat(existing.line);
+        }
+        
+        // If lines are equal, pick better edge
+        if (Math.abs(parseFloat(pick.line) - parseFloat(existing.line)) < 0.1) {
+          shouldReplace = parseFloat(pick.edge) > parseFloat(existing.edge);
+        }
+        
+        if (shouldReplace) {
+          dedupMap.set(key, pick);
+        }
+      }
+    }
+    
+    const uniquePredictions = Array.from(dedupMap.values());
+    console.log(`   Removed ${predictions.length - uniquePredictions.length} duplicate lines`);
+    
+    // Sort by edge
+    uniquePredictions.sort((a, b) => parseFloat(b.edge) - parseFloat(a.edge));
+
     const output = {
       generated: nowISO,
-      count: predictions.length,
-      models: {
+      games: gamesWithProps.length,
+      model: 'Baseline v2',
+      dataSource: 'Netlify Blobs (auto-updated daily)',
+      historical: {
         rebounds: { status: 'profitable', winRate: 62.5, roi: 19.3 },
         assists: { status: 'profitable', winRate: 66.7, roi: 27.3 }
       },
@@ -301,13 +396,13 @@ export default async (req, context) => {
         confidence: CONFIDENCE_THRESHOLD,
         kelly: MIN_KELLY
       },
-      predictions
+      predictions: uniquePredictions
     };
 
     // Store predictions in Netlify Blobs (so frontend can read them)
     await store.set('nba-picks-latest', JSON.stringify(output));
 
-    console.log(`✅ Generated ${predictions.length} predictions`);
+    console.log(`✅ Generated ${uniquePredictions.length} predictions (${predictions.length} before dedup)`);
     console.log(`📦 Stored in Blobs: nba-picks-latest`);
     console.log('🏴‍☠️ YOUR FAMILY DEPENDS ON THESE BETS!');
 
