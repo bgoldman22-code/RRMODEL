@@ -25,12 +25,19 @@ export default function NBAPlayerProps() {
     try {
       setLoading(true);
       
-      // Fetch live predictions from generated data
-      const response = await fetch('/data/nba-player-props-live.json');
+      // Fetch live predictions from Netlify function
+      const response = await fetch('/.netlify/functions/generate-daily-predictions');
       
       if (!response.ok) {
-        console.warn('Live predictions not available, using sample data');
-        setPredictions([]);
+        console.warn('Live predictions not available, trying static fallback...');
+        // Fallback to static JSON if function fails
+        const fallback = await fetch('/data/nba-player-props-live.json');
+        if (fallback.ok) {
+          const data = await fallback.json();
+          setPredictions(data.predictions || []);
+        } else {
+          setPredictions([]);
+        }
         return;
       }
       

@@ -1,7 +1,7 @@
 # netlify.toml - NBA V2 Configuration
 
 [build]
-  command = "npm run build"
+  command = "./build-with-picks.sh"
   functions = "netlify/functions"
   publish = "dist"
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF ."
