@@ -304,19 +304,14 @@ export default async (req, context) => {
       predictions
     };
 
-    // Write to public directory
-    const outputPath = join(process.cwd(), 'public/data/nba-player-props-live.json');
-    await writeFile(outputPath, JSON.stringify(output, null, 2));
+    // Store predictions in Netlify Blobs (so frontend can read them)
+    await store.set('nba-picks-latest', JSON.stringify(output));
 
     console.log(`✅ Generated ${predictions.length} predictions`);
+    console.log(`📦 Stored in Blobs: nba-picks-latest`);
     console.log('🏴‍☠️ YOUR FAMILY DEPENDS ON THESE BETS!');
 
-    return new Response(JSON.stringify({
-      success: true,
-      predictions: predictions.length,
-      games: todaysGames.length,
-      timestamp: nowISO
-    }), {
+    return new Response(JSON.stringify(output), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
