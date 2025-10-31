@@ -22,8 +22,8 @@ import fetch from 'node-fetch';
 const DAYS_TO_FETCH = 30;
 const RATE_LIMIT_MS = 500;
 const MAX_RETRIES = 3;
-const HISTORICAL_START = new Date('2024-10-01'); // Early season
-const CURRENT_START = new Date('2025-01-01'); // Recent games split
+const HISTORICAL_START = new Date('2024-10-01'); // 2024-25 season start
+const CURRENT_START = new Date('2025-10-01'); // Current month split (keeps recent games accessible)
 
 /**
  * Sleep helper
@@ -103,11 +103,35 @@ function extractPlayerStats(game) {
 }
 
 /**
+ * Fetch game IDs from NBA schedule/scoreboard
+ */
+async function fetchRecentGameIds() {
+  // NBA uses sequential game IDs for the season (0022500001, 0022500002, etc.)
+  // We'll try a range based on the current date
+  const gameIds = [];
+  
+  // Current season is 2024-25, so game IDs start with 002250
+  // Try last 300 game IDs (covers ~30 days of games)
+  const now = new Date();
+  const daysIntoSeason = Math.floor((now - new Date('2024-10-22')) / (1000 * 60 * 60 * 24));
+  const estimatedGames = daysIntoSeason * 12; // ~12 games per day average
+  
+  const startGameNum = Math.max(1, estimatedGames - 300);
+  const endGameNum = estimatedGames + 50; // Include upcoming games
+  
+  for (let i = startGameNum; i <= endGameNum; i++) {
+    gameIds.push(`00225${String(i).padStart(5, '0')}`);
+  }
+  
+  return gameIds;
+}
+
+/**
  * Main handler
  */
 export default async (req, context) => {
   console.log('🏀 NBA Boxscores Daily Update - Starting...');
-  console.log(`Fetching last ${DAYS_TO_FETCH} days from NBA CDN`);
+  console.log(`Fetching recent games from NBA CDN`);
   
   try {
     // Get Netlify Blobs store
@@ -138,27 +162,28 @@ export default async (req, context) => {
     
     // Fetch recent games
     const newEntries = [];
-    const today = new Date();
     let gamesChecked = 0;
     let gamesFound = 0;
     
     console.log('\n📥 Fetching recent games...');
     
-    // Generate game IDs for last N days
-    // Format: 00YYMMDD{001-015}
-    for (let i = 0; i < DAYS_TO_FETCH; i++) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0].replace(/-/g, '').substring(2); // YYMMDD
+    // Get game IDs to check
+    const gameIdsToCheck = await fetchRecentGameIds();
+    console.log(`📊 Checking ${gameIdsToCheck.length} potential game IDs...`);
+    
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - DAYS_TO_FETCH);
+    
+    for (const gameId of gameIdsToCheck) {
+      gamesChecked++;
       
-      // Try up to 15 games per day
-      for (let gameNum = 1; gameNum <= 15; gameNum++) {
-        const gameId = `00${dateStr}${String(gameNum).padStart(3, '0')}`;
-        gamesChecked++;
+      const game = await fetchBoxscore(gameId);
+      
+      if (game && game.gameStatus === 3) { // Status 3 = Final
+        const gameDate = new Date(game.gameTimeUTC);
         
-        const game = await fetchBoxscore(gameId);
-        
-        if (game && game.gameStatus === 3) { // Status 3 = Final
+        // Only include games within our date window
+        if (gameDate >= cutoffDate) {
           gamesFound++;
           const playerStats = extractPlayerStats(game);
           
@@ -170,11 +195,16 @@ export default async (req, context) => {
             }
           }
           
-          console.log(`  ✅ ${gameId}: ${playerStats.length} players`);
+          if (gamesFound % 10 === 0) {
+            console.log(`  ... ${gamesFound} games processed`);
+          }
+        } else if (gameDate < cutoffDate) {
+          // Past our window, can stop
+          break;
         }
-        
-        await sleep(RATE_LIMIT_MS);
       }
+      
+      await sleep(RATE_LIMIT_MS);
     }
     
     console.log(`\n📊 Checked ${gamesChecked} game IDs, found ${gamesFound} completed games`);
