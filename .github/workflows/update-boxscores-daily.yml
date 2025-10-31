@@ -1,10 +1,12 @@
-name: Update NBA Boxscores Daily
+name: Update NBA Boxscores Daily (DISABLED - Using Netlify Scheduled Function)
 
+# DISABLED: This workflow is no longer needed
+# Data updates now handled by Netlify scheduled function (update-boxscores-daily)
+# which runs at 10am UTC and updates Netlify Blobs directly
 on:
-  schedule:
-    # Run at 6am UTC (2am ET / 1am ET after DST) - before predictions run at 7am ET
-    - cron: '0 6 * * *'
-  workflow_dispatch: # Allow manual trigger
+  # schedule:
+  #   - cron: '0 6 * * *'
+  workflow_dispatch: # Keep manual trigger for emergency use only
 
 jobs:
   update-boxscores:
