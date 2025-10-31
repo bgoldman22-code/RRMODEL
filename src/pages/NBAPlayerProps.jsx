@@ -25,8 +25,8 @@ export default function NBAPlayerProps() {
     try {
       setLoading(true);
       
-      // Fetch live predictions from Netlify function
-      const response = await fetch('/.netlify/functions/generate-daily-predictions');
+      // Fetch live predictions from Netlify function (use trigger endpoint)
+      const response = await fetch('/.netlify/functions/trigger-nba-predictions');
       
       if (!response.ok) {
         console.warn('Live predictions not available, trying static fallback...');
