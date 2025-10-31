@@ -1,94 +1,69 @@
 /**
- * Upload large NBA data files to Netlify Blobs
- * Run once to migrate from git to Blobs storage
+ * Upload boxscores to Netlify Blobs via deployed function
  * 
- * Usage: node scripts/nba/upload-to-blobs.mjs
+ * This script posts the local boxscores data to a Netlify function
+ * which then uploads to Blobs using the site's built-in credentials
+ * 
+ * Usage:
+ *   node scripts/nba/upload-to-blobs.mjs
  */
 
-import { getStore } from '@netlify/blobs';
-import fs from 'fs/promises';
-import path from 'path';
+import { readFile } from 'fs/promises';
+import fetch from 'node-fetch';
 
-const NETLIFY_SITE_ID = process.env.NETLIFY_SITE_ID || 'bgroundrobin';
-const NETLIFY_TOKEN = process.env.NETLIFY_AUTH_TOKEN;
+const FUNCTION_URL = 'https://bgroundrobin.com/.netlify/functions/seed-blobs-from-local';
 
-if (!NETLIFY_TOKEN) {
-  console.error('❌ NETLIFY_AUTH_TOKEN environment variable required');
-  console.log('   Get it from: https://app.netlify.com/user/applications/personal');
-  process.exit(1);
-}
-
-async function uploadFile(store, filePath, blobKey) {
+async function uploadToBlobs() {
+  console.log('📤 Uploading boxscores to Netlify Blobs...');
+  
   try {
-    console.log(`📤 Uploading ${filePath} to blob: ${blobKey}`);
-    const data = await fs.readFile(filePath, 'utf8');
-    const json = JSON.parse(data);
-    
-    await store.setJSON(blobKey, json);
-    
-    const sizeKB = (data.length / 1024).toFixed(2);
-    console.log(`✅ Uploaded ${sizeKB} KB to ${blobKey}`);
-    return true;
-  } catch (error) {
-    console.error(`❌ Failed to upload ${filePath}:`, error.message);
-    return false;
-  }
-}
-
-async function main() {
-  console.log('🏀 NBA Data → Netlify Blobs Migration\n');
-  
-  const store = getStore({
-    name: 'nba-data',
-    siteID: NETLIFY_SITE_ID,
-    token: NETLIFY_TOKEN
-  });
-  
-  const files = [
-    // Historical odds (650K+ lines)
-    {
-      local: 'data/nba/historical-odds-2024.json',
-      blob: 'historical-odds-2024'
-    },
-    // Checkpoints (600K+ lines each)
-    {
-      local: 'data/nba/checkpoints/checkpoint-2025-02-08.json',
-      blob: 'checkpoints/2025-02-08'
-    },
-    {
-      local: 'data/nba/checkpoints/checkpoint-2025-02-18.json',
-      blob: 'checkpoints/2025-02-18'
-    },
-    {
-      local: 'data/nba/checkpoints/checkpoint-2025-02-28.json',
-      blob: 'checkpoints/2025-02-28'
-    },
-    // Backtest results
-    {
-      local: 'data/nba/backtest-results.json',
-      blob: 'backtest-results'
-    },
-    {
-      local: 'data/nba/backtest-results-v2.json',
-      blob: 'backtest-results-v2'
+    // Read local boxscores file
+    let boxscoresPath = '/tmp/player-boxscores-2024.json';
+    try {
+      await readFile(boxscoresPath, 'utf-8');
+    } catch {
+      boxscoresPath = 'data/nba/player-boxscores-2024.json';
     }
-  ];
-  
-  let uploaded = 0;
-  let failed = 0;
-  
-  for (const file of files) {
-    const success = await uploadFile(store, file.local, file.blob);
-    if (success) uploaded++;
-    else failed++;
+    
+    console.log(`� Reading from: ${boxscoresPath}`);
+    const boxscoresData = await readFile(boxscoresPath, 'utf-8');
+    const boxscores = JSON.parse(boxscoresData);
+    
+    console.log(`📊 Loaded ${boxscores.length} entries`);
+    console.log(`📦 Data size: ${(boxscoresData.length / 1024 / 1024).toFixed(2)} MB`);
+    
+    // Get date range
+    const dates = boxscores.map(b => b.gameDate).sort();
+    console.log(`📅 Date range: ${dates[0]} to ${dates[dates.length-1]}`);
+    
+    console.log(`\n📤 Posting to Netlify function...`);
+    console.log(`🔗 URL: ${FUNCTION_URL}`);
+    
+    const response = await fetch(FUNCTION_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: boxscoresData
+    });
+    
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Upload failed: ${response.status} - ${error}`);
+    }
+    
+    const result = await response.json();
+    
+    console.log('\n✅ SUCCESS!');
+    console.log('📊 Historical blob:', result.historical.entries, 'entries', `(${result.historical.dateRange})`);
+    console.log('📊 Current blob:', result.current.entries, 'entries', `(${result.current.dateRange})`);
+    console.log('📊 Total:', result.total, 'entries');
+    console.log('\n✨ Your live predictions will now use the complete dataset!');
+    
+  } catch (error) {
+    console.error('\n❌ Upload failed:', error.message);
+    process.exit(1);
   }
-  
-  console.log(`\n📊 Results: ${uploaded} uploaded, ${failed} failed`);
-  console.log('\n✅ Migration complete! Now add these to .gitignore and remove from git:');
-  console.log('   git rm --cached data/nba/checkpoints/*.json');
-  console.log('   git rm --cached data/nba/historical-odds-*.json');
-  console.log('   git rm --cached data/nba/backtest-results*.json');
-  console.log('   git commit -m "Remove large NBA data files (now in Netlify Blobs)"');
 }
 
-main().catch(console.error);
+uploadToBlobs();
