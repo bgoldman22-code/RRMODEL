@@ -288,54 +288,72 @@ export default async (req, context) => {
             const prediction = generatePrediction(stats, propType, isHome, restDays);
             if (!prediction) continue;
 
-            // Calculate edges
-            const overEdge = prediction - line;
-            const underEdge = line - prediction;
+            const { predicted, confidence } = prediction;
+            
+            if (confidence < CONFIDENCE_THRESHOLD) continue;
 
-            let betSide, edge, vegasOdds, impliedProb;
-            if (Math.abs(overEdge) > Math.abs(underEdge)) {
-              betSide = 'OVER';
-              edge = overEdge;
-              vegasOdds = overOutcome.price;
-              impliedProb = americanToProb(overOutcome.price);
-            } else {
-              betSide = 'UNDER';
-              edge = underEdge;
-              vegasOdds = underOutcome.price;
-              impliedProb = americanToProb(underOutcome.price);
+            // Calculate edge as probability difference (matching local script)
+            const overOdds = overOutcome.price;
+            const underOdds = underOutcome.price;
+            const overProb = americanToProb(overOdds);
+            const underProb = americanToProb(underOdds);
+            
+            // Our probability estimates
+            const ourOverProb = predicted > line ? 0.65 : 0.35;
+            const ourUnderProb = 1 - ourOverProb;
+
+            const overEdge = (ourOverProb - overProb) * 100;
+            const underEdge = (ourUnderProb - underProb) * 100;
+
+            // Check Over bet
+            if (overEdge >= EDGE_THRESHOLD) {
+              const kelly = (ourOverProb * (overOdds / 100 + 1) - 1) / (overOdds / 100);
+              if (kelly >= MIN_KELLY) {
+                predictions.push({
+                  player: playerName,
+                  team: homeTeam.includes(playerName.split(' ')[0]) ? homeTeam : awayTeam,
+                  opponent: homeTeam.includes(playerName.split(' ')[0]) ? awayTeam : homeTeam,
+                  isHome: homeTeam.includes(playerName.split(' ')[0]),
+                  gameTime: gameDate,
+                  propType: propType.replace('player_', ''),
+                  prediction: Math.round(predicted * 10) / 10,
+                  vegasLine: line,
+                  edge: Math.round(overEdge * 10) / 10,
+                  betSide: 'OVER',
+                  vegasOdds: overOdds,
+                  impliedProb: Math.round(overProb * 1000) / 10,
+                  confidence: Math.round(confidence * 1000) / 10,
+                  kellyFraction: Math.round(kelly * 1000) / 10,
+                  bookmaker: bookmaker.key,
+                  generatedAt: nowISO
+                });
+              }
             }
 
-            const confidence = betSide === 'OVER' 
-              ? Math.min(0.95, prediction / (line + 5)) 
-              : Math.min(0.95, (line - prediction + 5) / line);
-
-            const kellyFraction = confidence > impliedProb 
-              ? (confidence - impliedProb) / (1 - impliedProb) 
-              : 0;
-
-            // Filter by thresholds
-            if (Math.abs(edge) < EDGE_THRESHOLD || confidence < CONFIDENCE_THRESHOLD || kellyFraction < MIN_KELLY) {
-              continue;
+            // Check Under bet
+            if (underEdge >= EDGE_THRESHOLD) {
+              const kelly = (ourUnderProb * (Math.abs(underOdds) / 100 + 1) - 1) / (Math.abs(underOdds) / 100);
+              if (kelly >= MIN_KELLY) {
+                predictions.push({
+                  player: playerName,
+                  team: homeTeam.includes(playerName.split(' ')[0]) ? homeTeam : awayTeam,
+                  opponent: homeTeam.includes(playerName.split(' ')[0]) ? awayTeam : homeTeam,
+                  isHome: homeTeam.includes(playerName.split(' ')[0]),
+                  gameTime: gameDate,
+                  propType: propType.replace('player_', ''),
+                  prediction: Math.round(predicted * 10) / 10,
+                  vegasLine: line,
+                  edge: Math.round(underEdge * 10) / 10,
+                  betSide: 'UNDER',
+                  vegasOdds: underOdds,
+                  impliedProb: Math.round(underProb * 1000) / 10,
+                  confidence: Math.round(confidence * 1000) / 10,
+                  kellyFraction: Math.round(kelly * 1000) / 10,
+                  bookmaker: bookmaker.key,
+                  generatedAt: nowISO
+                });
+              }
             }
-
-            predictions.push({
-              player: playerName,
-              team: isHome ? homeTeam : awayTeam,
-              opponent: isHome ? awayTeam : homeTeam,
-              isHome,
-              gameTime: gameDate,
-              propType: propType.replace('player_', ''),
-              prediction: Math.round(prediction * 10) / 10,
-              vegasLine: line,
-              edge: Math.round(edge * 10) / 10,
-              betSide,
-              vegasOdds,
-              impliedProb: Math.round(impliedProb * 1000) / 10,
-              confidence: Math.round(confidence * 1000) / 10,
-              kellyFraction: Math.round(kellyFraction * 1000) / 10,
-              bookmaker: bookmaker.key,
-              generatedAt: nowISO
-            });
           }
         }
       }
