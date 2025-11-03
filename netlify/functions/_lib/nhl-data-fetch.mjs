@@ -425,3 +425,56 @@ function parseTimeToSeconds(timeStr) {
  * Export rate limiter for other modules to use
  */
 export { rateLimiter };
+
+/**
+ * Fetch individual player stats (for backward compatibility)
+ */
+export async function fetchPlayerStats(playerId) {
+  const url = `${NHL_API_NEW}/player/${playerId}/landing`;
+  
+  try {
+    const data = await fetchWithRetry(url);
+    return data;
+  } catch (error) {
+    console.error(`❌ Error fetching player stats for ${playerId}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Calculate rest days between games
+ */
+export function calculateRestDays(gameDate, previousGameDate) {
+  if (!previousGameDate) return 3; // Default if no previous game
+  
+  const current = new Date(gameDate);
+  const previous = new Date(previousGameDate);
+  const diffTime = Math.abs(current - previous);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  return diffDays;
+}
+
+/**
+ * Home/Away adjustments (backward compatibility)
+ */
+export const HOME_ICE_SOG_BOOST = 1.015; // +1.5% SOG for home players
+export const ROAD_SOG_PENALTY = 0.985;   // -1.5% SOG for road players
+
+/**
+ * Venue-specific adjustments (backward compatibility)
+ */
+export const VENUE_SOG_ADJUSTMENTS = {
+  'Ball Arena': 1.08,
+  'T-Mobile Arena': 1.06,
+  'Climate Pledge Arena': 1.05,
+  'Scotiabank Arena': 1.03,
+  'Madison Square Garden': 1.02,
+  'TD Garden': 1.01,
+  'United Center': 1.00,
+  'Enterprise Center': 1.00,
+  'Prudential Center': 0.97,
+  'Wells Fargo Center': 0.96,
+  'Mullett Arena': 0.95,
+  'Honda Center': 0.94
+};
