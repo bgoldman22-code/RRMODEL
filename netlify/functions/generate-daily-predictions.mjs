@@ -116,13 +116,9 @@ function generatePrediction(stats, propType, isHome, restDays) {
     prediction *= 1.01;
   }
 
-  // Calculate confidence based on sample size and consistency
-  const gamesPlayed = stats.games_played;
-  let confidence = 0.5;
-  
-  if (gamesPlayed >= 10) confidence = 0.7;
-  if (gamesPlayed >= 15) confidence = 0.75;
-  if (gamesPlayed >= 20) confidence = 0.8;
+  // Calculate confidence based on variance between recent and season stats
+  const variance = Math.abs(base - seasonAvg);
+  const confidence = Math.max(0.5, 0.95 - (variance * 0.1));
   
   return { predicted: prediction, confidence };
 }
@@ -289,8 +285,9 @@ export default async (req, context) => {
             // FILTER: Stable minutes only (less than 25% coefficient of variation)
             if (stats.minuteCV > 25) continue;
 
-            // Rough heuristic for home team
-            const isHome = game.home_team.toLowerCase().includes(playerName.split(' ').slice(-1)[0].toLowerCase());
+            // Determine if player's team is home or away
+            // playerTeam is already set from stats.last_game.teamTricode
+            const isHome = game.home_team.includes(playerTeam) || game.home_team.toLowerCase().includes(playerTeam.toLowerCase());
             const restDays = calculateRestDays(playerName, gameDate, boxscores);
 
             const prediction = generatePrediction(stats, propType, isHome, restDays);
@@ -319,9 +316,9 @@ export default async (req, context) => {
               if (kelly >= MIN_KELLY) {
                 predictions.push({
                   player: playerName,
-                  team: homeTeam.includes(playerName.split(' ')[0]) ? homeTeam : awayTeam,
-                  opponent: homeTeam.includes(playerName.split(' ')[0]) ? awayTeam : homeTeam,
-                  isHome: homeTeam.includes(playerName.split(' ')[0]),
+                  team: isHome ? homeTeam : awayTeam,
+                  opponent: isHome ? awayTeam : homeTeam,
+                  isHome: isHome,
                   gameTime: gameDate,
                   propType: propType.replace('player_', ''),
                   prediction: Math.round(predicted * 10) / 10,
@@ -344,9 +341,9 @@ export default async (req, context) => {
               if (kelly >= MIN_KELLY) {
                 predictions.push({
                   player: playerName,
-                  team: homeTeam.includes(playerName.split(' ')[0]) ? homeTeam : awayTeam,
-                  opponent: homeTeam.includes(playerName.split(' ')[0]) ? awayTeam : homeTeam,
-                  isHome: homeTeam.includes(playerName.split(' ')[0]),
+                  team: isHome ? homeTeam : awayTeam,
+                  opponent: isHome ? awayTeam : homeTeam,
+                  isHome: isHome,
                   gameTime: gameDate,
                   propType: propType.replace('player_', ''),
                   prediction: Math.round(predicted * 10) / 10,

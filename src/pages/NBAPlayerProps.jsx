@@ -173,7 +173,7 @@ export default function NBAPlayerProps() {
                     <span className={`inline-flex px-3 py-1 text-xs font-bold rounded ${
                       pred.betSide === 'OVER' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
-                      {pred.betSide} {pred.vegasOdds}
+                      {pred.betSide} {pred.vegasOdds > 0 ? `+${pred.vegasOdds}` : pred.vegasOdds}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
