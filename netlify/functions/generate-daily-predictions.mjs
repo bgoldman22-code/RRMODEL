@@ -366,7 +366,7 @@ export default async (req, context) => {
     const dedupMap = new Map();
     
     for (const pick of predictions) {
-      const key = `${pick.player}|${pick.prop.toUpperCase()}|${pick.betType}`;
+      const key = `${pick.player}|${pick.propType.toUpperCase()}|${pick.betSide}`;
       
       if (!dedupMap.has(key)) {
         dedupMap.set(key, pick);
@@ -377,14 +377,14 @@ export default async (req, context) => {
         // For UNDER: prefer lower line (harder to hit, more value)
         let shouldReplace = false;
         
-        if (pick.betType === 'OVER') {
-          shouldReplace = parseFloat(pick.line) > parseFloat(existing.line);
-        } else if (pick.betType === 'UNDER') {
-          shouldReplace = parseFloat(pick.line) < parseFloat(existing.line);
+        if (pick.betSide === 'OVER') {
+          shouldReplace = parseFloat(pick.vegasLine) > parseFloat(existing.vegasLine);
+        } else if (pick.betSide === 'UNDER') {
+          shouldReplace = parseFloat(pick.vegasLine) < parseFloat(existing.vegasLine);
         }
         
         // If lines are equal, pick better edge
-        if (Math.abs(parseFloat(pick.line) - parseFloat(existing.line)) < 0.1) {
+        if (Math.abs(parseFloat(pick.vegasLine) - parseFloat(existing.vegasLine)) < 0.1) {
           shouldReplace = parseFloat(pick.edge) > parseFloat(existing.edge);
         }
         
