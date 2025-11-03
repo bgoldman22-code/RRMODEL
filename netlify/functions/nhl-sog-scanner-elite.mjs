@@ -438,6 +438,7 @@ export async function handler(event, context) {
     }
     
     console.log(`✅ Loaded ${Object.keys(rosters).length} rosters`);
+    console.log('🔍 DEBUG: Teams with rosters:', Object.keys(rosters).join(', '));
     
     // Step 4: Generate elite projections
     console.log('🧠 Generating ELITE projections...');
@@ -471,11 +472,17 @@ export async function handler(event, context) {
           ...defensemen.slice(0, 6)  // Top 6 defensemen
         ];
         
+        console.log(`�� DEBUG: Processing ${playersToProcess.length} players for ${teamAbbrev}`);
+        
+        let projectionsGenerated = 0;
+        let projectionsFailed = 0;
+        
         for (const player of playersToProcess) {
           const playerName = `${player.firstName?.default || ''} ${player.lastName?.default || ''}`.trim();
           
           // Generate ELITE projection
-          const projection = await projectSOGElite(
+          try {
+            const projection = await projectSOGElite(
             player.id,
             playerName,
             teamAbbrev,
@@ -485,6 +492,17 @@ export async function handler(event, context) {
           );
           
           if (!projection) continue;
+          
+            
+            if (projection && projection.SOG) {
+              projectionsGenerated++;
+            } else {
+              projectionsFailed++;
+            }
+          } catch (projError) {
+            projectionsFailed++;
+            console.log(`⚠️  Projection failed for ${playerName}:`, projError.message);
+          }
           
           // Check if we have real odds for this player
           const realOddsKey = `${playerName}_`;
