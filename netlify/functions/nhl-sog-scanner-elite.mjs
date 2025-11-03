@@ -165,16 +165,10 @@ async function fetchNHLOdds() {
     }
     
     console.log(`📊 Found ${todayEvents.length} NHL events`);
-    console.log('🔍 Event details:', todayEvents.map(e => ({
-      id: e.id,
-      teams: `${e.away_team} @ ${e.home_team}`,
-      time: e.commence_time
-    })));
-    console.log('🔍 Event details:', todayEvents.map(e => ({
-      id: e.id,
-      teams: `${e.away_team} @ ${e.home_team}`,
-      time: e.commence_time
-    })));
+    console.log('🔍 DEBUG: Event IDs:', todayEvents.map(e => e.id).join(', '));
+    console.log('🔍 DEBUG: Game times:', todayEvents.map(e => e.commence_time).join(', '));
+    console.log('🔍 DEBUG: Event IDs:', todayEvents.map(e => e.id).join(', '));
+    console.log('🔍 DEBUG: Game times:', todayEvents.map(e => e.commence_time).join(', '));
     
     // Fetch player props for each event
     const oddsPromises = todayEvents.slice(0, 10).map(async (event) => {
@@ -195,70 +189,19 @@ async function fetchNHLOdds() {
     const validOdds = oddsResults.filter(Boolean);
     
     console.log(`✅ Fetched odds for ${validOdds.length} games`);
-    console.log('🔍 Odds API response summary:');
-    console.log(`   Total requests: ${oddsPromises.length}`);
-    console.log(`   Successful responses: ${oddsResults.length}`);
-    console.log(`   Valid odds data: ${validOdds.length}`);
-    console.log(`   Failed/empty: ${oddsResults.length - validOdds.length}`);
     
-    // Show details for each game
-    for (let i = 0; i < validOdds.length; i++) {
-      const gameData = validOdds[i];
-      const bookmakers = gameData.props?.bookmakers || [];
-      console.log(`   Game ${i+1}: ${gameData.event.away_team} @ ${gameData.event.home_team}`);
-      console.log(`     Bookmakers returned: ${bookmakers.length}`);
-      console.log(`     Book names: ${bookmakers.map(b => b.title).join(', ') || 'NONE'}`);
-      
-      const sogMarkets = bookmakers.map(b => 
-        b.markets?.find(m => m.key === 'player_shots_on_goal')
-      ).filter(Boolean);
-      console.log(`     SOG markets found: ${sogMarkets.length}`);
-      
-      if (sogMarkets.length > 0) {
-        const totalProps = sogMarkets.reduce((sum, m) => sum + (m.outcomes?.length || 0), 0);
-        console.log(`     Total player props: ${totalProps}`);
+    // DEBUG: Show detailed odds info
+    if (validOdds.length > 0) {
+      console.log('🔍 DEBUG: Odds API returned data for games:');
+      for (const gd of validOdds) {
+        const books = gd.props?.bookmakers || [];
+        const sogMarkets = books.map(b => b.markets?.find(m => m.key === 'player_shots_on_goal')).filter(Boolean);
+        console.log(`  - ${gd.event.away_team} @ ${gd.event.home_team}: ${books.length} bookmakers, ${sogMarkets.length} SOG markets`);
       }
+    } else {
+      console.log('⚠️  DEBUG: No valid odds data returned from The Odds API');
     }
     
-    if (validOdds.length === 0) {
-      console.log('⚠️  NO VALID ODDS DATA - Possible reasons:');
-      console.log('   1. The Odds API hasn\'t updated with props yet');
-      console.log('   2. player_shots_on_goal market not available via API');
-      console.log('   3. API rate limit/quota exceeded');
-      console.log('   4. Network/timeout issues');
-    }
-    console.log('🔍 Odds API response summary:');
-    console.log(`   Total requests: ${oddsPromises.length}`);
-    console.log(`   Successful responses: ${oddsResults.length}`);
-    console.log(`   Valid odds data: ${validOdds.length}`);
-    console.log(`   Failed/empty: ${oddsResults.length - validOdds.length}`);
-    
-    // Show details for each game
-    for (let i = 0; i < validOdds.length; i++) {
-      const gameData = validOdds[i];
-      const bookmakers = gameData.props?.bookmakers || [];
-      console.log(`   Game ${i+1}: ${gameData.event.away_team} @ ${gameData.event.home_team}`);
-      console.log(`     Bookmakers returned: ${bookmakers.length}`);
-      console.log(`     Book names: ${bookmakers.map(b => b.title).join(', ') || 'NONE'}`);
-      
-      const sogMarkets = bookmakers.map(b => 
-        b.markets?.find(m => m.key === 'player_shots_on_goal')
-      ).filter(Boolean);
-      console.log(`     SOG markets found: ${sogMarkets.length}`);
-      
-      if (sogMarkets.length > 0) {
-        const totalProps = sogMarkets.reduce((sum, m) => sum + (m.outcomes?.length || 0), 0);
-        console.log(`     Total player props: ${totalProps}`);
-      }
-    }
-    
-    if (validOdds.length === 0) {
-      console.log('⚠️  NO VALID ODDS DATA - Possible reasons:');
-      console.log('   1. The Odds API hasn\'t updated with props yet');
-      console.log('   2. player_shots_on_goal market not available via API');
-      console.log('   3. API rate limit/quota exceeded');
-      console.log('   4. Network/timeout issues');
-    }
     return validOdds;
     
   } catch (error) {
@@ -271,24 +214,20 @@ async function fetchNHLOdds() {
  * Process real odds into map
  */
 function processRealOdds(oddsData) {
-  if (!oddsData) return new Map();
+  if (!oddsData) {
+    console.log('🔍 DEBUG: processRealOdds called with null/undefined data');
+    return new Map();
+  }
   
   const playerOddsMap = new Map();
   const PRIORITY_BOOKS = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'ESPN BET'];
   
-  console.log('🔍 Processing odds with filters:');
-  console.log('   Priority books:', PRIORITY_BOOKS.join(', '));
+  console.log(`🔍 DEBUG: Processing ${oddsData.length} games for odds extraction`);
+  console.log('🔍 DEBUG: Priority books:', PRIORITY_BOOKS.join(', '));
   
-  let totalBooksProcessed = 0;
-  let acceptedBooks = 0;
-  let rejectedBooks = [];
-  
-  console.log('🔍 Processing odds with filters:');
-  console.log('   Priority books:', PRIORITY_BOOKS.join(', '));
-  
-  let totalBooksProcessed = 0;
-  let acceptedBooks = 0;
-  let rejectedBooks = [];
+  let booksSeenTotal = 0;
+  let booksAccepted = 0;
+  const bookNamesRejected = new Set();
   
   for (const gameData of oddsData) {
     const { event, props } = gameData;
@@ -297,12 +236,12 @@ function processRealOdds(oddsData) {
     
     for (const bookmaker of props.bookmakers) {
       const bookName = bookmaker.title || '';
-      totalBooksProcessed++;
+      booksSeenTotal++;
       if (!PRIORITY_BOOKS.some(b => bookName.includes(b))) {
-        rejectedBooks.push(bookName);
+        bookNamesRejected.add(bookName);
         continue;
       }
-      acceptedBooks++;
+      booksAccepted++;
       
       if (!bookmaker.markets) continue;
       
@@ -337,14 +276,10 @@ function processRealOdds(oddsData) {
   }
   
   console.log(`📊 Processed ${playerOddsMap.size} real odds lines`);
-  console.log('🔍 Bookmaker filtering results:');
-  console.log(`   Total bookmakers seen: ${totalBooksProcessed}`);
-  console.log(`   Accepted (priority): ${acceptedBooks}`);
-  console.log(`   Rejected: ${totalBooksProcessed - acceptedBooks}`);
-  if (rejectedBooks.length > 0) {
-    console.log(`   Rejected book names: ${[...new Set(rejectedBooks)].join(', ')}`);
+  console.log(`🔍 DEBUG: Bookmaker stats - Seen: ${booksSeenTotal}, Accepted: ${booksAccepted}, Rejected: ${bookNamesRejected.size}`);
+  if (bookNamesRejected.size > 0) {
+    console.log('🔍 DEBUG: Rejected book names:', Array.from(bookNamesRejected).join(', '));
   }
-  console.log(`   Final odds lines extracted: ${playerOddsMap.size}`);
   return playerOddsMap;
 }
 
