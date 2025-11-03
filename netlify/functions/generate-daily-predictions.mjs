@@ -116,7 +116,15 @@ function generatePrediction(stats, propType, isHome, restDays) {
     prediction *= 1.01;
   }
 
-  return prediction;
+  // Calculate confidence based on sample size and consistency
+  const gamesPlayed = stats.games_played;
+  let confidence = 0.5;
+  
+  if (gamesPlayed >= 10) confidence = 0.7;
+  if (gamesPlayed >= 15) confidence = 0.75;
+  if (gamesPlayed >= 20) confidence = 0.8;
+  
+  return { predicted: prediction, confidence };
 }
 
 // Calculate rest days
