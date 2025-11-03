@@ -140,7 +140,9 @@ async function fetchNHLOdds() {
   }
   
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const tomorrow = new Date(now.getTime() + 24*60*60*1000).toISOString().split('T')[0];
     
     // Fetch today's events
     const eventsUrl = `https://api.the-odds-api.com/v4/sports/icehockey_nhl/events?regions=us&dateFormat=iso&apiKey=${apiKey}`;
@@ -152,7 +154,10 @@ async function fetchNHLOdds() {
     }
     
     const events = await eventsResponse.json();
-    const todayEvents = events.filter(e => e.commence_time?.startsWith(today));
+    const todayEvents = events.filter(e => {
+      const gameDate = e.commence_time?.split('T')[0];
+      return gameDate === today || gameDate === tomorrow;
+    });
     
     if (todayEvents.length === 0) {
       console.log('📅 No NHL events today');
@@ -160,6 +165,16 @@ async function fetchNHLOdds() {
     }
     
     console.log(`📊 Found ${todayEvents.length} NHL events`);
+    console.log('🔍 Event details:', todayEvents.map(e => ({
+      id: e.id,
+      teams: `${e.away_team} @ ${e.home_team}`,
+      time: e.commence_time
+    })));
+    console.log('🔍 Event details:', todayEvents.map(e => ({
+      id: e.id,
+      teams: `${e.away_team} @ ${e.home_team}`,
+      time: e.commence_time
+    })));
     
     // Fetch player props for each event
     const oddsPromises = todayEvents.slice(0, 10).map(async (event) => {
@@ -180,6 +195,70 @@ async function fetchNHLOdds() {
     const validOdds = oddsResults.filter(Boolean);
     
     console.log(`✅ Fetched odds for ${validOdds.length} games`);
+    console.log('🔍 Odds API response summary:');
+    console.log(`   Total requests: ${oddsPromises.length}`);
+    console.log(`   Successful responses: ${oddsResults.length}`);
+    console.log(`   Valid odds data: ${validOdds.length}`);
+    console.log(`   Failed/empty: ${oddsResults.length - validOdds.length}`);
+    
+    // Show details for each game
+    for (let i = 0; i < validOdds.length; i++) {
+      const gameData = validOdds[i];
+      const bookmakers = gameData.props?.bookmakers || [];
+      console.log(`   Game ${i+1}: ${gameData.event.away_team} @ ${gameData.event.home_team}`);
+      console.log(`     Bookmakers returned: ${bookmakers.length}`);
+      console.log(`     Book names: ${bookmakers.map(b => b.title).join(', ') || 'NONE'}`);
+      
+      const sogMarkets = bookmakers.map(b => 
+        b.markets?.find(m => m.key === 'player_shots_on_goal')
+      ).filter(Boolean);
+      console.log(`     SOG markets found: ${sogMarkets.length}`);
+      
+      if (sogMarkets.length > 0) {
+        const totalProps = sogMarkets.reduce((sum, m) => sum + (m.outcomes?.length || 0), 0);
+        console.log(`     Total player props: ${totalProps}`);
+      }
+    }
+    
+    if (validOdds.length === 0) {
+      console.log('⚠️  NO VALID ODDS DATA - Possible reasons:');
+      console.log('   1. The Odds API hasn\'t updated with props yet');
+      console.log('   2. player_shots_on_goal market not available via API');
+      console.log('   3. API rate limit/quota exceeded');
+      console.log('   4. Network/timeout issues');
+    }
+    console.log('🔍 Odds API response summary:');
+    console.log(`   Total requests: ${oddsPromises.length}`);
+    console.log(`   Successful responses: ${oddsResults.length}`);
+    console.log(`   Valid odds data: ${validOdds.length}`);
+    console.log(`   Failed/empty: ${oddsResults.length - validOdds.length}`);
+    
+    // Show details for each game
+    for (let i = 0; i < validOdds.length; i++) {
+      const gameData = validOdds[i];
+      const bookmakers = gameData.props?.bookmakers || [];
+      console.log(`   Game ${i+1}: ${gameData.event.away_team} @ ${gameData.event.home_team}`);
+      console.log(`     Bookmakers returned: ${bookmakers.length}`);
+      console.log(`     Book names: ${bookmakers.map(b => b.title).join(', ') || 'NONE'}`);
+      
+      const sogMarkets = bookmakers.map(b => 
+        b.markets?.find(m => m.key === 'player_shots_on_goal')
+      ).filter(Boolean);
+      console.log(`     SOG markets found: ${sogMarkets.length}`);
+      
+      if (sogMarkets.length > 0) {
+        const totalProps = sogMarkets.reduce((sum, m) => sum + (m.outcomes?.length || 0), 0);
+        console.log(`     Total player props: ${totalProps}`);
+      }
+    }
+    
+    if (validOdds.length === 0) {
+      console.log('⚠️  NO VALID ODDS DATA - Possible reasons:');
+      console.log('   1. The Odds API hasn\'t updated with props yet');
+      console.log('   2. player_shots_on_goal market not available via API');
+      console.log('   3. API rate limit/quota exceeded');
+      console.log('   4. Network/timeout issues');
+    }
     return validOdds;
     
   } catch (error) {
@@ -197,6 +276,20 @@ function processRealOdds(oddsData) {
   const playerOddsMap = new Map();
   const PRIORITY_BOOKS = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'ESPN BET'];
   
+  console.log('🔍 Processing odds with filters:');
+  console.log('   Priority books:', PRIORITY_BOOKS.join(', '));
+  
+  let totalBooksProcessed = 0;
+  let acceptedBooks = 0;
+  let rejectedBooks = [];
+  
+  console.log('🔍 Processing odds with filters:');
+  console.log('   Priority books:', PRIORITY_BOOKS.join(', '));
+  
+  let totalBooksProcessed = 0;
+  let acceptedBooks = 0;
+  let rejectedBooks = [];
+  
   for (const gameData of oddsData) {
     const { event, props } = gameData;
     
@@ -204,7 +297,12 @@ function processRealOdds(oddsData) {
     
     for (const bookmaker of props.bookmakers) {
       const bookName = bookmaker.title || '';
-      if (!PRIORITY_BOOKS.some(b => bookName.includes(b))) continue;
+      totalBooksProcessed++;
+      if (!PRIORITY_BOOKS.some(b => bookName.includes(b))) {
+        rejectedBooks.push(bookName);
+        continue;
+      }
+      acceptedBooks++;
       
       if (!bookmaker.markets) continue;
       
@@ -239,6 +337,14 @@ function processRealOdds(oddsData) {
   }
   
   console.log(`📊 Processed ${playerOddsMap.size} real odds lines`);
+  console.log('🔍 Bookmaker filtering results:');
+  console.log(`   Total bookmakers seen: ${totalBooksProcessed}`);
+  console.log(`   Accepted (priority): ${acceptedBooks}`);
+  console.log(`   Rejected: ${totalBooksProcessed - acceptedBooks}`);
+  if (rejectedBooks.length > 0) {
+    console.log(`   Rejected book names: ${[...new Set(rejectedBooks)].join(', ')}`);
+  }
+  console.log(`   Final odds lines extracted: ${playerOddsMap.size}`);
   return playerOddsMap;
 }
 
@@ -300,7 +406,9 @@ export async function handler(event, context) {
     const minEdge = parseFloat(params.minEdge) || 5.0;
     
     // Step 1: Fetch today's schedule from cache (with fallback to NHL.com API)
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const tomorrow = new Date(now.getTime() + 24*60*60*1000).toISOString().split('T')[0];
     let allGames = [];
     
     try {
