@@ -13,7 +13,7 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs", "node-fetch"]
-  included_files = ["public/**", "nfl-model-v4.1/**", "nfl-model-v3/data/**"]
+  included_files = ["public/**", "nfl-model-v4.1/output/**", "nfl-model-v4.1/scripts/**"]
 
 [build.environment]
   NODE_VERSION = "20"
