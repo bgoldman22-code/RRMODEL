@@ -12,7 +12,9 @@ const NBAPredictionsV2 = () => {
   const loadPredictions = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/.netlify/functions/nba-predictions-elite-v2');
+      // Add cache-busting parameter to force fresh data
+      const timestamp = Date.now();
+      const response = await fetch(`/.netlify/functions/nba-predictions-elite-v2?_t=${timestamp}`);
       const data = await response.json();
 
       if (!data.ok || !data.predictions || data.predictions.length === 0) {
@@ -21,6 +23,7 @@ const NBAPredictionsV2 = () => {
       }
 
       setPredictions(data.predictions);
+      setError(null); // Clear any previous errors
     } catch (err) {
       setError(`Error loading predictions: ${err.message}`);
     } finally {
@@ -291,6 +294,23 @@ const NBAPredictionsV2 = () => {
       <h1>🏀 NBA Elite V2 Predictions</h1>
       <div className="subtitle">
         Powered by ESPN + NBA CDN • Live L5/L10/L20 Data • No GitHub Dependencies
+        <button 
+          onClick={loadPredictions} 
+          disabled={loading}
+          style={{
+            marginLeft: '15px',
+            padding: '8px 16px',
+            background: loading ? '#555' : '#00ff88',
+            color: '#000',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            fontWeight: 'bold',
+            fontSize: '14px'
+          }}
+        >
+          {loading ? '⟳ Loading...' : '🔄 Refresh'}
+        </button>
       </div>
 
       {loading && (
