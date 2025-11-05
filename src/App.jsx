@@ -11,6 +11,7 @@ import NFLReceivingProps from "./pages/NFLReceivingProps";  // Receiving props
 import NFLV5Page from "./pages/nfl-v5";  // V5 Hybrid Best-of-Breed
 import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
 import NHL from "./NHL";  // Elite NHL SOG Props
+import NBAPredictionsV2 from "./pages/NBAPredictionsV2";  // NBA Elite V2 Game Predictions
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
@@ -89,8 +90,8 @@ export default function App() {
     nba: {
       label: 'NBA',
       items: [
-        { label: 'Player Props (R + A) 💰', path: '/nba-player-props' },
-        { label: 'Coming Soon...', path: '#', disabled: true }
+        { label: 'Game Predictions (Elite) ⭐', path: '/nba-predictions-v2' },
+        { label: 'Player Props (R + A) 💰', path: '/nba-player-props' }
       ]
     }
   };
@@ -125,6 +126,7 @@ export default function App() {
           <Route path="/nfl-v5" element={<NFLV5Page />} />
           <Route path="/soccer-btts" element={<SoccerBTTS />} />
           <Route path="/nhl-sog" element={<NHL />} />
+          <Route path="/nba-predictions-v2" element={<NBAPredictionsV2 />} />
         </Routes>
       </div>
     </BrowserRouter>
