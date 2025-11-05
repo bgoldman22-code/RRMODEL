@@ -46,28 +46,28 @@ const NBAPredictionsV2 = () => {
 <head>
   <meta charset="UTF-8">
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: white; color: #000; }
+    body { font-family: Arial, sans-serif; margin: 20px; background: #0a0e27; color: #fff; }
     h1 { color: #00ff88; text-align: center; margin-bottom: 5px; }
-    .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }
-    .game { border: 2px solid #00ff88; border-radius: 8px; padding: 15px; margin-bottom: 20px; page-break-inside: avoid; }
-    .game-header { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 14px; }
+    .game { background: #1a1f3a; border: 2px solid #00ff88; border-radius: 8px; padding: 15px; margin-bottom: 20px; page-break-inside: avoid; }
+    .game-header { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; }
     .confidence { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 11px; margin-left: 10px; }
     .confidence.HIGH { background: #00ff88; color: #000; }
     .confidence.MEDIUM { background: #ffa500; color: #000; }
     .confidence.LOW { background: #ff4444; color: #fff; }
     .pick-summary { color: #00ff88; font-weight: bold; margin-bottom: 10px; }
     .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
-    .stat { background: #f5f5f5; padding: 8px; border-radius: 4px; }
-    .stat-label { font-size: 10px; color: #666; text-transform: uppercase; }
+    .stat { background: #0f1629; padding: 8px; border-radius: 4px; }
+    .stat-label { font-size: 10px; color: #888; text-transform: uppercase; }
     .stat-value { font-size: 16px; font-weight: bold; color: #00ff88; }
-    .vegas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; background: #f9f9f9; padding: 10px; border-radius: 4px; }
+    .vegas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; background: #0a0e27; padding: 10px; border-radius: 4px; }
     .vegas-item { text-align: center; }
-    .vegas-label { font-size: 10px; color: #666; }
-    .vegas-value { font-weight: bold; }
+    .vegas-label { font-size: 10px; color: #888; }
+    .vegas-value { font-weight: bold; color: #fff; }
     .bets-section { margin-top: 15px; }
     .bets-header { background: #00ff88; color: #000; padding: 5px 10px; font-weight: bold; border-radius: 4px; margin-bottom: 8px; }
-    .bet { background: #f5f5f5; padding: 8px; margin: 5px 0; border-radius: 4px; border-left: 3px solid #00ff88; }
-    .bet-details { display: flex; justify-content: space-between; font-size: 12px; margin-top: 5px; }
+    .bet { background: #0f1629; padding: 8px; margin: 5px 0; border-radius: 4px; border-left: 3px solid #00ff88; }
+    .bet-details { display: flex; justify-content: space-between; font-size: 12px; margin-top: 5px; color: #fff; }
     .edge-bets .bets-header { background: #ffa500; }
     .edge-bets .bet { border-left-color: #ffa500; }
     .units { color: #00ff88; font-weight: bold; font-size: 11px; }
