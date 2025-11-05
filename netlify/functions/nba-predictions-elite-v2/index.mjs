@@ -1369,23 +1369,35 @@ export default async (request, context) => {
         
         // Pick the side with positive edge (if any)
         // TIERED EDGE REQUIREMENTS based on win probability:
-        // 1. Strong Favorites (≥60%): Only need 0.5% edge (safe bets)
-        // 2. Normal range (40-60%): Need 3% edge (standard)
-        // 3. Underdog sweet spot (30-40%): Need 6% edge AND odds ≥+200
-        // 4. Longshots (<30%): Need 10% edge (high risk)
+        // FAVORITES (model predicts them to win):
+        //   53-63%: Need 1% edge (must overcome efficiency + variance)
+        //   63-70%: Need 2.2% edge (true market mispricing begins)
+        //   70%+:   Need 3.5% edge (gold zone favorites)
+        // UNDERDOGS (model predicts them to lose):
+        //   40-53%: Need 3% edge (coin flip zone)
+        //   30-40%: Need 6% edge AND odds ≥+200 (underdog sweet spot)
+        //   <30%:   Need 10% edge (longshot protection)
         
         const meetsHomeThreshold = (prob, edge, odds) => {
-          if (prob >= 0.60) return edge > 0.005;  // Strong favorite: 0.5% edge
-          if (prob >= 0.40) return edge > 0.03;   // Normal: 3% edge
-          if (prob >= 0.30) return edge > 0.06 && odds >= 200; // Underdog sweet spot: 6% edge + ≥+200 odds
-          return edge > 0.10; // Longshot: 10% edge minimum
+          // Favorites (prob >= 53%)
+          if (prob >= 0.70) return edge > 0.035;  // Gold zone: 3.5% edge
+          if (prob >= 0.63) return edge > 0.022;  // True mispricing: 2.2% edge
+          if (prob >= 0.53) return edge > 0.01;   // Overcome efficiency: 1% edge
+          // Underdogs/Coin flips (prob < 53%)
+          if (prob >= 0.40) return edge > 0.03;   // Coin flip: 3% edge
+          if (prob >= 0.30) return edge > 0.06 && odds >= 200; // Sweet spot: 6% edge + ≥+200 odds
+          return edge > 0.10; // Longshot: 10% edge
         };
         
         const meetsAwayThreshold = (prob, edge, odds) => {
-          if (prob >= 0.60) return edge > 0.005;  // Strong favorite: 0.5% edge
-          if (prob >= 0.40) return edge > 0.03;   // Normal: 3% edge
-          if (prob >= 0.30) return edge > 0.06 && odds >= 200; // Underdog sweet spot: 6% edge + ≥+200 odds
-          return edge > 0.10; // Longshot: 10% edge minimum
+          // Favorites (prob >= 53%)
+          if (prob >= 0.70) return edge > 0.035;  // Gold zone: 3.5% edge
+          if (prob >= 0.63) return edge > 0.022;  // True mispricing: 2.2% edge
+          if (prob >= 0.53) return edge > 0.01;   // Overcome efficiency: 1% edge
+          // Underdogs/Coin flips (prob < 53%)
+          if (prob >= 0.40) return edge > 0.03;   // Coin flip: 3% edge
+          if (prob >= 0.30) return edge > 0.06 && odds >= 200; // Sweet spot: 6% edge + ≥+200 odds
+          return edge > 0.10; // Longshot: 10% edge
         };
         
         const hasHomeEdge = meetsHomeThreshold(homeWinProb, homeMLEdge, homeMLOdds > 0 ? homeMLOdds : 0);
@@ -1399,13 +1411,14 @@ export default async (request, context) => {
           const pickedOdds = pickHome ? homeMLOdds : awayMLOdds;
           
           let betType = '';
-          if (pickedProb >= 0.60) betType = 'Strong Fav';
-          else if (pickedProb >= 0.40) betType = 'Normal';
+          if (pickedProb >= 0.70) betType = 'Gold Zone Fav';
+          else if (pickedProb >= 0.63) betType = 'Strong Fav';
+          else if (pickedProb >= 0.53) betType = 'Mild Fav';
+          else if (pickedProb >= 0.40) betType = 'Coin Flip';
           else if (pickedProb >= 0.30) betType = 'Dog Sweet Spot';
           else betType = 'Longshot';
           
-          console.log(`  → Recommendation: Bet ${pickHome ? home.team.abbreviation : away.team.abbreviation} ML (${betType}: ${(pickedProb * 100).toFixed(1)}% @ ${pickedOdds > 0 ? '+' : ''}${pickedOdds}, Edge: ${(pickedEdge * 100).toFixed(1)}%)`);
-          
+          console.log(`  → Recommendation: Bet ${pickHome ? home.team.abbreviation : away.team.abbreviation} ML (${betType}: ${(pickedProb * 100).toFixed(1)}% @ ${pickedOdds > 0 ? '+' : ''}${pickedOdds}, Edge: ${(pickedEdge * 100).toFixed(1)}%)`);          
           // Use PLACEMENT odds (best available) for actual bet
           const placementHomeML = gameVegasLines.moneyline.placement?.homePrice || fairHomeML;
           const placementAwayML = gameVegasLines.moneyline.placement?.awayPrice || fairAwayML;
