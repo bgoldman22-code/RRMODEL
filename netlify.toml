@@ -1,7 +1,7 @@
 # netlify.toml - NBA V2 Configuration
 
 [build]
-  command = "./build-with-picks.sh"
+  command = "npm run build"
   functions = "netlify/functions"
   publish = "dist"
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF ."
@@ -12,69 +12,9 @@
 
 [functions]
   node_bundler = "esbuild"
+  node_module_format = "esm"
   external_node_modules = ["@netlify/blobs", "node-fetch"]
-  included_files = ["public/**", "data/nba/**", "data/nfl/ssot/**", "netlify/functions/_lib/**"]
-
-# Phase 1 Speed Optimization: Slim bundles per function
-[functions."nfl-predictions-get"]
-  external_node_modules = ["@netlify/blobs"]
-  included_files = []  # GET needs no data files, only reads from blobs
-
-[functions."nfl-predictions-generate"]
-  included_files = ["data/nfl/**", "public/history/**", "netlify/functions/_lib/nfl-*.mjs", "netlify/functions/_lib/*-nfl.js", "netlify/functions/_lib/*-nfl.mjs", "netlify/functions/_lib/csv-snapshot.mjs", "netlify/functions/_lib/depth-chart-change-detector.js"]
-  external_node_modules = ["@netlify/blobs", "node-fetch"]
-
-[functions."nba-predictions-simple"]
-  included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
-  external_node_modules = []
-
-[functions."nba-predictions-elite"]
-  included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
-  external_node_modules = ["@netlify/blobs", "node-fetch"]
-
-[functions."nba-predictions-elite-v2"]
-  included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
-  external_node_modules = ["@netlify/blobs", "node-fetch"]
-
-[functions."nba-predictions-generate"]
-  included_files = ["data/nba/**", "netlify/functions/_lib/nba/**"]
-  external_node_modules = ["@netlify/blobs", "node-fetch"]
-
-# NHL SOG Scanner - disable bundling completely to preserve ES modules
-[functions."nhl-sog-scanner-elite-fast"]
-  node_bundler = "zisi"
-  included_files = ["netlify/functions/_lib/**"]
-
-[functions."nhl-sog-debug"]
-  node_bundler = "zisi"
-  included_files = ["netlify/functions/_lib/**"]
-
-# NHL SOG Scanner V3 - uses top-level await, needs ESM format
-[functions."nhl-sog-scanner-v3"]
-  node_bundler = "esbuild"
-  included_files = ["netlify/functions/_lib/**"]
-  [functions."nhl-sog-scanner-v3".build]
-    format = "esm"
-
-# nfl-receiving-scanner-elite will use global [functions] config
-
-# nfl-anytime-td-candidates - proxy to comprehensive with transformation
-[functions."nfl-anytime-td-candidates"]
-  node_bundler = "esbuild"
-  included_files = ["public/**", "data/nfl/**", "netlify/functions/nfl-td-comprehensive-predictions/**"]
-  external_node_modules = ["@netlify/blobs", "node-fetch"]
-
-# nfl-td-anytime-simple - standalone simple TD API with edge calculation
-[functions."nfl-td-anytime-simple"]
-  node_bundler = "esbuild"
-  included_files = ["public/nfl-anytime-td-player-data.json"]
-  external_node_modules = ["node-fetch"]
-
-# nfl-td-comprehensive-predictions - core TD engine
-[functions."nfl-td-comprehensive-predictions"]
-  node_bundler = "esbuild"
-  included_files = ["public/**", "data/nfl/**", "scripts/fetch-player-prop-odds.js"]
-  external_node_modules = ["@netlify/blobs", "node-fetch"]
+  included_files = ["public/**", "nfl-model-v4.1/**", "nfl-model-v3/data/**"]
 
 [build.environment]
   NODE_VERSION = "20"
@@ -100,60 +40,12 @@
   name = "refresh-td-odds-cache"
   cron = "0 12 * * *"
 
-# NFL Predictions Cache - refresh every 30 minutes during game weeks (Tue-Mon)
+# NFL V4.1 Predictions Refresh - daily at 9am UTC
 [[scheduled.functions]]
-  name = "nfl-predictions-refresh"
-  cron = "*/30 * * * *"
+  name = "nfl-v41-refresh"
+  cron = "0 9 * * *"
 
-# NFL Odds Snapshots - capture every 5 minutes for line movement tracking
+# NFL V5 Predictions Refresh - daily at 10am UTC (1hr after V4.1)
 [[scheduled.functions]]
-  name = "nfl-odds-snapshot"
-  cron = "*/5 * * * *"
-
-# NHL Stats Refresh - populate Netlify Blobs with player/team stats daily at 10am ET (14:00 UTC)
-[[scheduled.functions]]
-  name = "nhl-stats-refresh"
-  cron = "0 14 * * *"
-
-# NHL Stats Refresh configuration - allow longer execution time
-[functions."nhl-stats-refresh"]
-  included_files = []
-  external_node_modules = ["@netlify/blobs"]
-
-# NHL Schedule Refresh - cache daily schedule at 4am ET (8am UTC during DST, 9am UTC standard time)
-[[scheduled.functions]]
-  name = "nhl-schedule-refresh"
-  cron = "0 8 * * *"
-
-[functions."nhl-schedule-refresh"]
-  included_files = []
-  external_node_modules = ["@netlify/blobs"]
-
-# NBA Boxscores Daily Update - runs at 10am UTC (6am EDT / 5am EST) - 1 hour before predictions
-[[scheduled.functions]]
-  name = "update-boxscores-daily"
+  name = "nfl-v5-refresh"
   cron = "0 10 * * *"
-
-[functions."update-boxscores-daily"]
-  node_bundler = "esbuild"
-  included_files = []  # Fetches from NBA CDN, no local files needed
-  external_node_modules = ["@netlify/blobs", "node-fetch"]
-
-# NBA Player Props Daily Predictions - runs at 11am UTC (7am EDT / 6am EST after Nov 3)
-[[scheduled.functions]]
-  name = "generate-daily-predictions"
-  cron = "0 11 * * *"
-
-[functions."generate-daily-predictions"]
-  node_bundler = "esbuild"
-  included_files = []  # Reads from Netlify Blobs, no local files needed
-  external_node_modules = ["@netlify/blobs", "node-fetch"]
-
-# NBA Boxscores Seed (ONE-TIME USE) - manual trigger to upload initial data to Blobs
-[functions."seed-boxscores-to-blobs"]
-  node_bundler = "esbuild"
-  included_files = ["data/nba/player-boxscores-2024.json"]  # Only needed for initial seed
-  external_node_modules = ["@netlify/blobs"]
-
-# Trigger deploy - Wed Oct 30 15:15:00 EDT 2025 - Force rebuild NFL TD functions
-# Rebuild 1761870900

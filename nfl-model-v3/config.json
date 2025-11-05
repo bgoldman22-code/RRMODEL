@@ -1,0 +1,95 @@
+{
+  "seasons": [2020, 2021, 2022, 2023, 2024, 2025],
+  "weeks_regular_season": 18,
+  "include_playoffs": false,
+  
+  "odds_api": {
+    "sport": "americanfootball_nfl",
+    "regions": "us",
+    "markets": ["spreads", "totals", "h2h"],
+    "bookmakers": ["fanduel", "draftkings", "pinnacle"],
+    "preferred_bookmaker": "pinnacle",
+    "fallback_bookmakers": ["fanduel", "draftkings"],
+    "oddsFormat": "american",
+    "dateFormat": "iso",
+    "historical_start_date": "2020-06-06",
+    "notes": "Historical data costs 10 credits per region per market"
+  },
+  
+  "nflverse": {
+    "pbp_url": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{season}.csv.gz",
+    "games_url": "https://github.com/nflverse/nflverse-data/releases/download/games/games.csv",
+    "cache_locally": true
+  },
+  
+  "feature_generation": {
+    "lookback_window": 10,
+    "min_games_for_prediction": 3,
+    "recency_weights": {
+      "last_3_games": 0.5,
+      "last_5_games": 0.3,
+      "season_avg": 0.2
+    },
+    "metrics": [
+      "epa_per_play_offense",
+      "epa_per_play_defense",
+      "success_rate_offense",
+      "success_rate_defense",
+      "explosive_play_rate",
+      "red_zone_scoring_pct",
+      "turnover_differential",
+      "time_of_possession",
+      "third_down_conversion_pct",
+      "yards_per_play"
+    ]
+  },
+  
+  "prediction_engine": {
+    "model_type": "ensemble",
+    "spread_model": {
+      "type": "linear_regression",
+      "features_count": 55
+    },
+    "total_model": {
+      "type": "linear_regression",
+      "features_count": 40
+    },
+    "moneyline_model": {
+      "type": "logistic_regression",
+      "features_count": 55
+    },
+    "home_field_advantage": 2.5,
+    "confidence_thresholds": {
+      "high": 0.65,
+      "medium": 0.55,
+      "low": 0.5
+    }
+  },
+  
+  "edge_calculation": {
+    "vig_removal": true,
+    "vig_method": "power",
+    "min_bet_threshold": 0.03,
+    "edge_buckets": [
+      {"min": 0.00, "max": 0.02, "label": "0-2%"},
+      {"min": 0.02, "max": 0.04, "label": "2-4%"},
+      {"min": 0.04, "max": 0.06, "label": "4-6%"},
+      {"min": 0.06, "max": 0.08, "label": "6-8%"},
+      {"min": 0.08, "max": 1.00, "label": "8%+"}
+    ]
+  },
+  
+  "output": {
+    "save_predictions": true,
+    "save_features": true,
+    "save_edge_analysis": true,
+    "generate_charts": false,
+    "verbose_logging": true
+  },
+  
+  "notes": {
+    "created": "2025-11-04",
+    "purpose": "Historical backtesting configuration",
+    "independent": "Does not affect production model"
+  }
+}

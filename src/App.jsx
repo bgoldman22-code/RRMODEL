@@ -7,14 +7,10 @@ import MLB_HITS2 from "./MLB_HITS2";
 import NflTd from "./pages/NflTd";  // Simple TD system
 import NFLTouchdownPropsComprehensive from "./pages/NFLTouchdownPropsComprehensive";  // Advanced TD system
 import NFLPredictions from "./pages/NFLPredictions";
-import PredictionsTest from "./pages/PredictionsTest";  // Enhanced Split View Test Page
-import NFLReceivingProps from "./pages/NFLReceivingProps";  // Elite Receiving Props
+import NFLV4Page from "./pages/nfl-v4";  // V4.1 ML Pipeline
+import NFLV5Page from "./pages/nfl-v5";  // V5 Hybrid Best-of-Breed
 import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
 import NHL from "./NHL";  // Elite NHL SOG Props
-import NHLV2 from "./NHLV2";  // NHL SOG Props - Calibrated Policy V2
-import NBAPredictions from "./pages/NBAPredictions";  // Elite NBA Betting System V1 (Legacy)
-import NBAPredictionsV2 from "./pages/NBAPredictionsV2";  // Elite NBA Betting System V2
-import NBAPlayerProps from "./pages/NBAPlayerProps";  // NBA Player Props (Rebounds + Assists - PROFITABLE!)
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
@@ -72,9 +68,10 @@ export default function App() {
     nfl: {
       label: 'NFL',
       items: [
-        { label: 'Receiving Props 🎯', path: '/nfl-receiving-props' },
-        { label: 'Anytime TD Props 🏈', path: '/nfl-td-simple.html' },
-        { label: 'Game Predictions', path: '/predictions' }
+        { label: 'TD Advanced', path: '/nfl-td-comprehensive' },
+        { label: 'Game Predictions', path: '/predictions' },
+        { label: 'V4.1 (Direct ML)', path: '/nfl-v4' },
+        { label: 'V5 (Hybrid) 🏆', path: '/nfl-v5' }
       ]
     },
     soccer: {
@@ -86,17 +83,14 @@ export default function App() {
     nhl: {
       label: 'NHL',
       items: [
-        { label: 'SOG Props (Elite Model)', path: '/nhl-sog' },
-        { label: 'SOG Props V2 (Calibrated Policy) 📊', path: '/nhl-sog-v2' }
+        { label: 'SOG Props (Elite Model)', path: '/nhl-sog' }
       ]
     },
     nba: {
       label: 'NBA',
       items: [
         { label: 'Player Props (R + A) 💰', path: '/nba-player-props' },
-        { label: 'Elite Predictions V2 🔥', path: '/nba-predictions-v2' },
-        { label: 'Market Scanner V2', path: '/nba-predictions-v2?tab=inefficiencies' },
-        { label: 'Kelly Portfolio V2', path: '/nba-predictions-v2?tab=kelly' }
+        { label: 'Coming Soon...', path: '#', disabled: true }
       ]
     }
   };
@@ -125,16 +119,12 @@ export default function App() {
           <Route path="/mlb-hits2" element={<MLB_HITS2 />} />
           <Route path="/hrr" element={<HRR />} />
           {/* CHANGED: Removed simple NFL TD route */}
-          <Route path="/nfl-receiving-props" element={<NFLReceivingProps />} />
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/predictions" element={<NFLPredictions />} />
-          <Route path="/predictionstest" element={<PredictionsTest />} />
+          <Route path="/nfl-v4" element={<NFLV4Page />} />
+          <Route path="/nfl-v5" element={<NFLV5Page />} />
           <Route path="/soccer-btts" element={<SoccerBTTS />} />
           <Route path="/nhl-sog" element={<NHL />} />
-          <Route path="/nhl-sog-v2" element={<NHLV2 />} />
-          <Route path="/nba-player-props" element={<NBAPlayerProps />} />
-          <Route path="/nba-predictions" element={<NBAPredictions />} />
-          <Route path="/nba-predictions-v2" element={<NBAPredictionsV2 />} />
         </Routes>
       </div>
     </BrowserRouter>
