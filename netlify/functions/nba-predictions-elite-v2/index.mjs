@@ -415,22 +415,53 @@ async function fetchVegasLines(gameIds, isPreseason = false) {
 }
 
 /**
- * Calculate edge and Kelly bet sizing with PROPER American odds
- * NOTE: vegasLine is the POINT SPREAD, americanOdds is the PRICE (e.g., -110)
+ * Devig two-sided market odds to get fair probability
+ * Uses multiplicative method (scales probabilities proportionally)
  */
-function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, bankroll = 5000, seasonAdj = 1.0) {
+function devigOdds(odds1, odds2) {
+  // Convert American odds to implied probabilities
+  const implied1 = odds1 < 0 
+    ? Math.abs(odds1) / (Math.abs(odds1) + 100)
+    : 100 / (odds1 + 100);
+  const implied2 = odds2 < 0
+    ? Math.abs(odds2) / (Math.abs(odds2) + 100)
+    : 100 / (odds2 + 100);
+  
+  // Total implied probability (should be > 1.0 due to vig)
+  const totalImplied = implied1 + implied2;
+  
+  // Remove vig by scaling proportionally
+  const fair1 = implied1 / totalImplied;
+  const fair2 = implied2 / totalImplied;
+  
+  return { fair1, fair2, vig: (totalImplied - 1) * 100 };
+}
+
+/**
+ * Calculate edge and Kelly bet sizing with DEVIGGED odds
+ * NOTE: vegasLine is the POINT SPREAD, americanOdds is the PRICE (e.g., -110)
+ * opponentOdds is the other side of the market for devigging
+ */
+function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, bankroll = 5000, seasonAdj = 1.0, opponentOdds = null) {
   if (!vegasLine || !americanOdds) return null;
   
   // Edge in points (both are from home team perspective)
   // Example: Model OKC -15.3, Vegas OKC -6.5 → Edge = |(-15.3) - (-6.5)| = 8.8 points
   const edgePoints = Math.abs(modelPred - vegasLine);
   
-  // Convert American odds to implied probability for edge calculation
-  const vegasImpliedProb = americanOdds > 0 
-    ? 100 / (americanOdds + 100) 
-    : Math.abs(americanOdds) / (Math.abs(americanOdds) + 100);
+  // Devig the odds if we have both sides, otherwise use raw implied probability
+  let vegasImpliedProb;
+  if (opponentOdds !== null) {
+    const devigged = devigOdds(americanOdds, opponentOdds);
+    vegasImpliedProb = devigged.fair1; // Fair probability after removing vig
+  } else {
+    // Fallback to raw implied probability (includes vig)
+    vegasImpliedProb = americanOdds > 0 
+      ? 100 / (americanOdds + 100) 
+      : Math.abs(americanOdds) / (Math.abs(americanOdds) + 100);
+  }
   
-  // Edge in probability terms (model prob vs market prob)
+  // Edge in probability terms (model prob vs devigged market prob)
   const edgeProb = modelProb - vegasImpliedProb;
   const edgePercent = edgeProb * 100;
   
@@ -1251,7 +1282,8 @@ export default async (request, context) => {
           fairHomePrice, // Use fair price for edge calc
           winProb,
           5000,
-          seasonAdjustment // Apply early season sizing reduction
+          seasonAdjustment, // Apply early season sizing reduction
+          fairAwayPrice // Pass opponent odds for devigging
         );
         
         if (spreadEdge && spreadEdge.edgePoints >= 3) {
@@ -1389,7 +1421,8 @@ export default async (request, context) => {
             pickOdds,
             pickProb,
             5000,
-            seasonAdjustment // Apply early season sizing reduction
+            seasonAdjustment, // Apply early season sizing reduction
+            pickHome ? placementAwayML : placementHomeML // Pass opponent odds for devigging
           );
           
           if (mlKelly) {
@@ -1523,13 +1556,17 @@ export default async (request, context) => {
             : 0.5 + (totalEdge / fairLine) * 0.5;
           
           // Calculate Kelly for totals
+          const fairOverPrice = gameVegasLines.total.fair.overPrice;
+          const fairUnderPrice = gameVegasLines.total.fair.underPrice;
+          
           const totalKelly = calculateEdgeAndKelly(
             totalModelProb * 100,
             totalModelProb > 0.5 ? -110 : 110, // Dummy, we use actual odds
             placementOdds,
             totalModelProb,
             5000,
-            seasonAdjustment
+            seasonAdjustment,
+            pickOver ? fairUnderPrice : fairOverPrice // Pass opponent odds for devigging
           );
           
           totalOpp = {
