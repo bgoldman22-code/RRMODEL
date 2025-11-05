@@ -510,7 +510,7 @@ export async function projectSOGElite(playerId, playerName, team, opponent, isHo
   baseSOG *= oppQuality5v5;
   
   // === STEP 6: TOI ADJUSTMENT ===
-  const expectedTOI = calculateExpectedTOI(player);
+  const expectedTOI = await calculateExpectedTOI(player);
   const leagueavgTOI = player.position === 'D' ? 20.0 : 16.0;
   const toiFactor = expectedTOI / leagueavgTOI;
   baseSOG *= toiFactor;

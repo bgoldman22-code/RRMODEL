@@ -140,7 +140,9 @@ async function fetchNHLOdds() {
   }
   
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const tomorrow = new Date(now.getTime() + 24*60*60*1000).toISOString().split('T')[0];
     
     // Fetch today's events
     const eventsUrl = `https://api.the-odds-api.com/v4/sports/icehockey_nhl/events?regions=us&dateFormat=iso&apiKey=${apiKey}`;
@@ -152,7 +154,10 @@ async function fetchNHLOdds() {
     }
     
     const events = await eventsResponse.json();
-    const todayEvents = events.filter(e => e.commence_time?.startsWith(today));
+    const todayEvents = events.filter(e => {
+      const gameDate = e.commence_time?.split('T')[0];
+      return gameDate === today || gameDate === tomorrow;
+    });
     
     if (todayEvents.length === 0) {
       console.log('📅 No NHL events today');
@@ -160,6 +165,10 @@ async function fetchNHLOdds() {
     }
     
     console.log(`📊 Found ${todayEvents.length} NHL events`);
+    console.log('🔍 DEBUG: Event IDs:', todayEvents.map(e => e.id).join(', '));
+    console.log('🔍 DEBUG: Game times:', todayEvents.map(e => e.commence_time).join(', '));
+    console.log('🔍 DEBUG: Event IDs:', todayEvents.map(e => e.id).join(', '));
+    console.log('🔍 DEBUG: Game times:', todayEvents.map(e => e.commence_time).join(', '));
     
     // Fetch player props for each event
     const oddsPromises = todayEvents.slice(0, 10).map(async (event) => {
@@ -180,6 +189,19 @@ async function fetchNHLOdds() {
     const validOdds = oddsResults.filter(Boolean);
     
     console.log(`✅ Fetched odds for ${validOdds.length} games`);
+    
+    // DEBUG: Show detailed odds info
+    if (validOdds.length > 0) {
+      console.log('🔍 DEBUG: Odds API returned data for games:');
+      for (const gd of validOdds) {
+        const books = gd.props?.bookmakers || [];
+        const sogMarkets = books.map(b => b.markets?.find(m => m.key === 'player_shots_on_goal')).filter(Boolean);
+        console.log(`  - ${gd.event.away_team} @ ${gd.event.home_team}: ${books.length} bookmakers, ${sogMarkets.length} SOG markets`);
+      }
+    } else {
+      console.log('⚠️  DEBUG: No valid odds data returned from The Odds API');
+    }
+    
     return validOdds;
     
   } catch (error) {
@@ -192,10 +214,20 @@ async function fetchNHLOdds() {
  * Process real odds into map
  */
 function processRealOdds(oddsData) {
-  if (!oddsData) return new Map();
+  if (!oddsData) {
+    console.log('🔍 DEBUG: processRealOdds called with null/undefined data');
+    return new Map();
+  }
   
   const playerOddsMap = new Map();
   const PRIORITY_BOOKS = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'ESPN BET'];
+  
+  console.log(`🔍 DEBUG: Processing ${oddsData.length} games for odds extraction`);
+  console.log('🔍 DEBUG: Priority books:', PRIORITY_BOOKS.join(', '));
+  
+  let booksSeenTotal = 0;
+  let booksAccepted = 0;
+  const bookNamesRejected = new Set();
   
   for (const gameData of oddsData) {
     const { event, props } = gameData;
@@ -204,7 +236,12 @@ function processRealOdds(oddsData) {
     
     for (const bookmaker of props.bookmakers) {
       const bookName = bookmaker.title || '';
-      if (!PRIORITY_BOOKS.some(b => bookName.includes(b))) continue;
+      booksSeenTotal++;
+      if (!PRIORITY_BOOKS.some(b => bookName.includes(b))) {
+        bookNamesRejected.add(bookName);
+        continue;
+      }
+      booksAccepted++;
       
       if (!bookmaker.markets) continue;
       
@@ -239,6 +276,10 @@ function processRealOdds(oddsData) {
   }
   
   console.log(`📊 Processed ${playerOddsMap.size} real odds lines`);
+  console.log(`🔍 DEBUG: Bookmaker stats - Seen: ${booksSeenTotal}, Accepted: ${booksAccepted}, Rejected: ${bookNamesRejected.size}`);
+  if (bookNamesRejected.size > 0) {
+    console.log('🔍 DEBUG: Rejected book names:', Array.from(bookNamesRejected).join(', '));
+  }
   return playerOddsMap;
 }
 
@@ -300,7 +341,9 @@ export async function handler(event, context) {
     const minEdge = parseFloat(params.minEdge) || 5.0;
     
     // Step 1: Fetch today's schedule from cache (with fallback to NHL.com API)
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const tomorrow = new Date(now.getTime() + 24*60*60*1000).toISOString().split('T')[0];
     let allGames = [];
     
     try {
@@ -395,6 +438,7 @@ export async function handler(event, context) {
     }
     
     console.log(`✅ Loaded ${Object.keys(rosters).length} rosters`);
+    console.log('🔍 DEBUG: Teams with rosters:', Object.keys(rosters).join(', '));
     
     // Step 4: Generate elite projections
     console.log('🧠 Generating ELITE projections...');
@@ -428,11 +472,17 @@ export async function handler(event, context) {
           ...defensemen.slice(0, 6)  // Top 6 defensemen
         ];
         
+        console.log(`�� DEBUG: Processing ${playersToProcess.length} players for ${teamAbbrev}`);
+        
+        let projectionsGenerated = 0;
+        let projectionsFailed = 0;
+        
         for (const player of playersToProcess) {
           const playerName = `${player.firstName?.default || ''} ${player.lastName?.default || ''}`.trim();
           
           // Generate ELITE projection
-          const projection = await projectSOGElite(
+          try {
+            const projection = await projectSOGElite(
             player.id,
             playerName,
             teamAbbrev,
@@ -442,6 +492,17 @@ export async function handler(event, context) {
           );
           
           if (!projection) continue;
+          
+            
+            if (projection && projection.SOG) {
+              projectionsGenerated++;
+            } else {
+              projectionsFailed++;
+            }
+          } catch (projError) {
+            projectionsFailed++;
+            console.log(`⚠️  Projection failed for ${playerName}:`, projError.message);
+          }
           
           // Check if we have real odds for this player
           const realOddsKey = `${playerName}_`;

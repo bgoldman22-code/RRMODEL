@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2025-11-03T13:09:15Z",
+    "generated_at": "2025-11-04T16:51:11Z",
     "season": 2025,
-    "week": 9,
-    "total_players": 597,
+    "week": 10,
+    "total_players": 600,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -1098,6 +1098,27 @@
       "anytime_td": 0.81,
       "first_td": 0,
       "multiple_td": 0.09
+    },
+    {
+      "player_id": "00-0033119",
+      "name": "J.Brissett",
+      "team": "ARI",
+      "position": "QB",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "QB",
+      "anytime_td_prob": 0.255,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.0525,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.255,
+      "first_td": 0,
+      "multiple_td": 0
     },
     {
       "player_id": "00-0033217",
@@ -7831,14 +7852,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.054,
+      "multiple_td_prob": 0.049,
       "multiple_confidence": "high",
       "anytime_value_score": 0.33,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.81,
       "first_td": 0,
-      "multiple_td": 0.054
+      "multiple_td": 0.0491
     },
     {
       "player_id": "00-0037746",
@@ -10865,6 +10886,27 @@
       "multiple_td": 0
     },
     {
+      "player_id": "00-0039410",
+      "name": "R.Flournoy",
+      "team": "DAL",
+      "position": "WR",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "WR",
+      "anytime_td_prob": 0.85,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.35,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.85,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
       "player_id": "00-0039424",
       "name": "D.Vele",
       "team": "NO",
@@ -11296,14 +11338,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.067,
+      "multiple_td_prob": 0.06,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.0667
+      "multiple_td": 0.06
     },
     {
       "player_id": "00-0039851",
@@ -11472,6 +11514,27 @@
       "anytime_td": 0.9,
       "first_td": 0,
       "multiple_td": 0.1091
+    },
+    {
+      "player_id": "00-0039900",
+      "name": "M.Kneeland",
+      "team": "DAL",
+      "position": "DL",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "DE",
+      "anytime_td_prob": 0.68,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.265,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.68,
+      "first_td": 0,
+      "multiple_td": 0
     },
     {
       "player_id": "00-0039901",
