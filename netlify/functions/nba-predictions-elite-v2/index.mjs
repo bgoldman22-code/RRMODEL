@@ -1368,40 +1368,38 @@ export default async (request, context) => {
         console.log(`  Edge: ${home.team.abbreviation} ${(homeMLEdge * 100).toFixed(1)}% / ${away.team.abbreviation} ${(awayMLEdge * 100).toFixed(1)}%`);
         
         // Pick the side with positive edge (if any)
-        // TIERED EDGE REQUIREMENTS based on win probability:
+        // TIERED EDGE REQUIREMENTS based on win probability (with +0.1% hysteresis buffer):
         // FAVORITES (model predicts them to win):
-        //   53-63%: Need 1% edge (must overcome efficiency + variance)
-        //   63-70%: Need 2.2% edge (true market mispricing begins)
-        //   70%+:   Need 3.5% edge (gold zone favorites)
+        //   53-63%: Need 1.1% edge (must overcome efficiency + variance)
+        //   63-70%: Need 2.3% edge (true market mispricing begins)
+        //   70%+:   Need 3.6% edge (gold zone favorites)
         // UNDERDOGS (model predicts them to lose):
-        //   40-53%: Need 3% edge (coin flip zone)
-        //   30-40%: Need 6% edge AND odds ≥+200 (underdog sweet spot)
-        //   <30%:   Need 10% edge (longshot protection)
+        //   40-53%: Need 3.1% edge (coin flip zone)
+        //   30-40%: Need 6.1% edge AND odds ≥+200 (underdog sweet spot)
+        //   <30%:   Need 10.1% edge (longshot protection)
         
-        const meetsHomeThreshold = (prob, edge, odds) => {
-          // Favorites (prob >= 53%)
-          if (prob >= 0.70) return edge > 0.035;  // Gold zone: 3.5% edge
-          if (prob >= 0.63) return edge > 0.022;  // True mispricing: 2.2% edge
-          if (prob >= 0.53) return edge > 0.01;   // Overcome efficiency: 1% edge
+        const meetsThreshold = (prob, edge, odds) => {
+          // Favorites (prob >= 53%) - with hysteresis buffer
+          if (prob >= 0.70) return edge > 0.036;  // Gold zone: 3.6% edge
+          if (prob >= 0.63) return edge > 0.023;  // True mispricing: 2.3% edge
+          if (prob >= 0.53) return edge > 0.011;  // Overcome efficiency: 1.1% edge
           // Underdogs/Coin flips (prob < 53%)
-          if (prob >= 0.40) return edge > 0.03;   // Coin flip: 3% edge
-          if (prob >= 0.30) return edge > 0.06 && odds >= 200; // Sweet spot: 6% edge + ≥+200 odds
-          return edge > 0.10; // Longshot: 10% edge
+          if (prob >= 0.40) return edge > 0.031;  // Coin flip: 3.1% edge
+          if (prob >= 0.30) return edge > 0.061 && odds >= 200; // Sweet spot: 6.1% edge + ≥+200 odds
+          return edge > 0.101; // Longshot: 10.1% edge
         };
         
-        const meetsAwayThreshold = (prob, edge, odds) => {
-          // Favorites (prob >= 53%)
-          if (prob >= 0.70) return edge > 0.035;  // Gold zone: 3.5% edge
-          if (prob >= 0.63) return edge > 0.022;  // True mispricing: 2.2% edge
-          if (prob >= 0.53) return edge > 0.01;   // Overcome efficiency: 1% edge
-          // Underdogs/Coin flips (prob < 53%)
-          if (prob >= 0.40) return edge > 0.03;   // Coin flip: 3% edge
-          if (prob >= 0.30) return edge > 0.06 && odds >= 200; // Sweet spot: 6% edge + ≥+200 odds
-          return edge > 0.10; // Longshot: 10% edge
+        const getTierLabel = (prob) => {
+          if (prob >= 0.70) return 'Gold Zone Fav';
+          if (prob >= 0.63) return 'Strong Fav';
+          if (prob >= 0.53) return 'Mild Fav';
+          if (prob >= 0.40) return 'Coin Flip';
+          if (prob >= 0.30) return 'Dog Sweet Spot';
+          return 'Longshot';
         };
         
-        const hasHomeEdge = meetsHomeThreshold(homeWinProb, homeMLEdge, homeMLOdds > 0 ? homeMLOdds : 0);
-        const hasAwayEdge = meetsAwayThreshold(awayWinProb, awayMLEdge, awayMLOdds > 0 ? awayMLOdds : 0);
+        const hasHomeEdge = meetsThreshold(homeWinProb, homeMLEdge, homeMLOdds > 0 ? homeMLOdds : 0);
+        const hasAwayEdge = meetsThreshold(awayWinProb, awayMLEdge, awayMLOdds > 0 ? awayMLOdds : 0);
         
         if (hasHomeEdge || hasAwayEdge) {
           // Pick the side with the larger POSITIVE edge (not just larger number)
@@ -1409,16 +1407,8 @@ export default async (request, context) => {
           const pickedProb = pickHome ? homeWinProb : awayWinProb;
           const pickedEdge = pickHome ? homeMLEdge : awayMLEdge;
           const pickedOdds = pickHome ? homeMLOdds : awayMLOdds;
+          const betTier = getTierLabel(pickedProb);
           
-          let betType = '';
-          if (pickedProb >= 0.70) betType = 'Gold Zone Fav';
-          else if (pickedProb >= 0.63) betType = 'Strong Fav';
-          else if (pickedProb >= 0.53) betType = 'Mild Fav';
-          else if (pickedProb >= 0.40) betType = 'Coin Flip';
-          else if (pickedProb >= 0.30) betType = 'Dog Sweet Spot';
-          else betType = 'Longshot';
-          
-          console.log(`  → Recommendation: Bet ${pickHome ? home.team.abbreviation : away.team.abbreviation} ML (${betType}: ${(pickedProb * 100).toFixed(1)}% @ ${pickedOdds > 0 ? '+' : ''}${pickedOdds}, Edge: ${(pickedEdge * 100).toFixed(1)}%)`);          
           // Use PLACEMENT odds (best available) for actual bet
           const placementHomeML = gameVegasLines.moneyline.placement?.homePrice || fairHomeML;
           const placementAwayML = gameVegasLines.moneyline.placement?.awayPrice || fairAwayML;
@@ -1427,6 +1417,7 @@ export default async (request, context) => {
           const pickOdds = pickHome ? placementHomeML : placementAwayML;
           const pickProb = pickHome ? homeWinProb : awayWinProb;
           const pickEdge = pickHome ? homeMLEdge : awayMLEdge;
+          const pickImpliedProb = pickHome ? homeImpliedProb : awayImpliedProb;
           
           const mlKelly = calculateEdgeAndKelly(
             pickProb * 100, // Convert to 0-100 scale
@@ -1439,23 +1430,34 @@ export default async (request, context) => {
           );
           
           if (mlKelly) {
+            // Track Only filter: Dogs <45% with units <0.2U after caps become track-only
+            const unitsAfterCap = Math.min(mlKelly.units, 5.0);
+            const isTrackOnly = pickProb < 0.45 && unitsAfterCap < 0.2;
+            
             moneylineOpp = {
               market: 'Moneyline',
               pick: pickHome ? home.team.abbreviation : away.team.abbreviation,
               modelWinProb: (pickProb * 100).toFixed(1) + '%',
-              impliedProb: ((pickHome ? homeImpliedProb : awayImpliedProb) * 100).toFixed(1) + '%',
+              impliedProb: (pickImpliedProb * 100).toFixed(1) + '%',
+              p_model: pickProb,
+              p_market_devig: pickImpliedProb,
               odds: pickOdds, // Placement odds
               edge: (pickEdge * 100).toFixed(1) + '%',
               edgePercent: pickEdge * 100,
+              tier_label: betTier,
               kelly: mlKelly.kellyFraction,
               betSize: mlKelly.betSize,
-              units: mlKelly.units,
+              units: isTrackOnly ? 0 : unitsAfterCap,
+              isTrackOnly,
+              trackOnlyReason: isTrackOnly ? 'Low kelly (<0.2U) dog bet' : null,
               confidence, // Add confidence level
               book: placementBook,
               fairBook: gameVegasLines.moneyline.fair.book,
               fairVig: gameVegasLines.moneyline.fair.vig.toFixed(1),
               expectedValue: pickEdge * 100 * mlKelly.betSize
             };
+            
+            console.log(`[BETFILTER] game=${away.team.abbreviation}@${home.team.abbreviation} type=ML side=${moneylineOpp.pick} p_model=${pickProb.toFixed(3)} p_mkt=${pickImpliedProb.toFixed(3)} edge=${(pickEdge*100).toFixed(1)}% price=${pickOdds > 0 ? '+' : ''}${pickOdds} kellyQ=${mlKelly.kellyFraction.toFixed(2)} preCap=${mlKelly.units.toFixed(1)}U postCap=${unitsAfterCap.toFixed(1)}U tier='${betTier}' kept=${!isTrackOnly} reason='${isTrackOnly ? 'low_kelly' : 'pass'}'`);
           }
         }
       }
@@ -1605,7 +1607,46 @@ export default async (request, context) => {
       // ELITE DECISION: Recommend the best EV play(s)
       // Priority: 1) Best EV/Kelly 2) Spread if close game 3) ML if blowout 4) Total/Team Total if both
       
-      const allOpps = [spreadOpp, moneylineOpp, totalOpp, ...teamTotalOpps].filter(Boolean);
+      let allOpps = [spreadOpp, moneylineOpp, totalOpp, ...teamTotalOpps].filter(Boolean);
+      
+      // DEDUPLICATION: If same side passes both ML and Spread, keep only highest EV
+      if (spreadOpp && moneylineOpp) {
+        const spreadSide = spreadOpp.pick.split(' ')[0]; // Extract team from "LAL +2.5"
+        const mlSide = moneylineOpp.pick;
+        
+        if (spreadSide === mlSide) {
+          // Same side on both markets - deduplicate based on win probability
+          const winProb = moneylineOpp.p_model;
+          let keepSpread = false;
+          let reason = '';
+          
+          if (winProb < 0.60) {
+            // 53-60%: Spread usually dominates (better variance profile)
+            keepSpread = true;
+            reason = 'spread_better_variance_profile';
+          } else if (winProb < 0.68) {
+            // 60-68%: Compare EV, pick higher
+            keepSpread = (spreadOpp.expectedValue || 0) > (moneylineOpp.expectedValue || 0);
+            reason = keepSpread ? 'spread_higher_ev' : 'ml_higher_ev';
+          } else {
+            // 68%+: ML often cleaner (parlay-friendly, lower variance)
+            keepSpread = false;
+            reason = 'ml_cleaner_for_heavy_fav';
+          }
+          
+          if (keepSpread) {
+            moneylineOpp.suppressed_by = 'Spread';
+            moneylineOpp.suppression_reason = reason;
+            allOpps = allOpps.filter(o => o !== moneylineOpp);
+            console.log(`[DEDUP] ${spreadSide}: Suppressed ML (kept Spread) - ${reason}`);
+          } else {
+            spreadOpp.suppressed_by = 'Moneyline';
+            spreadOpp.suppression_reason = reason;
+            allOpps = allOpps.filter(o => o !== spreadOpp);
+            console.log(`[DEDUP] ${mlSide}: Suppressed Spread (kept ML) - ${reason}`);
+          }
+        }
+      }
       
       // Sort by expected value (EV)
       allOpps.sort((a, b) => (b.expectedValue || 0) - (a.expectedValue || 0));
@@ -1822,6 +1863,28 @@ export default async (request, context) => {
         console.warn(`[NBA V2] ⚠️  Low variance (stdev=${stdev.toFixed(2)} vs target=${targetStdev.toFixed(2)}), but within 10% tolerance for early season`);
       }
     }
+    
+    // TIER SUMMARY LOGGING
+    const tierStats = {};
+    predictions.forEach(pred => {
+      pred.opportunities?.forEach(opp => {
+        if (opp.tier_label) {
+          if (!tierStats[opp.tier_label]) {
+            tierStats[opp.tier_label] = { count: 0, totalEdge: 0, totalUnits: 0 };
+          }
+          tierStats[opp.tier_label].count++;
+          tierStats[opp.tier_label].totalEdge += opp.edgePercent || 0;
+          tierStats[opp.tier_label].totalUnits += opp.units || 0;
+        }
+      });
+    });
+    
+    Object.keys(tierStats).forEach(tier => {
+      const stats = tierStats[tier];
+      const avgEdge = stats.count > 0 ? (stats.totalEdge / stats.count).toFixed(1) : '0.0';
+      const avgUnits = stats.count > 0 ? (stats.totalUnits / stats.count).toFixed(1) : '0.0';
+      console.log(`[TIER_SUMMARY] ${tier}: kept ${stats.count} (avg edge ${avgEdge}%, avg units ${avgUnits}U)`);
+    });
     
     const jsonString = JSON.stringify(responseData);
     const sizeInKB = (jsonString.length / 1024).toFixed(2);
