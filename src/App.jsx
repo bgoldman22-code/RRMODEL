@@ -7,6 +7,7 @@ import MLB_HITS2 from "./MLB_HITS2";
 import NflTd from "./pages/NflTd";  // Simple TD system
 import NFLTouchdownPropsComprehensive from "./pages/NFLTouchdownPropsComprehensive";  // Advanced TD system
 import NFLPredictions from "./pages/NFLPredictions";
+import NFLReceivingProps from "./pages/NFLReceivingProps";  // Receiving props
 import NFLV5Page from "./pages/nfl-v5";  // V5 Hybrid Best-of-Breed
 import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
 import NHL from "./NHL";  // Elite NHL SOG Props
@@ -67,8 +68,9 @@ export default function App() {
     nfl: {
       label: 'NFL',
       items: [
-        { label: 'TD Advanced', path: '/nfl-td-comprehensive' },
         { label: 'Game Predictions', path: '/predictions' },
+        { label: 'TD Advanced', path: '/nfl-td-comprehensive' },
+        { label: 'Receiving Props', path: '/nfl-receiving-props' },
         { label: 'V5 (Hybrid) 🏆', path: '/nfl-v5' }
       ]
     },
@@ -119,6 +121,7 @@ export default function App() {
           {/* CHANGED: Removed simple NFL TD route */}
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/predictions" element={<NFLPredictions />} />
+          <Route path="/nfl-receiving-props" element={<NFLReceivingProps />} />
           <Route path="/nfl-v5" element={<NFLV5Page />} />
           <Route path="/soccer-btts" element={<SoccerBTTS />} />
           <Route path="/nhl-sog" element={<NHL />} />
