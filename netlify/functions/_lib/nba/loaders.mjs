@@ -411,7 +411,7 @@ function calculateBoxscoreStats(boxscore, teamTricode) {
  * @param {Array} gameStats - Array of per-game stats objects
  * @returns {object} - Aggregated stats
  */
-function aggregateStats(gameStats) {
+export function aggregateStats(gameStats) {
   if (!gameStats || gameStats.length === 0) {
     return null;
   }
@@ -611,6 +611,9 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
     
     console.log(`[NBA] ✅ ${team.abbreviation} L${lastN}: ${aggregated.games} games, OffRtg=${aggregated.offRtg.toFixed(1)}, DefRtg=${aggregated.defRtg.toFixed(1)}, Source=${aggregated.source} (${cdnCount} CDN, ${fallbackCount} fallback)`);
     
+    // OPTIMIZATION: Return raw gameStats array so caller can slice for different windows
+    aggregated.gameStats = gameStats;
+    
     return aggregated;
     
   } catch (error) {
@@ -632,12 +635,33 @@ export async function fetchTeamRollingStats(teamId, season = '2025-26', leagueWi
   try {
     console.log(`[NBA] 📊 Fetching rolling stats for team ${teamId}...`);
     
-    // Fetch all windows in parallel
-    const [l5, l10, l20] = await Promise.all([
-      fetchTeamLastGames(teamId, season, 5),
-      fetchTeamLastGames(teamId, season, 10),
-      fetchTeamLastGames(teamId, season, 20)
-    ]);
+    // OPTIMIZED: Fetch 20 games ONCE, then slice for L5/L10/L20
+    // This reduces 3 API calls per team down to 1 (67% reduction)
+    // 22 teams × 3 calls = 66 calls → 22 teams × 1 call = 22 calls
+    const l20 = await fetchTeamLastGames(teamId, season, 20);
+    
+    if (!l20 || !l20.gameStats || l20.gameStats.length === 0) {
+      console.log(`[NBA] No games found for team ${teamId}, returning nulls`);
+      return { l5: null, l10: null, l20: null };
+    }
+    
+    // Derive L5 and L10 from the L20 data (already fetched)
+    const allGames = l20.gameStats || [];
+    
+    // Always use available games, even if less than target window
+    // E.g., if team has 7 games, L10 = all 7, L5 = last 5
+    const l10Games = allGames.slice(-10);  // Takes up to 10, or whatever is available
+    const l5Games = allGames.slice(-5);    // Takes up to 5, or whatever is available
+    
+    // Aggregate stats for each window (will work with fewer games)
+    const l10 = l10Games.length > 0 ? aggregateStats(l10Games) : null;
+    const l5 = l5Games.length > 0 ? aggregateStats(l5Games) : null;
+    
+    // Tag sources
+    if (l5) l5.source = l20.source;
+    if (l10) l10.source = l20.source;
+    
+    console.log(`[NBA] ✅ Team ${teamId}: L5=${l5?.games || 0}, L10=${l10?.games || 0}, L20=${l20?.games || 0} games`);
     
     return { l5, l10, l20 };
     
