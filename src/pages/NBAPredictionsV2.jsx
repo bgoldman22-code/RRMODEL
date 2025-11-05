@@ -116,6 +116,9 @@ const NBAPredictionsV2 = () => {
       fullSlateLink.href = fullSlateCanvas.toDataURL();
       fullSlateLink.click();
       
+      // Wait 500ms before second download to prevent browser blocking
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // ===== TABLE 2: RECOMMENDED PICKS WITH STAKES =====
       const picksDiv = document.createElement('div');
       picksDiv.style.background = 'white';

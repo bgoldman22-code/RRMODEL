@@ -1654,23 +1654,31 @@ export default async (request, context) => {
       allOpps.sort((a, b) => (b.expectedValue || 0) - (a.expectedValue || 0));
       
       // UNIT SIZING AND EXPOSURE MANAGEMENT
-      console.log(`[UNIT SIZING START] Processing ${allOpps.length} opportunities`);
+      console.log(`[UNIT SIZING START] Processing ${allOpps.length} opportunities for ${away.team.abbreviation} @ ${home.team.abbreviation}`);
       allOpps.forEach((opp, idx) => {
-        console.log(`  [${idx}] ${opp.market} ${opp.pick}: ${opp.units}U (trackOnly: ${!!opp.isTrackOnly})`);
+        console.log(`  [BEFORE ${idx}] ${opp.market} ${opp.pick}: ${opp.units}U (trackOnly: ${!!opp.isTrackOnly})`);
       });
       
       // Step 1: Apply individual bet cap (max 5 units per bet)
-      allOpps.forEach(opp => {
+      let cappedCount = 0;
+      allOpps.forEach((opp, idx) => {
         // Skip track-only bets (already 0)
-        if (opp.isTrackOnly) return;
+        if (opp.isTrackOnly) {
+          console.log(`  [SKIP ${idx}] ${opp.market} ${opp.pick}: Track-only, leaving at 0U`);
+          return;
+        }
         
+        const originalUnits = opp.units;
         if (opp.units > 5) {
-          console.log(`[UNIT CAP] ${opp.market} ${opp.pick}: Capping ${opp.units.toFixed(1)}U → 5.0U`);
+          console.log(`  [CAP ${idx}] ${opp.market} ${opp.pick}: ${opp.units.toFixed(1)}U → 5.0U`);
           opp.units = 5.0;
+          cappedCount++;
         }
         // Round to 1 decimal place
         opp.units = Math.round(opp.units * 10) / 10;
+        console.log(`  [AFTER ${idx}] ${opp.market} ${opp.pick}: ${originalUnits.toFixed(1)}U → ${opp.units.toFixed(1)}U`);
       });
+      console.log(`[UNIT CAP COMPLETE] Capped ${cappedCount} bets`);
       
       // Step 2: Apply per-game exposure cap (max 12.5 units total)
       const totalExposure = allOpps.reduce((sum, opp) => sum + (opp.units || 0), 0);
