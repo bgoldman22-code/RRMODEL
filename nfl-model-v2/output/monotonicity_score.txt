@@ -1,0 +1,24 @@
+NFL Model V2 - Monotonicity Analysis
+============================================================
+
+SPREAD Market:
+  Monotonicity Score: 1 (Excellent)
+  Buckets Analyzed: 4
+
+TOTAL Market:
+  Monotonicity Score: 0.33 (Poor)
+  Buckets Analyzed: 4
+
+MONEYLINE Market:
+  Monotonicity Score: 0.33 (Poor)
+  Buckets Analyzed: 4
+
+
+Interpretation:
+- Score close to 1.0 = Perfect monotonic relationship
+- Higher edge consistently leads to higher win rates
+- Excellent (0.9+): Strong predictive signal
+- Good (0.75-0.9): Reliable but some noise
+- Fair (0.6-0.75): Weak signal, needs improvement
+- Poor (<0.6): Little to no predictive value
+

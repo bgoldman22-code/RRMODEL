@@ -1,0 +1,4487 @@
+{
+  "season": 2023,
+  "week": 18,
+  "fetch_date": "2024-01-06",
+  "snapshot_timestamp": "2024-01-06T22:55:39Z",
+  "previous_timestamp": "2024-01-06T22:50:38Z",
+  "next_timestamp": "2024-01-06T23:00:39Z",
+  "games": [
+    {
+      "id": "f1db1ea65e63375c8f6f9766dac5d4f7",
+      "commence_time": "2024-01-06T21:31:00Z",
+      "home_team": "Baltimore Ravens",
+      "away_team": "Pittsburgh Steelers",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": 124,
+            "away_price": -158,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": -110,
+            "away_price": -118,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 30.5,
+            "over_price": -114,
+            "under_price": -114,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 110,
+            "away_price": -145,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": -105,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 30.5,
+            "over_price": -112,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": 114,
+            "away_price": -145,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": -105,
+            "away_price": -125,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 29.5,
+            "over_price": -115,
+            "under_price": -115,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 135,
+            "away_price": -170,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 100,
+            "away_price": -130,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": 128,
+            "away_price": -205,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -120,
+            "away_price": -108,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": -118,
+            "under_price": -109,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": 150,
+            "away_price": -200,
+            "last_update": "2024-01-06T22:47:55Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -105,
+            "away_price": -125,
+            "last_update": "2024-01-06T22:47:55Z"
+          },
+          "total": {
+            "line": 33,
+            "over_price": -120,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:47:55Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 115,
+            "away_price": -145,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": -105,
+            "away_price": -125,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 29.5,
+            "over_price": -120,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -165,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 102,
+            "away_price": -135,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 30.5,
+            "over_price": -110,
+            "under_price": -120,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "2e8d909625844e0aea3dad1beee6712f",
+      "commence_time": "2024-01-07T01:16:00Z",
+      "home_team": "Indianapolis Colts",
+      "away_team": "Houston Texans",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": 100,
+            "away_price": -118,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 1.5,
+            "away_line": -1.5,
+            "home_price": -114,
+            "away_price": -106,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -112,
+            "under_price": -108,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -101,
+            "away_price": -119,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -105,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 47,
+            "over_price": -108,
+            "under_price": -106,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -101,
+            "away_price": -119,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": 1.5,
+            "away_line": -1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -106,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -109,
+            "away_price": -114,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": -106,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -109,
+            "away_price": -114,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": -104,
+            "away_price": -112,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": 1,
+            "away_line": -1,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "794e49c4f03306ab9c79cb84fcc2b0ac",
+      "commence_time": "2024-01-07T18:01:00Z",
+      "home_team": "New Orleans Saints",
+      "away_team": "Atlanta Falcons",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "draftkings": {
+          "moneyline": {
+            "home_price": -162,
+            "away_price": 136,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -161,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -114,
+            "away_price": -106,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -160,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -106,
+            "away_price": -104,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -107,
+            "under_price": -107,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -165,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": -175,
+            "away_price": 150,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": -148,
+            "away_price": 126,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -104,
+            "under_price": -118,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": -165,
+            "away_price": 142,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -177,
+            "away_price": 145,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": -177,
+            "away_price": 145,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": -160,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": -155,
+            "away_price": 135,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -111,
+            "under_price": -109,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": -160,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -165,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -170,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "50c6ec417a0a3cb00945bee203ecccad",
+      "commence_time": "2024-01-07T18:01:00Z",
+      "home_team": "Carolina Panthers",
+      "away_team": "Tampa Bay Buccaneers",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "draftkings": {
+          "moneyline": {
+            "home_price": 190,
+            "away_price": -230,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -215,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -105,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -104,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -217,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": 190,
+            "away_price": -230,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 36.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": 195,
+            "away_price": -230,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 36.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": 176,
+            "away_price": -210,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 36.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -230,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 36.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 36.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": 180,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 36.5,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 180,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 36.5,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": 175,
+            "away_price": -210,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -111,
+            "away_price": -109,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": 178,
+            "away_price": -215,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 36.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 180,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 36.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 190,
+            "away_price": -240,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 36.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "b51ff34c488e8470c3d975a781cc638d",
+      "commence_time": "2024-01-07T18:01:00Z",
+      "home_team": "Cincinnati Bengals",
+      "away_team": "Cleveland Browns",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": -340,
+            "away_price": 275,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 37.5,
+            "over_price": -102,
+            "under_price": -120,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -350,
+            "away_price": 260,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": -360,
+            "away_price": 280,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -330,
+            "away_price": 275,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": 101,
+            "away_price": -112,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -107,
+            "under_price": -107,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 275,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 275,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -104,
+            "away_price": -116,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -350,
+            "away_price": 275,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": -330,
+            "away_price": 275,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -104,
+            "away_price": -116,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -109,
+            "under_price": -111,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -360,
+            "away_price": 270,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -110,
+            "away_price": -112,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 37.5,
+            "over_price": -108,
+            "under_price": -113,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": -360,
+            "away_price": 270,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -8,
+            "away_line": 8,
+            "home_price": -104,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 37.5,
+            "over_price": -108,
+            "under_price": -113,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": -350,
+            "away_price": 280,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": -320,
+            "away_price": 260,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -350,
+            "away_price": 275,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": -310,
+            "away_price": 255,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 37.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "46b392b972587cb9f66805dcea8dcac9",
+      "commence_time": "2024-01-07T18:01:00Z",
+      "home_team": "Detroit Lions",
+      "away_team": "Minnesota Vikings",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": -186,
+            "away_price": 156,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -190,
+            "away_price": 160,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": -185,
+            "away_price": 154,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -108,
+            "away_price": -112,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": -190,
+            "away_price": 160,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": -180,
+            "away_price": 155,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -109,
+            "away_price": -111,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -190,
+            "away_price": 155,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": -175,
+            "away_price": 150,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": -195,
+            "away_price": 155,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -107,
+            "away_price": -114,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -195,
+            "away_price": 155,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -107,
+            "away_price": -114,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -179,
+            "away_price": 160,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -111,
+            "under_price": -109,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -180,
+            "away_price": 160,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": 104,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -108,
+            "under_price": -106,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -190,
+            "away_price": 158,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": -185,
+            "away_price": 160,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": -185,
+            "away_price": 160,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "77acb65d6a0314b676df5b4832ef45a3",
+      "commence_time": "2024-01-07T18:01:00Z",
+      "home_team": "Tennessee Titans",
+      "away_team": "Jacksonville Jaguars",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": 190,
+            "away_price": -230,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -104,
+            "under_price": -118,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": 180,
+            "away_price": -218,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 195,
+            "away_price": -227,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": -104,
+            "away_price": -116,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": 195,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": 4,
+            "away_line": -4,
+            "home_price": 101,
+            "away_price": -112,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -107,
+            "under_price": -107,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 180,
+            "away_price": -220,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": 180,
+            "away_price": -220,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": 170,
+            "away_price": -210,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -113,
+            "away_price": -108,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -113,
+            "under_price": -108,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 170,
+            "away_price": -210,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -113,
+            "away_price": -108,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -113,
+            "under_price": -108,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": 180,
+            "away_price": -220,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -112,
+            "away_price": -108,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -111,
+            "under_price": -109,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 180,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": 178,
+            "away_price": -210,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": 3.5,
+            "away_line": -3.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "fb5a05459a7e5616f95e2caa7732c20f",
+      "commence_time": "2024-01-07T18:01:00Z",
+      "home_team": "New England Patriots",
+      "away_team": "New York Jets",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "draftkings": {
+          "moneyline": {
+            "home_price": -130,
+            "away_price": 110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -102,
+            "away_price": -118,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": -112,
+            "under_price": -108,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": 100,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": -106,
+            "under_price": -108,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": -2,
+            "away_line": 2,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 30.5,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": -126,
+            "away_price": 108,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 30.5,
+            "over_price": -106,
+            "under_price": -114,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 117,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": -2,
+            "away_line": 2,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": 100,
+            "under_price": -120,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": -125,
+            "away_price": 105,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -134,
+            "away_price": 110,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": -2,
+            "away_line": 2,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": -134,
+            "away_price": 110,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -2,
+            "away_line": 2,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": -130,
+            "away_price": 110,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": -112,
+            "under_price": -108,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -2,
+            "away_line": 2,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -125,
+            "away_price": 105,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 30,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -130,
+            "away_price": 110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": -2,
+            "away_line": 2,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 30.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "c275e949047e5983348e5431f78e4013",
+      "commence_time": "2024-01-07T21:26:00Z",
+      "home_team": "Arizona Cardinals",
+      "away_team": "Seattle Seahawks",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -154,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -150,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": 124,
+            "away_price": -148,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -118,
+            "away_price": -102,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -145,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -155,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -145,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -145,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -115,
+            "away_price": 104,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -107,
+            "under_price": -107,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -152,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": -105,
+            "away_price": -117,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -152,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": -105,
+            "away_price": -117,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -155,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -112,
+            "away_price": -108,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -109,
+            "under_price": -111,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -145,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 47,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -150,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -150,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": 120,
+            "away_price": -140,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 47,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "2b2da592b91fb61473aed5b4fe975254",
+      "commence_time": "2024-01-07T21:26:00Z",
+      "home_team": "Green Bay Packers",
+      "away_team": "Chicago Bears",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "draftkings": {
+          "moneyline": {
+            "home_price": -162,
+            "away_price": 136,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -153,
+            "away_price": 133,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -118,
+            "away_price": 107,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -113,
+            "under_price": -102,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -154,
+            "away_price": 133,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": -165,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": -155,
+            "away_price": 133,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": -154,
+            "away_price": 130,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -104,
+            "away_price": -118,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": -150,
+            "away_price": 130,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -160,
+            "away_price": 130,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -155,
+            "away_price": 130,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": -155,
+            "away_price": 135,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -111,
+            "away_price": -109,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -150,
+            "away_price": 126,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": -157,
+            "away_price": 130,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -106,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -157,
+            "away_price": 130,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -106,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": -155,
+            "away_price": 135,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "d7e8bbb2997c341248c04ec59abb94fb",
+      "commence_time": "2024-01-07T21:26:00Z",
+      "home_team": "Washington Commanders",
+      "away_team": "Dallas Cowboys",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "draftkings": {
+          "moneyline": {
+            "home_price": 600,
+            "away_price": -900,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 615,
+            "away_price": -833,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": 615,
+            "away_price": -847,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -105,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -107,
+            "under_price": -107,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 600,
+            "away_price": -900,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": 575,
+            "away_price": -900,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": 610,
+            "away_price": -900,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 13.5,
+            "away_line": -13.5,
+            "home_price": -118,
+            "away_price": -104,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -112,
+            "under_price": -108,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 550,
+            "away_price": -835,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -113,
+            "under_price": -108,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": 550,
+            "away_price": -835,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -113,
+            "under_price": -108,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": 600,
+            "away_price": -1000,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": 550,
+            "away_price": -850,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 600,
+            "away_price": -900,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": 600,
+            "away_price": -900,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": 625,
+            "away_price": -901,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": 13.5,
+            "away_line": -13.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 47,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 500,
+            "away_price": -1099,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "cc55919e69edfb7f2749f3430f5b4b26",
+      "commence_time": "2024-01-07T21:26:00Z",
+      "home_team": "Las Vegas Raiders",
+      "away_team": "Denver Broncos",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": -154,
+            "away_price": 130,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -104,
+            "away_price": -118,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 37.5,
+            "over_price": -104,
+            "under_price": -118,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -160,
+            "away_price": 130,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": -166,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -108,
+            "away_price": -112,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -155,
+            "away_price": 135,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": 100,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -107,
+            "under_price": -107,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -156,
+            "away_price": 135,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": -165,
+            "away_price": 142,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -165,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": -155,
+            "away_price": 128,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -117,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -155,
+            "away_price": 128,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -117,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": -155,
+            "away_price": 135,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -109,
+            "away_price": -111,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -109,
+            "under_price": -111,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": -160,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": -165,
+            "away_price": 140,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -155,
+            "away_price": 130,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": -155,
+            "away_price": 133,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 37,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "a50417b93fb8ac1e9653946bb4850eb4",
+      "commence_time": "2024-01-07T21:26:00Z",
+      "home_team": "Los Angeles Chargers",
+      "away_team": "Kansas City Chiefs",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": -180,
+            "away_price": 152,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 35.5,
+            "over_price": -106,
+            "under_price": -114,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -190,
+            "away_price": 160,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 35.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": -190,
+            "away_price": 160,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 35,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": -185,
+            "away_price": 154,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 35,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -184,
+            "away_price": 164,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -103,
+            "away_price": -107,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 35.5,
+            "over_price": -104,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -185,
+            "away_price": 164,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -108,
+            "away_price": -112,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 35.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -190,
+            "away_price": 158,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 35,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": -190,
+            "away_price": 160,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 35,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": -195,
+            "away_price": 165,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 35.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": -190,
+            "away_price": 163,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 35.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -195,
+            "away_price": 160,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 35,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": -195,
+            "away_price": 160,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 35,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -190,
+            "away_price": 155,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 35,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": -185,
+            "away_price": 158,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 36,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "52c6f0c38ee6458d03e5caffe56af385",
+      "commence_time": "2024-01-07T21:26:00Z",
+      "home_team": "San Francisco 49ers",
+      "away_team": "Los Angeles Rams",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "draftkings": {
+          "moneyline": {
+            "home_price": -205,
+            "away_price": 170,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -204,
+            "away_price": 175,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": -4,
+            "away_line": 4,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -205,
+            "away_price": 175,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": -4,
+            "away_line": 4,
+            "home_price": -110,
+            "away_price": 100,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -107,
+            "under_price": -107,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": -210,
+            "away_price": 175,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 40.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": -205,
+            "away_price": 172,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -4,
+            "away_line": 4,
+            "home_price": -114,
+            "away_price": -106,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 40.5,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": -200,
+            "away_price": 170,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": -4,
+            "away_line": 4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -210,
+            "away_price": 170,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -113,
+            "under_price": -108,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": -210,
+            "away_price": 170,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -113,
+            "under_price": -108,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -205,
+            "away_price": 170,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": -4,
+            "away_line": 4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": -205,
+            "away_price": 170,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": -4,
+            "away_line": 4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -200,
+            "away_price": 165,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": -210,
+            "away_price": 175,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": -4,
+            "away_line": 4,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -210,
+            "away_price": 175,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 40.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": -210,
+            "away_price": 178,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "66c7e39643ecae341addae9fff981d0b",
+      "commence_time": "2024-01-07T21:26:00Z",
+      "home_team": "New York Giants",
+      "away_team": "Philadelphia Eagles",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "draftkings": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 5,
+            "away_line": -5,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -217,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -109,
+            "away_price": -111,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -215,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -104,
+            "away_price": -106,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -104,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": 176,
+            "away_price": -210,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": 190,
+            "away_price": -240,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": 5,
+            "away_line": -5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": 5,
+            "away_line": -5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 190,
+            "away_price": -240,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": 190,
+            "away_price": -240,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": 180,
+            "away_price": -220,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -111,
+            "under_price": -109,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": 185,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 5,
+            "away_line": -5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 180,
+            "away_price": -225,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": 4.5,
+            "away_line": -4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": 203,
+            "away_price": -240,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": 5.5,
+            "away_line": -5.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 190,
+            "away_price": -240,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": 5,
+            "away_line": -5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "4ede93bcf0120eff85ceba01144694b9",
+      "commence_time": "2024-01-08T01:21:00Z",
+      "home_team": "Miami Dolphins",
+      "away_team": "Buffalo Bills",
+      "snapshot_timestamp": "2024-01-06T22:55:39Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": 126,
+            "away_price": -146,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": -102,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 48.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -155,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 102,
+            "away_price": -122,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 48.5,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -150,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:31Z"
+          },
+          "total": {
+            "line": 48.5,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2024-01-06T22:55:31Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -155,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 105,
+            "away_price": -125,
+            "last_update": "2024-01-06T22:55:03Z"
+          },
+          "total": {
+            "line": 48.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:03Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -160,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:18Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -150,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 102,
+            "away_price": -113,
+            "last_update": "2024-01-06T22:55:34Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -113,
+            "under_price": -102,
+            "last_update": "2024-01-06T22:55:34Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -149,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": -103,
+            "away_price": -116,
+            "last_update": "2024-01-06T22:55:26Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:26Z"
+          }
+        },
+        "bovada": {
+          "moneyline": {
+            "home_price": 135,
+            "away_price": -160,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:54:59Z"
+          },
+          "total": {
+            "line": 48.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:59Z"
+          }
+        },
+        "superbook": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -150,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:01Z"
+          },
+          "total": {
+            "line": 48.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:01Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -152,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -115,
+            "away_price": -106,
+            "last_update": "2024-01-06T22:55:27Z"
+          },
+          "total": {
+            "line": 48.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:27Z"
+          }
+        },
+        "unibet_us": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -152,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -115,
+            "away_price": -106,
+            "last_update": "2024-01-06T22:54:58Z"
+          },
+          "total": {
+            "line": 48.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:54:58Z"
+          }
+        },
+        "betus": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -150,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2024-01-06T22:55:14Z"
+          },
+          "total": {
+            "line": 48.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:14Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 125,
+            "away_price": -150,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2024-01-06T22:55:32Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:32Z"
+          }
+        },
+        "wynnbet": {
+          "moneyline": {
+            "home_price": 138,
+            "away_price": -160,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2024-01-06T22:55:02Z"
+          },
+          "total": {
+            "line": 49,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2024-01-06T22:55:02Z"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "fetched_at": "2025-11-04T15:59:57.111Z",
+    "games_count": 16,
+    "total_snapshot_games": 16,
+    "description": "Week 18 closing lines"
+  }
+}

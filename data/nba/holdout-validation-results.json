@@ -1,0 +1,275 @@
+[
+  {
+    "configNum": 1,
+    "params": {
+      "l10_weight": 0.6,
+      "per36_weight": 0.4,
+      "starter_floor": 32,
+      "bench_floor": 24,
+      "sigma_floor_rebounds": 1.8,
+      "sigma_floor_assists": 1.6,
+      "z_temp": 0.9,
+      "min_ev": 0
+    },
+    "trainingMetrics": {
+      "count": 1329,
+      "mu_bias": -0.9368938966300311,
+      "under_rate": 0.7351392024078255,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 103,
+          "wins": 47,
+          "winRate": 0.4563106796116505,
+          "roi": -0.08433686013674226
+        },
+        "5-10%": {
+          "count": 294,
+          "wins": 140,
+          "winRate": 0.47619047619047616,
+          "roi": -0.12446195432787498
+        },
+        "10-15%": {
+          "count": 282,
+          "wins": 139,
+          "winRate": 0.4929078014184397,
+          "roi": -0.10763582728006098
+        },
+        "15%+": {
+          "count": 650,
+          "wins": 353,
+          "winRate": 0.5430769230769231,
+          "roi": 0.0024149475770289188
+        }
+      },
+      "monotonicity_score": 0.981739469781379,
+      "edge_15_plus_winrate": 0.5430769230769231,
+      "avg_roi": 0.2780447948010175
+    },
+    "holdoutMetrics": {
+      "count": 216,
+      "mu_bias": -0.5309276139317465,
+      "under_rate": 0.5879629629629629,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 43,
+          "wins": 17,
+          "winRate": 0.3953488372093023,
+          "roi": -0.21285122734589515
+        },
+        "5-10%": {
+          "count": 76,
+          "wins": 28,
+          "winRate": 0.3684210526315789,
+          "roi": -0.3095274543183767
+        },
+        "10-15%": {
+          "count": 34,
+          "wins": 12,
+          "winRate": 0.35294117647058826,
+          "roi": -0.3278200620483891
+        },
+        "15%+": {
+          "count": 63,
+          "wins": 31,
+          "winRate": 0.49206349206349204,
+          "roi": -0.03383733648602204
+        }
+      },
+      "monotonicity_score": 0.7840224741426548,
+      "edge_15_plus_winrate": 0.49206349206349204,
+      "avg_roi": 0.2034665835101846,
+      "shuffle_winrate": 0.5555555555555556,
+      "market_only_winrate": 0.4675925925925926
+    },
+    "validationCriteria": {
+      "winRate": false,
+      "roi": false,
+      "monotonicity": true,
+      "sampleSize": true,
+      "shuffleTest": false
+    },
+    "status": "FAILED"
+  },
+  {
+    "configNum": 2,
+    "params": {
+      "l10_weight": 0.6,
+      "per36_weight": 0.4,
+      "starter_floor": 32,
+      "bench_floor": 24,
+      "sigma_floor_rebounds": 1.8,
+      "sigma_floor_assists": 1,
+      "z_temp": 0.9,
+      "min_ev": 0
+    },
+    "trainingMetrics": {
+      "count": 1329,
+      "mu_bias": -0.9414194380664904,
+      "under_rate": 0.7373965387509406,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 103,
+          "wins": 47,
+          "winRate": 0.4563106796116505,
+          "roi": -0.08433686013674226
+        },
+        "5-10%": {
+          "count": 289,
+          "wins": 137,
+          "winRate": 0.4740484429065744,
+          "roi": -0.12835005509946912
+        },
+        "10-15%": {
+          "count": 285,
+          "wins": 141,
+          "winRate": 0.49473684210526314,
+          "roi": -0.10603127024902187
+        },
+        "15%+": {
+          "count": 652,
+          "wins": 355,
+          "winRate": 0.5444785276073619,
+          "roi": 0.004571603862563687
+        }
+      },
+      "monotonicity_score": 0.9830652924538194,
+      "edge_15_plus_winrate": 0.5444785276073619,
+      "avg_roi": 0.2805276436001165
+    },
+    "holdoutMetrics": {
+      "count": 217,
+      "mu_bias": -0.5281352702970281,
+      "under_rate": 0.5852534562211982,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 42,
+          "wins": 17,
+          "winRate": 0.40476190476190477,
+          "roi": -0.19410958990174976
+        },
+        "5-10%": {
+          "count": 78,
+          "wins": 28,
+          "winRate": 0.358974358974359,
+          "roi": -0.32723187856662345
+        },
+        "10-15%": {
+          "count": 34,
+          "wins": 13,
+          "winRate": 0.38235294117647056,
+          "roi": -0.26752594440133026
+        },
+        "15%+": {
+          "count": 63,
+          "wins": 31,
+          "winRate": 0.49206349206349204,
+          "roi": -0.03383733648602204
+        }
+      },
+      "monotonicity_score": 0.8169192559495009,
+      "edge_15_plus_winrate": 0.49206349206349204,
+      "avg_roi": 0.20398905921190408,
+      "shuffle_winrate": 0.5391705069124424,
+      "market_only_winrate": 0.47465437788018433
+    },
+    "validationCriteria": {
+      "winRate": false,
+      "roi": false,
+      "monotonicity": true,
+      "sampleSize": true,
+      "shuffleTest": false
+    },
+    "status": "FAILED"
+  },
+  {
+    "configNum": 3,
+    "params": {
+      "l10_weight": 0.6,
+      "per36_weight": 0.4,
+      "starter_floor": 32,
+      "bench_floor": 24,
+      "sigma_floor_rebounds": 1.8,
+      "sigma_floor_assists": 1.2,
+      "z_temp": 0.9,
+      "min_ev": 0
+    },
+    "trainingMetrics": {
+      "count": 1329,
+      "mu_bias": -0.9414194380664904,
+      "under_rate": 0.7373965387509406,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 103,
+          "wins": 47,
+          "winRate": 0.4563106796116505,
+          "roi": -0.08433686013674226
+        },
+        "5-10%": {
+          "count": 289,
+          "wins": 137,
+          "winRate": 0.4740484429065744,
+          "roi": -0.12835005509946912
+        },
+        "10-15%": {
+          "count": 285,
+          "wins": 141,
+          "winRate": 0.49473684210526314,
+          "roi": -0.10603127024902187
+        },
+        "15%+": {
+          "count": 652,
+          "wins": 355,
+          "winRate": 0.5444785276073619,
+          "roi": 0.004571603862563687
+        }
+      },
+      "monotonicity_score": 0.9830652924538194,
+      "edge_15_plus_winrate": 0.5444785276073619,
+      "avg_roi": 0.2804580869639093
+    },
+    "holdoutMetrics": {
+      "count": 217,
+      "mu_bias": -0.5281352702970281,
+      "under_rate": 0.5852534562211982,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 42,
+          "wins": 17,
+          "winRate": 0.40476190476190477,
+          "roi": -0.19410958990174976
+        },
+        "5-10%": {
+          "count": 78,
+          "wins": 28,
+          "winRate": 0.358974358974359,
+          "roi": -0.32723187856662345
+        },
+        "10-15%": {
+          "count": 34,
+          "wins": 13,
+          "winRate": 0.38235294117647056,
+          "roi": -0.26752594440133026
+        },
+        "15%+": {
+          "count": 63,
+          "wins": 31,
+          "winRate": 0.49206349206349204,
+          "roi": -0.03383733648602204
+        }
+      },
+      "monotonicity_score": 0.8169192559495009,
+      "edge_15_plus_winrate": 0.49206349206349204,
+      "avg_roi": 0.20398213714111682,
+      "shuffle_winrate": 0.5668202764976958,
+      "market_only_winrate": 0.47465437788018433
+    },
+    "validationCriteria": {
+      "winRate": false,
+      "roi": false,
+      "monotonicity": true,
+      "sampleSize": true,
+      "shuffleTest": false
+    },
+    "status": "FAILED"
+  }
+]

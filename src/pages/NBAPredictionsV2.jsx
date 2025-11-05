@@ -32,182 +32,205 @@ const NBAPredictionsV2 = () => {
     }
   };
 
-  const exportToPDF = async () => {
+  const exportToPNG = async () => {
     setExporting(true);
     try {
-      // Create a clean HTML structure for PDF
+      // Dynamically import html2canvas
+      const html2canvas = (await import('html2canvas')).default;
+      
       const today = new Date().toLocaleDateString('en-US', { 
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+        year: 'numeric', month: 'long', day: 'numeric' 
       });
       
-      let htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #0a0e27; color: #fff; }
-    h1 { color: #00ff88; text-align: center; margin-bottom: 5px; }
-    .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 14px; }
-    .game { background: #1a1f3a; border: 2px solid #00ff88; border-radius: 8px; padding: 15px; margin-bottom: 20px; page-break-inside: avoid; }
-    .game-header { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; }
-    .confidence { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 11px; margin-left: 10px; }
-    .confidence.HIGH { background: #00ff88; color: #000; }
-    .confidence.MEDIUM { background: #ffa500; color: #000; }
-    .confidence.LOW { background: #ff4444; color: #fff; }
-    .pick-summary { color: #00ff88; font-weight: bold; margin-bottom: 10px; }
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
-    .stat { background: #0f1629; padding: 8px; border-radius: 4px; }
-    .stat-label { font-size: 10px; color: #888; text-transform: uppercase; }
-    .stat-value { font-size: 16px; font-weight: bold; color: #00ff88; }
-    .vegas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; background: #0a0e27; padding: 10px; border-radius: 4px; }
-    .vegas-item { text-align: center; }
-    .vegas-label { font-size: 10px; color: #888; }
-    .vegas-value { font-weight: bold; color: #fff; }
-    .bets-section { margin-top: 15px; }
-    .bets-header { background: #00ff88; color: #000; padding: 5px 10px; font-weight: bold; border-radius: 4px; margin-bottom: 8px; }
-    .bet { background: #0f1629; padding: 8px; margin: 5px 0; border-radius: 4px; border-left: 3px solid #00ff88; }
-    .bet-details { display: flex; justify-content: space-between; font-size: 12px; margin-top: 5px; color: #fff; }
-    .edge-bets .bets-header { background: #ffa500; }
-    .edge-bets .bet { border-left-color: #ffa500; }
-    .units { color: #00ff88; font-weight: bold; font-size: 11px; }
-  </style>
-</head>
-<body>
-  <h1>🏀 NBA Elite V2 Predictions</h1>
-  <div class="subtitle">${today} • Powered by ESPN + NBA CDN</div>
-`;
-
-      predictions.forEach(pred => {
+      // Create hidden container for tables
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      document.body.appendChild(container);
+      
+      // ===== TABLE 1: FULL SLATE PROJECTIONS =====
+      const fullSlateDiv = document.createElement('div');
+      fullSlateDiv.style.background = 'white';
+      fullSlateDiv.style.padding = '30px';
+      fullSlateDiv.style.width = '1650px';
+      
+      let fullSlateHTML = `
+        <div style="font-family: Helvetica, Arial, sans-serif;">
+          <h1 style="text-align: center; margin-bottom: 5px; font-size: 28px;">NBA Picks - Full Slate Analysis</h1>
+          <p style="text-align: center; color: #666; margin-bottom: 25px; font-size: 14px;"><strong>Date:</strong> ${today}</p>
+          <h2 style="font-size: 20px; margin-bottom: 15px;">Full Slate Projections</h2>
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #bdc3c7;">
+            <thead>
+              <tr style="background: #2c3e50; color: white;">
+                <th style="padding: 10px; text-align: left; border: 1px solid #bdc3c7; font-size: 11px;">Game</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Conf.</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Model Pick</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Model Spread</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Model Total</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Win %</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Vegas Spread</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Vegas Total</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      
+      predictions.forEach((pred, idx) => {
+        const bgColor = idx % 2 === 0 ? '#ffffff' : '#ecf0f1';
         const confidence = pred.prediction?.confidence || 0;
-        const confidenceClass = confidence > 65 ? 'HIGH' : confidence > 50 ? 'MEDIUM' : 'LOW';
+        const favoriteTeam = pred.prediction?.winProbability?.favoriteTeam || '';
         const spread = pred.prediction?.spread?.prediction || 0;
         const total = pred.prediction?.total?.prediction || 0;
-        const favoriteTeam = pred.prediction?.winProbability?.favoriteTeam || '';
         const favoritePercent = pred.prediction?.winProbability?.favoritePercent || 0;
-        const spreadDisplay = pred.prediction?.spread?.display || `${spread.toFixed(1)}`;
+        const vegasSpread = pred.vegasLines?.spread?.display || 'N/A';
+        const vegasTotal = pred.vegasLines?.total?.line || 'N/A';
         
-        const recommendedBets = pred.opportunities?.filter(o => o.edgePercent > 5) || [];
-        const edgeBets = pred.opportunities?.filter(o => o.edgePercent <= 5) || [];
-        
-        htmlContent += `
-  <div class="game">
-    <div class="game-header">
-      ${pred.game}
-      <span class="confidence ${confidenceClass}">${confidence}% Confidence</span>
-    </div>
-    <div class="pick-summary">Model Pick: ${spreadDisplay} (${favoriteTeam} ${favoritePercent.toFixed(1)}% win prob)</div>
-    
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-label">Predicted Spread</div>
-        <div class="stat-value">${spreadDisplay}</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Predicted Total</div>
-        <div class="stat-value">${total.toFixed(1)}</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">${favoriteTeam} Win Prob</div>
-        <div class="stat-value">${favoritePercent.toFixed(1)}%</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Data Source</div>
-        <div class="stat-value" style="font-size: 12px;">ESPN + NBA CDN</div>
-      </div>
-    </div>
-    
-    <div class="vegas">
-      <div class="vegas-item">
-        <div class="vegas-label">Vegas Spread</div>
-        <div class="vegas-value">${pred.vegasLines?.spread?.display || 'N/A'}</div>
-      </div>
-      <div class="vegas-item">
-        <div class="vegas-label">Vegas Total</div>
-        <div class="vegas-value">${pred.vegasLines?.total?.line || 'N/A'}</div>
-      </div>
-      <div class="vegas-item">
-        <div class="vegas-label">${pred.teams?.home?.abbreviation || 'Home'} ML</div>
-        <div class="vegas-value">${pred.vegasLines?.moneyline?.homeDisplay || 'N/A'}</div>
-      </div>
-      <div class="vegas-item">
-        <div class="vegas-label">${pred.teams?.away?.abbreviation || 'Away'} ML</div>
-        <div class="vegas-value">${pred.vegasLines?.moneyline?.awayDisplay || 'N/A'}</div>
-      </div>
-    </div>
-`;
-
-        if (recommendedBets.length > 0) {
-          htmlContent += `
-    <div class="bets-section">
-      <div class="bets-header">🎯 Recommended Bets</div>
-`;
-          recommendedBets.forEach(opp => {
-            const pickDisplay = opp.market === 'Moneyline' && opp.modelWinProb 
-              ? `${opp.pick} (${opp.modelWinProb})` 
-              : opp.pick;
-            const unitsDisplay = opp.units === 0 ? '0.0U (track only)' : `${opp.units.toFixed(1)}U`;
-            
-            htmlContent += `
-      <div class="bet">
-        <strong>${opp.market}: ${pickDisplay}</strong>
-        <div class="bet-details">
-          <span>Edge: ${opp.edge}</span>
-          <span>Odds: ${opp.odds > 0 ? '+' : ''}${opp.odds}</span>
-          <span>${opp.book}</span>
-        </div>
-        <div class="units">Rec: ${unitsDisplay}</div>
-      </div>
-`;
-          });
-          htmlContent += `    </div>\n`;
-        }
-        
-        if (edgeBets.length > 0) {
-          htmlContent += `
-    <div class="bets-section edge-bets">
-      <div class="bets-header">📊 Edge Bets to Consider</div>
-`;
-          edgeBets.forEach(opp => {
-            const pickDisplay = opp.market === 'Moneyline' && opp.modelWinProb 
-              ? `${opp.pick} (${opp.modelWinProb})` 
-              : opp.pick;
-            const unitsDisplay = opp.units === 0 ? '0.0U (track only)' : `${opp.units.toFixed(1)}U`;
-            
-            htmlContent += `
-      <div class="bet">
-        <strong>${opp.market}: ${pickDisplay}</strong>
-        <div class="bet-details">
-          <span>Edge: ${opp.edge}</span>
-          <span>Odds: ${opp.odds > 0 ? '+' : ''}${opp.odds}</span>
-          <span>${opp.book}</span>
-        </div>
-        <div class="units">Rec: ${unitsDisplay}</div>
-      </div>
-`;
-          });
-          htmlContent += `    </div>\n`;
-        }
-        
-        htmlContent += `  </div>\n`;
+        fullSlateHTML += `
+          <tr style="background: ${bgColor};">
+            <td style="padding: 8px; border: 1px solid #bdc3c7; font-size: 10px;">${pred.game}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${confidence}%</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${favoriteTeam}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${spread.toFixed(1)}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${total.toFixed(1)}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${favoritePercent.toFixed(1)}%</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${vegasSpread}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${vegasTotal}</td>
+          </tr>
+        `;
       });
-
-      htmlContent += `
-</body>
-</html>`;
-
-      // Open print dialog with the HTML
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => {
-        printWindow.print();
-      }, 250);
+      
+      fullSlateHTML += `
+            </tbody>
+          </table>
+        </div>
+      `;
+      
+      fullSlateDiv.innerHTML = fullSlateHTML;
+      container.appendChild(fullSlateDiv);
+      
+      // Generate Full Slate PNG
+      const fullSlateCanvas = await html2canvas(fullSlateDiv, { scale: 2, backgroundColor: '#ffffff' });
+      const fullSlateLink = document.createElement('a');
+      fullSlateLink.download = `nba_picks_full_slate_${new Date().toISOString().split('T')[0]}.png`;
+      fullSlateLink.href = fullSlateCanvas.toDataURL();
+      fullSlateLink.click();
+      
+      // ===== TABLE 2: RECOMMENDED PICKS WITH STAKES =====
+      const picksDiv = document.createElement('div');
+      picksDiv.style.background = 'white';
+      picksDiv.style.padding = '30px';
+      picksDiv.style.width = '1650px';
+      
+      // Collect all bets with categories
+      const allBets = [];
+      predictions.forEach(pred => {
+        pred.opportunities?.forEach(opp => {
+          const category = opp.edgePercent > 5 ? 'STRONG' : opp.units === 0 ? 'TRACK' : 'CONSIDER';
+          allBets.push({
+            category,
+            game: pred.game,
+            betType: opp.market,
+            pick: opp.market === 'Moneyline' && opp.modelWinProb ? `${opp.pick} (${opp.modelWinProb})` : opp.pick,
+            edge: opp.edge,
+            odds: opp.odds > 0 ? `+${opp.odds}` : opp.odds,
+            book: opp.book,
+            stake: opp.units === 0 ? '0.0U' : `${opp.units.toFixed(1)}U`
+          });
+        });
+      });
+      
+      // Calculate summaries
+      const strongBets = allBets.filter(b => b.category === 'STRONG');
+      const considerBets = allBets.filter(b => b.category === 'CONSIDER');
+      const trackBets = allBets.filter(b => b.category === 'TRACK');
+      
+      const strongUnits = strongBets.reduce((sum, b) => sum + parseFloat(b.stake), 0);
+      const considerUnits = considerBets.reduce((sum, b) => sum + parseFloat(b.stake), 0);
+      const totalActiveBets = strongBets.length + considerBets.length;
+      const totalActiveUnits = strongUnits + considerUnits;
+      
+      let picksHTML = `
+        <div style="font-family: Helvetica, Arial, sans-serif;">
+          <h2 style="font-size: 20px; margin-bottom: 10px;">Recommended Picks with Stakes</h2>
+          <p style="font-size: 12px; margin-bottom: 15px;">
+            <strong>Color Key:</strong> 
+            🟢 <span style="color: #155724; font-weight: bold;">GREEN</span> = High Confidence / Strong Bet | 
+            🟡 <span style="color: #856404; font-weight: bold;">YELLOW</span> = Consider | 
+            🔴 <span style="color: #721c24; font-weight: bold;">RED</span> = Track Only
+          </p>
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #bdc3c7;">
+            <thead>
+              <tr style="background: #2c3e50; color: white;">
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Category</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #bdc3c7; font-size: 11px;">Game</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Bet Type</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #bdc3c7; font-size: 11px;">Pick</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Edge</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Odds</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Book</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Stake</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      
+      allBets.forEach(bet => {
+        let bgColor, textColor;
+        if (bet.category === 'STRONG') {
+          bgColor = '#d4edda';
+          textColor = '#155724';
+        } else if (bet.category === 'CONSIDER') {
+          bgColor = '#fff3cd';
+          textColor = '#856404';
+        } else {
+          bgColor = '#f8d7da';
+          textColor = '#721c24';
+        }
+        
+        picksHTML += `
+          <tr style="background: ${bgColor};">
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-weight: bold; color: ${textColor}; font-size: 10px;">${bet.category}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; font-size: 10px;">${bet.game}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${bet.betType}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; font-size: 10px;">${bet.pick}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${bet.edge}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${bet.odds}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${bet.book}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${bet.stake}</td>
+          </tr>
+        `;
+      });
+      
+      picksHTML += `
+            </tbody>
+          </table>
+          <div style="margin-top: 20px; font-size: 12px; line-height: 1.8;">
+            <strong>Summary:</strong><br/>
+            • Total Strong Bets: ${strongBets.length} picks | Total Units: ${strongUnits.toFixed(1)}U<br/>
+            • Total Consider Bets: ${considerBets.length} picks | Total Units: ${considerUnits.toFixed(1)}U<br/>
+            • Total Track Only: ${trackBets.length} picks | Total Units: 0.0U<br/>
+            <strong>Total Action: ${totalActiveBets} active picks | ${totalActiveUnits.toFixed(1)} Units</strong>
+          </div>
+        </div>
+      `;
+      
+      picksDiv.innerHTML = picksHTML;
+      container.appendChild(picksDiv);
+      
+      // Generate Picks PNG
+      const picksCanvas = await html2canvas(picksDiv, { scale: 2, backgroundColor: '#ffffff' });
+      const picksLink = document.createElement('a');
+      picksLink.download = `nba_picks_recommended_${new Date().toISOString().split('T')[0]}.png`;
+      picksLink.href = picksCanvas.toDataURL();
+      picksLink.click();
+      
+      // Cleanup
+      document.body.removeChild(container);
       
     } catch (err) {
-      console.error('PDF export error:', err);
-      alert('Failed to generate PDF. Please try again.');
+      console.error('PNG export error:', err);
+      alert('Failed to generate PNG. Please try again.');
     } finally {
       setExporting(false);
     }
@@ -514,7 +537,7 @@ const NBAPredictionsV2 = () => {
           {loading ? '⟳ Loading...' : '🔄 Refresh'}
         </button>
         <button 
-          onClick={exportToPDF} 
+          onClick={exportToPNG} 
           disabled={exporting || loading || !predictions.length}
           style={{
             marginLeft: '10px',
@@ -528,7 +551,7 @@ const NBAPredictionsV2 = () => {
             fontSize: '14px'
           }}
         >
-          {exporting ? '⟳ Generating...' : '📄 Export PDF'}
+          {exporting ? '⟳ Generating...' : '� Export PNG'}
         </button>
       </div>
 

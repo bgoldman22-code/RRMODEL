@@ -1,0 +1,22 @@
+{
+  "ml": {
+    "enabled": true,
+    "features": [
+      "epa_offense_diff",
+      "epa_defense_diff",
+      "third_down_success_diff",
+      "red_zone_td_rate_diff",
+      "pressure_rate_diff",
+      "explosive_rate_diff",
+      "qb_epa_rolling_diff",
+      "qb_cpoe_rolling_diff",
+      "home_field"
+    ],
+    "holdout_year": 2024,
+    "prob_cap": [0.02, 0.98],
+    "ev_threshold": 0.03,
+    "max_longshot_odds": 4.0,
+    "calibration": "platt",
+    "stacking": { "method": "blend", "lambda": 0.5 }
+  }
+}

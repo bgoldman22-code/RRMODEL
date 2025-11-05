@@ -1,0 +1,40 @@
+{
+  "created_at": "2025-11-04T18:06:24.371Z",
+  "model_version": "v4",
+  "k_folds": 5,
+  "min_bin_size": 200,
+  "total_games": 1168,
+  "num_bins": 3,
+  "pre_calibration": {
+    "brierScore": 0.24038017633786632,
+    "logLoss": 0.672933331558908,
+    "auc": 0.6704175785177737
+  },
+  "post_calibration": {
+    "brierScore": 0.2419224645714397,
+    "logLoss": 0.6768430667862582,
+    "auc": 0.6187496303306322
+  },
+  "improvement": {
+    "brier_pct": "0.64",
+    "logloss_pct": "0.58",
+    "auc_pct": "-7.71"
+  },
+  "isotonic_map": [
+    {
+      "x": 0.6133039417436672,
+      "y": 0.495,
+      "weight": 1
+    },
+    {
+      "x": 0.6142792314378228,
+      "y": 0.5533333333333332,
+      "weight": 4
+    },
+    {
+      "x": 0.6152820733587244,
+      "y": 0.575,
+      "weight": 1
+    }
+  ]
+}

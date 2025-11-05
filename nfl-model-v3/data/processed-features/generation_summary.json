@@ -1,0 +1,31 @@
+{
+  "completed_at": "2025-11-05T17:38:10.869Z",
+  "model_version": "V3",
+  "seasons": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "total_games": 1543,
+  "features_generated": 1255,
+  "skipped_early_season": 288,
+  "coverage_pct": 81.3350615683733,
+  "time_causal": true,
+  "lookback_window": 10,
+  "v3_features": [
+    "third_down_success_rate (off/def)",
+    "red_zone_td_rate (off/def)",
+    "pressure_rate (off/def)",
+    "qb_epa_under_pressure",
+    "explosive_play_rate (off/def)",
+    "pass_block_win_rate",
+    "pass_rush_win_rate",
+    "pressure_diff",
+    "tds_rz_diff",
+    "third_down_diff",
+    "explosive_diff"
+  ]
+}

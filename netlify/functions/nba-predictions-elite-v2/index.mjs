@@ -1654,6 +1654,11 @@ export default async (request, context) => {
       allOpps.sort((a, b) => (b.expectedValue || 0) - (a.expectedValue || 0));
       
       // UNIT SIZING AND EXPOSURE MANAGEMENT
+      console.log(`[UNIT SIZING START] Processing ${allOpps.length} opportunities`);
+      allOpps.forEach((opp, idx) => {
+        console.log(`  [${idx}] ${opp.market} ${opp.pick}: ${opp.units}U (trackOnly: ${!!opp.isTrackOnly})`);
+      });
+      
       // Step 1: Apply individual bet cap (max 5 units per bet)
       allOpps.forEach(opp => {
         // Skip track-only bets (already 0)

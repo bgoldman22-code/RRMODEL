@@ -1,0 +1,16 @@
+{
+  "holdout_year": 2024,
+  "auc": 0.7052669552669552,
+  "brier": 0.22597244175795958,
+  "monotonicity": 1,
+  "bets": 124,
+  "wins": 85,
+  "roi": 0.30858870967741914,
+  "pass": true,
+  "acceptance_gates": {
+    "auc": 0.68,
+    "brier": 0.235,
+    "monotonicity": 0.6,
+    "roi": -0.05
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "spread": {
+    "0-2%": {
+      "min_edge": 0,
+      "max_edge": 0.02,
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "pushes": 0,
+      "win_rate": 0,
+      "avg_edge": 0,
+      "roi": 0
+    },
+    "2-4%": {
+      "min_edge": 0.02,
+      "max_edge": 0.04,
+      "games": 43,
+      "wins": 21,
+      "losses": 22,
+      "pushes": 0,
+      "win_rate": 0.488,
+      "avg_edge": 0.035,
+      "roi": -0.067
+    },
+    "4-6%": {
+      "min_edge": 0.04,
+      "max_edge": 0.06,
+      "games": 62,
+      "wins": 22,
+      "losses": 39,
+      "pushes": 1,
+      "win_rate": 0.355,
+      "avg_edge": 0.049,
+      "roi": -0.306
+    },
+    "6-8%": {
+      "min_edge": 0.06,
+      "max_edge": 0.08,
+      "games": 47,
+      "wins": 28,
+      "losses": 19,
+      "pushes": 0,
+      "win_rate": 0.596,
+      "avg_edge": 0.07,
+      "roi": 0.138
+    },
+    "8%+": {
+      "min_edge": 0.08,
+      "max_edge": 1,
+      "games": 726,
+      "wins": 535,
+      "losses": 184,
+      "pushes": 7,
+      "win_rate": 0.737,
+      "avg_edge": 0.236,
+      "roi": 0.417
+    }
+  },
+  "total": {
+    "0-2%": {
+      "min_edge": 0,
+      "max_edge": 0.02,
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "pushes": 0,
+      "win_rate": 0,
+      "avg_edge": 0,
+      "roi": 0
+    },
+    "2-4%": {
+      "min_edge": 0.02,
+      "max_edge": 0.04,
+      "games": 83,
+      "wins": 41,
+      "losses": 40,
+      "pushes": 2,
+      "win_rate": 0.494,
+      "avg_edge": 0.035,
+      "roi": -0.032
+    },
+    "4-6%": {
+      "min_edge": 0.04,
+      "max_edge": 0.06,
+      "games": 169,
+      "wins": 87,
+      "losses": 82,
+      "pushes": 0,
+      "win_rate": 0.515,
+      "avg_edge": 0.05,
+      "roi": -0.017
+    },
+    "6-8%": {
+      "min_edge": 0.06,
+      "max_edge": 0.08,
+      "games": 127,
+      "wins": 68,
+      "losses": 58,
+      "pushes": 1,
+      "win_rate": 0.535,
+      "avg_edge": 0.07,
+      "roi": 0.031
+    },
+    "8%+": {
+      "min_edge": 0.08,
+      "max_edge": 1,
+      "games": 346,
+      "wins": 171,
+      "losses": 172,
+      "pushes": 3,
+      "win_rate": 0.494,
+      "avg_edge": 0.131,
+      "roi": -0.047
+    }
+  },
+  "moneyline": {
+    "0-2%": {
+      "min_edge": 0,
+      "max_edge": 0.02,
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "pushes": 0,
+      "win_rate": 0,
+      "avg_edge": 0,
+      "roi": 0
+    },
+    "2-4%": {
+      "min_edge": 0.02,
+      "max_edge": 0.04,
+      "games": 35,
+      "wins": 18,
+      "losses": 17,
+      "pushes": 0,
+      "win_rate": 0.514,
+      "avg_edge": 0.036,
+      "roi": -0.018
+    },
+    "4-6%": {
+      "min_edge": 0.04,
+      "max_edge": 0.06,
+      "games": 79,
+      "wins": 39,
+      "losses": 40,
+      "pushes": 0,
+      "win_rate": 0.494,
+      "avg_edge": 0.051,
+      "roi": -0.057
+    },
+    "6-8%": {
+      "min_edge": 0.06,
+      "max_edge": 0.08,
+      "games": 62,
+      "wins": 32,
+      "losses": 30,
+      "pushes": 0,
+      "win_rate": 0.516,
+      "avg_edge": 0.07,
+      "roi": -0.014
+    },
+    "8%+": {
+      "min_edge": 0.08,
+      "max_edge": 1,
+      "games": 681,
+      "wins": 274,
+      "losses": 407,
+      "pushes": 0,
+      "win_rate": 0.402,
+      "avg_edge": 0.239,
+      "roi": -0.232
+    }
+  }
+}

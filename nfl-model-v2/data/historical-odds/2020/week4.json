@@ -1,0 +1,3195 @@
+{
+  "season": 2020,
+  "week": 4,
+  "fetch_date": "2020-10-03",
+  "snapshot_timestamp": "2020-10-03T22:55:00Z",
+  "previous_timestamp": "2020-10-03T22:45:00Z",
+  "next_timestamp": "2020-10-03T23:05:00Z",
+  "games": [
+    {
+      "id": "d2f44260cc55edf03224280b6872c906",
+      "commence_time": "2020-10-04T20:05:00Z",
+      "home_team": "Los Angeles Rams",
+      "away_team": "New York Giants",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": -909,
+            "away_price": 610,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -13.5,
+            "away_line": 13.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 48.5,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -909,
+            "away_price": 625,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": -13.5,
+            "away_line": 13.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "bookmaker": {
+          "moneyline": {
+            "home_price": -909,
+            "away_price": 614,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -909,
+            "away_price": 640,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -13.5,
+            "away_line": 13.5,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -909,
+            "away_price": 640,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": -13.5,
+            "away_line": 13.5,
+            "home_price": -102,
+            "away_price": -108,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -833,
+            "away_price": 650,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": -13.5,
+            "away_line": 13.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": -833,
+            "away_price": 650,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": -13.5,
+            "away_line": 13.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": -833,
+            "away_price": 650,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": -13.5,
+            "away_line": 13.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -833,
+            "away_price": 590,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": -13.5,
+            "away_line": 13.5,
+            "home_price": 105,
+            "away_price": -105,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -769,
+            "away_price": 700,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": -909,
+            "away_price": 625,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": -13.5,
+            "away_line": 13.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 48,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": -909,
+            "away_price": 675,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -13.5,
+            "away_line": 13.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -1000,
+            "away_price": 660,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -22.5,
+            "away_line": 22.5,
+            "home_price": 260,
+            "away_price": -333,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 28.5,
+            "over_price": -1429,
+            "under_price": 825,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "81c8578ea74ac6db74ba12d9f694e9e2",
+      "commence_time": "2020-10-04T20:15:00Z",
+      "home_team": "Chicago Bears",
+      "away_team": "Indianapolis Colts",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "bookmaker": {
+          "moneyline": {
+            "home_price": 137,
+            "away_price": -156,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -109,
+            "under_price": -111,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 135,
+            "away_price": -156,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": 135,
+            "away_price": -154,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -106,
+            "away_price": -103,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": 138,
+            "away_price": -164,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": 128,
+            "away_price": -147,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -120,
+            "away_price": -102,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 128,
+            "away_price": -147,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -120,
+            "away_price": -103,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": 128,
+            "away_price": -147,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -120,
+            "away_price": -103,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 135,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -105,
+            "away_price": 105,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": 144,
+            "away_price": -147,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": 2.5,
+            "away_line": -2.5,
+            "home_price": 105,
+            "away_price": -125,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -114,
+            "away_price": -104,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -149,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -9,
+            "away_line": 9,
+            "home_price": 425,
+            "away_price": -588,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 23.5,
+            "over_price": -1667,
+            "under_price": 850,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "be346debd4086de5a64f146b028203e9",
+      "commence_time": "2020-10-04T17:00:00Z",
+      "home_team": "Tampa Bay Buccaneers",
+      "away_team": "Los Angeles Chargers",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "bookmaker": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 267,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 270,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 275,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -323,
+            "away_price": 265,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -312,
+            "away_price": 265,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -105,
+            "away_price": -105,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": -312,
+            "away_price": 270,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -109,
+            "away_price": -111,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -114,
+            "under_price": -106,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -312,
+            "away_price": 270,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": -312,
+            "away_price": 270,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 260,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": 100,
+            "away_price": 100,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -312,
+            "away_price": 300,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 270,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 270,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 270,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -17.5,
+            "away_line": 17.5,
+            "home_price": 333,
+            "away_price": -455,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 25.5,
+            "over_price": -1111,
+            "under_price": 675,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "bc573f8af1e49db164790fa74d5aa2a1",
+      "commence_time": "2020-10-04T17:00:00Z",
+      "home_team": "Carolina Panthers",
+      "away_team": "Arizona Cardinals",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 145,
+            "away_price": -167,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 51.5,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "bookmaker": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 51.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": 145,
+            "away_price": -164,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -105,
+            "away_price": -105,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 51.5,
+            "over_price": -106,
+            "under_price": -103,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": 138,
+            "away_price": -164,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 52,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 51.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 143,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 51.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": 143,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 51.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": 143,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 51.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -164,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": 100,
+            "away_price": 100,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 51.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": 150,
+            "away_price": -156,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": 145,
+            "away_price": -164,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 51.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": 145,
+            "away_price": -164,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 150,
+            "away_price": -175,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -8,
+            "away_line": 8,
+            "home_price": 475,
+            "away_price": -667,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 31.5,
+            "over_price": -1250,
+            "under_price": 750,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "3bef9acf70101871104e371154311831",
+      "commence_time": "2020-10-04T17:00:00Z",
+      "home_team": "Miami Dolphins",
+      "away_team": "Seattle Seahawks",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 207,
+            "away_price": -250,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 5,
+            "away_line": -5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": 207,
+            "away_price": -244,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": 5,
+            "away_line": -5,
+            "home_price": 100,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -108,
+            "under_price": -102,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": 200,
+            "away_price": -244,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 5,
+            "away_line": -5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 54.5,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 200,
+            "away_price": -238,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": 5.5,
+            "away_line": -5.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "bookmaker": {
+          "moneyline": {
+            "home_price": 199,
+            "away_price": -238,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 210,
+            "away_price": -244,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": 5.5,
+            "away_line": -5.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 54.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": 210,
+            "away_price": -244,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": 5.5,
+            "away_line": -5.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 54.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": 210,
+            "away_price": -244,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": 5.5,
+            "away_line": -5.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 54.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 190,
+            "away_price": -238,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": 5.5,
+            "away_line": -5.5,
+            "home_price": 100,
+            "away_price": 100,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": 210,
+            "away_price": -217,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": 200,
+            "away_price": -238,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": 5.5,
+            "away_line": -5.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 54.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": 205,
+            "away_price": -244,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": 5.5,
+            "away_line": -5.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 210,
+            "away_price": -250,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -5,
+            "away_line": 5,
+            "home_price": 375,
+            "away_price": -500,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 34.5,
+            "over_price": -1111,
+            "under_price": 675,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "c8b4fe632af0122ef8f2720164c78a3b",
+      "commence_time": "2020-10-04T17:00:00Z",
+      "home_team": "Cincinnati Bengals",
+      "away_team": "Jacksonville Jaguars",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -141,
+            "away_price": 120,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 49.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -141,
+            "away_price": 120,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -106,
+            "away_price": -103,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 49.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": -133,
+            "away_price": 114,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 49.5,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "bookmaker": {
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 49,
+            "over_price": -112,
+            "under_price": -108,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -141,
+            "away_price": 120,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 49,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": -130,
+            "away_price": 115,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 49,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -130,
+            "away_price": 115,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 49,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": -130,
+            "away_price": 115,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 49,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": 100,
+            "away_price": 100,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 49,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -130,
+            "away_price": 128,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": -141,
+            "away_price": 120,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 49.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": -141,
+            "away_price": 120,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -139,
+            "away_price": 120,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -13,
+            "away_line": 13,
+            "home_price": 450,
+            "away_price": -625,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 25.5,
+            "over_price": -3333,
+            "under_price": 1300,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "12ae12b14bdfc604d3a1d03d8e5b46c8",
+      "commence_time": "2020-10-04T17:00:00Z",
+      "home_team": "Dallas Cowboys",
+      "away_team": "Cleveland Browns",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -189,
+            "away_price": 170,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 56,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "bookmaker": {
+          "moneyline": {
+            "home_price": -185,
+            "away_price": 160,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 56,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -192,
+            "away_price": 165,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 56,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": -189,
+            "away_price": 160,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 56.5,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -189,
+            "away_price": 165,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -104,
+            "away_price": -106,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 56,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": -192,
+            "away_price": 170,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": -4,
+            "away_line": 4,
+            "home_price": -103,
+            "away_price": -118,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 56,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -196,
+            "away_price": 170,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": -4,
+            "away_line": 4,
+            "home_price": -104,
+            "away_price": -118,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 56,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": -196,
+            "away_price": 170,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": -4,
+            "away_line": 4,
+            "home_price": -104,
+            "away_price": -118,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 56,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -196,
+            "away_price": 165,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": 100,
+            "away_price": 100,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 56,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -182,
+            "away_price": 176,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": -189,
+            "away_price": 165,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 56,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": -196,
+            "away_price": 170,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -175,
+            "away_price": 150,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -15.5,
+            "away_line": 15.5,
+            "home_price": 425,
+            "away_price": -588,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 36.5,
+            "over_price": -1000,
+            "under_price": 625,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "2bf40ff37383207af38a6bb491029126",
+      "commence_time": "2020-10-04T20:25:00Z",
+      "home_team": "Las Vegas Raiders",
+      "away_team": "Buffalo Bills",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "lowvig": {
+          "moneyline": {
+            "home_price": 150,
+            "away_price": -169,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": 105,
+            "away_price": -116,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 53,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 155,
+            "away_price": -175,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 53,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 150,
+            "away_price": -172,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 53,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "bookmaker": {
+          "moneyline": {
+            "home_price": 148,
+            "away_price": -169,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 53,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": 146,
+            "away_price": -175,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 52.5,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": 155,
+            "away_price": -175,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": 3.5,
+            "away_line": -3.5,
+            "home_price": -112,
+            "away_price": -108,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 52.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 155,
+            "away_price": -179,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": 3.5,
+            "away_line": -3.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 52.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": 155,
+            "away_price": -179,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": 3.5,
+            "away_line": -3.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 52.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 150,
+            "away_price": -179,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": 110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 53,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": 158,
+            "away_price": -164,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": 155,
+            "away_price": -175,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 53,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": 160,
+            "away_price": -179,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": 101,
+            "away_price": -119,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 150,
+            "away_price": -179,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -9,
+            "away_line": 9,
+            "home_price": 525,
+            "away_price": -769,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 29.5,
+            "over_price": -2500,
+            "under_price": 1100,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "996f058838596c94595659a71aeacab5",
+      "commence_time": "2020-10-05T00:20:00Z",
+      "home_team": "San Francisco 49ers",
+      "away_team": "Philadelphia Eagles",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 275,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -323,
+            "away_price": 270,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -105,
+            "away_price": -105,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -106,
+            "under_price": -103,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 285,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 270,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "bookmaker": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 281,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 290,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -106,
+            "away_price": -115,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 290,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -106,
+            "away_price": -115,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 290,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 265,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": 105,
+            "away_price": -105,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -303,
+            "away_price": 295,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 275,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": -345,
+            "away_price": 275,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -104,
+            "away_price": -114,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 270,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -16,
+            "away_line": 16,
+            "home_price": 275,
+            "away_price": -357,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 22.5,
+            "over_price": -5000,
+            "under_price": 1400,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "a9d2648d6b1070d81c869172124d4e61",
+      "commence_time": "2020-10-04T17:00:00Z",
+      "home_team": "Washington Football Team",
+      "away_team": "Baltimore Ravens",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": 660,
+            "away_price": -1000,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 14,
+            "away_line": -14,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": 670,
+            "away_price": -1000,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": 14.5,
+            "away_line": -14.5,
+            "home_price": -115,
+            "away_price": 104,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": 100,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 670,
+            "away_price": -1000,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 14,
+            "away_line": -14,
+            "home_price": -108,
+            "away_price": -114,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 850,
+            "away_price": -1250,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": 14,
+            "away_line": -14,
+            "home_price": -104,
+            "away_price": -118,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": 850,
+            "away_price": -1250,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": 14,
+            "away_line": -14,
+            "home_price": -103,
+            "away_price": -118,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": 850,
+            "away_price": -1250,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": 14,
+            "away_line": -14,
+            "home_price": -104,
+            "away_price": -118,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 650,
+            "away_price": -1000,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": 14,
+            "away_line": -14,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": 780,
+            "away_price": -833,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": 700,
+            "away_price": -909,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": 14,
+            "away_line": -14,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "bookmaker": {
+          "moneyline": {
+            "home_price": 639,
+            "away_price": -909,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -114,
+            "under_price": -106,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": 650,
+            "away_price": -1000,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": 14,
+            "away_line": -14,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 640,
+            "away_price": -909,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": 14,
+            "away_line": -14,
+            "home_price": 100,
+            "away_price": 100,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 700,
+            "away_price": -1111,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": 500,
+            "away_price": -714,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 28.5,
+            "over_price": -1111,
+            "under_price": 650,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "14f9c25042039d592061dfff0716569c",
+      "commence_time": "2020-10-04T17:00:00Z",
+      "home_team": "Detroit Lions",
+      "away_team": "New Orleans Saints",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "fanduel": {
+          "moneyline": {
+            "home_price": 128,
+            "away_price": -152,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 54.5,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": 135,
+            "away_price": -156,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": 135,
+            "away_price": -154,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -110,
+            "away_price": 100,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -159,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -108,
+            "away_price": -114,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -159,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -108,
+            "away_price": -114,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -159,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -108,
+            "away_price": -112,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": 144,
+            "away_price": -147,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "bookmaker": {
+          "moneyline": {
+            "home_price": 130,
+            "away_price": -149,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": 140,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": 135,
+            "away_price": -161,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": 3,
+            "away_line": -3,
+            "home_price": 100,
+            "away_price": 100,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": 145,
+            "away_price": -172,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": 400,
+            "away_price": -556,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 34.5,
+            "over_price": -1111,
+            "under_price": 700,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "b486d307229bf228a2ff98df57b3fa45",
+      "commence_time": "2020-10-06T00:15:00Z",
+      "home_team": "Green Bay Packers",
+      "away_team": "Atlanta Falcons",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 275,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": -103,
+            "away_price": -118,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 56.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 275,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": 102,
+            "away_price": -112,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 56.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "mybookieag": {
+          "moneyline": {
+            "home_price": -323,
+            "away_price": 260,
+            "last_update": "2020-10-03T22:46:44Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2020-10-03T22:46:44Z"
+          },
+          "total": {
+            "line": 57,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:44Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": -323,
+            "away_price": 260,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 56.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -323,
+            "away_price": 260,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 56.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 275,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 56.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 275,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 56.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 275,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": -7.5,
+            "away_line": 7.5,
+            "home_price": -109,
+            "away_price": -111,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 56.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -294,
+            "away_price": 260,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "bookmaker": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 267,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 57,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": -323,
+            "away_price": 260,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 56.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "gtbets": {
+          "moneyline": {
+            "home_price": -323,
+            "away_price": 260,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": 101,
+            "away_price": -119,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 255,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": 110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 56.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -333,
+            "away_price": 270,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -17,
+            "away_line": 17,
+            "home_price": 310,
+            "away_price": -400,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 38.5,
+            "over_price": -769,
+            "under_price": 525,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "07cb89c69e1afeb6754c4ab0cbd142ea",
+      "commence_time": "2020-10-04T17:00:00Z",
+      "home_team": "Houston Texans",
+      "away_team": "Minnesota Vikings",
+      "snapshot_timestamp": "2020-10-03T22:55:00Z",
+      "bookmakers": {
+        "gtbets": {
+          "moneyline": {
+            "home_price": -189,
+            "away_price": 165,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -169,
+            "away_price": 168,
+            "last_update": "2020-10-03T22:44:51Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": -185,
+            "away_price": 154,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 53.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "bookmaker": {
+          "moneyline": {
+            "home_price": -179,
+            "away_price": 155,
+            "last_update": "2020-10-03T22:44:50Z"
+          },
+          "total": {
+            "line": 53.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:44:50Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -182,
+            "away_price": 161,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2020-10-03T22:46:18Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2020-10-03T22:46:18Z"
+          }
+        },
+        "lowvig": {
+          "moneyline": {
+            "home_price": -182,
+            "away_price": 161,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -104,
+            "away_price": -106,
+            "last_update": "2020-10-03T22:47:40Z"
+          },
+          "total": {
+            "line": 54,
+            "over_price": 100,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:40Z"
+          }
+        },
+        "williamhill_us": {
+          "moneyline": {
+            "home_price": -185,
+            "away_price": 165,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          },
+          "total": {
+            "line": 53.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:52Z"
+          }
+        },
+        "intertops": {
+          "moneyline": {
+            "home_price": -179,
+            "away_price": 160,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          },
+          "total": {
+            "line": 53.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:48:03Z"
+          }
+        },
+        "unibet": {
+          "moneyline": {
+            "home_price": -179,
+            "away_price": 155,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          },
+          "total": {
+            "line": 53.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:45:06Z"
+          }
+        },
+        "draftkings": {
+          "moneyline": {
+            "home_price": -179,
+            "away_price": 155,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          },
+          "total": {
+            "line": 53.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:47:03Z"
+          }
+        },
+        "betrivers": {
+          "moneyline": {
+            "home_price": -179,
+            "away_price": 155,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          },
+          "total": {
+            "line": 53.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:19Z"
+          }
+        },
+        "pointsbetus": {
+          "moneyline": {
+            "home_price": -185,
+            "away_price": 155,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": 100,
+            "away_price": 100,
+            "last_update": "2020-10-03T22:46:45Z"
+          },
+          "total": {
+            "line": 53.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2020-10-03T22:46:45Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -185,
+            "away_price": 155,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "spread": {
+            "home_line": -14,
+            "away_line": 14,
+            "home_price": 400,
+            "away_price": -556,
+            "last_update": "2020-10-03T22:46:54Z"
+          },
+          "total": {
+            "line": 31.5,
+            "over_price": -1667,
+            "under_price": 875,
+            "last_update": "2020-10-03T22:46:54Z"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "fetched_at": "2025-11-04T15:57:05.333Z",
+    "games_count": 13,
+    "total_snapshot_games": 13,
+    "description": "Week 4 closing lines"
+  }
+}

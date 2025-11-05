@@ -1,0 +1,367 @@
+{
+  "meta": {
+    "modelVersion": "v5",
+    "architecture": "hybrid_best_of_breed",
+    "season": "2025-2026",
+    "week": 10,
+    "updated_at": "2025-11-05T17:05:03.763Z",
+    "games": 14,
+    "models": {
+      "spread": "Poisson EPA V3 (+37% ROI backtested)",
+      "total": "Quantile Blend V5 (25th/75th percentiles)",
+      "moneyline": "Omitted (awaiting profitable model)"
+    }
+  },
+  "rows": [
+    {
+      "matchup": "LV @ DEN",
+      "awayTeam": "LV",
+      "homeTeam": "DEN",
+      "kickoff": "2025-11-07T00:15:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "DEN",
+        "line": 11.384641375141983,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 41.5,
+        "confidence": 0.78,
+        "p25": 31.5,
+        "p50": 41.5,
+        "p75": 51.5,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "ATL @ IND",
+      "awayTeam": "ATL",
+      "homeTeam": "IND",
+      "kickoff": "2025-11-09T13:30:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "IND",
+        "line": 12.136326778980935,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 50.09722222222222,
+        "confidence": 0.78,
+        "p25": 40.09722222222222,
+        "p50": 50.09722222222222,
+        "p75": 60.09722222222222,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "NO @ CAR",
+      "awayTeam": "NO",
+      "homeTeam": "CAR",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "CAR",
+        "line": 7.437143351501054,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 34.22222222222222,
+        "confidence": 0.78,
+        "p25": 24.22222222222222,
+        "p50": 34.22222222222222,
+        "p75": 44.22222222222222,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "NYG @ CHI",
+      "awayTeam": "NYG",
+      "homeTeam": "CHI",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "CHI",
+        "line": 5.3111554388342395,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 48.763888888888886,
+        "confidence": 0.78,
+        "p25": 38.763888888888886,
+        "p50": 48.763888888888886,
+        "p75": 58.763888888888886,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "JAX @ HOU",
+      "awayTeam": "JAX",
+      "homeTeam": "HOU",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "HOU",
+        "line": 7.255713077283994,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 43,
+        "confidence": 0.78,
+        "p25": 33,
+        "p50": 43,
+        "p75": 53,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "BUF @ MIA",
+      "awayTeam": "BUF",
+      "homeTeam": "MIA",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "away",
+        "team": "BUF",
+        "line": 6.4902616412570335,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 49.375,
+        "confidence": 0.78,
+        "p25": 39.375,
+        "p50": 49.375,
+        "p75": 59.375,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "BAL @ MIN",
+      "awayTeam": "BAL",
+      "homeTeam": "MIN",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "MIN",
+        "line": 3.2213079375394975,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 48,
+        "confidence": 0.78,
+        "p25": 38,
+        "p50": 48,
+        "p75": 58,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "CLE @ NYJ",
+      "awayTeam": "CLE",
+      "homeTeam": "NYJ",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "NYJ",
+        "line": 2.8151974772507735,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 36.75,
+        "confidence": 0.78,
+        "p25": 26.75,
+        "p50": 36.75,
+        "p75": 46.75,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "NE @ TB",
+      "awayTeam": "NE",
+      "homeTeam": "TB",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "away",
+        "team": "NE",
+        "line": 0.05842150821500214,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 50.95833333333333,
+        "confidence": 0.78,
+        "p25": 40.95833333333333,
+        "p50": 50.95833333333333,
+        "p75": 60.95833333333333,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "ARI @ SEA",
+      "awayTeam": "ARI",
+      "homeTeam": "SEA",
+      "kickoff": "2025-11-09T20:05:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "SEA",
+        "line": 7.643531976881784,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 51.375,
+        "confidence": 0.78,
+        "p25": 41.375,
+        "p50": 51.375,
+        "p75": 61.375,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "LA @ SF",
+      "awayTeam": "LA",
+      "homeTeam": "SF",
+      "kickoff": "2025-11-09T20:25:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "away",
+        "team": "LA",
+        "line": 2.552758986660267,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 47.68055555555556,
+        "confidence": 0.78,
+        "p25": 37.68055555555556,
+        "p50": 47.68055555555556,
+        "p75": 57.68055555555556,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "DET @ WAS",
+      "awayTeam": "DET",
+      "homeTeam": "WAS",
+      "kickoff": "2025-11-09T20:25:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "away",
+        "team": "DET",
+        "line": 4.4613105869895655,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 52.20833333333333,
+        "confidence": 0.78,
+        "p25": 42.20833333333333,
+        "p50": 52.20833333333333,
+        "p75": 62.20833333333333,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "PIT @ LAC",
+      "awayTeam": "PIT",
+      "homeTeam": "LAC",
+      "kickoff": "2025-11-10T00:20:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "LAC",
+        "line": 3.4319266500775645,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 49.138888888888886,
+        "confidence": 0.78,
+        "p25": 39.138888888888886,
+        "p50": 49.138888888888886,
+        "p75": 59.138888888888886,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    },
+    {
+      "matchup": "PHI @ GB",
+      "awayTeam": "PHI",
+      "homeTeam": "GB",
+      "kickoff": "2025-11-11T00:15:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "GB",
+        "line": 4.408625759018749,
+        "confidence": 0.65,
+        "model": "poisson_epa_v3"
+      },
+      "total": {
+        "side": "under",
+        "total": 51.75,
+        "confidence": 0.78,
+        "p25": 41.75,
+        "p50": 51.75,
+        "p75": 61.75,
+        "model": "quantile_blend_v5"
+      },
+      "moneyline": null
+    }
+  ]
+}

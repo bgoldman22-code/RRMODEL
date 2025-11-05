@@ -1,0 +1,6846 @@
+[
+  {
+    "game_id": "2022_04_ARI_CAR",
+    "season": 2022,
+    "week": 4,
+    "home_team": "CAR",
+    "away_team": "ARI",
+    "predictions": {
+      "spread": {
+        "line": 2.6640360424183602,
+        "pick": "CAR",
+        "confidence": 0.58
+      },
+      "total": {
+        "line": 44.401982806524664,
+        "confidence": 0.58
+      },
+      "moneyline": {
+        "pick": "CAR",
+        "home_win_prob": 0.6485629103734266,
+        "away_win_prob": 0.3514370896265734,
+        "confidence": 0.58
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_BUF_BAL",
+    "season": 2022,
+    "week": 4,
+    "home_team": "BAL",
+    "away_team": "BUF",
+    "predictions": {
+      "spread": {
+        "line": 3.2630847053309804,
+        "pick": "BAL",
+        "confidence": 0.57
+      },
+      "total": {
+        "line": 47.75540281576255,
+        "confidence": 0.57
+      },
+      "moneyline": {
+        "pick": "BAL",
+        "home_win_prob": 0.6792897026661483,
+        "away_win_prob": 0.3207102973338517,
+        "confidence": 0.57
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_CHI_NYG",
+    "season": 2022,
+    "week": 4,
+    "home_team": "NYG",
+    "away_team": "CHI",
+    "predictions": {
+      "spread": {
+        "line": 2.4079426482688397,
+        "pick": "NYG",
+        "confidence": 0.59
+      },
+      "total": {
+        "line": 44.32152159849482,
+        "confidence": 0.59
+      },
+      "moneyline": {
+        "pick": "NYG",
+        "home_win_prob": 0.6350229833801059,
+        "away_win_prob": 0.3649770166198941,
+        "confidence": 0.59
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_CLE_ATL",
+    "season": 2022,
+    "week": 4,
+    "home_team": "ATL",
+    "away_team": "CLE",
+    "predictions": {
+      "spread": {
+        "line": 3.062283721464262,
+        "pick": "ATL",
+        "confidence": 0.6
+      },
+      "total": {
+        "line": 45.66099268241399,
+        "confidence": 0.6
+      },
+      "moneyline": {
+        "pick": "ATL",
+        "home_win_prob": 0.669146038499926,
+        "away_win_prob": 0.33085396150007396,
+        "confidence": 0.6
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_DEN_LV",
+    "season": 2022,
+    "week": 4,
+    "home_team": "LV",
+    "away_team": "DEN",
+    "predictions": {
+      "spread": {
+        "line": 4.694177722127138,
+        "pick": "LV",
+        "confidence": 0.61
+      },
+      "total": {
+        "line": 44.940489258544126,
+        "confidence": 0.61
+      },
+      "moneyline": {
+        "pick": "LV",
+        "home_win_prob": 0.746429801921479,
+        "away_win_prob": 0.253570198078521,
+        "confidence": 0.61
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_JAX_PHI",
+    "season": 2022,
+    "week": 4,
+    "home_team": "PHI",
+    "away_team": "JAX",
+    "predictions": {
+      "spread": {
+        "line": 5.466589479139751,
+        "pick": "PHI",
+        "confidence": 0.58
+      },
+      "total": {
+        "line": 47.82305448066733,
+        "confidence": 0.58
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.7785636537495757,
+        "away_win_prob": 0.2214363462504243,
+        "confidence": 0.58
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_KC_TB",
+    "season": 2022,
+    "week": 4,
+    "home_team": "TB",
+    "away_team": "KC",
+    "predictions": {
+      "spread": {
+        "line": -0.7155730119515287,
+        "pick": "KC",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 45.98885053499434,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.4589471770591569,
+        "away_win_prob": 0.5410528229408431,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_LAC_HOU",
+    "season": 2022,
+    "week": 4,
+    "home_team": "HOU",
+    "away_team": "LAC",
+    "predictions": {
+      "spread": {
+        "line": 3.5656064194203516,
+        "pick": "HOU",
+        "confidence": 0.58
+      },
+      "total": {
+        "line": 43.98427470328454,
+        "confidence": 0.58
+      },
+      "moneyline": {
+        "pick": "HOU",
+        "home_win_prob": 0.6942553331483106,
+        "away_win_prob": 0.30574466685168944,
+        "confidence": 0.58
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_LA_SF",
+    "season": 2022,
+    "week": 4,
+    "home_team": "SF",
+    "away_team": "LA",
+    "predictions": {
+      "spread": {
+        "line": -0.07659969756940477,
+        "pick": "LA",
+        "confidence": 0.57
+      },
+      "total": {
+        "line": 44.629711520332606,
+        "confidence": 0.57
+      },
+      "moneyline": {
+        "pick": "LA",
+        "home_win_prob": 0.4955956313123769,
+        "away_win_prob": 0.5044043686876232,
+        "confidence": 0.57
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_MIA_CIN",
+    "season": 2022,
+    "week": 4,
+    "home_team": "CIN",
+    "away_team": "MIA",
+    "predictions": {
+      "spread": {
+        "line": 1.072607424702627,
+        "pick": "CIN",
+        "confidence": 0.69
+      },
+      "total": {
+        "line": 45.765054593244216,
+        "confidence": 0.69
+      },
+      "moneyline": {
+        "pick": "CIN",
+        "home_win_prob": 0.5613640204792104,
+        "away_win_prob": 0.4386359795207896,
+        "confidence": 0.69
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_MIN_NO",
+    "season": 2022,
+    "week": 4,
+    "home_team": "NO",
+    "away_team": "MIN",
+    "predictions": {
+      "spread": {
+        "line": 3.8700095629852242,
+        "pick": "NO",
+        "confidence": 0.63
+      },
+      "total": {
+        "line": 44.11186789037151,
+        "confidence": 0.63
+      },
+      "moneyline": {
+        "pick": "NO",
+        "home_win_prob": 0.7089112625022677,
+        "away_win_prob": 0.29108873749773234,
+        "confidence": 0.63
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_NE_GB",
+    "season": 2022,
+    "week": 4,
+    "home_team": "GB",
+    "away_team": "NE",
+    "predictions": {
+      "spread": {
+        "line": 3.851961219326183,
+        "pick": "GB",
+        "confidence": 0.59
+      },
+      "total": {
+        "line": 44.4271132480722,
+        "confidence": 0.59
+      },
+      "moneyline": {
+        "pick": "GB",
+        "home_win_prob": 0.7080539115540626,
+        "away_win_prob": 0.2919460884459374,
+        "confidence": 0.59
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_NYJ_PIT",
+    "season": 2022,
+    "week": 4,
+    "home_team": "PIT",
+    "away_team": "NYJ",
+    "predictions": {
+      "spread": {
+        "line": 2.9010967084607584,
+        "pick": "PIT",
+        "confidence": 0.57
+      },
+      "total": {
+        "line": 43.575022380743384,
+        "confidence": 0.57
+      },
+      "moneyline": {
+        "pick": "PIT",
+        "home_win_prob": 0.6608876176572948,
+        "away_win_prob": 0.33911238234270524,
+        "confidence": 0.57
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_SEA_DET",
+    "season": 2022,
+    "week": 4,
+    "home_team": "DET",
+    "away_team": "SEA",
+    "predictions": {
+      "spread": {
+        "line": 4.542533673798316,
+        "pick": "DET",
+        "confidence": 0.57
+      },
+      "total": {
+        "line": 44.618060392132186,
+        "confidence": 0.57
+      },
+      "moneyline": {
+        "pick": "DET",
+        "home_win_prob": 0.7397717851938487,
+        "away_win_prob": 0.2602282148061513,
+        "confidence": 0.57
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_TEN_IND",
+    "season": 2022,
+    "week": 4,
+    "home_team": "IND",
+    "away_team": "TEN",
+    "predictions": {
+      "spread": {
+        "line": 2.1439440780134666,
+        "pick": "IND",
+        "confidence": 0.59
+      },
+      "total": {
+        "line": 43.31529919565968,
+        "confidence": 0.59
+      },
+      "moneyline": {
+        "pick": "IND",
+        "home_win_prob": 0.6208381209937538,
+        "away_win_prob": 0.3791618790062462,
+        "confidence": 0.59
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_04_WAS_DAL",
+    "season": 2022,
+    "week": 4,
+    "home_team": "DAL",
+    "away_team": "WAS",
+    "predictions": {
+      "spread": {
+        "line": 1.1975822137226118,
+        "pick": "DAL",
+        "confidence": 0.58
+      },
+      "total": {
+        "line": 44.12692090227298,
+        "confidence": 0.58
+      },
+      "moneyline": {
+        "pick": "DAL",
+        "home_win_prob": 0.5684288854634262,
+        "away_win_prob": 0.4315711145365738,
+        "confidence": 0.58
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_ATL_TB",
+    "season": 2022,
+    "week": 5,
+    "home_team": "TB",
+    "away_team": "ATL",
+    "predictions": {
+      "spread": {
+        "line": 1.1979520004340465,
+        "pick": "TB",
+        "confidence": 0.66
+      },
+      "total": {
+        "line": 44.76745420697807,
+        "confidence": 0.66
+      },
+      "moneyline": {
+        "pick": "TB",
+        "home_win_prob": 0.5684497498257965,
+        "away_win_prob": 0.43155025017420345,
+        "confidence": 0.66
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_CHI_MIN",
+    "season": 2022,
+    "week": 5,
+    "home_team": "MIN",
+    "away_team": "CHI",
+    "predictions": {
+      "spread": {
+        "line": 2.6947842029060403,
+        "pick": "MIN",
+        "confidence": 0.59
+      },
+      "total": {
+        "line": 44.16243659054524,
+        "confidence": 0.59
+      },
+      "moneyline": {
+        "pick": "MIN",
+        "home_win_prob": 0.6501731437278165,
+        "away_win_prob": 0.34982685627218346,
+        "confidence": 0.59
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_CIN_BAL",
+    "season": 2022,
+    "week": 5,
+    "home_team": "BAL",
+    "away_team": "CIN",
+    "predictions": {
+      "spread": {
+        "line": 5.2698103282236195,
+        "pick": "BAL",
+        "confidence": 0.65
+      },
+      "total": {
+        "line": 46.517817923345035,
+        "confidence": 0.65
+      },
+      "moneyline": {
+        "pick": "BAL",
+        "home_win_prob": 0.7706625987387636,
+        "away_win_prob": 0.22933740126123636,
+        "confidence": 0.65
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_DAL_LA",
+    "season": 2022,
+    "week": 5,
+    "home_team": "LA",
+    "away_team": "DAL",
+    "predictions": {
+      "spread": {
+        "line": 6.286212468248944,
+        "pick": "LA",
+        "confidence": 0.63
+      },
+      "total": {
+        "line": 44.826149312687214,
+        "confidence": 0.63
+      },
+      "moneyline": {
+        "pick": "LA",
+        "home_win_prob": 0.8093556624732036,
+        "away_win_prob": 0.19064433752679644,
+        "confidence": 0.63
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_DET_NE",
+    "season": 2022,
+    "week": 5,
+    "home_team": "NE",
+    "away_team": "DET",
+    "predictions": {
+      "spread": {
+        "line": 1.781948902097345,
+        "pick": "NE",
+        "confidence": 0.65
+      },
+      "total": {
+        "line": 44.53964581468035,
+        "confidence": 0.65
+      },
+      "moneyline": {
+        "pick": "NE",
+        "home_win_prob": 0.6010514908832763,
+        "away_win_prob": 0.39894850911672375,
+        "confidence": 0.65
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_HOU_JAX",
+    "season": 2022,
+    "week": 5,
+    "home_team": "JAX",
+    "away_team": "HOU",
+    "predictions": {
+      "spread": {
+        "line": 3.8387813739289447,
+        "pick": "JAX",
+        "confidence": 0.65
+      },
+      "total": {
+        "line": 45.49843894971651,
+        "confidence": 0.65
+      },
+      "moneyline": {
+        "pick": "JAX",
+        "home_win_prob": 0.7074268924159451,
+        "away_win_prob": 0.29257310758405486,
+        "confidence": 0.65
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_IND_DEN",
+    "season": 2022,
+    "week": 5,
+    "home_team": "DEN",
+    "away_team": "IND",
+    "predictions": {
+      "spread": {
+        "line": 2.7226408072231223,
+        "pick": "DEN",
+        "confidence": 0.58
+      },
+      "total": {
+        "line": 43.84617637423431,
+        "confidence": 0.58
+      },
+      "moneyline": {
+        "pick": "DEN",
+        "home_win_prob": 0.6516290018042696,
+        "away_win_prob": 0.34837099819573036,
+        "confidence": 0.58
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_LAC_CLE",
+    "season": 2022,
+    "week": 5,
+    "home_team": "CLE",
+    "away_team": "LAC",
+    "predictions": {
+      "spread": {
+        "line": 5.073591422539982,
+        "pick": "CLE",
+        "confidence": 0.67
+      },
+      "total": {
+        "line": 44.97710857948845,
+        "confidence": 0.67
+      },
+      "moneyline": {
+        "pick": "CLE",
+        "home_win_prob": 0.7625889313114339,
+        "away_win_prob": 0.2374110686885661,
+        "confidence": 0.67
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_LV_KC",
+    "season": 2022,
+    "week": 5,
+    "home_team": "KC",
+    "away_team": "LV",
+    "predictions": {
+      "spread": {
+        "line": 5.398556076198816,
+        "pick": "KC",
+        "confidence": 0.65
+      },
+      "total": {
+        "line": 45.74488136027468,
+        "confidence": 0.65
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.7758542025332048,
+        "away_win_prob": 0.2241457974667952,
+        "confidence": 0.65
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_MIA_NYJ",
+    "season": 2022,
+    "week": 5,
+    "home_team": "NYJ",
+    "away_team": "MIA",
+    "predictions": {
+      "spread": {
+        "line": 2.1555111958871,
+        "pick": "NYJ",
+        "confidence": 0.67
+      },
+      "total": {
+        "line": 44.852676225805986,
+        "confidence": 0.67
+      },
+      "moneyline": {
+        "pick": "NYJ",
+        "home_win_prob": 0.6214641813273737,
+        "away_win_prob": 0.3785358186726263,
+        "confidence": 0.67
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_NYG_GB",
+    "season": 2022,
+    "week": 5,
+    "home_team": "GB",
+    "away_team": "NYG",
+    "predictions": {
+      "spread": {
+        "line": 4.950188534096704,
+        "pick": "GB",
+        "confidence": 0.58
+      },
+      "total": {
+        "line": 45.39814316377431,
+        "confidence": 0.58
+      },
+      "moneyline": {
+        "pick": "GB",
+        "home_win_prob": 0.7574120982953106,
+        "away_win_prob": 0.24258790170468936,
+        "confidence": 0.58
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_PHI_ARI",
+    "season": 2022,
+    "week": 5,
+    "home_team": "ARI",
+    "away_team": "PHI",
+    "predictions": {
+      "spread": {
+        "line": 2.014489722952275,
+        "pick": "ARI",
+        "confidence": 0.62
+      },
+      "total": {
+        "line": 45.204209538131146,
+        "confidence": 0.62
+      },
+      "moneyline": {
+        "pick": "ARI",
+        "home_win_prob": 0.6138044717141135,
+        "away_win_prob": 0.38619552828588655,
+        "confidence": 0.62
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_PIT_BUF",
+    "season": 2022,
+    "week": 5,
+    "home_team": "BUF",
+    "away_team": "PIT",
+    "predictions": {
+      "spread": {
+        "line": 5.028724199609696,
+        "pick": "BUF",
+        "confidence": 0.68
+      },
+      "total": {
+        "line": 45.824093748399655,
+        "confidence": 0.68
+      },
+      "moneyline": {
+        "pick": "BUF",
+        "home_win_prob": 0.760715563474628,
+        "away_win_prob": 0.239284436525372,
+        "confidence": 0.68
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_SEA_NO",
+    "season": 2022,
+    "week": 5,
+    "home_team": "NO",
+    "away_team": "SEA",
+    "predictions": {
+      "spread": {
+        "line": 0.41197672588565837,
+        "pick": "NO",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 43.8015419179231,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "NO",
+        "home_win_prob": 0.5236709536954884,
+        "away_win_prob": 0.47632904630451156,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_SF_CAR",
+    "season": 2022,
+    "week": 5,
+    "home_team": "CAR",
+    "away_team": "SF",
+    "predictions": {
+      "spread": {
+        "line": 3.109521195578189,
+        "pick": "CAR",
+        "confidence": 0.62
+      },
+      "total": {
+        "line": 45.031385933864186,
+        "confidence": 0.62
+      },
+      "moneyline": {
+        "pick": "CAR",
+        "home_win_prob": 0.671546916628808,
+        "away_win_prob": 0.32845308337119195,
+        "confidence": 0.62
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_05_TEN_WAS",
+    "season": 2022,
+    "week": 5,
+    "home_team": "WAS",
+    "away_team": "TEN",
+    "predictions": {
+      "spread": {
+        "line": 2.385360085603221,
+        "pick": "WAS",
+        "confidence": 0.62
+      },
+      "total": {
+        "line": 43.31461552151245,
+        "confidence": 0.62
+      },
+      "moneyline": {
+        "pick": "WAS",
+        "home_win_prob": 0.6338183365978342,
+        "away_win_prob": 0.36618166340216585,
+        "confidence": 0.62
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_ARI_SEA",
+    "season": 2022,
+    "week": 6,
+    "home_team": "SEA",
+    "away_team": "ARI",
+    "predictions": {
+      "spread": {
+        "line": 6.489692814396717,
+        "pick": "SEA",
+        "confidence": 0.69
+      },
+      "total": {
+        "line": 45.25390129507081,
+        "confidence": 0.69
+      },
+      "moneyline": {
+        "pick": "SEA",
+        "home_win_prob": 0.8164725952771116,
+        "away_win_prob": 0.18352740472288842,
+        "confidence": 0.69
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_BAL_NYG",
+    "season": 2022,
+    "week": 6,
+    "home_team": "NYG",
+    "away_team": "BAL",
+    "predictions": {
+      "spread": {
+        "line": 3.334291244190082,
+        "pick": "NYG",
+        "confidence": 0.6
+      },
+      "total": {
+        "line": 45.49914388354576,
+        "confidence": 0.6
+      },
+      "moneyline": {
+        "pick": "NYG",
+        "home_win_prob": 0.682847101934149,
+        "away_win_prob": 0.317152898065851,
+        "confidence": 0.6
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_BUF_KC",
+    "season": 2022,
+    "week": 6,
+    "home_team": "KC",
+    "away_team": "BUF",
+    "predictions": {
+      "spread": {
+        "line": 4.703640836209548,
+        "pick": "KC",
+        "confidence": 0.63
+      },
+      "total": {
+        "line": 46.63549524491007,
+        "confidence": 0.63
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.7468415352715627,
+        "away_win_prob": 0.2531584647284373,
+        "confidence": 0.63
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_CAR_LA",
+    "season": 2022,
+    "week": 6,
+    "home_team": "LA",
+    "away_team": "CAR",
+    "predictions": {
+      "spread": {
+        "line": 7.378593943400308,
+        "pick": "LA",
+        "confidence": 0.62
+      },
+      "total": {
+        "line": 43.53688630431903,
+        "confidence": 0.62
+      },
+      "moneyline": {
+        "pick": "LA",
+        "home_win_prob": 0.8451525371890238,
+        "away_win_prob": 0.15484746281097617,
+        "confidence": 0.62
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_CIN_NO",
+    "season": 2022,
+    "week": 6,
+    "home_team": "NO",
+    "away_team": "CIN",
+    "predictions": {
+      "spread": {
+        "line": 4.3057473214157405,
+        "pick": "NO",
+        "confidence": 0.63
+      },
+      "total": {
+        "line": 45.265120193772724,
+        "confidence": 0.63
+      },
+      "moneyline": {
+        "pick": "NO",
+        "home_win_prob": 0.729151495763083,
+        "away_win_prob": 0.270848504236917,
+        "confidence": 0.63
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_DAL_PHI",
+    "season": 2022,
+    "week": 6,
+    "home_team": "PHI",
+    "away_team": "DAL",
+    "predictions": {
+      "spread": {
+        "line": 5.520265578405684,
+        "pick": "PHI",
+        "confidence": 0.66
+      },
+      "total": {
+        "line": 46.4692140422348,
+        "confidence": 0.66
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.7806847253961438,
+        "away_win_prob": 0.21931527460385625,
+        "confidence": 0.66
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_DEN_LAC",
+    "season": 2022,
+    "week": 6,
+    "home_team": "LAC",
+    "away_team": "DEN",
+    "predictions": {
+      "spread": {
+        "line": 6.164029399764228,
+        "pick": "LAC",
+        "confidence": 0.69
+      },
+      "total": {
+        "line": 44.33392937756258,
+        "confidence": 0.69
+      },
+      "moneyline": {
+        "pick": "LAC",
+        "home_win_prob": 0.8049817970204409,
+        "away_win_prob": 0.19501820297955907,
+        "confidence": 0.69
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_JAX_IND",
+    "season": 2022,
+    "week": 6,
+    "home_team": "IND",
+    "away_team": "JAX",
+    "predictions": {
+      "spread": {
+        "line": 3.7713634580073325,
+        "pick": "IND",
+        "confidence": 0.66
+      },
+      "total": {
+        "line": 44.95332068258732,
+        "confidence": 0.66
+      },
+      "moneyline": {
+        "pick": "IND",
+        "home_win_prob": 0.7042072361429875,
+        "away_win_prob": 0.2957927638570125,
+        "confidence": 0.66
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_MIN_MIA",
+    "season": 2022,
+    "week": 6,
+    "home_team": "MIA",
+    "away_team": "MIN",
+    "predictions": {
+      "spread": {
+        "line": 3.9045992510172973,
+        "pick": "MIA",
+        "confidence": 0.63
+      },
+      "total": {
+        "line": 44.70558267523067,
+        "confidence": 0.63
+      },
+      "moneyline": {
+        "pick": "MIA",
+        "home_win_prob": 0.7105502221676206,
+        "away_win_prob": 0.28944977783237935,
+        "confidence": 0.63
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_NE_CLE",
+    "season": 2022,
+    "week": 6,
+    "home_team": "CLE",
+    "away_team": "NE",
+    "predictions": {
+      "spread": {
+        "line": 5.500622822764914,
+        "pick": "CLE",
+        "confidence": 0.65
+      },
+      "total": {
+        "line": 45.38134934229471,
+        "confidence": 0.65
+      },
+      "moneyline": {
+        "pick": "CLE",
+        "home_win_prob": 0.7799102187566013,
+        "away_win_prob": 0.22008978124339873,
+        "confidence": 0.65
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_NYJ_GB",
+    "season": 2022,
+    "week": 6,
+    "home_team": "GB",
+    "away_team": "NYJ",
+    "predictions": {
+      "spread": {
+        "line": 4.393634128640219,
+        "pick": "GB",
+        "confidence": 0.62
+      },
+      "total": {
+        "line": 44.96428250036781,
+        "confidence": 0.62
+      },
+      "moneyline": {
+        "pick": "GB",
+        "home_win_prob": 0.7331250027709122,
+        "away_win_prob": 0.2668749972290878,
+        "confidence": 0.62
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_SF_ATL",
+    "season": 2022,
+    "week": 6,
+    "home_team": "ATL",
+    "away_team": "SF",
+    "predictions": {
+      "spread": {
+        "line": 6.43470704220789,
+        "pick": "ATL",
+        "confidence": 0.66
+      },
+      "total": {
+        "line": 45.91442794871175,
+        "confidence": 0.66
+      },
+      "moneyline": {
+        "pick": "ATL",
+        "home_win_prob": 0.8145699555022223,
+        "away_win_prob": 0.18543004449777767,
+        "confidence": 0.66
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_TB_PIT",
+    "season": 2022,
+    "week": 6,
+    "home_team": "PIT",
+    "away_team": "TB",
+    "predictions": {
+      "spread": {
+        "line": 2.791777612686748,
+        "pick": "PIT",
+        "confidence": 0.67
+      },
+      "total": {
+        "line": 43.8857406944437,
+        "confidence": 0.67
+      },
+      "moneyline": {
+        "pick": "PIT",
+        "home_win_prob": 0.6552300135373162,
+        "away_win_prob": 0.34476998646268375,
+        "confidence": 0.67
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_06_WAS_CHI",
+    "season": 2022,
+    "week": 6,
+    "home_team": "CHI",
+    "away_team": "WAS",
+    "predictions": {
+      "spread": {
+        "line": 5.984159638978912,
+        "pick": "CHI",
+        "confidence": 0.67
+      },
+      "total": {
+        "line": 44.26451138200035,
+        "confidence": 0.67
+      },
+      "moneyline": {
+        "pick": "CHI",
+        "home_win_prob": 0.7984052355993645,
+        "away_win_prob": 0.2015947644006355,
+        "confidence": 0.67
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_ATL_CIN",
+    "season": 2022,
+    "week": 7,
+    "home_team": "CIN",
+    "away_team": "ATL",
+    "predictions": {
+      "spread": {
+        "line": 3.6060802005932846,
+        "pick": "CIN",
+        "confidence": 0.64
+      },
+      "total": {
+        "line": 45.60774817241542,
+        "confidence": 0.64
+      },
+      "moneyline": {
+        "pick": "CIN",
+        "home_win_prob": 0.6962277194006251,
+        "away_win_prob": 0.3037722805993749,
+        "confidence": 0.64
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_CHI_NE",
+    "season": 2022,
+    "week": 7,
+    "home_team": "NE",
+    "away_team": "CHI",
+    "predictions": {
+      "spread": {
+        "line": 2.8530668552138634,
+        "pick": "NE",
+        "confidence": 0.66
+      },
+      "total": {
+        "line": 45.48888768132834,
+        "confidence": 0.66
+      },
+      "moneyline": {
+        "pick": "NE",
+        "home_win_prob": 0.6584074645365556,
+        "away_win_prob": 0.34159253546344437,
+        "confidence": 0.66
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_CLE_BAL",
+    "season": 2022,
+    "week": 7,
+    "home_team": "BAL",
+    "away_team": "CLE",
+    "predictions": {
+      "spread": {
+        "line": 3.90296456103931,
+        "pick": "BAL",
+        "confidence": 0.64
+      },
+      "total": {
+        "line": 44.81181451200676,
+        "confidence": 0.64
+      },
+      "moneyline": {
+        "pick": "BAL",
+        "home_win_prob": 0.7104728890333544,
+        "away_win_prob": 0.28952711096664563,
+        "confidence": 0.64
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_DET_DAL",
+    "season": 2022,
+    "week": 7,
+    "home_team": "DAL",
+    "away_team": "DET",
+    "predictions": {
+      "spread": {
+        "line": 1.5469596390151477,
+        "pick": "DAL",
+        "confidence": 0.62
+      },
+      "total": {
+        "line": 44.213589934146206,
+        "confidence": 0.62
+      },
+      "moneyline": {
+        "pick": "DAL",
+        "home_win_prob": 0.5880235273199246,
+        "away_win_prob": 0.4119764726800754,
+        "confidence": 0.62
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_GB_WAS",
+    "season": 2022,
+    "week": 7,
+    "home_team": "WAS",
+    "away_team": "GB",
+    "predictions": {
+      "spread": {
+        "line": 1.9615431662550302,
+        "pick": "WAS",
+        "confidence": 0.64
+      },
+      "total": {
+        "line": 43.89452055094258,
+        "confidence": 0.64
+      },
+      "moneyline": {
+        "pick": "WAS",
+        "home_win_prob": 0.6109137933721922,
+        "away_win_prob": 0.3890862066278078,
+        "confidence": 0.64
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_HOU_LV",
+    "season": 2022,
+    "week": 7,
+    "home_team": "LV",
+    "away_team": "HOU",
+    "predictions": {
+      "spread": {
+        "line": 3.771093353559478,
+        "pick": "LV",
+        "confidence": 0.67
+      },
+      "total": {
+        "line": 45.18351373915106,
+        "confidence": 0.67
+      },
+      "moneyline": {
+        "pick": "LV",
+        "home_win_prob": 0.7041942955818153,
+        "away_win_prob": 0.29580570441818466,
+        "confidence": 0.67
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_IND_TEN",
+    "season": 2022,
+    "week": 7,
+    "home_team": "TEN",
+    "away_team": "IND",
+    "predictions": {
+      "spread": {
+        "line": 4.913740851974211,
+        "pick": "TEN",
+        "confidence": 0.63
+      },
+      "total": {
+        "line": 44.567239323892764,
+        "confidence": 0.63
+      },
+      "moneyline": {
+        "pick": "TEN",
+        "home_win_prob": 0.7558684983852655,
+        "away_win_prob": 0.24413150161473451,
+        "confidence": 0.63
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_KC_SF",
+    "season": 2022,
+    "week": 7,
+    "home_team": "SF",
+    "away_team": "KC",
+    "predictions": {
+      "spread": {
+        "line": 1.628125014990629,
+        "pick": "SF",
+        "confidence": 0.7
+      },
+      "total": {
+        "line": 46.00212105812796,
+        "confidence": 0.7
+      },
+      "moneyline": {
+        "pick": "SF",
+        "home_win_prob": 0.5925383438717552,
+        "away_win_prob": 0.4074616561282448,
+        "confidence": 0.7
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_NO_ARI",
+    "season": 2022,
+    "week": 7,
+    "home_team": "ARI",
+    "away_team": "NO",
+    "predictions": {
+      "spread": {
+        "line": 1.2105265662969051,
+        "pick": "ARI",
+        "confidence": 0.68
+      },
+      "total": {
+        "line": 44.51579088467128,
+        "confidence": 0.68
+      },
+      "moneyline": {
+        "pick": "ARI",
+        "home_win_prob": 0.5691590956529493,
+        "away_win_prob": 0.4308409043470507,
+        "confidence": 0.68
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_NYG_JAX",
+    "season": 2022,
+    "week": 7,
+    "home_team": "JAX",
+    "away_team": "NYG",
+    "predictions": {
+      "spread": {
+        "line": 2.699718054741862,
+        "pick": "JAX",
+        "confidence": 0.68
+      },
+      "total": {
+        "line": 45.510630408151435,
+        "confidence": 0.68
+      },
+      "moneyline": {
+        "pick": "JAX",
+        "home_win_prob": 0.6504312045418231,
+        "away_win_prob": 0.3495687954581769,
+        "confidence": 0.68
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_NYJ_DEN",
+    "season": 2022,
+    "week": 7,
+    "home_team": "DEN",
+    "away_team": "NYJ",
+    "predictions": {
+      "spread": {
+        "line": 1.8782219452708082,
+        "pick": "DEN",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 45.095089066093834,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "DEN",
+        "home_win_prob": 0.6063490118099695,
+        "away_win_prob": 0.3936509881900305,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_PIT_MIA",
+    "season": 2022,
+    "week": 7,
+    "home_team": "MIA",
+    "away_team": "PIT",
+    "predictions": {
+      "spread": {
+        "line": 4.387543829831188,
+        "pick": "MIA",
+        "confidence": 0.65
+      },
+      "total": {
+        "line": 43.51090769695091,
+        "confidence": 0.65
+      },
+      "moneyline": {
+        "pick": "MIA",
+        "home_win_prob": 0.7328508490600162,
+        "away_win_prob": 0.2671491509399838,
+        "confidence": 0.65
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_SEA_LAC",
+    "season": 2022,
+    "week": 7,
+    "home_team": "LAC",
+    "away_team": "SEA",
+    "predictions": {
+      "spread": {
+        "line": 3.452710319772478,
+        "pick": "LAC",
+        "confidence": 0.63
+      },
+      "total": {
+        "line": 45.00729607338404,
+        "confidence": 0.63
+      },
+      "moneyline": {
+        "pick": "LAC",
+        "home_win_prob": 0.6887160124024821,
+        "away_win_prob": 0.31128398759751785,
+        "confidence": 0.63
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_07_TB_CAR",
+    "season": 2022,
+    "week": 7,
+    "home_team": "CAR",
+    "away_team": "TB",
+    "predictions": {
+      "spread": {
+        "line": 0.5273400767192875,
+        "pick": "CAR",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 43.802326213587406,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "CAR",
+        "home_win_prob": 0.5302849371263127,
+        "away_win_prob": 0.46971506287368725,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_ARI_MIN",
+    "season": 2022,
+    "week": 8,
+    "home_team": "MIN",
+    "away_team": "ARI",
+    "predictions": {
+      "spread": {
+        "line": 5.0107847675394614,
+        "pick": "MIN",
+        "confidence": 0.67
+      },
+      "total": {
+        "line": 44.968510930836096,
+        "confidence": 0.67
+      },
+      "moneyline": {
+        "pick": "MIN",
+        "home_win_prob": 0.7599636980767859,
+        "away_win_prob": 0.24003630192321412,
+        "confidence": 0.67
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_BAL_TB",
+    "season": 2022,
+    "week": 8,
+    "home_team": "TB",
+    "away_team": "BAL",
+    "predictions": {
+      "spread": {
+        "line": 1.9373128026073667,
+        "pick": "TB",
+        "confidence": 0.68
+      },
+      "total": {
+        "line": 44.40381288549395,
+        "confidence": 0.68
+      },
+      "moneyline": {
+        "pick": "TB",
+        "home_win_prob": 0.60958828968954,
+        "away_win_prob": 0.39041171031045996,
+        "confidence": 0.68
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_CAR_ATL",
+    "season": 2022,
+    "week": 8,
+    "home_team": "ATL",
+    "away_team": "CAR",
+    "predictions": {
+      "spread": {
+        "line": 6.718394268193465,
+        "pick": "ATL",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 44.38818588562885,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "ATL",
+        "home_win_prob": 0.8242238263218528,
+        "away_win_prob": 0.17577617367814724,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_CHI_DAL",
+    "season": 2022,
+    "week": 8,
+    "home_team": "DAL",
+    "away_team": "CHI",
+    "predictions": {
+      "spread": {
+        "line": 1.5374810386436937,
+        "pick": "DAL",
+        "confidence": 0.68
+      },
+      "total": {
+        "line": 45.38105906073151,
+        "confidence": 0.68
+      },
+      "moneyline": {
+        "pick": "DAL",
+        "home_win_prob": 0.5874952981947643,
+        "away_win_prob": 0.4125047018052357,
+        "confidence": 0.68
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_CIN_CLE",
+    "season": 2022,
+    "week": 8,
+    "home_team": "CLE",
+    "away_team": "CIN",
+    "predictions": {
+      "spread": {
+        "line": 1.8483511755631674,
+        "pick": "CLE",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 45.42831010731773,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "CLE",
+        "home_win_prob": 0.6047079535770031,
+        "away_win_prob": 0.39529204642299687,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_DEN_JAX",
+    "season": 2022,
+    "week": 8,
+    "home_team": "JAX",
+    "away_team": "DEN",
+    "predictions": {
+      "spread": {
+        "line": 6.8331384687371735,
+        "pick": "JAX",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 44.73522198801622,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "JAX",
+        "home_win_prob": 0.8280146925953704,
+        "away_win_prob": 0.17198530740462958,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_GB_BUF",
+    "season": 2022,
+    "week": 8,
+    "home_team": "BUF",
+    "away_team": "GB",
+    "predictions": {
+      "spread": {
+        "line": 5.96719056252497,
+        "pick": "BUF",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 46.032754577334465,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "BUF",
+        "home_win_prob": 0.7977763173339144,
+        "away_win_prob": 0.2022236826660856,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_LV_NO",
+    "season": 2022,
+    "week": 8,
+    "home_team": "NO",
+    "away_team": "LV",
+    "predictions": {
+      "spread": {
+        "line": 2.960452059872247,
+        "pick": "NO",
+        "confidence": 0.67
+      },
+      "total": {
+        "line": 45.34527573145856,
+        "confidence": 0.67
+      },
+      "moneyline": {
+        "pick": "NO",
+        "home_win_prob": 0.663940425111295,
+        "away_win_prob": 0.33605957488870497,
+        "confidence": 0.67
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_MIA_DET",
+    "season": 2022,
+    "week": 8,
+    "home_team": "DET",
+    "away_team": "MIA",
+    "predictions": {
+      "spread": {
+        "line": 3.8862591928447046,
+        "pick": "DET",
+        "confidence": 0.63
+      },
+      "total": {
+        "line": 43.39731306001956,
+        "confidence": 0.63
+      },
+      "moneyline": {
+        "pick": "DET",
+        "home_win_prob": 0.7096818981999521,
+        "away_win_prob": 0.2903181018000479,
+        "confidence": 0.63
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_NE_NYJ",
+    "season": 2022,
+    "week": 8,
+    "home_team": "NYJ",
+    "away_team": "NE",
+    "predictions": {
+      "spread": {
+        "line": 1.9231068981917503,
+        "pick": "NYJ",
+        "confidence": 0.64
+      },
+      "total": {
+        "line": 45.94865166245109,
+        "confidence": 0.64
+      },
+      "moneyline": {
+        "pick": "NYJ",
+        "home_win_prob": 0.6088104119882582,
+        "away_win_prob": 0.39118958801174175,
+        "confidence": 0.64
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_NYG_SEA",
+    "season": 2022,
+    "week": 8,
+    "home_team": "SEA",
+    "away_team": "NYG",
+    "predictions": {
+      "spread": {
+        "line": 1.928924572159922,
+        "pick": "SEA",
+        "confidence": 0.69
+      },
+      "total": {
+        "line": 46.08783567286788,
+        "confidence": 0.69
+      },
+      "moneyline": {
+        "pick": "SEA",
+        "home_win_prob": 0.6091290395071517,
+        "away_win_prob": 0.3908709604928483,
+        "confidence": 0.69
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_PIT_PHI",
+    "season": 2022,
+    "week": 8,
+    "home_team": "PHI",
+    "away_team": "PIT",
+    "predictions": {
+      "spread": {
+        "line": 4.781614657682774,
+        "pick": "PHI",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 44.90292335916071,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.750217265005953,
+        "away_win_prob": 0.24978273499404702,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_SF_LA",
+    "season": 2022,
+    "week": 8,
+    "home_team": "LA",
+    "away_team": "SF",
+    "predictions": {
+      "spread": {
+        "line": 3.5649291354350394,
+        "pick": "LA",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 44.15804382413391,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "LA",
+        "home_win_prob": 0.6942222665211374,
+        "away_win_prob": 0.3057777334788626,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_TEN_HOU",
+    "season": 2022,
+    "week": 8,
+    "home_team": "HOU",
+    "away_team": "TEN",
+    "predictions": {
+      "spread": {
+        "line": 4.377496610022866,
+        "pick": "HOU",
+        "confidence": 0.62
+      },
+      "total": {
+        "line": 44.8707550927499,
+        "confidence": 0.62
+      },
+      "moneyline": {
+        "pick": "HOU",
+        "home_win_prob": 0.7323981842952693,
+        "away_win_prob": 0.26760181570473074,
+        "confidence": 0.62
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_08_WAS_IND",
+    "season": 2022,
+    "week": 8,
+    "home_team": "IND",
+    "away_team": "WAS",
+    "predictions": {
+      "spread": {
+        "line": 5.335508886845867,
+        "pick": "IND",
+        "confidence": 0.65
+      },
+      "total": {
+        "line": 44.61121739902734,
+        "confidence": 0.65
+      },
+      "moneyline": {
+        "pick": "IND",
+        "home_win_prob": 0.7733223561142535,
+        "away_win_prob": 0.22667764388574652,
+        "confidence": 0.65
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_BAL_NO",
+    "season": 2022,
+    "week": 9,
+    "home_team": "NO",
+    "away_team": "BAL",
+    "predictions": {
+      "spread": {
+        "line": 3.8387835665365047,
+        "pick": "NO",
+        "confidence": 0.66
+      },
+      "total": {
+        "line": 45.34065097549214,
+        "confidence": 0.66
+      },
+      "moneyline": {
+        "pick": "NO",
+        "home_win_prob": 0.7074269967929109,
+        "away_win_prob": 0.2925730032070891,
+        "confidence": 0.66
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_BUF_NYJ",
+    "season": 2022,
+    "week": 9,
+    "home_team": "NYJ",
+    "away_team": "BUF",
+    "predictions": {
+      "spread": {
+        "line": 0.6019901683771325,
+        "pick": "NYJ",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 46.11669300396851,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "NYJ",
+        "home_win_prob": 0.5345592423533062,
+        "away_win_prob": 0.4654407576466938,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_CAR_CIN",
+    "season": 2022,
+    "week": 9,
+    "home_team": "CIN",
+    "away_team": "CAR",
+    "predictions": {
+      "spread": {
+        "line": 6.7126382963780635,
+        "pick": "CIN",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 44.99185724684872,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "CIN",
+        "home_win_prob": 0.8240319426345976,
+        "away_win_prob": 0.17596805736540244,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_GB_DET",
+    "season": 2022,
+    "week": 9,
+    "home_team": "DET",
+    "away_team": "GB",
+    "predictions": {
+      "spread": {
+        "line": 4.873376803941546,
+        "pick": "DET",
+        "confidence": 0.64
+      },
+      "total": {
+        "line": 43.24623479808247,
+        "confidence": 0.64
+      },
+      "moneyline": {
+        "pick": "DET",
+        "home_win_prob": 0.754151292577346,
+        "away_win_prob": 0.24584870742265397,
+        "confidence": 0.64
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_IND_NE",
+    "season": 2022,
+    "week": 9,
+    "home_team": "NE",
+    "away_team": "IND",
+    "predictions": {
+      "spread": {
+        "line": 3.4421805630174305,
+        "pick": "NE",
+        "confidence": 0.67
+      },
+      "total": {
+        "line": 44.950538248268515,
+        "confidence": 0.67
+      },
+      "moneyline": {
+        "pick": "NE",
+        "home_win_prob": 0.6881965651427057,
+        "away_win_prob": 0.31180343485729434,
+        "confidence": 0.67
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_LAC_ATL",
+    "season": 2022,
+    "week": 9,
+    "home_team": "ATL",
+    "away_team": "LAC",
+    "predictions": {
+      "spread": {
+        "line": 5.065121844499627,
+        "pick": "ATL",
+        "confidence": 0.67
+      },
+      "total": {
+        "line": 44.523764778939665,
+        "confidence": 0.67
+      },
+      "moneyline": {
+        "pick": "ATL",
+        "home_win_prob": 0.7622360707328584,
+        "away_win_prob": 0.23776392926714163,
+        "confidence": 0.67
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_LA_TB",
+    "season": 2022,
+    "week": 9,
+    "home_team": "TB",
+    "away_team": "LA",
+    "predictions": {
+      "spread": {
+        "line": 1.2270811671015598,
+        "pick": "TB",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 43.6414842202037,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "TB",
+        "home_win_prob": 0.5700925267970351,
+        "away_win_prob": 0.42990747320296485,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_LV_JAX",
+    "season": 2022,
+    "week": 9,
+    "home_team": "JAX",
+    "away_team": "LV",
+    "predictions": {
+      "spread": {
+        "line": 3.051867415901147,
+        "pick": "JAX",
+        "confidence": 0.64
+      },
+      "total": {
+        "line": 44.83944558465348,
+        "confidence": 0.64
+      },
+      "moneyline": {
+        "pick": "JAX",
+        "home_win_prob": 0.6686154294957544,
+        "away_win_prob": 0.33138457050424563,
+        "confidence": 0.64
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_MIA_CHI",
+    "season": 2022,
+    "week": 9,
+    "home_team": "CHI",
+    "away_team": "MIA",
+    "predictions": {
+      "spread": {
+        "line": 3.997259729940124,
+        "pick": "CHI",
+        "confidence": 0.66
+      },
+      "total": {
+        "line": 44.78982450512337,
+        "confidence": 0.66
+      },
+      "moneyline": {
+        "pick": "CHI",
+        "home_win_prob": 0.7149136680477785,
+        "away_win_prob": 0.28508633195222155,
+        "confidence": 0.66
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_MIN_WAS",
+    "season": 2022,
+    "week": 9,
+    "home_team": "WAS",
+    "away_team": "MIN",
+    "predictions": {
+      "spread": {
+        "line": 1.2583330058496536,
+        "pick": "WAS",
+        "confidence": 0.69
+      },
+      "total": {
+        "line": 45.0872783687077,
+        "confidence": 0.69
+      },
+      "moneyline": {
+        "pick": "WAS",
+        "home_win_prob": 0.5718532988380391,
+        "away_win_prob": 0.42814670116196085,
+        "confidence": 0.69
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_PHI_HOU",
+    "season": 2022,
+    "week": 9,
+    "home_team": "HOU",
+    "away_team": "PHI",
+    "predictions": {
+      "spread": {
+        "line": 1.8580745165756198,
+        "pick": "HOU",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 45.28468132817757,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "HOU",
+        "home_win_prob": 0.605242401316417,
+        "away_win_prob": 0.39475759868358296,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_SEA_ARI",
+    "season": 2022,
+    "week": 9,
+    "home_team": "ARI",
+    "away_team": "SEA",
+    "predictions": {
+      "spread": {
+        "line": 2.710261438595591,
+        "pick": "ARI",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 45.38280439007102,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "ARI",
+        "home_win_prob": 0.6509823716209203,
+        "away_win_prob": 0.3490176283790797,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_09_TEN_KC",
+    "season": 2022,
+    "week": 9,
+    "home_team": "KC",
+    "away_team": "TEN",
+    "predictions": {
+      "spread": {
+        "line": 6.832371953961635,
+        "pick": "KC",
+        "confidence": 0.77
+      },
+      "total": {
+        "line": 46.272561930336295,
+        "confidence": 0.77
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.8279895851300688,
+        "away_win_prob": 0.17201041486993118,
+        "confidence": 0.77
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_ARI_LA",
+    "season": 2022,
+    "week": 10,
+    "home_team": "LA",
+    "away_team": "ARI",
+    "predictions": {
+      "spread": {
+        "line": 5.823939127703837,
+        "pick": "LA",
+        "confidence": 0.7
+      },
+      "total": {
+        "line": 44.094552521710284,
+        "confidence": 0.7
+      },
+      "moneyline": {
+        "pick": "LA",
+        "home_win_prob": 0.7924086914796256,
+        "away_win_prob": 0.20759130852037444,
+        "confidence": 0.7
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_ATL_CAR",
+    "season": 2022,
+    "week": 10,
+    "home_team": "CAR",
+    "away_team": "ATL",
+    "predictions": {
+      "spread": {
+        "line": 3.099911237092205,
+        "pick": "CAR",
+        "confidence": 0.69
+      },
+      "total": {
+        "line": 44.515231198594314,
+        "confidence": 0.69
+      },
+      "moneyline": {
+        "pick": "CAR",
+        "home_win_prob": 0.6710592044784205,
+        "away_win_prob": 0.3289407955215795,
+        "confidence": 0.69
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_CLE_MIA",
+    "season": 2022,
+    "week": 10,
+    "home_team": "MIA",
+    "away_team": "CLE",
+    "predictions": {
+      "spread": {
+        "line": 5.248518708557925,
+        "pick": "MIA",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 45.48889398729905,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "MIA",
+        "home_win_prob": 0.7697959345418459,
+        "away_win_prob": 0.23020406545815408,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_DAL_GB",
+    "season": 2022,
+    "week": 10,
+    "home_team": "GB",
+    "away_team": "DAL",
+    "predictions": {
+      "spread": {
+        "line": 2.1260586516022872,
+        "pick": "GB",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 45.042584251974155,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "GB",
+        "home_win_prob": 0.6198692956305278,
+        "away_win_prob": 0.38013070436947216,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_DEN_TEN",
+    "season": 2022,
+    "week": 10,
+    "home_team": "TEN",
+    "away_team": "DEN",
+    "predictions": {
+      "spread": {
+        "line": 4.043788264961934,
+        "pick": "TEN",
+        "confidence": 0.69
+      },
+      "total": {
+        "line": 45.02871752833271,
+        "confidence": 0.69
+      },
+      "moneyline": {
+        "pick": "TEN",
+        "home_win_prob": 0.7170897506842837,
+        "away_win_prob": 0.2829102493157163,
+        "confidence": 0.69
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_DET_CHI",
+    "season": 2022,
+    "week": 10,
+    "home_team": "CHI",
+    "away_team": "DET",
+    "predictions": {
+      "spread": {
+        "line": 5.592594195816956,
+        "pick": "CHI",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 44.467834724213176,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "CHI",
+        "home_win_prob": 0.7835197017304755,
+        "away_win_prob": 0.21648029826952453,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_HOU_NYG",
+    "season": 2022,
+    "week": 10,
+    "home_team": "NYG",
+    "away_team": "HOU",
+    "predictions": {
+      "spread": {
+        "line": 5.0726591609594465,
+        "pick": "NYG",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 44.23642253552163,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "NYG",
+        "home_win_prob": 0.762550108986974,
+        "away_win_prob": 0.23744989101302605,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_IND_LV",
+    "season": 2022,
+    "week": 10,
+    "home_team": "LV",
+    "away_team": "IND",
+    "predictions": {
+      "spread": {
+        "line": 7.133585090167524,
+        "pick": "LV",
+        "confidence": 0.8
+      },
+      "total": {
+        "line": 44.20478120809585,
+        "confidence": 0.8
+      },
+      "moneyline": {
+        "pick": "LV",
+        "home_win_prob": 0.8376335057690195,
+        "away_win_prob": 0.16236649423098048,
+        "confidence": 0.8
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_JAX_KC",
+    "season": 2022,
+    "week": 10,
+    "home_team": "KC",
+    "away_team": "JAX",
+    "predictions": {
+      "spread": {
+        "line": 5.0867596692090045,
+        "pick": "KC",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 45.69267495727245,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.7631368317647138,
+        "away_win_prob": 0.2368631682352862,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_LAC_SF",
+    "season": 2022,
+    "week": 10,
+    "home_team": "SF",
+    "away_team": "LAC",
+    "predictions": {
+      "spread": {
+        "line": 5.458502601503721,
+        "pick": "SF",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 45.06171206150233,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "SF",
+        "home_win_prob": 0.7782428224790112,
+        "away_win_prob": 0.22175717752098878,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_MIN_BUF",
+    "season": 2022,
+    "week": 10,
+    "home_team": "BUF",
+    "away_team": "MIN",
+    "predictions": {
+      "spread": {
+        "line": 4.328352192191213,
+        "pick": "BUF",
+        "confidence": 0.7
+      },
+      "total": {
+        "line": 46.1828426686958,
+        "confidence": 0.7
+      },
+      "moneyline": {
+        "pick": "BUF",
+        "home_win_prob": 0.7301770437717089,
+        "away_win_prob": 0.2698229562282911,
+        "confidence": 0.7
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_NO_PIT",
+    "season": 2022,
+    "week": 10,
+    "home_team": "PIT",
+    "away_team": "NO",
+    "predictions": {
+      "spread": {
+        "line": 2.7073407868521433,
+        "pick": "PIT",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 44.10744130847238,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "PIT",
+        "home_win_prob": 0.6508297316637611,
+        "away_win_prob": 0.3491702683362389,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_SEA_TB",
+    "season": 2022,
+    "week": 10,
+    "home_team": "TB",
+    "away_team": "SEA",
+    "predictions": {
+      "spread": {
+        "line": 1.644294791135707,
+        "pick": "TB",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 45.027133645721094,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "TB",
+        "home_win_prob": 0.5934359485549238,
+        "away_win_prob": 0.40656405144507624,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_10_WAS_PHI",
+    "season": 2022,
+    "week": 10,
+    "home_team": "PHI",
+    "away_team": "WAS",
+    "predictions": {
+      "spread": {
+        "line": 7.053168846710396,
+        "pick": "PHI",
+        "confidence": 0.76
+      },
+      "total": {
+        "line": 46.27285115172129,
+        "confidence": 0.76
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.8351022840326506,
+        "away_win_prob": 0.16489771596734937,
+        "confidence": 0.76
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_CAR_BAL",
+    "season": 2022,
+    "week": 11,
+    "home_team": "BAL",
+    "away_team": "CAR",
+    "predictions": {
+      "spread": {
+        "line": 5.498299395176417,
+        "pick": "BAL",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 45.608938347878436,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "BAL",
+        "home_win_prob": 0.7798184771325395,
+        "away_win_prob": 0.2201815228674605,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_CHI_ATL",
+    "season": 2022,
+    "week": 11,
+    "home_team": "ATL",
+    "away_team": "CHI",
+    "predictions": {
+      "spread": {
+        "line": 1.9903915643359271,
+        "pick": "ATL",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 44.19224299942383,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "ATL",
+        "home_win_prob": 0.6124897861403873,
+        "away_win_prob": 0.3875102138596127,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_CIN_PIT",
+    "season": 2022,
+    "week": 11,
+    "home_team": "PIT",
+    "away_team": "CIN",
+    "predictions": {
+      "spread": {
+        "line": 0.26778502139632776,
+        "pick": "PIT",
+        "confidence": 0.79
+      },
+      "total": {
+        "line": 44.84544088509035,
+        "confidence": 0.79
+      },
+      "moneyline": {
+        "pick": "PIT",
+        "home_win_prob": 0.5153927731303136,
+        "away_win_prob": 0.4846072268696864,
+        "confidence": 0.79
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_CLE_BUF",
+    "season": 2022,
+    "week": 11,
+    "home_team": "BUF",
+    "away_team": "CLE",
+    "predictions": {
+      "spread": {
+        "line": 3.629696805567536,
+        "pick": "BUF",
+        "confidence": 0.7
+      },
+      "total": {
+        "line": 45.51781345584423,
+        "confidence": 0.7
+      },
+      "moneyline": {
+        "pick": "BUF",
+        "home_win_prob": 0.6973752942727459,
+        "away_win_prob": 0.3026247057272541,
+        "confidence": 0.7
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_DAL_MIN",
+    "season": 2022,
+    "week": 11,
+    "home_team": "MIN",
+    "away_team": "DAL",
+    "predictions": {
+      "spread": {
+        "line": 3.1492630583275756,
+        "pick": "MIN",
+        "confidence": 0.7
+      },
+      "total": {
+        "line": 45.93275704998346,
+        "confidence": 0.7
+      },
+      "moneyline": {
+        "pick": "MIN",
+        "home_win_prob": 0.6735599096908839,
+        "away_win_prob": 0.32644009030911614,
+        "confidence": 0.7
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_DET_NYG",
+    "season": 2022,
+    "week": 11,
+    "home_team": "NYG",
+    "away_team": "DET",
+    "predictions": {
+      "spread": {
+        "line": 4.445215511651425,
+        "pick": "NYG",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 44.95062741081992,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "NYG",
+        "home_win_prob": 0.7354397425471185,
+        "away_win_prob": 0.2645602574528815,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_KC_LAC",
+    "season": 2022,
+    "week": 11,
+    "home_team": "LAC",
+    "away_team": "KC",
+    "predictions": {
+      "spread": {
+        "line": 0.26717369091698906,
+        "pick": "LAC",
+        "confidence": 0.8
+      },
+      "total": {
+        "line": 44.872994913937795,
+        "confidence": 0.8
+      },
+      "moneyline": {
+        "pick": "LAC",
+        "home_win_prob": 0.515357654866634,
+        "away_win_prob": 0.484642345133366,
+        "confidence": 0.8
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_LA_NO",
+    "season": 2022,
+    "week": 11,
+    "home_team": "NO",
+    "away_team": "LA",
+    "predictions": {
+      "spread": {
+        "line": 2.328690642802434,
+        "pick": "NO",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 43.81400635596541,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "NO",
+        "home_win_prob": 0.6307880049392147,
+        "away_win_prob": 0.3692119950607853,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_LV_DEN",
+    "season": 2022,
+    "week": 11,
+    "home_team": "DEN",
+    "away_team": "LV",
+    "predictions": {
+      "spread": {
+        "line": 2.915645918349586,
+        "pick": "DEN",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 43.993656749076486,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "DEN",
+        "home_win_prob": 0.661637174114712,
+        "away_win_prob": 0.338362825885288,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_NYJ_NE",
+    "season": 2022,
+    "week": 11,
+    "home_team": "NE",
+    "away_team": "NYJ",
+    "predictions": {
+      "spread": {
+        "line": 3.989455403996242,
+        "pick": "NE",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 45.18652778999483,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "NE",
+        "home_win_prob": 0.7145476852400693,
+        "away_win_prob": 0.2854523147599307,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_PHI_IND",
+    "season": 2022,
+    "week": 11,
+    "home_team": "IND",
+    "away_team": "PHI",
+    "predictions": {
+      "spread": {
+        "line": -1.3382029180360986,
+        "pick": "PHI",
+        "confidence": 0.83
+      },
+      "total": {
+        "line": 44.577847221381994,
+        "confidence": 0.83
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.42365507906440836,
+        "away_win_prob": 0.5763449209355916,
+        "confidence": 0.83
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_SF_ARI",
+    "season": 2022,
+    "week": 11,
+    "home_team": "ARI",
+    "away_team": "SF",
+    "predictions": {
+      "spread": {
+        "line": 1.1322035836326285,
+        "pick": "ARI",
+        "confidence": 0.76
+      },
+      "total": {
+        "line": 44.724732549011094,
+        "confidence": 0.76
+      },
+      "moneyline": {
+        "pick": "ARI",
+        "home_win_prob": 0.5647362955801447,
+        "away_win_prob": 0.4352637044198553,
+        "confidence": 0.76
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_TEN_GB",
+    "season": 2022,
+    "week": 11,
+    "home_team": "GB",
+    "away_team": "TEN",
+    "predictions": {
+      "spread": {
+        "line": 5.110287674596564,
+        "pick": "GB",
+        "confidence": 0.68
+      },
+      "total": {
+        "line": 44.90820569217071,
+        "confidence": 0.68
+      },
+      "moneyline": {
+        "pick": "GB",
+        "home_win_prob": 0.7641136052539484,
+        "away_win_prob": 0.23588639474605155,
+        "confidence": 0.68
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_11_WAS_HOU",
+    "season": 2022,
+    "week": 11,
+    "home_team": "HOU",
+    "away_team": "WAS",
+    "predictions": {
+      "spread": {
+        "line": 3.2377077201405475,
+        "pick": "HOU",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 44.61587962108651,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "HOU",
+        "home_win_prob": 0.678016817357418,
+        "away_win_prob": 0.32198318264258197,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_ATL_WAS",
+    "season": 2022,
+    "week": 12,
+    "home_team": "WAS",
+    "away_team": "ATL",
+    "predictions": {
+      "spread": {
+        "line": 2.9901855622177584,
+        "pick": "WAS",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 44.830551494106125,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "WAS",
+        "home_win_prob": 0.6654645865409212,
+        "away_win_prob": 0.3345354134590788,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_BAL_JAX",
+    "season": 2022,
+    "week": 12,
+    "home_team": "JAX",
+    "away_team": "BAL",
+    "predictions": {
+      "spread": {
+        "line": 3.8634498164625426,
+        "pick": "JAX",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 45.49485357338694,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "JAX",
+        "home_win_prob": 0.7085998263691866,
+        "away_win_prob": 0.2914001736308134,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_BUF_DET",
+    "season": 2022,
+    "week": 12,
+    "home_team": "DET",
+    "away_team": "BUF",
+    "predictions": {
+      "spread": {
+        "line": 3.5673316143462603,
+        "pick": "DET",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 45.42028023616549,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "DET",
+        "home_win_prob": 0.694339552257504,
+        "away_win_prob": 0.305660447742496,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_CHI_NYJ",
+    "season": 2022,
+    "week": 12,
+    "home_team": "NYJ",
+    "away_team": "CHI",
+    "predictions": {
+      "spread": {
+        "line": -1.0564925964183844,
+        "pick": "CHI",
+        "confidence": 0.81
+      },
+      "total": {
+        "line": 44.459500172079345,
+        "confidence": 0.81
+      },
+      "moneyline": {
+        "pick": "CHI",
+        "home_win_prob": 0.4395488320733539,
+        "away_win_prob": 0.5604511679266462,
+        "confidence": 0.81
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_CIN_TEN",
+    "season": 2022,
+    "week": 12,
+    "home_team": "TEN",
+    "away_team": "CIN",
+    "predictions": {
+      "spread": {
+        "line": 0.9574895481880521,
+        "pick": "TEN",
+        "confidence": 0.77
+      },
+      "total": {
+        "line": 45.8041462326676,
+        "confidence": 0.77
+      },
+      "moneyline": {
+        "pick": "TEN",
+        "home_win_prob": 0.554834215498943,
+        "away_win_prob": 0.44516578450105704,
+        "confidence": 0.77
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_DEN_CAR",
+    "season": 2022,
+    "week": 12,
+    "home_team": "CAR",
+    "away_team": "DEN",
+    "predictions": {
+      "spread": {
+        "line": 3.467452728044002,
+        "pick": "CAR",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 44.29597782972233,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "CAR",
+        "home_win_prob": 0.6894424779190775,
+        "away_win_prob": 0.31055752208092247,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_GB_PHI",
+    "season": 2022,
+    "week": 12,
+    "home_team": "PHI",
+    "away_team": "GB",
+    "predictions": {
+      "spread": {
+        "line": 4.758592467323959,
+        "pick": "PHI",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 45.06027782142675,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.7492236944306719,
+        "away_win_prob": 0.25077630556932806,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_HOU_MIA",
+    "season": 2022,
+    "week": 12,
+    "home_team": "MIA",
+    "away_team": "HOU",
+    "predictions": {
+      "spread": {
+        "line": 8.423982134755846,
+        "pick": "MIA",
+        "confidence": 0.87
+      },
+      "total": {
+        "line": 45.48734259709606,
+        "confidence": 0.87
+      },
+      "moneyline": {
+        "pick": "MIA",
+        "home_win_prob": 0.8740789842161288,
+        "away_win_prob": 0.12592101578387116,
+        "confidence": 0.87
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_LAC_ARI",
+    "season": 2022,
+    "week": 12,
+    "home_team": "ARI",
+    "away_team": "LAC",
+    "predictions": {
+      "spread": {
+        "line": 3.1975747646672374,
+        "pick": "ARI",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 43.98839810731171,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "ARI",
+        "home_win_prob": 0.6759983870225641,
+        "away_win_prob": 0.3240016129774359,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_LA_KC",
+    "season": 2022,
+    "week": 12,
+    "home_team": "KC",
+    "away_team": "LA",
+    "predictions": {
+      "spread": {
+        "line": 4.473769311082126,
+        "pick": "KC",
+        "confidence": 0.83
+      },
+      "total": {
+        "line": 45.270717205333895,
+        "confidence": 0.83
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.7367155668925426,
+        "away_win_prob": 0.2632844331074574,
+        "confidence": 0.83
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_LV_SEA",
+    "season": 2022,
+    "week": 12,
+    "home_team": "SEA",
+    "away_team": "LV",
+    "predictions": {
+      "spread": {
+        "line": 4.348635477178263,
+        "pick": "SEA",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 45.46168218326345,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "SEA",
+        "home_win_prob": 0.7310951782841446,
+        "away_win_prob": 0.2689048217158554,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_NE_MIN",
+    "season": 2022,
+    "week": 12,
+    "home_team": "MIN",
+    "away_team": "NE",
+    "predictions": {
+      "spread": {
+        "line": 5.7424620687819905,
+        "pick": "MIN",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 44.87660651807246,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "MIN",
+        "home_win_prob": 0.7893091665995078,
+        "away_win_prob": 0.21069083340049222,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_NO_SF",
+    "season": 2022,
+    "week": 12,
+    "home_team": "SF",
+    "away_team": "NO",
+    "predictions": {
+      "spread": {
+        "line": 5.218763266786175,
+        "pick": "SF",
+        "confidence": 0.8
+      },
+      "total": {
+        "line": 45.779848704295844,
+        "confidence": 0.8
+      },
+      "moneyline": {
+        "pick": "SF",
+        "home_win_prob": 0.7685809135752903,
+        "away_win_prob": 0.23141908642470965,
+        "confidence": 0.8
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_NYG_DAL",
+    "season": 2022,
+    "week": 12,
+    "home_team": "DAL",
+    "away_team": "NYG",
+    "predictions": {
+      "spread": {
+        "line": 4.6242206531316965,
+        "pick": "DAL",
+        "confidence": 0.79
+      },
+      "total": {
+        "line": 46.12765804429132,
+        "confidence": 0.79
+      },
+      "moneyline": {
+        "pick": "DAL",
+        "home_win_prob": 0.743372328759669,
+        "away_win_prob": 0.25662767124033103,
+        "confidence": 0.79
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_PIT_IND",
+    "season": 2022,
+    "week": 12,
+    "home_team": "IND",
+    "away_team": "PIT",
+    "predictions": {
+      "spread": {
+        "line": 1.1929084112530695,
+        "pick": "IND",
+        "confidence": 0.81
+      },
+      "total": {
+        "line": 43.646057044421276,
+        "confidence": 0.81
+      },
+      "moneyline": {
+        "pick": "IND",
+        "home_win_prob": 0.5681651560287759,
+        "away_win_prob": 0.43183484397122407,
+        "confidence": 0.81
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_12_TB_CLE",
+    "season": 2022,
+    "week": 12,
+    "home_team": "CLE",
+    "away_team": "TB",
+    "predictions": {
+      "spread": {
+        "line": 5.184696297913699,
+        "pick": "CLE",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 44.81849779613325,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "CLE",
+        "home_win_prob": 0.7671843433369745,
+        "away_win_prob": 0.2328156566630255,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_BUF_NE",
+    "season": 2022,
+    "week": 13,
+    "home_team": "NE",
+    "away_team": "BUF",
+    "predictions": {
+      "spread": {
+        "line": -0.21241324595027544,
+        "pick": "BUF",
+        "confidence": 0.83
+      },
+      "total": {
+        "line": 45.342138661535785,
+        "confidence": 0.83
+      },
+      "moneyline": {
+        "pick": "BUF",
+        "home_win_prob": 0.4877886671112054,
+        "away_win_prob": 0.5122113328887946,
+        "confidence": 0.83
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_CLE_HOU",
+    "season": 2022,
+    "week": 13,
+    "home_team": "HOU",
+    "away_team": "CLE",
+    "predictions": {
+      "spread": {
+        "line": 0.3908215857069419,
+        "pick": "HOU",
+        "confidence": 0.81
+      },
+      "total": {
+        "line": 43.37139457804035,
+        "confidence": 0.81
+      },
+      "moneyline": {
+        "pick": "HOU",
+        "home_win_prob": 0.5224571220366304,
+        "away_win_prob": 0.4775428779633696,
+        "confidence": 0.81
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_DEN_BAL",
+    "season": 2022,
+    "week": 13,
+    "home_team": "BAL",
+    "away_team": "DEN",
+    "predictions": {
+      "spread": {
+        "line": 5.513118389877478,
+        "pick": "BAL",
+        "confidence": 0.79
+      },
+      "total": {
+        "line": 45.133229010454706,
+        "confidence": 0.79
+      },
+      "moneyline": {
+        "pick": "BAL",
+        "home_win_prob": 0.7804031413986694,
+        "away_win_prob": 0.2195968586013306,
+        "confidence": 0.79
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_GB_CHI",
+    "season": 2022,
+    "week": 13,
+    "home_team": "CHI",
+    "away_team": "GB",
+    "predictions": {
+      "spread": {
+        "line": 4.399243802389399,
+        "pick": "CHI",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 44.11716052125563,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "CHI",
+        "home_win_prob": 0.7333773628702682,
+        "away_win_prob": 0.2666226371297318,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_IND_DAL",
+    "season": 2022,
+    "week": 13,
+    "home_team": "DAL",
+    "away_team": "IND",
+    "predictions": {
+      "spread": {
+        "line": 7.410990394324029,
+        "pick": "DAL",
+        "confidence": 0.84
+      },
+      "total": {
+        "line": 46.12585071496953,
+        "confidence": 0.84
+      },
+      "moneyline": {
+        "pick": "DAL",
+        "home_win_prob": 0.8461251656593488,
+        "away_win_prob": 0.1538748343406512,
+        "confidence": 0.84
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_JAX_DET",
+    "season": 2022,
+    "week": 13,
+    "home_team": "DET",
+    "away_team": "JAX",
+    "predictions": {
+      "spread": {
+        "line": 4.552934759679584,
+        "pick": "DET",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 45.17158258425755,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "DET",
+        "home_win_prob": 0.7402320517505081,
+        "away_win_prob": 0.2597679482494919,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_KC_CIN",
+    "season": 2022,
+    "week": 13,
+    "home_team": "CIN",
+    "away_team": "KC",
+    "predictions": {
+      "spread": {
+        "line": 3.41176555994165,
+        "pick": "CIN",
+        "confidence": 0.7
+      },
+      "total": {
+        "line": 46.63786331547356,
+        "confidence": 0.7
+      },
+      "moneyline": {
+        "pick": "CIN",
+        "home_win_prob": 0.6866934942761758,
+        "away_win_prob": 0.31330650572382424,
+        "confidence": 0.7
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_LAC_LV",
+    "season": 2022,
+    "week": 13,
+    "home_team": "LV",
+    "away_team": "LAC",
+    "predictions": {
+      "spread": {
+        "line": 3.20063379953978,
+        "pick": "LV",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 44.80058400035256,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "LV",
+        "home_win_prob": 0.6761524688083465,
+        "away_win_prob": 0.32384753119165355,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_MIA_SF",
+    "season": 2022,
+    "week": 13,
+    "home_team": "SF",
+    "away_team": "MIA",
+    "predictions": {
+      "spread": {
+        "line": 2.7370263859250343,
+        "pick": "SF",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 46.44799573227697,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "SF",
+        "home_win_prob": 0.6523797241580412,
+        "away_win_prob": 0.34762027584195876,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_NO_TB",
+    "season": 2022,
+    "week": 13,
+    "home_team": "TB",
+    "away_team": "NO",
+    "predictions": {
+      "spread": {
+        "line": 3.864342090614263,
+        "pick": "TB",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 44.348359524350585,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "TB",
+        "home_win_prob": 0.708642200265821,
+        "away_win_prob": 0.29135779973417897,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_NYJ_MIN",
+    "season": 2022,
+    "week": 13,
+    "home_team": "MIN",
+    "away_team": "NYJ",
+    "predictions": {
+      "spread": {
+        "line": 4.870716179947788,
+        "pick": "MIN",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 44.69646342016139,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "MIN",
+        "home_win_prob": 0.7540378162466664,
+        "away_win_prob": 0.24596218375333356,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_PIT_ATL",
+    "season": 2022,
+    "week": 13,
+    "home_team": "ATL",
+    "away_team": "PIT",
+    "predictions": {
+      "spread": {
+        "line": 3.8725504205649894,
+        "pick": "ATL",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 45.067351786839474,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "ATL",
+        "home_win_prob": 0.7090318417045338,
+        "away_win_prob": 0.2909681582954662,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_SEA_LA",
+    "season": 2022,
+    "week": 13,
+    "home_team": "LA",
+    "away_team": "SEA",
+    "predictions": {
+      "spread": {
+        "line": 5.147026172747837,
+        "pick": "LA",
+        "confidence": 0.8
+      },
+      "total": {
+        "line": 44.282823519435624,
+        "confidence": 0.8
+      },
+      "moneyline": {
+        "pick": "LA",
+        "home_win_prob": 0.7656332404272719,
+        "away_win_prob": 0.23436675957272812,
+        "confidence": 0.8
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_TEN_PHI",
+    "season": 2022,
+    "week": 13,
+    "home_team": "PHI",
+    "away_team": "TEN",
+    "predictions": {
+      "spread": {
+        "line": 5.665997264637014,
+        "pick": "PHI",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 45.64093418253307,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.7863695796744709,
+        "away_win_prob": 0.21363042032552915,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_13_WAS_NYG",
+    "season": 2022,
+    "week": 13,
+    "home_team": "NYG",
+    "away_team": "WAS",
+    "predictions": {
+      "spread": {
+        "line": 5.644062610098001,
+        "pick": "NYG",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 45.51740158412841,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "NYG",
+        "home_win_prob": 0.7855208382440723,
+        "away_win_prob": 0.21447916175592774,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_BAL_PIT",
+    "season": 2022,
+    "week": 14,
+    "home_team": "PIT",
+    "away_team": "BAL",
+    "predictions": {
+      "spread": {
+        "line": 5.150231054715867,
+        "pick": "PIT",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 45.18767257986528,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "PIT",
+        "home_win_prob": 0.765765483101574,
+        "away_win_prob": 0.234234516898426,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_CAR_SEA",
+    "season": 2022,
+    "week": 14,
+    "home_team": "SEA",
+    "away_team": "CAR",
+    "predictions": {
+      "spread": {
+        "line": 6.444615137991227,
+        "pick": "SEA",
+        "confidence": 0.79
+      },
+      "total": {
+        "line": 45.40452523163055,
+        "confidence": 0.79
+      },
+      "moneyline": {
+        "pick": "SEA",
+        "home_win_prob": 0.8149139211863577,
+        "away_win_prob": 0.18508607881364225,
+        "confidence": 0.79
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_CLE_CIN",
+    "season": 2022,
+    "week": 14,
+    "home_team": "CIN",
+    "away_team": "CLE",
+    "predictions": {
+      "spread": {
+        "line": 6.256550080110012,
+        "pick": "CIN",
+        "confidence": 0.79
+      },
+      "total": {
+        "line": 45.722256357793704,
+        "confidence": 0.79
+      },
+      "moneyline": {
+        "pick": "CIN",
+        "home_win_prob": 0.8083007579789508,
+        "away_win_prob": 0.19169924202104915,
+        "confidence": 0.79
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_HOU_DAL",
+    "season": 2022,
+    "week": 14,
+    "home_team": "DAL",
+    "away_team": "HOU",
+    "predictions": {
+      "spread": {
+        "line": 10.167869331031037,
+        "pick": "DAL",
+        "confidence": 0.9
+      },
+      "total": {
+        "line": 45.94748078741872,
+        "confidence": 0.9
+      },
+      "moneyline": {
+        "pick": "DAL",
+        "home_win_prob": 0.9120246170650089,
+        "away_win_prob": 0.08797538293499108,
+        "confidence": 0.9
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_JAX_TEN",
+    "season": 2022,
+    "week": 14,
+    "home_team": "TEN",
+    "away_team": "JAX",
+    "predictions": {
+      "spread": {
+        "line": 3.878159391537323,
+        "pick": "TEN",
+        "confidence": 0.7
+      },
+      "total": {
+        "line": 43.90883287744795,
+        "confidence": 0.7
+      },
+      "moneyline": {
+        "pick": "TEN",
+        "home_win_prob": 0.7092979173195689,
+        "away_win_prob": 0.2907020826804311,
+        "confidence": 0.7
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_KC_DEN",
+    "season": 2022,
+    "week": 14,
+    "home_team": "DEN",
+    "away_team": "KC",
+    "predictions": {
+      "spread": {
+        "line": -0.2233713909799624,
+        "pick": "KC",
+        "confidence": 0.84
+      },
+      "total": {
+        "line": 44.83604607980541,
+        "confidence": 0.84
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.4871589693152507,
+        "away_win_prob": 0.5128410306847493,
+        "confidence": 0.84
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_LV_LA",
+    "season": 2022,
+    "week": 14,
+    "home_team": "LA",
+    "away_team": "LV",
+    "predictions": {
+      "spread": {
+        "line": 6.415387017390271,
+        "pick": "LA",
+        "confidence": 0.76
+      },
+      "total": {
+        "line": 44.44151609736502,
+        "confidence": 0.76
+      },
+      "moneyline": {
+        "pick": "LA",
+        "home_win_prob": 0.8138978293673759,
+        "away_win_prob": 0.18610217063262413,
+        "confidence": 0.76
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_MIA_LAC",
+    "season": 2022,
+    "week": 14,
+    "home_team": "LAC",
+    "away_team": "MIA",
+    "predictions": {
+      "spread": {
+        "line": 4.056019668575428,
+        "pick": "LAC",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 44.6341691224913,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "LAC",
+        "home_win_prob": 0.717660126222447,
+        "away_win_prob": 0.282339873777553,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_MIN_DET",
+    "season": 2022,
+    "week": 14,
+    "home_team": "DET",
+    "away_team": "MIN",
+    "predictions": {
+      "spread": {
+        "line": 5.088007422113593,
+        "pick": "DET",
+        "confidence": 0.79
+      },
+      "total": {
+        "line": 45.26263899238049,
+        "confidence": 0.79
+      },
+      "moneyline": {
+        "pick": "DET",
+        "home_win_prob": 0.7631887026399891,
+        "away_win_prob": 0.23681129736001094,
+        "confidence": 0.79
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_NE_ARI",
+    "season": 2022,
+    "week": 14,
+    "home_team": "ARI",
+    "away_team": "NE",
+    "predictions": {
+      "spread": {
+        "line": 6.230039178591864,
+        "pick": "ARI",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 44.03663732675745,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "ARI",
+        "home_win_prob": 0.8073541687685699,
+        "away_win_prob": 0.1926458312314301,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_NYJ_BUF",
+    "season": 2022,
+    "week": 14,
+    "home_team": "BUF",
+    "away_team": "NYJ",
+    "predictions": {
+      "spread": {
+        "line": 7.089458221721525,
+        "pick": "BUF",
+        "confidence": 0.8
+      },
+      "total": {
+        "line": 45.99893595493569,
+        "confidence": 0.8
+      },
+      "moneyline": {
+        "pick": "BUF",
+        "home_win_prob": 0.836248446328357,
+        "away_win_prob": 0.16375155367164296,
+        "confidence": 0.8
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_PHI_NYG",
+    "season": 2022,
+    "week": 14,
+    "home_team": "NYG",
+    "away_team": "PHI",
+    "predictions": {
+      "spread": {
+        "line": 3.5823797491871487,
+        "pick": "NYG",
+        "confidence": 0.76
+      },
+      "total": {
+        "line": 45.09878325148621,
+        "confidence": 0.76
+      },
+      "moneyline": {
+        "pick": "NYG",
+        "home_win_prob": 0.6950736082841988,
+        "away_win_prob": 0.30492639171580116,
+        "confidence": 0.76
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_14_TB_SF",
+    "season": 2022,
+    "week": 14,
+    "home_team": "SF",
+    "away_team": "TB",
+    "predictions": {
+      "spread": {
+        "line": 3.5546829714252266,
+        "pick": "SF",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 46.196609364322846,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "SF",
+        "home_win_prob": 0.6937217802601571,
+        "away_win_prob": 0.3062782197398429,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_ARI_DEN",
+    "season": 2022,
+    "week": 15,
+    "home_team": "DEN",
+    "away_team": "ARI",
+    "predictions": {
+      "spread": {
+        "line": 2.8739828837095835,
+        "pick": "DEN",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 43.44650792523675,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "DEN",
+        "home_win_prob": 0.6594885960192006,
+        "away_win_prob": 0.3405114039807994,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_ATL_NO",
+    "season": 2022,
+    "week": 15,
+    "home_team": "NO",
+    "away_team": "ATL",
+    "predictions": {
+      "spread": {
+        "line": 2.4841424345840544,
+        "pick": "NO",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 44.20071572007099,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "NO",
+        "home_win_prob": 0.6390752588187143,
+        "away_win_prob": 0.3609247411812857,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_BAL_CLE",
+    "season": 2022,
+    "week": 15,
+    "home_team": "CLE",
+    "away_team": "BAL",
+    "predictions": {
+      "spread": {
+        "line": 2.9939964605668656,
+        "pick": "CLE",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 45.17875565477987,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "CLE",
+        "home_win_prob": 0.6656596874255934,
+        "away_win_prob": 0.33434031257440655,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_CIN_TB",
+    "season": 2022,
+    "week": 15,
+    "home_team": "TB",
+    "away_team": "CIN",
+    "predictions": {
+      "spread": {
+        "line": 1.381996865101137,
+        "pick": "TB",
+        "confidence": 0.83
+      },
+      "total": {
+        "line": 44.51717063141666,
+        "confidence": 0.83
+      },
+      "moneyline": {
+        "pick": "TB",
+        "home_win_prob": 0.578802453622234,
+        "away_win_prob": 0.42119754637776596,
+        "confidence": 0.83
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_DAL_JAX",
+    "season": 2022,
+    "week": 15,
+    "home_team": "JAX",
+    "away_team": "DAL",
+    "predictions": {
+      "spread": {
+        "line": 1.7824797493966742,
+        "pick": "JAX",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 45.67035497196712,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "JAX",
+        "home_win_prob": 0.6010807674816294,
+        "away_win_prob": 0.3989192325183706,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_DET_NYJ",
+    "season": 2022,
+    "week": 15,
+    "home_team": "NYJ",
+    "away_team": "DET",
+    "predictions": {
+      "spread": {
+        "line": 0.9992616147886153,
+        "pick": "NYJ",
+        "confidence": 0.8
+      },
+      "total": {
+        "line": 45.95988340539172,
+        "confidence": 0.8
+      },
+      "moneyline": {
+        "pick": "NYJ",
+        "home_win_prob": 0.5572059536237558,
+        "away_win_prob": 0.4427940463762442,
+        "confidence": 0.8
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_IND_MIN",
+    "season": 2022,
+    "week": 15,
+    "home_team": "MIN",
+    "away_team": "IND",
+    "predictions": {
+      "spread": {
+        "line": 6.726681579991299,
+        "pick": "MIN",
+        "confidence": 0.82
+      },
+      "total": {
+        "line": 43.82133359978807,
+        "confidence": 0.82
+      },
+      "moneyline": {
+        "pick": "MIN",
+        "home_win_prob": 0.8244998067250774,
+        "away_win_prob": 0.1755001932749226,
+        "confidence": 0.82
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_KC_HOU",
+    "season": 2022,
+    "week": 15,
+    "home_team": "HOU",
+    "away_team": "KC",
+    "predictions": {
+      "spread": {
+        "line": -1.6448443290065002,
+        "pick": "KC",
+        "confidence": 0.9
+      },
+      "total": {
+        "line": 44.15990650071333,
+        "confidence": 0.9
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.4065335568297154,
+        "away_win_prob": 0.5934664431702845,
+        "confidence": 0.9
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_LA_GB",
+    "season": 2022,
+    "week": 15,
+    "home_team": "GB",
+    "away_team": "LA",
+    "predictions": {
+      "spread": {
+        "line": 1.8000597504238285,
+        "pick": "GB",
+        "confidence": 0.76
+      },
+      "total": {
+        "line": 44.35268400834225,
+        "confidence": 0.76
+      },
+      "moneyline": {
+        "pick": "GB",
+        "home_win_prob": 0.6020499074027477,
+        "away_win_prob": 0.39795009259725234,
+        "confidence": 0.76
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_MIA_BUF",
+    "season": 2022,
+    "week": 15,
+    "home_team": "BUF",
+    "away_team": "MIA",
+    "predictions": {
+      "spread": {
+        "line": 6.27173449266877,
+        "pick": "BUF",
+        "confidence": 0.77
+      },
+      "total": {
+        "line": 45.49400779222891,
+        "confidence": 0.77
+      },
+      "moneyline": {
+        "pick": "BUF",
+        "home_win_prob": 0.8088413273221486,
+        "away_win_prob": 0.19115867267785136,
+        "confidence": 0.77
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_NE_LV",
+    "season": 2022,
+    "week": 15,
+    "home_team": "LV",
+    "away_team": "NE",
+    "predictions": {
+      "spread": {
+        "line": 5.766098917497457,
+        "pick": "LV",
+        "confidence": 0.77
+      },
+      "total": {
+        "line": 45.277184457798064,
+        "confidence": 0.77
+      },
+      "moneyline": {
+        "pick": "LV",
+        "home_win_prob": 0.7902118315919341,
+        "away_win_prob": 0.2097881684080659,
+        "confidence": 0.77
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_NYG_WAS",
+    "season": 2022,
+    "week": 15,
+    "home_team": "WAS",
+    "away_team": "NYG",
+    "predictions": {
+      "spread": {
+        "line": 2.266660317074596,
+        "pick": "WAS",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 44.72042407283973,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "WAS",
+        "home_win_prob": 0.6274591499715576,
+        "away_win_prob": 0.3725408500284424,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_PHI_CHI",
+    "season": 2022,
+    "week": 15,
+    "home_team": "CHI",
+    "away_team": "PHI",
+    "predictions": {
+      "spread": {
+        "line": 3.4710735294744604,
+        "pick": "CHI",
+        "confidence": 0.8
+      },
+      "total": {
+        "line": 45.48277280160433,
+        "confidence": 0.8
+      },
+      "moneyline": {
+        "pick": "CHI",
+        "home_win_prob": 0.68962075852385,
+        "away_win_prob": 0.31037924147615004,
+        "confidence": 0.8
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_PIT_CAR",
+    "season": 2022,
+    "week": 15,
+    "home_team": "CAR",
+    "away_team": "PIT",
+    "predictions": {
+      "spread": {
+        "line": 1.222857162533948,
+        "pick": "CAR",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 45.34766370820399,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "CAR",
+        "home_win_prob": 0.5698544033840954,
+        "away_win_prob": 0.43014559661590457,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_SF_SEA",
+    "season": 2022,
+    "week": 15,
+    "home_team": "SEA",
+    "away_team": "SF",
+    "predictions": {
+      "spread": {
+        "line": 4.787390936924105,
+        "pick": "SEA",
+        "confidence": 0.7
+      },
+      "total": {
+        "line": 46.27152089336205,
+        "confidence": 0.7
+      },
+      "moneyline": {
+        "pick": "SEA",
+        "home_win_prob": 0.7504661398936716,
+        "away_win_prob": 0.2495338601063284,
+        "confidence": 0.7
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_15_TEN_LAC",
+    "season": 2022,
+    "week": 15,
+    "home_team": "LAC",
+    "away_team": "TEN",
+    "predictions": {
+      "spread": {
+        "line": 3.6533371140941346,
+        "pick": "LAC",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 44.25163315449405,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "LAC",
+        "home_win_prob": 0.6985215592352519,
+        "away_win_prob": 0.30147844076474806,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_ATL_BAL",
+    "season": 2022,
+    "week": 16,
+    "home_team": "BAL",
+    "away_team": "ATL",
+    "predictions": {
+      "spread": {
+        "line": 1.7684958219858644,
+        "pick": "BAL",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 44.509611962602264,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "BAL",
+        "home_win_prob": 0.600309303517751,
+        "away_win_prob": 0.399690696482249,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_BUF_CHI",
+    "season": 2022,
+    "week": 16,
+    "home_team": "CHI",
+    "away_team": "BUF",
+    "predictions": {
+      "spread": {
+        "line": 3.5705637347877652,
+        "pick": "CHI",
+        "confidence": 0.78
+      },
+      "total": {
+        "line": 45.01169174146816,
+        "confidence": 0.78
+      },
+      "moneyline": {
+        "pick": "CHI",
+        "home_win_prob": 0.6944973002220293,
+        "away_win_prob": 0.30550269977797073,
+        "confidence": 0.78
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_CIN_NE",
+    "season": 2022,
+    "week": 16,
+    "home_team": "NE",
+    "away_team": "CIN",
+    "predictions": {
+      "spread": {
+        "line": 0.06326705861186266,
+        "pick": "NE",
+        "confidence": 0.82
+      },
+      "total": {
+        "line": 45.5810079542052,
+        "confidence": 0.82
+      },
+      "moneyline": {
+        "pick": "NE",
+        "home_win_prob": 0.5036377916803845,
+        "away_win_prob": 0.4963622083196155,
+        "confidence": 0.82
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_DEN_LA",
+    "season": 2022,
+    "week": 16,
+    "home_team": "LA",
+    "away_team": "DEN",
+    "predictions": {
+      "spread": {
+        "line": 7.06168043403311,
+        "pick": "LA",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 44.21744692583971,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "LA",
+        "home_win_prob": 0.8353716903383318,
+        "away_win_prob": 0.1646283096616682,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_DET_CAR",
+    "season": 2022,
+    "week": 16,
+    "home_team": "CAR",
+    "away_team": "DET",
+    "predictions": {
+      "spread": {
+        "line": 1.9082428364248434,
+        "pick": "CAR",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 46.11948876178202,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "CAR",
+        "home_win_prob": 0.6079959030447003,
+        "away_win_prob": 0.3920040969552997,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_GB_MIA",
+    "season": 2022,
+    "week": 16,
+    "home_team": "MIA",
+    "away_team": "GB",
+    "predictions": {
+      "spread": {
+        "line": 2.141911844634939,
+        "pick": "MIA",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 45.206761398683376,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "MIA",
+        "home_win_prob": 0.6207280864666832,
+        "away_win_prob": 0.3792719135333168,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_HOU_TEN",
+    "season": 2022,
+    "week": 16,
+    "home_team": "TEN",
+    "away_team": "HOU",
+    "predictions": {
+      "spread": {
+        "line": 5.720259239878092,
+        "pick": "TEN",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 43.55813377431142,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "TEN",
+        "home_win_prob": 0.7884586748752326,
+        "away_win_prob": 0.21154132512476742,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_JAX_NYJ",
+    "season": 2022,
+    "week": 16,
+    "home_team": "NYJ",
+    "away_team": "JAX",
+    "predictions": {
+      "spread": {
+        "line": 1.7711308330805986,
+        "pick": "NYJ",
+        "confidence": 0.78
+      },
+      "total": {
+        "line": 44.43213410695805,
+        "confidence": 0.78
+      },
+      "moneyline": {
+        "pick": "NYJ",
+        "home_win_prob": 0.6004547097372741,
+        "away_win_prob": 0.3995452902627259,
+        "confidence": 0.78
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_LAC_IND",
+    "season": 2022,
+    "week": 16,
+    "home_team": "IND",
+    "away_team": "LAC",
+    "predictions": {
+      "spread": {
+        "line": 2.8855163951170164,
+        "pick": "IND",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 43.87357756158898,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "IND",
+        "home_win_prob": 0.6600840447602527,
+        "away_win_prob": 0.33991595523974727,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_LV_PIT",
+    "season": 2022,
+    "week": 16,
+    "home_team": "PIT",
+    "away_team": "LV",
+    "predictions": {
+      "spread": {
+        "line": 6.023575426385998,
+        "pick": "PIT",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 45.15813437942706,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "PIT",
+        "home_win_prob": 0.7998604414115925,
+        "away_win_prob": 0.20013955858840748,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_NO_CLE",
+    "season": 2022,
+    "week": 16,
+    "home_team": "CLE",
+    "away_team": "NO",
+    "predictions": {
+      "spread": {
+        "line": 2.4258748008924824,
+        "pick": "CLE",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 44.65304056950849,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "CLE",
+        "home_win_prob": 0.635978356069038,
+        "away_win_prob": 0.36402164393096204,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_NYG_MIN",
+    "season": 2022,
+    "week": 16,
+    "home_team": "MIN",
+    "away_team": "NYG",
+    "predictions": {
+      "spread": {
+        "line": 4.119495429354762,
+        "pick": "MIN",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 44.1448036111895,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "MIN",
+        "home_win_prob": 0.7206088983969617,
+        "away_win_prob": 0.27939110160303826,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_PHI_DAL",
+    "season": 2022,
+    "week": 16,
+    "home_team": "DAL",
+    "away_team": "PHI",
+    "predictions": {
+      "spread": {
+        "line": 4.555044302989085,
+        "pick": "DAL",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 47.20823707862878,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "DAL",
+        "home_win_prob": 0.7403253383162955,
+        "away_win_prob": 0.25967466168370446,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_SEA_KC",
+    "season": 2022,
+    "week": 16,
+    "home_team": "KC",
+    "away_team": "SEA",
+    "predictions": {
+      "spread": {
+        "line": 5.557305953373682,
+        "pick": "KC",
+        "confidence": 0.76
+      },
+      "total": {
+        "line": 45.654754746172905,
+        "confidence": 0.76
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.7821398758275023,
+        "away_win_prob": 0.21786012417249767,
+        "confidence": 0.76
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_TB_ARI",
+    "season": 2022,
+    "week": 16,
+    "home_team": "ARI",
+    "away_team": "TB",
+    "predictions": {
+      "spread": {
+        "line": 3.163541126271233,
+        "pick": "ARI",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 43.41253320176778,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "ARI",
+        "home_win_prob": 0.6742815638987614,
+        "away_win_prob": 0.32571843610123863,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_16_WAS_SF",
+    "season": 2022,
+    "week": 16,
+    "home_team": "SF",
+    "away_team": "WAS",
+    "predictions": {
+      "spread": {
+        "line": 5.48448132778108,
+        "pick": "SF",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 46.36067333204683,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "SF",
+        "home_win_prob": 0.7792722974233723,
+        "away_win_prob": 0.22072770257662766,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_ARI_ATL",
+    "season": 2022,
+    "week": 17,
+    "home_team": "ATL",
+    "away_team": "ARI",
+    "predictions": {
+      "spread": {
+        "line": 5.900054481449462,
+        "pick": "ATL",
+        "confidence": 0.8
+      },
+      "total": {
+        "line": 43.74027493992425,
+        "confidence": 0.8
+      },
+      "moneyline": {
+        "pick": "ATL",
+        "home_win_prob": 0.7952737266553097,
+        "away_win_prob": 0.2047262733446903,
+        "confidence": 0.8
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_CAR_TB",
+    "season": 2022,
+    "week": 17,
+    "home_team": "TB",
+    "away_team": "CAR",
+    "predictions": {
+      "spread": {
+        "line": 1.5174891401491504,
+        "pick": "TB",
+        "confidence": 0.85
+      },
+      "total": {
+        "line": 44.11822435958653,
+        "confidence": 0.85
+      },
+      "moneyline": {
+        "pick": "TB",
+        "home_win_prob": 0.5863805182028119,
+        "away_win_prob": 0.4136194817971881,
+        "confidence": 0.85
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_CHI_DET",
+    "season": 2022,
+    "week": 17,
+    "home_team": "DET",
+    "away_team": "CHI",
+    "predictions": {
+      "spread": {
+        "line": 4.571084550549367,
+        "pick": "DET",
+        "confidence": 0.82
+      },
+      "total": {
+        "line": 44.366480799978305,
+        "confidence": 0.82
+      },
+      "moneyline": {
+        "pick": "DET",
+        "home_win_prob": 0.7410339457670411,
+        "away_win_prob": 0.25896605423295893,
+        "confidence": 0.82
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_CLE_WAS",
+    "season": 2022,
+    "week": 17,
+    "home_team": "WAS",
+    "away_team": "CLE",
+    "predictions": {
+      "spread": {
+        "line": 4.922811749082712,
+        "pick": "WAS",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 44.495987935062516,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "WAS",
+        "home_win_prob": 0.7562532816848994,
+        "away_win_prob": 0.24374671831510064,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_DAL_TEN",
+    "season": 2022,
+    "week": 17,
+    "home_team": "TEN",
+    "away_team": "DAL",
+    "predictions": {
+      "spread": {
+        "line": 1.522142257760525,
+        "pick": "TEN",
+        "confidence": 0.82
+      },
+      "total": {
+        "line": 44.67805026672317,
+        "confidence": 0.82
+      },
+      "moneyline": {
+        "pick": "TEN",
+        "home_win_prob": 0.5866400629218039,
+        "away_win_prob": 0.41335993707819607,
+        "confidence": 0.82
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_DEN_KC",
+    "season": 2022,
+    "week": 17,
+    "home_team": "KC",
+    "away_team": "DEN",
+    "predictions": {
+      "spread": {
+        "line": 4.856392660062761,
+        "pick": "KC",
+        "confidence": 0.82
+      },
+      "total": {
+        "line": 44.92938275035653,
+        "confidence": 0.82
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.7534263080528323,
+        "away_win_prob": 0.24657369194716772,
+        "confidence": 0.82
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_IND_NYG",
+    "season": 2022,
+    "week": 17,
+    "home_team": "NYG",
+    "away_team": "IND",
+    "predictions": {
+      "spread": {
+        "line": 7.012135798437599,
+        "pick": "NYG",
+        "confidence": 0.84
+      },
+      "total": {
+        "line": 43.46884971272332,
+        "confidence": 0.84
+      },
+      "moneyline": {
+        "pick": "NYG",
+        "home_win_prob": 0.833798551944714,
+        "away_win_prob": 0.16620144805528603,
+        "confidence": 0.84
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_JAX_HOU",
+    "season": 2022,
+    "week": 17,
+    "home_team": "HOU",
+    "away_team": "JAX",
+    "predictions": {
+      "spread": {
+        "line": 1.4069432590757138,
+        "pick": "HOU",
+        "confidence": 0.81
+      },
+      "total": {
+        "line": 44.86782379481696,
+        "confidence": 0.81
+      },
+      "moneyline": {
+        "pick": "HOU",
+        "home_win_prob": 0.5802006053360771,
+        "away_win_prob": 0.4197993946639229,
+        "confidence": 0.81
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_LA_LAC",
+    "season": 2022,
+    "week": 17,
+    "home_team": "LAC",
+    "away_team": "LA",
+    "predictions": {
+      "spread": {
+        "line": 0.22903145855929363,
+        "pick": "LAC",
+        "confidence": 0.77
+      },
+      "total": {
+        "line": 45.59294157145063,
+        "confidence": 0.77
+      },
+      "moneyline": {
+        "pick": "LAC",
+        "home_win_prob": 0.5131662644287509,
+        "away_win_prob": 0.4868337355712491,
+        "confidence": 0.77
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_MIA_NE",
+    "season": 2022,
+    "week": 17,
+    "home_team": "NE",
+    "away_team": "MIA",
+    "predictions": {
+      "spread": {
+        "line": 2.183934021942057,
+        "pick": "NE",
+        "confidence": 0.76
+      },
+      "total": {
+        "line": 44.51462516326666,
+        "confidence": 0.76
+      },
+      "moneyline": {
+        "pick": "NE",
+        "home_win_prob": 0.6230008205701584,
+        "away_win_prob": 0.3769991794298416,
+        "confidence": 0.76
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_MIN_GB",
+    "season": 2022,
+    "week": 17,
+    "home_team": "GB",
+    "away_team": "MIN",
+    "predictions": {
+      "spread": {
+        "line": 2.535417382064582,
+        "pick": "GB",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 45.18085041462608,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "GB",
+        "home_win_prob": 0.6417909786879396,
+        "away_win_prob": 0.35820902131206045,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_NO_PHI",
+    "season": 2022,
+    "week": 17,
+    "home_team": "PHI",
+    "away_team": "NO",
+    "predictions": {
+      "spread": {
+        "line": 6.3145806397076525,
+        "pick": "PHI",
+        "confidence": 0.8
+      },
+      "total": {
+        "line": 46.23046057505469,
+        "confidence": 0.8
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.8103603829299905,
+        "away_win_prob": 0.18963961707000954,
+        "confidence": 0.8
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_NYJ_SEA",
+    "season": 2022,
+    "week": 17,
+    "home_team": "SEA",
+    "away_team": "NYJ",
+    "predictions": {
+      "spread": {
+        "line": 4.652461364013354,
+        "pick": "SEA",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 43.720588972200105,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "SEA",
+        "home_win_prob": 0.7446094886261563,
+        "away_win_prob": 0.2553905113738437,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_PIT_BAL",
+    "season": 2022,
+    "week": 17,
+    "home_team": "BAL",
+    "away_team": "PIT",
+    "predictions": {
+      "spread": {
+        "line": 1.4147661415155506,
+        "pick": "BAL",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 45.45386588671787,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "BAL",
+        "home_win_prob": 0.5806387846219797,
+        "away_win_prob": 0.4193612153780203,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_17_SF_LV",
+    "season": 2022,
+    "week": 17,
+    "home_team": "LV",
+    "away_team": "SF",
+    "predictions": {
+      "spread": {
+        "line": 3.0015370554476313,
+        "pick": "LV",
+        "confidence": 0.77
+      },
+      "total": {
+        "line": 45.84994071313576,
+        "confidence": 0.77
+      },
+      "moneyline": {
+        "pick": "LV",
+        "home_win_prob": 0.6660455650337147,
+        "away_win_prob": 0.3339544349662853,
+        "confidence": 0.77
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_ARI_SF",
+    "season": 2022,
+    "week": 18,
+    "home_team": "SF",
+    "away_team": "ARI",
+    "predictions": {
+      "spread": {
+        "line": 6.90468742574825,
+        "pick": "SF",
+        "confidence": 0.84
+      },
+      "total": {
+        "line": 45.753589742689364,
+        "confidence": 0.84
+      },
+      "moneyline": {
+        "pick": "SF",
+        "home_win_prob": 0.8303455344801955,
+        "away_win_prob": 0.16965446551980445,
+        "confidence": 0.84
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_BAL_CIN",
+    "season": 2022,
+    "week": 18,
+    "home_team": "CIN",
+    "away_team": "BAL",
+    "predictions": {
+      "spread": {
+        "line": 4.8981891585941995,
+        "pick": "CIN",
+        "confidence": 0.76
+      },
+      "total": {
+        "line": 45.272191953980936,
+        "confidence": 0.76
+      },
+      "moneyline": {
+        "pick": "CIN",
+        "home_win_prob": 0.7552078463456012,
+        "away_win_prob": 0.24479215365439877,
+        "confidence": 0.76
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_CAR_NO",
+    "season": 2022,
+    "week": 18,
+    "home_team": "NO",
+    "away_team": "CAR",
+    "predictions": {
+      "spread": {
+        "line": 1.717767034280341,
+        "pick": "NO",
+        "confidence": 0.8
+      },
+      "total": {
+        "line": 45.2505724365156,
+        "confidence": 0.8
+      },
+      "moneyline": {
+        "pick": "NO",
+        "home_win_prob": 0.597506548852871,
+        "away_win_prob": 0.402493451147129,
+        "confidence": 0.8
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_CLE_PIT",
+    "season": 2022,
+    "week": 18,
+    "home_team": "PIT",
+    "away_team": "CLE",
+    "predictions": {
+      "spread": {
+        "line": 6.686800988358859,
+        "pick": "PIT",
+        "confidence": 0.77
+      },
+      "total": {
+        "line": 45.53449694662204,
+        "confidence": 0.77
+      },
+      "moneyline": {
+        "pick": "PIT",
+        "home_win_prob": 0.8231685888795413,
+        "away_win_prob": 0.17683141112045875,
+        "confidence": 0.77
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_DAL_WAS",
+    "season": 2022,
+    "week": 18,
+    "home_team": "WAS",
+    "away_team": "DAL",
+    "predictions": {
+      "spread": {
+        "line": 1.380580544246241,
+        "pick": "WAS",
+        "confidence": 0.82
+      },
+      "total": {
+        "line": 45.001142621761986,
+        "confidence": 0.82
+      },
+      "moneyline": {
+        "pick": "WAS",
+        "home_win_prob": 0.5787230360097368,
+        "away_win_prob": 0.42127696399026315,
+        "confidence": 0.82
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_DET_GB",
+    "season": 2022,
+    "week": 18,
+    "home_team": "GB",
+    "away_team": "DET",
+    "predictions": {
+      "spread": {
+        "line": 2.9319605225414103,
+        "pick": "GB",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 46.701636229609626,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "GB",
+        "home_win_prob": 0.6624767173784322,
+        "away_win_prob": 0.33752328262156783,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_HOU_IND",
+    "season": 2022,
+    "week": 18,
+    "home_team": "IND",
+    "away_team": "HOU",
+    "predictions": {
+      "spread": {
+        "line": 2.675489905514447,
+        "pick": "IND",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 42.63948734008072,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "IND",
+        "home_win_prob": 0.6491631288189665,
+        "away_win_prob": 0.35083687118103346,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_KC_LV",
+    "season": 2022,
+    "week": 18,
+    "home_team": "LV",
+    "away_team": "KC",
+    "predictions": {
+      "spread": {
+        "line": 3.2614102326941317,
+        "pick": "LV",
+        "confidence": 0.77
+      },
+      "total": {
+        "line": 45.2329441221529,
+        "confidence": 0.77
+      },
+      "moneyline": {
+        "pick": "LV",
+        "home_win_prob": 0.6792057945810202,
+        "away_win_prob": 0.32079420541897985,
+        "confidence": 0.77
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_LAC_DEN",
+    "season": 2022,
+    "week": 18,
+    "home_team": "DEN",
+    "away_team": "LAC",
+    "predictions": {
+      "spread": {
+        "line": 4.394421642239636,
+        "pick": "DEN",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 44.90347017740789,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "DEN",
+        "home_win_prob": 0.7331604394877376,
+        "away_win_prob": 0.26683956051226243,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_LA_SEA",
+    "season": 2022,
+    "week": 18,
+    "home_team": "SEA",
+    "away_team": "LA",
+    "predictions": {
+      "spread": {
+        "line": -0.1706154679022891,
+        "pick": "LA",
+        "confidence": 0.76
+      },
+      "total": {
+        "line": 44.58782476112585,
+        "confidence": 0.76
+      },
+      "moneyline": {
+        "pick": "LA",
+        "home_win_prob": 0.4901908693198808,
+        "away_win_prob": 0.5098091306801191,
+        "confidence": 0.76
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_MIN_CHI",
+    "season": 2022,
+    "week": 18,
+    "home_team": "CHI",
+    "away_team": "MIN",
+    "predictions": {
+      "spread": {
+        "line": 2.583755277474058,
+        "pick": "CHI",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 42.68696948309904,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "CHI",
+        "home_win_prob": 0.6443428405153809,
+        "away_win_prob": 0.35565715948461907,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_NE_BUF",
+    "season": 2022,
+    "week": 18,
+    "home_team": "BUF",
+    "away_team": "NE",
+    "predictions": {
+      "spread": {
+        "line": 6.448234695135429,
+        "pick": "BUF",
+        "confidence": 0.81
+      },
+      "total": {
+        "line": 45.58695202502773,
+        "confidence": 0.81
+      },
+      "moneyline": {
+        "pick": "BUF",
+        "home_win_prob": 0.8150394533163975,
+        "away_win_prob": 0.1849605466836025,
+        "confidence": 0.81
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_NYG_PHI",
+    "season": 2022,
+    "week": 18,
+    "home_team": "PHI",
+    "away_team": "NYG",
+    "predictions": {
+      "spread": {
+        "line": 3.2793939599942132,
+        "pick": "PHI",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 45.68205330007167,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.6801063553528419,
+        "away_win_prob": 0.3198936446471581,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_NYJ_MIA",
+    "season": 2022,
+    "week": 18,
+    "home_team": "MIA",
+    "away_team": "NYJ",
+    "predictions": {
+      "spread": {
+        "line": 5.683160311939404,
+        "pick": "MIA",
+        "confidence": 0.81
+      },
+      "total": {
+        "line": 44.095814082380556,
+        "confidence": 0.81
+      },
+      "moneyline": {
+        "pick": "MIA",
+        "home_win_prob": 0.7870319804060125,
+        "away_win_prob": 0.21296801959398748,
+        "confidence": 0.81
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_TB_ATL",
+    "season": 2022,
+    "week": 18,
+    "home_team": "ATL",
+    "away_team": "TB",
+    "predictions": {
+      "spread": {
+        "line": 5.023046092625808,
+        "pick": "ATL",
+        "confidence": 0.72
+      },
+      "total": {
+        "line": 44.342964089041544,
+        "confidence": 0.72
+      },
+      "moneyline": {
+        "pick": "ATL",
+        "home_win_prob": 0.7604777612050534,
+        "away_win_prob": 0.2395222387949466,
+        "confidence": 0.72
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_18_TEN_JAX",
+    "season": 2022,
+    "week": 18,
+    "home_team": "JAX",
+    "away_team": "TEN",
+    "predictions": {
+      "spread": {
+        "line": 4.3252545469450805,
+        "pick": "JAX",
+        "confidence": 0.81
+      },
+      "total": {
+        "line": 45.03151727379972,
+        "confidence": 0.81
+      },
+      "moneyline": {
+        "pick": "JAX",
+        "home_win_prob": 0.7300366532478825,
+        "away_win_prob": 0.26996334675211753,
+        "confidence": 0.81
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_19_BAL_CIN",
+    "season": 2022,
+    "week": 19,
+    "home_team": "CIN",
+    "away_team": "BAL",
+    "predictions": {
+      "spread": {
+        "line": 4.108769503541387,
+        "pick": "CIN",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 45.05188208110437,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "CIN",
+        "home_win_prob": 0.7201119503165957,
+        "away_win_prob": 0.2798880496834043,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_19_DAL_TB",
+    "season": 2022,
+    "week": 19,
+    "home_team": "TB",
+    "away_team": "DAL",
+    "predictions": {
+      "spread": {
+        "line": 2.1994210557927065,
+        "pick": "TB",
+        "confidence": 0.73
+      },
+      "total": {
+        "line": 44.55124347807787,
+        "confidence": 0.73
+      },
+      "moneyline": {
+        "pick": "TB",
+        "home_win_prob": 0.623837067260579,
+        "away_win_prob": 0.37616293273942103,
+        "confidence": 0.73
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_19_LAC_JAX",
+    "season": 2022,
+    "week": 19,
+    "home_team": "JAX",
+    "away_team": "LAC",
+    "predictions": {
+      "spread": {
+        "line": 2.656667375925818,
+        "pick": "JAX",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 46.768868041540195,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "JAX",
+        "home_win_prob": 0.648176520534308,
+        "away_win_prob": 0.35182347946569204,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_19_MIA_BUF",
+    "season": 2022,
+    "week": 19,
+    "home_team": "BUF",
+    "away_team": "MIA",
+    "predictions": {
+      "spread": {
+        "line": 6.33148224011585,
+        "pick": "BUF",
+        "confidence": 0.79
+      },
+      "total": {
+        "line": 45.6947541419486,
+        "confidence": 0.79
+      },
+      "moneyline": {
+        "pick": "BUF",
+        "home_win_prob": 0.8109570591589341,
+        "away_win_prob": 0.18904294084106588,
+        "confidence": 0.79
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_19_NYG_MIN",
+    "season": 2022,
+    "week": 19,
+    "home_team": "MIN",
+    "away_team": "NYG",
+    "predictions": {
+      "spread": {
+        "line": 4.153026171571832,
+        "pick": "MIN",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 45.14311689634765,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "MIN",
+        "home_win_prob": 0.7221589379665418,
+        "away_win_prob": 0.27784106203345815,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_19_SEA_SF",
+    "season": 2022,
+    "week": 19,
+    "home_team": "SF",
+    "away_team": "SEA",
+    "predictions": {
+      "spread": {
+        "line": 6.6867739702328635,
+        "pick": "SF",
+        "confidence": 0.81
+      },
+      "total": {
+        "line": 46.34924160765373,
+        "confidence": 0.81
+      },
+      "moneyline": {
+        "pick": "SF",
+        "home_win_prob": 0.8231676843304673,
+        "away_win_prob": 0.17683231566953272,
+        "confidence": 0.81
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_20_CIN_BUF",
+    "season": 2022,
+    "week": 20,
+    "home_team": "BUF",
+    "away_team": "CIN",
+    "predictions": {
+      "spread": {
+        "line": 5.909683203932608,
+        "pick": "BUF",
+        "confidence": 0.74
+      },
+      "total": {
+        "line": 46.46008493034582,
+        "confidence": 0.74
+      },
+      "moneyline": {
+        "pick": "BUF",
+        "home_win_prob": 0.795634058500365,
+        "away_win_prob": 0.20436594149963505,
+        "confidence": 0.74
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_20_DAL_SF",
+    "season": 2022,
+    "week": 20,
+    "home_team": "SF",
+    "away_team": "DAL",
+    "predictions": {
+      "spread": {
+        "line": 4.759294896445335,
+        "pick": "SF",
+        "confidence": 0.8
+      },
+      "total": {
+        "line": 47.047639823131746,
+        "confidence": 0.8
+      },
+      "moneyline": {
+        "pick": "SF",
+        "home_win_prob": 0.7492540480763934,
+        "away_win_prob": 0.2507459519236066,
+        "confidence": 0.8
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_20_JAX_KC",
+    "season": 2022,
+    "week": 20,
+    "home_team": "KC",
+    "away_team": "JAX",
+    "predictions": {
+      "spread": {
+        "line": 4.924589137651803,
+        "pick": "KC",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 46.49842144205285,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.7563286295184323,
+        "away_win_prob": 0.24367137048156773,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_20_NYG_PHI",
+    "season": 2022,
+    "week": 20,
+    "home_team": "PHI",
+    "away_team": "NYG",
+    "predictions": {
+      "spread": {
+        "line": 2.7706528299625544,
+        "pick": "PHI",
+        "confidence": 0.78
+      },
+      "total": {
+        "line": 45.77459605358703,
+        "confidence": 0.78
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.6541315892131639,
+        "away_win_prob": 0.34586841078683606,
+        "confidence": 0.78
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_21_CIN_KC",
+    "season": 2022,
+    "week": 21,
+    "home_team": "KC",
+    "away_team": "CIN",
+    "predictions": {
+      "spread": {
+        "line": 5.437563298482214,
+        "pick": "KC",
+        "confidence": 0.75
+      },
+      "total": {
+        "line": 46.823091320976864,
+        "confidence": 0.75
+      },
+      "moneyline": {
+        "pick": "KC",
+        "home_win_prob": 0.7774105522039515,
+        "away_win_prob": 0.2225894477960485,
+        "confidence": 0.75
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_21_SF_PHI",
+    "season": 2022,
+    "week": 21,
+    "home_team": "PHI",
+    "away_team": "SF",
+    "predictions": {
+      "spread": {
+        "line": 2.3525400751997383,
+        "pick": "PHI",
+        "confidence": 0.77
+      },
+      "total": {
+        "line": 46.799962465449426,
+        "confidence": 0.77
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.6320645982474209,
+        "away_win_prob": 0.3679354017525791,
+        "confidence": 0.77
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  },
+  {
+    "game_id": "2022_22_KC_PHI",
+    "season": 2022,
+    "week": 22,
+    "home_team": "PHI",
+    "away_team": "KC",
+    "predictions": {
+      "spread": {
+        "line": 2.4980301260476563,
+        "pick": "PHI",
+        "confidence": 0.71
+      },
+      "total": {
+        "line": 47.107373536285635,
+        "confidence": 0.71
+      },
+      "moneyline": {
+        "pick": "PHI",
+        "home_win_prob": 0.6398116919198464,
+        "away_win_prob": 0.36018830808015356,
+        "confidence": 0.71
+      }
+    },
+    "metadata": {
+      "predicted_at": "2025-11-04T17:33:19.573Z",
+      "model_version": "v2-backtest",
+      "time_causal": true
+    }
+  }
+]

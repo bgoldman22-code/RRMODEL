@@ -1,0 +1,5321 @@
+{
+  "season": 2021,
+  "week": 15,
+  "fetch_date": "2021-12-18",
+  "snapshot_timestamp": "2021-12-18T22:55:00Z",
+  "previous_timestamp": "2021-12-18T22:45:00Z",
+  "next_timestamp": "2021-12-18T23:05:00Z",
+  "games": [
+    {
+      "id": "bd655d64333fb0896b5b78dd3602e235",
+      "commence_time": "2021-12-19T01:15:00Z",
+      "home_team": "Indianapolis Colts",
+      "away_team": "New England Patriots",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "unibet": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -103,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -112,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -137,
+            "away_price": 120,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "foxbet": {
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -118,
+            "away_price": 100,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -139,
+            "away_price": 120,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -105,
+            "under_price": -115,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": -130,
+            "away_price": 110,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -104,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": -137,
+            "away_price": 120,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -141,
+            "away_price": 117,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": -137,
+            "away_price": 117,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -104,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": -137,
+            "away_price": 120,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": -141,
+            "away_price": 117,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 116,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -105,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": -137,
+            "away_price": 117,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -122,
+            "away_price": 120,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "mybookieag": {
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "spread": {
+            "home_line": -2,
+            "away_line": 2,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": -130,
+            "away_price": 110,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": -135,
+            "away_price": 115,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "0aefae9c01344e79530139ec323b6308",
+      "commence_time": "2021-12-19T18:00:00Z",
+      "home_team": "Miami Dolphins",
+      "away_team": "New York Jets",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "betrivers": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 345,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -111,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 345,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -400,
+            "away_price": 320,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "betonlineag": {
+          "moneyline": {
+            "home_price": -435,
+            "away_price": 340,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -435,
+            "away_price": 340,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": -455,
+            "away_price": 350,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 345,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -435,
+            "away_price": 335,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": -435,
+            "away_price": 330,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": -435,
+            "away_price": 335,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -105,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 340,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "betmgm": {
+          "moneyline": {
+            "home_price": -455,
+            "away_price": 360,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 330,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "mybookieag": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": -435,
+            "away_price": 335,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -400,
+            "away_price": 370,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": -10,
+            "away_line": 10,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 340,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 320,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -435,
+            "away_price": 335,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "f26f60527497f5fc0c8046d41e1eb550",
+      "commence_time": "2021-12-19T18:00:00Z",
+      "home_team": "Detroit Lions",
+      "away_team": "Arizona Cardinals",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "betonlineag": {
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": 500,
+            "away_price": -667,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": 12.5,
+            "away_line": -12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": 460,
+            "away_price": -588,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": 12.5,
+            "away_line": -12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": 460,
+            "away_price": -588,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": 12.5,
+            "away_line": -12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -106,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": 480,
+            "away_price": -667,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": 12.5,
+            "away_line": -12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": 460,
+            "away_price": -588,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": 12.5,
+            "away_line": -12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 47,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": 475,
+            "away_price": -667,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 47,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": 475,
+            "away_price": -714,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": 12,
+            "away_line": -12,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 47,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": 450,
+            "away_price": -625,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": 12.5,
+            "away_line": -12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": 440,
+            "away_price": -625,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "mybookieag": {
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": 500,
+            "away_price": -714,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": 12.5,
+            "away_line": -12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": 440,
+            "away_price": -625,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": 560,
+            "away_price": -588,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -119,
+            "away_price": 101,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 47,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": 500,
+            "away_price": -714,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": 12.5,
+            "away_line": -12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": 525,
+            "away_price": -769,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 47.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -115,
+            "away_price": 104,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": 500,
+            "away_price": -667,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": 12.5,
+            "away_line": -12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": 475,
+            "away_price": -714,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": 12.5,
+            "away_line": -12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 47,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": 475,
+            "away_price": -667,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": 13,
+            "away_line": -13,
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 47,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": 500,
+            "away_price": -714,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "cc0b20ab42e27f12e687b494c6e1de73",
+      "commence_time": "2021-12-19T18:00:00Z",
+      "home_team": "New York Giants",
+      "away_team": "Dallas Cowboys",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "draftkings": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": 400,
+            "away_price": -556,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": 405,
+            "away_price": -500,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": 11,
+            "away_line": -11,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": 425,
+            "away_price": -556,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": 405,
+            "away_price": -500,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -106,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": 410,
+            "away_price": -556,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -111,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -106,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": 405,
+            "away_price": -500,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": 425,
+            "away_price": -588,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": 450,
+            "away_price": -625,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": 390,
+            "away_price": -526,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "mybookieag": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": 415,
+            "away_price": -556,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": 390,
+            "away_price": -526,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": 10.5,
+            "away_line": -10.5,
+            "home_price": 105,
+            "away_price": -116,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": 425,
+            "away_price": -526,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": 440,
+            "away_price": -556,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": 400,
+            "away_price": -556,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": 100,
+            "under_price": -118,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": 425,
+            "away_price": -556,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": 10.5,
+            "away_line": -10.5,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": 400,
+            "away_price": -526,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": 470,
+            "away_price": -500,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": 11.5,
+            "away_line": -11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": 410,
+            "away_price": -500,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "df597f7f494f9978646463e332e0c8f2",
+      "commence_time": "2021-12-19T18:00:00Z",
+      "home_team": "Pittsburgh Steelers",
+      "away_team": "Tennessee Titans",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "sugarhouse": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": -118,
+            "away_price": 105,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": -130,
+            "away_price": 110,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -122,
+            "away_price": 102,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": -123,
+            "away_price": 102,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": -118,
+            "away_price": 105,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -112,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": -122,
+            "away_price": 102,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -111,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -118,
+            "away_price": 105,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -118,
+            "away_price": 100,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -125,
+            "away_price": 105,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": -120,
+            "away_price": 100,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "mybookieag": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": -125,
+            "away_price": 105,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -112,
+            "away_price": 110,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -105,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": -123,
+            "away_price": 103,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -125,
+            "away_price": 105,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": -1.5,
+            "away_line": 1.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": -125,
+            "away_price": 105,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": -1,
+            "away_line": 1,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": -125,
+            "away_price": 105,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": -1,
+            "away_line": 1,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 43,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -116,
+            "away_price": -102,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "048d15f97f219ecac466533be2da7b88",
+      "commence_time": "2021-12-19T21:05:00Z",
+      "home_team": "San Francisco 49ers",
+      "away_team": "Atlanta Falcons",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "sugarhouse": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": -400,
+            "away_price": 335,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": -8.5,
+            "away_line": 8.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 310,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -435,
+            "away_price": 320,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": -9,
+            "away_line": 9,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": -400,
+            "away_price": 320,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": -400,
+            "away_price": 335,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": -435,
+            "away_price": 320,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -435,
+            "away_price": 340,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -114,
+            "away_price": -106,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 46,
+            "over_price": -114,
+            "under_price": -106,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -400,
+            "away_price": 335,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "foxbet": {
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -118,
+            "away_price": 100,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -400,
+            "away_price": 320,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": -9,
+            "away_line": 9,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 320,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 330,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": -9,
+            "away_line": 9,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": -400,
+            "away_price": 315,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "mybookieag": {
+          "spread": {
+            "home_line": -9,
+            "away_line": 9,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 320,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -370,
+            "away_price": 340,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 46,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": -9,
+            "away_line": 9,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -417,
+            "away_price": 320,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": -9.5,
+            "away_line": 9.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": -455,
+            "away_price": 340,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": -10,
+            "away_line": 10,
+            "home_price": 105,
+            "away_price": -125,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": -400,
+            "away_price": 320,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": -9,
+            "away_line": 9,
+            "home_price": -105,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 46.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": -400,
+            "away_price": 320,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "d49b0a7b9f5132f7b66ff74d59318aea",
+      "commence_time": "2021-12-19T18:00:00Z",
+      "home_team": "Jacksonville Jaguars",
+      "away_team": "Houston Texans",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "williamhill_us": {
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -222,
+            "away_price": 180,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": -217,
+            "away_price": 185,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": -5,
+            "away_line": 5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": -222,
+            "away_price": 190,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": -5,
+            "away_line": 5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -233,
+            "away_price": 185,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": -222,
+            "away_price": 180,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": -5,
+            "away_line": 5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": -222,
+            "away_price": 190,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": -5,
+            "away_line": 5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": -233,
+            "away_price": 185,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 40,
+            "over_price": 100,
+            "under_price": -118,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -227,
+            "away_price": 188,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": -5,
+            "away_line": 5,
+            "home_price": -109,
+            "away_price": -111,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -217,
+            "away_price": 190,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": -238,
+            "away_price": 190,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": -5,
+            "away_line": 5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": -222,
+            "away_price": 180,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "mybookieag": {
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": -222,
+            "away_price": 180,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -200,
+            "away_price": 192,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 39.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -114,
+            "away_price": -106,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -233,
+            "away_price": 190,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -108,
+            "away_price": -102,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": -213,
+            "away_price": 185,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -222,
+            "away_price": 190,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": -5.5,
+            "away_line": 5.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": -227,
+            "away_price": 190,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": -4.5,
+            "away_line": 4.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 39.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": -227,
+            "away_price": 185,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "4f50f5c343f50a350328919ddddb8baa",
+      "commence_time": "2021-12-19T21:05:00Z",
+      "home_team": "Denver Broncos",
+      "away_team": "Cincinnati Bengals",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "unibet": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -111,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -106,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -159,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -161,
+            "away_price": 140,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": -156,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": -159,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -159,
+            "away_price": 128,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": -154,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": -159,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -112,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": -159,
+            "away_price": 128,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -159,
+            "away_price": 134,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "lowvig": {
+          "total": {
+            "line": 44,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": 100,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": -154,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": -149,
+            "away_price": 130,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": -149,
+            "away_price": 130,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "mybookieag": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": -161,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -141,
+            "away_price": 138,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -161,
+            "away_price": 140,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": -164,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -154,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": -149,
+            "away_price": 130,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "1721f7cb4ceb1a15df5c6466d5f3bc3f",
+      "commence_time": "2021-12-20T01:20:00Z",
+      "home_team": "Tampa Bay Buccaneers",
+      "away_team": "New Orleans Saints",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "unibet": {
+          "spread": {
+            "home_line": -11,
+            "away_line": 11,
+            "home_price": -109,
+            "away_price": -111,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -109,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -526,
+            "away_price": 430,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": -10.5,
+            "away_line": 10.5,
+            "home_price": -118,
+            "away_price": 100,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -556,
+            "away_price": 425,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "fanduel": {
+          "moneyline": {
+            "home_price": -556,
+            "away_price": 420,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "spread": {
+            "home_line": -11.5,
+            "away_line": 11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": -11.5,
+            "away_line": 11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -588,
+            "away_price": 425,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": -11,
+            "away_line": 11,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": -556,
+            "away_price": 430,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": -10.5,
+            "away_line": 10.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": -588,
+            "away_price": 425,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": -11,
+            "away_line": 11,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": -526,
+            "away_price": 430,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": -11,
+            "away_line": 11,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -588,
+            "away_price": 410,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": -11.5,
+            "away_line": 11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": -588,
+            "away_price": 425,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": -11,
+            "away_line": 11,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": -526,
+            "away_price": 430,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": -11,
+            "away_line": 11,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": -588,
+            "away_price": 410,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": -11.5,
+            "away_line": 11.5,
+            "home_price": -102,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": -556,
+            "away_price": 430,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": -11.5,
+            "away_line": 11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": -556,
+            "away_price": 410,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "mybookieag": {
+          "spread": {
+            "home_line": -11.5,
+            "away_line": 11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": -556,
+            "away_price": 420,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -500,
+            "away_price": 470,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": -11.5,
+            "away_line": 11.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -556,
+            "away_price": 445,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": -11,
+            "away_line": 11,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": -556,
+            "away_price": 400,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": -11.5,
+            "away_line": 11.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": -556,
+            "away_price": 425,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "dd1e14b70ee1048eec5eef04950f50fd",
+      "commence_time": "2021-12-19T18:00:00Z",
+      "home_team": "Buffalo Bills",
+      "away_team": "Carolina Panthers",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "betonlineag": {
+          "spread": {
+            "home_line": -13,
+            "away_line": 13,
+            "home_price": -108,
+            "away_price": -114,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": -625,
+            "away_price": 460,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": -12.5,
+            "away_line": 12.5,
+            "home_price": -112,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -112,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -625,
+            "away_price": 480,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": -13,
+            "away_line": 13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -667,
+            "away_price": 475,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": -13,
+            "away_line": 13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -667,
+            "away_price": 450,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": -12.5,
+            "away_line": 12.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -667,
+            "away_price": 475,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": -13,
+            "away_line": 13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": -667,
+            "away_price": 460,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": -12.5,
+            "away_line": 12.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": -625,
+            "away_price": 480,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": -12.5,
+            "away_line": 12.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": -625,
+            "away_price": 480,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -588,
+            "away_price": 540,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": -12.5,
+            "away_line": 12.5,
+            "home_price": -114,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -108,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": -667,
+            "away_price": 475,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": -12.5,
+            "away_line": 12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -667,
+            "away_price": 480,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": -13,
+            "away_line": 13,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -625,
+            "away_price": 470,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": -12.5,
+            "away_line": 12.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": -667,
+            "away_price": 450,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 43.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": -13,
+            "away_line": 13,
+            "home_price": -102,
+            "away_price": -108,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -103,
+            "under_price": -106,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": -588,
+            "away_price": 460,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": -13,
+            "away_line": 13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": -714,
+            "away_price": 475,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": -13,
+            "away_line": 13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": -588,
+            "away_price": 440,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "mybookieag": {
+          "spread": {
+            "home_line": -13,
+            "away_line": 13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": -625,
+            "away_price": 455,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": -13,
+            "away_line": 13,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": -588,
+            "away_price": 450,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "f9da2ac2a07745c39bb75946ebd8917d",
+      "commence_time": "2021-12-19T21:25:00Z",
+      "home_team": "Baltimore Ravens",
+      "away_team": "Green Bay Packers",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "betrivers": {
+          "spread": {
+            "home_line": 7,
+            "away_line": -7,
+            "home_price": -115,
+            "away_price": -106,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": 230,
+            "away_price": -278,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": 7,
+            "away_line": -7,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -112,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": 230,
+            "away_price": -278,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": 6.5,
+            "away_line": -6.5,
+            "home_price": 101,
+            "away_price": -119,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": 255,
+            "away_price": -303,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": 7,
+            "away_line": -7,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": 250,
+            "away_price": -323,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": 6.5,
+            "away_line": -6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": 240,
+            "away_price": -303,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": 7,
+            "away_line": -7,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": 230,
+            "away_price": -294,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": 7,
+            "away_line": -7,
+            "home_price": -115,
+            "away_price": -106,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": 215,
+            "away_price": -278,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": 7,
+            "away_line": -7,
+            "home_price": -115,
+            "away_price": -106,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": 230,
+            "away_price": -278,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": 265,
+            "away_price": -270,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": 6.5,
+            "away_line": -6.5,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": 255,
+            "away_price": -312,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": 7,
+            "away_line": -7,
+            "home_price": -115,
+            "away_price": -106,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": 215,
+            "away_price": -278,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": 7,
+            "away_line": -7,
+            "home_price": -114,
+            "away_price": -106,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -106,
+            "under_price": -114,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": 250,
+            "away_price": -312,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 43.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": 7,
+            "away_line": -7,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": 280,
+            "away_price": -345,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "foxbet": {
+          "total": {
+            "line": 43.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "spread": {
+            "home_line": 6.5,
+            "away_line": -6.5,
+            "home_price": 100,
+            "away_price": -118,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": 245,
+            "away_price": -303,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": 6.5,
+            "away_line": -6.5,
+            "home_price": 105,
+            "away_price": -116,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": 255,
+            "away_price": -303,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "mybookieag": {
+          "total": {
+            "line": 43.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "spread": {
+            "home_line": 6.5,
+            "away_line": -6.5,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": 245,
+            "away_price": -303,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": 6.5,
+            "away_line": -6.5,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": 250,
+            "away_price": -303,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": 7,
+            "away_line": -7,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 43.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": 250,
+            "away_price": -303,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "571864aeeee47f8315504924b37ded21",
+      "commence_time": "2021-12-21T01:15:00Z",
+      "home_team": "Chicago Bears",
+      "away_team": "Minnesota Vikings",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "pointsbetus": {
+          "spread": {
+            "home_line": 6.5,
+            "away_line": -6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": 220,
+            "away_price": -278,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": 210,
+            "away_price": -250,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -106,
+            "away_price": -115,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": 215,
+            "away_price": -250,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": 215,
+            "away_price": -250,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": 6.5,
+            "away_line": -6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -118,
+            "under_price": 100,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": 225,
+            "away_price": -278,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -108,
+            "away_price": -102,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": 210,
+            "away_price": -250,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": 220,
+            "away_price": -270,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": 215,
+            "away_price": -256,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": 5.5,
+            "away_line": -5.5,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": 200,
+            "away_price": -250,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -106,
+            "away_price": -115,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": 200,
+            "away_price": -250,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -106,
+            "away_price": -115,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": 215,
+            "away_price": -250,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": 225,
+            "away_price": -244,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "mybookieag": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:47:19Z"
+          },
+          "moneyline": {
+            "home_price": 215,
+            "away_price": -263,
+            "last_update": "2021-12-18T22:47:19Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -106,
+            "away_price": -115,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": 200,
+            "away_price": -250,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": 5.5,
+            "away_line": -5.5,
+            "home_price": -106,
+            "away_price": -114,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": 200,
+            "away_price": -244,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 44,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": 225,
+            "away_price": -263,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": 220,
+            "away_price": -278,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": 6,
+            "away_line": -6,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": 220,
+            "away_price": -263,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "df036c58bd074d33bb4d49c18a6b2456",
+      "commence_time": "2021-12-20T22:00:00Z",
+      "home_team": "Cleveland Browns",
+      "away_team": "Las Vegas Raiders",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "betfair": {
+          "moneyline": {
+            "home_price": -139,
+            "away_price": 136,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "betrivers": {
+          "total": {
+            "line": 41,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": 100,
+            "away_price": -123,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": -159,
+            "away_price": 132,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": -2.5,
+            "away_line": 2.5,
+            "home_price": -120,
+            "away_price": -102,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 40.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -154,
+            "away_price": 130,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": 100,
+            "away_price": -123,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": -159,
+            "away_price": 132,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": 100,
+            "away_price": -123,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -112,
+            "under_price": -106,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -159,
+            "away_price": 132,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": -149,
+            "away_price": 125,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 40.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -161,
+            "away_price": 140,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": -161,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -105,
+            "away_price": -115,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 40.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": -152,
+            "away_price": 129,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 40.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": -154,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "sugarhouse": {
+          "total": {
+            "line": 41,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": 100,
+            "away_price": -123,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": -159,
+            "away_price": 132,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 40,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": -154,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": -3.5,
+            "away_line": 3.5,
+            "home_price": 100,
+            "away_price": -123,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 41,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -159,
+            "away_price": 132,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 40.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 40.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -161,
+            "away_price": 135,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 40.5,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -161,
+            "away_price": 140,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 40.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        },
+        "lowvig": {
+          "total": {
+            "line": 40.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "spread": {
+            "home_line": -3,
+            "away_line": 3,
+            "home_price": 100,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": -149,
+            "away_price": 130,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "002aa5a45545b1f33383d4c5366ba751",
+      "commence_time": "2021-12-22T00:00:00Z",
+      "home_team": "Los Angeles Rams",
+      "away_team": "Seattle Seahawks",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "williamhill_us": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -294,
+            "away_price": 235,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 215,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 215,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 215,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 255,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -111,
+            "away_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -111,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": -286,
+            "away_price": 235,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -109,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -109,
+            "under_price": -112,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 215,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "fanduel": {
+          "spread": {
+            "home_line": -6,
+            "away_line": 6,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -263,
+            "away_price": 215,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 230,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 225,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -109,
+            "away_price": -111,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -109,
+            "under_price": -111,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 215,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": -303,
+            "away_price": 240,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 235,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 45.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 225,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 45,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "lowvig": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -105,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "total": {
+            "line": 44.5,
+            "over_price": -105,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 235,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -109,
+            "away_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -294,
+            "away_price": 245,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": -7,
+            "away_line": 7,
+            "home_price": 100,
+            "away_price": -120,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 45,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": -270,
+            "away_price": 230,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "28be1a9defdcdd5e8a9040b80fe841f7",
+      "commence_time": "2021-12-22T00:00:00Z",
+      "home_team": "Philadelphia Eagles",
+      "away_team": "Washington Football Team",
+      "snapshot_timestamp": "2021-12-18T22:55:00Z",
+      "bookmakers": {
+        "fanduel": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 41.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 230,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "unibet": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -108,
+            "away_price": -112,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -112,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -238,
+            "away_price": 200,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "foxbet": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:04Z"
+          },
+          "moneyline": {
+            "home_price": -250,
+            "away_price": 210,
+            "last_update": "2021-12-18T22:48:04Z"
+          }
+        },
+        "williamhill_us": {
+          "spread": {
+            "home_line": -6,
+            "away_line": 6,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 230,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betonlineag": {
+          "spread": {
+            "home_line": -6,
+            "away_line": 6,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:48:17Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 230,
+            "last_update": "2021-12-18T22:48:17Z"
+          }
+        },
+        "pointsbetus": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:57Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 220,
+            "last_update": "2021-12-18T22:48:57Z"
+          }
+        },
+        "betfair": {
+          "moneyline": {
+            "home_price": -256,
+            "away_price": 235,
+            "last_update": "2021-12-18T22:48:43Z"
+          }
+        },
+        "twinspires": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -108,
+            "away_price": -114,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:23Z"
+          },
+          "moneyline": {
+            "home_price": -244,
+            "away_price": 195,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "sugarhouse": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -108,
+            "away_price": -114,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:18Z"
+          },
+          "moneyline": {
+            "home_price": -238,
+            "away_price": 200,
+            "last_update": "2021-12-18T22:49:18Z"
+          }
+        },
+        "draftkings": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 220,
+            "last_update": "2021-12-18T22:48:00Z"
+          },
+          "total": {
+            "line": 42.5,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:00Z"
+          }
+        },
+        "betrivers": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -108,
+            "away_price": -114,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:46Z"
+          },
+          "moneyline": {
+            "home_price": -238,
+            "away_price": 200,
+            "last_update": "2021-12-18T22:49:46Z"
+          }
+        },
+        "barstool": {
+          "spread": {
+            "home_line": -6.5,
+            "away_line": 6.5,
+            "home_price": -108,
+            "away_price": -114,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -114,
+            "under_price": -108,
+            "last_update": "2021-12-18T22:49:45Z"
+          },
+          "moneyline": {
+            "home_price": -244,
+            "away_price": 195,
+            "last_update": "2021-12-18T22:49:45Z"
+          }
+        },
+        "betmgm": {
+          "spread": {
+            "home_line": -5.5,
+            "away_line": 5.5,
+            "home_price": -110,
+            "away_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:27Z"
+          },
+          "moneyline": {
+            "home_price": -250,
+            "away_price": 200,
+            "last_update": "2021-12-18T22:49:27Z"
+          }
+        },
+        "lowvig": {
+          "total": {
+            "line": 42,
+            "over_price": -109,
+            "under_price": -101,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "spread": {
+            "home_line": -6,
+            "away_line": 6,
+            "home_price": -110,
+            "away_price": 100,
+            "last_update": "2021-12-18T22:50:11Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 230,
+            "last_update": "2021-12-18T22:50:11Z"
+          }
+        },
+        "intertops": {
+          "spread": {
+            "home_line": -6,
+            "away_line": 6,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:48:44Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 235,
+            "last_update": "2021-12-18T22:48:44Z"
+          }
+        },
+        "wynnbet": {
+          "total": {
+            "line": 42,
+            "over_price": -115,
+            "under_price": -105,
+            "last_update": "2021-12-18T22:49:23Z"
+          }
+        },
+        "gtbets": {
+          "spread": {
+            "home_line": -6,
+            "away_line": 6,
+            "home_price": -114,
+            "away_price": -104,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -109,
+            "under_price": -109,
+            "last_update": "2021-12-18T22:50:03Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 235,
+            "last_update": "2021-12-18T22:50:03Z"
+          }
+        },
+        "betus": {
+          "spread": {
+            "home_line": -6,
+            "away_line": 6,
+            "home_price": -115,
+            "away_price": -105,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "total": {
+            "line": 42,
+            "over_price": -110,
+            "under_price": -110,
+            "last_update": "2021-12-18T22:49:43Z"
+          },
+          "moneyline": {
+            "home_price": -278,
+            "away_price": 235,
+            "last_update": "2021-12-18T22:49:43Z"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "fetched_at": "2025-11-04T15:58:13.599Z",
+    "games_count": 15,
+    "total_snapshot_games": 15,
+    "description": "Week 15 closing lines"
+  }
+}

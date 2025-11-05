@@ -1,0 +1,296 @@
+[
+  {
+    "configNum": 1,
+    "params": {
+      "l10_weight": 0.6,
+      "per36_weight": 0.4,
+      "starter_floor": 32,
+      "bench_floor": 24,
+      "sigma_floor_rebounds": 1.8,
+      "sigma_floor_assists": 1.6,
+      "z_temp": 0.9,
+      "min_ev": 0
+    },
+    "trainingMetrics": {
+      "count": 1329,
+      "mu_bias": -0.9368938966300311,
+      "under_rate": 0.7351392024078255,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 103,
+          "wins": 47,
+          "winRate": 0.4563106796116505,
+          "roi": -0.08433686013674226
+        },
+        "5-10%": {
+          "count": 294,
+          "wins": 140,
+          "winRate": 0.47619047619047616,
+          "roi": -0.12446195432787498
+        },
+        "10-15%": {
+          "count": 282,
+          "wins": 139,
+          "winRate": 0.4929078014184397,
+          "roi": -0.10763582728006098
+        },
+        "15%+": {
+          "count": 650,
+          "wins": 353,
+          "winRate": 0.5430769230769231,
+          "roi": 0.0024149475770289188
+        }
+      },
+      "monotonicity_score": 0.981739469781379,
+      "edge_15_plus_winrate": 0.5430769230769231,
+      "avg_roi": 0.2780447948010175
+    },
+    "holdoutMetrics": {
+      "count": 1228,
+      "mu_bias": 0.021285554303289267,
+      "under_rate": 0.3982084690553746,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 626,
+          "wins": 302,
+          "winRate": 0.48242811501597443,
+          "roi": -0.05467165613305794
+        },
+        "5-10%": {
+          "count": 298,
+          "wins": 125,
+          "winRate": 0.41946308724832215,
+          "roi": -0.11755690146308419
+        },
+        "10-15%": {
+          "count": 86,
+          "wins": 38,
+          "winRate": 0.4418604651162791,
+          "roi": 1.2489256865517981
+        },
+        "15%+": {
+          "count": 218,
+          "wins": 99,
+          "winRate": 0.4541284403669725,
+          "roi": 14.509157045171476
+        }
+      },
+      "monotonicity_score": 0.3462715805832476,
+      "edge_15_plus_winrate": 0.4541284403669725,
+      "avg_roi": 3.1200102416537105,
+      "shuffleTest": {
+        "mean": 0.5042019543973946,
+        "sd": 0.013472963996127312,
+        "theoretical_sd": 0.01426825363838374,
+        "z_score": 6.973859407350291,
+        "passed": true,
+        "iterations": 500
+      }
+    },
+    "validationCriteria": {
+      "coverage": false,
+      "winRate": false,
+      "roi": true,
+      "monotonicity": false,
+      "sampleSize": true,
+      "shuffleTest": true
+    },
+    "status": "FAILED"
+  },
+  {
+    "configNum": 2,
+    "params": {
+      "l10_weight": 0.6,
+      "per36_weight": 0.4,
+      "starter_floor": 32,
+      "bench_floor": 24,
+      "sigma_floor_rebounds": 1.8,
+      "sigma_floor_assists": 1,
+      "z_temp": 0.9,
+      "min_ev": 0
+    },
+    "trainingMetrics": {
+      "count": 1329,
+      "mu_bias": -0.9414194380664904,
+      "under_rate": 0.7373965387509406,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 103,
+          "wins": 47,
+          "winRate": 0.4563106796116505,
+          "roi": -0.08433686013674226
+        },
+        "5-10%": {
+          "count": 289,
+          "wins": 137,
+          "winRate": 0.4740484429065744,
+          "roi": -0.12835005509946912
+        },
+        "10-15%": {
+          "count": 285,
+          "wins": 141,
+          "winRate": 0.49473684210526314,
+          "roi": -0.10603127024902187
+        },
+        "15%+": {
+          "count": 652,
+          "wins": 355,
+          "winRate": 0.5444785276073619,
+          "roi": 0.004571603862563687
+        }
+      },
+      "monotonicity_score": 0.9830652924538194,
+      "edge_15_plus_winrate": 0.5444785276073619,
+      "avg_roi": 0.2805276436001165
+    },
+    "holdoutMetrics": {
+      "count": 1228,
+      "mu_bias": 0.021285554303289267,
+      "under_rate": 0.3990228013029316,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 626,
+          "wins": 301,
+          "winRate": 0.48083067092651754,
+          "roi": -0.05818603312986311
+        },
+        "5-10%": {
+          "count": 298,
+          "wins": 125,
+          "winRate": 0.41946308724832215,
+          "roi": -0.11755690146308419
+        },
+        "10-15%": {
+          "count": 85,
+          "wins": 38,
+          "winRate": 0.4470588235294118,
+          "roi": 1.2753836358053487
+        },
+        "15%+": {
+          "count": 219,
+          "wins": 99,
+          "winRate": 0.4520547945205479,
+          "roi": 14.438338976472062
+        }
+      },
+      "monotonicity_score": 0.3491898194778478,
+      "edge_15_plus_winrate": 0.4520547945205479,
+      "avg_roi": 3.119946225783891,
+      "shuffleTest": {
+        "mean": 0.5040146579804567,
+        "sd": 0.0119539175497693,
+        "theoretical_sd": 0.01426825363838374,
+        "z_score": 7.509712287489018,
+        "passed": true,
+        "iterations": 500
+      }
+    },
+    "validationCriteria": {
+      "coverage": false,
+      "winRate": false,
+      "roi": true,
+      "monotonicity": false,
+      "sampleSize": true,
+      "shuffleTest": true
+    },
+    "status": "FAILED"
+  },
+  {
+    "configNum": 3,
+    "params": {
+      "l10_weight": 0.6,
+      "per36_weight": 0.4,
+      "starter_floor": 32,
+      "bench_floor": 24,
+      "sigma_floor_rebounds": 1.8,
+      "sigma_floor_assists": 1.2,
+      "z_temp": 0.9,
+      "min_ev": 0
+    },
+    "trainingMetrics": {
+      "count": 1329,
+      "mu_bias": -0.9414194380664904,
+      "under_rate": 0.7373965387509406,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 103,
+          "wins": 47,
+          "winRate": 0.4563106796116505,
+          "roi": -0.08433686013674226
+        },
+        "5-10%": {
+          "count": 289,
+          "wins": 137,
+          "winRate": 0.4740484429065744,
+          "roi": -0.12835005509946912
+        },
+        "10-15%": {
+          "count": 285,
+          "wins": 141,
+          "winRate": 0.49473684210526314,
+          "roi": -0.10603127024902187
+        },
+        "15%+": {
+          "count": 652,
+          "wins": 355,
+          "winRate": 0.5444785276073619,
+          "roi": 0.004571603862563687
+        }
+      },
+      "monotonicity_score": 0.9830652924538194,
+      "edge_15_plus_winrate": 0.5444785276073619,
+      "avg_roi": 0.2804580869639093
+    },
+    "holdoutMetrics": {
+      "count": 1228,
+      "mu_bias": 0.021285554303289267,
+      "under_rate": 0.3990228013029316,
+      "edge_buckets": {
+        "0-5%": {
+          "count": 626,
+          "wins": 301,
+          "winRate": 0.48083067092651754,
+          "roi": -0.05818603312986311
+        },
+        "5-10%": {
+          "count": 299,
+          "wins": 125,
+          "winRate": 0.4180602006688963,
+          "roi": -0.12050821617391008
+        },
+        "10-15%": {
+          "count": 85,
+          "wins": 38,
+          "winRate": 0.4470588235294118,
+          "roi": 1.2753836358053487
+        },
+        "15%+": {
+          "count": 218,
+          "wins": 98,
+          "winRate": 0.44954128440366975,
+          "roi": 14.501293349234386
+        }
+      },
+      "monotonicity_score": 0.3367806200585749,
+      "edge_15_plus_winrate": 0.44954128440366975,
+      "avg_roi": 3.119822429949522,
+      "shuffleTest": {
+        "mean": 0.5037801302931599,
+        "sd": 0.012047545021430985,
+        "theoretical_sd": 0.01426825363838374,
+        "z_score": 7.016058694344545,
+        "passed": true,
+        "iterations": 500
+      }
+    },
+    "validationCriteria": {
+      "coverage": false,
+      "winRate": false,
+      "roi": true,
+      "monotonicity": false,
+      "sampleSize": true,
+      "shuffleTest": true
+    },
+    "status": "FAILED"
+  }
+]

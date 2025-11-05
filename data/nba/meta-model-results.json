@@ -1,0 +1,221 @@
+{
+  "meta": {
+    "date": "2025-11-04T16:15:39.035Z",
+    "source": "data/nba/holdout-predictions-detailed.json",
+    "n_samples": 9776
+  },
+  "model": {
+    "formula": "Logit(OverHit) ~ q_mkt + z_model + spread_big",
+    "features": [
+      "Intercept",
+      "q_mkt",
+      "z_model",
+      "spread_big",
+      "pace_top25",
+      "sdmins_top25"
+    ]
+  },
+  "fit": {
+    "coefficients": {
+      "Intercept": 0,
+      "q_mkt": 0,
+      "z_model": 0,
+      "spread_big": 0,
+      "pace_top25": 0,
+      "sdmins_top25": 0
+    },
+    "std_errors": {
+      "Intercept": null,
+      "q_mkt": null,
+      "z_model": null,
+      "spread_big": null,
+      "pace_top25": null,
+      "sdmins_top25": null
+    },
+    "z_scores": {
+      "Intercept": null,
+      "q_mkt": null,
+      "z_model": null,
+      "spread_big": null,
+      "pace_top25": null,
+      "sdmins_top25": null
+    },
+    "p_values": {
+      "Intercept": null,
+      "q_mkt": null,
+      "z_model": null,
+      "spread_big": null,
+      "pace_top25": null,
+      "sdmins_top25": null
+    },
+    "logLik": -6776.20683715508,
+    "aic": 13564.41367431016,
+    "bic": 13607.53978839863
+  },
+  "decision": {
+    "has_signal": false,
+    "z_model_coefficient": 0,
+    "z_model_pvalue": null,
+    "interpretation": "Model has NO signal beyond market price - need more features or abandon"
+  },
+  "lift_curves": {
+    "deciles": [
+      {
+        "decile": 1,
+        "n": 977,
+        "hits": 545,
+        "hitRate": 0.5578300921187308,
+        "avgZ": -0.6817013930547067,
+        "avgQMkt": 0.5203870664969342
+      },
+      {
+        "decile": 2,
+        "n": 977,
+        "hits": 483,
+        "hitRate": 0.49437052200614123,
+        "avgZ": -0.38235525058058434,
+        "avgQMkt": 0.5149228559467934
+      },
+      {
+        "decile": 3,
+        "n": 977,
+        "hits": 401,
+        "hitRate": 0.4104401228249744,
+        "avgZ": -0.2624479383330703,
+        "avgQMkt": 0.4902632374935356
+      },
+      {
+        "decile": 4,
+        "n": 977,
+        "hits": 475,
+        "hitRate": 0.48618219037871035,
+        "avgZ": -0.1760314984901143,
+        "avgQMkt": 0.46762505849157376
+      },
+      {
+        "decile": 5,
+        "n": 977,
+        "hits": 449,
+        "hitRate": 0.4595701125895599,
+        "avgZ": -0.09342018977645586,
+        "avgQMkt": 0.4461266382192198
+      },
+      {
+        "decile": 6,
+        "n": 977,
+        "hits": 368,
+        "hitRate": 0.3766632548618219,
+        "avgZ": -0.016625685411078475,
+        "avgQMkt": 0.4354424875875806
+      },
+      {
+        "decile": 7,
+        "n": 977,
+        "hits": 414,
+        "hitRate": 0.42374616171954965,
+        "avgZ": 0.06409900967943749,
+        "avgQMkt": 0.4364983912348552
+      },
+      {
+        "decile": 8,
+        "n": 977,
+        "hits": 445,
+        "hitRate": 0.4554759467758444,
+        "avgZ": 0.16873089877834938,
+        "avgQMkt": 0.4611000556316272
+      },
+      {
+        "decile": 9,
+        "n": 977,
+        "hits": 491,
+        "hitRate": 0.5025588536335721,
+        "avgZ": 0.33620119331621867,
+        "avgQMkt": 0.5096598392517709
+      },
+      {
+        "decile": 10,
+        "n": 983,
+        "hits": 571,
+        "hitRate": 0.5808748728382502,
+        "avgZ": 0.8260192664509292,
+        "avgQMkt": 0.5166845814589865
+      }
+    ],
+    "monotonic": false
+  },
+  "calibration": {
+    "bins": [
+      {
+        "bin": 1,
+        "n": 977,
+        "avgModelProb": 0.5,
+        "empiricalRate": 0.45138178096212894,
+        "diff": -0.04861821903787106
+      },
+      {
+        "bin": 2,
+        "n": 977,
+        "avgModelProb": 0.5,
+        "empiricalRate": 0.49129989764585463,
+        "diff": -0.008700102354145367
+      },
+      {
+        "bin": 3,
+        "n": 977,
+        "avgModelProb": 0.5,
+        "empiricalRate": 0.48618219037871035,
+        "diff": -0.013817809621289645
+      },
+      {
+        "bin": 4,
+        "n": 977,
+        "avgModelProb": 0.5,
+        "empiricalRate": 0.4677584442169908,
+        "diff": -0.03224155578300919
+      },
+      {
+        "bin": 5,
+        "n": 977,
+        "avgModelProb": 0.5,
+        "empiricalRate": 0.4564994882292733,
+        "diff": -0.043500511770726724
+      },
+      {
+        "bin": 6,
+        "n": 977,
+        "avgModelProb": 0.5,
+        "empiricalRate": 0.5076765609007164,
+        "diff": 0.007676560900716445
+      },
+      {
+        "bin": 7,
+        "n": 977,
+        "avgModelProb": 0.5,
+        "empiricalRate": 0.46366427840327534,
+        "diff": -0.03633572159672466
+      },
+      {
+        "bin": 8,
+        "n": 977,
+        "avgModelProb": 0.5,
+        "empiricalRate": 0.4524053224155578,
+        "diff": -0.04759467758444219
+      },
+      {
+        "bin": 9,
+        "n": 977,
+        "avgModelProb": 0.5,
+        "empiricalRate": 0.49641760491299897,
+        "diff": -0.0035823950870010335
+      },
+      {
+        "bin": 10,
+        "n": 983,
+        "avgModelProb": 0.5,
+        "empiricalRate": 0.4750762970498474,
+        "diff": -0.024923702950152615
+      }
+    ],
+    "mean_absolute_error": 0.026699125668607892
+  }
+}

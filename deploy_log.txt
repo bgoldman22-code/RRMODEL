@@ -1,0 +1,662 @@
+ ›   Warning: --build is now the default and can safely be omitted.
+[96m[1m​[22m[39m
+[96m[1mNetlify Build                                                 [22m[39m
+[96m[1m────────────────────────────────────────────────────────────────[22m[39m
+[36m[1m​[22m[39m
+[36m[1m❯ Version[22m[39m
+  @netlify/build 35.1.3
+[36m[1m​[22m[39m
+[36m[1m❯ Flags[22m[39m
+  accountId: 689cadd919107316089ba41c
+[36m[1m​[22m[39m
+[36m[1m❯ Current directory[22m[39m
+  /Users/brentgoldman/Desktop/REPO33/RRMODEL
+[36m[1m​[22m[39m
+[36m[1m❯ Config file[22m[39m
+  /Users/brentgoldman/Desktop/REPO33/RRMODEL/netlify.toml
+[36m[1m​[22m[39m
+[36m[1m❯ Context[22m[39m
+  production
+[36m[1m​[22m[39m
+[36m[1m❯ Installing extensions[22m[39m
+   - neon
+[36m[1m​[22m[39m
+[36m[1m❯ Loading extensions[22m[39m
+   - neon
+[96m[1m​[22m[39m
+[96m[1mbuild.command from netlify.toml                               [22m[39m
+[96m[1m────────────────────────────────────────────────────────────────[22m[39m
+​
+[36m$ npm run build[39m
+
+> rrmodel-main28@1.0.0 build
+> vite build
+
+vite v5.4.20 building for production...
+transforming...
+✓ 62 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                  0.42 kB │ gzip:  0.29 kB
+dist/assets/index-n-_wwlQC.js  280.17 kB │ gzip: 84.67 kB
+✓ built in 565ms
+​
+[90m(build.command completed in 1s)[39m
+[96m[1m​[22m[39m
+[96m[1mFunctions bundling                                            [22m[39m
+[96m[1m────────────────────────────────────────────────────────────────[22m[39m
+​
+Packaging Functions from [36mnetlify/functions[39m directory:
+ - _blobs-helper.mjs
+ - _blobs.js
+ - _util-espn.mjs
+ - archive-predictions.mjs
+ - bcrypt-diagnostics.mjs
+ - build-injuries-v4.js
+ - debug-espn-structure.js
+ - diag.mjs
+ - fd-proxy.js
+ - fetch-soccer-fixtures.js
+ - generate-daily-predictions.mjs
+ - generate-parlays.js
+ - historical-predictions.mjs
+ - hits2-advanced.mjs
+ - hits2-daily-learn.mjs
+ - hits2-diag.mjs
+ - hits2-model-settings.mjs
+ - hits2-model.mjs
+ - hits2-preview.mjs
+ - hits2-slate.mjs
+ - hits2-submit-picks.mjs
+ - hr-leaders.js
+ - hrExp.cjs
+ - hrr-diag.mjs
+ - hrr-slate.mjs
+ - injuries-cron-all.js
+ - injuries-patch.js
+ - injuries-read-v4.js
+ - injuries-read.js
+ - learn-diag.mjs
+ - learn-status.mjs
+ - mlb-backfill-pitchers.mjs
+ - mlb-backfill.mjs
+ - mlb-calibration.mjs
+ - mlb-daily-learn.js
+ - mlb-game-context.mjs
+ - mlb-hr-exp-list.cjs
+ - mlb-hr-generate-exp.cjs
+ - mlb-hr-generate-exp2.cjs
+ - mlb-league-summarize.mjs
+ - mlb-learn-batch.mjs
+ - mlb-learn-diagnostics.mjs
+ - mlb-learn-status.mjs
+ - mlb-learn-summary.mjs
+ - mlb-learn.mjs
+ - mlb-learner-v2.mjs
+ - mlb-log-picks.js
+ - mlb-metrics.js
+ - mlb-model-settings.js
+ - mlb-preds-get.js
+ - mlb-slate-lite.mjs
+ - nba-debug-generate.mjs
+ - nba-picks-latest.mjs
+ - nfl-anytime-td-candidates.mjs
+ - nfl-blobs-check.cjs
+ - nfl-bootstrap-nb.mjs
+ - nfl-bootstrap.js
+ - nfl-data.js
+ - nfl-depthcharts-local.cjs
+ - nfl-depthcharts-rollover.cjs
+ - nfl-diag.cjs
+ - nfl-game-predict.mjs
+ - nfl-injuries-balldontlie.cjs
+ - nfl-injuries-collect.js
+ - nfl-injuries-comprehensive-elite.js
+ - nfl-injuries-comprehensive-v2.js
+ - nfl-injuries-comprehensive.cjs
+ - nfl-injuries-manual-test.cjs
+ - nfl-injuries-sportradar.cjs
+ - nfl-injuries-test.cjs
+ - nfl-odds-diag.cjs
+ - nfl-odds-snapshot/index.mjs
+ - nfl-odds.mjs
+ - nfl-predictions-deeplink-diag.cjs
+ - nfl-predictions-diag/index.cjs
+ - nfl-predictions-generate-v2.mjs
+ - nfl-predictions-generate/index.mjs
+ - nfl-predictions-refresh.mjs
+ - nfl-receiving-scanner-elite.js
+ - nfl-receiving-scanner-ssot.mjs
+ - nfl-receiving-scanner.mjs
+ - nfl-receiving-ssot-upload-post.mjs
+ - nfl-receiving-ssot-upload.mjs
+ - nfl-rosters-daily.cjs
+ - nfl-rosters-gameday-mon.cjs
+ - nfl-rosters-gameday-sun.cjs
+ - nfl-rosters-gameday-thu.cjs
+ - nfl-rosters-get.cjs
+ - nfl-rosters-list.mjs
+ - nfl-rosters-nb.mjs
+ - nfl-rosters-run.mjs
+ - nfl-rosters.mjs
+ - nfl-td-anytime-simple.mjs
+ - nfl-td-predictions-enhanced.js
+ - nfl-td-test-simple.mjs
+ - nfl-train-weekly.mjs
+ - nfl-v41-by-date.mjs
+ - nfl-v41-latest.mjs
+ - nfl-v41-refresh.mjs
+ - nfl-v5-by-date.mjs
+ - nfl-v5-latest.mjs
+ - nfl-v5-refresh.mjs
+ - nhl-check-blobs.mjs
+ - nhl-debug-players.mjs
+ - nhl-export-predictions.mjs
+ - nhl-fetch-results.mjs
+ - nhl-prediction-stats.mjs
+ - nhl-schedule-refresh.mjs
+ - nhl-setup-blobs.mjs
+ - nhl-sog-calibrated-v2.js
+ - nhl-sog-debug.js
+ - nhl-sog-scanner-elite-fast.js
+ - nhl-sog-scanner-elite.js
+ - nhl-sog-scanner-real.mjs
+ - nhl-sog-scanner-simple.mjs
+ - nhl-sog-scanner-v3-fast.mjs
+ - nhl-sog-scanner-v3-optimized.mjs
+ - nhl-sog-scanner-v3.mjs
+ - nhl-sog-scanner.mjs
+ - nhl-stats-refresh.mjs
+ - odds-diag.js
+ - odds-diagnostics.mjs
+ - odds-get-hits.cjs
+ - odds-get.cjs
+ - odds-hits2.mjs
+ - odds-hrr.mjs
+ - odds-list-markets.js
+ - odds-lookup.mjs
+ - odds-nfl-negcorr.cjs
+ - odds-props.mjs
+ - odds-refresh-multi-cjs.zip
+ - odds-refresh-multi.cjs
+ - odds-refresh-rapid-background.js
+ - odds-refresh-rapid.js
+ - odds-refresh-tidy.cjs
+ - odds-refresh/index.mjs
+ - odds-scan-missing.mjs
+ - odds-seed-demo.js
+ - odds-source-diagnose.mjs
+ - odds-status/index.mjs
+ - odds-test-market-multi.js
+ - odds-test-market.js
+ - ping.js
+ - preds-diag.js
+ - prewarm-odds-v2.mjs
+ - prewarm-odds.mjs
+ - profile.js
+ - props-diagnostics.mjs
+ - props-get-raw.mjs
+ - props-get.mjs
+ - props-prob.mjs
+ - props-refresh.mjs
+ - props-stats.mjs
+ - save-picks.mjs
+ - sb-advanced.mjs
+ - sb-daily-learn.mjs
+ - sb-model-settings.mjs
+ - sb-submit-picks.mjs
+ - scheduled-predictions-refresh.mjs
+ - seed-blobs-from-local.mjs
+ - seed-blobs-from-post.mjs
+ - seed-boxscores-to-blobs.mjs
+ - soccer-btts-predictions.js
+ - soccer-daily-learn.mjs
+ - soccer-data-pipeline.js
+ - soccer-model-settings.mjs
+ - soccer-submit-picks.mjs
+ - test-blobs-simple.mjs
+ - test-blobs/index.mjs
+ - test-simple-injuries.js
+ - test-td-simple.mjs
+ - test-v4-deployment.js
+ - trigger-nba-build.mjs
+ - trigger-nba-predictions.mjs
+ - trigger-nhl-schedule.mjs
+ - update-boxscores-daily.mjs
+ - xping.cjs
+ - blobs-get/index.cjs
+ - blobs-introspect/index.cjs
+ - blobs-selftest/index.mjs
+ - debug-injury-check/index.mjs
+ - health-blobs/index.cjs
+ - health-blobs-min/index.cjs
+ - nba-debug/index.mjs
+ - nba-minimal-test/index.mjs
+ - nba-predictions-clean/index.mjs
+ - nba-predictions-elite/index.mjs
+ - nba-predictions-elite-v2/index.mjs
+ - nba-predictions-generate/index.mjs
+ - nba-predictions-simple/index.mjs
+ - nba-test-simple/index.mjs
+ - nfl-clv-close/index.mjs
+ - nfl-clv-track/index.mjs
+ - nfl-debug-load/index.cjs
+ - nfl-depthcharts-build-dynamic/index.cjs
+ - nfl-depthcharts-dbg/index.cjs
+ - nfl-depthcharts-get/index.cjs
+ - nfl-depthcharts-import/index.cjs
+ - nfl-depthcharts-import-fantasypros/index.cjs
+ - nfl-depthcharts-import-footballguys/index.cjs
+ - nfl-depthcharts-import-public/index.cjs
+ - nfl-depthcharts-import-sportradar-weekly/index.cjs
+ - nfl-depthcharts-import-sportsdataio/index.cjs
+ - nfl-depthcharts-seed/index.cjs
+ - nfl-history-fetch-nflverse/index.cjs
+ - nfl-history-refresh/index.cjs
+ - nfl-injuries-get/index.js
+ - nfl-odds-bridge/index.cjs
+ - nfl-odds-get/index.cjs
+ - nfl-odds-placeholder/index.cjs
+ - nfl-picks-snapshot-get/index.mjs
+ - nfl-picks-snapshot-selftest/index.mjs
+ - nfl-predictions-archive/index.mjs
+ - nfl-predictions-cached/index.mjs
+ - nfl-predictions-generate-v2-background/index.mjs
+ - nfl-predictions-generate2/index.mjs
+ - nfl-predictions-get/index.mjs
+ - nfl-predictions-get-v2/index.mjs
+ - nfl-predictions-history/index.mjs
+ - nfl-predictions-meta/index.cjs
+ - nfl-predictions-score/index.cjs
+ - nfl-predictions-train/index.cjs
+ - nfl-results-store/index.mjs
+ - nfl-schedule-get/index.cjs
+ - nfl-schedule-import-sportsblaze/index.cjs
+ - nfl-schedule-local/index.cjs
+ - nfl-schedule-refresh/index.cjs
+ - nfl-sgp-negcorr/index.mjs
+ - nfl-sportradar-probe/index.cjs
+ - nfl-td-advanced-predictions/index.mjs
+ - nfl-td-candidates-local/index.cjs
+ - nfl-td-comprehensive-predictions/index.mjs
+ - nfl-td-model/index.cjs
+ - nfl-td-predictions/index.mjs
+ - nfl-train/index.mjs
+ - nfl-week-local/index.cjs
+ - refresh-td-odds-cache/index.mjs
+ - teamform-refresh/index.mjs
+ - teamform-status/index.mjs
+ - upload-static-data/index.mjs
+​
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    scripts/build-injuries-snapshot.js:499:4:
+      499 │ if (import.meta.url === `file://${process.argv[1]}`) {
+          ╵     ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+✘ [ERROR] Cannot assign to "seasonAvg" because it is a constant
+
+    netlify/functions/_lib/nhl-elite-projection-v4.cjs.js:221:4:
+      221 │     seasonAvg = (seasonAvg * (1 - regressionFactor)) + (leagueAvg...
+          ╵     ~~~~~~~~~
+
+  The symbol "seasonAvg" was declared a constant here:
+
+    netlify/functions/_lib/nhl-elite-projection-v4.cjs.js:195:8:
+      195 │   const seasonAvg = parseFloat(player.season.shotsPerGame) || 2.5;
+          ╵         ~~~~~~~~~
+
+✘ [ERROR] Cannot assign to "seasonAvg" because it is a constant
+
+    netlify/functions/_lib/nhl-elite-projection-v4.cjs.js:221:4:
+      221 │     seasonAvg = (seasonAvg * (1 - regressionFactor)) + (leagueAvg...
+          ╵     ~~~~~~~~~
+
+  The symbol "seasonAvg" was declared a constant here:
+
+    netlify/functions/_lib/nhl-elite-projection-v4.cjs.js:195:8:
+      195 │   const seasonAvg = parseFloat(player.season.shotsPerGame) || 2.5;
+          ╵         ~~~~~~~~~
+
+✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+
+    netlify/functions/nhl-sog-scanner-v3.mjs:39:17:
+      39 │   const v3Proj = await import('./_lib/nhl-projection-v3-learned.mj...
+         ╵                  ~~~~~
+
+✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+
+    netlify/functions/nhl-sog-scanner-v3.mjs:47:17:
+      47 │   const v1Proj = await import('./_lib/nhl-projection-engine.mjs');
+         ╵                  ~~~~~
+
+✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+
+    netlify/functions/nhl-sog-scanner-v3.mjs:54:23:
+      54 │   const eliteScanner = await import('./_lib/nhl-elite-line-scanner...
+         ╵                        ~~~~~
+
+✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+
+    netlify/functions/nhl-sog-scanner-v3.mjs:63:23:
+      63 │   const injuryModule = await import('./_lib/nhl-injury-lineup-scra...
+         ╵                        ~~~~~
+
+✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+
+    netlify/functions/nhl-sog-scanner-v3.mjs:71:19:
+      71 │   const mlModule = await import('./_lib/nhl-xgboost-ml-layer.mjs');
+         ╵                    ~~~~~
+
+✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+
+    netlify/functions/nhl-sog-scanner-v3.mjs:83:22:
+      83 │   const noVigModule = await import('./_lib/nhl-no-vig-odds.mjs');
+         ╵                       ~~~~~
+
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    netlify/functions/_lib/nhl-no-vig-odds.mjs:262:4:
+      262 │ if (import.meta.url === `file://${process.argv[1]}`) {
+          ╵     ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+▲ [WARNING] Duplicate key "Tottenham Hotspur" in object literal [duplicate-object-key]
+
+    netlify/functions/soccer-btts-predictions.js:1325:2:
+      1325 │   'Tottenham Hotspur': ['Tottenham', 'Spurs', 'THFC'],
+           ╵   ~~~~~~~~~~~~~~~~~~~
+
+  The original key "Tottenham Hotspur" is here:
+
+    netlify/functions/soccer-btts-predictions.js:1273:2:
+      1273 │   'Tottenham Hotspur': ['Tottenham', 'Spurs', 'THFC'],
+           ╵   ~~~~~~~~~~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "Manchester City" in object literal [duplicate-object-key]
+
+    netlify/functions/soccer-btts-predictions.js:1326:2:
+      1326 │   'Manchester City': ['Man City', 'MCFC', 'City'],
+           ╵   ~~~~~~~~~~~~~~~~~
+
+  The original key "Manchester City" is here:
+
+    netlify/functions/soccer-btts-predictions.js:1268:2:
+      1268 │   'Manchester City': ['Man City', 'Manchester City FC', 'MCFC'],
+           ╵   ~~~~~~~~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "Borussia Dortmund" in object literal [duplicate-object-key]
+
+    netlify/functions/soccer-btts-predictions.js:1329:2:
+      1329 │   'Borussia Dortmund': ['Dortmund', 'BVB'],
+           ╵   ~~~~~~~~~~~~~~~~~~~
+
+  The original key "Borussia Dortmund" is here:
+
+    netlify/functions/soccer-btts-predictions.js:1297:2:
+      1297 │   'Borussia Dortmund': ['BVB', 'Dortmund'],
+           ╵   ~~~~~~~~~~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "Eintracht Frankfurt" in object literal [duplicate-object-key]
+
+    netlify/functions/soccer-btts-predictions.js:1331:2:
+      1331 │   'Eintracht Frankfurt': ['Frankfurt', 'SGE'],
+           ╵   ~~~~~~~~~~~~~~~~~~~~~
+
+  The original key "Eintracht Frankfurt" is here:
+
+    netlify/functions/soccer-btts-predictions.js:1302:2:
+      1302 │   'Eintracht Frankfurt': ['Frankfurt', 'SGE'],
+           ╵   ~~~~~~~~~~~~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "Bayern Munich" in object literal [duplicate-object-key]
+
+    netlify/functions/soccer-btts-predictions.js:2790:2:
+      2790 │   'Bayern Munich': {
+           ╵   ~~~~~~~~~~~~~~~
+
+  The original key "Bayern Munich" is here:
+
+    netlify/functions/soccer-btts-predictions.js:2758:2:
+      2758 │   'Bayern Munich': {
+           ╵   ~~~~~~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "Borussia Dortmund" in object literal [duplicate-object-key]
+
+    netlify/functions/soccer-btts-predictions.js:2796:2:
+      2796 │   'Borussia Dortmund': {
+           ╵   ~~~~~~~~~~~~~~~~~~~
+
+  The original key "Borussia Dortmund" is here:
+
+    netlify/functions/soccer-btts-predictions.js:2526:2:
+      2526 │   'Borussia Dortmund': {
+           ╵   ~~~~~~~~~~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "Inter Milan" in object literal [duplicate-object-key]
+
+    netlify/functions/soccer-btts-predictions.js:2822:2:
+      2822 │   'Inter Milan': {
+           ╵   ~~~~~~~~~~~~~
+
+  The original key "Inter Milan" is here:
+
+    netlify/functions/soccer-btts-predictions.js:2764:2:
+      2764 │   'Inter Milan': {
+           ╵   ~~~~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "Juventus" in object literal [duplicate-object-key]
+
+    netlify/functions/soccer-btts-predictions.js:2834:2:
+      2834 │   'Juventus': {
+           ╵   ~~~~~~~~~~
+
+  The original key "Juventus" is here:
+
+    netlify/functions/soccer-btts-predictions.js:2552:2:
+      2552 │   'Juventus': {
+           ╵   ~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "PSG" in object literal [duplicate-object-key]
+
+    netlify/functions/soccer-btts-predictions.js:2854:2:
+      2854 │   'PSG': {
+           ╵   ~~~~~
+
+  The original key "PSG" is here:
+
+    netlify/functions/soccer-btts-predictions.js:2782:2:
+      2782 │   'PSG': {
+           ╵   ~~~~~
+
+▲ [WARNING] Duplicate key "AS Monaco" in object literal [duplicate-object-key]
+
+    netlify/functions/soccer-btts-predictions.js:2860:2:
+      2860 │   'AS Monaco': {
+           ╵   ~~~~~~~~~~~
+
+  The original key "AS Monaco" is here:
+
+    netlify/functions/soccer-btts-predictions.js:2584:2:
+      2584 │   'AS Monaco': {
+           ╵   ~~~~~~~~~~~
+
+10 of 19 warnings shown (disable the message limit with --log-limit=0)
+▲ [WARNING] The CommonJS "module" variable is treated as a global variable in an ECMAScript module and may not work as expected [commonjs-variable-in-esm]
+
+    lib/nfl/meta.js:11:0:
+      11 │ module.exports = { getMeta };
+         ╵ ~~~~~~
+
+  This file is considered to be an ECMAScript module because the enclosing "package.json" file sets the type of this file to "module":
+
+    package.json:4:10:
+      4 │   "type": "module",
+        ╵           ~~~~~~~~
+
+  Node's package format requires that CommonJS files in a "type": "module" package use the ".cjs" file extension.
+
+▲ [WARNING] The CommonJS "module" variable is treated as a global variable in an ECMAScript module and may not work as expected [commonjs-variable-in-esm]
+
+    lib/nfl/score.js:26:0:
+      26 │ module.exports = { score, readLatest, LATEST_KEY };
+         ╵ ~~~~~~
+
+  This file is considered to be an ECMAScript module because the enclosing "package.json" file sets the type of this file to "module":
+
+    package.json:4:10:
+      4 │   "type": "module",
+        ╵           ~~~~~~~~
+
+  Node's package format requires that CommonJS files in a "type": "module" package use the ".cjs" file extension.
+
+▲ [WARNING] The CommonJS "module" variable is treated as a global variable in an ECMAScript module and may not work as expected [commonjs-variable-in-esm]
+
+    lib/nfl/model.js:32:0:
+      32 │ module.exports = { train, readMeta, writeMeta, META_KEY };
+         ╵ ~~~~~~
+
+  This file is considered to be an ECMAScript module because the enclosing "package.json" file sets the type of this file to "module":
+
+    package.json:4:10:
+      4 │   "type": "module",
+        ╵           ~~~~~~~~
+
+  Node's package format requires that CommonJS files in a "type": "module" package use the ".cjs" file extension.
+
+▲ [WARNING] The CommonJS "module" variable is treated as a global variable in an ECMAScript module and may not work as expected [commonjs-variable-in-esm]
+
+    lib/nfl/util.js:45:0:
+      45 │ module.exports = { env, nowISO, getJSON, blobsGet, blobsPut };
+         ╵ ~~~~~~
+
+  This file is considered to be an ECMAScript module because the enclosing "package.json" file sets the type of this file to "module":
+
+    package.json:4:10:
+      4 │   "type": "module",
+        ╵           ~~~~~~~~
+
+  Node's package format requires that CommonJS files in a "type": "module" package use the ".cjs" file extension.
+
+▲ [WARNING] Using direct eval with a bundler is not recommended and may cause problems [direct-eval]
+
+    netlify/functions/_lib/blobs.mjs:47:11:
+      47 │     return eval("require")(pkg); // esbuild bundles this, Netlify ...
+         ╵            ~~~~
+
+  You can read more about direct eval and bundling here: https://esbuild.github.io/link/direct-eval
+
+[31m[1m​[22m[39m
+[31m[1m❯ Failed to bundle functions with selected bundler (fallback used):[22m[39m
+   - nhl-sog-debug.zip
+   - nhl-sog-scanner-elite-fast.zip
+   - nhl-sog-scanner-v3.zip
+[33m[1m​[22m[39m
+[33m[1m❯ Functions bundled with warnings:[22m[39m
+   - injuries-cron-all.zip
+   - soccer-btts-predictions.zip
+   - nfl-predictions-meta.zip
+   - nfl-train.zip
+​
+[90m(Functions bundling completed in 4m 5.9s)[39m
+
+Deploying to Netlify
+────────────────────────────────────────────────────────────────
+
+[32mDeploy path: [39m       /Users/brentgoldman/Desktop/REPO33/RRMODEL/dist
+[32mFunctions path: [39m    /Users/brentgoldman/Desktop/REPO33/RRMODEL/netlify/functions
+[32mConfiguration path: [39m/Users/brentgoldman/Desktop/REPO33/RRMODEL/netlify.toml
+
+⠋ Uploading blobs to deploy store...
+
+✔ Finished uploading blobs to deploy store
+⠋ Hashing files...
+⠋ Looking for a functions cache...
+✔ Deploying functions from cache (use --skip-functions-cache to override)
+✔ Finished hashing 61 files and 240 functions
+⠋ CDN diffing files...
+✔ CDN requesting 3 files and 239 functions
+⠋ Uploading 242 files
+ ›   Warning: JSONHTTPError: The function exceeds the maximum size of 250 MB 400
+ ›   Warning: 
+{
+  "name": "JSONHTTPError",
+  "status": 400,
+  "json": {
+    "code": 400,
+    "message": "The function exceeds the maximum size of 250 MB"
+  }
+}
+
+[91m[1m​[22m[39m
+[91m[1mInternal error during "options.onPostBuild"                   [22m[39m
+[91m[1m────────────────────────────────────────────────────────────────[22m[39m
+​
+  [31m[1mError message[22m[39m
+  JSONHTTPError: Bad Request
+​
+  [31m[1mError location[22m[39m
+  During options.onPostBuild
+      at parseResponse (file:///usr/local/lib/node_modules/netlify-cli/node_modules/@netlify/api/lib/methods/response.js:34:39)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async callMethod (file:///usr/local/lib/node_modules/netlify-cli/node_modules/@netlify/api/lib/methods/index.js:26:28)
+      at async tryUpload (file:///usr/local/lib/node_modules/netlify-cli/dist/utils/deploy/upload-files.js:80:29)
+​
+  [31m[1mError properties[22m[39m
+  {
+    name: [32m'JSONHTTPError'[39m,
+    status: [33m400[39m,
+    json: {
+      code: [33m400[39m,
+      message: [32m'The function exceeds the maximum size of 250 MB'[39m
+    }
+  }
+​
+  [31m[1mResolved config[22m[39m
+  build:
+    command: npm run build
+    commandOrigin: config
+    environment:
+      - NODE_VERSION
+      - NETLIFY_USE_YARN
+      - NPM_FLAGS
+      - BLOBS_STORE_NFL
+      - NFL_SCHEDULE_URL
+      - NFL_ODDS_BRIDGE_URL
+      - NFLVERSE_TEAM_FORM_URL
+    ignore: git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF .
+    processing:
+      secrets:
+        omit_paths:
+          - ACTION_REQUIRED.md
+          - GITHUB_ACTION_RAPIDAPI_SETUP.md
+          - RAPIDAPI_INTEGRATION_SUMMARY.md
+    publish: /Users/brentgoldman/Desktop/REPO33/RRMODEL/dist
+    publishOrigin: config
+  functions:
+    "*":
+      external_node_modules:
+        - "@netlify/blobs"
+        - node-fetch
+      included_files:
+        - public/**
+        - nfl-model-v4.1/**
+        - nfl-model-v3/data/**
+      node_bundler: esbuild
+  functionsDirectory: /Users/brentgoldman/Desktop/REPO33/RRMODEL/netlify/functions
+  headers:
+    - for: /index.html
+      values:
+        Cache-Control: no-cache, no-store, must-revalidate
+        Expires: "0"
+        Pragma: no-cache
+    - for: /assets/*
+      values:
+        Cache-Control: public, max-age=31536000, immutable
+  redirects:
+    - from: /*
+      status: 200
+      to: /index.html

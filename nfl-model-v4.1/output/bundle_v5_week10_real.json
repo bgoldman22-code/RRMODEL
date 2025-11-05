@@ -1,0 +1,673 @@
+{
+  "meta": {
+    "modelVersion": "v5",
+    "architecture": "hybrid_best_of_breed",
+    "season": "2025-2026",
+    "week": 10,
+    "updated_at": "2025-11-05T18:02:46.794Z",
+    "games": 14,
+    "models": {
+      "spread": "V3 Multi-Feature EPA (71.2% WR, +37% ROI backtested 2020-2024)",
+      "total": "V5 Quantile Blend (distributional, pace-adjusted)",
+      "moneyline": "Omitted (awaiting profitable model)"
+    },
+    "data_sources": {
+      "historical": "NFLverse 2025 Weeks 1-9 (135 games)",
+      "features": "EPA, Success Rate, Explosive, 3rd Down, Trench (PBWR/PRWR)",
+      "schedule": "Week 10 (14 games, Nov 7-11, 2025)"
+    },
+    "limitations": [
+      "No real-time Vegas lines (edge cannot be calculated)",
+      "Over/Under side requires market comparison",
+      "No injury adjustments",
+      "No weather integration",
+      "HFA venue-specific but not dynamically updated"
+    ]
+  },
+  "rows": [
+    {
+      "matchup": "LV @ DEN",
+      "awayTeam": "LV",
+      "homeTeam": "DEN",
+      "kickoff": "2025-11-07T00:15:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "DEN",
+        "line": 12.373854998725573,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "17.77",
+          "success_diff": "5.1%",
+          "explosive_diff": "0.7%",
+          "hfa": "3.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 41.43055555555556,
+        "confidence": 0.78,
+        "p25": 29.012361787257472,
+        "p50": 41.43055555555556,
+        "p75": 53.84874932385364,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "ATL @ IND",
+      "awayTeam": "ATL",
+      "homeTeam": "IND",
+      "kickoff": "2025-11-09T13:30:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "IND",
+        "line": 10.844310195253119,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "19.27",
+          "success_diff": "1.0%",
+          "explosive_diff": "-0.6%",
+          "hfa": "2.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 50.261111111111106,
+        "confidence": 0.78,
+        "p25": 38.449393107137354,
+        "p50": 50.26111111111111,
+        "p75": 62.07282911508487,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "NO @ CAR",
+      "awayTeam": "NO",
+      "homeTeam": "CAR",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "CAR",
+        "line": 7.9465882673588695,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "9.87",
+          "success_diff": "5.7%",
+          "explosive_diff": "0.5%",
+          "hfa": "2.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 33.644444444444446,
+        "confidence": 0.78,
+        "p25": 23.93577592836437,
+        "p50": 33.644444444444446,
+        "p75": 43.35311296052451,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.3"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "NYG @ CHI",
+      "awayTeam": "NYG",
+      "homeTeam": "CHI",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "CHI",
+        "line": 5.0751603191548895,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "5.62",
+          "success_diff": "2.0%",
+          "explosive_diff": "0.2%",
+          "hfa": "2.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 47.55972222222223,
+        "confidence": 0.78,
+        "p25": 34.762334184513975,
+        "p50": 47.55972222222222,
+        "p75": 60.35711025993047,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "JAX @ HOU",
+      "awayTeam": "JAX",
+      "homeTeam": "HOU",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "HOU",
+        "line": 6.652030398347477,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "9.51",
+          "success_diff": "1.2%",
+          "explosive_diff": "0.5%",
+          "hfa": "2.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 43.5875,
+        "confidence": 0.78,
+        "p25": 30.8689626093547,
+        "p50": 43.5875,
+        "p75": 56.3060373906453,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "BUF @ MIA",
+      "awayTeam": "BUF",
+      "homeTeam": "MIA",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "away",
+        "team": "BUF",
+        "line": 7.546620357816906,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "-17.98",
+          "success_diff": "-5.3%",
+          "explosive_diff": "-0.9%",
+          "hfa": "2.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 48.987500000000004,
+        "confidence": 0.78,
+        "p25": 36.50571817250489,
+        "p50": 48.9875,
+        "p75": 61.46928182749511,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "BAL @ MIN",
+      "awayTeam": "BAL",
+      "homeTeam": "MIN",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "MIN",
+        "line": 3.4421812241764593,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "1.44",
+          "success_diff": "2.7%",
+          "explosive_diff": "0.7%",
+          "hfa": "2.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 47.375,
+        "confidence": 0.78,
+        "p25": 30.85937960158011,
+        "p50": 47.375,
+        "p75": 63.89062039841989,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "CLE @ NYJ",
+      "awayTeam": "CLE",
+      "homeTeam": "NYJ",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "NYJ",
+        "line": 2.635807761552656,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "0.63",
+          "success_diff": "1.1%",
+          "explosive_diff": "0.5%",
+          "hfa": "2.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 36.087500000000006,
+        "confidence": 0.78,
+        "p25": 24.485547052483135,
+        "p50": 36.0875,
+        "p75": 47.68945294751687,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "NE @ TB",
+      "awayTeam": "NE",
+      "homeTeam": "TB",
+      "kickoff": "2025-11-09T17:00:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "away",
+        "team": "NE",
+        "line": 1.099329844328317,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "-5.12",
+          "success_diff": "-2.9%",
+          "explosive_diff": "-0.5%",
+          "hfa": "2.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 51.25555555555555,
+        "confidence": 0.78,
+        "p25": 40.01173791111813,
+        "p50": 51.25555555555556,
+        "p75": 62.499373199992974,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "ARI @ SEA",
+      "awayTeam": "ARI",
+      "homeTeam": "SEA",
+      "kickoff": "2025-11-09T20:05:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "SEA",
+        "line": 7.680443546033168,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "10.29",
+          "success_diff": "0.7%",
+          "explosive_diff": "1.2%",
+          "hfa": "2.7"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 51.762499999999996,
+        "confidence": 0.78,
+        "p25": 42.60425252421125,
+        "p50": 51.7625,
+        "p75": 60.920747475788744,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.5",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "LA @ SF",
+      "awayTeam": "LA",
+      "homeTeam": "SF",
+      "kickoff": "2025-11-09T20:25:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "away",
+        "team": "LA",
+        "line": 3.3239677370200464,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "-10.11",
+          "success_diff": "-2.5%",
+          "explosive_diff": "-1.0%",
+          "hfa": "2.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 48.40416666666667,
+        "confidence": 0.78,
+        "p25": 39.57637294467756,
+        "p50": 48.40416666666667,
+        "p75": 57.23196038865578,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "DET @ WAS",
+      "awayTeam": "DET",
+      "homeTeam": "WAS",
+      "kickoff": "2025-11-09T20:25:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "away",
+        "team": "DET",
+        "line": 5.004548460641406,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "-13.92",
+          "success_diff": "-2.4%",
+          "explosive_diff": "-1.0%",
+          "hfa": "2.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 51.761111111111106,
+        "confidence": 0.78,
+        "p25": 37.655871429467034,
+        "p50": 51.76111111111111,
+        "p75": 65.86635079275518,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "PIT @ LAC",
+      "awayTeam": "PIT",
+      "homeTeam": "LAC",
+      "kickoff": "2025-11-10T00:20:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "LAC",
+        "line": 5.349257160887042,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "1.86",
+          "success_diff": "9.1%",
+          "explosive_diff": "1.5%",
+          "hfa": "2.0"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 48.95694444444445,
+        "confidence": 0.78,
+        "p25": 40.70548026811769,
+        "p50": 48.956944444444446,
+        "p75": 57.2084086207712,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    },
+    {
+      "matchup": "PHI @ GB",
+      "awayTeam": "PHI",
+      "homeTeam": "GB",
+      "kickoff": "2025-11-11T00:15:00Z",
+      "season": 2025,
+      "week": 10,
+      "spread": {
+        "side": "home",
+        "team": "GB",
+        "line": 5.06598452410085,
+        "confidence": 0.5700000000000001,
+        "model": "v3_multi_feature_epa",
+        "components": {
+          "epa_diff": "3.82",
+          "success_diff": "2.8%",
+          "explosive_diff": "1.0%",
+          "hfa": "2.5"
+        }
+      },
+      "total": {
+        "side": null,
+        "total": 51.7625,
+        "confidence": 0.78,
+        "p25": 40.50962233452553,
+        "p50": 51.7625,
+        "p75": 63.01537766547447,
+        "model": "v5_quantile_blend",
+        "possessions": {
+          "home": "11.4",
+          "away": "11.4"
+        }
+      },
+      "moneyline": null,
+      "vegas": {
+        "spread": null,
+        "total": null,
+        "spread_price": -110,
+        "total_over_price": -110,
+        "total_under_price": -110
+      },
+      "edge": {
+        "spread": null,
+        "total": null
+      }
+    }
+  ]
+}
