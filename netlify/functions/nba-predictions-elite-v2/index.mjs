@@ -1398,15 +1398,15 @@ export default async (request, context) => {
           return 'Longshot';
         };
         
-        const hasHomeEdge = meetsThreshold(homeWinProb, homeMLEdge, homeMLOdds > 0 ? homeMLOdds : 0);
-        const hasAwayEdge = meetsThreshold(awayWinProb, awayMLEdge, awayMLOdds > 0 ? awayMLOdds : 0);
+        const hasHomeEdge = meetsThreshold(homeWinProb, homeMLEdge, fairHomeML > 0 ? fairHomeML : 0);
+        const hasAwayEdge = meetsThreshold(awayWinProb, awayMLEdge, fairAwayML > 0 ? fairAwayML : 0);
         
         if (hasHomeEdge || hasAwayEdge) {
           // Pick the side with the larger POSITIVE edge (not just larger number)
           const pickHome = hasHomeEdge && (!hasAwayEdge || homeMLEdge > awayMLEdge);
           const pickedProb = pickHome ? homeWinProb : awayWinProb;
           const pickedEdge = pickHome ? homeMLEdge : awayMLEdge;
-          const pickedOdds = pickHome ? homeMLOdds : awayMLOdds;
+          const pickedOdds = pickHome ? fairHomeML : fairAwayML;
           const betTier = getTierLabel(pickedProb);
           
           // Use PLACEMENT odds (best available) for actual bet

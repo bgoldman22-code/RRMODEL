@@ -30,6 +30,16 @@ export const CONFIG = {
     underdogBy: 4.5   // ≥ this = pass lean
   },
   
+  // 2+ TD ceiling bonus weights by position
+  ceilingWeights: {
+    RB: 0.8,   // Strong ceiling from multiple TDs
+    TE: 0.6,   // Moderate ceiling
+    WR: 0.35,  // Small ceiling (more TD variance)
+    QB: 0.0,   // No bonus (pass TDs already in props)
+    K: 0.0,    // No bonus
+    DST: 0.0   // No bonus
+  },
+  
   // Injury status penalties
   injuryPenalties: {
     'Q': -0.3,   // Questionable
