@@ -1430,9 +1430,11 @@ export default async (request, context) => {
           );
           
           if (mlKelly) {
-            // Track Only filter: Dogs <45% with units <0.2U after caps become track-only
-            const unitsAfterCap = Math.min(mlKelly.units, 5.0);
-            const isTrackOnly = pickProb < 0.45 && unitsAfterCap < 0.2;
+            // Don't cap units yet - will be done in centralized unit sizing section
+            const rawUnits = mlKelly.units;
+            
+            // Track Only filter: Dogs <45% with raw units <0.2U become track-only
+            const isTrackOnly = pickProb < 0.45 && rawUnits < 0.2;
             
             moneylineOpp = {
               market: 'Moneyline',
@@ -1447,7 +1449,7 @@ export default async (request, context) => {
               tier_label: betTier,
               kelly: mlKelly.kellyFraction,
               betSize: mlKelly.betSize,
-              units: isTrackOnly ? 0 : unitsAfterCap,
+              units: isTrackOnly ? 0 : rawUnits, // Will be capped later
               isTrackOnly,
               trackOnlyReason: isTrackOnly ? 'Low kelly (<0.2U) dog bet' : null,
               confidence, // Add confidence level
@@ -1457,7 +1459,7 @@ export default async (request, context) => {
               expectedValue: pickEdge * 100 * mlKelly.betSize
             };
             
-            console.log(`[BETFILTER] game=${away.team.abbreviation}@${home.team.abbreviation} type=ML side=${moneylineOpp.pick} p_model=${pickProb.toFixed(3)} p_mkt=${pickImpliedProb.toFixed(3)} edge=${(pickEdge*100).toFixed(1)}% price=${pickOdds > 0 ? '+' : ''}${pickOdds} kellyQ=${mlKelly.kellyFraction.toFixed(2)} preCap=${mlKelly.units.toFixed(1)}U postCap=${unitsAfterCap.toFixed(1)}U tier='${betTier}' kept=${!isTrackOnly} reason='${isTrackOnly ? 'low_kelly' : 'pass'}'`);
+            console.log(`[BETFILTER] game=${away.team.abbreviation}@${home.team.abbreviation} type=ML side=${moneylineOpp.pick} p_model=${pickProb.toFixed(3)} p_mkt=${pickImpliedProb.toFixed(3)} edge=${(pickEdge*100).toFixed(1)}% price=${pickOdds > 0 ? '+' : ''}${pickOdds} kellyQ=${mlKelly.kellyFraction.toFixed(2)} preCap=${rawUnits.toFixed(1)}U tier='${betTier}' kept=${!isTrackOnly} reason='${isTrackOnly ? 'low_kelly' : 'pass'}'`);
           }
         }
       }
@@ -1654,7 +1656,11 @@ export default async (request, context) => {
       // UNIT SIZING AND EXPOSURE MANAGEMENT
       // Step 1: Apply individual bet cap (max 5 units per bet)
       allOpps.forEach(opp => {
+        // Skip track-only bets (already 0)
+        if (opp.isTrackOnly) return;
+        
         if (opp.units > 5) {
+          console.log(`[UNIT CAP] ${opp.market} ${opp.pick}: Capping ${opp.units.toFixed(1)}U → 5.0U`);
           opp.units = 5.0;
         }
         // Round to 1 decimal place
@@ -1665,10 +1671,18 @@ export default async (request, context) => {
       const totalExposure = allOpps.reduce((sum, opp) => sum + (opp.units || 0), 0);
       if (totalExposure > 12.5) {
         const scale = 12.5 / totalExposure;
+        console.log(`[EXPOSURE CAP] Game total ${totalExposure.toFixed(1)}U > 12.5U, scaling by ${scale.toFixed(3)}x`);
         allOpps.forEach(opp => {
+          if (opp.isTrackOnly) return;
+          const oldUnits = opp.units;
           opp.units = Math.round((opp.units * scale) * 10) / 10;
+          console.log(`  ${opp.market} ${opp.pick}: ${oldUnits.toFixed(1)}U → ${opp.units.toFixed(1)}U`);
         });
       }
+      
+      // Log final game exposure
+      const finalExposure = allOpps.reduce((sum, opp) => sum + (opp.units || 0), 0);
+      console.log(`[FINAL EXPOSURE] Game total: ${finalExposure.toFixed(1)}U (${allOpps.filter(o => !o.isTrackOnly).length} active bets)`);
       
       // Add top 3 opportunities (or all if fewer)
       opportunities.push(...allOpps.slice(0, 3));
