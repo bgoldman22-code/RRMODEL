@@ -50,9 +50,14 @@ const NBAPredictionsV2 = () => {
       const edgeClass = opp.edge > 10 ? 'bet-rec' : opp.edge > 5 ? 'bet-rec low-edge' : 'bet-rec skip';
       const edgeColor = opp.edge > 5 ? 'edge-positive' : 'edge-negative';
       
+      // Format pick with win probability for moneyline bets
+      const pickDisplay = opp.market === 'Moneyline' && opp.modelWinProb 
+        ? `${opp.pick} (${opp.modelWinProb})` 
+        : opp.pick;
+      
       return (
         <div key={idx} className={edgeClass}>
-          <strong>{opp.market}: {opp.pick}</strong>
+          <strong>{opp.market}: {pickDisplay}</strong>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
             <span>Edge: <span className={edgeColor}>{opp.edge}%</span></span>
             <span>Odds: {opp.odds > 0 ? '+' : ''}{opp.odds}</span>
