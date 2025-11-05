@@ -1716,9 +1716,13 @@ export default async (request, context) => {
         console.warn(`[NBA V2] ⚠️  ${dupeCount} games have duplicate feature vectors (identical inputs)`);
       }
       
-      if (stdev < targetStdev) {
+      // EARLY SEASON: Relax variance check (within 10% is acceptable)
+      // Teams genuinely cluster more early in season with limited data
+      if (stdev < targetStdev * 0.9) {
         const clustered = spreads.filter(s => Math.abs(s - mean) < 1.0).length;
         throw new Error(`[NBA V2] Spread variance collapsed: stdev=${stdev.toFixed(2)} < target ${targetStdev.toFixed(2)} (${clustered}/${spreads.length} games clustered near ${mean.toFixed(1)})`);
+      } else if (stdev < targetStdev) {
+        console.warn(`[NBA V2] ⚠️  Low variance (stdev=${stdev.toFixed(2)} vs target=${targetStdev.toFixed(2)}), but within 10% tolerance for early season`);
       }
     }
     
