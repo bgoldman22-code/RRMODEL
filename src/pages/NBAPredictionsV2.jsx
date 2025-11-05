@@ -63,7 +63,7 @@ const NBAPredictionsV2 = () => {
             <span>Odds: {opp.odds > 0 ? '+' : ''}{opp.odds}</span>
             <span>{opp.book}</span>
           </div>
-          {opp.units && <div style={{ color: '#00ff88', fontSize: '12px' }}>Rec: {opp.units} units</div>}
+          {opp.units !== undefined && <div style={{ color: '#00ff88', fontSize: '12px' }}>Rec: {opp.units} units</div>}
         </div>
       );
     }) || [];
