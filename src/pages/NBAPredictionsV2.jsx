@@ -48,11 +48,11 @@ const NBAPredictionsV2 = () => {
     // Determine pick recommendation with team abbreviations
     const pickSummary = `Model Pick: ${spreadDisplay} (${favoriteTeam} ${favoritePercent.toFixed(1)}% win prob)`;
     
-    // Process betting opportunities
-    const betRecommendations = pred.opportunities?.map((opp, idx) => {
-      const edgeClass = opp.edge > 10 ? 'bet-rec' : opp.edge > 5 ? 'bet-rec low-edge' : 'bet-rec skip';
-      const edgeColor = opp.edge > 5 ? 'edge-positive' : 'edge-negative';
-      
+    // Process betting opportunities - split into recommended and edge bets
+    const recommendedBets = [];
+    const edgeBets = [];
+    
+    pred.opportunities?.forEach((opp, idx) => {
       // Format pick with win probability for moneyline bets
       const pickDisplay = opp.market === 'Moneyline' && opp.modelWinProb 
         ? `${opp.pick} (${opp.modelWinProb})` 
@@ -65,18 +65,24 @@ const NBAPredictionsV2 = () => {
           : `Rec: ${opp.units.toFixed(1)}U`
         : null;
       
-      return (
-        <div key={idx} className={edgeClass}>
+      const betCard = (
+        <div key={idx} className="bet-card">
           <strong>{opp.market}: {pickDisplay}</strong>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
-            <span>Edge: <span className={edgeColor}>{opp.edge}%</span></span>
+            <span>Edge: <span className="edge-value">{opp.edge}%</span></span>
             <span>Odds: {opp.odds > 0 ? '+' : ''}{opp.odds}</span>
             <span>{opp.book}</span>
           </div>
           {unitsDisplay && <div style={{ color: opp.units === 0 ? '#888' : '#00ff88', fontSize: '12px' }}>{unitsDisplay}</div>}
         </div>
       );
-    }) || [];
+      
+      if (opp.edge > 5) {
+        recommendedBets.push(betCard);
+      } else {
+        edgeBets.push(betCard);
+      }
+    });
 
     return (
       <div key={pred.gameId} className="game">
@@ -134,10 +140,17 @@ const NBAPredictionsV2 = () => {
           </div>
         )}
         
-        {betRecommendations.length > 0 && (
+        {recommendedBets.length > 0 && (
           <div className="recommendations">
-            <div className="rec-header">🎯 Betting Recommendations</div>
-            {betRecommendations}
+            <div className="rec-header">🎯 Recommended Bets</div>
+            {recommendedBets}
+          </div>
+        )}
+        
+        {edgeBets.length > 0 && (
+          <div className="edge-bets">
+            <div className="edge-header">📊 Edge Bets to Consider</div>
+            {edgeBets}
           </div>
         )}
       </div>
@@ -216,26 +229,36 @@ const NBAPredictionsV2 = () => {
           padding: 15px;
           background: #0f1629;
           border-radius: 8px;
-          border-left: 3px solid #ffa500;
+          border-left: 3px solid #00ff88;
         }
         .rec-header {
+          color: #00ff88;
+          font-weight: bold;
+          margin-bottom: 10px;
+          font-size: 16px;
+        }
+        .edge-bets {
+          margin-top: 20px;
+          padding: 15px;
+          background: #0f1629;
+          border-radius: 8px;
+          border-left: 3px solid #ffa500;
+        }
+        .edge-header {
           color: #ffa500;
           font-weight: bold;
           margin-bottom: 10px;
           font-size: 16px;
         }
-        .bet-rec {
+        .bet-card {
           background: #1a1f3a;
           padding: 10px;
           margin: 8px 0;
           border-radius: 6px;
-          border-left: 3px solid #00ff88;
         }
-        .bet-rec.skip {
-          border-left-color: #ff4444;
-        }
-        .bet-rec.low-edge {
-          border-left-color: #ffa500;
+        .edge-value {
+          color: #00ff88;
+          font-weight: bold;
         }
         .pick-summary {
           font-size: 18px;
@@ -265,9 +288,6 @@ const NBAPredictionsV2 = () => {
         }
         .edge-positive { 
           color: #00ff88; 
-        }
-        .edge-negative { 
-          color: #ff4444; 
         }
         .confidence {
           display: inline-block;
