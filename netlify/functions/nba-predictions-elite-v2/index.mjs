@@ -1336,15 +1336,43 @@ export default async (request, context) => {
         console.log(`  Edge: ${home.team.abbreviation} ${(homeMLEdge * 100).toFixed(1)}% / ${away.team.abbreviation} ${(awayMLEdge * 100).toFixed(1)}%`);
         
         // Pick the side with positive edge (if any)
-        // CRITICAL FIX: Only bet if there's a POSITIVE edge, and pick the side with the LARGER positive edge
-        const hasHomeEdge = homeMLEdge > 0.03; // 3% edge minimum
-        const hasAwayEdge = awayMLEdge > 0.03;
+        // TIERED EDGE REQUIREMENTS based on win probability:
+        // 1. Strong Favorites (≥60%): Only need 0.5% edge (safe bets)
+        // 2. Normal range (40-60%): Need 3% edge (standard)
+        // 3. Underdog sweet spot (30-40%): Need 6% edge AND odds ≥+200
+        // 4. Longshots (<30%): Need 10% edge (high risk)
+        
+        const meetsHomeThreshold = (prob, edge, odds) => {
+          if (prob >= 0.60) return edge > 0.005;  // Strong favorite: 0.5% edge
+          if (prob >= 0.40) return edge > 0.03;   // Normal: 3% edge
+          if (prob >= 0.30) return edge > 0.06 && odds >= 200; // Underdog sweet spot: 6% edge + ≥+200 odds
+          return edge > 0.10; // Longshot: 10% edge minimum
+        };
+        
+        const meetsAwayThreshold = (prob, edge, odds) => {
+          if (prob >= 0.60) return edge > 0.005;  // Strong favorite: 0.5% edge
+          if (prob >= 0.40) return edge > 0.03;   // Normal: 3% edge
+          if (prob >= 0.30) return edge > 0.06 && odds >= 200; // Underdog sweet spot: 6% edge + ≥+200 odds
+          return edge > 0.10; // Longshot: 10% edge minimum
+        };
+        
+        const hasHomeEdge = meetsHomeThreshold(homeWinProb, homeMLEdge, homeMLOdds > 0 ? homeMLOdds : 0);
+        const hasAwayEdge = meetsAwayThreshold(awayWinProb, awayMLEdge, awayMLOdds > 0 ? awayMLOdds : 0);
         
         if (hasHomeEdge || hasAwayEdge) {
           // Pick the side with the larger POSITIVE edge (not just larger number)
           const pickHome = hasHomeEdge && (!hasAwayEdge || homeMLEdge > awayMLEdge);
+          const pickedProb = pickHome ? homeWinProb : awayWinProb;
+          const pickedEdge = pickHome ? homeMLEdge : awayMLEdge;
+          const pickedOdds = pickHome ? homeMLOdds : awayMLOdds;
           
-          console.log(`  → Recommendation: Bet ${pickHome ? home.team.abbreviation : away.team.abbreviation} ML`);
+          let betType = '';
+          if (pickedProb >= 0.60) betType = 'Strong Fav';
+          else if (pickedProb >= 0.40) betType = 'Normal';
+          else if (pickedProb >= 0.30) betType = 'Dog Sweet Spot';
+          else betType = 'Longshot';
+          
+          console.log(`  → Recommendation: Bet ${pickHome ? home.team.abbreviation : away.team.abbreviation} ML (${betType}: ${(pickedProb * 100).toFixed(1)}% @ ${pickedOdds > 0 ? '+' : ''}${pickedOdds}, Edge: ${(pickedEdge * 100).toFixed(1)}%)`);
           
           // Use PLACEMENT odds (best available) for actual bet
           const placementHomeML = gameVegasLines.moneyline.placement?.homePrice || fairHomeML;
