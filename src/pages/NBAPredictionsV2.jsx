@@ -55,6 +55,13 @@ const NBAPredictionsV2 = () => {
         ? `${opp.pick} (${opp.modelWinProb})` 
         : opp.pick;
       
+      // Format units display
+      const unitsDisplay = opp.units !== undefined 
+        ? opp.units === 0 
+          ? 'Rec: 0.0U (track only)' 
+          : `Rec: ${opp.units.toFixed(1)}U`
+        : null;
+      
       return (
         <div key={idx} className={edgeClass}>
           <strong>{opp.market}: {pickDisplay}</strong>
@@ -63,7 +70,7 @@ const NBAPredictionsV2 = () => {
             <span>Odds: {opp.odds > 0 ? '+' : ''}{opp.odds}</span>
             <span>{opp.book}</span>
           </div>
-          {opp.units !== undefined && <div style={{ color: '#00ff88', fontSize: '12px' }}>Rec: {opp.units} units</div>}
+          {unitsDisplay && <div style={{ color: opp.units === 0 ? '#888' : '#00ff88', fontSize: '12px' }}>{unitsDisplay}</div>}
         </div>
       );
     }) || [];

@@ -1560,6 +1560,25 @@ export default async (request, context) => {
       // Sort by expected value (EV)
       allOpps.sort((a, b) => (b.expectedValue || 0) - (a.expectedValue || 0));
       
+      // UNIT SIZING AND EXPOSURE MANAGEMENT
+      // Step 1: Apply individual bet cap (max 5 units per bet)
+      allOpps.forEach(opp => {
+        if (opp.units > 5) {
+          opp.units = 5.0;
+        }
+        // Round to 1 decimal place
+        opp.units = Math.round(opp.units * 10) / 10;
+      });
+      
+      // Step 2: Apply per-game exposure cap (max 12.5 units total)
+      const totalExposure = allOpps.reduce((sum, opp) => sum + (opp.units || 0), 0);
+      if (totalExposure > 12.5) {
+        const scale = 12.5 / totalExposure;
+        allOpps.forEach(opp => {
+          opp.units = Math.round((opp.units * scale) * 10) / 10;
+        });
+      }
+      
       // Add top 3 opportunities (or all if fewer)
       opportunities.push(...allOpps.slice(0, 3));
       
