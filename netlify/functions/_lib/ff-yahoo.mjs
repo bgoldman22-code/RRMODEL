@@ -217,11 +217,24 @@ export async function getLeagueSettings(accessToken, leagueKey) {
   try {
     const data = await yahooRequest(accessToken, `/league/${leagueKey}/settings`);
     
+    // Extract league name from the response
+    const leagueInfo = data.fantasy_content?.league?.[0];
+    let leagueName = 'Unknown League';
+    if (leagueInfo) {
+      for (const item of leagueInfo) {
+        if (item.name) {
+          leagueName = item.name;
+          break;
+        }
+      }
+    }
+    
     const settings = data.fantasy_content?.league?.[1]?.settings?.[0];
     if (!settings) {
       console.warn('No settings found in API response, using defaults');
       // Return defaults if API doesn't provide settings
       return {
+        leagueName,
         scoringRules: {
           passYards: 0.04,
           passTD: 4,
@@ -325,6 +338,7 @@ export async function getLeagueSettings(accessToken, leagueKey) {
     console.log(`Roster positions:`, positionCounts);
 
     return {
+      leagueName,
       scoringRules,
       positionCounts,
       pprType

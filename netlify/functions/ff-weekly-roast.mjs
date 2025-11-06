@@ -1,25 +1,7 @@
 /**
  * Fantasy Football Weekly League Roast Generator
  * 
- * Generates hil    // Step 6: Fetch roster details AND STATS for each team
-    console.log('Fetching team rosters and stats...');
-    const teamDetails = [];
-    
-    for (const matchup of scoreboard) {
-      for (const team of [matchup.team1, matchup.team2]) {
-        try {
-          const roster = await getTeamRoster(accessToken, team.team_key, weekToAnalyze);
-          const stats = await getTeamStats(accessToken, team.team_key, weekToAnalyze); // NEW: Get actual points
-          const standing = standings.find(s => s.team_key === team.team_key);
-          const teamTransactions = transactions.filter(t => t.team_key === team.team_key);
-
-          // DEBUG: Log stats object to see what we got
-          console.log(`Stats for ${team.name} (${team.team_key}):`, JSON.stringify(stats, null, 2));
-          console.log(`Roster player keys:`, roster.map(p => p.player_key));
-
-          // Calculate bench points
-          const starters = roster.filter(p => p.slot !== 'BN' && p.slot !== 'IR');
-          const bench = roster.filter(p => p.slot === 'BN' || p.slot === 'IR');R power rankings and weekly summaries
+ * Generates hilarious, rated-R power rankings and weekly summaries
  * using Yahoo Fantasy API data + Claude AI (or OpenAI GPT-4 as fallback) for savage commentary.
  * 
  * Analyzes:
@@ -40,6 +22,7 @@ import {
   getLeagueScoreboard,
   getLeagueStandings,
   getLeagueTransactions,
+  getLeagueSettings,
   getTeamRoster,
   getTeamStats // NEW: Get actual player points
 } from './_lib/ff-yahoo.mjs';
@@ -84,125 +67,145 @@ export default async function handler(request, context) {
 
     // Step 5: Fetch all league data
     console.log('Fetching league data...');
-    const [scoreboard, standings, transactions] = await Promise.all([
+    const [scoreboard, standings, transactions, leagueSettings] = await Promise.all([
       getLeagueScoreboard(accessToken, leagueKey, weekToAnalyze),
       getLeagueStandings(accessToken, leagueKey), // Current standings
-      getLeagueTransactions(accessToken, leagueKey, weekToAnalyze)
+      getLeagueTransactions(accessToken, leagueKey, weekToAnalyze),
+      getLeagueSettings(accessToken, leagueKey) // Get league metadata with actual name
     ]);
+    
+    // Use the actual league name from settings, not the team name
+    const actualLeagueName = leagueSettings.leagueName || league.name;
+    console.log(`Actual league name: ${actualLeagueName}`);
 
     // Step 6: Fetch roster details AND STATS for each team
     console.log('Fetching team rosters and stats...');
     const teamDetails = [];
     
-    for (const matchup of scoreboard) {
-      for (const team of [matchup.team1, matchup.team2]) {
-        try {
-          const roster = await getTeamRoster(accessToken, team.team_key, weekToAnalyze);
-          const stats = await getTeamStats(accessToken, team.team_key, weekToAnalyze); // NEW: Get actual points
-          const standing = standings.find(s => s.team_key === team.team_key);
-          const teamTransactions = transactions.filter(t => t.team_key === team.team_key);
-
-          // Calculate bench points
-          const starters = roster.filter(p => p.slot !== 'BN' && p.slot !== 'IR');
-          const bench = roster.filter(p => p.slot === 'BN' || p.slot === 'IR');
+    // CRITICAL: Build teamDetails from STANDINGS (all teams), not just matchups
+    // This ensures we analyze ALL teams in the league, even if they didn't play this week
+    for (const standing of standings) {
+      try {
+        const team = {
+          team_key: standing.team_key,
+          name: standing.name,
+          points: 0, // Will be filled from matchup if exists
+          projected: 0
+        };
         
-          // Calculate bench vs starter diff - with detailed logging
-          let starterPoints = 0;
-          let benchPoints = 0;
-          
-          for (const p of starters) {
-            const pts = stats[p.player_key]?.points || 0;
-            if (pts === 0 && stats[p.player_key] === undefined) {
-              console.warn(`⚠️ Missing stats for starter ${p.name} (${p.player_key})`);
-            }
-            starterPoints += pts;
-          }
-          
-          for (const p of bench) {
-            const pts = stats[p.player_key]?.points || 0;
-            benchPoints += pts;
-          }
-          
-          console.log(`${team.name}: ${starterPoints.toFixed(1)} starter pts, ${benchPoints.toFixed(1)} bench pts`);
-          
-          // Find biggest bench mistake (bench player who would've beaten a starter)
-          let biggestMistake = null;
-          let biggestDiff = 0;
-          for (const benchPlayer of bench) {
-            const benchPts = stats[benchPlayer.player_key]?.points || 0;
-            for (const starter of starters) {
-              if (starter.position === benchPlayer.position || starter.slot === 'FLEX') {
-                const starterPts = stats[starter.player_key]?.points || 0;
-                const diff = benchPts - starterPts;
-                if (diff > biggestDiff) {
-                  biggestDiff = diff;
-                  biggestMistake = {
-                    benched: `${benchPlayer.name} (${benchPts.toFixed(1)} pts)`,
-                    started: `${starter.name} (${starterPts.toFixed(1)} pts)`,
-                    diff: diff.toFixed(1)
-                  };
-                }
+        // Try to find this team's matchup for the week
+        const matchup = scoreboard.find(m => 
+          m.team1.team_key === standing.team_key || m.team2.team_key === standing.team_key
+        );
+        
+        if (matchup) {
+          const teamInMatchup = matchup.team1.team_key === standing.team_key ? matchup.team1 : matchup.team2;
+          team.points = teamInMatchup.points;
+          team.projected = teamInMatchup.projected;
+        }
+        
+        const roster = await getTeamRoster(accessToken, standing.team_key, weekToAnalyze);
+        const stats = await getTeamStats(accessToken, standing.team_key, weekToAnalyze);
+        const teamTransactions = transactions.filter(t => t.team_key === standing.team_key);
+
+        // Calculate bench points
+        const starters = roster.filter(p => p.slot !== 'BN' && p.slot !== 'IR');
+        const bench = roster.filter(p => p.slot === 'BN' || p.slot !== 'IR');
+        
+        // Calculate bench vs starter diff
+        const starterPoints = starters.reduce((sum, p) => sum + (stats[p.player_key]?.points || 0), 0);
+        const benchPoints = bench.reduce((sum, p) => sum + (stats[p.player_key]?.points || 0), 0);
+        
+        // Find biggest bench mistake (bench player who would've beaten a starter)
+        let biggestMistake = null;
+        let biggestDiff = 0;
+        for (const benchPlayer of bench) {
+          const benchPts = stats[benchPlayer.player_key]?.points || 0;
+          for (const starter of starters) {
+            if (starter.position === benchPlayer.position || starter.slot === 'FLEX') {
+              const starterPts = stats[starter.player_key]?.points || 0;
+              const diff = benchPts - starterPts;
+              if (diff > biggestDiff) {
+                biggestDiff = diff;
+                biggestMistake = {
+                  benched: `${benchPlayer.name} (${benchPts.toFixed(1)} pts)`,
+                  started: `${starter.name} (${starterPts.toFixed(1)} pts)`,
+                  diff: diff.toFixed(1)
+                };
               }
             }
           }
-          
-          teamDetails.push({
-            ...team,
-            record: `${standing?.wins || 0}-${standing?.losses || 0}`,
-            rank: standing?.rank || 0,
-            starters: starters.map(p => ({
-              name: p.name,
-              position: p.position,
-              team: p.team,
-              status: p.status,
-              points: (stats[p.player_key]?.points || 0).toFixed(1),
-              projected: (stats[p.player_key]?.projected || 0).toFixed(1)
-            })),
-            bench: bench.map(p => ({
-              name: p.name,
-              position: p.position,
-              team: p.team,
-              status: p.status,
-              points: (stats[p.player_key]?.points || 0).toFixed(1),
-              projected: (stats[p.player_key]?.projected || 0).toFixed(1)
-            })),
-            transactions: teamTransactions.map(t => ({
-              type: t.type,
-              players: t.players.map(p => `${p.type}: ${p.name}`).join(', ')
-            })),
-            starterPoints: starterPoints.toFixed(1),
-            benchPoints: benchPoints.toFixed(1),
-            biggestMistake
-          });
-          
-        } catch (teamError) {
-          console.error(`Error processing team ${team.name}:`, teamError);
-          // Add placeholder data so we don't break the entire response
-          teamDetails.push({
-            ...team,
-            record: 'N/A',
-            rank: 0,
-            starters: [],
-            bench: [],
-            transactions: [],
-            starterPoints: '0.0',
-            benchPoints: '0.0',
-            biggestMistake: null,
-            error: `Failed to load team data: ${teamError.message}`
-          });
         }
+        
+        teamDetails.push({
+          ...team,
+          record: `${standing?.wins || 0}-${standing?.losses || 0}`,
+          rank: standing?.rank || 0,
+          wins: standing?.wins || 0,
+          losses: standing?.losses || 0,
+          ties: standing?.ties || 0,
+          points_for: standing?.points_for || 0,
+          points_against: standing?.points_against || 0,
+          starters: starters.map(p => ({
+            name: p.name,
+            position: p.position,
+            team: p.team,
+            status: p.status,
+            points: (stats[p.player_key]?.points || 0).toFixed(1),
+            projected: (stats[p.player_key]?.projected || 0).toFixed(1)
+          })),
+          bench: bench.map(p => ({
+            name: p.name,
+            position: p.position,
+            team: p.team,
+            status: p.status,
+            points: (stats[p.player_key]?.points || 0).toFixed(1),
+            projected: (stats[p.player_key]?.projected || 0).toFixed(1)
+          })),
+          transactions: teamTransactions.map(t => ({
+            type: t.type,
+            players: t.players.map(p => `${p.type}: ${p.name}`).join(', ')
+          })),
+          starterPoints: starterPoints.toFixed(1),
+          benchPoints: benchPoints.toFixed(1),
+          biggestMistake
+        });
+          
+      } catch (teamError) {
+        console.error(`Error processing team ${standing.name}:`, teamError);
+        // Add placeholder data so we don't break the entire response
+        teamDetails.push({
+          team_key: standing.team_key,
+          name: standing.name,
+          points: 0,
+          projected: 0,
+          record: `${standing?.wins || 0}-${standing?.losses || 0}`,
+          rank: standing?.rank || 0,
+          wins: standing?.wins || 0,
+          losses: standing?.losses || 0,
+          ties: standing?.ties || 0,
+          points_for: standing?.points_for || 0,
+          points_against: standing?.points_against || 0,
+          starters: [],
+          bench: [],
+          transactions: [],
+          starterPoints: '0.0',
+          benchPoints: '0.0',
+          biggestMistake: null,
+          error: `Failed to load team data: ${teamError.message}`
+        });
       }
     }
 
     // Step 7: Generate AI roast
     console.log(`Generating AI roast with tone: ${tone}...`);
-    const roast = await generateRoast(league.name, weekToAnalyze, currentWeek, teamDetails, scoreboard, tone);
+    const roast = await generateRoast(actualLeagueName, weekToAnalyze, currentWeek, teamDetails, scoreboard, tone);
 
     // Step 8: Return results
     return new Response(JSON.stringify({
       success: true,
       league: {
-        name: league.name,
+        name: actualLeagueName,
         key: leagueKey
       },
       week_analyzed: weekToAnalyze,
@@ -391,6 +394,12 @@ const ROAST_CHARACTERS = {
     systemPrompt: "You are Yoda analyzing fantasy football teams.",
     style: "Backwards syntax, deeply cryptic wisdom. 'Start that player, you did. Regret, you will.' Jedi wisdom about patience and the Force. Reference the Dark Side for bad decisions. Warn of future failures in riddles. Much to learn, they have.",
     task: "Offer cryptic Jedi wisdom about each team's path. Predict failures in backwards Yoda-speak."
+  },
+  
+  gandalf: {
+    systemPrompt: "You are Gandalf the Grey (or White) analyzing fantasy football teams as if they were warriors in Middle-earth.",
+    style: "Wise, dramatic, prophetic. Mix gravitas with occasional dry humor. Reference the quest, darkness rising, hope in dark times. 'A wizard arrives precisely when he means to.' Compare teams to fellowship members, orcs, or heroes. Warn of doom but offer hope. Pipe-smoking wisdom. You've seen many battles across many ages.",
+    task: "Write a weekly chronicle as if documenting the fellowship's journey. Some teams are heroes rising, others succumbing to darkness. Be wise, dramatic, and occasionally amused by folly."
   }
 };
 
@@ -407,68 +416,54 @@ async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, match
 
     const prompt = `${character.systemPrompt}
 
-CRITICAL: You must FULLY EMBODY this character's voice, speech patterns, and personality. This is not a surface-level impression - you ARE this character analyzing fantasy football. Use their actual vocabulary, rhythm, and worldview.
+CRITICAL: You must FULLY EMBODY this character's voice, speech patterns, and personality. This is not a surface-level impression - you ARE this character writing a weekly league recap. Use their actual vocabulary, rhythm, and worldview.
 
 Style Guide: ${character.style}
 
 Week ${weekAnalyzed} just finished in the "${leagueName}" league. We're now in Week ${currentWeek}.
 
-Your task: Write power rankings reviewing each team IN CHARACTER. Stay in character the ENTIRE time.
+Your task: ${character.task}
+
+This is NOT always a "roast" - the tone depends on YOUR character. Some characters are brutal and roast (Ramsay, Cartman), some are wise and prophetic (Gandalf, Yoda), some are analytical (Dwight, Philosopher), some are entertainers (Chappelle, Mulaney). Write a weekly league recap that this character would ACTUALLY write - sometimes funny, sometimes brutal, sometimes profound, but ALWAYS entertaining and true to character.
 
 MATCHUP RESULTS:
 ${matchups.map(m => `${m.team1.name} (${m.team1.points} pts) vs ${m.team2.name} (${m.team2.points} pts) - Winner: ${m.winner === m.team1.team_key ? m.team1.name : m.team2.name}`).join('\n')}
 
 TEAM DATA (sorted by standings):
-${sortedTeams.map((t, i) => {
-  // Filter out players with 0 points to avoid confusion
-  const topPerformers = t.starters.filter(p => parseFloat(p.points) > 0).sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 3);
-  const worstStarters = t.starters.filter(p => parseFloat(p.points) === 0 || parseFloat(p.points) < 3).sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 2);
-  const benchStars = t.bench.filter(p => parseFloat(p.points) > 5).sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 3);
-  
-  return `
+${sortedTeams.map((t, i) => `
 ${i + 1}. ${t.name} (${t.record}) - Rank: ${t.rank}
-   Week ${weekAnalyzed} TOTAL: ${t.points} pts
-   - Starter points: ${t.starterPoints} pts (actual scored)
-   - Bench points wasted: ${t.benchPoints} pts
-   ${t.biggestMistake ? `   
-   💀 BIGGEST MISTAKE: Benched ${t.biggestMistake.benched}, started ${t.biggestMistake.started}
-      Cost them ${t.biggestMistake.diff} points!` : ''}
+   Week ${weekAnalyzed}: ${t.points} pts (ACTUAL: ${t.starterPoints} from starters, ${t.benchPoints} left on bench!)
+   Season total: ${t.points_for || 'N/A'} pts
+   ${t.biggestMistake ? `BENCH MISTAKE: Benched ${t.biggestMistake.benched}, started ${t.biggestMistake.started} - Left ${t.biggestMistake.diff} pts on bench!` : ''}
    
-   TOP PERFORMERS (THESE PLAYERS SCORED THESE POINTS):
-   ${topPerformers.length > 0 ? topPerformers.map(p => `   🔥 ${p.name}: ${p.points} pts (${p.position} for ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n') : '   (No strong performances)'}
+   TOP PERFORMERS:
+   ${t.starters.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 3).map(p => `   🔥 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
    
-   WORST STARTERS (THESE PLAYERS SCORED THESE POINTS):
-   ${worstStarters.length > 0 ? worstStarters.map(p => `   💩 ${p.name}: ${p.points} pts (${p.position} for ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n') : '   (All starters performed)'}
+   WORST STARTERS:
+   ${t.starters.sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 2).map(p => `   💩 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
    
-   BENCH PLAYERS WHO SCORED MORE (SHOULD'VE STARTED):
-   ${benchStars.length > 0 ? benchStars.map(p => `   😤 ${p.name}: ${p.points} pts (${p.position} for ${p.team}) - SAT ON BENCH!${p.status ? ` [${p.status}]` : ''}`).join('\n') : '   (No bench players outscored starters)'}
+   BENCH (could've used):
+   ${t.bench.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 3).map(p => `   😤 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
    
-   WAIVER WIRE MOVES:
+   WAIVER MOVES:
    ${t.transactions.length > 0 ? t.transactions.map(tx => `   ${tx.players}`).join('\n') : '   None'}
-`;
-}).join('\n')}
+`).join('\n')}
 
-IMPORTANT DATA NOTES:
-- The "pts" numbers shown above are ACTUAL FANTASY POINTS SCORED by those players in Week ${weekAnalyzed}
-- DO NOT say "scored 0.0 points" unless the number literally shows "0.0" - those are real points!
-- If you see "Saquon Barkley: 24.8 pts", that means Saquon actually scored 24.8 fantasy points
-- Use these exact numbers in your roasts - they are REAL STATS from the game
-
-ROASTING GUIDELINES:
+CONTEXT FOR ROASTING:
 - Close games (won/lost by <5 pts) = maximum roast fuel
 - Big blowouts = either celebrate domination or mock complete failure  
 - High bench points = roast for lineup management incompetence
-- Players with 0 points (injuries/benched in real NFL) = mock the bad luck or stupid start
+- Started OUT/Q players = maximum stupidity roast
 - Waiver pickups that flopped = mock the desperation
 - Waiver pickups that succeeded = grudging respect or "even a blind squirrel" jokes
 
 Write power rankings with:
 1. Overall league narrative (who's dominating, who's tanking)
-2. Individual team breakdowns (highlight embarrassing moments with EXACT POINTS)
+2. Individual team breakdowns (highlight embarrassing moments)
 3. "Roast of the Week" - single most embarrassing team/decision
 4. "Play of the Week" - best performance or clutch win
 
-CRITICAL: Use SPECIFIC STATS and NAMES from above. Call out EXACT point totals for players. Example: "Saquon Barkley went off for 24.8 points" not "Saquon scored zero". The numbers above are REAL.
+CRITICAL: Use SPECIFIC STATS and NAMES. Don't be vague. Call out exact points, exact players, exact margins. That's what makes it funny and authentic, not formulaic.
 
 Format in HTML with <h1>, <h2>, <h3>, <p> tags. Make it SAVAGE and SPECIFIC. 🔥`;
 
