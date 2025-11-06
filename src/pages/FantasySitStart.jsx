@@ -21,6 +21,7 @@ export default function FantasySitStart() {
   const [season, setSeason] = useState(''); // Empty = auto-detect current season
   const [week, setWeek] = useState('');
   const [apiKey, setApiKey] = useState('');
+  const [tone, setTone] = useState('default'); // Roast character/tone
 
   // Generate season options (2001 to current year)
   const currentYear = new Date().getFullYear();
@@ -83,6 +84,7 @@ export default function FantasySitStart() {
       const params = new URLSearchParams();
       if (season) params.append('season', season);
       if (week) params.append('week', week);
+      if (tone) params.append('tone', tone); // Add tone parameter
 
       const headers = {};
       if (apiKey) {
@@ -255,6 +257,33 @@ export default function FantasySitStart() {
           {/* Step 3: Generate */}
           <div className="border-t pt-4">
             <h3 className="font-medium mb-2">Step 3: Get Recommendations or League Summary</h3>
+            
+            {/* Tone selector for roast */}
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Roast Style / Character:
+              </label>
+              <select
+                value={tone}
+                onChange={(e) => setTone(e.target.value)}
+                className="px-3 py-2 border rounded-md w-full max-w-md"
+              >
+                <option value="default">Default (Savage NFL Analyst)</option>
+                <option value="ramsay">🔥 Gordon Ramsay (Kitchen Nightmares)</option>
+                <option value="cartman">😈 Eric Cartman (South Park)</option>
+                <option value="chappelle">🎤 Dave Chappelle (Stand-up)</option>
+                <option value="burr">🎙️ Bill Burr (Boston Rant)</option>
+                <option value="madden">🏈 John Madden (Boom! Turducken!)</option>
+                <option value="soprano">🤌 Tony Soprano (Mob Boss)</option>
+                <option value="trump">🇺🇸 Donald Trump (Rally Speech)</option>
+                <option value="theoffice">📹 The Office (Talking Heads)</option>
+                <option value="rickandmorty">🧪 Rick Sanchez (Nihilistic Genius)</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Choose who delivers your league roast. They'll stay fully in character.
+              </p>
+            </div>
+            
             <div className="flex gap-3 flex-wrap">
               <button
                 onClick={handleFetchRecommendations}
