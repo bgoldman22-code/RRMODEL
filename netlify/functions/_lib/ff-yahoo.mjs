@@ -241,7 +241,10 @@ export async function getLeagueSettings(accessToken, leagueKey) {
 
     // Extract scoring rules
     const statCategories = settings.stat_categories?.stats || [];
+    const statModifiers = settings.stat_modifiers?.stats || [];
+    
     console.log(`Found ${statCategories.length} stat categories in league settings`);
+    console.log(`Found ${statModifiers.length} stat modifiers (scoring rules)`);
     
     const scoringRules = {
       passYards: 0.04,      // Default: 1 pt per 25 yards
@@ -256,8 +259,10 @@ export async function getLeagueSettings(accessToken, leagueKey) {
       twoPtConversion: 2    // Default: 2 pts per 2PC
     };
 
-    // Parse stat categories to override defaults
-    for (const stat of statCategories) {
+    // Parse stat MODIFIERS (actual scoring values)
+    const statsToCheck = statModifiers.length > 0 ? statModifiers : statCategories;
+    
+    for (const stat of statsToCheck) {
       // stat could be { stat: {...} } or just the stat object directly
       const statInfo = stat.stat || stat;
       if (!statInfo) continue;
@@ -265,16 +270,18 @@ export async function getLeagueSettings(accessToken, leagueKey) {
       const statId = statInfo.stat_id;
       // Yahoo returns scoring value in different places - try all possibilities
       const value = parseFloat(
-        statInfo.value || 
-        statInfo.points || 
+        statInfo.value ||
+        statInfo.points ||
+        statInfo.bonus_value ||
         statInfo.display_value ||
         (statInfo.stat_position_types?.[0]?.stat_position_type?.value) ||
+        (statInfo.stat_position_types?.[0]?.stat_position_type?.bonus_value) ||
         0
       );
 
       // Log first few stats to debug the structure
-      if (statCategories.indexOf(stat) < 5) {
-        console.log(`  Stat ID ${statId}: value=${value}, statInfo=`, JSON.stringify(statInfo));
+      if (statsToCheck.indexOf(stat) < 5) {
+        console.log(`  Stat ID ${statId}: value=${value}, statInfo=`, JSON.stringify(statInfo).substring(0, 300));
       }
 
       // Map stat IDs to scoring rules (Yahoo 2025 stat IDs)

@@ -28,35 +28,26 @@ const REGIONS = 'us';
 const MARKETS_LINES = 'spreads,totals,h2h';
 const BOOKMAKERS = 'draftkings,fanduel';
 
-// Player prop markets - comprehensive coverage for fantasy scoring
+// Player prop markets - using correct TheOddsAPI v4 market names
+// NOTE: Many of these require premium subscription and may not be available
 const PROP_MARKETS = [
-  // Passing
-  'player_pass_yds',
-  'player_pass_tds',
+  // Core props (most likely to be available)
+  'player_pass_tds',           // Passing touchdowns
+  'player_pass_yds',            // Passing yards
+  'player_rush_yds',            // Rushing yards  
+  'player_receiving_yards',     // Receiving yards (note: different from player_rec_yds)
+  'player_receptions',          // Receptions
+  'player_anytime_td',          // Anytime TD scorer
+  'player_first_td',            // First TD scorer
+  
+  // Additional props (may require premium)
   'player_pass_completions',
   'player_pass_attempts',
   'player_pass_interceptions',
-  'player_pass_longest_completion',
-  
-  // Rushing
-  'player_rush_yds',
   'player_rush_attempts',
-  'player_rush_longest',
-  
-  // Receiving
-  'player_rec_yds',
-  'player_receptions',
-  'player_reception_longest',
-  
-  // Touchdowns (critical for fantasy!)
-  'player_anytime_td',
-  'player_first_td',
   'player_last_td',
-  
-  // Defense/Special Teams (if available)
   'player_tackles_assists',
   'player_sacks',
-  'player_interceptions',
   'player_kicking_points'
 ];
 
@@ -214,6 +205,16 @@ export async function getPlayerProps(week) {
         
         if (!response.ok) {
           const errorText = await response.text();
+          
+          // 422 = Invalid market (not supported on this plan/endpoint)
+          if (response.status === 422) {
+            const error = JSON.parse(errorText);
+            if (error.error_code === 'INVALID_MARKET') {
+              // Silently skip unsupported markets (likely need premium subscription)
+              continue;
+            }
+          }
+          
           console.warn(`Failed to fetch ${market}: ${response.status} - ${errorText.substring(0, 200)}`);
           
           // If 404, log the URL we tried
@@ -354,7 +355,15 @@ export async function getPlayerProps(week) {
       await setCachedProps(week, allProps);
       console.log(`  - Cached props for future requests`);
     } else {
-      console.warn(`  - NOT caching (no props available yet - likely too early in week)`);
+      // Check if ALL calls failed with 422 (unsupported markets)
+      if (totalApiCalls > 0 && successfulCalls === 0) {
+        console.warn(`  ⚠️  No props available: All markets returned 422 errors`);
+        console.warn(`  ⚠️  Player props may require TheOddsAPI premium subscription`);
+        console.warn(`  ⚠️  Check your plan at: https://the-odds-api.com/account`);
+        console.warn(`  ⚠️  Tool will use baseline EFP values without props`);
+      } else {
+        console.warn(`  - NOT caching (no props available yet - likely too early in week)`);
+      }
     }
 
     return allProps;
