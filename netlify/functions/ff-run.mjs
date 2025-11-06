@@ -179,8 +179,30 @@ export const handler = async (event, context) => {
         continue;
       }
 
-      // Get player props (match by name)
-      const props = allProps[player.name] || {};
+      // Get player props (match by name with fuzzy matching)
+      let playerPropsData = allProps[player.name]; // Exact match first
+      
+      // If no exact match, try fuzzy match (remove suffixes like "Jr.", "II", "III")
+      if (!playerPropsData) {
+        const normalizedName = player.name.replace(/\s+(Jr\.|Sr\.|II|III|IV)$/i, '').trim();
+        playerPropsData = allProps[normalizedName];
+        
+        // Try even looser match - find any player with same first and last name
+        if (!playerPropsData) {
+          const [first, ...lastParts] = player.name.split(' ');
+          const last = lastParts.join(' ');
+          
+          for (const [propsName, propsData] of Object.entries(allProps)) {
+            if (propsName.includes(first) && propsName.includes(last)) {
+              playerPropsData = propsData;
+              console.log(`  Fuzzy matched: "${player.name}" → "${propsName}"`);
+              break;
+            }
+          }
+        }
+      }
+      
+      const props = playerPropsData?.props || {}; // Extract nested props object
       const hasProps = Object.keys(props).length > 0;
 
       // Calculate base EFP

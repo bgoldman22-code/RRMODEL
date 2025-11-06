@@ -203,7 +203,7 @@ async function projectSHSOG(playerStats, gameLog, opponent, context) {
 /**
  * ELITE UPGRADE 3: RINK SCORER BIAS (RTSS tracking variance)
  */
-const RINK_EFFECTS = {
+export const RINK_EFFECTS = {
   // High-tracking arenas (generous SOG recording)
   'Bell Centre': 1.045,           // Montreal +4.5%
   'Canadian Tire Centre': 1.035,  // Ottawa +3.5%
