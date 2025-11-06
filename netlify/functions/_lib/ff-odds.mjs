@@ -29,26 +29,34 @@ const MARKETS_LINES = 'spreads,totals,h2h';
 const BOOKMAKERS = 'draftkings,fanduel';
 
 // Player prop markets - using correct TheOddsAPI v4 market names
-// NOTE: Many of these require premium subscription and may not be available
+// NOTE: Must use /events/{eventId}/odds endpoint, not /sports/{sport}/odds
 const PROP_MARKETS = [
-  // Core props (most likely to be available)
-  'player_pass_tds',           // Passing touchdowns
-  'player_pass_yds',            // Passing yards
-  'player_rush_yds',            // Rushing yards  
-  'player_receiving_yards',     // Receiving yards (note: different from player_rec_yds)
-  'player_receptions',          // Receptions
-  'player_anytime_td',          // Anytime TD scorer
-  'player_first_td',            // First TD scorer
+  // Passing props
+  'player_pass_yds',           // Pass Yards (Over/Under)
+  'player_pass_tds',            // Pass Touchdowns (Over/Under)
+  'player_pass_completions',    // Pass Completions (Over/Under)
+  'player_pass_attempts',       // Pass Attempts (Over/Under)
+  'player_pass_interceptions',  // Pass Interceptions (Over/Under)
   
-  // Additional props (may require premium)
-  'player_pass_completions',
-  'player_pass_attempts',
-  'player_pass_interceptions',
-  'player_rush_attempts',
-  'player_last_td',
-  'player_tackles_assists',
-  'player_sacks',
-  'player_kicking_points'
+  // Rushing props
+  'player_rush_yds',            // Rush Yards (Over/Under)
+  'player_rush_tds',            // Rush Touchdowns (Over/Under)
+  'player_rush_attempts',       // Rush Attempts (Over/Under)
+  
+  // Receiving props
+  'player_reception_yds',       // Reception Yards (Over/Under)
+  'player_receptions',          // Receptions (Over/Under)
+  'player_reception_tds',       // Reception Touchdowns (Over/Under)
+  
+  // Touchdown props (Yes/No markets)
+  'player_anytime_td',          // Anytime Touchdown Scorer (Yes/No)
+  'player_1st_td',              // 1st Touchdown Scorer (Yes/No)
+  'player_last_td',             // Last Touchdown Scorer (Yes/No)
+  
+  // Defensive/ST props
+  'player_tackles_assists',     // Tackles + Assists (Over/Under)
+  'player_sacks',               // Sacks (Over/Under)
+  'player_kicking_points'       // Kicking Points (Over/Under)
 ];
 
 /**
@@ -182,19 +190,41 @@ export async function getPlayerProps(week) {
       throw new Error('Missing ODDS_API_KEY environment variable');
     }
 
+    console.log(`Fetching player props for week ${week}...`);
+
+    // Step 1: Get upcoming events to get event IDs
+    const eventsUrl = new URL(`${ODDS_API_BASE}/sports/${SPORT}/events`);
+    eventsUrl.searchParams.set('apiKey', apiKey);
+    
+    const eventsResponse = await fetch(eventsUrl.toString());
+    if (!eventsResponse.ok) {
+      throw new Error(`Failed to fetch events: ${eventsResponse.status}`);
+    }
+    
+    const events = await eventsResponse.json();
+    console.log(`Found ${events.length} upcoming NFL games`);
+    
+    if (events.length === 0) {
+      console.warn('No upcoming games found');
+      return {};
+    }
+
     const allProps = {};
     let totalApiCalls = 0;
     let successfulCalls = 0;
+    let totalPropsFound = 0;
 
-    console.log(`Fetching player props for week ${week}...`);
-
-    // Fetch each prop market separately (TheOddsAPI requires separate calls)
-    for (const market of PROP_MARKETS) {
-      // Try the odds endpoint with eventIds parameter
-      const url = new URL(`${ODDS_API_BASE}/sports/${SPORT}/odds`);
+    // Step 2: For each event, fetch player props using /events/{eventId}/odds endpoint
+    // NOTE: Player props MUST use per-event endpoint, not the sports/odds endpoint
+    for (const event of events) {
+      const eventId = event.id;
+      
+      // Fetch multiple markets in one call (comma-separated)
+      const marketsParam = PROP_MARKETS.join(',');
+      const url = new URL(`${ODDS_API_BASE}/sports/${SPORT}/events/${eventId}/odds`);
       url.searchParams.set('apiKey', apiKey);
       url.searchParams.set('regions', REGIONS);
-      url.searchParams.set('markets', market); // Market as parameter
+      url.searchParams.set('markets', marketsParam);
       url.searchParams.set('bookmakers', BOOKMAKERS);
       url.searchParams.set('oddsFormat', 'american');
 
@@ -205,149 +235,96 @@ export async function getPlayerProps(week) {
         
         if (!response.ok) {
           const errorText = await response.text();
-          
-          // 422 = Invalid market (not supported on this plan/endpoint)
-          if (response.status === 422) {
-            const error = JSON.parse(errorText);
-            if (error.error_code === 'INVALID_MARKET') {
-              // Silently skip unsupported markets (likely need premium subscription)
-              continue;
-            }
-          }
-          
-          console.warn(`Failed to fetch ${market}: ${response.status} - ${errorText.substring(0, 200)}`);
-          
-          // If 404, log the URL we tried
-          if (response.status === 404) {
-            console.warn(`  Tried URL: ${url.toString().replace(apiKey, 'API_KEY')}`);
-          }
+          console.warn(`Failed to fetch props for event ${eventId}: ${response.status}`);
           continue;
         }
 
-        const events = await response.json();
+        const eventOdds = await response.json();
         
-        if (!events || events.length === 0) {
-          console.log(`  ${market}: No events/props available yet`);
+        if (!eventOdds || !eventOdds.bookmakers || eventOdds.bookmakers.length === 0) {
           continue;
-        }
-
-        // Log first event structure for debugging (only first market)
-        if (totalApiCalls === 1) {
-          console.log(`  First event structure:`, JSON.stringify(events[0], null, 2).substring(0, 500));
         }
 
         successfulCalls++;
-        let propsFoundInMarket = 0;
+        let propsFoundInEvent = 0;
 
-        // Parse props from each event
-        for (const event of events) {
-          for (const bookmaker of event.bookmakers || []) {
-            for (const propMarket of bookmaker.markets || []) {
-              for (const outcome of propMarket.outcomes || []) {
-                const playerName = outcome.description; // Player name
-                const line = parseFloat(outcome.point || 0);
-                const price = outcome.price;
+        // Process each bookmaker's markets from the event
+        for (const bookmaker of eventOdds.bookmakers) {
+          for (const market of bookmaker.markets) {
+            const marketKey = market.key;
+            
+            // Process each outcome (player prop)
+            for (const outcome of market.outcomes || []) {
+              const playerName = outcome.description || outcome.name;
+              if (!playerName) continue;
 
-                if (!playerName) continue; // Skip if no player name
+              const line = parseFloat(outcome.point || 0);
+              const price = outcome.price;
+              const impliedProb = americanToProb(price);
 
-                propsFoundInMarket++;
+              // Initialize player entry if needed
+              if (!allProps[playerName]) {
+                allProps[playerName] = {
+                  name: playerName,
+                  team: null,
+                  props: {}
+                };
+              }
 
-                // Convert American odds to implied probability
-                const impliedProb = americanToProb(price);
-
-                // Initialize player props if not exists
-                if (!allProps[playerName]) {
-                  allProps[playerName] = {
-                    name: playerName,
-                    team: null, // TheOddsAPI doesn't always provide team
-                    props: {}
-                  };
-                }
-
-                // Store prop based on market type
-                if (market === 'player_pass_yds') {
-                  allProps[playerName].props.pass_yds = line;
-                  allProps[playerName].props.pass_yds_prob = impliedProb;
-                }
-                if (market === 'player_pass_tds') {
-                  allProps[playerName].props.pass_tds = line;
-                  allProps[playerName].props.pass_tds_prob = impliedProb;
-                }
-                if (market === 'player_pass_completions') {
-                  allProps[playerName].props.pass_completions = line;
-                  allProps[playerName].props.pass_completions_prob = impliedProb;
-                }
-                if (market === 'player_pass_attempts') {
-                  allProps[playerName].props.pass_attempts = line;
-                  allProps[playerName].props.pass_attempts_prob = impliedProb;
-                }
-                if (market === 'player_pass_interceptions') {
-                  allProps[playerName].props.interceptions = line;
-                  allProps[playerName].props.interceptions_prob = impliedProb;
-                }
-                if (market === 'player_pass_longest_completion') {
-                  allProps[playerName].props.pass_longest = line;
-                }
-                if (market === 'player_rush_yds') {
-                  allProps[playerName].props.rush_yds = line;
-                  allProps[playerName].props.rush_yds_prob = impliedProb;
-                }
-                if (market === 'player_rush_attempts') {
-                  allProps[playerName].props.rush_attempts = line;
-                  allProps[playerName].props.rush_attempts_prob = impliedProb;
-                }
-                if (market === 'player_rush_longest') {
-                  allProps[playerName].props.rush_longest = line;
-                }
-                if (market === 'player_rec_yds') {
-                  allProps[playerName].props.rec_yds = line;
-                  allProps[playerName].props.rec_yds_prob = impliedProb;
-                }
-                if (market === 'player_receptions') {
-                  allProps[playerName].props.receptions = line;
-                  allProps[playerName].props.receptions_prob = impliedProb;
-                }
-                if (market === 'player_reception_longest') {
-                  allProps[playerName].props.rec_longest = line;
-                }
-                if (market === 'player_anytime_td') {
-                  allProps[playerName].props.anytime_td_prob = impliedProb;
-                  // Estimate 2+ TD probability (heuristic: prob^1.8 * 0.6)
-                  allProps[playerName].props.two_plus_td_prob = Math.pow(impliedProb, 1.8) * 0.6;
-                }
-                if (market === 'player_first_td') {
-                  allProps[playerName].props.first_td_prob = impliedProb;
-                }
-                if (market === 'player_last_td') {
-                  allProps[playerName].props.last_td_prob = impliedProb;
-                }
-                if (market === 'player_tackles_assists') {
-                  allProps[playerName].props.tackles_assists = line;
-                }
-                if (market === 'player_sacks') {
-                  allProps[playerName].props.sacks = line;
-                }
-                if (market === 'player_interceptions') {
-                  allProps[playerName].props.def_interceptions = line; // Different from QB INTs
-                }
-                if (market === 'player_kicking_points') {
-                  allProps[playerName].props.kicking_points = line;
-                }
+              // Map TheOddsAPI market keys to our internal prop names
+              if (marketKey === 'player_pass_yds' && !allProps[playerName].props.pass_yds) {
+                allProps[playerName].props.pass_yds = line;
+                allProps[playerName].props.pass_yds_prob = impliedProb;
+                propsFoundInEvent++;
+              } else if (marketKey === 'player_pass_tds' && !allProps[playerName].props.pass_tds) {
+                allProps[playerName].props.pass_tds = line;
+                allProps[playerName].props.pass_tds_prob = impliedProb;
+                propsFoundInEvent++;
+              } else if (marketKey === 'player_pass_completions' && !allProps[playerName].props.pass_completions) {
+                allProps[playerName].props.pass_completions = line;
+                propsFoundInEvent++;
+              } else if (marketKey === 'player_rush_yds' && !allProps[playerName].props.rush_yds) {
+                allProps[playerName].props.rush_yds = line;
+                allProps[playerName].props.rush_yds_prob = impliedProb;
+                propsFoundInEvent++;
+              } else if (marketKey === 'player_reception_yds' && !allProps[playerName].props.rec_yds) {
+                allProps[playerName].props.rec_yds = line;
+                allProps[playerName].props.rec_yds_prob = impliedProb;
+                propsFoundInEvent++;
+              } else if (marketKey === 'player_receptions' && !allProps[playerName].props.receptions) {
+                allProps[playerName].props.receptions = line;
+                allProps[playerName].props.receptions_prob = impliedProb;
+                propsFoundInEvent++;
+              } else if (marketKey === 'player_anytime_td' && !allProps[playerName].props.anytime_td_prob) {
+                allProps[playerName].props.anytime_td_prob = impliedProb;
+                allProps[playerName].props.two_plus_td_prob = Math.pow(impliedProb, 1.8) * 0.6;
+                propsFoundInEvent++;
+              } else if (marketKey === 'player_reception_tds' && !allProps[playerName].props.rec_tds) {
+                allProps[playerName].props.rec_tds = line;
+                propsFoundInEvent++;
+              } else if (marketKey === 'player_rush_tds' && !allProps[playerName].props.rush_tds) {
+                allProps[playerName].props.rush_tds = line;
+                propsFoundInEvent++;
               }
             }
           }
         }
         
-        console.log(`  ${market}: Found ${propsFoundInMarket} props`);
-        
-      } catch (marketError) {
-        console.warn(`Error fetching ${market}:`, marketError.message);
+        if (propsFoundInEvent > 0) {
+          console.log(`  Event ${eventId} (${eventOdds.away_team} @ ${eventOdds.home_team}): ${propsFoundInEvent} props`);
+          totalPropsFound += propsFoundInEvent;
+        }
+
+      } catch (error) {
+        console.error(`Error fetching props for event ${eventId}:`, error.message);
+        continue;
       }
     }
 
     const totalPlayers = Object.keys(allProps).length;
     console.log(`\nProps Summary for Week ${week}:`);
-    console.log(`  - API calls: ${successfulCalls}/${totalApiCalls} successful`);
+    console.log(`  - API calls: ${successfulCalls}/${totalApiCalls} successful events`);
+    console.log(`  - Total props found: ${totalPropsFound}`);
     console.log(`  - Total players with props: ${totalPlayers}`);
 
     // Only cache if we got some props (don't cache empty results)
@@ -355,15 +332,7 @@ export async function getPlayerProps(week) {
       await setCachedProps(week, allProps);
       console.log(`  - Cached props for future requests`);
     } else {
-      // Check if ALL calls failed with 422 (unsupported markets)
-      if (totalApiCalls > 0 && successfulCalls === 0) {
-        console.warn(`  ⚠️  No props available: All markets returned 422 errors`);
-        console.warn(`  ⚠️  Player props may require TheOddsAPI premium subscription`);
-        console.warn(`  ⚠️  Check your plan at: https://the-odds-api.com/account`);
-        console.warn(`  ⚠️  Tool will use baseline EFP values without props`);
-      } else {
-        console.warn(`  - NOT caching (no props available yet - likely too early in week)`);
-      }
+      console.warn(`  - NOT caching (no props available yet)`);
     }
 
     return allProps;
