@@ -6,10 +6,16 @@
  * 
  * Key Features:
  * - Game lines: spreads, totals, moneylines (DraftKings/FanDuel priority)
- * - Player props: pass_yds, pass_tds, rush_yds, rec_yds, receptions, anytime_td
+ * - Player props: Comprehensive coverage including:
+ *   - Passing: yards, TDs, completions, attempts, INTs
+ *   - Rushing: yards, attempts, longest
+ *   - Receiving: yards, receptions, longest
+ *   - Touchdowns: anytime, first, last
+ *   - Defense/ST: tackles, sacks, INTs, kicking points
  * - Implied totals: homeIT = (total/2) - (spread/2)
  * - Script lean: ±4.5 threshold for pass-heavy underdogs, run-heavy favorites
  * - Cache with configurable TTL (default 1h)
+ * - Graceful handling of 404s (props may not be available until Tuesday/Wednesday)
  * 
  * API Docs: https://the-odds-api.com/liveapi/guides/v4/
  */
@@ -22,15 +28,36 @@ const REGIONS = 'us';
 const MARKETS_LINES = 'spreads,totals,h2h';
 const BOOKMAKERS = 'draftkings,fanduel';
 
-// Player prop markets
+// Player prop markets - comprehensive coverage for fantasy scoring
 const PROP_MARKETS = [
+  // Passing
   'player_pass_yds',
   'player_pass_tds',
+  'player_pass_completions',
+  'player_pass_attempts',
   'player_pass_interceptions',
+  'player_pass_longest_completion',
+  
+  // Rushing
   'player_rush_yds',
+  'player_rush_attempts',
+  'player_rush_longest',
+  
+  // Receiving
   'player_rec_yds',
   'player_receptions',
-  'player_anytime_td'
+  'player_reception_longest',
+  
+  // Touchdowns (critical for fantasy!)
+  'player_anytime_td',
+  'player_first_td',
+  'player_last_td',
+  
+  // Defense/Special Teams (if available)
+  'player_tackles_assists',
+  'player_sacks',
+  'player_interceptions',
+  'player_kicking_points'
 ];
 
 /**
@@ -213,13 +240,31 @@ export async function getPlayerProps(week) {
                   allProps[playerName].props.pass_tds = line;
                   allProps[playerName].props.pass_tds_prob = impliedProb;
                 }
+                if (market === 'player_pass_completions') {
+                  allProps[playerName].props.pass_completions = line;
+                  allProps[playerName].props.pass_completions_prob = impliedProb;
+                }
+                if (market === 'player_pass_attempts') {
+                  allProps[playerName].props.pass_attempts = line;
+                  allProps[playerName].props.pass_attempts_prob = impliedProb;
+                }
                 if (market === 'player_pass_interceptions') {
                   allProps[playerName].props.interceptions = line;
                   allProps[playerName].props.interceptions_prob = impliedProb;
                 }
+                if (market === 'player_pass_longest_completion') {
+                  allProps[playerName].props.pass_longest = line;
+                }
                 if (market === 'player_rush_yds') {
                   allProps[playerName].props.rush_yds = line;
                   allProps[playerName].props.rush_yds_prob = impliedProb;
+                }
+                if (market === 'player_rush_attempts') {
+                  allProps[playerName].props.rush_attempts = line;
+                  allProps[playerName].props.rush_attempts_prob = impliedProb;
+                }
+                if (market === 'player_rush_longest') {
+                  allProps[playerName].props.rush_longest = line;
                 }
                 if (market === 'player_rec_yds') {
                   allProps[playerName].props.rec_yds = line;
@@ -229,10 +274,31 @@ export async function getPlayerProps(week) {
                   allProps[playerName].props.receptions = line;
                   allProps[playerName].props.receptions_prob = impliedProb;
                 }
+                if (market === 'player_reception_longest') {
+                  allProps[playerName].props.rec_longest = line;
+                }
                 if (market === 'player_anytime_td') {
                   allProps[playerName].props.anytime_td_prob = impliedProb;
                   // Estimate 2+ TD probability (heuristic: prob^1.8 * 0.6)
                   allProps[playerName].props.two_plus_td_prob = Math.pow(impliedProb, 1.8) * 0.6;
+                }
+                if (market === 'player_first_td') {
+                  allProps[playerName].props.first_td_prob = impliedProb;
+                }
+                if (market === 'player_last_td') {
+                  allProps[playerName].props.last_td_prob = impliedProb;
+                }
+                if (market === 'player_tackles_assists') {
+                  allProps[playerName].props.tackles_assists = line;
+                }
+                if (market === 'player_sacks') {
+                  allProps[playerName].props.sacks = line;
+                }
+                if (market === 'player_interceptions') {
+                  allProps[playerName].props.def_interceptions = line; // Different from QB INTs
+                }
+                if (market === 'player_kicking_points') {
+                  allProps[playerName].props.kicking_points = line;
                 }
               }
             }

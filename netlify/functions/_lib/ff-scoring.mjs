@@ -164,6 +164,11 @@ function applyFallback(position, teamContext, scoringRules) {
  * @returns {number} Sit/start score
  */
 export function calculateSitStartScore(efp, context, player, scoringRules, allPlayers) {
+  // If no game context (bye week, game not scheduled, etc.), return 0
+  if (!context) {
+    return 0; // Player is unplayable (bye week or no game)
+  }
+
   // Calculate z-score within position group
   const positionPlayers = allPlayers.filter(p => p.position === player.position);
   const zScore = calculateZScore(efp, positionPlayers.map(p => p.efp));
@@ -172,9 +177,9 @@ export function calculateSitStartScore(efp, context, player, scoringRules, allPl
   const scriptBonus = calculateScriptBonus(player.position, context);
   const itBonus = calculateITBonus(context);
   const injuryPenalty = calculateInjuryPenalty(player.status);
-  const byePenalty = player.bye_week === context.week ? -999 : 0;
+  const byePenalty = player.bye_week === context.week ? 0 : 0; // Handled earlier now
 
-  // Formula: zEFP + 0.35*script + 0.25*IT + 0.20*injury - 999*bye
+  // Formula: zEFP + 0.35*script + 0.25*IT + 0.20*injury
   const score = zScore + (0.35 * scriptBonus) + (0.25 * itBonus) + (0.20 * injuryPenalty) + byePenalty;
 
   return score;
