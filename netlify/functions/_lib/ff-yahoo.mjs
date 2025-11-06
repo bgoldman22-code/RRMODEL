@@ -219,11 +219,30 @@ export async function getLeagueSettings(accessToken, leagueKey) {
     
     const settings = data.fantasy_content?.league?.[1]?.settings?.[0];
     if (!settings) {
-      throw new Error('No settings found in API response');
+      console.warn('No settings found in API response, using defaults');
+      // Return defaults if API doesn't provide settings
+      return {
+        scoringRules: {
+          passYards: 0.04,
+          passTD: 4,
+          passInt: -2,
+          rushYards: 0.1,
+          rushTD: 6,
+          recYards: 0.1,
+          reception: 0,
+          recTD: 6,
+          fumble: -2,
+          twoPtConversion: 2
+        },
+        positionCounts: { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DEF: 1, BN: 6 },
+        pprType: 'Standard'
+      };
     }
 
     // Extract scoring rules
     const statCategories = settings.stat_categories?.stats || [];
+    console.log(`Found ${statCategories.length} stat categories in league settings`);
+    
     const scoringRules = {
       passYards: 0.04,      // Default: 1 pt per 25 yards
       passTD: 4,            // Default: 4 pts per TD
@@ -275,7 +294,7 @@ export async function getLeagueSettings(accessToken, leagueKey) {
       positionCounts[position] = (positionCounts[position] || 0) + count;
     }
 
-    console.log(`League scoring: ${pprType}, passTD=${scoringRules.passTD}, INT=${scoringRules.passInt}`);
+    console.log(`League scoring: ${pprType}, passTD=${scoringRules.passTD}, INT=${scoringRules.passInt}, rushTD=${scoringRules.rushTD}, recTD=${scoringRules.recTD}`);
     console.log(`Roster positions:`, positionCounts);
 
     return {

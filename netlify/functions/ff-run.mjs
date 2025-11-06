@@ -165,6 +165,7 @@ export const handler = async (event, context) => {
       // Handle bye weeks or missing games (context is null)
       if (!gameContext) {
         // Bye week or game not scheduled - player scores 0
+        console.log(`Player ${player.name} (${player.team}) has no game context (bye week or game not found)`);
         scoredPlayers.push({
           ...player,
           props: {},
@@ -178,9 +179,11 @@ export const handler = async (event, context) => {
 
       // Get player props (match by name)
       const props = allProps[player.name] || {};
+      const hasProps = Object.keys(props).length > 0;
 
       // Calculate base EFP
       const efp = expectedFantasyPoints(props, scoringRules, player.position, gameContext);
+      console.log(`Player ${player.name} (${player.position}, ${player.team}): EFP=${efp.toFixed(1)}, hasProps=${hasProps}`);
 
       // Add multi-TD ceiling bonus
       const ceilingBonus = applyMultiTDBonus(efp, props, scoringRules, player.position);
