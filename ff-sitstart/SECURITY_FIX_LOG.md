@@ -27,7 +27,7 @@ To prevent exposing secrets, the build will fail until these secret values are n
 
 **Before**:
 ```markdown
-- Already have: API key (`c5d3fe15e6c5be83b2acd8695cff012b`)
+- Already have: API key (`REDACTED_FOR_SECURITY`)
 ```
 
 **After**:
@@ -39,7 +39,7 @@ To prevent exposing secrets, the build will fail until these secret values are n
 Searched entire codebase for API key value → **NOT FOUND**
 
 ```bash
-grep -r "c5d3fe15e6c5be83b2acd8695cff012b" .
+grep -r "REDACTED_API_KEY" .
 # No matches
 ```
 
