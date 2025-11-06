@@ -20,6 +20,8 @@
 import { getStore } from '@netlify/blobs';
 
 export const handler = async (event, context) => {
+  console.log('ff-auth-callback invoked with code:', event.queryStringParameters?.code ? 'present' : 'missing');
+  
   try {
     // Extract authorization code from query string
     const code = event.queryStringParameters?.code;
@@ -53,9 +55,11 @@ export const handler = async (event, context) => {
     }
 
     // Exchange code for tokens
+    console.log('Starting token exchange with Yahoo...');
     const tokenUrl = 'https://api.login.yahoo.com/oauth2/get_token';
     const authHeader = 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
     
+    console.log('Sending POST to Yahoo token endpoint...');
     const tokenResponse = await fetch(tokenUrl, {
       method: 'POST',
       headers: {
@@ -78,12 +82,15 @@ export const handler = async (event, context) => {
         body: JSON.stringify({ 
           error: 'Token exchange failed',
           message: 'Yahoo API returned an error during token exchange',
-          status: tokenResponse.status
+          status: tokenResponse.status,
+          details: errorText
         })
       };
     }
 
+    console.log('Token exchange successful, parsing response...');
     const tokenData = await tokenResponse.json();
+    console.log('Token data received:', Object.keys(tokenData));
     
     // Extract tokens and calculate expiry
     const {
@@ -109,6 +116,7 @@ export const handler = async (event, context) => {
     // Calculate expiry timestamp with 2-minute buffer for clock skew
     const expiresAt = Date.now() + (expires_in * 1000) - (2 * 60 * 1000);
 
+    console.log('Saving tokens to Netlify Blobs...');
     // Save tokens to Netlify Blobs
     const authStore = getStore('auth');
     const tokenPayload = {
