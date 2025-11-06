@@ -43,8 +43,9 @@ CACHE_TTL_SECONDS=3600
 
 #### B. TheOddsAPI Key
 - You already have this: Check `.env` file or previous configs
-- Should look like: `c5d3fe15e6c5be83b2acd8695cff012b`
-- ⚠️ If exposed in Git history, consider getting new key from: https://the-odds-api.com/
+- Should look like: `REDACTED_32_CHAR_HEX_STRING`
+- ⚠️ Never commit actual API keys - always use environment variables
+- Get new key from: https://the-odds-api.com/
 
 ---
 
