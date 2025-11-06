@@ -181,6 +181,7 @@ export async function getPlayerProps(week) {
   // Check cache first
   const cached = await getCachedProps(week);
   if (cached) {
+    console.log(`Using cached props: ${Object.keys(cached).length} players`);
     return cached;
   }
 
@@ -191,6 +192,10 @@ export async function getPlayerProps(week) {
     }
 
     const allProps = {};
+    let totalApiCalls = 0;
+    let successfulCalls = 0;
+
+    console.log(`Fetching player props for week ${week}...`);
 
     // Fetch each prop market separately (TheOddsAPI requires separate calls)
     for (const market of PROP_MARKETS) {
@@ -202,17 +207,26 @@ export async function getPlayerProps(week) {
       url.searchParams.set('bookmakers', BOOKMAKERS);
       url.searchParams.set('oddsFormat', 'american');
 
+      totalApiCalls++;
+
       try {
-        console.log(`Fetching ${market}...`);
         const response = await fetch(url.toString());
         
         if (!response.ok) {
           const errorText = await response.text();
-          console.warn(`Failed to fetch ${market}: ${response.status} - ${errorText}`);
+          console.warn(`Failed to fetch ${market}: ${response.status} - ${errorText.substring(0, 200)}`);
           continue;
         }
 
         const events = await response.json();
+        
+        if (!events || events.length === 0) {
+          console.log(`  ${market}: No events/props available yet`);
+          continue;
+        }
+
+        successfulCalls++;
+        let propsFoundInMarket = 0;
 
         // Parse props from each event
         for (const event of events) {
@@ -222,6 +236,10 @@ export async function getPlayerProps(week) {
                 const playerName = outcome.description; // Player name
                 const line = parseFloat(outcome.point || 0);
                 const price = outcome.price;
+
+                if (!playerName) continue; // Skip if no player name
+
+                propsFoundInMarket++;
 
                 // Convert American odds to implied probability
                 const impliedProb = americanToProb(price);
@@ -308,15 +326,27 @@ export async function getPlayerProps(week) {
             }
           }
         }
+        
+        console.log(`  ${market}: Found ${propsFoundInMarket} props`);
+        
       } catch (marketError) {
         console.warn(`Error fetching ${market}:`, marketError.message);
       }
     }
 
-    // Cache for future requests
-    await setCachedProps(week, allProps);
+    const totalPlayers = Object.keys(allProps).length;
+    console.log(`\nProps Summary for Week ${week}:`);
+    console.log(`  - API calls: ${successfulCalls}/${totalApiCalls} successful`);
+    console.log(`  - Total players with props: ${totalPlayers}`);
 
-    console.log(`Fetched props for ${Object.keys(allProps).length} players for week ${week}`);
+    // Only cache if we got some props (don't cache empty results)
+    if (totalPlayers > 0) {
+      await setCachedProps(week, allProps);
+      console.log(`  - Cached props for future requests`);
+    } else {
+      console.warn(`  - NOT caching (no props available yet - likely too early in week)`);
+    }
+
     return allProps;
   } catch (error) {
     console.error('Error fetching player props:', error.message);
