@@ -431,7 +431,7 @@ Format in HTML with <h1>, <h2>, <h3>, <p> tags. Make it SAVAGE and SPECIFIC. ðŸ”
       });
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-4o',  // Updated to current GPT-4 model
         messages: [{
           role: 'system',
           content: character.systemPrompt + '\n\n' + character.style
