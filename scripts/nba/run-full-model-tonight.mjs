@@ -96,9 +96,9 @@ async function fetchRecentBoxscores(daysBack = 25) {
                       opponentTricode: oppAbbr,
                       homeAway: isHome ? 'home' : 'away',
                       minutes,
-                      points: parseInt(stats[12]) || 0, // PTS
-                      rebounds: parseInt(stats[11]) || 0, // REB
-                      assists: parseInt(stats[13]) || 0, // AST
+                      points: parseInt(stats[1]) || 0, // PTS (index 1)
+                      rebounds: parseInt(stats[4]) || 0, // REB (index 4)
+                      assists: parseInt(stats[5]) || 0, // AST (index 5)
                       team: teamAbbr
                     });
                   }

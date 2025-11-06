@@ -262,20 +262,31 @@ export async function getLeagueSettings(accessToken, leagueKey) {
       if (!statInfo) continue;
 
       const statId = statInfo.stat_id;
-      const value = parseFloat(statInfo.value || 0);
+      // Yahoo returns value in different formats - try both
+      const value = parseFloat(statInfo.value || statInfo.points || 0);
 
       // Log first few stats to debug
-      if (statCategories.indexOf(stat) < 3) {
-        console.log(`  Stat ID ${statId}: value=${value}, name=${statInfo.name || 'unknown'}`);
+      if (statCategories.indexOf(stat) < 5) {
+        console.log(`  Stat ID ${statId}: value=${value}, points=${statInfo.points}, rawValue=${statInfo.value}, name=${statInfo.name || 'unknown'}`);
       }
 
       // Map stat IDs to scoring rules (Yahoo 2025 stat IDs)
-      if (statId === 4) scoringRules.passYards = value / 25;           // Passing Yards (per 25)
+      // Note: Some values are "per X yards" (25 pass, 10 rush/rec), others are per event
+      if (statId === 4) {
+        // Passing Yards: Yahoo gives points per yard (e.g., 0.04 = 1 pt per 25 yards)
+        scoringRules.passYards = value;
+      }
       if (statId === 5) scoringRules.passTD = value;                   // Passing TD
       if (statId === 6) scoringRules.passInt = value;                  // Interceptions
-      if (statId === 8) scoringRules.rushYards = value / 10;           // Rushing Yards (per 10)
+      if (statId === 8) {
+        // Rushing Yards: Yahoo gives points per yard (e.g., 0.1 = 1 pt per 10 yards)
+        scoringRules.rushYards = value;
+      }
       if (statId === 9) scoringRules.rushTD = value;                   // Rushing TD
-      if (statId === 11) scoringRules.recYards = value / 10;           // Receiving Yards (per 10)
+      if (statId === 11) {
+        // Receiving Yards: Yahoo gives points per yard
+        scoringRules.recYards = value;
+      }
       if (statId === 10) scoringRules.reception = value;               // Reception (PPR)
       if (statId === 12) scoringRules.recTD = value;                   // Receiving TD
       if (statId === 18) scoringRules.fumble = value;                  // Fumbles Lost
