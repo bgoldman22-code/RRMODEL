@@ -204,7 +204,7 @@ Write power rankings with:
 Format in HTML with <h1>, <h2>, <p> tags. Make it SAVAGE. 🔥`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-sonnet-20240620', // Using stable version
       max_tokens: 4000,
       messages: [{
         role: 'user',

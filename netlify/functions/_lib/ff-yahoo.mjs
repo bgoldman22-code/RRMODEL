@@ -258,16 +258,23 @@ export async function getLeagueSettings(accessToken, leagueKey) {
 
     // Parse stat categories to override defaults
     for (const stat of statCategories) {
-      const statInfo = stat.stat;
+      // stat could be { stat: {...} } or just the stat object directly
+      const statInfo = stat.stat || stat;
       if (!statInfo) continue;
 
       const statId = statInfo.stat_id;
-      // Yahoo returns value in different formats - try both
-      const value = parseFloat(statInfo.value || statInfo.points || 0);
+      // Yahoo returns scoring value in different places - try all possibilities
+      const value = parseFloat(
+        statInfo.value || 
+        statInfo.points || 
+        statInfo.display_value ||
+        (statInfo.stat_position_types?.[0]?.stat_position_type?.value) ||
+        0
+      );
 
-      // Log first few stats to debug
+      // Log first few stats to debug the structure
       if (statCategories.indexOf(stat) < 5) {
-        console.log(`  Stat ID ${statId}: value=${value}, points=${statInfo.points}, rawValue=${statInfo.value}, name=${statInfo.name || 'unknown'}`);
+        console.log(`  Stat ID ${statId}: value=${value}, statInfo=`, JSON.stringify(statInfo));
       }
 
       // Map stat IDs to scoring rules (Yahoo 2025 stat IDs)
