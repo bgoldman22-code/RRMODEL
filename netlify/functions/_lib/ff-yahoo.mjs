@@ -77,45 +77,82 @@ export async function getCurrentGameKey(accessToken) {
 
 /**
  * Get user's fantasy leagues for a specific game
+ * According to Yahoo API docs, we should use /teams endpoint, not /leagues
  * @param {string} accessToken - OAuth access token
- * @param {string} gameKey - Game key from getCurrentGameKey
- * @returns {Promise<Array>} Array of league objects
+ * @param {string} gameKey - Game key from getCurrentGameKey (e.g., "449")
+ * @returns {Promise<Array>} Array of league objects (derived from teams)
  */
 export async function getUserLeagues(accessToken, gameKey) {
   try {
-    const data = await yahooRequest(accessToken, `/users;use_login=1/games;game_key=${gameKey}/leagues`);
+    // Yahoo API: /users;use_login=1/games;game_keys=nfl/teams
+    // This returns ALL teams for the user in NFL games, then we filter by game_key
+    const data = await yahooRequest(accessToken, `/users;use_login=1/games;game_keys=nfl/teams`);
     
-    const games = data.fantasy_content?.users?.[0]?.user?.[1]?.games;
-    if (!games) {
-      throw new Error('No games found in API response');
+    console.log('Yahoo API teams response:', JSON.stringify(data, null, 2));
+    
+    const users = data.fantasy_content?.users;
+    if (!users) {
+      throw new Error('No users found in API response');
     }
 
-    const gameData = games[0]?.game?.[1]?.leagues;
-    if (!gameData) {
-      console.log('No leagues found for this game');
+    // Navigate: users[0].user[1].games
+    const games = users[0]?.user?.[1]?.games;
+    if (!games) {
+      console.log('No games found in user data');
       return [];
     }
 
-    // Parse leagues array (skip count at [0])
+    // Games is an array-like object with count at [0]
     const leagues = [];
-    for (let i = 0; i < gameData.count; i++) {
-      const league = gameData[i]?.league?.[0];
-      if (league) {
-        leagues.push({
-          league_key: league.league_key,
-          league_id: league.league_id,
-          name: league.name,
-          num_teams: league.num_teams,
-          scoring_type: league.scoring_type, // head2head, etc.
-          url: league.url
-        });
+    const leaguesSeen = new Set();
+
+    // Iterate through games array (skip [0] which is count)
+    for (let i = 0; i < games.count; i++) {
+      const gameObj = games[i]?.game;
+      if (!gameObj) continue;
+
+      // Check if this is the game we want
+      const gameInfo = gameObj[0];
+      if (gameInfo.game_key !== gameKey) {
+        console.log(`Skipping game ${gameInfo.game_key} (looking for ${gameKey})`);
+        continue;
+      }
+
+      // Get teams for this game
+      const teams = gameObj[1]?.teams;
+      if (!teams) continue;
+
+      // Each team has a league - extract unique leagues
+      for (let j = 0; j < teams.count; j++) {
+        const team = teams[j]?.team?.[0];
+        if (!team) continue;
+
+        // Extract league info from team_key (format: game_key.l.league_id.t.team_id)
+        const teamKey = team.team_key;
+        const leagueMatch = teamKey.match(/\.l\.(\d+)/);
+        if (!leagueMatch) continue;
+
+        const leagueId = leagueMatch[1];
+        const leagueKey = `${gameKey}.l.${leagueId}`;
+
+        // Only add each league once
+        if (!leaguesSeen.has(leagueKey)) {
+          leaguesSeen.add(leagueKey);
+          leagues.push({
+            league_key: leagueKey,
+            league_id: leagueId,
+            name: team.name, // Team name (we'll get real league name later from settings)
+            team_key: teamKey,
+            team_name: team.name
+          });
+        }
       }
     }
 
-    console.log(`Found ${leagues.length} leagues for game ${gameKey}`);
+    console.log(`Found ${leagues.length} leagues for game ${gameKey} via teams endpoint`);
     return leagues;
   } catch (error) {
-    console.error('Error fetching user leagues:', error.message);
+    console.error('Error fetching user leagues via teams:', error.message);
     throw error;
   }
 }
