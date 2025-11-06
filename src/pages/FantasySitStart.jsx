@@ -278,6 +278,23 @@ export default function FantasySitStart() {
                 <option value="trump">🇺🇸 Donald Trump (Rally Speech)</option>
                 <option value="theoffice">📹 The Office (Talking Heads)</option>
                 <option value="rickandmorty">🧪 Rick Sanchez (Nihilistic Genius)</option>
+                <option value="timrobinson">🤯 Tim Robinson (I Think You Should Leave)</option>
+                <option value="larrydavid">😤 Larry David (Curb Your Enthusiasm)</option>
+                <option value="mulaney">🎭 John Mulaney (Stand-up Comedy)</option>
+                <option value="shakespeare">🎪 Shakespeare (Elizabethan Drama)</option>
+                <option value="dwight">🐻 Dwight Schrute (The Office)</option>
+                <option value="philosopher">🥃 Drunk Philosopher (Existential)</option>
+                <option value="noiretective">🕵️ Film Noir Detective (1940s)</option>
+                <option value="bane">😷 Bane (The Dark Knight)</option>
+                <option value="taylorswift">💔 Taylor Swift (Betrayal Songs)</option>
+                <option value="hungergames">🏹 Hunger Games Announcer (Caesar)</option>
+                <option value="zoolander">💁 Derek Zoolander (Really Really Ridiculously)</option>
+                <option value="sparrow">🏴‍☠️ Captain Jack Sparrow (Pirates)</option>
+                <option value="motivational">✨ Toxic Positivity Coach (Aggressive Enthusiasm)</option>
+                <option value="valleygirl">💅 Valley Girl (Like, Literally the Worst)</option>
+                <option value="viking">⚔️ Viking Warrior (Honor and Glory)</option>
+                <option value="tarot">🔮 Sarcastic Tarot Reader (Dark Predictions)</option>
+                <option value="yoda">🟢 Yoda (Backwards Wisdom)</option>
               </select>
               <p className="text-xs text-gray-500 mt-1">
                 Choose who delivers your league roast. They'll stay fully in character.
