@@ -199,11 +199,11 @@ export async function getPlayerProps(week) {
 
     // Fetch each prop market separately (TheOddsAPI requires separate calls)
     for (const market of PROP_MARKETS) {
-      // Correct endpoint: /sports/{sport}/events with markets parameter
-      const url = new URL(`${ODDS_API_BASE}/sports/${SPORT}/events`);
+      // Try the odds endpoint with eventIds parameter
+      const url = new URL(`${ODDS_API_BASE}/sports/${SPORT}/odds`);
       url.searchParams.set('apiKey', apiKey);
       url.searchParams.set('regions', REGIONS);
-      url.searchParams.set('markets', market); // Market as parameter, not in path
+      url.searchParams.set('markets', market); // Market as parameter
       url.searchParams.set('bookmakers', BOOKMAKERS);
       url.searchParams.set('oddsFormat', 'american');
 
@@ -215,6 +215,11 @@ export async function getPlayerProps(week) {
         if (!response.ok) {
           const errorText = await response.text();
           console.warn(`Failed to fetch ${market}: ${response.status} - ${errorText.substring(0, 200)}`);
+          
+          // If 404, log the URL we tried
+          if (response.status === 404) {
+            console.warn(`  Tried URL: ${url.toString().replace(apiKey, 'API_KEY')}`);
+          }
           continue;
         }
 
@@ -223,6 +228,11 @@ export async function getPlayerProps(week) {
         if (!events || events.length === 0) {
           console.log(`  ${market}: No events/props available yet`);
           continue;
+        }
+
+        // Log first event structure for debugging (only first market)
+        if (totalApiCalls === 1) {
+          console.log(`  First event structure:`, JSON.stringify(events[0], null, 2).substring(0, 500));
         }
 
         successfulCalls++;
