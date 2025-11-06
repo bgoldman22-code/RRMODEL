@@ -21,7 +21,8 @@ import {
   getLeagueScoreboard,
   getLeagueStandings,
   getLeagueTransactions,
-  getTeamRoster
+  getTeamRoster,
+  getTeamStats // NEW: Get actual player points
 } from './_lib/ff-yahoo.mjs';
 
 export default async function handler(request, context) {
@@ -70,13 +71,14 @@ export default async function handler(request, context) {
       getLeagueTransactions(accessToken, leagueKey, weekToAnalyze)
     ]);
 
-    // Step 6: Fetch roster details for each team
-    console.log('Fetching team rosters...');
+    // Step 6: Fetch roster details AND STATS for each team
+    console.log('Fetching team rosters and stats...');
     const teamDetails = [];
     
     for (const matchup of scoreboard) {
       for (const team of [matchup.team1, matchup.team2]) {
         const roster = await getTeamRoster(accessToken, team.team_key, weekToAnalyze);
+        const stats = await getTeamStats(accessToken, team.team_key, weekToAnalyze); // NEW: Get actual points
         const standing = standings.find(s => s.team_key === team.team_key);
         const teamTransactions = transactions.filter(t => t.team_key === team.team_key);
 
@@ -84,8 +86,30 @@ export default async function handler(request, context) {
         const starters = roster.filter(p => p.slot !== 'BN' && p.slot !== 'IR');
         const bench = roster.filter(p => p.slot === 'BN' || p.slot === 'IR');
         
-        // For now, use placeholder points (will be filled with actual when available)
-        const benchPoints = 0; // TODO: Add actual points when available
+        // Calculate bench vs starter diff
+        const starterPoints = starters.reduce((sum, p) => sum + (stats[p.player_key]?.points || 0), 0);
+        const benchPoints = bench.reduce((sum, p) => sum + (stats[p.player_key]?.points || 0), 0);
+        
+        // Find biggest bench mistake (bench player who would've beaten a starter)
+        let biggestMistake = null;
+        let biggestDiff = 0;
+        for (const benchPlayer of bench) {
+          const benchPts = stats[benchPlayer.player_key]?.points || 0;
+          for (const starter of starters) {
+            if (starter.position === benchPlayer.position || starter.slot === 'FLEX') {
+              const starterPts = stats[starter.player_key]?.points || 0;
+              const diff = benchPts - starterPts;
+              if (diff > biggestDiff) {
+                biggestDiff = diff;
+                biggestMistake = {
+                  benched: `${benchPlayer.name} (${benchPts.toFixed(1)} pts)`,
+                  started: `${starter.name} (${starterPts.toFixed(1)} pts)`,
+                  diff: diff.toFixed(1)
+                };
+              }
+            }
+          }
+        }
         
         teamDetails.push({
           ...team,
@@ -96,23 +120,24 @@ export default async function handler(request, context) {
             position: p.position,
             team: p.team,
             status: p.status,
-            points: 0, // Placeholder
-            projected: 0 // Placeholder
+            points: (stats[p.player_key]?.points || 0).toFixed(1),
+            projected: (stats[p.player_key]?.projected || 0).toFixed(1)
           })),
           bench: bench.map(p => ({
             name: p.name,
             position: p.position,
             team: p.team,
             status: p.status,
-            points: 0, // Placeholder
-            projected: 0 // Placeholder
+            points: (stats[p.player_key]?.points || 0).toFixed(1),
+            projected: (stats[p.player_key]?.projected || 0).toFixed(1)
           })),
           transactions: teamTransactions.map(t => ({
             type: t.type,
             players: t.players.map(p => `${p.type}: ${p.name}`).join(', ')
           })),
-          benchPoints,
-          biggestMistake: 'TBD' // Will be calculated
+          starterPoints: starterPoints.toFixed(1),
+          benchPoints: benchPoints.toFixed(1),
+          biggestMistake
         });
       }
     }
@@ -156,52 +181,62 @@ export default async function handler(request, context) {
 const ROAST_CHARACTERS = {
   default: {
     systemPrompt: "You are a savage, hilarious fantasy football analyst writing BRUTAL weekly power rankings.",
-    style: "Rated-R, profanity-laced, ruthless but funny. Use emojis liberally, reference NFL memes, create storylines."
+    style: "Rated-R, profanity-laced, ruthless but funny. Use emojis liberally, reference NFL memes, create storylines.",
+    task: "Write savage power rankings roasting each team"
   },
   
   ramsay: {
     systemPrompt: "You are Gordon Ramsay reviewing fantasy football teams like they're failing restaurants on Kitchen Nightmares.",
-    style: "Scream at incompetence, use British insults, compare teams to raw chicken and burnt toast. Call owners 'fucking donkeys' when they start injured players. Be disgusted by mediocrity. Use CAPS for emphasis. Occasionally give genuine praise but make it cutting."
+    style: "Scream at incompetence, use British insults, compare teams to raw chicken and burnt toast. Call owners 'fucking donkeys' when they start injured players. Be disgusted by mediocrity. Use CAPS for emphasis. Occasionally give genuine praise but make it cutting.",
+    task: "Review each fantasy team like you're inspecting a failing kitchen. Yell about the disasters."
   },
   
   cartman: {
     systemPrompt: "You are Eric Cartman from South Park reviewing fantasy football teams.",
-    style: "Bratty, manipulative, narcissistic. Call teams 'you guys' sarcastically. Reference your authority ('I'm the commissioner, respect my authoritah!'). Make fun of Jews, hippies, gingers. Blame Kyle for everything. Scheme and plot. Use Cartman's actual speech patterns and jokes."
+    style: "Bratty, manipulative, narcissistic. Call teams 'you guys' sarcastically. Reference your authority ('I'm the commissioner, respect my authoritah!'). Make fun of Jews, hippies, gingers. Blame Kyle for everything. Scheme and plot. Use Cartman's actual speech patterns and jokes.",
+    task: "Give your opinion on each team with maximum Cartman energy. Insult everyone but position yourself as superior."
   },
   
   chappelle: {
     systemPrompt: "You are Dave Chappelle doing stand-up about fantasy football teams.",
-    style: "Sharp social commentary through football lens. Race-aware humor without being offensive. Tell stories that circle back. Use 'man' a lot. Reference crack, white people doing weird shit, black stereotypes. Laugh at your own jokes mid-sentence. Build to punchlines."
+    style: "Sharp social commentary through football lens. Race-aware humor without being offensive. Tell stories that circle back. Use 'man' a lot. Reference crack, white people doing weird shit, black stereotypes. Laugh at your own jokes mid-sentence. Build to punchlines.",
+    task: "Do a stand-up routine about the league. Turn each team's week into a bit with a punchline."
   },
   
   burr: {
     systemPrompt: "You are Bill Burr ranting about fantasy football owners on his podcast.",
-    style: "Boston accent in writing ('Jeezus Christ'). Rant about soft owners, defend controversial takes. Get angrier as you go. Reference wives/girlfriends nagging. Mock yourself mid-rant. Use sports analogies. Call out fair-weather fans."
+    style: "Boston accent in writing ('Jeezus Christ'). Rant about soft owners, defend controversial takes. Get angrier as you go. Reference wives/girlfriends nagging. Mock yourself mid-rant. Use sports analogies. Call out fair-weather fans.",
+    task: "Rant about each team like you're on the Monday Morning Podcast. Build up steam and go off."
   },
   
   madden: {
     systemPrompt: "You are John Madden commentating on fantasy football teams like it's Thanksgiving Day football.",
-    style: "Simple, enthusiastic, dad-energy. Use 'boom' a lot. Draw circles around things. 'Now here's a guy who...' Compliment toughness. Talk about Turducken. Obvious observations delivered with excitement. Be genuinely impressed by basic things."
+    style: "Simple, enthusiastic, dad-energy. Use 'boom' a lot. Draw circles around things. 'Now here's a guy who...' Compliment toughness. Talk about Turducken. Obvious observations delivered with excitement. Be genuinely impressed by basic things.",
+    task: "Commentate on each team's week like you're calling a game. Excited, simple observations with genuine enthusiasm."
   },
   
   soprano: {
     systemPrompt: "You are Tony Soprano reviewing fantasy football teams like they're crew members in the mafia.",
-    style: "Mob boss evaluating loyalty and performance. Threatening undertones. Reference gabagool, waste management, New Jersey. Question people's honor. Be paranoid about betrayal. Complain about panic attacks. Therapy references. Italian-American slang."
+    style: "Mob boss evaluating loyalty and performance. Threatening undertones. Reference gabagool, waste management, New Jersey. Question people's honor. Be paranoid about betrayal. Complain about panic attacks. Therapy references. Italian-American slang.",
+    task: "Evaluate each team like you're deciding who deserves a promotion or needs to be whacked. Business metaphors."
   },
   
   trump: {
     systemPrompt: "You are Donald Trump reviewing fantasy football teams at a rally.",
-    style: "Superlatives for everything (tremendous, phenomenal, disaster). Self-congratulation. Attack losers. 'Believe me' and 'many people are saying'. Nicknames for bad teams. Everything is the best or worst ever. No middle ground. Rambling tangents that somehow circle back."
+    style: "Superlatives for everything (tremendous, phenomenal, disaster). Self-congratulation. Attack losers. 'Believe me' and 'many people are saying'. Nicknames for bad teams. Everything is the best or worst ever. No middle ground. Rambling tangents that somehow circle back.",
+    task: "Give a rally speech about the league. Huge wins are tremendous, losses are complete disasters. Make it about you."
   },
   
   theoffice: {
     systemPrompt: "You are writing The Office-style talking head interviews about fantasy football teams.",
-    style: "Awkward humor, uncomfortable moments, relatable cringe. Michael Scott energy for bad teams, Jim's smirk for obvious mistakes, Dwight's intensity for try-hards, Stanley's disinterest for last place. Camera looks. That's what she said opportunities."
+    style: "Awkward humor, uncomfortable moments, relatable cringe. Michael Scott energy for bad teams, Jim's smirk for obvious mistakes, Dwight's intensity for try-hards, Stanley's disinterest for last place. Camera looks. That's what she said opportunities.",
+    task: "Write talking heads from different 'characters' (managers, players, commish) reacting to each team's performance."
   },
   
   rickandmorty: {
     systemPrompt: "You are Rick Sanchez reviewing fantasy football teams from across the multiverse.",
-    style: "Nihilistic genius mocking tryhard owners. Burp mid-sentence. Science references. Multiverse jokes (in C-137 this team is good). Insult Morty-level incompetence. 'Get your shit together' rants. Dark humor about meaninglessness. Portal gun references."
+    style: "Nihilistic genius mocking tryhard owners. Burp mid-sentence. Science references. Multiverse jokes (in C-137 this team is good). Insult Morty-level incompetence. 'Get your shit together' rants. Dark humor about meaninglessness. Portal gun references.",
+    task: "Analyze each team from a nihilistic multiverse perspective. Nothing matters, but you're still annoyed by stupidity."
   }
 };
 
@@ -238,26 +273,40 @@ ${matchups.map(m => `${m.team1.name} (${m.team1.points} pts) vs ${m.team2.name} 
 TEAM DATA (sorted by standings):
 ${sortedTeams.map((t, i) => `
 ${i + 1}. ${t.name} (${t.record}) - Rank: ${t.rank}
-   Points this week: ${t.points} (projected: ${t.projected})
-   Season total: ${t.points_for || 'N/A'}
+   Week ${weekAnalyzed}: ${t.points} pts (ACTUAL: ${t.starterPoints} from starters, ${t.benchPoints} left on bench!)
+   Season total: ${t.points_for || 'N/A'} pts
+   ${t.biggestMistake ? `BENCH MISTAKE: Benched ${t.biggestMistake.benched}, started ${t.biggestMistake.started} - Left ${t.biggestMistake.diff} pts on bench!` : ''}
    
-   STARTERS (${t.starters.length}):
-   ${t.starters.slice(0, 5).map(p => `   • ${p.name} (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
+   TOP PERFORMERS:
+   ${t.starters.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 3).map(p => `   🔥 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
    
-   BENCH (${t.bench.length}):
-   ${t.bench.slice(0, 3).map(p => `   • ${p.name} (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
+   WORST STARTERS:
+   ${t.starters.sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 2).map(p => `   💩 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
    
-   TRANSACTIONS:
-   ${t.transactions.length > 0 ? t.transactions.map(tx => `   • ${tx.players}`).join('\n') : '   None this week'}
+   BENCH (could've used):
+   ${t.bench.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 3).map(p => `   😤 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
+   
+   WAIVER MOVES:
+   ${t.transactions.length > 0 ? t.transactions.map(tx => `   ${tx.players}`).join('\n') : '   None'}
 `).join('\n')}
+
+CONTEXT FOR ROASTING:
+- Close games (won/lost by <5 pts) = maximum roast fuel
+- Big blowouts = either celebrate domination or mock complete failure  
+- High bench points = roast for lineup management incompetence
+- Started OUT/Q players = maximum stupidity roast
+- Waiver pickups that flopped = mock the desperation
+- Waiver pickups that succeeded = grudging respect or "even a blind squirrel" jokes
 
 Write power rankings with:
 1. Overall league narrative (who's dominating, who's tanking)
-2. Individual team breakdowns (top 3 and bottom 3)
-3. "Roast of the Week" - single most embarrassing moment
-4. "Play of the Week" - best performance
+2. Individual team breakdowns (highlight embarrassing moments)
+3. "Roast of the Week" - single most embarrassing team/decision
+4. "Play of the Week" - best performance or clutch win
 
-Format in HTML with <h1>, <h2>, <p> tags. Make it SAVAGE. 🔥`;
+CRITICAL: Use SPECIFIC STATS and NAMES. Don't be vague. Call out exact points, exact players, exact margins. That's what makes it funny and authentic, not formulaic.
+
+Format in HTML with <h1>, <h2>, <h3>, <p> tags. Make it SAVAGE and SPECIFIC. 🔥`;
 
     const message = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20240620', // Using stable version

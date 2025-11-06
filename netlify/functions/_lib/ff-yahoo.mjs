@@ -279,10 +279,8 @@ export async function getLeagueSettings(accessToken, leagueKey) {
         0
       );
 
-      // Log first few stats to debug the structure
-      if (statsToCheck.indexOf(stat) < 5) {
-        console.log(`  Stat ID ${statId}: value=${value}, statInfo=`, JSON.stringify(statInfo).substring(0, 300));
-      }
+      // Log ALL stats to debug the structure
+      console.log(`  Stat ID ${statId}: value=${value}`);
 
       // Map stat IDs to scoring rules (Yahoo 2025 stat IDs)
       // Note: Some values are "per X yards" (25 pass, 10 rush/rec), others are per event
@@ -292,17 +290,17 @@ export async function getLeagueSettings(accessToken, leagueKey) {
       }
       if (statId === 5) scoringRules.passTD = value;                   // Passing TD
       if (statId === 6) scoringRules.passInt = value;                  // Interceptions
-      if (statId === 8) {
+      if (statId === 9) {
         // Rushing Yards: Yahoo gives points per yard (e.g., 0.1 = 1 pt per 10 yards)
         scoringRules.rushYards = value;
       }
-      if (statId === 9) scoringRules.rushTD = value;                   // Rushing TD
-      if (statId === 11) {
+      if (statId === 10) scoringRules.rushTD = value;                  // Rushing TD
+      if (statId === 12) {
         // Receiving Yards: Yahoo gives points per yard
         scoringRules.recYards = value;
       }
-      if (statId === 10) scoringRules.reception = value;               // Reception (PPR)
-      if (statId === 12) scoringRules.recTD = value;                   // Receiving TD
+      if (statId === 11) scoringRules.reception = value;               // Reception (PPR)
+      if (statId === 13) scoringRules.recTD = value;                   // Receiving TD
       if (statId === 18) scoringRules.fumble = value;                  // Fumbles Lost
       if (statId === 16) scoringRules.twoPtConversion = value;         // 2-Point Conversions
     }
@@ -379,6 +377,78 @@ export async function getLeagueTeams(accessToken, leagueKey) {
  * @param {string} teamKey - Team key (e.g., "449.l.12345.t.1")
  * @param {number} week - Week number
  * @returns {Promise<Array>} Array of player objects with positions
+ */
+/**
+ * Get player stats for a specific team and week
+ * @param {string} accessToken - OAuth access token
+ * @param {string} teamKey - Team key
+ * @param {number} week - Week number
+ * @returns {Promise<Object>} Map of player_key => {points, projected}
+ */
+export async function getTeamStats(accessToken, teamKey, week) {
+  try {
+    // Fetch roster with stats for the specific week
+    const data = await yahooRequest(accessToken, `/team/${teamKey}/roster/players/stats;type=week;week=${week}`);
+    
+    const players = data.fantasy_content?.team?.[1]?.roster?.[0]?.players;
+    if (!players) {
+      console.log('No player stats found');
+      return {};
+    }
+
+    const statsMap = {};
+    
+    for (let i = 0; i < players.count; i++) {
+      const playerData = players[i]?.player;
+      if (!playerData) continue;
+
+      const playerInfo = playerData[0];
+      const playerStats = playerData[1]?.player_stats;
+      
+      let playerKey, playerName;
+      for (const item of playerInfo) {
+        if (item.player_key) playerKey = item.player_key;
+        if (item.name?.full) playerName = item.name.full;
+      }
+
+      if (!playerKey) continue;
+
+      // Extract points from stats
+      let points = 0;
+      if (playerStats?.stats) {
+        const stats = playerStats.stats;
+        for (let j = 0; j < stats.length; j++) {
+          const stat = stats[j]?.stat;
+          if (stat) {
+            // Stat ID 0 = fantasy points for the week
+            if (stat.stat_id === '0') {
+              points = parseFloat(stat.value || 0);
+              break;
+            }
+          }
+        }
+      }
+
+      statsMap[playerKey] = {
+        name: playerName,
+        points,
+        projected: 0 // TODO: Projected points if available
+      };
+    }
+
+    return statsMap;
+  } catch (error) {
+    console.error('Error fetching team stats:', error.message);
+    return {};
+  }
+}
+
+/**
+ * Get team roster for specific team + week
+ * @param {string} accessToken - OAuth access token
+ * @param {string} teamKey - Team key (e.g., "461.l.509796.t.7")
+ * @param {number} week - Week number
+ * @returns {Promise<Array>} Array of player objects
  */
 export async function getTeamRoster(accessToken, teamKey, week) {
   try {
