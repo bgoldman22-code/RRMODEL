@@ -13,8 +13,8 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import { ensureAuth } from './_lib/ff-blobs.mjs';
 import { 
-  validateToken, 
   getCurrentGameKey, 
   getUserLeagues,
   getCurrentWeek,
@@ -33,7 +33,7 @@ export default async function handler(request, context) {
     const requestedLeague = params.get('league');
 
     // Step 1: Validate OAuth token
-    const accessToken = await validateToken();
+    const accessToken = await ensureAuth();
     console.log('Access token validated');
 
     // Step 2: Get current game key (2025 season)
