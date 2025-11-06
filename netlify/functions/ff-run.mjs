@@ -97,13 +97,20 @@ export const handler = async (event, context) => {
 
     // Step 3: Get user's leagues
     const leagues = await getUserLeagues(accessToken, gameKey);
+    console.log(`Leagues response:`, JSON.stringify(leagues, null, 2));
+    
     if (leagues.length === 0) {
       return {
         statusCode: 404,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           error: 'No leagues found',
-          message: 'You do not have any fantasy leagues for this season'
+          message: `You do not have any fantasy leagues for this season (game key: ${gameKey}). Yahoo returned 0 leagues. This might mean your league hasn't started yet or is for a different season.`,
+          debug: {
+            gameKey,
+            leaguesFound: 0,
+            suggestion: 'Try specifying the league key directly using ?league=XXX.l.XXXXX parameter'
+          }
         })
       };
     }
