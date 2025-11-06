@@ -63,11 +63,37 @@ export async function getCurrentGameKey(accessToken) {
       throw new Error('No NFL game data found');
     }
 
-    // Get most recent season (should be first in array)
-    const currentGame = gamesArray[0].game[0];
-    const gameKey = currentGame.game_key;
+    console.log(`Found ${gamesArray.length} NFL games, checking for current season...`);
 
-    console.log(`Current NFL game key: ${gameKey} (${currentGame.season})`);
+    // Find the game for current year (2025)
+    const currentYear = new Date().getFullYear();
+    let currentGame = null;
+
+    // Look through all games to find 2025 season
+    for (const gameObj of gamesArray) {
+      const game = gameObj.game[0];
+      console.log(`  Game ${game.game_key}: ${game.name} - ${game.season}`);
+      
+      if (parseInt(game.season) === currentYear) {
+        currentGame = game;
+        break;
+      }
+    }
+
+    // If no 2025 game found, use the highest game_key (most recent)
+    if (!currentGame) {
+      console.log(`No ${currentYear} season found, using most recent game...`);
+      // Sort by game_key descending (higher = more recent)
+      gamesArray.sort((a, b) => {
+        const keyA = parseInt(a.game[0].game_key);
+        const keyB = parseInt(b.game[0].game_key);
+        return keyB - keyA;
+      });
+      currentGame = gamesArray[0].game[0];
+    }
+
+    const gameKey = currentGame.game_key;
+    console.log(`✓ Using NFL game key: ${gameKey} (${currentGame.season} season)`);
     return gameKey;
   } catch (error) {
     console.error('Error fetching current game key:', error.message);
