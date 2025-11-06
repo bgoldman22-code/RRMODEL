@@ -2,7 +2,7 @@
  * Fantasy Football Weekly League Roast Generator
  * 
  * Generates hilarious, rated-R power rankings and weekly summaries
- * using Yahoo Fantasy API data + Claude AI for savage commentary.
+ * using Yahoo Fantasy API data + Claude AI (or OpenAI GPT-4 as fallback) for savage commentary.
  * 
  * Analyzes:
  * - Matchup results (wins/losses, blowouts)
@@ -13,6 +13,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { ensureAuth } from './_lib/ff-blobs.mjs';
 import { 
   getCurrentGameKey, 
@@ -343,16 +344,10 @@ const ROAST_CHARACTERS = {
 };
 
 /**
- * Generate AI-powered roast using Claude
+ * Generate AI-powered roast using Claude or OpenAI (fallback)
  */
 async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, matchups, tone = 'default') {
   try {
-    // Initialize Anthropic client with direct API key (no AI Gateway)
-    const anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
-      // Do NOT use baseURL or AI Gateway - direct Anthropic API only
-    });
-
     // Sort teams by rank
     const sortedTeams = [...teams].sort((a, b) => a.rank - b.rank);
     
@@ -410,16 +405,46 @@ CRITICAL: Use SPECIFIC STATS and NAMES. Don't be vague. Call out exact points, e
 
 Format in HTML with <h1>, <h2>, <h3>, <p> tags. Make it SAVAGE and SPECIFIC. 🔥`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022', // Updated to current stable version
-      max_tokens: 4000,
-      messages: [{
-        role: 'user',
-        content: prompt
-      }]
-    });
+    // Try Claude first
+    try {
+      const anthropic = new Anthropic({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+      });
 
-    return message.content[0].text;
+      const message = await anthropic.messages.create({
+        model: 'claude-3-5-sonnet-20240620', // Stable version
+        max_tokens: 4000,
+        messages: [{
+          role: 'user',
+          content: prompt
+        }]
+      });
+
+      return message.content[0].text;
+
+    } catch (claudeError) {
+      console.warn('Claude API failed, falling back to OpenAI:', claudeError.message);
+      
+      // Fallback to OpenAI GPT-4
+      const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY, // Use same key if available
+      });
+
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4-turbo-preview',
+        messages: [{
+          role: 'system',
+          content: character.systemPrompt + '\n\n' + character.style
+        }, {
+          role: 'user',
+          content: prompt
+        }],
+        max_tokens: 4000,
+        temperature: 0.9
+      });
+
+      return completion.choices[0].message.content;
+    }
 
   } catch (error) {
     console.error('Error generating roast:', error);
