@@ -151,13 +151,36 @@ export async function getUserLeagues(accessToken, gameKey) {
 
       // Each team has a league - extract unique leagues
       for (let j = 0; j < teams.count; j++) {
-        const team = teams[j]?.team?.[0];
-        if (!team) continue;
+        const teamWrapper = teams[j]?.team;
+        if (!teamWrapper) continue;
+
+        // Team data is in team[0] as an array of objects
+        // Example: team[0] = [{ team_key: "..." }, { team_id: "..." }, { name: "..." }, ...]
+        const teamDataArray = teamWrapper[0];
+        if (!Array.isArray(teamDataArray)) continue;
+
+        // Extract team_key and name from the array
+        let teamKey = null;
+        let teamName = null;
+
+        for (const item of teamDataArray) {
+          if (item && typeof item === 'object') {
+            if (item.team_key) teamKey = item.team_key;
+            if (item.name) teamName = item.name;
+          }
+        }
+
+        if (!teamKey) {
+          console.log('Skipping team without team_key');
+          continue;
+        }
 
         // Extract league info from team_key (format: game_key.l.league_id.t.team_id)
-        const teamKey = team.team_key;
         const leagueMatch = teamKey.match(/\.l\.(\d+)/);
-        if (!leagueMatch) continue;
+        if (!leagueMatch) {
+          console.log(`Could not parse league from team_key: ${teamKey}`);
+          continue;
+        }
 
         const leagueId = leagueMatch[1];
         const leagueKey = `${gameKey}.l.${leagueId}`;
@@ -168,9 +191,9 @@ export async function getUserLeagues(accessToken, gameKey) {
           leagues.push({
             league_key: leagueKey,
             league_id: leagueId,
-            name: team.name, // Team name (we'll get real league name later from settings)
+            name: teamName || 'Unknown', // Team name (we'll get real league name later from settings)
             team_key: teamKey,
-            team_name: team.name
+            team_name: teamName || 'Unknown'
           });
         }
       }
