@@ -162,6 +162,20 @@ export const handler = async (event, context) => {
       // Get game context for player's team
       const gameContext = getGameContext(lines, player.team);
 
+      // Handle bye weeks or missing games (context is null)
+      if (!gameContext) {
+        // Bye week or game not scheduled - player scores 0
+        scoredPlayers.push({
+          ...player,
+          props: {},
+          context: null,
+          efp: 0,
+          ceiling_bonus: 0,
+          is_bye_week: true
+        });
+        continue;
+      }
+
       // Get player props (match by name)
       const props = allProps[player.name] || {};
 
@@ -178,18 +192,26 @@ export const handler = async (event, context) => {
         props,
         context: gameContext,
         efp: totalEFP,
-        ceiling_bonus: ceilingBonus
+        ceiling_bonus: ceilingBonus,
+        is_bye_week: false
       });
     }
 
     // Calculate sit/start scores (needs all players for z-score)
     for (const player of scoredPlayers) {
+      // Bye week players get score of 0 (unplayable)
+      if (player.is_bye_week) {
+        player.score = 0;
+        player.tier = 'BYE';
+        continue;
+      }
+
       player.score = calculateSitStartScore(
         player.efp, 
         player.context, 
         player, 
         scoringRules, 
-        scoredPlayers
+        scoredPlayers.filter(p => !p.is_bye_week) // Only compare to non-bye players
       );
     }
 
