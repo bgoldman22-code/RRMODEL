@@ -131,8 +131,9 @@ export const handler = async (event, context) => {
     const week = requestedWeek || currentWeek;
     console.log(`Using week: ${week}`);
 
-    // Step 6: Get team roster
-    const teamKey = requestedTeam || `${leagueKey}.t.1`; // Default to team 1 if not specified
+    // Step 6: Get team roster (use authenticated user's team from league object)
+    const teamKey = requestedTeam || league.team_key; // Use user's team, not team 1!
+    console.log(`Using team: ${teamKey} (${league.team_name})`);
     const roster = await getTeamRoster(accessToken, teamKey, week);
     console.log(`Fetched roster: ${roster.length} players`);
 

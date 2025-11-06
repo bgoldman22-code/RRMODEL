@@ -418,6 +418,235 @@ export async function getTeamRoster(accessToken, teamKey, week) {
 }
 
 /**
+ * Get league scoreboard (matchups) for a specific week
+ * @param {string} accessToken - OAuth access token
+ * @param {string} leagueKey - League key
+ * @param {number} week - Week number
+ * @returns {Promise<Array>} Array of matchup objects
+ */
+export async function getLeagueScoreboard(accessToken, leagueKey, week) {
+  try {
+    const data = await yahooRequest(accessToken, `/league/${leagueKey}/scoreboard;week=${week}`);
+    
+    const scoreboard = data.fantasy_content?.league?.[1]?.scoreboard?.[0];
+    if (!scoreboard) {
+      throw new Error('No scoreboard found in API response');
+    }
+
+    const matchups = [];
+    const matchupsData = scoreboard.matchups;
+    
+    for (let i = 0; i < matchupsData.count; i++) {
+      const matchupData = matchupsData[i]?.matchup;
+      if (!matchupData) continue;
+
+      const teamsData = matchupData[0]?.teams;
+      if (!teamsData || teamsData.count !== 2) continue;
+
+      const team1Data = teamsData[0]?.team;
+      const team2Data = teamsData[1]?.team;
+
+      // Parse team 1
+      const team1Info = team1Data[0];
+      let team1Key, team1Name, team1Points, team1Projected;
+      for (const item of team1Info) {
+        if (item.team_key) team1Key = item.team_key;
+        if (item.name) team1Name = item.name;
+      }
+      const team1Stats = team1Data[1]?.team_points;
+      if (team1Stats) {
+        team1Points = parseFloat(team1Stats.total || 0);
+      }
+      const team1Proj = team1Data[1]?.team_projected_points;
+      if (team1Proj) {
+        team1Projected = parseFloat(team1Proj.total || 0);
+      }
+
+      // Parse team 2
+      const team2Info = team2Data[0];
+      let team2Key, team2Name, team2Points, team2Projected;
+      for (const item of team2Info) {
+        if (item.team_key) team2Key = item.team_key;
+        if (item.name) team2Name = item.name;
+      }
+      const team2Stats = team2Data[1]?.team_points;
+      if (team2Stats) {
+        team2Points = parseFloat(team2Stats.total || 0);
+      }
+      const team2Proj = team2Data[1]?.team_projected_points;
+      if (team2Proj) {
+        team2Projected = parseFloat(team2Proj.total || 0);
+      }
+
+      matchups.push({
+        week,
+        team1: {
+          team_key: team1Key,
+          name: team1Name,
+          points: team1Points,
+          projected: team1Projected
+        },
+        team2: {
+          team_key: team2Key,
+          name: team2Name,
+          points: team2Points,
+          projected: team2Projected
+        },
+        winner: team1Points > team2Points ? team1Key : team2Key
+      });
+    }
+
+    console.log(`Fetched ${matchups.length} matchups for week ${week}`);
+    return matchups;
+  } catch (error) {
+    console.error('Error fetching league scoreboard:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get league transactions for a specific week
+ * @param {string} accessToken - OAuth access token
+ * @param {string} leagueKey - League key
+ * @param {number} week - Week number
+ * @returns {Promise<Array>} Array of transaction objects
+ */
+export async function getLeagueTransactions(accessToken, leagueKey, week) {
+  try {
+    const data = await yahooRequest(
+      accessToken, 
+      `/league/${leagueKey}/transactions;types=add,drop,trade;week=${week}`
+    );
+    
+    const transactionsData = data.fantasy_content?.league?.[1]?.transactions;
+    if (!transactionsData) {
+      return [];
+    }
+
+    const transactions = [];
+    for (let i = 0; i < transactionsData.count; i++) {
+      const txData = transactionsData[i]?.transaction;
+      if (!txData) continue;
+
+      const txInfo = txData[0];
+      let type, timestamp, teamKey;
+      
+      for (const item of txInfo) {
+        if (item.type) type = item.type;
+        if (item.timestamp) timestamp = item.timestamp;
+      }
+
+      // Get team from players array
+      const playersData = txData[1]?.players;
+      const players = [];
+      
+      if (playersData) {
+        for (let j = 0; j < playersData.count; j++) {
+          const playerData = playersData[j]?.player;
+          if (!playerData) continue;
+
+          const playerInfo = playerData[0];
+          let playerName, transactionType, destTeam;
+
+          for (const item of playerInfo) {
+            if (item.name?.full) playerName = item.name.full;
+          }
+
+          const txData = playerData[1]?.transaction_data;
+          if (txData) {
+            transactionType = txData[0]?.type;
+            destTeam = txData[0]?.destination_team_key;
+            if (destTeam) teamKey = destTeam;
+          }
+
+          players.push({
+            name: playerName,
+            type: transactionType
+          });
+        }
+      }
+
+      transactions.push({
+        type,
+        timestamp,
+        team_key: teamKey,
+        players
+      });
+    }
+
+    console.log(`Fetched ${transactions.length} transactions for week ${week}`);
+    return transactions;
+  } catch (error) {
+    console.warn('Error fetching league transactions:', error.message);
+    return [];
+  }
+}
+
+/**
+ * Get league standings
+ * @param {string} accessToken - OAuth access token
+ * @param {string} leagueKey - League key
+ * @returns {Promise<Array>} Array of team standings
+ */
+export async function getLeagueStandings(accessToken, leagueKey) {
+  try {
+    const data = await yahooRequest(accessToken, `/league/${leagueKey}/standings`);
+    
+    const standings = data.fantasy_content?.league?.[1]?.standings?.[0]?.teams;
+    if (!standings) {
+      throw new Error('No standings found in API response');
+    }
+
+    const teams = [];
+    for (let i = 0; i < standings.count; i++) {
+      const teamData = standings[i]?.team;
+      if (!teamData) continue;
+
+      const teamInfo = teamData[0];
+      let teamKey, teamName, rank;
+
+      for (const item of teamInfo) {
+        if (item.team_key) teamKey = item.team_key;
+        if (item.name) teamName = item.name;
+      }
+
+      const standingsData = teamData[1]?.team_standings;
+      if (standingsData) {
+        rank = parseInt(standingsData.rank || 0, 10);
+      }
+
+      const outcomeData = teamData[1]?.team_standings?.outcome_totals;
+      let wins = 0, losses = 0, ties = 0, pointsFor = 0, pointsAgainst = 0;
+      
+      if (outcomeData) {
+        wins = parseInt(outcomeData.wins || 0, 10);
+        losses = parseInt(outcomeData.losses || 0, 10);
+        ties = parseInt(outcomeData.ties || 0, 10);
+        pointsFor = parseFloat(outcomeData.points_for || 0);
+        pointsAgainst = parseFloat(outcomeData.points_against || 0);
+      }
+
+      teams.push({
+        team_key: teamKey,
+        name: teamName,
+        rank,
+        wins,
+        losses,
+        ties,
+        points_for: pointsFor,
+        points_against: pointsAgainst
+      });
+    }
+
+    console.log(`Fetched standings for ${teams.length} teams`);
+    return teams;
+  } catch (error) {
+    console.error('Error fetching league standings:', error.message);
+    throw error;
+  }
+}
+
+/**
  * Get current week number for a league
  * @param {string} accessToken - OAuth access token
  * @param {string} leagueKey - League key

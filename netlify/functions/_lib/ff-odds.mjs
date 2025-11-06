@@ -194,17 +194,21 @@ export async function getPlayerProps(week) {
 
     // Fetch each prop market separately (TheOddsAPI requires separate calls)
     for (const market of PROP_MARKETS) {
-      const url = new URL(`${ODDS_API_BASE}/sports/${SPORT}/events/${market}`);
+      // Correct endpoint: /sports/{sport}/events with markets parameter
+      const url = new URL(`${ODDS_API_BASE}/sports/${SPORT}/events`);
       url.searchParams.set('apiKey', apiKey);
       url.searchParams.set('regions', REGIONS);
+      url.searchParams.set('markets', market); // Market as parameter, not in path
       url.searchParams.set('bookmakers', BOOKMAKERS);
       url.searchParams.set('oddsFormat', 'american');
 
       try {
+        console.log(`Fetching ${market}...`);
         const response = await fetch(url.toString());
         
         if (!response.ok) {
-          console.warn(`Failed to fetch ${market}: ${response.status}`);
+          const errorText = await response.text();
+          console.warn(`Failed to fetch ${market}: ${response.status} - ${errorText}`);
           continue;
         }
 

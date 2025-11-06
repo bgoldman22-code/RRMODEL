@@ -13,8 +13,11 @@ import React, { useState, useEffect } from 'react';
 
 export default function FantasySitStart() {
   const [loading, setLoading] = useState(false);
+  const [roastLoading, setRoastLoading] = useState(false);
   const [data, setData] = useState(null);
+  const [roastData, setRoastData] = useState(null);
   const [error, setError] = useState(null);
+  const [roastError, setRoastError] = useState(null);
   const [season, setSeason] = useState(''); // Empty = auto-detect current season
   const [week, setWeek] = useState('');
   const [apiKey, setApiKey] = useState('');
