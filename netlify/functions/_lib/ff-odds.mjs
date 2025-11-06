@@ -384,12 +384,13 @@ export function calculateScriptLean(context, team, threshold = 4.5) {
 /**
  * Get game context for a specific team
  * @param {Array} lines - Game lines from getWeekLines
- * @param {string} team - Team abbreviation
+ * @param {string} team - Team abbreviation (case-insensitive)
  * @returns {Object|null} Game context or null if not found
  */
 export function getGameContext(lines, team) {
+  const teamUpper = team?.toUpperCase();
   for (const game of lines) {
-    if (game.home_team === team || game.away_team === team) {
+    if (game.home_team?.toUpperCase() === teamUpper || game.away_team?.toUpperCase() === teamUpper) {
       return game;
     }
   }
