@@ -264,6 +264,11 @@ export async function getLeagueSettings(accessToken, leagueKey) {
       const statId = statInfo.stat_id;
       const value = parseFloat(statInfo.value || 0);
 
+      // Log first few stats to debug
+      if (statCategories.indexOf(stat) < 3) {
+        console.log(`  Stat ID ${statId}: value=${value}, name=${statInfo.name || 'unknown'}`);
+      }
+
       // Map stat IDs to scoring rules
       // Common Yahoo stat IDs (may vary by league):
       if (statId === 5) scoringRules.passYards = value / 25;           // Passing Yards (per 25)
@@ -371,6 +376,12 @@ export async function getTeamRoster(accessToken, teamKey, week) {
     for (let i = 0; i < playersData.count; i++) {
       const playerData = playersData[i]?.player;
       if (!playerData) continue;
+
+      // Yahoo API returns player data as nested arrays similar to team data
+      // playerData is an array: [0] = array of player info objects, [1] = additional data
+      if (i === 0) {
+        console.log(`Sample player data structure:`, JSON.stringify(playerData, null, 2));
+      }
 
       const player = playerData[0];
       const position = player.selected_position?.[1]?.position;
