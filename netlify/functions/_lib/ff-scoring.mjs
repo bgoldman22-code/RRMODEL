@@ -391,8 +391,13 @@ export function fillLineup(scoredPlayers, positionCounts) {
   const starters = [];
   const bench = [];
 
-  // Sort players by score (descending)
-  const sorted = [...scoredPlayers].sort((a, b) => b.score - a.score);
+  // Sort players by score (descending), but exclude bye week players from optimal lineup
+  const sorted = [...scoredPlayers]
+    .filter(p => !p.is_bye_week) // Don't include bye week players in optimal lineup
+    .sort((a, b) => b.score - a.score);
+  
+  // Add bye week players to bench automatically
+  const byePlayers = scoredPlayers.filter(p => p.is_bye_week);
 
   // Track filled slots
   const filled = {};
@@ -410,6 +415,11 @@ export function fillLineup(scoredPlayers, positionCounts) {
     } else {
       bench.push({ ...player, slot: 'BN' });
     }
+  }
+  
+  // Add bye week players to bench
+  for (const player of byePlayers) {
+    bench.push({ ...player, slot: 'BN' });
   }
 
   return { starters, bench };
