@@ -269,16 +269,15 @@ export async function getLeagueSettings(accessToken, leagueKey) {
         console.log(`  Stat ID ${statId}: value=${value}, name=${statInfo.name || 'unknown'}`);
       }
 
-      // Map stat IDs to scoring rules
-      // Common Yahoo stat IDs (may vary by league):
-      if (statId === 5) scoringRules.passYards = value / 25;           // Passing Yards (per 25)
-      if (statId === 4) scoringRules.passTD = value;                   // Passing TD
-      if (statId === 19) scoringRules.passInt = value;                 // Interceptions
-      if (statId === 9) scoringRules.rushYards = value / 10;           // Rushing Yards (per 10)
-      if (statId === 10) scoringRules.rushTD = value;                  // Rushing TD
-      if (statId === 12) scoringRules.recYards = value / 10;           // Receiving Yards (per 10)
-      if (statId === 11) scoringRules.reception = value;               // Reception (PPR)
-      if (statId === 13) scoringRules.recTD = value;                   // Receiving TD
+      // Map stat IDs to scoring rules (Yahoo 2025 stat IDs)
+      if (statId === 4) scoringRules.passYards = value / 25;           // Passing Yards (per 25)
+      if (statId === 5) scoringRules.passTD = value;                   // Passing TD
+      if (statId === 6) scoringRules.passInt = value;                  // Interceptions
+      if (statId === 8) scoringRules.rushYards = value / 10;           // Rushing Yards (per 10)
+      if (statId === 9) scoringRules.rushTD = value;                   // Rushing TD
+      if (statId === 11) scoringRules.recYards = value / 10;           // Receiving Yards (per 10)
+      if (statId === 10) scoringRules.reception = value;               // Reception (PPR)
+      if (statId === 12) scoringRules.recTD = value;                   // Receiving TD
       if (statId === 18) scoringRules.fumble = value;                  // Fumbles Lost
       if (statId === 16) scoringRules.twoPtConversion = value;         // 2-Point Conversions
     }
@@ -378,25 +377,35 @@ export async function getTeamRoster(accessToken, teamKey, week) {
       if (!playerData) continue;
 
       // Yahoo API returns player data as nested arrays similar to team data
-      // playerData is an array: [0] = array of player info objects, [1] = additional data
-      if (i === 0) {
-        console.log(`Sample player data structure:`, JSON.stringify(playerData, null, 2));
+      // playerData is an array: [0] = array of player info objects, [1] = selected_position data
+      const playerInfo = playerData[0]; // Array of objects
+      const positionInfo = playerData[1]; // Selected position object
+
+      // Extract values from the array of objects
+      let playerKey, playerId, playerName, displayPosition, teamAbbr, byeWeek, status;
+      
+      for (const item of playerInfo) {
+        if (item.player_key) playerKey = item.player_key;
+        if (item.player_id) playerId = item.player_id;
+        if (item.name?.full) playerName = item.name.full;
+        if (item.display_position) displayPosition = item.display_position;
+        if (item.editorial_team_abbr) teamAbbr = item.editorial_team_abbr;
+        if (item.bye_weeks?.week) byeWeek = parseInt(item.bye_weeks.week, 10);
+        if (item.status) status = item.status;
       }
 
-      const player = playerData[0];
-      const position = player.selected_position?.[1]?.position;
-      const status = player.status || null;
-      const byeWeek = parseInt(player.bye_weeks?.week, 10) || null;
+      // Get selected position (starting slot)
+      const selectedPosition = positionInfo?.selected_position?.[1]?.position || 'BN';
 
       players.push({
-        player_key: player.player_key,
-        player_id: player.player_id,
-        name: player.name?.full,
-        position: player.display_position,
-        team: player.editorial_team_abbr,
-        status: status,                    // Q, D, O, IR, etc.
-        bye_week: byeWeek,
-        slot: position || 'BN'             // QB, RB, WR, TE, FLEX, K, DEF, BN
+        player_key: playerKey,
+        player_id: playerId,
+        name: playerName,
+        position: displayPosition,
+        team: teamAbbr,
+        status: status || null,
+        bye_week: byeWeek || null,
+        slot: selectedPosition
       });
     }
 
