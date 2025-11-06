@@ -19,6 +19,17 @@
 
 import { getStore } from '@netlify/blobs';
 
+/**
+ * Get a Netlify Blobs store with proper configuration
+ */
+function getBlobsStore(name) {
+  return getStore({
+    name,
+    siteID: process.env.SITE_ID,
+    token: process.env.NETLIFY_TOKEN
+  });
+}
+
 export const handler = async (event, context) => {
   console.log('ff-auth-callback invoked with code:', event.queryStringParameters?.code ? 'present' : 'missing');
   
@@ -118,7 +129,7 @@ export const handler = async (event, context) => {
 
     console.log('Saving tokens to Netlify Blobs...');
     // Save tokens to Netlify Blobs
-    const authStore = getStore('auth');
+    const authStore = getBlobsStore('auth');
     const tokenPayload = {
       access_token,
       refresh_token,

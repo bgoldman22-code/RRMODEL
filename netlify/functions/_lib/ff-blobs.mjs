@@ -21,12 +21,25 @@ const CACHE_TTL_MS = (parseInt(process.env.CACHE_TTL_SECONDS, 10) || 3600) * 100
 const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000; // 5 minutes
 
 /**
+ * Get a Netlify Blobs store with proper configuration
+ * @param {string} name - Store name (e.g., 'auth', 'cache')
+ * @returns {Object} Blobs store instance
+ */
+function getBlobsStore(name) {
+  return getStore({
+    name,
+    siteID: process.env.SITE_ID,
+    token: process.env.NETLIFY_TOKEN
+  });
+}
+
+/**
  * Get OAuth tokens from Blobs storage
  * @returns {Promise<Object|null>} Token object or null if not found
  */
 export async function getTokens() {
   try {
-    const authStore = getStore('auth');
+    const authStore = getBlobsStore('auth');
     const tokenJson = await authStore.get('yahoo.json');
     
     if (!tokenJson) {
@@ -48,7 +61,7 @@ export async function getTokens() {
  */
 export async function saveTokens(tokens) {
   try {
-    const authStore = getStore('auth');
+    const authStore = getBlobsStore('auth');
     await authStore.set('yahoo.json', JSON.stringify(tokens, null, 2));
     console.log('Tokens saved to Blobs successfully');
     return true;
@@ -167,7 +180,7 @@ export async function ensureAuth() {
  */
 export async function getCachedLines(week) {
   try {
-    const cacheStore = getStore('cache');
+    const cacheStore = getBlobsStore('cache');
     const cacheKey = `lines-week-${week}.json`;
     
     const cached = await cacheStore.getWithMetadata(cacheKey);
@@ -200,7 +213,7 @@ export async function getCachedLines(week) {
  */
 export async function setCachedLines(week, lines) {
   try {
-    const cacheStore = getStore('cache');
+    const cacheStore = getBlobsStore('cache');
     const cacheKey = `lines-week-${week}.json`;
     
     await cacheStore.set(cacheKey, JSON.stringify(lines), {
@@ -226,7 +239,7 @@ export async function setCachedLines(week, lines) {
  */
 export async function getCachedProps(week) {
   try {
-    const cacheStore = getStore('cache');
+    const cacheStore = getBlobsStore('cache');
     const cacheKey = `props-week-${week}.json`;
     
     const cached = await cacheStore.getWithMetadata(cacheKey);
@@ -259,7 +272,7 @@ export async function getCachedProps(week) {
  */
 export async function setCachedProps(week, props) {
   try {
-    const cacheStore = getStore('cache');
+    const cacheStore = getBlobsStore('cache');
     const cacheKey = `props-week-${week}.json`;
     
     await cacheStore.set(cacheKey, JSON.stringify(props), {
@@ -284,7 +297,7 @@ export async function setCachedProps(week, props) {
  */
 export async function clearCache() {
   try {
-    const cacheStore = getStore('cache');
+    const cacheStore = getBlobsStore('cache');
     
     // Netlify Blobs doesn't have a "clear all" method, so we'll just log
     // In practice, expired cache entries are ignored by the get functions
