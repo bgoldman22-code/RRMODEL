@@ -53,17 +53,20 @@ export default async function handler(request, context) {
     const league = leagues.find(l => l.league_key === leagueKey) || leagues[0];
     console.log(`Using league: ${league.name} (${leagueKey})`);
 
-    // Step 4: Get current week
+    // Step 4: Get current week and determine week to analyze
     const currentWeek = await getCurrentWeek(accessToken, leagueKey);
-    const week = requestedWeek || currentWeek;
-    console.log(`Using week: ${week}`);
+    
+    // Roast should analyze PREVIOUS week's games (week is complete)
+    // But show CURRENT standings (includes that week's results)
+    const weekToAnalyze = requestedWeek || (currentWeek - 1);
+    console.log(`Current week: ${currentWeek}, Analyzing week: ${weekToAnalyze}`);
 
     // Step 5: Fetch all league data
     console.log('Fetching league data...');
     const [scoreboard, standings, transactions] = await Promise.all([
-      getLeagueScoreboard(accessToken, leagueKey, week),
-      getLeagueStandings(accessToken, leagueKey),
-      getLeagueTransactions(accessToken, leagueKey, week)
+      getLeagueScoreboard(accessToken, leagueKey, weekToAnalyze),
+      getLeagueStandings(accessToken, leagueKey), // Current standings
+      getLeagueTransactions(accessToken, leagueKey, weekToAnalyze)
     ]);
 
     // Step 6: Fetch roster details for each team
@@ -72,7 +75,7 @@ export default async function handler(request, context) {
     
     for (const matchup of scoreboard) {
       for (const team of [matchup.team1, matchup.team2]) {
-        const roster = await getTeamRoster(accessToken, team.team_key, week);
+        const roster = await getTeamRoster(accessToken, team.team_key, weekToAnalyze);
         const standing = standings.find(s => s.team_key === team.team_key);
         const teamTransactions = transactions.filter(t => t.team_key === team.team_key);
 
@@ -115,7 +118,7 @@ export default async function handler(request, context) {
 
     // Step 7: Generate AI roast
     console.log('Generating AI roast...');
-    const roast = await generateRoast(league.name, week, teamDetails, scoreboard);
+    const roast = await generateRoast(league.name, weekToAnalyze, currentWeek, teamDetails, scoreboard);
 
     // Step 8: Return results
     return new Response(JSON.stringify({
@@ -124,7 +127,8 @@ export default async function handler(request, context) {
         name: league.name,
         key: leagueKey
       },
-      week,
+      week_analyzed: weekToAnalyze,
+      current_week: currentWeek,
       roast,
       teams: teamDetails,
       matchups: scoreboard
@@ -148,10 +152,12 @@ export default async function handler(request, context) {
 /**
  * Generate AI-powered roast using Claude
  */
-async function generateRoast(leagueName, week, teams, matchups) {
+async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, matchups) {
   try {
+    // Initialize Anthropic client with direct API key (no AI Gateway)
     const anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY
+      apiKey: process.env.ANTHROPIC_API_KEY,
+      // Do NOT use baseURL or AI Gateway - direct Anthropic API only
     });
 
     // Sort teams by rank
@@ -159,7 +165,7 @@ async function generateRoast(leagueName, week, teams, matchups) {
 
     const prompt = `You are a savage, hilarious fantasy football analyst writing BRUTAL weekly power rankings for the "${leagueName}" league.
 
-Week ${week} is complete. Write rated-R, profanity-laced power rankings with the following style:
+Week ${weekAnalyzed} just finished. We're now in Week ${currentWeek}. Write rated-R, profanity-laced power rankings with the following style:
 - Be RUTHLESS but funny
 - Roast bad performances viciously
 - Celebrate domination with hype

@@ -44,7 +44,8 @@ import {
   calculateSitStartScore, 
   assignTiers, 
   generateReasons, 
-  fillLineup, 
+  fillLineup,
+  fillLineupFromActual,
   tryFlexSwaps 
 } from './_lib/ff-scoring.mjs';
 
@@ -229,11 +230,40 @@ export const handler = async (event, context) => {
       }
     }
 
-    // Fill lineup (starters vs bench)
-    const { starters, bench } = fillLineup(tieredPlayers, positionCounts);
+    // APPROACH A: Use actual Yahoo lineup (what user set)
+    const { starters: actualStarters, bench: actualBench } = fillLineupFromActual(tieredPlayers);
 
-    // Suggest FLEX swaps
-    const flexOptions = tryFlexSwaps(starters, bench);
+    // APPROACH B: Calculate optimal lineup (best possible)
+    const { starters: optimalStarters, bench: optimalBench } = fillLineup(tieredPlayers, positionCounts);
+
+    // Find recommendations: bench players who should be starting
+    const recommendations = [];
+    for (const benchPlayer of actualBench) {
+      // Skip bye week players
+      if (benchPlayer.is_bye_week) continue;
+
+      // Find if any starter has lower score at same/FLEX position
+      for (const starter of actualStarters) {
+        const canSwap = (
+          benchPlayer.position === starter.position || 
+          starter.slot === 'FLEX' || 
+          (benchPlayer.position === 'RB' || benchPlayer.position === 'WR' || benchPlayer.position === 'TE')
+        );
+        
+        if (canSwap && benchPlayer.score > starter.score + 1.0) {
+          recommendations.push({
+            action: 'START',
+            player: benchPlayer.name,
+            instead_of: starter.name,
+            improvement: `+${(benchPlayer.score - starter.score).toFixed(1)} pts`,
+            reason: `${benchPlayer.name} (${benchPlayer.efp} proj) has higher score than ${starter.name} (${starter.efp} proj)`
+          });
+        }
+      }
+    }
+
+    // Suggest FLEX swaps for optimal lineup
+    const flexOptions = tryFlexSwaps(optimalStarters, optimalBench);
 
     // Step 9: Format response
     const meta = {
@@ -247,12 +277,20 @@ export const handler = async (event, context) => {
     };
 
     const notes = [];
+    if (recommendations.length > 0) {
+      notes.push(`⚠️ ${recommendations.length} lineup change(s) recommended - see recommendations`);
+    }
     if (flexOptions.length > 0) {
-      notes.push(`${flexOptions.length} FLEX swap(s) suggested - see flex_options`);
+      notes.push(`${flexOptions.length} FLEX swap(s) suggested for optimal lineup - see optimal_flex_options`);
     }
     if (Object.keys(allProps).length === 0) {
       notes.push('Warning: No player props available from TheOddsAPI');
     }
+
+    // Calculate total projected points
+    const actualTotal = actualStarters.reduce((sum, p) => sum + (p.efp || 0), 0);
+    const optimalTotal = optimalStarters.reduce((sum, p) => sum + (p.efp || 0), 0);
+    const improvement = optimalTotal - actualTotal;
 
     // JSON response
     if (format === 'json') {
@@ -264,9 +302,21 @@ export const handler = async (event, context) => {
         },
         body: JSON.stringify({
           meta,
-          starters: starters.map(formatPlayer),
-          bench: bench.map(formatPlayer),
-          flex_options: flexOptions,
+          summary: {
+            actual_projected: actualTotal.toFixed(1),
+            optimal_projected: optimalTotal.toFixed(1),
+            potential_improvement: improvement.toFixed(1)
+          },
+          actual_lineup: {
+            starters: actualStarters.map(formatPlayer),
+            bench: actualBench.map(formatPlayer)
+          },
+          recommendations,
+          optimal_lineup: {
+            starters: optimalStarters.map(formatPlayer),
+            bench: optimalBench.map(formatPlayer),
+            flex_options: flexOptions
+          },
           notes
         }, null, 2)
       };

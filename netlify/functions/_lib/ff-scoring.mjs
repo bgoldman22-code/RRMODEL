@@ -357,6 +357,36 @@ export function generateReasons(player, scoringRules) {
  * @param {Object} positionCounts - Roster slot requirements
  * @returns {Object} { starters, bench }
  */
+/**
+ * Fill lineup with starters vs bench based on ACTUAL Yahoo lineup
+ * (respects user's actual starting positions)
+ * @param {Array} scoredPlayers - All players with scores
+ * @returns {Object} { starters, bench }
+ */
+export function fillLineupFromActual(scoredPlayers) {
+  const starters = [];
+  const bench = [];
+
+  for (const player of scoredPlayers) {
+    // Use the 'slot' from Yahoo API to determine actual lineup
+    if (player.slot === 'BN' || player.slot === 'IR') {
+      bench.push({ ...player });
+    } else {
+      // QB, RB, WR, TE, FLEX, K, DEF, etc.
+      starters.push({ ...player });
+    }
+  }
+
+  return { starters, bench };
+}
+
+/**
+ * Fill lineup with optimal starters (highest scoring players)
+ * (ignores user's actual lineup, calculates best possible)
+ * @param {Array} scoredPlayers - All players with scores
+ * @param {Object} positionCounts - Required positions (QB: 1, RB: 2, etc.)
+ * @returns {Object} { starters, bench }
+ */
 export function fillLineup(scoredPlayers, positionCounts) {
   const starters = [];
   const bench = [];
