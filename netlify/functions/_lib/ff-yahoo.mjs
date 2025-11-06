@@ -1,0 +1,321 @@
+/**
+ * Yahoo Fantasy API Client (Serverless)
+ * 
+ * Provides functions to interact with Yahoo Fantasy Sports API.
+ * Adapted for Netlify Functions (uses passed access tokens, no filesystem).
+ * 
+ * Key Endpoints:
+ * - getCurrentGameKey: Get current NFL season ID
+ * - getUserLeagues: List user's leagues for a game
+ * - getLeagueSettings: Get scoring rules + roster positions
+ * - getLeagueTeams: Get all teams in league
+ * - getTeamRoster: Get player roster for specific team + week
+ * - getCurrentWeek: Get current week number for league
+ * 
+ * API Docs: https://developer.yahoo.com/fantasysports/guide/
+ */
+
+const YAHOO_API_BASE = 'https://fantasysports.yahooapis.com/fantasy/v2';
+
+/**
+ * Make authenticated request to Yahoo Fantasy API
+ * @param {string} accessToken - OAuth access token
+ * @param {string} endpoint - API endpoint (e.g., '/users;use_login=1/games')
+ * @returns {Promise<Object>} Parsed JSON response
+ */
+async function yahooRequest(accessToken, endpoint) {
+  const url = `${YAHOO_API_BASE}${endpoint}?format=json`;
+  
+  const response = await fetch(url, {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Yahoo API error (${response.status}): ${errorText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Get current NFL game key (e.g., "449" for 2025 season)
+ * @param {string} accessToken - OAuth access token
+ * @returns {Promise<string>} Game key (e.g., "449")
+ */
+export async function getCurrentGameKey(accessToken) {
+  try {
+    const data = await yahooRequest(accessToken, '/users;use_login=1/games;game_codes=nfl');
+    
+    // Navigate nested response structure
+    const games = data.fantasy_content?.users?.[0]?.user?.[1]?.games;
+    if (!games) {
+      throw new Error('No NFL games found in API response');
+    }
+
+    // Games are returned as array with count at [0]
+    const gamesArray = Object.values(games).filter(g => typeof g === 'object' && g.game);
+    
+    if (gamesArray.length === 0) {
+      throw new Error('No NFL game data found');
+    }
+
+    // Get most recent season (should be first in array)
+    const currentGame = gamesArray[0].game[0];
+    const gameKey = currentGame.game_key;
+
+    console.log(`Current NFL game key: ${gameKey} (${currentGame.season})`);
+    return gameKey;
+  } catch (error) {
+    console.error('Error fetching current game key:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get user's fantasy leagues for a specific game
+ * @param {string} accessToken - OAuth access token
+ * @param {string} gameKey - Game key from getCurrentGameKey
+ * @returns {Promise<Array>} Array of league objects
+ */
+export async function getUserLeagues(accessToken, gameKey) {
+  try {
+    const data = await yahooRequest(accessToken, `/users;use_login=1/games;game_key=${gameKey}/leagues`);
+    
+    const games = data.fantasy_content?.users?.[0]?.user?.[1]?.games;
+    if (!games) {
+      throw new Error('No games found in API response');
+    }
+
+    const gameData = games[0]?.game?.[1]?.leagues;
+    if (!gameData) {
+      console.log('No leagues found for this game');
+      return [];
+    }
+
+    // Parse leagues array (skip count at [0])
+    const leagues = [];
+    for (let i = 0; i < gameData.count; i++) {
+      const league = gameData[i]?.league?.[0];
+      if (league) {
+        leagues.push({
+          league_key: league.league_key,
+          league_id: league.league_id,
+          name: league.name,
+          num_teams: league.num_teams,
+          scoring_type: league.scoring_type, // head2head, etc.
+          url: league.url
+        });
+      }
+    }
+
+    console.log(`Found ${leagues.length} leagues for game ${gameKey}`);
+    return leagues;
+  } catch (error) {
+    console.error('Error fetching user leagues:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get league scoring settings and roster positions
+ * @param {string} accessToken - OAuth access token
+ * @param {string} leagueKey - League key (e.g., "449.l.12345")
+ * @returns {Promise<Object>} Normalized scoring rules
+ */
+export async function getLeagueSettings(accessToken, leagueKey) {
+  try {
+    const data = await yahooRequest(accessToken, `/league/${leagueKey}/settings`);
+    
+    const settings = data.fantasy_content?.league?.[1]?.settings?.[0];
+    if (!settings) {
+      throw new Error('No settings found in API response');
+    }
+
+    // Extract scoring rules
+    const statCategories = settings.stat_categories?.stats || [];
+    const scoringRules = {
+      passYards: 0.04,      // Default: 1 pt per 25 yards
+      passTD: 4,            // Default: 4 pts per TD
+      passInt: -2,          // Default: -2 pts per INT
+      rushYards: 0.1,       // Default: 1 pt per 10 yards
+      rushTD: 6,            // Default: 6 pts per TD
+      recYards: 0.1,        // Default: 1 pt per 10 yards
+      reception: 0,         // Default: 0 (Standard), check for PPR
+      recTD: 6,             // Default: 6 pts per TD
+      fumble: -2,           // Default: -2 pts per fumble
+      twoPtConversion: 2    // Default: 2 pts per 2PC
+    };
+
+    // Parse stat categories to override defaults
+    for (const stat of statCategories) {
+      const statInfo = stat.stat;
+      if (!statInfo) continue;
+
+      const statId = statInfo.stat_id;
+      const value = parseFloat(statInfo.value || 0);
+
+      // Map stat IDs to scoring rules
+      // Common Yahoo stat IDs (may vary by league):
+      if (statId === 5) scoringRules.passYards = value / 25;           // Passing Yards (per 25)
+      if (statId === 4) scoringRules.passTD = value;                   // Passing TD
+      if (statId === 19) scoringRules.passInt = value;                 // Interceptions
+      if (statId === 9) scoringRules.rushYards = value / 10;           // Rushing Yards (per 10)
+      if (statId === 10) scoringRules.rushTD = value;                  // Rushing TD
+      if (statId === 12) scoringRules.recYards = value / 10;           // Receiving Yards (per 10)
+      if (statId === 11) scoringRules.reception = value;               // Reception (PPR)
+      if (statId === 13) scoringRules.recTD = value;                   // Receiving TD
+      if (statId === 18) scoringRules.fumble = value;                  // Fumbles Lost
+      if (statId === 16) scoringRules.twoPtConversion = value;         // 2-Point Conversions
+    }
+
+    // Determine PPR type
+    let pprType = 'Standard';
+    if (scoringRules.reception === 1) pprType = 'Full PPR';
+    else if (scoringRules.reception === 0.5) pprType = 'Half PPR';
+    else if (scoringRules.reception > 0) pprType = `${scoringRules.reception} PPR`;
+
+    // Extract roster positions
+    const rosterPositions = settings.roster_positions?.roster_position || [];
+    const positionCounts = {};
+    
+    for (const pos of rosterPositions) {
+      const position = pos.position;
+      const count = parseInt(pos.count, 10) || 0;
+      positionCounts[position] = (positionCounts[position] || 0) + count;
+    }
+
+    console.log(`League scoring: ${pprType}, passTD=${scoringRules.passTD}, INT=${scoringRules.passInt}`);
+    console.log(`Roster positions:`, positionCounts);
+
+    return {
+      scoringRules,
+      positionCounts,
+      pprType
+    };
+  } catch (error) {
+    console.error('Error fetching league settings:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get all teams in a league
+ * @param {string} accessToken - OAuth access token
+ * @param {string} leagueKey - League key
+ * @returns {Promise<Array>} Array of team objects
+ */
+export async function getLeagueTeams(accessToken, leagueKey) {
+  try {
+    const data = await yahooRequest(accessToken, `/league/${leagueKey}/teams`);
+    
+    const teamsData = data.fantasy_content?.league?.[1]?.teams;
+    if (!teamsData) {
+      throw new Error('No teams found in API response');
+    }
+
+    const teams = [];
+    for (let i = 0; i < teamsData.count; i++) {
+      const team = teamsData[i]?.team?.[0];
+      if (team) {
+        teams.push({
+          team_key: team.team_key,
+          team_id: team.team_id,
+          name: team.name,
+          manager: team.managers?.[0]?.manager?.nickname
+        });
+      }
+    }
+
+    console.log(`Found ${teams.length} teams in league ${leagueKey}`);
+    return teams;
+  } catch (error) {
+    console.error('Error fetching league teams:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get team roster for specific week
+ * @param {string} accessToken - OAuth access token
+ * @param {string} teamKey - Team key (e.g., "449.l.12345.t.1")
+ * @param {number} week - Week number
+ * @returns {Promise<Array>} Array of player objects with positions
+ */
+export async function getTeamRoster(accessToken, teamKey, week) {
+  try {
+    const data = await yahooRequest(accessToken, `/team/${teamKey}/roster;week=${week}`);
+    
+    const roster = data.fantasy_content?.team?.[1]?.roster;
+    if (!roster) {
+      throw new Error('No roster found in API response');
+    }
+
+    const players = [];
+    const playersData = roster[0]?.players;
+    
+    if (!playersData) {
+      console.log('No players found in roster');
+      return [];
+    }
+
+    for (let i = 0; i < playersData.count; i++) {
+      const playerData = playersData[i]?.player;
+      if (!playerData) continue;
+
+      const player = playerData[0];
+      const position = player.selected_position?.[1]?.position;
+      const status = player.status || null;
+      const byeWeek = parseInt(player.bye_weeks?.week, 10) || null;
+
+      players.push({
+        player_key: player.player_key,
+        player_id: player.player_id,
+        name: player.name?.full,
+        position: player.display_position,
+        team: player.editorial_team_abbr,
+        status: status,                    // Q, D, O, IR, etc.
+        bye_week: byeWeek,
+        slot: position || 'BN'             // QB, RB, WR, TE, FLEX, K, DEF, BN
+      });
+    }
+
+    console.log(`Fetched ${players.length} players from roster for week ${week}`);
+    return players;
+  } catch (error) {
+    console.error('Error fetching team roster:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get current week number for a league
+ * @param {string} accessToken - OAuth access token
+ * @param {string} leagueKey - League key
+ * @returns {Promise<number>} Current week number
+ */
+export async function getCurrentWeek(accessToken, leagueKey) {
+  try {
+    const data = await yahooRequest(accessToken, `/league/${leagueKey}`);
+    
+    const league = data.fantasy_content?.league?.[0];
+    if (!league) {
+      throw new Error('No league data found in API response');
+    }
+
+    const currentWeek = parseInt(league.current_week, 10);
+    
+    if (isNaN(currentWeek)) {
+      throw new Error('Invalid current week in API response');
+    }
+
+    console.log(`Current week for league ${leagueKey}: ${currentWeek}`);
+    return currentWeek;
+  } catch (error) {
+    console.error('Error fetching current week:', error.message);
+    throw error;
+  }
+}

@@ -1859,7 +1859,8 @@ export default async (request, context) => {
     };
     
     // GUARD: Detect spread variance collapse (size-aware threshold)
-    if (predictions.length > 0) {
+    // Skip variance check for single-game slates (stdev is always 0 with n=1)
+    if (predictions.length > 1) {
       const spreads = predictions.map(p => Math.abs(p.prediction.spread.prediction));
       const mean = spreads.reduce((a, b) => a + b, 0) / spreads.length;
       const variance = spreads.reduce((s, x) => s + Math.pow(x - mean, 2), 0) / spreads.length;
@@ -1889,6 +1890,8 @@ export default async (request, context) => {
       } else if (stdev < targetStdev) {
         console.warn(`[NBA V2] ⚠️  Low variance (stdev=${stdev.toFixed(2)} vs target=${targetStdev.toFixed(2)}), but within 10% tolerance for early season`);
       }
+    } else if (predictions.length === 1) {
+      console.log(`[NBA V2] Single game slate - skipping variance check`);
     }
     
     // TIER SUMMARY LOGGING
