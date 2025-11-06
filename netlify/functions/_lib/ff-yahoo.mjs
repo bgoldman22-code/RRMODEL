@@ -44,9 +44,10 @@ async function yahooRequest(accessToken, endpoint) {
 /**
  * Get current NFL game key (e.g., "449" for 2025 season)
  * @param {string} accessToken - OAuth access token
+ * @param {number|null} requestedSeason - Optional: specific year to find (e.g., 2024, 2025)
  * @returns {Promise<string>} Game key (e.g., "449")
  */
-export async function getCurrentGameKey(accessToken) {
+export async function getCurrentGameKey(accessToken, requestedSeason = null) {
   try {
     const data = await yahooRequest(accessToken, '/users;use_login=1/games;game_codes=nfl');
     
@@ -63,26 +64,26 @@ export async function getCurrentGameKey(accessToken) {
       throw new Error('No NFL game data found');
     }
 
-    console.log(`Found ${gamesArray.length} NFL games, checking for current season...`);
+    console.log(`Found ${gamesArray.length} NFL games, checking for ${requestedSeason || 'current'} season...`);
 
-    // Find the game for current year (2025)
-    const currentYear = new Date().getFullYear();
+    // Determine target season
+    const targetSeason = requestedSeason || new Date().getFullYear();
     let currentGame = null;
 
-    // Look through all games to find 2025 season
+    // Look through all games to find target season
     for (const gameObj of gamesArray) {
       const game = gameObj.game[0];
       console.log(`  Game ${game.game_key}: ${game.name} - ${game.season}`);
       
-      if (parseInt(game.season) === currentYear) {
+      if (parseInt(game.season) === targetSeason) {
         currentGame = game;
         break;
       }
     }
 
-    // If no 2025 game found, use the highest game_key (most recent)
+    // If no matching season found, use the highest game_key (most recent)
     if (!currentGame) {
-      console.log(`No ${currentYear} season found, using most recent game...`);
+      console.log(`No ${targetSeason} season found, using most recent game...`);
       // Sort by game_key descending (higher = more recent)
       gamesArray.sort((a, b) => {
         const keyA = parseInt(a.game[0].game_key);

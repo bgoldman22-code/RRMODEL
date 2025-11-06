@@ -15,8 +15,16 @@ export default function FantasySitStart() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const [season, setSeason] = useState(''); // Empty = auto-detect current season
   const [week, setWeek] = useState('');
   const [apiKey, setApiKey] = useState('');
+
+  // Generate season options (2001 to current year)
+  const currentYear = new Date().getFullYear();
+  const seasonOptions = [];
+  for (let year = currentYear; year >= 2001; year--) {
+    seasonOptions.push(year);
+  }
 
   // Check if user is authenticated on load
   useEffect(() => {
@@ -35,6 +43,7 @@ export default function FantasySitStart() {
 
     try {
       const params = new URLSearchParams();
+      if (season) params.append('season', season);
       if (week) params.append('week', week);
       params.append('format', 'json');
       params.append('explain', 'all');
@@ -156,7 +165,25 @@ export default function FantasySitStart() {
           {/* Step 2: Configure */}
           <div className="border-t pt-4">
             <h3 className="font-medium mb-2">Step 2: Configure (Optional)</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">
+                  NFL Season
+                </label>
+                <select
+                  value={season}
+                  onChange={(e) => setSeason(e.target.value)}
+                  className="w-full border rounded-md px-3 py-2 bg-white"
+                >
+                  <option value="">Auto-detect current season</option>
+                  {seasonOptions.map(year => (
+                    <option key={year} value={year}>{year} Season</option>
+                  ))}
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Default: {currentYear} (current season)
+                </p>
+              </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-1">
                   NFL Week (leave blank for current)
@@ -170,6 +197,9 @@ export default function FantasySitStart() {
                   placeholder="Auto-detect current week"
                   className="w-full border rounded-md px-3 py-2"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Detects the current week for selected season
+                </p>
               </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-1">

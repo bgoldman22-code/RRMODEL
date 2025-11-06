@@ -10,7 +10,8 @@
  * 6. Returns JSON or CSV response
  * 
  * Query Parameters:
- * - week: NFL week number (optional, defaults to current)
+ * - season: NFL season year (optional, defaults to current year, e.g., 2025)
+ * - week: NFL week number (optional, defaults to current week in selected season)
  * - league: League key (optional, uses first available)
  * - team: Team key (optional, uses first team in league)
  * - format: 'json' or 'csv' (default: json)
@@ -20,7 +21,7 @@
  * - x-api-key: API key for endpoint protection (optional, if FF_API_KEY env var set)
  * 
  * Example:
- * GET /ff-run?week=10&format=json
+ * GET /ff-run?season=2025&week=10&format=json
  * Headers: { "x-api-key": "your-secret-key" }
  */
 
@@ -67,13 +68,14 @@ export const handler = async (event, context) => {
 
     // Parse query parameters
     const params = event.queryStringParameters || {};
+    const requestedSeason = params.season ? parseInt(params.season, 10) : null;
     const requestedWeek = params.week ? parseInt(params.week, 10) : null;
     const requestedLeague = params.league || null;
     const requestedTeam = params.team || null;
     const format = params.format || 'json';
     const explain = params.explain || 'all';
 
-    console.log('FF-Run started with params:', { requestedWeek, requestedLeague, requestedTeam, format, explain });
+    console.log('FF-Run started with params:', { requestedSeason, requestedWeek, requestedLeague, requestedTeam, format, explain });
 
     // Step 1: Ensure valid access token
     const accessToken = await ensureAuth();
@@ -91,8 +93,8 @@ export const handler = async (event, context) => {
 
     console.log('Access token validated');
 
-    // Step 2: Get current NFL game key
-    const gameKey = await getCurrentGameKey(accessToken);
+    // Step 2: Get current NFL game key (optionally for specific season)
+    const gameKey = await getCurrentGameKey(accessToken, requestedSeason);
     console.log(`Game key: ${gameKey}`);
 
     // Step 3: Get user's leagues
