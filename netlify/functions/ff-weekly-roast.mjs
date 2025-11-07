@@ -444,26 +444,23 @@ CRITICAL INSTRUCTION: When you see "Top: No starters scored points" or players w
 MATCHUP RESULTS:
 ${matchups.map(m => `${m.team1.name} (${m.team1.points} pts) vs ${m.team2.name} (${m.team2.points} pts) - Winner: ${m.winner === m.team1.team_key ? m.team1.name : m.team2.name}`).join('\n')}
 
-TEAM DATA (sorted by standings) - TOP 6 TEAMS ONLY TO SAVE TIME:
-${sortedTeams.slice(0, 6).map((t, i) => {
+TEAM DATA (ALL ${sortedTeams.length} TEAMS - sorted by standings):
+${sortedTeams.map((t, i) => {
   // Filter out players with 0 points (didn't play) to avoid confusion
   const playersWithPoints = t.starters.filter(p => parseFloat(p.points) > 0);
   const topPlayers = playersWithPoints.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 2);
   const worstPlayers = playersWithPoints.sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 2);
   
   return `
-${i + 1}. ${t.name} (${t.record}) - Week ${weekAnalyzed}: ${t.points} pts
+${i + 1}. ${t.name} (${t.record}) - Week ${weekAnalyzed}: ${t.points} pts (Rank: ${t.rank})
    Starters: ${t.starterPoints} pts, Bench: ${t.benchPoints} pts
-   ${t.biggestMistake ? `MISTAKE: Benched ${t.biggestMistake.benched}, started ${t.biggestMistake.started}` : ''}
-   ${topPlayers.length > 0 ? `Top: ${topPlayers.map(p => `${p.name} ${p.points}pts`).join(', ')}` : 'Top: No starters scored points'}
+   ${t.biggestMistake ? `BENCH ERROR: Benched ${t.biggestMistake.benched}, started ${t.biggestMistake.started} (${t.biggestMistake.diff}pt swing)` : 'No major bench mistakes'}
+   ${topPlayers.length > 0 ? `Best: ${topPlayers.map(p => `${p.name} ${p.points}pts`).join(', ')}` : 'Best: No starters scored points'}
    ${worstPlayers.length > 0 ? `Worst: ${worstPlayers.map(p => `${p.name} ${p.points}pts`).join(', ')}` : 'Worst: All starters scored 0'}
 `;
 }).join('\n')}
 
-BOTTOM TEAMS (Quick mentions):
-${sortedTeams.slice(6).map(t => `${t.name} (${t.record}): ${t.points} pts in Week ${weekAnalyzed}`).join('\n')}
-
-Write power rankings focusing on TOP stories. Keep it under 500 words. Format in HTML with <h2>, <h3>, <p> tags. BE SPECIFIC with stats.`;
+Write a weekly league recap analyzing ALL teams. Give each team meaningful commentary - winners AND losers. Keep it under 600 words. Format in HTML with <h2>, <h3>, <p> tags for readability. BE SPECIFIC with player names and stats.`;
 
     // Try Claude first, with timeout
     const generateWithClaudeOrOpenAI = async () => {
@@ -474,7 +471,7 @@ Write power rankings focusing on TOP stories. Keep it under 500 words. Format in
 
         const message = await anthropic.messages.create({
           model: 'claude-3-5-sonnet-20241022', // Updated to newer, faster model
-          max_tokens: 2000, // Reduced from 4000 to speed up
+          max_tokens: 3000, // Increased to allow full 12-team analysis
           messages: [{
             role: 'user',
             content: prompt
@@ -500,7 +497,7 @@ Write power rankings focusing on TOP stories. Keep it under 500 words. Format in
             role: 'user',
             content: prompt
           }],
-          max_tokens: 2000, // Reduced from 4000
+          max_tokens: 3000, // Increased to allow full 12-team analysis
           temperature: 0.9
         });
 
