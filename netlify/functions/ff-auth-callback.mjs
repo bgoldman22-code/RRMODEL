@@ -2,33 +2,23 @@
  * OAuth Callback Function
  * 
  * Exchanges Yahoo OAuth authorization code for access + refresh tokens
- * and saves them to Netlify Blobs for persistent storage.
+ * and saves them to HTTP-only cookies (PER-USER, not shared).
  * 
  * Flow:
  * 1. User clicks ff-auth-start → redirected to Yahoo consent
  * 2. Yahoo redirects back here with ?code=xyz
  * 3. We exchange code for tokens via POST to Yahoo token endpoint
- * 4. Save tokens to Blobs (auth/yahoo.json) with expiry timestamp
+ * 4. Set HTTP-only secure cookies with tokens (browser-specific)
  * 5. Return HTML success page
  * 
  * Environment Variables Required:
  * - YAHOO_CLIENT_ID: Yahoo OAuth client ID
  * - YAHOO_CLIENT_SECRET: Yahoo OAuth client secret
  * - YAHOO_REDIRECT_URI: Must match the registered redirect URI
+ * 
+ * SECURITY: Tokens are stored in HTTP-only cookies per browser,
+ * preventing cross-user token leakage that occurred with Blobs storage.
  */
-
-import { getStore } from '@netlify/blobs';
-
-/**
- * Get a Netlify Blobs store with proper configuration
- */
-function getBlobsStore(name) {
-  return getStore({
-    name,
-    siteID: process.env.SITE_ID,
-    token: process.env.NETLIFY_TOKEN
-  });
-}
 
 export const handler = async (event, context) => {
   console.log('ff-auth-callback invoked with code:', event.queryStringParameters?.code ? 'present' : 'missing');
@@ -127,29 +117,38 @@ export const handler = async (event, context) => {
     // Calculate expiry timestamp with 2-minute buffer for clock skew
     const expiresAt = Date.now() + (expires_in * 1000) - (2 * 60 * 1000);
 
-    console.log('Saving tokens to Netlify Blobs...');
-    // Save tokens to Netlify Blobs
-    const authStore = getBlobsStore('auth');
-    const tokenPayload = {
-      access_token,
-      refresh_token,
-      expires_at: expiresAt,
-      token_type,
-      xoauth_yahoo_guid,
-      created_at: Date.now()
-    };
+    console.log('Setting HTTP-only cookies for token storage...');
+    
+    // Create cookie expiry date (30 days from now)
+    const cookieExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const cookieExpiryString = cookieExpiry.toUTCString();
+    
+    // Set secure HTTP-only cookies (per-browser, not shared across users)
+    const isProduction = process.env.CONTEXT === 'production';
+    const cookieOptions = `HttpOnly; Secure; SameSite=Lax; Path=/; Expires=${cookieExpiryString}`;
+    
+    const cookies = [
+      `ff_access_token=${access_token}; ${cookieOptions}`,
+      `ff_refresh_token=${refresh_token}; ${cookieOptions}`,
+      `ff_expires_at=${expiresAt}; ${cookieOptions}`,
+      `ff_token_type=${token_type}; ${cookieOptions}`
+    ];
+    
+    if (xoauth_yahoo_guid) {
+      cookies.push(`ff_yahoo_guid=${xoauth_yahoo_guid}; ${cookieOptions}`);
+    }
 
-    await authStore.set('yahoo.json', JSON.stringify(tokenPayload, null, 2));
-
-    console.log('OAuth tokens saved successfully to Blobs');
+    console.log('OAuth tokens saved to HTTP-only cookies (per-user)');
     console.log(`Token expires at: ${new Date(expiresAt).toISOString()}`);
+    console.log(`Cookie expires at: ${cookieExpiryString}`);
 
-    // Return HTML success page
+    // Return HTML success page with cookies set
     return {
       statusCode: 200,
       headers: { 
         'Content-Type': 'text/html',
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-cache',
+        'Set-Cookie': cookies
       },
       body: `
 <!DOCTYPE html>
@@ -206,7 +205,8 @@ export const handler = async (event, context) => {
     <p>You can now close this tab and start using the fantasy sit/start tool.</p>
     <div class="info">
       <strong>Next Steps:</strong><br>
-      Call the <code>/ff-run</code> endpoint with your league and team info to get sit/start recommendations.
+      Your authentication is saved securely in your browser.<br>
+      Return to the app to generate roasts and get recommendations.
     </div>
   </div>
 </body>

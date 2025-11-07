@@ -493,20 +493,63 @@ export function fillLineup(scoredPlayers, positionCounts) {
   // Add bye week players to bench automatically
   const byePlayers = scoredPlayers.filter(p => p.is_bye_week);
 
-  // Track filled slots
-  const filled = {};
-  for (const pos in positionCounts) {
-    filled[pos] = 0;
-  }
+  // Track filled slots - need to track dedicated positions AND flex separately
+  const filled = {
+    QB: 0,
+    RB: 0,
+    WR: 0,
+    TE: 0,
+    K: 0,
+    DEF: 0,
+    FLEX: 0
+  };
+  
+  const needed = {
+    QB: positionCounts.QB || 0,
+    RB: positionCounts.RB || 0,
+    WR: positionCounts.WR || 0,
+    TE: positionCounts.TE || 0,
+    K: positionCounts.K || 0,
+    DEF: positionCounts.DEF || 0,
+    FLEX: positionCounts.FLEX || 0
+  };
 
+  console.log('fillLineup - Position requirements:', needed);
+  console.log(`fillLineup - Processing ${sorted.length} players (${byePlayers.length} on bye)`);
+
+  // Pass 1: Fill dedicated position slots (QB, RB, WR, TE, K, DEF)
   for (const player of sorted) {
     const pos = player.position;
-    const needed = positionCounts[pos] || 0;
-
-    if (filled[pos] < needed) {
+    
+    // Try to fill dedicated position slot
+    if (filled[pos] < needed[pos]) {
       starters.push({ ...player, slot: pos });
       filled[pos]++;
+      console.log(`✓ Assigned ${player.name} (${pos}, score: ${player.score?.toFixed(1)}) to ${pos} slot [${filled[pos]}/${needed[pos]}]`);
+    }
+  }
+
+  // Pass 2: Fill FLEX slots with remaining RB/WR/TE players
+  const flexEligible = sorted.filter(p => 
+    (p.position === 'RB' || p.position === 'WR' || p.position === 'TE') &&
+    !starters.includes(p) // Player not already assigned to a starting slot
+  );
+
+  console.log(`FLEX-eligible players remaining: ${flexEligible.length}`);
+  
+  for (const player of flexEligible) {
+    if (filled.FLEX < needed.FLEX) {
+      starters.push({ ...player, slot: 'FLEX' });
+      filled.FLEX++;
+      console.log(`✓ Assigned ${player.name} (${player.position}, score: ${player.score?.toFixed(1)}) to FLEX slot [${filled.FLEX}/${needed.FLEX}]`);
     } else {
+      break; // FLEX slots full
+    }
+  }
+  
+  // Pass 3: Everyone else goes to bench
+  for (const player of sorted) {
+    if (!starters.includes(player)) {
       bench.push({ ...player, slot: 'BN' });
     }
   }
@@ -516,6 +559,9 @@ export function fillLineup(scoredPlayers, positionCounts) {
     bench.push({ ...player, slot: 'BN' });
   }
 
+  console.log(`✅ fillLineup complete: ${starters.length} starters, ${bench.length} bench`);
+  console.log(`Final lineup: QB=${filled.QB}/${needed.QB}, RB=${filled.RB}/${needed.RB}, WR=${filled.WR}/${needed.WR}, TE=${filled.TE}/${needed.TE}, K=${filled.K}/${needed.K}, DEF=${filled.DEF}/${needed.DEF}, FLEX=${filled.FLEX}/${needed.FLEX}`);
+  
   return { starters, bench };
 }
 

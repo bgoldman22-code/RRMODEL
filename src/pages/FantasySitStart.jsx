@@ -24,6 +24,9 @@ export default function FantasySitStart() {
   const [apiKey, setApiKey] = useState('');
   const [tone, setTone] = useState('default'); // Roast character/tone
   const [exportingPng, setExportingPng] = useState(false);
+  const [availableLeagues, setAvailableLeagues] = useState([]);
+  const [selectedLeague, setSelectedLeague] = useState('');
+  const [loadingLeagues, setLoadingLeagues] = useState(false);
 
   // Generate season options (2001 to current year)
   const currentYear = new Date().getFullYear();
@@ -32,10 +35,30 @@ export default function FantasySitStart() {
     seasonOptions.push(year);
   }
 
-  // Check if user is authenticated on load
+  // Check if user is authenticated on load and fetch leagues
   useEffect(() => {
-    // Could add a /ff-check-auth endpoint to verify tokens exist
+    fetchAvailableLeagues();
   }, []);
+
+  const fetchAvailableLeagues = async () => {
+    setLoadingLeagues(true);
+    try {
+      const response = await fetch('/.netlify/functions/ff-get-leagues');
+      if (response.ok) {
+        const leagues = await response.json();
+        setAvailableLeagues(leagues);
+        // Auto-select first league if only one exists
+        if (leagues.length === 1) {
+          setSelectedLeague(leagues[0].league_key);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch leagues:', err);
+      // Don't show error to user, just means they need to auth
+    } finally {
+      setLoadingLeagues(false);
+    }
+  };
 
   const handleAuth = () => {
     // Redirect to OAuth start endpoint
@@ -186,6 +209,12 @@ export default function FantasySitStart() {
   };
 
   const handleFetchRoast = async () => {
+    // Validate league selection
+    if (!selectedLeague) {
+      setRoastError('Please authenticate and select a league first');
+      return;
+    }
+
     setRoastLoading(true);
     setRoastError(null);
     setRoastData(null);
@@ -195,6 +224,7 @@ export default function FantasySitStart() {
       if (season) params.append('season', season);
       if (week) params.append('week', week);
       if (tone) params.append('tone', tone); // Add tone parameter
+      if (selectedLeague) params.append('league', selectedLeague); // Add selected league
 
       const headers = {};
       if (apiKey) {
@@ -308,6 +338,36 @@ export default function FantasySitStart() {
             <p className="text-xs text-gray-500 mt-1">
               You'll be redirected to Yahoo to approve access. This is required only once.
             </p>
+            
+            {/* League Selector - Shows after authentication */}
+            {availableLeagues.length > 0 && (
+              <div className="mt-4 p-4 bg-green-50 border border-green-300 rounded-md">
+                <label className="block text-sm font-medium text-green-900 mb-2">
+                  Select Your League {availableLeagues.length > 1 && `(${availableLeagues.length} found)`}
+                </label>
+                <select
+                  value={selectedLeague}
+                  onChange={(e) => setSelectedLeague(e.target.value)}
+                  className="w-full border rounded-md px-3 py-2 bg-white"
+                >
+                  {availableLeagues.length > 1 && <option value="">Choose a league...</option>}
+                  {availableLeagues.map(league => (
+                    <option key={league.league_key} value={league.league_key}>
+                      {league.name} ({league.season})
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-green-700 mt-1">
+                  ✓ {availableLeagues.length === 1 ? 'Auto-selected your league' : 'Select which league to roast'}
+                </p>
+              </div>
+            )}
+            
+            {loadingLeagues && (
+              <div className="mt-4 text-sm text-gray-600">
+                Loading your leagues...
+              </div>
+            )}
           </div>
 
           {/* Step 2: Configure */}

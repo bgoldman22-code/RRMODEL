@@ -13,7 +13,7 @@
  */
 
 import OpenAI from 'openai';
-import { ensureAuth } from './_lib/ff-blobs.mjs';
+import { ensureAuth } from './_lib/ff-cookies.mjs';
 import { 
   getCurrentGameKey, 
   getUserLeagues,
@@ -35,8 +35,22 @@ export default async function handler(request, context) {
     const requestedLeague = params.get('league');
     const tone = params.get('tone') || 'default'; // Custom tone/character
 
-    // Step 1: Validate OAuth token
-    const accessToken = await ensureAuth();
+    // Step 1: Validate OAuth token from cookies
+    const cookieHeader = request.headers.get('cookie') || '';
+    const authResult = await ensureAuth(cookieHeader);
+    
+    if (!authResult) {
+      return new Response(JSON.stringify({ 
+        error: 'Not authenticated',
+        message: 'Please authenticate with Yahoo Fantasy first'
+      }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const accessToken = authResult.accessToken;
+    const updatedCookies = authResult.cookies; // May be undefined if not refreshed
     console.log('Access token validated');
 
     // Step 2: Get current game key (2025 season)
@@ -226,7 +240,12 @@ export default async function handler(request, context) {
     console.log(`Generating AI roast with tone: ${tone}...`);
     const roast = await generateRoast(actualLeagueName, weekToAnalyze, currentWeek, teamDetails, scoreboard, nextWeekMatchups, tone);
 
-    // Step 8: Return results
+    // Step 8: Return results with updated cookies if token was refreshed
+    const responseHeaders = { 'Content-Type': 'application/json' };
+    if (updatedCookies) {
+      responseHeaders['Set-Cookie'] = updatedCookies;
+    }
+
     return new Response(JSON.stringify({
       success: true,
       league: {
@@ -240,7 +259,7 @@ export default async function handler(request, context) {
       matchups: scoreboard
     }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: responseHeaders
     });
 
   } catch (error) {

@@ -25,7 +25,7 @@
  * Headers: { "x-api-key": "your-secret-key" }
  */
 
-import { ensureAuth } from './_lib/ff-blobs.mjs';
+import { ensureAuth } from './_lib/ff-cookies.mjs';
 import { 
   getCurrentGameKey, 
   getUserLeagues, 
@@ -78,9 +78,11 @@ export const handler = async (event, context) => {
 
     console.log('FF-Run started with params:', { requestedSeason, requestedWeek, requestedLeague, requestedTeam, format, explain });
 
-    // Step 1: Ensure valid access token
-    const accessToken = await ensureAuth();
-    if (!accessToken) {
+    // Step 1: Ensure valid access token from cookies
+    const cookieHeader = event.headers.cookie || '';
+    const authResult = await ensureAuth(cookieHeader);
+    
+    if (!authResult) {
       return {
         statusCode: 401,
         headers: { 'Content-Type': 'application/json' },
@@ -92,6 +94,8 @@ export const handler = async (event, context) => {
       };
     }
 
+    const accessToken = authResult.accessToken;
+    const updatedCookies = authResult.cookies;
     console.log('Access token validated');
 
     // Step 2: Get current NFL game key (optionally for specific season)
@@ -316,12 +320,19 @@ export const handler = async (event, context) => {
 
     // JSON response
     if (format === 'json') {
+      const responseHeaders = { 
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      };
+      
+      // Add updated cookies if token was refreshed
+      if (updatedCookies) {
+        responseHeaders['Set-Cookie'] = updatedCookies;
+      }
+
       return {
         statusCode: 200,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
-        },
+        headers: responseHeaders,
         body: JSON.stringify({
           meta,
           summary: {
@@ -347,13 +358,20 @@ export const handler = async (event, context) => {
     // CSV response
     if (format === 'csv') {
       const csv = convertToCSV([...starters, ...bench]);
+      const responseHeaders = { 
+        'Content-Type': 'text/csv',
+        'Content-Disposition': `attachment; filename="sitstart-week${week}.csv"`,
+        'Cache-Control': 'no-cache'
+      };
+      
+      // Add updated cookies if token was refreshed
+      if (updatedCookies) {
+        responseHeaders['Set-Cookie'] = updatedCookies;
+      }
+
       return {
         statusCode: 200,
-        headers: { 
-          'Content-Type': 'text/csv',
-          'Content-Disposition': `attachment; filename="sitstart-week${week}.csv"`,
-          'Cache-Control': 'no-cache'
-        },
+        headers: responseHeaders,
         body: csv
       };
     }
