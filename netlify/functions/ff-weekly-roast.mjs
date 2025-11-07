@@ -73,8 +73,9 @@ export default async function handler(request, context) {
       getLeagueSettings(accessToken, leagueKey) // Get league metadata with actual name
     ]);
     
-    // Use the actual league name from settings, not the team name
-    const actualLeagueName = leagueSettings.leagueName || league.name;
+    // Use environment variable for league name, or actual league name from settings
+    // Yahoo API often returns null/empty for league name, so we need a fallback
+    const actualLeagueName = process.env.FANTASY_LEAGUE_NAME || leagueSettings.leagueName || 'Drake Mayo Bowl';
     console.log(`Actual league name: ${actualLeagueName}`);
 
     // Step 6: Fetch roster details AND STATS for each team
@@ -114,9 +115,9 @@ export default async function handler(request, context) {
         
         const teamTransactions = transactions.filter(t => t.team_key === standing.team_key);
 
-        // Calculate bench points
+        // Separate starters from bench (BN slot = bench, IR = injured reserve)
         const starters = roster.filter(p => p.slot !== 'BN' && p.slot !== 'IR');
-        const bench = roster.filter(p => p.slot === 'BN' || p.slot !== 'IR');
+        const bench = roster.filter(p => p.slot === 'BN'); // Only actual bench players (exclude IR)
         
         // Calculate bench vs starter diff
         const starterPoints = starters.reduce((sum, p) => sum + (stats[p.player_key]?.points || 0), 0);
@@ -131,11 +132,13 @@ export default async function handler(request, context) {
             if (starter.position === benchPlayer.position || starter.slot === 'FLEX') {
               const starterPts = stats[starter.player_key]?.points || 0;
               const diff = benchPts - starterPts;
-              if (diff > biggestDiff) {
+              if (diff > biggestDiff && diff > 5) { // Only if bench player scored 5+ more points
                 biggestDiff = diff;
                 biggestMistake = {
-                  benched: `${benchPlayer.name} (${benchPts.toFixed(1)} pts)`,
-                  started: `${starter.name} (${starterPts.toFixed(1)} pts)`,
+                  benched: benchPlayer.name,
+                  benchedPoints: benchPts.toFixed(1),
+                  started: starter.name,
+                  startedPoints: starterPts.toFixed(1),
                   diff: diff.toFixed(1)
                 };
               }
