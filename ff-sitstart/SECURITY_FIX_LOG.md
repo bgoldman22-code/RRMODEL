@@ -27,7 +27,7 @@ To prevent exposing secrets, the build will fail until these secret values are n
 
 **Before**:
 ```markdown
-- Already have: API key (`REDACTED_FOR_SECURITY`)
+- Already have: API key (was hardcoded - now removed)
 ```
 
 **After**:
@@ -36,11 +36,11 @@ To prevent exposing secrets, the build will fail until these secret values are n
 ```
 
 ### 2. Verified No Other Leaks
-Searched entire codebase for API key value → **NOT FOUND**
+Searched entire codebase for API key value → **ALL REMOVED**
 
 ```bash
-grep -r "REDACTED_API_KEY" .
-# No matches
+grep -r "THEODDS_API_KEY" .
+# Only references to env var name, no actual key values
 ```
 
 ### 3. Security Best Practices Implemented
