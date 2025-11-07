@@ -517,6 +517,9 @@ export function fillLineup(scoredPlayers, positionCounts) {
   console.log('fillLineup - Position requirements:', needed);
   console.log(`fillLineup - Processing ${sorted.length} players (${byePlayers.length} on bye)`);
 
+  // Track which players have been assigned to starters (by player_key to avoid reference issues)
+  const usedPlayerKeys = new Set();
+
   // Pass 1: Fill dedicated position slots (QB, RB, WR, TE, K, DEF)
   for (const player of sorted) {
     const pos = player.position;
@@ -524,15 +527,16 @@ export function fillLineup(scoredPlayers, positionCounts) {
     // Try to fill dedicated position slot
     if (filled[pos] < needed[pos]) {
       starters.push({ ...player, slot: pos });
+      usedPlayerKeys.add(player.player_key || player.name); // Track by unique ID
       filled[pos]++;
       console.log(`✓ Assigned ${player.name} (${pos}, score: ${player.score?.toFixed(1)}) to ${pos} slot [${filled[pos]}/${needed[pos]}]`);
     }
   }
 
-  // Pass 2: Fill FLEX slots with remaining RB/WR/TE players
+  // Pass 2: Fill FLEX slots with remaining RB/WR/TE players (highest scoring first)
   const flexEligible = sorted.filter(p => 
     (p.position === 'RB' || p.position === 'WR' || p.position === 'TE') &&
-    !starters.includes(p) // Player not already assigned to a starting slot
+    !usedPlayerKeys.has(p.player_key || p.name) // Player not already assigned
   );
 
   console.log(`FLEX-eligible players remaining: ${flexEligible.length}`);
@@ -540,6 +544,7 @@ export function fillLineup(scoredPlayers, positionCounts) {
   for (const player of flexEligible) {
     if (filled.FLEX < needed.FLEX) {
       starters.push({ ...player, slot: 'FLEX' });
+      usedPlayerKeys.add(player.player_key || player.name); // Track by unique ID
       filled.FLEX++;
       console.log(`✓ Assigned ${player.name} (${player.position}, score: ${player.score?.toFixed(1)}) to FLEX slot [${filled.FLEX}/${needed.FLEX}]`);
     } else {
@@ -547,9 +552,9 @@ export function fillLineup(scoredPlayers, positionCounts) {
     }
   }
   
-  // Pass 3: Everyone else goes to bench
+  // Pass 3: Everyone else goes to bench (only if not already a starter)
   for (const player of sorted) {
-    if (!starters.includes(player)) {
+    if (!usedPlayerKeys.has(player.player_key || player.name)) {
       bench.push({ ...player, slot: 'BN' });
     }
   }
