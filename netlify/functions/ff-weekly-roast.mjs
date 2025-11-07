@@ -410,13 +410,13 @@ const ROAST_CHARACTERS = {
 };
 
 /**
- * Generate AI-powered roast using Claude or OpenAI (fallback)
- * TIMEOUT FIX: Limit to 30 seconds to avoid Netlify 60s function timeout
+ * Generate AI-powered roast using OpenAI GPT-4o-mini
+ * PERFORMANCE FIX: Ultra-compact prompt + faster model + aggressive timeouts
  */
 async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, matchups, tone = 'default') {
-  // Wrap entire generation in timeout (30s leaves 30s for data fetching)
+  // Aggressive timeout wrapper (25s leaves 35s buffer for data fetching)
   const timeoutPromise = new Promise((_, reject) => 
-    setTimeout(() => reject(new Error('AI generation timed out after 30 seconds')), 30000)
+    setTimeout(() => reject(new Error('AI generation timed out after 25 seconds')), 25000)
   );
   
   try {
@@ -426,58 +426,42 @@ async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, match
     // Get character definition
     const character = ROAST_CHARACTERS[tone.toLowerCase()] || ROAST_CHARACTERS.default;
 
+    // ULTRA-COMPACT PROMPT - Reduce tokens by 70% for faster generation
     const prompt = `${character.systemPrompt}
 
-CRITICAL: You must FULLY EMBODY this character's voice, speech patterns, and personality. This is not a surface-level impression - you ARE this character writing a weekly league recap. Use their actual vocabulary, rhythm, and worldview.
+${character.style}
 
-Style Guide: ${character.style}
+Week ${weekAnalyzed} league recap for "${leagueName}".
 
-Week ${weekAnalyzed} just finished in the "${leagueName}" league. We're now in Week ${currentWeek}.
+MATCHUPS:
+${matchups.map(m => `${m.team1.name} ${m.team1.points} vs ${m.team2.name} ${m.team2.points}`).join('\n')}
 
-Your task: ${character.task}
-
-This is NOT always a "roast" - the tone depends on YOUR character. Write a weekly league recap that this character would ACTUALLY write - entertaining and true to character.
-
-CRITICAL INSTRUCTION: When you see "Top: No starters scored points" or players with 0.0pts, this means their stats HAVEN'T LOADED YET or they didn't play. DO NOT mention these players as if they scored zero - they simply have missing data. Focus ONLY on players with actual point totals (>0). If a team has no scoring data, acknowledge "stats unavailable" rather than acting like they scored nothing.
-
-MATCHUP RESULTS:
-${matchups.map(m => `${m.team1.name} (${m.team1.points} pts) vs ${m.team2.name} (${m.team2.points} pts) - Winner: ${m.winner === m.team1.team_key ? m.team1.name : m.team2.name}`).join('\n')}
-
-TEAM DATA (ALL ${sortedTeams.length} TEAMS - sorted by standings):
-${sortedTeams.map((t, i) => {
-  // Filter out players with 0 points (didn't play) to avoid confusion
-  const playersWithPoints = t.starters.filter(p => parseFloat(p.points) > 0);
-  const topPlayers = playersWithPoints.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 2);
-  const worstPlayers = playersWithPoints.sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 2);
-  
-  return `
-${i + 1}. ${t.name} (${t.record}) - Week ${weekAnalyzed}: ${t.points} pts (Rank: ${t.rank})
-   Starters: ${t.starterPoints} pts, Bench: ${t.benchPoints} pts
-   ${t.biggestMistake ? `BENCH ERROR: Benched ${t.biggestMistake.benched}, started ${t.biggestMistake.started} (${t.biggestMistake.diff}pt swing)` : 'No major bench mistakes'}
-   ${topPlayers.length > 0 ? `Best: ${topPlayers.map(p => `${p.name} ${p.points}pts`).join(', ')}` : 'Best: No starters scored points'}
-   ${worstPlayers.length > 0 ? `Worst: ${worstPlayers.map(p => `${p.name} ${p.points}pts`).join(', ')}` : 'Worst: All starters scored 0'}
-`;
+TEAMS (top 6 + notable losers):
+${sortedTeams.slice(0, 6).map((t, i) => {
+  const top = t.starters.filter(p => parseFloat(p.points) > 0).sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 1);
+  return `${i + 1}. ${t.name} (${t.record}): ${t.points}pts. Best: ${top.map(p => `${p.name} ${p.points}`).join(', ') || 'no data'}${t.biggestMistake ? `. Benched ${t.biggestMistake.benched}!` : ''}`;
 }).join('\n')}
+...bottom teams: ${sortedTeams.slice(-3).map(t => `${t.name} ${t.points}pts`).join(', ')}
 
-Write a weekly league recap analyzing ALL teams. Give each team meaningful commentary - winners AND losers. Keep it under 500 words for faster generation. Format in HTML with <h2>, <h3>, <p> tags for readability. BE SPECIFIC with player names and stats.`;
+Write 250-word recap in character. HTML format (<h2>, <p>). Be specific with names/stats.`;
 
     // Use OpenAI GPT-4 directly (Claude was failing anyway)
     const generateWithOpenAI = async () => {
       const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY,
-        timeout: 25000 // Hard timeout at 25 seconds
+        timeout: 20000 // Reduced to 20s for aggressive timeout
       });
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini', // MUCH faster than gpt-4o, 1/10th the cost, still high quality
         messages: [{
           role: 'system',
-          content: character.systemPrompt + '\n\n' + character.style
+          content: character.systemPrompt
         }, {
           role: 'user',
           content: prompt
         }],
-        max_tokens: 2000, // Reduced for faster generation (500 words ~= 700 tokens + safety buffer)
+        max_tokens: 800, // 250 words ~= 350 tokens + safety buffer
         temperature: 0.9
       });
 
@@ -493,11 +477,11 @@ Write a weekly league recap analyzing ALL teams. Give each team meaningful comme
     // If timeout, return a simple fallback message
     if (error.message.includes('timed out')) {
       return `<h2>⏱️ Quick Week ${weekAnalyzed} Recap</h2>
-<p>The league summary is taking longer than expected. Here are the key stats:</p>
+<p>Generation took longer than expected. Key matchups:</p>
 <ul>
 ${matchups.map(m => `<li><strong>${m.team1.name}</strong> (${m.team1.points}) vs <strong>${m.team2.name}</strong> (${m.team2.points})</li>`).join('')}
 </ul>
-<p><em>Try refreshing for the full ${tone} analysis!</em></p>`;
+<p><em>Top team: ${teams.sort((a, b) => a.rank - b.rank)[0]?.name || 'Unknown'} | Bottom: ${teams.sort((a, b) => b.rank - a.rank)[0]?.name || 'Unknown'}</em></p>`;
     }
     
     return `<h1>Error Generating Roast</h1><p>The roast generator encountered an error: ${error.message}</p>`;
