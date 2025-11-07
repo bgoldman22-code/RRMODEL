@@ -401,12 +401,13 @@ export async function getLeagueTeams(accessToken, leagueKey) {
  */
 export async function getTeamStats(accessToken, teamKey, week) {
   try {
-    // Fetch roster with stats for the specific week
-    const data = await yahooRequest(accessToken, `/team/${teamKey}/roster/players/stats;type=week;week=${week}`);
+    // Fetch roster with player points for the specific week
+    // Using correct endpoint based on Yahoo API docs
+    const data = await yahooRequest(accessToken, `/team/${teamKey}/roster;week=${week}/players/stats`);
     
-    const players = data.fantasy_content?.team?.[1]?.roster?.[0]?.players;
+    const players = data.fantasy_content?.team?.[1]?.roster?.[1]?.players;
     if (!players) {
-      console.log('No player stats found');
+      console.log('No player stats found in roster');
       return {};
     }
 
@@ -418,7 +419,7 @@ export async function getTeamStats(accessToken, teamKey, week) {
 
       const playerInfo = playerData[0];
       const playerStats = playerData[1]?.player_stats;
-      const playerPoints = playerData[1]?.player_points; // NEW: Try player_points field
+      const playerPoints = playerData[1]?.player_points;
       
       let playerKey, playerName;
       for (const item of playerInfo) {
@@ -428,31 +429,32 @@ export async function getTeamStats(accessToken, teamKey, week) {
 
       if (!playerKey) continue;
 
-      // Extract points from stats - try multiple methods
+      // Extract points - Yahoo API should provide player_points.total for weekly stats
       let points = 0;
       
-      // METHOD 1: Try player_points.total (most direct)
-      if (playerPoints?.total) {
+      // METHOD 1: player_points.total (standard Yahoo API field for fantasy points)
+      if (playerPoints?.total !== undefined) {
         points = parseFloat(playerPoints.total);
       }
-      // METHOD 2: Try stats array with stat_id '0'
+      // METHOD 2: Fallback to calculating from individual stats
       else if (playerStats?.stats) {
+        // Try to find total fantasy points in stats array
         const stats = playerStats.stats;
         for (let j = 0; j < stats.length; j++) {
           const stat = stats[j]?.stat;
-          if (stat && stat.stat_id === '0') {
+          // Some leagues use stat_id 0 for total fantasy points
+          if (stat && (stat.stat_id === '0' || stat.stat_id === 0)) {
             points = parseFloat(stat.value || 0);
             break;
           }
         }
       }
       
-      // DEBUG: Log first player's full structure to see what we're getting
+      // DEBUG: Log first player's complete structure to understand Yahoo API response
       if (i === 0) {
         console.log(`DEBUG first player stats structure:`, JSON.stringify({
           name: playerName,
-          player_points: playerPoints,
-          player_stats: playerStats,
+          full_player_data: playerData,
           extracted_points: points
         }, null, 2));
       }
@@ -460,7 +462,7 @@ export async function getTeamStats(accessToken, teamKey, week) {
       statsMap[playerKey] = {
         name: playerName,
         points,
-        projected: 0 // TODO: Projected points if available
+        projected: 0 // TODO: Add projected points if needed
       };
     }
 
