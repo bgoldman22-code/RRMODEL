@@ -261,13 +261,16 @@ export const handler = async (event, context) => {
     // OPPONENT ANALYSIS: Fetch opponent's roster and calculate their optimal lineup
     let opponentAnalysis = null;
     try {
-      console.log(`Fetching matchup data for week ${week}...`);
+      console.log(`🔍 Fetching matchup data for week ${week}...`);
       const matchups = await getLeagueScoreboard(accessToken, leagueKey, week);
+      console.log(`Found ${matchups.length} total matchups for week ${week}`);
+      console.log(`Looking for team_key: ${teamKey}`);
+      
       const userMatchup = matchups.find(m => m.team1.team_key === teamKey || m.team2.team_key === teamKey);
       
       if (userMatchup) {
         const opponentTeam = userMatchup.team1.team_key === teamKey ? userMatchup.team2 : userMatchup.team1;
-        console.log(`Found opponent: ${opponentTeam.name} (${opponentTeam.team_key})`);
+        console.log(`✅ Found opponent: ${opponentTeam.name} (${opponentTeam.team_key})`);
         
         // Fetch opponent's roster
         const opponentRoster = await getTeamRoster(accessToken, opponentTeam.team_key, week);
@@ -276,7 +279,7 @@ export const handler = async (event, context) => {
         // Process opponent's players (same logic as user's roster)
         const opponentScoredPlayers = [];
         for (const player of opponentRoster) {
-          const gameContext = await getGameContext(player.team, week, allLines);
+          const gameContext = await getGameContext(player.team, week, lines);
           
           if (!gameContext || gameContext.is_bye) {
             opponentScoredPlayers.push({ ...player, props: {}, context: null, efp: 0, ceiling_bonus: 0, is_bye_week: true });
