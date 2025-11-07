@@ -405,8 +405,14 @@ const ROAST_CHARACTERS = {
 
 /**
  * Generate AI-powered roast using Claude or OpenAI (fallback)
+ * TIMEOUT FIX: Limit to 45 seconds to avoid Netlify 60s function timeout
  */
 async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, matchups, tone = 'default') {
+  // Wrap entire generation in timeout
+  const timeoutPromise = new Promise((_, reject) => 
+    setTimeout(() => reject(new Error('AI generation timed out after 45 seconds')), 45000)
+  );
+  
   try {
     // Sort teams by rank
     const sortedTeams = [...teams].sort((a, b) => a.rank - b.rank);
@@ -424,92 +430,84 @@ Week ${weekAnalyzed} just finished in the "${leagueName}" league. We're now in W
 
 Your task: ${character.task}
 
-This is NOT always a "roast" - the tone depends on YOUR character. Some characters are brutal and roast (Ramsay, Cartman), some are wise and prophetic (Gandalf, Yoda), some are analytical (Dwight, Philosopher), some are entertainers (Chappelle, Mulaney). Write a weekly league recap that this character would ACTUALLY write - sometimes funny, sometimes brutal, sometimes profound, but ALWAYS entertaining and true to character.
+This is NOT always a "roast" - the tone depends on YOUR character. Write a weekly league recap that this character would ACTUALLY write - entertaining and true to character.
 
 MATCHUP RESULTS:
 ${matchups.map(m => `${m.team1.name} (${m.team1.points} pts) vs ${m.team2.name} (${m.team2.points} pts) - Winner: ${m.winner === m.team1.team_key ? m.team1.name : m.team2.name}`).join('\n')}
 
-TEAM DATA (sorted by standings):
-${sortedTeams.map((t, i) => `
-${i + 1}. ${t.name} (${t.record}) - Rank: ${t.rank}
-   Week ${weekAnalyzed}: ${t.points} pts (ACTUAL: ${t.starterPoints} from starters, ${t.benchPoints} left on bench!)
-   Season total: ${t.points_for || 'N/A'} pts
-   ${t.biggestMistake ? `BENCH MISTAKE: Benched ${t.biggestMistake.benched}, started ${t.biggestMistake.started} - Left ${t.biggestMistake.diff} pts on bench!` : ''}
-   
-   TOP PERFORMERS:
-   ${t.starters.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 3).map(p => `   🔥 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
-   
-   WORST STARTERS:
-   ${t.starters.sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 2).map(p => `   💩 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
-   
-   BENCH (could've used):
-   ${t.bench.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 3).map(p => `   😤 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
-   
-   WAIVER MOVES:
-   ${t.transactions.length > 0 ? t.transactions.map(tx => `   ${tx.players}`).join('\n') : '   None'}
+TEAM DATA (sorted by standings) - TOP 6 TEAMS ONLY TO SAVE TIME:
+${sortedTeams.slice(0, 6).map((t, i) => `
+${i + 1}. ${t.name} (${t.record}) - Week ${weekAnalyzed}: ${t.points} pts
+   Starters: ${t.starterPoints} pts, Bench: ${t.benchPoints} pts
+   ${t.biggestMistake ? `MISTAKE: Benched ${t.biggestMistake.benched}, started ${t.biggestMistake.started}` : ''}
+   Top: ${t.starters.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 2).map(p => `${p.name} ${p.points}pts`).join(', ')}
+   Worst: ${t.starters.sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 1).map(p => `${p.name} ${p.points}pts`).join(', ')}
 `).join('\n')}
 
-CONTEXT FOR ROASTING:
-- Close games (won/lost by <5 pts) = maximum roast fuel
-- Big blowouts = either celebrate domination or mock complete failure  
-- High bench points = roast for lineup management incompetence
-- Started OUT/Q players = maximum stupidity roast
-- Waiver pickups that flopped = mock the desperation
-- Waiver pickups that succeeded = grudging respect or "even a blind squirrel" jokes
+BOTTOM TEAMS (Quick mentions):
+${sortedTeams.slice(6).map(t => `${t.name} (${t.record}): ${t.points} pts in Week ${weekAnalyzed}`).join('\n')}
 
-Write power rankings with:
-1. Overall league narrative (who's dominating, who's tanking)
-2. Individual team breakdowns (highlight embarrassing moments)
-3. "Roast of the Week" - single most embarrassing team/decision
-4. "Play of the Week" - best performance or clutch win
+Write power rankings focusing on TOP stories. Keep it under 500 words. Format in HTML with <h2>, <h3>, <p> tags. BE SPECIFIC with stats.`;
 
-CRITICAL: Use SPECIFIC STATS and NAMES. Don't be vague. Call out exact points, exact players, exact margins. That's what makes it funny and authentic, not formulaic.
+    // Try Claude first, with timeout
+    const generateWithClaudeOrOpenAI = async () => {
+      try {
+        const anthropic = new Anthropic({
+          apiKey: process.env.ANTHROPIC_API_KEY,
+        });
 
-Format in HTML with <h1>, <h2>, <h3>, <p> tags. Make it SAVAGE and SPECIFIC. 🔥`;
+        const message = await anthropic.messages.create({
+          model: 'claude-3-5-sonnet-20241022', // Updated to newer, faster model
+          max_tokens: 2000, // Reduced from 4000 to speed up
+          messages: [{
+            role: 'user',
+            content: prompt
+          }]
+        });
 
-    // Try Claude first
-    try {
-      const anthropic = new Anthropic({
-        apiKey: process.env.ANTHROPIC_API_KEY,
-      });
+        return message.content[0].text;
 
-      const message = await anthropic.messages.create({
-        model: 'claude-3-5-sonnet-20240620', // Stable version
-        max_tokens: 4000,
-        messages: [{
-          role: 'user',
-          content: prompt
-        }]
-      });
+      } catch (claudeError) {
+        console.warn(`Claude API failed, falling back to OpenAI: ${claudeError.status} ${claudeError.message}`);
+        
+        // Fallback to OpenAI GPT-4
+        const openai = new OpenAI({
+          apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY,
+        });
 
-      return message.content[0].text;
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4o',
+          messages: [{
+            role: 'system',
+            content: character.systemPrompt + '\n\n' + character.style
+          }, {
+            role: 'user',
+            content: prompt
+          }],
+          max_tokens: 2000, // Reduced from 4000
+          temperature: 0.9
+        });
 
-    } catch (claudeError) {
-      console.warn('Claude API failed, falling back to OpenAI:', claudeError.message);
-      
-      // Fallback to OpenAI GPT-4
-      const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY, // Use same key if available
-      });
-
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',  // Updated to current GPT-4 model
-        messages: [{
-          role: 'system',
-          content: character.systemPrompt + '\n\n' + character.style
-        }, {
-          role: 'user',
-          content: prompt
-        }],
-        max_tokens: 4000,
-        temperature: 0.9
-      });
-
-      return completion.choices[0].message.content;
-    }
+        return completion.choices[0].message.content;
+      }
+    };
+    
+    // Race AI generation against timeout
+    return await Promise.race([generateWithClaudeOrOpenAI(), timeoutPromise]);
 
   } catch (error) {
     console.error('Error generating roast:', error);
+    
+    // If timeout, return a simple fallback message
+    if (error.message.includes('timed out')) {
+      return `<h2>⏱️ Quick Week ${weekAnalyzed} Recap</h2>
+<p>The league summary is taking longer than expected. Here are the key stats:</p>
+<ul>
+${matchups.map(m => `<li><strong>${m.team1.name}</strong> (${m.team1.points}) vs <strong>${m.team2.name}</strong> (${m.team2.points})</li>`).join('')}
+</ul>
+<p><em>Try refreshing for the full ${tone} analysis!</em></p>`;
+    }
+    
     return `<h1>Error Generating Roast</h1><p>The roast generator encountered an error: ${error.message}</p>`;
   }
 }

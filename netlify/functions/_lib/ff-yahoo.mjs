@@ -640,9 +640,12 @@ export async function getLeagueTransactions(accessToken, leagueKey, week) {
       const txInfo = txData[0];
       let type, timestamp, teamKey;
       
-      for (const item of txInfo) {
-        if (item.type) type = item.type;
-        if (item.timestamp) timestamp = item.timestamp;
+      // Fix: Check if txInfo is iterable array before looping
+      if (txInfo && Array.isArray(txInfo)) {
+        for (const item of txInfo) {
+          if (item.type) type = item.type;
+          if (item.timestamp) timestamp = item.timestamp;
+        }
       }
 
       // Get team from players array

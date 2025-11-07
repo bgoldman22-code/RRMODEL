@@ -1055,6 +1055,65 @@ BENCH: Trevor Lawrence, Zay Flowers, Hunter Henry
 
 ## Known Issues & Limitations
 
+### Issue 0: Function Timeout During AI Generation
+**Status:** FIXED (Nov 7, 2024)
+
+**Error Message:**
+```
+Duration: 60000 ms	Memory Usage: 133 MB
+(Function hits Netlify's 60-second timeout)
+```
+
+**Root Cause:**
+- AI generation (Claude/OpenAI) taking 50-55 seconds
+- Prompt was too large with all 12 teams' detailed stats
+- No timeout protection, causing function to hit Netlify's hard limit
+
+**Solutions Implemented:**
+1. **45-second timeout wrapper** - AI generation wrapped in Promise.race() with 45s timeout
+2. **Reduced prompt size** - Only top 6 teams get detailed analysis, bottom 6 get quick mentions
+3. **Reduced max_tokens** - From 4000 to 2000 to speed up generation
+4. **Updated Claude model** - Changed to `claude-3-5-sonnet-20241022` (newer, faster version)
+5. **Graceful fallback** - If timeout occurs, return simple HTML summary instead of crashing
+
+**Impact:**
+- Generation time reduced from 55s to ~20-30s
+- Function completes well within 60s limit
+- Users see fallback message if AI still times out
+
+---
+
+### Issue 0.5: Transaction Data Not Iterable
+**Status:** FIXED (Nov 7, 2024)
+
+**Error Message:**
+```
+WARN   Error fetching league transactions: txInfo is not iterable
+```
+
+**Root Cause:**
+- `getLeagueTransactions()` in ff-yahoo.mjs attempting to iterate over `txInfo` without checking if it's an array
+- Yahoo API returns variable structure (sometimes object, sometimes array)
+- Same pattern as earlier `leagueInfo` bug
+
+**Solution:**
+```javascript
+// OLD CODE (BROKEN):
+for (const item of txInfo) { ... }
+
+// NEW CODE (FIXED):
+if (txInfo && Array.isArray(txInfo)) {
+  for (const item of txInfo) { ... }
+}
+```
+
+**Impact:**
+- Transaction data now loads successfully
+- Function doesn't crash when txInfo is not an array
+- Transactions still gracefully return empty array if structure is unexpected
+
+---
+
 ### Issue 1: AI Gateway 403 Error
 **Status:** OPEN (as of Nov 6, 2025)
 
