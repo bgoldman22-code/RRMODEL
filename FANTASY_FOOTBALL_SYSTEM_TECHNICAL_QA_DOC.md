@@ -1136,6 +1136,115 @@ Fallback to OpenAI GPT-4 is implemented, just needs API key configured.
 
 ---
 
+### Issue 0.6: Player Stats Extraction Bug (Array Indexing)
+**Status:** FIXED (Nov 7, 2024)
+
+**Error Message:**
+```
+AI roast showing all players with 0.0 points despite real scores in data
+```
+
+**Root Cause:**
+- `getTeamStats()` in ff-yahoo.mjs accessing wrong array index
+- Yahoo API returns player data as 3-element array: [info, selected_position, stats+points]
+- Code was accessing `playerData[1]` (selected_position) instead of `playerData[2]` (stats/points)
+
+**Solution:**
+```javascript
+// OLD CODE (BROKEN):
+const stats = playerData[1]?.player_stats;
+const points = playerData[1]?.player_points;
+
+// NEW CODE (FIXED):
+const stats = playerData[2]?.player_stats;
+const points = playerData[2]?.player_points;
+```
+
+**Impact:**
+- Player fantasy points now correctly extracted from Yahoo API
+- AI roasts now reference actual player scores (e.g., "Josh Allen: 28.82 pts")
+- Fixed in commit fa0dda87
+
+---
+
+### Issue 0.7: Team Coverage Limitation in AI Prompt
+**Status:** FIXED (Nov 7, 2024)
+
+**Error Message:**
+```
+"Feels like its not even every team being summarized?"
+```
+
+**Root Cause:**
+- Prompt generation explicitly limited to "TOP 6 TEAMS ONLY TO SAVE TIME"
+- Bottom 6 teams received only one-line mentions
+- AI couldn't provide meaningful analysis for half the league
+
+**Solution:**
+```javascript
+// OLD CODE (BROKEN):
+const topTeams = sortedTeams.slice(0, 6);
+// ... detailed analysis for top 6
+const bottomTeams = sortedTeams.slice(6);
+// ... one-line mentions for bottom 6
+
+// NEW CODE (FIXED):
+// All teams get equal treatment
+for (const team of sortedTeams) {
+  // ... full analysis with starters/bench/mistakes
+}
+```
+
+**Additional Changes:**
+- Increased max_tokens from 2000 to 3000
+- Changed instruction from "TOP stories, 500 words" to "ALL teams, 600 words"
+- Added rank display for each team
+- Improved bench error formatting
+- Fixed in commit 27bcc88f
+
+---
+
+### Issue 0.8: Function Timeout on AI Generation
+**Status:** FIXED (Nov 7, 2024)
+
+**Error Message:**
+```
+Failed to execute 'json' on 'Response': Unexpected end of JSON input
+Duration: 37808.15 ms (dangerously close to 60s Netlify limit)
+```
+
+**Root Cause:**
+- OpenAI API taking 33 seconds for generation
+- Combined with data fetching (5-7s), total execution approaching 60s Netlify hard limit
+- Response getting truncated mid-JSON when timeout hit
+- Previous timeout was 45s, but only protected AI generation, not total function time
+
+**Solution:**
+```javascript
+// Reduced AI generation timeout from 45s to 30s (leaves 30s buffer)
+const timeoutPromise = new Promise((_, reject) => 
+  setTimeout(() => reject(new Error('AI generation timed out after 30 seconds')), 30000)
+);
+
+// Reduced max_tokens from 3000 to 2000 for faster generation
+max_tokens: 2000,
+
+// Added hard API timeouts
+timeout_ms: 25000 // Claude
+timeout: 25000    // OpenAI
+
+// Reduced word limit from 600 to 500 words
+```
+
+**Performance Impact:**
+- **Before:** 37.8s total execution (33s OpenAI + 5s data)
+- **After:** Expected ~25-30s total (18-20s AI + 5-7s data)
+- **Safety Margin:** Now 30-35s away from timeout instead of 22s
+
+**Fixed in:** Commit 658d9a09
+
+---
+
 ### Issue 2: Limited Prop Coverage for Backups
 **Status:** BY DESIGN
 
