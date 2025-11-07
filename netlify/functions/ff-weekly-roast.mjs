@@ -64,13 +64,14 @@ export default async function handler(request, context) {
     const weekToAnalyze = requestedWeek || (currentWeek - 1);
     console.log(`Current week: ${currentWeek}, Analyzing week: ${weekToAnalyze}`);
 
-    // Step 5: Fetch all league data
+    // Step 5: Fetch all league data (including NEXT week's matchups for preview)
     console.log('Fetching league data...');
-    const [scoreboard, standings, transactions, leagueSettings] = await Promise.all([
+    const [scoreboard, standings, transactions, leagueSettings, nextWeekMatchups] = await Promise.all([
       getLeagueScoreboard(accessToken, leagueKey, weekToAnalyze),
       getLeagueStandings(accessToken, leagueKey), // Current standings
       getLeagueTransactions(accessToken, leagueKey, weekToAnalyze),
-      getLeagueSettings(accessToken, leagueKey) // Get league metadata with actual name
+      getLeagueSettings(accessToken, leagueKey), // Get league metadata with actual name
+      getLeagueScoreboard(accessToken, leagueKey, currentWeek) // Fetch NEXT week's matchups with projections
     ]);
     
     // Use environment variable for league name, or actual league name from settings
@@ -106,6 +107,9 @@ export default async function handler(request, context) {
         
         const roster = await getTeamRoster(accessToken, standing.team_key, weekToAnalyze);
         const stats = await getTeamStats(accessToken, standing.team_key, weekToAnalyze);
+        
+        // Fetch NEXT week's roster to check for injuries (IR/OUT/DOUBTFUL players)
+        const nextWeekRoster = await getTeamRoster(accessToken, standing.team_key, currentWeek);
         
         // DEBUG: Log stats for first team
         if (teamDetails.length === 0) {
@@ -146,6 +150,16 @@ export default async function handler(request, context) {
           }
         }
         
+        // Identify injured/OUT players for next week
+        const injuredNextWeek = nextWeekRoster.filter(p => 
+          p.status && ['IR', 'O', 'D', 'Q'].includes(p.status) && p.slot !== 'BN'
+        ).map(p => ({
+          name: p.name,
+          position: p.position,
+          status: p.status,
+          team: p.team
+        }));
+        
         teamDetails.push({
           ...team,
           record: `${standing?.wins || 0}-${standing?.losses || 0}`,
@@ -177,7 +191,8 @@ export default async function handler(request, context) {
           })),
           starterPoints: starterPoints.toFixed(1),
           benchPoints: benchPoints.toFixed(1),
-          biggestMistake
+          biggestMistake,
+          injuredNextWeek // Add injury data for next week
         });
           
       } catch (teamError) {
@@ -206,9 +221,9 @@ export default async function handler(request, context) {
       }
     }
 
-    // Step 7: Generate AI roast
+    // Step 7: Generate AI roast with preview data
     console.log(`Generating AI roast with tone: ${tone}...`);
-    const roast = await generateRoast(actualLeagueName, weekToAnalyze, currentWeek, teamDetails, scoreboard, tone);
+    const roast = await generateRoast(actualLeagueName, weekToAnalyze, currentWeek, teamDetails, scoreboard, nextWeekMatchups, tone);
 
     // Step 8: Return results
     return new Response(JSON.stringify({
@@ -416,7 +431,7 @@ const ROAST_CHARACTERS = {
  * Generate AI-powered roast using OpenAI GPT-4o-mini
  * PERFORMANCE FIX: Ultra-compact prompt + faster model + aggressive timeouts
  */
-async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, matchups, tone = 'default') {
+async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, matchups, nextWeekMatchups, tone = 'default') {
   // Aggressive timeout wrapper (25s leaves 35s buffer for data fetching)
   const timeoutPromise = new Promise((_, reject) => 
     setTimeout(() => reject(new Error('AI generation timed out after 25 seconds')), 25000)
@@ -428,6 +443,38 @@ async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, match
     
     // Get character definition
     const character = ROAST_CHARACTERS[tone.toLowerCase()] || ROAST_CHARACTERS.default;
+
+    // Build detailed preview section with matchup analysis
+    const playoffCutoff = 6; // Typical playoff cutoff
+    const previewData = nextWeekMatchups.map(m => {
+      const team1 = teams.find(t => t.team_key === m.team1.team_key);
+      const team2 = teams.find(t => t.team_key === m.team2.team_key);
+      
+      const team1Rank = team1?.rank || 99;
+      const team2Rank = team2?.rank || 99;
+      const team1Record = team1?.record || '0-0';
+      const team2Record = team2?.record || '0-0';
+      
+      // Identify key matchup types
+      let matchupType = '';
+      if (team1Rank <= playoffCutoff && team2Rank <= playoffCutoff) {
+        matchupType = '🔥 PLAYOFF SHOWDOWN';
+      } else if (team1Rank > teams.length - 3 || team2Rank > teams.length - 3) {
+        matchupType = '🗑️ BATTLE FOR LAST PLACE';
+      } else if (Math.abs(m.team1.projected - m.team2.projected) < 10) {
+        matchupType = '⚔️ NAIL-BITER';
+      } else {
+        matchupType = '📊 KEY MATCHUP';
+      }
+      
+      // Get injuries for both teams
+      const team1Injuries = team1?.injuredNextWeek || [];
+      const team2Injuries = team2?.injuredNextWeek || [];
+      
+      return `${matchupType}: ${m.team1.name} (${team1Record}, #${team1Rank}) ${m.team1.projected.toFixed(1)}pts vs ${m.team2.name} (${team2Record}, #${team2Rank}) ${m.team2.projected.toFixed(1)}pts
+${team1Injuries.length > 0 ? `  ${m.team1.name} injuries: ${team1Injuries.map(i => `${i.name} (${i.status})`).join(', ')}` : ''}
+${team2Injuries.length > 0 ? `  ${m.team2.name} injuries: ${team2Injuries.map(i => `${i.name} (${i.status})`).join(', ')}` : ''}`;
+    }).join('\n');
 
     // BALANCED PROMPT - Detailed but efficient for quality roasts
     const prompt = `${character.systemPrompt}
@@ -451,15 +498,24 @@ ${sortedTeams.map((t, i) => {
    ${moves}`;
 }).join('\n')}
 
-Write 400-word character-driven recap with sections:
+WEEK ${currentWeek} PREVIEW (CRITICAL - USE THIS DATA):
+${previewData}
+
+Write 500-word character-driven recap with sections:
 1. <h2>Week ${weekAnalyzed} Headline</h2> - Character intro, set the tone
 2. <h3>Winners Circle</h3> - Top 3-4 teams, highlight stars & bench blunders  
 3. <h3>Middle of the Pack</h3> - Teams fighting for playoffs (mention records, playoff chances)
 4. <h3>Bottom Feeders</h3> - Last place teams, brutal honesty about their season
 5. <h3>Waiver Wire Winners & Losers</h3> - Notable adds/drops if any big moves
-6. <h3>Looking Ahead</h3> - Week ${currentWeek} preview, playoff implications
+6. <h3>Looking Ahead to Week ${currentWeek}</h3> - **DETAILED PREVIEW** (150+ words):
+   - Highlight TOP playoff matchups (teams fighting for postseason spots)
+   - Call out BOTTOM matchups (last place battles) 
+   - Mention projected score predictions for key games
+   - Note ANY injured/out players that could swing matchups
+   - Build drama around close projections and playoff implications
+   - Make bold predictions about who wins/loses and why
 
-Use <p> tags. Include specific player names, stats, and records. Stay in character throughout!`;
+Use <p> tags. Include specific player names, stats, records, and INJURIES. Stay in character throughout!`;
 
     // Use OpenAI GPT-4 directly (Claude was failing anyway)
     const generateWithOpenAI = async () => {
@@ -477,7 +533,7 @@ Use <p> tags. Include specific player names, stats, and records. Stay in charact
           role: 'user',
           content: prompt
         }],
-        max_tokens: 1200, // 400 words ~= 550 tokens + safety buffer for structured HTML
+        max_tokens: 1500, // 500 words ~= 700 tokens + safety buffer for structured HTML with detailed preview
         temperature: 0.9
       });
 
