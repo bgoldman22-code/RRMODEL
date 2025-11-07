@@ -13,6 +13,7 @@ import FantasySitStart from "./pages/FantasySitStart";  // Fantasy Sit/Start Too
 import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
 import NHL from "./NHL";  // Elite NHL SOG Props
 import NBAPredictionsV2 from "./pages/NBAPredictionsV2";  // NBA Elite V2 Game Predictions
+import NBAPlayerProps from "./pages/NBAPlayerProps";  // NBA Player Props (Rebounds + Assists)
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
@@ -130,6 +131,7 @@ export default function App() {
           <Route path="/soccer-btts" element={<SoccerBTTS />} />
           <Route path="/nhl-sog" element={<NHL />} />
           <Route path="/nba-predictions-v2" element={<NBAPredictionsV2 />} />
+          <Route path="/nba-player-props" element={<NBAPlayerProps />} />
         </Routes>
       </div>
     </BrowserRouter>
