@@ -351,15 +351,18 @@ export default function FantasySitStart() {
               </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-1">
-                  API Key (if required)
+                  API Key <span className="text-blue-600 font-medium">(Only for Sit/Start Recommendations)</span>
                 </label>
                 <input
                   type="password"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Leave blank if not needed"
+                  placeholder="Not needed for Weekly Roast"
                   className="w-full border rounded-md px-3 py-2"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  ℹ️ Weekly Roast works without an API key. Only enter a key if you want Sit/Start recommendations.
+                </p>
               </div>
             </div>
           </div>
@@ -422,18 +425,18 @@ export default function FantasySitStart() {
                 disabled={loading}
                 className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                {loading ? 'Loading...' : 'Get Sit/Start Recommendations'}
+                {loading ? 'Loading...' : '📊 Get Sit/Start Recommendations (Requires API Key)'}
               </button>
               <button
                 onClick={handleFetchRoast}
                 disabled={roastLoading}
-                className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-2 rounded-md hover:from-red-700 hover:to-orange-700 transition-all font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {roastLoading ? 'Generating Roast...' : '🔥 Generate Weekly League Summary'}
+                {roastLoading ? 'Generating Roast...' : '🔥 Generate Weekly Roast (No API Key Needed!)'}
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              Sit/Start: Your personal recommendations • League Summary: Roasts for the entire league
+            <p className="text-sm text-gray-500 mt-2">
+              💡 <strong>Tip:</strong> Weekly Roast only needs Yahoo authentication (Step 1). API key is optional for Sit/Start only.
             </p>
           </div>
         </div>
