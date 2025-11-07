@@ -52,6 +52,11 @@ const FALLBACK_BASELINES = {
  * @returns {number} Expected fantasy points
  */
 export function expectedFantasyPoints(props, scoringRules, position, teamContext) {
+  // Special handling for Defense/ST
+  if (position === 'DEF' || position === 'DST') {
+    return calculateDefenseEFP(teamContext, scoringRules, props);
+  }
+
   if (!props || Object.keys(props).length === 0) {
     // No props available - use fallback
     return applyFallback(position, teamContext, scoringRules);
@@ -90,6 +95,95 @@ export function expectedFantasyPoints(props, scoringRules, position, teamContext
       ? scoringRules.recTD 
       : scoringRules.rushTD;
     efp += props.anytime_td_prob * tdValue;
+  }
+
+  return efp;
+}
+
+/**
+ * Calculate Expected Fantasy Points for Defense/ST
+ * Based on opponent implied total, defensive stats, and turnover expectations
+ * @param {Object} gameContext - Game context with opponent implied total
+ * @param {Object} scoringRules - League scoring settings
+ * @param {Object} props - Defense props (sacks, turnovers if available)
+ * @returns {number} Expected defense fantasy points
+ */
+function calculateDefenseEFP(gameContext, scoringRules, props = {}) {
+  if (!gameContext || !gameContext.implied_totals) {
+    // No game context - return baseline
+    return 8;
+  }
+
+  let efp = 0;
+
+  // 1. POINTS ALLOWED (based on opponent's implied total)
+  // Opponent IT is the key metric - lower IT = better defense projection
+  const oppIT = gameContext.opponent_implied_total || gameContext.implied_totals.awayIT;
+  
+  // Standard DEF/ST scoring tiers for points allowed
+  // Adjust based on your league settings - these are common defaults
+  if (oppIT <= 13) {
+    efp += 10; // 0-13 points allowed (elite matchup)
+  } else if (oppIT <= 17) {
+    efp += 7;  // 14-17 points allowed (great matchup)
+  } else if (oppIT <= 20) {
+    efp += 4;  // 18-20 points allowed (good matchup)
+  } else if (oppIT <= 24) {
+    efp += 1;  // 21-24 points allowed (average)
+  } else if (oppIT <= 27) {
+    efp += 0;  // 25-27 points allowed (below average)
+  } else if (oppIT <= 31) {
+    efp += -1; // 28-31 points allowed (poor matchup)
+  } else {
+    efp += -4; // 32+ points allowed (terrible matchup)
+  }
+
+  // 2. EXPECTED SACKS
+  // League average is ~2.5 sacks/game, adjust based on matchup
+  // Lower opponent IT often correlates with more sacks (more pass plays when trailing)
+  let expectedSacks = 2.5;
+  
+  if (props.team_sacks) {
+    // If we have actual sacks props from TheOddsAPI, use those
+    expectedSacks = props.team_sacks.line || 2.5;
+  } else {
+    // Estimate based on game script
+    // Underdogs pass more = more sack opportunities
+    if (gameContext.spread && gameContext.spread > 3) {
+      expectedSacks += 0.5; // Defense is favorite, opponent will pass more
+    } else if (gameContext.spread && gameContext.spread < -3) {
+      expectedSacks -= 0.3; // Defense is underdog, opponent may run more
+    }
+  }
+  
+  efp += expectedSacks * 1.0; // 1 pt per sack (standard scoring)
+
+  // 3. EXPECTED TURNOVERS (INTs + Fumble Recoveries)
+  // League average is ~1.2 turnovers/game
+  let expectedTurnovers = 1.2;
+  
+  // Higher opponent pass volume = more INT opportunities
+  if (oppIT < 17) {
+    // Low-scoring offense = more mistakes
+    expectedTurnovers += 0.3;
+  } else if (oppIT > 27) {
+    // High-scoring offense = tougher to force turnovers
+    expectedTurnovers -= 0.2;
+  }
+  
+  efp += expectedTurnovers * 2.0; // 2 pts per turnover (standard scoring)
+
+  // 4. DEFENSIVE/SPECIAL TEAMS TD
+  // League average is ~5% probability per game
+  const defTDProb = 0.05;
+  efp += defTDProb * 6.0; // 6 pts for defensive TD
+
+  // 5. BONUS: Yardage allowed (if league uses it)
+  // Lower opponent IT suggests fewer yards allowed
+  if (oppIT <= 17) {
+    efp += 2; // Likely to hold opponent under 300 yards
+  } else if (oppIT >= 28) {
+    efp -= 1; // Likely to allow 400+ yards
   }
 
   return efp;

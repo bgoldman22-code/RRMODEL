@@ -390,8 +390,24 @@ export function calculateScriptLean(context, team, threshold = 4.5) {
 export function getGameContext(lines, team) {
   const teamUpper = team?.toUpperCase();
   for (const game of lines) {
-    if (game.home_team?.toUpperCase() === teamUpper || game.away_team?.toUpperCase() === teamUpper) {
-      return game;
+    const isHome = game.home_team?.toUpperCase() === teamUpper;
+    const isAway = game.away_team?.toUpperCase() === teamUpper;
+    
+    if (isHome || isAway) {
+      // Add opponent's implied total for Defense/ST calculations
+      const context = {
+        ...game,
+        is_home: isHome,
+        opponent: isHome ? game.away_team : game.home_team
+      };
+      
+      // Add opponent's implied total (what the OTHER team is expected to score)
+      if (game.implied_totals) {
+        context.opponent_implied_total = isHome ? game.implied_totals.awayIT : game.implied_totals.homeIT;
+        context.team_implied_total = isHome ? game.implied_totals.homeIT : game.implied_totals.awayIT;
+      }
+      
+      return context;
     }
   }
   return null;
