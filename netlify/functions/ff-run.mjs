@@ -167,13 +167,9 @@ export const handler = async (event, context) => {
     const scoredPlayers = [];
 
     for (const player of roster) {
-      // Get game context for player's team
-      const gameContext = getGameContext(lines, player.team);
-
-      // Handle bye weeks or missing games (context is null)
-      if (!gameContext) {
-        // Bye week or game not scheduled - player scores 0
-        console.log(`Player ${player.name} (${player.team}) has no game context (bye week or game not found)`);
+      // Check if player is on bye week (from Yahoo roster data)
+      if (player.bye_week === week) {
+        console.log(`Player ${player.name} (${player.team}) is on BYE WEEK ${week}`);
         scoredPlayers.push({
           ...player,
           props: {},
@@ -181,6 +177,24 @@ export const handler = async (event, context) => {
           efp: 0,
           ceiling_bonus: 0,
           is_bye_week: true
+        });
+        continue;
+      }
+      
+      // Get game context for player's team
+      const gameContext = getGameContext(lines, player.team);
+
+      // Handle missing games (no betting lines available)
+      if (!gameContext) {
+        // Game not found in odds API - could be late-added game or data issue
+        console.log(`Player ${player.name} (${player.team}) has no game context (game not found in odds data)`);
+        scoredPlayers.push({
+          ...player,
+          props: {},
+          context: null,
+          efp: 0,
+          ceiling_bonus: 0,
+          is_bye_week: false // Not a bye, just no data
         });
         continue;
       }

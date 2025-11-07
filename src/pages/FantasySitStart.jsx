@@ -288,9 +288,8 @@ export default function FantasySitStart() {
         <div>
           <h3 className="font-bold text-lg">{player.name}</h3>
           <div className="text-sm text-gray-600">
-            {player.position} • {player.team} vs {player.opponent}
+            {player.position} • {player.team} {player.is_bye_week ? '(BYE)' : `vs ${player.opponent}`}
             {player.status && <span className="ml-2 text-red-600">({player.status})</span>}
-            {player.bye_week && <span className="ml-2 text-red-600">(BYE WEEK {player.bye_week})</span>}
           </div>
         </div>
         <div className="flex items-center gap-2">
