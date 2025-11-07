@@ -31,7 +31,8 @@ import {
   getUserLeagues, 
   getLeagueSettings, 
   getTeamRoster, 
-  getCurrentWeek 
+  getCurrentWeek,
+  getLeagueScoreboard
 } from './_lib/ff-yahoo.mjs';
 import { 
   getWeekLines, 
@@ -257,6 +258,87 @@ export const handler = async (event, context) => {
       }
     }
 
+    // OPPONENT ANALYSIS: Fetch opponent's roster and calculate their optimal lineup
+    let opponentAnalysis = null;
+    try {
+      console.log(`Fetching matchup data for week ${week}...`);
+      const matchups = await getLeagueScoreboard(accessToken, leagueKey, week);
+      const userMatchup = matchups.find(m => m.team1.team_key === teamKey || m.team2.team_key === teamKey);
+      
+      if (userMatchup) {
+        const opponentTeam = userMatchup.team1.team_key === teamKey ? userMatchup.team2 : userMatchup.team1;
+        console.log(`Found opponent: ${opponentTeam.name} (${opponentTeam.team_key})`);
+        
+        // Fetch opponent's roster
+        const opponentRoster = await getTeamRoster(accessToken, opponentTeam.team_key, week);
+        console.log(`Fetched opponent roster: ${opponentRoster.length} players`);
+        
+        // Process opponent's players (same logic as user's roster)
+        const opponentScoredPlayers = [];
+        for (const player of opponentRoster) {
+          const gameContext = await getGameContext(player.team, week, allLines);
+          
+          if (!gameContext || gameContext.is_bye) {
+            opponentScoredPlayers.push({ ...player, props: {}, context: null, efp: 0, ceiling_bonus: 0, is_bye_week: true });
+            continue;
+          }
+          
+          let playerPropsData = allProps[player.name];
+          if (!playerPropsData) {
+            const normalizedName = player.name.replace(/\s+(Jr\.|Sr\.|II|III|IV)$/i, '').trim();
+            playerPropsData = allProps[normalizedName];
+          }
+          
+          const props = playerPropsData?.props || {};
+          const efp = expectedFantasyPoints(props, scoringRules, player.position, gameContext);
+          const ceilingBonus = applyMultiTDBonus(efp, props, scoringRules, player.position);
+          const totalEFP = efp + ceilingBonus;
+          
+          opponentScoredPlayers.push({
+            ...player,
+            props,
+            context: gameContext,
+            efp: totalEFP,
+            ceiling_bonus: ceilingBonus,
+            is_bye_week: false
+          });
+        }
+        
+        // Calculate sit/start scores for opponent
+        for (const player of opponentScoredPlayers) {
+          if (player.is_bye_week) {
+            player.score = 0;
+            player.tier = 'BYE';
+            continue;
+          }
+          player.score = calculateSitStartScore(player.efp, player.context, player, scoringRules, opponentScoredPlayers.filter(p => !p.is_bye_week));
+        }
+        
+        const opponentTieredPlayers = assignTiers(opponentScoredPlayers);
+        
+        // Calculate opponent's optimal lineup
+        const { starters: opponentOptimalStarters } = fillLineup(opponentTieredPlayers, positionCounts);
+        const opponentProjected = opponentOptimalStarters.reduce((sum, p) => sum + (p.efp || 0), 0);
+        
+        opponentAnalysis = {
+          team_name: opponentTeam.name,
+          team_key: opponentTeam.team_key,
+          projected_points: opponentProjected,
+          top_players: opponentOptimalStarters
+            .sort((a, b) => b.efp - a.efp)
+            .slice(0, 3)
+            .map(p => ({ name: p.name, position: p.position, projected: p.efp?.toFixed(1) }))
+        };
+        
+        console.log(`Opponent ${opponentTeam.name} projected: ${opponentProjected.toFixed(1)} pts`);
+      } else {
+        console.log('No matchup found for this week (possible bye week for league)');
+      }
+    } catch (error) {
+      console.error('Error fetching opponent analysis:', error.message);
+      // Continue without opponent analysis
+    }
+
     // APPROACH A: Use actual Yahoo lineup (what user set)
     const { starters: actualStarters, bench: actualBench } = fillLineupFromActual(tieredPlayers);
 
@@ -319,6 +401,29 @@ export const handler = async (event, context) => {
     const optimalTotal = optimalStarters.reduce((sum, p) => sum + (p.efp || 0), 0);
     const improvement = optimalTotal - actualTotal;
 
+    // Calculate win probability if opponent data available
+    let matchupPrediction = null;
+    if (opponentAnalysis) {
+      const pointDiff = optimalTotal - opponentAnalysis.projected_points;
+      
+      // Win probability based on point differential
+      // Using logistic function: P(win) = 1 / (1 + e^(-pointDiff/15))
+      // Standard deviation of ~15 points per game in fantasy football
+      const winProb = 1 / (1 + Math.exp(-pointDiff / 15));
+      
+      matchupPrediction = {
+        opponent: opponentAnalysis.team_name,
+        your_projected: optimalTotal.toFixed(1),
+        opponent_projected: opponentAnalysis.projected_points.toFixed(1),
+        point_differential: pointDiff.toFixed(1),
+        win_probability: `${(winProb * 100).toFixed(0)}%`,
+        win_probability_decimal: winProb.toFixed(3),
+        prediction: winProb > 0.5 ? 'WIN' : 'LOSS',
+        confidence: winProb > 0.7 ? 'High' : winProb > 0.55 ? 'Medium' : 'Low',
+        opponent_top_threats: opponentAnalysis.top_players
+      };
+    }
+
     // JSON response
     if (format === 'json') {
       const response = {
@@ -334,6 +439,7 @@ export const handler = async (event, context) => {
             optimal_projected: optimalTotal.toFixed(1),
             potential_improvement: improvement.toFixed(1)
           },
+          matchup: matchupPrediction,
           actual_lineup: {
             starters: actualStarters.map(formatPlayer),
             bench: actualBench.map(formatPlayer)

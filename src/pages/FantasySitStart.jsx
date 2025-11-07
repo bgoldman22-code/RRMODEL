@@ -613,6 +613,82 @@ export default function FantasySitStart() {
             </div>
           )}
 
+          {/* Matchup Prediction */}
+          {data.matchup && (
+            <div className={`border-2 rounded-lg p-6 ${
+              data.matchup.prediction === 'WIN' 
+                ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-400' 
+                : 'bg-gradient-to-r from-red-50 to-orange-50 border-red-400'
+            }`}>
+              <h3 className="text-xl font-bold mb-4">🏆 Week {data.meta.week} Matchup Prediction</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                {/* Your Team */}
+                <div className="bg-white rounded-lg p-4 border-2 border-blue-400">
+                  <div className="text-sm text-gray-600 mb-1">Your Team</div>
+                  <div className="text-2xl font-bold text-blue-600 mb-2">{data.matchup.your_projected} pts</div>
+                  <div className="text-xs text-gray-500">Optimal Projected</div>
+                </div>
+                
+                {/* Opponent */}
+                <div className="bg-white rounded-lg p-4 border-2 border-red-400">
+                  <div className="text-sm text-gray-600 mb-1">{data.matchup.opponent}</div>
+                  <div className="text-2xl font-bold text-red-600 mb-2">{data.matchup.opponent_projected} pts</div>
+                  <div className="text-xs text-gray-500">Projected</div>
+                </div>
+              </div>
+              
+              {/* Win Probability */}
+              <div className="bg-white rounded-lg p-6 text-center">
+                <div className="text-sm text-gray-600 mb-2">Win Probability</div>
+                <div className={`text-5xl font-bold mb-2 ${
+                  data.matchup.prediction === 'WIN' ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {data.matchup.win_probability}
+                </div>
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                    data.matchup.prediction === 'WIN' 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {data.matchup.prediction}
+                  </span>
+                  <span className={`px-3 py-1 rounded-full text-sm ${
+                    data.matchup.confidence === 'High' ? 'bg-blue-100 text-blue-800' :
+                    data.matchup.confidence === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {data.matchup.confidence} Confidence
+                  </span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  {parseFloat(data.matchup.point_differential) > 0 ? (
+                    <span>Projected to win by <strong>{data.matchup.point_differential} points</strong></span>
+                  ) : (
+                    <span>Projected to lose by <strong>{Math.abs(parseFloat(data.matchup.point_differential)).toFixed(1)} points</strong></span>
+                  )}
+                </div>
+              </div>
+              
+              {/* Opponent Top Threats */}
+              {data.matchup.opponent_top_threats && data.matchup.opponent_top_threats.length > 0 && (
+                <div className="mt-4 bg-white rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-700 mb-2">🔥 Opponent's Top Threats</h4>
+                  <div className="space-y-2">
+                    {data.matchup.opponent_top_threats.map((player, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-sm">
+                        <span className="font-medium">{player.name}</span>
+                        <span className="text-gray-600">{player.position}</span>
+                        <span className="font-bold text-orange-600">{player.projected} pts</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Recommendations */}
           {data.recommendations && data.recommendations.length > 0 && (
             <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-4">
