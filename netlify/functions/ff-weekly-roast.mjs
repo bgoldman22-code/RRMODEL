@@ -216,6 +216,7 @@ export default async function handler(request, context) {
           starterPoints: '0.0',
           benchPoints: '0.0',
           biggestMistake: null,
+          injuredNextWeek: [], // Empty array for consistency
           error: `Failed to load team data: ${teamError.message}`
         });
       }

@@ -90,7 +90,9 @@ The AI is now explicitly instructed:
 Playoff implications are huge!</p>
 ```
 
-### After (Detailed)
+### After (Detailed - adapts to character voice)
+
+**Trump Character:**
 ```html
 <h3>Looking Ahead to Week 10</h3>
 <p>Folks, Week 10 is ABSOLUTELY CRITICAL! The playoff picture is getting clearer!</p>
@@ -104,13 +106,47 @@ DISASTROUS! Comeback Kids might steal this one!</p>
 - somebody's gotta lose! Projected at 87.4 vs 82.1, this is the definition of mediocrity! 
 Both teams have given up, but The Strugglers have Mahomes on bye week. YIKES!</p>
 
-<p><strong>NAIL-BITER ALERT:</strong> Middle Pack (5-4, #6) vs Bubble Team (5-4, #7) 
-projected at 110.2 vs 108.5. Winner stays in playoff hunt, loser starts panicking! 
-Both teams healthy, so no excuses!</p>
-
 <p>My prediction? Elite Squad stumbles without CMC, Comeback Kids capitalize. 
-Bottom Dwellers finally win one. Middle Pack edges out Bubble Team in the 
-playoff race. Believe me, Week 10 is gonna be HUGE!</p>
+Bottom Dwellers finally win one. Week 10 is gonna be HUGE!</p>
+```
+
+**Gandalf Character:**
+```html
+<h3>Looking Ahead to Week 10</h3>
+<p>A great shadow falls upon the coming battles, my friends. The fates of many 
+shall be decided in Week 10.</p>
+
+<p>Elite Squad, once mighty warriors of the realm, now march into battle with 
+McCaffrey fallen to injury's curse. They face Comeback Kids in a contest that 
+may determine their path to the postseason. The projections speak of 125.3 
+against 122.1 - a close affair indeed.</p>
+
+<p>In the depths below, Bottom Dwellers and The Strugglers wage their own war - 
+not for glory, but to avoid the shame of finishing last. Both have suffered 
+greatly this season. The cards predict 87.4 and 82.1 - neither impressive.</p>
+
+<p>Heed my words: injuries shall swing these battles. The loss of McCaffrey 
+may doom Elite Squad. Victory favors the bold, but also the healthy!</p>
+```
+
+**Leslie Knope Character:**
+```html
+<h3>Looking Ahead to Week 10</h3>
+<p>OH MY GOSH you guys, Week 10 is literally the most important week of the 
+ENTIRE SEASON! I am SO EXCITED!</p>
+
+<p>Elite Squad versus Comeback Kids is going to be AMAZING! These are two 
+INCREDIBLE teams - 7-2 and 6-3! - and they're projected super close at 
+125.3 and 122.1! Though I'm a teensy bit worried about CMC being on IR 
+because that's not ideal, but you know what? They can TOTALLY still pull 
+this off with teamwork and positive attitudes!</p>
+
+<p>And even Bottom Dwellers and The Strugglers deserve our support! Yes, 
+they're 2-7 and 1-8, but that just means they've had CHARACTER-BUILDING 
+experiences! Every team matters in our beautiful fantasy league family!</p>
+
+<p>I predict everyone is going to try their ABSOLUTE BEST and we're going 
+to see some FANTASTIC football! GO TEAM!</p>
 ```
 
 ## User Benefits
@@ -118,8 +154,9 @@ playoff race. Believe me, Week 10 is gonna be HUGE!</p>
 1. **More Context** - Users understand the stakes for each matchup
 2. **Injury Awareness** - Know which teams are dealing with key injuries
 3. **Playoff Clarity** - See which matchups matter most for postseason
-4. **Entertainment Value** - More dramatic predictions and analysis
+4. **Entertainment Value** - More dramatic predictions and analysis in character voice
 5. **Strategic Value** - Injury info helps with waiver wire decisions
+6. **Character Consistency** - Each tone/character interprets the data in their unique voice
 
 ## API Cost Impact
 
