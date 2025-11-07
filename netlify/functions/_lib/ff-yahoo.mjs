@@ -445,8 +445,8 @@ export async function getTeamStats(accessToken, teamKey, week) {
       if (!playerData) continue;
 
       const playerInfo = playerData[0];
-      const playerStats = playerData[1]?.player_stats;
-      const playerPoints = playerData[1]?.player_points;
+      const playerStats = playerData[2]?.player_stats;
+      const playerPoints = playerData[2]?.player_points;
       
       let playerKey, playerName;
       for (const item of playerInfo) {
