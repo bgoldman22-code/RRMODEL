@@ -10,7 +10,22 @@ export default async (req, context) => {
 
   try {
     const store = getV5Store()
-    const bundle = await store.get(LATEST_KEY, { type: 'json' })
+    let bundle = await store.get(LATEST_KEY, { type: 'json' })
+
+    // FALLBACK: If blobs are empty, try static file
+    if (!bundle) {
+      console.log('⚠️ No V5 data in blobs, trying static fallback...')
+      try {
+        const staticUrl = 'https://roaringrooster.netlify.app/data/nfl-v5-predictions.json'
+        const res = await fetch(staticUrl)
+        if (res.ok) {
+          bundle = await res.json()
+          console.log('✅ Loaded V5 data from static fallback')
+        }
+      } catch (fallbackError) {
+        console.error('Static fallback also failed:', fallbackError)
+      }
+    }
 
     if (!bundle) {
       return new Response(JSON.stringify({ error: 'No predictions available' }), {
