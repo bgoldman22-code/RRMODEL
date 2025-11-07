@@ -411,6 +411,19 @@ export const handler = async (event, context) => {
       // Standard deviation of ~15 points per game in fantasy football
       const winProb = 1 / (1 + Math.exp(-pointDiff / 15));
       
+      // Convert to American odds
+      let americanOdds;
+      if (winProb > 0.5) {
+        // Favorite (negative odds): -100 * (prob / (1 - prob))
+        americanOdds = Math.round(-100 * (winProb / (1 - winProb)));
+      } else {
+        // Underdog (positive odds): 100 * ((1 - prob) / prob)
+        americanOdds = Math.round(100 * ((1 - winProb) / winProb));
+      }
+      
+      // Format odds with + for positive
+      const oddsDisplay = americanOdds > 0 ? `+${americanOdds}` : `${americanOdds}`;
+      
       matchupPrediction = {
         opponent: opponentAnalysis.team_name,
         your_projected: optimalTotal.toFixed(1),
@@ -418,6 +431,7 @@ export const handler = async (event, context) => {
         point_differential: pointDiff.toFixed(1),
         win_probability: `${(winProb * 100).toFixed(0)}%`,
         win_probability_decimal: winProb.toFixed(3),
+        american_odds: oddsDisplay,
         prediction: winProb > 0.5 ? 'WIN' : 'LOSS',
         confidence: winProb > 0.7 ? 'High' : winProb > 0.55 ? 'Medium' : 'Low',
         opponent_top_threats: opponentAnalysis.top_players

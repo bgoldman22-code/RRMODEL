@@ -646,6 +646,19 @@ export default function FantasySitStart() {
                 }`}>
                   {data.matchup.win_probability}
                 </div>
+                
+                {/* American Odds */}
+                {data.matchup.american_odds && (
+                  <div className="mb-3">
+                    <span className={`text-2xl font-mono font-bold ${
+                      data.matchup.american_odds.startsWith('+') ? 'text-blue-600' : 'text-orange-600'
+                    }`}>
+                      {data.matchup.american_odds}
+                    </span>
+                    <span className="text-sm text-gray-500 ml-2">American Odds</span>
+                  </div>
+                )}
+                
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
                     data.matchup.prediction === 'WIN' 
