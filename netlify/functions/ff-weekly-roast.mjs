@@ -426,24 +426,37 @@ async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, match
     // Get character definition
     const character = ROAST_CHARACTERS[tone.toLowerCase()] || ROAST_CHARACTERS.default;
 
-    // ULTRA-COMPACT PROMPT - Reduce tokens by 70% for faster generation
+    // BALANCED PROMPT - Detailed but efficient for quality roasts
     const prompt = `${character.systemPrompt}
 
 ${character.style}
 
-Week ${weekAnalyzed} league recap for "${leagueName}".
+Week ${weekAnalyzed} recap for "${leagueName}" (now Week ${currentWeek}).
 
 MATCHUPS:
-${matchups.map(m => `${m.team1.name} ${m.team1.points} vs ${m.team2.name} ${m.team2.points}`).join('\n')}
+${matchups.map(m => `${m.team1.name} ${m.team1.points}pts vs ${m.team2.name} ${m.team2.points}pts - Winner: ${m.winner === m.team1.team_key ? m.team1.name : m.team2.name}`).join('\n')}
 
-TEAMS (top 6 + notable losers):
-${sortedTeams.slice(0, 6).map((t, i) => {
-  const top = t.starters.filter(p => parseFloat(p.points) > 0).sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 1);
-  return `${i + 1}. ${t.name} (${t.record}): ${t.points}pts. Best: ${top.map(p => `${p.name} ${p.points}`).join(', ') || 'no data'}${t.biggestMistake ? `. Benched ${t.biggestMistake.benched}!` : ''}`;
+STANDINGS (all 12 teams with full details):
+${sortedTeams.map((t, i) => {
+  const top = t.starters.filter(p => parseFloat(p.points) > 0).sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 2);
+  const worst = t.starters.filter(p => parseFloat(p.points) > 0).sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 1);
+  const moves = t.transactions?.length > 0 ? `Recent moves: ${t.transactions.slice(0, 2).map(tx => tx.players).join('; ')}` : 'No moves';
+  return `${i + 1}. ${t.name} (${t.record}): Week ${weekAnalyzed} score ${t.points}pts
+   Top: ${top.map(p => `${p.name} ${p.points}pts`).join(', ') || 'no scorers'}
+   ${worst.length > 0 ? `Dud: ${worst[0].name} ${worst[0].points}pts` : ''}
+   ${t.biggestMistake ? `BENCHED: ${t.biggestMistake.benched} (${t.biggestMistake.benchedPoints}pts) for ${t.biggestMistake.started} (${t.biggestMistake.startedPoints}pts)` : 'No bench errors'}
+   ${moves}`;
 }).join('\n')}
-...bottom teams: ${sortedTeams.slice(-3).map(t => `${t.name} ${t.points}pts`).join(', ')}
 
-Write 250-word recap in character. HTML format (<h2>, <p>). Be specific with names/stats.`;
+Write 400-word character-driven recap with sections:
+1. <h2>Week ${weekAnalyzed} Headline</h2> - Character intro, set the tone
+2. <h3>Winners Circle</h3> - Top 3-4 teams, highlight stars & bench blunders  
+3. <h3>Middle of the Pack</h3> - Teams fighting for playoffs (mention records, playoff chances)
+4. <h3>Bottom Feeders</h3> - Last place teams, brutal honesty about their season
+5. <h3>Waiver Wire Winners & Losers</h3> - Notable adds/drops if any big moves
+6. <h3>Looking Ahead</h3> - Week ${currentWeek} preview, playoff implications
+
+Use <p> tags. Include specific player names, stats, and records. Stay in character throughout!`;
 
     // Use OpenAI GPT-4 directly (Claude was failing anyway)
     const generateWithOpenAI = async () => {
@@ -461,7 +474,7 @@ Write 250-word recap in character. HTML format (<h2>, <p>). Be specific with nam
           role: 'user',
           content: prompt
         }],
-        max_tokens: 800, // 250 words ~= 350 tokens + safety buffer
+        max_tokens: 1200, // 400 words ~= 550 tokens + safety buffer for structured HTML
         temperature: 0.9
       });
 
