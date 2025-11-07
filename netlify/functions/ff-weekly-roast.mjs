@@ -106,6 +106,13 @@ export default async function handler(request, context) {
         
         const roster = await getTeamRoster(accessToken, standing.team_key, weekToAnalyze);
         const stats = await getTeamStats(accessToken, standing.team_key, weekToAnalyze);
+        
+        // DEBUG: Log stats for first team
+        if (teamDetails.length === 0) {
+          console.log(`DEBUG: First team (${standing.name}) stats sample:`, 
+            Object.entries(stats).slice(0, 3).map(([key, val]) => `${val.name}: ${val.points}pts`));
+        }
+        
         const teamTransactions = transactions.filter(t => t.team_key === standing.team_key);
 
         // Calculate bench points
@@ -432,17 +439,26 @@ Your task: ${character.task}
 
 This is NOT always a "roast" - the tone depends on YOUR character. Write a weekly league recap that this character would ACTUALLY write - entertaining and true to character.
 
+CRITICAL INSTRUCTION: When you see "Top: No starters scored points" or players with 0.0pts, this means their stats HAVEN'T LOADED YET or they didn't play. DO NOT mention these players as if they scored zero - they simply have missing data. Focus ONLY on players with actual point totals (>0). If a team has no scoring data, acknowledge "stats unavailable" rather than acting like they scored nothing.
+
 MATCHUP RESULTS:
 ${matchups.map(m => `${m.team1.name} (${m.team1.points} pts) vs ${m.team2.name} (${m.team2.points} pts) - Winner: ${m.winner === m.team1.team_key ? m.team1.name : m.team2.name}`).join('\n')}
 
 TEAM DATA (sorted by standings) - TOP 6 TEAMS ONLY TO SAVE TIME:
-${sortedTeams.slice(0, 6).map((t, i) => `
+${sortedTeams.slice(0, 6).map((t, i) => {
+  // Filter out players with 0 points (didn't play) to avoid confusion
+  const playersWithPoints = t.starters.filter(p => parseFloat(p.points) > 0);
+  const topPlayers = playersWithPoints.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 2);
+  const worstPlayers = playersWithPoints.sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 2);
+  
+  return `
 ${i + 1}. ${t.name} (${t.record}) - Week ${weekAnalyzed}: ${t.points} pts
    Starters: ${t.starterPoints} pts, Bench: ${t.benchPoints} pts
    ${t.biggestMistake ? `MISTAKE: Benched ${t.biggestMistake.benched}, started ${t.biggestMistake.started}` : ''}
-   Top: ${t.starters.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 2).map(p => `${p.name} ${p.points}pts`).join(', ')}
-   Worst: ${t.starters.sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 1).map(p => `${p.name} ${p.points}pts`).join(', ')}
-`).join('\n')}
+   ${topPlayers.length > 0 ? `Top: ${topPlayers.map(p => `${p.name} ${p.points}pts`).join(', ')}` : 'Top: No starters scored points'}
+   ${worstPlayers.length > 0 ? `Worst: ${worstPlayers.map(p => `${p.name} ${p.points}pts`).join(', ')}` : 'Worst: All starters scored 0'}
+`;
+}).join('\n')}
 
 BOTTOM TEAMS (Quick mentions):
 ${sortedTeams.slice(6).map(t => `${t.name} (${t.record}): ${t.points} pts in Week ${weekAnalyzed}`).join('\n')}

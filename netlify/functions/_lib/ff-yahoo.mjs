@@ -418,6 +418,7 @@ export async function getTeamStats(accessToken, teamKey, week) {
 
       const playerInfo = playerData[0];
       const playerStats = playerData[1]?.player_stats;
+      const playerPoints = playerData[1]?.player_points; // NEW: Try player_points field
       
       let playerKey, playerName;
       for (const item of playerInfo) {
@@ -427,20 +428,33 @@ export async function getTeamStats(accessToken, teamKey, week) {
 
       if (!playerKey) continue;
 
-      // Extract points from stats
+      // Extract points from stats - try multiple methods
       let points = 0;
-      if (playerStats?.stats) {
+      
+      // METHOD 1: Try player_points.total (most direct)
+      if (playerPoints?.total) {
+        points = parseFloat(playerPoints.total);
+      }
+      // METHOD 2: Try stats array with stat_id '0'
+      else if (playerStats?.stats) {
         const stats = playerStats.stats;
         for (let j = 0; j < stats.length; j++) {
           const stat = stats[j]?.stat;
-          if (stat) {
-            // Stat ID 0 = fantasy points for the week
-            if (stat.stat_id === '0') {
-              points = parseFloat(stat.value || 0);
-              break;
-            }
+          if (stat && stat.stat_id === '0') {
+            points = parseFloat(stat.value || 0);
+            break;
           }
         }
+      }
+      
+      // DEBUG: Log first player's full structure to see what we're getting
+      if (i === 0) {
+        console.log(`DEBUG first player stats structure:`, JSON.stringify({
+          name: playerName,
+          player_points: playerPoints,
+          player_stats: playerStats,
+          extracted_points: points
+        }, null, 2));
       }
 
       statsMap[playerKey] = {
