@@ -220,7 +220,7 @@ export async function getLeagueSettings(accessToken, leagueKey) {
     // Extract league name from the response
     const leagueInfo = data.fantasy_content?.league?.[0];
     let leagueName = 'Unknown League';
-    if (leagueInfo) {
+    if (leagueInfo && Array.isArray(leagueInfo)) {
       for (const item of leagueInfo) {
         if (item.name) {
           leagueName = item.name;
