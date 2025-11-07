@@ -131,12 +131,11 @@ export const handler = async (event, context) => {
     console.log(`Token expires at: ${new Date(expiresAt).toISOString()}`);
     console.log(`Cookie expires at: ${cookieExpiryString}`);
 
-    // Return HTML success page with cookies set
-    // NOTE: Netlify requires multiValueHeaders for multiple Set-Cookie headers
+    // Redirect back to the fantasy sit/start page
     return {
-      statusCode: 200,
+      statusCode: 302,
       headers: { 
-        'Content-Type': 'text/html',
+        'Location': '/fantasy-sitstart?auth=success',
         'Cache-Control': 'no-cache'
       },
       multiValueHeaders: {
@@ -148,68 +147,7 @@ export const handler = async (event, context) => {
           ...(xoauth_yahoo_guid ? [`ff_yahoo_guid=${xoauth_yahoo_guid}; ${cookieOptions}`] : [])
         ]
       },
-      body: `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yahoo Fantasy OAuth - Success</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    .container {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 40px;
-      max-width: 500px;
-      text-align: center;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-    h1 { margin: 0 0 20px 0; font-size: 2em; }
-    p { font-size: 1.1em; margin: 15px 0; line-height: 1.6; }
-    .checkmark {
-      font-size: 4em;
-      animation: pop 0.3s ease-out;
-    }
-    @keyframes pop {
-      0% { transform: scale(0); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
-    }
-    .info {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      padding: 15px;
-      margin-top: 20px;
-      font-size: 0.9em;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="checkmark">✅</div>
-    <h1>Authentication Successful!</h1>
-    <p>Your Yahoo Fantasy account has been linked.</p>
-    <p>You can now close this tab and start using the fantasy sit/start tool.</p>
-    <div class="info">
-      <strong>Next Steps:</strong><br>
-      Your authentication is saved securely in your browser.<br>
-      Return to the app to generate roasts and get recommendations.
-    </div>
-  </div>
-</body>
-</html>
-      `.trim()
+      body: ''
     };
 
   } catch (error) {

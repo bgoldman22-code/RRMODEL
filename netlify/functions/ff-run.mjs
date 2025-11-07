@@ -130,6 +130,7 @@ export const handler = async (event, context) => {
     // Step 4: Get league settings (scoring rules + position counts)
     const { scoringRules, positionCounts, pprType } = await getLeagueSettings(accessToken, leagueKey);
     console.log(`Scoring: ${pprType}, passTD=${scoringRules.passTD}`);
+    console.log('Position counts:', JSON.stringify(positionCounts));
 
     // Step 5: Get current week for league
     const currentWeek = await getCurrentWeek(accessToken, leagueKey);

@@ -27,6 +27,7 @@ export default function FantasySitStart() {
   const [availableLeagues, setAvailableLeagues] = useState([]);
   const [selectedLeague, setSelectedLeague] = useState('');
   const [loadingLeagues, setLoadingLeagues] = useState(false);
+  const [authSuccess, setAuthSuccess] = useState(false);
 
   // Generate season options (2001 to current year)
   const currentYear = new Date().getFullYear();
@@ -35,8 +36,18 @@ export default function FantasySitStart() {
     seasonOptions.push(year);
   }
 
-  // Check if user is authenticated on load and fetch leagues
+  // Check for auth success and fetch leagues
   useEffect(() => {
+    // Check if redirected from OAuth callback
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('auth') === 'success') {
+      setAuthSuccess(true);
+      // Remove auth param from URL
+      window.history.replaceState({}, '', window.location.pathname);
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => setAuthSuccess(false), 5000);
+    }
+    
     fetchAvailableLeagues();
   }, []);
 
@@ -320,6 +331,17 @@ export default function FantasySitStart() {
       <p className="text-gray-600 mb-6">
         Get AI-powered sit/start recommendations using Vegas lines, player props, and your league's scoring settings.
       </p>
+
+      {/* Success Message */}
+      {authSuccess && (
+        <div className="bg-green-50 border-2 border-green-500 rounded-lg p-4 mb-6 flex items-center gap-3 animate-fade-in">
+          <span className="text-3xl">✅</span>
+          <div>
+            <h3 className="font-semibold text-green-900">Authentication Successful!</h3>
+            <p className="text-sm text-green-700">Your Yahoo Fantasy account has been linked. You can now generate roasts and recommendations.</p>
+          </div>
+        </div>
+      )}
 
       {/* Controls */}
       <div className="bg-white border rounded-lg p-6 mb-6">
