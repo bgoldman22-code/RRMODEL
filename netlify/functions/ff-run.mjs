@@ -293,10 +293,16 @@ export const handler = async (event, context) => {
         // Process opponent's players (same logic as user's roster)
         const opponentScoredPlayers = [];
         for (const player of opponentRoster) {
-          const gameContext = await getGameContext(player.team, week, lines);
-          
-          if (!gameContext || gameContext.is_bye) {
+          // Check bye week first (same as user roster processing)
+          if (player.bye_week === week) {
             opponentScoredPlayers.push({ ...player, props: {}, context: null, efp: 0, ceiling_bonus: 0, is_bye_week: true });
+            continue;
+          }
+          
+          const gameContext = getGameContext(lines, player.team);
+          
+          if (!gameContext) {
+            opponentScoredPlayers.push({ ...player, props: {}, context: null, efp: 0, ceiling_bonus: 0, is_bye_week: false });
             continue;
           }
           
