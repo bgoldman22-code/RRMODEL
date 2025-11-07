@@ -2,7 +2,7 @@
  * Fantasy Football Weekly League Roast Generator
  * 
  * Generates hilarious, rated-R power rankings and weekly summaries
- * using Yahoo Fantasy API data + Claude AI (or OpenAI GPT-4 as fallback) for savage commentary.
+ * using Yahoo Fantasy API data + OpenAI GPT-4 for savage commentary.
  * 
  * Analyzes:
  * - Matchup results (wins/losses, blowouts)
@@ -12,7 +12,6 @@
  * - Projected vs actual performance
  */
 
-import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 import { ensureAuth } from './_lib/ff-blobs.mjs';
 import { 
@@ -462,53 +461,31 @@ ${i + 1}. ${t.name} (${t.record}) - Week ${weekAnalyzed}: ${t.points} pts (Rank:
 
 Write a weekly league recap analyzing ALL teams. Give each team meaningful commentary - winners AND losers. Keep it under 500 words for faster generation. Format in HTML with <h2>, <h3>, <p> tags for readability. BE SPECIFIC with player names and stats.`;
 
-    // Try Claude first, with timeout
-    const generateWithClaudeOrOpenAI = async () => {
-      try {
-        const anthropic = new Anthropic({
-          apiKey: process.env.ANTHROPIC_API_KEY,
-        });
+    // Use OpenAI GPT-4 directly (Claude was failing anyway)
+    const generateWithOpenAI = async () => {
+      const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY,
+        timeout: 25000 // Hard timeout at 25 seconds
+      });
 
-        const message = await anthropic.messages.create({
-          model: 'claude-3-5-sonnet-20241022', // Updated to newer, faster model
-          max_tokens: 2000, // Reduced for faster generation (600 words ~= 800 tokens + safety buffer)
-          messages: [{
-            role: 'user',
-            content: prompt
-          }],
-          timeout_ms: 25000 // Hard timeout at 25 seconds
-        });
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [{
+          role: 'system',
+          content: character.systemPrompt + '\n\n' + character.style
+        }, {
+          role: 'user',
+          content: prompt
+        }],
+        max_tokens: 2000, // Reduced for faster generation (500 words ~= 700 tokens + safety buffer)
+        temperature: 0.9
+      });
 
-        return message.content[0].text;
-
-      } catch (claudeError) {
-        console.warn(`Claude API failed, falling back to OpenAI: ${claudeError.status} ${claudeError.message}`);
-        
-        // Fallback to OpenAI GPT-4
-        const openai = new OpenAI({
-          apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY,
-        });
-
-        const completion = await openai.chat.completions.create({
-          model: 'gpt-4o',
-          messages: [{
-            role: 'system',
-            content: character.systemPrompt + '\n\n' + character.style
-          }, {
-            role: 'user',
-            content: prompt
-          }],
-          max_tokens: 2000, // Reduced for faster generation (600 words ~= 800 tokens + safety buffer)
-          temperature: 0.9,
-          timeout: 25000 // Hard timeout at 25 seconds
-        });
-
-        return completion.choices[0].message.content;
-      }
+      return completion.choices[0].message.content;
     };
     
     // Race AI generation against timeout
-    return await Promise.race([generateWithClaudeOrOpenAI(), timeoutPromise]);
+    return await Promise.race([generateWithOpenAI(), timeoutPromise]);
 
   } catch (error) {
     console.error('Error generating roast:', error);
