@@ -412,12 +412,12 @@ const ROAST_CHARACTERS = {
 
 /**
  * Generate AI-powered roast using Claude or OpenAI (fallback)
- * TIMEOUT FIX: Limit to 45 seconds to avoid Netlify 60s function timeout
+ * TIMEOUT FIX: Limit to 30 seconds to avoid Netlify 60s function timeout
  */
 async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, matchups, tone = 'default') {
-  // Wrap entire generation in timeout
+  // Wrap entire generation in timeout (30s leaves 30s for data fetching)
   const timeoutPromise = new Promise((_, reject) => 
-    setTimeout(() => reject(new Error('AI generation timed out after 45 seconds')), 45000)
+    setTimeout(() => reject(new Error('AI generation timed out after 30 seconds')), 30000)
   );
   
   try {
@@ -460,7 +460,7 @@ ${i + 1}. ${t.name} (${t.record}) - Week ${weekAnalyzed}: ${t.points} pts (Rank:
 `;
 }).join('\n')}
 
-Write a weekly league recap analyzing ALL teams. Give each team meaningful commentary - winners AND losers. Keep it under 600 words. Format in HTML with <h2>, <h3>, <p> tags for readability. BE SPECIFIC with player names and stats.`;
+Write a weekly league recap analyzing ALL teams. Give each team meaningful commentary - winners AND losers. Keep it under 500 words for faster generation. Format in HTML with <h2>, <h3>, <p> tags for readability. BE SPECIFIC with player names and stats.`;
 
     // Try Claude first, with timeout
     const generateWithClaudeOrOpenAI = async () => {
@@ -471,11 +471,12 @@ Write a weekly league recap analyzing ALL teams. Give each team meaningful comme
 
         const message = await anthropic.messages.create({
           model: 'claude-3-5-sonnet-20241022', // Updated to newer, faster model
-          max_tokens: 3000, // Increased to allow full 12-team analysis
+          max_tokens: 2000, // Reduced for faster generation (600 words ~= 800 tokens + safety buffer)
           messages: [{
             role: 'user',
             content: prompt
-          }]
+          }],
+          timeout_ms: 25000 // Hard timeout at 25 seconds
         });
 
         return message.content[0].text;
@@ -497,8 +498,9 @@ Write a weekly league recap analyzing ALL teams. Give each team meaningful comme
             role: 'user',
             content: prompt
           }],
-          max_tokens: 3000, // Increased to allow full 12-team analysis
-          temperature: 0.9
+          max_tokens: 2000, // Reduced for faster generation (600 words ~= 800 tokens + safety buffer)
+          temperature: 0.9,
+          timeout: 25000 // Hard timeout at 25 seconds
         });
 
         return completion.choices[0].message.content;
