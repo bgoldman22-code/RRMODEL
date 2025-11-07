@@ -6,9 +6,9 @@
  * 
  * Generates predictions for games starting within next 18 hours
  * 
- * Data Source: Netlify Blobs (updated daily at 10am UTC by update-boxscores-daily.mjs)
- * - Always fresh: includes last night's games
- * - No rebuilds: data updates independently from code
+ * Data Source: 
+ * - PRIMARY: Fetches fresh boxscores from ESPN API (last 25 days)
+ * - FALLBACK: Netlify Blobs if ESPN unavailable (optional, not required)
  * 
  * Environment Variables Required:
  * - ODDS_API_KEY: TheOddsAPI key (set in Netlify dashboard)
@@ -38,6 +38,98 @@ function americanToProb(odds) {
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Fetch recent boxscores from ESPN API
+ * Copied from working local script (run-full-model-tonight.mjs)
+ */
+async function fetchESPNBoxscores(daysBack = 25) {
+  console.log(`📊 Fetching last ${daysBack} days of boxscores from ESPN...`);
+  
+  const boxscores = [];
+  const today = new Date();
+  
+  for (let i = daysBack; i >= 1; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0].replace(/-/g, '');
+    
+    try {
+      const url = `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${dateStr}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) continue;
+      
+      const data = await response.json();
+      if (!data.events || data.events.length === 0) continue;
+      
+      const completedGames = data.events.filter(e => 
+        e.status.type.completed === true
+      );
+      
+      if (completedGames.length === 0) continue;
+      
+      console.log(`   ${dateStr}: ${completedGames.length} games`);
+      
+      // For each completed game, get detailed boxscore
+      for (const game of completedGames) {
+        try {
+          const summaryUrl = `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=${game.id}`;
+          await sleep(300); // Rate limit
+          
+          const summaryResp = await fetch(summaryUrl);
+          if (!summaryResp.ok) continue;
+          
+          const summary = await summaryResp.json();
+          
+          if (summary.boxscore?.players) {
+            const comp = game.competitions[0];
+            const homeTeam = comp.competitors.find(c => c.homeAway === 'home');
+            const awayTeam = comp.competitors.find(c => c.homeAway === 'away');
+            
+            for (const teamData of summary.boxscore.players) {
+              const teamId = teamData.team.id;
+              const teamAbbr = teamData.team.abbreviation;
+              const isHome = teamId === homeTeam.id;
+              const oppAbbr = isHome ? awayTeam.team.abbreviation : homeTeam.team.abbreviation;
+              
+              // First stat group has the main stats
+              if (teamData.statistics && teamData.statistics[0]) {
+                for (const athlete of teamData.statistics[0].athletes) {
+                  const stats = athlete.stats;
+                  const minutes = parseFloat(stats[0]) || 0;
+                  
+                  if (minutes > 0) {
+                    boxscores.push({
+                      gameDate: game.date.split('T')[0],
+                      playerName: athlete.athlete.displayName,
+                      teamTricode: teamAbbr,
+                      opponentTricode: oppAbbr,
+                      homeAway: isHome ? 'home' : 'away',
+                      minutes,
+                      points: parseInt(stats[1]) || 0, // PTS (index 1)
+                      rebounds: parseInt(stats[4]) || 0, // REB (index 4) ← CRITICAL
+                      assists: parseInt(stats[5]) || 0, // AST (index 5) ← CRITICAL
+                      team: teamAbbr
+                    });
+                  }
+                }
+              }
+            }
+          }
+        } catch (err) {
+          // Skip this game
+        }
+      }
+      
+    } catch (err) {
+      console.log(`   ${dateStr}: Error`);
+    }
+  }
+  
+  console.log(`   ✅ Collected ${boxscores.length} player-game records`);
+  return boxscores;
 }
 
 // Calculate player statistics from boxscores
@@ -147,24 +239,36 @@ export default async (req, context) => {
   }
 
   try {
-    // Load boxscores from Netlify Blobs (updated daily at 10am UTC)
-    console.log('📥 Loading boxscores from Netlify Blobs...');
-    const store = getStore('nba-data');
+    // Hybrid data loading: Try Blobs first (if available), fallback to ESPN
+    let boxscores = [];
     
-    // Read both blobs (no decompression needed - Netlify handles it automatically)
-    const [historicalData, currentData] = await Promise.all([
-      store.get('player-boxscores-historical', { type: 'json' }),
-      store.get('player-boxscores-current', { type: 'json' })
-    ]);
-    
-    if (!historicalData || !currentData) {
-      throw new Error('No boxscores found in Netlify Blobs. Run seed-blobs-locally first.');
+    try {
+      console.log('📥 Attempting to load boxscores from Netlify Blobs...');
+      const store = getStore('nba-data');
+      
+      const [historicalData, currentData] = await Promise.all([
+        store.get('player-boxscores-historical', { type: 'json' }),
+        store.get('player-boxscores-current', { type: 'json' })
+      ]);
+      
+      if (historicalData && currentData && historicalData.length > 0 && currentData.length > 0) {
+        boxscores = [...historicalData, ...currentData];
+        console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blobs (${historicalData.length} historical + ${currentData.length} current)`);
+      } else {
+        throw new Error('Blobs empty or missing');
+      }
+    } catch (blobError) {
+      console.warn('⚠️  Blobs unavailable, fetching fresh data from ESPN:', blobError.message);
+      
+      // Fallback: Fetch from ESPN directly (same as local script)
+      boxscores = await fetchESPNBoxscores(25);
+      
+      if (boxscores.length === 0) {
+        throw new Error('Failed to fetch boxscores from both Blobs and ESPN');
+      }
+      
+      console.log(`✅ Loaded ${boxscores.length} boxscore entries from ESPN (live fetch)`);
     }
-    
-    // Merge both datasets
-    const boxscores = [...historicalData, ...currentData];
-    
-    console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blobs (${historicalData.length} historical + ${currentData.length} current)`);
 
     // Calculate top 8 rotation players per team (for filtering)
     console.log('📊 Calculating rotation rankings...');
@@ -327,7 +431,7 @@ export default async (req, context) => {
                   betSide: 'OVER',
                   vegasOdds: overOdds,
                   impliedProb: Math.round(overProb * 1000) / 10,
-                  confidence: Math.round(confidence * 1000) / 10,
+                  confidence: Math.round(confidence * 100), // Convert 0.95 → 95
                   kellyFraction: Math.round(kelly * 1000) / 10,
                   bookmaker: bookmaker.key,
                   generatedAt: nowISO
@@ -352,7 +456,7 @@ export default async (req, context) => {
                   betSide: 'UNDER',
                   vegasOdds: underOdds,
                   impliedProb: Math.round(underProb * 1000) / 10,
-                  confidence: Math.round(confidence * 1000) / 10,
+                  confidence: Math.round(confidence * 100), // Convert 0.95 → 95
                   kellyFraction: Math.round(kelly * 1000) / 10,
                   bookmaker: bookmaker.key,
                   generatedAt: nowISO
