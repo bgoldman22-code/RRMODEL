@@ -463,9 +463,9 @@ const ROAST_CHARACTERS = {
  * PERFORMANCE FIX: Ultra-compact prompt + faster model + aggressive timeouts
  */
 async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, matchups, nextWeekMatchups, tone = 'default') {
-  // Aggressive timeout wrapper (25s leaves 35s buffer for data fetching)
+  // Extended timeout for detailed preview prompts with deep data (50s leaves 10s buffer for data fetching)
   const timeoutPromise = new Promise((_, reject) => 
-    setTimeout(() => reject(new Error('AI generation timed out after 25 seconds')), 25000)
+    setTimeout(() => reject(new Error('AI generation timed out after 50 seconds')), 50000)
   );
   
   try {
@@ -552,7 +552,7 @@ Use <p> tags. Include specific player names, stats, records, and INJURIES. Stay 
     const generateWithOpenAI = async () => {
       const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY,
-        timeout: 20000 // Reduced to 20s for aggressive timeout
+        timeout: 45000 // 45s timeout for OpenAI API calls (deep data processing)
       });
 
       const completion = await openai.chat.completions.create({
