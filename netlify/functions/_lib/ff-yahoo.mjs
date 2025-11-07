@@ -405,9 +405,36 @@ export async function getTeamStats(accessToken, teamKey, week) {
     // Using correct endpoint based on Yahoo API docs
     const data = await yahooRequest(accessToken, `/team/${teamKey}/roster;week=${week}/players/stats`);
     
-    const players = data.fantasy_content?.team?.[1]?.roster?.[1]?.players;
+    // DEBUG: Log the complete structure to understand Yahoo API response
+    console.log('DEBUG: Full Yahoo API response structure:', JSON.stringify({
+      fantasy_content_keys: data.fantasy_content ? Object.keys(data.fantasy_content) : 'NO fantasy_content',
+      team_keys: data.fantasy_content?.team ? Object.keys(data.fantasy_content.team) : 'NO team',
+      team_0: data.fantasy_content?.team?.[0] ? 'exists' : 'missing',
+      team_1: data.fantasy_content?.team?.[1] ? Object.keys(data.fantasy_content.team[1]) : 'missing',
+      roster_in_team_1: data.fantasy_content?.team?.[1]?.roster ? 'exists' : 'missing',
+    }, null, 2));
+    
+    // Try multiple paths to find players
+    let players = null;
+    
+    // Path 1: team[1].roster[1].players (our current attempt)
+    if (data.fantasy_content?.team?.[1]?.roster?.[1]?.players) {
+      players = data.fantasy_content.team[1].roster[1].players;
+      console.log('Found players at team[1].roster[1].players');
+    }
+    // Path 2: team[1].roster[0].players (alternative)
+    else if (data.fantasy_content?.team?.[1]?.roster?.[0]?.players) {
+      players = data.fantasy_content.team[1].roster[0].players;
+      console.log('Found players at team[1].roster[0].players');
+    }
+    // Path 3: team[1].roster.players (direct)
+    else if (data.fantasy_content?.team?.[1]?.roster?.players) {
+      players = data.fantasy_content.team[1].roster.players;
+      console.log('Found players at team[1].roster.players');
+    }
+    
     if (!players) {
-      console.log('No player stats found in roster');
+      console.log('No player stats found in roster - tried all paths');
       return {};
     }
 
