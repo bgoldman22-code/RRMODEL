@@ -241,10 +241,10 @@ export default async (req, context) => {
   try {
     // Hybrid data loading: Try Blobs first (if available), fallback to ESPN
     let boxscores = [];
+    const store = getStore('nba-data'); // Declare outside try block for later use
     
     try {
       console.log('📥 Attempting to load boxscores from Netlify Blobs...');
-      const store = getStore('nba-data');
       
       const [historicalData, currentData] = await Promise.all([
         store.get('player-boxscores-historical', { type: 'json' }),
