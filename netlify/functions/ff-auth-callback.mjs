@@ -127,28 +127,26 @@ export const handler = async (event, context) => {
     const isProduction = process.env.CONTEXT === 'production';
     const cookieOptions = `HttpOnly; Secure; SameSite=Lax; Path=/; Expires=${cookieExpiryString}`;
     
-    const cookies = [
-      `ff_access_token=${access_token}; ${cookieOptions}`,
-      `ff_refresh_token=${refresh_token}; ${cookieOptions}`,
-      `ff_expires_at=${expiresAt}; ${cookieOptions}`,
-      `ff_token_type=${token_type}; ${cookieOptions}`
-    ];
-    
-    if (xoauth_yahoo_guid) {
-      cookies.push(`ff_yahoo_guid=${xoauth_yahoo_guid}; ${cookieOptions}`);
-    }
-
     console.log('OAuth tokens saved to HTTP-only cookies (per-user)');
     console.log(`Token expires at: ${new Date(expiresAt).toISOString()}`);
     console.log(`Cookie expires at: ${cookieExpiryString}`);
 
     // Return HTML success page with cookies set
+    // NOTE: Netlify requires multiValueHeaders for multiple Set-Cookie headers
     return {
       statusCode: 200,
       headers: { 
         'Content-Type': 'text/html',
-        'Cache-Control': 'no-cache',
-        'Set-Cookie': cookies
+        'Cache-Control': 'no-cache'
+      },
+      multiValueHeaders: {
+        'Set-Cookie': [
+          `ff_access_token=${access_token}; ${cookieOptions}`,
+          `ff_refresh_token=${refresh_token}; ${cookieOptions}`,
+          `ff_expires_at=${expiresAt}; ${cookieOptions}`,
+          `ff_token_type=${token_type}; ${cookieOptions}`,
+          ...(xoauth_yahoo_guid ? [`ff_yahoo_guid=${xoauth_yahoo_guid}; ${cookieOptions}`] : [])
+        ]
       },
       body: `
 <!DOCTYPE html>

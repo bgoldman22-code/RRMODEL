@@ -241,9 +241,17 @@ export default async function handler(request, context) {
     const roast = await generateRoast(actualLeagueName, weekToAnalyze, currentWeek, teamDetails, scoreboard, nextWeekMatchups, tone);
 
     // Step 8: Return results with updated cookies if token was refreshed
-    const responseHeaders = { 'Content-Type': 'application/json' };
+    const responseInit = {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    };
+    
+    // Add updated cookies if token was refreshed (using multiValueHeaders in Netlify)
     if (updatedCookies) {
-      responseHeaders['Set-Cookie'] = updatedCookies;
+      responseInit.headers = new Headers(responseInit.headers);
+      updatedCookies.forEach(cookie => {
+        responseInit.headers.append('Set-Cookie', cookie);
+      });
     }
 
     return new Response(JSON.stringify({
@@ -257,10 +265,7 @@ export default async function handler(request, context) {
       roast,
       teams: teamDetails,
       matchups: scoreboard
-    }), {
-      status: 200,
-      headers: responseHeaders
-    });
+    }), responseInit);
 
   } catch (error) {
     console.error('Error in FF-Weekly-Roast:', error);

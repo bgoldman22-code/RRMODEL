@@ -320,19 +320,12 @@ export const handler = async (event, context) => {
 
     // JSON response
     if (format === 'json') {
-      const responseHeaders = { 
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache'
-      };
-      
-      // Add updated cookies if token was refreshed
-      if (updatedCookies) {
-        responseHeaders['Set-Cookie'] = updatedCookies;
-      }
-
-      return {
+      const response = {
         statusCode: 200,
-        headers: responseHeaders,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        },
         body: JSON.stringify({
           meta,
           summary: {
@@ -353,27 +346,38 @@ export const handler = async (event, context) => {
           notes
         }, null, 2)
       };
+      
+      // Add updated cookies if token was refreshed (using multiValueHeaders)
+      if (updatedCookies) {
+        response.multiValueHeaders = {
+          'Set-Cookie': updatedCookies
+        };
+      }
+
+      return response;
     }
 
     // CSV response
     if (format === 'csv') {
       const csv = convertToCSV([...starters, ...bench]);
-      const responseHeaders = { 
-        'Content-Type': 'text/csv',
-        'Content-Disposition': `attachment; filename="sitstart-week${week}.csv"`,
-        'Cache-Control': 'no-cache'
-      };
-      
-      // Add updated cookies if token was refreshed
-      if (updatedCookies) {
-        responseHeaders['Set-Cookie'] = updatedCookies;
-      }
-
-      return {
+      const response = {
         statusCode: 200,
-        headers: responseHeaders,
+        headers: { 
+          'Content-Type': 'text/csv',
+          'Content-Disposition': `attachment; filename="sitstart-week${week}.csv"`,
+          'Cache-Control': 'no-cache'
+        },
         body: csv
       };
+      
+      // Add updated cookies if token was refreshed (using multiValueHeaders)
+      if (updatedCookies) {
+        response.multiValueHeaders = {
+          'Set-Cookie': updatedCookies
+        };
+      }
+
+      return response;
     }
 
     // Unknown format

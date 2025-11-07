@@ -64,16 +64,21 @@ export async function handler(event) {
 
     console.log(`✅ Returning ${formattedLeagues.length} leagues`);
     
-    // Add updated cookies if token was refreshed
-    if (updatedCookies) {
-      headers['Set-Cookie'] = updatedCookies;
-    }
-
-    return {
+    // Build response
+    const response = {
       statusCode: 200,
       headers,
       body: JSON.stringify(formattedLeagues),
     };
+    
+    // Add updated cookies if token was refreshed (using multiValueHeaders)
+    if (updatedCookies) {
+      response.multiValueHeaders = {
+        'Set-Cookie': updatedCookies
+      };
+    }
+
+    return response;
 
   } catch (error) {
     console.error('❌ Error fetching leagues:', error);
