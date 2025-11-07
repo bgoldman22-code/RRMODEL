@@ -325,12 +325,28 @@ export async function getLeagueSettings(accessToken, leagueKey) {
     else if (scoringRules.reception > 0) pprType = `${scoringRules.reception} PPR`;
 
     // Extract roster positions
+    console.log('DEBUG: Full settings object keys:', Object.keys(settings));
+    console.log('DEBUG: settings.roster_positions =', JSON.stringify(settings.roster_positions, null, 2));
+    
     const rosterPositions = settings.roster_positions?.roster_position || [];
+    console.log('DEBUG: rosterPositions length =', rosterPositions.length);
+    
     const positionCounts = {};
     
     for (const pos of rosterPositions) {
-      const position = pos.position;
+      console.log('DEBUG: Processing roster position:', JSON.stringify(pos, null, 2));
+      let position = pos.position;
       const count = parseInt(pos.count, 10) || 0;
+      
+      // Normalize Yahoo position codes to match fillLineup expectations
+      // Yahoo uses "W/R/T" for FLEX, "W/R" for RB/WR flex, "BN" for bench
+      if (position === 'W/R/T' || position === 'W/R' || position === 'RB/WR/TE') {
+        position = 'FLEX';
+      } else if (position === 'BN') {
+        position = 'BN'; // Keep as-is (bench)
+      }
+      // QB, RB, WR, TE, K, DEF stay as-is
+      
       positionCounts[position] = (positionCounts[position] || 0) + count;
     }
 
