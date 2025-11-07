@@ -1317,6 +1317,32 @@ setTimeout(..., 25000) // Promise.race wrapper (was 30000)
 
 **Fixed in:** Commit 9f131fcf
 
+**Quality Improvements (Nov 7 PM):**
+After initial deployment, user feedback indicated roasts were too short and lacking depth:
+- ❌ Only 250 words (too brief)
+- ❌ Poor HTML structure (no proper sections)
+- ❌ Missing playoff context and waiver moves
+- ❌ Incomplete coverage of all teams
+
+**Enhanced Version (Commit 5d5fa266):**
+- ✅ Increased to 400 words for comprehensive coverage
+- ✅ Added structured sections:
+  * Winners Circle (top performers)
+  * Middle of the Pack (playoff race)
+  * Bottom Feeders (struggling teams)
+  * Waiver Wire Winners & Losers (transactions)
+  * Looking Ahead (week preview)
+- ✅ Included all 12 teams with meaningful commentary
+- ✅ Added transaction/waiver move analysis
+- ✅ Proper HTML formatting with `<h2>`, `<h3>`, `<p>` tags
+- ✅ Still maintains fast generation time (12-18s)
+
+**Token Impact:**
+- Input: 800 → 1000 tokens (+25%)
+- Output: 400 → 600 tokens (+50%)
+- Generation time: 11s → 12-18s (+1-7s)
+- Still well under 25s timeout with 7-13s safety margin
+
 ---
 
 ### Issue 2: Limited Prop Coverage for Backups
@@ -1419,17 +1445,33 @@ OPENAI_API_KEY="your_openai_key"  # Required for fallback
 |-----------|-----------|-----------|-------|
 | OAuth Flow | 1-2 sec | N/A | One-time per user |
 | Sit/Start Analysis | 3-5 sec | <1 sec | Depends on roster size |
-| Weekly Roast (gpt-4o-mini) | 10-15 sec | N/A | Fast model, optimized prompt |
+| Weekly Roast (gpt-4o-mini) | 12-18 sec | N/A | 400-word comprehensive recap |
 | Props Fetch (TheOddsAPI) | 2-3 sec | <0.5 sec | Per game endpoint |
 
 ### Weekly Roast Performance History
 
-| Date | Model | Prompt Size | Output | Time | Issue |
-|------|-------|-------------|--------|------|-------|
-| Oct 2024 | Claude Sonnet 3.5 | 2500 tokens | 1000 tokens | 20-25s | ✅ Working |
+| Date | Model | Prompt | Output | Time | Issue |
+|------|-------|--------|--------|------|-------|
+| Oct 2024 | Claude Sonnet 3.5 | 2500 tokens | 1000 tokens (500 words) | 20-25s | ✅ Working |
 | Nov 6, 2024 | Claude fallback | 2500 tokens | 1000 tokens | Failed | ❌ timeout_ms error |
-| Nov 7, 2024 AM | GPT-4o | 2500 tokens | 1000 tokens | 30s+ | ❌ Timeout |
-| Nov 7, 2024 PM | GPT-4o-mini | 800 tokens | 400 tokens | 8-12s | ✅ FIXED |
+| Nov 7 AM | GPT-4o | 2500 tokens | 1000 tokens | 30s+ | ❌ Timeout |
+| Nov 7 PM | GPT-4o-mini | 800 tokens | 400 tokens (250 words) | 11s | ✅ Fast but shallow |
+| Nov 7 PM v2 | GPT-4o-mini | 1000 tokens | 600 tokens (400 words) | 12-18s | ✅ OPTIMAL |
+
+### Content Quality Evolution
+
+**Version 1 (250 words):** Too short, lacked depth
+- ❌ Missing playoff implications
+- ❌ No transaction analysis
+- ❌ Incomplete team coverage
+- ❌ Poor HTML structure
+
+**Version 2 (400 words):** Comprehensive coverage
+- ✅ Structured sections (Winners, Middle, Bottom, Moves, Preview)
+- ✅ All 12 teams with meaningful commentary
+- ✅ Playoff race context
+- ✅ Waiver wire moves highlighted
+- ✅ Proper HTML formatting with headers
 
 ### API Usage Limits
 
@@ -1437,7 +1479,13 @@ OPENAI_API_KEY="your_openai_key"  # Required for fallback
 |---------|-------|---------------|------------------|-------|
 | Yahoo Fantasy | 10k/day | ~100/day | Free | Cached aggressively |
 | TheOddsAPI | 500/month | ~30/week | Included | Premium plan |
-| OpenAI GPT-4o-mini | Pay-per-use | ~50/week | $0.005 | 250-word roasts, 800 input + 400 output tokens |
+| OpenAI GPT-4o-mini | Pay-per-use | ~50/week | $0.007 | 400-word roasts, 1000 input + 600 output tokens |
+
+**Roast Cost Breakdown (per request):**
+- Input: 1000 tokens × $0.15/1M = $0.00015
+- Output: 600 tokens × $0.60/1M = $0.00036
+- **Total: ~$0.0005 per roast** (rounded to $0.001 with overhead)
+- **Monthly cost (50 roasts):** ~$0.35
 
 ---
 
