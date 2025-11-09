@@ -13,7 +13,13 @@ import fetch from 'node-fetch';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const API_KEY = 'c5d3fe15e6c5be83b2acd8695cff012b';
+const API_KEY = process.env.THEODDS_API_KEY;
+if (!API_KEY) {
+  console.error('❌ ERROR: THEODDS_API_KEY environment variable not set');
+  console.error('💡 Set it in Netlify UI: Site settings → Build & deploy → Environment');
+  process.exit(1);
+}
+
 const BASE_URL = 'https://api.the-odds-api.com/v4';
 const SPORT = 'baseball_mlb';
 const MARKET = 'h2h'; // Moneyline - available historically

@@ -22,7 +22,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ==================== CONFIG ====================
-const API_KEY = 'c5d3fe15e6c5be83b2acd8695cff012b';
+const API_KEY = process.env.THEODDS_API_KEY;
+if (!API_KEY) {
+  console.error('❌ ERROR: THEODDS_API_KEY environment variable not set');
+  console.error('💡 Set it in Netlify UI: Site settings → Build & deploy → Environment');
+  process.exit(1);
+}
+
 const SPORT = 'baseball_mlb';
 const REGION = 'us';
 const MARKET = 'batter_home_runs';
