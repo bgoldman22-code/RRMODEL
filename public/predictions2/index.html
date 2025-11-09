@@ -588,13 +588,20 @@
             let highConfPicks = 0;
             let totalUnits = 0;
             
+            // Helper function to calculate units
+            function calcUnits(confidence, edge, bet) {
+                if (!bet || edge <= 0) return 0;
+                const kelly = (confidence * edge) / 100 / 100;
+                return Math.min(Math.max(kelly * 10, 0.5), 2.5);
+            }
+            
             predictions.forEach(pred => {
                 const preds = pred.predictions || {};
                 ['moneyline', 'spread', 'total'].forEach(market => {
                     const pick = preds[market];
                     if (pick && pick.bet && pick.confidence >= 50) {
                         totalPicks++;
-                        totalUnits += pick.recommended_units || 0;
+                        totalUnits += calcUnits(pick.confidence, pick.edge, pick.bet);
                         if (pick.confidence >= 65) highConfPicks++;
                     }
                 });
@@ -636,11 +643,19 @@
             const odds = pred.odds || {};
             const stats = pred.teamStats || {};
             
+            // Calculate units based on confidence and edge (Kelly criterion approximation)
+            function calculateUnits(confidence, edge, bet) {
+                if (!bet || edge <= 0) return 0;
+                // Simple Kelly: (confidence * edge) / 100, capped at 2.5 units
+                const kelly = (confidence * edge) / 100 / 100; // Divide by 100 twice: once for percentage, once for fractional Kelly
+                return Math.min(Math.max(kelly * 10, 0.5), 2.5); // Min 0.5, max 2.5
+            }
+            
             // Moneyline section
             const mlConfidence = mlPick.confidence || 0;
             const mlEdge = mlPick.edge || 0;
             const mlBet = mlPick.bet || false;
-            const mlUnits = mlPick.recommended_units || 0;
+            const mlUnits = calculateUnits(mlConfidence, mlEdge, mlBet);
             const mlPickTeam = mlPick.pick || '';
             const mlHomeOdds = odds.moneyline?.home || odds.display?.h2h?.home;
             const mlAwayOdds = odds.moneyline?.away || odds.display?.h2h?.away;
@@ -652,7 +667,7 @@
             const spreadConfidence = spreadPick.confidence || 0;
             const spreadEdge = spreadPick.edge || 0;
             const spreadBet = spreadPick.bet || false;
-            const spreadUnits = spreadPick.recommended_units || 0;
+            const spreadUnits = calculateUnits(spreadConfidence, spreadEdge, spreadBet);
             const spreadPickTeam = spreadPick.pick || '';
             const spreadLine = spreadPick.line || 0;
             const spreadModelLine = spreadPick.predicted || 0;
@@ -665,7 +680,7 @@
             const totalConfidence = totalPick.confidence || 0;
             const totalEdge = totalPick.edge || 0;
             const totalBet = totalPick.bet || false;
-            const totalUnits = totalPick.recommended_units || 0;
+            const totalUnits = calculateUnits(totalConfidence, totalEdge, totalBet);
             const totalDirection = totalPick.pick ? (totalPick.pick.charAt(0).toUpperCase() + totalPick.pick.slice(1)) : '';
             const totalVegasLine = totalPick.line || odds.total?.line || odds.display?.total?.over?.line || 0;
             const totalModelLine = totalPick.predicted || 0;
@@ -677,11 +692,11 @@
             const totalBestPrice = totalPick.best_book?.price || totalOdds;
             const totalBestEdge = totalPick.best_book?.edge_points || totalEdge;
             
-            // EPA stats
-            const homeEPA = stats.home?.epa || 0;
-            const awayEPA = stats.away?.epa || 0;
-            const homeForm = stats.home?.form || 0;
-            const awayForm = stats.away?.form || 0;
+            // EPA stats (from teamStats.home/away.score, NOT .epa)
+            const homeScore = stats.home?.score || 0;
+            const awayScore = stats.away?.score || 0;
+            const homeForm = stats.home?.injuryImpact?.totalImpact || 0;
+            const awayForm = stats.away?.injuryImpact?.totalImpact || 0;
             
             return `
                 <div class="game-card">
@@ -775,11 +790,11 @@
                     <!-- Team Stats -->
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #2a2f4a; font-size: 13px; color: #888;">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            <div>${homeTeam} EPA: ${homeEPA.toFixed(3)}</div>
-                            <div>${awayTeam} EPA: ${awayEPA.toFixed(3)}</div>
+                            <div>${homeTeam} Score: ${homeScore.toFixed(2)}</div>
+                            <div>${awayTeam} Score: ${awayScore.toFixed(2)}</div>
                         </div>
                         <div style="margin-top: 6px; color: #666;">
-                            Form: ${homeForm >= 0 ? '+' : ''}${homeForm.toFixed(3)} / ${awayForm >= 0 ? '+' : ''}${awayForm.toFixed(3)}
+                            Injury Impact: ${homeForm.toFixed(1)} / ${awayForm.toFixed(1)}
                         </div>
                         <div style="margin-top: 6px; color: #00ff88; font-size: 12px;">
                             Live odds ✓
