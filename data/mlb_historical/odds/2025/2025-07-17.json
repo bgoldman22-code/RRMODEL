@@ -1,0 +1,509 @@
+{
+  "date": "2025-07-17",
+  "timestamp": "2025-11-05T06:29:15.521Z",
+  "games_count": 15,
+  "credits_used": 160,
+  "games": [
+    {
+      "id": "cd0d11ec1434466237cb3f7b7ec1cde1",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-18T18:21:00Z",
+      "home_team": "Chicago Cubs",
+      "away_team": "Boston Red Sox",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-17T11:51:33Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-17T11:55:37Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Pete Crow-Armstrong",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alex Bregman",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Seiya Suzuki",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Wilyer Abreu",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Busch",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Tucker",
+                  "price": 5.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jarren Duran",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ian Happ",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trevor Story",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Roman Anthony",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carson Kelly",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dansby Swanson",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carlos Narvaez",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ceddanne Rafaela",
+                  "price": 7.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Masataka Yoshida",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Abraham Toro",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Shaw",
+                  "price": 13,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nico Hoerner",
+                  "price": 16,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4a570459758ef39453dd950d58989097",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-18T22:40:00Z",
+      "home_team": "Pittsburgh Pirates",
+      "away_team": "Chicago White Sox",
+      "bookmakers": []
+    },
+    {
+      "id": "0089a0b4f786f6ad16bae742eaf1f065",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-18T22:45:00Z",
+      "home_team": "Philadelphia Phillies",
+      "away_team": "Los Angeles Angels",
+      "bookmakers": []
+    },
+    {
+      "id": "fd9a76569234360a743ff07a5d9f011e",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-18T22:45:00Z",
+      "home_team": "Washington Nationals",
+      "away_team": "San Diego Padres",
+      "bookmakers": []
+    },
+    {
+      "id": "499dd7d7c1351101c77d68376a3c0390",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-18T23:07:00Z",
+      "home_team": "Toronto Blue Jays",
+      "away_team": "San Francisco Giants",
+      "bookmakers": []
+    },
+    {
+      "id": "8095b879cf6bbd19f121616a2d65649a",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-18T23:10:00Z",
+      "home_team": "Cleveland Guardians",
+      "away_team": "Oakland Athletics",
+      "bookmakers": []
+    },
+    {
+      "id": "bac4249db2987734d4d5e4b8b2d2648c",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-18T23:11:00Z",
+      "home_team": "New York Mets",
+      "away_team": "Cincinnati Reds",
+      "bookmakers": []
+    },
+    {
+      "id": "f19e902ad18079b2c8fb1339126f2e87",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-18T23:11:00Z",
+      "home_team": "Miami Marlins",
+      "away_team": "Kansas City Royals",
+      "bookmakers": []
+    },
+    {
+      "id": "c17898685d317ca432d3275bd4cb30f7",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-18T23:15:00Z",
+      "home_team": "Atlanta Braves",
+      "away_team": "New York Yankees",
+      "bookmakers": []
+    },
+    {
+      "id": "58ef42cde044286fa10994c77054c2ca",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-18T23:36:00Z",
+      "home_team": "Tampa Bay Rays",
+      "away_team": "Baltimore Orioles",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-17T11:51:33Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-17T11:51:19Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Jordan Westburg",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler O'Neill",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Junior Caminero",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Colton Cowser",
+                  "price": 5.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gunnar Henderson",
+                  "price": 6.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jonathan Aranda",
+                  "price": 6.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Danny Jansen",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ramon Laureano",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ryan O'Hearn",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cedric Mullins",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jackson Holliday",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Yandy Diaz",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Lowe",
+                  "price": 7.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chandler Simpson",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jacob Stallings",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jake Mangum",
+                  "price": 11,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Taylor Walls",
+                  "price": 11.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ha-Seong Kim",
+                  "price": 11.6,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "889d45b2394b5c3a345b63dbd249a28f",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-19T00:06:00Z",
+      "home_team": "Texas Rangers",
+      "away_team": "Detroit Tigers",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-17T11:51:33Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-17T11:56:05Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Spencer Torkelson",
+                  "price": 4.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Corey Seager",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Riley Greene",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jahmai Jones",
+                  "price": 5.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Wyatt Langford",
+                  "price": 6.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adolis Garcia",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gleyber Torres",
+                  "price": 6.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Wenceel Perez",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Marcus Semien",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Higashioka",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Javier Baez",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dillon Dingler",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Vierling",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Smith",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jonah Heim",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Evan Carter",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Zach McKinstry",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ezequiel Duran",
+                  "price": 12,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "df92b4676a2481eb260822d9af4c7d08",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-19T00:41:00Z",
+      "home_team": "Colorado Rockies",
+      "away_team": "Minnesota Twins",
+      "bookmakers": []
+    },
+    {
+      "id": "8cc3a3d09dfe3e8b01f46f9deb6ffac6",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-19T01:40:00Z",
+      "home_team": "Arizona Diamondbacks",
+      "away_team": "St. Louis Cardinals",
+      "bookmakers": []
+    },
+    {
+      "id": "529ff6bb106937a0d5e0b282770c2895",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-19T02:10:00Z",
+      "home_team": "Seattle Mariners",
+      "away_team": "Houston Astros",
+      "bookmakers": []
+    },
+    {
+      "id": "7077e0a4bb01b670ffe1b188b940cb08",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-19T02:10:00Z",
+      "home_team": "Los Angeles Dodgers",
+      "away_team": "Milwaukee Brewers",
+      "bookmakers": []
+    }
+  ]
+}

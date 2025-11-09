@@ -1,0 +1,6047 @@
+{
+  "date": "2025-07-30",
+  "timestamp": "2025-11-05T06:32:47.448Z",
+  "games_count": 15,
+  "credits_used": 160,
+  "games": [
+    {
+      "id": "3908f246ac75322ba52494aa2c6a6481",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T16:35:00Z",
+      "home_team": "Baltimore Orioles",
+      "away_team": "Toronto Blue Jays",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:39Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Addison Barger",
+                  "price": 4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler O'Neill",
+                  "price": 4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Vladimir Guerrero Jr.",
+                  "price": 4.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cedric Mullins",
+                  "price": 4.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gunnar Henderson",
+                  "price": 4.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ramon Laureano",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jordan Westburg",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Colton Cowser",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ryan O'Hearn",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jackson Holliday",
+                  "price": 5.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bo Bichette",
+                  "price": 5.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Davis Schneider",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adley Rutschman",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nathan Lukes",
+                  "price": 6.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Will Wagner",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler Heineman",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ernie Clement",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Myles Straw",
+                  "price": 12,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:24Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Tyler O'Neill",
+                  "price": 3.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Addison Barger",
+                  "price": 3.85,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Vladimir Guerrero Jr.",
+                  "price": 4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gunnar Henderson",
+                  "price": 4.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jordan Westburg",
+                  "price": 4.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cedric Mullins",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Colton Cowser",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bo Bichette",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adley Rutschman",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jackson Holliday",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ryan O'Hearn",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nathan Lukes",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Will Wagner",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dylan Carlson",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ernie Clement",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler Heineman",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Myles Straw",
+                  "price": 8,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2025-07-30T11:55:13Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:51Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Cedric Mullins",
+                  "price": 36,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ryan O'Hearn",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler Heineman",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Addison Barger",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Vladimir Guerrero Jr.",
+                  "price": 36,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nathan Lukes",
+                  "price": 61,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bo Bichette",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ernie Clement",
+                  "price": 101,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adley Rutschman",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jordan Westburg",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cedric Mullins",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Vladimir Guerrero Jr.",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jordan Westburg",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adley Rutschman",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bo Bichette",
+                  "price": 51,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ernie Clement",
+                  "price": 101,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nathan Lukes",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gunnar Henderson",
+                  "price": 31,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Addison Barger",
+                  "price": 30,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ryan O'Hearn",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gunnar Henderson",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jackson Holliday",
+                  "price": 51,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler O'Neill",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler O'Neill",
+                  "price": 34,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jackson Holliday",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler Heineman",
+                  "price": 111,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Will Wagner",
+                  "price": 81,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Will Wagner",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ernie Clement",
+                  "price": 8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler Heineman",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bo Bichette",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ryan O'Hearn",
+                  "price": 5.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Addison Barger",
+                  "price": 3.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nathan Lukes",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jordan Westburg",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gunnar Henderson",
+                  "price": 3.95,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adley Rutschman",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jackson Holliday",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cedric Mullins",
+                  "price": 4.35,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler O'Neill",
+                  "price": 4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Vladimir Guerrero Jr.",
+                  "price": 4.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Will Wagner",
+                  "price": 7,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "f7cff1e2fc4403f706826771bdad87c2",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T17:11:00Z",
+      "home_team": "Detroit Tigers",
+      "away_team": "Arizona Diamondbacks",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:25Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Eugenio Suarez",
+                  "price": 3.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Corbin Carroll",
+                  "price": 4.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ketel Marte",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Riley Greene",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kerry Carpenter",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Torkelson",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gleyber Torres",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Colt Keith",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adrian Del Castillo",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Wenceel Perez",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Javier Baez",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dillon Dingler",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Lourdes Gurriel Jr.",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tristin English",
+                  "price": 9.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alek Thomas",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Zach McKinstry",
+                  "price": 11,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Geraldo Perdomo",
+                  "price": 11,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jose Herrera",
+                  "price": 14,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:24Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Eugenio Suarez",
+                  "price": 3.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Corbin Carroll",
+                  "price": 3.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kerry Carpenter",
+                  "price": 4.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ketel Marte",
+                  "price": 4.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Riley Greene",
+                  "price": 4.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Torkelson",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Colt Keith",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gleyber Torres",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dillon Dingler",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Javier Baez",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adrian Del Castillo",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Lourdes Gurriel Jr.",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Zach McKinstry",
+                  "price": 6.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alek Thomas",
+                  "price": 6.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Geraldo Perdomo",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tristin English",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jose Herrera",
+                  "price": 8.5,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2025-07-30T11:55:13Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:48Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Tristin English",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tristin English",
+                  "price": 81,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ketel Marte",
+                  "price": 36,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ketel Marte",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Corbin Carroll",
+                  "price": 31,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gleyber Torres",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dillon Dingler",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Corbin Carroll",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Lourdes Gurriel Jr.",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Eugenio Suarez",
+                  "price": 25,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Zach McKinstry",
+                  "price": 111,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Lourdes Gurriel Jr.",
+                  "price": 91,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Eugenio Suarez",
+                  "price": 151,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Zach McKinstry",
+                  "price": 101,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Torkelson",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Colt Keith",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adrian Del Castillo",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dillon Dingler",
+                  "price": 81,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Geraldo Perdomo",
+                  "price": 126,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kerry Carpenter",
+                  "price": 34,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Colt Keith",
+                  "price": 67,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adrian Del Castillo",
+                  "price": 81,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kerry Carpenter",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Riley Greene",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gleyber Torres",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Torkelson",
+                  "price": 41,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Riley Greene",
+                  "price": 41,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tristin English",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Corbin Carroll",
+                  "price": 4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Eugenio Suarez",
+                  "price": 3.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Lourdes Gurriel Jr.",
+                  "price": 7.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Riley Greene",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dillon Dingler",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adrian Del Castillo",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Torkelson",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ketel Marte",
+                  "price": 4.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Colt Keith",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Zach McKinstry",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kerry Carpenter",
+                  "price": 4.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gleyber Torres",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Geraldo Perdomo",
+                  "price": 9,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "32616b490dedfd6744159027ab3422a5",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T17:11:00Z",
+      "home_team": "Minnesota Twins",
+      "away_team": "Boston Red Sox",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:38Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Wilyer Abreu",
+                  "price": 4.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Wallner",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jarren Duran",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alex Bregman",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kody Clemens",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Roman Anthony",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trevor Story",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Royce Lewis",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trevor Larnach",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ryan Jeffers",
+                  "price": 8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carlos Correa",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Willi Castro",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Masataka Yoshida",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ceddanne Rafaela",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Harrison Bader",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Abraham Toro",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ty France",
+                  "price": 11,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Connor Wong",
+                  "price": 11.6,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2025-07-30T11:55:13Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:51Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Matt Wallner",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brooks Lee",
+                  "price": 91,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alex Bregman",
+                  "price": 61,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Wilyer Abreu",
+                  "price": 35,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Willi Castro",
+                  "price": 111,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trevor Story",
+                  "price": 76,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kody Clemens",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brooks Lee",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ty France",
+                  "price": 101,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trevor Larnach",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jarren Duran",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trevor Larnach",
+                  "price": 76,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trevor Story",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kody Clemens",
+                  "price": 51,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jarren Duran",
+                  "price": 46,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alex Bregman",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carlos Narvaez",
+                  "price": 151,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ty France",
+                  "price": 131,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Royce Lewis",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Wallner",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Masataka Yoshida",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carlos Narvaez",
+                  "price": 76,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Roman Anthony",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Masataka Yoshida",
+                  "price": 76,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Roman Anthony",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Wilyer Abreu",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Royce Lewis",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jarren Duran",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Willi Castro",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Wilyer Abreu",
+                  "price": 4.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ty France",
+                  "price": 9.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kody Clemens",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alex Bregman",
+                  "price": 5.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Royce Lewis",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brooks Lee",
+                  "price": 8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Wallner",
+                  "price": 5.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Masataka Yoshida",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Roman Anthony",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carlos Narvaez",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trevor Story",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trevor Larnach",
+                  "price": 6.75,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:41Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Wilyer Abreu",
+                  "price": 4.05,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kody Clemens",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Wallner",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alex Bregman",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jarren Duran",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Royce Lewis",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Roman Anthony",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trevor Larnach",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trevor Story",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Masataka Yoshida",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carlos Narvaez",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ceddanne Rafaela",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Abraham Toro",
+                  "price": 6.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Willi Castro",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brooks Lee",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Harrison Bader",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ty France",
+                  "price": 7.5,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "41ba9d9292184eee87260c06888f9ec1",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T18:11:00Z",
+      "home_team": "Kansas City Royals",
+      "away_team": "Atlanta Braves",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:35Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Salvador Perez",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bobby Witt Jr.",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Olson",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Randal Grichuk",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Sean Murphy",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Marcell Ozuna",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Austin Riley",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Vinnie Pasquantino",
+                  "price": 6.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ozzie Albies",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jurickson Profar",
+                  "price": 8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Harris II",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jonathan India",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "John Rave",
+                  "price": 9.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Maikel Garcia",
+                  "price": 9.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Freddy Fermin",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Eli White",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Isbel",
+                  "price": 14,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Allen",
+                  "price": 15,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2025-07-30T11:55:13Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:00Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Jurickson Profar",
+                  "price": 101,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Austin Riley",
+                  "price": 46,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bobby Witt Jr.",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Harris II",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Maikel Garcia",
+                  "price": 121,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Sean Murphy",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ozzie Albies",
+                  "price": 81,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Vinnie Pasquantino",
+                  "price": 76,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ozzie Albies",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Olson",
+                  "price": 61,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jonathan India",
+                  "price": 111,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Randal Grichuk",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Harris II",
+                  "price": 81,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Olson",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jonathan India",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bobby Witt Jr.",
+                  "price": 41,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Salvador Perez",
+                  "price": 46,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "John Rave",
+                  "price": 151,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "John Rave",
+                  "price": 101,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Randal Grichuk",
+                  "price": 41,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Vinnie Pasquantino",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Marcell Ozuna",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Maikel Garcia",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Marcell Ozuna",
+                  "price": 67,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Sean Murphy",
+                  "price": 61,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Salvador Perez",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jurickson Profar",
+                  "price": 151,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Austin Riley",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Maikel Garcia",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "John Rave",
+                  "price": 10.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jonathan India",
+                  "price": 8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Sean Murphy",
+                  "price": 6.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ozzie Albies",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Harris II",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Marcell Ozuna",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Salvador Perez",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Olson",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Austin Riley",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jurickson Profar",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bobby Witt Jr.",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Vinnie Pasquantino",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Randal Grichuk",
+                  "price": 4.9,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:03Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Salvador Perez",
+                  "price": 4.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Randal Grichuk",
+                  "price": 4.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bobby Witt Jr.",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Olson",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Sean Murphy",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Austin Riley",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Marcell Ozuna",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Vinnie Pasquantino",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jonathan India",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ozzie Albies",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Harris II",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jurickson Profar",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Maikel Garcia",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "John Rave",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Freddy Fermin",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Eli White",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Isbel",
+                  "price": 7.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Allen",
+                  "price": 8,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bea7fd071ec9b4826aae317458ed86ee",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T18:11:00Z",
+      "home_team": "Milwaukee Brewers",
+      "away_team": "Chicago Cubs",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:22Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Seiya Suzuki",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew Vaughn",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Tucker",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Busch",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Pete Crow-Armstrong",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "William Contreras",
+                  "price": 5.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carson Kelly",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Isaac Collins",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dansby Swanson",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Christian Yelich",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Caleb Durbin",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Joey Ortiz",
+                  "price": 8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Moisés Ballesteros",
+                  "price": 8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brice Turang",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Blake Perkins",
+                  "price": 9.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Sal Frelick",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Shaw",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nico Hoerner",
+                  "price": 12,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:24Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Kyle Tucker",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Busch",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew Vaughn",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Seiya Suzuki",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Pete Crow-Armstrong",
+                  "price": 4.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "William Contreras",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carson Kelly",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Christian Yelich",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Caleb Durbin",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dansby Swanson",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Isaac Collins",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Joey Ortiz",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Blake Perkins",
+                  "price": 6.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Shaw",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Sal Frelick",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brice Turang",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nico Hoerner",
+                  "price": 8.5,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2025-07-30T11:55:13Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:28Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Nico Hoerner",
+                  "price": 161,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Sal Frelick",
+                  "price": 111,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brice Turang",
+                  "price": 126,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Christian Yelich",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Busch",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Sal Frelick",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brice Turang",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Pete Crow-Armstrong",
+                  "price": 46,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Pete Crow-Armstrong",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Isaac Collins",
+                  "price": 76,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "William Contreras",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew Vaughn",
+                  "price": 41,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dansby Swanson",
+                  "price": 71,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "William Contreras",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Isaac Collins",
+                  "price": 151,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carson Kelly",
+                  "price": 76,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Seiya Suzuki",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew Vaughn",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Busch",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Blake Perkins",
+                  "price": 111,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Tucker",
+                  "price": 46,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carson Kelly",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Seiya Suzuki",
+                  "price": 51,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Christian Yelich",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dansby Swanson",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Tucker",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nico Hoerner",
+                  "price": 13,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew Vaughn",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Sal Frelick",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Busch",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Tucker",
+                  "price": 5.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Pete Crow-Armstrong",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dansby Swanson",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carson Kelly",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Christian Yelich",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Seiya Suzuki",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "William Contreras",
+                  "price": 5.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Isaac Collins",
+                  "price": 6.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brice Turang",
+                  "price": 9.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Blake Perkins",
+                  "price": 8.5,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "65598cac119ceedc2fd6760845171e55",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T18:11:00Z",
+      "home_team": "Chicago White Sox",
+      "away_team": "Philadelphia Phillies",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:28Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Kyle Schwarber",
+                  "price": 3.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryce Harper",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Robert Jr.",
+                  "price": 5.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew Benintendi",
+                  "price": 5.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Miguel Vargas",
+                  "price": 5.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Colson Montgomery",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Max Kepler",
+                  "price": 6.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mike Tauchman",
+                  "price": 6.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Lenyn Sosa",
+                  "price": 6.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Castellanos",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "J.T. Realmuto",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brooks Baldwin",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Otto Kemp",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trea Turner",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brandon Marsh",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Edgar Quero",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryson Stott",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chase Meidroth",
+                  "price": 11,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:24Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Kyle Schwarber",
+                  "price": 3.05,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryce Harper",
+                  "price": 4.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Robert Jr.",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew Benintendi",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Miguel Vargas",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Castellanos",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brooks Baldwin",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mike Tauchman",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trea Turner",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Max Kepler",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Lenyn Sosa",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Colson Montgomery",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "J.T. Realmuto",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Teel",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Otto Kemp",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brandon Marsh",
+                  "price": 6.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryson Stott",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chase Meidroth",
+                  "price": 7.5,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2025-07-30T11:55:13Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:06Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Trea Turner",
+                  "price": 71,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Robert Jr.",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Schwarber",
+                  "price": 111,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryce Harper",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Teel",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brandon Marsh",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Schwarber",
+                  "price": 21,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chase Meidroth",
+                  "price": 126,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Teel",
+                  "price": 81,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brandon Marsh",
+                  "price": 76,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Otto Kemp",
+                  "price": 101,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew Benintendi",
+                  "price": 71,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Miguel Vargas",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Castellanos",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mike Tauchman",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "J.T. Realmuto",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Miguel Vargas",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew Benintendi",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Castellanos",
+                  "price": 67,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Robert Jr.",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryce Harper",
+                  "price": 36,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Otto Kemp",
+                  "price": 81,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "J.T. Realmuto",
+                  "price": 71,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trea Turner",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mike Tauchman",
+                  "price": 61,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryce Harper",
+                  "price": 4.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trea Turner",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Schwarber",
+                  "price": 3.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew Benintendi",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Castellanos",
+                  "price": 6.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chase Meidroth",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brandon Marsh",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Robert Jr.",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Otto Kemp",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Teel",
+                  "price": 7.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mike Tauchman",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Miguel Vargas",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "J.T. Realmuto",
+                  "price": 6.5,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0828dc28a8a862352951f5b756c67fca",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T18:11:00Z",
+      "home_team": "Houston Astros",
+      "away_team": "Washington Nationals",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:56Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "James Wood",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Christian Walker",
+                  "price": 6.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "CJ Abrams",
+                  "price": 6.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Bell",
+                  "price": 6.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jose Altuve",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Yainer Diaz",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Victor Caratini",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nathaniel Lowe",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Riley Adams",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Zack Short",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alex Call",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cam Smith",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cooper Hummel",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chas McCormick",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mauricio Dubon",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Daylen Lile",
+                  "price": 11,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jacob Young",
+                  "price": 11.6,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2025-07-30T11:55:13Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:51Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Drew Millas",
+                  "price": 111,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Drew Millas",
+                  "price": 101,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Bell",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brady House",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "CJ Abrams",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nathaniel Lowe",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "James Wood",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Victor Caratini",
+                  "price": 76,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cam Smith",
+                  "price": 81,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mauricio Dubon",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Daylen Lile",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Yainer Diaz",
+                  "price": 67,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Bell",
+                  "price": 71,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Victor Caratini",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Daylen Lile",
+                  "price": 101,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Christian Walker",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "James Wood",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nathaniel Lowe",
+                  "price": 101,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brady House",
+                  "price": 81,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chas McCormick",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cam Smith",
+                  "price": 101,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jose Altuve",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "CJ Abrams",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jose Altuve",
+                  "price": 71,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chas McCormick",
+                  "price": 101,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mauricio Dubon",
+                  "price": 111,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Christian Walker",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Yainer Diaz",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Drew Millas",
+                  "price": 9.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mauricio Dubon",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jose Altuve",
+                  "price": 6.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Yainer Diaz",
+                  "price": 6.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Daylen Lile",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Christian Walker",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chas McCormick",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brady House",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Bell",
+                  "price": 6.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "James Wood",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nathaniel Lowe",
+                  "price": 8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "CJ Abrams",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cam Smith",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Victor Caratini",
+                  "price": 6.4,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:48Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "James Wood",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "CJ Abrams",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Bell",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Christian Walker",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Yainer Diaz",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jose Altuve",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brady House",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nathaniel Lowe",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Victor Caratini",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cam Smith",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Zack Short",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cooper Hummel",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mauricio Dubon",
+                  "price": 7.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chas McCormick",
+                  "price": 7.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Daylen Lile",
+                  "price": 7.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jacob Young",
+                  "price": 8,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "91c96fe79e7485d7add4362c11b9e5f7",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T19:46:00Z",
+      "home_team": "San Francisco Giants",
+      "away_team": "Pittsburgh Pirates",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:38Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Matt Chapman",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Rafael Devers",
+                  "price": 5.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Willy Adames",
+                  "price": 6.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Heliot Ramos",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Oneil Cruz",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Wilmer Flores",
+                  "price": 9.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mike Yastrzemski",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Horwitz",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew McCutchen",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Patrick Bailey",
+                  "price": 11.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryan Reynolds",
+                  "price": 11.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brett Wisely",
+                  "price": 11.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tommy Pham",
+                  "price": 13,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jung Hoo Lee",
+                  "price": 13,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Henry Davis",
+                  "price": 14,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Gonzales",
+                  "price": 15,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Isiah Kiner-Falefa",
+                  "price": 18,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ke'Bryan Hayes",
+                  "price": 18,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:14Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Rafael Devers",
+                  "price": 4.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Willy Adames",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Chapman",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mike Yastrzemski",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Heliot Ramos",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Oneil Cruz",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jung Hoo Lee",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew McCutchen",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryan Reynolds",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Horwitz",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dominic Smith",
+                  "price": 7.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brett Wisely",
+                  "price": 7.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Gonzales",
+                  "price": 8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Henry Davis",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ke'Bryan Hayes",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tommy Pham",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Isiah Kiner-Falefa",
+                  "price": 9,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2025-07-30T11:55:13Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:36Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Willy Adames",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryan Reynolds",
+                  "price": 101,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dominic Smith",
+                  "price": 126,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew McCutchen",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Oneil Cruz",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Chapman",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Rafael Devers",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dominic Smith",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Willy Adames",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mike Yastrzemski",
+                  "price": 151,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Rafael Devers",
+                  "price": 41,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Horwitz",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jung Hoo Lee",
+                  "price": 101,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jung Hoo Lee",
+                  "price": 151,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew McCutchen",
+                  "price": 101,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Chapman",
+                  "price": 51,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Heliot Ramos",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ke'Bryan Hayes",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryan Reynolds",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tommy Pham",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ke'Bryan Hayes",
+                  "price": 161,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tommy Pham",
+                  "price": 161,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Heliot Ramos",
+                  "price": 76,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Horwitz",
+                  "price": 121,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Gonzales",
+                  "price": 151,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Gonzales",
+                  "price": 101,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mike Yastrzemski",
+                  "price": 91,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Oneil Cruz",
+                  "price": 71,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mike Yastrzemski",
+                  "price": 7.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Oneil Cruz",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Horwitz",
+                  "price": 9.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Heliot Ramos",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jung Hoo Lee",
+                  "price": 11,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Chapman",
+                  "price": 5.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andrew McCutchen",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Willy Adames",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tommy Pham",
+                  "price": 11.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dominic Smith",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Gonzales",
+                  "price": 11,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ke'Bryan Hayes",
+                  "price": 12.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Bryan Reynolds",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Rafael Devers",
+                  "price": 4.8,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8cf14c24c5af65d668c680e174e8acbe",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T20:11:00Z",
+      "home_team": "San Diego Padres",
+      "away_team": "New York Mets",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:02Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Juan Soto",
+                  "price": 3.65,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Pete Alonso",
+                  "price": 4.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Francisco Lindor",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Manny Machado",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brandon Nimmo",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Fernando Tatis Jr.",
+                  "price": 5.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Francisco Alvarez",
+                  "price": 5.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mark Vientos",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ronny Mauricio",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brett Baty",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jackson Merrill",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gavin Sheets",
+                  "price": 7.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jeff McNeil",
+                  "price": 7.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jake Cronenworth",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Martin Maldonado",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Xander Bogaerts",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Arraez",
+                  "price": 16,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jose Iglesias",
+                  "price": 18,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:24Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Pete Alonso",
+                  "price": 3.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Francisco Lindor",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brandon Nimmo",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Fernando Tatis Jr.",
+                  "price": 4.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Manny Machado",
+                  "price": 4.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mark Vientos",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Francisco Alvarez",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jeff McNeil",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jackson Merrill",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brett Baty",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gavin Sheets",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Xander Bogaerts",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jake Cronenworth",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyrone Taylor",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Martin Maldonado",
+                  "price": 7.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Arraez",
+                  "price": 8.5,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2025-07-30T11:55:13Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:36Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Luis Arraez",
+                  "price": 126,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jackson Merrill",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brandon Nimmo",
+                  "price": 46,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gavin Sheets",
+                  "price": 81,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jake Cronenworth",
+                  "price": 101,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Fernando Tatis Jr.",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jake Cronenworth",
+                  "price": 101,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mark Vientos",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mark Vientos",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jeff McNeil",
+                  "price": 71,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jeff McNeil",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brett Baty",
+                  "price": 67,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Fernando Tatis Jr.",
+                  "price": 46,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gavin Sheets",
+                  "price": 131,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Arraez",
+                  "price": 151,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jackson Merrill",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Manny Machado",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Pete Alonso",
+                  "price": 26,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Francisco Lindor",
+                  "price": 36,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Pete Alonso",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Xander Bogaerts",
+                  "price": 91,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brett Baty",
+                  "price": 181,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brandon Nimmo",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Francisco Lindor",
+                  "price": 200,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Manny Machado",
+                  "price": 56,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Xander Bogaerts",
+                  "price": 161,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Starling Marte",
+                  "price": 151,
+                  "point": 2.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Starling Marte",
+                  "price": 121,
+                  "point": 1.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mark Vientos",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jackson Merrill",
+                  "price": 5.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Pete Alonso",
+                  "price": 3.65,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Fernando Tatis Jr.",
+                  "price": 5.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Xander Bogaerts",
+                  "price": 8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Manny Machado",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Francisco Lindor",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jake Cronenworth",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Arraez",
+                  "price": 10.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gavin Sheets",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brett Baty",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brandon Nimmo",
+                  "price": 5.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jeff McNeil",
+                  "price": 6.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Starling Marte",
+                  "price": 9,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "53a0bdd52f845e2309a0e778ed9c995a",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T22:40:00Z",
+      "home_team": "Cleveland Guardians",
+      "away_team": "Colorado Rockies",
+      "bookmakers": [
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:47Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Jose Ramirez",
+                  "price": 3.95,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Hunter Goodman",
+                  "price": 4.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "David Fry",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carlos Santana",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ezequiel Tovar",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jordan Beck",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Angel Martinez",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gabriel Arias",
+                  "price": 6.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Steven Kwan",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brenton Doyle",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Warming Bernabel",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Farmer",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Orlando Arcia",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Thairo Estrada",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Austin Hedges",
+                  "price": 7.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler Freeman",
+                  "price": 7.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brayan Rocchio",
+                  "price": 8,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:32Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Jose Ramirez",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Hunter Goodman",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "David Fry",
+                  "price": 6.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carlos Santana",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ezequiel Tovar",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Angel Martinez",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gabriel Arias",
+                  "price": 7.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jordan Beck",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Warming Bernabel",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brenton Doyle",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Johnathan Rodriguez",
+                  "price": 9.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Orlando Arcia",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Austin Hedges",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Thairo Estrada",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler Freeman",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Farmer",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brayan Rocchio",
+                  "price": 11.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Steven Kwan",
+                  "price": 13,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc3252cd4886023f2f9f8deac7983c6b",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T23:06:00Z",
+      "home_team": "New York Yankees",
+      "away_team": "Tampa Bay Rays",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:38Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Giancarlo Stanton",
+                  "price": 3.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jazz Chisholm Jr.",
+                  "price": 4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trent Grisham",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ben Rice",
+                  "price": 4.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jonathan Aranda",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Junior Caminero",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cody Bellinger",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ryan McMahon",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Austin Wells",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jasson Domínguez",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Yandy Diaz",
+                  "price": 5.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Lowe",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Anthony Volpe",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tristan Gray",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Thaiss",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Taylor Walls",
+                  "price": 11,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jake Mangum",
+                  "price": 14,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chandler Simpson",
+                  "price": 16,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:24Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Giancarlo Stanton",
+                  "price": 3.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ben Rice",
+                  "price": 3.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jazz Chisholm Jr.",
+                  "price": 3.85,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Trent Grisham",
+                  "price": 4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Junior Caminero",
+                  "price": 4.05,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Cody Bellinger",
+                  "price": 4.05,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jonathan Aranda",
+                  "price": 4.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Austin Wells",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ryan McMahon",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jasson Domínguez",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Yandy Diaz",
+                  "price": 4.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Lowe",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tristan Gray",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Anthony Volpe",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt Thaiss",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Taylor Walls",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jake Mangum",
+                  "price": 8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Chandler Simpson",
+                  "price": 8.5,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c64285aa2155e3168faa30c82a115769",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T23:11:00Z",
+      "home_team": "Cincinnati Reds",
+      "away_team": "Los Angeles Dodgers",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:58Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Shohei Ohtani",
+                  "price": 2.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Teoscar Hernandez",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Will Smith",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andy Pages",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Elly De La Cruz",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mookie Betts",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler Stephenson",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt McLain",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Conforto",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Will Benson",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Austin Hays",
+                  "price": 5.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Noelvi Marte",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Freddie Freeman",
+                  "price": 5.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Steer",
+                  "price": 6.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alex Freeland",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gavin Lux",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jake Fraley",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tommy Edman",
+                  "price": 7,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:27Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Shohei Ohtani",
+                  "price": 2.15,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Elly De La Cruz",
+                  "price": 4.05,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Teoscar Hernandez",
+                  "price": 4.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Will Smith",
+                  "price": 4.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Michael Conforto",
+                  "price": 4.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Will Benson",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Andy Pages",
+                  "price": 4.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mookie Betts",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Freddie Freeman",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Austin Hays",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler Stephenson",
+                  "price": 4.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Matt McLain",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Noelvi Marte",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Spencer Steer",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tommy Edman",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jake Fraley",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Gavin Lux",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Miguel Rojas",
+                  "price": 7.25,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1602f29ae1e55427f39647a13161ad11",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-30T23:46:00Z",
+      "home_team": "St. Louis Cardinals",
+      "away_team": "Miami Marlins",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:45Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Kyle Stowers",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Agustín Ramírez",
+                  "price": 5.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jesus Sanchez",
+                  "price": 5.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Willson Contreras",
+                  "price": 5.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alec Burleson",
+                  "price": 5.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ivan Herrera",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brendan Donovan",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nolan Arenado",
+                  "price": 7.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jordan Walker",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Pedro Pages",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Otto Lopez",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Eric Wagaman",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dane Myers",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Masyn Winn",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Graham Pauley",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Liam Hicks",
+                  "price": 11,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Victor Scott II",
+                  "price": 11.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Xavier Edwards",
+                  "price": 13,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:14Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Agustín Ramírez",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Willson Contreras",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jesus Sanchez",
+                  "price": 4.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Kyle Stowers",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Alec Burleson",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nolan Arenado",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ivan Herrera",
+                  "price": 5.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brendan Donovan",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jordan Walker",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Otto Lopez",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Pedro Pages",
+                  "price": 6.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Eric Wagaman",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Masyn Winn",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Graham Pauley",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Liam Hicks",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dane Myers",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Victor Scott II",
+                  "price": 7.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Xavier Edwards",
+                  "price": 8,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b24c7fa01a45215fe119d3fb019fe11a",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-31T01:39:00Z",
+      "home_team": "Los Angeles Angels",
+      "away_team": "Texas Rangers",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:11Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Mike Trout",
+                  "price": 4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Corey Seager",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jo Adell",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Taylor Ward",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Logan O'Hoppe",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Wyatt Langford",
+                  "price": 5.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Zach Neto",
+                  "price": 5.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adolis Garcia",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Marcus Semien",
+                  "price": 6.4,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Joc Pederson",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Yoan Moncada",
+                  "price": 7.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "LaMonte Wade Jr.",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Jung",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Smith",
+                  "price": 9.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jonah Heim",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Evan Carter",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nolan Schanuel",
+                  "price": 10,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Rengifo",
+                  "price": 12,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:14Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Mike Trout",
+                  "price": 3.85,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Corey Seager",
+                  "price": 4.3,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jo Adell",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Taylor Ward",
+                  "price": 4.8,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Logan O'Hoppe",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Joc Pederson",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Adolis Garcia",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Zach Neto",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Marcus Semien",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Yoan Moncada",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Wyatt Langford",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Jung",
+                  "price": 6.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Smith",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nolan Schanuel",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Evan Carter",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jonah Heim",
+                  "price": 7.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Rengifo",
+                  "price": 7.75,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "58fbf26c6f20507194124b68c0cc26b8",
+      "sport_key": "baseball_mlb",
+      "sport_title": "MLB",
+      "commence_time": "2025-07-31T02:06:00Z",
+      "home_team": "Oakland Athletics",
+      "away_team": "Seattle Mariners",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2025-07-30T11:54:41Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:30Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Cal Raleigh",
+                  "price": 2.76,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Kurtz",
+                  "price": 3.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Shea Langeliers",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Randy Arozarena",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brent Rooker",
+                  "price": 4.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Lawrence Butler",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Julio Rodriguez",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler Soderstrom",
+                  "price": 5.2,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jorge Polanco",
+                  "price": 5.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Naylor",
+                  "price": 5.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mitch Garver",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Dominic Canzone",
+                  "price": 6.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carlos Cortes",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "J.P. Crawford",
+                  "price": 8.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Urias",
+                  "price": 9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Miguel Andujar",
+                  "price": 9.7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ben Williamson",
+                  "price": 11,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Max Schuemann",
+                  "price": 11.6,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "williamhill_us",
+          "title": "Caesars",
+          "last_update": "2025-07-30T11:53:58Z",
+          "markets": [
+            {
+              "key": "batter_home_runs",
+              "last_update": "2025-07-30T11:55:27Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "description": "Cal Raleigh",
+                  "price": 2.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Nick Kurtz",
+                  "price": 3.15,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Randy Arozarena",
+                  "price": 3.9,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Shea Langeliers",
+                  "price": 4.1,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Julio Rodriguez",
+                  "price": 4.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Brent Rooker",
+                  "price": 4.5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Tyler Soderstrom",
+                  "price": 4.6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Lawrence Butler",
+                  "price": 4.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Mitch Garver",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Jorge Polanco",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Josh Naylor",
+                  "price": 5,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Carlos Cortes",
+                  "price": 6,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "J.P. Crawford",
+                  "price": 6.25,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Miguel Andujar",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Luis Urias",
+                  "price": 7,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Ben Williamson",
+                  "price": 7.75,
+                  "point": 0.5
+                },
+                {
+                  "name": "Over",
+                  "description": "Max Schuemann",
+                  "price": 8,
+                  "point": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

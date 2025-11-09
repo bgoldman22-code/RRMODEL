@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLB HR Round Robin - Dashboard Demo (Client Version)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .winning-player {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .losing-player {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .best-ev-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .best-prob-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-baseball-ball text-2xl text-blue-600"></i>
+                    <span class="text-xl font-bold text-gray-800">MLB HR Round Robin</span>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-blue-600 font-semibold border-b-2 border-blue-600">Dashboard</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600">Daily Picks</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600">Players</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600">History</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Date Header -->
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">June 15, 2024</h1>
+                <p class="text-gray-600 mt-1">Saturday • 12 MLB Games Today • Model Confidence: HIGH</p>
+            </div>
+            <div class="flex space-x-2">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-sync-alt mr-2"></i>Refresh Odds
+                </button>
+                <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    <i class="fas fa-download mr-2"></i>Export Picks
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="stat-card rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-80">Today's Investment</p>
+                        <p class="text-3xl font-bold mt-1">15 Units</p>
+                        <p class="text-xs mt-2">6-Pick RR (15 parlays × 1u)</p>
+                    </div>
+                    <i class="fas fa-coins text-4xl opacity-50"></i>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Model ROI (YTD)</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-1">+26.0%</p>
+                        <p class="text-xs text-gray-500 mt-2">2024-2025 Combined</p>
+                    </div>
+                    <i class="fas fa-chart-line text-4xl text-green-600 opacity-50"></i>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Optimal Structure</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-1">5-Pick</p>
+                        <p class="text-xs text-gray-500 mt-2">Best ROI/Variance Balance</p>
+                    </div>
+                    <i class="fas fa-trophy text-4xl text-yellow-600 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommended Structure Alert -->
+        <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mb-6 rounded-r-lg">
+            <div class="flex items-start">
+                <i class="fas fa-lightbulb text-blue-600 text-xl mt-1 mr-3"></i>
+                <div>
+                    <p class="font-bold text-blue-900">Model Recommendation: 4-Pick Round Robin × 3-Way (4 parlays)</p>
+                    <p class="text-sm text-blue-800 mt-1">
+                        Exceptional edge in top 4 players today. Expected value: +4.8 units. Place as: <span class="font-semibold">4 separate 3-leg parlays, 1 unit each</span>
+                        <br><span class="text-xs italic mt-1 block">Why 3-leg today: Top 4 players all have 25%+ model probability with 6%+ edge. 3-leg structure maximizes EV when depth is strong but not deep.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: Model Picks & Best EV/Prob -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Best EV Pick -->
+                <div class="best-ev-card rounded-lg shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-sm opacity-90">🔥 BEST EXPECTED VALUE</p>
+                            <h2 class="text-2xl font-bold mt-1">Aaron Judge</h2>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-3xl font-bold">+240</p>
+                            <p class="text-sm opacity-90">3.40 decimal</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 bg-white bg-opacity-20 rounded-lg p-4">
+                        <div>
+                            <p class="text-xs opacity-80">Model Probability</p>
+                            <p class="text-xl font-bold">33.1%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs opacity-80">Vegas Implied</p>
+                            <p class="text-xl font-bold">29.4%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs opacity-80">Expected Value</p>
+                            <p class="text-xl font-bold text-yellow-300">+12.5%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs opacity-80">Edge vs Market</p>
+                            <p class="text-xl font-bold text-yellow-300">+3.7%</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 space-y-2">
+                        <p class="text-sm font-semibold">Why This Pick:</p>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p class="text-sm"><strong>vs Pitcher:</strong> 5 HR in 18 AB (.278 BA) lifetime vs Logan Gilbert - crushes his 4-seam fastball</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p class="text-sm"><strong>Pitch Matchup:</strong> Gilbert throws 62% fastballs up in zone, Judge has 48% HR rate on elevated fastballs</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p class="text-sm"><strong>Park Factor:</strong> Yankee Stadium +8% HR for RHH (314 ft to RF pole, short porch)</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p class="text-sm"><strong>Recent Form:</strong> 4 HR in last 7 games, .412 BA, hitting peak of hot streak</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p class="text-sm"><strong>Weather:</strong> 78°F, wind 8 mph out to RF, air density favorable (low humidity)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Best Probability Pick -->
+                <div class="best-prob-card rounded-lg shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-sm opacity-90">🎯 HIGHEST PROBABILITY</p>
+                            <h2 class="text-2xl font-bold mt-1">Matt Olson</h2>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-3xl font-bold">+320</p>
+                            <p class="text-sm opacity-90">4.20 decimal</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 bg-white bg-opacity-20 rounded-lg p-4">
+                        <div>
+                            <p class="text-xs opacity-80">Model Probability</p>
+                            <p class="text-xl font-bold">30.4%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs opacity-80">Vegas Implied</p>
+                            <p class="text-xl font-bold">23.8%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs opacity-80">Expected Value</p>
+                            <p class="text-xl font-bold text-yellow-300">+27.7%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs opacity-80">Edge vs Market</p>
+                            <p class="text-xl font-bold text-yellow-300">+6.6%</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 space-y-2">
+                        <p class="text-sm font-semibold">Why This Pick:</p>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p class="text-sm"><strong>vs Pitcher:</strong> 3 HR in 11 AB (.364 BA) vs Bryce Miller - owns his slider (2 HR on sliders)</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p class="text-sm"><strong>Pitch Matchup:</strong> Miller throws 58% sliders down and away, Olson crushes low breaking balls (.680 SLG)</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p class="text-sm"><strong>Park Factor:</strong> Truist Park neutral overall, but LF power alley (380 ft) perfect for Olson's pull tendency</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p class="text-sm"><strong>Recent Form:</strong> 3 HR in last 7 games (.340 BA), elite contact quality (95.2 mph avg exit velo)</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p class="text-sm"><strong>Lineup:</strong> Batting 4th = 4.2 PA expected, plus protection from Ozuna/Riley behind him</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Round Robin Structure Recommendations -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-layer-group text-purple-600 mr-2"></i>Round Robin Options
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <!-- 4-Pick × 3-Way (Recommended) -->
+                        <div class="border-2 border-green-500 rounded-lg p-4 bg-green-50">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <h3 class="text-lg font-bold text-gray-800">4-Pick RR × 3-Way</h3>
+                                        <span class="px-2 py-1 bg-green-600 text-white text-xs rounded-full font-semibold">RECOMMENDED</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">How to place: 4 separate 3-leg parlays (need 3 to win)</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500">Total Investment</p>
+                                    <p class="text-2xl font-bold text-gray-800">4u</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 mt-3 text-sm">
+                                <div class="bg-white rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected ROI</p>
+                                    <p class="font-bold text-green-600">+118%</p>
+                                </div>
+                                <div class="bg-white rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Win Rate</p>
+                                    <p class="font-bold text-gray-800">8.7%</p>
+                                </div>
+                                <div class="bg-white rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected Value</p>
+                                    <p class="font-bold text-blue-600">+4.72u</p>
+                                </div>
+                            </div>
+                            <div class="mt-3 p-3 bg-white rounded border border-green-200">
+                                <p class="text-xs font-semibold text-gray-700 mb-1">Why 3-Way Today:</p>
+                                <p class="text-xs text-gray-600">Top 4 players all have exceptional edge (6%+ each). 3-leg structure offers massive upside when top picks are this strong. Parlay odds average 40:1. Only need ONE to hit for profit.</p>
+                            </div>
+                        </div>
+
+                        <!-- 6-Pick × 2-Way -->
+                        <div class="border rounded-lg p-4 hover:border-blue-300 transition cursor-pointer">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-800">6-Pick RR × 2-Way</h3>
+                                    <p class="text-sm text-gray-600 mt-1">How to place: 15 separate 2-leg parlays</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500">Total Investment</p>
+                                    <p class="text-2xl font-bold text-gray-800">15u</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 mt-3 text-sm">
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected ROI</p>
+                                    <p class="font-bold text-green-600">+23.8%</p>
+                                </div>
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Win Rate</p>
+                                    <p class="font-bold text-gray-800">32.2%</p>
+                                </div>
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected Value</p>
+                                    <p class="font-bold text-blue-600">+3.57u</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5-Pick × 2-Way -->
+                        <div class="border rounded-lg p-4 hover:border-blue-300 transition cursor-pointer">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-800">5-Pick RR × 2-Way</h3>
+                                    <p class="text-sm text-gray-600 mt-1">How to place: 10 separate 2-leg parlays</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500">Total Investment</p>
+                                    <p class="text-2xl font-bold text-gray-800">10u</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 mt-3 text-sm">
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected ROI</p>
+                                    <p class="font-bold text-green-600">+31.1%</p>
+                                </div>
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Win Rate</p>
+                                    <p class="font-bold text-gray-800">28.5%</p>
+                                </div>
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected Value</p>
+                                    <p class="font-bold text-blue-600">+3.11u</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3-Pick × 4-Way -->
+                        <div class="border rounded-lg p-4 hover:border-blue-300 transition cursor-pointer">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <h3 class="text-lg font-bold text-gray-800">3-Pick RR × 4-Way</h3>
+                                        <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full font-semibold">LOTTERY</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">How to place: 3 separate 4-leg parlays (need all 4)</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500">Total Investment</p>
+                                    <p class="text-2xl font-bold text-gray-800">3u</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 mt-3 text-sm">
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected ROI</p>
+                                    <p class="font-bold text-green-600">+242%</p>
+                                </div>
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Win Rate</p>
+                                    <p class="font-bold text-gray-800">2.1%</p>
+                                </div>
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected Value</p>
+                                    <p class="font-bold text-blue-600">+7.26u</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4-Pick × 2-Way -->
+                        <div class="border rounded-lg p-4 hover:border-blue-300 transition cursor-pointer">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-800">4-Pick RR × 2-Way</h3>
+                                    <p class="text-sm text-gray-600 mt-1">How to place: 6 separate 2-leg parlays</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500">Total Investment</p>
+                                    <p class="text-2xl font-bold text-gray-800">6u</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 mt-3 text-sm">
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected ROI</p>
+                                    <p class="font-bold text-green-600">+36.3%</p>
+                                </div>
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Win Rate</p>
+                                    <p class="font-bold text-gray-800">22.2%</p>
+                                </div>
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected Value</p>
+                                    <p class="font-bold text-blue-600">+2.18u</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3-Pick × 2-Way -->
+                        <div class="border rounded-lg p-4 hover:border-blue-300 transition cursor-pointer">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <h3 class="text-lg font-bold text-gray-800">3-Pick RR × 2-Way</h3>
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-semibold">HIGH VARIANCE</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">How to place: 3 separate 2-leg parlays</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500">Total Investment</p>
+                                    <p class="text-2xl font-bold text-gray-800">3u</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 mt-3 text-sm">
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected ROI</p>
+                                    <p class="font-bold text-green-600">+81.1%</p>
+                                </div>
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Win Rate</p>
+                                    <p class="font-bold text-gray-800">17.8%</p>
+                                </div>
+                                <div class="bg-gray-50 rounded p-2 text-center">
+                                    <p class="text-xs text-gray-500">Expected Value</p>
+                                    <p class="font-bold text-blue-600">+2.43u</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All 6 Players -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-star text-yellow-500 mr-2"></i>Today's Top 6 Players
+                    </h2>
+
+                    <div class="space-y-3">
+                        <!-- Player 1: Matt Olson -->
+                        <div class="winning-player rounded-lg p-4">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start space-x-3">
+                                    <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                                        1
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2">
+                                            <h3 class="font-bold text-gray-800">Matt Olson</h3>
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">ATL</span>
+                                            <span class="text-green-600 font-bold text-sm">✓ HIT 1 HR</span>
+                                        </div>
+                                        <div class="grid grid-cols-4 gap-2 mt-2 text-xs">
+                                            <div>
+                                                <p class="text-gray-500">Model Prob</p>
+                                                <p class="font-bold text-gray-800">30.4%</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Implied</p>
+                                                <p class="font-bold text-gray-800">23.8%</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">EV</p>
+                                                <p class="font-bold text-green-600">+27.7%</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Edge</p>
+                                                <p class="font-bold text-blue-600">+6.6%</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xl font-bold text-blue-600">+320</p>
+                                    <p class="text-xs text-gray-500">4.20</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Player 2: Aaron Judge -->
+                        <div class="winning-player rounded-lg p-4">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start space-x-3">
+                                    <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                                        2
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2">
+                                            <h3 class="font-bold text-gray-800">Aaron Judge</h3>
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">NYY</span>
+                                            <span class="text-green-600 font-bold text-sm">✓ HIT 2 HRs</span>
+                                        </div>
+                                        <div class="grid grid-cols-4 gap-2 mt-2 text-xs">
+                                            <div>
+                                                <p class="text-gray-500">Model Prob</p>
+                                                <p class="font-bold text-gray-800">33.1%</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Implied</p>
+                                                <p class="font-bold text-gray-800">29.4%</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">EV</p>
+                                                <p class="font-bold text-green-600">+12.5%</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Edge</p>
+                                                <p class="font-bold text-blue-600">+3.7%</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xl font-bold text-blue-600">+240</p>
+                                    <p class="text-xs text-gray-500">3.40</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Remaining players (collapsed for space) -->
+                        <details class="bg-gray-50 rounded-lg p-4">
+                            <summary class="cursor-pointer font-semibold text-gray-800 flex items-center">
+                                <i class="fas fa-chevron-down mr-2"></i>
+                                View Players 3-6 (Click to expand)
+                            </summary>
+                            <div class="mt-3 space-y-3">
+                                <!-- Player 3-6 would be here -->
+                                <p class="text-sm text-gray-600">Players 3-6: Schwarber (+280), Ozuna (+350), Soto (+260), Seager (+380)</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FULL PLAYER TABLES -->
+            <div class="lg:col-span-3 space-y-6 mt-8">
+                <!-- Top 10 Pure Probability Table -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-percentage text-blue-600 mr-2"></i>Top 10 Players by Model Probability
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-4">Ranked by highest likelihood to hit a home run (model probability), regardless of odds or EV</p>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Rank</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Player</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Team</th>
+                                    <th class="px-3 py-2 text-center font-semibold text-gray-700">Prob</th>
+                                    <th class="px-3 py-2 text-center font-semibold text-gray-700">Odds</th>
+                                    <th class="px-3 py-2 text-center font-semibold text-gray-700">Implied</th>
+                                    <th class="px-3 py-2 text-center font-semibold text-gray-700">EV</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Why</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-blue-50">
+                                    <td class="px-3 py-3 font-bold text-blue-600">1</td>
+                                    <td class="px-3 py-3 font-semibold">Aaron Judge</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">NYY</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">33.1%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+240</td>
+                                    <td class="px-3 py-3 text-center">29.4%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+12.5%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">5 HR in 18 AB vs Gilbert | Crushes elevated fastballs (62% usage) | Short RF porch</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50">
+                                    <td class="px-3 py-3 font-bold text-blue-600">2</td>
+                                    <td class="px-3 py-3 font-semibold">Matt Olson</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold">ATL</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">30.4%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+320</td>
+                                    <td class="px-3 py-3 text-center">23.8%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+27.7%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">3 HR in 11 AB vs Miller | .680 SLG on sliders down (58% usage) | Hot streak (3 HR L7)</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50">
+                                    <td class="px-3 py-3 font-bold text-blue-600">3</td>
+                                    <td class="px-3 py-3 font-semibold">Kyle Schwarber</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold">PHI</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">29.8%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+280</td>
+                                    <td class="px-3 py-3 text-center">26.3%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+13.3%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">6 HR in 22 AB vs Strider | Destroys 97+ mph heat | Citizens Bank +12% HR park</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50">
+                                    <td class="px-3 py-3 font-bold text-blue-600">4</td>
+                                    <td class="px-3 py-3 font-semibold">Shohei Ohtani</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">LAD</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">28.2%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+190</td>
+                                    <td class="px-3 py-3 text-center">34.5%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-red-600">-18.2%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">2 HR in 9 AB vs Wheeler | 106 mph avg EV L7 | Wind out 10 mph but overbet by market</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50">
+                                    <td class="px-3 py-3 font-bold text-blue-600">5</td>
+                                    <td class="px-3 py-3 font-semibold">Juan Soto</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">NYY</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">27.6%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+260</td>
+                                    <td class="px-3 py-3 text-center">27.8%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-orange-600">-0.7%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">7 HR in 31 AB vs Gilbert | Patient (15.7% BB) = better pitches | Same park as Judge</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50">
+                                    <td class="px-3 py-3 font-bold text-blue-600">6</td>
+                                    <td class="px-3 py-3 font-semibold">Marcell Ozuna</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold">ATL</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">26.9%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+350</td>
+                                    <td class="px-3 py-3 text-center">22.2%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+19.1%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">4 HR in 15 AB vs Miller | 72% pull rate vs RHP | Protection from Olson/Riley</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50">
+                                    <td class="px-3 py-3 font-bold text-blue-600">7</td>
+                                    <td class="px-3 py-3 font-semibold">Corey Seager</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">TEX</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">25.3%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+380</td>
+                                    <td class="px-3 py-3 text-center">20.8%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+21.6%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">3 HR in 13 AB vs Syndergaard | Kills sinkers glove-side | Globe Life +7% for LHH</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50">
+                                    <td class="px-3 py-3 font-bold text-blue-600">8</td>
+                                    <td class="px-3 py-3 font-semibold">Yordan Alvarez</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded font-semibold">HOU</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">24.8%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+310</td>
+                                    <td class="px-3 py-3 text-center">24.4%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+1.6%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">2 HR in 8 AB vs Fried | Elite vs LHP (.580 SLG) | Minute Maid short LF (315 ft)</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50">
+                                    <td class="px-3 py-3 font-bold text-blue-600">9</td>
+                                    <td class="px-3 py-3 font-semibold">Pete Alonso</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">NYM</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">23.7%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+340</td>
+                                    <td class="px-3 py-3 text-center">22.7%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+4.4%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">8 HR in 29 AB vs Nola | Owns changeups (.720 SLG) | Wind blowing out 12 mph</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50">
+                                    <td class="px-3 py-3 font-bold text-blue-600">10</td>
+                                    <td class="px-3 py-3 font-semibold">Ronald Acuña Jr.</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold">ATL</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">22.9%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+290</td>
+                                    <td class="px-3 py-3 text-center">25.6%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-red-600">-10.5%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">4 HR in 19 AB vs Miller | Elite speed = better pitches | But overvalued today</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top 20 Pure EV Table -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-chart-line text-green-600 mr-2"></i>Top 20 Players by Expected Value
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-4">Ranked by highest +EV (edge over market odds). Filtered: model probability ≥ 19%</p>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Rank</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Player</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Team</th>
+                                    <th class="px-3 py-2 text-center font-semibold text-gray-700">EV</th>
+                                    <th class="px-3 py-2 text-center font-semibold text-gray-700">Prob</th>
+                                    <th class="px-3 py-2 text-center font-semibold text-gray-700">Odds</th>
+                                    <th class="px-3 py-2 text-center font-semibold text-gray-700">Implied</th>
+                                    <th class="px-3 py-2 text-center font-semibold text-gray-700">Edge</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Why</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-green-50 bg-green-50">
+                                    <td class="px-3 py-3 font-bold text-green-600">1</td>
+                                    <td class="px-3 py-3 font-semibold">Matt Olson</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold">ATL</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+27.7%</td>
+                                    <td class="px-3 py-3 text-center">30.4%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+320</td>
+                                    <td class="px-3 py-3 text-center">23.8%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+6.6%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">3 HR in 11 AB vs Miller | .680 SLG on low sliders (58%) | Hot (3 HR L7)</td>
+                                </tr>
+                                <tr class="hover:bg-green-50">
+                                    <td class="px-3 py-3 font-bold text-green-600">2</td>
+                                    <td class="px-3 py-3 font-semibold">Corey Seager</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">TEX</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+21.6%</td>
+                                    <td class="px-3 py-3 text-center">25.3%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+380</td>
+                                    <td class="px-3 py-3 text-center">20.8%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+4.5%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">3 HR in 13 AB vs Syndergaard | Feasts on sinkers | +7% park for LHH</td>
+                                </tr>
+                                <tr class="hover:bg-green-50">
+                                    <td class="px-3 py-3 font-bold text-green-600">3</td>
+                                    <td class="px-3 py-3 font-semibold">Marcell Ozuna</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold">ATL</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+19.1%</td>
+                                    <td class="px-3 py-3 text-center">26.9%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+350</td>
+                                    <td class="px-3 py-3 text-center">22.2%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+4.7%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">4 HR in 15 AB vs Miller | 72% pull vs RHP | Batting behind Olson</td>
+                                </tr>
+                                <tr class="hover:bg-green-50">
+                                    <td class="px-3 py-3 font-bold text-green-600">4</td>
+                                    <td class="px-3 py-3 font-semibold">Kyle Schwarber</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold">PHI</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+13.3%</td>
+                                    <td class="px-3 py-3 text-center">29.8%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+280</td>
+                                    <td class="px-3 py-3 text-center">26.3%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+3.5%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">6 HR in 22 AB vs Strider | Elite vs 97+ mph heat | CBP +12% HR park</td>
+                                </tr>
+                                <tr class="hover:bg-green-50">
+                                    <td class="px-3 py-3 font-bold text-green-600">5</td>
+                                    <td class="px-3 py-3 font-semibold">Aaron Judge</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">NYY</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+12.5%</td>
+                                    <td class="px-3 py-3 text-center">33.1%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+240</td>
+                                    <td class="px-3 py-3 text-center">29.4%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+3.7%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">5 HR in 18 AB vs Gilbert | 48% HR on elevated FB | RF porch 314 ft</td>
+                                </tr>
+                                <tr class="hover:bg-green-50">
+                                    <td class="px-3 py-3 font-bold text-green-600">6</td>
+                                    <td class="px-3 py-3 font-semibold">Matt Chapman</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">TOR</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+11.8%</td>
+                                    <td class="px-3 py-3 text-center">21.4%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+420</td>
+                                    <td class="px-3 py-3 text-center">19.2%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+2.2%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">2 HR in 7 AB vs Kikuchi | Mashes LHP (.340 vs L) | Rogers Centre +9%</td>
+                                </tr>
+                                <tr class="hover:bg-green-50">
+                                    <td class="px-3 py-3 font-bold text-green-600">7</td>
+                                    <td class="px-3 py-3 font-semibold">Freddie Freeman</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">LAD</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+9.7%</td>
+                                    <td class="px-3 py-3 text-center">22.1%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+390</td>
+                                    <td class="px-3 py-3 text-center">20.4%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+1.7%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">4 HR in 16 AB vs Wheeler | Patient approach = better counts | Day game</td>
+                                </tr>
+                                <tr class="hover:bg-green-50">
+                                    <td class="px-3 py-3 font-bold text-green-600">8</td>
+                                    <td class="px-3 py-3 font-semibold">Mookie Betts</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">LAD</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+8.2%</td>
+                                    <td class="px-3 py-3 text-center">21.8%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+380</td>
+                                    <td class="px-3 py-3 text-center">20.8%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+1.0%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">3 HR in 14 AB vs Wheeler | Leadoff = 4.5+ PA | Elite barrel rate (18.2%)</td>
+                                </tr>
+                                <tr class="hover:bg-green-50">
+                                    <td class="px-3 py-3 font-bold text-green-600">9</td>
+                                    <td class="px-3 py-3 font-semibold">Vladimir Guerrero Jr.</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">TOR</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+7.9%</td>
+                                    <td class="px-3 py-3 text-center">20.3%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+410</td>
+                                    <td class="px-3 py-3 text-center">19.6%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+0.7%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">5 HR in 21 AB vs Kikuchi | Dominant vs LHP (.615 SLG) | 3-4 slot in order</td>
+                                </tr>
+                                <tr class="hover:bg-green-50">
+                                    <td class="px-3 py-3 font-bold text-green-600">10</td>
+                                    <td class="px-3 py-3 font-semibold">Fernando Tatis Jr.</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded font-semibold">SD</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+6.4%</td>
+                                    <td class="px-3 py-3 text-center">19.7%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+440</td>
+                                    <td class="px-3 py-3 text-center">18.5%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+1.2%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">2 HR in 9 AB vs Snell | Aggressive (8% BB) = swings at hittable balls | Petco -8% but wind</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-3 font-bold text-gray-600">11</td>
+                                    <td class="px-3 py-3">Pete Alonso</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">NYM</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+4.4%</td>
+                                    <td class="px-3 py-3 text-center">23.7%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+340</td>
+                                    <td class="px-3 py-3 text-center">22.7%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+1.0%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">8 HR in 29 AB vs Nola | .720 SLG on changeups | Wind out 12 mph to CF</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-3 font-bold text-gray-600">12</td>
+                                    <td class="px-3 py-3">Adolis García</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">TEX</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+3.8%</td>
+                                    <td class="px-3 py-3 text-center">19.2%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+450</td>
+                                    <td class="px-3 py-3 text-center">18.2%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+1.0%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">1 HR in 6 AB vs Syndergaard | Elite power (21.4% barrel) | Globe Life +7%</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-3 font-bold text-gray-600">13</td>
+                                    <td class="px-3 py-3">Anthony Santander</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded font-semibold">BAL</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+3.2%</td>
+                                    <td class="px-3 py-3 text-center">19.8%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+420</td>
+                                    <td class="px-3 py-3 text-center">19.2%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+0.6%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">3 HR in 12 AB vs Pivetta | Opposite field power | Camden +5% for switch</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-3 font-bold text-gray-600">14</td>
+                                    <td class="px-3 py-3">Yordan Alvarez</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded font-semibold">HOU</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+1.6%</td>
+                                    <td class="px-3 py-3 text-center">24.8%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+310</td>
+                                    <td class="px-3 py-3 text-center">24.4%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+0.4%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">2 HR in 8 AB vs Fried | .580 SLG vs LHP | Minute Maid LF 315 ft</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-3 font-bold text-gray-600">15</td>
+                                    <td class="px-3 py-3">Jose Ramirez</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold">CLE</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+1.2%</td>
+                                    <td class="px-3 py-3 text-center">19.4%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+430</td>
+                                    <td class="px-3 py-3 text-center">18.9%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+0.5%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">4 HR in 18 AB vs Cole | Switch-hits = no platoon split | 3-hole hitter</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-3 font-bold text-gray-600">16</td>
+                                    <td class="px-3 py-3">Christian Walker</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold">ARI</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+0.9%</td>
+                                    <td class="px-3 py-3 text-center">19.1%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+440</td>
+                                    <td class="px-3 py-3 text-center">18.5%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-purple-600">+0.6%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">2 HR in 11 AB vs Kershaw | Elite barrel (19.8%) | Chase Field +11% HR park</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-3 font-bold text-gray-600">17</td>
+                                    <td class="px-3 py-3">Kyle Tucker</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded font-semibold">HOU</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+0.7%</td>
+                                    <td class="px-3 py-3 text-center">20.2%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+390</td>
+                                    <td class="px-3 py-3 text-center">20.4%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-orange-600">-0.2%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">3 HR in 13 AB vs Fried | All-around elite | Minimal edge but consistent</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-3 font-bold text-gray-600">18</td>
+                                    <td class="px-3 py-3">Julio Rodriguez</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded font-semibold">SEA</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+0.4%</td>
+                                    <td class="px-3 py-3 text-center">19.6%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+420</td>
+                                    <td class="px-3 py-3 text-center">19.2%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-orange-600">+0.4%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">1 HR in 8 AB vs Quantrill | T-Mobile -10% but wind helping today | Young/improving</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-3 font-bold text-gray-600">19</td>
+                                    <td class="px-3 py-3">Rafael Devers</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold">BOS</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+0.2%</td>
+                                    <td class="px-3 py-3 text-center">19.8%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+410</td>
+                                    <td class="px-3 py-3 text-center">19.6%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-orange-600">+0.2%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">4 HR in 17 AB vs Cole | Fenway +4% for LHH pull | Minimal but stable edge</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-3 font-bold text-gray-600">20</td>
+                                    <td class="px-3 py-3">Austin Riley</td>
+                                    <td class="px-3 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded font-semibold">ATL</span></td>
+                                    <td class="px-3 py-3 text-center font-bold text-green-600">+0.1%</td>
+                                    <td class="px-3 py-3 text-center">19.3%</td>
+                                    <td class="px-3 py-3 text-center text-blue-600 font-semibold">+430</td>
+                                    <td class="px-3 py-3 text-center">18.9%</td>
+                                    <td class="px-3 py-3 text-center font-bold text-orange-600">+0.4%</td>
+                                    <td class="px-3 py-3 text-xs text-gray-700">2 HR in 10 AB vs Miller | Batting 5th (protection) | Tiny edge, volume play</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Quick Actions & Stats -->
+            <div class="space-y-6">
+                <!-- Model Insights -->
+                <div class="bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+                    <h3 class="text-lg font-bold mb-4">
+                        <i class="fas fa-brain mr-2"></i>Model Insights
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p><span class="font-semibold">Strong day:</span> 6/6 players have +EV (average edge: +8.2%)</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p><span class="font-semibold">Weather advantage:</span> 4 games with favorable wind conditions</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check-circle text-green-300 mt-1"></i>
+                            <p><span class="font-semibold">Pitcher mismatches:</span> 3 of top 6 facing rookie/struggling arms</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-exclamation-triangle text-yellow-300 mt-1"></i>
+                            <p><span class="font-semibold">Note:</span> Higher variance expected due to depth (6-pick vs 3-pick)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <button class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            <i class="fas fa-file-export mr-2"></i>Generate Bet Slip
+                        </button>
+                        <button class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-calculator mr-2"></i>Kelly Calculator
+                        </button>
+                        <button class="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                            <i class="fas fa-history mr-2"></i>View History
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ROI Chart -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">2024 ROI by Structure</h3>
+                    <canvas id="roiChart" height="200"></canvas>
+                </div>
+
+                <!-- Risk Metrics -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">
+                        <i class="fas fa-shield-alt text-blue-600 mr-2"></i>Today's Risk
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-600">Max Loss (if all lose)</span>
+                                <span class="font-semibold text-red-600">-15 units</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 15%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">1.5% of recommended 1000u bankroll</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-600">Expected Return</span>
+                                <span class="font-semibold text-green-600">+3.57 units</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 23.8%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Based on +23.8% historical ROI</p>
+                        </div>
+                        <div class="pt-3 border-t">
+                            <p class="text-xs text-gray-600"><span class="font-semibold">Kelly Rec:</span> 4.7u per parlay (using 25% fractional)</p>
+                            <p class="text-xs text-gray-600"><span class="font-semibold">Conservative:</span> 1u per parlay (current)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ROI Chart
+        const ctx = document.getElementById('roiChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['3-Pick', '4-Pick', '5-Pick', '6-Pick'],
+                datasets: [{
+                    label: '2024 ROI %',
+                    data: [81.1, 36.3, 31.1, 23.8],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(139, 92, 246, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(59, 130, 246)',
+                        'rgb(16, 185, 129)',
+                        'rgb(245, 158, 11)',
+                        'rgb(139, 92, 246)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '+' + value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
