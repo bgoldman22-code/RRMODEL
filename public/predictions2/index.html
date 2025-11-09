@@ -589,16 +589,15 @@
             let totalUnits = 0;
             
             predictions.forEach(pred => {
-                if (pred.picks) {
-                    ['moneyline', 'spread', 'total'].forEach(market => {
-                        const pick = pred.picks[market];
-                        if (pick && pick.confidence >= 50) {
-                            totalPicks++;
-                            totalUnits += pick.recommended_units || 0;
-                            if (pick.confidence >= 65) highConfPicks++;
-                        }
-                    });
-                }
+                const preds = pred.predictions || {};
+                ['moneyline', 'spread', 'total'].forEach(market => {
+                    const pick = preds[market];
+                    if (pick && pick.bet && pick.confidence >= 50) {
+                        totalPicks++;
+                        totalUnits += pick.recommended_units || 0;
+                        if (pick.confidence >= 65) highConfPicks++;
+                    }
+                });
             });
 
             document.getElementById('summaryStats').innerHTML = `
@@ -627,13 +626,12 @@
         }
 
         function renderGameCard(pred) {
-            const game = pred.game || {};
-            const homeTeam = game.home_team || game.home || 'Home';
-            const awayTeam = game.away_team || game.away || 'Away';
+            const homeTeam = pred.home_team || pred.game?.home_team || 'Home';
+            const awayTeam = pred.away_team || pred.game?.away_team || 'Away';
             
-            const mlPick = pred.picks?.moneyline || {};
-            const spreadPick = pred.picks?.spread || {};
-            const totalPick = pred.picks?.total || {};
+            const mlPick = pred.predictions?.moneyline || {};
+            const spreadPick = pred.predictions?.spread || {};
+            const totalPick = pred.predictions?.total || {};
             
             const odds = pred.odds || {};
             const stats = pred.teamStats || {};
@@ -641,36 +639,43 @@
             // Moneyline section
             const mlConfidence = mlPick.confidence || 0;
             const mlEdge = mlPick.edge || 0;
-            const mlBet = mlConfidence >= 55 && mlEdge >= 3;
+            const mlBet = mlPick.bet || false;
             const mlUnits = mlPick.recommended_units || 0;
             const mlPickTeam = mlPick.pick || '';
-            const mlOdds = mlPickTeam === homeTeam ? odds.moneyline?.home : odds.moneyline?.away;
-            const mlOddsFormatted = mlOdds != null ? (mlOdds > 0 ? `+${mlOdds}` : mlOdds) : 'N/A';
-            const mlBook = odds.moneyline?.book || 'FanDuel';
+            const mlHomeOdds = odds.moneyline?.home || odds.display?.h2h?.home;
+            const mlAwayOdds = odds.moneyline?.away || odds.display?.h2h?.away;
+            const mlPickOdds = mlPickTeam === homeTeam ? mlHomeOdds : mlAwayOdds;
+            const mlOddsFormatted = mlPickOdds != null ? (mlPickOdds > 0 ? `+${mlPickOdds}` : mlPickOdds) : 'N/A';
+            const mlBook = mlPick.best_book?.bookmaker || odds.display_book || 'FanDuel';
             
             // Spread section
             const spreadConfidence = spreadPick.confidence || 0;
             const spreadEdge = spreadPick.edge || 0;
-            const spreadBet = spreadConfidence >= 58 && spreadEdge >= 1.5;
+            const spreadBet = spreadPick.bet || false;
             const spreadUnits = spreadPick.recommended_units || 0;
             const spreadPickTeam = spreadPick.pick || '';
             const spreadLine = spreadPick.line || 0;
-            const spreadModelLine = pred.predictions?.spread?.line || 0;
-            const spreadOdds = spreadPick.odds || -110;
+            const spreadModelLine = spreadPick.predicted || 0;
+            const spreadHomeOdds = odds.spread?.home_line || odds.display?.spread?.home_line || 0;
+            const spreadOdds = spreadPick.odds || (spreadPickTeam === homeTeam ? odds.display?.spread?.home_price : odds.display?.spread?.away_price) || -110;
             const spreadOddsFormatted = spreadOdds > 0 ? `+${spreadOdds}` : spreadOdds;
-            const spreadBook = odds.spread?.book || 'FanDuel';
+            const spreadBook = spreadPick.best_book?.bookmaker || odds.display_book || 'FanDuel';
             
             // Total section
             const totalConfidence = totalPick.confidence || 0;
             const totalEdge = totalPick.edge || 0;
-            const totalBet = totalConfidence >= 58 && totalEdge >= 8;
+            const totalBet = totalPick.bet || false;
             const totalUnits = totalPick.recommended_units || 0;
-            const totalDirection = totalPick.pick || '';
-            const totalVegasLine = odds.total?.line || 0;
-            const totalModelLine = pred.predictions?.total?.line || 0;
-            const totalOdds = totalPick.odds || -110;
+            const totalDirection = totalPick.pick ? (totalPick.pick.charAt(0).toUpperCase() + totalPick.pick.slice(1)) : '';
+            const totalVegasLine = totalPick.line || odds.total?.line || odds.display?.total?.over?.line || 0;
+            const totalModelLine = totalPick.predicted || 0;
+            const totalOdds = totalPick.odds || (totalDirection === 'Over' ? odds.display?.total?.over?.price : odds.display?.total?.under?.price) || -110;
             const totalOddsFormatted = totalOdds > 0 ? `+${totalOdds}` : totalOdds;
-            const totalBook = odds.total?.book || 'FanDuel';
+            const totalBook = totalPick.best_book?.bookmaker || odds.display_book || 'FanDuel';
+            const totalBestBook = totalPick.best_book?.bookmaker || 'Caesars';
+            const totalBestLine = totalPick.best_book?.line || totalVegasLine;
+            const totalBestPrice = totalPick.best_book?.price || totalOdds;
+            const totalBestEdge = totalPick.best_book?.edge_points || totalEdge;
             
             // EPA stats
             const homeEPA = stats.home?.epa || 0;
@@ -706,8 +711,8 @@
                             Best: ${mlBook} ${mlOddsFormatted} (${mlEdge.toFixed(1)}% edge)
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: #aaa;">
-                            <div>${awayTeam}: ${odds.moneyline?.away != null ? (odds.moneyline.away > 0 ? `+${odds.moneyline.away}` : odds.moneyline.away) : 'N/A'}</div>
-                            <div>${homeTeam}: ${odds.moneyline?.home != null ? (odds.moneyline.home > 0 ? `+${odds.moneyline.home}` : odds.moneyline.home) : 'N/A'}</div>
+                            <div>${awayTeam}: ${mlAwayOdds != null ? (mlAwayOdds > 0 ? `+${mlAwayOdds}` : mlAwayOdds) : 'N/A'}</div>
+                            <div>${homeTeam}: ${mlHomeOdds != null ? (mlHomeOdds > 0 ? `+${mlHomeOdds}` : mlHomeOdds) : 'N/A'}</div>
                         </div>
                         <div style="font-size: 12px; color: #666; margin-top: 6px;">via ${mlBook}</div>
                     </div>
@@ -762,7 +767,7 @@
                             <div>Model: ${totalModelLine.toFixed(1)}</div>
                         </div>
                         <div style="font-size: 13px; color: #ccc;">
-                            Best: ${totalBook} ${totalOddsFormatted} ${totalDirection === 'Over' ? 'O' : 'U'}${totalVegasLine.toFixed(1)} (${totalEdge.toFixed(1)}% edge)
+                            Best: ${totalBestBook} ${totalBestPrice > 0 ? '+' : ''}${totalBestPrice} ${totalDirection === 'Over' ? 'O' : 'U'}${totalBestLine.toFixed(1)} (${totalBestEdge.toFixed(1)} pts)
                         </div>
                         <div style="font-size: 12px; color: #666; margin-top: 6px;">via ${totalBook}</div>
                     </div>
@@ -798,9 +803,8 @@
                 // Show overlay with export content
                 document.getElementById('exportWeek').textContent = `Week ${currentWeek} - ${new Date().toLocaleDateString()}`;
                 
-                // Render top 10 games for export
-                const topGames = currentData.predictions.slice(0, 10);
-                const exportGamesHtml = topGames.map(pred => renderGameCard(pred)).join('');
+                // Render ALL games for export (not just top 10)
+                const exportGamesHtml = currentData.predictions.map(pred => renderGameCard(pred)).join('');
                 document.getElementById('exportGames').innerHTML = `
                     <div class="predictions-grid">${exportGamesHtml}</div>
                 `;
