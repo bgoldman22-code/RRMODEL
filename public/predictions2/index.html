@@ -527,7 +527,7 @@
                 setStatus('Loading predictions...', 'loading');
                 
                 const season = new Date().getFullYear();
-                const response = await fetch(`/.netlify/functions/nfl-predictions-generate2?week=${currentWeek}&season=${season}`);
+                const response = await fetch(`/.netlify/functions/nfl-predictions-generate?week=${currentWeek}&season=${season}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -572,9 +572,9 @@
         }
 
         function renderPredictions(data) {
-            const rows = data.rows || [];
+            const predictions = data.predictions || [];
             
-            if (rows.length === 0) {
+            if (predictions.length === 0) {
                 document.getElementById('predictions').innerHTML = `
                     <div class="no-data">No games available for Week ${currentWeek}</div>
                 `;
@@ -583,138 +583,209 @@
             }
 
             // Render summary stats
-            const highConfidence = rows.filter(r => r.confidence === 'HIGH').length;
-            const mediumConfidence = rows.filter(r => r.confidence === 'MEDIUM').length;
-            const avgEdge = rows.reduce((sum, r) => sum + (r.modelEdge || 0), 0) / rows.length;
-            const topPicks = rows.filter(r => r.modelEdge > 0.05).length;
+            const totalGames = predictions.length;
+            let totalPicks = 0;
+            let highConfPicks = 0;
+            let totalUnits = 0;
+            
+            predictions.forEach(pred => {
+                if (pred.picks) {
+                    ['moneyline', 'spread', 'total'].forEach(market => {
+                        const pick = pred.picks[market];
+                        if (pick && pick.confidence >= 50) {
+                            totalPicks++;
+                            totalUnits += pick.recommended_units || 0;
+                            if (pick.confidence >= 65) highConfPicks++;
+                        }
+                    });
+                }
+            });
 
             document.getElementById('summaryStats').innerHTML = `
                 <div class="stat-card">
-                    <div class="stat-value">${rows.length}</div>
+                    <div class="stat-value">${totalGames}</div>
                     <div class="stat-label">Total Games</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">${highConfidence}</div>
-                    <div class="stat-label">High Confidence</div>
+                    <div class="stat-value">${totalPicks}</div>
+                    <div class="stat-label">Total Picks</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">${topPicks}</div>
-                    <div class="stat-label">Top Picks (5%+ Edge)</div>
+                    <div class="stat-value">${highConfPicks}</div>
+                    <div class="stat-label">High Confidence (65%+)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">${(avgEdge * 100).toFixed(1)}%</div>
-                    <div class="stat-label">Avg Model Edge</div>
+                    <div class="stat-value">${totalUnits.toFixed(1)}U</div>
+                    <div class="stat-label">Total Units</div>
                 </div>
             `;
             document.getElementById('summaryStats').style.display = 'grid';
 
             // Render game cards
-            const html = rows.map(game => renderGameCard(game)).join('');
+            const html = predictions.map(pred => renderGameCard(pred)).join('');
             document.getElementById('predictions').innerHTML = html;
         }
 
-        function renderGameCard(game) {
-            const homeTeam = game.matchup.split(' @ ')[1];
-            const awayTeam = game.matchup.split(' @ ')[0];
+        function renderGameCard(pred) {
+            const game = pred.game || {};
+            const homeTeam = game.home_team || game.home || 'Home';
+            const awayTeam = game.away_team || game.away || 'Away';
             
-            const confidenceClass = `confidence-${game.confidence || 'LOW'}`;
-            const edgeClass = game.modelEdge > 0 ? 'edge-positive' : 'edge-negative';
+            const mlPick = pred.picks?.moneyline || {};
+            const spreadPick = pred.picks?.spread || {};
+            const totalPick = pred.picks?.total || {};
             
-            const homeWinProb = (game.homeProb * 100).toFixed(1);
-            const awayWinProb = (game.awayProb * 100).toFixed(1);
+            const odds = pred.odds || {};
+            const stats = pred.teamStats || {};
             
-            const isPick = game.pick === homeTeam ? 'Home' : 'Away';
-            const pickProb = (game.modelPickProb * 100).toFixed(1);
+            // Moneyline section
+            const mlConfidence = mlPick.confidence || 0;
+            const mlEdge = mlPick.edge || 0;
+            const mlBet = mlConfidence >= 55 && mlEdge >= 3;
+            const mlUnits = mlPick.recommended_units || 0;
+            const mlPickTeam = mlPick.pick || '';
+            const mlOdds = mlPickTeam === homeTeam ? odds.moneyline?.home : odds.moneyline?.away;
+            const mlOddsFormatted = mlOdds != null ? (mlOdds > 0 ? `+${mlOdds}` : mlOdds) : 'N/A';
+            const mlBook = odds.moneyline?.book || 'FanDuel';
             
-            const homeML = game.ml_home > 0 ? `+${game.ml_home}` : game.ml_home;
-            const awayML = game.ml_away > 0 ? `+${game.ml_away}` : game.ml_away;
+            // Spread section
+            const spreadConfidence = spreadPick.confidence || 0;
+            const spreadEdge = spreadPick.edge || 0;
+            const spreadBet = spreadConfidence >= 58 && spreadEdge >= 1.5;
+            const spreadUnits = spreadPick.recommended_units || 0;
+            const spreadPickTeam = spreadPick.pick || '';
+            const spreadLine = spreadPick.line || 0;
+            const spreadModelLine = pred.predictions?.spread?.line || 0;
+            const spreadOdds = spreadPick.odds || -110;
+            const spreadOddsFormatted = spreadOdds > 0 ? `+${spreadOdds}` : spreadOdds;
+            const spreadBook = odds.spread?.book || 'FanDuel';
             
-            const marketProb = game.marketProb ? (game.marketProb * 100).toFixed(1) + '%' : 'N/A';
-            const modelEdge = game.modelEdge ? (game.modelEdge * 100).toFixed(1) + '%' : 'N/A';
+            // Total section
+            const totalConfidence = totalPick.confidence || 0;
+            const totalEdge = totalPick.edge || 0;
+            const totalBet = totalConfidence >= 58 && totalEdge >= 8;
+            const totalUnits = totalPick.recommended_units || 0;
+            const totalDirection = totalPick.pick || '';
+            const totalVegasLine = odds.total?.line || 0;
+            const totalModelLine = pred.predictions?.total?.line || 0;
+            const totalOdds = totalPick.odds || -110;
+            const totalOddsFormatted = totalOdds > 0 ? `+${totalOdds}` : totalOdds;
+            const totalBook = odds.total?.book || 'FanDuel';
+            
+            // EPA stats
+            const homeEPA = stats.home?.epa || 0;
+            const awayEPA = stats.away?.epa || 0;
+            const homeForm = stats.home?.form || 0;
+            const awayForm = stats.away?.form || 0;
             
             return `
                 <div class="game-card">
-                    <div class="confidence-badge ${confidenceClass}">
-                        ${game.confidence || 'LOW'}
+                    <div class="matchup" style="font-size: 1.1em; margin-bottom: 20px; padding-right: 0;">
+                        ${awayTeam} @ ${homeTeam}
                     </div>
                     
-                    <div class="matchup">${game.matchup}</div>
-                    
-                    <div class="pick-section">
-                        <div class="pick-label">Model Pick</div>
-                        <div class="pick-value">${game.pick} (${pickProb}%)</div>
+                    <!-- Moneyline Pick -->
+                    <div class="pick-section" style="background: ${mlBet ? 'rgba(0, 255, 136, 0.1)' : 'rgba(100, 100, 100, 0.1)'}; border-left-color: ${mlBet ? '#00ff88' : '#666'};">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div>
+                                <div class="pick-label" style="font-size: 16px; font-weight: 700; color: ${mlBet ? '#00ff88' : '#888'};">
+                                    ${mlPickTeam}
+                                </div>
+                                <div style="font-size: 13px; color: #888; margin-top: 2px;">
+                                    ${mlBet ? `BET ${mlUnits.toFixed(1)}U` : 'NO BET'}
+                                </div>
+                            </div>
+                            <div class="confidence-badge ${mlConfidence >= 65 ? 'confidence-HIGH' : mlConfidence >= 55 ? 'confidence-MEDIUM' : 'confidence-LOW'}" style="position: relative; top: 0; right: 0;">
+                                ${mlConfidence.toFixed(1)}% conf
+                            </div>
+                        </div>
+                        <div style="font-size: 14px; color: #888; margin-bottom: 8px;">
+                            ${mlEdge.toFixed(1)}% edge
+                        </div>
+                        <div style="font-size: 13px; color: #ccc; margin-bottom: 4px;">
+                            Best: ${mlBook} ${mlOddsFormatted} (${mlEdge.toFixed(1)}% edge)
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: #aaa;">
+                            <div>${awayTeam}: ${odds.moneyline?.away != null ? (odds.moneyline.away > 0 ? `+${odds.moneyline.away}` : odds.moneyline.away) : 'N/A'}</div>
+                            <div>${homeTeam}: ${odds.moneyline?.home != null ? (odds.moneyline.home > 0 ? `+${odds.moneyline.home}` : odds.moneyline.home) : 'N/A'}</div>
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-top: 6px;">via ${mlBook}</div>
                     </div>
                     
-                    <div class="stats-row">
-                        <div class="stat-box">
-                            <div class="stat-box-label">Home Win</div>
-                            <div class="stat-box-value">${homeWinProb}%</div>
+                    <!-- Spread Pick -->
+                    <div class="pick-section" style="margin-top: 15px; background: ${spreadBet ? 'rgba(255, 165, 0, 0.1)' : 'rgba(100, 100, 100, 0.1)'}; border-left-color: ${spreadBet ? '#ffa500' : '#666'};">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div>
+                                <div class="pick-label" style="font-size: 16px; font-weight: 700; color: ${spreadBet ? '#ffa500' : '#888'};">
+                                    ${spreadPickTeam}
+                                </div>
+                                <div style="font-size: 13px; color: #888; margin-top: 2px;">
+                                    ${spreadBet ? `BET ${spreadUnits.toFixed(1)}U` : 'NO BET'}
+                                </div>
+                            </div>
+                            <div class="confidence-badge ${spreadConfidence >= 65 ? 'confidence-HIGH' : spreadConfidence >= 55 ? 'confidence-MEDIUM' : 'confidence-LOW'}" style="position: relative; top: 0; right: 0; background: #ffa500; color: #0a0e27;">
+                                ${spreadConfidence.toFixed(1)}% conf
+                            </div>
                         </div>
-                        <div class="stat-box">
-                            <div class="stat-box-label">Away Win</div>
-                            <div class="stat-box-value">${awayWinProb}%</div>
+                        <div style="font-size: 14px; color: #888; margin-bottom: 8px;">
+                            ${spreadLine >= 0 ? '+' : ''}${spreadLine.toFixed(1)} pts
                         </div>
-                        <div class="stat-box">
-                            <div class="stat-box-label">Model Edge</div>
-                            <div class="stat-box-value ${edgeClass}">${modelEdge}</div>
+                        <div style="font-size: 13px; color: #ccc; margin-bottom: 8px;">
+                            Line: ${spreadPickTeam} ${spreadLine >= 0 ? '+' : ''}${spreadLine.toFixed(1)}
                         </div>
+                        <div style="font-size: 13px; color: #ccc;">
+                            Model: ${spreadPickTeam} ${spreadModelLine >= 0 ? '+' : ''}${spreadModelLine.toFixed(1)}
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-top: 6px;">via ${spreadBook}</div>
                     </div>
                     
-                    <div class="team-comparison">
-                        <div class="team-stats">
-                            <div class="team-name">${awayTeam} (Away)</div>
-                            <div class="team-stat-line">
-                                <span>EPA/Play:</span>
-                                <span>${game.teamStats?.away?.epa?.toFixed(3) || 'N/A'}</span>
+                    <!-- Total Pick -->
+                    <div class="pick-section" style="margin-top: 15px; background: ${totalBet ? 'rgba(100, 149, 237, 0.1)' : 'rgba(100, 100, 100, 0.1)'}; border-left-color: ${totalBet ? '#6495ed' : '#666'};">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div>
+                                <div class="pick-label" style="font-size: 16px; font-weight: 700; color: ${totalBet ? '#6495ed' : '#888'};">
+                                    ${totalDirection}
+                                </div>
+                                <div style="font-size: 13px; color: #888; margin-top: 2px;">
+                                    ${totalBet ? `BET ${totalUnits.toFixed(1)}U` : 'NO BET'}
+                                </div>
                             </div>
-                            <div class="team-stat-line">
-                                <span>Form:</span>
-                                <span>${game.teamStats?.away?.form?.toFixed(3) || 'N/A'}</span>
-                            </div>
-                            <div class="team-stat-line">
-                                <span>Strength:</span>
-                                <span>${game.teamStats?.away?.strength?.toFixed(3) || 'N/A'}</span>
-                            </div>
-                        </div>
-                        <div class="team-stats">
-                            <div class="team-name">${homeTeam} (Home)</div>
-                            <div class="team-stat-line">
-                                <span>EPA/Play:</span>
-                                <span>${game.teamStats?.home?.epa?.toFixed(3) || 'N/A'}</span>
-                            </div>
-                            <div class="team-stat-line">
-                                <span>Form:</span>
-                                <span>${game.teamStats?.home?.form?.toFixed(3) || 'N/A'}</span>
-                            </div>
-                            <div class="team-stat-line">
-                                <span>Strength:</span>
-                                <span>${game.teamStats?.home?.strength?.toFixed(3) || 'N/A'}</span>
+                            <div class="confidence-badge ${totalConfidence >= 65 ? 'confidence-HIGH' : totalConfidence >= 55 ? 'confidence-MEDIUM' : 'confidence-LOW'}" style="position: relative; top: 0; right: 0; background: #6495ed; color: #0a0e27;">
+                                ${totalConfidence.toFixed(1)}% conf
                             </div>
                         </div>
+                        <div style="font-size: 14px; color: #888; margin-bottom: 8px;">
+                            ${totalEdge.toFixed(1)}% edge
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: #ccc; margin-bottom: 8px;">
+                            <div>Vegas: ${totalVegasLine.toFixed(1)}</div>
+                            <div>Model: ${totalModelLine.toFixed(1)}</div>
+                        </div>
+                        <div style="font-size: 13px; color: #ccc;">
+                            Best: ${totalBook} ${totalOddsFormatted} ${totalDirection === 'Over' ? 'O' : 'U'}${totalVegasLine.toFixed(1)} (${totalEdge.toFixed(1)}% edge)
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-top: 6px;">via ${totalBook}</div>
                     </div>
                     
-                    ${game.ml_home && game.ml_away ? `
-                        <div class="odds-info">
-                            <div class="odds-item">
-                                <div class="odds-label">Home ML</div>
-                                <div class="odds-value">${homeML}</div>
-                            </div>
-                            <div class="odds-item">
-                                <div class="odds-label">Away ML</div>
-                                <div class="odds-value">${awayML}</div>
-                            </div>
-                            <div class="odds-item">
-                                <div class="odds-label">Market Prob</div>
-                                <div class="odds-value">${marketProb}</div>
-                            </div>
+                    <!-- Team Stats -->
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #2a2f4a; font-size: 13px; color: #888;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div>${homeTeam} EPA: ${homeEPA.toFixed(3)}</div>
+                            <div>${awayTeam} EPA: ${awayEPA.toFixed(3)}</div>
                         </div>
-                    ` : ''}
+                        <div style="margin-top: 6px; color: #666;">
+                            Form: ${homeForm >= 0 ? '+' : ''}${homeForm.toFixed(3)} / ${awayForm >= 0 ? '+' : ''}${awayForm.toFixed(3)}
+                        </div>
+                        <div style="margin-top: 6px; color: #00ff88; font-size: 12px;">
+                            Live odds ✓
+                        </div>
+                    </div>
                 </div>
             `;
         }
 
         async function exportToPNG() {
-            if (!currentData || !currentData.rows || currentData.rows.length === 0) {
+            if (!currentData || !currentData.predictions || currentData.predictions.length === 0) {
                 alert('No predictions to export. Please load predictions first.');
                 return;
             }
@@ -728,8 +799,8 @@
                 document.getElementById('exportWeek').textContent = `Week ${currentWeek} - ${new Date().toLocaleDateString()}`;
                 
                 // Render top 10 games for export
-                const topGames = currentData.rows.slice(0, 10);
-                const exportGamesHtml = topGames.map(game => renderGameCard(game)).join('');
+                const topGames = currentData.predictions.slice(0, 10);
+                const exportGamesHtml = topGames.map(pred => renderGameCard(pred)).join('');
                 document.getElementById('exportGames').innerHTML = `
                     <div class="predictions-grid">${exportGamesHtml}</div>
                 `;
