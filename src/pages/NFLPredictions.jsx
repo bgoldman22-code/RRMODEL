@@ -961,16 +961,17 @@ export default function NFLPredictions() {
         const homeTeam = r.home_team || 'HOME';
         const awayTeam = r.away_team || 'AWAY';
         
-        // Get predictions
-        const ml = r.moneyline_pick || {};
-        const spread = r.spread_pick || {};
-        const total = r.total_pick || {};
+        // Get predictions from the correct structure
+        const ml = r.predictions?.moneyline || {};
+        const spread = r.predictions?.spread || {};
+        const total = r.predictions?.total || {};
         
         // Format Moneyline
         let mlText = 'NO BET';
         if (ml.bet && ml.pick) {
-          const units = ml.recommended_units || 0;
-          const price = ml.best_book?.price || ml.odds || 0;
+          const units = ml.kellyUnits || ml.recommended_units || 0;
+          const bestBook = ml.best_book || {};
+          const price = bestBook.price || ml.odds || 0;
           const priceStr = price > 0 ? `+${price}` : price;
           mlText = `${ml.pick} ML (BET ${units.toFixed(1)}U, ${priceStr})`;
         }
@@ -978,7 +979,7 @@ export default function NFLPredictions() {
         // Format Spread
         let spreadText = 'NO BET';
         if (spread.bet && spread.pick) {
-          const units = spread.recommended_units || 0;
+          const units = spread.kellyUnits || spread.recommended_units || 0;
           const line = spread.line || 0;
           const lineStr = line > 0 ? `+${line}` : line;
           spreadText = `${spread.pick} ${lineStr} (BET ${units.toFixed(1)}U)`;
@@ -987,21 +988,21 @@ export default function NFLPredictions() {
         // Format Total
         let totalText = 'NO BET';
         if (total.bet && total.pick) {
-          const units = total.recommended_units || 0;
+          const units = total.kellyUnits || total.recommended_units || 0;
           const line = total.line || 0;
           totalText = `${total.pick} ${line} (BET ${units.toFixed(1)}U)`;
         }
         
         // Find best edge
         const edges = [];
-        if (ml.edge) edges.push(ml.edge);
-        if (spread.edge) edges.push(spread.edge);
-        if (total.edge) edges.push(total.edge);
+        if (ml.edge) edges.push(Math.abs(ml.edge));
+        if (spread.edge) edges.push(Math.abs(spread.edge));
+        if (total.edge) edges.push(Math.abs(total.edge));
         const bestEdge = edges.length > 0 ? Math.max(...edges) : 0;
         
-        // Get EPA values
-        const homeEPA = r.home_epa || r.teamStats?.home?.score || r.teamStats?.home?.epa || 0;
-        const awayEPA = r.away_epa || r.teamStats?.away?.score || r.teamStats?.away?.epa || 0;
+        // Get EPA values from teamStats
+        const homeEPA = r.teamStats?.home?.score || r.teamStats?.home?.epa || r.home_epa || 0;
+        const awayEPA = r.teamStats?.away?.score || r.teamStats?.away?.epa || r.away_epa || 0;
         
         const rowStyle = idx % 2 === 0 ? 'background:white;' : 'background:#f8f9fa;';
         tableHTML += `
@@ -1040,7 +1041,7 @@ export default function NFLPredictions() {
       
     } catch (error) {
       console.error('Export error:', error);
-      alert('Export failed. Please make sure html2canvas is installed: npm install html2canvas');
+      alert('Export failed: ' + error.message);
     }
   };
 
