@@ -1,8 +1,8 @@
 # MLB HR Round Robin - Historical Odds Collection Strategy
 
-**API Key:** c5d3fe15e6c5be83b2acd8695cff012b  
-**Current Usage:** 26,628 / 5,000,000 (0.5%)  
-**Available Credits:** 4,973,372
+**API Key:** [Set in Netlify environment variables as THEODDS_API_KEY]  
+**Current Usage:** Check TheOddsAPI dashboard  
+**Available Credits:** Check TheOddsAPI dashboard
 
 ---
 

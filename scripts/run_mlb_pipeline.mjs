@@ -125,9 +125,65 @@ function loadPlayerStats() {
 }
 
 /**
+ * Load player Statcast profiles (most recent season)
+ */
+function loadPlayerProfiles() {
+  try {
+    const currentYear = new Date().getFullYear();
+    const lastYear = currentYear - 1;
+    
+    let profileFile = path.join(CONFIG.DATA_DIR, 'mlb_historical', 'players', 'profiles', `${currentYear}_batter_profiles.json`);
+    if (!fs.existsSync(profileFile)) {
+      profileFile = path.join(CONFIG.DATA_DIR, 'mlb_historical', 'players', 'profiles', `${lastYear}_batter_profiles.json`);
+    }
+    
+    if (!fs.existsSync(profileFile)) {
+      console.warn('⚠️  No player profiles file found');
+      return [];
+    }
+    
+    const profiles = JSON.parse(fs.readFileSync(profileFile, 'utf8'));
+    console.log(`✅ Loaded Statcast profiles for ${profiles.length} players`);
+    return profiles;
+  } catch (error) {
+    console.error('❌ Error loading player profiles:', error.message);
+    return [];
+  }
+}
+
+/**
+ * Merge stats and profiles by player name
+ */
+function mergePlayerData(stats, profiles) {
+  const merged = [];
+  
+  for (const stat of stats) {
+    // Find matching profile
+    const profile = profiles.find(p => 
+      p.player_name.toLowerCase().trim() === stat.Name.toLowerCase().trim()
+    );
+    
+    // Merge data
+    merged.push({
+      ...stat,
+      // Add Statcast metrics if profile exists
+      avg_exit_velo: profile?.avg_exit_velo || null,
+      max_exit_velo: profile?.max_exit_velo || null,
+      avg_launch_angle: profile?.avg_launch_angle || null,
+      barrel_rate: profile?.barrel_rate || null,
+      hard_contact_rate: profile?.hard_contact_rate || null,
+      hr_rate_statcast: profile?.hr_rate || null
+    });
+  }
+  
+  console.log(`✅ Merged ${merged.length} players with Statcast data`);
+  return merged;
+}
+
+/**
  * Match players from odds with stats and calculate probabilities
  */
-async function processPlayers(oddsData, playerStats, games) {
+async function processPlayers(oddsData, playerData, games) {
   console.log('\n📊 Processing player data...');
   
   const players = [];
@@ -149,14 +205,14 @@ async function processPlayers(oddsData, playerStats, games) {
         for (const outcome of market.outcomes) {
           const playerName = outcome.description;
           
-          // Find player stats
-          let playerStat = playerStats.find(s => 
+          // Find player data (now includes Statcast metrics)
+          let playerStat = playerData.find(s => 
             s.Name.toLowerCase().trim() === playerName.toLowerCase().trim()
           );
           
           if (!playerStat) {
             const lastName = playerName.split(' ').pop().toLowerCase();
-            playerStat = playerStats.find(s => 
+            playerStat = playerData.find(s => 
               s.Name.split(' ').pop().toLowerCase() === lastName
             );
           }
@@ -367,9 +423,17 @@ async function main() {
     console.log('\n3️⃣  Loading player statistics...');
     const playerStats = loadPlayerStats();
     
+    // Step 3b: Load Statcast profiles
+    console.log('\n3️⃣b Loading Statcast profiles...');
+    const playerProfiles = loadPlayerProfiles();
+    
+    // Step 3c: Merge stats with Statcast data
+    console.log('\n3️⃣c Merging player data...');
+    const playerData = mergePlayerData(playerStats, playerProfiles);
+    
     // Step 4: Process players
     console.log('\n4️⃣  Processing player data and calculating probabilities...');
-    const players = await processPlayers(oddsData, playerStats, games);
+    const players = await processPlayers(oddsData, playerData, games);
     
     // Step 5: Sort and filter
     console.log('\n5️⃣  Ranking players...');

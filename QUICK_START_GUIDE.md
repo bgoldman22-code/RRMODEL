@@ -310,7 +310,7 @@ Your actual September 2025 slips will be compared:
 3. **Without odds data**: Can still run backtest with estimated odds
 
 ### API Credits
-- TheOddsAPI key: `c5d3fe15e6c5be83b2acd8695cff012b`
+- TheOddsAPI key: Set in `.env` as `THEODDS_API_KEY` (never commit actual key!)
 - Budget: 50,000 credits (1% of 5M quota)
 - Cost: ~10 credits per day per region
 - Total needed: ~9,000 credits (900 days × 10)

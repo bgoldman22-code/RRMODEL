@@ -149,7 +149,7 @@ Test all possible RR configurations:
 **Runtime:** ~1-2 hours for all 5 years
 
 ### 3. Historical Odds Data (⏳ Pending - 50K Credits)
-**Source:** TheOddsAPI (api key: c5d3fe15e6c5be83b2acd8695cff012b)  
+**Source:** TheOddsAPI (API key stored in THEODDS_API_KEY environment variable)  
 **Market:** `batter_home_runs` (Over 0.5 = "Will player hit HR? YES")  
 **Years:** 2021-2025 (~900 daily snapshots)
 

@@ -15,6 +15,7 @@ import { getParkFactor } from './park_factors.mjs';
 
 /**
  * Calculate base HR score from player stats
+ * Enhanced with Statcast metrics when available
  */
 export function calculateHRScore(player) {
   const hrRate = (player.HR || 0) / Math.max(player.AB || 1, 1);
@@ -22,15 +23,46 @@ export function calculateHRScore(player) {
   const hrFB = (player['HR/FB'] || 0) / 100; // Convert percentage
   const hardPct = (player['Hard%'] || 0) / 100;
   
-  // Weighted formula: HR Rate 50%, ISO 25%, HR/FB 15%, Hard% 10%
-  const score = (hrRate * 50) + (iso * 25) + (hrFB * 15) + (hardPct * 10);
+  // STATCAST ENHANCEMENTS (if available)
+  let statcastBonus = 0;
+  let hasStatcast = false;
+  
+  if (player.avg_exit_velo && player.barrel_rate && player.hard_contact_rate) {
+    hasStatcast = true;
+    
+    // Exit velocity adjustment (baseline: 89 mph league avg)
+    // 95+ mph = elite power (+15%)
+    const exitVeloBonus = Math.max(0, (player.avg_exit_velo - 89) / 40); // 0 to +0.15
+    
+    // Barrel rate (elite: 15%+, avg: 8%)
+    const barrelBonus = Math.max(0, (player.barrel_rate - 0.08) * 2); // 0 to +0.14
+    
+    // Hard contact rate (elite: 45%+, avg: 35%)
+    const hardContactBonus = Math.max(0, (player.hard_contact_rate - 0.35) * 0.5); // 0 to +0.05
+    
+    statcastBonus = exitVeloBonus + barrelBonus + hardContactBonus;
+  }
+  
+  // Original formula: HR Rate 50%, ISO 25%, HR/FB 15%, Hard% 10%
+  let score = (hrRate * 50) + (iso * 25) + (hrFB * 15) + (hardPct * 10);
+  
+  // Add Statcast bonus (up to +34 points on 100-point scale)
+  if (hasStatcast) {
+    score += statcastBonus * 100; // Scale to 0-100 range
+  }
   
   return {
     score: score * 100, // Scale to 0-100
     hrRate: hrRate,
     iso: iso,
     hrFB: hrFB * 100,
-    hardPct: hardPct * 100
+    hardPct: hardPct * 100,
+    // Statcast metrics
+    hasStatcast: hasStatcast,
+    exitVelo: player.avg_exit_velo || null,
+    maxExitVelo: player.max_exit_velo || null,
+    barrelRate: player.barrel_rate ? (player.barrel_rate * 100) : null,
+    hardContactRate: player.hard_contact_rate ? (player.hard_contact_rate * 100) : null
   };
 }
 
@@ -200,7 +232,24 @@ export function generateWHY(player, matchup, game, parkFactor) {
     }
   }
   
-  // 5. Power metrics
+  // 5. STATCAST POWER METRICS (ENHANCED)
+  if (player.avg_exit_velo && player.avg_exit_velo >= 92) {
+    reasons.push(`Elite exit velo: ${player.avg_exit_velo.toFixed(1)} mph avg (top 15%)`);
+  }
+  
+  if (player.barrel_rate && player.barrel_rate >= 0.12) {
+    reasons.push(`High barrel rate: ${(player.barrel_rate * 100).toFixed(1)}% (top 20%)`);
+  }
+  
+  if (player.hard_contact_rate && player.hard_contact_rate >= 0.42) {
+    reasons.push(`Hard contact machine: ${(player.hard_contact_rate * 100).toFixed(1)}%`);
+  }
+  
+  if (player.max_exit_velo && player.max_exit_velo >= 115) {
+    reasons.push(`Max exit velo: ${player.max_exit_velo.toFixed(1)} mph (elite raw power)`);
+  }
+  
+  // 6. Traditional power metrics (fallback if no Statcast)
   if (player.ISO > 0.250) {
     reasons.push(`Elite power (${player.ISO.toFixed(3)} ISO)`);
   }
