@@ -928,6 +928,122 @@ export default function NFLPredictions() {
     }
   }, [rows]);
 
+  // Export to PNG function
+  const exportToPNG = async () => {
+    try {
+      // Dynamically import html2canvas
+      const html2canvas = (await import('html2canvas')).default;
+      
+      // Create export container
+      const exportDiv = document.createElement('div');
+      exportDiv.style.cssText = 'position:fixed;left:-9999px;top:0;background:white;padding:40px;width:1400px;';
+      
+      // Build table HTML
+      let tableHTML = `
+        <div style="font-size:32px;font-weight:bold;text-align:center;margin-bottom:30px;color:#000;">
+          ■ NFL Week ${week} Model Predictions — Full Slate
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;">
+          <thead style="background:#1e3a5f;color:white;">
+            <tr>
+              <th style="padding:12px 10px;text-align:left;font-weight:bold;border:1px solid #2c4a6f;">Matchup</th>
+              <th style="padding:12px 10px;text-align:left;font-weight:bold;border:1px solid #2c4a6f;">Moneyline</th>
+              <th style="padding:12px 10px;text-align:left;font-weight:bold;border:1px solid #2c4a6f;">Spread</th>
+              <th style="padding:12px 10px;text-align:left;font-weight:bold;border:1px solid #2c4a6f;">Total</th>
+              <th style="padding:12px 10px;text-align:center;font-weight:bold;border:1px solid #2c4a6f;">Best Edge</th>
+              <th style="padding:12px 10px;text-align:center;font-weight:bold;border:1px solid #2c4a6f;">EPA (Home/Away)</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      rows.forEach((r, idx) => {
+        const homeTeam = r.home_team || 'HOME';
+        const awayTeam = r.away_team || 'AWAY';
+        
+        // Get predictions
+        const ml = r.moneyline_pick || {};
+        const spread = r.spread_pick || {};
+        const total = r.total_pick || {};
+        
+        // Format Moneyline
+        let mlText = 'NO BET';
+        if (ml.bet && ml.pick) {
+          const units = ml.recommended_units || 0;
+          const price = ml.best_book?.price || ml.odds || 0;
+          const priceStr = price > 0 ? `+${price}` : price;
+          mlText = `${ml.pick} ML (BET ${units.toFixed(1)}U, ${priceStr})`;
+        }
+        
+        // Format Spread
+        let spreadText = 'NO BET';
+        if (spread.bet && spread.pick) {
+          const units = spread.recommended_units || 0;
+          const line = spread.line || 0;
+          const lineStr = line > 0 ? `+${line}` : line;
+          spreadText = `${spread.pick} ${lineStr} (BET ${units.toFixed(1)}U)`;
+        }
+        
+        // Format Total
+        let totalText = 'NO BET';
+        if (total.bet && total.pick) {
+          const units = total.recommended_units || 0;
+          const line = total.line || 0;
+          totalText = `${total.pick} ${line} (BET ${units.toFixed(1)}U)`;
+        }
+        
+        // Find best edge
+        const edges = [];
+        if (ml.edge) edges.push(ml.edge);
+        if (spread.edge) edges.push(spread.edge);
+        if (total.edge) edges.push(total.edge);
+        const bestEdge = edges.length > 0 ? Math.max(...edges) : 0;
+        
+        // Get EPA values
+        const homeEPA = r.home_epa || r.teamStats?.home?.score || r.teamStats?.home?.epa || 0;
+        const awayEPA = r.away_epa || r.teamStats?.away?.score || r.teamStats?.away?.epa || 0;
+        
+        const rowStyle = idx % 2 === 0 ? 'background:white;' : 'background:#f8f9fa;';
+        tableHTML += `
+          <tr style="${rowStyle}">
+            <td style="padding:10px;border:1px solid #ccc;font-weight:600;">${awayTeam} @ ${homeTeam}</td>
+            <td style="padding:10px;border:1px solid #ccc;">${mlText}</td>
+            <td style="padding:10px;border:1px solid #ccc;">${spreadText}</td>
+            <td style="padding:10px;border:1px solid #ccc;">${totalText}</td>
+            <td style="padding:10px;border:1px solid #ccc;text-align:center;font-weight:bold;">${bestEdge.toFixed(1)}%</td>
+            <td style="padding:10px;border:1px solid #ccc;text-align:center;">${homeEPA.toFixed(3)} / ${awayEPA.toFixed(3)}</td>
+          </tr>
+        `;
+      });
+      
+      tableHTML += '</tbody></table>';
+      exportDiv.innerHTML = tableHTML;
+      document.body.appendChild(exportDiv);
+      
+      // Capture
+      const canvas = await html2canvas(exportDiv, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        logging: false,
+        width: 1400,
+        windowWidth: 1400
+      });
+      
+      // Remove temp div
+      document.body.removeChild(exportDiv);
+      
+      // Download
+      const link = document.createElement('a');
+      link.download = `NFL_Week${week}_Model_Picks.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('Export failed. Please make sure html2canvas is installed: npm install html2canvas');
+    }
+  };
+
   // PickBadge Component - moved outside map for proper JSX structure
   const PickBadge = ({ pick, confidence, type, modelValue, marketValue, betRecommendation, edge, pickedTeam, unitInfo, bestBook }) => (
     <div className="space-y-1">
@@ -1031,6 +1147,13 @@ export default function NFLPredictions() {
               ))}
             </select>
           </div>
+          <button
+            className="px-3 py-2 rounded-xl bg-green-600 text-white hover:opacity-90"
+            onClick={exportToPNG}
+            disabled={loading || rows.length === 0}
+          >
+            📥 Export PNG
+          </button>
           <button
             className="px-3 py-2 rounded-xl bg-black text-white hover:opacity-90"
             onClick={() => load(true)}
