@@ -104,7 +104,11 @@ async function generatePredictions(season, games) {
     throw new Error(`Prediction generation failed: ${res.status} ${res.statusText}`);
   }
   
-  return await res.json();
+  const data = await res.json();
+  
+  // nfl-predictions-generate returns { predictions: [...], parlaySuggestions: [...] }
+  // We only need the predictions array
+  return data.predictions || data || [];
 }
 
 /**
