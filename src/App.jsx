@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import MLB_HR from "./MLB_HR";
 import MLB_HITS2 from "./MLB_HITS2";
+import MLBRoundRobin from "./pages/MLBRoundRobin";  // MLB HR Round Robin V2
 // CHANGED: Use the components you actually have
 import NflTd from "./pages/NflTd";  // Simple TD system
 import NFLTouchdownPropsComprehensive from "./pages/NFLTouchdownPropsComprehensive";  // Advanced TD system
@@ -63,7 +64,8 @@ export default function App() {
       items: [
         { label: 'Home Runs', path: '/mlb-hr' },
         { label: '2+ Hits', path: '/mlb-hits2' },
-        { label: 'HRR (Hit-Run-RBI)', path: '/hrr' }
+        { label: 'HRR (Hit-Run-RBI)', path: '/hrr' },
+        { label: 'Round Robin V2 🎯', path: '/mlb-rr' }
       ]
     },
     nfl: {
@@ -118,6 +120,7 @@ export default function App() {
           <Route path="/mlb-hr" element={<MLB_HR />} />
           <Route path="/mlb-hits2" element={<MLB_HITS2 />} />
           <Route path="/hrr" element={<HRR />} />
+          <Route path="/mlb-rr" element={<MLBRoundRobin />} />
           {/* CHANGED: Removed simple NFL TD route */}
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/predictions" element={<NFLPredictions />} />
