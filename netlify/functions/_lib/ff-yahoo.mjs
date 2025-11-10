@@ -217,24 +217,11 @@ export async function getLeagueSettings(accessToken, leagueKey) {
   try {
     const data = await yahooRequest(accessToken, `/league/${leagueKey}/settings`);
     
-    // Extract league name from the response
-    const leagueInfo = data.fantasy_content?.league?.[0];
-    let leagueName = 'Unknown League';
-    if (leagueInfo && Array.isArray(leagueInfo)) {
-      for (const item of leagueInfo) {
-        if (item.name) {
-          leagueName = item.name;
-          break;
-        }
-      }
-    }
-    
     const settings = data.fantasy_content?.league?.[1]?.settings?.[0];
     if (!settings) {
       console.warn('No settings found in API response, using defaults');
       // Return defaults if API doesn't provide settings
       return {
-        leagueName,
         scoringRules: {
           passYards: 0.04,
           passTD: 4,
@@ -254,10 +241,7 @@ export async function getLeagueSettings(accessToken, leagueKey) {
 
     // Extract scoring rules
     const statCategories = settings.stat_categories?.stats || [];
-    const statModifiers = settings.stat_modifiers?.stats || [];
-    
     console.log(`Found ${statCategories.length} stat categories in league settings`);
-    console.log(`Found ${statModifiers.length} stat modifiers (scoring rules)`);
     
     const scoringRules = {
       passYards: 0.04,      // Default: 1 pt per 25 yards
@@ -272,46 +256,22 @@ export async function getLeagueSettings(accessToken, leagueKey) {
       twoPtConversion: 2    // Default: 2 pts per 2PC
     };
 
-    // Parse stat MODIFIERS (actual scoring values)
-    const statsToCheck = statModifiers.length > 0 ? statModifiers : statCategories;
-    
-    for (const stat of statsToCheck) {
-      // stat could be { stat: {...} } or just the stat object directly
-      const statInfo = stat.stat || stat;
+    // Parse stat categories to override defaults
+    for (const stat of statCategories) {
+      const statInfo = stat.stat;
       if (!statInfo) continue;
 
       const statId = statInfo.stat_id;
-      // Yahoo returns scoring value in different places - try all possibilities
-      const value = parseFloat(
-        statInfo.value ||
-        statInfo.points ||
-        statInfo.bonus_value ||
-        statInfo.display_value ||
-        (statInfo.stat_position_types?.[0]?.stat_position_type?.value) ||
-        (statInfo.stat_position_types?.[0]?.stat_position_type?.bonus_value) ||
-        0
-      );
+      const value = parseFloat(statInfo.value || 0);
 
-      // Log ALL stats to debug the structure
-      console.log(`  Stat ID ${statId}: value=${value}`);
-
-      // Map stat IDs to scoring rules (Yahoo 2025 stat IDs)
-      // Note: Some values are "per X yards" (25 pass, 10 rush/rec), others are per event
-      if (statId === 4) {
-        // Passing Yards: Yahoo gives points per yard (e.g., 0.04 = 1 pt per 25 yards)
-        scoringRules.passYards = value;
-      }
-      if (statId === 5) scoringRules.passTD = value;                   // Passing TD
-      if (statId === 6) scoringRules.passInt = value;                  // Interceptions
-      if (statId === 9) {
-        // Rushing Yards: Yahoo gives points per yard (e.g., 0.1 = 1 pt per 10 yards)
-        scoringRules.rushYards = value;
-      }
+      // Map stat IDs to scoring rules
+      // Common Yahoo stat IDs (may vary by league):
+      if (statId === 5) scoringRules.passYards = value / 25;           // Passing Yards (per 25)
+      if (statId === 4) scoringRules.passTD = value;                   // Passing TD
+      if (statId === 19) scoringRules.passInt = value;                 // Interceptions
+      if (statId === 9) scoringRules.rushYards = value / 10;           // Rushing Yards (per 10)
       if (statId === 10) scoringRules.rushTD = value;                  // Rushing TD
-      if (statId === 12) {
-        // Receiving Yards: Yahoo gives points per yard
-        scoringRules.recYards = value;
-      }
+      if (statId === 12) scoringRules.recYards = value / 10;           // Receiving Yards (per 10)
       if (statId === 11) scoringRules.reception = value;               // Reception (PPR)
       if (statId === 13) scoringRules.recTD = value;                   // Receiving TD
       if (statId === 18) scoringRules.fumble = value;                  // Fumbles Lost
@@ -325,28 +285,12 @@ export async function getLeagueSettings(accessToken, leagueKey) {
     else if (scoringRules.reception > 0) pprType = `${scoringRules.reception} PPR`;
 
     // Extract roster positions
-    // Yahoo returns: [{ roster_position: { position: "QB", count: 1 } }, ...]
-    const rosterPositionsRaw = settings.roster_positions || [];
+    const rosterPositions = settings.roster_positions?.roster_position || [];
     const positionCounts = {};
     
-    for (const item of rosterPositionsRaw) {
-      // Extract the nested roster_position object
-      const pos = item.roster_position;
-      if (!pos) continue;
-      
-      let position = pos.position;
+    for (const pos of rosterPositions) {
+      const position = pos.position;
       const count = parseInt(pos.count, 10) || 0;
-      
-      // Skip IR (injured reserve) - not a real roster slot for lineup
-      if (position === 'IR') continue;
-      
-      // Normalize Yahoo position codes to match fillLineup expectations
-      // Yahoo uses "W/R/T" for FLEX, "W/R" for RB/WR flex
-      if (position === 'W/R/T' || position === 'W/R' || position === 'RB/WR/TE') {
-        position = 'FLEX';
-      }
-      // BN, QB, RB, WR, TE, K, DEF stay as-is
-      
       positionCounts[position] = (positionCounts[position] || 0) + count;
     }
 
@@ -354,7 +298,6 @@ export async function getLeagueSettings(accessToken, leagueKey) {
     console.log(`Roster positions:`, positionCounts);
 
     return {
-      leagueName,
       scoringRules,
       positionCounts,
       pprType
@@ -408,121 +351,6 @@ export async function getLeagueTeams(accessToken, leagueKey) {
  * @param {number} week - Week number
  * @returns {Promise<Array>} Array of player objects with positions
  */
-/**
- * Get player stats for a specific team and week
- * @param {string} accessToken - OAuth access token
- * @param {string} teamKey - Team key
- * @param {number} week - Week number
- * @returns {Promise<Object>} Map of player_key => {points, projected}
- */
-export async function getTeamStats(accessToken, teamKey, week) {
-  try {
-    // Fetch roster with player points for the specific week
-    // Using correct endpoint based on Yahoo API docs
-    const data = await yahooRequest(accessToken, `/team/${teamKey}/roster;week=${week}/players/stats`);
-    
-    // DEBUG: Log the complete structure to understand Yahoo API response
-    console.log('DEBUG: Full Yahoo API response structure:', JSON.stringify({
-      fantasy_content_keys: data.fantasy_content ? Object.keys(data.fantasy_content) : 'NO fantasy_content',
-      team_keys: data.fantasy_content?.team ? Object.keys(data.fantasy_content.team) : 'NO team',
-      team_0: data.fantasy_content?.team?.[0] ? 'exists' : 'missing',
-      team_1: data.fantasy_content?.team?.[1] ? Object.keys(data.fantasy_content.team[1]) : 'missing',
-      roster_in_team_1: data.fantasy_content?.team?.[1]?.roster ? 'exists' : 'missing',
-    }, null, 2));
-    
-    // Try multiple paths to find players
-    let players = null;
-    
-    // Path 1: team[1].roster[1].players (our current attempt)
-    if (data.fantasy_content?.team?.[1]?.roster?.[1]?.players) {
-      players = data.fantasy_content.team[1].roster[1].players;
-      console.log('Found players at team[1].roster[1].players');
-    }
-    // Path 2: team[1].roster[0].players (alternative)
-    else if (data.fantasy_content?.team?.[1]?.roster?.[0]?.players) {
-      players = data.fantasy_content.team[1].roster[0].players;
-      console.log('Found players at team[1].roster[0].players');
-    }
-    // Path 3: team[1].roster.players (direct)
-    else if (data.fantasy_content?.team?.[1]?.roster?.players) {
-      players = data.fantasy_content.team[1].roster.players;
-      console.log('Found players at team[1].roster.players');
-    }
-    
-    if (!players) {
-      console.log('No player stats found in roster - tried all paths');
-      return {};
-    }
-
-    const statsMap = {};
-    
-    for (let i = 0; i < players.count; i++) {
-      const playerData = players[i]?.player;
-      if (!playerData) continue;
-
-      const playerInfo = playerData[0];
-      const playerStats = playerData[2]?.player_stats;
-      const playerPoints = playerData[2]?.player_points;
-      
-      let playerKey, playerName;
-      for (const item of playerInfo) {
-        if (item.player_key) playerKey = item.player_key;
-        if (item.name?.full) playerName = item.name.full;
-      }
-
-      if (!playerKey) continue;
-
-      // Extract points - Yahoo API should provide player_points.total for weekly stats
-      let points = 0;
-      
-      // METHOD 1: player_points.total (standard Yahoo API field for fantasy points)
-      if (playerPoints?.total !== undefined) {
-        points = parseFloat(playerPoints.total);
-      }
-      // METHOD 2: Fallback to calculating from individual stats
-      else if (playerStats?.stats) {
-        // Try to find total fantasy points in stats array
-        const stats = playerStats.stats;
-        for (let j = 0; j < stats.length; j++) {
-          const stat = stats[j]?.stat;
-          // Some leagues use stat_id 0 for total fantasy points
-          if (stat && (stat.stat_id === '0' || stat.stat_id === 0)) {
-            points = parseFloat(stat.value || 0);
-            break;
-          }
-        }
-      }
-      
-      // DEBUG: Log first player's complete structure to understand Yahoo API response
-      if (i === 0) {
-        console.log(`DEBUG first player stats structure:`, JSON.stringify({
-          name: playerName,
-          full_player_data: playerData,
-          extracted_points: points
-        }, null, 2));
-      }
-
-      statsMap[playerKey] = {
-        name: playerName,
-        points,
-        projected: 0 // TODO: Add projected points if needed
-      };
-    }
-
-    return statsMap;
-  } catch (error) {
-    console.error('Error fetching team stats:', error.message);
-    return {};
-  }
-}
-
-/**
- * Get team roster for specific team + week
- * @param {string} accessToken - OAuth access token
- * @param {string} teamKey - Team key (e.g., "461.l.509796.t.7")
- * @param {number} week - Week number
- * @returns {Promise<Array>} Array of player objects
- */
 export async function getTeamRoster(accessToken, teamKey, week) {
   try {
     const data = await yahooRequest(accessToken, `/team/${teamKey}/roster;week=${week}`);
@@ -544,36 +372,20 @@ export async function getTeamRoster(accessToken, teamKey, week) {
       const playerData = playersData[i]?.player;
       if (!playerData) continue;
 
-      // Yahoo API returns player data as nested arrays similar to team data
-      // playerData is an array: [0] = array of player info objects, [1] = selected_position data
-      const playerInfo = playerData[0]; // Array of objects
-      const positionInfo = playerData[1]; // Selected position object
-
-      // Extract values from the array of objects
-      let playerKey, playerId, playerName, displayPosition, teamAbbr, byeWeek, status;
-      
-      for (const item of playerInfo) {
-        if (item.player_key) playerKey = item.player_key;
-        if (item.player_id) playerId = item.player_id;
-        if (item.name?.full) playerName = item.name.full;
-        if (item.display_position) displayPosition = item.display_position;
-        if (item.editorial_team_abbr) teamAbbr = item.editorial_team_abbr;
-        if (item.bye_weeks?.week) byeWeek = parseInt(item.bye_weeks.week, 10);
-        if (item.status) status = item.status;
-      }
-
-      // Get selected position (starting slot)
-      const selectedPosition = positionInfo?.selected_position?.[1]?.position || 'BN';
+      const player = playerData[0];
+      const position = player.selected_position?.[1]?.position;
+      const status = player.status || null;
+      const byeWeek = parseInt(player.bye_weeks?.week, 10) || null;
 
       players.push({
-        player_key: playerKey,
-        player_id: playerId,
-        name: playerName,
-        position: displayPosition,
-        team: teamAbbr,
-        status: status || null,
-        bye_week: byeWeek || null,
-        slot: selectedPosition
+        player_key: player.player_key,
+        player_id: player.player_id,
+        name: player.name?.full,
+        position: player.display_position,
+        team: player.editorial_team_abbr,
+        status: status,                    // Q, D, O, IR, etc.
+        bye_week: byeWeek,
+        slot: position || 'BN'             // QB, RB, WR, TE, FLEX, K, DEF, BN
       });
     }
 
@@ -581,238 +393,6 @@ export async function getTeamRoster(accessToken, teamKey, week) {
     return players;
   } catch (error) {
     console.error('Error fetching team roster:', error.message);
-    throw error;
-  }
-}
-
-/**
- * Get league scoreboard (matchups) for a specific week
- * @param {string} accessToken - OAuth access token
- * @param {string} leagueKey - League key
- * @param {number} week - Week number
- * @returns {Promise<Array>} Array of matchup objects
- */
-export async function getLeagueScoreboard(accessToken, leagueKey, week) {
-  try {
-    const data = await yahooRequest(accessToken, `/league/${leagueKey}/scoreboard;week=${week}`);
-    
-    const scoreboard = data.fantasy_content?.league?.[1]?.scoreboard?.[0];
-    if (!scoreboard) {
-      throw new Error('No scoreboard found in API response');
-    }
-
-    const matchups = [];
-    const matchupsData = scoreboard.matchups;
-    
-    for (let i = 0; i < matchupsData.count; i++) {
-      const matchupData = matchupsData[i]?.matchup;
-      if (!matchupData) continue;
-
-      const teamsData = matchupData[0]?.teams;
-      if (!teamsData || teamsData.count !== 2) continue;
-
-      const team1Data = teamsData[0]?.team;
-      const team2Data = teamsData[1]?.team;
-
-      // Parse team 1
-      const team1Info = team1Data[0];
-      let team1Key, team1Name, team1Points, team1Projected;
-      for (const item of team1Info) {
-        if (item.team_key) team1Key = item.team_key;
-        if (item.name) team1Name = item.name;
-      }
-      const team1Stats = team1Data[1]?.team_points;
-      if (team1Stats) {
-        team1Points = parseFloat(team1Stats.total || 0);
-      }
-      const team1Proj = team1Data[1]?.team_projected_points;
-      if (team1Proj) {
-        team1Projected = parseFloat(team1Proj.total || 0);
-      }
-
-      // Parse team 2
-      const team2Info = team2Data[0];
-      let team2Key, team2Name, team2Points, team2Projected;
-      for (const item of team2Info) {
-        if (item.team_key) team2Key = item.team_key;
-        if (item.name) team2Name = item.name;
-      }
-      const team2Stats = team2Data[1]?.team_points;
-      if (team2Stats) {
-        team2Points = parseFloat(team2Stats.total || 0);
-      }
-      const team2Proj = team2Data[1]?.team_projected_points;
-      if (team2Proj) {
-        team2Projected = parseFloat(team2Proj.total || 0);
-      }
-
-      matchups.push({
-        week,
-        team1: {
-          team_key: team1Key,
-          name: team1Name,
-          points: team1Points,
-          projected: team1Projected
-        },
-        team2: {
-          team_key: team2Key,
-          name: team2Name,
-          points: team2Points,
-          projected: team2Projected
-        },
-        winner: team1Points > team2Points ? team1Key : team2Key
-      });
-    }
-
-    console.log(`Fetched ${matchups.length} matchups for week ${week}`);
-    return matchups;
-  } catch (error) {
-    console.error('Error fetching league scoreboard:', error.message);
-    throw error;
-  }
-}
-
-/**
- * Get league transactions for a specific week
- * @param {string} accessToken - OAuth access token
- * @param {string} leagueKey - League key
- * @param {number} week - Week number
- * @returns {Promise<Array>} Array of transaction objects
- */
-export async function getLeagueTransactions(accessToken, leagueKey, week) {
-  try {
-    const data = await yahooRequest(
-      accessToken, 
-      `/league/${leagueKey}/transactions;types=add,drop,trade;week=${week}`
-    );
-    
-    const transactionsData = data.fantasy_content?.league?.[1]?.transactions;
-    if (!transactionsData) {
-      return [];
-    }
-
-    const transactions = [];
-    for (let i = 0; i < transactionsData.count; i++) {
-      const txData = transactionsData[i]?.transaction;
-      if (!txData) continue;
-
-      const txInfo = txData[0];
-      let type, timestamp, teamKey;
-      
-      // Fix: Check if txInfo is iterable array before looping
-      if (txInfo && Array.isArray(txInfo)) {
-        for (const item of txInfo) {
-          if (item.type) type = item.type;
-          if (item.timestamp) timestamp = item.timestamp;
-        }
-      }
-
-      // Get team from players array
-      const playersData = txData[1]?.players;
-      const players = [];
-      
-      if (playersData) {
-        for (let j = 0; j < playersData.count; j++) {
-          const playerData = playersData[j]?.player;
-          if (!playerData) continue;
-
-          const playerInfo = playerData[0];
-          let playerName, transactionType, destTeam;
-
-          for (const item of playerInfo) {
-            if (item.name?.full) playerName = item.name.full;
-          }
-
-          const txData = playerData[1]?.transaction_data;
-          if (txData) {
-            transactionType = txData[0]?.type;
-            destTeam = txData[0]?.destination_team_key;
-            if (destTeam) teamKey = destTeam;
-          }
-
-          players.push({
-            name: playerName,
-            type: transactionType
-          });
-        }
-      }
-
-      transactions.push({
-        type,
-        timestamp,
-        team_key: teamKey,
-        players
-      });
-    }
-
-    console.log(`Fetched ${transactions.length} transactions for week ${week}`);
-    return transactions;
-  } catch (error) {
-    console.warn('Error fetching league transactions:', error.message);
-    return [];
-  }
-}
-
-/**
- * Get league standings
- * @param {string} accessToken - OAuth access token
- * @param {string} leagueKey - League key
- * @returns {Promise<Array>} Array of team standings
- */
-export async function getLeagueStandings(accessToken, leagueKey) {
-  try {
-    const data = await yahooRequest(accessToken, `/league/${leagueKey}/standings`);
-    
-    const standings = data.fantasy_content?.league?.[1]?.standings?.[0]?.teams;
-    if (!standings) {
-      throw new Error('No standings found in API response');
-    }
-
-    const teams = [];
-    for (let i = 0; i < standings.count; i++) {
-      const teamData = standings[i]?.team;
-      if (!teamData) continue;
-
-      const teamInfo = teamData[0];
-      let teamKey, teamName, rank;
-
-      for (const item of teamInfo) {
-        if (item.team_key) teamKey = item.team_key;
-        if (item.name) teamName = item.name;
-      }
-
-      const standingsData = teamData[1]?.team_standings;
-      if (standingsData) {
-        rank = parseInt(standingsData.rank || 0, 10);
-      }
-
-      const outcomeData = teamData[1]?.team_standings?.outcome_totals;
-      let wins = 0, losses = 0, ties = 0, pointsFor = 0, pointsAgainst = 0;
-      
-      if (outcomeData) {
-        wins = parseInt(outcomeData.wins || 0, 10);
-        losses = parseInt(outcomeData.losses || 0, 10);
-        ties = parseInt(outcomeData.ties || 0, 10);
-        pointsFor = parseFloat(outcomeData.points_for || 0);
-        pointsAgainst = parseFloat(outcomeData.points_against || 0);
-      }
-
-      teams.push({
-        team_key: teamKey,
-        name: teamName,
-        rank,
-        wins,
-        losses,
-        ties,
-        points_for: pointsFor,
-        points_against: pointsAgainst
-      });
-    }
-
-    console.log(`Fetched standings for ${teams.length} teams`);
-    return teams;
-  } catch (error) {
-    console.error('Error fetching league standings:', error.message);
     throw error;
   }
 }

@@ -1,15 +1,11 @@
 #!/usr/bin/env node
-/*
- * NFL Model V3 - Prediction Engine with Enhanced Features
+/**
+ * NFL Model V2 - Prediction Engine
  * 
- * V3 FORMULA:
- * spread = 12*epa_diff + 10*epa_def_diff + 8*third_down_diff + 
- *          6*explosive_diff + 5*tds_rz_diff + 4*pressure_diff + 1.5*HFA
+ * Generates predictions for all games using time-causal features.
+ * Uses simplified linear models for spread, total, and moneyline predictions.
  * 
- * ML conversion: p_home = logistic(spread * 0.23)
- * Total: 45 + 14*(EPA_off_sum) - 10*(EPA_def_sum) + 6*explosive_diff
- * 
- * Run: node nfl-model-v3/scripts/04-predict-games.mjs
+ * Run: node nfl-model-v2/scripts/04-predict-games.mjs
  */
 
 import fs from 'fs/promises';
@@ -28,25 +24,20 @@ const FEATURES_DIR = path.join(__dirname, '../data/processed-features');
 const OUTPUT_DIR = path.join(__dirname, '../data/processed-features');
 
 /**
- * Logistic function for spread-to-probability conversion
- */
-function logistic(x) {
-  return 1 / (1 + Math.exp(-x));
-}
-
-/**
- * V3 SPREAD PREDICTION with Enhanced Features
- * Formula: 12*EPA_off + 10*EPA_def + 8*3rd_down + 6*explosive + 5*RZ_TD + 4*pressure + 1.5*HFA
+ * Simple linear regression prediction
+ * In a real backtest, you'd train on historical data
+ * For now, using heuristic weights based on NFL analytics research
  */
 function predictSpread(features) {
+  // Spread = expected home margin
+  // Positive = home favored, Negative = away favored
+  
   const spread = (
-    12 * features.epa_offense_diff +
-    10 * features.epa_defense_diff +
-     8 * features.third_down_diff +
-     6 * features.explosive_diff +
-     5 * features.tds_rz_diff +
-     4 * features.pressure_diff +
-   1.5 * features.home_field_advantage
+    features.home_field_advantage +
+    (features.home_epa_offense - features.away_epa_offense) * 15 +
+    (features.away_epa_defense - features.home_epa_defense) * 15 +
+    (features.home_success_rate_offense - features.away_success_rate_offense) * 10 +
+    (features.home_explosive_rate - features.away_explosive_rate) * 8
   );
   
   return {
@@ -57,41 +48,45 @@ function predictSpread(features) {
 }
 
 /**
- * V3 TOTAL PREDICTION with Enhanced Features
- * Formula: 45 + 14*EPA_off_sum - 10*EPA_def_sum + 6*explosive_diff
+ * Predict total points
  */
 function predictTotal(features) {
+  // Base NFL average is ~45 points
   const base = 45;
   
   const total = base + (
-    14 * (features.home_epa_offense + features.away_epa_offense) -
-    10 * (features.home_epa_defense + features.away_epa_defense) +
-     6 * features.explosive_diff
+    (features.home_epa_offense + features.away_epa_offense) * 20 +
+    (features.home_epa_defense + features.away_epa_defense) * -15 +
+    (features.home_explosive_rate + features.away_explosive_rate) * 12
   );
   
   return {
-    predicted_total: Math.max(30, Math.min(70, total)),
+    predicted_total: Math.max(35, Math.min(65, total)), // Bound between 35-65
     confidence: calculateConfidence(features, 'total')
   };
 }
 
 /**
- * V3 MONEYLINE PREDICTION with Logistic Conversion
- * p_home = logistic(spread * 0.23)
+ * Predict moneyline (win probability)
  */
 function predictMoneyline(features) {
+  // Convert spread to win probability using logistic function
   const spread = predictSpread(features).predicted_spread;
   
-  // Logistic conversion: spread * 0.23
-  const homeWinProb = logistic(spread * 0.23);
+  // Typical conversion: each point of spread ≈ 2.5% win probability
+  // At 0 spread (even game), home team has ~53% win prob due to HFA
+  const baseProb = 0.53;
+  const spreadEffect = spread * 0.025;
   
-  // Bound between 8% and 92%
-  const boundedProb = Math.max(0.08, Math.min(0.92, homeWinProb));
+  let homeWinProb = baseProb + spreadEffect;
+  
+  // Bound between 5% and 95%
+  homeWinProb = Math.max(0.05, Math.min(0.95, homeWinProb));
   
   return {
-    home_win_probability: boundedProb,
-    away_win_probability: 1 - boundedProb,
-    predicted_winner: boundedProb > 0.5 ? features.home_team : features.away_team,
+    home_win_probability: homeWinProb,
+    away_win_probability: 1 - homeWinProb,
+    predicted_winner: homeWinProb > 0.5 ? features.home_team : features.away_team,
     confidence: calculateConfidence(features, 'moneyline')
   };
 }

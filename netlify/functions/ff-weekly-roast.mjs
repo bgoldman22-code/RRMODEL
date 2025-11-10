@@ -2,7 +2,7 @@
  * Fantasy Football Weekly League Roast Generator
  * 
  * Generates hilarious, rated-R power rankings and weekly summaries
- * using Yahoo Fantasy API data + OpenAI GPT-4 for savage commentary.
+ * using Yahoo Fantasy API data + Claude AI (or OpenAI GPT-4 as fallback) for savage commentary.
  * 
  * Analyzes:
  * - Matchup results (wins/losses, blowouts)
@@ -12,8 +12,9 @@
  * - Projected vs actual performance
  */
 
+import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
-import { ensureAuth } from './_lib/ff-cookies.mjs';
+import { ensureAuth } from './_lib/ff-blobs.mjs';
 import { 
   getCurrentGameKey, 
   getUserLeagues,
@@ -21,7 +22,6 @@ import {
   getLeagueScoreboard,
   getLeagueStandings,
   getLeagueTransactions,
-  getLeagueSettings,
   getTeamRoster,
   getTeamStats // NEW: Get actual player points
 } from './_lib/ff-yahoo.mjs';
@@ -35,22 +35,8 @@ export default async function handler(request, context) {
     const requestedLeague = params.get('league');
     const tone = params.get('tone') || 'default'; // Custom tone/character
 
-    // Step 1: Validate OAuth token from cookies
-    const cookieHeader = request.headers.get('cookie') || '';
-    const authResult = await ensureAuth(cookieHeader);
-    
-    if (!authResult) {
-      return new Response(JSON.stringify({ 
-        error: 'Not authenticated',
-        message: 'Please authenticate with Yahoo Fantasy first'
-      }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    const accessToken = authResult.accessToken;
-    const updatedCookies = authResult.cookies; // May be undefined if not refreshed
+    // Step 1: Validate OAuth token
+    const accessToken = await ensureAuth();
     console.log('Access token validated');
 
     // Step 2: Get current game key (2025 season)
@@ -78,64 +64,28 @@ export default async function handler(request, context) {
     const weekToAnalyze = requestedWeek || (currentWeek - 1);
     console.log(`Current week: ${currentWeek}, Analyzing week: ${weekToAnalyze}`);
 
-    // Step 5: Fetch all league data (including NEXT week's matchups for preview)
+    // Step 5: Fetch all league data
     console.log('Fetching league data...');
-    const [scoreboard, standings, transactions, leagueSettings, nextWeekMatchups] = await Promise.all([
+    const [scoreboard, standings, transactions] = await Promise.all([
       getLeagueScoreboard(accessToken, leagueKey, weekToAnalyze),
       getLeagueStandings(accessToken, leagueKey), // Current standings
-      getLeagueTransactions(accessToken, leagueKey, weekToAnalyze),
-      getLeagueSettings(accessToken, leagueKey), // Get league metadata with actual name
-      getLeagueScoreboard(accessToken, leagueKey, currentWeek) // Fetch NEXT week's matchups with projections
+      getLeagueTransactions(accessToken, leagueKey, weekToAnalyze)
     ]);
-    
-    // Use environment variable for league name, or actual league name from settings
-    // Yahoo API often returns null/empty for league name, so we need a fallback
-    const actualLeagueName = process.env.FANTASY_LEAGUE_NAME || leagueSettings.leagueName || 'Drake Mayo Bowl';
-    console.log(`Actual league name: ${actualLeagueName}`);
 
     // Step 6: Fetch roster details AND STATS for each team
     console.log('Fetching team rosters and stats...');
     const teamDetails = [];
     
-    // CRITICAL: Build teamDetails from STANDINGS (all teams), not just matchups
-    // This ensures we analyze ALL teams in the league, even if they didn't play this week
-    for (const standing of standings) {
-      try {
-        const team = {
-          team_key: standing.team_key,
-          name: standing.name,
-          points: 0, // Will be filled from matchup if exists
-          projected: 0
-        };
-        
-        // Try to find this team's matchup for the week
-        const matchup = scoreboard.find(m => 
-          m.team1.team_key === standing.team_key || m.team2.team_key === standing.team_key
-        );
-        
-        if (matchup) {
-          const teamInMatchup = matchup.team1.team_key === standing.team_key ? matchup.team1 : matchup.team2;
-          team.points = teamInMatchup.points;
-          team.projected = teamInMatchup.projected;
-        }
-        
-        const roster = await getTeamRoster(accessToken, standing.team_key, weekToAnalyze);
-        const stats = await getTeamStats(accessToken, standing.team_key, weekToAnalyze);
-        
-        // Fetch NEXT week's roster to check for injuries (IR/OUT/DOUBTFUL players)
-        const nextWeekRoster = await getTeamRoster(accessToken, standing.team_key, currentWeek);
-        
-        // DEBUG: Log stats for first team
-        if (teamDetails.length === 0) {
-          console.log(`DEBUG: First team (${standing.name}) stats sample:`, 
-            Object.entries(stats).slice(0, 3).map(([key, val]) => `${val.name}: ${val.points}pts`));
-        }
-        
-        const teamTransactions = transactions.filter(t => t.team_key === standing.team_key);
+    for (const matchup of scoreboard) {
+      for (const team of [matchup.team1, matchup.team2]) {
+        const roster = await getTeamRoster(accessToken, team.team_key, weekToAnalyze);
+        const stats = await getTeamStats(accessToken, team.team_key, weekToAnalyze); // NEW: Get actual points
+        const standing = standings.find(s => s.team_key === team.team_key);
+        const teamTransactions = transactions.filter(t => t.team_key === team.team_key);
 
-        // Separate starters from bench (BN slot = bench, IR = injured reserve)
+        // Calculate bench points
         const starters = roster.filter(p => p.slot !== 'BN' && p.slot !== 'IR');
-        const bench = roster.filter(p => p.slot === 'BN'); // Only actual bench players (exclude IR)
+        const bench = roster.filter(p => p.slot === 'BN' || p.slot === 'IR');
         
         // Calculate bench vs starter diff
         const starterPoints = starters.reduce((sum, p) => sum + (stats[p.player_key]?.points || 0), 0);
@@ -150,13 +100,11 @@ export default async function handler(request, context) {
             if (starter.position === benchPlayer.position || starter.slot === 'FLEX') {
               const starterPts = stats[starter.player_key]?.points || 0;
               const diff = benchPts - starterPts;
-              if (diff > biggestDiff && diff > 5) { // Only if bench player scored 5+ more points
+              if (diff > biggestDiff) {
                 biggestDiff = diff;
                 biggestMistake = {
-                  benched: benchPlayer.name,
-                  benchedPoints: benchPts.toFixed(1),
-                  started: starter.name,
-                  startedPoints: starterPts.toFixed(1),
+                  benched: `${benchPlayer.name} (${benchPts.toFixed(1)} pts)`,
+                  started: `${starter.name} (${starterPts.toFixed(1)} pts)`,
                   diff: diff.toFixed(1)
                 };
               }
@@ -164,25 +112,10 @@ export default async function handler(request, context) {
           }
         }
         
-        // Identify injured/OUT players for next week
-        const injuredNextWeek = nextWeekRoster.filter(p => 
-          p.status && ['IR', 'O', 'D', 'Q'].includes(p.status) && p.slot !== 'BN'
-        ).map(p => ({
-          name: p.name,
-          position: p.position,
-          status: p.status,
-          team: p.team
-        }));
-        
         teamDetails.push({
           ...team,
           record: `${standing?.wins || 0}-${standing?.losses || 0}`,
           rank: standing?.rank || 0,
-          wins: standing?.wins || 0,
-          losses: standing?.losses || 0,
-          ties: standing?.ties || 0,
-          points_for: standing?.points_for || 0,
-          points_against: standing?.points_against || 0,
           starters: starters.map(p => ({
             name: p.name,
             position: p.position,
@@ -205,59 +138,20 @@ export default async function handler(request, context) {
           })),
           starterPoints: starterPoints.toFixed(1),
           benchPoints: benchPoints.toFixed(1),
-          biggestMistake,
-          injuredNextWeek // Add injury data for next week
-        });
-          
-      } catch (teamError) {
-        console.error(`Error processing team ${standing.name}:`, teamError);
-        // Add placeholder data so we don't break the entire response
-        teamDetails.push({
-          team_key: standing.team_key,
-          name: standing.name,
-          points: 0,
-          projected: 0,
-          record: `${standing?.wins || 0}-${standing?.losses || 0}`,
-          rank: standing?.rank || 0,
-          wins: standing?.wins || 0,
-          losses: standing?.losses || 0,
-          ties: standing?.ties || 0,
-          points_for: standing?.points_for || 0,
-          points_against: standing?.points_against || 0,
-          starters: [],
-          bench: [],
-          transactions: [],
-          starterPoints: '0.0',
-          benchPoints: '0.0',
-          biggestMistake: null,
-          injuredNextWeek: [], // Empty array for consistency
-          error: `Failed to load team data: ${teamError.message}`
+          biggestMistake
         });
       }
     }
 
-    // Step 7: Generate AI roast with preview data
+    // Step 7: Generate AI roast
     console.log(`Generating AI roast with tone: ${tone}...`);
-    const roast = await generateRoast(actualLeagueName, weekToAnalyze, currentWeek, teamDetails, scoreboard, nextWeekMatchups, tone);
+    const roast = await generateRoast(league.name, weekToAnalyze, currentWeek, teamDetails, scoreboard, tone);
 
-    // Step 8: Return results with updated cookies if token was refreshed
-    const responseInit = {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    };
-    
-    // Add updated cookies if token was refreshed (using multiValueHeaders in Netlify)
-    if (updatedCookies) {
-      responseInit.headers = new Headers(responseInit.headers);
-      updatedCookies.forEach(cookie => {
-        responseInit.headers.append('Set-Cookie', cookie);
-      });
-    }
-
+    // Step 8: Return results
     return new Response(JSON.stringify({
       success: true,
       league: {
-        name: actualLeagueName,
+        name: league.name,
         key: leagueKey
       },
       week_analyzed: weekToAnalyze,
@@ -265,7 +159,10 @@ export default async function handler(request, context) {
       roast,
       teams: teamDetails,
       matchups: scoreboard
-    }), responseInit);
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
 
   } catch (error) {
     console.error('Error in FF-Weekly-Roast:', error);
@@ -443,55 +340,13 @@ const ROAST_CHARACTERS = {
     systemPrompt: "You are Yoda analyzing fantasy football teams.",
     style: "Backwards syntax, deeply cryptic wisdom. 'Start that player, you did. Regret, you will.' Jedi wisdom about patience and the Force. Reference the Dark Side for bad decisions. Warn of future failures in riddles. Much to learn, they have.",
     task: "Offer cryptic Jedi wisdom about each team's path. Predict failures in backwards Yoda-speak."
-  },
-  
-  gandalf: {
-    systemPrompt: "You are Gandalf the Grey (or White) analyzing fantasy football teams as if they were warriors in Middle-earth.",
-    style: "Wise, dramatic, prophetic. Mix gravitas with occasional dry humor. Reference the quest, darkness rising, hope in dark times. 'A wizard arrives precisely when he means to.' Compare teams to fellowship members, orcs, or heroes. Warn of doom but offer hope. Pipe-smoking wisdom. You've seen many battles across many ages.",
-    task: "Write a weekly chronicle as if documenting the fellowship's journey. Some teams are heroes rising, others succumbing to darkness. Be wise, dramatic, and occasionally amused by folly."
-  },
-  
-  creed: {
-    systemPrompt: "You are Creed Bratton from The Office analyzing fantasy football teams with zero context and deeply unsettling comments.",
-    style: "Completely unhinged, random dark references, vaguely criminal past, confuses player names, makes bizarre observations. 'I've been involved in several fantasy leagues, both as a leader and a follower. You make more money as a leader but have more fun as a follower.' Non-sequiturs, deadpan delivery, occasionally accurate by accident.",
-    task: "Analyze teams like Creed - confused, disturbing, weirdly insightful. Mispronounce names, reference crimes, get details wrong but stumble onto truth."
-  },
-  
-  ronswanson: {
-    systemPrompt: "You are Ron Swanson from Parks & Recreation analyzing fantasy football teams.",
-    style: "Libertarian, stoic, meat-obsessed, despises government and weakness. Short, declarative sentences. 'Never half-ass two things. Whole-ass one thing.' Respect for hard work and self-reliance. Disdain for excuses and emotions. Mentions woodworking, breakfast meats, and Lagavulin. Dry humor, deadpan delivery.",
-    task: "Judge teams by Ron's standards - strength, self-sufficiency, no crying. Winners get respect. Losers get contempt and a recommendation for more bacon."
-  },
-  
-  stefon: {
-    systemPrompt: "You are Stefon from SNL's Weekend Update analyzing fantasy football leagues.",
-    style: "Valley accent, cover face when laughing, 'This league has EVERYTHING...' List absurd things in teams/matchups. Make up weird club names and references. 'Yes yes yes yes yes.' Breathless excitement, giggly, covering mouth. End with bizarre recommendations like 'human fire hydrants' or 'MTV's Dan Cortese.'",
-    task: "Present the league like NYC's hottest club. List what each team has going on - injuries, mistakes, bench blunders - like they're club attractions."
-  },
-  
-  herzog: {
-    systemPrompt: "You are Werner Herzog narrating a documentary about fantasy football.",
-    style: "German accent, philosophical pessimism, profound observations about futility and nature's indifference. Long, contemplative sentences. 'The universe is not hostile, nor yet is it friendly. It is simply indifferent.' Reference harsh landscapes, survival, man's struggle against chaos. Poetic descriptions of failure.",
-    task: "Narrate the league as if it's a nature documentary about survival and inevitable doom. Make fantasy football seem existential and tragic."
-  },
-  
-  fieri: {
-    systemPrompt: "You are Guy Fieri from Diners, Drive-Ins and Dives analyzing fantasy football teams.",
-    style: "EXTREME enthusiasm, food metaphors for everything. 'Welcome to FLAVORTOWN!' 'That's money!' 'Off the hook!' Describe performances like dishes - 'smoky,' 'bold,' 'money flavor.' Winners are 'gangster,' losers are 'dry' or 'bland.' Reference Triple-D, signature spiky hair energy, finger guns.",
-    task: "Review each team like a restaurant. Winners are serving up flavor bombs, losers are serving sad cafeteria food. Make everything about bold flavors and Flavortown."
   }
 };
 
 /**
- * Generate AI-powered roast using OpenAI GPT-4o-mini
- * PERFORMANCE FIX: Ultra-compact prompt + faster model + aggressive timeouts
+ * Generate AI-powered roast using Claude or OpenAI (fallback)
  */
-async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, matchups, nextWeekMatchups, tone = 'default') {
-  // Extended timeout for detailed preview prompts with deep data (50s leaves 10s buffer for data fetching)
-  const timeoutPromise = new Promise((_, reject) => 
-    setTimeout(() => reject(new Error('AI generation timed out after 50 seconds')), 50000)
-  );
-  
+async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, matchups, tone = 'default') {
   try {
     // Sort teams by rank
     const sortedTeams = [...teams].sort((a, b) => a.rank - b.rank);
@@ -499,118 +354,100 @@ async function generateRoast(leagueName, weekAnalyzed, currentWeek, teams, match
     // Get character definition
     const character = ROAST_CHARACTERS[tone.toLowerCase()] || ROAST_CHARACTERS.default;
 
-    // Build detailed preview section with matchup analysis
-    const playoffCutoff = 6; // Typical playoff cutoff
-    const previewData = nextWeekMatchups.map(m => {
-      const team1 = teams.find(t => t.team_key === m.team1.team_key);
-      const team2 = teams.find(t => t.team_key === m.team2.team_key);
-      
-      const team1Rank = team1?.rank || 99;
-      const team2Rank = team2?.rank || 99;
-      const team1Record = team1?.record || '0-0';
-      const team2Record = team2?.record || '0-0';
-      
-      // Identify key matchup types
-      let matchupType = '';
-      if (team1Rank <= playoffCutoff && team2Rank <= playoffCutoff) {
-        matchupType = '🔥 PLAYOFF SHOWDOWN';
-      } else if (team1Rank > teams.length - 3 || team2Rank > teams.length - 3) {
-        matchupType = '🗑️ BATTLE FOR LAST PLACE';
-      } else if (Math.abs(m.team1.projected - m.team2.projected) < 10) {
-        matchupType = '⚔️ NAIL-BITER';
-      } else {
-        matchupType = '📊 KEY MATCHUP';
-      }
-      
-      // Get injuries for both teams
-      const team1Injuries = team1?.injuredNextWeek || [];
-      const team2Injuries = team2?.injuredNextWeek || [];
-      
-      return `${matchupType}: ${m.team1.name} (${team1Record}, #${team1Rank}) ${m.team1.projected.toFixed(1)}pts vs ${m.team2.name} (${team2Record}, #${team2Rank}) ${m.team2.projected.toFixed(1)}pts
-${team1Injuries.length > 0 ? `  ${m.team1.name} injuries: ${team1Injuries.map(i => `${i.name} (${i.status})`).join(', ')}` : ''}
-${team2Injuries.length > 0 ? `  ${m.team2.name} injuries: ${team2Injuries.map(i => `${i.name} (${i.status})`).join(', ')}` : ''}`;
-    }).join('\n');
-
-    // BALANCED PROMPT - Detailed but efficient for quality roasts
     const prompt = `${character.systemPrompt}
 
-${character.style}
+CRITICAL: You must FULLY EMBODY this character's voice, speech patterns, and personality. This is not a surface-level impression - you ARE this character analyzing fantasy football. Use their actual vocabulary, rhythm, and worldview.
 
-Week ${weekAnalyzed} recap for "${leagueName}" (now Week ${currentWeek}).
+Style Guide: ${character.style}
 
-MATCHUPS:
-${matchups.map(m => `${m.team1.name} ${m.team1.points}pts vs ${m.team2.name} ${m.team2.points}pts - Winner: ${m.winner === m.team1.team_key ? m.team1.name : m.team2.name}`).join('\n')}
+Week ${weekAnalyzed} just finished in the "${leagueName}" league. We're now in Week ${currentWeek}.
 
-STANDINGS (all 12 teams with full details):
-${sortedTeams.map((t, i) => {
-  const top = t.starters.filter(p => parseFloat(p.points) > 0).sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 2);
-  const worst = t.starters.filter(p => parseFloat(p.points) > 0).sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 1);
-  const moves = t.transactions?.length > 0 ? `Recent moves: ${t.transactions.slice(0, 2).map(tx => tx.players).join('; ')}` : 'No moves';
-  return `${i + 1}. ${t.name} (${t.record}): Week ${weekAnalyzed} score ${t.points}pts
-   Top: ${top.map(p => `${p.name} ${p.points}pts`).join(', ') || 'no scorers'}
-   ${worst.length > 0 ? `Dud: ${worst[0].name} ${worst[0].points}pts` : ''}
-   ${t.biggestMistake ? `BENCHED: ${t.biggestMistake.benched} (${t.biggestMistake.benchedPoints}pts) for ${t.biggestMistake.started} (${t.biggestMistake.startedPoints}pts)` : 'No bench errors'}
-   ${moves}`;
-}).join('\n')}
+Your task: Write power rankings reviewing each team IN CHARACTER. Stay in character the ENTIRE time.
 
-WEEK ${currentWeek} PREVIEW (CRITICAL - USE THIS DATA):
-${previewData}
+MATCHUP RESULTS:
+${matchups.map(m => `${m.team1.name} (${m.team1.points} pts) vs ${m.team2.name} (${m.team2.points} pts) - Winner: ${m.winner === m.team1.team_key ? m.team1.name : m.team2.name}`).join('\n')}
 
-Write 500-word character-driven recap with sections:
-1. <h2>Week ${weekAnalyzed} Headline</h2> - Character intro, set the tone
-2. <h3>Winners Circle</h3> - Top 3-4 teams, highlight stars & bench blunders  
-3. <h3>Middle of the Pack</h3> - Teams fighting for playoffs (mention records, playoff chances)
-4. <h3>Bottom Feeders</h3> - Last place teams, brutal honesty about their season
-5. <h3>Waiver Wire Winners & Losers</h3> - Notable adds/drops if any big moves
-6. <h3>Looking Ahead to Week ${currentWeek}</h3> - **DETAILED PREVIEW** (150+ words):
-   - Highlight TOP playoff matchups (teams fighting for postseason spots)
-   - Call out BOTTOM matchups (last place battles) 
-   - Mention projected score predictions for key games
-   - Note ANY injured/out players that could swing matchups
-   - Build drama around close projections and playoff implications
-   - Make bold predictions about who wins/loses and why
+TEAM DATA (sorted by standings):
+${sortedTeams.map((t, i) => `
+${i + 1}. ${t.name} (${t.record}) - Rank: ${t.rank}
+   Week ${weekAnalyzed}: ${t.points} pts (ACTUAL: ${t.starterPoints} from starters, ${t.benchPoints} left on bench!)
+   Season total: ${t.points_for || 'N/A'} pts
+   ${t.biggestMistake ? `BENCH MISTAKE: Benched ${t.biggestMistake.benched}, started ${t.biggestMistake.started} - Left ${t.biggestMistake.diff} pts on bench!` : ''}
+   
+   TOP PERFORMERS:
+   ${t.starters.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 3).map(p => `   🔥 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
+   
+   WORST STARTERS:
+   ${t.starters.sort((a, b) => parseFloat(a.points) - parseFloat(b.points)).slice(0, 2).map(p => `   💩 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
+   
+   BENCH (could've used):
+   ${t.bench.sort((a, b) => parseFloat(b.points) - parseFloat(a.points)).slice(0, 3).map(p => `   😤 ${p.name}: ${p.points} pts (${p.position}, ${p.team})${p.status ? ` [${p.status}]` : ''}`).join('\n')}
+   
+   WAIVER MOVES:
+   ${t.transactions.length > 0 ? t.transactions.map(tx => `   ${tx.players}`).join('\n') : '   None'}
+`).join('\n')}
 
-Use <p> tags. Include specific player names, stats, records, and INJURIES. Stay in character throughout!`;
+CONTEXT FOR ROASTING:
+- Close games (won/lost by <5 pts) = maximum roast fuel
+- Big blowouts = either celebrate domination or mock complete failure  
+- High bench points = roast for lineup management incompetence
+- Started OUT/Q players = maximum stupidity roast
+- Waiver pickups that flopped = mock the desperation
+- Waiver pickups that succeeded = grudging respect or "even a blind squirrel" jokes
 
-    // Use OpenAI GPT-4 directly (Claude was failing anyway)
-    const generateWithOpenAI = async () => {
+Write power rankings with:
+1. Overall league narrative (who's dominating, who's tanking)
+2. Individual team breakdowns (highlight embarrassing moments)
+3. "Roast of the Week" - single most embarrassing team/decision
+4. "Play of the Week" - best performance or clutch win
+
+CRITICAL: Use SPECIFIC STATS and NAMES. Don't be vague. Call out exact points, exact players, exact margins. That's what makes it funny and authentic, not formulaic.
+
+Format in HTML with <h1>, <h2>, <h3>, <p> tags. Make it SAVAGE and SPECIFIC. 🔥`;
+
+    // Try Claude first
+    try {
+      const anthropic = new Anthropic({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+      });
+
+      const message = await anthropic.messages.create({
+        model: 'claude-3-5-sonnet-20240620', // Stable version
+        max_tokens: 4000,
+        messages: [{
+          role: 'user',
+          content: prompt
+        }]
+      });
+
+      return message.content[0].text;
+
+    } catch (claudeError) {
+      console.warn('Claude API failed, falling back to OpenAI:', claudeError.message);
+      
+      // Fallback to OpenAI GPT-4
       const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY,
-        timeout: 45000 // 45s timeout for OpenAI API calls (deep data processing)
+        apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY, // Use same key if available
       });
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini', // MUCH faster than gpt-4o, 1/10th the cost, still high quality
+        model: 'gpt-4o',  // Updated to current GPT-4 model
         messages: [{
           role: 'system',
-          content: character.systemPrompt
+          content: character.systemPrompt + '\n\n' + character.style
         }, {
           role: 'user',
           content: prompt
         }],
-        max_tokens: 1500, // 500 words ~= 700 tokens + safety buffer for structured HTML with detailed preview
+        max_tokens: 4000,
         temperature: 0.9
       });
 
       return completion.choices[0].message.content;
-    };
-    
-    // Race AI generation against timeout
-    return await Promise.race([generateWithOpenAI(), timeoutPromise]);
+    }
 
   } catch (error) {
     console.error('Error generating roast:', error);
-    
-    // If timeout, return a simple fallback message
-    if (error.message.includes('timed out')) {
-      return `<h2>⏱️ Quick Week ${weekAnalyzed} Recap</h2>
-<p>Generation took longer than expected. Key matchups:</p>
-<ul>
-${matchups.map(m => `<li><strong>${m.team1.name}</strong> (${m.team1.points}) vs <strong>${m.team2.name}</strong> (${m.team2.points})</li>`).join('')}
-</ul>
-<p><em>Top team: ${teams.sort((a, b) => a.rank - b.rank)[0]?.name || 'Unknown'} | Bottom: ${teams.sort((a, b) => b.rank - a.rank)[0]?.name || 'Unknown'}</em></p>`;
-    }
-    
     return `<h1>Error Generating Roast</h1><p>The roast generator encountered an error: ${error.message}</p>`;
   }
 }

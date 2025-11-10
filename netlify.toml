@@ -13,17 +13,7 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs", "node-fetch"]
-  included_files = ["public/**", "nfl-model-v4.1/output/**", "nfl-model-v4.1/scripts/**"]
-
-# Fantasy Football functions - only need these env vars
-[functions."ff-*"]
-  included_files = []  # Don't include NFL model files
-  
-# Scope env vars per function category to stay under 4KB limit
-[context.production.environment]
-  # These are loaded for ALL functions - keep minimal
-  NETLIFY_TOKEN = ""
-  SITE_ID = ""
+  included_files = ["public/**"]
 
 [build.environment]
   NODE_VERSION = "20"
@@ -49,12 +39,7 @@
   name = "refresh-td-odds-cache"
   cron = "0 12 * * *"
 
-# NFL V4.1 Predictions Refresh - daily at 9am UTC
+# NFL V5 Predictions - refresh weekly on Tuesday 10am ET (14:00 UTC)
 [[scheduled.functions]]
-  name = "nfl-v41-refresh"
-  cron = "0 9 * * *"
-
-# NFL V5 Predictions Refresh - daily at 10am UTC (1hr after V4.1)
-[[scheduled.functions]]
-  name = "nfl-v5-refresh"
-  cron = "0 10 * * *"
+  name = "nfl-v5-weekly-refresh"
+  cron = "0 14 * * 2"

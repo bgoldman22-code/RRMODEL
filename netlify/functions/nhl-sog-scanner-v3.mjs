@@ -28,43 +28,65 @@
 
 import { fetchTodaySchedule, fetchTeamRoster } from './_lib/nhl-data-fetch.mjs';
 
-// Lazy-load modules as promises (no top-level await)
-const v3ProjPromise = import('./_lib/nhl-projection-v3-learned.mjs').catch(e => {
-  console.warn('⚠️ Phase 2A unavailable, using v1 projection');
-  return null;
-});
-
-const v1ProjPromise = import('./_lib/nhl-projection-engine.mjs').catch(e => {
-  console.error('❌ Critical: No projection engine available');
-  return null;
-});
-
-const eliteScannerPromise = import('./_lib/nhl-elite-line-scanner-v2.mjs').catch(e => {
-  console.warn('⚠️ Elite scanner unavailable, using simple calculations');
-  return null;
-});
-
-const injuryModulePromise = import('./_lib/nhl-injury-lineup-scraper.mjs').catch(e => {
-  console.warn('⚠️ Phase 2B unavailable, using default injury data');
-  return null;
-});
-
-const mlModulePromise = import('./_lib/nhl-xgboost-ml-layer.mjs').catch(e => {
-  console.warn('⚠️ Phase 2C unavailable, using ZINB only');
-  return null;
-});
-
-const noVigModulePromise = import('./_lib/nhl-no-vig-odds.mjs').catch(e => {
-  console.warn('⚠️ No-vig module unavailable, using raw odds');
-  return null;
-});
-
-// Module references (loaded in handler)
+// Try to import v3 modules, fall back to v1 if they fail
 let projectPlayerSOGv3, projectPlayerSOG;
 let calculateEVWithPush, calculateHybridKelly;
 let getBatchInjuryLineupFactors;
 let predictSOGWithXGBoost, ensemblePrediction, engineerFeatures, loadBooster, areModelsAvailable;
 let calculateTrueEdge, blendMarketProbabilities;
+
+try {
+  const v3Proj = await import('./_lib/nhl-projection-v3-learned.mjs');
+  projectPlayerSOGv3 = v3Proj.projectPlayerSOGv3;
+  console.log('✅ Phase 2A loaded: Learned parameters');
+} catch (e) {
+  console.warn('⚠️ Phase 2A unavailable, using v1 projection');
+}
+
+try {
+  const v1Proj = await import('./_lib/nhl-projection-engine.mjs');
+  projectPlayerSOG = v1Proj.projectPlayerSOG;
+} catch (e) {
+  console.error('❌ Critical: No projection engine available');
+}
+
+try {
+  const eliteScanner = await import('./_lib/nhl-elite-line-scanner-v2.mjs');
+  calculateEVWithPush = eliteScanner.calculateEVWithPush;
+  calculateHybridKelly = eliteScanner.calculateHybridKelly;
+  console.log('✅ Phase 2A loaded: Elite edge detection');
+} catch (e) {
+  console.warn('⚠️ Elite scanner unavailable, using simple calculations');
+}
+
+try {
+  const injuryModule = await import('./_lib/nhl-injury-lineup-scraper.mjs');
+  getBatchInjuryLineupFactors = injuryModule.getBatchInjuryLineupFactors;
+  console.log('✅ Phase 2B loaded: Injury integration');
+} catch (e) {
+  console.warn('⚠️ Phase 2B unavailable, using default injury data');
+}
+
+try {
+  const mlModule = await import('./_lib/nhl-xgboost-ml-layer.mjs');
+  predictSOGWithXGBoost = mlModule.predictSOGWithXGBoost;
+  ensemblePrediction = mlModule.ensemblePrediction;
+  engineerFeatures = mlModule.engineerFeatures;
+  loadBooster = mlModule.loadBooster;
+  areModelsAvailable = mlModule.areModelsAvailable;
+  console.log('✅ Phase 2C loaded: ML layer');
+} catch (e) {
+  console.warn('⚠️ Phase 2C unavailable, using ZINB only');
+}
+
+try {
+  const noVigModule = await import('./_lib/nhl-no-vig-odds.mjs');
+  calculateTrueEdge = noVigModule.calculateTrueEdge;
+  blendMarketProbabilities = noVigModule.blendMarketProbabilities;
+  console.log('✅ Elite Odds: No-vig consolidation');
+} catch (e) {
+  console.warn('⚠️ No-vig module unavailable, using raw odds');
+}
 
 // Mock bookmaker lines (in production, fetch from odds API)
 const MOCK_BOOKMAKER_LINES = {
@@ -91,47 +113,6 @@ export async function handler(event, context) {
   }
   
   try {
-    // Load modules inside handler (no top-level await)
-    const [v3Proj, v1Proj, eliteScanner, injuryModule, mlModule, noVigModule] = await Promise.all([
-      v3ProjPromise,
-      v1ProjPromise,
-      eliteScannerPromise,
-      injuryModulePromise,
-      mlModulePromise,
-      noVigModulePromise
-    ]);
-
-    // Assign module exports
-    if (v3Proj) {
-      projectPlayerSOGv3 = v3Proj.projectPlayerSOGv3;
-      console.log('✅ Phase 2A loaded: Learned parameters');
-    }
-    if (v1Proj) {
-      projectPlayerSOG = v1Proj.projectPlayerSOG;
-    }
-    if (eliteScanner) {
-      calculateEVWithPush = eliteScanner.calculateEVWithPush;
-      calculateHybridKelly = eliteScanner.calculateHybridKelly;
-      console.log('✅ Phase 2A loaded: Elite edge detection');
-    }
-    if (injuryModule) {
-      getBatchInjuryLineupFactors = injuryModule.getBatchInjuryLineupFactors;
-      console.log('✅ Phase 2B loaded: Injury integration');
-    }
-    if (mlModule) {
-      predictSOGWithXGBoost = mlModule.predictSOGWithXGBoost;
-      ensemblePrediction = mlModule.ensemblePrediction;
-      engineerFeatures = mlModule.engineerFeatures;
-      loadBooster = mlModule.loadBooster;
-      areModelsAvailable = mlModule.areModelsAvailable;
-      console.log('✅ Phase 2C loaded: ML layer');
-    }
-    if (noVigModule) {
-      calculateTrueEdge = noVigModule.calculateTrueEdge;
-      blendMarketProbabilities = noVigModule.blendMarketProbabilities;
-      console.log('✅ Elite Odds: No-vig consolidation');
-    }
-
     const params = event.queryStringParameters || {};
     const minEdge = parseFloat(params.minEdge) || 3.0;
     const minConfidence = parseFloat(params.minConfidence) || 60;
