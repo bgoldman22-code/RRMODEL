@@ -43,3 +43,13 @@
 [[scheduled.functions]]
   name = "nfl-v5-weekly-refresh"
   cron = "0 14 * * 2"
+
+# 🆕 NBA Tracking - Verify game results daily at 6 AM ET (11:00 UTC)
+[[scheduled.functions]]
+  name = "nba-tracking-verify-games"
+  cron = "0 11 * * *"
+
+# 🆕 NBA Tracking - Verify player props daily at 6 AM ET (11:00 UTC)
+[[scheduled.functions]]
+  name = "nba-tracking-verify-props"
+  cron = "0 11 * * *"

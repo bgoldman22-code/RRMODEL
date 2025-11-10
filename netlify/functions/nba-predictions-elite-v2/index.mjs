@@ -29,6 +29,7 @@ import { applyRCIAdjustment, getRCISummary } from '../_lib/nba/rci-adjustments.m
 import { getTeamInjuries } from '../_lib/nba/injuries.mjs';
 import { applyInjuryAdjustment, getInjurySummary, getInjuryAdvantage } from '../_lib/nba/injury-adjustments.mjs';
 import { fetchTeamRollingStats, loadTeamInfo } from '../_lib/nba/loaders.mjs';
+import { saveGamePredictions } from '../nba-tracking-save-predictions.mjs';
 
 /**
  * ESPN → NBA abbreviation normalization
@@ -1919,6 +1920,34 @@ export default async (request, context) => {
     const jsonString = JSON.stringify(responseData);
     const sizeInKB = (jsonString.length / 1024).toFixed(2);
     console.log(`[NBA Elite V2] Response size: ${sizeInKB} KB`);
+    
+    // 🆕 SAVE GAME PREDICTIONS FOR TRACKING (skip preseason)
+    if (!isPreseason && predictions.length > 0) {
+      try {
+        const gamePredictions = predictions.map(p => ({
+          gameId: p.gameId || null,
+          gameTime: p.gameTime,
+          homeTeam: p.home,
+          awayTeam: p.away,
+          predictedWinner: p.prediction?.spread?.prediction > 0 ? p.home : p.away,
+          predictedMargin: Math.abs(p.prediction?.spread?.prediction || 0),
+          confidence: p.prediction?.confidence || null,
+          homeOdds: p.odds?.moneyline?.home,
+          awayOdds: p.odds?.moneyline?.away,
+          spread: p.odds?.spread?.line,
+          total: p.odds?.total?.line,
+          model: 'Elite Ensemble V2',
+          recommendationTier: p.opportunities?.[0]?.tier_label || null
+        }));
+        
+        const today = new Date().toISOString().split('T')[0];
+        await saveGamePredictions(gamePredictions, today);
+        console.log(`[NBA Elite V2] 📊 Saved ${gamePredictions.length} game predictions for tracking`);
+      } catch (trackingError) {
+        console.error('[NBA Elite V2] ⚠️ Failed to save tracking data:', trackingError.message);
+        // Don't fail the request if tracking fails
+      }
+    }
     
     return new Response(jsonString, {
       headers: {

@@ -16,6 +16,7 @@
 
 import { getStore } from '@netlify/blobs';
 import fetch from 'node-fetch';
+import { savePropPredictions } from './nba-tracking-save-predictions.mjs';
 
 // Configuration
 const API_KEY = process.env.ODDS_API_KEY;
@@ -416,8 +417,11 @@ export default async (req, context) => {
 
             // Check Over bet
             if (overEdge >= EDGE_THRESHOLD) {
-              const kelly = (ourOverProb * (overOdds / 100 + 1) - 1) / (overOdds / 100);
+              const kelly = (ourOverProb * (Math.abs(overOdds) / 100 + 1) - 1) / (Math.abs(overOdds) / 100);
               if (kelly >= MIN_KELLY) {
+                // Calculate recommended units (1/4 Kelly for conservative bankroll management)
+                const recommendedUnits = Math.max(0.5, Math.min(3, Math.round(kelly * 25 * 10) / 10));
+                
                 predictions.push({
                   player: playerName,
                   team: isHome ? homeTeam : awayTeam,
@@ -433,6 +437,7 @@ export default async (req, context) => {
                   impliedProb: Math.round(overProb * 1000) / 10,
                   confidence: Math.round(confidence * 100), // Convert 0.95 → 95
                   kellyFraction: Math.round(kelly * 1000) / 10,
+                  recommendedUnits: recommendedUnits,
                   bookmaker: bookmaker.key,
                   generatedAt: nowISO
                 });
@@ -443,6 +448,9 @@ export default async (req, context) => {
             if (underEdge >= EDGE_THRESHOLD) {
               const kelly = (ourUnderProb * (Math.abs(underOdds) / 100 + 1) - 1) / (Math.abs(underOdds) / 100);
               if (kelly >= MIN_KELLY) {
+                // Calculate recommended units (1/4 Kelly for conservative bankroll management)
+                const recommendedUnits = Math.max(0.5, Math.min(3, Math.round(kelly * 25 * 10) / 10));
+                
                 predictions.push({
                   player: playerName,
                   team: isHome ? homeTeam : awayTeam,
@@ -458,6 +466,7 @@ export default async (req, context) => {
                   impliedProb: Math.round(underProb * 1000) / 10,
                   confidence: Math.round(confidence * 100), // Convert 0.95 → 95
                   kellyFraction: Math.round(kelly * 1000) / 10,
+                  recommendedUnits: recommendedUnits,
                   bookmaker: bookmaker.key,
                   generatedAt: nowISO
                 });
@@ -528,6 +537,11 @@ export default async (req, context) => {
 
     // Store predictions in Netlify Blobs (so frontend can read them)
     await store.set('nba-picks-latest', JSON.stringify(output));
+
+    // 🆕 SAVE PREDICTIONS FOR TRACKING
+    const today = new Date().toISOString().split('T')[0];
+    await savePropPredictions(uniquePredictions, today);
+    console.log(`📊 Saved ${uniquePredictions.length} predictions for tracking`);
 
     console.log(`✅ Generated ${uniquePredictions.length} predictions (${predictions.length} before dedup)`);
     console.log(`📦 Stored in Blobs: nba-picks-latest`);
