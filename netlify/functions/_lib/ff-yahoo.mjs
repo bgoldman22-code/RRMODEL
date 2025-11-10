@@ -425,3 +425,70 @@ export async function getCurrentWeek(accessToken, leagueKey) {
     throw error;
   }
 }
+
+/**
+ * Get league scoreboard for a specific week
+ * @param {string} accessToken - OAuth access token
+ * @param {string} leagueKey - League key
+ * @param {number} week - Week number
+ * @returns {Promise<Object>} Scoreboard data
+ */
+export async function getLeagueScoreboard(accessToken, leagueKey, week) {
+  try {
+    const data = await yahooRequest(accessToken, `/league/${leagueKey}/scoreboard;week=${week}`);
+    return data.fantasy_content?.league?.[1]?.scoreboard || {};
+  } catch (error) {
+    console.error('Error fetching league scoreboard:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get league standings
+ * @param {string} accessToken - OAuth access token
+ * @param {string} leagueKey - League key
+ * @returns {Promise<Object>} Standings data
+ */
+export async function getLeagueStandings(accessToken, leagueKey) {
+  try {
+    const data = await yahooRequest(accessToken, `/league/${leagueKey}/standings`);
+    return data.fantasy_content?.league?.[1]?.standings || {};
+  } catch (error) {
+    console.error('Error fetching league standings:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get league transactions
+ * @param {string} accessToken - OAuth access token
+ * @param {string} leagueKey - League key
+ * @returns {Promise<Array>} Transactions array
+ */
+export async function getLeagueTransactions(accessToken, leagueKey) {
+  try {
+    const data = await yahooRequest(accessToken, `/league/${leagueKey}/transactions`);
+    const transactions = data.fantasy_content?.league?.[1]?.transactions;
+    return Array.isArray(transactions) ? transactions : [];
+  } catch (error) {
+    console.error('Error fetching league transactions:', error.message);
+    return []; // Return empty array on error
+  }
+}
+
+/**
+ * Get team stats for a specific week
+ * @param {string} accessToken - OAuth access token
+ * @param {string} teamKey - Team key
+ * @param {number} week - Week number
+ * @returns {Promise<Object>} Team stats
+ */
+export async function getTeamStats(accessToken, teamKey, week) {
+  try {
+    const data = await yahooRequest(accessToken, `/team/${teamKey}/stats;type=week;week=${week}`);
+    return data.fantasy_content?.team?.[1]?.team_stats || {};
+  } catch (error) {
+    console.error('Error fetching team stats:', error.message);
+    throw error;
+  }
+}
