@@ -74,31 +74,134 @@ export default function NFLPredictionsV5() {
 
   /**
    * Refresh predictions with fresh odds, injuries, etc. (slower)
+   * Optionally specify a week to generate predictions for
    */
-  async function refreshNow() {
+  async function refreshNow(weekOverride = null) {
     setRefreshing(true);
     setError(null);
     
     try {
-      const res = await fetch('/.netlify/functions/nfl-v5-refresh-now', {
-        method: 'GET',
-        headers: { 'Cache-Control': 'no-cache' }
+      const targetWeek = weekOverride || selectedWeek;
+      const season = 2025;
+      
+      // First, get the schedule for the target week
+      const scheduleRes = await fetch(`/.netlify/functions/nfl-schedule-get?season=${season}&week=${targetWeek}`);
+      if (!scheduleRes.ok) {
+        throw new Error(`Failed to fetch schedule for Week ${targetWeek}`);
+      }
+      
+      const scheduleData = await scheduleRes.json();
+      const matchups = scheduleData.matchups || [];
+      
+      if (matchups.length === 0) {
+        throw new Error(`No games found for Week ${targetWeek}`);
+      }
+      
+      // Transform matchups to games format
+      const games = matchups.map(m => ({
+        game_id: m.id,
+        home_team: m.homeTeam,
+        away_team: m.awayTeam,
+        start: m.kickoff
+      }));
+      
+      // Generate predictions for this specific week
+      const generateRes = await fetch('/.netlify/functions/nfl-predictions-generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          season: season.toString(),
+          games: games,
+          refresh: true
+        })
       });
       
-      if (!res.ok) {
-        throw new Error(`Refresh failed: ${res.status}`);
+      if (!generateRes.ok) {
+        throw new Error(`Prediction generation failed: ${generateRes.status}`);
       }
       
-      const data = await res.json();
+      const generateData = await generateRes.json();
+      const predictions = generateData.predictions || [];
       
-      if (data.ok) {
-        setPredictions(data.rows || []);
-        setMeta(data.meta || {});
-        setDataSource('fresh');
-        setLastRefresh(data.refresh_metadata?.refreshed_at);
-      } else {
-        throw new Error(data.error || 'Refresh failed');
+      if (predictions.length === 0) {
+        throw new Error('No predictions generated');
       }
+      
+      // Transform to V5 format
+      const transformedPredictions = predictions.map(pred => {
+        const spread = pred.predictions?.spread || {};
+        const total = pred.predictions?.total || {};
+        const moneyline = pred.predictions?.moneyline || {};
+        
+        return {
+          game_id: pred.game_id,
+          matchup: `${pred.away_team} @ ${pred.home_team}`,
+          kickoff: pred.start || pred.kickoff,
+          away_team: pred.away_team,
+          home_team: pred.home_team,
+          spread: {
+            pick: spread.pick,
+            line: spread.line,
+            predicted_margin: spread.predicted,
+            confidence: spread.confidence,
+            edge: spread.edge,
+            recommended_units: spread.recommended_units || 0
+          },
+          total: {
+            pick: total.pick,
+            line: total.line,
+            predicted_total: total.predicted,
+            confidence: total.confidence,
+            edge: total.edge,
+            recommended_units: total.recommended_units || 0
+          },
+          moneyline: {
+            pick: moneyline.pick,
+            confidence: moneyline.confidence,
+            edge: moneyline.edge,
+            recommended_units: moneyline.recommended_units || 0
+          },
+          home_win_prob: pred.predictions?.home_win_prob || 0.5,
+          away_win_prob: pred.predictions?.away_win_prob || 0.5,
+          model_version: "v5-hybrid",
+          generated_at: new Date().toISOString()
+        };
+      });
+      
+      // Update UI with fresh predictions
+      setPredictions(transformedPredictions);
+      setMeta({
+        model_version: "v5",
+        season: season,
+        week: targetWeek,
+        updated_at: new Date().toISOString(),
+        games_count: transformedPredictions.length,
+        models: {
+          spread: {
+            name: "Poisson EPA V3",
+            description: "Advanced EPA-based spread predictions",
+            backtested_roi: "+37%",
+            min_edge: "5%"
+          },
+          total: {
+            name: "Quantile Blend V5",
+            description: "25th/75th percentile totals",
+            backtested_roi: "+18%",
+            min_edge: "4%"
+          }
+        },
+        data_sources: {
+          odds: "TheOddsAPI (real-time)",
+          injuries: "Canonical Availability V5",
+          weather: "Dome detection + historical",
+          metrics: "Advanced EPA system"
+        }
+      });
+      setDataSource('fresh');
+      setLastRefresh(new Date().toISOString());
+      
+      // Note: This doesn't upload to Blobs - that's only done by the backend refresh endpoint
+      // To persist, user would need to save manually or we'd need to add an upload step
       
     } catch (err) {
       console.error('Error refreshing predictions:', err);
@@ -302,7 +405,7 @@ export default function NFLPredictionsV5() {
 
           {/* Refresh Button */}
           <button
-            onClick={refreshNow}
+            onClick={() => refreshNow()}
             disabled={refreshing}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               refreshing
@@ -316,10 +419,10 @@ export default function NFLPredictionsV5() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                Refreshing...
+                Refreshing Week {selectedWeek}...
               </span>
             ) : (
-              '🔄 Refresh Now'
+              `🔄 Refresh Week ${selectedWeek}`
             )}
           </button>
         </div>
