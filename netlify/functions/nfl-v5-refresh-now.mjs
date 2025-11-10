@@ -66,7 +66,16 @@ async function fetchSchedule(season, week) {
     
     if (res.ok) {
       const data = await res.json();
-      return data.games || data || [];
+      // nfl-schedule-get returns { matchups: [...] } not { games: [...] }
+      const matchups = data.matchups || [];
+      
+      // Transform matchups to games format expected by nfl-predictions-generate
+      return matchups.map(m => ({
+        game_id: m.id,
+        home_team: m.homeTeam,
+        away_team: m.awayTeam,
+        start: m.kickoff
+      }));
     }
   } catch (err) {
     console.warn('[V5-REFRESH] Schedule fetch failed:', err.message);
