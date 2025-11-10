@@ -254,9 +254,9 @@ assists: parseInt(stats[5]) || 0    ✅
 ### Local Development
 ```bash
 # Required:
-ODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b
+ODDS_API_KEY=<your-api-key-here>
 # OR
-THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b
+THEODDS_API_KEY=<your-api-key-here>
 
 # Optional:
 # (none - data fetched live from ESPN)
@@ -265,7 +265,7 @@ THEODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b
 ### GitHub/Netlify Production
 ```bash
 # Required (set in Netlify dashboard):
-ODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b
+ODDS_API_KEY=<your-api-key-here>
 
 # Automatic (provided by Netlify):
 NETLIFY_SITE_ID=bgroundrobin
