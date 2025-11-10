@@ -38,11 +38,8 @@ export default function NFLPredictionsV5() {
       // Try to load specific week first, fallback to latest
       let res;
       if (selectedWeek) {
-        res = await fetch(`/.netlify/functions/nfl-v5-by-date?week=${selectedWeek}`);
-        if (!res.ok) {
-          // Week not found, try latest
-          res = await fetch('/.netlify/functions/nfl-v5-latest');
-        }
+        const season = 2025; // TODO: Make dynamic if needed
+        res = await fetch(`/.netlify/functions/nfl-v5-by-date?week=${selectedWeek}&season=${season}`);
       } else {
         res = await fetch('/.netlify/functions/nfl-v5-latest');
       }
@@ -52,6 +49,16 @@ export default function NFLPredictionsV5() {
       }
       
       const data = await res.json();
+      
+      // Check if we got an error response
+      if (data.error) {
+        // Week not available yet, show message
+        setError(data.message || `Week ${selectedWeek} predictions not available yet`);
+        setPredictions([]);
+        setMeta(null);
+        return;
+      }
+      
       setPredictions(data.rows || []);
       setMeta(data.meta || {});
       setDataSource('cached');
@@ -320,9 +327,13 @@ export default function NFLPredictionsV5() {
 
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800 font-medium">Error</p>
-          <p className="text-red-600 text-sm">{error}</p>
+        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-yellow-800 font-medium">⚠️ {error}</p>
+          {predictions.length === 0 && (
+            <p className="text-yellow-700 text-sm mt-2">
+              Try selecting Week {meta?.week || 10} (current) or click "Refresh Now" to generate predictions for this week.
+            </p>
+          )}
         </div>
       )}
 
