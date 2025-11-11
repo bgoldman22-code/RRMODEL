@@ -8,6 +8,11 @@
  * - Market-aware blending with precision weighting
  * - Kelly staking with uncertainty haircuts and odds quality gates
  * 
+ * EPL UPGRADE: Dixon-Coles Profile C (27.5% ROI backtest)
+ * - Profitable band filter [0.61-0.66]
+ * - Quarter-Kelly + 20% EV cap
+ * - Shin de-vig
+ * 
  * Features Used by Pros:
  * - NPxG (non-penalty xG) from Understat - opponent-adjusted, true process
  * - Tactical matchups (press intensity, high line vulnerability)
@@ -19,6 +24,7 @@
  */
 
 import { fetchTeamNPxG, fetchTeamRecentForm, calculateNPxGLambda, calculateNPxGConfidence } from './_lib/understat-npxg-fetcher.mjs';
+import { runDixonColesProfileC } from './_lib/dixon-coles-profile-c.mjs';
 
 const LEAGUES = {
   'premier-league': {
@@ -3877,7 +3883,37 @@ exports.handler = async (event, context) => {
             // Auto-reduce α by 0.1 for high concentration
             // This would be applied in real implementation
           }
-        }      return {
+        }
+        
+        // EPL ONLY: Dixon-Coles Profile C (27.5% ROI backtest)
+        let profileC = null;
+        if (league === 'premier-league' && effectiveOdds.btts_yes && effectiveOdds.btts_no) {
+          try {
+            profileC = runDixonColesProfileC({
+              pBttsYes: bivariateResult.btts_probability, // Use raw model probability
+              oddsYes: effectiveOdds.btts_yes,
+              oddsNo: effectiveOdds.btts_no,
+              bankroll: 100
+            });
+            
+            // For EPL: Override professional_value_bet with Profile C if it has a recommendation
+            if (profileC.recommendation) {
+              professionalValueBet = {
+                selection: profileC.recommendation,
+                kelly_fraction: profileC.kelly_fraction,
+                expected_value: profileC.expected_value,
+                recommendation: 'PROFILE_C_27PCT_ROI',
+                profile_c_edge: profileC.edge,
+                profile_c_metadata: profileC.metadata
+              };
+            }
+          } catch (error) {
+            console.error('Profile C error:', error);
+            profileC = { model: 'dixon-coles-profile-c', error: error.message };
+          }
+        }
+        
+      return {
         fixture_id: fixture.id,
         matchup: `${fixture.away_team} @ ${fixture.home_team}`,
         home_team: fixture.home_team,
@@ -3980,6 +4016,9 @@ exports.handler = async (event, context) => {
           calibration_applied: blendResult.calibration_applied || false,
           blend_method: blendResult.blend_method || 'model_only',
           final_prob_source: blendResult.alpha < 1 ? 'precision_weighted_blend' : 'pure_model',
+          
+          // EPL ONLY: Profile C (27.5% ROI backtest)
+          profile_c: profileC || null,
           
           // Dixon-Coles details
           marginal_probabilities: bivariateResult.marginal_probs,
