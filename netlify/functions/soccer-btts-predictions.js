@@ -3901,13 +3901,16 @@ exports.handler = async (event, context) => {
               console.log('✅ PROFILE C ACTIVE:', {
                 match: `${fixture.home_team} vs ${fixture.away_team}`,
                 probability: profileC.probability.toFixed(4),
+                probability_raw: profileC.probability_raw?.toFixed(4),
                 recommendation: profileC.recommendation,
                 odds: profileC.odds.toFixed(2),
                 edge: `${(profileC.edge * 100).toFixed(2)}%`,
                 kelly: profileC.kelly_fraction.toFixed(4),
                 stake: `$${profileC.stake.toFixed(2)}`,
                 ev: `${(profileC.expected_value * 100).toFixed(2)}%`,
-                inBand: profileC.metadata.in_profitable_band
+                profitable_band: profileC.metadata.profitable_band_check,
+                quarter_kelly: profileC.metadata.quarter_kelly,
+                ev_capped: profileC.metadata.ev_cap_applied
               });
               
               professionalValueBet = {
@@ -3919,12 +3922,22 @@ exports.handler = async (event, context) => {
                 profile_c_metadata: profileC.metadata
               };
             } else if (profileC) {
-              console.log('⛔ Profile C: NO BET', {
+              const logData = {
                 match: `${fixture.home_team} vs ${fixture.away_team}`,
-                probability: profileC.probability.toFixed(4),
-                inBand: profileC.metadata?.in_profitable_band || false,
-                reason: profileC.metadata?.in_profitable_band === false ? 'Outside [0.61-0.66] band' : 'Insufficient edge'
-              });
+                probability_raw: profileC.probability_raw?.toFixed(4),
+                probability_calibrated: profileC.probability?.toFixed(4),
+                reason: profileC.reason || 'Insufficient edge'
+              };
+              
+              // Add reason-specific details
+              if (profileC.band_check) {
+                logData.band_status = `${profileC.band_check.value.toFixed(4)} not in [0.61-0.66]`;
+              }
+              if (profileC.odds_check) {
+                logData.odds_check = `Yes: ${profileC.odds_check.yes.toFixed(2)}, No: ${profileC.odds_check.no.toFixed(2)} (min 1.65)`;
+              }
+              
+              console.log('⛔ Profile C: NO BET', logData);
             }
           } catch (error) {
             console.error('Profile C error:', error);
