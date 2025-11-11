@@ -64,12 +64,68 @@ export default function NBAPlayerProps() {
       return 0;
     });
 
-  // Export top 20 picks as PNG
+  // Helper function to generate table HTML for a set of predictions
+  const generateTableHTML = (props, title, startRank) => {
+    return `
+      <div style="width: 900px;">
+        <div style="margin-bottom: 20px; text-align: center;">
+          <h2 style="font-size: 24px; font-weight: bold; margin: 0; color: #1f2937;">${title}</h2>
+        </div>
+        <table style="width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+          <thead>
+            <tr style="background: #f9fafb;">
+              <th style="padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Player</th>
+              <th style="padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Prop</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Line</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Pick</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Stake</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${props.map((pred, idx) => `
+              <tr style="background: ${idx % 2 === 0 ? '#ffffff' : '#f9fafb'}; border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 10px 12px;">
+                  <div style="font-weight: 600; font-size: 13px; color: #111827;">${pred.player}</div>
+                  <div style="font-size: 10px; color: #6b7280; margin-top: 2px;">${pred.team} vs ${pred.opponent}</div>
+                </td>
+                <td style="padding: 10px 12px;">
+                  <span style="display: inline-block; padding: 3px 10px; font-size: 10px; font-weight: 600; border-radius: 9999px; ${
+                    pred.propType === 'rebounds' 
+                      ? 'background: #f3e8ff; color: #7c3aed;' 
+                      : 'background: #dbeafe; color: #2563eb;'
+                  }">
+                    ${pred.propType.toUpperCase()}
+                  </span>
+                </td>
+                <td style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 13px; color: #111827;">
+                  ${pred.vegasLine}
+                </td>
+                <td style="padding: 10px 12px; text-align: center;">
+                  <span style="display: inline-block; padding: 4px 12px; font-size: 11px; font-weight: 700; border-radius: 6px; ${
+                    pred.betSide === 'OVER' 
+                      ? 'background: #d1fae5; color: #065f46;' 
+                      : 'background: #fee2e2; color: #991b1b;'
+                  }">
+                    ${pred.betSide}
+                  </span>
+                </td>
+                <td style="padding: 10px 12px; text-align: center; font-weight: 700; font-size: 13px; color: #f59e0b;">
+                  ${pred.recommendedUnits ? pred.recommendedUnits.toFixed(1) : (pred.kellyFraction / 10).toFixed(1)}U
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  };
+
+  // Export top 40 picks as PNG (top 20 + next 20 side by side)
   const exportToPNG = async () => {
-    // Get top 20 by edge (the smartest metric)
-    const top20 = [...predictions]
-      .sort((a, b) => Math.abs(b.edge) - Math.abs(a.edge))
-      .slice(0, 20);
+    // Get top 40 by edge (the smartest metric)
+    const sorted = [...predictions].sort((a, b) => Math.abs(b.edge) - Math.abs(a.edge));
+    const top20 = sorted.slice(0, 20);
+    const next20 = sorted.slice(20, 40);
 
     // Create a temporary div for export
     const exportDiv = document.createElement('div');
@@ -82,58 +138,17 @@ export default function NBAPlayerProps() {
     const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     
     exportDiv.innerHTML = `
-      <div style="width: 900px;">
+      <div style="width: 1860px;">
         <div style="margin-bottom: 30px; text-align: center;">
-          <h1 style="font-size: 32px; font-weight: bold; margin: 0 0 10px 0; color: #1f2937;">🏀 NBA Player Props</h1>
-          <p style="font-size: 16px; color: #6b7280; margin: 0;">Top 20 Picks • ${today}</p>
-          <p style="font-size: 14px; color: #10b981; margin: 5px 0 0 0; font-weight: 600;">Rebounds: 62.5% Win | Assists: 66.7% Win</p>
+          <h1 style="font-size: 36px; font-weight: bold; margin: 0 0 10px 0; color: #1f2937;">🏀 NBA Player Props</h1>
+          <p style="font-size: 18px; color: #6b7280; margin: 0;">Top 40 Picks • ${today}</p>
+          <p style="font-size: 16px; color: #10b981; margin: 5px 0 0 0; font-weight: 600;">Rebounds: 62.5% Win | Assists: 66.7% Win</p>
         </div>
-        <table style="width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
-          <thead>
-            <tr style="background: #f9fafb;">
-              <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Player</th>
-              <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Prop</th>
-              <th style="padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Vegas Line</th>
-              <th style="padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Pick</th>
-              <th style="padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Stake</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${top20.map((pred, idx) => `
-              <tr style="background: ${idx % 2 === 0 ? '#ffffff' : '#f9fafb'}; border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 12px 16px;">
-                  <div style="font-weight: 600; font-size: 15px; color: #111827;">${pred.player}</div>
-                  <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">${pred.team} vs ${pred.opponent}</div>
-                </td>
-                <td style="padding: 12px 16px;">
-                  <span style="display: inline-block; padding: 4px 12px; font-size: 11px; font-weight: 600; border-radius: 9999px; ${
-                    pred.propType === 'rebounds' 
-                      ? 'background: #f3e8ff; color: #7c3aed;' 
-                      : 'background: #dbeafe; color: #2563eb;'
-                  }">
-                    ${pred.propType.toUpperCase()}
-                  </span>
-                </td>
-                <td style="padding: 12px 16px; text-align: center; font-weight: 600; font-size: 15px; color: #111827;">
-                  ${pred.vegasLine}
-                </td>
-                <td style="padding: 12px 16px; text-align: center;">
-                  <span style="display: inline-block; padding: 6px 16px; font-size: 12px; font-weight: 700; border-radius: 6px; ${
-                    pred.betSide === 'OVER' 
-                      ? 'background: #d1fae5; color: #065f46;' 
-                      : 'background: #fee2e2; color: #991b1b;'
-                  }">
-                    ${pred.betSide}
-                  </span>
-                </td>
-                <td style="padding: 12px 16px; text-align: center; font-weight: 700; font-size: 15px; color: #f59e0b;">
-                  ${pred.recommendedUnits ? pred.recommendedUnits.toFixed(1) : (pred.kellyFraction / 10).toFixed(1)}U
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-        <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #9ca3af;">
+        <div style="display: flex; gap: 30px; justify-content: space-between;">
+          ${generateTableHTML(top20, 'TOP 20 (#1-20)', 1)}
+          ${generateTableHTML(next20, 'NEXT 20 (#21-40)', 21)}
+        </div>
+        <div style="margin-top: 25px; text-align: center; font-size: 12px; color: #9ca3af;">
           Model: Baseline v2 | Edge Threshold: 4%+ | Confidence: 60%+ | bgroundrobin.com
         </div>
       </div>
@@ -149,7 +164,7 @@ export default function NBAPlayerProps() {
       });
       
       const link = document.createElement('a');
-      link.download = `nba-props-top20-${new Date().toISOString().split('T')[0]}.png`;
+      link.download = `nba-props-top40-${new Date().toISOString().split('T')[0]}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } catch (error) {

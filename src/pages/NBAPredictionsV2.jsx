@@ -15,7 +15,41 @@ const NBAPredictionsV2 = () => {
       setLoading(true);
       // Add cache-busting parameter to force fresh data
       const timestamp = Date.now();
-      const response = await fetch(`/.netlify/functions/nba-predictions-elite-v2?_t=${timestamp}`);
+      const response = await fetch(`/.netlify/functions/n          {loading ? '⟳ Loading...' : '🔄 Refresh'}
+        </button>
+        <button 
+          onClick={exportFullSlatePNG} 
+          disabled={exporting || loading || !predictions.length}
+          style={{
+            marginLeft: '10px',
+            padding: '8px 16px',
+            background: (exporting || loading || !predictions.length) ? '#555' : '#3b82f6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: (exporting || loading || !predictions.length) ? 'not-allowed' : 'pointer',
+            fontWeight: 'bold',
+            fontSize: '14px'
+          }}
+        >
+          {exporting ? '⟳ Generating...' : '📊 Full Slate'}
+        </button>
+        <button 
+          onClick={exportRecommendedPNG} 
+          disabled={exporting || loading || !predictions.length}
+          style={{
+            marginLeft: '10px',
+            padding: '8px 16px',
+            background: (exporting || loading || !predictions.length) ? '#555' : '#ffa500',
+            color: '#000',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: (exporting || loading || !predictions.length) ? 'not-allowed' : 'pointer',
+            fontWeight: 'bold',
+            fontSize: '14px'
+          }}
+        >
+          {exporting ? '⟳ Generating...' : '⭐ Recommended'}te-v2?_t=${timestamp}`);
       const data = await response.json();
 
       if (!data.ok || !data.predictions || data.predictions.length === 0) {
@@ -32,7 +66,7 @@ const NBAPredictionsV2 = () => {
     }
   };
 
-  const exportToPNG = async () => {
+  const exportFullSlatePNG = async () => {
     setExporting(true);
     try {
       // Dynamically import html2canvas
@@ -42,7 +76,7 @@ const NBAPredictionsV2 = () => {
         year: 'numeric', month: 'long', day: 'numeric' 
       });
       
-      // Create hidden container for tables
+      // Create hidden container for table
       const container = document.createElement('div');
       container.style.position = 'absolute';
       container.style.left = '-9999px';
@@ -116,10 +150,35 @@ const NBAPredictionsV2 = () => {
       fullSlateLink.href = fullSlateCanvas.toDataURL();
       fullSlateLink.click();
       
-      // Wait 500ms before second download to prevent browser blocking
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Cleanup
+      document.body.removeChild(container);
       
-      // ===== TABLE 2: RECOMMENDED PICKS WITH STAKES =====
+    } catch (err) {
+      console.error('PNG export error:', err);
+      alert('Failed to generate Full Slate PNG. Please try again.');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const exportRecommendedPNG = async () => {
+    setExporting(true);
+    try {
+      // Dynamically import html2canvas
+      const html2canvas = (await import('html2canvas')).default;
+      
+      const today = new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', month: 'long', day: 'numeric' 
+      });
+      
+      // Create hidden container for table
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      document.body.appendChild(container);
+      
+      // ===== RECOMMENDED PICKS WITH STAKES =====
       const picksDiv = document.createElement('div');
       picksDiv.style.background = 'white';
       picksDiv.style.padding = '30px';
