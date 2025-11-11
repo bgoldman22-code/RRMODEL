@@ -200,6 +200,73 @@
         grid-template-columns: 1fr;
       }
     }
+    
+    /* Export Table Styles */
+    #exportContainer {
+      position: fixed;
+      left: -9999px;
+      top: 0;
+      background: white;
+      padding: 40px;
+      width: 1400px;
+    }
+    
+    .export-title {
+      font-size: 32px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #000;
+    }
+    
+    .export-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+    }
+    
+    .export-table thead {
+      background: #1e3a5f;
+      color: white;
+    }
+    
+    .export-table th {
+      padding: 12px 10px;
+      text-align: left;
+      font-weight: bold;
+      border: 1px solid #2c4a6f;
+    }
+    
+    .export-table td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: white;
+    }
+    
+    .export-table tbody tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+    
+    .export-table .matchup-col {
+      font-weight: 600;
+      min-width: 120px;
+    }
+    
+    .export-table .pick-col {
+      min-width: 180px;
+    }
+    
+    .export-table .edge-col {
+      text-align: center;
+      font-weight: bold;
+      min-width: 80px;
+    }
+    
+    .export-table .epa-col {
+      text-align: center;
+      min-width: 140px;
+    }
   </style>
 </head>
 <body>
@@ -214,6 +281,7 @@
       <button onclick="showDifferencesOnly()" id="btnDiff">Show Differences Only</button>
       <button onclick="generateV1()" id="btnV1">🔄 Regenerate V1</button>
       <button onclick="generateV2()" id="btnV2">🔄 Regenerate V2</button>
+      <button onclick="exportTableToPNG()" id="btnExport" style="background: #28a745;">📥 Export Full Slate PNG</button>
       <div id="status"></div>
       <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 6px; font-size: 0.9em;">
         💡 <strong>Tip:</strong> Use "Load & Compare" to view cached predictions (fast). 
@@ -238,6 +306,13 @@
     </div>
   </div>
 
+  <!-- Hidden container for PNG export -->
+  <div id="exportContainer">
+    <div class="export-title">■ NFL Week 10 Model Predictions — Full Slate</div>
+    <table class="export-table" id="exportTable"></table>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     let v1Data = null;
     let v2Data = null;
@@ -592,6 +667,144 @@
           <div class="stat-label">V2 Improved (Larger Impact)</div>
         </div>
       `;
+    }
+
+    async function exportTableToPNG() {
+      try {
+        if (!v1Data && !v2Data) {
+          alert('Please load predictions first before exporting');
+          return;
+        }
+        
+        // Use V2 data if available, otherwise V1
+        const data = v2Data || v1Data;
+        const predictions = data.predictions || data.rows || [];
+        
+        if (predictions.length === 0) {
+          alert('No predictions to export');
+          return;
+        }
+        
+        document.getElementById('btnExport').disabled = true;
+        document.getElementById('btnExport').textContent = '⏳ Generating PNG...';
+        
+        // Build the table
+        const table = document.getElementById('exportTable');
+        let tableHTML = `
+          <thead>
+            <tr>
+              <th class="matchup-col">Matchup</th>
+              <th class="pick-col">Moneyline</th>
+              <th class="pick-col">Spread</th>
+              <th class="pick-col">Total</th>
+              <th class="edge-col">Best Edge</th>
+              <th class="epa-col">EPA (Home/Away)</th>
+            </tr>
+          </thead>
+          <tbody>
+        `;
+        
+        predictions.forEach(game => {
+          const homeTeam = game.home_team || game.home || 'HOME';
+          const awayTeam = game.away_team || game.away || 'AWAY';
+          
+          // Get predictions
+          const preds = game.predictions || {};
+          const ml = preds.moneyline || {};
+          const spread = preds.spread || {};
+          const total = preds.total || {};
+          
+          // Format Moneyline
+          let mlText = 'NO BET';
+          if (ml.bet && ml.pick) {
+            const units = ml.recommended_units || 0;
+            const price = ml.best_book?.price || ml.odds || 0;
+            const priceStr = price > 0 ? `+${price}` : price;
+            mlText = `${ml.pick} ML (BET ${units.toFixed(1)}U, ${priceStr})`;
+          }
+          
+          // Format Spread
+          let spreadText = 'NO BET';
+          if (spread.bet && spread.pick) {
+            const units = spread.recommended_units || 0;
+            const line = spread.line || 0;
+            const lineStr = line > 0 ? `+${line}` : line;
+            spreadText = `${spread.pick} ${lineStr} (BET ${units.toFixed(1)}U)`;
+          }
+          
+          // Format Total
+          let totalText = 'NO BET';
+          if (total.bet && total.pick) {
+            const units = total.recommended_units || 0;
+            const line = total.line || 0;
+            totalText = `${total.pick} ${line} (BET ${units.toFixed(1)}U)`;
+          }
+          
+          // Find best edge across all markets
+          const edges = [];
+          if (ml.edge) edges.push(ml.edge);
+          if (spread.edge) edges.push(spread.edge);
+          if (total.edge) edges.push(total.edge);
+          const bestEdge = edges.length > 0 ? Math.max(...edges) : 0;
+          
+          // Get EPA values
+          const stats = game.teamStats || {};
+          const homeEPA = stats.home?.score || stats.home?.epa || 0;
+          const awayEPA = stats.away?.score || stats.away?.epa || 0;
+          
+          tableHTML += `
+            <tr>
+              <td class="matchup-col">${awayTeam} @ ${homeTeam}</td>
+              <td class="pick-col">${mlText}</td>
+              <td class="pick-col">${spreadText}</td>
+              <td class="pick-col">${totalText}</td>
+              <td class="edge-col">${bestEdge.toFixed(1)}%</td>
+              <td class="epa-col">${homeEPA.toFixed(3)} / ${awayEPA.toFixed(3)}</td>
+            </tr>
+          `;
+        });
+        
+        tableHTML += '</tbody>';
+        table.innerHTML = tableHTML;
+        
+        // Update title with current week
+        const titleDiv = document.querySelector('#exportContainer .export-title');
+        const week = new URLSearchParams(window.location.search).get('week') || '10';
+        titleDiv.textContent = `■ NFL Week ${week} Model Predictions — Full Slate`;
+        
+        // Capture the export container
+        const container = document.getElementById('exportContainer');
+        container.style.left = '0';
+        
+        const canvas = await html2canvas(container, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          logging: false,
+          width: 1400,
+          windowWidth: 1400
+        });
+        
+        // Hide container again
+        container.style.left = '-9999px';
+        
+        // Download
+        const link = document.createElement('a');
+        link.download = `NFL_Week${week}_Model_Picks.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        
+        document.getElementById('btnExport').textContent = '✅ PNG Downloaded!';
+        setTimeout(() => {
+          document.getElementById('btnExport').textContent = '📥 Export Full Slate PNG';
+          document.getElementById('btnExport').disabled = false;
+        }, 2000);
+        
+      } catch (error) {
+        console.error('Export error:', error);
+        alert('Export failed: ' + error.message);
+        document.getElementById('btnExport').textContent = '📥 Export Full Slate PNG';
+        document.getElementById('btnExport').disabled = false;
+      }
     }
 
     // Auto-load on page load

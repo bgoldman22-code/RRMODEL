@@ -15,78 +15,7 @@ const NBAPredictionsV2 = () => {
       setLoading(true);
       // Add cache-busting parameter to force fresh data
       const timestamp = Date.now();
-      const response = await fetch(`/.netlify/functions/n          {loading ? '⟳ Loading...          {loading ? '⟳ Loading...' : '🔄 Refresh'}
-        </button>
-        <button 
-          onClick={exportFullSlatePNG} 
-          disabled={exporting || loading || !predictions.length}
-          style={{
-            marginLeft: '10px',
-            padding: '8px 16px',
-            background: (exporting || loading || !predictions.length) ? '#555' : '#3b82f6',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: (exporting || loading || !predictions.length) ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold',
-            fontSize: '14px'
-          }}
-        >
-          {exporting ? '⟳ Generating...' : '📊 Full Slate'}
-        </button>
-        <button 
-          onClick={exportRecommendedPNG} 
-          disabled={exporting || loading || !predictions.length}
-          style={{
-            marginLeft: '10px',
-            padding: '8px 16px',
-            background: (exporting || loading || !predictions.length) ? '#555' : '#ffa500',
-            color: '#000',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: (exporting || loading || !predictions.length) ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold',
-            fontSize: '14px'
-          }}
-        >
-          {exporting ? '⟳ Generating...' : '⭐ Recommended'}
-        </button>
-      </div>
-
-      {loading && (       </button>
-        <button 
-          onClick={exportFullSlatePNG} 
-          disabled={exporting || loading || !predictions.length}
-          style={{
-            marginLeft: '10px',
-            padding: '8px 16px',
-            background: (exporting || loading || !predictions.length) ? '#555' : '#3b82f6',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: (exporting || loading || !predictions.length) ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold',
-            fontSize: '14px'
-          }}
-        >
-          {exporting ? '⟳ Generating...' : '📊 Full Slate'}
-        </button>
-        <button 
-          onClick={exportRecommendedPNG} 
-          disabled={exporting || loading || !predictions.length}
-          style={{
-            marginLeft: '10px',
-            padding: '8px 16px',
-            background: (exporting || loading || !predictions.length) ? '#555' : '#ffa500',
-            color: '#000',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: (exporting || loading || !predictions.length) ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold',
-            fontSize: '14px'
-          }}
-        >
-          {exporting ? '⟳ Generating...' : '⭐ Recommended'}te-v2?_t=${timestamp}`);
+      const response = await fetch(`/.netlify/functions/nba-predictions-elite-v2?_t=${timestamp}`);
       const data = await response.json();
 
       if (!data.ok || !data.predictions || data.predictions.length === 0) {
