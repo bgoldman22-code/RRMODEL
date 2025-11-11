@@ -95,6 +95,7 @@ export default function NBAPlayerProps() {
               <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Prop</th>
               <th style="padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Vegas Line</th>
               <th style="padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Pick</th>
+              <th style="padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Stake</th>
             </tr>
           </thead>
           <tbody>
@@ -124,6 +125,9 @@ export default function NBAPlayerProps() {
                   }">
                     ${pred.betSide}
                   </span>
+                </td>
+                <td style="padding: 12px 16px; text-align: center; font-weight: 700; font-size: 15px; color: #f59e0b;">
+                  ${pred.recommendedUnits ? pred.recommendedUnits.toFixed(1) : (pred.kellyFraction / 10).toFixed(1)}U
                 </td>
               </tr>
             `).join('')}
@@ -294,8 +298,8 @@ export default function NBAPlayerProps() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                     {pred.edge}%
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                    {pred.kellyFraction ? `${(pred.kellyFraction / 10).toFixed(1)}U` : '-'}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-yellow-600">
+                    {pred.recommendedUnits ? `${pred.recommendedUnits.toFixed(1)}U` : (pred.kellyFraction ? `${(pred.kellyFraction / 10).toFixed(1)}U` : '-')}
                   </td>
                 </tr>
               ))}
