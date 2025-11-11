@@ -636,7 +636,7 @@ const NBAPredictionsV2 = () => {
           {loading ? '⟳ Loading...' : '🔄 Refresh'}
         </button>
         <button 
-          onClick={exportToPNG} 
+          onClick={exportFullSlatePNG} 
           disabled={exporting || loading || !predictions.length}
           style={{
             marginLeft: '10px',
@@ -650,7 +650,24 @@ const NBAPredictionsV2 = () => {
             fontSize: '14px'
           }}
         >
-          {exporting ? '⟳ Generating...' : '� Export PNG'}
+          {exporting ? '⟳ Generating...' : '📊 Export Full Slate'}
+        </button>
+        <button 
+          onClick={exportRecommendedPNG} 
+          disabled={exporting || loading || !predictions.length}
+          style={{
+            marginLeft: '10px',
+            padding: '8px 16px',
+            background: (exporting || loading || !predictions.length) ? '#555' : '#4CAF50',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: (exporting || loading || !predictions.length) ? 'not-allowed' : 'pointer',
+            fontWeight: 'bold',
+            fontSize: '14px'
+          }}
+        >
+          {exporting ? '⟳ Generating...' : '⭐ Export Recommended'}
         </button>
       </div>
 

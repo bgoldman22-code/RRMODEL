@@ -120,14 +120,11 @@ export default function NBAPlayerProps() {
     `;
   };
 
-  // Export top 40 picks as PNG (top 20 + next 20 side by side)
-  const exportToPNG = async () => {
-    // Get top 40 by edge (the smartest metric)
+  // Export top 20 picks as PNG
+  const exportTop20PNG = async () => {
     const sorted = [...predictions].sort((a, b) => Math.abs(b.edge) - Math.abs(a.edge));
     const top20 = sorted.slice(0, 20);
-    const next20 = sorted.slice(20, 40);
 
-    // Create a temporary div for export
     const exportDiv = document.createElement('div');
     exportDiv.style.position = 'absolute';
     exportDiv.style.left = '-9999px';
@@ -138,17 +135,14 @@ export default function NBAPlayerProps() {
     const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     
     exportDiv.innerHTML = `
-      <div style="width: 1860px;">
+      <div style="width: 900px;">
         <div style="margin-bottom: 30px; text-align: center;">
-          <h1 style="font-size: 36px; font-weight: bold; margin: 0 0 10px 0; color: #1f2937;">🏀 NBA Player Props</h1>
-          <p style="font-size: 18px; color: #6b7280; margin: 0;">Top 40 Picks • ${today}</p>
-          <p style="font-size: 16px; color: #10b981; margin: 5px 0 0 0; font-weight: 600;">Rebounds: 62.5% Win | Assists: 66.7% Win</p>
+          <h1 style="font-size: 32px; font-weight: bold; margin: 0 0 10px 0; color: #1f2937;">🏀 NBA Player Props</h1>
+          <p style="font-size: 16px; color: #6b7280; margin: 0;">Top 20 Picks • ${today}</p>
+          <p style="font-size: 14px; color: #10b981; margin: 5px 0 0 0; font-weight: 600;">Rebounds: 62.5% Win | Assists: 66.7% Win</p>
         </div>
-        <div style="display: flex; gap: 30px; justify-content: space-between;">
-          ${generateTableHTML(top20, 'TOP 20 (#1-20)', 1)}
-          ${generateTableHTML(next20, 'NEXT 20 (#21-40)', 21)}
-        </div>
-        <div style="margin-top: 25px; text-align: center; font-size: 12px; color: #9ca3af;">
+        ${generateTableHTML(top20, 'TOP 20 (#1-20)', 1)}
+        <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #9ca3af;">
           Model: Baseline v2 | Edge Threshold: 4%+ | Confidence: 60%+ | bgroundrobin.com
         </div>
       </div>
@@ -164,7 +158,61 @@ export default function NBAPlayerProps() {
       });
       
       const link = document.createElement('a');
-      link.download = `nba-props-top40-${new Date().toISOString().split('T')[0]}.png`;
+      link.download = `nba-props-top20-${new Date().toISOString().split('T')[0]}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
+    } finally {
+      document.body.removeChild(exportDiv);
+    }
+  };
+
+  // Export next 20 picks (21-40) as PNG
+  const exportNext20PNG = async () => {
+    const sorted = [...predictions].sort((a, b) => Math.abs(b.edge) - Math.abs(a.edge));
+    const next20 = sorted.slice(20, 40);
+
+    if (next20.length === 0) {
+      alert('Not enough predictions for Next 20 export. Need at least 21 predictions.');
+      return;
+    }
+
+    const exportDiv = document.createElement('div');
+    exportDiv.style.position = 'absolute';
+    exportDiv.style.left = '-9999px';
+    exportDiv.style.background = 'white';
+    exportDiv.style.padding = '40px';
+    exportDiv.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+    
+    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    
+    exportDiv.innerHTML = `
+      <div style="width: 900px;">
+        <div style="margin-bottom: 30px; text-align: center;">
+          <h1 style="font-size: 32px; font-weight: bold; margin: 0 0 10px 0; color: #1f2937;">🏀 NBA Player Props</h1>
+          <p style="font-size: 16px; color: #6b7280; margin: 0;">Next 20 Picks (#21-40) • ${today}</p>
+          <p style="font-size: 14px; color: #10b981; margin: 5px 0 0 0; font-weight: 600;">Rebounds: 62.5% Win | Assists: 66.7% Win</p>
+        </div>
+        ${generateTableHTML(next20, 'NEXT 20 (#21-40)', 21)}
+        <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #9ca3af;">
+          Model: Baseline v2 | Edge Threshold: 4%+ | Confidence: 60%+ | bgroundrobin.com
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(exportDiv);
+    
+    try {
+      const canvas = await html2canvas(exportDiv, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        logging: false
+      });
+      
+      const link = document.createElement('a');
+      link.download = `nba-props-next20-${new Date().toISOString().split('T')[0]}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } catch (error) {
@@ -232,14 +280,25 @@ export default function NBAPlayerProps() {
           </button>
 
           <button
-            onClick={exportToPNG}
+            onClick={exportTop20PNG}
             disabled={predictions.length === 0}
             className="bg-green-600 text-white px-4 py-1.5 rounded hover:bg-green-700 transition text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            Export Top 40 PNG
+            Export Top 20
+          </button>
+
+          <button
+            onClick={exportNext20PNG}
+            disabled={predictions.length < 21}
+            className="bg-green-600 text-white px-4 py-1.5 rounded hover:bg-green-700 transition text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Export Next 20
           </button>
         </div>
       </div>
