@@ -3898,6 +3898,18 @@ exports.handler = async (event, context) => {
             
             // For EPL: Override professional_value_bet with Profile C if it has a recommendation
             if (profileC.recommendation) {
+              console.log('✅ PROFILE C ACTIVE:', {
+                match: `${fixture.home_team} vs ${fixture.away_team}`,
+                probability: profileC.probability.toFixed(4),
+                recommendation: profileC.recommendation,
+                odds: profileC.odds.toFixed(2),
+                edge: `${(profileC.edge * 100).toFixed(2)}%`,
+                kelly: profileC.kelly_fraction.toFixed(4),
+                stake: `$${profileC.stake.toFixed(2)}`,
+                ev: `${(profileC.expected_value * 100).toFixed(2)}%`,
+                inBand: profileC.metadata.in_profitable_band
+              });
+              
               professionalValueBet = {
                 selection: profileC.recommendation,
                 kelly_fraction: profileC.kelly_fraction,
@@ -3906,6 +3918,13 @@ exports.handler = async (event, context) => {
                 profile_c_edge: profileC.edge,
                 profile_c_metadata: profileC.metadata
               };
+            } else if (profileC) {
+              console.log('⛔ Profile C: NO BET', {
+                match: `${fixture.home_team} vs ${fixture.away_team}`,
+                probability: profileC.probability.toFixed(4),
+                inBand: profileC.metadata?.in_profitable_band || false,
+                reason: profileC.metadata?.in_profitable_band === false ? 'Outside [0.61-0.66] band' : 'Insufficient edge'
+              });
             }
           } catch (error) {
             console.error('Profile C error:', error);
