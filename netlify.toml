@@ -4,7 +4,6 @@
   command = "npm run build"
   functions = "netlify/functions"
   publish = "dist"
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF ."
 
 [build.processing.secrets]
   # Documentation files contain placeholder references, not actual secrets
