@@ -43,27 +43,27 @@ const TEAM_NAME_MAP = {
   'Dallas Mavericks': 'DAL',
   'Denver Nuggets': 'DEN',
   'Detroit Pistons': 'DET',
-  'Golden State Warriors': 'GS',
+  'Golden State Warriors': 'GSW',
   'Houston Rockets': 'HOU',
   'Indiana Pacers': 'IND',
-  'LA Clippers': 'LAC',
+  'Los Angeles Clippers': 'LAC',
   'Los Angeles Lakers': 'LAL',
   'Memphis Grizzlies': 'MEM',
   'Miami Heat': 'MIA',
   'Milwaukee Bucks': 'MIL',
   'Minnesota Timberwolves': 'MIN',
-  'New Orleans Pelicans': 'NO',
-  'New York Knicks': 'NY',
+  'New Orleans Pelicans': 'NOP',
+  'New York Knicks': 'NYK',
   'Oklahoma City Thunder': 'OKC',
   'Orlando Magic': 'ORL',
   'Philadelphia 76ers': 'PHI',
   'Phoenix Suns': 'PHX',
   'Portland Trail Blazers': 'POR',
   'Sacramento Kings': 'SAC',
-  'San Antonio Spurs': 'SA',
+  'San Antonio Spurs': 'SAS',
   'Toronto Raptors': 'TOR',
   'Utah Jazz': 'UTA',
-  'Washington Wizards': 'WSH'
+  'Washington Wizards': 'WAS'
 };
 
 // Utility functions
