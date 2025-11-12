@@ -49,7 +49,7 @@ async function loadFromBlobs(budget) {
   budget.checkpoint('tier1-start');
   
   // Check budget
-  if (budget.remaining() < 1000) {
+  if (budget.remaining('ACQUIRE') < 1000) {
     return { success: false, reason: 'Insufficient budget for Blobs check' };
   }
   
@@ -137,7 +137,7 @@ async function loadFromNBACDN(budget, teams = []) {
   budget.checkpoint('tier2.5-start');
   
   // Check budget
-  if (budget.remaining() < 5000) {
+  if (budget.remaining('ACQUIRE') < 5000) {
     return { success: false, reason: 'Insufficient budget for NBA CDN' };
   }
   
@@ -153,7 +153,7 @@ async function loadFromNBACDN(budget, teams = []) {
     
     // Fetch last 7 days
     for (let i = 7; i >= 1; i--) {
-      if (budget.remaining() < 2000) {
+      if (budget.remaining('ACQUIRE') < 2000) {
         console.log('   ⏱️  Budget running low, stopping CDN fetch');
         break;
       }
@@ -221,7 +221,7 @@ async function loadFromESPN(budget, teams = [], daysBack = 15) {
   budget.checkpoint('tier3-start');
   
   // Check budget - need at least 10s
-  if (budget.remaining() < 10000) {
+  if (budget.remaining('ACQUIRE') < 10000) {
     return { success: false, reason: 'Insufficient budget for ESPN fetch' };
   }
   
@@ -245,7 +245,7 @@ async function loadFromESPN(budget, teams = [], daysBack = 15) {
     
     for (let i = 0; i < dates.length; i += concurrency) {
       // HARD STOP check
-      if (budget.remaining() < 3000) {
+      if (budget.remaining('ACQUIRE') < 3000) {
         console.log('   ⏱️  Approaching budget limit, stopping fetch');
         break;
       }
@@ -348,7 +348,7 @@ async function fetchDateBoxscores(date, budget) {
     
     // Fetch each game's boxscore
     for (const game of completedGames) {
-      if (budget.remaining() < 2000) {
+      if (budget.remaining('ACQUIRE') < 2000) {
         break;
       }
       
@@ -509,12 +509,12 @@ export async function loadPlayerBoxscores(budget, options = {}) {
     tier = i + 1;
     
     // Check budget before trying tier
-    const remaining = budget.remaining();
+    const remaining = budget.remaining('ACQUIRE');
     console.log(`📊 Budget remaining: ${(remaining / 1000).toFixed(1)}s`);
     
     if (remaining < 2000) {
       console.log('⏱️  Budget nearly exhausted, stopping');
-      budget.enforce(); // Will throw if over limit
+      budget.enforce('ACQUIRE'); // Will throw if over limit
       break;
     }
     
@@ -536,7 +536,7 @@ export async function loadPlayerBoxscores(budget, options = {}) {
               spanDays: result.data.spanDays,
               tier,
               ageHours: result.data.ageHours,
-              budgetUsedMs: budget.elapsed()
+              budgetUsedMs: budget.elapsed('ACQUIRE')
             }
           };
         } else {
