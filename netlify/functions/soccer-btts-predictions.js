@@ -3836,41 +3836,45 @@ exports.handler = async (event, context) => {
           }
         }
         
-        // Calculate value bet if we have odds OR create fallback analysis
-        if (effectiveOdds.btts_yes && effectiveOdds.btts_no) {
-          const oddsQuality = {
-            book_count: effectiveOdds.book_count || 2,
-            is_exchange: effectiveOdds.is_exchange || false,
-            freshness_minutes: effectiveOdds.freshness_minutes || 30
-          };
-          
-          professionalValueBet = calculateProfessionalValueBet(
-            finalProb, 
-            effectiveOdds, 
-            modelUncertainty, 
-            oddsQuality
-          );
-        } else {
-          // FALLBACK: Create basic value analysis even without perfect odds
-          const modelImpliedOdds = {
-            btts_yes: 1 / finalProb,
-            btts_no: 1 / (1 - finalProb)
-          };
-          
-          professionalValueBet = {
-            selection: finalProb > 0.55 ? 'YES' : finalProb < 0.45 ? 'NO' : null,
-            kelly_fraction: Math.max(0, Math.min(0.02, (finalProb - 0.5) * 0.1)),
-            expected_value: Math.abs(finalProb - 0.5) * 2, // Basic EV estimate
-            recommendation: finalProb > 0.6 ? 'STRONG_LEAN_YES' : 
-                           finalProb < 0.4 ? 'STRONG_LEAN_NO' : 
-                           finalProb > 0.55 ? 'LEAN_YES' :
-                           finalProb < 0.45 ? 'LEAN_NO' : 'NO_ANALYSIS'
-          };
+        // FOR EPL: Skip old logic, use Profile C exclusively
+        // FOR OTHER LEAGUES: Use old calculateProfessionalValueBet
+        if (league !== 'premier-league') {
+          // Calculate value bet if we have odds OR create fallback analysis
+          if (effectiveOdds.btts_yes && effectiveOdds.btts_no) {
+            const oddsQuality = {
+              book_count: effectiveOdds.book_count || 2,
+              is_exchange: effectiveOdds.is_exchange || false,
+              freshness_minutes: effectiveOdds.freshness_minutes || 30
+            };
+            
+            professionalValueBet = calculateProfessionalValueBet(
+              finalProb, 
+              effectiveOdds, 
+              modelUncertainty, 
+              oddsQuality
+            );
+          } else {
+            // FALLBACK: Create basic value analysis even without perfect odds
+            const modelImpliedOdds = {
+              btts_yes: 1 / finalProb,
+              btts_no: 1 / (1 - finalProb)
+            };
+            
+            professionalValueBet = {
+              selection: finalProb > 0.55 ? 'YES' : finalProb < 0.45 ? 'NO' : null,
+              kelly_fraction: Math.max(0, Math.min(0.02, (finalProb - 0.5) * 0.1)),
+              expected_value: Math.abs(finalProb - 0.5) * 2, // Basic EV estimate
+              recommendation: finalProb > 0.6 ? 'STRONG_LEAN_YES' : 
+                             finalProb < 0.4 ? 'STRONG_LEAN_NO' : 
+                             finalProb > 0.55 ? 'LEAN_YES' :
+                             finalProb < 0.45 ? 'LEAN_NO' : 'NO_ANALYSIS'
+            };
+          }
         }
         
-        // Portfolio correlation check (basic implementation)
+        // Portfolio correlation check (basic implementation) - SKIP FOR EPL (Profile C handles this)
         let portfolioWarning = null;
-        if (professionalValueBet?.kelly_fraction > 0.01) {
+        if (league !== 'premier-league' && professionalValueBet?.kelly_fraction > 0.01) {
           // Check if >65% of slate is lighting up YES
           const totalPredictions = fixtures.length;
           const yesRecommendations = fixtures.filter(f => {
