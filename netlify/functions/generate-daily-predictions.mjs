@@ -31,6 +31,41 @@ const EDGE_THRESHOLD = 4.0;
 const CONFIDENCE_THRESHOLD = 0.60;
 const MIN_KELLY = 0.01;
 
+// Team name mapping: The Odds API uses full names, ESPN uses tricodes
+const TEAM_NAME_MAP = {
+  // Map The Odds API full names to ESPN tricodes
+  'Atlanta Hawks': 'ATL',
+  'Boston Celtics': 'BOS',
+  'Brooklyn Nets': 'BKN',
+  'Charlotte Hornets': 'CHA',
+  'Chicago Bulls': 'CHI',
+  'Cleveland Cavaliers': 'CLE',
+  'Dallas Mavericks': 'DAL',
+  'Denver Nuggets': 'DEN',
+  'Detroit Pistons': 'DET',
+  'Golden State Warriors': 'GS',
+  'Houston Rockets': 'HOU',
+  'Indiana Pacers': 'IND',
+  'LA Clippers': 'LAC',
+  'Los Angeles Lakers': 'LAL',
+  'Memphis Grizzlies': 'MEM',
+  'Miami Heat': 'MIA',
+  'Milwaukee Bucks': 'MIL',
+  'Minnesota Timberwolves': 'MIN',
+  'New Orleans Pelicans': 'NO',
+  'New York Knicks': 'NY',
+  'Oklahoma City Thunder': 'OKC',
+  'Orlando Magic': 'ORL',
+  'Philadelphia 76ers': 'PHI',
+  'Phoenix Suns': 'PHX',
+  'Portland Trail Blazers': 'POR',
+  'Sacramento Kings': 'SAC',
+  'San Antonio Spurs': 'SA',
+  'Toronto Raptors': 'TOR',
+  'Utah Jazz': 'UTA',
+  'Washington Wizards': 'WSH'
+};
+
 // Utility functions
 function americanToProb(odds) {
   if (odds > 0) return 100 / (odds + 100);
@@ -362,6 +397,15 @@ export default async (req, context) => {
       const homeTeam = game.home_team;
       const awayTeam = game.away_team;
       const gameDate = game.commence_time;
+      
+      // Convert The Odds API team names to ESPN tricodes for validation
+      const homeTricode = TEAM_NAME_MAP[homeTeam];
+      const awayTricode = TEAM_NAME_MAP[awayTeam];
+      
+      if (!homeTricode || !awayTricode) {
+        console.warn(`⚠️  Unknown team names: ${homeTeam} vs ${awayTeam}`);
+        continue;
+      }
 
       for (const bookmaker of game.bookmakers) {
         for (const market of bookmaker.markets) {
@@ -390,9 +434,14 @@ export default async (req, context) => {
             // FILTER: Stable minutes only (less than 25% coefficient of variation)
             if (stats.minuteCV > 25) continue;
 
+            // ✅ VALIDATION: Player must be on one of the teams in this game
+            if (playerTeam !== homeTricode && playerTeam !== awayTricode) {
+              console.warn(`⚠️  Skipping ${playerName} (${playerTeam}) - not in game ${homeTricode} vs ${awayTricode}`);
+              continue;
+            }
+
             // Determine if player's team is home or away
-            // playerTeam is already set from stats.last_game.teamTricode
-            const isHome = game.home_team.includes(playerTeam) || game.home_team.toLowerCase().includes(playerTeam.toLowerCase());
+            const isHome = playerTeam === homeTricode;
             const restDays = calculateRestDays(playerName, gameDate, boxscores);
 
             const prediction = generatePrediction(stats, propType, isHome, restDays);
