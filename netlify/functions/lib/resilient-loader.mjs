@@ -19,7 +19,7 @@
 
 import { getStore } from '@netlify/blobs';
 import fetch from 'node-fetch';
-import AbortController from 'abort-controller';
+// AbortController is built-in in Node.js 20+
 import { 
   BUDGETS, 
   TTL, 
