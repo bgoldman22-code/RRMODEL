@@ -279,8 +279,12 @@ export default async (req, context) => {
     let boxscores = [];
     const store = getStore('nba-data'); // Declare outside try block for later use
     
-    try {
-      console.log('📥 Attempting to load boxscores from Netlify Blobs...');
+    // ALWAYS FETCH FRESH FROM ESPN for up-to-date rosters
+    console.log('� Fetching fresh boxscores from ESPN (always live for roster accuracy)...');
+    boxscores = await fetchESPNBoxscores(25);
+    
+    if (boxscores.length === 0) {
+      console.warn('⚠️  ESPN fetch failed, falling back to cached Blobs...');
       
       const [historicalData, currentData] = await Promise.all([
         store.get('player-boxscores-historical', { type: 'json' }),
@@ -291,18 +295,9 @@ export default async (req, context) => {
         boxscores = [...historicalData, ...currentData];
         console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blobs (${historicalData.length} historical + ${currentData.length} current)`);
       } else {
-        throw new Error('Blobs empty or missing');
+        throw new Error('Failed to fetch boxscores from both ESPN and Blobs');
       }
-    } catch (blobError) {
-      console.warn('⚠️  Blobs unavailable, fetching fresh data from ESPN:', blobError.message);
-      
-      // Fallback: Fetch from ESPN directly (same as local script)
-      boxscores = await fetchESPNBoxscores(25);
-      
-      if (boxscores.length === 0) {
-        throw new Error('Failed to fetch boxscores from both Blobs and ESPN');
-      }
-      
+    } else {
       console.log(`✅ Loaded ${boxscores.length} boxscore entries from ESPN (live fetch)`);
     }
 
