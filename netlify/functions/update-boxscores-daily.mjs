@@ -248,9 +248,10 @@ export default async (req, context) => {
       stats: {
         gamesChecked,
         gamesFound,
-        totalEntries: filteredBoxscores.length,
-        newEntries: newEntries.length,
-        oldEntriesRemoved: allBoxscores.length - filteredBoxscores.length
+        historicalEntries: historicalBoxscores.length,
+        currentEntries: currentBoxscores.length,
+        totalEntries: historicalBoxscores.length + currentBoxscores.length,
+        newEntries: newEntries.length
       }
     }), {
       status: 200,
