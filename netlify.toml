@@ -52,3 +52,8 @@
 [[scheduled.functions]]
   name = "nba-tracking-verify-props"
   cron = "0 11 * * *"
+
+# 🆕 NBA Boxscores - Update daily at 5 AM ET (10:00 UTC) to keep roster data fresh
+[[scheduled.functions]]
+  name = "update-boxscores-daily"
+  cron = "0 10 * * *"

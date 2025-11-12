@@ -31,6 +31,41 @@ const EDGE_THRESHOLD = 4.0;
 const CONFIDENCE_THRESHOLD = 0.60;
 const MIN_KELLY = 0.01;
 
+// Team name mapping: The Odds API uses full names, ESPN uses tricodes
+const TEAM_NAME_MAP = {
+  // Map The Odds API full names to ESPN tricodes
+  'Atlanta Hawks': 'ATL',
+  'Boston Celtics': 'BOS',
+  'Brooklyn Nets': 'BKN',
+  'Charlotte Hornets': 'CHA',
+  'Chicago Bulls': 'CHI',
+  'Cleveland Cavaliers': 'CLE',
+  'Dallas Mavericks': 'DAL',
+  'Denver Nuggets': 'DEN',
+  'Detroit Pistons': 'DET',
+  'Golden State Warriors': 'GSW',
+  'Houston Rockets': 'HOU',
+  'Indiana Pacers': 'IND',
+  'Los Angeles Clippers': 'LAC',
+  'Los Angeles Lakers': 'LAL',
+  'Memphis Grizzlies': 'MEM',
+  'Miami Heat': 'MIA',
+  'Milwaukee Bucks': 'MIL',
+  'Minnesota Timberwolves': 'MIN',
+  'New Orleans Pelicans': 'NOP',
+  'New York Knicks': 'NYK',
+  'Oklahoma City Thunder': 'OKC',
+  'Orlando Magic': 'ORL',
+  'Philadelphia 76ers': 'PHI',
+  'Phoenix Suns': 'PHX',
+  'Portland Trail Blazers': 'POR',
+  'Sacramento Kings': 'SAC',
+  'San Antonio Spurs': 'SAS',
+  'Toronto Raptors': 'TOR',
+  'Utah Jazz': 'UTA',
+  'Washington Wizards': 'WAS'
+};
+
 // Utility functions
 function americanToProb(odds) {
   if (odds > 0) return 100 / (odds + 100);
@@ -244,8 +279,12 @@ export default async (req, context) => {
     let boxscores = [];
     const store = getStore('nba-data'); // Declare outside try block for later use
     
-    try {
-      console.log('📥 Attempting to load boxscores from Netlify Blobs...');
+    // ALWAYS FETCH FRESH FROM ESPN for up-to-date rosters
+    console.log('� Fetching fresh boxscores from ESPN (always live for roster accuracy)...');
+    boxscores = await fetchESPNBoxscores(25);
+    
+    if (boxscores.length === 0) {
+      console.warn('⚠️  ESPN fetch failed, falling back to cached Blobs...');
       
       const [historicalData, currentData] = await Promise.all([
         store.get('player-boxscores-historical', { type: 'json' }),
@@ -256,18 +295,9 @@ export default async (req, context) => {
         boxscores = [...historicalData, ...currentData];
         console.log(`✅ Loaded ${boxscores.length} boxscore entries from Blobs (${historicalData.length} historical + ${currentData.length} current)`);
       } else {
-        throw new Error('Blobs empty or missing');
+        throw new Error('Failed to fetch boxscores from both ESPN and Blobs');
       }
-    } catch (blobError) {
-      console.warn('⚠️  Blobs unavailable, fetching fresh data from ESPN:', blobError.message);
-      
-      // Fallback: Fetch from ESPN directly (same as local script)
-      boxscores = await fetchESPNBoxscores(25);
-      
-      if (boxscores.length === 0) {
-        throw new Error('Failed to fetch boxscores from both Blobs and ESPN');
-      }
-      
+    } else {
       console.log(`✅ Loaded ${boxscores.length} boxscore entries from ESPN (live fetch)`);
     }
 
@@ -362,6 +392,15 @@ export default async (req, context) => {
       const homeTeam = game.home_team;
       const awayTeam = game.away_team;
       const gameDate = game.commence_time;
+      
+      // Convert The Odds API team names to ESPN tricodes for validation
+      const homeTricode = TEAM_NAME_MAP[homeTeam];
+      const awayTricode = TEAM_NAME_MAP[awayTeam];
+      
+      if (!homeTricode || !awayTricode) {
+        console.warn(`⚠️  Unknown team names: ${homeTeam} vs ${awayTeam}`);
+        continue;
+      }
 
       for (const bookmaker of game.bookmakers) {
         for (const market of bookmaker.markets) {
@@ -390,9 +429,14 @@ export default async (req, context) => {
             // FILTER: Stable minutes only (less than 25% coefficient of variation)
             if (stats.minuteCV > 25) continue;
 
+            // ✅ VALIDATION: Player must be on one of the teams in this game
+            if (playerTeam !== homeTricode && playerTeam !== awayTricode) {
+              console.warn(`⚠️  Skipping ${playerName} (${playerTeam}) - not in game ${homeTricode} vs ${awayTricode}`);
+              continue;
+            }
+
             // Determine if player's team is home or away
-            // playerTeam is already set from stats.last_game.teamTricode
-            const isHome = game.home_team.includes(playerTeam) || game.home_team.toLowerCase().includes(playerTeam.toLowerCase());
+            const isHome = playerTeam === homeTricode;
             const restDays = calculateRestDays(playerName, gameDate, boxscores);
 
             const prediction = generatePrediction(stats, propType, isHome, restDays);
