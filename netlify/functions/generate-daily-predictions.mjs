@@ -218,11 +218,7 @@ export default async (req, context) => {
   console.log(`⏱️  Global budget: ${BUDGETS.GLOBAL / 1000}s (Acquire: ${BUDGETS.ACQUIRE / 1000}s HARD STOP)`);
   
   // Initialize budget tracker
-  const budget = new BudgetTracker(BUDGETS.GLOBAL, {
-    ACQUIRE: BUDGETS.ACQUIRE,
-    TRANSFORM: BUDGETS.TRANSFORM,
-    MERGE: BUDGETS.MERGE
-  });
+  const budget = new BudgetTracker(BUDGETS);
   
   if (!API_KEY) {
     return new Response(JSON.stringify({ error: 'ODDS_API_KEY not set' }), {
