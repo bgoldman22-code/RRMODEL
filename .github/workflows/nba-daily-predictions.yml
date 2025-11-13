@@ -39,6 +39,11 @@ jobs:
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
       
+      - name: Pull latest changes before commit
+        run: |
+          git config pull.rebase true
+          git pull origin main42 || true
+      
       - name: Commit and push predictions
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
