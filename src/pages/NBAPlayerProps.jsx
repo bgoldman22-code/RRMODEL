@@ -110,7 +110,7 @@ export default function NBAPlayerProps() {
                   </span>
                 </td>
                 <td style="padding: 10px 12px; text-align: center; font-weight: 700; font-size: 13px; color: #f59e0b;">
-                  ${pred.recommendedUnits ? pred.recommendedUnits.toFixed(1) : (pred.kellyFraction / 10).toFixed(1)}U
+                  ${(pred.kellyStake || pred.recommendedUnits || 0).toFixed(1)}U
                 </td>
               </tr>
             `).join('')}
@@ -373,7 +373,7 @@ export default function NBAPlayerProps() {
                     {pred.edge}%
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-yellow-600">
-                    {pred.recommendedUnits ? `${pred.recommendedUnits.toFixed(1)}U` : (pred.kellyFraction ? `${(pred.kellyFraction / 10).toFixed(1)}U` : '-')}
+                    {(pred.kellyStake || pred.recommendedUnits || 0).toFixed(1)}U
                   </td>
                 </tr>
               ))}
