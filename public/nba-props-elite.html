@@ -605,16 +605,21 @@
             ctx.fillStyle = '#888888';
             ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText('PLAYER', 20, y + 15);
+            ctx.fillText('RANK', 15, y + 15);
+            ctx.fillText('PLAYER', 60, y + 15);
             ctx.fillText('PROP', 280, y + 15);
             ctx.textAlign = 'center';
-            ctx.fillText('VEGAS LINE', 440, y + 15);
-            ctx.fillText('PICK', 550, y + 15);
-            ctx.fillText('STAKE', 640, y + 15);
+            ctx.fillText('LINE', 420, y + 15);
+            ctx.fillText('PICK', 500, y + 15);
+            ctx.fillText('EDGE', 580, y + 15);
+            ctx.fillText('STAKE', 660, y + 15);
 
             // Draw picks
             picks.forEach((pick, idx) => {
                 const rowY = y + 30 + (idx * rowHeight);
+                
+                // Calculate actual rank (for 21-40, rank starts at 21)
+                const rank = title === '21-40' ? idx + 21 : idx + 1;
                 
                 // Alternate row background
                 if (idx % 2 === 0) {
@@ -622,17 +627,23 @@
                     ctx.fillRect(0, rowY, width, rowHeight);
                 }
 
+                // Rank number
+                ctx.fillStyle = '#00ff88';
+                ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${rank}`, 30, rowY + 25);
+
                 // Player name and team
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, sans-serif';
                 ctx.textAlign = 'left';
-                const playerText = pick.player.length > 20 ? pick.player.substring(0, 18) + '...' : pick.player;
-                ctx.fillText(playerText, 20, rowY + 17);
+                const playerText = pick.player.length > 18 ? pick.player.substring(0, 16) + '...' : pick.player;
+                ctx.fillText(playerText, 60, rowY + 17);
                 
                 ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
                 ctx.fillStyle = '#888888';
                 const gameText = pick.game?.split(' @ ')[0] || '';
-                ctx.fillText(gameText, 20, rowY + 32);
+                ctx.fillText(gameText, 60, rowY + 32);
 
                 // Prop type badge
                 const propType = (pick.propType || pick.prop || '').toUpperCase();
@@ -647,20 +658,25 @@
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText(pick.line.toFixed(1), 440, rowY + 25);
+                ctx.fillText(pick.line.toFixed(1), 420, rowY + 25);
 
                 // Pick badge
                 const pickBg = pick.pick === 'OVER' ? '#00ff88' : '#ff6b6b';
                 ctx.fillStyle = pickBg;
-                ctx.fillRect(525, rowY + 8, 50, 24);
+                ctx.fillRect(475, rowY + 8, 50, 24);
                 ctx.fillStyle = '#000000';
                 ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, sans-serif';
-                ctx.fillText(pick.pick, 550, rowY + 25);
+                ctx.fillText(pick.pick, 500, rowY + 25);
+
+                // Edge percentage
+                ctx.fillStyle = pick.edge >= 10 ? '#00ff88' : '#ffaa00';
+                ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.fillText(`${pick.edge.toFixed(1)}%`, 580, rowY + 25);
 
                 // Stake (units)
                 ctx.fillStyle = '#ffaa00';
                 ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, sans-serif';
-                ctx.fillText(`${pick.units.toFixed(1)}U`, 640, rowY + 25);
+                ctx.fillText(`${pick.units.toFixed(1)}U`, 660, rowY + 25);
             });
 
             // Footer
