@@ -1,0 +1,83 @@
+# NBA Opponent Defense Stats - Daily Update
+# Fetches defensive metrics from NBA Stats API and commits to repo
+# Runs daily at 8 AM ET (12 PM UTC)
+
+name: Update NBA Opponent Defense Stats
+
+on:
+  schedule:
+    # 8 AM ET = 12 PM UTC (during standard time)
+    # 8 AM EDT = 12 PM UTC (during daylight time)
+    - cron: '0 12 * * *'
+  
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  update-defense:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install nba_api pandas
+      
+      - name: Fetch opponent defense stats
+        run: |
+          python scripts/nba/update-opponent-defense.py
+        env:
+          PYTHONUNBUFFERED: 1
+      
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --quiet data/nba/opponent-defense/ || echo "changed=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit and push if changed
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add data/nba/opponent-defense/
+          git commit -m "Update opponent defense stats [$(date +'%Y-%m-%d %H:%M UTC')]"
+          git push
+      
+      - name: No changes
+        if: steps.git-check.outputs.changed != 'true'
+        run: |
+          echo "✅ No changes to opponent defense data"
+      
+      - name: Workflow summary
+        run: |
+          echo "### 🏀 NBA Opponent Defense Stats Update" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date:** $(date +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.git-check.outputs.changed }}" == "true" ]; then
+            echo "✅ Data updated and committed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ No changes detected" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Show file info if it exists
+          if [ -f "data/nba/opponent-defense/2025-26.json" ]; then
+            TEAM_COUNT=$(jq length data/nba/opponent-defense/2025-26.json)
+            LAST_UPDATED=$(jq -r '.[0].lastUpdated' data/nba/opponent-defense/2025-26.json)
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Teams:** $TEAM_COUNT" >> $GITHUB_STEP_SUMMARY
+            echo "**Last Updated:** $LAST_UPDATED" >> $GITHUB_STEP_SUMMARY
+          fi

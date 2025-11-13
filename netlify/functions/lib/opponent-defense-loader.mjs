@@ -18,6 +18,10 @@ import { getStore } from '@netlify/blobs';
 import fetch from 'node-fetch';
 import { normalizeTeamName } from './team-mapper.mjs';
 
+// TEMPORARY: Disable NBA Stats API due to timeout issues (60s limit)
+// TODO: Set up background job to update defensive stats separately
+const DISABLE_NBA_API = true;
+
 const OPPONENT_DEFENSE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const NBA_STATS_BASE_URL = 'https://stats.nba.com/stats';
 const RETRY_DELAYS = [2000, 4000, 8000]; // Exponential backoff
@@ -264,18 +268,24 @@ export async function getOpponentDefense(boxscores = null, forceRefresh = false)
   let teams = null;
   let source = 'unknown';
   
-  // Try 1: Fetch from NBA Stats API
-  try {
-    teams = await fetchFromNBAStatsAPI();
-    source = 'nba-stats-api';
-    
-    // Save to Blobs for next time
-    await saveToBlobs(teams);
-    
-  } catch (err) {
-    console.log(`⚠️  NBA Stats API failed: ${err.message}`);
-    
-    // Try 2: Load from Blobs cache
+  // Try 1: Fetch from NBA Stats API (DISABLED due to timeouts)
+  if (!DISABLE_NBA_API) {
+    try {
+      teams = await fetchFromNBAStatsAPI();
+      source = 'nba-stats-api';
+      
+      // Save to Blobs for next time
+      await saveToBlobs(teams);
+      
+    } catch (err) {
+      console.log(`⚠️  NBA Stats API failed: ${err.message}`);
+    }
+  } else {
+    console.log(`ℹ️  NBA Stats API disabled (using fallback data)`);
+  }
+  
+  // Try 2: Load from Blobs cache
+  if (!teams) {
     const blobData = await loadFromBlobs();
     if (blobData && blobData.age < OPPONENT_DEFENSE_TTL_MS * 2) { // Allow 48h old from Blobs
       teams = blobData.teams;

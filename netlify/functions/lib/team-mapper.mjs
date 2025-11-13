@@ -95,6 +95,13 @@ teamInfo.teams.forEach(team => {
     addAlias('PhiladelphiaSixers');
   }
   
+  // New Orleans special case (ESPN uses "NO" instead of "NOP")
+  if (info.tricode === 'NOP') {
+    addAlias('NO');                                  // ESPN abbreviation
+    addAlias('New Orleans Pelicans');
+    addAlias('Pelicans');
+  }
+  
   // Trail Blazers special cases (spacing quirks)
   if (info.tricode === 'POR') {
     addAlias('Portland Trail Blazers');
