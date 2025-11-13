@@ -261,9 +261,24 @@ async function main() {
     if (!result) continue;
     
     const { predicted, confidence } = result;
-    const edge = ((predicted - prop.line) / prop.line) * 100;
     
-    if (edge < EDGE_THRESHOLD || confidence < CONFIDENCE_THRESHOLD) continue;
+    // Calculate edge for BOTH sides
+    const overEdge = ((predicted - prop.line) / prop.line) * 100;
+    const underEdge = ((prop.line - predicted) / prop.line) * 100;
+    
+    // Determine which side has better edge
+    let betSide, edge;
+    if (overEdge > underEdge && overEdge >= EDGE_THRESHOLD) {
+      betSide = 'OVER';
+      edge = overEdge;
+    } else if (underEdge > overEdge && underEdge >= EDGE_THRESHOLD) {
+      betSide = 'UNDER';
+      edge = underEdge;
+    } else {
+      continue; // Neither side meets threshold
+    }
+    
+    if (confidence < CONFIDENCE_THRESHOLD) continue;
     
     const impliedProb = americanToProb(prop.odds);
     const kelly = (confidence - impliedProb) / (1 - impliedProb);
@@ -276,7 +291,7 @@ async function main() {
       player: prop.player,
       prop: prop.propType.replace('player_', ''),
       line: prop.line.toFixed(1),
-      pick: 'OVER',
+      pick: betSide,
       predicted: predicted.toFixed(1),
       odds: prop.odds,
       edge: edge.toFixed(1),
