@@ -1,0 +1,62 @@
+name: NBA Daily Predictions
+
+on:
+  schedule:
+    # 6:30 AM ET (10:30 UTC in EST, 11:30 UTC in EDT)
+    # Using 10:30 UTC for winter (EST) - after Nov 3
+    - cron: '30 10 * * *'
+    
+    # 12:05 PM ET (16:05 UTC in EST, 17:05 UTC in EDT)
+    - cron: '05 16 * * *'
+    
+    # 6:45 PM ET (22:45 UTC in EST, 23:45 UTC in EDT)
+    - cron: '45 22 * * *'
+  
+  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
+
+jobs:
+  generate-predictions:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Run NBA predictions model
+        run: node scripts/nba/run-full-model-github-actions.mjs
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+      
+      - name: Commit and push predictions
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🏀 Update NBA predictions - $(date -u +'%Y-%m-%d %H:%M UTC')"
+          file_pattern: 'public/data/nba/*.json'
+          commit_user_name: NBA Predictions Bot
+          commit_user_email: bot@bgroundrobin.com
+          commit_author: NBA Predictions Bot <bot@bgroundrobin.com>
+      
+      - name: Summary
+        run: |
+          echo "## ✅ NBA Predictions Updated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date -u +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "public/data/nba/predictions-latest.json" ]; then
+            PICK_COUNT=$(jq '.recommendations | length' public/data/nba/predictions-latest.json 2>/dev/null || echo "unknown")
+            echo "**Picks Generated:** $PICK_COUNT" >> $GITHUB_STEP_SUMMARY
+          fi
