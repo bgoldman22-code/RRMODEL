@@ -423,9 +423,18 @@
             const predicted = parseFloat(pred.predicted);
             const edge = parseFloat(pred.edge);
             const confidence = parseFloat(pred.confidence);
+            const odds = parseInt(pred.odds);
+            const units = parseFloat(pred.units);
+            
+            // Calculate implied probability from American odds
+            const impliedProb = odds > 0 
+                ? (100 / (odds + 100)) * 100 
+                : (Math.abs(odds) / (Math.abs(odds) + 100)) * 100;
             
             const edgeClass = edge >= 6 ? 'edge-high' : edge >= 4 ? 'edge-medium' : 'edge-low';
-            const recClass = pred.recommendation === 'BET' ? 'bet' : 'skip';
+            // A bet is recommended if it has edge >= 4% and units >= 0.5
+            const isBet = edge >= 4.0 && units >= 0.5;
+            const recClass = isBet ? 'bet' : 'skip';
             
             return `
                 <div class="prediction-card">
@@ -442,6 +451,10 @@
                             <span class="detail-value">${line.toFixed(1)}</span>
                         </div>
                         <div class="detail-row">
+                            <span class="detail-label">Odds</span>
+                            <span class="detail-value">${odds > 0 ? '+' : ''}${odds} (${impliedProb.toFixed(1)}%)</span>
+                        </div>
+                        <div class="detail-row">
                             <span class="detail-label">Edge</span>
                             <span class="detail-value">
                                 ${edge.toFixed(1)}%
@@ -453,6 +466,10 @@
                         <div class="detail-row">
                             <span class="detail-label">Confidence</span>
                             <span class="detail-value">${confidence.toFixed(1)}%</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Kelly Units</span>
+                            <span class="detail-value">${units.toFixed(1)} units</span>
                         </div>
                         ${pred.oppDefenseRating ? `
                         <div class="detail-row">
@@ -469,10 +486,13 @@
                     </div>
                     
                     <div class="recommendation ${recClass}">
-                        ${pred.recommendation === 'BET' ? 
-                            `✅ PICK: ${pred.side || pred.pick || 'OVER'} ${line.toFixed(1)}` : 
+                        ${isBet ? 
+                            `✅ PICK: ${pred.pick} ${line.toFixed(1)} @ ${odds > 0 ? '+' : ''}${odds} (${units.toFixed(1)}U)` : 
                             `⛔ SKIP - Edge Too Low`
                         }
+                    </div>
+                    <div style="text-align: center; margin-top: 10px; color: #888; font-size: 0.85em;">
+                        ${pred.book} • ${pred.game.replace(' @ ', ' @ ')}
                     </div>
                 </div>
             `;
