@@ -673,10 +673,11 @@
                 ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, sans-serif';
                 ctx.fillText(`${pick.edge.toFixed(1)}%`, 580, rowY + 25);
 
-                // Stake (units)
+                // Stake (units) - with fallback
+                const units = pick.units || pick.kelly || pick.kellyStake || 0;
                 ctx.fillStyle = '#ffaa00';
                 ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, sans-serif';
-                ctx.fillText(`${pick.units.toFixed(1)}U`, 660, rowY + 25);
+                ctx.fillText(`${parseFloat(units).toFixed(1)}U`, 660, rowY + 25);
             });
 
             // Footer
