@@ -219,17 +219,35 @@ async function fetchOdds() {
       
       for (const book of propsData.bookmakers) {
         for (const market of book.markets) {
+          // Group outcomes by player and line to get both Over/Under odds
+          const grouped = {};
           for (const outcome of market.outcomes) {
-            allProps.push({
-              player: outcome.description,
-              propType: market.key,
-              line: outcome.point,
-              odds: outcome.price,
-              book: book.title,
-              homeTeam: event.home_team,
-              awayTeam: event.away_team,
-              gameTime: event.commence_time
-            });
+            const key = `${outcome.description}|${outcome.point}`;
+            if (!grouped[key]) {
+              grouped[key] = {
+                player: outcome.description,
+                propType: market.key,
+                line: outcome.point,
+                overOdds: null,
+                underOdds: null,
+                book: book.title,
+                homeTeam: event.home_team,
+                awayTeam: event.away_team,
+                gameTime: event.commence_time
+              };
+            }
+            if (outcome.name === 'Over') {
+              grouped[key].overOdds = outcome.price;
+            } else if (outcome.name === 'Under') {
+              grouped[key].underOdds = outcome.price;
+            }
+          }
+          
+          // Add complete prop lines (with both Over and Under odds)
+          for (const prop of Object.values(grouped)) {
+            if (prop.overOdds && prop.underOdds) {
+              allProps.push(prop);
+            }
           }
         }
       }
@@ -266,21 +284,23 @@ async function main() {
     const overEdge = ((predicted - prop.line) / prop.line) * 100;
     const underEdge = ((prop.line - predicted) / prop.line) * 100;
     
-    // Determine which side has better edge
-    let betSide, edge;
+    // Determine which side has better edge and use correct odds
+    let betSide, edge, odds;
     if (overEdge > underEdge && overEdge >= EDGE_THRESHOLD) {
       betSide = 'OVER';
       edge = overEdge;
+      odds = prop.overOdds;
     } else if (underEdge > overEdge && underEdge >= EDGE_THRESHOLD) {
       betSide = 'UNDER';
       edge = underEdge;
+      odds = prop.underOdds;
     } else {
       continue; // Neither side meets threshold
     }
     
     if (confidence < CONFIDENCE_THRESHOLD) continue;
     
-    const impliedProb = americanToProb(prop.odds);
+    const impliedProb = americanToProb(odds);
     const kelly = (confidence - impliedProb) / (1 - impliedProb);
     
     if (kelly < MIN_KELLY) continue;
@@ -293,7 +313,7 @@ async function main() {
       line: prop.line.toFixed(1),
       pick: betSide,
       predicted: predicted.toFixed(1),
-      odds: prop.odds,
+      odds: odds,
       edge: edge.toFixed(1),
       confidence: (confidence * 100).toFixed(1),
       kelly: (kelly * 100).toFixed(1),
