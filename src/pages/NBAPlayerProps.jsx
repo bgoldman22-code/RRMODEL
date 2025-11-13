@@ -27,13 +27,13 @@ export default function NBAPlayerProps() {
     try {
       setLoading(true);
       
-      // Fetch live predictions from Netlify function (use trigger endpoint)
-      const response = await fetch('/.netlify/functions/trigger-nba-predictions');
+      // Fetch from new API endpoint that serves the correct format
+      const response = await fetch('/api/nba-player-props');
       
       if (!response.ok) {
-        console.warn('Live predictions not available, trying static fallback...');
-        // Fallback to static JSON if function fails
-        const fallback = await fetch('/data/nba-player-props-live.json');
+        console.warn('API not available, trying static file...');
+        // Fallback to static JSON if API fails
+        const fallback = await fetch('/data/nba/nba-player-props-live.json');
         if (fallback.ok) {
           const data = await fallback.json();
           setPredictions(data.predictions || []);
