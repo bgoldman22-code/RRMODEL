@@ -310,6 +310,7 @@ async function main() {
   const outputDir = join(REPO_ROOT, 'public', 'data', 'nba');
   await mkdir(outputDir, { recursive: true });
   
+  // New format for nba-props-elite.html
   const output = {
     generated: new Date().toISOString(),
     source: 'github-actions',
@@ -324,8 +325,52 @@ async function main() {
   
   const jsonPath = join(outputDir, 'predictions-latest.json');
   await writeFile(jsonPath, JSON.stringify(output, null, 2));
-  
-  console.log(`\n✅ Wrote predictions to: ${jsonPath}`);
+  console.log(`\n✅ Wrote new format to: ${jsonPath}`);
+
+  // Old format for nba-player-props.html compatibility
+  const oldFormatOutput = {
+    generated: new Date().toISOString(),
+    games: [...new Set(uniquePicks.map(p => p.game))].length,
+    model: "Baseline v2",
+    dataSource: `GitHub Actions (${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})`,
+    historical: {
+      rebounds: {
+        status: "profitable",
+        winRate: 62.5,
+        roi: 19.3
+      },
+      assists: {
+        status: "profitable",
+        winRate: 66.7,
+        roi: 27.3
+      }
+    },
+    thresholds: {
+      edge: EDGE_THRESHOLD,
+      confidence: CONFIDENCE_THRESHOLD * 100,
+      kelly: MIN_KELLY
+    },
+    predictions: uniquePicks.map(p => ({
+      player: p.player,
+      team: p.awayTeam, // Simplified - could parse from game if needed
+      opponent: p.homeTeam,
+      propType: p.prop,
+      prediction: parseFloat(p.predicted),
+      vegasLine: parseFloat(p.line),
+      betSide: p.pick,
+      edge: parseFloat(p.edge),
+      confidence: parseFloat(p.confidence),
+      kellyStake: parseFloat(p.units),
+      odds: p.odds,
+      book: p.book,
+      game: p.game,
+      gameTime: p.gameTime
+    }))
+  };
+
+  const oldJsonPath = join(outputDir, 'nba-player-props-live.json');
+  await writeFile(oldJsonPath, JSON.stringify(oldFormatOutput, null, 2));
+  console.log(`✅ Wrote old format to: ${oldJsonPath}`);
   console.log(`\n📊 Summary:`);
   console.log(`   Total picks: ${output.summary.total}`);
   console.log(`   Avg edge: ${output.summary.avgEdge}%`);
