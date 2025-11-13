@@ -214,6 +214,18 @@ function calculateRestDays(playerName, gameDate, boxscores) {
 }
 
 export default async (req, context) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
+    });
+  }
+
   console.log('🏀 NBA Daily Predictions V2 - Starting...');
   console.log(`⏱️  Global budget: ${BUDGETS.GLOBAL / 1000}s (Acquire: ${BUDGETS.ACQUIRE / 1000}s HARD STOP)`);
   
@@ -223,7 +235,12 @@ export default async (req, context) => {
   if (!API_KEY) {
     return new Response(JSON.stringify({ error: 'ODDS_API_KEY not set' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
     });
   }
 
@@ -564,7 +581,12 @@ export default async (req, context) => {
 
     return new Response(JSON.stringify(output), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
     });
 
   } catch (error) {
@@ -580,7 +602,12 @@ export default async (req, context) => {
       stack: error.stack 
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
     });
   }
 };
