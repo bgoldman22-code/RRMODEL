@@ -64,7 +64,10 @@ export default function NBADDTDPicks() {
   }
 
   // No picks available
-  if (!picks || (!picks.picks?.dd?.length && !picks.picks?.td?.length)) {
+  const ddPicks = picks?.picks?.double_double || picks?.picks?.dd || [];
+  const tdPicks = picks?.picks?.triple_double || picks?.picks?.td || [];
+  
+  if (!picks || (ddPicks.length === 0 && tdPicks.length === 0)) {
     return (
       <div className="nba-ddtd-picks no-picks">
         <h2>🏀 Double-Double & Triple-Double Picks</h2>
@@ -82,13 +85,13 @@ export default function NBADDTDPicks() {
           <span className="date">📅 {picks.date}</span>
           <span className="model">🤖 Model: {picks.model_version}</span>
           <span className="summary">
-            {picks.summary.total_dd} DD, {picks.summary.total_td} TD
+            {picks.summary?.dd_picks || ddPicks.length} DD, {picks.summary?.td_picks || tdPicks.length} TD
           </span>
         </div>
       </div>
 
       {/* Double-Double Picks */}
-      {picks.picks.dd.length > 0 && (
+      {ddPicks.length > 0 && (
         <div className="picks-section">
           <h3>🔥 Double-Double Picks</h3>
           <div className="picks-table-container">
@@ -96,32 +99,28 @@ export default function NBADDTDPicks() {
               <thead>
                 <tr>
                   <th>Player</th>
-                  <th>Game</th>
-                  <th>Model Prob</th>
-                  <th>Best Odds</th>
+                  <th>Odds</th>
+                  <th>Implied Prob</th>
                   <th>Edge</th>
-                  <th>L20 Rate</th>
-                  <th>Avg Min</th>
+                  <th>Book</th>
                 </tr>
               </thead>
               <tbody>
-                {picks.picks.dd.map((pick, idx) => (
+                {ddPicks.map((pick, idx) => (
                   <tr key={idx}>
                     <td className="player-name">{pick.player}</td>
-                    <td className="game">{pick.game}</td>
-                    <td className="prob">{(pick.model_prob * 100).toFixed(1)}%</td>
-                    <td className="odds">{pick.best_odds > 0 ? '+' : ''}{pick.best_odds}</td>
+                    <td className="odds">{pick.odds > 0 ? '+' : ''}{pick.odds}</td>
+                    <td className="prob">{pick.implied_prob?.toFixed?.(1) || pick.implied_prob}%</td>
                     <td 
                       className="edge"
                       style={{ 
-                        color: getEdgeColor(pick.edge),
+                        color: getEdgeColor(pick.edge / 100),
                         fontWeight: 'bold'
                       }}
                     >
-                      {(pick.edge * 100).toFixed(1)}%
+                      {pick.edge?.toFixed?.(1) || pick.edge}%
                     </td>
-                    <td className="rate">{(pick.l20_dd_rate * 100).toFixed(0)}%</td>
-                    <td className="minutes">{pick.avg_minutes}</td>
+                    <td className="bookmaker">{pick.bookmaker}</td>
                   </tr>
                 ))}
               </tbody>
@@ -131,7 +130,7 @@ export default function NBADDTDPicks() {
       )}
 
       {/* Triple-Double Picks */}
-      {picks.picks.td.length > 0 && (
+      {tdPicks.length > 0 && (
         <div className="picks-section">
           <h3>⭐ Triple-Double Picks</h3>
           <div className="picks-table-container">
@@ -139,32 +138,28 @@ export default function NBADDTDPicks() {
               <thead>
                 <tr>
                   <th>Player</th>
-                  <th>Game</th>
-                  <th>Model Prob</th>
-                  <th>Best Odds</th>
+                  <th>Odds</th>
+                  <th>Implied Prob</th>
                   <th>Edge</th>
-                  <th>L20 Rate</th>
-                  <th>Avg Min</th>
+                  <th>Book</th>
                 </tr>
               </thead>
               <tbody>
-                {picks.picks.td.map((pick, idx) => (
+                {tdPicks.map((pick, idx) => (
                   <tr key={idx}>
                     <td className="player-name">{pick.player}</td>
-                    <td className="game">{pick.game}</td>
-                    <td className="prob">{(pick.model_prob * 100).toFixed(1)}%</td>
-                    <td className="odds">{pick.best_odds > 0 ? '+' : ''}{pick.best_odds}</td>
+                    <td className="odds">{pick.odds > 0 ? '+' : ''}{pick.odds}</td>
+                    <td className="prob">{pick.implied_prob?.toFixed?.(1) || pick.implied_prob}%</td>
                     <td 
                       className="edge"
                       style={{ 
-                        color: getEdgeColor(pick.edge),
+                        color: getEdgeColor(pick.edge / 100),
                         fontWeight: 'bold'
                       }}
                     >
-                      {(pick.edge * 100).toFixed(1)}%
+                      {pick.edge?.toFixed?.(1) || pick.edge}%
                     </td>
-                    <td className="rate">{(pick.l20_td_rate * 100).toFixed(0)}%</td>
-                    <td className="minutes">{pick.avg_minutes}</td>
+                    <td className="bookmaker">{pick.bookmaker}</td>
                   </tr>
                 ))}
               </tbody>
