@@ -272,33 +272,69 @@ netlify/functions/
 - [x] Live validation (2025 wk 9: MAE 9.43)
 - [x] Feature parity verified (100% match)
 - [x] Version tagging implemented
-- [x] Code pushed to GitHub
+- [x] Code pushed to GitHub (commit: af3b1b6b)
 
-### Phase 2: Netlify Functions 🚧 NEXT
-- [ ] Implement Blobs storage integration
-- [ ] Deploy generation endpoint
-- [ ] Deploy retrieval endpoint
-- [ ] Set up scheduled triggers
-- [ ] Test error handling
-- [ ] Validate performance
+### Phase 2: Netlify Functions ✅ COMPLETE
+- [x] Implement Blobs storage integration
+- [x] Deploy generation endpoint (nfl-v5-generate.mjs)
+- [x] Deploy retrieval endpoint (nfl-v5-get.mjs)
+- [x] Set up scheduled triggers (GitHub Action)
+- [x] Test error handling (404, 400, 500)
+- [x] Code pushed to GitHub (commit: 107bb159)
 
-### Phase 3: Frontend Integration 🔜 PENDING
-- [ ] Add V5 toggle to UI
-- [ ] Wire V5 API endpoints
-- [ ] Display predictions with version badge
-- [ ] Implement compare mode
-- [ ] Test on staging
-- [ ] Deploy to production
+### Phase 3: Frontend Integration ✅ COMPLETE
+- [x] Update NFLPredictionsV5.jsx to use new API endpoints
+- [x] Wire V5 API endpoints (nfl-v5-get, nfl-v5-generate)
+- [x] Display predictions with V5-only mode
+- [x] Improve data source tracking (cached vs fresh)
+- [x] Simplify refresh logic (remove legacy transformation)
+- [x] Code pushed to GitHub (commit: ddd81f17)
+- [x] Documentation complete (V5_PHASE3_FRONTEND_COMPLETE.md)
 
-### Phase 4: Monitoring 🔜 ONGOING
-- [ ] Set up MAE tracking
-- [ ] Configure alerts
-- [ ] Create performance dashboard
+### Phase 4: Testing & Validation 🚧 NEXT
+- [ ] Run manual testing suite (see V5_MANUAL_TESTING_GUIDE.md)
+- [ ] Update NFLverse data for Week 10+
+- [ ] Test generation endpoint end-to-end
+- [ ] Test retrieval endpoint with Blobs
+- [ ] Validate frontend displays correctly
+- [ ] Test week selection and refresh
+- [ ] Verify PNG export works
+- [ ] Monitor performance metrics
+
+### Phase 5: Monitoring & Compare Mode 🔜 FUTURE
+- [ ] Set up MAE tracking dashboard
+- [ ] Configure alerts (errors, performance)
+- [ ] Add Compare mode (V1 vs V5 side-by-side)
 - [ ] Monitor feature drift
-- [ ] Track generation success rate
+- [ ] Track weekly prediction accuracy
+- [ ] Create performance reports
 
 ---
 
-**Status:** 🟢 Phase 1 Complete - Ready for Phase 2 (Netlify Integration)  
+## 🧪 Testing Required
+
+**IMPORTANT:** Once Netlify deployment completes, run the full manual testing suite:
+
+📖 **See:** [V5_MANUAL_TESTING_GUIDE.md](./V5_MANUAL_TESTING_GUIDE.md)
+
+**Quick Testing Checklist:**
+1. ✅ Update NFLverse data (Week 10+)
+2. ✅ Test `nfl-v5-generate` function via API
+3. ✅ Test `nfl-v5-get` function via API
+4. ✅ Test frontend at `/nfl-v5` (load, refresh, export)
+5. ✅ Verify week selection works
+6. ✅ Check Netlify Blobs storage
+7. ✅ Review function logs and performance
+
+**Estimated Testing Time:** 10-15 minutes
+
+---
+
+**Status:** 🟢 Phase 1-3 Complete - Ready for Testing (Phase 4)  
 **Last Updated:** November 14, 2025  
-**Version:** V5-Reconstructed-Ridge-ZeroDef-2025-11-14
+**Version:** V5-Reconstructed-Ridge-ZeroDef-2025-11-14  
+**Latest Commits:**
+- Phase 1: af3b1b6b (V5 ensemble generator)
+- Phase 2: 107bb159 (Netlify functions + Blobs)
+- Phase 3: ddd81f17 (Frontend integration)
+- Docs: a885c498 (Phase 3 documentation)
