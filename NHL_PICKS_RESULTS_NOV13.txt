@@ -1,0 +1,51 @@
+🏒 NHL SOG PICKS - NOVEMBER 13, 2025
+=====================================
+PERFORMANCE SUMMARY
+=====================================
+
+📊 OVERALL RESULTS:
+------------------
+Total Picks: 83
+✅ Wins: 41 (49.4%)
+❌ Losses: 42 (50.6%)
+
+💰 FINANCIAL RESULTS:
+--------------------
+Total Units Bet: 136.95
+Profit/Loss: -58.94 units (-43.0% ROI)
+At $10/unit: -$589.37
+
+⚠️ CRITICAL FINDINGS:
+--------------------
+1. Win rate of 49.4% is BELOW the 52.4% break-even needed for +EV betting
+2. Model is NOT showing edge despite claiming 54-82% edges on picks
+3. Heavy losses despite model being "high confidence"
+4. Projected SOG values were often significantly off
+
+🔍 TOP PICK PERFORMANCE:
+-----------------------
+Kyle Connor: ❌ LOSS (Projected 7.49, Actual 2) - Off by 5.5 shots!
+Jason Robertson: ✅ WIN (Projected 4.70, Actual 7) 
+Morgan Geekie: ✅ WIN (Projected 3.08, Actual 3)
+Jordan Eberle: ✅ WIN (Projected 3.63, Actual 3)
+Jack Eichel: ✅ WIN (Projected 5.52, Actual 5)
+
+📉 WORST MISSES:
+---------------
+- Kyle Connor: Proj 7.49, Act 2 (Off by -5.49)
+- David Pastrnak: Proj 5.71, Act 3 (Off by -2.71)
+- William Nylander: Proj 4.38, Act 0 (Off by -4.38)
+- Wyatt Johnston: Proj 3.76, Act 1 (Off by -2.76)
+
+💡 RECOMMENDATION:
+-----------------
+⛔ DO NOT USE THIS MODEL FOR REAL MONEY YET
+
+The model needs:
+1. Calibration - projections are not accurate enough
+2. More conservative edge thresholds
+3. Better handling of variance/outliers
+4. Validation period before risking capital
+
+This was a LOSING session despite "81% edges" being claimed.
+Model shows it is NOT properly calibrated yet.

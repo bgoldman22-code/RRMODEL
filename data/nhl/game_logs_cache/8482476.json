@@ -1,0 +1,496 @@
+{
+  "playerId": 8482476,
+  "playerName": "Emil Heineman",
+  "timestamp": 1763135431966,
+  "gameLog": {
+    "L3": {
+      "shots": "2.33",
+      "toi": "15.6",
+      "ppToi": "0.0",
+      "goals": "0.33",
+      "assists": "0.33",
+      "points": "0.67",
+      "games": 3
+    },
+    "L5": {
+      "shots": "2.60",
+      "toi": "15.2",
+      "ppToi": "0.0",
+      "goals": "0.40",
+      "assists": "0.40",
+      "points": "0.80",
+      "games": 5
+    },
+    "L10": {
+      "shots": "2.60",
+      "toi": "15.4",
+      "ppToi": "0.0",
+      "goals": "0.20",
+      "assists": "0.30",
+      "points": "0.50",
+      "games": 10
+    },
+    "rawGames": [
+      {
+        "gameId": 2025020277,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-11-13",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Golden Knights"
+        },
+        "points": 1,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 3,
+        "shifts": 22,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "VGK",
+        "pim": 0,
+        "toi": "18:03"
+      },
+      {
+        "gameId": 2025020252,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-11-10",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Devils"
+        },
+        "points": 0,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 19,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "NJD",
+        "pim": 0,
+        "toi": "16:30"
+      },
+      {
+        "gameId": 2025020237,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-11-08",
+        "goals": 0,
+        "assists": 1,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Rangers"
+        },
+        "points": 1,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 20,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "NYR",
+        "pim": 2,
+        "toi": "12:09"
+      },
+      {
+        "gameId": 2025020228,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-11-07",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Wild"
+        },
+        "points": 1,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 5,
+        "shifts": 20,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "MIN",
+        "pim": 0,
+        "toi": "15:36"
+      },
+      {
+        "gameId": 2025020205,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-11-04",
+        "goals": 0,
+        "assists": 1,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Bruins"
+        },
+        "points": 1,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 1,
+        "shifts": 18,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "BOS",
+        "pim": 0,
+        "toi": "13:31"
+      },
+      {
+        "gameId": 2025020195,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-11-02",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Blue Jackets"
+        },
+        "points": 0,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 3,
+        "shifts": 21,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "CBJ",
+        "pim": 0,
+        "toi": "14:24"
+      },
+      {
+        "gameId": 2025020179,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-31",
+        "goals": 0,
+        "assists": 1,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Capitals"
+        },
+        "points": 1,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 3,
+        "shifts": 18,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "WSH",
+        "pim": 0,
+        "toi": "12:44"
+      },
+      {
+        "gameId": 2025020171,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-30",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Hurricanes"
+        },
+        "points": 0,
+        "plusMinus": -2,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 5,
+        "shifts": 24,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "CAR",
+        "pim": 0,
+        "toi": "18:25"
+      },
+      {
+        "gameId": 2025020154,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-28",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Bruins"
+        },
+        "points": 0,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 18,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "BOS",
+        "pim": 0,
+        "toi": "12:50"
+      },
+      {
+        "gameId": 2025020127,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-25",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Flyers"
+        },
+        "points": 0,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 0,
+        "shifts": 24,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "PHI",
+        "pim": 2,
+        "toi": "19:29"
+      },
+      {
+        "gameId": 2025020115,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-23",
+        "goals": 2,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Red Wings"
+        },
+        "points": 2,
+        "plusMinus": 2,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 4,
+        "shifts": 19,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "DET",
+        "pim": 0,
+        "toi": "14:40"
+      },
+      {
+        "gameId": 2025020100,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-21",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Sharks"
+        },
+        "points": 1,
+        "plusMinus": 0,
+        "powerPlayGoals": 1,
+        "powerPlayPoints": 1,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 1,
+        "shifts": 19,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "SJS",
+        "pim": 0,
+        "toi": "13:20"
+      },
+      {
+        "gameId": 2025020077,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-18",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Senators",
+          "fr": "Sénateurs"
+        },
+        "points": 1,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 19,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "OTT",
+        "pim": 2,
+        "toi": "13:24"
+      },
+      {
+        "gameId": 2025020065,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-16",
+        "goals": 0,
+        "assists": 1,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Oilers"
+        },
+        "points": 1,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 1,
+        "shifts": 17,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "EDM",
+        "pim": 2,
+        "toi": "12:06"
+      },
+      {
+        "gameId": 2025020042,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-13",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Jets"
+        },
+        "points": 1,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 3,
+        "shifts": 17,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "WPG",
+        "pim": 0,
+        "toi": "12:11"
+      },
+      {
+        "gameId": 2025020028,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-11",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Capitals"
+        },
+        "points": 0,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 19,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "WSH",
+        "pim": 0,
+        "toi": "15:54"
+      },
+      {
+        "gameId": 2025020013,
+        "teamAbbrev": "NYI",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-09",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Islanders"
+        },
+        "opponentCommonName": {
+          "default": "Penguins"
+        },
+        "points": 0,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 0,
+        "shifts": 16,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "PIT",
+        "pim": 0,
+        "toi": "13:12"
+      }
+    ]
+  }
+}

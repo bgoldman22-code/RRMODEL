@@ -1,0 +1,496 @@
+{
+  "playerId": 8482740,
+  "playerName": "Wyatt Johnston",
+  "timestamp": 1763065400245,
+  "gameLog": {
+    "L3": {
+      "shots": "2.00",
+      "toi": "21.3",
+      "ppToi": "0.0",
+      "goals": "0.33",
+      "assists": "0.67",
+      "points": "1.00",
+      "games": 3
+    },
+    "L5": {
+      "shots": "2.40",
+      "toi": "21.9",
+      "ppToi": "0.0",
+      "goals": "0.60",
+      "assists": "1.20",
+      "points": "1.80",
+      "games": 5
+    },
+    "L10": {
+      "shots": "3.10",
+      "toi": "22.0",
+      "ppToi": "0.0",
+      "goals": "0.50",
+      "assists": "0.70",
+      "points": "1.20",
+      "games": 10
+    },
+    "rawGames": [
+      {
+        "gameId": 2025020258,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-11-11",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Senators",
+          "fr": "Sénateurs"
+        },
+        "points": 0,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 25,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "OTT",
+        "pim": 0,
+        "toi": "23:33"
+      },
+      {
+        "gameId": 2025020248,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-11-09",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Kraken"
+        },
+        "points": 1,
+        "plusMinus": -1,
+        "powerPlayGoals": 1,
+        "powerPlayPoints": 1,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 22,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "SEA",
+        "pim": 0,
+        "toi": "17:38"
+      },
+      {
+        "gameId": 2025020233,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-11-08",
+        "goals": 0,
+        "assists": 2,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Predators"
+        },
+        "points": 2,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 1,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 27,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "NSH",
+        "pim": 2,
+        "toi": "22:42"
+      },
+      {
+        "gameId": 2025020224,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-11-06",
+        "goals": 2,
+        "assists": 1,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Ducks"
+        },
+        "points": 3,
+        "plusMinus": -1,
+        "powerPlayGoals": 2,
+        "powerPlayPoints": 3,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 3,
+        "shifts": 24,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "ANA",
+        "pim": 0,
+        "toi": "22:02"
+      },
+      {
+        "gameId": 2025020207,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-11-04",
+        "goals": 0,
+        "assists": 3,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Oilers"
+        },
+        "points": 3,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 1,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 3,
+        "shifts": 26,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "EDM",
+        "pim": 0,
+        "toi": "23:29"
+      },
+      {
+        "gameId": 2025020185,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-11-01",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Panthers"
+        },
+        "points": 1,
+        "plusMinus": -2,
+        "powerPlayGoals": 1,
+        "powerPlayPoints": 1,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 5,
+        "shifts": 22,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "FLA",
+        "pim": 0,
+        "toi": "20:00"
+      },
+      {
+        "gameId": 2025020169,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-30",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Lightning"
+        },
+        "points": 0,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 4,
+        "shifts": 28,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "TBL",
+        "pim": 2,
+        "toi": "26:49"
+      },
+      {
+        "gameId": 2025020159,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-28",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Capitals"
+        },
+        "points": 0,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 1,
+        "shifts": 27,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "WSH",
+        "pim": 0,
+        "toi": "22:54"
+      },
+      {
+        "gameId": 2025020145,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-26",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Predators"
+        },
+        "points": 1,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 4,
+        "shifts": 25,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "NSH",
+        "pim": 2,
+        "toi": "21:21"
+      },
+      {
+        "gameId": 2025020138,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-25",
+        "goals": 0,
+        "assists": 1,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Hurricanes"
+        },
+        "points": 1,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 1,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 5,
+        "shifts": 23,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "CAR",
+        "pim": 0,
+        "toi": "19:49"
+      },
+      {
+        "gameId": 2025020119,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-23",
+        "goals": 1,
+        "assists": 1,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Kings"
+        },
+        "points": 2,
+        "plusMinus": -1,
+        "powerPlayGoals": 1,
+        "powerPlayPoints": 2,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 4,
+        "shifts": 27,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "LAK",
+        "pim": 0,
+        "toi": "24:11"
+      },
+      {
+        "gameId": 2025020106,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-21",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Blue Jackets"
+        },
+        "points": 0,
+        "plusMinus": -2,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 3,
+        "shifts": 22,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "CBJ",
+        "pim": 0,
+        "toi": "19:37"
+      },
+      {
+        "gameId": 2025020083,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-18",
+        "goals": 0,
+        "assists": 1,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Blues"
+        },
+        "points": 1,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 3,
+        "shifts": 23,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "STL",
+        "pim": 0,
+        "toi": "20:23"
+      },
+      {
+        "gameId": 2025020068,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-16",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Canucks"
+        },
+        "points": 1,
+        "plusMinus": 0,
+        "powerPlayGoals": 1,
+        "powerPlayPoints": 1,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 22,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "VAN",
+        "pim": 0,
+        "toi": "21:57"
+      },
+      {
+        "gameId": 2025020054,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-14",
+        "goals": 1,
+        "assists": 1,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Wild"
+        },
+        "points": 2,
+        "plusMinus": 1,
+        "powerPlayGoals": 1,
+        "powerPlayPoints": 1,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 3,
+        "shifts": 25,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "MIN",
+        "pim": 0,
+        "toi": "20:16"
+      },
+      {
+        "gameId": 2025020034,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-11",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Avalanche"
+        },
+        "points": 1,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 5,
+        "shifts": 31,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "COL",
+        "pim": 0,
+        "toi": "21:29"
+      },
+      {
+        "gameId": 2025020017,
+        "teamAbbrev": "DAL",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-09",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Stars"
+        },
+        "opponentCommonName": {
+          "default": "Jets"
+        },
+        "points": 1,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 1,
+        "otGoals": 0,
+        "shots": 1,
+        "shifts": 25,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "opponentAbbrev": "WPG",
+        "pim": 0,
+        "toi": "20:05"
+      }
+    ]
+  }
+}

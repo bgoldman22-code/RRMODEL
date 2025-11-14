@@ -1,0 +1,1509 @@
+{
+  "timestamp": 1763065381852,
+  "teams": {
+    "DET": {
+      "team": "DET",
+      "all": {
+        "xGF": 56.26,
+        "xGA": 54.82,
+        "xGPct": 0.51,
+        "shotsFor": 467,
+        "shotsAgainst": 432,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 69,
+        "highDangerShotsAgainst": 65
+      },
+      "5v5": {
+        "xGF": 35.92,
+        "xGA": 36.57,
+        "xGPct": 0.5,
+        "shotsFor": 368,
+        "shotsAgainst": 329,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 38,
+        "highDangerShotsAgainst": 40
+      },
+      "PP": {
+        "xGF": 11.75,
+        "xGA": 1.24,
+        "xGPct": 0.9,
+        "shotsFor": 67,
+        "shotsAgainst": 20,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 14,
+        "highDangerShotsAgainst": 1
+      },
+      "PK": {
+        "xGF": 0.66,
+        "xGA": 9.11,
+        "xGPct": 0.07,
+        "shotsFor": 6,
+        "shotsAgainst": 54,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 1,
+        "highDangerShotsAgainst": 11
+      }
+    },
+    "TBL": {
+      "team": "TBL",
+      "all": {
+        "xGF": 61.21,
+        "xGA": 49.14,
+        "xGPct": 0.55,
+        "shotsFor": 430,
+        "shotsAgainst": 457,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 76,
+        "highDangerShotsAgainst": 60
+      },
+      "5v5": {
+        "xGF": 35.95,
+        "xGA": 31.99,
+        "xGPct": 0.53,
+        "shotsFor": 322,
+        "shotsAgainst": 337,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 44,
+        "highDangerShotsAgainst": 35
+      },
+      "PP": {
+        "xGF": 10.24,
+        "xGA": 1.42,
+        "xGPct": 0.88,
+        "shotsFor": 66,
+        "shotsAgainst": 15,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 11,
+        "highDangerShotsAgainst": 3
+      },
+      "PK": {
+        "xGF": 0.78,
+        "xGA": 10.64,
+        "xGPct": 0.07,
+        "shotsFor": 9,
+        "shotsAgainst": 71,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 0,
+        "highDangerShotsAgainst": 15
+      }
+    },
+    "ANA": {
+      "team": "ANA",
+      "all": {
+        "xGF": 57,
+        "xGA": 58.49,
+        "xGPct": 0.49,
+        "shotsFor": 488,
+        "shotsAgainst": 486,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 63,
+        "highDangerShotsAgainst": 64
+      },
+      "5v5": {
+        "xGF": 37.3,
+        "xGA": 41.19,
+        "xGPct": 0.48,
+        "shotsFor": 359,
+        "shotsAgainst": 390,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 39,
+        "highDangerShotsAgainst": 43
+      },
+      "PP": {
+        "xGF": 9.89,
+        "xGA": 1.05,
+        "xGPct": 0.9,
+        "shotsFor": 75,
+        "shotsAgainst": 8,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 11,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 2.16,
+        "xGA": 10.38,
+        "xGPct": 0.17,
+        "shotsFor": 23,
+        "shotsAgainst": 64,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 3,
+        "highDangerShotsAgainst": 13
+      }
+    },
+    "TOR": {
+      "team": "TOR",
+      "all": {
+        "xGF": 57.89,
+        "xGA": 54.3,
+        "xGPct": 0.52,
+        "shotsFor": 479,
+        "shotsAgainst": 524,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 70,
+        "highDangerShotsAgainst": 64
+      },
+      "5v5": {
+        "xGF": 35.5,
+        "xGA": 36.68,
+        "xGPct": 0.49,
+        "shotsFor": 370,
+        "shotsAgainst": 394,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 35,
+        "highDangerShotsAgainst": 41
+      },
+      "PP": {
+        "xGF": 11.34,
+        "xGA": 1.05,
+        "xGPct": 0.92,
+        "shotsFor": 64,
+        "shotsAgainst": 13,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 20,
+        "highDangerShotsAgainst": 1
+      },
+      "PK": {
+        "xGF": 0.72,
+        "xGA": 9.46,
+        "xGPct": 0.07,
+        "shotsFor": 13,
+        "shotsAgainst": 85,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 0,
+        "highDangerShotsAgainst": 10
+      }
+    },
+    "BUF": {
+      "team": "BUF",
+      "all": {
+        "xGF": 48.6,
+        "xGA": 56.92,
+        "xGPct": 0.46,
+        "shotsFor": 453,
+        "shotsAgainst": 509,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 55,
+        "highDangerShotsAgainst": 67
+      },
+      "5v5": {
+        "xGF": 34.21,
+        "xGA": 34.68,
+        "xGPct": 0.5,
+        "shotsFor": 344,
+        "shotsAgainst": 376,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 39,
+        "highDangerShotsAgainst": 32
+      },
+      "PP": {
+        "xGF": 8.33,
+        "xGA": 0.91,
+        "xGPct": 0.9,
+        "shotsFor": 77,
+        "shotsAgainst": 11,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 9,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 1.79,
+        "xGA": 9.7,
+        "xGPct": 0.16,
+        "shotsFor": 15,
+        "shotsAgainst": 84,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 3,
+        "highDangerShotsAgainst": 13
+      }
+    },
+    "VGK": {
+      "team": "VGK",
+      "all": {
+        "xGF": 51.53,
+        "xGA": 44.67,
+        "xGPct": 0.54,
+        "shotsFor": 445,
+        "shotsAgainst": 382,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 49,
+        "highDangerShotsAgainst": 43
+      },
+      "5v5": {
+        "xGF": 32.79,
+        "xGA": 28.95,
+        "xGPct": 0.53,
+        "shotsFor": 349,
+        "shotsAgainst": 294,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 23,
+        "highDangerShotsAgainst": 24
+      },
+      "PP": {
+        "xGF": 8.65,
+        "xGA": 0.66,
+        "xGPct": 0.93,
+        "shotsFor": 52,
+        "shotsAgainst": 9,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 12,
+        "highDangerShotsAgainst": 0
+      },
+      "PK": {
+        "xGF": 1.36,
+        "xGA": 7.03,
+        "xGPct": 0.16,
+        "shotsFor": 11,
+        "shotsAgainst": 49,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 3,
+        "highDangerShotsAgainst": 8
+      }
+    },
+    "WPG": {
+      "team": "WPG",
+      "all": {
+        "xGF": 55.28,
+        "xGA": 59.33,
+        "xGPct": 0.48,
+        "shotsFor": 435,
+        "shotsAgainst": 475,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 78,
+        "highDangerShotsAgainst": 70
+      },
+      "5v5": {
+        "xGF": 31.07,
+        "xGA": 39.72,
+        "xGPct": 0.44,
+        "shotsFor": 293,
+        "shotsAgainst": 367,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 42,
+        "highDangerShotsAgainst": 43
+      },
+      "PP": {
+        "xGF": 11.59,
+        "xGA": 0.98,
+        "xGPct": 0.92,
+        "shotsFor": 88,
+        "shotsAgainst": 11,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 15,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 2.96,
+        "xGA": 11.49,
+        "xGPct": 0.2,
+        "shotsFor": 25,
+        "shotsAgainst": 75,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 5,
+        "highDangerShotsAgainst": 15
+      }
+    },
+    "BOS": {
+      "team": "BOS",
+      "all": {
+        "xGF": 57,
+        "xGA": 64.91,
+        "xGPct": 0.47,
+        "shotsFor": 492,
+        "shotsAgainst": 541,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 61,
+        "highDangerShotsAgainst": 74
+      },
+      "5v5": {
+        "xGF": 35.51,
+        "xGA": 41.45,
+        "xGPct": 0.46,
+        "shotsFor": 378,
+        "shotsAgainst": 381,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 33,
+        "highDangerShotsAgainst": 43
+      },
+      "PP": {
+        "xGF": 12.29,
+        "xGA": 2.22,
+        "xGPct": 0.85,
+        "shotsFor": 73,
+        "shotsAgainst": 21,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 15,
+        "highDangerShotsAgainst": 5
+      },
+      "PK": {
+        "xGF": 1.19,
+        "xGA": 11.27,
+        "xGPct": 0.1,
+        "shotsFor": 15,
+        "shotsAgainst": 101,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 3,
+        "highDangerShotsAgainst": 14
+      }
+    },
+    "PIT": {
+      "team": "PIT",
+      "all": {
+        "xGF": 62.93,
+        "xGA": 56.43,
+        "xGPct": 0.53,
+        "shotsFor": 481,
+        "shotsAgainst": 503,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 83,
+        "highDangerShotsAgainst": 70
+      },
+      "5v5": {
+        "xGF": 41.61,
+        "xGA": 43.85,
+        "xGPct": 0.49,
+        "shotsFor": 380,
+        "shotsAgainst": 405,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 49,
+        "highDangerShotsAgainst": 53
+      },
+      "PP": {
+        "xGF": 13.27,
+        "xGA": 1.29,
+        "xGPct": 0.91,
+        "shotsFor": 66,
+        "shotsAgainst": 12,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 23,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 0.81,
+        "xGA": 6.65,
+        "xGPct": 0.11,
+        "shotsFor": 13,
+        "shotsAgainst": 63,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 0,
+        "highDangerShotsAgainst": 8
+      }
+    },
+    "EDM": {
+      "team": "EDM",
+      "all": {
+        "xGF": 56.9,
+        "xGA": 61.01,
+        "xGPct": 0.48,
+        "shotsFor": 513,
+        "shotsAgainst": 451,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 65,
+        "highDangerShotsAgainst": 69
+      },
+      "5v5": {
+        "xGF": 37.55,
+        "xGA": 38.53,
+        "xGPct": 0.49,
+        "shotsFor": 403,
+        "shotsAgainst": 352,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 35,
+        "highDangerShotsAgainst": 37
+      },
+      "PP": {
+        "xGF": 12.16,
+        "xGA": 1.44,
+        "xGPct": 0.89,
+        "shotsFor": 61,
+        "shotsAgainst": 13,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 18,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 1.39,
+        "xGA": 14.71,
+        "xGPct": 0.09,
+        "shotsFor": 15,
+        "shotsAgainst": 59,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 1,
+        "highDangerShotsAgainst": 20
+      }
+    },
+    "FLA": {
+      "team": "FLA",
+      "all": {
+        "xGF": 54.16,
+        "xGA": 49.79,
+        "xGPct": 0.52,
+        "shotsFor": 450,
+        "shotsAgainst": 395,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 55,
+        "highDangerShotsAgainst": 47
+      },
+      "5v5": {
+        "xGF": 34.12,
+        "xGA": 28.26,
+        "xGPct": 0.55,
+        "shotsFor": 330,
+        "shotsAgainst": 295,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 29,
+        "highDangerShotsAgainst": 20
+      },
+      "PP": {
+        "xGF": 12.56,
+        "xGA": 1.13,
+        "xGPct": 0.92,
+        "shotsFor": 82,
+        "shotsAgainst": 12,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 15,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 2.08,
+        "xGA": 10.13,
+        "xGPct": 0.17,
+        "shotsFor": 15,
+        "shotsAgainst": 61,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 4,
+        "highDangerShotsAgainst": 12
+      }
+    },
+    "NYR": {
+      "team": "NYR",
+      "all": {
+        "xGF": 56.59,
+        "xGA": 56.59,
+        "xGPct": 0.5,
+        "shotsFor": 498,
+        "shotsAgainst": 493,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 64,
+        "highDangerShotsAgainst": 58
+      },
+      "5v5": {
+        "xGF": 42.04,
+        "xGA": 33.12,
+        "xGPct": 0.56,
+        "shotsFor": 383,
+        "shotsAgainst": 376,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 45,
+        "highDangerShotsAgainst": 31
+      },
+      "PP": {
+        "xGF": 9.74,
+        "xGA": 1.19,
+        "xGPct": 0.89,
+        "shotsFor": 84,
+        "shotsAgainst": 11,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 12,
+        "highDangerShotsAgainst": 0
+      },
+      "PK": {
+        "xGF": 1.01,
+        "xGA": 13.5,
+        "xGPct": 0.07,
+        "shotsFor": 14,
+        "shotsAgainst": 76,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 1,
+        "highDangerShotsAgainst": 17
+      }
+    },
+    "COL": {
+      "team": "COL",
+      "all": {
+        "xGF": 70.72,
+        "xGA": 48.18,
+        "xGPct": 0.59,
+        "shotsFor": 580,
+        "shotsAgainst": 445,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 74,
+        "highDangerShotsAgainst": 63
+      },
+      "5v5": {
+        "xGF": 47.24,
+        "xGA": 32.79,
+        "xGPct": 0.59,
+        "shotsFor": 450,
+        "shotsAgainst": 332,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 50,
+        "highDangerShotsAgainst": 42
+      },
+      "PP": {
+        "xGF": 14.99,
+        "xGA": 1.2,
+        "xGPct": 0.93,
+        "shotsFor": 92,
+        "shotsAgainst": 16,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 15,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 1.86,
+        "xGA": 10.18,
+        "xGPct": 0.15,
+        "shotsFor": 19,
+        "shotsAgainst": 67,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 2,
+        "highDangerShotsAgainst": 14
+      }
+    },
+    "VAN": {
+      "team": "VAN",
+      "all": {
+        "xGF": 58.05,
+        "xGA": 69.83,
+        "xGPct": 0.45,
+        "shotsFor": 496,
+        "shotsAgainst": 543,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 80,
+        "highDangerShotsAgainst": 87
+      },
+      "5v5": {
+        "xGF": 38.71,
+        "xGA": 45.71,
+        "xGPct": 0.46,
+        "shotsFor": 365,
+        "shotsAgainst": 422,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 54,
+        "highDangerShotsAgainst": 49
+      },
+      "PP": {
+        "xGF": 12.39,
+        "xGA": 1.15,
+        "xGPct": 0.91,
+        "shotsFor": 82,
+        "shotsAgainst": 12,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 16,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 1.84,
+        "xGA": 15.33,
+        "xGPct": 0.11,
+        "shotsFor": 19,
+        "shotsAgainst": 83,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 2,
+        "highDangerShotsAgainst": 23
+      }
+    },
+    "UTA": {
+      "team": "UTA",
+      "all": {
+        "xGF": 57.42,
+        "xGA": 56.22,
+        "xGPct": 0.51,
+        "shotsFor": 506,
+        "shotsAgainst": 403,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 64,
+        "highDangerShotsAgainst": 63
+      },
+      "5v5": {
+        "xGF": 39.85,
+        "xGA": 36.83,
+        "xGPct": 0.52,
+        "shotsFor": 389,
+        "shotsAgainst": 312,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 41,
+        "highDangerShotsAgainst": 38
+      },
+      "PP": {
+        "xGF": 10.97,
+        "xGA": 1.05,
+        "xGPct": 0.91,
+        "shotsFor": 83,
+        "shotsAgainst": 7,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 15,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 0.53,
+        "xGA": 9.37,
+        "xGPct": 0.05,
+        "shotsFor": 12,
+        "shotsAgainst": 61,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 0,
+        "highDangerShotsAgainst": 10
+      }
+    },
+    "PHI": {
+      "team": "PHI",
+      "all": {
+        "xGF": 49.5,
+        "xGA": 45.71,
+        "xGPct": 0.52,
+        "shotsFor": 393,
+        "shotsAgainst": 409,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 52,
+        "highDangerShotsAgainst": 51
+      },
+      "5v5": {
+        "xGF": 29.13,
+        "xGA": 29.82,
+        "xGPct": 0.49,
+        "shotsFor": 299,
+        "shotsAgainst": 302,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 22,
+        "highDangerShotsAgainst": 33
+      },
+      "PP": {
+        "xGF": 9.75,
+        "xGA": 1.7,
+        "xGPct": 0.85,
+        "shotsFor": 55,
+        "shotsAgainst": 12,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 14,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 1.92,
+        "xGA": 7.92,
+        "xGPct": 0.2,
+        "shotsFor": 11,
+        "shotsAgainst": 67,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 3,
+        "highDangerShotsAgainst": 8
+      }
+    },
+    "CBJ": {
+      "team": "CBJ",
+      "all": {
+        "xGF": 58.3,
+        "xGA": 63.6,
+        "xGPct": 0.48,
+        "shotsFor": 514,
+        "shotsAgainst": 505,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 69,
+        "highDangerShotsAgainst": 80
+      },
+      "5v5": {
+        "xGF": 41.19,
+        "xGA": 39.88,
+        "xGPct": 0.51,
+        "shotsFor": 400,
+        "shotsAgainst": 395,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 47,
+        "highDangerShotsAgainst": 44
+      },
+      "PP": {
+        "xGF": 6.66,
+        "xGA": 0.31,
+        "xGPct": 0.96,
+        "shotsFor": 55,
+        "shotsAgainst": 7,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 7,
+        "highDangerShotsAgainst": 0
+      },
+      "PK": {
+        "xGF": 0.68,
+        "xGA": 13.02,
+        "xGPct": 0.05,
+        "shotsFor": 12,
+        "shotsAgainst": 77,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 0,
+        "highDangerShotsAgainst": 18
+      }
+    },
+    "SJS": {
+      "team": "SJS",
+      "all": {
+        "xGF": 50.47,
+        "xGA": 60.36,
+        "xGPct": 0.46,
+        "shotsFor": 418,
+        "shotsAgainst": 543,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 61,
+        "highDangerShotsAgainst": 69
+      },
+      "5v5": {
+        "xGF": 29.28,
+        "xGA": 36.32,
+        "xGPct": 0.45,
+        "shotsFor": 309,
+        "shotsAgainst": 398,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 31,
+        "highDangerShotsAgainst": 35
+      },
+      "PP": {
+        "xGF": 14.01,
+        "xGA": 1.75,
+        "xGPct": 0.89,
+        "shotsFor": 72,
+        "shotsAgainst": 19,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 23,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 1.22,
+        "xGA": 15.69,
+        "xGPct": 0.07,
+        "shotsFor": 13,
+        "shotsAgainst": 99,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 2,
+        "highDangerShotsAgainst": 21
+      }
+    },
+    "MIN": {
+      "team": "MIN",
+      "all": {
+        "xGF": 60.86,
+        "xGA": 60.11,
+        "xGPct": 0.5,
+        "shotsFor": 514,
+        "shotsAgainst": 533,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 75,
+        "highDangerShotsAgainst": 58
+      },
+      "5v5": {
+        "xGF": 41.19,
+        "xGA": 41.56,
+        "xGPct": 0.5,
+        "shotsFor": 388,
+        "shotsAgainst": 421,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 51,
+        "highDangerShotsAgainst": 39
+      },
+      "PP": {
+        "xGF": 13.34,
+        "xGA": 0.85,
+        "xGPct": 0.94,
+        "shotsFor": 85,
+        "shotsAgainst": 14,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 16,
+        "highDangerShotsAgainst": 0
+      },
+      "PK": {
+        "xGF": 0.09,
+        "xGA": 9.21,
+        "xGPct": 0.01,
+        "shotsFor": 7,
+        "shotsAgainst": 66,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 0,
+        "highDangerShotsAgainst": 9
+      }
+    },
+    "SEA": {
+      "team": "SEA",
+      "all": {
+        "xGF": 45.95,
+        "xGA": 44.99,
+        "xGPct": 0.51,
+        "shotsFor": 401,
+        "shotsAgainst": 443,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 46,
+        "highDangerShotsAgainst": 50
+      },
+      "5v5": {
+        "xGF": 25.61,
+        "xGA": 33.61,
+        "xGPct": 0.43,
+        "shotsFor": 293,
+        "shotsAgainst": 361,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 21,
+        "highDangerShotsAgainst": 35
+      },
+      "PP": {
+        "xGF": 11.72,
+        "xGA": 0.93,
+        "xGPct": 0.93,
+        "shotsFor": 72,
+        "shotsAgainst": 9,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 16,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 0.43,
+        "xGA": 6.84,
+        "xGPct": 0.06,
+        "shotsFor": 4,
+        "shotsAgainst": 54,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 1,
+        "highDangerShotsAgainst": 8
+      }
+    },
+    "MTL": {
+      "team": "MTL",
+      "all": {
+        "xGF": 48.99,
+        "xGA": 50.22,
+        "xGPct": 0.49,
+        "shotsFor": 395,
+        "shotsAgainst": 433,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 54,
+        "highDangerShotsAgainst": 58
+      },
+      "5v5": {
+        "xGF": 31.17,
+        "xGA": 33.12,
+        "xGPct": 0.48,
+        "shotsFor": 302,
+        "shotsAgainst": 322,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 33,
+        "highDangerShotsAgainst": 36
+      },
+      "PP": {
+        "xGF": 9.78,
+        "xGA": 0.47,
+        "xGPct": 0.95,
+        "shotsFor": 49,
+        "shotsAgainst": 7,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 11,
+        "highDangerShotsAgainst": 0
+      },
+      "PK": {
+        "xGF": 1.59,
+        "xGA": 9.67,
+        "xGPct": 0.14,
+        "shotsFor": 14,
+        "shotsAgainst": 71,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 2,
+        "highDangerShotsAgainst": 12
+      }
+    },
+    "CGY": {
+      "team": "CGY",
+      "all": {
+        "xGF": 51.59,
+        "xGA": 57.52,
+        "xGPct": 0.47,
+        "shotsFor": 527,
+        "shotsAgainst": 534,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 51,
+        "highDangerShotsAgainst": 66
+      },
+      "5v5": {
+        "xGF": 36.1,
+        "xGA": 31.82,
+        "xGPct": 0.53,
+        "shotsFor": 414,
+        "shotsAgainst": 364,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 33,
+        "highDangerShotsAgainst": 29
+      },
+      "PP": {
+        "xGF": 10.58,
+        "xGA": 2.05,
+        "xGPct": 0.84,
+        "shotsFor": 71,
+        "shotsAgainst": 24,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 13,
+        "highDangerShotsAgainst": 4
+      },
+      "PK": {
+        "xGF": 1.14,
+        "xGA": 13.92,
+        "xGPct": 0.08,
+        "shotsFor": 14,
+        "shotsAgainst": 109,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 1,
+        "highDangerShotsAgainst": 19
+      }
+    },
+    "CAR": {
+      "team": "CAR",
+      "all": {
+        "xGF": 64.89,
+        "xGA": 52.98,
+        "xGPct": 0.55,
+        "shotsFor": 532,
+        "shotsAgainst": 427,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 81,
+        "highDangerShotsAgainst": 63
+      },
+      "5v5": {
+        "xGF": 42.23,
+        "xGA": 33.87,
+        "xGPct": 0.55,
+        "shotsFor": 406,
+        "shotsAgainst": 324,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 48,
+        "highDangerShotsAgainst": 34
+      },
+      "PP": {
+        "xGF": 12.83,
+        "xGA": 1.67,
+        "xGPct": 0.88,
+        "shotsFor": 76,
+        "shotsAgainst": 18,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 19,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 2.39,
+        "xGA": 11.49,
+        "xGPct": 0.17,
+        "shotsFor": 19,
+        "shotsAgainst": 66,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 4,
+        "highDangerShotsAgainst": 18
+      }
+    },
+    "NYI": {
+      "team": "NYI",
+      "all": {
+        "xGF": 54.57,
+        "xGA": 60.96,
+        "xGPct": 0.47,
+        "shotsFor": 474,
+        "shotsAgainst": 466,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 67,
+        "highDangerShotsAgainst": 87
+      },
+      "5v5": {
+        "xGF": 34,
+        "xGA": 38.85,
+        "xGPct": 0.47,
+        "shotsFor": 339,
+        "shotsAgainst": 343,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 37,
+        "highDangerShotsAgainst": 47
+      },
+      "PP": {
+        "xGF": 11.04,
+        "xGA": 1.89,
+        "xGPct": 0.85,
+        "shotsFor": 85,
+        "shotsAgainst": 12,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 15,
+        "highDangerShotsAgainst": 4
+      },
+      "PK": {
+        "xGF": 1.47,
+        "xGA": 14.14,
+        "xGPct": 0.09,
+        "shotsFor": 19,
+        "shotsAgainst": 89,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 1,
+        "highDangerShotsAgainst": 27
+      }
+    },
+    "NSH": {
+      "team": "NSH",
+      "all": {
+        "xGF": 58.87,
+        "xGA": 61.89,
+        "xGPct": 0.49,
+        "shotsFor": 489,
+        "shotsAgainst": 510,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 69,
+        "highDangerShotsAgainst": 69
+      },
+      "5v5": {
+        "xGF": 36.72,
+        "xGA": 38.92,
+        "xGPct": 0.49,
+        "shotsFor": 356,
+        "shotsAgainst": 385,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 40,
+        "highDangerShotsAgainst": 41
+      },
+      "PP": {
+        "xGF": 11.88,
+        "xGA": 1.03,
+        "xGPct": 0.92,
+        "shotsFor": 78,
+        "shotsAgainst": 9,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 14,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 0.58,
+        "xGA": 9.75,
+        "xGPct": 0.06,
+        "shotsFor": 10,
+        "shotsAgainst": 65,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 0,
+        "highDangerShotsAgainst": 11
+      }
+    },
+    "OTT": {
+      "team": "OTT",
+      "all": {
+        "xGF": 50.99,
+        "xGA": 51.38,
+        "xGPct": 0.5,
+        "shotsFor": 466,
+        "shotsAgainst": 443,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 55,
+        "highDangerShotsAgainst": 56
+      },
+      "5v5": {
+        "xGF": 33.9,
+        "xGA": 31.72,
+        "xGPct": 0.52,
+        "shotsFor": 346,
+        "shotsAgainst": 332,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 34,
+        "highDangerShotsAgainst": 32
+      },
+      "PP": {
+        "xGF": 10.1,
+        "xGA": 1.61,
+        "xGPct": 0.86,
+        "shotsFor": 79,
+        "shotsAgainst": 16,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 10,
+        "highDangerShotsAgainst": 1
+      },
+      "PK": {
+        "xGF": 1.58,
+        "xGA": 7.9,
+        "xGPct": 0.17,
+        "shotsFor": 9,
+        "shotsAgainst": 57,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 5,
+        "highDangerShotsAgainst": 7
+      }
+    },
+    "NJD": {
+      "team": "NJD",
+      "all": {
+        "xGF": 55.96,
+        "xGA": 51.65,
+        "xGPct": 0.52,
+        "shotsFor": 500,
+        "shotsAgainst": 472,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 57,
+        "highDangerShotsAgainst": 61
+      },
+      "5v5": {
+        "xGF": 35.78,
+        "xGA": 36.48,
+        "xGPct": 0.5,
+        "shotsFor": 385,
+        "shotsAgainst": 361,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 28,
+        "highDangerShotsAgainst": 43
+      },
+      "PP": {
+        "xGF": 10.33,
+        "xGA": 0.94,
+        "xGPct": 0.92,
+        "shotsFor": 74,
+        "shotsAgainst": 10,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 14,
+        "highDangerShotsAgainst": 1
+      },
+      "PK": {
+        "xGF": 1.19,
+        "xGA": 6.88,
+        "xGPct": 0.15,
+        "shotsFor": 13,
+        "shotsAgainst": 69,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 1,
+        "highDangerShotsAgainst": 8
+      }
+    },
+    "LAK": {
+      "team": "LAK",
+      "all": {
+        "xGF": 52.38,
+        "xGA": 56.68,
+        "xGPct": 0.48,
+        "shotsFor": 494,
+        "shotsAgainst": 465,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 56,
+        "highDangerShotsAgainst": 69
+      },
+      "5v5": {
+        "xGF": 33.92,
+        "xGA": 34.42,
+        "xGPct": 0.5,
+        "shotsFor": 378,
+        "shotsAgainst": 335,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 27,
+        "highDangerShotsAgainst": 37
+      },
+      "PP": {
+        "xGF": 6.17,
+        "xGA": 1.91,
+        "xGPct": 0.76,
+        "shotsFor": 58,
+        "shotsAgainst": 19,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 9,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 1.68,
+        "xGA": 12.4,
+        "xGPct": 0.12,
+        "shotsFor": 19,
+        "shotsAgainst": 71,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 3,
+        "highDangerShotsAgainst": 20
+      }
+    },
+    "DAL": {
+      "team": "DAL",
+      "all": {
+        "xGF": 58.32,
+        "xGA": 56.12,
+        "xGPct": 0.51,
+        "shotsFor": 445,
+        "shotsAgainst": 477,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 70,
+        "highDangerShotsAgainst": 59
+      },
+      "5v5": {
+        "xGF": 31.99,
+        "xGA": 33.64,
+        "xGPct": 0.49,
+        "shotsFor": 315,
+        "shotsAgainst": 356,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 31,
+        "highDangerShotsAgainst": 28
+      },
+      "PP": {
+        "xGF": 15.36,
+        "xGA": 1.76,
+        "xGPct": 0.9,
+        "shotsFor": 82,
+        "shotsAgainst": 16,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 25,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 0.71,
+        "xGA": 13.52,
+        "xGPct": 0.05,
+        "shotsFor": 10,
+        "shotsAgainst": 76,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 1,
+        "highDangerShotsAgainst": 20
+      }
+    },
+    "STL": {
+      "team": "STL",
+      "all": {
+        "xGF": 50.4,
+        "xGA": 53.35,
+        "xGPct": 0.49,
+        "shotsFor": 446,
+        "shotsAgainst": 463,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 64,
+        "highDangerShotsAgainst": 56
+      },
+      "5v5": {
+        "xGF": 38.88,
+        "xGA": 36.77,
+        "xGPct": 0.51,
+        "shotsFor": 353,
+        "shotsAgainst": 381,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 45,
+        "highDangerShotsAgainst": 36
+      },
+      "PP": {
+        "xGF": 7.12,
+        "xGA": 1.49,
+        "xGPct": 0.83,
+        "shotsFor": 66,
+        "shotsAgainst": 12,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 10,
+        "highDangerShotsAgainst": 1
+      },
+      "PK": {
+        "xGF": 1,
+        "xGA": 10.69,
+        "xGPct": 0.09,
+        "shotsFor": 13,
+        "shotsAgainst": 53,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 2,
+        "highDangerShotsAgainst": 12
+      }
+    },
+    "WSH": {
+      "team": "WSH",
+      "all": {
+        "xGF": 57.54,
+        "xGA": 52.31,
+        "xGPct": 0.52,
+        "shotsFor": 469,
+        "shotsAgainst": 410,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 59,
+        "highDangerShotsAgainst": 62
+      },
+      "5v5": {
+        "xGF": 40.9,
+        "xGA": 32.23,
+        "xGPct": 0.56,
+        "shotsFor": 361,
+        "shotsAgainst": 301,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 38,
+        "highDangerShotsAgainst": 34
+      },
+      "PP": {
+        "xGF": 8.38,
+        "xGA": 1.34,
+        "xGPct": 0.86,
+        "shotsFor": 75,
+        "shotsAgainst": 19,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 8,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 1.29,
+        "xGA": 14.78,
+        "xGPct": 0.08,
+        "shotsFor": 9,
+        "shotsAgainst": 72,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 3,
+        "highDangerShotsAgainst": 20
+      }
+    },
+    "CHI": {
+      "team": "CHI",
+      "all": {
+        "xGF": 52.05,
+        "xGA": 62.71,
+        "xGPct": 0.45,
+        "shotsFor": 423,
+        "shotsAgainst": 541,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 61,
+        "highDangerShotsAgainst": 75
+      },
+      "5v5": {
+        "xGF": 34.84,
+        "xGA": 42.84,
+        "xGPct": 0.45,
+        "shotsFor": 338,
+        "shotsAgainst": 422,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 39,
+        "highDangerShotsAgainst": 47
+      },
+      "PP": {
+        "xGF": 10.15,
+        "xGA": 1.25,
+        "xGPct": 0.89,
+        "shotsFor": 51,
+        "shotsAgainst": 13,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 15,
+        "highDangerShotsAgainst": 2
+      },
+      "PK": {
+        "xGF": 0.82,
+        "xGA": 12.58,
+        "xGPct": 0.06,
+        "shotsFor": 7,
+        "shotsAgainst": 81,
+        "fenwickFor": 0,
+        "fenwickAgainst": 0,
+        "highDangerShotsFor": 0,
+        "highDangerShotsAgainst": 19
+      }
+    }
+  }
+}

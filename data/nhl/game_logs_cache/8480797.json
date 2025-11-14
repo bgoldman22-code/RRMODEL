@@ -1,0 +1,523 @@
+{
+  "playerId": 8480797,
+  "playerName": "Joel Farabee",
+  "timestamp": 1763065393432,
+  "gameLog": {
+    "L3": {
+      "shots": "1.00",
+      "toi": "16.2",
+      "ppToi": "0.0",
+      "goals": "0.00",
+      "assists": "0.00",
+      "points": "0.00",
+      "games": 3
+    },
+    "L5": {
+      "shots": "0.80",
+      "toi": "16.9",
+      "ppToi": "0.0",
+      "goals": "0.00",
+      "assists": "0.20",
+      "points": "0.20",
+      "games": 5
+    },
+    "L10": {
+      "shots": "1.70",
+      "toi": "17.4",
+      "ppToi": "0.0",
+      "goals": "0.20",
+      "assists": "0.30",
+      "points": "0.50",
+      "games": 10
+    },
+    "rawGames": [
+      {
+        "gameId": 2025020260,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-11-11",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Blues"
+        },
+        "points": 0,
+        "plusMinus": -2,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 20,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "15:32",
+        "opponentAbbrev": "STL",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020249,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-11-09",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Wild"
+        },
+        "points": 0,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 0,
+        "shifts": 20,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "16:30",
+        "opponentAbbrev": "MIN",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020229,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-11-07",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Blackhawks"
+        },
+        "points": 0,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 1,
+        "shifts": 20,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "16:33",
+        "opponentAbbrev": "CHI",
+        "pim": 5
+      },
+      {
+        "gameId": 2025020215,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-11-05",
+        "goals": 0,
+        "assists": 1,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Blue Jackets"
+        },
+        "points": 1,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 0,
+        "shifts": 23,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "17:15",
+        "opponentAbbrev": "CBJ",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020196,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-11-02",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Flyers"
+        },
+        "points": 0,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 1,
+        "shifts": 23,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "18:42",
+        "opponentAbbrev": "PHI",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020183,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-11-01",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Predators"
+        },
+        "points": 1,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 21,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "18:26",
+        "opponentAbbrev": "NSH",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020168,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-30",
+        "goals": 0,
+        "assists": 1,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Senators",
+          "fr": "Sénateurs"
+        },
+        "points": 1,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 1,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 27,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "19:33",
+        "opponentAbbrev": "OTT",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020151,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-28",
+        "goals": 1,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Maple Leafs"
+        },
+        "points": 1,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 22,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "16:04",
+        "opponentAbbrev": "TOR",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020146,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-26",
+        "goals": 0,
+        "assists": 1,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Rangers"
+        },
+        "points": 1,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 21,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "15:24",
+        "opponentAbbrev": "NYR",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020126,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-24",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Jets"
+        },
+        "points": 0,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 5,
+        "shifts": 20,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "19:37",
+        "opponentAbbrev": "WPG",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020110,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-22",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Canadiens"
+        },
+        "points": 0,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 1,
+        "shifts": 22,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "15:32",
+        "opponentAbbrev": "MTL",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020096,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-20",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Jets"
+        },
+        "points": 0,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 3,
+        "shifts": 21,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "15:57",
+        "opponentAbbrev": "WPG",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020087,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-18",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Golden Knights"
+        },
+        "points": 0,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 23,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "15:53",
+        "opponentAbbrev": "VGK",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020060,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-15",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Mammoth"
+        },
+        "points": 0,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 4,
+        "shifts": 22,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "19:49",
+        "opponentAbbrev": "UTA",
+        "pim": 2
+      },
+      {
+        "gameId": 2025020053,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-14",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Golden Knights"
+        },
+        "points": 0,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 1,
+        "shifts": 24,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "17:05",
+        "opponentAbbrev": "VGK",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020023,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "H",
+        "gameDate": "2025-10-11",
+        "goals": 0,
+        "assists": 1,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Blues"
+        },
+        "points": 1,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 1,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 2,
+        "shifts": 24,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "21:27",
+        "opponentAbbrev": "STL",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020019,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-09",
+        "goals": 0,
+        "assists": 1,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Canucks"
+        },
+        "points": 1,
+        "plusMinus": 1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 0,
+        "shifts": 22,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "17:53",
+        "opponentAbbrev": "VAN",
+        "pim": 0
+      },
+      {
+        "gameId": 2025020006,
+        "teamAbbrev": "CGY",
+        "homeRoadFlag": "R",
+        "gameDate": "2025-10-08",
+        "goals": 0,
+        "assists": 0,
+        "commonName": {
+          "default": "Flames"
+        },
+        "opponentCommonName": {
+          "default": "Oilers"
+        },
+        "points": 0,
+        "plusMinus": -1,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "gameWinningGoals": 0,
+        "otGoals": 0,
+        "shots": 1,
+        "shifts": 23,
+        "shorthandedGoals": 0,
+        "shorthandedPoints": 0,
+        "toi": "20:30",
+        "opponentAbbrev": "EDM",
+        "pim": 0
+      }
+    ]
+  }
+}
