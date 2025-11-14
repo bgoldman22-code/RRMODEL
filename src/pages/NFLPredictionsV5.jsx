@@ -11,6 +11,27 @@
 
 import { useState, useEffect } from 'react';
 
+// Auto-detect current NFL week
+function getCurrentNFLWeek() {
+  const now = new Date();
+  const year = now.getFullYear();
+  
+  // NFL season typically starts first week of September
+  // Week 1 usually starts around Sept 5-10
+  const seasonStart = new Date(year, 8, 5); // Sept 5
+  
+  if (now < seasonStart) {
+    // Before season starts, default to Week 1
+    return 1;
+  }
+  
+  const daysSinceStart = Math.floor((now - seasonStart) / (1000 * 60 * 60 * 24));
+  const week = Math.floor(daysSinceStart / 7) + 1;
+  
+  // Cap at Week 18 (regular season)
+  return Math.min(Math.max(week, 1), 18);
+}
+
 export default function NFLPredictionsV5() {
   const [predictions, setPredictions] = useState([]);
   const [meta, setMeta] = useState(null);
@@ -20,7 +41,7 @@ export default function NFLPredictionsV5() {
   const [error, setError] = useState(null);
   const [lastRefresh, setLastRefresh] = useState(null);
   const [dataSource, setDataSource] = useState('cached');
-  const [selectedWeek, setSelectedWeek] = useState(10); // Current week
+  const [selectedWeek, setSelectedWeek] = useState(getCurrentNFLWeek()); // Auto-detect current week
 
   // Load cached predictions on mount and when week changes
   useEffect(() => {
@@ -38,20 +59,50 @@ export default function NFLPredictionsV5() {
       const season = 2025;
       const targetWeek = selectedWeek;
       
+      console.log(`Loading V5 predictions for ${season} Week ${targetWeek}...`);
+      
       // Fetch from LIVE V5 endpoint (pulls fresh NFLverse data, cached 15min)
-      const res = await fetch(`/.netlify/functions/nfl-v5-live?season=${season}&week=${targetWeek}`);
+      const url = `/.netlify/functions/nfl-v5-live?season=${season}&week=${targetWeek}`;
+      console.log('Fetching:', url);
+      
+      const res = await fetch(url);
+      
+      console.log('Response status:', res.status);
+      console.log('Response headers:', [...res.headers.entries()]);
       
       if (!res.ok) {
-        if (res.status === 404) {
-          throw new Error(`No games found for Week ${targetWeek}. Check if this week has started.`);
+        // Try to get error details
+        const contentType = res.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || `API error: ${res.status}`);
+        } else {
+          const text = await res.text();
+          console.error('Non-JSON response:', text.substring(0, 200));
+          throw new Error(`API returned HTML instead of JSON. Function may not be deployed yet. Status: ${res.status}`);
         }
-        throw new Error(`Failed to load predictions: ${res.status}`);
+      }
+      
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        console.error('Response is not JSON:', text.substring(0, 200));
+        throw new Error('API returned HTML instead of JSON. The nfl-v5-live function may not be deployed yet.');
       }
       
       const data = await res.json();
+      console.log('Received data:', { 
+        games: data.games?.length, 
+        cached: data.cached, 
+        generation_time_ms: data.generation_time_ms 
+      });
       
       // Data is already in the right format from nfl-v5-live
       const games = data.games || [];
+      
+      if (games.length === 0) {
+        throw new Error(`No games found for ${season} Week ${targetWeek}. This week may not have any scheduled games yet.`);
+      }
       
       setPredictions(games);
       setMeta({
