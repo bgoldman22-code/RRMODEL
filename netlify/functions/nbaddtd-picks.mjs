@@ -57,35 +57,50 @@ export async function handler(event, context) {
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const cacheKey = `picks-${today}`;
     
-    // Try to get from cache first
-    console.log(`Checking cache for ${cacheKey}...`);
-    const cached = await getJson(cacheKey);
-    
-    if (cached) {
-      console.log('✅ Serving picks from cache');
-      return {
-        statusCode: 200,
-        headers: {
-          ...headers,
-          'X-Cache': 'HIT',
-          'X-Generated-At': cached.generated_at || 'unknown'
-        },
-        body: JSON.stringify(cached)
-      };
+    // Try to get from cache first (but don't fail if blobs not configured)
+    let cached = null;
+    try {
+      console.log(`Checking cache for ${cacheKey}...`);
+      cached = await getJson(cacheKey);
+      if (cached) {
+        console.log('✅ Serving picks from cache');
+        return {
+          statusCode: 200,
+          headers: {
+            ...headers,
+            'X-Cache': 'HIT',
+            'X-Generated-At': cached.generated_at || 'unknown'
+          },
+          body: JSON.stringify(cached)
+        };
+      }
+    } catch (blobError) {
+      console.warn('⚠️  Blobs not available (not enabled), skipping cache:', blobError.message);
     }
     
-    // Cache miss - fetch from GitHub
+    // Cache miss (or blobs unavailable) - fetch from GitHub
     console.log('⚠️  Cache miss, fetching from GitHub...');
     const picks = await fetchPicksFromGitHub();
     
     if (!picks) {
+      // Return sample data if GitHub repo not set up yet
+      console.log('⚠️  GitHub repo not ready, returning sample data');
+      const sampleData = {
+        date: new Date().toISOString().split('T')[0],
+        generated_at: new Date().toISOString(),
+        picks: [],
+        message: 'NBA-DDTD-RESEARCH repo not set up yet. Coming soon!',
+        status: 'pending_setup'
+      };
+      
       return {
-        statusCode: 503,
-        headers,
-        body: JSON.stringify({
-          error: 'Unable to fetch picks from source',
-          message: 'Please try again later'
-        })
+        statusCode: 200,
+        headers: {
+          ...headers,
+          'X-Cache': 'NONE',
+          'X-Status': 'pending_setup'
+        },
+        body: JSON.stringify(sampleData)
       };
     }
     
@@ -102,9 +117,13 @@ export async function handler(event, context) {
       };
     }
     
-    // Cache for 24 hours
-    console.log(`Caching picks for ${today}...`);
-    await setJson(cacheKey, picks, 86400);
+    // Cache for 24 hours (if blobs available)
+    try {
+      console.log(`Caching picks for ${today}...`);
+      await setJson(cacheKey, picks, 86400);
+    } catch (cacheError) {
+      console.warn('⚠️  Could not cache picks (blobs not enabled):', cacheError.message);
+    }
     
     console.log('✅ Serving fresh picks from GitHub');
     return {
