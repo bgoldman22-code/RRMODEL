@@ -25,28 +25,106 @@
 
 import { getStore } from "@netlify/blobs";
 
+// Team name to abbreviation mapping (from schedule-source.mjs)
+const TEAM_NAME_TO_ABBREV = {
+  'Arizona Cardinals': 'ARI',
+  'Atlanta Falcons': 'ATL',
+  'Baltimore Ravens': 'BAL',
+  'Buffalo Bills': 'BUF',
+  'Carolina Panthers': 'CAR',
+  'Chicago Bears': 'CHI',
+  'Cincinnati Bengals': 'CIN',
+  'Cleveland Browns': 'CLE',
+  'Dallas Cowboys': 'DAL',
+  'Denver Broncos': 'DEN',
+  'Detroit Lions': 'DET',
+  'Green Bay Packers': 'GB',
+  'Houston Texans': 'HOU',
+  'Indianapolis Colts': 'IND',
+  'Jacksonville Jaguars': 'JAX',
+  'Kansas City Chiefs': 'KC',
+  'Las Vegas Raiders': 'LV',
+  'Los Angeles Chargers': 'LAC',
+  'Los Angeles Rams': 'LA',
+  'Miami Dolphins': 'MIA',
+  'Minnesota Vikings': 'MIN',
+  'New England Patriots': 'NE',
+  'New Orleans Saints': 'NO',
+  'New York Giants': 'NYG',
+  'New York Jets': 'NYJ',
+  'Philadelphia Eagles': 'PHI',
+  'Pittsburgh Steelers': 'PIT',
+  'San Francisco 49ers': 'SF',
+  'Seattle Seahawks': 'SEA',
+  'Tampa Bay Buccaneers': 'TB',
+  'Tennessee Titans': 'TEN',
+  'Washington Commanders': 'WAS'
+};
+
+function teamNameToAbbrev(fullName) {
+  return TEAM_NAME_TO_ABBREV[fullName] || fullName;
+}
+
 // V5 prediction logic (port from v5-ensemble.mjs)
 async function generateV5Predictions({ season, week }) {
   const startTime = Date.now();
   
   try {
-    // 1. Fetch latest NFLverse data
-    const aggregatesUrl = `https://raw.githubusercontent.com/nflverse/nflverse-data/master/data/game_aggregates_${season}.json`;
-    const aggregatesRes = await fetch(aggregatesUrl);
-    if (!aggregatesRes.ok) {
-      throw new Error(`Failed to fetch aggregates: ${aggregatesRes.status}`);
-    }
-    const allAggregates = await aggregatesRes.json();
+    // 1. Load aggregates from local nfl-model-v3 data
+    // This is the same data source v5-ensemble.mjs uses
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const { fileURLToPath } = await import('url');
     
-    // 2. Load schedule for target week
-    // TODO: Pull from your schedule.full.json or fetch dynamically
-    const scheduleUrl = `https://raw.githubusercontent.com/nflverse/nflverse-data/master/data/schedule_${season}.json`;
-    const scheduleRes = await fetch(scheduleUrl);
-    if (!scheduleRes.ok) {
-      throw new Error(`Failed to fetch schedule: ${scheduleRes.status}`);
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    
+    // Path to aggregates (same as v5-ensemble.mjs)
+    const aggregatePath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'nfl-model-v3',
+      'data',
+      'nflverse',
+      `game_aggregates_${season}.json`
+    );
+    
+    const aggregatesData = await fs.readFile(aggregatePath, 'utf-8');
+    const allAggregates = JSON.parse(aggregatesData);
+    
+    // 2. Load schedule from netlify/data/nfl/SEASON/schedule.full.json
+    const schedulePath = path.join(
+      __dirname,
+      '..',
+      'data',
+      'nfl',
+      season.toString(),
+      'schedule.full.json'
+    );
+    
+    const scheduleData = await fs.readFile(schedulePath, 'utf-8');
+    const scheduleJson = JSON.parse(scheduleData);
+    
+    // Extract games for target week
+    const weekKey = week.toString();
+    const weekSchedule = scheduleJson.weeks?.[weekKey];
+    
+    if (!weekSchedule || !weekSchedule.matchups) {
+      throw new Error(`No games found in schedule for ${season} Week ${week}`);
     }
-    const fullSchedule = await scheduleRes.json();
-    const weekGames = fullSchedule.filter(g => g.week === week && g.season === season);
+    
+    // Convert schedule format to game list
+    const weekGames = weekSchedule.matchups.map(m => ({
+      game_id: m.id || `${season}_${String(week).padStart(2, '0')}_${m.awayTeam}_${m.homeTeam}`,
+      season,
+      week,
+      home_team: teamNameToAbbrev(m.homeTeam),
+      away_team: teamNameToAbbrev(m.awayTeam),
+      gameday: m.date || `${season}-W${week}`,
+      gametime: m.kickoff,
+      kickoff: m.kickoff
+    }));
     
     if (weekGames.length === 0) {
       throw new Error(`No games found for ${season} Week ${week}`);
