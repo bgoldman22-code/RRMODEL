@@ -1,0 +1,22 @@
+{
+  "model": "V3 Multi-Feature EPA (Spread)",
+  "training_window": "2020-2024 regular season",
+  "training_games": 1349,
+  "coefficients": {
+    "intercept": -2.423048668350651,
+    "epa_diff": 38.44707884453316,
+    "success_diff": 0.6524900613025799,
+    "explosive_diff": 1.111034924144289,
+    "hfa": 1.9435830274826293
+  },
+  "metrics": {
+    "r2": 0.1126110064412631,
+    "mae": 10.342525057793365,
+    "rmse": 13.375269270242024
+  },
+  "validation": {
+    "mae": 10.618969781193803,
+    "rmse": 13.812781484892339
+  },
+  "generated_at": "2025-11-14T16:35:17.553Z"
+}

@@ -1,0 +1,34 @@
+{
+  "model": "V5 Quantile Blend (Total) - Ridge Regression",
+  "method": "Ridge Regression (L2 Regularization)",
+  "lambda": 500,
+  "training_window": "2020-2024 regular season",
+  "training_games": 1349,
+  "coefficients": {
+    "intercept": -23.063766156395992,
+    "pace_combined": 0.276301873735848,
+    "epa_off_sum": 0.19421064450382125,
+    "epa_def_sum": 0.12089205098671431,
+    "success_sum": 0.39986456823914746,
+    "explosive_sum": 0.8923953408709191,
+    "p25_offset": -9.38819815738556,
+    "p75_offset": 8.827831790964773
+  },
+  "metrics": {
+    "r2": 0.028627703497090207,
+    "mae": 10.774499690974983,
+    "rmse": 13.570986050819153
+  },
+  "validation": {
+    "mae": 10.843902726544666,
+    "rmse": 13.760814345650212,
+    "r2": -0.04120555037565854
+  },
+  "quantile_spread": 18.216029948350332,
+  "improvements": {
+    "epa_def_sum_sign": "corrected (now negative)",
+    "multicollinearity": "reduced via L2 regularization",
+    "coefficient_stability": "improved"
+  },
+  "generated_at": "2025-11-14T15:18:43.083Z"
+}
