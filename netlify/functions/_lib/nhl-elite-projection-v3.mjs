@@ -673,25 +673,42 @@ function zinbPMF(k, pi, mu, r) {
  * Gamma function approximation
  */
 function gamma(z) {
-  // Stirling approximation for large z
-  if (z > 10) {
-    return Math.sqrt(2 * Math.PI / z) * Math.pow(z / Math.E, z);
+  // Guard against invalid inputs
+  if (!isFinite(z) || z <= 0) return 1;
+  
+  // Exact values for small positive integers
+  if (Number.isInteger(z) && z > 0 && z <= 10) {
+    const factorials = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880];
+    return factorials[z];
   }
   
-  // Exact values for small integers
-  if (z === 1) return 1;
-  if (z === 2) return 1;
-  if (z === 3) return 2;
-  if (z === 4) return 6;
-  if (z === 5) return 24;
-  if (z === 6) return 120;
+  // Lanczos approximation (non-recursive, accurate)
+  const g = 7;
+  const coefficients = [
+    0.99999999999980993,
+    676.5203681218851,
+    -1259.1392167224028,
+    771.32342877765313,
+    -176.61502916214059,
+    12.507343278686905,
+    -0.13857109526572012,
+    9.9843695780195716e-6,
+    1.5056327351493116e-7
+  ];
   
-  // Special value
-  if (Math.abs(z - 0.5) < 0.01) return Math.sqrt(Math.PI);
+  if (z < 0.5) {
+    // Use reflection formula for z < 0.5
+    return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
+  }
   
-  // Recursive formula for other values
-  if (z < 1) return gamma(z + 1) / z;
-  return (z - 1) * gamma(z - 1);
+  z -= 1;
+  let x = coefficients[0];
+  for (let i = 1; i < g + 2; i++) {
+    x += coefficients[i] / (z + i);
+  }
+  
+  const t = z + g + 0.5;
+  return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
 }
 
 export default {
