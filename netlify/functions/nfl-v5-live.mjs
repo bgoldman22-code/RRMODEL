@@ -65,72 +65,88 @@ function teamNameToAbbrev(fullName) {
   return TEAM_NAME_TO_ABBREV[fullName] || fullName;
 }
 
+// Parse CSV string to array of objects
+function parseCSV(csvText) {
+  const lines = csvText.trim().split('\n');
+  if (lines.length < 2) return [];
+  
+  const headers = lines[0].split(',');
+  return lines.slice(1).map(line => {
+    const values = line.split(',');
+    const obj = {};
+    headers.forEach((header, i) => {
+      obj[header] = values[i] || '';
+    });
+    return obj;
+  });
+}
+
 // V5 prediction logic (port from v5-ensemble.mjs)
 async function generateV5Predictions({ season, week }) {
   const startTime = Date.now();
   
   try {
-    // 1. Load aggregates from local nfl-model-v3 data
-    // This is the same data source v5-ensemble.mjs uses
-    const fs = await import('fs/promises');
-    const path = await import('path');
-    const { fileURLToPath } = await import('url');
+    // 1. Fetch NFLverse games CSV (schedule + completed game stats)
+    const NFLVERSE_GAMES_URL = 'https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv';
+    console.log('Fetching NFLverse games from:', NFLVERSE_GAMES_URL);
     
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    
-    // Path to aggregates (same as v5-ensemble.mjs)
-    const aggregatePath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'nfl-model-v3',
-      'data',
-      'nflverse',
-      `game_aggregates_${season}.json`
-    );
-    
-    const aggregatesData = await fs.readFile(aggregatePath, 'utf-8');
-    const allAggregates = JSON.parse(aggregatesData);
-    
-    // 2. Load schedule from netlify/data/nfl/SEASON/schedule.full.json
-    const schedulePath = path.join(
-      __dirname,
-      '..',
-      'data',
-      'nfl',
-      season.toString(),
-      'schedule.full.json'
-    );
-    
-    const scheduleData = await fs.readFile(schedulePath, 'utf-8');
-    const scheduleJson = JSON.parse(scheduleData);
-    
-    // Extract games for target week
-    const weekKey = week.toString();
-    const weekSchedule = scheduleJson.weeks?.[weekKey];
-    
-    if (!weekSchedule || !weekSchedule.matchups) {
-      throw new Error(`No games found in schedule for ${season} Week ${week}`);
+    const response = await fetch(NFLVERSE_GAMES_URL);
+    if (!response.ok) {
+      throw new Error(`NFLverse fetch failed: ${response.status} ${response.statusText}`);
     }
     
-    // Convert schedule format to game list
-    const weekGames = weekSchedule.matchups.map(m => ({
-      game_id: m.id || `${season}_${String(week).padStart(2, '0')}_${m.awayTeam}_${m.homeTeam}`,
-      season,
-      week,
-      home_team: teamNameToAbbrev(m.homeTeam),
-      away_team: teamNameToAbbrev(m.awayTeam),
-      gameday: m.date || `${season}-W${week}`,
-      gametime: m.kickoff,
-      kickoff: m.kickoff
-    }));
+    const csvText = await response.text();
+    const allGames = parseCSV(csvText);
+    console.log(`Loaded ${allGames.length} total games from NFLverse`);
+    
+    // 2. Extract this season's games for aggregates (completed games only)
+    const allAggregates = allGames
+      .filter(g => Number(g.season) === season && g.away_score && g.home_score)
+      .map(g => ({
+        game_id: g.game_id,
+        season: Number(g.season),
+        week: Number(g.week),
+        home_team: g.home_team,
+        away_team: g.away_team,
+        home_score: Number(g.home_score),
+        away_score: Number(g.away_score),
+        // Estimate EPA and metrics from score/game data
+        // (Real nflverse has play-by-play, but for serverless we approximate)
+        plays: 155, // League average
+        home_epa_per_play: (Number(g.home_score) - 23) / 70, // Rough approximation
+        away_epa_per_play: (Number(g.away_score) - 23) / 70,
+        home_success_rate: Math.min(0.6, Math.max(0.3, Number(g.home_score) / 50)),
+        away_success_rate: Math.min(0.6, Math.max(0.3, Number(g.away_score) / 50)),
+        home_explosive_rate: 0.11,
+        away_explosive_rate: 0.11
+      }));
+    
+    console.log(`Aggregated ${allAggregates.length} completed games for ${season}`);
+    
+    // 3. Extract target week's schedule (future games)
+    const weekGames = allGames
+      .filter(g => Number(g.season) === season && Number(g.week) === week)
+      .map(g => ({
+        game_id: g.game_id,
+        season: Number(g.season),
+        week: Number(g.week),
+        home_team: g.home_team,
+        away_team: g.away_team,
+        gameday: g.gameday,
+        gametime: g.gametime,
+        kickoff: g.gametime,
+        spread_line: g.spread_line ? Number(g.spread_line) : null,
+        total_line: g.total_line ? Number(g.total_line) : null
+      }));
     
     if (weekGames.length === 0) {
       throw new Error(`No games found for ${season} Week ${week}`);
     }
     
-    // 3. Compute rolling metrics for each team (16-game window)
+    console.log(`Found ${weekGames.length} games for Week ${week}`);
+    console.log(`Found ${weekGames.length} games for Week ${week}`);
+    
+    // 4. Compute rolling metrics for each team (16-game window)
     const teamMetrics = {};
     for (const game of weekGames) {
       if (!teamMetrics[game.home_team]) {
@@ -141,7 +157,7 @@ async function generateV5Predictions({ season, week }) {
       }
     }
     
-    // 4. Generate predictions for each game
+    // 5. Generate predictions for each game
     const predictions = [];
     for (const game of weekGames) {
       const homeMetrics = teamMetrics[game.home_team];
@@ -171,7 +187,8 @@ async function generateV5Predictions({ season, week }) {
           home_favorite: spreadPred.raw_prediction < 0,
           favorite_team: spreadPred.raw_prediction < 0 ? game.home_team : game.away_team,
           confidence: spreadPred.confidence,
-          features: spreadFeatures
+          features: spreadFeatures,
+          market_line: game.spread_line
         },
         
         total_model: {
@@ -180,7 +197,8 @@ async function generateV5Predictions({ season, week }) {
           p50: totalPred.p50,
           p75: totalPred.p75,
           spread: totalPred.spread,
-          features: totalFeatures
+          features: totalFeatures,
+          market_line: game.total_line
         },
         
         actual: null // Future predictions
@@ -192,13 +210,14 @@ async function generateV5Predictions({ season, week }) {
     return {
       season,
       week,
-      model_version: 'V5-Live-Dynamic-2025-11-14',
+      model_version: 'V5-Live-NFLverse-2025-11-14',
       generated_at: new Date().toISOString(),
       generation_time_ms: executionTime,
       games_count: predictions.length,
       data_sources: {
-        aggregates: `nflverse/${season}`,
-        schedule: `nflverse/${season}`,
+        nflverse_url: NFLVERSE_GAMES_URL,
+        aggregates: `nflverse/${season} (${allAggregates.length} games)`,
+        schedule: `nflverse/${season} Week ${week}`,
         rolling_window: 16,
         cutoff_week: week - 1
       },
@@ -376,45 +395,59 @@ export default async (req, context) => {
     const week = weekParam ? parseInt(weekParam) : auto.week;
     
     const cacheKey = `live/${season}-week${week}`;
-    const store = getStore("nfl-v5");
     
-    // Check cache (unless force refresh)
-    if (!forceRefresh) {
-      const cached = await store.get(cacheKey, { type: "json" });
-      if (cached && cached.generated_at) {
-        const cacheAge = Date.now() - new Date(cached.generated_at).getTime();
-        if (cacheAge < 15 * 60 * 1000) { // 15 minutes
-          return new Response(
-            JSON.stringify({
-              ...cached,
-              cached: true,
-              cache_age_seconds: Math.floor(cacheAge / 1000)
-            }),
-            {
-              status: 200,
-              headers: {
-                "Content-Type": "application/json",
-                "Cache-Control": "public, max-age=900", // 15 min
-                "X-Cache-Status": "HIT"
+    // Try to use Netlify Blobs if available (production), skip if not (local testing)
+    let store = null;
+    let cached = null;
+    try {
+      store = getStore("nfl-v5");
+      
+      // Check cache (unless force refresh)
+      if (!forceRefresh) {
+        cached = await store.get(cacheKey, { type: "json" });
+        if (cached && cached.generated_at) {
+          const cacheAge = Date.now() - new Date(cached.generated_at).getTime();
+          if (cacheAge < 15 * 60 * 1000) { // 15 minutes
+            return new Response(
+              JSON.stringify({
+                ...cached,
+                cached: true,
+                cache_age_seconds: Math.floor(cacheAge / 1000)
+              }),
+              {
+                status: 200,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Cache-Control": "public, max-age=900", // 15 min
+                  "X-Cache-Status": "HIT"
+                }
               }
-            }
-          );
+            );
+          }
         }
       }
+    } catch (blobsError) {
+      console.log('Netlify Blobs not available (local testing):', blobsError.message);
     }
     
     // Generate fresh predictions
     console.log(`Generating V5 predictions for ${season} Week ${week}...`);
     const predictions = await generateV5Predictions({ season, week });
     
-    // Cache results
-    await store.set(cacheKey, JSON.stringify(predictions), {
-      metadata: {
-        season,
-        week,
-        generated_at: predictions.generated_at
+    // Cache results (if Blobs available)
+    if (store) {
+      try {
+        await store.set(cacheKey, JSON.stringify(predictions), {
+          metadata: {
+            season,
+            week,
+            generated_at: predictions.generated_at
+          }
+        });
+      } catch (cacheError) {
+        console.log('Failed to cache (local testing):', cacheError.message);
       }
-    });
+    }
     
     return new Response(
       JSON.stringify({
