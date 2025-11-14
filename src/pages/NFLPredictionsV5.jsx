@@ -28,7 +28,7 @@ export default function NFLPredictionsV5() {
   }, [selectedWeek]);
 
     /**
-   * Load predictions from Blobs (cached)
+   * Load predictions from Live V5 endpoint (auto-cached for 15min)
    */
   async function loadCached() {
     try {
@@ -38,53 +38,55 @@ export default function NFLPredictionsV5() {
       const season = 2025;
       const targetWeek = selectedWeek;
       
-      // Fetch from new V5 endpoint
-      const res = await fetch(`/.netlify/functions/nfl-v5-get?season=${season}&week=${targetWeek}`);
+      // Fetch from LIVE V5 endpoint (pulls fresh NFLverse data, cached 15min)
+      const res = await fetch(`/.netlify/functions/nfl-v5-live?season=${season}&week=${targetWeek}`);
       
       if (!res.ok) {
         if (res.status === 404) {
-          throw new Error(`No predictions found for Week ${targetWeek}. Try refreshing to generate them.`);
+          throw new Error(`No games found for Week ${targetWeek}. Check if this week has started.`);
         }
         throw new Error(`Failed to load predictions: ${res.status}`);
       }
       
       const data = await res.json();
       
-      // Extract bundle data
-      const bundle = data.bundle || {};
-      const games = bundle.games || [];
+      // Data is already in the right format from nfl-v5-live
+      const games = data.games || [];
       
       setPredictions(games);
       setMeta({
-        model_version: bundle.model_version || "v5",
+        model_version: data.model_version || "V5-Live",
         season: data.season,
         week: data.week,
-        updated_at: bundle.generated_at,
-        generated_at: bundle.generated_at,
-        games_count: bundle.games_count || games.length,
+        updated_at: data.generated_at,
+        generated_at: data.generated_at,
+        games_count: data.games_count || games.length,
+        generation_time_ms: data.generation_time_ms,
+        cached: data.cached || false,
+        cache_age_seconds: data.cache_age_seconds || 0,
         models: {
           spread: {
-            name: "Poisson EPA V3",
-            description: "Advanced EPA-based spread predictions",
-            backtested_roi: "+37%",
-            min_edge: "5%"
+            name: "V5 Multi-Feature EPA",
+            description: "OLS regression on EPA, success, explosive differentials",
+            backtested_mae: "10.62 pts",
+            training_window: "2020-2024 (1349 games)"
           },
           total: {
-            name: "Quantile Blend V5",
-            description: "25th/75th percentile totals",
-            backtested_roi: "+18%",
-            min_edge: "4%"
+            name: "V5 Ridge Regression (λ=500)",
+            description: "Ridge with epa_def_sum zero-weighted",
+            backtested_mae: "10.84 pts",
+            training_window: "2020-2024 (1349 games)"
           }
         },
         data_sources: {
-          odds: "TheOddsAPI (real-time)",
-          injuries: "Canonical Availability V5",
-          weather: "Dome detection + historical",
-          metrics: "Advanced EPA system"
+          aggregates: `NFLverse ${data.season}`,
+          schedule: `NFLverse ${data.season}`,
+          rolling_window: "16 games",
+          cutoff_week: `Week ${data.week - 1}`
         }
       });
-      setDataSource(data.source || 'blobs:nfl-v5');
-      setLastRefresh(bundle.generated_at);
+      setDataSource(data.cached ? `cached (${Math.floor(data.cache_age_seconds / 60)}min old)` : 'live (fresh)');
+      setLastRefresh(data.generated_at);
       
     } catch (err) {
       console.error('Error loading cached predictions:', err);
@@ -96,7 +98,7 @@ export default function NFLPredictionsV5() {
   }
 
   /**
-   * Refresh predictions by calling V5 generate endpoint
+   * Force refresh predictions (bypass cache)
    */
   async function refreshNow(weekOverride = null) {
     setRefreshing(true);
@@ -106,65 +108,56 @@ export default function NFLPredictionsV5() {
       const targetWeek = weekOverride || selectedWeek;
       const season = 2025;
       
-      // Call new V5 generate endpoint
-      const generateRes = await fetch(`/.netlify/functions/nfl-v5-generate?week=${targetWeek}&season=${season}`);
+      // Call LIVE endpoint with force=true to bypass cache
+      const res = await fetch(`/.netlify/functions/nfl-v5-live?season=${season}&week=${targetWeek}&force=true`);
       
-      if (!generateRes.ok) {
-        if (generateRes.status === 400) {
+      if (!res.ok) {
+        if (res.status === 400) {
           throw new Error('Invalid week or season parameter');
         }
-        throw new Error(`Prediction generation failed: ${generateRes.status}`);
+        throw new Error(`Prediction generation failed: ${res.status}`);
       }
       
-      const generateData = await generateRes.json();
-      
-      if (generateData.status !== 'success') {
-        throw new Error('Generation failed on backend');
-      }
-      
-      // Immediately fetch the newly generated bundle
-      const getRes = await fetch(`/.netlify/functions/nfl-v5-get?season=${season}&week=${targetWeek}`);
-      
-      if (!getRes.ok) {
-        throw new Error('Failed to fetch generated predictions');
-      }
-      
-      const data = await getRes.json();
-      const bundle = data.bundle || {};
-      const games = bundle.games || [];
+      const data = await res.json();
+      const games = data.games || [];
       
       // Update UI with fresh predictions
       setPredictions(games);
       setMeta({
-        model_version: bundle.model_version || "v5",
+        model_version: data.model_version || "V5-Live",
         season: data.season,
         week: data.week,
-        updated_at: bundle.generated_at,
-        generated_at: bundle.generated_at,
-        games_count: bundle.games_count || games.length,
+        updated_at: data.generated_at,
+        generated_at: data.generated_at,
+        games_count: data.games_count || games.length,
+        generation_time_ms: data.generation_time_ms,
+        cached: false,
+        cache_age_seconds: 0,
         models: {
           spread: {
-            name: "Poisson EPA V3",
-            description: "Advanced EPA-based spread predictions",
-            backtested_roi: "+37%",
-            min_edge: "5%"
+            name: "V5 Multi-Feature EPA",
+            description: "OLS regression on EPA, success, explosive differentials",
+            backtested_mae: "10.62 pts",
+            training_window: "2020-2024 (1349 games)"
           },
           total: {
-            name: "Quantile Blend V5",
-            description: "25th/75th percentile totals",
-            backtested_roi: "+18%",
-            min_edge: "4%"
+            name: "V5 Ridge Regression (λ=500)",
+            description: "Ridge with epa_def_sum zero-weighted",
+            backtested_mae: "10.84 pts",
+            training_window: "2020-2024 (1349 games)"
           }
         },
         data_sources: {
-          odds: "TheOddsAPI (real-time)",
-          injuries: "Canonical Availability V5",
-          weather: "Dome detection + historical",
-          metrics: "Advanced EPA system"
+          aggregates: `NFLverse ${data.season}`,
+          schedule: `NFLverse ${data.season}`,
+          rolling_window: "16 games",
+          cutoff_week: `Week ${data.week - 1}`
         }
       });
-      setDataSource('fresh');
-      setLastRefresh(bundle.generated_at);
+      setDataSource('live (fresh)');
+      setLastRefresh(data.generated_at);
+      
+      alert(`✅ Fresh predictions generated in ${data.generation_time_ms}ms!`);
       
     } catch (err) {
       console.error('Error refreshing predictions:', err);
