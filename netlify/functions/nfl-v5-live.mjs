@@ -480,7 +480,3 @@ export default async (req, context) => {
     );
   }
 };
-
-export const config = {
-  path: "/nfl-v5-live"
-};
