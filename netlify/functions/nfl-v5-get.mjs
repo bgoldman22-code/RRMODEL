@@ -1,14 +1,15 @@
 /**
  * Netlify Function: nfl-v5-get
  * 
- * Returns the latest V5 predictions from Netlify Blobs.
+ * Returns V5 predictions from Netlify Blobs for a specified season and week.
  * Zero dependencies on V1 codebase - reads pre-generated bundle only.
  * 
  * FLOW:
  * =====
- * 1. Fetch latest bundle from Netlify Blobs (key: nfl-v5/week-latest.json)
- * 2. Return bundle as JSON
- * 3. Cache for 1 hour (predictions update once daily)
+ * 1. Parse query params for season and week (both required for explicit retrieval)
+ * 2. Fetch bundle from Netlify Blobs using key: nfl-v5-<season>-week-<week>
+ * 3. Return bundle as JSON with minimal metadata wrapper
+ * 4. Cache for 60 seconds (allows frequent updates during game weeks)
  * 
  * ENVIRONMENT:
  * ============
@@ -18,62 +19,107 @@
  * 
  * ENDPOINTS:
  * ==========
- * GET /.netlify/functions/nfl-v5-get
- *   Query params: None
- *   Response: { "season": 2025, "week": 11, "model_version": "V5-...", "games": [...] }
+ * GET /.netlify/functions/nfl-v5-get?season=2025&week=11
+ *   Query params: season (required), week (required)
+ *   Response: { "season": 2025, "week": 11, "source": "blobs:nfl-v5", "bundle": {...} }
  * 
- * GET /.netlify/functions/nfl-v5-get?season=2024&week=10
- *   Query params: season, week (optional, for historical bundles)
- *   Response: Historical bundle if available, else 404
- * 
- * TODO: Implement once Netlify Blobs setup is complete
+ * NOTE: Both season and week are required. This ensures explicit retrieval
+ * and avoids ambiguity about which week is "current" or "latest".
  */
 
-import { getStore } from '@netlify/blobs';
+import { getBundle, getBundleKey } from './_lib/blobs-nfl-v5.mjs';
 
 export default async function handler(req, context) {
   try {
-    // Parse query params for optional season/week (historical mode)
+    // Parse query params
     const url = new URL(req.url);
-    const season = url.searchParams.get('season');
-    const week = url.searchParams.get('week');
+    const seasonParam = url.searchParams.get('season');
+    const weekParam = url.searchParams.get('week');
     
-    // Determine blob key
-    let blobKey;
-    if (season && week) {
-      blobKey = `nfl-v5/bundle_${season}_week${week}.json`;
-      console.log(`Fetching historical bundle: ${blobKey}`);
-    } else {
-      blobKey = 'nfl-v5/week-latest.json';
-      console.log(`Fetching latest bundle: ${blobKey}`);
+    // Validate required parameters
+    if (!seasonParam || !weekParam) {
+      return new Response(JSON.stringify({
+        error: 'Invalid parameters',
+        message: 'Both "season" and "week" query parameters are required',
+        example: '/.netlify/functions/nfl-v5-get?season=2025&week=11'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
     
-    // TODO: Fetch from Netlify Blobs
-    // const store = getStore('nfl-predictions');
-    // const bundle = await store.get(blobKey, { type: 'json' });
+    const season = parseInt(seasonParam, 10);
+    const week = parseInt(weekParam, 10);
     
-    // For now, return placeholder
+    // Validate season
+    if (isNaN(season) || season < 2020 || season > 2030) {
+      return new Response(JSON.stringify({
+        error: 'Invalid parameters',
+        message: 'Season must be between 2020 and 2030'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // Validate week
+    if (isNaN(week) || week < 1 || week > 18) {
+      return new Response(JSON.stringify({
+        error: 'Invalid parameters',
+        message: 'Week must be between 1 and 18'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    console.log(`📦 Fetching V5 bundle for ${season} Week ${week}`);
+    
+    // Fetch bundle from Blobs
+    const bundle = await getBundle(season, week);
+    
+    if (!bundle) {
+      const key = getBundleKey(season, week);
+      console.log(`❌ Bundle not found: ${key}`);
+      
+      return new Response(JSON.stringify({
+        error: 'Bundle not found',
+        message: `No V5 predictions available for ${season} Week ${week}`,
+        bundle_key: key,
+        note: 'Bundle may not have been generated yet. Try generating it first via /api/nfl-v5/generate'
+      }), {
+        status: 404,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        }
+      });
+    }
+    
+    console.log(`✅ Bundle retrieved: ${bundle.games_count} games`);
+    
+    // Return bundle wrapped with minimal metadata
     const response = {
-      success: false,
-      message: 'V5 predictions not yet available',
-      note: 'This function will return pre-generated predictions from Netlify Blobs',
-      requested: { season, week, blobKey }
+      season: bundle.season,
+      week: bundle.week,
+      source: 'blobs:nfl-v5',
+      bundle: bundle
     };
     
     return new Response(JSON.stringify(response), {
-      status: 404, // Not Found (until implemented)
+      status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600' // Cache for 1 hour
+        'Cache-Control': 'public, max-age=60' // Cache for 60 seconds
       }
     });
     
   } catch (error) {
-    console.error('Error in nfl-v5-get:', error);
+    console.error('❌ Error in nfl-v5-get:', error);
     
     return new Response(JSON.stringify({
-      success: false,
-      error: error.message
+      error: 'Internal error',
+      message: error.message
     }), {
       status: 500,
       headers: {
@@ -84,6 +130,5 @@ export default async function handler(req, context) {
 }
 
 export const config = {
-  path: '/api/nfl-v5/get',
-  method: 'GET'
+  path: '/api/nfl-v5/get'
 };

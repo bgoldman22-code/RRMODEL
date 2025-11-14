@@ -1,0 +1,37 @@
+name: Update NFLverse Aggregates for V5
+
+on:
+  schedule:
+    - cron: "0 15 * * 2"
+  workflow_dispatch:
+
+jobs:
+  update-aggregates:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Update NFLverse game aggregates
+      run: |
+        cd nfl-model-v3
+        node scripts/02-prepare-nflverse-data.mjs --season 2025
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add nfl-model-v3/data/nflverse/game_aggregates_2025.json
+        git diff --staged --quiet || git commit -m "chore: update 2025 NFLverse game aggregates for V5"
+        git push || exit 0
