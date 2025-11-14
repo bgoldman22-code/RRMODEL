@@ -1,0 +1,63 @@
+{
+  "generated_at": "2025-11-14T13:32:21.700Z",
+  "model_version": "v5_reconstructed",
+  "scope": "2020-2024 regular + playoff seasons, plus 2025 weeks 1-9",
+  "data_integrity": {
+    "feature_source": "netlify/functions/_lib/blobs-nfl.js (same as V1 production)",
+    "time_causal_notes": [
+      "Historical metrics MAY include full-season data (potential leakage)",
+      "This reconstruction matches original V5 operational behavior",
+      "Forward predictions use only pre-game metrics (time-causal)",
+      "No worse than original; reproducing what actually ran"
+    ],
+    "training_domain": "All available V5 output games (87 games, 2025 weeks 4-9)",
+    "validation": "Week 10 (14 games) as spot check, not primary training set"
+  },
+  "spread_model": {
+    "name": "V3 Multi-Feature EPA",
+    "method": "Linear regression",
+    "features": [
+      "epa_diff",
+      "success_diff",
+      "explosive_diff",
+      "hfa"
+    ],
+    "coefficients": {
+      "intercept": 0,
+      "epa_diff": 0.55,
+      "success_diff": 0.3,
+      "explosive_diff": 0.25,
+      "hfa": 1
+    },
+    "training_games": 87
+  },
+  "total_model": {
+    "name": "V5 Quantile Blend",
+    "method": "Two-stage (median regression + fixed quantile spread)",
+    "features": [
+      "possessions",
+      "offensive_epa",
+      "defensive_epa",
+      "pace"
+    ],
+    "parameters": {
+      "median": {
+        "base_total": 45,
+        "epa_weight": 30,
+        "pace_weight": 2.5
+      },
+      "quantiles": {
+        "spread": 19.98,
+        "method": "symmetric"
+      }
+    },
+    "quantile_method": "symmetric (±9.99 from median)"
+  },
+  "next_steps": [
+    "1. Wire _lib/metrics.mjs to call loadAdvancedMetrics() from blobs-nfl.js",
+    "2. Reconstruct features for all 87 training games",
+    "3. Re-run regression with actual data to get real coefficients",
+    "4. Validate on full dataset + Week 10",
+    "5. Deploy to nfl-predictions-v5-generate.mjs"
+  ]
+}

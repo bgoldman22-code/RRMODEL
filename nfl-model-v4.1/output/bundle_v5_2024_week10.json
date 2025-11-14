@@ -1,0 +1,559 @@
+{
+  "season": 2024,
+  "week": 10,
+  "model_version": "V5-Reconstructed-Ridge-ZeroDef-2025-11-14",
+  "model_metadata": {
+    "spread_model": {
+      "name": "V5 Multi-Feature EPA",
+      "method": "OLS",
+      "training_window": "2020-2024",
+      "training_games": 1349,
+      "mae_validation": 10.62,
+      "coefficients_file": "v5_coefficients_spread.json",
+      "features": [
+        "epa_diff",
+        "success_diff",
+        "explosive_diff",
+        "hfa"
+      ]
+    },
+    "total_model": {
+      "name": "V5 Ridge Regression (λ=500)",
+      "method": "Ridge with epa_def_sum zero-weighted in serving",
+      "training_window": "2020-2024",
+      "training_games": 1349,
+      "mae_validation": 10.84,
+      "coefficients_file": "v5_coefficients_total_ridge.json",
+      "features": [
+        "pace_combined",
+        "epa_off_sum",
+        "epa_def_sum (zero)",
+        "success_sum",
+        "explosive_sum"
+      ],
+      "notes": "epa_def_sum coefficient set to 0.0 at serving time to prevent defensive leakage"
+    }
+  },
+  "generated_at": "2025-11-14T19:55:38.985Z",
+  "games_count": 14,
+  "games": [
+    {
+      "game_id": "2024_10_ATL_NO",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "NO",
+      "away_team": "ATL",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": -0.13292347024075557,
+        "home_favorite": true,
+        "favorite_team": "NO",
+        "line": 0.13292347024075557,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": -0.0053896664600301195,
+          "success_diff": -1.383365325782357,
+          "explosive_diff": -0.43850268673821213,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 37,
+        "p50": 46.5,
+        "p75": 55.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 176.83333333333334,
+          "epa_off_sum": 0.0005132972483728286,
+          "epa_def_sum": 0.012826055883660863,
+          "success_sum": 43.421124830202665,
+          "explosive_sum": 3.6637071016175153
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_BUF_IND",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "IND",
+      "away_team": "BUF",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": -3.4907829615963335,
+        "home_favorite": true,
+        "favorite_team": "IND",
+        "line": 3.4907829615963335,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": -0.07000241093692361,
+          "success_diff": -3.8649059552189726,
+          "explosive_diff": 0.23248647042922246,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 36,
+        "p50": 45,
+        "p75": 54,
+        "spread": 18,
+        "features": {
+          "pace_combined": 171.44444444444446,
+          "epa_off_sum": 0.0438671587837005,
+          "epa_def_sum": -0.016686885086916507,
+          "success_sum": 42.32433488588315,
+          "explosive_sum": 4.461812454377447
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_CIN_BAL",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "BAL",
+      "away_team": "CIN",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 6.4300136634956635,
+        "home_favorite": false,
+        "favorite_team": "CIN",
+        "line": 6.4300136634956635,
+        "confidence": 0.53,
+        "features": {
+          "epa_diff": 0.044210300205625566,
+          "success_diff": 2.900078113283369,
+          "explosive_diff": 1.236565299038188,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 39,
+        "p50": 48.5,
+        "p75": 57.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 176.55555555555554,
+          "epa_off_sum": 0.10989167030943678,
+          "epa_def_sum": 0.05783158478016826,
+          "success_sum": 46.59346701265332,
+          "explosive_sum": 4.666569525668628
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_DEN_KC",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "KC",
+      "away_team": "DEN",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 5.6689523470611345,
+        "home_favorite": false,
+        "favorite_team": "DEN",
+        "line": 5.6689523470611345,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.02538893806129106,
+          "success_diff": 4.6400958265457595,
+          "explosive_diff": -0.6936806848105992,
+          "hfa": 2.5
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 38.5,
+        "p50": 47.5,
+        "p75": 56.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 174.46527777777777,
+          "epa_off_sum": 0.008918570748166321,
+          "epa_def_sum": -0.05288643671278333,
+          "success_sum": 47.15663014585616,
+          "explosive_sum": 4.157833761416775
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_DET_HOU",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "HOU",
+      "away_team": "DET",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": -3.1357646068555525,
+        "home_favorite": true,
+        "favorite_team": "HOU",
+        "line": 3.1357646068555525,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": -0.08789527947644199,
+          "success_diff": -1.5372694515541352,
+          "explosive_diff": -0.19577441713770002,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 37.5,
+        "p50": 47,
+        "p75": 56,
+        "spread": 18,
+        "features": {
+          "pace_combined": 173.80555555555554,
+          "epa_off_sum": 0.05228720365610655,
+          "epa_def_sum": -0.0420716287480614,
+          "success_sum": 45.57403089964569,
+          "explosive_sum": 4.237866164198296
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_MIA_LA",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "LA",
+      "away_team": "MIA",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 4.461415987907073,
+        "home_favorite": false,
+        "favorite_team": "MIA",
+        "line": 4.461415987907073,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.032801494414723215,
+          "success_diff": 1.6211183212444413,
+          "explosive_diff": 0.6106138985919605,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 36,
+        "p50": 45.5,
+        "p75": 54.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 173.375,
+          "epa_off_sum": -0.05161261523059931,
+          "epa_def_sum": 0.025742687309806344,
+          "success_sum": 44.55203605194338,
+          "explosive_sum": 3.2307877363087303
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_MIN_JAX",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "JAX",
+      "away_team": "MIN",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": -2.8169114693460715,
+        "home_favorite": true,
+        "favorite_team": "JAX",
+        "line": 2.8169114693460715,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": -0.09710994915843836,
+          "success_diff": -0.6620291055383837,
+          "explosive_diff": -0.10392794133784224,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 36.5,
+        "p50": 46,
+        "p75": 55,
+        "spread": 18,
+        "features": {
+          "pace_combined": 173.24305555555554,
+          "epa_off_sum": 0.017082537776522334,
+          "epa_def_sum": -0.00030238728858344305,
+          "success_sum": 41.793029143271895,
+          "explosive_sum": 4.938362290953748
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_NE_CHI",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "CHI",
+      "away_team": "NE",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 3.8468592642641894,
+        "home_favorite": false,
+        "favorite_team": "NE",
+        "line": 3.8468592642641894,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.07994843210011178,
+          "success_diff": 0.2440058815777968,
+          "explosive_diff": -0.7652803606366985,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 36,
+        "p50": 45.5,
+        "p75": 54.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 173.05555555555554,
+          "epa_off_sum": -0.058588283496922605,
+          "epa_def_sum": -0.011494299553256603,
+          "success_sum": 42.38042819139978,
+          "explosive_sum": 4.214835627622541
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_NYG_CAR",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "CAR",
+      "away_team": "NYG",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": -5.041973570037286,
+        "home_favorite": true,
+        "favorite_team": "CAR",
+        "line": 5.041973570037286,
+        "confidence": 0.53,
+        "features": {
+          "epa_diff": -0.0672644928433992,
+          "success_diff": -1.93616732617701,
+          "explosive_diff": -2.391137939755603,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 36.5,
+        "p50": 46,
+        "p75": 55,
+        "spread": 18,
+        "features": {
+          "pace_combined": 171.66666666666669,
+          "epa_off_sum": -0.09183095261636064,
+          "epa_def_sum": 0.0765504482855359,
+          "success_sum": 41.459149032215926,
+          "explosive_sum": 5.6979386379594015
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_NYJ_ARI",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "ARI",
+      "away_team": "NYJ",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 2.8728079752328313,
+        "home_favorite": false,
+        "favorite_team": "NYJ",
+        "line": 2.8728079752328313,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": -0.00012579431323792717,
+          "success_diff": 2.290247382419508,
+          "explosive_diff": -0.0727579670978945,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 36,
+        "p50": 45.5,
+        "p75": 54,
+        "spread": 18,
+        "features": {
+          "pace_combined": 169.22222222222223,
+          "epa_off_sum": 0.023498313268535742,
+          "epa_def_sum": 0.03650939034851655,
+          "success_sum": 44.11972865209906,
+          "explosive_sum": 4.4419739456088605
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_PHI_DAL",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "DAL",
+      "away_team": "PHI",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": -3.2565970665611674,
+        "home_favorite": true,
+        "favorite_team": "DAL",
+        "line": 3.2565970665611674,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": -0.08176885195972707,
+          "success_diff": -0.7274386738173405,
+          "explosive_diff": -0.9921330338280986,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 37.5,
+        "p50": 47,
+        "p75": 56,
+        "spread": 18,
+        "features": {
+          "pace_combined": 174.4375,
+          "epa_off_sum": 0.022465526379922215,
+          "epa_def_sum": 0.031491739530271456,
+          "success_sum": 44.962150580119044,
+          "explosive_sum": 4.463464987278039
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_PIT_WAS",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "WAS",
+      "away_team": "PIT",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 2.6554820271141284,
+        "home_favorite": false,
+        "favorite_team": "PIT",
+        "line": 2.6554820271141284,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.006616979075518531,
+          "success_diff": 2.9405845935892043,
+          "explosive_diff": -0.8836275765337784,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 39,
+        "p50": 48.5,
+        "p75": 57.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 169.48611111111111,
+          "epa_off_sum": 0.10707974460490492,
+          "epa_def_sum": -0.021058872638660367,
+          "success_sum": 47.698665946915455,
+          "explosive_sum": 6.262362889531134
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_SF_TB",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "TB",
+      "away_team": "SF",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 1.0383682693060767,
+        "home_favorite": false,
+        "favorite_team": "SF",
+        "line": 1.0383682693060767,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": -0.012982004538179336,
+          "success_diff": -0.4074761505325486,
+          "explosive_diff": 0.30534159259893967,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 40,
+        "p50": 49.5,
+        "p75": 58.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 174.29861111111111,
+          "epa_off_sum": 0.05955585521708773,
+          "epa_def_sum": 0.02379928837763086,
+          "success_sum": 47.17115436843293,
+          "explosive_sum": 6.187929331178305
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2024_10_TEN_LAC",
+      "season": 2024,
+      "week": 10,
+      "gameday": "2024-W10",
+      "home_team": "LAC",
+      "away_team": "TEN",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 5.626985970995073,
+        "home_favorite": false,
+        "favorite_team": "TEN",
+        "line": 5.626985970995073,
+        "confidence": 0.5700000000000001,
+        "features": {
+          "epa_diff": 0.1253492075999318,
+          "success_diff": -1.8823580336716579,
+          "explosive_diff": 0.514635150564988,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 34,
+        "p50": 43.5,
+        "p75": 52,
+        "spread": 18,
+        "features": {
+          "pace_combined": 168.4375,
+          "epa_off_sum": -0.08159788478920006,
+          "epa_def_sum": -0.07258554136697053,
+          "success_sum": 40.75700653221308,
+          "explosive_sum": 4.0374457747013635
+        }
+      },
+      "actual": null
+    }
+  ]
+}

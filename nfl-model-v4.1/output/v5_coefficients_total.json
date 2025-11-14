@@ -1,0 +1,26 @@
+{
+  "model": "V5 Quantile Blend (Total)",
+  "training_window": "2020-2024 regular season",
+  "training_games": 1349,
+  "coefficients": {
+    "intercept": 10.040905702345643,
+    "pace_combined": 0.1752652123585271,
+    "epa_off_sum": 31.340068562456295,
+    "epa_def_sum": 13.89278862723734,
+    "success_sum": 0.025156640560208547,
+    "explosive_sum": 0.9899035890253438,
+    "p25_offset": -9.228650189183362,
+    "p75_offset": 8.449059968844736
+  },
+  "metrics": {
+    "r2": 0.043529855110467475,
+    "mae": 10.643670923019545,
+    "rmse": 13.4664851576135
+  },
+  "validation": {
+    "mae": 10.611507733235443,
+    "rmse": 13.57852239006057
+  },
+  "quantile_spread": 17.6777101580281,
+  "generated_at": "2025-11-14T16:35:17.560Z"
+}

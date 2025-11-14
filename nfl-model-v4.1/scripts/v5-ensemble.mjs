@@ -79,6 +79,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { predictSpreadGame, predictSpreadFromFeatures } from './_lib/v5-spread-model.mjs';
 import { predictTotalGame, predictTotalFromFeatures } from './_lib/v5-total-model.mjs';
+import { loadWeekSchedule } from './_lib/schedule-source.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -137,6 +138,74 @@ async function loadGameAggregates(season) {
     console.error(`❌ Failed to load game aggregates for ${season}:`, error.message);
     return null;
   }
+}
+
+/**
+ * Load game list and aggregates based on mode (historical vs future)
+ * 
+ * HISTORICAL MODE:
+ * - Game list comes from aggregates (games already played in that week)
+ * - Includes actual scores for validation
+ * 
+ * FUTURE MODE:
+ * - Game list comes from schedule (games not yet played)
+ * - No actual scores available
+ * - Still uses aggregates for rolling metrics from prior weeks
+ * 
+ * @param {Object} params - Parameters
+ * @param {number} params.season - NFL season
+ * @param {number} params.week - Week number
+ * @param {boolean} params.historical - True for historical mode, false for future mode
+ * @returns {Promise<Object>} { gameList, allAggregates }
+ */
+async function loadGameListAndAggregates({ season, week, historical }) {
+  // Load aggregates (needed for rolling metrics in both modes)
+  const allAggregates = await loadGameAggregates(season);
+  if (!allAggregates) {
+    throw new Error(`Failed to load aggregates for season ${season}`);
+  }
+
+  const targetWeek = String(week);
+
+  if (historical) {
+    // HISTORICAL MODE: game list from aggregates
+    const weekAggregates = allAggregates.filter(
+      (g) => String(g.week) === targetWeek
+    );
+
+    if (weekAggregates.length === 0) {
+      throw new Error(
+        `No games found in aggregates for season=${season}, week=${week}. ` +
+        `This week may not have been played yet. Use --future mode for predictions.`
+      );
+    }
+
+    const gameList = weekAggregates.map((g) => ({
+      season: Number(season),
+      week: Number(g.week),
+      home_team: g.home_team,
+      away_team: g.away_team,
+      kickoff: g.kickoff || g.gametime || null,
+      game_id: g.game_id,
+      // Include actual scores for validation
+      home_score: g.home_score,
+      away_score: g.away_score,
+    }));
+
+    return { gameList, allAggregates };
+  }
+
+  // FUTURE MODE: game list from schedule
+  const scheduleGames = await loadWeekSchedule({ season, week });
+
+  if (scheduleGames.length === 0) {
+    throw new Error(
+      `No games found in schedule for season=${season}, week=${week}`
+    );
+  }
+
+  // Return schedule games as-is (no actual scores available yet)
+  return { gameList: scheduleGames, allAggregates };
 }
 
 /**
@@ -242,7 +311,7 @@ function getDefaultMetrics() {
  * 
  * ALGORITHM:
  * ==========
- * 1. Filter to games where team participated BEFORE target game
+ * 1. Filter to games where team participated BEFORE target week
  * 2. Sort chronologically by game_id
  * 3. Take last N games (default: 8)
  * 4. Compute averages across window
@@ -259,9 +328,10 @@ function getDefaultMetrics() {
  * 
  * TIME CAUSALITY:
  * ===============
- * - Only uses games BEFORE target game (no future leakage)
- * - game_id format: YYYY_WW_AWAY_HOME (e.g., "2025_11_BUF_KC")
- * - Comparison: targetGameId = "2025_11_BUF_KC" excludes itself and all later games
+ * - Only uses games BEFORE target week (no future leakage)
+ * - For historical mode (week 10): uses weeks 1-9
+ * - For future mode (week 11): uses weeks 1-10
+ * - Comparison: targetWeek = 11 excludes week 11 and all later games
  * 
  * EDGE CASES:
  * ===========
@@ -271,30 +341,39 @@ function getDefaultMetrics() {
  * 
  * @param {Array} games - All games from season
  * @param {string} team - Team abbreviation (e.g., "KC", "BUF")
- * @param {string} targetGameId - Game ID to predict (e.g., "2025_11_BUF_KC")
- * @param {number} windowSize - Number of recent games to average (default: 8)
+ * @param {number} season - Season year
+ * @param {number} targetWeek - Week to predict (exclusive - only use weeks before this)
+ * @param {number} windowSize - Number of recent games to average (default: 16)
  * @returns {Object} Team metrics with pace, EPA, success, explosive rates
  */
-function computeRollingMetrics(games, team, targetGameId, windowSize = 8) {
+function computeRollingMetrics(games, team, season, targetWeek, windowSize = 16) {
   // Validate inputs
   if (!games || games.length === 0) {
     console.warn(`⚠️  No games provided for team ${team}`);
     return getDefaultMetrics();
   }
   
-  if (!team || !targetGameId) {
-    console.warn(`⚠️  Missing team or targetGameId`);
+  if (!team || !targetWeek) {
+    console.warn(`⚠️  Missing team or targetWeek`);
     return getDefaultMetrics();
   }
   
-  // Get all games for this team before the target game
+  // Get all games for this team BEFORE the target week
   const teamGames = games
-    .filter(g => 
-      (g.home_team === team || g.away_team === team) &&
-      g.game_id < targetGameId && // Only past games
-      parseInt(g.week, 10) <= 18 // Regular season only
-    )
-    .sort((a, b) => a.game_id.localeCompare(b.game_id));
+    .filter(g => {
+      if (String(g.season) !== String(season)) return false;
+      const w = Number(g.week);
+      if (!Number.isFinite(w)) return false;
+      if (w >= targetWeek) return false; // STRICTLY earlier weeks
+      if (w > 18) return false; // Regular season only
+      return g.home_team === team || g.away_team === team;
+    })
+    .sort((a, b) => {
+      // Sort by week, then by game_id
+      const weekDiff = Number(a.week) - Number(b.week);
+      if (weekDiff !== 0) return weekDiff;
+      return a.game_id.localeCompare(b.game_id);
+    });
   
   // Take last N games
   const recentGames = teamGames.slice(-windowSize);
@@ -347,6 +426,40 @@ function computeRollingMetrics(games, team, targetGameId, windowSize = 8) {
 }
 
 /**
+ * Extract actual game results from game data (historical mode only)
+ * 
+ * In historical mode, loadGameListAndAggregates includes home_score and away_score
+ * directly on the game object (pulled from aggregates).
+ * 
+ * @param {Object} game - Game object with optional home_score/away_score fields
+ * @param {boolean} historical - Whether in historical mode
+ * @returns {Object|null} Actual results { total, margin, home_score, away_score } or null
+ */
+function buildActualFromAggregate(game, historical) {
+  // Future mode: no actuals available
+  if (!historical) return null;
+  
+  // Extract scores (populated by loadGameListAndAggregates in historical mode)
+  const homeScore = typeof game.home_score === 'number' ? game.home_score : null;
+  const awayScore = typeof game.away_score === 'number' ? game.away_score : null;
+  
+  // Can't compute actuals without both scores
+  if (homeScore == null || awayScore == null) {
+    return null;
+  }
+  
+  const total = homeScore + awayScore;
+  const margin = homeScore - awayScore;
+  
+  return {
+    home_score: homeScore,
+    away_score: awayScore,
+    total,
+    margin
+  };
+}
+
+/**
  * Generate predictions for a single game
  * 
  * PROCESS:
@@ -365,18 +478,21 @@ function computeRollingMetrics(games, team, targetGameId, windowSize = 8) {
  * 
  * @param {Object} game - Game object with teams, scores, etc.
  * @param {Array} allGames - All games from season (for rolling window)
+ * @param {number} season - Season year
+ * @param {number} week - Week number (used for rolling metrics cutoff)
+ * @param {boolean} historical - Whether in historical mode (for actual results)
  * @returns {Object|null} Prediction object or null if failed
  */
-async function predictGame(game, allGames) {
+async function predictGame(game, allGames, season, week, historical = false) {
   try {
     // Validate game object
-    if (!game || !game.home_team || !game.away_team || !game.game_id) {
+    if (!game || !game.home_team || !game.away_team) {
       throw new Error('Invalid game object: missing required fields');
     }
     
-    // Compute rolling metrics for both teams
-    const homeMetrics = computeRollingMetrics(allGames, game.home_team, game.game_id);
-    const awayMetrics = computeRollingMetrics(allGames, game.away_team, game.game_id);
+    // Compute rolling metrics for both teams (only using weeks BEFORE target week)
+    const homeMetrics = computeRollingMetrics(allGames, game.home_team, season, week);
+    const awayMetrics = computeRollingMetrics(allGames, game.away_team, season, week);
     
     // Validate metrics
     if (!homeMetrics || !awayMetrics) {
@@ -401,9 +517,12 @@ async function predictGame(game, allGames) {
       throw new Error('Invalid predictions from models');
     }
     
-    // Determine favorite
-    const homeFavorite = spreadPred.predicted_spread < 0;
+    // Determine favorite (raw_prediction is what model returns)
+    const homeFavorite = spreadPred.raw_prediction < 0;
     const favorite = homeFavorite ? game.home_team : game.away_team;
+    
+    // Extract actual results if historical mode
+    const actual = buildActualFromAggregate(game, historical);
     
     return {
       game_id: game.game_id,
@@ -415,10 +534,10 @@ async function predictGame(game, allGames) {
       
       spread_model: {
         model_name: 'v5_multi_feature_epa',
-        predicted_spread: spreadPred.predicted_spread,
+        predicted_spread: spreadPred.raw_prediction,
         home_favorite: homeFavorite,
         favorite_team: favorite,
-        line: Math.abs(spreadPred.predicted_spread),
+        line: spreadPred.line,
         confidence: spreadPred.confidence,
         features: spreadFeatures
       },
@@ -432,13 +551,8 @@ async function predictGame(game, allGames) {
         features: totalFeatures
       },
       
-      // Include actual results if historical mode
-      actual: (game.home_score !== undefined && game.away_score !== undefined) ? {
-        home_score: game.home_score,
-        away_score: game.away_score,
-        total: game.home_score + game.away_score,
-        margin: game.home_score - game.away_score
-      } : null
+      // Include actual results if historical mode (from aggregate data)
+      actual
     };
   } catch (error) {
     console.error(`⚠️  Failed to predict game ${game.game_id}:`, error.message);
@@ -451,39 +565,30 @@ async function predictGame(game, allGames) {
  */
 async function generateEnsemble(season, week, outputPath, historical = false) {
   console.log('\n' + '='.repeat(70));
-  console.log(`V5 ENSEMBLE GENERATOR - ${season} Week ${week}`);
+  console.log(`V5 ENSEMBLE GENERATOR - ${season} Week ${week} ${historical ? '(Historical)' : '(Future)'}`);
   console.log('='.repeat(70));
   console.log('');
   
-  // Load game aggregates
-  console.log(`📂 Loading game aggregates for ${season}...`);
-  const allGames = await loadGameAggregates(season);
+  // Load game list and aggregates using unified loader
+  console.log(`📂 Loading ${historical ? 'historical games' : 'schedule'} for ${season} Week ${week}...`);
+  const { gameList, allAggregates } = await loadGameListAndAggregates({ season, week, historical });
   
-  if (!allGames) {
-    console.error(`❌ No game data found for season ${season}`);
-    process.exit(1);
-  }
-  
-  console.log(`   ✅ Loaded ${allGames.length} games`);
-  
-  // Filter for target week
-  const weekGames = filterGamesForWeek(allGames, season, week);
-  
-  if (weekGames.length === 0) {
+  if (!gameList || gameList.length === 0) {
     console.error(`❌ No games found for ${season} week ${week}`);
-    console.error(`   Make sure this is a valid regular season week.`);
+    console.error(`   Historical mode: ${historical}`);
     process.exit(1);
   }
   
-  console.log(`   ✅ Found ${weekGames.length} games for week ${week}`);
+  console.log(`   ✅ Loaded ${gameList.length} games for week ${week}`);
+  console.log(`   ✅ Loaded ${allAggregates.length} total games for rolling metrics`);
   console.log('');
   
   // Generate predictions
   console.log('🔮 Generating V5 predictions...');
   const predictions = [];
   
-  for (const game of weekGames) {
-    const pred = await predictGame(game, allGames);
+  for (const game of gameList) {
+    const pred = await predictGame(game, allAggregates, season, week, historical);
     if (pred) {
       predictions.push(pred);
       console.log(`   ✅ ${game.away_team} @ ${game.home_team}`);

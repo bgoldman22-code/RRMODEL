@@ -1,0 +1,338 @@
+#!/usr/bin/env node
+/**
+ * V5 Future Week Generator
+ * 
+ * Generates predictions for UPCOMING games using schedule + historical rolling metrics
+ * 
+ * Usage:
+ *   node scripts/generate-v5-future-week.mjs --season 2025 --week 11
+ */
+
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { predictSpreadFromFeatures } from './_lib/v5-spread-model.mjs';
+import { predictTotalFromFeatures } from './_lib/v5-total-model.mjs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Team abbreviation mapping (schedule uses full names, aggregates use abbreviations)
+const TEAM_ABBREV_MAP = {
+  'Arizona Cardinals': 'ARI',
+  'Atlanta Falcons': 'ATL',
+  'Baltimore Ravens': 'BAL',
+  'Buffalo Bills': 'BUF',
+  'Carolina Panthers': 'CAR',
+  'Chicago Bears': 'CHI',
+  'Cincinnati Bengals': 'CIN',
+  'Cleveland Browns': 'CLE',
+  'Dallas Cowboys': 'DAL',
+  'Denver Broncos': 'DEN',
+  'Detroit Lions': 'DET',
+  'Green Bay Packers': 'GB',
+  'Houston Texans': 'HOU',
+  'Indianapolis Colts': 'IND',
+  'Jacksonville Jaguars': 'JAX',
+  'Kansas City Chiefs': 'KC',
+  'Las Vegas Raiders': 'LV',
+  'Los Angeles Chargers': 'LAC',
+  'Los Angeles Rams': 'LA',
+  'Miami Dolphins': 'MIA',
+  'Minnesota Vikings': 'MIN',
+  'New England Patriots': 'NE',
+  'New Orleans Saints': 'NO',
+  'New York Giants': 'NYG',
+  'New York Jets': 'NYJ',
+  'Philadelphia Eagles': 'PHI',
+  'Pittsburgh Steelers': 'PIT',
+  'San Francisco 49ers': 'SF',
+  'Seattle Seahawks': 'SEA',
+  'Tampa Bay Buccaneers': 'TB',
+  'Tennessee Titans': 'TEN',
+  'Washington Commanders': 'WAS'
+};
+
+// Parse command line arguments
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const parsed = {
+    season: 2025,
+    week: 11,
+    output: null
+  };
+  
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--season' && args[i + 1]) {
+      parsed.season = parseInt(args[i + 1], 10);
+      i++;
+    } else if (args[i] === '--week' && args[i + 1]) {
+      parsed.week = parseInt(args[i + 1], 10);
+      i++;
+    } else if (args[i] === '--output' && args[i + 1]) {
+      parsed.output = args[i + 1];
+      i++;
+    }
+  }
+  
+  if (!parsed.output) {
+    parsed.output = path.join(__dirname, `../output/bundle_v5_${parsed.season}_week${parsed.week}.json`);
+  }
+  
+  return parsed;
+}
+
+// Calculate rolling metrics for a team up through a certain week
+function calculateRollingMetrics(teamGames, throughWeek, lookback = 16) {
+  // Filter to games before the target week
+  const pastGames = teamGames
+    .filter(g => parseInt(g.week) < throughWeek)
+    .sort((a, b) => parseInt(a.week) - parseInt(b.week))
+    .slice(-lookback); // Take last N games
+  
+  if (pastGames.length === 0) {
+    return null; // Not enough data
+  }
+  
+  // Calculate averages
+  const metrics = {
+    epa_off: 0,
+    epa_def: 0,
+    success_off: 0,
+    success_def: 0,
+    explosive_off: 0,
+    explosive_def: 0,
+    pace: 0,
+    games_count: pastGames.length
+  };
+  
+  pastGames.forEach(g => {
+    metrics.epa_off += g.epa_off || 0;
+    metrics.epa_def += g.epa_def || 0;
+    metrics.success_off += g.success_off || 0;
+    metrics.success_def += g.success_def || 0;
+    metrics.explosive_off += g.explosive_off || 0;
+    metrics.explosive_def += g.explosive_def || 0;
+    metrics.pace += g.pace || 0;
+  });
+  
+  const count = pastGames.length;
+  metrics.epa_off /= count;
+  metrics.epa_def /= count;
+  metrics.success_off /= count;
+  metrics.success_def /= count;
+  metrics.explosive_off /= count;
+  metrics.explosive_def /= count;
+  metrics.pace /= count;
+  
+  return metrics;
+}
+
+// Get home field advantage for venue
+function getHFA(homeTeam) {
+  const hfaMap = {
+    'DEN': 3.0,
+    'GB': 2.7,
+    'KC': 2.5,
+    'SEA': 2.5,
+    'NE': 2.3
+  };
+  return hfaMap[homeTeam] || 2.0;
+}
+
+async function main() {
+  const args = parseArgs();
+  const { season, week, output } = args;
+  
+  console.log(`\n🏈 V5 Future Week Generator\n`);
+  console.log(`📅 Season: ${season}`);
+  console.log(`📆 Week: ${week}`);
+  console.log(`📁 Output: ${output}`);
+  console.log(`📊 Mode: Future predictions (using schedule + rolling metrics)\n`);
+  
+  // Load schedule
+  console.log(`📅 Loading schedule...`);
+  const schedulePath = path.join(__dirname, `../../netlify/data/nfl/${season}/schedule.full.json`);
+  const scheduleData = JSON.parse(await fs.readFile(schedulePath, 'utf-8'));
+  const weekSchedule = scheduleData.weeks[week.toString()]?.matchups || [];
+  
+  if (weekSchedule.length === 0) {
+    console.error(`❌ No games found in schedule for week ${week}`);
+    process.exit(2);
+  }
+  
+  console.log(`   ✅ Found ${weekSchedule.length} games\n`);
+  
+  // Load game aggregates (for rolling metrics)
+  console.log(`📂 Loading game aggregates for ${season}...`);
+  const aggregatesPath = path.join(__dirname, `../../nfl-model-v3/data/nflverse/game_aggregates_${season}.json`);
+  const allGames = JSON.parse(await fs.readFile(aggregatesPath, 'utf-8'));
+  console.log(`   ✅ Loaded ${allGames.length} historical games\n`);
+  
+  // Group games by team for rolling calculations
+  const gamesByTeam = {};
+  allGames.forEach(game => {
+    const home = game.home_team;
+    const away = game.away_team;
+    
+    if (!gamesByTeam[home]) gamesByTeam[home] = [];
+    if (!gamesByTeam[away]) gamesByTeam[away] = [];
+    
+    // Add game from home team's perspective
+    gamesByTeam[home].push({
+      week: game.week,
+      epa_off: game.home_epa_per_play,
+      epa_def: game.away_epa_per_play,
+      success_off: game.home_success_rate,
+      success_def: game.away_success_rate,
+      explosive_off: game.home_explosive_rate,
+      explosive_def: game.away_explosive_rate,
+      pace: game.plays
+    });
+    
+    // Add game from away team's perspective
+    gamesByTeam[away].push({
+      week: game.week,
+      epa_off: game.away_epa_per_play,
+      epa_def: game.home_epa_per_play,
+      success_off: game.away_success_rate,
+      success_def: game.home_success_rate,
+      explosive_off: game.away_explosive_rate,
+      explosive_def: game.home_explosive_rate,
+      pace: game.plays
+    });
+  });
+  
+  // Generate predictions
+  console.log(`🔮 Generating V5 predictions...\n`);
+  const predictions = [];
+  
+  for (const matchup of weekSchedule) {
+    const homeAbbrev = TEAM_ABBREV_MAP[matchup.homeTeam];
+    const awayAbbrev = TEAM_ABBREV_MAP[matchup.awayTeam];
+    
+    if (!homeAbbrev || !awayAbbrev) {
+      console.log(`   ⚠️  Skipping ${matchup.awayTeam} @ ${matchup.homeTeam} (unknown team abbreviation)`);
+      continue;
+    }
+    
+    // Calculate rolling metrics
+    const homeMetrics = calculateRollingMetrics(gamesByTeam[homeAbbrev] || [], week);
+    const awayMetrics = calculateRollingMetrics(gamesByTeam[awayAbbrev] || [], week);
+    
+    if (!homeMetrics || !awayMetrics) {
+      console.log(`   ⚠️  Skipping ${awayAbbrev} @ ${homeAbbrev} (insufficient data)`);
+      continue;
+    }
+    
+    // Build features for spread model
+    const spreadFeatures = {
+      epa_diff: (awayMetrics.epa_off - awayMetrics.epa_def) - (homeMetrics.epa_off - homeMetrics.epa_def),
+      success_diff: (awayMetrics.success_off - awayMetrics.success_def) - (homeMetrics.success_off - homeMetrics.success_def),
+      explosive_diff: (awayMetrics.explosive_off - awayMetrics.explosive_def) - (homeMetrics.explosive_off - homeMetrics.explosive_def),
+      hfa: getHFA(homeAbbrev)
+    };
+    
+    // Build features for total model
+    const totalFeatures = {
+      pace_combined: homeMetrics.pace + awayMetrics.pace,
+      epa_off_sum: homeMetrics.epa_off + awayMetrics.epa_off,
+      epa_def_sum: 0, // Zero-weighted (prevent defensive leakage)
+      success_sum: homeMetrics.success_off + awayMetrics.success_off,
+      explosive_sum: homeMetrics.explosive_off + awayMetrics.explosive_off
+    };
+    
+    // Generate predictions
+    const spreadPred = predictSpreadFromFeatures(spreadFeatures);
+    const totalPred = predictTotalFromFeatures(totalFeatures);
+    
+    predictions.push({
+      game_id: `${season}_${week}_${awayAbbrev}_${homeAbbrev}`,
+      season,
+      week,
+      gameday: matchup.kickoff,
+      home_team: homeAbbrev,
+      away_team: awayAbbrev,
+      predicted_spread: spreadPred.predicted_spread,
+      predicted_total_p50: totalPred.p50,
+      spread: {
+        pick: null, // Add odds logic later
+        line: null,
+        predicted_margin: spreadPred.predicted_spread,
+        confidence: spreadPred.confidence,
+        edge: null,
+        recommended_units: 0
+      },
+      total: {
+        pick: null, // Add odds logic later  
+        line: null,
+        predicted_total: totalPred.p50,
+        p25: totalPred.p25,
+        p75: totalPred.p75,
+        confidence: 0.65,
+        edge: null,
+        recommended_units: 0
+      },
+      moneyline: {
+        pick: null,
+        confidence: spreadPred.confidence,
+        edge: null,
+        recommended_units: 0
+      },
+      features: {
+        spread: spreadFeatures,
+        total: totalFeatures
+      }
+    });
+    
+    console.log(`   ✅ ${awayAbbrev} @ ${homeAbbrev}`);
+  }
+  
+  console.log(`\n✅ Generated ${predictions.length} predictions\n`);
+  
+  // Build output bundle
+  const bundle = {
+    season,
+    week,
+    model_version: "V5-Reconstructed-Ridge-ZeroDef-2025-11-14",
+    model_metadata: {
+      spread_model: {
+        name: "V5 Multi-Feature EPA",
+        method: "OLS",
+        training_window: "2020-2024",
+        training_games: 1349,
+        mae_validation: 10.62,
+        coefficients_file: "v5_coefficients_spread.json",
+        features: ["epa_diff", "success_diff", "explosive_diff", "hfa"]
+      },
+      total_model: {
+        name: "V5 Ridge Regression (λ=500)",
+        method: "Ridge with epa_def_sum zero-weighted in serving",
+        training_window: "2020-2024",
+        training_games: 1349,
+        mae_validation: 10.84,
+        coefficients_file: "v5_coefficients_total_ridge.json",
+        features: ["pace_combined", "epa_off_sum", "epa_def_sum (zero)", "success_sum", "explosive_sum"],
+        notes: "epa_def_sum coefficient set to 0.0 at serving time to prevent defensive leakage"
+      }
+    },
+    generated_at: new Date().toISOString(),
+    games_count: predictions.length,
+    games: predictions
+  };
+  
+  // Write output
+  console.log(`💾 Writing output...`);
+  await fs.writeFile(output, JSON.stringify(bundle, null, 2));
+  console.log(`   ✅ Saved to: ${output}\n`);
+  
+  console.log(`========================================================================`);
+  console.log(`✅ V5 FUTURE WEEK GENERATION COMPLETE`);
+  console.log(`========================================================================\n`);
+}
+
+main().catch(err => {
+  console.error(`\n❌ Error:`, err.message);
+  console.error(err.stack);
+  process.exit(1);
+});
