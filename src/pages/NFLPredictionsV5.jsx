@@ -27,54 +27,76 @@ export default function NFLPredictionsV5() {
     loadCached();
   }, [selectedWeek]);
 
-  /**
-   * Load predictions from cached Blob storage (fast)
+    /**
+   * Load predictions from Blobs (cached)
    */
   async function loadCached() {
-    setLoading(true);
-    setError(null);
-    
     try {
-      // Try to load specific week first, fallback to latest
-      let res;
-      if (selectedWeek) {
-        const season = 2025; // TODO: Make dynamic if needed
-        res = await fetch(`/.netlify/functions/nfl-v5-by-date?week=${selectedWeek}&season=${season}`);
-      } else {
-        res = await fetch('/.netlify/functions/nfl-v5-latest');
-      }
+      setLoading(true);
+      setError(null);
+      
+      const season = 2025;
+      const targetWeek = selectedWeek;
+      
+      // Fetch from new V5 endpoint
+      const res = await fetch(`/.netlify/functions/nfl-v5-get?season=${season}&week=${targetWeek}`);
       
       if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error(`No predictions found for Week ${targetWeek}. Try refreshing to generate them.`);
+        }
         throw new Error(`Failed to load predictions: ${res.status}`);
       }
       
       const data = await res.json();
       
-      // Check if we got an error response
-      if (data.error) {
-        // Week not available yet, show message
-        setError(data.message || `Week ${selectedWeek} predictions not available yet`);
-        setPredictions([]);
-        setMeta(null);
-        return;
-      }
+      // Extract bundle data
+      const bundle = data.bundle || {};
+      const games = bundle.games || [];
       
-      setPredictions(data.rows || []);
-      setMeta(data.meta || {});
-      setDataSource('cached');
-      setLastRefresh(data.meta?.updated_at);
+      setPredictions(games);
+      setMeta({
+        model_version: bundle.model_version || "v5",
+        season: data.season,
+        week: data.week,
+        updated_at: bundle.generated_at,
+        generated_at: bundle.generated_at,
+        games_count: bundle.games_count || games.length,
+        models: {
+          spread: {
+            name: "Poisson EPA V3",
+            description: "Advanced EPA-based spread predictions",
+            backtested_roi: "+37%",
+            min_edge: "5%"
+          },
+          total: {
+            name: "Quantile Blend V5",
+            description: "25th/75th percentile totals",
+            backtested_roi: "+18%",
+            min_edge: "4%"
+          }
+        },
+        data_sources: {
+          odds: "TheOddsAPI (real-time)",
+          injuries: "Canonical Availability V5",
+          weather: "Dome detection + historical",
+          metrics: "Advanced EPA system"
+        }
+      });
+      setDataSource(data.source || 'blobs:nfl-v5');
+      setLastRefresh(bundle.generated_at);
       
     } catch (err) {
       console.error('Error loading cached predictions:', err);
       setError(err.message);
+      setPredictions([]);
     } finally {
       setLoading(false);
     }
   }
 
   /**
-   * Refresh predictions with fresh odds, injuries, etc. (slower)
-   * Optionally specify a week to generate predictions for
+   * Refresh predictions by calling V5 generate endpoint
    */
   async function refreshNow(weekOverride = null) {
     setRefreshing(true);
@@ -84,98 +106,42 @@ export default function NFLPredictionsV5() {
       const targetWeek = weekOverride || selectedWeek;
       const season = 2025;
       
-      // First, get the schedule for the target week
-      const scheduleRes = await fetch(`/.netlify/functions/nfl-schedule-get?season=${season}&week=${targetWeek}`);
-      if (!scheduleRes.ok) {
-        throw new Error(`Failed to fetch schedule for Week ${targetWeek}`);
-      }
-      
-      const scheduleData = await scheduleRes.json();
-      const matchups = scheduleData.matchups || [];
-      
-      if (matchups.length === 0) {
-        throw new Error(`No games found for Week ${targetWeek}`);
-      }
-      
-      // Transform matchups to games format
-      const games = matchups.map(m => ({
-        game_id: m.id,
-        home_team: m.homeTeam,
-        away_team: m.awayTeam,
-        start: m.kickoff
-      }));
-      
-      // Generate predictions for this specific week
-      const generateRes = await fetch('/.netlify/functions/nfl-predictions-generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          season: season.toString(),
-          games: games,
-          refresh: true
-        })
-      });
+      // Call new V5 generate endpoint
+      const generateRes = await fetch(`/.netlify/functions/nfl-v5-generate?week=${targetWeek}&season=${season}`);
       
       if (!generateRes.ok) {
+        if (generateRes.status === 400) {
+          throw new Error('Invalid week or season parameter');
+        }
         throw new Error(`Prediction generation failed: ${generateRes.status}`);
       }
       
       const generateData = await generateRes.json();
-      const predictions = generateData.predictions || [];
       
-      if (predictions.length === 0) {
-        throw new Error('No predictions generated');
+      if (generateData.status !== 'success') {
+        throw new Error('Generation failed on backend');
       }
       
-      // Transform to V5 format
-      const transformedPredictions = predictions.map(pred => {
-        const spread = pred.predictions?.spread || {};
-        const total = pred.predictions?.total || {};
-        const moneyline = pred.predictions?.moneyline || {};
-        
-        return {
-          game_id: pred.game_id,
-          matchup: `${pred.away_team} @ ${pred.home_team}`,
-          kickoff: pred.start || pred.kickoff,
-          away_team: pred.away_team,
-          home_team: pred.home_team,
-          spread: {
-            pick: spread.pick,
-            line: spread.line,
-            predicted_margin: spread.predicted,
-            confidence: spread.confidence,
-            edge: spread.edge,
-            recommended_units: spread.recommended_units || 0
-          },
-          total: {
-            pick: total.pick,
-            line: total.line,
-            predicted_total: total.predicted,
-            confidence: total.confidence,
-            edge: total.edge,
-            recommended_units: total.recommended_units || 0
-          },
-          moneyline: {
-            pick: moneyline.pick,
-            confidence: moneyline.confidence,
-            edge: moneyline.edge,
-            recommended_units: moneyline.recommended_units || 0
-          },
-          home_win_prob: pred.predictions?.home_win_prob || 0.5,
-          away_win_prob: pred.predictions?.away_win_prob || 0.5,
-          model_version: "v5-hybrid",
-          generated_at: new Date().toISOString()
-        };
-      });
+      // Immediately fetch the newly generated bundle
+      const getRes = await fetch(`/.netlify/functions/nfl-v5-get?season=${season}&week=${targetWeek}`);
+      
+      if (!getRes.ok) {
+        throw new Error('Failed to fetch generated predictions');
+      }
+      
+      const data = await getRes.json();
+      const bundle = data.bundle || {};
+      const games = bundle.games || [];
       
       // Update UI with fresh predictions
-      setPredictions(transformedPredictions);
+      setPredictions(games);
       setMeta({
-        model_version: "v5",
-        season: season,
-        week: targetWeek,
-        updated_at: new Date().toISOString(),
-        games_count: transformedPredictions.length,
+        model_version: bundle.model_version || "v5",
+        season: data.season,
+        week: data.week,
+        updated_at: bundle.generated_at,
+        generated_at: bundle.generated_at,
+        games_count: bundle.games_count || games.length,
         models: {
           spread: {
             name: "Poisson EPA V3",
@@ -198,10 +164,7 @@ export default function NFLPredictionsV5() {
         }
       });
       setDataSource('fresh');
-      setLastRefresh(new Date().toISOString());
-      
-      // Note: This doesn't upload to Blobs - that's only done by the backend refresh endpoint
-      // To persist, user would need to save manually or we'd need to add an upload step
+      setLastRefresh(bundle.generated_at);
       
     } catch (err) {
       console.error('Error refreshing predictions:', err);
