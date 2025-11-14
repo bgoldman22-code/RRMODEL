@@ -187,7 +187,7 @@ async function generateV5Predictions({ season, week }) {
         home_team: game.home_team,
         away_team: game.away_team,
         gameday: game.gameday,
-        kickoff: game.gametime,
+        kickoff: game.kickoff, // Use the properly formatted ISO datetime
         
         spread_model: {
           model_name: 'v5_multi_feature_epa',
