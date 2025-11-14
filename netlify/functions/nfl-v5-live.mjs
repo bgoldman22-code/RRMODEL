@@ -126,18 +126,27 @@ async function generateV5Predictions({ season, week }) {
     // 3. Extract target week's schedule (future games)
     const weekGames = allGames
       .filter(g => Number(g.season) === season && Number(g.week) === week)
-      .map(g => ({
-        game_id: g.game_id,
-        season: Number(g.season),
-        week: Number(g.week),
-        home_team: g.home_team,
-        away_team: g.away_team,
-        gameday: g.gameday,
-        gametime: g.gametime,
-        kickoff: g.gametime,
-        spread_line: g.spread_line ? Number(g.spread_line) : null,
-        total_line: g.total_line ? Number(g.total_line) : null
-      }));
+      .map(g => {
+        // Combine gameday and gametime into ISO datetime
+        let kickoff = g.gameday; // Default to just the date
+        if (g.gametime && g.gameday) {
+          // gametime is like "20:15", gameday is like "2025-11-13"
+          // Combine them: "2025-11-13T20:15:00Z"
+          kickoff = `${g.gameday}T${g.gametime}:00Z`;
+        }
+        
+        return {
+          game_id: g.game_id,
+          season: Number(g.season),
+          week: Number(g.week),
+          home_team: g.home_team,
+          away_team: g.away_team,
+          gameday: g.gameday,
+          kickoff: kickoff, // Full ISO datetime
+          spread_line: g.spread_line ? Number(g.spread_line) : null,
+          total_line: g.total_line ? Number(g.total_line) : null
+        };
+      });
     
     if (weekGames.length === 0) {
       throw new Error(`No games found for ${season} Week ${week}`);
