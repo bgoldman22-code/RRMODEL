@@ -97,19 +97,61 @@ function extractPlayerStats(boxscore) {
 }
 
 // Normalize team names for matching
+/**
+ * Normalize team names for consistent matching
+ * TheOddsAPI uses full names like "Oklahoma City Thunder"
+ * NBA CDN uses nicknames like "Thunder"
+ */
 function normalizeTeam(name) {
-  return name.toLowerCase()
-    .replace(/\s+(trail blazers|76ers|thunder|pelicans|clippers|lakers|warriors|grizzlies|timberwolves|mavericks)/g, '')
-    .replace(/[^a-z]/g, '');
+  if (!name) return '';
+  
+  // Map full names to NBA CDN nicknames
+  const teamMap = {
+    'Oklahoma City Thunder': 'Thunder',
+    'Los Angeles Lakers': 'Lakers',
+    'Los Angeles Clippers': 'Clippers',
+    'Golden State Warriors': 'Warriors',
+    'Portland Trail Blazers': 'Trail Blazers',
+    'New York Knicks': 'Knicks',
+    'Brooklyn Nets': 'Nets',
+    'Philadelphia 76ers': '76ers',
+    'Boston Celtics': 'Celtics',
+    'Toronto Raptors': 'Raptors',
+    'Chicago Bulls': 'Bulls',
+    'Cleveland Cavaliers': 'Cavaliers',
+    'Detroit Pistons': 'Pistons',
+    'Indiana Pacers': 'Pacers',
+    'Milwaukee Bucks': 'Bucks',
+    'Atlanta Hawks': 'Hawks',
+    'Charlotte Hornets': 'Hornets',
+    'Miami Heat': 'Heat',
+    'Orlando Magic': 'Magic',
+    'Washington Wizards': 'Wizards',
+    'Dallas Mavericks': 'Mavericks',
+    'Houston Rockets': 'Rockets',
+    'Memphis Grizzlies': 'Grizzlies',
+    'New Orleans Pelicans': 'Pelicans',
+    'San Antonio Spurs': 'Spurs',
+    'Denver Nuggets': 'Nuggets',
+    'Minnesota Timberwolves': 'Timberwolves',
+    'Utah Jazz': 'Jazz',
+    'Phoenix Suns': 'Suns',
+    'Sacramento Kings': 'Kings'
+  };
+  
+  // Return mapped name or original if already in nickname format
+  return teamMap[name] || name;
 }
 
-// Match game by teams and date
+// Match game by teams and commence time (UTC)
 function matchGame(oddsGame, nbaGames) {
   const oddsHome = normalizeTeam(oddsGame.homeTeam);
   const oddsAway = normalizeTeam(oddsGame.awayTeam);
   
-  // Convert our date to match format (compare just the date part)
-  const oddsDate = oddsGame.date; // "2025-10-21"
+  // Use commence time (UTC) instead of date field
+  // TheOddsAPI commenceTime: "2025-10-22T02:00:00Z"
+  // NBA gameDateTimeUTC: "2025-10-22T02:00:00Z"
+  const oddsDate = oddsGame.commenceTime.split('T')[0];
   
   for (const game of nbaGames) {
     // NBA gameDateTimeUTC is like "2025-10-02T16:00:00Z"

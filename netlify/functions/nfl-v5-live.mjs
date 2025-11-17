@@ -353,6 +353,7 @@ async function generateV5Predictions({ season, week }) {
           p50: totalPred.p50,
           p75: totalPred.p75,
           spread: totalPred.spread,
+          features: totalFeatures,  // Expose for debugging/validation
           features: totalFeatures,
           market_line: game.total_line
         },
@@ -384,10 +385,41 @@ async function generateV5Predictions({ season, week }) {
       });
     }
     
+    // Calculate feature distribution means for monitoring
+    const featureMeans = {
+      pace_combined: 0,
+      epa_off_sum: 0,
+      success_sum: 0,
+      explosive_sum: 0,
+      count: predictions.length
+    };
+    
+    predictions.forEach(p => {
+      const homeTeam = p.home_team;
+      const awayTeam = p.away_team;
+      const homeMetrics = teamMetrics[homeTeam];
+      const awayMetrics = teamMetrics[awayTeam];
+      
+      if (homeMetrics && awayMetrics) {
+        featureMeans.pace_combined += (homeMetrics.pace_avg + awayMetrics.pace_avg) / 2;
+        featureMeans.epa_off_sum += homeMetrics.epa_offense_avg + awayMetrics.epa_offense_avg;
+        featureMeans.success_sum += homeMetrics.off_success_rate + awayMetrics.off_success_rate;
+        featureMeans.explosive_sum += homeMetrics.off_explosive_rate + awayMetrics.off_explosive_rate;
+      }
+    });
+    
+    // Compute means
+    if (featureMeans.count > 0) {
+      featureMeans.pace_combined /= featureMeans.count;
+      featureMeans.epa_off_sum /= featureMeans.count;
+      featureMeans.success_sum /= featureMeans.count;
+      featureMeans.explosive_sum /= featureMeans.count;
+    }
+    
     return {
       season,
       week,
-      model_version: 'V5-Live-Production-Calibrated-2025-11-17',
+      model_version: 'V5-Live-EPA-Fix-2025-11-17',
       generated_at: new Date().toISOString(),
       generation_time_ms: executionTime,
       games_count: predictions.length,
@@ -397,13 +429,29 @@ async function generateV5Predictions({ season, week }) {
         under_count: underCount,
         mean_total: meanTotal
       },
+      feature_diagnostics: {
+        means: {
+          pace_combined: Number(featureMeans.pace_combined.toFixed(2)),
+          epa_off_sum: Number(featureMeans.epa_off_sum.toFixed(4)),
+          success_sum: Number(featureMeans.success_sum.toFixed(4)),
+          explosive_sum: Number(featureMeans.explosive_sum.toFixed(4))
+        },
+        training_targets: {
+          pace_combined: 171.4,
+          epa_off_sum: 0.0186,
+          success_sum: 0.444,
+          explosive_sum: 0.041
+        },
+        epa_denominator: 'gamePlaysEst (training-exact)',
+        scale_factor: 1.3714
+      },
       data_sources: {
         nflverse_url: NFLVERSE_GAMES_URL,
         aggregates: `nflverse/${season} (${allAggregates.length} games)`,
         schedule: `nflverse/${season} Week ${week}`,
         rolling_window: 16,
         cutoff_week: week - 1,
-        calibration: 'Training-exact feature generation (pace=2.714x, epa=per-play, success=rate)'
+        calibration: 'Training-exact: EPA ÷ gamePlaysEst, pace = gamePlaysEst, SCALE = 1.3714'
       },
       games: predictions
     };
