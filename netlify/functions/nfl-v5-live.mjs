@@ -231,13 +231,29 @@ async function generateV5Predictions({ season, week }) {
       const spreadEdge = game.spread_line ? Math.abs(Math.abs(spreadPred.raw_prediction) - Math.abs(game.spread_line)) : 0;
       const totalEdge = game.total_line ? Math.abs(totalPred.p50 - game.total_line) : 0;
       
-      // Determine picks
+      // Determine picks with CORRECT favorite/underdog logic
       const spreadPick = spreadPred.raw_prediction < 0 ? game.home_team : game.away_team;
-      // NFLverse spread_line is from home team perspective (negative = home favored)
-      // If we're picking the away team, flip the sign to show their line
+      
+      // CRITICAL: Spread line must match the picked team's role (favorite vs underdog)
+      // NFLverse spread_line is from HOME team perspective:
+      //   - Negative = home is favorite (e.g., -3.5 means home favored by 3.5)
+      //   - Positive = home is underdog (e.g., +3.5 means away favored by 3.5)
+      
       let spreadLine = game.spread_line || spreadPred.line;
-      if (spreadPick === game.away_team && spreadLine !== null) {
-        spreadLine = -spreadLine; // Flip to away team's perspective
+      
+      if (spreadLine !== null) {
+        // Determine who the market favorite is
+        const marketFavorite = spreadLine < 0 ? game.home_team : game.away_team;
+        
+        // If we're picking the favorite, show negative spread
+        // If we're picking the underdog, show positive spread
+        if (spreadPick === marketFavorite) {
+          // Picking favorite - use negative spread
+          spreadLine = -Math.abs(spreadLine);
+        } else {
+          // Picking underdog - use positive spread
+          spreadLine = Math.abs(spreadLine);
+        }
       }
       
       const totalPick = totalPred.p50 > (game.total_line || totalPred.p50) ? 'OVER' : 'UNDER';
