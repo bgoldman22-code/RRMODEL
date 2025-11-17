@@ -113,6 +113,10 @@ async function generateV5Predictions({ season, week }) {
     console.log(`Loaded ${teamStats.length} team-week stats from NFLverse`);
     
     // 3. Build aggregates from team stats (real EPA data!)
+    // TRAINING CALIBRATION CONSTANTS (from game_aggregates_2025.json analysis)
+    const PACE_SCALING_FACTOR = 2.714;  // 171.4 avg game plays / 63 avg team offensive plays
+    const EXPLOSIVE_RATE_MEAN = 0.0204; // Training mean per team
+    
     const allAggregates = teamStats
       .filter(s => Number(s.season) === season && Number(s.week) < week && s.season_type === 'REG')
       .map(s => {
@@ -130,6 +134,15 @@ async function generateV5Predictions({ season, week }) {
         
         const isHome = game ? game.home_team === teamAbbrev : false;
         
+        // Calculate per-team offensive plays
+        const offensivePlays = Number(s.attempts || 0) + Number(s.carries || 0);
+        
+        // Calculate total EPA for this team's offense
+        const totalOffenseEPA = Number(s.passing_epa || 0) + Number(s.rushing_epa || 0);
+        
+        // Calculate success plays
+        const successPlays = Number(s.passing_first_downs || 0) + Number(s.rushing_first_downs || 0);
+        
         return {
           game_id: game ? game.game_id : `${season}_${String(weekNum).padStart(2, '0')}_${opponent}_${teamAbbrev}`,
           season: season,
@@ -139,14 +152,19 @@ async function generateV5Predictions({ season, week }) {
           home_team: isHome ? teamAbbrev : opponent,
           away_team: isHome ? opponent : teamAbbrev,
           is_home: isHome,
-          // Real EPA from play-by-play!
-          offense_epa: Number(s.passing_epa || 0) + Number(s.rushing_epa || 0),
-          defense_epa: 0, // Defense EPA needs opponent's offense EPA (will calculate below)
-          plays: Number(s.attempts || 0) + Number(s.carries || 0),
-          // Success rate approximation from yards/first downs
-          success_rate: (Number(s.passing_first_downs || 0) + Number(s.rushing_first_downs || 0)) / 
-                       (Number(s.attempts || 1) + Number(s.carries || 1)),
-          explosive_rate: 0.11 // Placeholder - would need play-level data
+          
+          // TRAINING-EXACT FEATURES:
+          // 1. Pace: Scale offensive plays to total game plays (matches training ~171)
+          plays: Math.round(offensivePlays * PACE_SCALING_FACTOR),
+          
+          // 2. EPA: Per-play format (matches training -0.05 to 0.4 range)
+          epa_per_play: offensivePlays > 0 ? (totalOffenseEPA / offensivePlays) : 0.0,
+          
+          // 3. Success Rate: Decimal 0-1 format (matches training 0.2-0.5 range)
+          success_rate: offensivePlays > 0 ? (successPlays / offensivePlays) : 0.222,
+          
+          // 4. Explosive Rate: Use training mean until play-by-play data available
+          explosive_rate: EXPLOSIVE_RATE_MEAN
         };
       });
     
@@ -215,7 +233,12 @@ async function generateV5Predictions({ season, week }) {
       
       // Determine picks
       const spreadPick = spreadPred.raw_prediction < 0 ? game.home_team : game.away_team;
-      const spreadLine = game.spread_line || spreadPred.line;
+      // NFLverse spread_line is from home team perspective (negative = home favored)
+      // If we're picking the away team, flip the sign to show their line
+      let spreadLine = game.spread_line || spreadPred.line;
+      if (spreadPick === game.away_team && spreadLine !== null) {
+        spreadLine = -spreadLine; // Flip to away team's perspective
+      }
       
       const totalPick = totalPred.p50 > (game.total_line || totalPred.p50) ? 'OVER' : 'UNDER';
       const totalLine = game.total_line || totalPred.p50;
@@ -286,19 +309,47 @@ async function generateV5Predictions({ season, week }) {
     
     const executionTime = Date.now() - startTime;
     
+    // HEALTH CHECK: Detect catastrophic mis-inference
+    const totalPicks = predictions.map(p => p.total.pick);
+    const overCount = totalPicks.filter(p => p === 'OVER').length;
+    const underCount = totalPicks.filter(p => p === 'UNDER').length;
+    const meanTotal = predictions.reduce((s, p) => s + p.total.predicted, 0) / predictions.length;
+    
+    const healthCheckFailed = 
+      (overCount === predictions.length || underCount === predictions.length) ||  // All one side
+      meanTotal > 60 || meanTotal < 30;  // Predictions unrealistic
+    
+    if (healthCheckFailed) {
+      console.warn('⚠️  HEALTH CHECK FAILED');
+      console.warn(`   OVER: ${overCount}, UNDER: ${underCount}, Mean Total: ${meanTotal.toFixed(1)}`);
+      console.warn('   Predictions marked as debug-only - feature distribution anomaly');
+      
+      predictions.forEach(p => {
+        p.total.debug_only = true;
+        p.total.health_check_warning = 'Feature distribution anomaly detected - verify feature generation';
+      });
+    }
+    
     return {
       season,
       week,
-      model_version: 'V5-Live-NFLverse-2025-11-14',
+      model_version: 'V5-Live-Production-Calibrated-2025-11-17',
       generated_at: new Date().toISOString(),
       generation_time_ms: executionTime,
       games_count: predictions.length,
+      health_check: {
+        passed: !healthCheckFailed,
+        over_count: overCount,
+        under_count: underCount,
+        mean_total: meanTotal
+      },
       data_sources: {
         nflverse_url: NFLVERSE_GAMES_URL,
         aggregates: `nflverse/${season} (${allAggregates.length} games)`,
         schedule: `nflverse/${season} Week ${week}`,
         rolling_window: 16,
-        cutoff_week: week - 1
+        cutoff_week: week - 1,
+        calibration: 'Training-exact feature generation (pace=2.714x, epa=per-play, success=rate)'
       },
       games: predictions
     };
@@ -321,46 +372,52 @@ function computeRollingMetrics(aggregates, team, season, targetWeek, windowSize 
   const recentGames = teamGames.slice(0, windowSize);
   
   if (recentGames.length === 0) {
-    // Fallback: league averages
+    // Fallback: TRAINING DISTRIBUTION MEANS (not arbitrary values)
     return {
-      pace_avg: 155,
-      epa_offense_avg: 0.0,
-      epa_defense_avg: 0.0,
-      off_success_rate: 0.45,
-      def_success_rate: 0.45,
-      off_explosive_rate: 0.11,
-      def_explosive_rate: 0.11,
+      pace_avg: 171.4,            // Training mean total game plays
+      epa_offense_avg: 0.0093,    // Training mean per team per play
+      epa_defense_avg: 0.0093,    // Training mean per team per play
+      off_success_rate: 0.222,    // Training mean per team
+      def_success_rate: 0.222,
+      off_explosive_rate: 0.0204, // Training mean per team
+      def_explosive_rate: 0.0204,
       points_scored_avg: 22.0,
       points_allowed_avg: 22.0
     };
   }
   
-  let pace_sum = 0, epa_off_sum = 0, epa_def_sum = 0;
-  let success_off_sum = 0, success_def_sum = 0;
-  let explosive_off_sum = 0, explosive_def_sum = 0;
+  // Accumulate metrics (already in per-play/rate format from aggregates)
+  let pace_sum = 0;
+  let epa_off_per_play_sum = 0;  // Already per-play
+  let epa_def_per_play_sum = 0;  // Already per-play
+  let success_off_sum = 0;       // Already rate (0-1)
+  let success_def_sum = 0;
+  let explosive_off_sum = 0;     // Already rate (0-1)
+  let explosive_def_sum = 0;
   
   for (const game of recentGames) {
-    pace_sum += game.plays || 155;
-    epa_off_sum += game.offense_epa || 0.0;
-    // For defense, we need the opponent's offensive EPA
-    // Find opponent's stats for the same game
+    pace_sum += game.plays || 171.4;
+    epa_off_per_play_sum += game.epa_per_play || 0.0;
+    
+    // For defense, we need the opponent's offensive EPA per play
     const opponentGame = aggregates.find(agg => 
       agg.season === game.season && 
       agg.week === game.week && 
       agg.team === game.opponent
     );
-    epa_def_sum += (opponentGame ? opponentGame.offense_epa : 0.0);
-    success_off_sum += game.success_rate || 0.45;
-    success_def_sum += (opponentGame ? opponentGame.success_rate : 0.45);
-    explosive_off_sum += game.explosive_rate || 0.11;
-    explosive_def_sum += (opponentGame ? opponentGame.explosive_rate : 0.11);
+    
+    epa_def_per_play_sum += (opponentGame ? opponentGame.epa_per_play : 0.0);
+    success_off_sum += game.success_rate || 0.222;
+    success_def_sum += (opponentGame ? opponentGame.success_rate : 0.222);
+    explosive_off_sum += game.explosive_rate || 0.0204;
+    explosive_def_sum += (opponentGame ? opponentGame.explosive_rate : 0.0204);
   }
   
   const n = recentGames.length;
   return {
     pace_avg: pace_sum / n,
-    epa_offense_avg: (epa_off_sum / n) / (pace_sum / n), // EPA per play
-    epa_defense_avg: (epa_def_sum / n) / (pace_sum / n), // EPA per play allowed
+    epa_offense_avg: epa_off_per_play_sum / n,  // Simple average (no extra division)
+    epa_defense_avg: epa_def_per_play_sum / n,  // Simple average (no extra division)
     off_success_rate: success_off_sum / n,
     def_success_rate: success_def_sum / n,
     off_explosive_rate: explosive_off_sum / n,
@@ -391,12 +448,25 @@ function computeSpreadFeatures(homeMetrics, awayMetrics, game) {
 }
 
 function computeTotalFeatures(homeMetrics, awayMetrics) {
+  // Training expects:
+  // - pace_combined: ~171 (single game total plays, not sum of team averages)
+  // - epa_off_sum: ~0.0-0.2 (sum of per-play EPA decimals)
+  // - success_sum: ~0.4-0.5 (sum of success rate decimals, NOT percentage)
+  // - explosive_sum: ~0.04 (sum of explosive rate decimals, NOT percentage)
+  
   return {
-    pace_combined: homeMetrics.pace_avg + awayMetrics.pace_avg,
+    // Pace: Average the two teams' pace (each team's pace is already total game plays)
+    pace_combined: (homeMetrics.pace_avg + awayMetrics.pace_avg) / 2,
+    
+    // EPA: Sum per-play EPA (already in correct scale)
     epa_off_sum: homeMetrics.epa_offense_avg + awayMetrics.epa_offense_avg,
     epa_def_sum: homeMetrics.epa_defense_avg + awayMetrics.epa_defense_avg,
-    success_sum: (homeMetrics.off_success_rate + awayMetrics.off_success_rate) * 100,
-    explosive_sum: (homeMetrics.off_explosive_rate + awayMetrics.off_explosive_rate) * 100
+    
+    // Success: Sum decimal rates (already 0-1, don't multiply by 100!)
+    success_sum: homeMetrics.off_success_rate + awayMetrics.off_success_rate,
+    
+    // Explosive: Sum decimal rates (already 0-1, don't multiply by 100!)
+    explosive_sum: homeMetrics.off_explosive_rate + awayMetrics.off_explosive_rate
   };
 }
 
