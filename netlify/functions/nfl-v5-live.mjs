@@ -180,21 +180,62 @@ async function generateV5Predictions({ season, week }) {
       const spreadPred = predictSpread(spreadFeatures);
       const totalPred = predictTotal(totalFeatures);
       
+      // Calculate edge vs market lines
+      const spreadEdge = game.spread_line ? Math.abs(Math.abs(spreadPred.raw_prediction) - Math.abs(game.spread_line)) : 0;
+      const totalEdge = game.total_line ? Math.abs(totalPred.p50 - game.total_line) : 0;
+      
+      // Determine picks
+      const spreadPick = spreadPred.raw_prediction < 0 ? game.home_team : game.away_team;
+      const spreadLine = game.spread_line || spreadPred.line;
+      
+      const totalPick = totalPred.p50 > (game.total_line || totalPred.p50) ? 'OVER' : 'UNDER';
+      const totalLine = game.total_line || totalPred.p50;
+      
+      // Calculate recommended units (simplified Kelly criterion)
+      const spreadUnits = spreadEdge > 10 ? 3 : spreadEdge > 5 ? 2 : spreadEdge > 2 ? 1 : 0.5;
+      const totalUnits = totalEdge > 10 ? 3 : totalEdge > 5 ? 2 : totalEdge > 2 ? 1 : 0.5;
+      
       predictions.push({
         game_id: game.game_id,
         season: game.season,
         week: game.week,
         home_team: game.home_team,
         away_team: game.away_team,
+        matchup: `${game.away_team} @ ${game.home_team}`,
         gameday: game.gameday,
         kickoff: game.kickoff, // Use the properly formatted ISO datetime
         
+        // Frontend-compatible format
+        spread: {
+          pick: spreadPick,
+          line: spreadLine,
+          edge: spreadEdge,
+          units: spreadUnits,
+          confidence: spreadPred.confidence
+        },
+        
+        total: {
+          pick: totalPick,
+          line: totalLine,
+          edge: totalEdge,
+          units: totalUnits,
+          predicted: totalPred.p50
+        },
+        
+        moneyline: {
+          pick: spreadPick, // Same as spread favorite
+          line: null, // Not calculated in V5
+          edge: 0,
+          units: 0
+        },
+        
+        // Raw model output (for debugging/analysis)
         spread_model: {
           model_name: 'v5_multi_feature_epa',
           predicted_spread: spreadPred.raw_prediction,
           line: spreadPred.line,
           home_favorite: spreadPred.raw_prediction < 0,
-          favorite_team: spreadPred.raw_prediction < 0 ? game.home_team : game.away_team,
+          favorite_team: spreadPick,
           confidence: spreadPred.confidence,
           features: spreadFeatures,
           market_line: game.spread_line
