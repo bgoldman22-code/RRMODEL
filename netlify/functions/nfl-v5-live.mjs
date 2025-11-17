@@ -114,59 +114,97 @@ async function generateV5Predictions({ season, week }) {
     
     // 3. Build aggregates from team stats (real EPA data!)
     // TRAINING CALIBRATION CONSTANTS (from game_aggregates_2025.json analysis)
-    const PACE_SCALING_FACTOR = 2.714;  // 171.4 avg game plays / 63 avg team offensive plays
+    // Training: EPA per play = team_total_epa / total_game_plays (both teams combined)
+    // NOT: team_total_epa / team_offensive_plays
+    const SCALE_GAME_PLAYS = 1.3714;    // 171.43 / 125 (training total plays / base offensive plays)
     const EXPLOSIVE_RATE_MEAN = 0.0204; // Training mean per team
     
-    const allAggregates = teamStats
+    // First pass: collect per-team stats and match with opponents
+    const teamStatsMap = new Map();
+    teamStats
       .filter(s => Number(s.season) === season && Number(s.week) < week && s.season_type === 'REG')
-      .map(s => {
-        const teamAbbrev = s.team;
-        const opponent = s.opponent_team;
-        const weekNum = Number(s.week);
-        
-        // Find the corresponding game to determine home/away
-        const game = allGames.find(g => 
-          Number(g.season) === season && 
-          Number(g.week) === weekNum &&
-          ((g.home_team === teamAbbrev && g.away_team === opponent) || 
-           (g.away_team === teamAbbrev && g.home_team === opponent))
-        );
-        
-        const isHome = game ? game.home_team === teamAbbrev : false;
-        
-        // Calculate per-team offensive plays
-        const offensivePlays = Number(s.attempts || 0) + Number(s.carries || 0);
-        
-        // Calculate total EPA for this team's offense
-        const totalOffenseEPA = Number(s.passing_epa || 0) + Number(s.rushing_epa || 0);
-        
-        // Calculate success plays
-        const successPlays = Number(s.passing_first_downs || 0) + Number(s.rushing_first_downs || 0);
-        
-        return {
-          game_id: game ? game.game_id : `${season}_${String(weekNum).padStart(2, '0')}_${opponent}_${teamAbbrev}`,
-          season: season,
-          week: weekNum,
-          team: teamAbbrev,
-          opponent: opponent,
-          home_team: isHome ? teamAbbrev : opponent,
-          away_team: isHome ? opponent : teamAbbrev,
-          is_home: isHome,
-          
-          // TRAINING-EXACT FEATURES:
-          // 1. Pace: Scale offensive plays to total game plays (matches training ~171)
-          plays: Math.round(offensivePlays * PACE_SCALING_FACTOR),
-          
-          // 2. EPA: Per-play format (matches training -0.05 to 0.4 range)
-          epa_per_play: offensivePlays > 0 ? (totalOffenseEPA / offensivePlays) : 0.0,
-          
-          // 3. Success Rate: Decimal 0-1 format (matches training 0.2-0.5 range)
-          success_rate: offensivePlays > 0 ? (successPlays / offensivePlays) : 0.222,
-          
-          // 4. Explosive Rate: Use training mean until play-by-play data available
-          explosive_rate: EXPLOSIVE_RATE_MEAN
-        };
+      .forEach(s => {
+        const key = `${s.team}_${s.week}`;
+        teamStatsMap.set(key, {
+          team: s.team,
+          opponent: s.opponent_team,
+          week: Number(s.week),
+          offensive_plays: Number(s.attempts || 0) + Number(s.carries || 0),
+          total_epa: Number(s.passing_epa || 0) + Number(s.rushing_epa || 0),
+          success_plays: Number(s.passing_first_downs || 0) + Number(s.rushing_first_downs || 0)
+        });
       });
+    
+    // Second pass: build aggregates with game-level context
+    const allAggregates = [];
+    const processedGames = new Set();
+    
+    for (const [key, teamData] of teamStatsMap.entries()) {
+      const weekNum = teamData.week;
+      const teamAbbrev = teamData.team;
+      const opponent = teamData.opponent;
+      
+      // Find corresponding game
+      const game = allGames.find(g => 
+        Number(g.season) === season && 
+        Number(g.week) === weekNum &&
+        ((g.home_team === teamAbbrev && g.away_team === opponent) || 
+         (g.away_team === teamAbbrev && g.home_team === opponent))
+      );
+      
+      if (!game) continue;
+      
+      const gameKey = `${game.game_id}_${teamAbbrev}`;
+      if (processedGames.has(gameKey)) continue;
+      processedGames.add(gameKey);
+      
+      const isHome = game.home_team === teamAbbrev;
+      
+      // Get opponent stats for this game
+      const opponentKey = `${opponent}_${weekNum}`;
+      const opponentData = teamStatsMap.get(opponentKey);
+      
+      // TRAINING-EXACT EPA CALCULATION:
+      // Step 1: Calculate base game plays (sum of both teams' offensive plays)
+      // Step 2: Scale to estimated total game plays (including special teams)
+      // Step 3: Use same denominator for BOTH teams' EPA per play
+      
+      let gamePlaysEst;
+      if (opponentData) {
+        // Both teams' data available - use actual sum
+        const baseGamePlays = teamData.offensive_plays + opponentData.offensive_plays;
+        gamePlaysEst = baseGamePlays * SCALE_GAME_PLAYS;
+      } else {
+        // Fallback: estimate based on this team alone
+        gamePlaysEst = teamData.offensive_plays * SCALE_GAME_PLAYS * 2;
+      }
+      
+      // Create aggregate for this team
+      allAggregates.push({
+        game_id: game.game_id,
+        season: season,
+        week: weekNum,
+        team: teamAbbrev,
+        opponent: opponent,
+        home_team: game.home_team,
+        away_team: game.away_team,
+        is_home: isHome,
+        
+        // TRAINING-EXACT FEATURES:
+        // 1. Pace: Estimated total game plays (matches training ~171)
+        plays: Math.round(gamePlaysEst),
+        
+        // 2. EPA: Divide by TOTAL GAME PLAYS, not individual team plays
+        //    This matches training: team_epa_per_play = team_epa / game_total_plays
+        epa_per_play: gamePlaysEst > 0 ? (teamData.total_epa / gamePlaysEst) : 0.0,
+        
+        // 3. Success Rate: Decimal 0-1 format (per team's offensive plays)
+        success_rate: teamData.offensive_plays > 0 ? (teamData.success_plays / teamData.offensive_plays) : 0.222,
+        
+        // 4. Explosive Rate: Use training mean (play-by-play data not available)
+        explosive_rate: EXPLOSIVE_RATE_MEAN
+      });
+    }
     
     console.log(`Aggregated ${allAggregates.length} team-week records for ${season}`);
     
