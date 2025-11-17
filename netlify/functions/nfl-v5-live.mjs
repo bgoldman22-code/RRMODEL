@@ -86,44 +86,73 @@ async function generateV5Predictions({ season, week }) {
   const startTime = Date.now();
   
   try {
-    // 1. Fetch NFLverse games CSV (schedule + completed game stats)
+    // 1. Fetch NFLverse games CSV (schedule + betting lines)
     const NFLVERSE_GAMES_URL = 'https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv';
     console.log('Fetching NFLverse games from:', NFLVERSE_GAMES_URL);
     
-    const response = await fetch(NFLVERSE_GAMES_URL);
-    if (!response.ok) {
-      throw new Error(`NFLverse fetch failed: ${response.status} ${response.statusText}`);
+    const gamesResponse = await fetch(NFLVERSE_GAMES_URL);
+    if (!gamesResponse.ok) {
+      throw new Error(`NFLverse games fetch failed: ${gamesResponse.status}`);
     }
     
-    const csvText = await response.text();
-    const allGames = parseCSV(csvText);
+    const gamesText = await gamesResponse.text();
+    const allGames = parseCSV(gamesText);
     console.log(`Loaded ${allGames.length} total games from NFLverse`);
     
-    // 2. Extract this season's games for aggregates (completed games only)
-    const allAggregates = allGames
-      .filter(g => Number(g.season) === season && g.away_score && g.home_score)
-      .map(g => ({
-        game_id: g.game_id,
-        season: Number(g.season),
-        week: Number(g.week),
-        home_team: g.home_team,
-        away_team: g.away_team,
-        home_score: Number(g.home_score),
-        away_score: Number(g.away_score),
-        // Estimate EPA and metrics from score/game data
-        // (Real nflverse has play-by-play, but for serverless we approximate)
-        plays: 155, // League average
-        home_epa_per_play: (Number(g.home_score) - 23) / 70, // Rough approximation
-        away_epa_per_play: (Number(g.away_score) - 23) / 70,
-        home_success_rate: Math.min(0.6, Math.max(0.3, Number(g.home_score) / 50)),
-        away_success_rate: Math.min(0.6, Math.max(0.3, Number(g.away_score) / 50)),
-        home_explosive_rate: 0.11,
-        away_explosive_rate: 0.11
-      }));
+    // 2. Fetch NFLverse team stats (weekly) - has EPA, success rate, etc.
+    const NFLVERSE_STATS_URL = `https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_${season}.csv`;
+    console.log('Fetching NFLverse team stats from:', NFLVERSE_STATS_URL);
     
-    console.log(`Aggregated ${allAggregates.length} completed games for ${season}`);
+    const statsResponse = await fetch(NFLVERSE_STATS_URL);
+    if (!statsResponse.ok) {
+      throw new Error(`NFLverse stats fetch failed: ${statsResponse.status}`);
+    }
     
-    // 3. Extract target week's schedule (future games)
+    const statsText = await statsResponse.text();
+    const teamStats = parseCSV(statsText);
+    console.log(`Loaded ${teamStats.length} team-week stats from NFLverse`);
+    
+    // 3. Build aggregates from team stats (real EPA data!)
+    const allAggregates = teamStats
+      .filter(s => Number(s.season) === season && Number(s.week) < week && s.season_type === 'REG')
+      .map(s => {
+        const teamAbbrev = s.team;
+        const opponent = s.opponent_team;
+        const weekNum = Number(s.week);
+        
+        // Find the corresponding game to determine home/away
+        const game = allGames.find(g => 
+          Number(g.season) === season && 
+          Number(g.week) === weekNum &&
+          ((g.home_team === teamAbbrev && g.away_team === opponent) || 
+           (g.away_team === teamAbbrev && g.home_team === opponent))
+        );
+        
+        const isHome = game ? game.home_team === teamAbbrev : false;
+        
+        return {
+          game_id: game ? game.game_id : `${season}_${String(weekNum).padStart(2, '0')}_${opponent}_${teamAbbrev}`,
+          season: season,
+          week: weekNum,
+          team: teamAbbrev,
+          opponent: opponent,
+          home_team: isHome ? teamAbbrev : opponent,
+          away_team: isHome ? opponent : teamAbbrev,
+          is_home: isHome,
+          // Real EPA from play-by-play!
+          offense_epa: Number(s.passing_epa || 0) + Number(s.rushing_epa || 0),
+          defense_epa: 0, // Defense EPA needs opponent's offense EPA (will calculate below)
+          plays: Number(s.attempts || 0) + Number(s.carries || 0),
+          // Success rate approximation from yards/first downs
+          success_rate: (Number(s.passing_first_downs || 0) + Number(s.rushing_first_downs || 0)) / 
+                       (Number(s.attempts || 1) + Number(s.carries || 1)),
+          explosive_rate: 0.11 // Placeholder - would need play-level data
+        };
+      });
+    
+    console.log(`Aggregated ${allAggregates.length} team-week records for ${season}`);
+    
+    // 4. Extract target week's schedule (future games)
     const weekGames = allGames
       .filter(g => Number(g.season) === season && Number(g.week) === week)
       .map(g => {
@@ -281,12 +310,13 @@ async function generateV5Predictions({ season, week }) {
 }
 
 // Rolling metrics computation (16-game window, time-causal)
-function computeRollingMetrics(games, team, season, targetWeek, windowSize = 16) {
-  const teamGames = games.filter(g => 
-    Number(g.season) === season &&
-    Number(g.week) < targetWeek && // STRICTLY earlier weeks
-    (g.home_team === team || g.away_team === team)
-  ).sort((a, b) => Number(b.week) - Number(a.week)); // Most recent first
+function computeRollingMetrics(aggregates, team, season, targetWeek, windowSize = 16) {
+  // Filter to this team's games before the target week
+  const teamGames = aggregates.filter(agg => 
+    agg.season === season &&
+    agg.week < targetWeek && // STRICTLY earlier weeks
+    agg.team === team
+  ).sort((a, b) => b.week - a.week); // Most recent first
   
   const recentGames = teamGames.slice(0, windowSize);
   
@@ -299,7 +329,9 @@ function computeRollingMetrics(games, team, season, targetWeek, windowSize = 16)
       off_success_rate: 0.45,
       def_success_rate: 0.45,
       off_explosive_rate: 0.11,
-      def_explosive_rate: 0.11
+      def_explosive_rate: 0.11,
+      points_scored_avg: 22.0,
+      points_allowed_avg: 22.0
     };
   }
   
@@ -308,37 +340,33 @@ function computeRollingMetrics(games, team, season, targetWeek, windowSize = 16)
   let explosive_off_sum = 0, explosive_def_sum = 0;
   
   for (const game of recentGames) {
-    const isHome = game.home_team === team;
-    const pace = game.plays || 155;
-    
-    if (isHome) {
-      pace_sum += pace;
-      epa_off_sum += game.home_epa_per_play || 0.0;
-      epa_def_sum += game.away_epa_per_play || 0.0;
-      success_off_sum += game.home_success_rate || 0.45;
-      success_def_sum += game.away_success_rate || 0.45;
-      explosive_off_sum += game.home_explosive_rate || 0.11;
-      explosive_def_sum += game.away_explosive_rate || 0.11;
-    } else {
-      pace_sum += pace;
-      epa_off_sum += game.away_epa_per_play || 0.0;
-      epa_def_sum += game.home_epa_per_play || 0.0;
-      success_off_sum += game.away_success_rate || 0.45;
-      success_def_sum += game.home_success_rate || 0.45;
-      explosive_off_sum += game.away_explosive_rate || 0.11;
-      explosive_def_sum += game.home_explosive_rate || 0.11;
-    }
+    pace_sum += game.plays || 155;
+    epa_off_sum += game.offense_epa || 0.0;
+    // For defense, we need the opponent's offensive EPA
+    // Find opponent's stats for the same game
+    const opponentGame = aggregates.find(agg => 
+      agg.season === game.season && 
+      agg.week === game.week && 
+      agg.team === game.opponent
+    );
+    epa_def_sum += (opponentGame ? opponentGame.offense_epa : 0.0);
+    success_off_sum += game.success_rate || 0.45;
+    success_def_sum += (opponentGame ? opponentGame.success_rate : 0.45);
+    explosive_off_sum += game.explosive_rate || 0.11;
+    explosive_def_sum += (opponentGame ? opponentGame.explosive_rate : 0.11);
   }
   
   const n = recentGames.length;
   return {
     pace_avg: pace_sum / n,
-    epa_offense_avg: epa_off_sum / n,
-    epa_defense_avg: epa_def_sum / n,
+    epa_offense_avg: (epa_off_sum / n) / (pace_sum / n), // EPA per play
+    epa_defense_avg: (epa_def_sum / n) / (pace_sum / n), // EPA per play allowed
     off_success_rate: success_off_sum / n,
     def_success_rate: success_def_sum / n,
     off_explosive_rate: explosive_off_sum / n,
-    def_explosive_rate: explosive_def_sum / n
+    def_explosive_rate: explosive_def_sum / n,
+    points_scored_avg: 22.0, // Can add if needed
+    points_allowed_avg: 22.0
   };
 }
 
