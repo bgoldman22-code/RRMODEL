@@ -179,8 +179,18 @@ async function generateV5Predictions({ season, week }) {
         gamePlaysEst = teamData.offensive_plays * SCALE_GAME_PLAYS * 2;
       }
       
-      // Create aggregate for this team
-      allAggregates.push({
+  // Create aggregate for this team
+  // Clamp per-game measurements to training-plausible ranges to avoid
+  // extreme outliers (which previously drove many all-UNDER totals).
+  const raw_epa_per_play = gamePlaysEst > 0 ? (teamData.total_epa / gamePlaysEst) : 0.0;
+  const epa_per_play = Math.max(-0.35, Math.min(raw_epa_per_play, 0.35)); // clamp to [-0.35,0.35]
+
+  const raw_success = teamData.offensive_plays > 0 ? (teamData.success_plays / teamData.offensive_plays) : 0.222;
+  const success_rate = Math.max(0.10, Math.min(raw_success, 0.80)); // clamp to [0.10,0.80]
+
+  const explosive_rate = Math.max(0.005, Math.min(EXPLOSIVE_RATE_MEAN, 0.08));
+
+  allAggregates.push({
         game_id: game.game_id,
         season: season,
         week: weekNum,
@@ -193,16 +203,18 @@ async function generateV5Predictions({ season, week }) {
         // TRAINING-EXACT FEATURES:
         // 1. Pace: Estimated total game plays (matches training ~171)
         plays: Math.round(gamePlaysEst),
-        
+
         // 2. EPA: Divide by TOTAL GAME PLAYS, not individual team plays
         //    This matches training: team_epa_per_play = team_epa / game_total_plays
-        epa_per_play: gamePlaysEst > 0 ? (teamData.total_epa / gamePlaysEst) : 0.0,
-        
+        //    Apply clamping to avoid extreme outliers.
+        epa_per_play,
+
         // 3. Success Rate: Decimal 0-1 format (per team's offensive plays)
-        success_rate: teamData.offensive_plays > 0 ? (teamData.success_plays / teamData.offensive_plays) : 0.222,
-        
+        //    Clamped to plausible range.
+        success_rate,
+
         // 4. Explosive Rate: Use training mean (play-by-play data not available)
-        explosive_rate: EXPLOSIVE_RATE_MEAN
+        explosive_rate
       });
     }
     

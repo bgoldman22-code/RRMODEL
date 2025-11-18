@@ -1,1 +1,3 @@
-/.netlify/functions/*  /.netlify/functions/:splat  200
+# Netlify automatically routes /.netlify/functions/* - no redirect needed
+# Removing invalid redirect that was breaking navigation
+
