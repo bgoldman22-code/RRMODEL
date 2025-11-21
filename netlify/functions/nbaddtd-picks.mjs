@@ -1,6 +1,6 @@
 import { getStore } from "@netlify/blobs";
 
-export default async (req, context) => {
+export default async function handler(event, context) {
   try {
     // Get Netlify Blobs store
     const store = getStore("nba-ddtd-cache");
@@ -10,21 +10,21 @@ export default async (req, context) => {
     
     if (cached) {
       console.log("✅ Cache HIT - Returning cached picks");
-      return new Response(JSON.stringify(cached), {
-        status: 200,
+      return {
+        statusCode: 200,
         headers: {
           "Content-Type": "application/json",
-          "Cache-Control": "public, max-age=3600", // 1 hour browser cache
+          "Cache-Control": "public, max-age=3600",
           "X-Cache": "HIT"
-        }
-      });
+        },
+        body: JSON.stringify(cached)
+      };
     }
     
     // Cache MISS - Fetch from GitHub
     console.log("⚠️ Cache MISS - Fetching from GitHub");
     
     const githubUrl = "https://raw.githubusercontent.com/bgoldman22-code/NBA-DDTD-RESEARCH/main/data/nba/ddtd_today_picks.json";
-    
     const response = await fetch(githubUrl);
     
     if (!response.ok) {
@@ -41,33 +41,28 @@ export default async (req, context) => {
       }
     });
     
-    console.log("✅ Fetched from GitHub and cached");
-    
-    return new Response(JSON.stringify(picks), {
-      status: 200,
+    console.log("✅ Fresh picks cached successfully");
+    return {
+      statusCode: 200,
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "public, max-age=3600",
         "X-Cache": "MISS"
-      }
-    });
+      },
+      body: JSON.stringify(picks)
+    };
     
   } catch (error) {
-    console.error("❌ Error fetching picks:", error);
-    
-    return new Response(
-      JSON.stringify({
-        error: "Failed to fetch NBA DD/TD picks",
+    console.error("❌ Function error:", error);
+    return {
+      statusCode: 500,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        error: "Failed to fetch picks",
         message: error.message
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" }
-      }
-    );
+      })
+    };
   }
-};
-
-export const config = {
-  path: "/api/nba-ddtd-picks"
-};
+}
