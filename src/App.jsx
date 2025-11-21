@@ -13,6 +13,7 @@ import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
 import NHL from "./NHL";  // Elite NHL SOG Props
 import NBAPredictionsV2 from "./pages/NBAPredictionsV2";  // NBA Elite V2 Game Predictions
 import NBAPlayerProps from "./pages/NBAPlayerProps";  // NBA Player Props (Rebounds + Assists)
+import NBAPlayerPropsV2 from "./pages/NBAPlayerPropsV2";  // NBA Player Props V2 (Phase 3 PRA)
 import NBADDTDPage from "./pages/NBADDTDPage";  // NBA DD/TD Picks Page
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
@@ -94,6 +95,7 @@ export default function App() {
       items: [
         { label: 'Game Predictions (Elite) ⭐', path: '/nba-predictions-v2' },
         { label: 'Player Props (R + A) 💰', path: '/nba-player-props' },
+        { label: 'Player Props V2 (PRA) 🚀', path: '/nba-player-props-v2' },
         { label: 'DD/TD Picks 🎯', path: '/nba-ddtd' }
       ]
     }
@@ -131,6 +133,7 @@ export default function App() {
           <Route path="/nhl-sog" element={<NHL />} />
           <Route path="/nba-predictions-v2" element={<NBAPredictionsV2 />} />
           <Route path="/nba-player-props" element={<NBAPlayerProps />} />
+          <Route path="/nba-player-props-v2" element={<NBAPlayerPropsV2 />} />
           <Route path="/nba-ddtd" element={<NBADDTDPage />} />
         </Routes>
       </div>
