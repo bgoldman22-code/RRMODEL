@@ -1,6 +1,6 @@
 import { getStore } from "@netlify/blobs";
 
-export default async function handler(event, context) {
+export default async (request, context) => {
   try {
     // Get Netlify Blobs store
     const store = getStore("nba-ddtd-cache");
@@ -10,15 +10,14 @@ export default async function handler(event, context) {
     
     if (cached) {
       console.log("✅ Cache HIT - Returning cached picks");
-      return {
-        statusCode: 200,
+      return new Response(JSON.stringify(cached), {
+        status: 200,
         headers: {
           "Content-Type": "application/json",
           "Cache-Control": "public, max-age=3600",
           "X-Cache": "HIT"
-        },
-        body: JSON.stringify(cached)
-      };
+        }
+      });
     }
     
     // Cache MISS - Fetch from GitHub
@@ -42,27 +41,25 @@ export default async function handler(event, context) {
     });
     
     console.log("✅ Fresh picks cached successfully");
-    return {
-      statusCode: 200,
+    return new Response(JSON.stringify(picks), {
+      status: 200,
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "public, max-age=3600",
         "X-Cache": "MISS"
-      },
-      body: JSON.stringify(picks)
-    };
+      }
+    });
     
   } catch (error) {
     console.error("❌ Function error:", error);
-    return {
-      statusCode: 500,
+    return new Response(JSON.stringify({
+      error: "Failed to fetch picks",
+      message: error.message
+    }), {
+      status: 500,
       headers: {
         "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        error: "Failed to fetch picks",
-        message: error.message
-      })
-    };
+      }
+    });
   }
-}
+};
