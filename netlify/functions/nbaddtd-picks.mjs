@@ -1,150 +1,73 @@
-/**
- * NBA DD/TD Picks Netlify Function
- * Serves pre-generated picks from NBA-DDTD-RESEARCH repo
- * No model inference - just reads JSON and caches it
- */
+import { getStore } from "@netlify/blobs";
 
-import { getJson, setJson } from './_lib/blobs-nba.mjs';
-
-// URL to raw JSON file in NBA-DDTD-RESEARCH repo
-// NOTE: Repo must be public for this URL to work, or use a GitHub token
-// Replace YOUR_GITHUB_USERNAME with your actual username
-const PICKS_JSON_URL = 'https://raw.githubusercontent.com/bgoldman22-code/NBA-DDTD-RESEARCH/main/data/nba/ddtd_today_picks.json';
-
-/**
- * Fetch picks from GitHub repo
- * @returns {Promise<Object|null>} - Picks data or null on error
- */
-async function fetchPicksFromGitHub() {
+export default async (req, context) => {
   try {
-    const response = await fetch(PICKS_JSON_URL);
+    // Get Netlify Blobs store
+    const store = getStore("nba-ddtd-cache");
+    
+    // Try to get cached picks (24hr TTL)
+    const cached = await store.get("today-picks", { type: "json" });
+    
+    if (cached) {
+      console.log("✅ Cache HIT - Returning cached picks");
+      return new Response(JSON.stringify(cached), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "public, max-age=3600", // 1 hour browser cache
+          "X-Cache": "HIT"
+        }
+      });
+    }
+    
+    // Cache MISS - Fetch from GitHub
+    console.log("⚠️ Cache MISS - Fetching from GitHub");
+    
+    const githubUrl = "https://raw.githubusercontent.com/bgoldman22-code/NBA-DDTD-RESEARCH/main/data/nba/ddtd_today_picks.json";
+    
+    const response = await fetch(githubUrl);
     
     if (!response.ok) {
-      console.error(`GitHub fetch failed: ${response.status} ${response.statusText}`);
-      return null;
+      throw new Error(`GitHub fetch failed: ${response.statusText}`);
     }
     
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching picks from GitHub:', error);
-    return null;
-  }
-}
-
-/**
- * Main handler
- */
-export async function handler(event, context) {
-  const headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS'
-  };
-  
-  // Handle CORS preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers,
-      body: ''
-    };
-  }
-  
-  try {
-    // Get today's date for cache key
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-    const cacheKey = `picks-${today}`;
+    const picks = await response.json();
     
-    // Try to get from cache first (but don't fail if blobs not configured)
-    let cached = null;
-    try {
-      console.log(`Checking cache for ${cacheKey}...`);
-      cached = await getJson(cacheKey);
-      if (cached) {
-        console.log('✅ Serving picks from cache');
-        return {
-          statusCode: 200,
-          headers: {
-            ...headers,
-            'X-Cache': 'HIT',
-            'X-Generated-At': cached.generated_at || 'unknown'
-          },
-          body: JSON.stringify(cached)
-        };
+    // Cache for 24 hours
+    await store.setJSON("today-picks", picks, {
+      metadata: {
+        cachedAt: new Date().toISOString(),
+        date: picks.date
       }
-    } catch (blobError) {
-      console.warn('⚠️  Blobs not available (not enabled), skipping cache:', blobError.message);
-    }
+    });
     
-    // Cache miss (or blobs unavailable) - fetch from GitHub
-    console.log('⚠️  Cache miss, fetching from GitHub...');
-    const picks = await fetchPicksFromGitHub();
+    console.log("✅ Fetched from GitHub and cached");
     
-    if (!picks) {
-      // Return sample data if GitHub repo not set up yet
-      console.log('⚠️  GitHub repo not ready, returning sample data');
-      const sampleData = {
-        date: new Date().toISOString().split('T')[0],
-        generated_at: new Date().toISOString(),
-        picks: [],
-        message: 'NBA-DDTD-RESEARCH repo not set up yet. Coming soon!',
-        status: 'pending_setup'
-      };
-      
-      return {
-        statusCode: 200,
-        headers: {
-          ...headers,
-          'X-Cache': 'NONE',
-          'X-Status': 'pending_setup'
-        },
-        body: JSON.stringify(sampleData)
-      };
-    }
-    
-    // Validate picks structure
-    if (!picks.date || !picks.picks) {
-      console.error('Invalid picks structure:', picks);
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({
-          error: 'Invalid picks data structure',
-          message: 'Data validation failed'
-        })
-      };
-    }
-    
-    // Cache for 24 hours (if blobs available)
-    try {
-      console.log(`Caching picks for ${today}...`);
-      await setJson(cacheKey, picks, 86400);
-    } catch (cacheError) {
-      console.warn('⚠️  Could not cache picks (blobs not enabled):', cacheError.message);
-    }
-    
-    console.log('✅ Serving fresh picks from GitHub');
-    return {
-      statusCode: 200,
+    return new Response(JSON.stringify(picks), {
+      status: 200,
       headers: {
-        ...headers,
-        'X-Cache': 'MISS',
-        'X-Generated-At': picks.generated_at || 'unknown'
-      },
-      body: JSON.stringify(picks)
-    };
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=3600",
+        "X-Cache": "MISS"
+      }
+    });
     
   } catch (error) {
-    console.error('Handler error:', error);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({
-        error: 'Internal server error',
+    console.error("❌ Error fetching picks:", error);
+    
+    return new Response(
+      JSON.stringify({
+        error: "Failed to fetch NBA DD/TD picks",
         message: error.message
-      })
-    };
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
   }
-}
+};
+
+export const config = {
+  path: "/api/nba-ddtd-picks"
+};
