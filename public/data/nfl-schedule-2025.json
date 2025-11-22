@@ -2521,6 +2521,8 @@
     "gametime": "20:15",
     "away_team": "BUF",
     "home_team": "HOU",
+    "away_score": 19,
+    "home_score": 23,
     "game_type": "REG",
     "roof": "closed",
     "surface": "astroturf"
@@ -2911,24 +2913,24 @@
   },
   {
     "week": 14,
+    "game_id": "2025_14_CIN_BUF",
+    "gameday": "2025-12-07",
+    "weekday": "Sunday",
+    "gametime": "13:00",
+    "away_team": "CIN",
+    "home_team": "BUF",
+    "game_type": "REG",
+    "roof": "outdoors",
+    "surface": "a_turf"
+  },
+  {
+    "week": 14,
     "game_id": "2025_14_TEN_CLE",
     "gameday": "2025-12-07",
     "weekday": "Sunday",
     "gametime": "13:00",
     "away_team": "TEN",
     "home_team": "CLE",
-    "game_type": "REG",
-    "roof": "outdoors",
-    "surface": "grass"
-  },
-  {
-    "week": 14,
-    "game_id": "2025_14_CHI_GB",
-    "gameday": "2025-12-07",
-    "weekday": "Sunday",
-    "gametime": "13:00",
-    "away_team": "CHI",
-    "home_team": "GB",
     "game_type": "REG",
     "roof": "outdoors",
     "surface": "grass"
@@ -3007,15 +3009,15 @@
   },
   {
     "week": 14,
-    "game_id": "2025_14_CIN_BUF",
+    "game_id": "2025_14_CHI_GB",
     "gameday": "2025-12-07",
     "weekday": "Sunday",
     "gametime": "16:25",
-    "away_team": "CIN",
-    "home_team": "BUF",
+    "away_team": "CHI",
+    "home_team": "GB",
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": "a_turf"
+    "surface": "grass"
   },
   {
     "week": 14,
