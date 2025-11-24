@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2025-11-20T16:49:51Z",
+    "generated_at": "2025-11-24T13:08:46Z",
     "season": 2025,
     "week": 12,
-    "total_players": 608,
+    "total_players": 615,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -376,14 +376,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.15,
+      "multiple_td_prob": 0.171,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.028,
+      "multiple_value_score": 0.0366,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.15
+      "multiple_td": 0.1714
     },
     {
       "player_id": "00-0031408",
@@ -922,14 +922,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.25,
+      "multiple_td_prob": 0.264,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.0681,
+      "multiple_value_score": 0.0736,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.2503
+      "multiple_td": 0.264
     },
     {
       "player_id": "00-0032775",
@@ -1069,14 +1069,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.108,
+      "multiple_td_prob": 0.098,
       "multiple_confidence": "high",
       "anytime_value_score": 0.33,
       "first_value_score": 0,
-      "multiple_value_score": 0.0112,
+      "multiple_value_score": 0.0073,
       "anytime_td": 0.81,
       "first_td": 0,
-      "multiple_td": 0.108
+      "multiple_td": 0.0982
     },
     {
       "player_id": "00-0033106",
@@ -1993,14 +1993,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.15,
+      "multiple_td_prob": 0.143,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.028,
+      "multiple_value_score": 0.0254,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.15
+      "multiple_td": 0.1435
     },
     {
       "player_id": "00-0033941",
@@ -2274,6 +2274,27 @@
       "anytime_td": 0.81,
       "first_td": 0,
       "multiple_td": 0.09
+    },
+    {
+      "player_id": "00-0034361",
+      "name": "J.Reid",
+      "team": "NO",
+      "position": "DB",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "SS",
+      "anytime_td_prob": 0.68,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.265,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.68,
+      "first_td": 0,
+      "multiple_td": 0
     },
     {
       "player_id": "00-0034364",
@@ -2854,14 +2875,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.138,
+      "multiple_td_prob": 0.171,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.0234,
+      "multiple_value_score": 0.0366,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.1385
+      "multiple_td": 0.1714
     },
     {
       "player_id": "00-0034829",
@@ -3127,14 +3148,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.1,
+      "multiple_td_prob": 0.092,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.008,
+      "multiple_value_score": 0.0049,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.1
+      "multiple_td": 0.0923
     },
     {
       "player_id": "00-0034968",
@@ -3746,6 +3767,27 @@
       "multiple_td": 0
     },
     {
+      "player_id": "00-0035359",
+      "name": "D.Sills",
+      "team": "ATL",
+      "position": "WR",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "WR",
+      "anytime_td_prob": 0.85,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.35,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.85,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
       "player_id": "00-0035406",
       "name": "L.Humphrey",
       "team": "DEN",
@@ -3778,14 +3820,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.086,
+      "multiple_td_prob": 0.075,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.0023,
+      "multiple_value_score": 0,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.0857
+      "multiple_td": 0.075
     },
     {
       "player_id": "00-0035525",
@@ -3967,14 +4009,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.038,
+      "multiple_td_prob": 0.035,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.0375
+      "multiple_td": 0.0353
     },
     {
       "player_id": "00-0035643",
@@ -4114,14 +4156,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.112,
+      "multiple_td_prob": 0.106,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.013,
+      "multiple_value_score": 0.0104,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.1125
+      "multiple_td": 0.1059
     },
     {
       "player_id": "00-0035681",
@@ -4762,11 +4804,11 @@
       "is_home": true,
       "depth_chart_position": "TE",
       "anytime_td_prob": 0.765,
-      "anytime_confidence": "medium",
+      "anytime_confidence": "high",
       "first_td_prob": 0,
-      "first_confidence": "medium",
+      "first_confidence": "high",
       "multiple_td_prob": 0,
-      "multiple_confidence": "medium",
+      "multiple_confidence": "high",
       "anytime_value_score": 0.3075,
       "first_value_score": 0,
       "multiple_value_score": 0,
@@ -5059,14 +5101,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.12,
+      "multiple_td_prob": 0.1,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.016,
+      "multiple_value_score": 0.008,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.12
+      "multiple_td": 0.1
     },
     {
       "player_id": "00-0036322",
@@ -5311,14 +5353,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.056,
+      "multiple_td_prob": 0.06,
       "multiple_confidence": "high",
       "anytime_value_score": 0.06,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.27,
       "first_td": 0,
-      "multiple_td": 0.0559
+      "multiple_td": 0.06
     },
     {
       "player_id": "00-0036407",
@@ -6172,14 +6214,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.049,
+      "multiple_td_prob": 0.045,
       "multiple_confidence": "high",
       "anytime_value_score": 0.33,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.81,
       "first_td": 0,
-      "multiple_td": 0.0491
+      "multiple_td": 0.045
     },
     {
       "player_id": "00-0036898",
@@ -6403,14 +6445,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.067,
+      "multiple_td_prob": 0.064,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.0667
+      "multiple_td": 0.0643
     },
     {
       "player_id": "00-0036970",
@@ -6487,14 +6529,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.22,
+      "multiple_td_prob": 0.206,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.056,
+      "multiple_value_score": 0.0505,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.22
+      "multiple_td": 0.2062
     },
     {
       "player_id": "00-0036974",
@@ -6970,14 +7012,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.094,
+      "multiple_td_prob": 0.082,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.0057,
+      "multiple_value_score": 0.001,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.0943
+      "multiple_td": 0.0825
     },
     {
       "player_id": "00-0037235",
@@ -7117,14 +7159,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.086,
+      "multiple_td_prob": 0.08,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.0023,
+      "multiple_value_score": 0,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.0857
+      "multiple_td": 0.08
     },
     {
       "player_id": "00-0037248",
@@ -7138,14 +7180,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.238,
+      "multiple_td_prob": 0.228,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.063,
+      "multiple_value_score": 0.0594,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.2376
+      "multiple_td": 0.2285
     },
     {
       "player_id": "00-0037249",
@@ -8219,6 +8261,27 @@
       "multiple_td": 0.0982
     },
     {
+      "player_id": "00-0037839",
+      "name": "C.Durant",
+      "team": "LA",
+      "position": "DB",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "CB",
+      "anytime_td_prob": 0.68,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.265,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.68,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
       "player_id": "00-0037840",
       "name": "K.Williams",
       "team": "LA",
@@ -8923,14 +8986,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.043,
+      "multiple_td_prob": 0.08,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.0429
+      "multiple_td": 0.08
     },
     {
       "player_id": "00-0038544",
@@ -9143,6 +9206,27 @@
       "multiple_td": 0
     },
     {
+      "player_id": "00-0038577",
+      "name": "N.Herbig",
+      "team": "PIT",
+      "position": "LB",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "OLB",
+      "anytime_td_prob": 0.68,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.265,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.68,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
       "player_id": "00-0038579",
       "name": "A.O'Connell",
       "team": "LV",
@@ -9259,14 +9343,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.067,
+      "multiple_td_prob": 0.06,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.0667
+      "multiple_td": 0.06
     },
     {
       "player_id": "00-0038608",
@@ -9654,18 +9738,18 @@
       "opponent": "TBD",
       "is_home": true,
       "depth_chart_position": "RB",
-      "anytime_td_prob": 0.935,
+      "anytime_td_prob": 0.95,
       "anytime_confidence": "medium",
       "first_td_prob": 0,
       "first_confidence": "medium",
-      "multiple_td_prob": 0,
+      "multiple_td_prob": 0.33,
       "multiple_confidence": "medium",
-      "anytime_value_score": 0.3925,
+      "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0,
-      "anytime_td": 0.935,
+      "multiple_value_score": 0.1,
+      "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0
+      "multiple_td": 0.33
     },
     {
       "player_id": "00-0038797",
@@ -10372,14 +10456,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.255,
+      "multiple_td_prob": 0.268,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.0702,
+      "multiple_value_score": 0.0752,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.2555
+      "multiple_td": 0.2681
     },
     {
       "player_id": "00-0039141",
@@ -10603,14 +10687,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.152,
+      "multiple_td_prob": 0.141,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.0289,
+      "multiple_value_score": 0.0246,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.1523
+      "multiple_td": 0.1414
     },
     {
       "player_id": "00-0039169",
@@ -11092,6 +11176,27 @@
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.85,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
+      "player_id": "00-0039530",
+      "name": "B.Spann-Ford",
+      "team": "DAL",
+      "position": "TE",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "TE",
+      "anytime_td_prob": 0.765,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.3075,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.765,
       "first_td": 0,
       "multiple_td": 0
     },
@@ -11944,17 +12049,17 @@
       "is_home": true,
       "depth_chart_position": "RB",
       "anytime_td_prob": 0.95,
-      "anytime_confidence": "high",
+      "anytime_confidence": "medium",
       "first_td_prob": 0,
-      "first_confidence": "high",
-      "multiple_td_prob": 0.132,
-      "multiple_confidence": "high",
+      "first_confidence": "medium",
+      "multiple_td_prob": 0.11,
+      "multiple_confidence": "medium",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.0208,
+      "multiple_value_score": 0.012,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.132
+      "multiple_td": 0.11
     },
     {
       "player_id": "00-0040124",
@@ -11986,17 +12091,17 @@
       "is_home": true,
       "depth_chart_position": "TE",
       "anytime_td_prob": 0.81,
-      "anytime_confidence": "high",
+      "anytime_confidence": "medium",
       "first_td_prob": 0,
-      "first_confidence": "high",
-      "multiple_td_prob": 0.35,
-      "multiple_confidence": "high",
+      "first_confidence": "medium",
+      "multiple_td_prob": 0.27,
+      "multiple_confidence": "medium",
       "anytime_value_score": 0.33,
       "first_value_score": 0,
-      "multiple_value_score": 0.108,
+      "multiple_value_score": 0.076,
       "anytime_td": 0.81,
       "first_td": 0,
-      "multiple_td": 0.35
+      "multiple_td": 0.27
     },
     {
       "player_id": "00-0040128",
@@ -12304,14 +12409,14 @@
       "anytime_confidence": "medium",
       "first_td_prob": 0,
       "first_confidence": "medium",
-      "multiple_td_prob": 0.2,
+      "multiple_td_prob": 0.15,
       "multiple_confidence": "medium",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.048,
+      "multiple_value_score": 0.028,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.2
+      "multiple_td": 0.15
     },
     {
       "player_id": "00-0040242",
@@ -12503,6 +12608,27 @@
       "multiple_td": 0
     },
     {
+      "player_id": "00-0040676",
+      "name": "C.Ward",
+      "team": "TEN",
+      "position": "QB",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "QB",
+      "anytime_td_prob": 0.255,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.0525,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.255,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
       "player_id": "00-0040691",
       "name": "J.Dart",
       "team": "NYG",
@@ -12531,16 +12657,37 @@
       "opponent": "TBD",
       "is_home": true,
       "depth_chart_position": "WR",
-      "anytime_td_prob": 0.85,
+      "anytime_td_prob": 0.9,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0.2,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.375,
+      "first_value_score": 0,
+      "multiple_value_score": 0.048,
+      "anytime_td": 0.9,
+      "first_td": 0,
+      "multiple_td": 0.2
+    },
+    {
+      "player_id": "00-0040706",
+      "name": "W.Nolen",
+      "team": "ARI",
+      "position": "DL",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "DT",
+      "anytime_td_prob": 0.68,
       "anytime_confidence": "medium",
       "first_td_prob": 0,
       "first_confidence": "medium",
       "multiple_td_prob": 0,
       "multiple_confidence": "medium",
-      "anytime_value_score": 0.35,
+      "anytime_value_score": 0.265,
       "first_value_score": 0,
       "multiple_value_score": 0,
-      "anytime_td": 0.85,
+      "anytime_td": 0.68,
       "first_td": 0,
       "multiple_td": 0
     },
@@ -12766,14 +12913,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.22,
+      "multiple_td_prob": 0.33,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.056,
+      "multiple_value_score": 0.1,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.22
+      "multiple_td": 0.33
     }
   ]
 }
