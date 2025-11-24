@@ -50,7 +50,7 @@
 - Add `ODDS_API_KEY` to Netlify environment variables
 - Netlify Dashboard → Site Settings → Environment Variables
 - Key: `ODDS_API_KEY`
-- Value: `c5d3fe15e6c5be83b2acd8695cff012b`
+- Value: `[YOUR_ODDS_API_KEY_HERE]`
 
 **Note:** Refresh functionality is optional. GitHub Actions will handle daily updates automatically.
 
@@ -133,7 +133,7 @@ node scripts/nba/collect-opponent-defense.mjs
 1. Go to: https://github.com/bgoldman22-code/RRMODEL/settings/secrets/actions
 2. Click "New repository secret"
 3. Name: `ODDS_API_KEY`
-4. Value: `c5d3fe15e6c5be83b2acd8695cff012b`
+4. Value: `[YOUR_ODDS_API_KEY_HERE]`
 5. Save
 
 ### Step 2: Push to GitHub
@@ -190,7 +190,7 @@ git push origin main42
 3. Go to: Site Settings → Environment Variables
 4. Add new variable:
    - Key: `ODDS_API_KEY`
-   - Value: `c5d3fe15e6c5be83b2acd8695cff012b`
+   - Value: `[YOUR_ODDS_API_KEY_HERE]`
 5. Redeploy site
 
 **Why optional?**
@@ -259,7 +259,7 @@ Frontend updates table
 ### Predictions file not found
 **Fix:** Run generator manually once:
 ```bash
-export ODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b
+export ODDS_API_KEY=[YOUR_ODDS_API_KEY_HERE]
 node scripts/nba/generate-pra-predictions-v2.mjs
 git add public/data/nba/nba-props-v2-live.json
 git commit -m "Initial V2 predictions"

@@ -472,3 +472,6 @@ export default {
   calculateLineProbabilityZINB,
   RINK_EFFECTS
 };
+
+// Named export for RINK_EFFECTS
+export { RINK_EFFECTS };

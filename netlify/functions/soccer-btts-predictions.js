@@ -1328,7 +1328,6 @@ const TEAM_NAME_MAPPING = {
   'Chelsea FC': ['Chelsea', 'CFC'],
   'Arsenal FC': ['Arsenal', 'Gunners', 'AFC'],
   'Liverpool FC': ['Liverpool', 'LFC', 'Reds'],
-  'Tottenham Hotspur': ['Tottenham', 'Spurs', 'THFC'],
   'Manchester City': ['Man City', 'MCFC', 'City'],
   'SL Benfica': ['Benfica', 'SLB'],
   'FC Bayern München': ['Bayern Munich', 'Bayern', 'FCB'],
