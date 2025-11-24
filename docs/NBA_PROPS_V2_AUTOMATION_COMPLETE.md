@@ -28,7 +28,7 @@
 
 **Setup required:**
 - Add `ODDS_API_KEY` to GitHub Secrets: https://github.com/bgoldman22-code/RRMODEL/settings/secrets/actions
-- Value: `c5d3fe15e6c5be83b2acd8695cff012b`
+- Value: `[YOUR_ODDS_API_KEY_HERE]`
 
 ---
 
