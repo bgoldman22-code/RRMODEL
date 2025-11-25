@@ -54,7 +54,7 @@ export async function handler(event, context) {
   try {
     // Get today's date for cache key
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-    const cacheKey = `picks-${today}`;
+    const cacheKey = `picks-v2-${today}`;
     
     // Try to get from cache first
     console.log(`Checking cache for ${cacheKey}...`);
