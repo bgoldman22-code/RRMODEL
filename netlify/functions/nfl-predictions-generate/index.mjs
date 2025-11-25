@@ -3578,22 +3578,32 @@ export default async (request, context) => {
       // The caching system was causing issues with stale data and locking
       console.log('🔄 Generating fresh predictions (caching disabled)');
 
-      // Fetch games and regenerate
+      // Fetch games and regenerate - READ FROM LOCAL SCHEDULE FILE
       try {
-        console.log('🔄 Auto-fetching current NFL games for predictions...');
-        const scheduleRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-schedule-get');
-        if (scheduleRes.ok) {
-          const scheduleData = await scheduleRes.json();
-          games = (scheduleData.matchups || scheduleData.games || []).map(game => ({
-            game_id: game.id || `${game.away || game.awayTeam}_${game.home || game.homeTeam}`,
-            home_team: getTeamAbbreviation(game.home || game.homeTeam),
-            away_team: getTeamAbbreviation(game.away || game.awayTeam),
-            start: game.kickoff || game.start
-          }));
-          console.log(`✅ Auto-fetched ${games.length} games for predictions`);
-        }
+        console.log('🔄 Loading current NFL games from local schedule...');
+        // Import schedule from local file
+        const scheduleModule = await import('../../../netlify/data/nfl/2025/schedule.full.json', {
+          assert: { type: 'json' }
+        });
+        const fullSchedule = scheduleModule.default;
+        
+        // Determine current week (Week 13 for now based on date)
+        const currentWeek = 13; // Could be calculated dynamically from fullSchedule.current_week or date
+        console.log(`📅 Current week: ${currentWeek}`);
+        
+        // Get games for current week
+        const weekGames = fullSchedule.weeks[currentWeek.toString()]?.matchups || [];
+        games = weekGames.map(game => ({
+          game_id: game.id,
+          home_team: getTeamAbbreviation(game.homeTeam),
+          away_team: getTeamAbbreviation(game.awayTeam),
+          start: game.kickoff,
+          week: game.week
+        }));
+        console.log(`✅ Loaded ${games.length} games for week ${currentWeek} from local schedule`);
       } catch (error) {
-        console.warn('⚠️  Failed to auto-fetch games:', error.message);
+        console.warn('⚠️  Failed to load games from schedule:', error.message);
+        console.warn('⚠️  Error stack:', error.stack);
         games = []; // Continue with empty games if fetch fails
       }
     }
