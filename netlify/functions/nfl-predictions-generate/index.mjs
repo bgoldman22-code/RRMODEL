@@ -3574,6 +3574,7 @@ export default async (request, context) => {
     } else if (request.method === 'GET') {
       const url = new URL(request.url);
       season = url.searchParams.get('season') || '2025';
+      const requestedWeek = url.searchParams.get('week');
 
       // CACHING DISABLED: Always generate fresh predictions
       // The caching system was causing issues with stale data and locking
@@ -3588,22 +3589,27 @@ export default async (request, context) => {
         });
         const fullSchedule = scheduleModule.default;
         
-        // Use date-based week detection (matches what generateAdvancedPredictions uses)
-        // This will be calculated dynamically based on current date
-        // For Nov 25+, this should be Week 13
-        const now = new Date();
-        const seasonStart = new Date('2025-09-04');
-        const nowDay = now.getDay();
-        let adjustedDate = new Date(now);
-        if (nowDay === 1) {
-          adjustedDate.setDate(adjustedDate.getDate() - 1);
+        // Determine which week to load
+        let currentWeek;
+        if (requestedWeek) {
+          // Use explicitly requested week (allows looking ahead)
+          currentWeek = parseInt(requestedWeek, 10);
+          console.log(`📅 Using requested week: ${currentWeek}`);
+        } else {
+          // Use date-based week detection as fallback
+          const now = new Date();
+          const seasonStart = new Date('2025-09-04');
+          const nowDay = now.getDay();
+          let adjustedDate = new Date(now);
+          if (nowDay === 1) {
+            adjustedDate.setDate(adjustedDate.getDate() - 1);
+          }
+          const daysSinceStart = Math.floor((adjustedDate - seasonStart) / (24 * 60 * 60 * 1000));
+          currentWeek = Math.max(1, Math.min(22, Math.floor(daysSinceStart / 7) + 1));
+          console.log(`📅 Current week (date-based): ${currentWeek} (${now.toDateString()})`);
         }
-        const daysSinceStart = Math.floor((adjustedDate - seasonStart) / (24 * 60 * 60 * 1000));
-        const currentWeek = Math.max(1, Math.min(22, Math.floor(daysSinceStart / 7) + 1));
         
-        console.log(`📅 Current week (date-based): ${currentWeek} (${now.toDateString()})`);
-        
-        // Get games for current week
+        // Get games for requested/current week
         const weekGames = fullSchedule.weeks[currentWeek.toString()]?.matchups || [];
         games = weekGames.map(game => ({
           game_id: game.id,
