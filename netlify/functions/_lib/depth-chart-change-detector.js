@@ -151,38 +151,9 @@ function loadDepthChart(week, year = 2025) {
     }
     
     const data = fs.readFileSync(depthChartPath, 'utf8');
-    const rawData = JSON.parse(data);
+    const depthChartByCode = JSON.parse(data);
     
-    // Handle both array format (Week 13+) and object format (Week 1-12)
-    let depthChartByCode = {};
-    
-    if (Array.isArray(rawData)) {
-      // Array format: [{ team: "Arizona Cardinals", QB: [...], ... }]
-      for (const teamData of rawData) {
-        const teamName = teamData.team;
-        const teamCode = TEAM_NAME_TO_CODE[teamName];
-        
-        if (!teamCode) {
-          console.warn(`⚠️ Unknown team name: ${teamName}`);
-          continue;
-        }
-        
-        // Copy position arrays (QB, RB, WR, TE, etc.)
-        depthChartByCode[teamCode] = {
-          QB: teamData.QB || [],
-          RB: teamData.RB || [],
-          WR: teamData.WR || [],
-          TE: teamData.TE || []
-        };
-      }
-    } else if (typeof rawData === 'object' && rawData !== null) {
-      // Object format: { ARI: { QB: [...], RB: [...] }, ATL: { ... } }
-      // Already in the correct format, just use it directly
-      depthChartByCode = rawData;
-    } else {
-      console.error(`❌ Invalid depth chart format for week ${week}: expected array or object`);
-      return null;
-    }
+    // Expected format: { ARI: { QB: [...], RB: [...] }, ATL: { ... } }
     
     console.log(`✅ Loaded depth charts for ${Object.keys(depthChartByCode).length} teams (Week ${week})`);
     

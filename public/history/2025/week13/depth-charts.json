@@ -1,6 +1,5 @@
-[
-  {
-    "team": "Arizona Cardinals",
+{
+  "ARI": {
     "QB": [
       "Jacoby Brissett",
       "Kyler Murray"
@@ -23,8 +22,7 @@
       "Elijah Higgins"
     ]
   },
-  {
-    "team": "Atlanta Falcons",
+  "ATL": {
     "QB": [
       "Kirk Cousins"
     ],
@@ -42,8 +40,7 @@
       "Kyle Pitts Sr."
     ]
   },
-  {
-    "team": "Baltimore Ravens",
+  "BAL": {
     "QB": [
       "Lamar Jackson",
       "Tyler Huntley",
@@ -68,8 +65,7 @@
       "Charlie Kolar"
     ]
   },
-  {
-    "team": "Buffalo Bills",
+  "BUF": {
     "QB": [
       "Josh Allen",
       "Mitchell Trubisky"
@@ -94,8 +90,7 @@
       "Dalton Kincaid"
     ]
   },
-  {
-    "team": "Carolina Panthers",
+  "CAR": {
     "QB": [
       "Bryce Young",
       "Andy Dalton"
@@ -118,8 +113,7 @@
       "Mitchell Evans"
     ]
   },
-  {
-    "team": "Chicago Bears",
+  "CHI": {
     "QB": [
       "Caleb Williams",
       "Tyson Bagent"
@@ -141,8 +135,7 @@
       "Cole Kmet"
     ]
   },
-  {
-    "team": "Cincinnati Bengals",
+  "CIN": {
     "QB": [
       "Joe Burrow",
       "Joe Flacco",
@@ -168,8 +161,7 @@
       "Drew Sample"
     ]
   },
-  {
-    "team": "Cleveland Browns",
+  "CLE": {
     "QB": [
       "Shedeur Sanders",
       "Dillon Gabriel",
@@ -191,8 +183,7 @@
       "David Njoku"
     ]
   },
-  {
-    "team": "Dallas Cowboys",
+  "DAL": {
     "QB": [
       "Dak Prescott",
       "Joe Milton III"
@@ -216,8 +207,7 @@
       "Luke Schoonmaker"
     ]
   },
-  {
-    "team": "Denver Broncos",
+  "DEN": {
     "QB": [
       "Bo Nix"
     ],
@@ -238,8 +228,7 @@
       "Adam Trautman"
     ]
   },
-  {
-    "team": "Detroit Lions",
+  "DET": {
     "QB": [
       "Jared Goff",
       "Kyle Allen"
@@ -259,8 +248,7 @@
       "Sam LaPorta"
     ]
   },
-  {
-    "team": "Green Bay Packers",
+  "GB": {
     "QB": [
       "Jordan Love",
       "Malik Willis"
@@ -285,8 +273,7 @@
       "John FitzPatrick"
     ]
   },
-  {
-    "team": "Houston Texans",
+  "HOU": {
     "QB": [
       "C.J. Stroud",
       "Davis Mills"
@@ -309,8 +296,7 @@
       "Cade Stover"
     ]
   },
-  {
-    "team": "Indianapolis Colts",
+  "IND": {
     "QB": [
       "Daniel Jones",
       "Anthony Richardson Sr."
@@ -330,8 +316,7 @@
       "Tyler Warren"
     ]
   },
-  {
-    "team": "Jacksonville Jaguars",
+  "JAX": {
     "QB": [
       "Trevor Lawrence",
       "Nick Mullens"
@@ -354,8 +339,7 @@
       "Hunter Long"
     ]
   },
-  {
-    "team": "Kansas City Chiefs",
+  "KC": {
     "QB": [
       "Patrick Mahomes II",
       "Gardner Minshew II"
@@ -382,8 +366,7 @@
       "Jared Wiley"
     ]
   },
-  {
-    "team": "Los Angeles Chargers",
+  "LAC": {
     "QB": [
       "Justin Herbert",
       "Trey Lance"
@@ -407,8 +390,7 @@
       "Will Dissly"
     ]
   },
-  {
-    "team": "Los Angeles Rams",
+  "LAR": {
     "QB": [
       "Matthew Stafford",
       "Jimmy Garoppolo"
@@ -432,8 +414,7 @@
       "Tyler Higbee"
     ]
   },
-  {
-    "team": "Las Vegas Raiders",
+  "LV": {
     "QB": [
       "Geno Smith",
       "Kenny Pickett",
@@ -456,8 +437,7 @@
       "Michael Mayer"
     ]
   },
-  {
-    "team": "Miami Dolphins",
+  "MIA": {
     "QB": [
       "Tua Tagovailoa",
       "Zach Wilson",
@@ -478,8 +458,7 @@
       "Darren Waller"
     ]
   },
-  {
-    "team": "Minnesota Vikings",
+  "MIN": {
     "QB": [
       "Max Brosmer",
       "J.J. McCarthy"
@@ -501,8 +480,7 @@
       "Josh Oliver"
     ]
   },
-  {
-    "team": "New England Patriots",
+  "NE": {
     "QB": [
       "Drake Maye",
       "Joshua Dobbs"
@@ -525,8 +503,7 @@
       "Austin Hooper"
     ]
   },
-  {
-    "team": "New Orleans Saints",
+  "NO": {
     "QB": [
       "Tyler Shough",
       "Spencer Rattler"
@@ -547,8 +524,7 @@
       "Foster Moreau"
     ]
   },
-  {
-    "team": "New York Giants",
+  "NYG": {
     "QB": [
       "Jaxson Dart",
       "Jameis Winston",
@@ -571,8 +547,7 @@
       "Daniel Bellinger"
     ]
   },
-  {
-    "team": "New York Jets",
+  "NYJ": {
     "QB": [
       "Tyrod Taylor",
       "Justin Fields"
@@ -596,8 +571,7 @@
       "Jeremy Ruckert"
     ]
   },
-  {
-    "team": "Philadelphia Eagles",
+  "PHI": {
     "QB": [
       "Jalen Hurts",
       "Sam Howell"
@@ -618,8 +592,7 @@
       "Grant Calcaterra"
     ]
   },
-  {
-    "team": "Pittsburgh Steelers",
+  "PIT": {
     "QB": [
       "Aaron Rodgers",
       "Mason Rudolph"
@@ -640,8 +613,7 @@
       "Pat Freiermuth"
     ]
   },
-  {
-    "team": "Seattle Seahawks",
+  "SEA": {
     "QB": [
       "Sam Darnold",
       "Jalen Milroe"
@@ -662,8 +634,7 @@
       "Elijah Arroyo"
     ]
   },
-  {
-    "team": "San Francisco 49ers",
+  "SF": {
     "QB": [
       "Brock Purdy",
       "Mac Jones"
@@ -687,8 +658,7 @@
       "Jake Tonges"
     ]
   },
-  {
-    "team": "Tampa Bay Buccaneers",
+  "TB": {
     "QB": [
       "Baker Mayfield",
       "Teddy Bridgewater"
@@ -710,8 +680,7 @@
       "Cade Otton"
     ]
   },
-  {
-    "team": "Tennessee Titans",
+  "TEN": {
     "QB": [
       "Cam Ward"
     ],
@@ -733,8 +702,7 @@
       "Gunnar Helm"
     ]
   },
-  {
-    "team": "Washington Commanders",
+  "WAS": {
     "QB": [
       "Marcus Mariota",
       "Jayden Daniels"
@@ -757,4 +725,4 @@
       "Ben Sinnott"
     ]
   }
-]
+}
