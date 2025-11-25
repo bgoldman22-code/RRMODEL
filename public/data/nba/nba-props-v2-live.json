@@ -23,7 +23,9 @@
       "game": "Indiana Pacers @ Milwaukee Bucks",
       "gameTime": "2025-04-22T23:10:00Z",
       "model": "points_lightgbm",
-      "threshold": 0.6
+      "threshold": 0.6,
+      "modelProbability": 0.6010246813146863,
+      "kellyStake": 0
     },
     {
       "player": "Andrew Nembhard",
@@ -40,7 +42,9 @@
       "game": "Indiana Pacers @ Milwaukee Bucks",
       "gameTime": "2025-04-22T23:10:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.521944063268128,
+      "kellyStake": 0
     },
     {
       "player": "Giannis Antetokounmpo",
@@ -57,7 +61,9 @@
       "game": "Indiana Pacers @ Milwaukee Bucks",
       "gameTime": "2025-04-22T23:10:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5559851849256078,
+      "kellyStake": 0
     },
     {
       "player": "Tyrese Haliburton",
@@ -74,7 +80,9 @@
       "game": "Indiana Pacers @ Milwaukee Bucks",
       "gameTime": "2025-04-22T23:10:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5741036813475344,
+      "kellyStake": 0
     },
     {
       "player": "Damian Lillard",
@@ -91,7 +99,9 @@
       "game": "Indiana Pacers @ Milwaukee Bucks",
       "gameTime": "2025-04-22T23:10:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5741036813475344,
+      "kellyStake": 0
     },
     {
       "player": "Bennedict Mathurin",
@@ -108,7 +118,9 @@
       "game": "Indiana Pacers @ Milwaukee Bucks",
       "gameTime": "2025-04-22T23:10:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5664820927591742,
+      "kellyStake": 0
     },
     {
       "player": "Taurean Prince",
@@ -125,7 +137,9 @@
       "game": "Indiana Pacers @ Milwaukee Bucks",
       "gameTime": "2025-04-22T23:10:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5772046483727177,
+      "kellyStake": 0
     },
     {
       "player": "Desmond Bane",
@@ -142,7 +156,9 @@
       "game": "Oklahoma City Thunder @ Memphis Grizzlies",
       "gameTime": "2025-04-22T23:30:00Z",
       "model": "points_lightgbm",
-      "threshold": 0.6
+      "threshold": 0.6,
+      "modelProbability": 0.6390372447467356,
+      "kellyStake": 0
     },
     {
       "player": "Chet Holmgren",
@@ -159,7 +175,9 @@
       "game": "Oklahoma City Thunder @ Memphis Grizzlies",
       "gameTime": "2025-04-22T23:30:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.5527638791051807,
+      "kellyStake": 0
     },
     {
       "player": "Jalen Williams",
@@ -176,7 +194,9 @@
       "game": "Oklahoma City Thunder @ Memphis Grizzlies",
       "gameTime": "2025-04-22T23:30:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.574122622663673,
+      "kellyStake": 0
     },
     {
       "player": "Ja Morant",
@@ -193,7 +213,9 @@
       "game": "Oklahoma City Thunder @ Memphis Grizzlies",
       "gameTime": "2025-04-22T23:30:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5850374213989007,
+      "kellyStake": 0
     },
     {
       "player": "Rui Hachimura",
@@ -210,7 +232,9 @@
       "game": "Los Angeles Lakers @ Minnesota Timberwolves",
       "gameTime": "2025-04-23T02:00:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.5903605016748797,
+      "kellyStake": 0
     },
     {
       "player": "Anthony Edwards",
@@ -227,7 +251,9 @@
       "game": "Los Angeles Lakers @ Minnesota Timberwolves",
       "gameTime": "2025-04-23T02:00:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.5657497455924723,
+      "kellyStake": 0
     },
     {
       "player": "Rui Hachimura",
@@ -244,7 +270,9 @@
       "game": "Los Angeles Lakers @ Minnesota Timberwolves",
       "gameTime": "2025-04-23T02:00:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.5903605016748797,
+      "kellyStake": 0
     },
     {
       "player": "Nickeil Alexander-Walker",
@@ -261,7 +289,9 @@
       "game": "Los Angeles Lakers @ Minnesota Timberwolves",
       "gameTime": "2025-04-23T02:00:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.5260800517122393,
+      "kellyStake": 0
     },
     {
       "player": "Mike Conley",
@@ -278,7 +308,9 @@
       "game": "Los Angeles Lakers @ Minnesota Timberwolves",
       "gameTime": "2025-04-23T02:00:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.5213914318454635,
+      "kellyStake": 0
     },
     {
       "player": "LeBron James",
@@ -295,7 +327,9 @@
       "game": "Los Angeles Lakers @ Minnesota Timberwolves",
       "gameTime": "2025-04-23T02:00:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.55194084238079,
+      "kellyStake": 0
     },
     {
       "player": "Paolo Banchero",
@@ -312,7 +346,9 @@
       "game": "Boston Celtics @ Orlando Magic",
       "gameTime": "2025-04-23T23:00:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5925722073201911,
+      "kellyStake": 0
     },
     {
       "player": "Jrue Holiday",
@@ -329,7 +365,9 @@
       "game": "Boston Celtics @ Orlando Magic",
       "gameTime": "2025-04-23T23:00:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5757588583058662,
+      "kellyStake": 0
     },
     {
       "player": "Jayson Tatum",
@@ -346,7 +384,9 @@
       "game": "Boston Celtics @ Orlando Magic",
       "gameTime": "2025-04-23T23:00:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5740431848275147,
+      "kellyStake": 0
     },
     {
       "player": "Andrew Wiggins",
@@ -363,7 +403,9 @@
       "game": "Cleveland Cavaliers @ Miami Heat",
       "gameTime": "2025-04-23T23:40:00Z",
       "model": "points_lightgbm",
-      "threshold": 0.6
+      "threshold": 0.6,
+      "modelProbability": 0.6428441079849998,
+      "kellyStake": 0
     },
     {
       "player": "Kel'el Ware",
@@ -380,7 +422,9 @@
       "game": "Cleveland Cavaliers @ Miami Heat",
       "gameTime": "2025-04-23T23:40:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.6006977499072862,
+      "kellyStake": 0
     },
     {
       "player": "Darius Garland",
@@ -397,7 +441,9 @@
       "game": "Cleveland Cavaliers @ Miami Heat",
       "gameTime": "2025-04-23T23:40:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5671698286700263,
+      "kellyStake": 0
     },
     {
       "player": "Tyler Herro",
@@ -414,7 +460,9 @@
       "game": "Cleveland Cavaliers @ Miami Heat",
       "gameTime": "2025-04-23T23:40:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5741036813475344,
+      "kellyStake": 0
     },
     {
       "player": "Bam Adebayo",
@@ -431,7 +479,9 @@
       "game": "Cleveland Cavaliers @ Miami Heat",
       "gameTime": "2025-04-23T23:40:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5891758204418434,
+      "kellyStake": 0
     },
     {
       "player": "Ty Jerome",
@@ -448,7 +498,9 @@
       "game": "Cleveland Cavaliers @ Miami Heat",
       "gameTime": "2025-04-23T23:40:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5741831162704751,
+      "kellyStake": 0
     },
     {
       "player": "Max Strus",
@@ -465,7 +517,9 @@
       "game": "Cleveland Cavaliers @ Miami Heat",
       "gameTime": "2025-04-23T23:40:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.574122622663673,
+      "kellyStake": 0
     },
     {
       "player": "Ty Jerome",
@@ -482,7 +536,9 @@
       "game": "Cleveland Cavaliers @ Miami Heat",
       "gameTime": "2025-04-23T23:40:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5741831162704751,
+      "kellyStake": 0
     },
     {
       "player": "Darius Garland",
@@ -499,7 +555,9 @@
       "game": "Cleveland Cavaliers @ Miami Heat",
       "gameTime": "2025-04-23T23:40:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5671698286700263,
+      "kellyStake": 0
     },
     {
       "player": "Amen Thompson",
@@ -516,7 +574,9 @@
       "game": "Houston Rockets @ Golden State Warriors",
       "gameTime": "2025-04-24T01:30:00Z",
       "model": "points_lightgbm",
-      "threshold": 0.6
+      "threshold": 0.6,
+      "modelProbability": 0.6516062982986305,
+      "kellyStake": 0
     },
     {
       "player": "Tari Eason",
@@ -533,7 +593,9 @@
       "game": "Houston Rockets @ Golden State Warriors",
       "gameTime": "2025-04-24T01:30:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.5399327266475833,
+      "kellyStake": 0
     },
     {
       "player": "Fred VanVleet",
@@ -550,7 +612,9 @@
       "game": "Houston Rockets @ Golden State Warriors",
       "gameTime": "2025-04-24T01:30:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5740657980628984,
+      "kellyStake": 0
     },
     {
       "player": "Jalen Green",
@@ -567,7 +631,9 @@
       "game": "Houston Rockets @ Golden State Warriors",
       "gameTime": "2025-04-24T01:30:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5680089565858788,
+      "kellyStake": 0
     },
     {
       "player": "Tari Eason",
@@ -584,7 +650,9 @@
       "game": "Houston Rockets @ Golden State Warriors",
       "gameTime": "2025-04-24T01:30:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5553061259709433,
+      "kellyStake": 0
     },
     {
       "player": "Cade Cunningham",
@@ -601,7 +669,9 @@
       "game": "Detroit Pistons @ New York Knicks",
       "gameTime": "2025-04-24T23:00:00Z",
       "model": "points_lightgbm",
-      "threshold": 0.6
+      "threshold": 0.6,
+      "modelProbability": 0.6235572445246158,
+      "kellyStake": 0
     },
     {
       "player": "Jalen Brunson",
@@ -618,7 +688,9 @@
       "game": "Detroit Pistons @ New York Knicks",
       "gameTime": "2025-04-24T23:00:00Z",
       "model": "points_lightgbm",
-      "threshold": 0.6
+      "threshold": 0.6,
+      "modelProbability": 0.6129067964791299,
+      "kellyStake": 0
     },
     {
       "player": "Mikal Bridges",
@@ -635,7 +707,9 @@
       "game": "Detroit Pistons @ New York Knicks",
       "gameTime": "2025-04-24T23:00:00Z",
       "model": "points_lightgbm",
-      "threshold": 0.6
+      "threshold": 0.6,
+      "modelProbability": 0.6294676308736507,
+      "kellyStake": 0
     },
     {
       "player": "Mikal Bridges",
@@ -652,7 +726,9 @@
       "game": "Detroit Pistons @ New York Knicks",
       "gameTime": "2025-04-24T23:00:00Z",
       "model": "points_lightgbm",
-      "threshold": 0.6
+      "threshold": 0.6,
+      "modelProbability": 0.6294676308736507,
+      "kellyStake": 0
     },
     {
       "player": "Jalen Brunson",
@@ -669,7 +745,9 @@
       "game": "Detroit Pistons @ New York Knicks",
       "gameTime": "2025-04-24T23:00:00Z",
       "model": "points_lightgbm",
-      "threshold": 0.6
+      "threshold": 0.6,
+      "modelProbability": 0.6129067964791299,
+      "kellyStake": 0
     },
     {
       "player": "Jalen Brunson",
@@ -686,7 +764,9 @@
       "game": "Detroit Pistons @ New York Knicks",
       "gameTime": "2025-04-24T23:00:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.5203632710617067,
+      "kellyStake": 0
     },
     {
       "player": "Cade Cunningham",
@@ -703,7 +783,9 @@
       "game": "Detroit Pistons @ New York Knicks",
       "gameTime": "2025-04-24T23:00:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5714361731711285,
+      "kellyStake": 0
     },
     {
       "player": "Jalen Duren",
@@ -720,7 +802,9 @@
       "game": "Detroit Pistons @ New York Knicks",
       "gameTime": "2025-04-24T23:00:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5508496894765572,
+      "kellyStake": 0
     },
     {
       "player": "OG Anunoby",
@@ -737,7 +821,9 @@
       "game": "Detroit Pistons @ New York Knicks",
       "gameTime": "2025-04-24T23:00:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5501040719484397,
+      "kellyStake": 0
     },
     {
       "player": "Tobias Harris",
@@ -754,7 +840,9 @@
       "game": "Detroit Pistons @ New York Knicks",
       "gameTime": "2025-04-24T23:00:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5948232162706549,
+      "kellyStake": 0
     },
     {
       "player": "Ivica Zubac",
@@ -771,7 +859,9 @@
       "game": "Los Angeles Clippers @ Denver Nuggets",
       "gameTime": "2025-04-25T02:00:00Z",
       "model": "points_lightgbm",
-      "threshold": 0.6
+      "threshold": 0.6,
+      "modelProbability": 0.6622965016603062,
+      "kellyStake": 0
     },
     {
       "player": "Ivica Zubac",
@@ -788,7 +878,9 @@
       "game": "Los Angeles Clippers @ Denver Nuggets",
       "gameTime": "2025-04-25T02:00:00Z",
       "model": "points_lightgbm",
-      "threshold": 0.6
+      "threshold": 0.6,
+      "modelProbability": 0.6622965016603062,
+      "kellyStake": 0
     },
     {
       "player": "Ivica Zubac",
@@ -805,7 +897,9 @@
       "game": "Los Angeles Clippers @ Denver Nuggets",
       "gameTime": "2025-04-25T02:00:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.5348772897210533,
+      "kellyStake": 0
     },
     {
       "player": "Aaron Gordon",
@@ -822,7 +916,9 @@
       "game": "Los Angeles Clippers @ Denver Nuggets",
       "gameTime": "2025-04-25T02:00:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.6348382104073983,
+      "kellyStake": 0
     },
     {
       "player": "Jamal Murray",
@@ -839,7 +935,9 @@
       "game": "Los Angeles Clippers @ Denver Nuggets",
       "gameTime": "2025-04-25T02:00:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.5207500898985798,
+      "kellyStake": 0
     },
     {
       "player": "Kris Dunn",
@@ -856,7 +954,9 @@
       "game": "Los Angeles Clippers @ Denver Nuggets",
       "gameTime": "2025-04-25T02:00:00Z",
       "model": "rebounds_lightgbm",
-      "threshold": 0.52
+      "threshold": 0.52,
+      "modelProbability": 0.536148011780967,
+      "kellyStake": 0
     },
     {
       "player": "Kawhi Leonard",
@@ -873,7 +973,9 @@
       "game": "Los Angeles Clippers @ Denver Nuggets",
       "gameTime": "2025-04-25T02:00:00Z",
       "model": "assists_logistic_pra",
-      "threshold": 0.55
+      "threshold": 0.55,
+      "modelProbability": 0.5953800258161971,
+      "kellyStake": 0
     }
   ],
   "stats": {

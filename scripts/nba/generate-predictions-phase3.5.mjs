@@ -513,6 +513,7 @@ for (const prop of allProps) {
       opponent,
       propType: market.replace('player_', ''),
       prediction: result.prob_win,
+      modelProbability: result.prob_win, // For frontend compatibility
       vegasLine: line,
       betSide: side.toUpperCase(),
       edge: (result.edge * 100).toFixed(1), // Convert to percentage
@@ -522,7 +523,8 @@ for (const prop of allProps) {
       game: `${home_team} @ ${away_team}`,
       gameTime: commence_time,
       model: result.use_this_model,
-      threshold: result.threshold
+      threshold: result.threshold,
+      kellyStake: 0 // Placeholder for frontend (Kelly sizing not implemented yet)
     });
 
   } catch (err) {
