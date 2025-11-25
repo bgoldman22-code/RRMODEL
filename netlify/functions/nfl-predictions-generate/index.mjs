@@ -2605,6 +2605,7 @@ async function generateAdvancedPredictions(games, season) {
     // Determine current week as soon as metrics are available
     try {
       currentWeek = getCurrentWeek(advancedMetrics);
+      console.log(`📅 Current week detected: ${currentWeek}`);
     } catch (e) {
       console.warn('Could not determine current week from metrics, defaulting to 1');
       currentWeek = 1;
@@ -3587,9 +3588,20 @@ export default async (request, context) => {
         });
         const fullSchedule = scheduleModule.default;
         
-        // Determine current week (Week 13 for now based on date)
-        const currentWeek = 13; // Could be calculated dynamically from fullSchedule.current_week or date
-        console.log(`📅 Current week: ${currentWeek}`);
+        // Use date-based week detection (matches what generateAdvancedPredictions uses)
+        // This will be calculated dynamically based on current date
+        // For Nov 25+, this should be Week 13
+        const now = new Date();
+        const seasonStart = new Date('2025-09-04');
+        const nowDay = now.getDay();
+        let adjustedDate = new Date(now);
+        if (nowDay === 1) {
+          adjustedDate.setDate(adjustedDate.getDate() - 1);
+        }
+        const daysSinceStart = Math.floor((adjustedDate - seasonStart) / (24 * 60 * 60 * 1000));
+        const currentWeek = Math.max(1, Math.min(22, Math.floor(daysSinceStart / 7) + 1));
+        
+        console.log(`📅 Current week (date-based): ${currentWeek} (${now.toDateString()})`);
         
         // Get games for current week
         const weekGames = fullSchedule.weeks[currentWeek.toString()]?.matchups || [];
