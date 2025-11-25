@@ -1,18 +1,21 @@
 /**
- * NBA Player Props V2 API (Phase 2.5 Baseline)
+ * NBA Player Props V2 API (Phase 3.5 Production)
  * 
- * Serves Phase 2.5 predictions (Points/Rebounds/Assists - individual stats)
- * Uses correlation-weighted regression models
+ * Serves Phase 3.5 hybrid predictions (Points/Rebounds/Assists):
+ * - Logistic PRA for Assists (61% WR, +14.2% ROI)
+ * - LightGBM for Points (58.7% WR, +10.3% ROI)
+ * - LightGBM for Rebounds (54.2% WR, +1.1% ROI)
  * 
  * Modes:
  * - Default: Serves static JSON (fast, cached)
  * - Refresh: Regenerates predictions on-demand (requires ODDS_API_KEY)
  * 
- * WARNING: Refresh mode is slow (~2 min) and may timeout on Netlify free tier.
+ * WARNING: Refresh mode is slow (~2-3 min) and may timeout on Netlify free tier.
  * Daily updates should be handled by GitHub Actions scheduled workflow.
  * Use refresh endpoint for emergency/manual updates only.
  * 
- * Pattern mirrors nba-player-props.mjs (V1) for consistency
+ * NOTE: This endpoint now serves Phase 3.5 data (mixed Logistic + LightGBM)
+ * while maintaining backward compatibility with the V2 API contract.
  */
 
 import { execSync } from 'child_process';
@@ -42,7 +45,7 @@ export default async (req, context) => {
 
     // If refresh requested, regenerate predictions
     if (isRefreshRequest) {
-      console.log('🔄 Phase 2.5 Refresh requested - regenerating predictions...');
+      console.log('🔄 Phase 3.5 Refresh requested - regenerating predictions...');
       
       // Check for ODDS_API_KEY
       if (!process.env.ODDS_API_KEY) {
@@ -65,19 +68,19 @@ export default async (req, context) => {
           timeout: 60000 // 60 second timeout
         });
         
-        // Step 2: Generate fresh Phase 2.5 predictions
-        console.log('  🎯 Generating Phase 2.5 predictions...');
-        execSync('node scripts/nba/generate-predictions-phase2.mjs', {
+        // Step 2: Generate fresh Phase 3.5 predictions (hybrid Logistic + LightGBM)
+        console.log('  🎯 Generating Phase 3.5 predictions (Logistic + LightGBM)...');
+        execSync('node scripts/nba/generate-predictions-phase3.5.mjs', {
           cwd: process.cwd(),
           env: { 
             ...process.env, 
             ODDS_API_KEY: process.env.ODDS_API_KEY 
           },
           stdio: 'inherit',
-          timeout: 120000 // 2 minute timeout
+          timeout: 180000 // 3 minute timeout (LightGBM needs more time)
         });
         
-        console.log('✅ Phase 2.5 predictions refreshed successfully');
+        console.log('✅ Phase 3.5 predictions refreshed successfully');
         
       } catch (error) {
         console.error('❌ Refresh failed:', error.message);
@@ -96,11 +99,11 @@ export default async (req, context) => {
     const jsonPath = join(process.cwd(), 'public/data/nba/nba-props-v2-live.json');
     
     if (!existsSync(jsonPath)) {
-      console.warn('⚠️  Phase 2.5 predictions file not found');
+      console.warn('⚠️  Phase 3.5 predictions file not found');
       return new Response(
         JSON.stringify({ 
           error: 'Predictions not yet generated',
-          message: 'Run: node scripts/nba/generate-predictions-phase2.mjs',
+          message: 'Run: node scripts/nba/generate-predictions-phase3.5.mjs',
           picks: []
         }),
         { status: 404, headers }
@@ -110,12 +113,12 @@ export default async (req, context) => {
     const data = readFileSync(jsonPath, 'utf-8');
     const parsed = JSON.parse(data);
     
-    console.log(`✓ Serving ${parsed.picks?.length || 0} Phase 2.5 predictions`);
+    console.log(`✓ Serving ${parsed.picks?.length || 0} Phase 3.5 predictions (model: ${parsed.model_version || 'unknown'})`);
     
     return new Response(data, { status: 200, headers });
     
   } catch (error) {
-    console.error('❌ Error serving Phase 2.5 predictions:', error);
+    console.error('❌ Error serving Phase 3.5 predictions:', error);
     
     return new Response(
       JSON.stringify({

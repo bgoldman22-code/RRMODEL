@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import html2canvas from 'html2canvas';
 
 /**
- * NBA Player Props V2 - Phase 3 PRA Model
+ * NBA Player Props V2 - Phase 3.5 Production
  * 
- * PHASE 3 PRA MODEL (PRODUCTION):
- * - Points + Rebounds + Assists combined predictions
- * - Trained model: 60.8% win rate, +17.08% ROI (backtest)
- * - Advanced features: L5/L10/L999 stats, rest days, opponent defense, minutes
+ * PHASE 3.5 HYBRID MODEL (PRODUCTION):
+ * - Mixed Strategy: Logistic PRA + LightGBM per-market
+ * - Assists: Logistic PRA (61% WR, +14.2% ROI)
+ * - Points: LightGBM (58.7% WR, +10.3% ROI)
+ * - Rebounds: LightGBM (54.2% WR, +1.1% ROI)
+ * - Advanced features: L5/L10/L20/L40/L999, season stats, H2H, opponent defense
  * - Uses real 2025-26 season data
  */
 
@@ -44,10 +46,11 @@ export default function NBAPlayerPropsV2() {
           const data = await fallback.json();
           setPredictions(data.predictions || []);
           setMetadata({
-            generated: data.generated,
+            generated: data.generated || data.generated_at,
             season: data.season,
-            model: data.model,
-            version: data.version
+            model: data.model || data.source,
+            version: data.version,
+            model_version: data.model_version
           });
         } else {
           setPredictions([]);
@@ -56,12 +59,13 @@ export default function NBAPlayerPropsV2() {
       }
       
       const data = await response.json();
-      setPredictions(data.predictions || []);
+      setPredictions(data.predictions || data.picks || []);
       setMetadata({
-        generated: data.generated,
+        generated: data.generated || data.generated_at,
         season: data.season,
-        model: data.model,
-        version: data.version
+        model: data.model || data.source,
+        version: data.version,
+        model_version: data.model_version
       });
       
       if (forceRefresh) {
@@ -182,13 +186,13 @@ export default function NBAPlayerPropsV2() {
     exportDiv.innerHTML = `
       <div style="width: 900px;">
         <div style="margin-bottom: 30px; text-align: center;">
-          <h1 style="font-size: 32px; font-weight: bold; margin: 0 0 10px 0; color: #1f2937;">🏀 NBA Player Props V2 (Phase 3 PRA)</h1>
+          <h1 style="font-size: 32px; font-weight: bold; margin: 0 0 10px 0; color: #1f2937;">🏀 NBA Player Props V2 (Phase 3.5)</h1>
           <p style="font-size: 16px; color: #6b7280; margin: 0;">Top 20 Picks • ${today}</p>
-          <p style="font-size: 14px; color: #10b981; margin: 5px 0 0 0; font-weight: 600;">60.8% Win | +17.08% ROI</p>
+          <p style="font-size: 14px; color: #10b981; margin: 5px 0 0 0; font-weight: 600;">Logistic PRA + LightGBM | 58-61% Win Rate</p>
         </div>
         ${generateTableHTML(top20, 'TOP 20 (#1-20)')}
         <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #9ca3af;">
-          Model: Phase 3 PRA | Edge Threshold: 2%+ | Confidence: 60%+ | bgroundrobin.com
+          Model: Phase 3.5 (Hybrid) | Assists: Logistic | Points/Rebounds: LightGBM | bgroundrobin.com
         </div>
       </div>
     `;
@@ -233,13 +237,13 @@ export default function NBAPlayerPropsV2() {
     exportDiv.innerHTML = `
       <div style="width: 900px;">
         <div style="margin-bottom: 30px; text-align: center;">
-          <h1 style="font-size: 32px; font-weight: bold; margin: 0 0 10px 0; color: #1f2937;">🏀 NBA Player Props V2 (Phase 3 PRA)</h1>
+          <h1 style="font-size: 32px; font-weight: bold; margin: 0 0 10px 0; color: #1f2937;">🏀 NBA Player Props V2 (Phase 3.5)</h1>
           <p style="font-size: 16px; color: #6b7280; margin: 0;">Next 20 Picks (#21-40) • ${today}</p>
-          <p style="font-size: 14px; color: #10b981; margin: 5px 0 0 0; font-weight: 600;">60.8% Win | +17.08% ROI</p>
+          <p style="font-size: 14px; color: #10b981; margin: 5px 0 0 0; font-weight: 600;">Logistic PRA + LightGBM | 58-61% Win Rate</p>
         </div>
         ${generateTableHTML(next20, 'NEXT 20 (#21-40)')}
         <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #9ca3af;">
-          Model: Phase 3 PRA | Edge Threshold: 2%+ | Confidence: 60%+ | bgroundrobin.com
+          Model: Phase 3.5 (Hybrid) | Assists: Logistic | Points/Rebounds: LightGBM | bgroundrobin.com
         </div>
       </div>
     `;
@@ -268,17 +272,20 @@ export default function NBAPlayerPropsV2() {
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <h1 className="text-3xl font-bold">🏀 NBA Player Props V2</h1>
-          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Phase 3 PRA</span>
+          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Phase 3.5 Hybrid</span>
         </div>
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-green-600">Historical:</span>
-            <span>60.8% win | +17.08% ROI</span>
+            <span className="font-semibold text-green-600">Performance:</span>
+            <span>Assists 61% | Points 58.7% | Rebounds 54.2%</span>
           </div>
           {metadata.season && (<div className="flex items-center gap-2">
             <span className="font-semibold text-blue-600">Season:</span><span>{metadata.season}</span></div>)}
         </div>
-        <p className="text-sm text-gray-600 mt-2">Advanced PRA model • 18 features • Real 2025-26 data</p>
+        <p className="text-sm text-gray-600 mt-2">Mixed Logistic + LightGBM • 60 features • L5/L10/L20/L40/L999 + H2H + Opponent Defense</p>
+        {metadata.model_version && (
+          <p className="text-xs text-gray-500 mt-1">Model: {metadata.model_version}</p>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow p-4 mb-6">
@@ -371,13 +378,14 @@ export default function NBAPlayerPropsV2() {
 
       {/* Model Info Footer */}
       <div className="mt-6 bg-gray-50 rounded-lg p-4 text-sm text-gray-600">
-        <h3 className="font-semibold mb-2">Phase 3 PRA Model Information</h3>
+        <h3 className="font-semibold mb-2">Phase 3.5 Hybrid Model Information</h3>
         <ul className="space-y-1">
-          <li>• <strong>Version:</strong> {metadata.version || 'phase3_pra_v1_real'}</li>
-          <li>• <strong>Features:</strong> 18 (L5/L10/L999 stats, minutes, rest days, opponent defense, games played)</li>
-          <li>• <strong>Markets:</strong> Points, Rebounds, Assists (all 3 props)</li>
-          <li>• <strong>Betting Thresholds:</strong> 2%+ edge, 1%+ Kelly fraction, 5+ games minimum</li>
-          <li>• <strong>Backtest Results:</strong> 60.8% win rate, +17.08% ROI (multi-season validated)</li>
+          <li>• <strong>Version:</strong> {metadata.model_version || 'phase3.5_hybrid_v1_20251125'}</li>
+          <li>• <strong>Engine:</strong> Logistic PRA for Assists, LightGBM for Points/Rebounds</li>
+          <li>• <strong>Features:</strong> 60 (L5/L10/L20/L40/L999, season-to-date, H2H, opponent defense, rest days)</li>
+          <li>• <strong>Markets:</strong> Points (LGBM), Rebounds (LGBM), Assists (Logistic)</li>
+          <li>• <strong>Thresholds:</strong> Assists 0.55 | Points 0.60 | Rebounds 0.52</li>
+          <li>• <strong>Backtest Results:</strong> Assists 61% WR (+14.2% ROI), Points 58.7% WR (+10.3% ROI), Rebounds 54.2% WR (+1.1% ROI)</li>
           <li>• <strong>Data Source:</strong> Real 2025-26 season boxscores + opponent defense stats</li>
           <li>• <strong>Status:</strong> ✅ Production-ready | Automated daily updates via GitHub Actions</li>
         </ul>

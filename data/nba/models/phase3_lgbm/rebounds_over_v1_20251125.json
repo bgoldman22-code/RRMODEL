@@ -1,0 +1,248 @@
+{
+  "model_name": "rebounds_over",
+  "market": "player_rebounds",
+  "side": "Over",
+  "feature_columns": [
+    "L5_ppg",
+    "L10_ppg",
+    "L20_ppg",
+    "L40_ppg",
+    "L999_ppg",
+    "L5_rpg",
+    "L10_rpg",
+    "L20_rpg",
+    "L40_rpg",
+    "L999_rpg",
+    "L5_apg",
+    "L10_apg",
+    "L20_apg",
+    "L40_apg",
+    "L999_apg",
+    "L5_pra",
+    "L10_pra",
+    "L20_pra",
+    "L40_pra",
+    "L999_pra",
+    "L5_minutes",
+    "L10_minutes",
+    "L20_minutes",
+    "L40_minutes",
+    "L5_fga",
+    "L10_fga",
+    "L20_fga",
+    "L40_fga",
+    "L5_fta",
+    "L10_fta",
+    "L20_fta",
+    "L40_fta",
+    "season_ppg",
+    "season_rpg",
+    "season_apg",
+    "season_pra",
+    "season_minutes",
+    "season_fga",
+    "season_fta",
+    "season_games_played",
+    "h2h_ppg",
+    "h2h_rpg",
+    "h2h_apg",
+    "h2h_pra",
+    "h2h_minutes",
+    "h2h_fga",
+    "h2h_fta",
+    "h2h_games_played",
+    "opp_def_L5_pra_allowed",
+    "opp_def_L10_pra_allowed",
+    "opp_def_L5_ppg_allowed",
+    "opp_def_L10_ppg_allowed",
+    "opp_def_L5_rpg_allowed",
+    "opp_def_L10_rpg_allowed",
+    "opp_def_L5_apg_allowed",
+    "opp_def_L10_apg_allowed",
+    "rest_days",
+    "home",
+    "line",
+    "games_played"
+  ],
+  "hyperparameters": {
+    "objective": "binary",
+    "metric": "auc",
+    "boosting_type": "gbdt",
+    "num_leaves": 31,
+    "learning_rate": 0.05,
+    "feature_fraction": 0.8,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 5,
+    "verbose": -1,
+    "max_depth": 6,
+    "min_data_in_leaf": 20,
+    "lambda_l1": 0.1,
+    "lambda_l2": 0.1,
+    "scale_pos_weight": 1.098177542621987
+  },
+  "metrics": {
+    "train_accuracy": 0.7032782291958531,
+    "test_accuracy": 0.507563025210084,
+    "train_auc": 0.7901748341761428,
+    "test_auc": 0.4976179839373243,
+    "test_precision": 0.45799011532125206,
+    "test_recall": 0.3357487922705314,
+    "n_train": 7138,
+    "n_test": 1785,
+    "train_date_range": [
+      "2023-10-24",
+      "2025-02-04"
+    ],
+    "test_date_range": [
+      "2025-02-04",
+      "2025-04-11"
+    ],
+    "scale_pos_weight": 1.098177542621987
+  },
+  "feature_importance": {
+    "L5_ppg": 194.965989112854,
+    "L10_ppg": 246.47441816329956,
+    "L20_ppg": 0.0,
+    "L40_ppg": 0.0,
+    "L999_ppg": 153.18204832077026,
+    "L5_rpg": 172.8882496356964,
+    "L10_rpg": 105.79879140853882,
+    "L20_rpg": 0.0,
+    "L40_rpg": 0.0,
+    "L999_rpg": 150.5119891166687,
+    "L5_apg": 132.33415937423706,
+    "L10_apg": 166.72616910934448,
+    "L20_apg": 0.0,
+    "L40_apg": 0.0,
+    "L999_apg": 453.99689197540283,
+    "L5_pra": 86.20191025733948,
+    "L10_pra": 69.04056930541992,
+    "L20_pra": 0.0,
+    "L40_pra": 0.0,
+    "L999_pra": 100.15490055084229,
+    "L5_minutes": 124.13575863838196,
+    "L10_minutes": 364.59455156326294,
+    "L20_minutes": 0.0,
+    "L40_minutes": 0.0,
+    "L5_fga": 109.8629093170166,
+    "L10_fga": 165.79050946235657,
+    "L20_fga": 0.0,
+    "L40_fga": 0.0,
+    "L5_fta": 141.26589965820312,
+    "L10_fta": 107.09379005432129,
+    "L20_fta": 0.0,
+    "L40_fta": 0.0,
+    "season_ppg": 0.0,
+    "season_rpg": 0.0,
+    "season_apg": 0.0,
+    "season_pra": 0.0,
+    "season_minutes": 0.0,
+    "season_fga": 0.0,
+    "season_fta": 0.0,
+    "season_games_played": 0.0,
+    "h2h_ppg": 0.0,
+    "h2h_rpg": 0.0,
+    "h2h_apg": 0.0,
+    "h2h_pra": 0.0,
+    "h2h_minutes": 0.0,
+    "h2h_fga": 0.0,
+    "h2h_fta": 0.0,
+    "h2h_games_played": 0.0,
+    "opp_def_L5_pra_allowed": 101.41776943206787,
+    "opp_def_L10_pra_allowed": 179.26635026931763,
+    "opp_def_L5_ppg_allowed": 279.6379504799843,
+    "opp_def_L10_ppg_allowed": 234.17809867858887,
+    "opp_def_L5_rpg_allowed": 114.91091108322144,
+    "opp_def_L10_rpg_allowed": 177.8979787826538,
+    "opp_def_L5_apg_allowed": 114.72817182540894,
+    "opp_def_L10_apg_allowed": 215.53840970993042,
+    "rest_days": 90.18102931976318,
+    "home": 25.072439670562744,
+    "line": 43.06573009490967,
+    "games_played": 181.26952028274536
+  },
+  "top_10_features": [
+    {
+      "feature": "L999_apg",
+      "importance": 453.99689197540283
+    },
+    {
+      "feature": "L10_minutes",
+      "importance": 364.59455156326294
+    },
+    {
+      "feature": "opp_def_L5_ppg_allowed",
+      "importance": 279.6379504799843
+    },
+    {
+      "feature": "L10_ppg",
+      "importance": 246.47441816329956
+    },
+    {
+      "feature": "opp_def_L10_ppg_allowed",
+      "importance": 234.17809867858887
+    },
+    {
+      "feature": "opp_def_L10_apg_allowed",
+      "importance": 215.53840970993042
+    },
+    {
+      "feature": "L5_ppg",
+      "importance": 194.965989112854
+    },
+    {
+      "feature": "games_played",
+      "importance": 181.26952028274536
+    },
+    {
+      "feature": "opp_def_L10_pra_allowed",
+      "importance": 179.26635026931763
+    },
+    {
+      "feature": "opp_def_L10_rpg_allowed",
+      "importance": 177.8979787826538
+    }
+  ],
+  "calibration": [
+    {
+      "bin": "0.40-0.45",
+      "count": 181,
+      "predicted": 0.4331641035189254,
+      "actual": 0.47513812154696133
+    },
+    {
+      "bin": "0.45-0.50",
+      "count": 960,
+      "predicted": 0.4800027510997399,
+      "actual": 0.46875
+    },
+    {
+      "bin": "0.50-0.55",
+      "count": 499,
+      "predicted": 0.5146520053808619,
+      "actual": 0.4529058116232465
+    },
+    {
+      "bin": "0.55-0.60",
+      "count": 84,
+      "predicted": 0.5744531693927857,
+      "actual": 0.5476190476190477
+    },
+    {
+      "bin": "0.60-0.65",
+      "count": 20,
+      "predicted": 0.6185452553775928,
+      "actual": 0.2
+    },
+    {
+      "bin": "0.65-0.70",
+      "count": 4,
+      "predicted": 0.6611244059632022,
+      "actual": 0.5
+    }
+  ],
+  "best_iteration": 15,
+  "version": "v1",
+  "created": "2025-11-25T10:14:52.211644",
+  "model_file": "rebounds_over_v1_20251125.txt"
+}
