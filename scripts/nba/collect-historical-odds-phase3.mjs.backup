@@ -1,0 +1,530 @@
+#!/usr/bin/env node
+/**
+ * Collect Historical NBA Player Props Odds for Phase 3 Training
+ * 
+ * This script collects player props odds for 60 strategically sampled dates
+ * across 2023-2025 seasons using TheOddsAPI historical data endpoint.
+ * 
+ * Usage:
+ *   export ODDS_API_KEY=your_key_here
+ *   node scripts/nba/collect-historical-odds-phase3.mjs
+ * 
+ *   # Or with custom date range:
+ *   node scripts/nba/collect-historical-odds-phase3.mjs --start-date 2023-11-01 --end-date 2025-04-15 --sample-size 60
+ * 
+ * API Documentation:
+ *   https://the-odds-api.com/historical-odds-data/
+ *   https://the-odds-api.com/sports-odds-data/betting-markets.html#additional-markets
+ * 
+ * Output:
+ *   data/nba/historical_odds/nba_props_YYYYMMDD_v1.json (60 files)
+ *   data/nba/historical_odds/phase3_odds_manifest_v1.json (index)
+ * 
+ * Data Safety:
+ *   - Atomic writes (.tmp → rename)
+ *   - Idempotent (skip existing files)
+ *   - Updates phase3_checkpoints.json
+ *   - Never commits API key to git
+ */
+
+import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const REPO_ROOT = join(__dirname, '../..');
+
+// Configuration
+const HISTORICAL_ODDS_DIR = join(REPO_ROOT, 'data/nba/historical_odds');
+const MANIFEST_FILE = join(HISTORICAL_ODDS_DIR, 'phase3_odds_manifest_v1.json');
+const CHECKPOINT_FILE = join(REPO_ROOT, 'data/nba/phase3_checkpoints.json');
+
+// TheOddsAPI configuration
+const ODDS_API_KEY = process.env.ODDS_API_KEY;
+const ODDS_API_BASE = 'https://api.the-odds-api.com/v4';
+const SPORT = 'basketball_nba';
+
+// Markets to collect
+const MARKETS = [
+  'player_points',
+  'player_rebounds', 
+  'player_assists',
+  'player_points_rebounds_assists' // PRA combined if available
+];
+
+console.log('[collect-historical-odds] NBA Historical Player Props Odds Collector');
+console.log('[collect-historical-odds] Output directory:', HISTORICAL_ODDS_DIR);
+
+/**
+ * Generate strategically sampled dates across seasons
+ * 
+ * Strategy: Sample dates evenly across early/mid/late periods of each season
+ */
+function generateSampleDates(startDate, endDate, sampleSize = 60) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  
+  console.log('\n[collect-historical-odds] Generating sample dates...');
+  console.log(`  Date range: ${startDate} to ${endDate}`);
+  console.log(`  Target samples: ${sampleSize}`);
+  
+  // Define season periods (NBA season typically Nov-Apr)
+  const seasons = [
+    // 2022-23 season
+    { 
+      name: '2022-23', 
+      periods: [
+        { name: 'early', start: '2022-11-01', end: '2022-12-31', samples: 7 },
+        { name: 'mid', start: '2023-01-01', end: '2023-02-28', samples: 7 },
+        { name: 'late', start: '2023-03-01', end: '2023-04-15', samples: 6 }
+      ]
+    },
+    // 2023-24 season
+    {
+      name: '2023-24',
+      periods: [
+        { name: 'early', start: '2023-11-01', end: '2023-12-31', samples: 7 },
+        { name: 'mid', start: '2024-01-01', end: '2024-02-29', samples: 7 },
+        { name: 'late', start: '2024-03-01', end: '2024-04-15', samples: 6 }
+      ]
+    },
+    // 2024-25 season
+    {
+      name: '2024-25',
+      periods: [
+        { name: 'early', start: '2024-11-01', end: '2024-12-31', samples: 10 },
+        { name: 'mid', start: '2025-01-01', end: '2025-02-28', samples: 10 }
+      ]
+    }
+  ];
+  
+  const sampledDates = [];
+  
+  for (const season of seasons) {
+    console.log(`\n  Season: ${season.name}`);
+    
+    for (const period of season.periods) {
+      const periodStart = new Date(period.start);
+      const periodEnd = new Date(period.end);
+      const periodDays = Math.floor((periodEnd - periodStart) / (1000 * 60 * 60 * 24));
+      const interval = Math.floor(periodDays / period.samples);
+      
+      console.log(`    ${period.name}: ${period.start} to ${period.end} (${period.samples} samples)`);
+      
+      for (let i = 0; i < period.samples; i++) {
+        const offsetDays = i * interval + Math.floor(interval / 2); // Center of each interval
+        const sampleDate = new Date(periodStart);
+        sampleDate.setDate(sampleDate.getDate() + offsetDays);
+        
+        // Format as YYYY-MM-DD
+        const dateStr = sampleDate.toISOString().split('T')[0];
+        
+        // Only include dates that have likely had games (avoid off-season)
+        // NBA games are typically Tue-Sun, so we're good with any date in season
+        sampledDates.push(dateStr);
+      }
+    }
+  }
+  
+  // Sort chronologically
+  sampledDates.sort();
+  
+  console.log(`\n  ✅ Generated ${sampledDates.length} sample dates`);
+  return sampledDates;
+}
+
+/**
+ * Check API key and quota
+ */
+async function checkApiStatus() {
+  if (!ODDS_API_KEY) {
+    console.error('\n❌ ERROR: ODDS_API_KEY environment variable not set');
+    console.error('   Set it with: export ODDS_API_KEY=your_key_here');
+    process.exit(1);
+  }
+  
+  console.log('\n[collect-historical-odds] Checking API status...');
+  
+  try {
+    // Check quota (endpoint doesn't require historical data, just checks key)
+    const response = await fetch(`${ODDS_API_BASE}/sports/?apiKey=${ODDS_API_KEY}`);
+    
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}: ${response.statusText}`);
+    }
+    
+    const remaining = response.headers.get('x-requests-remaining');
+    const used = response.headers.get('x-requests-used');
+    
+    console.log('  ✅ API key valid');
+    if (remaining) console.log(`  📊 Requests remaining: ${remaining}`);
+    if (used) console.log(`  📊 Requests used: ${used}`);
+    
+    // Estimate cost: 60 dates × ~10 events/date × 4 markets = ~2,400 requests
+    // Plus 60 requests to get events list = 2,460 total
+    console.log(`\n  ⚠️  This script will make approximately 2,500 API requests:`);
+    console.log(`     - 60 date requests (get events)`);
+    
+  } catch (error) {
+    console.error('\n❌ API check failed:', error.message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Fetch events for a specific date
+ */
+async function fetchEventsForDate(date, retries = 3) {
+  const url = `${ODDS_API_BASE}/historical/sports/${SPORT}/events`;
+  const params = new URLSearchParams({
+    apiKey: ODDS_API_KEY,
+    date: `${date}T12:00:00Z` // Noon UTC captures most games
+  });
+  
+  const fullUrl = `${url}?${params}`;
+  
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(fullUrl);
+      
+      if (response.status === 404) {
+        return { date, events: [], status: 'no_data' };
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      const events = data.data || [];
+      
+      const remaining = response.headers.get('x-requests-remaining');
+      if (remaining) {
+        console.log(`      Quota remaining: ${remaining}`);
+      }
+      
+      return { date, events, status: 'success' };
+      
+    } catch (error) {
+      console.log(`      ⚠️  Attempt ${attempt}/${retries} failed: ${error.message}`);
+      
+      if (attempt < retries) {
+        const delay = Math.pow(2, attempt) * 1000;
+        console.log(`      ⏳ Waiting ${delay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        return { date, events: [], status: 'error', error: error.message };
+      }
+    }
+  }
+}
+
+/**
+ * Fetch odds for a specific event and market
+ */
+async function fetchOddsForEvent(eventId, date, market, retries = 3) {
+  const url = `${ODDS_API_BASE}/historical/sports/${SPORT}/events/${eventId}/odds`;
+  
+  const params = new URLSearchParams({
+    apiKey: ODDS_API_KEY,
+    regions: 'us',
+    markets: market,
+    oddsFormat: 'american',
+    date: `${date}T12:00:00Z`,
+    bookmakers: 'fanduel,draftkings'
+  });
+  
+  const fullUrl = `${url}?${params}`;
+  
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(fullUrl);
+      
+      if (response.status === 404) {
+        return { event_id: eventId, market, data: null, status: 'no_data' };
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const responseData = await response.json();
+      const eventData = responseData.data || null;
+      
+      return { event_id: eventId, market, data: eventData, status: 'success' };
+      
+    } catch (error) {
+      if (attempt < retries) {
+        const delay = Math.pow(2, attempt) * 1000;
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        return { event_id: eventId, market, data: null, status: 'error', error: error.message };
+      }
+    }
+  }
+}
+
+/**
+ * Parse and normalize odds data
+ */
+function parseOddsData(oddsData) {
+  const parsed = [];
+  
+  for (const event of oddsData.events || []) {
+    const homeTeam = event.home_team;
+    const awayTeam = event.away_team;
+    const commenceTime = event.commence_time;
+    
+    for (const bookmaker of event.bookmakers || []) {
+      const bookmakerId = bookmaker.key;
+      
+      for (const market of bookmaker.markets || []) {
+        const marketKey = market.key;
+        
+        for (const outcome of market.outcomes || []) {
+          // Parse player props
+          const playerName = outcome.description || outcome.name;
+          const line = outcome.point;
+          const price = outcome.price;
+          
+          // Determine team (for home/away context)
+          let team = null;
+          if (playerName && event.home_team && event.away_team) {
+            // We'll need to match player to team later using boxscores
+            team = null; // Will be resolved during training dataset build
+          }
+          
+          parsed.push({
+            player: playerName,
+            team: team, // To be resolved later
+            opponent: null, // To be resolved later
+            market: marketKey,
+            line: line,
+            odds: price,
+            bookmaker: bookmakerId,
+            game_time: commenceTime,
+            home_team: homeTeam,
+            away_team: awayTeam
+          });
+        }
+      }
+    }
+  }
+  
+  return parsed;
+}
+
+/**
+ * Save odds data for a specific date
+ */
+function saveDateOdds(date, allMarketData) {
+  const dateSlug = date.replace(/-/g, '');
+  const filename = `nba_props_${dateSlug}_v1.json`;
+  const filepath = join(HISTORICAL_ODDS_DIR, filename);
+  
+  // Check if file already exists (idempotent)
+  if (existsSync(filepath)) {
+    console.log(`    ℹ️  File already exists: ${filename} (skipping)`);
+    return { skipped: true, filepath };
+  }
+  
+  // Combine all markets
+  const allProps = [];
+  let totalEvents = 0;
+  
+  for (const marketData of allMarketData) {
+    if (marketData.status === 'success' && marketData.events.length > 0) {
+      totalEvents += marketData.events.length;
+      const parsed = parseOddsData(marketData);
+      allProps.push(...parsed);
+    }
+  }
+  
+  if (allProps.length === 0) {
+    console.log(`    ⚠️  No props data for ${date} (all markets returned empty)`);
+    // Still save an empty file to mark this date as attempted
+  }
+  
+  const data = {
+    date: date,
+    fetched_at: new Date().toISOString(),
+    source: 'the-odds-api',
+    markets: MARKETS,
+    total_events: totalEvents,
+    total_props: allProps.length,
+    props: allProps
+  };
+  
+  // Atomic write
+  const tmpFile = filepath + '.tmp';
+  writeFileSync(tmpFile, JSON.stringify(data, null, 2));
+  renameSync(tmpFile, filepath);
+  
+  console.log(`    ✅ Saved: ${filename} (${allProps.length} props from ${totalEvents} events)`);
+  
+  return { skipped: false, filepath, props_count: allProps.length, events_count: totalEvents };
+}
+
+/**
+ * Update or create manifest file
+ */
+function updateManifest(dateResults) {
+  console.log('\n[collect-historical-odds] Updating manifest...');
+  
+  const manifest = {
+    version: 'v1',
+    created: new Date().toISOString(),
+    source: 'the-odds-api',
+    markets: MARKETS,
+    total_dates: dateResults.length,
+    date_range: [
+      dateResults[0]?.date || null,
+      dateResults[dateResults.length - 1]?.date || null
+    ],
+    total_props: dateResults.reduce((sum, r) => sum + (r.props_count || 0), 0),
+    total_events: dateResults.reduce((sum, r) => sum + (r.events_count || 0), 0),
+    files: dateResults.map(r => ({
+      date: r.date,
+      file: r.filepath,
+      props_count: r.props_count || 0,
+      events_count: r.events_count || 0,
+      skipped: r.skipped || false
+    }))
+  };
+  
+  // Atomic write
+  const tmpFile = MANIFEST_FILE + '.tmp';
+  writeFileSync(tmpFile, JSON.stringify(manifest, null, 2));
+  renameSync(tmpFile, MANIFEST_FILE);
+  
+  console.log(`  ✅ Manifest saved: ${MANIFEST_FILE}`);
+  console.log(`  📊 Total dates: ${manifest.total_dates}`);
+  console.log(`  📊 Total props: ${manifest.total_props}`);
+  console.log(`  📊 Total events: ${manifest.total_events}`);
+}
+
+/**
+ * Update checkpoint file
+ */
+function updateCheckpoint(dateResults) {
+  console.log('\n[collect-historical-odds] Updating checkpoint...');
+  
+  try {
+    let checkpointData = { checkpoints: [] };
+    
+    if (existsSync(CHECKPOINT_FILE)) {
+      checkpointData = JSON.parse(readFileSync(CHECKPOINT_FILE, 'utf-8'));
+    }
+    
+    const artifacts = [
+      MANIFEST_FILE,
+      ...dateResults.map(r => r.filepath)
+    ];
+    
+    const newCheckpoint = {
+      timestamp: new Date().toISOString(),
+      step: 'collect_historical_odds_phase3',
+      artifacts: artifacts,
+      notes: `Collected ${dateResults.length} dates with ${dateResults.reduce((s, r) => s + (r.props_count || 0), 0)} total props`
+    };
+    
+    checkpointData.checkpoints.push(newCheckpoint);
+    
+    // Atomic write
+    const tmpFile = CHECKPOINT_FILE + '.tmp';
+    writeFileSync(tmpFile, JSON.stringify(checkpointData, null, 2));
+    renameSync(tmpFile, CHECKPOINT_FILE);
+    
+    console.log('  ✅ Checkpoint updated');
+  } catch (err) {
+    console.error('  ⚠️  Failed to update checkpoint:', err.message);
+  }
+}
+
+/**
+ * Main execution
+ */
+async function main() {
+  try {
+    // Parse command line arguments
+    const args = process.argv.slice(2);
+    const startDateArg = args.find(a => a.startsWith('--start-date='))?.split('=')[1] || '2022-11-01';
+    const endDateArg = args.find(a => a.startsWith('--end-date='))?.split('=')[1] || '2025-04-15';
+    const sampleSizeArg = parseInt(args.find(a => a.startsWith('--sample-size='))?.split('=')[1] || '60');
+    
+    // Create output directory
+    mkdirSync(HISTORICAL_ODDS_DIR, { recursive: true });
+    
+    // Check API status
+    await checkApiStatus();
+    
+    // Generate sample dates
+    const dates = generateSampleDates(startDateArg, endDateArg, sampleSizeArg);
+    
+    console.log('\n' + '='.repeat(60));
+    console.log(`Starting collection of ${dates.length} dates`);
+    console.log('='.repeat(60));
+    
+    const dateResults = [];
+    let processedCount = 0;
+    let skippedCount = 0;
+    
+    for (const date of dates) {
+      console.log(`\n[${processedCount + 1}/${dates.length}] Processing ${date}...`);
+      
+      // Fetch all markets for this date
+      const marketData = [];
+      
+      for (const market of MARKETS) {
+        console.log(`    Fetching ${market}...`);
+        const data = await fetchOddsForDate(date, market);
+        marketData.push(data);
+        
+        // Rate limiting: wait between market requests
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      // Save combined data
+      const result = saveDateOdds(date, marketData);
+      result.date = date;
+      dateResults.push(result);
+      
+      if (result.skipped) {
+        skippedCount++;
+      }
+      
+      processedCount++;
+      
+      // Rate limiting: wait between dates
+      if (processedCount < dates.length) {
+        console.log('    ⏳ Waiting 2 seconds before next date...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    }
+    
+    // Update manifest
+    updateManifest(dateResults);
+    
+    // Update checkpoint
+    updateCheckpoint(dateResults);
+    
+    // Print summary
+    console.log('\n' + '='.repeat(60));
+    console.log('✅ COMPLETE: Historical odds collection finished');
+    console.log('='.repeat(60));
+    console.log(`Total dates processed: ${processedCount}`);
+    console.log(`Skipped (already existed): ${skippedCount}`);
+    console.log(`New files created: ${processedCount - skippedCount}`);
+    console.log(`Total props collected: ${dateResults.reduce((s, r) => s + (r.props_count || 0), 0)}`);
+    console.log(`\n📁 Output directory: ${HISTORICAL_ODDS_DIR}`);
+    console.log(`📄 Manifest: ${MANIFEST_FILE}`);
+    console.log('\n🎯 Next step: Build Phase 3 training dataset (Phase C)');
+    
+  } catch (err) {
+    console.error('\n❌ FATAL ERROR:', err);
+    process.exit(1);
+  }
+}
+
+main();

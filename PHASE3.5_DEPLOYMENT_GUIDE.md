@@ -104,7 +104,7 @@ This updates the boxscore data with any games from the last 24 hours.
 
 ```bash
 cd ~/Desktop/REPO33/RRMODEL
-export ODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b
+export ODDS_API_KEY=YOUR_THEODDS_API_KEY
 node scripts/nba/generate-predictions-phase3.5.mjs
 ```
 
@@ -287,7 +287,7 @@ jobs:
    - Go to: https://github.com/YOUR_USERNAME/RRMODEL/settings/secrets/actions
    - Click "New repository secret"
    - Name: `ODDS_API_KEY`
-   - Value: `c5d3fe15e6c5be83b2acd8695cff012b`
+   - Value: `YOUR_THEODDS_API_KEY` (get from TheOdds API dashboard)
    - Click "Add secret"
 
 2. **Commit and push the workflow:**

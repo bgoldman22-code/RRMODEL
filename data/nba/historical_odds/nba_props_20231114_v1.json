@@ -1,0 +1,5271 @@
+{
+  "date": "2023-11-14",
+  "fetched_at": "2025-11-24T17:16:26.836Z",
+  "source": "the-odds-api",
+  "total_props": 724,
+  "events": [
+    {
+      "event_id": "6220e92545f97799b92e85a5b76fd81e",
+      "home_team": "Detroit Pistons",
+      "away_team": "Atlanta Hawks",
+      "commence_time": "2023-11-15T00:00:00Z",
+      "markets": {
+        "player_points": [
+          {
+            "player": "Ausar Thompson",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Ausar Thompson",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Over",
+            "line": 22.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Under",
+            "line": 22.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Isaiah Stewart",
+            "side": "Over",
+            "line": 11.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Isaiah Stewart",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Marvin Bagley",
+            "side": "Over",
+            "line": 12.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Marvin Bagley",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Over",
+            "line": 10.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Under",
+            "line": 10.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Over",
+            "line": 23.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Under",
+            "line": 23.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Isaiah Stewart",
+            "side": "Over",
+            "line": 11.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Isaiah Stewart",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Ausar Thompson",
+            "side": "Over",
+            "line": 13.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Ausar Thompson",
+            "side": "Under",
+            "line": 13.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_rebounds": [
+          {
+            "player": "Ausar Thompson",
+            "side": "Over",
+            "line": 10.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Ausar Thompson",
+            "side": "Under",
+            "line": 10.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Isaiah Stewart",
+            "side": "Over",
+            "line": 8.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Isaiah Stewart",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -175,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Under",
+            "line": 2.5,
+            "odds": 135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -162,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Under",
+            "line": 2.5,
+            "odds": 126,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -132,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Ausar Thompson",
+            "side": "Over",
+            "line": 10.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Ausar Thompson",
+            "side": "Under",
+            "line": 10.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Marvin Bagley",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Marvin Bagley",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Isaiah Stewart",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Isaiah Stewart",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_assists": [
+          {
+            "player": "Ausar Thompson",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Ausar Thompson",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -160,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -140,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Over",
+            "line": 6.5,
+            "odds": 118,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Cade Cunningham",
+            "side": "Under",
+            "line": 6.5,
+            "odds": -150,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Killian Hayes",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Ausar Thompson",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Ausar Thompson",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -166,
+            "bookmaker": "fanduel"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "098e6def7ec861b2178ec2a85f3d6011",
+      "home_team": "Charlotte Hornets",
+      "away_team": "Miami Heat",
+      "commence_time": "2023-11-15T00:10:00Z",
+      "markets": {
+        "player_points": [
+          {
+            "player": "Bam Adebayo",
+            "side": "Over",
+            "line": 23.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Bam Adebayo",
+            "side": "Under",
+            "line": 23.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Brandon Miller",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Brandon Miller",
+            "side": "Under",
+            "line": 12.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Over",
+            "line": 15.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Under",
+            "line": 15.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Over",
+            "line": 17.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Under",
+            "line": 17.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Haywood Highsmith",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Haywood Highsmith",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Over",
+            "line": 22.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Under",
+            "line": 22.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Under",
+            "line": 9.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Over",
+            "line": 25.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mark Williams",
+            "side": "Over",
+            "line": 11.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mark Williams",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "P.J. Washington",
+            "side": "Over",
+            "line": 14.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "P.J. Washington",
+            "side": "Under",
+            "line": 14.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Over",
+            "line": 17.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Under",
+            "line": 17.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "P.J. Washington",
+            "side": "Over",
+            "line": 14.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "P.J. Washington",
+            "side": "Under",
+            "line": 14.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Over",
+            "line": 10.5,
+            "odds": 104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Under",
+            "line": 10.5,
+            "odds": -132,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Brandon Miller",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Brandon Miller",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Over",
+            "line": 22.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Under",
+            "line": 22.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bam Adebayo",
+            "side": "Over",
+            "line": 23.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bam Adebayo",
+            "side": "Under",
+            "line": 23.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Haywood Highsmith",
+            "side": "Over",
+            "line": 8.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Haywood Highsmith",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Over",
+            "line": 15.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Under",
+            "line": 15.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mark Williams",
+            "side": "Over",
+            "line": 11.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mark Williams",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_rebounds": [
+          {
+            "player": "Bam Adebayo",
+            "side": "Over",
+            "line": 10.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Bam Adebayo",
+            "side": "Under",
+            "line": 10.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Brandon Miller",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Brandon Miller",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -165,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Under",
+            "line": 2.5,
+            "odds": 125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Haywood Highsmith",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Haywood Highsmith",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -145,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Under",
+            "line": 3.5,
+            "odds": 110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Over",
+            "line": 6.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Under",
+            "line": 6.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mark Williams",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mark Williams",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "P.J. Washington",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "P.J. Washington",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Over",
+            "line": 6.5,
+            "odds": 112,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Under",
+            "line": 6.5,
+            "odds": -142,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bam Adebayo",
+            "side": "Over",
+            "line": 10.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bam Adebayo",
+            "side": "Under",
+            "line": 10.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -160,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Under",
+            "line": 2.5,
+            "odds": 124,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "P.J. Washington",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "P.J. Washington",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Haywood Highsmith",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Haywood Highsmith",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mark Williams",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -132,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mark Williams",
+            "side": "Under",
+            "line": 8.5,
+            "odds": 104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Brandon Miller",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 116,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Brandon Miller",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -148,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_assists": [
+          {
+            "player": "Bam Adebayo",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Bam Adebayo",
+            "side": "Under",
+            "line": 3.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -140,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -145,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Under",
+            "line": 8.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kyle Lowry",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Gordon Hayward",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 112,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jimmy Butler",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -142,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "P.J. Washington",
+            "side": "Over",
+            "line": 2.5,
+            "odds": 128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "P.J. Washington",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -164,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Duncan Robinson",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bam Adebayo",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bam Adebayo",
+            "side": "Under",
+            "line": 3.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -136,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "LaMelo Ball",
+            "side": "Under",
+            "line": 8.5,
+            "odds": 106,
+            "bookmaker": "fanduel"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "28aa33d5a3c545a8cd237f8faef03bc0",
+      "home_team": "Philadelphia 76ers",
+      "away_team": "Indiana Pacers",
+      "commence_time": "2023-11-15T00:10:00Z",
+      "markets": {
+        "player_points": [
+          {
+            "player": "Bennedict Mathurin",
+            "side": "Over",
+            "line": 13.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Bennedict Mathurin",
+            "side": "Under",
+            "line": 13.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Bruce Brown",
+            "side": "Over",
+            "line": 10.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Bruce Brown",
+            "side": "Under",
+            "line": 10.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Over",
+            "line": 32.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Under",
+            "line": 32.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Myles Turner",
+            "side": "Over",
+            "line": 17.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Myles Turner",
+            "side": "Under",
+            "line": 17.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Obi Toppin",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Obi Toppin",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Over",
+            "line": 21.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Under",
+            "line": 21.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Over",
+            "line": 21.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Under",
+            "line": 21.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bruce Brown Jr",
+            "side": "Over",
+            "line": 10.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bruce Brown Jr",
+            "side": "Under",
+            "line": 10.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Over",
+            "line": 32.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Under",
+            "line": 32.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Obi Toppin",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Obi Toppin",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Myles Turner",
+            "side": "Over",
+            "line": 17.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Myles Turner",
+            "side": "Under",
+            "line": 17.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bennedict Mathurin",
+            "side": "Over",
+            "line": 13.5,
+            "odds": -118,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bennedict Mathurin",
+            "side": "Under",
+            "line": 13.5,
+            "odds": -108,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_rebounds": [
+          {
+            "player": "Bennedict Mathurin",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Bennedict Mathurin",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -155,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Bruce Brown",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Bruce Brown",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -145,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Over",
+            "line": 11.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Myles Turner",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Myles Turner",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Obi Toppin",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Obi Toppin",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Myles Turner",
+            "side": "Over",
+            "line": 7.5,
+            "odds": 108,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Myles Turner",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -138,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Obi Toppin",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 118,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Obi Toppin",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -150,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bennedict Mathurin",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -154,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bennedict Mathurin",
+            "side": "Under",
+            "line": 3.5,
+            "odds": 120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Over",
+            "line": 11.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bruce Brown Jr",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 116,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bruce Brown Jr",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -148,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_assists": [
+          {
+            "player": "Bruce Brown",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Bruce Brown",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -140,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Over",
+            "line": 10.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Under",
+            "line": 10.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Bruce Brown Jr",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Bruce Brown Jr",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Over",
+            "line": 10.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Tyrese Haliburton",
+            "side": "Under",
+            "line": 10.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -156,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Joel Embiid",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 122,
+            "bookmaker": "fanduel"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "ce5b4855283a127e1eb62d83ec3dd852",
+      "home_team": "Oklahoma City Thunder",
+      "away_team": "San Antonio Spurs",
+      "commence_time": "2023-11-15T00:30:00Z",
+      "markets": {
+        "player_points": [
+          {
+            "player": "Chet Holmgren",
+            "side": "Over",
+            "line": 15.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Chet Holmgren",
+            "side": "Under",
+            "line": 15.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Williams",
+            "side": "Over",
+            "line": 17.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Williams",
+            "side": "Under",
+            "line": 17.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Over",
+            "line": 13.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Under",
+            "line": 13.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Luguentz Dort",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Luguentz Dort",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Over",
+            "line": 31.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Under",
+            "line": 31.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Over",
+            "line": 13.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Under",
+            "line": 13.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jalen Williams",
+            "side": "Over",
+            "line": 17.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jalen Williams",
+            "side": "Under",
+            "line": 17.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Over",
+            "line": 31.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Under",
+            "line": 31.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Chet Holmgren",
+            "side": "Over",
+            "line": 15.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Chet Holmgren",
+            "side": "Under",
+            "line": 15.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Luguentz Dort",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Luguentz Dort",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_rebounds": [
+          {
+            "player": "Chet Holmgren",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Chet Holmgren",
+            "side": "Under",
+            "line": 7.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Williams",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Williams",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Over",
+            "line": 6.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Under",
+            "line": 6.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Luguentz Dort",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -140,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Luguentz Dort",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -138,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 108,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Luguentz Dort",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -125,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Luguentz Dort",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jalen Williams",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jalen Williams",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Over",
+            "line": 6.5,
+            "odds": -102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Under",
+            "line": 6.5,
+            "odds": -125,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Chet Holmgren",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -125,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Chet Holmgren",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -102,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_assists": [
+          {
+            "player": "Chet Holmgren",
+            "side": "Over",
+            "line": 2.5,
+            "odds": 145,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Chet Holmgren",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -185,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Williams",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Williams",
+            "side": "Under",
+            "line": 2.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Josh Giddey",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "b45d86c1e3b8e4067de8bcf333abe9e1",
+      "home_team": "Brooklyn Nets",
+      "away_team": "Orlando Magic",
+      "commence_time": "2023-11-15T00:40:00Z",
+      "markets": {
+        "player_points": [
+          {
+            "player": "Cameron Johnson",
+            "side": "Over",
+            "line": 17.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Cameron Johnson",
+            "side": "Under",
+            "line": 17.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Over",
+            "line": 19.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Under",
+            "line": 19.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Goga Bitadze",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Goga Bitadze",
+            "side": "Under",
+            "line": 7.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nicolas Claxton",
+            "side": "Over",
+            "line": 11.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nicolas Claxton",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paolo Banchero",
+            "side": "Over",
+            "line": 21.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paolo Banchero",
+            "side": "Under",
+            "line": 21.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Over",
+            "line": 13.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Under",
+            "line": 13.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Over",
+            "line": 19.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Under",
+            "line": 19.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Dorian Finney-Smith",
+            "side": "Over",
+            "line": 11.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Dorian Finney-Smith",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Over",
+            "line": 13.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Under",
+            "line": 13.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Cam Johnson",
+            "side": "Over",
+            "line": 16.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Cam Johnson",
+            "side": "Under",
+            "line": 16.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Black",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Black",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Nic Claxton",
+            "side": "Over",
+            "line": 11.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Nic Claxton",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_rebounds": [
+          {
+            "player": "Cameron Johnson",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Cameron Johnson",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Goga Bitadze",
+            "side": "Over",
+            "line": 6.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Goga Bitadze",
+            "side": "Under",
+            "line": 6.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -155,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Under",
+            "line": 3.5,
+            "odds": 120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nicolas Claxton",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nicolas Claxton",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paolo Banchero",
+            "side": "Over",
+            "line": 8.5,
+            "odds": 110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paolo Banchero",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -145,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -166,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Black",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 118,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Black",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -150,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Cam Johnson",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -146,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Cam Johnson",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 114,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Dorian Finney-Smith",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Dorian Finney-Smith",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -146,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Under",
+            "line": 3.5,
+            "odds": 114,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Nic Claxton",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Nic Claxton",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -136,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 106,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_assists": [
+          {
+            "player": "Cameron Johnson",
+            "side": "Over",
+            "line": 2.5,
+            "odds": 125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Cameron Johnson",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -160,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Under",
+            "line": 2.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nicolas Claxton",
+            "side": "Over",
+            "line": 2.5,
+            "odds": 150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nicolas Claxton",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -195,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paolo Banchero",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paolo Banchero",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Over",
+            "line": 6.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Under",
+            "line": 6.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 118,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Franz Wagner",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -150,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Over",
+            "line": 6.5,
+            "odds": -102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Spencer Dinwiddie",
+            "side": "Under",
+            "line": 6.5,
+            "odds": -125,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mikal Bridges",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -166,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jalen Suggs",
+            "side": "Under",
+            "line": 2.5,
+            "odds": 130,
+            "bookmaker": "fanduel"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "e70e4d158a1dfc5bd474966aeb12a57c",
+      "home_team": "New Orleans Pelicans",
+      "away_team": "Dallas Mavericks",
+      "commence_time": "2023-11-15T01:10:00Z",
+      "markets": {
+        "player_points": [
+          {
+            "player": "Brandon Ingram",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Brandon Ingram",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Dereck Lively II",
+            "side": "Over",
+            "line": 8.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Dereck Lively II",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Derrick Jones Jr.",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Derrick Jones Jr.",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Grant Williams",
+            "side": "Over",
+            "line": 8.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Grant Williams",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jonas Valanciunas",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jonas Valanciunas",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Over",
+            "line": 30.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Under",
+            "line": 30.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Over",
+            "line": 30.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Under",
+            "line": 30.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Dereck Lively",
+            "side": "Over",
+            "line": 8.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Dereck Lively",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jonas Valanciunas",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -118,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jonas Valanciunas",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -108,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Brandon Ingram",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Brandon Ingram",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -125,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Derrick Jones Jr.",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Derrick Jones Jr.",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -125,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Tim Hardaway Jr.",
+            "side": "Over",
+            "line": 15.5,
+            "odds": -118,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Tim Hardaway Jr.",
+            "side": "Under",
+            "line": 15.5,
+            "odds": -108,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Grant Williams",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Grant Williams",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_rebounds": [
+          {
+            "player": "Brandon Ingram",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Brandon Ingram",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Dereck Lively II",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Dereck Lively II",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Derrick Jones Jr.",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Derrick Jones Jr.",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Grant Williams",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Grant Williams",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jonas Valanciunas",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jonas Valanciunas",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -140,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Over",
+            "line": 8.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Over",
+            "line": 7.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Derrick Jones Jr.",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Derrick Jones Jr.",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Grant Williams",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Grant Williams",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Over",
+            "line": 7.5,
+            "odds": 114,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -146,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Brandon Ingram",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Brandon Ingram",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Over",
+            "line": 8.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Tim Hardaway Jr.",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 116,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Tim Hardaway Jr.",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -148,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Dereck Lively",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Dereck Lively",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jonas Valanciunas",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jonas Valanciunas",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_assists": [
+          {
+            "player": "Brandon Ingram",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Brandon Ingram",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -145,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Under",
+            "line": 7.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -140,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Brandon Ingram",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -132,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Brandon Ingram",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kyrie Irving",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Zion Williamson",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -154,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Luka Doncic",
+            "side": "Under",
+            "line": 7.5,
+            "odds": 120,
+            "bookmaker": "fanduel"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "0a6f9a1915a54de57ced300f8157d8a3",
+      "home_team": "Utah Jazz",
+      "away_team": "Portland Trail Blazers",
+      "commence_time": "2023-11-15T02:10:00Z",
+      "markets": {
+        "player_points": [
+          {
+            "player": "Deandre Ayton",
+            "side": "Over",
+            "line": 15.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Deandre Ayton",
+            "side": "Under",
+            "line": 15.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jerami Grant",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jerami Grant",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "John Collins",
+            "side": "Over",
+            "line": 14.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "John Collins",
+            "side": "Under",
+            "line": 14.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Over",
+            "line": 20.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Under",
+            "line": 20.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Lauri Markkanen",
+            "side": "Over",
+            "line": 24.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Lauri Markkanen",
+            "side": "Under",
+            "line": 24.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Over",
+            "line": 22.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Under",
+            "line": 22.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Over",
+            "line": 15.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Under",
+            "line": 15.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Over",
+            "line": 15.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Under",
+            "line": 15.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Keyonte George",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Keyonte George",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jerami Grant",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jerami Grant",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Over",
+            "line": 20.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Under",
+            "line": 20.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Over",
+            "line": 22.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Under",
+            "line": 22.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "John Collins",
+            "side": "Over",
+            "line": 14.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "John Collins",
+            "side": "Under",
+            "line": 14.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Lauri Markkanen",
+            "side": "Over",
+            "line": 24.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Lauri Markkanen",
+            "side": "Under",
+            "line": 24.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Deandre Ayton",
+            "side": "Over",
+            "line": 15.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Deandre Ayton",
+            "side": "Under",
+            "line": 15.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_rebounds": [
+          {
+            "player": "Deandre Ayton",
+            "side": "Over",
+            "line": 11.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Deandre Ayton",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jerami Grant",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jerami Grant",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "John Collins",
+            "side": "Over",
+            "line": 8.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "John Collins",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -145,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Under",
+            "line": 3.5,
+            "odds": 110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Lauri Markkanen",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Lauri Markkanen",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -155,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Deandre Ayton",
+            "side": "Over",
+            "line": 12.5,
+            "odds": 108,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Deandre Ayton",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -138,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Lauri Markkanen",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Lauri Markkanen",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -142,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 112,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 118,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -150,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jerami Grant",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jerami Grant",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "John Collins",
+            "side": "Over",
+            "line": 8.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "John Collins",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -132,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Under",
+            "line": 3.5,
+            "odds": 104,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_assists": [
+          {
+            "player": "Jerami Grant",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jerami Grant",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -155,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -160,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -160,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jerami Grant",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jerami Grant",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -156,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Deandre Ayton",
+            "side": "Over",
+            "line": 1.5,
+            "odds": 122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Deandre Ayton",
+            "side": "Under",
+            "line": 1.5,
+            "odds": -156,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Over",
+            "line": 9.5,
+            "odds": 108,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Skylar Mays",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -136,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Over",
+            "line": 3.5,
+            "odds": -158,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Shaedon Sharpe",
+            "side": "Under",
+            "line": 3.5,
+            "odds": 124,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -156,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jordan Clarkson",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 122,
+            "bookmaker": "fanduel"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "655999ca6eda7526696c271c5562a8a7",
+      "home_team": "Denver Nuggets",
+      "away_team": "Los Angeles Clippers",
+      "commence_time": "2023-11-15T03:00:00Z",
+      "markets": {
+        "player_points": [
+          {
+            "player": "Aaron Gordon",
+            "side": "Over",
+            "line": 14.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Aaron Gordon",
+            "side": "Under",
+            "line": 14.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Ivica Zubac",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Ivica Zubac",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "James Harden",
+            "side": "Over",
+            "line": 15.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "James Harden",
+            "side": "Under",
+            "line": 15.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Over",
+            "line": 22.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Under",
+            "line": 22.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kentavious Caldwell-Pope",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kentavious Caldwell-Pope",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Michael Porter Jr.",
+            "side": "Over",
+            "line": 18.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Michael Porter Jr.",
+            "side": "Under",
+            "line": 18.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Over",
+            "line": 31.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Under",
+            "line": 31.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paul George",
+            "side": "Over",
+            "line": 21.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paul George",
+            "side": "Under",
+            "line": 21.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Reggie Jackson",
+            "side": "Over",
+            "line": 11.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Reggie Jackson",
+            "side": "Under",
+            "line": 11.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Over",
+            "line": 13.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Under",
+            "line": 13.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kentavious Caldwell-Pope",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kentavious Caldwell-Pope",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Ivica Zubac",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -108,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Ivica Zubac",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Over",
+            "line": 31.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Under",
+            "line": 31.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Paul George",
+            "side": "Over",
+            "line": 22.5,
+            "odds": -108,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Paul George",
+            "side": "Under",
+            "line": 22.5,
+            "odds": -118,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Reggie Jackson",
+            "side": "Over",
+            "line": 11.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Reggie Jackson",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Over",
+            "line": 14.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Under",
+            "line": 14.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Aaron Gordon",
+            "side": "Over",
+            "line": 14.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Aaron Gordon",
+            "side": "Under",
+            "line": 14.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Michael Porter Jr.",
+            "side": "Over",
+            "line": 18.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Michael Porter Jr.",
+            "side": "Under",
+            "line": 18.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Over",
+            "line": 22.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Under",
+            "line": 22.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "James Harden",
+            "side": "Over",
+            "line": 15.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "James Harden",
+            "side": "Under",
+            "line": 15.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_rebounds": [
+          {
+            "player": "Aaron Gordon",
+            "side": "Over",
+            "line": 7.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Aaron Gordon",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Ivica Zubac",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Ivica Zubac",
+            "side": "Under",
+            "line": 7.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "James Harden",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "James Harden",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kentavious Caldwell-Pope",
+            "side": "Over",
+            "line": 2.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kentavious Caldwell-Pope",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Michael Porter Jr.",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Michael Porter Jr.",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Under",
+            "line": 12.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paul George",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paul George",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Reggie Jackson",
+            "side": "Over",
+            "line": 2.5,
+            "odds": 135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Reggie Jackson",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -175,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kentavious Caldwell-Pope",
+            "side": "Over",
+            "line": 2.5,
+            "odds": 114,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kentavious Caldwell-Pope",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -146,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Michael Porter Jr.",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Michael Porter Jr.",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Under",
+            "line": 12.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Aaron Gordon",
+            "side": "Over",
+            "line": 7.5,
+            "odds": 104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Aaron Gordon",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -132,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "James Harden",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -118,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "James Harden",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -108,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Ivica Zubac",
+            "side": "Over",
+            "line": 7.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Ivica Zubac",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Paul George",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 112,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Paul George",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -142,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_assists": [
+          {
+            "player": "Aaron Gordon",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Aaron Gordon",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "James Harden",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "James Harden",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -175,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Under",
+            "line": 2.5,
+            "odds": 135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kentavious Caldwell-Pope",
+            "side": "Over",
+            "line": 2.5,
+            "odds": 140,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Kentavious Caldwell-Pope",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -180,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paul George",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Paul George",
+            "side": "Under",
+            "line": 2.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Reggie Jackson",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Reggie Jackson",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Nikola Jokic",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Paul George",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -170,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Paul George",
+            "side": "Under",
+            "line": 2.5,
+            "odds": 132,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "James Harden",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "James Harden",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Aaron Gordon",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Aaron Gordon",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 134,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Kawhi Leonard",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -172,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Reggie Jackson",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Reggie Jackson",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Russell Westbrook",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -125,
+            "bookmaker": "fanduel"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "e815a78cdabf0bc18aa58a621e0fdbe7",
+      "home_team": "Golden State Warriors",
+      "away_team": "Minnesota Timberwolves",
+      "commence_time": "2023-11-15T03:10:00Z",
+      "markets": {
+        "player_points": [
+          {
+            "player": "Anthony Edwards",
+            "side": "Over",
+            "line": 26.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Anthony Edwards",
+            "side": "Under",
+            "line": 26.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jaden McDaniels",
+            "side": "Over",
+            "line": 10.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jaden McDaniels",
+            "side": "Under",
+            "line": 10.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Karl-Anthony Towns",
+            "side": "Over",
+            "line": 21.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Karl-Anthony Towns",
+            "side": "Under",
+            "line": 21.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Rudy Gobert",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Rudy Gobert",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Over",
+            "line": 30.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Under",
+            "line": 30.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Over",
+            "line": 30.5,
+            "odds": -108,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Under",
+            "line": 30.5,
+            "odds": -118,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jaden McDaniels",
+            "side": "Over",
+            "line": 10.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jaden McDaniels",
+            "side": "Under",
+            "line": 10.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Edwards",
+            "side": "Over",
+            "line": 26.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Edwards",
+            "side": "Under",
+            "line": 26.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Rudy Gobert",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Rudy Gobert",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Karl-Anthony Towns",
+            "side": "Over",
+            "line": 20.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Karl-Anthony Towns",
+            "side": "Under",
+            "line": 20.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Over",
+            "line": 9.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Under",
+            "line": 9.5,
+            "odds": -113,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_rebounds": [
+          {
+            "player": "Anthony Edwards",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Anthony Edwards",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -145,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jaden McDaniels",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -130,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jaden McDaniels",
+            "side": "Under",
+            "line": 2.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Karl-Anthony Towns",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Karl-Anthony Towns",
+            "side": "Under",
+            "line": 8.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Over",
+            "line": 2.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Rudy Gobert",
+            "side": "Over",
+            "line": 11.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Rudy Gobert",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jaden McDaniels",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jaden McDaniels",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Edwards",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 116,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Edwards",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -148,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Over",
+            "line": 2.5,
+            "odds": 122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -156,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Rudy Gobert",
+            "side": "Over",
+            "line": 11.5,
+            "odds": -104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Rudy Gobert",
+            "side": "Under",
+            "line": 11.5,
+            "odds": -122,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Karl-Anthony Towns",
+            "side": "Over",
+            "line": 8.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Karl-Anthony Towns",
+            "side": "Under",
+            "line": 8.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_assists": [
+          {
+            "player": "Anthony Edwards",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Anthony Edwards",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -140,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Karl-Anthony Towns",
+            "side": "Over",
+            "line": 2.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Karl-Anthony Towns",
+            "side": "Under",
+            "line": 2.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 100,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -155,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 110,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Mike Conley",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -140,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 114,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Stephen Curry",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -146,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Edwards",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 116,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Edwards",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -148,
+            "bookmaker": "fanduel"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "cd8e1caa4ce880c6996b6e37e363f0bb",
+      "home_team": "Los Angeles Lakers",
+      "away_team": "Memphis Grizzlies",
+      "commence_time": "2023-11-15T03:40:00Z",
+      "markets": {
+        "player_points": [
+          {
+            "player": "Anthony Davis",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Anthony Davis",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Over",
+            "line": 26.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Under",
+            "line": 26.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jaren Jackson Jr.",
+            "side": "Over",
+            "line": 19.5,
+            "odds": -125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jaren Jackson Jr.",
+            "side": "Under",
+            "line": 19.5,
+            "odds": -105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Marcus Smart",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Marcus Smart",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jaren Jackson Jr.",
+            "side": "Over",
+            "line": 20.5,
+            "odds": -102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jaren Jackson Jr.",
+            "side": "Under",
+            "line": 20.5,
+            "odds": -125,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Over",
+            "line": 26.5,
+            "odds": -106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Under",
+            "line": 26.5,
+            "odds": -120,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Marcus Smart",
+            "side": "Over",
+            "line": 12.5,
+            "odds": -102,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Marcus Smart",
+            "side": "Under",
+            "line": 12.5,
+            "odds": -125,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Davis",
+            "side": "Over",
+            "line": 25.5,
+            "odds": -111,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Davis",
+            "side": "Under",
+            "line": 25.5,
+            "odds": -115,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_rebounds": [
+          {
+            "player": "Anthony Davis",
+            "side": "Over",
+            "line": 13.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Anthony Davis",
+            "side": "Under",
+            "line": 13.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Over",
+            "line": 5.5,
+            "odds": 115,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Under",
+            "line": 5.5,
+            "odds": -150,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jaren Jackson Jr.",
+            "side": "Over",
+            "line": 7.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Jaren Jackson Jr.",
+            "side": "Under",
+            "line": 7.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Marcus Smart",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 125,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Marcus Smart",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -160,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -140,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Under",
+            "line": 4.5,
+            "odds": 110,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jaren Jackson Jr.",
+            "side": "Over",
+            "line": 6.5,
+            "odds": -132,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Jaren Jackson Jr.",
+            "side": "Under",
+            "line": 6.5,
+            "odds": 104,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Davis",
+            "side": "Over",
+            "line": 13.5,
+            "odds": 100,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Davis",
+            "side": "Under",
+            "line": 13.5,
+            "odds": -128,
+            "bookmaker": "fanduel"
+          }
+        ],
+        "player_assists": [
+          {
+            "player": "Anthony Davis",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Anthony Davis",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -140,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Over",
+            "line": 4.5,
+            "odds": -110,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -120,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Marcus Smart",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -135,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Marcus Smart",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 105,
+            "bookmaker": "draftkings"
+          },
+          {
+            "player": "Anthony Davis",
+            "side": "Over",
+            "line": 3.5,
+            "odds": 126,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Anthony Davis",
+            "side": "Under",
+            "line": 3.5,
+            "odds": -162,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Over",
+            "line": 4.5,
+            "odds": 106,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Desmond Bane",
+            "side": "Under",
+            "line": 4.5,
+            "odds": -136,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Marcus Smart",
+            "side": "Over",
+            "line": 5.5,
+            "odds": -130,
+            "bookmaker": "fanduel"
+          },
+          {
+            "player": "Marcus Smart",
+            "side": "Under",
+            "line": 5.5,
+            "odds": 102,
+            "bookmaker": "fanduel"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "5a4b28938902c4fba16da19c6e8c1296",
+      "home_team": "New York Knicks",
+      "away_team": "Milwaukee Bucks",
+      "commence_time": "2023-12-25T17:00:00Z",
+      "markets": {
+        "player_points": [],
+        "player_rebounds": [],
+        "player_assists": []
+      }
+    },
+    {
+      "event_id": "20fc47de6083f99da2027876dfebadb7",
+      "home_team": "Denver Nuggets",
+      "away_team": "Golden State Warriors",
+      "commence_time": "2023-12-25T19:30:00Z",
+      "markets": {
+        "player_points": [],
+        "player_rebounds": [],
+        "player_assists": []
+      }
+    },
+    {
+      "event_id": "9cb979b834e23b9dc8737eebba4db760",
+      "home_team": "Los Angeles Lakers",
+      "away_team": "Boston Celtics",
+      "commence_time": "2023-12-25T22:00:00Z",
+      "markets": {
+        "player_points": [],
+        "player_rebounds": [],
+        "player_assists": []
+      }
+    },
+    {
+      "event_id": "184da460295c1cfd98b0ff31e8fc2b13",
+      "home_team": "Miami Heat",
+      "away_team": "Philadelphia 76ers",
+      "commence_time": "2023-12-26T01:00:00Z",
+      "markets": {
+        "player_points": [],
+        "player_rebounds": [],
+        "player_assists": []
+      }
+    },
+    {
+      "event_id": "96d0c38f9eae8242f2e363bdedd90c53",
+      "home_team": "Phoenix Suns",
+      "away_team": "Dallas Mavericks",
+      "commence_time": "2023-12-26T03:30:00Z",
+      "markets": {
+        "player_points": [],
+        "player_rebounds": [],
+        "player_assists": []
+      }
+    }
+  ]
+}

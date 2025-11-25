@@ -1,0 +1,73 @@
+{
+  "date": "2025-06-02",
+  "fetched_at": "2025-11-24T19:38:29.586Z",
+  "source": "the-odds-api",
+  "bookmakers": [
+    "fanduel",
+    "draftkings",
+    "betmgm"
+  ],
+  "markets": [
+    "spreads",
+    "totals",
+    "h2h"
+  ],
+  "games": [
+    {
+      "event_id": "c551e57315cc318feea2aea6a316457b",
+      "home_team": "Oklahoma City Thunder",
+      "away_team": "Indiana Pacers",
+      "commence_time": "2025-06-06T00:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "fanduel": {
+            "home_line": -9,
+            "home_price": -114,
+            "away_line": 9,
+            "away_price": -106
+          },
+          "draftkings": {
+            "home_line": -9,
+            "home_price": -110,
+            "away_line": 9,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "fanduel": {
+            "line": 230.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "draftkings": {
+            "line": 230,
+            "over_price": -112,
+            "under_price": -108
+          }
+        },
+        "h2h": {
+          "fanduel": {
+            "home_price": -400,
+            "away_price": 315
+          },
+          "draftkings": {
+            "home_price": -380,
+            "away_price": 300
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -9,
+          "away_line": 9
+        },
+        "totals": {
+          "line": 230.25
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    }
+  ]
+}

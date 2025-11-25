@@ -1,0 +1,68 @@
+{
+  "version": "v1",
+  "created": "2025-11-24T18:52:32.968Z",
+  "summary": {
+    "total_bets": 12414,
+    "wins": 6248,
+    "losses": 6166,
+    "win_rate": 0.503302722732399,
+    "total_staked": 12414,
+    "total_returned": 11819.42935753922,
+    "roi": -4.7895170167615575,
+    "confidence_threshold": 0.55
+  },
+  "analyses": {
+    "by_confidence": {
+      "0.55-0.60": {
+        "count": 11064,
+        "wins": 5510,
+        "win_rate": 0.4980115690527838,
+        "avg_probability": 0.5706414275215319
+      },
+      "0.60-0.65": {
+        "count": 1333,
+        "wins": 725,
+        "win_rate": 0.5438859714928732,
+        "avg_probability": 0.6117601724401238
+      },
+      "0.65-0.70": {
+        "count": 17,
+        "wins": 13,
+        "win_rate": 0.7647058823529411,
+        "avg_probability": 0.656504728093857
+      }
+    },
+    "by_market": {
+      "player_points": {
+        "count": 3498,
+        "wins": 1788,
+        "win_rate": 0.5111492281303602,
+        "roi": -3.6971105259268264
+      },
+      "player_rebounds": {
+        "count": 5240,
+        "wins": 2529,
+        "win_rate": 0.48263358778625953,
+        "roi": -8.529927663445946
+      },
+      "player_assists": {
+        "count": 3676,
+        "wins": 1931,
+        "win_rate": 0.5252992383025027,
+        "roi": -0.49721182532947916
+      }
+    },
+    "by_signal": {
+      "phase3_phase2_agree": {
+        "count": 12412,
+        "wins": 6246,
+        "win_rate": 0.5032226877215598
+      },
+      "phase3_phase2_disagree": {
+        "count": 2,
+        "wins": 2,
+        "win_rate": 1
+      }
+    }
+  }
+}

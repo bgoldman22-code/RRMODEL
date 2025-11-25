@@ -1,0 +1,65 @@
+{
+  "date": "2025-07-24",
+  "fetched_at": "2025-11-24T19:44:17.918Z",
+  "source": "the-odds-api",
+  "bookmakers": [
+    "fanduel",
+    "draftkings",
+    "betmgm"
+  ],
+  "markets": [
+    "spreads",
+    "totals",
+    "h2h"
+  ],
+  "games": [
+    {
+      "event_id": "33440995f501119c12b3b5b9b4aae97c",
+      "home_team": "Miami Heat",
+      "away_team": "San Antonio Spurs",
+      "commence_time": "2025-07-05T20:30:00Z",
+      "bookmakers": {
+        "spreads": {},
+        "totals": {},
+        "h2h": {}
+      },
+      "consensus": {}
+    },
+    {
+      "event_id": "b6ff6d57221de822878fc42448ccbaed",
+      "home_team": "Golden State Warriors",
+      "away_team": "Los Angeles Lakers",
+      "commence_time": "2025-07-05T22:30:00Z",
+      "bookmakers": {
+        "spreads": {},
+        "totals": {},
+        "h2h": {}
+      },
+      "consensus": {}
+    },
+    {
+      "event_id": "5a622e7e4d7be034f55bc14e2d1222d9",
+      "home_team": "Oklahoma City Thunder",
+      "away_team": "Memphis Grizzlies",
+      "commence_time": "2025-07-05T23:00:00Z",
+      "bookmakers": {
+        "spreads": {},
+        "totals": {},
+        "h2h": {}
+      },
+      "consensus": {}
+    },
+    {
+      "event_id": "01d5ba299a77bd78ab9a2a5fd70f7cd8",
+      "home_team": "Utah Jazz",
+      "away_team": "Philadelphia 76ers",
+      "commence_time": "2025-07-06T01:00:00Z",
+      "bookmakers": {
+        "spreads": {},
+        "totals": {},
+        "h2h": {}
+      },
+      "consensus": {}
+    }
+  ]
+}

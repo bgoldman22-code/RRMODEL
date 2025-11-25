@@ -1,0 +1,611 @@
+╔════════════════════════════════════════════════════════════════════╗
+║                                                                    ║
+║       🚀 NHL WALK-FORWARD BACKTEST - IMPROVED MODEL               ║
+║                                                                    ║
+╚════════════════════════════════════════════════════════════════════╝
+
+IMPROVEMENTS:
+  ✅ Position-specific baselines
+  ✅ Exponential recency weighting
+  ✅ Power play time indicator
+  ✅ Player shots/TOI efficiency
+  ✅ Enhanced home/away factors
+
+📂 Loading historical data...
+✅ Loaded 169,847 games
+
+📅 Sorting games chronologically...
+   Range: 2021-10-12 → 2025-04-17
+
+🚶 Starting walk-forward backtest...
+   Training window: 1,000 games minimum
+   Refit interval: 500 games
+   Test window: 500 games
+
+🔧 Configuration:
+   Max Cycles: 185
+   Test Start Date: 2023-10-01
+   Model Version: phase2_gbm
+   Use LightGBM: true
+   LightGBM Endpoint: http://localhost:8888/train-lgbm
+
+🔄 Cycle 1: Training on 1,000 games (up to 2021-10-16)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 2: Training on 1,500 games (up to 2021-10-19)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 3: Training on 2,000 games (up to 2021-10-21)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 4: Training on 2,500 games (up to 2021-10-23)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 5: Training on 3,000 games (up to 2021-10-25)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 6: Training on 3,500 games (up to 2021-10-27)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 7: Training on 4,000 games (up to 2021-10-29)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 8: Training on 4,500 games (up to 2021-10-31)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 9: Training on 5,000 games (up to 2021-11-03)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 10: Training on 5,500 games (up to 2021-11-05)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 11: Training on 6,000 games (up to 2021-11-06)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 12: Training on 6,500 games (up to 2021-11-09)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 13: Training on 7,000 games (up to 2021-11-11)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 14: Training on 7,500 games (up to 2021-11-13)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 15: Training on 8,000 games (up to 2021-11-14)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 16: Training on 8,500 games (up to 2021-11-17)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 17: Training on 9,000 games (up to 2021-11-19)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 18: Training on 9,500 games (up to 2021-11-21)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 19: Training on 10,000 games (up to 2021-11-24)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 20: Training on 10,500 games (up to 2021-11-26)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 21: Training on 11,000 games (up to 2021-11-27)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 22: Training on 11,500 games (up to 2021-11-29)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 23: Training on 12,000 games (up to 2021-12-01)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 24: Training on 12,500 games (up to 2021-12-03)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 25: Training on 13,000 games (up to 2021-12-05)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 26: Training on 13,500 games (up to 2021-12-07)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 27: Training on 14,000 games (up to 2021-12-09)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 28: Training on 14,500 games (up to 2021-12-11)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 29: Training on 15,000 games (up to 2021-12-12)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 30: Training on 15,500 games (up to 2021-12-14)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 31: Training on 16,000 games (up to 2021-12-17)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 32: Training on 16,500 games (up to 2021-12-20)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 33: Training on 17,000 games (up to 2021-12-30)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 34: Training on 17,500 games (up to 2022-01-01)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 35: Training on 18,000 games (up to 2022-01-04)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 36: Training on 18,500 games (up to 2022-01-06)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 37: Training on 19,000 games (up to 2022-01-08)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 38: Training on 19,500 games (up to 2022-01-12)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 39: Training on 20,000 games (up to 2022-01-14)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 40: Training on 20,500 games (up to 2022-01-16)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 41: Training on 21,000 games (up to 2022-01-18)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 42: Training on 21,500 games (up to 2022-01-21)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 43: Training on 22,000 games (up to 2022-01-22)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 44: Training on 22,500 games (up to 2022-01-24)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 45: Training on 23,000 games (up to 2022-01-26)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 46: Training on 23,500 games (up to 2022-01-28)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 47: Training on 24,000 games (up to 2022-01-30)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 48: Training on 24,500 games (up to 2022-02-01)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 49: Training on 25,000 games (up to 2022-02-08)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 50: Training on 25,500 games (up to 2022-02-10)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 51: Training on 26,000 games (up to 2022-02-12)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 52: Training on 26,500 games (up to 2022-02-15)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 53: Training on 27,000 games (up to 2022-02-17)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 54: Training on 27,500 games (up to 2022-02-19)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 55: Training on 28,000 games (up to 2022-02-22)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 56: Training on 28,500 games (up to 2022-02-24)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 57: Training on 29,000 games (up to 2022-02-26)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 58: Training on 29,500 games (up to 2022-02-28)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 59: Training on 30,000 games (up to 2022-03-02)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 60: Training on 30,500 games (up to 2022-03-04)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 61: Training on 31,000 games (up to 2022-03-06)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 62: Training on 31,500 games (up to 2022-03-08)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 63: Training on 32,000 games (up to 2022-03-10)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 64: Training on 32,500 games (up to 2022-03-12)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 65: Training on 33,000 games (up to 2022-03-13)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 66: Training on 33,500 games (up to 2022-03-15)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 67: Training on 34,000 games (up to 2022-03-17)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 68: Training on 34,500 games (up to 2022-03-19)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 69: Training on 35,000 games (up to 2022-03-21)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 70: Training on 35,500 games (up to 2022-03-23)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 71: Training on 36,000 games (up to 2022-03-25)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 72: Training on 36,500 games (up to 2022-03-26)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 73: Training on 37,000 games (up to 2022-03-29)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 74: Training on 37,500 games (up to 2022-03-31)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 75: Training on 38,000 games (up to 2022-04-01)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 76: Training on 38,500 games (up to 2022-04-03)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 77: Training on 39,000 games (up to 2022-04-05)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 78: Training on 39,500 games (up to 2022-04-07)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 79: Training on 40,000 games (up to 2022-04-09)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 80: Training on 40,500 games (up to 2022-04-10)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 81: Training on 41,000 games (up to 2022-04-12)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 82: Training on 41,500 games (up to 2022-04-14)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 83: Training on 42,000 games (up to 2022-04-16)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 84: Training on 42,500 games (up to 2022-04-18)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 85: Training on 43,000 games (up to 2022-04-20)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 86: Training on 43,500 games (up to 2022-04-22)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 87: Training on 44,000 games (up to 2022-04-24)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 88: Training on 44,500 games (up to 2022-04-26)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 89: Training on 45,000 games (up to 2022-04-27)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 90: Training on 45,500 games (up to 2022-04-29)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 91: Training on 46,000 games (up to 2022-10-11)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 92: Training on 46,500 games (up to 2022-10-13)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 93: Training on 47,000 games (up to 2022-10-15)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 94: Training on 47,500 games (up to 2022-10-17)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 95: Training on 48,000 games (up to 2022-10-20)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 96: Training on 48,500 games (up to 2022-10-22)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 97: Training on 49,000 games (up to 2022-10-23)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 98: Training on 49,500 games (up to 2022-10-25)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 99: Training on 50,000 games (up to 2022-10-27)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 100: Training on 50,500 games (up to 2022-10-29)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 101: Training on 51,000 games (up to 2022-10-31)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 102: Training on 51,500 games (up to 2022-11-02)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 103: Training on 52,000 games (up to 2022-11-04)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 104: Training on 52,500 games (up to 2022-11-05)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 105: Training on 53,000 games (up to 2022-11-08)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 106: Training on 53,500 games (up to 2022-11-10)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 107: Training on 54,000 games (up to 2022-11-12)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 108: Training on 54,500 games (up to 2022-11-14)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 109: Training on 55,000 games (up to 2022-11-17)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 110: Training on 55,500 games (up to 2022-11-19)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 111: Training on 56,000 games (up to 2022-11-19)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 112: Training on 56,500 games (up to 2022-11-22)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 113: Training on 57,000 games (up to 2022-11-23)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 114: Training on 57,500 games (up to 2022-11-26)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 115: Training on 58,000 games (up to 2022-11-28)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 116: Training on 58,500 games (up to 2022-11-30)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 117: Training on 59,000 games (up to 2022-12-01)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 118: Training on 59,500 games (up to 2022-12-03)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 119: Training on 60,000 games (up to 2022-12-06)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 120: Training on 60,500 games (up to 2022-12-07)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 121: Training on 61,000 games (up to 2022-12-09)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 122: Training on 61,500 games (up to 2022-12-11)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 123: Training on 62,000 games (up to 2022-12-13)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 124: Training on 62,500 games (up to 2022-12-15)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 125: Training on 63,000 games (up to 2022-12-17)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 126: Training on 63,500 games (up to 2022-12-19)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 127: Training on 64,000 games (up to 2022-12-20)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 128: Training on 64,500 games (up to 2022-12-22)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 129: Training on 65,000 games (up to 2022-12-27)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 130: Training on 65,500 games (up to 2022-12-29)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 131: Training on 66,000 games (up to 2022-12-30)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 132: Training on 66,500 games (up to 2023-01-01)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 133: Training on 67,000 games (up to 2023-01-03)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 134: Training on 67,500 games (up to 2023-01-05)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 135: Training on 68,000 games (up to 2023-01-07)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 136: Training on 68,500 games (up to 2023-01-10)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 137: Training on 69,000 games (up to 2023-01-12)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 138: Training on 69,500 games (up to 2023-01-13)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 139: Training on 70,000 games (up to 2023-01-14)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 140: Training on 70,500 games (up to 2023-01-17)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 141: Training on 71,000 games (up to 2023-01-19)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 142: Training on 71,500 games (up to 2023-01-21)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 143: Training on 72,000 games (up to 2023-01-22)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 144: Training on 72,500 games (up to 2023-01-24)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 145: Training on 73,000 games (up to 2023-01-26)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 146: Training on 73,500 games (up to 2023-01-28)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 147: Training on 74,000 games (up to 2023-01-31)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 148: Training on 74,500 games (up to 2023-02-07)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 149: Training on 75,000 games (up to 2023-02-11)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 150: Training on 75,500 games (up to 2023-02-12)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 151: Training on 76,000 games (up to 2023-02-14)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 152: Training on 76,500 games (up to 2023-02-16)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 153: Training on 77,000 games (up to 2023-02-18)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 154: Training on 77,500 games (up to 2023-02-20)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 155: Training on 78,000 games (up to 2023-02-22)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 156: Training on 78,500 games (up to 2023-02-24)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 157: Training on 79,000 games (up to 2023-02-25)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 158: Training on 79,500 games (up to 2023-02-28)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 159: Training on 80,000 games (up to 2023-03-02)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 160: Training on 80,500 games (up to 2023-03-03)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 161: Training on 81,000 games (up to 2023-03-05)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 162: Training on 81,500 games (up to 2023-03-07)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 163: Training on 82,000 games (up to 2023-03-09)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 164: Training on 82,500 games (up to 2023-03-11)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 165: Training on 83,000 games (up to 2023-03-12)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 166: Training on 83,500 games (up to 2023-03-14)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 167: Training on 84,000 games (up to 2023-03-16)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 168: Training on 84,500 games (up to 2023-03-18)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 169: Training on 85,000 games (up to 2023-03-20)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 170: Training on 85,500 games (up to 2023-03-21)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 171: Training on 86,000 games (up to 2023-03-23)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 172: Training on 86,500 games (up to 2023-03-25)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 173: Training on 87,000 games (up to 2023-03-27)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 174: Training on 87,500 games (up to 2023-03-29)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 175: Training on 88,000 games (up to 2023-03-31)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 176: Training on 88,500 games (up to 2023-04-02)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 177: Training on 89,000 games (up to 2023-04-04)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 178: Training on 89,500 games (up to 2023-04-06)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 179: Training on 90,000 games (up to 2023-04-08)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 180: Training on 90,500 games (up to 2023-04-09)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 181: Training on 91,000 games (up to 2023-04-11)
+   ⏭️  Skipping (before 2023-10-01)
+
+🔄 Cycle 182: Training on 91,500 games (up to 2023-04-13)
+   Testing on 500 games (2023-04-13 → 2023-10-11)
+   ✅ Cycle 182: 482 predictions made (skipped 18 no-history, 0 null-projection)
+
+🔄 Cycle 183: Training on 92,000 games (up to 2023-10-11)
+   Testing on 500 games (2023-10-11 → 2023-10-14)
+   ✅ Cycle 183: 478 predictions made (skipped 15 no-history, 0 null-projection)
+
+🔄 Cycle 184: Training on 92,500 games (up to 2023-10-14)
+   Testing on 500 games (2023-10-14 → 2023-10-17)
+   ✅ Cycle 184: 490 predictions made (skipped 8 no-history, 0 null-projection)
+
+🔄 Cycle 185: Training on 93,000 games (up to 2023-10-17)
+   Testing on 500 games (2023-10-17 → 2023-10-20)
+   ✅ Cycle 185: 491 predictions made (skipped 7 no-history, 0 null-projection)
+
+═══════════════════════════════════════════════════════════════════
+📊 IMPROVED MODEL RESULTS
+═══════════════════════════════════════════════════════════════════
+
+Total Predictions: 1,941
+Cycles: 185
+
+📊 Accuracy Metrics:
+   MAE: 1.199 shots
+   Bias: +0.296 shots
+   Correlation: 0.446
+
+🔍 VALIDATION (No Look-Ahead Bias):
+   MAE < 1.0: ❌ FAIL
+   Correlation > 0.55: ❌ FAIL
+   Bias < 0.15: ❌ FAIL
+
+⚠️  Some validation gates failed
+
+💾 Results saved to: RRMODEL/results/nhl-pilot-comparison/lightgbm-test.json
+

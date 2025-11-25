@@ -1,0 +1,3019 @@
+{
+  "date": "2024-10-21",
+  "fetched_at": "2025-11-24T18:11:24.209Z",
+  "source": "the-odds-api",
+  "bookmakers": [
+    "fanduel",
+    "draftkings",
+    "betmgm"
+  ],
+  "markets": [
+    "spreads",
+    "totals",
+    "h2h"
+  ],
+  "games": [
+    {
+      "event_id": "92cf7db605a734b10e69eabf56e1eac9",
+      "home_team": "Boston Celtics",
+      "away_team": "New York Knicks",
+      "commence_time": "2024-10-22T23:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -5.5,
+            "home_price": -112,
+            "away_line": 5.5,
+            "away_price": -108
+          },
+          "fanduel": {
+            "home_line": -5.5,
+            "home_price": -110,
+            "away_line": 5.5,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": -5.5,
+            "home_price": -115,
+            "away_line": 5.5,
+            "away_price": -105
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 224,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "fanduel": {
+            "line": 223.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "betmgm": {
+            "line": 223.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -225,
+            "away_price": 185
+          },
+          "fanduel": {
+            "home_price": -230,
+            "away_price": 190
+          },
+          "betmgm": {
+            "home_price": -225,
+            "away_price": 180
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -5.5,
+          "away_line": 5.5
+        },
+        "totals": {
+          "line": 223.66666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "026ffb7b2ccf8a09dab9b24f33de27f7",
+      "home_team": "Los Angeles Lakers",
+      "away_team": "Minnesota Timberwolves",
+      "commence_time": "2024-10-23T02:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 1.5,
+            "home_price": -112,
+            "away_line": -1.5,
+            "away_price": -108
+          },
+          "fanduel": {
+            "home_line": 1.5,
+            "home_price": -108,
+            "away_line": -1.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": 1.5,
+            "home_price": -110,
+            "away_line": -1.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 219,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 219.5,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "betmgm": {
+            "line": 219.5,
+            "over_price": -105,
+            "under_price": -115
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 102,
+            "away_price": -122
+          },
+          "fanduel": {
+            "home_price": 102,
+            "away_price": -120
+          },
+          "betmgm": {
+            "home_price": 100,
+            "away_price": -120
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 1.5,
+          "away_line": -1.5
+        },
+        "totals": {
+          "line": 219.33333333333334
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "bcd8b3510e7a9d55ccbd7ce761761e11",
+      "home_team": "Detroit Pistons",
+      "away_team": "Indiana Pacers",
+      "commence_time": "2024-10-23T23:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 6,
+            "home_price": -112,
+            "away_line": -6,
+            "away_price": -108
+          },
+          "fanduel": {
+            "home_line": 5.5,
+            "home_price": -106,
+            "away_line": -5.5,
+            "away_price": -114
+          },
+          "betmgm": {
+            "home_line": 5.5,
+            "home_price": -110,
+            "away_line": -5.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 233.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "fanduel": {
+            "line": 233.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 233.5,
+            "over_price": -115,
+            "under_price": -105
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 190,
+            "away_price": -230
+          },
+          "fanduel": {
+            "home_price": 200,
+            "away_price": -245
+          },
+          "betmgm": {
+            "home_price": 185,
+            "away_price": -225
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 5.666666666666667,
+          "away_line": -5.666666666666667
+        },
+        "totals": {
+          "line": 233.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "3f1e025363323de9c99f3d7ec0eb26b7",
+      "home_team": "Atlanta Hawks",
+      "away_team": "Brooklyn Nets",
+      "commence_time": "2024-10-23T23:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -7.5,
+            "home_price": -115,
+            "away_line": 7.5,
+            "away_price": -105
+          },
+          "fanduel": {
+            "home_line": -8,
+            "home_price": -110,
+            "away_line": 8,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": -7.5,
+            "home_price": -115,
+            "away_line": 7.5,
+            "away_price": -105
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 221.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 221.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "betmgm": {
+            "line": 221.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -310,
+            "away_price": 250
+          },
+          "fanduel": {
+            "home_price": -330,
+            "away_price": 265
+          },
+          "betmgm": {
+            "home_price": -350,
+            "away_price": 260
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -7.666666666666667,
+          "away_line": 7.666666666666667
+        },
+        "totals": {
+          "line": 221.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "520febbdcfd2e1f8c002f0e5969ddd49",
+      "home_team": "Toronto Raptors",
+      "away_team": "Cleveland Cavaliers",
+      "commence_time": "2024-10-23T23:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 5.5,
+            "home_price": -112,
+            "away_line": -5.5,
+            "away_price": -108
+          },
+          "fanduel": {
+            "home_line": 5,
+            "home_price": -110,
+            "away_line": -5,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": 5.5,
+            "home_price": -115,
+            "away_line": -5.5,
+            "away_price": -105
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 221,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "fanduel": {
+            "line": 221.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 220.5,
+            "over_price": -115,
+            "under_price": -105
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 180,
+            "away_price": -218
+          },
+          "fanduel": {
+            "home_price": 164,
+            "away_price": -198
+          },
+          "betmgm": {
+            "home_price": 170,
+            "away_price": -210
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 5.333333333333333,
+          "away_line": -5.333333333333333
+        },
+        "totals": {
+          "line": 221
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "8e1c55c639dc5d22d84decb3f27c7b66",
+      "home_team": "Miami Heat",
+      "away_team": "Orlando Magic",
+      "commence_time": "2024-10-23T23:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -2,
+            "home_price": -110,
+            "away_line": 2,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -2,
+            "home_price": -114,
+            "away_line": 2,
+            "away_price": -106
+          },
+          "betmgm": {
+            "home_line": -1.5,
+            "home_price": -115,
+            "away_line": 1.5,
+            "away_price": -105
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 210,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "fanduel": {
+            "line": 209.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "betmgm": {
+            "line": 210.5,
+            "over_price": -105,
+            "under_price": -115
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -125,
+            "away_price": 105
+          },
+          "fanduel": {
+            "home_price": -134,
+            "away_price": 114
+          },
+          "betmgm": {
+            "home_price": -125,
+            "away_price": 105
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -1.8333333333333333,
+          "away_line": 1.8333333333333333
+        },
+        "totals": {
+          "line": 210
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "5908e64fdee6aa0aee10509f928b8344",
+      "home_team": "Philadelphia 76ers",
+      "away_team": "Milwaukee Bucks",
+      "commence_time": "2024-10-23T23:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -2.5,
+            "home_price": -108,
+            "away_line": 2.5,
+            "away_price": -112
+          },
+          "fanduel": {
+            "home_line": -2.5,
+            "home_price": -110,
+            "away_line": 2.5,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": -2.5,
+            "home_price": -110,
+            "away_line": 2.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 225,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 224.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 224.5,
+            "over_price": -115,
+            "under_price": -105
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -130,
+            "away_price": 110
+          },
+          "fanduel": {
+            "home_price": -142,
+            "away_price": 118
+          },
+          "betmgm": {
+            "home_price": -140,
+            "away_price": 115
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -2.5,
+          "away_line": 2.5
+        },
+        "totals": {
+          "line": 224.66666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "3614297da4247a7aaef3dbd9463e644b",
+      "home_team": "Houston Rockets",
+      "away_team": "Charlotte Hornets",
+      "commence_time": "2024-10-24T00:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -7,
+            "home_price": -108,
+            "away_line": 7,
+            "away_price": -112
+          },
+          "fanduel": {
+            "home_line": -7,
+            "home_price": -110,
+            "away_line": 7,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": -6.5,
+            "home_price": -115,
+            "away_line": 6.5,
+            "away_price": -105
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 233.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 233.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 233.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -270,
+            "away_price": 220
+          },
+          "fanduel": {
+            "home_price": -270,
+            "away_price": 220
+          },
+          "betmgm": {
+            "home_price": -275,
+            "away_price": 220
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -6.833333333333333,
+          "away_line": 6.833333333333333
+        },
+        "totals": {
+          "line": 233.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "ed3d298bba3be64b2ccdf364afa3c097",
+      "home_team": "New Orleans Pelicans",
+      "away_team": "Chicago Bulls",
+      "commence_time": "2024-10-24T00:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -7.5,
+            "home_price": -105,
+            "away_line": 7.5,
+            "away_price": -115
+          },
+          "fanduel": {
+            "home_line": -7.5,
+            "home_price": -114,
+            "away_line": 7.5,
+            "away_price": -106
+          },
+          "betmgm": {
+            "home_line": -7.5,
+            "home_price": -110,
+            "away_line": 7.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 223.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "fanduel": {
+            "line": 224,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 223.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -310,
+            "away_price": 250
+          },
+          "fanduel": {
+            "home_price": -290,
+            "away_price": 235
+          },
+          "betmgm": {
+            "home_price": -350,
+            "away_price": 260
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -7.5,
+          "away_line": 7.5
+        },
+        "totals": {
+          "line": 223.66666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "6f2e578dbd59095e80b5b0c74f43d8d8",
+      "home_team": "Utah Jazz",
+      "away_team": "Memphis Grizzlies",
+      "commence_time": "2024-10-24T01:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 4,
+            "home_price": -112,
+            "away_line": -4,
+            "away_price": -108
+          },
+          "fanduel": {
+            "home_line": 4,
+            "home_price": -110,
+            "away_line": -4,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": 3.5,
+            "home_price": -105,
+            "away_line": -3.5,
+            "away_price": -115
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 229.5,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "fanduel": {
+            "line": 229.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 229.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 136,
+            "away_price": -162
+          },
+          "fanduel": {
+            "home_price": 148,
+            "away_price": -176
+          },
+          "betmgm": {
+            "home_price": 145,
+            "away_price": -175
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 3.8333333333333335,
+          "away_line": -3.8333333333333335
+        },
+        "totals": {
+          "line": 229.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "7f82790f1c8e7caa7dfa873ec0547fe4",
+      "home_team": "Portland Trail Blazers",
+      "away_team": "Golden State Warriors",
+      "commence_time": "2024-10-24T02:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 6,
+            "home_price": -105,
+            "away_line": -6,
+            "away_price": -115
+          },
+          "fanduel": {
+            "home_line": 6,
+            "home_price": -110,
+            "away_line": -6,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": 5.5,
+            "home_price": -105,
+            "away_line": -5.5,
+            "away_price": -115
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 225.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 225.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 225.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 185,
+            "away_price": -225
+          },
+          "fanduel": {
+            "home_price": 188,
+            "away_price": -225
+          },
+          "betmgm": {
+            "home_price": 180,
+            "away_price": -225
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 5.833333333333333,
+          "away_line": -5.833333333333333
+        },
+        "totals": {
+          "line": 225.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "8de94b8af5293483abe2a5c52875810d",
+      "home_team": "Los Angeles Clippers",
+      "away_team": "Phoenix Suns",
+      "commence_time": "2024-10-24T02:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 4.5,
+            "home_price": -112,
+            "away_line": -4.5,
+            "away_price": -108
+          },
+          "fanduel": {
+            "home_line": 4.5,
+            "home_price": -106,
+            "away_line": -4.5,
+            "away_price": -114
+          },
+          "betmgm": {
+            "home_line": 4.5,
+            "home_price": -110,
+            "away_line": -4.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 223.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "fanduel": {
+            "line": 223.5,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "betmgm": {
+            "line": 224.5,
+            "over_price": -105,
+            "under_price": -115
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 154,
+            "away_price": -185
+          },
+          "fanduel": {
+            "home_price": 158,
+            "away_price": -188
+          },
+          "betmgm": {
+            "home_price": 155,
+            "away_price": -190
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 4.5,
+          "away_line": -4.5
+        },
+        "totals": {
+          "line": 223.83333333333334
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "9e5c6a9f958653c964712b118e07f6ab",
+      "home_team": "Washington Wizards",
+      "away_team": "Boston Celtics",
+      "commence_time": "2024-10-24T23:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 13,
+            "home_price": -108,
+            "away_line": -13,
+            "away_price": -112
+          },
+          "fanduel": {
+            "home_line": 13.5,
+            "home_price": -110,
+            "away_line": -13.5,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": 13.5,
+            "home_price": -115,
+            "away_line": -13.5,
+            "away_price": -105
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 234.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 234.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 234.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 525,
+            "away_price": -750
+          },
+          "fanduel": {
+            "home_price": 560,
+            "away_price": -800
+          },
+          "betmgm": {
+            "home_price": 550,
+            "away_price": -800
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 13.333333333333334,
+          "away_line": -13.333333333333334
+        },
+        "totals": {
+          "line": 234.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "9fc2bfeed6fed586c135c5f1bafbab54",
+      "home_team": "Dallas Mavericks",
+      "away_team": "San Antonio Spurs",
+      "commence_time": "2024-10-24T23:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -7.5,
+            "home_price": -108,
+            "away_line": 7.5,
+            "away_price": -112
+          },
+          "fanduel": {
+            "home_line": -8,
+            "home_price": -110,
+            "away_line": 8,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": -7.5,
+            "home_price": -110,
+            "away_line": 7.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 232,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "fanduel": {
+            "line": 231.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 232.5,
+            "over_price": -105,
+            "under_price": -115
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -298,
+            "away_price": 240
+          },
+          "fanduel": {
+            "home_price": -310,
+            "away_price": 250
+          },
+          "betmgm": {
+            "home_price": -300,
+            "away_price": 240
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -7.666666666666667,
+          "away_line": 7.666666666666667
+        },
+        "totals": {
+          "line": 232
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "d1c48b0232af93a5b1b27fce495ae28b",
+      "home_team": "Denver Nuggets",
+      "away_team": "Oklahoma City Thunder",
+      "commence_time": "2024-10-25T02:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -2.5,
+            "home_price": -108,
+            "away_line": 2.5,
+            "away_price": -112
+          },
+          "fanduel": {
+            "home_line": -2.5,
+            "home_price": -110,
+            "away_line": 2.5,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": -2.5,
+            "home_price": -110,
+            "away_line": 2.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 225.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "fanduel": {
+            "line": 225.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 225.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -135,
+            "away_price": 114
+          },
+          "fanduel": {
+            "home_price": -144,
+            "away_price": 122
+          },
+          "betmgm": {
+            "home_price": -140,
+            "away_price": 115
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -2.5,
+          "away_line": 2.5
+        },
+        "totals": {
+          "line": 225.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "933e68c9038b6d3a7ffd59790addde8d",
+      "home_team": "Sacramento Kings",
+      "away_team": "Minnesota Timberwolves",
+      "commence_time": "2024-10-25T02:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -1,
+            "home_price": -112,
+            "away_line": 1,
+            "away_price": -108
+          },
+          "fanduel": {
+            "home_line": -1.5,
+            "home_price": -108,
+            "away_line": 1.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": -1.5,
+            "home_price": -110,
+            "away_line": 1.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 228,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 227.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 227.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -120,
+            "away_price": 100
+          },
+          "fanduel": {
+            "home_price": -122,
+            "away_price": 104
+          },
+          "betmgm": {
+            "home_price": -120,
+            "away_price": 100
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -1.3333333333333333,
+          "away_line": 1.3333333333333333
+        },
+        "totals": {
+          "line": 227.66666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "3212efff7788723bdd2ec598fd8f7a43",
+      "home_team": "New York Knicks",
+      "away_team": "Indiana Pacers",
+      "commence_time": "2024-10-25T23:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -5.5,
+            "home_price": -110,
+            "away_line": 5.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 225,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -245,
+            "away_price": 200
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -5.5,
+          "away_line": 5.5
+        },
+        "totals": {
+          "line": 225
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "d35ddee1c4251399c3eca618798adf8c",
+      "home_team": "Washington Wizards",
+      "away_team": "Miami Heat",
+      "commence_time": "2024-11-03T01:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 7.5,
+            "home_price": -110,
+            "away_line": -7.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 226.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 250,
+            "away_price": -310
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 7.5,
+          "away_line": -7.5
+        },
+        "totals": {
+          "line": 226.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "74058cb479045efa21ebd5c57050e23e",
+      "home_team": "Boston Celtics",
+      "away_team": "Atlanta Hawks",
+      "commence_time": "2024-11-13T00:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -11.5,
+            "home_price": -110,
+            "away_line": 11.5,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -12.5,
+            "home_price": -106,
+            "away_line": 12.5,
+            "away_price": -114
+          },
+          "betmgm": {
+            "home_line": -12.5,
+            "home_price": -105,
+            "away_line": 12.5,
+            "away_price": -115
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 231.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 231.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 231.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -575,
+            "away_price": 425
+          },
+          "fanduel": {
+            "home_price": -700,
+            "away_price": 500
+          },
+          "betmgm": {
+            "home_price": -700,
+            "away_price": 500
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -12.166666666666666,
+          "away_line": 12.166666666666666
+        },
+        "totals": {
+          "line": 231.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "ff0b160b9779ae75b9f7d05511270837",
+      "home_team": "Orlando Magic",
+      "away_team": "Charlotte Hornets",
+      "commence_time": "2024-11-13T00:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -7.5,
+            "home_price": -110,
+            "away_line": 7.5,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -8,
+            "home_price": -106,
+            "away_line": 8,
+            "away_price": -114
+          },
+          "betmgm": {
+            "home_line": -7.5,
+            "home_price": -115,
+            "away_line": 7.5,
+            "away_price": -105
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 218.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 218.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 218.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -345,
+            "away_price": 275
+          },
+          "fanduel": {
+            "home_price": -330,
+            "away_price": 265
+          },
+          "betmgm": {
+            "home_price": -300,
+            "away_price": 260
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -7.666666666666667,
+          "away_line": 7.666666666666667
+        },
+        "totals": {
+          "line": 218.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "e80e0c514aa69872360f58b079796a8b",
+      "home_team": "Detroit Pistons",
+      "away_team": "Miami Heat",
+      "commence_time": "2024-11-13T00:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 4,
+            "home_price": -110,
+            "away_line": -4,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": 3.5,
+            "home_price": -108,
+            "away_line": -3.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": 3.5,
+            "home_price": -105,
+            "away_line": -3.5,
+            "away_price": -115
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 219.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 218.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 219.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 150,
+            "away_price": -180
+          },
+          "fanduel": {
+            "home_price": 142,
+            "away_price": -168
+          },
+          "betmgm": {
+            "home_price": 145,
+            "away_price": -175
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 3.6666666666666665,
+          "away_line": -3.6666666666666665
+        },
+        "totals": {
+          "line": 219.16666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "2d650fff73dcc627c1c0de3a4694e9fc",
+      "home_team": "Philadelphia 76ers",
+      "away_team": "New York Knicks",
+      "commence_time": "2024-11-13T00:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -2.5,
+            "home_price": -110,
+            "away_line": 2.5,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -1.5,
+            "home_price": -112,
+            "away_line": 1.5,
+            "away_price": -108
+          },
+          "betmgm": {
+            "home_line": -1.5,
+            "home_price": -110,
+            "away_line": 1.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 215.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 216.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 216.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -142,
+            "away_price": 120
+          },
+          "fanduel": {
+            "home_price": -130,
+            "away_price": 108
+          },
+          "betmgm": {
+            "home_price": -120,
+            "away_price": 100
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -1.8333333333333333,
+          "away_line": 1.8333333333333333
+        },
+        "totals": {
+          "line": 216.16666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "30e4d7fc5396e7b0b8be16b278c123fe",
+      "home_team": "Milwaukee Bucks",
+      "away_team": "Toronto Raptors",
+      "commence_time": "2024-11-13T01:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -8,
+            "home_price": -112,
+            "away_line": 8,
+            "away_price": -108
+          },
+          "fanduel": {
+            "home_line": -8,
+            "home_price": -114,
+            "away_line": 8,
+            "away_price": -106
+          },
+          "betmgm": {
+            "home_line": -8.5,
+            "home_price": -105,
+            "away_line": 8.5,
+            "away_price": -115
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 229,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 229.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 229.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -360,
+            "away_price": 285
+          },
+          "fanduel": {
+            "home_price": -340,
+            "away_price": 275
+          },
+          "betmgm": {
+            "home_price": -300,
+            "away_price": 240
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -8.166666666666666,
+          "away_line": 8.166666666666666
+        },
+        "totals": {
+          "line": 229.33333333333334
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "6050b0be3ce7b57b77ef6695b9cecaa1",
+      "home_team": "Utah Jazz",
+      "away_team": "Phoenix Suns",
+      "commence_time": "2024-11-13T02:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 3,
+            "home_price": -110,
+            "away_line": -3,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": 3.5,
+            "home_price": -106,
+            "away_line": -3.5,
+            "away_price": -114
+          },
+          "betmgm": {
+            "home_line": 3.5,
+            "home_price": -110,
+            "away_line": -3.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 234,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 234,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 233.5,
+            "over_price": -115,
+            "under_price": -105
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 124,
+            "away_price": -148
+          },
+          "fanduel": {
+            "home_price": 142,
+            "away_price": -168
+          },
+          "betmgm": {
+            "home_price": 140,
+            "away_price": -165
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 3.3333333333333335,
+          "away_line": -3.3333333333333335
+        },
+        "totals": {
+          "line": 233.83333333333334
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "f0bfcb563a5de00b392bda6960db1796",
+      "home_team": "Golden State Warriors",
+      "away_team": "Dallas Mavericks",
+      "commence_time": "2024-11-13T03:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -2,
+            "home_price": -110,
+            "away_line": 2,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": -1.5,
+            "home_price": -115,
+            "away_line": 1.5,
+            "away_price": -105
+          },
+          "fanduel": {
+            "home_line": -1.5,
+            "home_price": -112,
+            "away_line": 1.5,
+            "away_price": -108
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 230.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 230.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 230.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -130,
+            "away_price": 110
+          },
+          "betmgm": {
+            "home_price": -130,
+            "away_price": 110
+          },
+          "fanduel": {
+            "home_price": -126,
+            "away_price": 108
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -1.6666666666666667,
+          "away_line": 1.6666666666666667
+        },
+        "totals": {
+          "line": 230.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "4a86e15d2c8c52972524be69d15941cc",
+      "home_team": "Portland Trail Blazers",
+      "away_team": "Minnesota Timberwolves",
+      "commence_time": "2024-11-13T03:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 6,
+            "home_price": -110,
+            "away_line": -6,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": 7,
+            "home_price": -108,
+            "away_line": -7,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": 6.5,
+            "home_price": -110,
+            "away_line": -6.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 218.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 218.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 218.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 205,
+            "away_price": -250
+          },
+          "fanduel": {
+            "home_price": 235,
+            "away_price": -290
+          },
+          "betmgm": {
+            "home_price": 225,
+            "away_price": -275
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 6.5,
+          "away_line": -6.5
+        },
+        "totals": {
+          "line": 218.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "b545064206b8dded3eacfe94a3486010",
+      "home_team": "Toronto Raptors",
+      "away_team": "Detroit Pistons",
+      "commence_time": "2024-11-16T00:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -4.5,
+            "home_price": -110,
+            "away_line": 4.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 238.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -192,
+            "away_price": 160
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -4.5,
+          "away_line": 4.5
+        },
+        "totals": {
+          "line": 238.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "0619b014dfdc9d5586485d1092d0ad57",
+      "home_team": "Indiana Pacers",
+      "away_team": "Miami Heat",
+      "commence_time": "2024-11-16T00:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -3.5,
+            "home_price": -110,
+            "away_line": 3.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 238.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -166,
+            "away_price": 140
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -3.5,
+          "away_line": 3.5
+        },
+        "totals": {
+          "line": 238.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "ca224a310a95b9304f7c8b6e2494ee15",
+      "home_team": "Orlando Magic",
+      "away_team": "Philadelphia 76ers",
+      "commence_time": "2024-11-16T00:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 1,
+            "home_price": -110,
+            "away_line": -1,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 227.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -102,
+            "away_price": -118
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 1,
+          "away_line": -1
+        },
+        "totals": {
+          "line": 227.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "1a46dad2277cca4a74204b8e2bbe6bc6",
+      "home_team": "Atlanta Hawks",
+      "away_team": "Washington Wizards",
+      "commence_time": "2024-11-16T00:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -6.5,
+            "home_price": -110,
+            "away_line": 6.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 238.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -265,
+            "away_price": 215
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -6.5,
+          "away_line": 6.5
+        },
+        "totals": {
+          "line": 238.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "432e5ff1dfaf3992cc9fde2c1582c76f",
+      "home_team": "New York Knicks",
+      "away_team": "Brooklyn Nets",
+      "commence_time": "2024-11-16T00:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -13,
+            "home_price": -110,
+            "away_line": 13,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 215,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -900,
+            "away_price": 600
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -13,
+          "away_line": 13
+        },
+        "totals": {
+          "line": 215
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "0c8bcf32079a8c03a4b22e13a8c77a41",
+      "home_team": "Cleveland Cavaliers",
+      "away_team": "Chicago Bulls",
+      "commence_time": "2024-11-16T00:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -7.5,
+            "home_price": -110,
+            "away_line": 7.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 217.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -325,
+            "away_price": 260
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -7.5,
+          "away_line": 7.5
+        },
+        "totals": {
+          "line": 217.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "cfa354d9b48630ea2630af8defb2b9ef",
+      "home_team": "San Antonio Spurs",
+      "away_team": "Los Angeles Lakers",
+      "commence_time": "2024-11-16T00:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 1,
+            "home_price": -110,
+            "away_line": -1,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 231.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -102,
+            "away_price": -118
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 1,
+          "away_line": -1
+        },
+        "totals": {
+          "line": 231.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "3dc935a0b75960161d6bfdf8f2fa8e3d",
+      "home_team": "New Orleans Pelicans",
+      "away_team": "Denver Nuggets",
+      "commence_time": "2024-11-16T01:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -1,
+            "home_price": -110,
+            "away_line": 1,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 229.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -118,
+            "away_price": -102
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -1,
+          "away_line": 1
+        },
+        "totals": {
+          "line": 229.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "4440572120e5bfc80b66c6092af854dc",
+      "home_team": "Houston Rockets",
+      "away_team": "Los Angeles Clippers",
+      "commence_time": "2024-11-16T01:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -4,
+            "home_price": -110,
+            "away_line": 4,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 224.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -180,
+            "away_price": 150
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -4,
+          "away_line": 4
+        },
+        "totals": {
+          "line": 224.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "4f810271cfe5cec9d74be5bf4bac935b",
+      "home_team": "Oklahoma City Thunder",
+      "away_team": "Phoenix Suns",
+      "commence_time": "2024-11-16T01:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -5,
+            "home_price": -110,
+            "away_line": 5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 230.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -205,
+            "away_price": 170
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -5,
+          "away_line": 5
+        },
+        "totals": {
+          "line": 230.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "f539352357353e1bec8c5e594d1a816b",
+      "home_team": "Golden State Warriors",
+      "away_team": "Memphis Grizzlies",
+      "commence_time": "2024-11-16T03:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -2,
+            "home_price": -110,
+            "away_line": 2,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 227.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -130,
+            "away_price": 110
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -2,
+          "away_line": 2
+        },
+        "totals": {
+          "line": 227.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "88ce2e9fedcf84d708244491037ed0f2",
+      "home_team": "Sacramento Kings",
+      "away_team": "Minnesota Timberwolves",
+      "commence_time": "2024-11-16T03:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -1,
+            "home_price": -110,
+            "away_line": 1,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 228.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -118,
+            "away_price": -102
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -1,
+          "away_line": 1
+        },
+        "totals": {
+          "line": 228.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "973a6ea86af7d9e2bf4c52509822f5bf",
+      "home_team": "New York Knicks",
+      "away_team": "San Antonio Spurs",
+      "commence_time": "2024-12-25T17:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -9.5,
+            "home_price": -110,
+            "away_line": 9.5,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -10,
+            "home_price": -110,
+            "away_line": 10,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": -9.5,
+            "home_price": -110,
+            "away_line": 9.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 226.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 226.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "betmgm": {
+            "line": 226.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -425,
+            "away_price": 330
+          },
+          "fanduel": {
+            "home_price": -480,
+            "away_price": 370
+          },
+          "betmgm": {
+            "home_price": -450,
+            "away_price": 340
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -9.666666666666666,
+          "away_line": 9.666666666666666
+        },
+        "totals": {
+          "line": 226.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "07a07eaa8f786d68cb371107f36f5b33",
+      "home_team": "Dallas Mavericks",
+      "away_team": "Minnesota Timberwolves",
+      "commence_time": "2024-12-25T19:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -3,
+            "home_price": -110,
+            "away_line": 3,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -3.5,
+            "home_price": -108,
+            "away_line": 3.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": -2.5,
+            "home_price": -110,
+            "away_line": 2.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 228.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 227.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "betmgm": {
+            "line": 227.5,
+            "over_price": -105,
+            "under_price": -115
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -155,
+            "away_price": 130
+          },
+          "fanduel": {
+            "home_price": -168,
+            "away_price": 142
+          },
+          "betmgm": {
+            "home_price": -145,
+            "away_price": 120
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -3,
+          "away_line": 3
+        },
+        "totals": {
+          "line": 227.83333333333334
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "6f66bc2154fb45b2047e1c1c5afcdc38",
+      "home_team": "Boston Celtics",
+      "away_team": "Philadelphia 76ers",
+      "commence_time": "2024-12-25T22:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -5.5,
+            "home_price": -110,
+            "away_line": 5.5,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -5.5,
+            "home_price": -108,
+            "away_line": 5.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": -4.5,
+            "home_price": -115,
+            "away_line": 4.5,
+            "away_price": -105
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 226,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 226.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 224.5,
+            "over_price": -115,
+            "under_price": -105
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -218,
+            "away_price": 180
+          },
+          "fanduel": {
+            "home_price": -210,
+            "away_price": 176
+          },
+          "betmgm": {
+            "home_price": -210,
+            "away_price": 170
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -5.166666666666667,
+          "away_line": 5.166666666666667
+        },
+        "totals": {
+          "line": 225.66666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "bc6f994bad539db5054c8b750c437fb8",
+      "home_team": "Golden State Warriors",
+      "away_team": "Los Angeles Lakers",
+      "commence_time": "2024-12-26T01:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -3.5,
+            "home_price": -110,
+            "away_line": 3.5,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -3.5,
+            "home_price": -108,
+            "away_line": 3.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": -3.5,
+            "home_price": -110,
+            "away_line": 3.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 234.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 235.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 235.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -162,
+            "away_price": 136
+          },
+          "fanduel": {
+            "home_price": -166,
+            "away_price": 140
+          },
+          "betmgm": {
+            "home_price": -165,
+            "away_price": 135
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -3.5,
+          "away_line": 3.5
+        },
+        "totals": {
+          "line": 235.16666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "22a9b650e64ca15cb0c83dc0148a571e",
+      "home_team": "Phoenix Suns",
+      "away_team": "Denver Nuggets",
+      "commence_time": "2024-12-26T03:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -1,
+            "home_price": -110,
+            "away_line": 1,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -1.5,
+            "home_price": -110,
+            "away_line": 1.5,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": -1.5,
+            "home_price": -105,
+            "away_line": 1.5,
+            "away_price": -115
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 226,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 226.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 227.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -115,
+            "away_price": -105
+          },
+          "fanduel": {
+            "home_price": -126,
+            "away_price": 108
+          },
+          "betmgm": {
+            "home_price": -115,
+            "away_price": -105
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -1.3333333333333333,
+          "away_line": 1.3333333333333333
+        },
+        "totals": {
+          "line": 226.66666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "018bca38c1fc33355f7dfc20ad69b2ee",
+      "home_team": "Charlotte Hornets",
+      "away_team": "Dallas Mavericks",
+      "commence_time": "2025-01-20T17:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 7,
+            "home_price": -110,
+            "away_line": -7,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 232.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 235,
+            "away_price": -290
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 7,
+          "away_line": -7
+        },
+        "totals": {
+          "line": 232.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "648497f8f49bde0d229d66eb1e3c27d3",
+      "home_team": "Houston Rockets",
+      "away_team": "Detroit Pistons",
+      "commence_time": "2025-01-20T19:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -7,
+            "home_price": -110,
+            "away_line": 7,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 228.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -298,
+            "away_price": 240
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -7,
+          "away_line": 7
+        },
+        "totals": {
+          "line": 228.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "499a4015cf50b478efb61409fa0786d5",
+      "home_team": "Memphis Grizzlies",
+      "away_team": "Minnesota Timberwolves",
+      "commence_time": "2025-01-20T19:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -1,
+            "home_price": -110,
+            "away_line": 1,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 218.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -118,
+            "away_price": -102
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -1,
+          "away_line": 1
+        },
+        "totals": {
+          "line": 218.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "b736883206d52bd2d7f89ed1d3c89f62",
+      "home_team": "New York Knicks",
+      "away_team": "Atlanta Hawks",
+      "commence_time": "2025-01-20T20:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -9,
+            "home_price": -110,
+            "away_line": 9,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 222,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -425,
+            "away_price": 330
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -9,
+          "away_line": 9
+        },
+        "totals": {
+          "line": 222
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "78c8db06b7974d20983f9b3c9bc1b678",
+      "home_team": "Cleveland Cavaliers",
+      "away_team": "Phoenix Suns",
+      "commence_time": "2025-01-20T20:30:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -2.5,
+            "home_price": -110,
+            "away_line": 2.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 223.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -142,
+            "away_price": 120
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -2.5,
+          "away_line": 2.5
+        },
+        "totals": {
+          "line": 223.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "173d7d5f2bf8881f4bc4a2179fdf895f",
+      "home_team": "Golden State Warriors",
+      "away_team": "Boston Celtics",
+      "commence_time": "2025-01-20T22:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 5,
+            "home_price": -110,
+            "away_line": -5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 221.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 170,
+            "away_price": -205
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 5,
+          "away_line": -5
+        },
+        "totals": {
+          "line": 221.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "20515d2b43e180979c39074d4f7bcb3f",
+      "home_team": "New Orleans Pelicans",
+      "away_team": "Utah Jazz",
+      "commence_time": "2025-01-21T01:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -7.5,
+            "home_price": -110,
+            "away_line": 7.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 226.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -325,
+            "away_price": 260
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -7.5,
+          "away_line": 7.5
+        },
+        "totals": {
+          "line": 226.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "59065cde52a9e2b367362915f8e2298a",
+      "home_team": "Indiana Pacers",
+      "away_team": "San Antonio Spurs",
+      "commence_time": "2025-01-23T19:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -3.5,
+            "home_price": -110,
+            "away_line": 3.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 240,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -166,
+            "away_price": 140
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -3.5,
+          "away_line": 3.5
+        },
+        "totals": {
+          "line": 240
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "178af5284f2a47d4e8b7771bebab5da9",
+      "home_team": "San Antonio Spurs",
+      "away_team": "Indiana Pacers",
+      "commence_time": "2025-01-25T17:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 3.5,
+            "home_price": -110,
+            "away_line": -3.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 240,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 136,
+            "away_price": -162
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 3.5,
+          "away_line": -3.5
+        },
+        "totals": {
+          "line": 240
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    }
+  ]
+}

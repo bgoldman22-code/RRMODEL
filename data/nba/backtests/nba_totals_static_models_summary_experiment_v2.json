@@ -1,0 +1,89 @@
+{
+  "generated_at": "2025-11-25T08:57:37.307503",
+  "dataset": {
+    "path": "data/nba/backtests/nba_totals_backtest_dataset.parquet",
+    "num_games": 1468,
+    "date_range": {
+      "start": "2024-10-22",
+      "end": "2025-11-22"
+    }
+  },
+  "parameters": {
+    "edge_threshold": 4.0,
+    "default_odds": -110
+  },
+  "models": {
+    "baseline": {
+      "model_name": "Baseline Model",
+      "mae": 15.256431727706174,
+      "correlation": NaN,
+      "num_bets": 850,
+      "wins": 437,
+      "losses": 412,
+      "pushes": 1,
+      "win_rate": 0.5147232037691402,
+      "roi": -1.7326203208556146,
+      "total_profit": -14.727272727272723,
+      "avg_edge": 0.11454980925610632,
+      "edge_buckets": [
+        {
+          "edge_range": "4-6",
+          "num_bets": 249,
+          "win_rate": 0.5060240963855421,
+          "roi": -3.3953997809419483
+        },
+        {
+          "edge_range": "6-8",
+          "num_bets": 209,
+          "win_rate": 0.5358851674641149,
+          "roi": 2.305350152240105
+        },
+        {
+          "edge_range": "8+",
+          "num_bets": 392,
+          "win_rate": 0.5089514066496164,
+          "roi": -2.8293135435992562
+        }
+      ]
+    },
+    "experiment_v2": {
+      "model_name": "Experiment V2",
+      "mae": 15.167507533702864,
+      "correlation": NaN,
+      "num_bets": 854,
+      "wins": 460,
+      "losses": 393,
+      "pushes": 1,
+      "win_rate": 0.5392731535756154,
+      "roi": 2.9486906536086868,
+      "total_profit": 25.181818181818187,
+      "avg_edge": 2.311021381225576,
+      "edge_buckets": [
+        {
+          "edge_range": "4-6",
+          "num_bets": 271,
+          "win_rate": 0.5129151291512916,
+          "roi": -2.079838980207984
+        },
+        {
+          "edge_range": "6-8",
+          "num_bets": 188,
+          "win_rate": 0.574468085106383,
+          "roi": 9.671179883945841
+        },
+        {
+          "edge_range": "8+",
+          "num_bets": 395,
+          "win_rate": 0.5406091370558376,
+          "roi": 3.199079401611048
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "delta_bets": 4,
+    "delta_win_rate": 0.02454994980647529,
+    "delta_roi": 4.681310974464301,
+    "delta_total_profit": 39.90909090909091
+  }
+}

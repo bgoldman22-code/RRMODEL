@@ -1,0 +1,518 @@
+{
+  "timestamp": "2025-11-25T10:02:04.324256",
+  "config": {
+    "min_train_games": 500,
+    "lgbm_params": {
+      "objective": "regression",
+      "metric": [
+        "rmse",
+        "mae"
+      ],
+      "boosting_type": "gbdt",
+      "num_leaves": 32,
+      "max_depth": 5,
+      "learning_rate": 0.03,
+      "feature_fraction": 0.8,
+      "bagging_fraction": 0.9,
+      "bagging_freq": 1,
+      "min_data_in_leaf": 20,
+      "lambda_l1": 0.1,
+      "lambda_l2": 0.1,
+      "verbose": -1,
+      "seed": 42
+    },
+    "num_boost_round": 50
+  },
+  "experiments": {
+    "baseline_lgbm_residual_v1": {
+      "experiment": "baseline_lgbm_residual_v1",
+      "total_games": 962,
+      "mae": 14.169,
+      "rmse": 17.772,
+      "bias": -0.727,
+      "correlation": 0.3932,
+      "edge_distribution": {
+        "mean": 0.519,
+        "median": 0.619,
+        "std": 2.439,
+        "histogram_pct": {
+          "0-2": 57.59,
+          "2-4": 31.39,
+          "4-6": 8.52,
+          "6+": 2.49
+        }
+      },
+      "calibration_by_edge_bucket": {
+        "3-4": {
+          "count": 95,
+          "over_count": 65,
+          "under_count": 30,
+          "over_success_pct": 55.38,
+          "under_success_pct": 50.0
+        },
+        "4-5": {
+          "count": 62,
+          "over_count": 35,
+          "under_count": 27,
+          "over_success_pct": 48.57,
+          "under_success_pct": 40.74
+        },
+        "5-6": {
+          "count": 20,
+          "over_count": 14,
+          "under_count": 6,
+          "over_success_pct": 50.0,
+          "under_success_pct": 50.0
+        },
+        "6-8": {
+          "count": 20,
+          "over_count": 11,
+          "under_count": 9,
+          "over_success_pct": 45.45,
+          "under_success_pct": 77.78
+        },
+        "8+": {
+          "count": 4,
+          "over_count": 4,
+          "under_count": 0,
+          "over_success_pct": 25.0,
+          "under_success_pct": null
+        }
+      }
+    },
+    "drop_four_factors": {
+      "experiment": "drop_four_factors",
+      "total_games": 962,
+      "mae": 14.152,
+      "rmse": 17.725,
+      "bias": -0.76,
+      "correlation": 0.3982,
+      "edge_distribution": {
+        "mean": 0.486,
+        "median": 0.593,
+        "std": 2.29,
+        "histogram_pct": {
+          "0-2": 63.2,
+          "2-4": 26.82,
+          "4-6": 8.32,
+          "6+": 1.66
+        }
+      },
+      "calibration_by_edge_bucket": {
+        "3-4": {
+          "count": 92,
+          "over_count": 64,
+          "under_count": 28,
+          "over_success_pct": 42.19,
+          "under_success_pct": 46.43
+        },
+        "4-5": {
+          "count": 65,
+          "over_count": 40,
+          "under_count": 25,
+          "over_success_pct": 40.0,
+          "under_success_pct": 28.0
+        },
+        "5-6": {
+          "count": 15,
+          "over_count": 8,
+          "under_count": 7,
+          "over_success_pct": 50.0,
+          "under_success_pct": 85.71
+        },
+        "6-8": {
+          "count": 16,
+          "over_count": 9,
+          "under_count": 7,
+          "over_success_pct": 66.67,
+          "under_success_pct": 85.71
+        }
+      }
+    },
+    "drop_rest_schedule": {
+      "experiment": "drop_rest_schedule",
+      "total_games": 962,
+      "mae": 14.19,
+      "rmse": 17.79,
+      "bias": -0.711,
+      "correlation": 0.3912,
+      "edge_distribution": {
+        "mean": 0.536,
+        "median": 0.655,
+        "std": 2.359,
+        "histogram_pct": {
+          "0-2": 61.33,
+          "2-4": 28.38,
+          "4-6": 8.52,
+          "6+": 1.77
+        }
+      },
+      "calibration_by_edge_bucket": {
+        "3-4": {
+          "count": 99,
+          "over_count": 61,
+          "under_count": 38,
+          "over_success_pct": 55.74,
+          "under_success_pct": 42.11
+        },
+        "4-5": {
+          "count": 53,
+          "over_count": 36,
+          "under_count": 17,
+          "over_success_pct": 44.44,
+          "under_success_pct": 52.94
+        },
+        "5-6": {
+          "count": 29,
+          "over_count": 15,
+          "under_count": 14,
+          "over_success_pct": 40.0,
+          "under_success_pct": 50.0
+        },
+        "6-8": {
+          "count": 17,
+          "over_count": 11,
+          "under_count": 6,
+          "over_success_pct": 45.45,
+          "under_success_pct": 50.0
+        }
+      }
+    },
+    "drop_pace": {
+      "experiment": "drop_pace",
+      "total_games": 962,
+      "mae": 14.21,
+      "rmse": 17.812,
+      "bias": -0.753,
+      "correlation": 0.3896,
+      "edge_distribution": {
+        "mean": 0.493,
+        "median": 0.505,
+        "std": 2.512,
+        "histogram_pct": {
+          "0-2": 58.73,
+          "2-4": 28.48,
+          "4-6": 10.19,
+          "6+": 2.6
+        }
+      },
+      "calibration_by_edge_bucket": {
+        "3-4": {
+          "count": 92,
+          "over_count": 67,
+          "under_count": 25,
+          "over_success_pct": 44.78,
+          "under_success_pct": 48.0
+        },
+        "4-5": {
+          "count": 68,
+          "over_count": 42,
+          "under_count": 26,
+          "over_success_pct": 47.62,
+          "under_success_pct": 57.69
+        },
+        "5-6": {
+          "count": 30,
+          "over_count": 17,
+          "under_count": 13,
+          "over_success_pct": 35.29,
+          "under_success_pct": 30.77
+        },
+        "6-8": {
+          "count": 23,
+          "over_count": 16,
+          "under_count": 7,
+          "over_success_pct": 50.0,
+          "under_success_pct": 71.43
+        },
+        "8+": {
+          "count": 2,
+          "over_count": 0,
+          "under_count": 2,
+          "over_success_pct": null,
+          "under_success_pct": 50.0
+        }
+      }
+    },
+    "drop_matchups": {
+      "experiment": "drop_matchups",
+      "total_games": 962,
+      "mae": 14.209,
+      "rmse": 17.819,
+      "bias": -0.709,
+      "correlation": 0.3882,
+      "edge_distribution": {
+        "mean": 0.537,
+        "median": 0.549,
+        "std": 2.478,
+        "histogram_pct": {
+          "0-2": 59.04,
+          "2-4": 28.9,
+          "4-6": 10.19,
+          "6+": 1.87
+        }
+      },
+      "calibration_by_edge_bucket": {
+        "3-4": {
+          "count": 99,
+          "over_count": 71,
+          "under_count": 28,
+          "over_success_pct": 43.66,
+          "under_success_pct": 25.0
+        },
+        "4-5": {
+          "count": 65,
+          "over_count": 36,
+          "under_count": 29,
+          "over_success_pct": 52.78,
+          "under_success_pct": 41.38
+        },
+        "5-6": {
+          "count": 33,
+          "over_count": 18,
+          "under_count": 15,
+          "over_success_pct": 50.0,
+          "under_success_pct": 53.33
+        },
+        "6-8": {
+          "count": 13,
+          "over_count": 10,
+          "under_count": 3,
+          "over_success_pct": 50.0,
+          "under_success_pct": 66.67
+        },
+        "8+": {
+          "count": 5,
+          "over_count": 4,
+          "under_count": 1,
+          "over_success_pct": 50.0,
+          "under_success_pct": 100.0
+        }
+      }
+    },
+    "only_ratings_and_pace": {
+      "experiment": "only_ratings_and_pace",
+      "total_games": 962,
+      "mae": 14.166,
+      "rmse": 17.732,
+      "bias": -0.727,
+      "correlation": 0.3971,
+      "edge_distribution": {
+        "mean": 0.52,
+        "median": 0.641,
+        "std": 2.227,
+        "histogram_pct": {
+          "0-2": 64.97,
+          "2-4": 26.92,
+          "4-6": 6.86,
+          "6+": 1.25
+        }
+      },
+      "calibration_by_edge_bucket": {
+        "3-4": {
+          "count": 95,
+          "over_count": 63,
+          "under_count": 32,
+          "over_success_pct": 44.44,
+          "under_success_pct": 43.75
+        },
+        "4-5": {
+          "count": 40,
+          "over_count": 26,
+          "under_count": 14,
+          "over_success_pct": 50.0,
+          "under_success_pct": 35.71
+        },
+        "5-6": {
+          "count": 26,
+          "over_count": 17,
+          "under_count": 9,
+          "over_success_pct": 88.24,
+          "under_success_pct": 55.56
+        },
+        "6-8": {
+          "count": 11,
+          "over_count": 6,
+          "under_count": 5,
+          "over_success_pct": 33.33,
+          "under_success_pct": 40.0
+        },
+        "8+": {
+          "count": 1,
+          "over_count": 0,
+          "under_count": 1,
+          "over_success_pct": null,
+          "under_success_pct": 100.0
+        }
+      }
+    },
+    "top_k_20_features": {
+      "experiment": "top_k_20_features",
+      "total_games": 962,
+      "mae": 14.115,
+      "rmse": 17.723,
+      "bias": -0.77,
+      "correlation": 0.3982,
+      "edge_distribution": {
+        "mean": 0.476,
+        "median": 0.719,
+        "std": 2.348,
+        "histogram_pct": {
+          "0-2": 60.6,
+          "2-4": 30.15,
+          "4-6": 8.0,
+          "6+": 1.25
+        }
+      },
+      "calibration_by_edge_bucket": {
+        "3-4": {
+          "count": 98,
+          "over_count": 60,
+          "under_count": 38,
+          "over_success_pct": 50.0,
+          "under_success_pct": 52.63
+        },
+        "4-5": {
+          "count": 47,
+          "over_count": 31,
+          "under_count": 16,
+          "over_success_pct": 51.61,
+          "under_success_pct": 43.75
+        },
+        "5-6": {
+          "count": 30,
+          "over_count": 19,
+          "under_count": 11,
+          "over_success_pct": 52.63,
+          "under_success_pct": 45.45
+        },
+        "6-8": {
+          "count": 10,
+          "over_count": 4,
+          "under_count": 6,
+          "over_success_pct": 50.0,
+          "under_success_pct": 66.67
+        },
+        "8+": {
+          "count": 2,
+          "over_count": 0,
+          "under_count": 2,
+          "over_success_pct": null,
+          "under_success_pct": 50.0
+        }
+      }
+    },
+    "top_k_15_features": {
+      "experiment": "top_k_15_features",
+      "total_games": 962,
+      "mae": 14.068,
+      "rmse": 17.662,
+      "bias": -0.794,
+      "correlation": 0.4052,
+      "edge_distribution": {
+        "mean": 0.453,
+        "median": 0.699,
+        "std": 2.485,
+        "histogram_pct": {
+          "0-2": 59.04,
+          "2-4": 30.15,
+          "4-6": 9.04,
+          "6+": 1.77
+        }
+      },
+      "calibration_by_edge_bucket": {
+        "3-4": {
+          "count": 104,
+          "over_count": 70,
+          "under_count": 34,
+          "over_success_pct": 41.43,
+          "under_success_pct": 47.06
+        },
+        "4-5": {
+          "count": 59,
+          "over_count": 33,
+          "under_count": 26,
+          "over_success_pct": 54.55,
+          "under_success_pct": 30.77
+        },
+        "5-6": {
+          "count": 28,
+          "over_count": 16,
+          "under_count": 12,
+          "over_success_pct": 62.5,
+          "under_success_pct": 75.0
+        },
+        "6-8": {
+          "count": 14,
+          "over_count": 5,
+          "under_count": 9,
+          "over_success_pct": 80.0,
+          "under_success_pct": 55.56
+        },
+        "8+": {
+          "count": 3,
+          "over_count": 0,
+          "under_count": 3,
+          "over_success_pct": null,
+          "under_success_pct": 66.67
+        }
+      }
+    },
+    "top_k_10_features": {
+      "experiment": "top_k_10_features",
+      "total_games": 962,
+      "mae": 14.098,
+      "rmse": 17.665,
+      "bias": -0.729,
+      "correlation": 0.4047,
+      "edge_distribution": {
+        "mean": 0.518,
+        "median": 0.682,
+        "std": 2.543,
+        "histogram_pct": {
+          "0-2": 55.61,
+          "2-4": 32.02,
+          "4-6": 10.5,
+          "6+": 1.87
+        }
+      },
+      "calibration_by_edge_bucket": {
+        "3-4": {
+          "count": 124,
+          "over_count": 82,
+          "under_count": 42,
+          "over_success_pct": 46.34,
+          "under_success_pct": 52.38
+        },
+        "4-5": {
+          "count": 75,
+          "over_count": 45,
+          "under_count": 30,
+          "over_success_pct": 64.44,
+          "under_success_pct": 50.0
+        },
+        "5-6": {
+          "count": 26,
+          "over_count": 15,
+          "under_count": 11,
+          "over_success_pct": 60.0,
+          "under_success_pct": 36.36
+        },
+        "6-8": {
+          "count": 15,
+          "over_count": 5,
+          "under_count": 10,
+          "over_success_pct": 60.0,
+          "under_success_pct": 50.0
+        },
+        "8+": {
+          "count": 3,
+          "over_count": 2,
+          "under_count": 1,
+          "over_success_pct": 50.0,
+          "under_success_pct": 100.0
+        }
+      }
+    }
+  }
+}

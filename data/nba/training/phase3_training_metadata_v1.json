@@ -1,0 +1,73 @@
+{
+  "version": "v1",
+  "created": "2025-11-25T15:14:05.682Z",
+  "source_boxscores": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/boxscores_multiseason_2022_26_v1.json",
+  "source_odds": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds",
+  "total_examples": 49158,
+  "by_market": {
+    "player_points": 18598,
+    "player_rebounds": 17849,
+    "player_assists": 12711
+  },
+  "by_side": {
+    "Over": 24579,
+    "Under": 24579
+  },
+  "by_date": {
+    "2023-10": 1295,
+    "2023-11": 4218,
+    "2023-12": 3920,
+    "2024-01": 4266,
+    "2024-02": 3062,
+    "2024-03": 4461,
+    "2024-04": 2914,
+    "2024-10": 1743,
+    "2024-11": 5175,
+    "2024-12": 3544,
+    "2025-01": 4504,
+    "2025-02": 3044,
+    "2025-03": 4574,
+    "2025-04": 2438
+  },
+  "win_rate_overall": "0.500",
+  "avg_line": "9.7",
+  "unique_players": 322,
+  "date_range": {
+    "earliest": "2023-10-24",
+    "latest": "2025-04-11"
+  },
+  "features": [
+    "L5_ppg",
+    "L10_ppg",
+    "L999_ppg",
+    "L5_rpg",
+    "L10_rpg",
+    "L999_rpg",
+    "L5_apg",
+    "L10_apg",
+    "L999_apg",
+    "L5_pra",
+    "L10_pra",
+    "L999_pra",
+    "L5_minutes",
+    "L10_minutes",
+    "L5_fga",
+    "L10_fga",
+    "L5_fta",
+    "L10_fta",
+    "opp_def_L5_pra_allowed",
+    "opp_def_L10_pra_allowed",
+    "opp_def_L5_ppg_allowed",
+    "opp_def_L10_ppg_allowed",
+    "opp_def_L5_rpg_allowed",
+    "opp_def_L10_rpg_allowed",
+    "opp_def_L5_apg_allowed",
+    "opp_def_L10_apg_allowed",
+    "rest_days",
+    "home",
+    "line",
+    "games_played"
+  ],
+  "target": "result",
+  "leakage_prevention": "All features computed using only data from date < game_date"
+}

@@ -1,0 +1,12 @@
+{
+  "min_train_games": 500,
+  "train_window_type": "expanding",
+  "rolling_window_games": 1500,
+  "ridge_alpha": 3.0,
+  "edge_threshold": 4.0,
+  "default_odds": -110,
+  "date_range": {
+    "start": "2024-10-22",
+    "end": "2025-11-22"
+  }
+}

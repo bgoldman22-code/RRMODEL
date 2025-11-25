@@ -1,0 +1,23 @@
+{
+  "generated_at": "2025-11-24T16:59:52.437911Z",
+  "model": "total_model_experiment_v2",
+  "alpha": 3.0,
+  "split": {
+    "strategy": "date",
+    "val_start_date": "2024-10-22",
+    "train_rows": "1914",
+    "val_rows": "1474"
+  },
+  "train": {
+    "mae": 15.651430152066917,
+    "rmse": 19.880034264426538,
+    "mean_error": 4.75180094970182e-16,
+    "correlation": 0.18368644712709775
+  },
+  "validation": {
+    "mae": 15.174373057964862,
+    "rmse": 19.104550544700935,
+    "mean_error": 0.3598524164530397,
+    "correlation": 0.24873595454018288
+  }
+}

@@ -1,0 +1,865 @@
+{
+  "date": "2025-02-10",
+  "fetched_at": "2025-11-24T19:05:27.537Z",
+  "source": "the-odds-api",
+  "bookmakers": [
+    "fanduel",
+    "draftkings",
+    "betmgm"
+  ],
+  "markets": [
+    "spreads",
+    "totals",
+    "h2h"
+  ],
+  "games": [
+    {
+      "event_id": "de674935dc38d314dc4b4b0ac5c024c4",
+      "home_team": "Orlando Magic",
+      "away_team": "Atlanta Hawks",
+      "commence_time": "2025-02-11T00:10:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -5,
+            "home_price": -112,
+            "away_line": 5,
+            "away_price": -108
+          },
+          "fanduel": {
+            "home_line": -5.5,
+            "home_price": -108,
+            "away_line": 5.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": -5.5,
+            "home_price": -105,
+            "away_line": 5.5,
+            "away_price": -115
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 222,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "fanduel": {
+            "line": 221.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 221.5,
+            "over_price": -115,
+            "under_price": -105
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -198,
+            "away_price": 164
+          },
+          "fanduel": {
+            "home_price": -210,
+            "away_price": 176
+          },
+          "betmgm": {
+            "home_price": -210,
+            "away_price": 170
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -5.333333333333333,
+          "away_line": 5.333333333333333
+        },
+        "totals": {
+          "line": 221.66666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "3c08e999c5f8c6d6954b8f618b5df9a8",
+      "home_team": "Cleveland Cavaliers",
+      "away_team": "Minnesota Timberwolves",
+      "commence_time": "2025-02-11T00:10:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -9,
+            "home_price": -110,
+            "away_line": 9,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -9,
+            "home_price": -110,
+            "away_line": 9,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": -9.5,
+            "home_price": -105,
+            "away_line": 9.5,
+            "away_price": -115
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 229,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "fanduel": {
+            "line": 228.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 228.5,
+            "over_price": -115,
+            "under_price": -105
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -375,
+            "away_price": 295
+          },
+          "fanduel": {
+            "home_price": -405,
+            "away_price": 320
+          },
+          "betmgm": {
+            "home_price": -375,
+            "away_price": 300
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -9.166666666666666,
+          "away_line": 9.166666666666666
+        },
+        "totals": {
+          "line": 228.66666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "4b1c91161cc3d0cb86b46500daf2e29a",
+      "home_team": "Washington Wizards",
+      "away_team": "San Antonio Spurs",
+      "commence_time": "2025-02-11T00:10:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 11.5,
+            "home_price": -115,
+            "away_line": -11.5,
+            "away_price": -105
+          },
+          "fanduel": {
+            "home_line": 11.5,
+            "home_price": -108,
+            "away_line": -11.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": 11.5,
+            "home_price": -115,
+            "away_line": -11.5,
+            "away_price": -105
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 236.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 235.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 236.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 455,
+            "away_price": -625
+          },
+          "fanduel": {
+            "home_price": 440,
+            "away_price": -590
+          },
+          "betmgm": {
+            "home_price": 450,
+            "away_price": -625
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 11.5,
+          "away_line": -11.5
+        },
+        "totals": {
+          "line": 236.16666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "c4f4e62d7ede59a6a74ab6038c332137",
+      "home_team": "Miami Heat",
+      "away_team": "Boston Celtics",
+      "commence_time": "2025-02-11T00:40:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 5.5,
+            "home_price": -105,
+            "away_line": -5.5,
+            "away_price": -115
+          },
+          "fanduel": {
+            "home_line": 6,
+            "home_price": -112,
+            "away_line": -6,
+            "away_price": -108
+          },
+          "betmgm": {
+            "home_line": 5.5,
+            "home_price": -105,
+            "away_line": -5.5,
+            "away_price": -115
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 219,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "fanduel": {
+            "line": 219.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 219.5,
+            "over_price": -105,
+            "under_price": -115
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 190,
+            "away_price": -230
+          },
+          "fanduel": {
+            "home_price": 190,
+            "away_price": -230
+          },
+          "betmgm": {
+            "home_price": 180,
+            "away_price": -220
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 5.666666666666667,
+          "away_line": -5.666666666666667
+        },
+        "totals": {
+          "line": 219.33333333333334
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "91c394eb2e93c78c8ec2315dfcc85dc9",
+      "home_team": "Brooklyn Nets",
+      "away_team": "Charlotte Hornets",
+      "commence_time": "2025-02-11T00:40:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -4,
+            "home_price": -105,
+            "away_line": 4,
+            "away_price": -115
+          },
+          "fanduel": {
+            "home_line": -3.5,
+            "home_price": -112,
+            "away_line": 3.5,
+            "away_price": -108
+          },
+          "betmgm": {
+            "home_line": -3.5,
+            "home_price": -118,
+            "away_line": 3.5,
+            "away_price": -102
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 213,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "fanduel": {
+            "line": 212.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 212.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -175,
+            "away_price": 145
+          },
+          "fanduel": {
+            "home_price": -168,
+            "away_price": 142
+          },
+          "betmgm": {
+            "home_price": -175,
+            "away_price": 145
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -3.6666666666666665,
+          "away_line": 3.6666666666666665
+        },
+        "totals": {
+          "line": 212.66666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "28890e3553d5c550382dc17fe360b622",
+      "home_team": "Milwaukee Bucks",
+      "away_team": "Golden State Warriors",
+      "commence_time": "2025-02-11T01:10:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": 6,
+            "home_price": -108,
+            "away_line": -6,
+            "away_price": -112
+          },
+          "fanduel": {
+            "home_line": 6,
+            "home_price": -108,
+            "away_line": -6,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": 6.5,
+            "home_price": -115,
+            "away_line": -6.5,
+            "away_price": -105
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 231.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 231.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 231.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": 200,
+            "away_price": -245
+          },
+          "fanduel": {
+            "home_price": 198,
+            "away_price": -240
+          },
+          "betmgm": {
+            "home_price": 195,
+            "away_price": -235
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": 6.166666666666667,
+          "away_line": -6.166666666666667
+        },
+        "totals": {
+          "line": 231.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "948b9d66b01eca0ac831573f593c2871",
+      "home_team": "Oklahoma City Thunder",
+      "away_team": "New Orleans Pelicans",
+      "commence_time": "2025-02-11T01:10:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -15.5,
+            "home_price": -110,
+            "away_line": 15.5,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -15.5,
+            "home_price": -112,
+            "away_line": 15.5,
+            "away_price": -108
+          },
+          "betmgm": {
+            "home_line": -15.5,
+            "home_price": -115,
+            "away_line": 15.5,
+            "away_price": -105
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 234,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "fanduel": {
+            "line": 234.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 234.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -1200,
+            "away_price": 750
+          },
+          "fanduel": {
+            "home_price": -1500,
+            "away_price": 870
+          },
+          "betmgm": {
+            "home_price": -1600,
+            "away_price": 850
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -15.5,
+          "away_line": 15.5
+        },
+        "totals": {
+          "line": 234.33333333333334
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "b149b26eec030d502d419c0bc0d4ee95",
+      "home_team": "Dallas Mavericks",
+      "away_team": "Sacramento Kings",
+      "commence_time": "2025-02-11T01:40:00Z",
+      "bookmakers": {
+        "spreads": {
+          "fanduel": {
+            "home_line": -1,
+            "home_price": -110,
+            "away_line": 1,
+            "away_price": -110
+          },
+          "draftkings": {
+            "home_line": -1,
+            "home_price": -110,
+            "away_line": 1,
+            "away_price": -110
+          },
+          "betmgm": {
+            "home_line": -1.5,
+            "home_price": -110,
+            "away_line": 1.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "fanduel": {
+            "line": 237.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "draftkings": {
+            "line": 237.5,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "betmgm": {
+            "line": 237.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "fanduel": {
+            "home_price": -108,
+            "away_price": -108
+          },
+          "draftkings": {
+            "home_price": -120,
+            "away_price": 100
+          },
+          "betmgm": {
+            "home_price": -120,
+            "away_price": 100
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -1.1666666666666667,
+          "away_line": 1.1666666666666667
+        },
+        "totals": {
+          "line": 237.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "c88cced20eb9497a7b9447bc2ee98f86",
+      "home_team": "Denver Nuggets",
+      "away_team": "Portland Trail Blazers",
+      "commence_time": "2025-02-11T02:10:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -9,
+            "home_price": -115,
+            "away_line": 9,
+            "away_price": -105
+          },
+          "fanduel": {
+            "home_line": -9.5,
+            "home_price": -108,
+            "away_line": 9.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": -9.5,
+            "home_price": -110,
+            "away_line": 9.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 233,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "fanduel": {
+            "line": 232.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 233.5,
+            "over_price": -105,
+            "under_price": -115
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -410,
+            "away_price": 320
+          },
+          "fanduel": {
+            "home_price": -405,
+            "away_price": 320
+          },
+          "betmgm": {
+            "home_price": -425,
+            "away_price": 325
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -9.333333333333334,
+          "away_line": 9.333333333333334
+        },
+        "totals": {
+          "line": 233
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "8652e5cb2e7732aff755077975780ad9",
+      "home_team": "Los Angeles Lakers",
+      "away_team": "Utah Jazz",
+      "commence_time": "2025-02-11T03:40:00Z",
+      "bookmakers": {
+        "spreads": {
+          "fanduel": {
+            "home_line": -13,
+            "home_price": -110,
+            "away_line": 13,
+            "away_price": -110
+          },
+          "draftkings": {
+            "home_line": -13,
+            "home_price": -112,
+            "away_line": 13,
+            "away_price": -108
+          },
+          "betmgm": {
+            "home_line": -13.5,
+            "home_price": -105,
+            "away_line": 13.5,
+            "away_price": -115
+          }
+        },
+        "totals": {
+          "fanduel": {
+            "line": 234.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "draftkings": {
+            "line": 235,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 234.5,
+            "over_price": -115,
+            "under_price": -105
+          }
+        },
+        "h2h": {
+          "fanduel": {
+            "home_price": -850,
+            "away_price": 590
+          },
+          "draftkings": {
+            "home_price": -850,
+            "away_price": 575
+          },
+          "betmgm": {
+            "home_price": -900,
+            "away_price": 575
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -13.166666666666666,
+          "away_line": 13.166666666666666
+        },
+        "totals": {
+          "line": 234.66666666666666
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "8c5dfc09221b32ad1835ce0e5c426454",
+      "home_team": "Los Angeles Lakers",
+      "away_team": "Dallas Mavericks",
+      "commence_time": "2025-02-26T03:00:00Z",
+      "bookmakers": {
+        "spreads": {
+          "fanduel": {
+            "home_line": -6,
+            "home_price": -110,
+            "away_line": 6,
+            "away_price": -110
+          },
+          "draftkings": {
+            "home_line": -6.5,
+            "home_price": -110,
+            "away_line": 6.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "fanduel": {
+            "line": 227.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "draftkings": {
+            "line": 227.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "fanduel": {
+            "home_price": -250,
+            "away_price": 205
+          },
+          "draftkings": {
+            "home_price": -250,
+            "away_price": 205
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -6.25,
+          "away_line": 6.25
+        },
+        "totals": {
+          "line": 227.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "f880e059bbee7b5b9e4af4d17bcee511",
+      "home_team": "Sacramento Kings",
+      "away_team": "San Antonio Spurs",
+      "commence_time": "2025-03-08T03:10:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -2,
+            "home_price": -110,
+            "away_line": 2,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 235,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -130,
+            "away_price": 110
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -2,
+          "away_line": 2
+        },
+        "totals": {
+          "line": 235
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    },
+    {
+      "event_id": "0e1dde121b5be88b7c95e744d43c877f",
+      "home_team": "Miami Heat",
+      "away_team": "Golden State Warriors",
+      "commence_time": "2025-03-26T00:40:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -1,
+            "home_price": -105,
+            "away_line": 1,
+            "away_price": -115
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 223.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -110,
+            "away_price": -110
+          }
+        }
+      },
+      "consensus": {
+        "spreads": {
+          "home_line": -1,
+          "away_line": 1
+        },
+        "totals": {
+          "line": 223.5
+        },
+        "h2h": {
+          "available": true
+        }
+      }
+    }
+  ]
+}

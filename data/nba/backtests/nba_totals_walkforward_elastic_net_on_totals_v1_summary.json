@@ -1,0 +1,72 @@
+{
+  "model": "elastic_net_on_totals_v1",
+  "features": [
+    "home_season_ft_rate",
+    "away_season_tov_pct",
+    "home_l5_tov_pct",
+    "home_l5_pace",
+    "away_l5_ortg",
+    "home_ortg_vs_away_drtg",
+    "home_season_orb_pct",
+    "home_l5_orb_pct",
+    "home_l5_drtg",
+    "home_l5_efg",
+    "away_l10_drtg",
+    "home_l10_ortg",
+    "ortg_diff",
+    "home_l5_ortg",
+    "away_l5_drtg"
+  ],
+  "num_features": 15,
+  "target": "actual_total",
+  "total_predictions": 962,
+  "total_bets": 321,
+  "wins": 165,
+  "losses": 156,
+  "win_rate": 51.4018691588785,
+  "total_profit": -660.0,
+  "total_wagered": 35310,
+  "roi": -1.8691588785046727,
+  "mae_all": 14.99855207822605,
+  "mae_bets": 14.85955454093236,
+  "correlation": 0.21661514924962633,
+  "by_direction": {
+    "OVER": {
+      "bets": 148,
+      "wins": 78,
+      "win_rate": 52.702702702702695,
+      "profit": 100.0,
+      "roi": 0.6142506142506142
+    },
+    "UNDER": {
+      "bets": 173,
+      "wins": 87,
+      "win_rate": 50.28901734104046,
+      "profit": -760.0,
+      "roi": -3.9936941671045716
+    }
+  },
+  "by_edge_bucket": {
+    "4.0-5.0": {
+      "bets": 97,
+      "wins": 41,
+      "win_rate": 42.2680412371134,
+      "profit": -2060.0,
+      "roi": -19.306466729147143
+    },
+    "5.0-6.0": {
+      "bets": 84,
+      "wins": 47,
+      "win_rate": 55.952380952380956,
+      "profit": 630.0,
+      "roi": 6.8181818181818175
+    },
+    "6.0-8.0": {
+      "bets": 140,
+      "wins": 77,
+      "win_rate": 55.00000000000001,
+      "profit": 770.0,
+      "roi": 5.0
+    }
+  }
+}

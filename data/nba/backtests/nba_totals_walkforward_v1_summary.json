@@ -1,0 +1,61 @@
+{
+  "generated_at": "2025-11-25T09:06:30.074479",
+  "backtest_type": "walk_forward_v1",
+  "zero_data_leakage": true,
+  "dataset": {
+    "path": "data/nba/backtests/nba_totals_backtest_dataset.parquet",
+    "total_games": 1461,
+    "date_range": {
+      "start": "2024-10-22",
+      "end": "2025-11-22"
+    }
+  },
+  "config": {
+    "min_train_games": 500,
+    "train_window_type": "expanding",
+    "rolling_window_games": null,
+    "ridge_alpha": 3.0,
+    "edge_threshold": 4.0,
+    "default_odds": -110
+  },
+  "performance": {
+    "num_bets": 538,
+    "wins": 272,
+    "losses": 266,
+    "pushes": 0,
+    "win_rate": 0.5055762081784386,
+    "total_profit": -18.727272727272727,
+    "total_staked": 538.0,
+    "roi": -3.4809057113889827,
+    "avg_edge": 8.56265833376957
+  },
+  "edge_buckets": [
+    {
+      "edge_range": "[4,6)",
+      "num_bets": 156,
+      "wins": 77,
+      "losses": 79,
+      "win_rate": 0.4935897435897436,
+      "total_profit": -9.0,
+      "roi": -5.769230769230769
+    },
+    {
+      "edge_range": "[6,8)",
+      "num_bets": 117,
+      "wins": 57,
+      "losses": 60,
+      "win_rate": 0.48717948717948717,
+      "total_profit": -8.181818181818183,
+      "roi": -6.993006993006995
+    },
+    {
+      "edge_range": "[8,\u221e)",
+      "num_bets": 265,
+      "wins": 138,
+      "losses": 127,
+      "win_rate": 0.5207547169811321,
+      "total_profit": -1.5454545454545432,
+      "roi": -0.5831903945111484
+    }
+  ]
+}

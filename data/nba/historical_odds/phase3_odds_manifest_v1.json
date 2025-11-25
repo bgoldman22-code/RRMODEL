@@ -1,0 +1,729 @@
+{
+  "version": "v1",
+  "created": "2025-11-24T17:55:14.295Z",
+  "total_dates": 120,
+  "total_props": 72637,
+  "total_events": 1217,
+  "files": [
+    {
+      "date": "2023-05-01",
+      "props": 0,
+      "events": 4,
+      "skipped": false
+    },
+    {
+      "date": "2023-05-05",
+      "props": 428,
+      "events": 0,
+      "skipped": true
+    },
+    {
+      "date": "2023-05-10",
+      "props": 336,
+      "events": 4,
+      "skipped": false
+    },
+    {
+      "date": "2023-05-15",
+      "props": 164,
+      "events": 0,
+      "skipped": true
+    },
+    {
+      "date": "2023-05-20",
+      "props": 224,
+      "events": 2,
+      "skipped": false
+    },
+    {
+      "date": "2023-05-25",
+      "props": 138,
+      "events": 1,
+      "skipped": false
+    },
+    {
+      "date": "2023-06-01",
+      "props": 128,
+      "events": 1,
+      "skipped": false
+    },
+    {
+      "date": "2023-06-05",
+      "props": 104,
+      "events": 1,
+      "skipped": false
+    },
+    {
+      "date": "2023-06-10",
+      "props": 120,
+      "events": 1,
+      "skipped": false
+    },
+    {
+      "date": "2023-06-15",
+      "props": 0,
+      "events": 1,
+      "skipped": false
+    },
+    {
+      "date": "2023-10-24",
+      "props": 1335,
+      "events": 76,
+      "skipped": false
+    },
+    {
+      "date": "2023-10-27",
+      "props": 1004,
+      "events": 16,
+      "skipped": false
+    },
+    {
+      "date": "2023-10-31",
+      "props": 223,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2023-11-03",
+      "props": 532,
+      "events": 12,
+      "skipped": false
+    },
+    {
+      "date": "2023-11-07",
+      "props": 379,
+      "events": 19,
+      "skipped": false
+    },
+    {
+      "date": "2023-11-10",
+      "props": 710,
+      "events": 14,
+      "skipped": false
+    },
+    {
+      "date": "2023-11-14",
+      "props": 724,
+      "events": 15,
+      "skipped": false
+    },
+    {
+      "date": "2023-11-17",
+      "props": 750,
+      "events": 16,
+      "skipped": false
+    },
+    {
+      "date": "2023-11-21",
+      "props": 458,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2023-11-24",
+      "props": 840,
+      "events": 15,
+      "skipped": false
+    },
+    {
+      "date": "2023-11-28",
+      "props": 626,
+      "events": 13,
+      "skipped": false
+    },
+    {
+      "date": "2023-12-01",
+      "props": 378,
+      "events": 15,
+      "skipped": false
+    },
+    {
+      "date": "2023-12-05",
+      "props": 582,
+      "events": 18,
+      "skipped": false
+    },
+    {
+      "date": "2023-12-08",
+      "props": 1086,
+      "events": 19,
+      "skipped": false
+    },
+    {
+      "date": "2023-12-12",
+      "props": 198,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2023-12-15",
+      "props": 608,
+      "events": 13,
+      "skipped": false
+    },
+    {
+      "date": "2023-12-19",
+      "props": 344,
+      "events": 9,
+      "skipped": false
+    },
+    {
+      "date": "2023-12-22",
+      "props": 446,
+      "events": 11,
+      "skipped": false
+    },
+    {
+      "date": "2023-12-26",
+      "props": 566,
+      "events": 9,
+      "skipped": false
+    },
+    {
+      "date": "2023-12-29",
+      "props": 498,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2024-01-02",
+      "props": 460,
+      "events": 6,
+      "skipped": false
+    },
+    {
+      "date": "2024-01-05",
+      "props": 1014,
+      "events": 14,
+      "skipped": false
+    },
+    {
+      "date": "2024-01-09",
+      "props": 416,
+      "events": 5,
+      "skipped": false
+    },
+    {
+      "date": "2024-01-12",
+      "props": 584,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2024-01-16",
+      "props": 222,
+      "events": 3,
+      "skipped": false
+    },
+    {
+      "date": "2024-01-19",
+      "props": 544,
+      "events": 7,
+      "skipped": false
+    },
+    {
+      "date": "2024-01-23",
+      "props": 460,
+      "events": 5,
+      "skipped": false
+    },
+    {
+      "date": "2024-01-26",
+      "props": 674,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2024-01-30",
+      "props": 328,
+      "events": 5,
+      "skipped": false
+    },
+    {
+      "date": "2024-02-02",
+      "props": 696,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2024-02-06",
+      "props": 606,
+      "events": 7,
+      "skipped": false
+    },
+    {
+      "date": "2024-02-09",
+      "props": 396,
+      "events": 6,
+      "skipped": false
+    },
+    {
+      "date": "2024-02-23",
+      "props": 834,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2024-02-27",
+      "props": 918,
+      "events": 11,
+      "skipped": false
+    },
+    {
+      "date": "2024-03-01",
+      "props": 526,
+      "events": 9,
+      "skipped": false
+    },
+    {
+      "date": "2024-03-05",
+      "props": 690,
+      "events": 9,
+      "skipped": false
+    },
+    {
+      "date": "2024-03-08",
+      "props": 622,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2024-03-12",
+      "props": 452,
+      "events": 7,
+      "skipped": false
+    },
+    {
+      "date": "2024-03-15",
+      "props": 422,
+      "events": 6,
+      "skipped": false
+    },
+    {
+      "date": "2024-03-19",
+      "props": 437,
+      "events": 5,
+      "skipped": false
+    },
+    {
+      "date": "2024-03-22",
+      "props": 620,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2024-03-26",
+      "props": 404,
+      "events": 4,
+      "skipped": false
+    },
+    {
+      "date": "2024-03-29",
+      "props": 1114,
+      "events": 12,
+      "skipped": false
+    },
+    {
+      "date": "2024-04-02",
+      "props": 822,
+      "events": 9,
+      "skipped": false
+    },
+    {
+      "date": "2024-04-05",
+      "props": 806,
+      "events": 12,
+      "skipped": false
+    },
+    {
+      "date": "2024-04-09",
+      "props": 1242,
+      "events": 14,
+      "skipped": false
+    },
+    {
+      "date": "2024-04-12",
+      "props": 806,
+      "events": 16,
+      "skipped": false
+    },
+    {
+      "date": "2024-04-16",
+      "props": 764,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2024-04-19",
+      "props": 1069,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2024-04-23",
+      "props": 884,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2024-04-26",
+      "props": 802,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2024-04-30",
+      "props": 578,
+      "events": 6,
+      "skipped": false
+    },
+    {
+      "date": "2024-05-03",
+      "props": 364,
+      "events": 4,
+      "skipped": false
+    },
+    {
+      "date": "2024-05-07",
+      "props": 458,
+      "events": 4,
+      "skipped": false
+    },
+    {
+      "date": "2024-05-10",
+      "props": 440,
+      "events": 4,
+      "skipped": false
+    },
+    {
+      "date": "2024-05-14",
+      "props": 478,
+      "events": 4,
+      "skipped": false
+    },
+    {
+      "date": "2024-05-17",
+      "props": 372,
+      "events": 3,
+      "skipped": false
+    },
+    {
+      "date": "2024-05-21",
+      "props": 276,
+      "events": 2,
+      "skipped": false
+    },
+    {
+      "date": "2024-05-24",
+      "props": 232,
+      "events": 2,
+      "skipped": false
+    },
+    {
+      "date": "2024-05-28",
+      "props": 120,
+      "events": 1,
+      "skipped": false
+    },
+    {
+      "date": "2024-10-22",
+      "props": 1538,
+      "events": 52,
+      "skipped": false
+    },
+    {
+      "date": "2024-10-25",
+      "props": 1237,
+      "events": 23,
+      "skipped": false
+    },
+    {
+      "date": "2024-10-29",
+      "props": 394,
+      "events": 17,
+      "skipped": false
+    },
+    {
+      "date": "2024-11-01",
+      "props": 704,
+      "events": 22,
+      "skipped": false
+    },
+    {
+      "date": "2024-11-05",
+      "props": 0,
+      "events": 27,
+      "skipped": false
+    },
+    {
+      "date": "2024-11-08",
+      "props": 1072,
+      "events": 25,
+      "skipped": false
+    },
+    {
+      "date": "2024-11-12",
+      "props": 764,
+      "events": 13,
+      "skipped": false
+    },
+    {
+      "date": "2024-11-15",
+      "props": 1001,
+      "events": 17,
+      "skipped": false
+    },
+    {
+      "date": "2024-11-19",
+      "props": 482,
+      "events": 11,
+      "skipped": false
+    },
+    {
+      "date": "2024-11-22",
+      "props": 560,
+      "events": 13,
+      "skipped": false
+    },
+    {
+      "date": "2024-11-26",
+      "props": 430,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2024-11-29",
+      "props": 886,
+      "events": 15,
+      "skipped": false
+    },
+    {
+      "date": "2024-12-03",
+      "props": 926,
+      "events": 16,
+      "skipped": false
+    },
+    {
+      "date": "2024-12-06",
+      "props": 514,
+      "events": 16,
+      "skipped": false
+    },
+    {
+      "date": "2024-12-10",
+      "props": 466,
+      "events": 12,
+      "skipped": false
+    },
+    {
+      "date": "2024-12-13",
+      "props": 942,
+      "events": 15,
+      "skipped": false
+    },
+    {
+      "date": "2024-12-17",
+      "props": 312,
+      "events": 18,
+      "skipped": false
+    },
+    {
+      "date": "2024-12-20",
+      "props": 246,
+      "events": 7,
+      "skipped": false
+    },
+    {
+      "date": "2024-12-24",
+      "props": 484,
+      "events": 5,
+      "skipped": false
+    },
+    {
+      "date": "2024-12-27",
+      "props": 742,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2024-12-31",
+      "props": 586,
+      "events": 6,
+      "skipped": false
+    },
+    {
+      "date": "2025-01-03",
+      "props": 740,
+      "events": 9,
+      "skipped": false
+    },
+    {
+      "date": "2025-01-07",
+      "props": 674,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2025-01-10",
+      "props": 720,
+      "events": 7,
+      "skipped": false
+    },
+    {
+      "date": "2025-01-14",
+      "props": 662,
+      "events": 7,
+      "skipped": false
+    },
+    {
+      "date": "2025-01-17",
+      "props": 830,
+      "events": 9,
+      "skipped": false
+    },
+    {
+      "date": "2025-01-21",
+      "props": 536,
+      "events": 5,
+      "skipped": false
+    },
+    {
+      "date": "2025-01-24",
+      "props": 270,
+      "events": 4,
+      "skipped": false
+    },
+    {
+      "date": "2025-01-28",
+      "props": 356,
+      "events": 4,
+      "skipped": false
+    },
+    {
+      "date": "2025-01-31",
+      "props": 746,
+      "events": 7,
+      "skipped": false
+    },
+    {
+      "date": "2025-02-04",
+      "props": 710,
+      "events": 9,
+      "skipped": false
+    },
+    {
+      "date": "2025-02-07",
+      "props": 482,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2025-02-21",
+      "props": 812,
+      "events": 11,
+      "skipped": false
+    },
+    {
+      "date": "2025-02-25",
+      "props": 744,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2025-02-28",
+      "props": 900,
+      "events": 11,
+      "skipped": false
+    },
+    {
+      "date": "2025-03-04",
+      "props": 866,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2025-03-07",
+      "props": 772,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2025-03-11",
+      "props": 426,
+      "events": 5,
+      "skipped": false
+    },
+    {
+      "date": "2025-03-14",
+      "props": 822,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2025-03-18",
+      "props": 342,
+      "events": 4,
+      "skipped": false
+    },
+    {
+      "date": "2025-03-21",
+      "props": 850,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2025-03-25",
+      "props": 724,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2025-03-28",
+      "props": 572,
+      "events": 7,
+      "skipped": false
+    },
+    {
+      "date": "2025-04-01",
+      "props": 672,
+      "events": 7,
+      "skipped": false
+    },
+    {
+      "date": "2025-04-04",
+      "props": 870,
+      "events": 10,
+      "skipped": false
+    },
+    {
+      "date": "2025-04-08",
+      "props": 894,
+      "events": 11,
+      "skipped": false
+    },
+    {
+      "date": "2025-04-11",
+      "props": 590,
+      "events": 15,
+      "skipped": false
+    },
+    {
+      "date": "2025-04-15",
+      "props": 758,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2025-04-18",
+      "props": 1086,
+      "events": 8,
+      "skipped": false
+    },
+    {
+      "date": "2025-04-22",
+      "props": 1044,
+      "events": 8,
+      "skipped": false
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "sample_size": 3388,
+  "date_range": {
+    "start": "2023-01-01",
+    "end": "2025-11-23"
+  },
+  "baseline": {
+    "mae": 15.544062118607958,
+    "rmse": 19.70019557874489,
+    "mean_error": -1.2175900684610712,
+    "correlation": 0.20507131068126902,
+    "directional_accuracy": 0.5746753246753247
+  },
+  "experiment_v2": {
+    "mae": 15.443873840673325,
+    "rmse": 19.54644298964826,
+    "mean_error": 0.15651488101393493,
+    "correlation": 0.21241486303966545,
+    "directional_accuracy": 0.5726092089728453
+  }
+}

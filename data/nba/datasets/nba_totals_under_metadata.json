@@ -1,0 +1,35 @@
+{
+  "created_at": "2025-11-25T11:06:59.758442",
+  "dataset_type": "under_classification",
+  "seasons": [
+    "2022_23",
+    "2023_24",
+    "2024_25",
+    "2025_26"
+  ],
+  "total_samples": 3310,
+  "samples_with_odds": 1466,
+  "under_win_rate": 0.4747612551159618,
+  "over_win_rate": 0.5238744884038199,
+  "date_range": {
+    "start": "2023-01-11",
+    "end": "2025-11-23"
+  },
+  "feature_groups": {
+    "core_team_strength": 40,
+    "under_specific": 16,
+    "total": 80
+  },
+  "target_columns": [
+    "target_under_win",
+    "target_over_win",
+    "target_residual"
+  ],
+  "notes": [
+    "UNDER-specific features added for classification model",
+    "TODO: closing_spread requires odds API extension",
+    "TODO: opponent eFG% allowed requires advanced stats",
+    "TODO: local timezone conversion for accurate start times",
+    "Blowout/pace/defense features use available proxies"
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "version": "v1",
+  "created": "2025-11-25T09:53:09.578365",
+  "model_file": "meta_lgbm_v1_20251125.txt",
+  "feature_names": [
+    "p_win_lgbm",
+    "p_win_logistic_pra",
+    "p_implied",
+    "edge_phase25",
+    "edge_prob_lgbm",
+    "edge_prob_logistic",
+    "market_is_points",
+    "market_is_rebounds",
+    "market_is_assists",
+    "side_is_over",
+    "side_is_under",
+    "line",
+    "odds",
+    "home",
+    "rest_days",
+    "games_played",
+    "L5_pra",
+    "L10_pra",
+    "L999_pra",
+    "opp_def_L5_pra_allowed",
+    "opp_def_L10_pra_allowed",
+    "volatility_pra_L10",
+    "consistency_pra",
+    "logistic_assists_055_gate",
+    "lgbm_points_060_gate",
+    "lgbm_rebounds_052_gate"
+  ],
+  "metrics": {
+    "train_acc": 0.7517927071148858,
+    "test_acc": 0.5264442636289667,
+    "train_auc": 0.8404175475556552,
+    "test_auc": 0.5320029104087665,
+    "test_precision": 0.5278738115816768,
+    "test_recall": 0.49715099715099714
+  },
+  "feature_importance": {
+    "p_win_lgbm": 89175.82632541656,
+    "p_win_logistic_pra": 1656.607578754425,
+    "p_implied": 7175.732336997986,
+    "edge_phase25": 0.0,
+    "edge_prob_lgbm": 14338.320412635803,
+    "edge_prob_logistic": 1306.7585878372192,
+    "market_is_points": 8.757659912109375,
+    "market_is_rebounds": 645.3764982223511,
+    "market_is_assists": 46.625,
+    "side_is_over": 0.0,
+    "side_is_under": 0.0,
+    "line": 538.63796043396,
+    "odds": 770.9064035415649,
+    "home": 0.0,
+    "rest_days": 125.14160919189453,
+    "games_played": 647.3650689125061,
+    "L5_pra": 492.8154501914978,
+    "L10_pra": 501.7643189430237,
+    "L999_pra": 792.3060493469238,
+    "opp_def_L5_pra_allowed": 414.311909198761,
+    "opp_def_L10_pra_allowed": 319.84128999710083,
+    "volatility_pra_L10": 0.0,
+    "consistency_pra": 0.0,
+    "logistic_assists_055_gate": 31.554099082946777,
+    "lgbm_points_060_gate": 114.2959976196289,
+    "lgbm_rebounds_052_gate": 502.0307922363281
+  },
+  "top_features": [
+    {
+      "feature": "p_win_lgbm",
+      "importance": 89175.82632541656
+    },
+    {
+      "feature": "edge_prob_lgbm",
+      "importance": 14338.320412635803
+    },
+    {
+      "feature": "p_implied",
+      "importance": 7175.732336997986
+    },
+    {
+      "feature": "p_win_logistic_pra",
+      "importance": 1656.607578754425
+    },
+    {
+      "feature": "edge_prob_logistic",
+      "importance": 1306.7585878372192
+    },
+    {
+      "feature": "L999_pra",
+      "importance": 792.3060493469238
+    },
+    {
+      "feature": "odds",
+      "importance": 770.9064035415649
+    },
+    {
+      "feature": "games_played",
+      "importance": 647.3650689125061
+    },
+    {
+      "feature": "market_is_rebounds",
+      "importance": 645.3764982223511
+    },
+    {
+      "feature": "line",
+      "importance": 538.63796043396
+    }
+  ],
+  "calibration": [
+    {
+      "bin": "0.40-0.45",
+      "count": 1008,
+      "predicted": 0.42703070135335575,
+      "actual": 0.4781746031746032
+    },
+    {
+      "bin": "0.45-0.50",
+      "count": 1000,
+      "predicted": 0.4727232756255622,
+      "actual": 0.496
+    },
+    {
+      "bin": "0.50-0.55",
+      "count": 659,
+      "predicted": 0.5255697419479101,
+      "actual": 0.5402124430955993
+    },
+    {
+      "bin": "0.55-0.60",
+      "count": 732,
+      "predicted": 0.5729416124318972,
+      "actual": 0.4890710382513661
+    },
+    {
+      "bin": "0.60-0.65",
+      "count": 427,
+      "predicted": 0.6254834748009904,
+      "actual": 0.5292740046838408
+    },
+    {
+      "bin": "0.65-0.70",
+      "count": 686,
+      "predicted": 0.6757201252641571,
+      "actual": 0.5306122448979592
+    }
+  ]
+}

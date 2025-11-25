@@ -1,0 +1,349 @@
+{
+  "version": "1.0",
+  "created": "2025-11-24T00:00:00Z",
+  "purpose": "Track all Phase 3 artifacts for disaster recovery and reproducibility",
+  "rules": [
+    "Never overwrite - append new checkpoints",
+    "Every major step must update this file",
+    "All artifacts must be versioned and findable",
+    "Use atomic writes when updating this file"
+  ],
+  "checkpoints": [
+    {
+      "timestamp": "2025-11-24T00:00:00Z",
+      "step": "initialize_phase3_system",
+      "artifacts": [
+        "docs/NBA_PHASE3_REBUILD_PLAN.md",
+        "data/nba/phase3_checkpoints.json"
+      ],
+      "notes": "Phase 3 rebuild plan created. Ready to collect multi-season data."
+    },
+    {
+      "timestamp": "2025-11-24T16:41:17.275158Z",
+      "step": "fetch_multiseason_boxscores",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/raw/boxscores_2024_25.json"
+      ],
+      "notes": "Fetched 1 seasons: 2024-25"
+    },
+    {
+      "timestamp": "2025-11-24T16:41:36.177244Z",
+      "step": "fetch_multiseason_boxscores",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/raw/boxscores_2023_24.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/raw/boxscores_2022_23.json"
+      ],
+      "notes": "Fetched 2 seasons: 2023-24, 2022-23"
+    },
+    {
+      "timestamp": "2025-11-24T16:42:00.674Z",
+      "step": "normalize_multiseason_boxscores",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/boxscores_multiseason_2022_26_v1.json"
+      ],
+      "notes": "Combined 78602 games from 3 seasons"
+    },
+    {
+      "timestamp": "2025-11-24T17:06:15.347Z",
+      "step": "collect_historical_odds_phase3",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/phase3_odds_manifest_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20221110_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20221125_v1.json"
+      ],
+      "notes": "Collected 2 dates with 0 total props"
+    },
+    {
+      "timestamp": "2025-11-24T17:07:24.951Z",
+      "step": "collect_historical_odds_phase3",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/phase3_odds_manifest_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230505_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230515_v1.json"
+      ],
+      "notes": "Collected 2 dates with 592 total props"
+    },
+    {
+      "timestamp": "2025-11-24T17:55:14.298Z",
+      "step": "collect_historical_odds_phase3",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/phase3_odds_manifest_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230501_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230505_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230510_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230515_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230520_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230525_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230601_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230605_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230610_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20230615_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231024_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231027_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231031_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231103_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231107_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231110_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231114_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231117_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231121_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231124_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231128_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231201_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231205_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231208_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231212_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231215_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231219_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231222_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231226_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20231229_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240102_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240105_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240109_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240112_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240116_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240119_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240123_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240126_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240130_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240202_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240206_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240209_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240223_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240227_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240301_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240305_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240308_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240312_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240315_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240319_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240322_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240326_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240329_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240402_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240405_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240409_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240412_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240416_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240419_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240423_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240426_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240430_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240503_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240507_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240510_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240514_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240517_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240521_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240524_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20240528_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241022_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241025_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241029_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241101_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241105_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241108_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241112_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241115_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241119_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241122_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241126_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241129_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241203_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241206_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241210_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241213_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241217_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241220_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241224_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241227_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20241231_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250103_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250107_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250110_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250114_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250117_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250121_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250124_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250128_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250131_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250204_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250207_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250221_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250225_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250228_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250304_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250307_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250311_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250314_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250318_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250321_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250325_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250328_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250401_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250404_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250408_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250411_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250415_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250418_v1.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/historical_odds/nba_props_20250422_v1.json"
+      ],
+      "notes": "Collected 120 dates with 72637 total props"
+    },
+    {
+      "timestamp": "2025-11-24T18:38:02.676Z",
+      "step": "build_phase3_training_dataset",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/training/phase3_training_v1_20251124.jsonl",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/training/phase3_training_metadata_v1.json"
+      ],
+      "notes": "Created 0 training examples with zero-leakage walkforward features"
+    },
+    {
+      "timestamp": "2025-11-24T18:46:40.250Z",
+      "step": "build_phase3_training_dataset",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/training/phase3_training_v1_20251124.jsonl",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/training/phase3_training_metadata_v1.json"
+      ],
+      "notes": "Created 49158 training examples with zero-leakage walkforward features"
+    },
+    {
+      "timestamp": "2025-11-24T13:52:15.614649",
+      "step": "train_phase3_pra_models",
+      "artifacts": {
+        "pickle_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3/pra_under_model_v1_20251124.pkl",
+        "json_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3/pra_under_coefficients_v1_20251124.json"
+      },
+      "metrics": {
+        "over_test_acc": 0.4969487388120423,
+        "over_test_auc": 0.48723384793431596,
+        "under_test_acc": 0.4965419039869813,
+        "under_test_auc": 0.48731471348738004
+      },
+      "notes": "Trained PRA OVER/UNDER models with test accuracy 0.497 / 0.497"
+    },
+    {
+      "timestamp": "2025-11-24T18:52:32.974Z",
+      "step": "backtest_phase3",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/backtests/phase3_backtest_v1_20251124.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/backtests/phase3_backtest_summary_v1_20251124.json"
+      ],
+      "summary": {
+        "total_bets": 12414,
+        "win_rate": 0.503302722732399,
+        "roi": -4.7895170167615575
+      },
+      "notes": "Phase 3 backtest: 12414 bets, 50.3% win rate, -4.8% ROI"
+    },
+    {
+      "timestamp": "2025-11-25T09:11:05.132607",
+      "step": "train_phase3_lgbm_models",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_over_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_over_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_under_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_under_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_over_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_over_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_under_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_under_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_over_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_over_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_under_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_under_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/training_summary_v1_20251125.json"
+      ],
+      "summary": {
+        "n_models": 6,
+        "avg_test_auc": 0.5214558738434263
+      },
+      "notes": "Trained 6 LightGBM models (Points/Rebounds/Assists × Over/Under) with per-market optimization"
+    },
+    {
+      "timestamp": "2025-11-25T14:11:33.240Z",
+      "step": "backtest_lgbm_thresholds",
+      "artifacts": [
+        "phase3_lgbm_thresholds_raw_v1_20251125.json",
+        "phase3_lgbm_thresholds_summary_v1_20251125.json"
+      ],
+      "summary": {
+        "best_overall_roi": 0.0174,
+        "best_market_rois": {
+          "player_assists": 0.0362,
+          "player_points": 0.1026,
+          "player_rebounds": 0.0113
+        }
+      },
+      "notes": "LightGBM threshold sweep analysis to identify optimal confidence thresholds per market"
+    },
+    {
+      "timestamp": "2025-11-25T09:53:09.660582",
+      "step": "train_phase3_meta_model",
+      "artifacts": [
+        "meta_lgbm_v1_20251125.txt",
+        "meta_lgbm_v1_20251125.json",
+        "phase3_meta_backtest_raw_v1_20251125.json",
+        "phase3_meta_backtest_summary_v1_20251125.json"
+      ],
+      "summary": {
+        "test_auc": 0.5320029104087665,
+        "best_threshold": 0.65,
+        "best_roi": -0.00518678220325788
+      },
+      "notes": "Meta-model combining Logistic PRA, LightGBM per-market, and known profitable gates"
+    },
+    {
+      "timestamp": "2025-11-25T15:14:05.684Z",
+      "step": "build_phase3_training_dataset",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/training/phase3_training_v1_20251125.jsonl",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/training/phase3_training_metadata_v1.json"
+      ],
+      "notes": "Created 49158 training examples with zero-leakage walkforward features"
+    },
+    {
+      "timestamp": "2025-11-25T10:14:52.921558",
+      "step": "train_phase3_lgbm_models",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_over_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_over_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_under_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_under_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_over_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_over_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_under_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_under_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_over_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_over_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_under_v1_20251125.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_under_v1_20251125.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/training_summary_v1_20251125.json"
+      ],
+      "summary": {
+        "n_models": 6,
+        "avg_test_auc": 0.5214558738434263
+      },
+      "notes": "Trained 6 LightGBM models (Points/Rebounds/Assists × Over/Under) with per-market optimization"
+    },
+    {
+      "timestamp": "2025-11-25T15:16:17.549Z",
+      "step": "backtest_lgbm_thresholds",
+      "artifacts": [
+        "phase3_lgbm_thresholds_raw_v1_20251125.json",
+        "phase3_lgbm_thresholds_summary_v1_20251125.json"
+      ],
+      "summary": {
+        "best_overall_roi": 0.0174,
+        "best_market_rois": {
+          "player_assists": 0.0362,
+          "player_points": 0.1026,
+          "player_rebounds": 0.0113
+        }
+      },
+      "notes": "LightGBM threshold sweep analysis to identify optimal confidence thresholds per market"
+    }
+  ]
+}

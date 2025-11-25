@@ -1,0 +1,283 @@
+{
+  "generated_at": "2025-11-25T15:16:17.548Z",
+  "model_version": "phase3_lgbm_v1",
+  "thresholds": [
+    0.5,
+    0.52,
+    0.54,
+    0.56,
+    0.58,
+    0.6
+  ],
+  "n_test_examples": 9832,
+  "test_date_range": [
+    "2025-02-04",
+    "2025-04-11"
+  ],
+  "by_market": {
+    "player_assists": [
+      {
+        "threshold": 0.5,
+        "bets": 1581,
+        "wins": 807,
+        "losses": 774,
+        "win_rate": 0.5104,
+        "roi": -0.0407,
+        "avg_probability": 0.5312
+      },
+      {
+        "threshold": 0.52,
+        "bets": 612,
+        "wins": 316,
+        "losses": 296,
+        "win_rate": 0.5163,
+        "roi": -0.0462,
+        "avg_probability": 0.5695
+      },
+      {
+        "threshold": 0.54,
+        "bets": 420,
+        "wins": 223,
+        "losses": 197,
+        "win_rate": 0.531,
+        "roi": -0.0213,
+        "avg_probability": 0.5877
+      },
+      {
+        "threshold": 0.56,
+        "bets": 294,
+        "wins": 151,
+        "losses": 143,
+        "win_rate": 0.5136,
+        "roi": -0.0489,
+        "avg_probability": 0.6042
+      },
+      {
+        "threshold": 0.58,
+        "bets": 204,
+        "wins": 113,
+        "losses": 91,
+        "win_rate": 0.5539,
+        "roi": 0.0362,
+        "avg_probability": 0.6191
+      },
+      {
+        "threshold": 0.6,
+        "bets": 140,
+        "wins": 76,
+        "losses": 64,
+        "win_rate": 0.5429,
+        "roi": 0.0108,
+        "avg_probability": 0.633
+      }
+    ],
+    "player_points": [
+      {
+        "threshold": 0.5,
+        "bets": 2028,
+        "wins": 1075,
+        "losses": 953,
+        "win_rate": 0.5301,
+        "roi": -0.0072,
+        "avg_probability": 0.5385
+      },
+      {
+        "threshold": 0.52,
+        "bets": 1323,
+        "wins": 722,
+        "losses": 601,
+        "win_rate": 0.5457,
+        "roi": 0.0229,
+        "avg_probability": 0.5538
+      },
+      {
+        "threshold": 0.54,
+        "bets": 751,
+        "wins": 416,
+        "losses": 335,
+        "win_rate": 0.5539,
+        "roi": 0.0368,
+        "avg_probability": 0.5722
+      },
+      {
+        "threshold": 0.56,
+        "bets": 401,
+        "wins": 223,
+        "losses": 178,
+        "win_rate": 0.5561,
+        "roi": 0.0395,
+        "avg_probability": 0.5915
+      },
+      {
+        "threshold": 0.58,
+        "bets": 219,
+        "wins": 120,
+        "losses": 99,
+        "win_rate": 0.5479,
+        "roi": 0.0287,
+        "avg_probability": 0.6103
+      },
+      {
+        "threshold": 0.6,
+        "bets": 121,
+        "wins": 71,
+        "losses": 50,
+        "win_rate": 0.5868,
+        "roi": 0.1026,
+        "avg_probability": 0.6279
+      }
+    ],
+    "player_rebounds": [
+      {
+        "threshold": 0.5,
+        "bets": 1481,
+        "wins": 776,
+        "losses": 705,
+        "win_rate": 0.524,
+        "roi": -0.0195,
+        "avg_probability": 0.541
+      },
+      {
+        "threshold": 0.52,
+        "bets": 875,
+        "wins": 474,
+        "losses": 401,
+        "win_rate": 0.5417,
+        "roi": 0.0113,
+        "avg_probability": 0.5628
+      },
+      {
+        "threshold": 0.54,
+        "bets": 532,
+        "wins": 285,
+        "losses": 247,
+        "win_rate": 0.5357,
+        "roi": 0.0032,
+        "avg_probability": 0.5842
+      },
+      {
+        "threshold": 0.56,
+        "bets": 359,
+        "wins": 182,
+        "losses": 177,
+        "win_rate": 0.507,
+        "roi": -0.0481,
+        "avg_probability": 0.6011
+      },
+      {
+        "threshold": 0.58,
+        "bets": 229,
+        "wins": 114,
+        "losses": 115,
+        "win_rate": 0.4978,
+        "roi": -0.0682,
+        "avg_probability": 0.6194
+      },
+      {
+        "threshold": 0.6,
+        "bets": 138,
+        "wins": 70,
+        "losses": 68,
+        "win_rate": 0.5072,
+        "roi": -0.0507,
+        "avg_probability": 0.6395
+      }
+    ]
+  },
+  "overall": [
+    {
+      "threshold": 0.5,
+      "bets": 5090,
+      "wins": 2658,
+      "losses": 2432,
+      "win_rate": 0.5222,
+      "roi": -0.0212,
+      "avg_probability": 0.5369
+    },
+    {
+      "threshold": 0.52,
+      "bets": 2810,
+      "wins": 1512,
+      "losses": 1298,
+      "win_rate": 0.5381,
+      "roi": 0.0042,
+      "avg_probability": 0.56
+    },
+    {
+      "threshold": 0.54,
+      "bets": 1703,
+      "wins": 924,
+      "losses": 779,
+      "win_rate": 0.5426,
+      "roi": 0.012,
+      "avg_probability": 0.5798
+    },
+    {
+      "threshold": 0.56,
+      "bets": 1054,
+      "wins": 556,
+      "losses": 498,
+      "win_rate": 0.5275,
+      "roi": -0.015,
+      "avg_probability": 0.5983
+    },
+    {
+      "threshold": 0.58,
+      "bets": 652,
+      "wins": 347,
+      "losses": 305,
+      "win_rate": 0.5322,
+      "roi": -0.003,
+      "avg_probability": 0.6162
+    },
+    {
+      "threshold": 0.6,
+      "bets": 399,
+      "wins": 217,
+      "losses": 182,
+      "win_rate": 0.5439,
+      "roi": 0.0174,
+      "avg_probability": 0.6337
+    }
+  ],
+  "best_combinations": {
+    "bestOverall": {
+      "threshold": 0.6,
+      "bets": 399,
+      "wins": 217,
+      "losses": 182,
+      "win_rate": 0.5439,
+      "roi": 0.0174,
+      "avg_probability": 0.6337
+    },
+    "bestByMarket": {
+      "player_assists": {
+        "threshold": 0.58,
+        "bets": 204,
+        "wins": 113,
+        "losses": 91,
+        "win_rate": 0.5539,
+        "roi": 0.0362,
+        "avg_probability": 0.6191
+      },
+      "player_points": {
+        "threshold": 0.6,
+        "bets": 121,
+        "wins": 71,
+        "losses": 50,
+        "win_rate": 0.5868,
+        "roi": 0.1026,
+        "avg_probability": 0.6279
+      },
+      "player_rebounds": {
+        "threshold": 0.52,
+        "bets": 875,
+        "wins": 474,
+        "losses": 401,
+        "win_rate": 0.5417,
+        "roi": 0.0113,
+        "avg_probability": 0.5628
+      }
+    }
+  }
+}

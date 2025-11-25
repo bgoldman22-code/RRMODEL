@@ -269,7 +269,7 @@ Generator makes **8 API calls per run:**
 1. 1 call to fetch events list
 2. 7 calls to fetch player props for each game
 
-**Your API key:** `c5d3fe15e6c5be83b2acd8695cff012b`
+**Your API key:** `YOUR_THEODDS_API_KEY`
 
 ### TheOddsAPI Limits
 - Free tier: 500 requests/month

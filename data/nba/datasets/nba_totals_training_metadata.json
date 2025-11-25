@@ -1,0 +1,51 @@
+{
+  "samples": 3388,
+  "features": [
+    "home_l10_fgPct",
+    "home_l10_fg3Pct",
+    "home_l10_ftPct",
+    "home_l10_rebounds",
+    "home_l10_assists",
+    "home_l10_turnovers",
+    "away_l10_fgPct",
+    "away_l10_fg3Pct",
+    "away_l10_ftPct",
+    "away_l10_rebounds",
+    "away_l10_assists",
+    "away_l10_turnovers",
+    "fgPct_diff",
+    "fg3Pct_diff",
+    "rebounds_diff",
+    "assists_diff",
+    "turnovers_diff",
+    "home_court"
+  ],
+  "seasons": [
+    {
+      "season": "2022_23",
+      "count": 684,
+      "start_date": "2023-01-01",
+      "end_date": "2023-04-09"
+    },
+    {
+      "season": "2023_24",
+      "count": 1230,
+      "start_date": "2023-10-24",
+      "end_date": "2024-04-14"
+    },
+    {
+      "season": "2024_25",
+      "count": 1225,
+      "start_date": "2024-10-22",
+      "end_date": "2025-04-13"
+    },
+    {
+      "season": "2025_26",
+      "count": 249,
+      "start_date": "2025-10-21",
+      "end_date": "2025-11-23"
+    }
+  ],
+  "csv_path": "data/nba/datasets/nba_totals_training_dataset.csv",
+  "parquet_path": "data/nba/datasets/nba_totals_training_dataset.parquet"
+}
