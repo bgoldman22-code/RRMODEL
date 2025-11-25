@@ -15,6 +15,22 @@ import { getTeamInjuries } from '../_lib/nba/injuries.mjs';
 import { applyInjuryAdjustment, getInjurySummary, getInjuryAdvantage } from '../_lib/nba/injury-adjustments.mjs';
 
 /**
+ * FEATURE FLAG: Experimental Totals Shadow Mode
+ * 
+ * When enabled, experimental totals predictions run alongside production totals
+ * for comparison and validation. Experimental totals are NOT added to betting
+ * opportunities - they only appear in debugTotals metadata.
+ * 
+ * Default: FALSE (production-only behavior)
+ * To enable: Set environment variable NBA_TOTALS_EXPERIMENT_SHADOW=true
+ */
+const ENABLE_TOTALS_EXPERIMENT_SHADOW = process.env.NBA_TOTALS_EXPERIMENT_SHADOW === 'true';
+
+if (ENABLE_TOTALS_EXPERIMENT_SHADOW) {
+  console.log('[NBA TOTALS] 🧪 SHADOW MODE ENABLED - Experimental totals will run for comparison');
+}
+
+/**
  * Fetch live Vegas lines from The Odds API
  */
 async function fetchVegasLines(gameIds, isPreseason = false) {
@@ -398,6 +414,118 @@ function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, ba
     units: parseFloat((betSize / 10).toFixed(1)), // $10/unit
     seasonAdjusted: seasonAdj < 1.0 // Flag if early season reduced sizing
   };
+}
+
+/**
+ * PRODUCTION TOTALS OPPORTUNITY EVALUATION
+ * 
+ * Extracted from main prediction logic for safety/isolation.
+ * This is the CURRENT LIVE production totals logic - DO NOT MODIFY.
+ * 
+ * @param {number} totalPred - Model's predicted game total
+ * @param {object} gameVegasLines - Market lines from Odds API
+ * @returns {object|null} - Total opportunity or null if no edge
+ */
+function computeProductionTotalOpportunity(totalPred, gameVegasLines) {
+  let totalOpp = null;
+  if (gameVegasLines.total?.fair?.line != null) {
+    const fairLine = gameVegasLines.total.fair.line;
+    const totalEdge = Math.abs(totalPred - fairLine);
+    
+    if (totalEdge >= 4) {
+      const pickOver = totalPred > fairLine;
+      
+      // Use fair odds for edge, placement odds for bet
+      const fairOdds = pickOver ? gameVegasLines.total.fair.overPrice : gameVegasLines.total.fair.underPrice;
+      const placementOdds = pickOver 
+        ? (gameVegasLines.total.placement?.overPrice || fairOdds)
+        : (gameVegasLines.total.placement?.underPrice || fairOdds);
+      const placementBook = gameVegasLines.total.placement?.book || gameVegasLines.total.fair.book;
+      
+      // Rough Kelly for totals (simplified)
+      const totalImpliedProb = Math.abs(fairOdds) / (Math.abs(fairOdds) + 100);
+      const totalEdgePercent = (totalEdge / fairLine) * 100;
+      
+      totalOpp = {
+        market: 'Total',
+        pick: pickOver ? `Over ${fairLine}` : `Under ${fairLine}`,
+        modelLine: totalPred.toFixed(1),
+        vegasLine: fairLine,
+        odds: placementOdds, // Placement odds
+        edge: totalEdge.toFixed(1),
+        edgePercent: totalEdgePercent,
+        kelly: null, // Would need more sophisticated total prob model
+        betSize: null,
+        units: null,
+        book: placementBook,
+        fairBook: gameVegasLines.total.fair.book,
+        fairVig: gameVegasLines.total.fair.vig.toFixed(1),
+        expectedValue: totalEdgePercent * 50 // Rough estimate
+      };
+    }
+  }
+  return totalOpp;
+}
+
+/**
+ * EXPERIMENTAL TOTALS OPPORTUNITY EVALUATION
+ * 
+ * This is the EXPERIMENTAL totals logic for shadow mode testing.
+ * Currently mirrors production behavior, but this is where new model + calibration will be integrated.
+ * 
+ * FUTURE INTEGRATION:
+ * - Load total_model_experiment_v2.json (new trained model)
+ * - Load total_calibration_experiment_v2.json (probability calibration)
+ * - Apply calibrated probability-based edge calculation
+ * - Use proper Kelly criterion instead of rough estimate
+ * 
+ * @param {number} totalPred - Model's predicted game total
+ * @param {object} gameVegasLines - Market lines from Odds API
+ * @returns {object|null} - Total opportunity or null if no edge
+ */
+function computeExperimentalTotalOpportunity(totalPred, gameVegasLines) {
+  // For now: Clone production behavior 1:1 for validation
+  // This will be replaced with new model logic in future commits
+  
+  let totalOpp = null;
+  if (gameVegasLines.total?.fair?.line != null) {
+    const fairLine = gameVegasLines.total.fair.line;
+    const totalEdge = Math.abs(totalPred - fairLine);
+    
+    if (totalEdge >= 4) {
+      const pickOver = totalPred > fairLine;
+      
+      // Use fair odds for edge, placement odds for bet
+      const fairOdds = pickOver ? gameVegasLines.total.fair.overPrice : gameVegasLines.total.fair.underPrice;
+      const placementOdds = pickOver 
+        ? (gameVegasLines.total.placement?.overPrice || fairOdds)
+        : (gameVegasLines.total.placement?.underPrice || fairOdds);
+      const placementBook = gameVegasLines.total.placement?.book || gameVegasLines.total.fair.book;
+      
+      // Rough Kelly for totals (simplified)
+      const totalImpliedProb = Math.abs(fairOdds) / (Math.abs(fairOdds) + 100);
+      const totalEdgePercent = (totalEdge / fairLine) * 100;
+      
+      totalOpp = {
+        mode: 'experimental', // Tag as experimental
+        market: 'Total',
+        pick: pickOver ? `Over ${fairLine}` : `Under ${fairLine}`,
+        modelLine: totalPred.toFixed(1),
+        vegasLine: fairLine,
+        odds: placementOdds, // Placement odds
+        edge: totalEdge.toFixed(1),
+        edgePercent: totalEdgePercent,
+        kelly: null, // Would need more sophisticated total prob model
+        betSize: null,
+        units: null,
+        book: placementBook,
+        fairBook: gameVegasLines.total.fair.book,
+        fairVig: gameVegasLines.total.fair.vig.toFixed(1),
+        expectedValue: totalEdgePercent * 50 // Rough estimate
+      };
+    }
+  }
+  return totalOpp;
 }
 
 /**
@@ -1253,43 +1381,15 @@ export default async (request, context) => {
         }
       }
       
-      // 4. TOTAL OPPORTUNITY  
-      let totalOpp = null;
-      if (gameVegasLines.total?.fair?.line != null) {
-        const fairLine = gameVegasLines.total.fair.line;
-        const totalEdge = Math.abs(totalPred - fairLine);
-        
-        if (totalEdge >= 4) {
-          const pickOver = totalPred > fairLine;
-          
-          // Use fair odds for edge, placement odds for bet
-          const fairOdds = pickOver ? gameVegasLines.total.fair.overPrice : gameVegasLines.total.fair.underPrice;
-          const placementOdds = pickOver 
-            ? (gameVegasLines.total.placement?.overPrice || fairOdds)
-            : (gameVegasLines.total.placement?.underPrice || fairOdds);
-          const placementBook = gameVegasLines.total.placement?.book || gameVegasLines.total.fair.book;
-          
-          // Rough Kelly for totals (simplified)
-          const totalImpliedProb = Math.abs(fairOdds) / (Math.abs(fairOdds) + 100);
-          const totalEdgePercent = (totalEdge / fairLine) * 100;
-          
-          totalOpp = {
-            market: 'Total',
-            pick: pickOver ? `Over ${fairLine}` : `Under ${fairLine}`,
-            modelLine: totalPred.toFixed(1),
-            vegasLine: fairLine,
-            odds: placementOdds, // Placement odds
-            edge: totalEdge.toFixed(1),
-            edgePercent: totalEdgePercent,
-            kelly: null, // Would need more sophisticated total prob model
-            betSize: null,
-            units: null,
-            book: placementBook,
-            fairBook: gameVegasLines.total.fair.book,
-            fairVig: gameVegasLines.total.fair.vig.toFixed(1),
-            expectedValue: totalEdgePercent * 50 // Rough estimate
-          };
-        }
+      // 4. TOTAL OPPORTUNITY (Production)
+      const totalOpp = computeProductionTotalOpportunity(totalPred, gameVegasLines);
+      
+      // 4a. EXPERIMENTAL TOTALS (Shadow Mode - Read-Only)
+      let totalOppExperimental = null;
+      if (ENABLE_TOTALS_EXPERIMENT_SHADOW) {
+        totalOppExperimental = computeExperimentalTotalOpportunity(totalPred, gameVegasLines);
+        // CRITICAL: Do NOT add experimental to allOpps array
+        // This is shadow mode only - for debugging/validation
       }
       
       // ELITE DECISION: Recommend the best EV play(s)
@@ -1413,7 +1513,14 @@ export default async (request, context) => {
           } : null
         },
         opportunities,
-        teamTotals // NEW: Individual team scoring projections
+        teamTotals, // NEW: Individual team scoring projections
+        ...(ENABLE_TOTALS_EXPERIMENT_SHADOW && {
+          debugTotals: {
+            production: totalOpp || null,
+            experimental: totalOppExperimental || null,
+            note: 'Shadow mode active - experimental totals NOT used in betting decisions'
+          }
+        })
       });
     }
     

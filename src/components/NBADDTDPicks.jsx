@@ -19,7 +19,7 @@ export default function NBADDTDPicks() {
   async function fetchPicks() {
     try {
       setLoading(true);
-      const response = await fetch('/.netlify/functions/nbaddtd-picks');
+      const response = await fetch('/.netlify/functions/nba-ddtd-picks');
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
