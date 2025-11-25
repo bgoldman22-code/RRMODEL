@@ -2592,23 +2592,27 @@ function generateResponsibleParlays(components) {
 }
 
 // MAIN PREDICTION FUNCTION: v13 Logic + v8 Odds Integration
-async function generateAdvancedPredictions(games, season) {
+async function generateAdvancedPredictions(games, season, weekOverride = null) {
   console.log('=== v13 LOGIC + v8 WORKING ODDS INTEGRATION ===');
   
   let advancedMetrics = null;
   let injuries = null;
   // Ensure currentWeek is available before any injury-duration updates
-  let currentWeek = 1;
+  let currentWeek = weekOverride || 1;
   
   try {
     advancedMetrics = await loadAdvancedMetrics(season);
-    // Determine current week as soon as metrics are available
-    try {
-      currentWeek = getCurrentWeek(advancedMetrics);
-      console.log(`📅 Current week detected: ${currentWeek}`);
-    } catch (e) {
-      console.warn('Could not determine current week from metrics, defaulting to 1');
-      currentWeek = 1;
+    // Determine current week as soon as metrics are available (unless overridden)
+    if (!weekOverride) {
+      try {
+        currentWeek = getCurrentWeek(advancedMetrics);
+        console.log(`📅 Current week detected: ${currentWeek}`);
+      } catch (e) {
+        console.warn('Could not determine current week from metrics, defaulting to 1');
+        currentWeek = 1;
+      }
+    } else {
+      console.log(`📅 Using overridden week: ${weekOverride}`);
     }
     injuries = await loadInjuries();
     
@@ -3626,7 +3630,7 @@ export default async (request, context) => {
       }
     }
 
-    const result = await generateAdvancedPredictions(games, season);
+    const result = await generateAdvancedPredictions(games, season, currentWeek);
     
     // ========================================
     // EXPOSURE CHECKING: Enforce daily/per-game limits
