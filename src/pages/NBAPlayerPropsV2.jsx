@@ -367,7 +367,7 @@ export default function NBAPlayerPropsV2() {
                       <span className="text-sm font-semibold">{(pred.modelProbability * 100).toFixed(1)}%</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center font-bold text-green-600">{pred.edge.toFixed(1)}%</td>
+                  <td className="px-6 py-4 text-center font-bold text-green-600">{typeof pred.edge === 'number' ? pred.edge.toFixed(1) : pred.edge}%</td>
                   <td className="px-6 py-4 text-center font-bold text-yellow-600">{(pred.kellyStake || 0).toFixed(1)}U</td>
                 </tr>
               ))}

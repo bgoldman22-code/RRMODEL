@@ -1579,12 +1579,14 @@ export default async (request, context) => {
             const totalImpliedProb = Math.abs(fairOdds) / (Math.abs(fairOdds) + 100);
             const totalEdgePercent = (totalEdge / fairLine) * 100;
             
-            // Estimate total probability based on edge (simplified model)
-            // If model predicts Over by 5 points on a 220 line, that's ~2.3% difference
-            // Convert edge to rough probability estimate: larger edge = higher confidence
+            // Estimate total probability based on edge (calibrated to backtest data)
+            // Backtest showed: 6.5+ edge UNDERS achieved 57.1% win rate
+            // Formula calibrated: 0.5 + (edge / line) * 2.58 produces realistic probabilities
+            // Scale factor 2.58 derived from: (0.571 - 0.5) / (6.5 / 236.5) ≈ 2.58
+            // This converts point edges to win probabilities matching actual historical performance
             const totalModelProb = pickOver 
-              ? 0.5 + (totalEdge / fairLine) * 0.5  // Edge boosts probability from 50%
-              : 0.5 + (totalEdge / fairLine) * 0.5;
+              ? 0.5 + (totalEdge / fairLine) * 2.58  // Calibrated to 57.1% WR at 6.5 edge
+              : 0.5 + (totalEdge / fairLine) * 2.58;
             
             // Calculate Kelly for totals
             const fairOverPrice = gameVegasLines.total.fair.overPrice;
@@ -1674,7 +1676,8 @@ export default async (request, context) => {
         console.log(`  [BEFORE ${idx}] ${opp.market} ${opp.pick}: ${opp.units}U (trackOnly: ${!!opp.isTrackOnly})`);
       });
       
-      // Step 1: Apply individual bet cap (max 5 units per bet)
+      // Step 1: Apply individual bet cap (max 8 units per bet)
+      // Raised from 5U to 8U to allow SUPER HIGH EDGE bets (Nov 2025)
       let cappedCount = 0;
       allOpps.forEach((opp, idx) => {
         // Skip track-only bets (already 0)
@@ -1684,9 +1687,9 @@ export default async (request, context) => {
         }
         
         const originalUnits = opp.units;
-        if (opp.units > 5) {
-          console.log(`  [CAP ${idx}] ${opp.market} ${opp.pick}: ${opp.units.toFixed(1)}U → 5.0U`);
-          opp.units = 5.0;
+        if (opp.units > 8) {
+          console.log(`  [CAP ${idx}] ${opp.market} ${opp.pick}: ${opp.units.toFixed(1)}U → 8.0U`);
+          opp.units = 8.0;
           cappedCount++;
         }
         // Round to 1 decimal place
@@ -1695,11 +1698,12 @@ export default async (request, context) => {
       });
       console.log(`[UNIT CAP COMPLETE] Capped ${cappedCount} bets`);
       
-      // Step 2: Apply per-game exposure cap (max 12.5 units total)
+      // Step 2: Apply per-game exposure cap (max 18 units total)
+      // Raised from 12.5U to 18U to allow multiple high-edge bets per game (Nov 2025)
       const totalExposure = allOpps.reduce((sum, opp) => sum + (opp.units || 0), 0);
-      if (totalExposure > 12.5) {
-        const scale = 12.5 / totalExposure;
-        console.log(`[EXPOSURE CAP] Game total ${totalExposure.toFixed(1)}U > 12.5U, scaling by ${scale.toFixed(3)}x`);
+      if (totalExposure > 18) {
+        const scale = 18 / totalExposure;
+        console.log(`[EXPOSURE CAP] Game total ${totalExposure.toFixed(1)}U > 18U, scaling by ${scale.toFixed(3)}x`);
         allOpps.forEach(opp => {
           if (opp.isTrackOnly) return;
           const oldUnits = opp.units;

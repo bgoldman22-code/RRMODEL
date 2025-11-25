@@ -516,7 +516,7 @@ for (const prop of allProps) {
       modelProbability: result.prob_win, // For frontend compatibility
       vegasLine: line,
       betSide: side.toUpperCase(),
-      edge: (result.edge * 100).toFixed(1), // Convert to percentage
+      edge: result.edge * 100, // Convert to percentage, keep as number
       confidence: Math.round(result.prob_win * 100),
       odds,
       book: bookmaker,
