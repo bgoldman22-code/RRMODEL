@@ -89,7 +89,7 @@ export async function handler(event, context) {
     }
     
     // Validate picks structure
-    if (!picks.date || !picks.picks) {
+    if (!picks.date || !picks.recommended_picks) {
       console.error('Invalid picks structure:', picks);
       return {
         statusCode: 500,
