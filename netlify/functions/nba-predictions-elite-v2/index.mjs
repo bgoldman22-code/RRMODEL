@@ -474,8 +474,13 @@ function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, ba
   const q = 1 - modelProb;
   const kelly = b > 0 ? (b * modelProb - q) / b : 0;
   
-  // Apply season adjustment to Kelly (reduce betting early season)
-  const adjustedKelly = kelly * seasonAdj;
+  // OPTION 3: Exempt high-edge bets (8+ points) from season adjustment
+  // These are clear value opportunities that shouldn't be reduced
+  const isHighEdge = Math.abs(edgePoints) >= 8.0;
+  const effectiveSeasonAdj = isHighEdge ? 1.0 : seasonAdj;
+  
+  // Apply season adjustment to Kelly (reduce betting early season, except high-edge bets)
+  const adjustedKelly = kelly * effectiveSeasonAdj;
   
   // Cap at 5% of bankroll (quarter Kelly for safety), then apply season adjustment
   const kellyFraction = Math.min(Math.max(adjustedKelly * 0.25, 0), 0.05);
@@ -487,7 +492,8 @@ function calculateEdgeAndKelly(modelPred, vegasLine, americanOdds, modelProb, ba
     kellyFraction: parseFloat((kellyFraction * 100).toFixed(2)),
     betSize,
     units: parseFloat((betSize / 10).toFixed(1)), // $10/unit
-    seasonAdjusted: seasonAdj < 1.0 // Flag if early season reduced sizing
+    seasonAdjusted: effectiveSeasonAdj < 1.0, // Flag if early season reduced sizing
+    highEdgeExempt: isHighEdge // Flag if high-edge exemption applied
   };
 }
 
@@ -1230,10 +1236,9 @@ export default async (request, context) => {
       } else if (avgCurrentSeasonGames < 10) {
         seasonAdjustment = 0.75; // 75% confidence - still early
         seasonNote = `EARLY SEASON: ${avgCurrentSeasonGames.toFixed(0)} games. Model stabilizing. 3/4 units.`;
-      } else if (avgCurrentSeasonGames < 15) {
-        seasonAdjustment = 0.9; // 90% confidence - getting there
-        seasonNote = `Model confidence building (${avgCurrentSeasonGames.toFixed(0)} games). Normal units after 15.`;
       }
+      // REMOVED: < 15 game threshold - by game 10, sample size is adequate (12% of season)
+      // Full confidence after 10 games to avoid missing high-edge opportunities
       
       confidence = Math.floor(confidence * seasonAdjustment);
       
