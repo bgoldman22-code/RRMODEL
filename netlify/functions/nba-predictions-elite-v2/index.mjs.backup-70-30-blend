@@ -1205,10 +1205,8 @@ export default async (request, context) => {
       // Also run the model prediction for comparison
       const totalPredModel = predict(TOTAL_MODEL, totalFeatures);
       
-      // PRODUCTION FIX: Use 100% model prediction (proven +8.12% ROI)
-      // Previous 70/30 blend was losing -4.23% ROI
-      // Strategy: OVERS always + high-edge UNDERS only (6.5+ edge)
-      const totalPred = totalPredModel;
+      // Blend: 70% matchup-adjusted, 30% model
+      const totalPred = 0.7 * totalFromMatchup + 0.3 * totalPredModel;
       
       // Calculate base confidence
       const netRtgDiff = Math.abs(homeL10.netRtg - awayL10.netRtg);
@@ -1557,62 +1555,55 @@ export default async (request, context) => {
         if (totalEdge >= 4) {
           const pickOver = totalPred > fairLine;
           
-          // OPTIMAL STRATEGY: OVERS always + high-edge UNDERS only (6.5+)
-          // Backtest results: OVERS +6.85% ROI, high-edge UNDERS +9.09% ROI
-          // Combined strategy: +8.12% ROI on 176 bets (vs -4.23% with old blend)
-          const isHighEdgeUnder = !pickOver && totalEdge >= 6.5;
+          // Use fair odds for edge, placement odds for bet
+          const fairOdds = pickOver ? gameVegasLines.total.fair.overPrice : gameVegasLines.total.fair.underPrice;
+          const placementOdds = pickOver 
+            ? (gameVegasLines.total.placement?.overPrice || fairOdds)
+            : (gameVegasLines.total.placement?.underPrice || fairOdds);
+          const placementBook = gameVegasLines.total.placement?.book || gameVegasLines.total.fair.book;
           
-          if (pickOver || isHighEdgeUnder) {
-            // Use fair odds for edge, placement odds for bet
-            const fairOdds = pickOver ? gameVegasLines.total.fair.overPrice : gameVegasLines.total.fair.underPrice;
-            const placementOdds = pickOver 
-              ? (gameVegasLines.total.placement?.overPrice || fairOdds)
-              : (gameVegasLines.total.placement?.underPrice || fairOdds);
-            const placementBook = gameVegasLines.total.placement?.book || gameVegasLines.total.fair.book;
+          // Rough Kelly for totals (simplified)
+          const totalImpliedProb = Math.abs(fairOdds) / (Math.abs(fairOdds) + 100);
+          const totalEdgePercent = (totalEdge / fairLine) * 100;
           
-            // Rough Kelly for totals (simplified)
-            const totalImpliedProb = Math.abs(fairOdds) / (Math.abs(fairOdds) + 100);
-            const totalEdgePercent = (totalEdge / fairLine) * 100;
-            
-            // Estimate total probability based on edge (simplified model)
-            // If model predicts Over by 5 points on a 220 line, that's ~2.3% difference
-            // Convert edge to rough probability estimate: larger edge = higher confidence
-            const totalModelProb = pickOver 
-              ? 0.5 + (totalEdge / fairLine) * 0.5  // Edge boosts probability from 50%
-              : 0.5 + (totalEdge / fairLine) * 0.5;
-            
-            // Calculate Kelly for totals
-            const fairOverPrice = gameVegasLines.total.fair.overPrice;
-            const fairUnderPrice = gameVegasLines.total.fair.underPrice;
-            
-            const totalKelly = calculateEdgeAndKelly(
-              totalModelProb * 100,
-              totalModelProb > 0.5 ? -110 : 110, // Dummy, we use actual odds
-              placementOdds,
-              totalModelProb,
-              5000,
-              seasonAdjustment,
-              pickOver ? fairUnderPrice : fairOverPrice // Pass opponent odds for devigging
-            );
-            
-            totalOpp = {
-              market: 'Total',
-              pick: pickOver ? `Over ${fairLine}` : `Under ${fairLine}`,
-              modelLine: totalPred.toFixed(1),
-              vegasLine: fairLine,
-              odds: placementOdds, // Placement odds
-              edge: totalEdge.toFixed(1),
-              edgePercent: totalEdgePercent,
-              kelly: totalKelly.kellyFraction,
-              betSize: totalKelly.betSize,
-              units: totalKelly.units,
-              confidence, // Add confidence level
-              book: placementBook,
-              fairBook: gameVegasLines.total.fair.book,
-              fairVig: gameVegasLines.total.fair.vig.toFixed(1),
-              expectedValue: totalEdgePercent * 50 // Rough estimate
-            };
-          }
+          // Estimate total probability based on edge (simplified model)
+          // If model predicts Over by 5 points on a 220 line, that's ~2.3% difference
+          // Convert edge to rough probability estimate: larger edge = higher confidence
+          const totalModelProb = pickOver 
+            ? 0.5 + (totalEdge / fairLine) * 0.5  // Edge boosts probability from 50%
+            : 0.5 + (totalEdge / fairLine) * 0.5;
+          
+          // Calculate Kelly for totals
+          const fairOverPrice = gameVegasLines.total.fair.overPrice;
+          const fairUnderPrice = gameVegasLines.total.fair.underPrice;
+          
+          const totalKelly = calculateEdgeAndKelly(
+            totalModelProb * 100,
+            totalModelProb > 0.5 ? -110 : 110, // Dummy, we use actual odds
+            placementOdds,
+            totalModelProb,
+            5000,
+            seasonAdjustment,
+            pickOver ? fairUnderPrice : fairOverPrice // Pass opponent odds for devigging
+          );
+          
+          totalOpp = {
+            market: 'Total',
+            pick: pickOver ? `Over ${fairLine}` : `Under ${fairLine}`,
+            modelLine: totalPred.toFixed(1),
+            vegasLine: fairLine,
+            odds: placementOdds, // Placement odds
+            edge: totalEdge.toFixed(1),
+            edgePercent: totalEdgePercent,
+            kelly: totalKelly.kellyFraction,
+            betSize: totalKelly.betSize,
+            units: totalKelly.units,
+            confidence, // Add confidence level
+            book: placementBook,
+            fairBook: gameVegasLines.total.fair.book,
+            fairVig: gameVegasLines.total.fair.vig.toFixed(1),
+            expectedValue: totalEdgePercent * 50 // Rough estimate
+          };
         }
       }
       

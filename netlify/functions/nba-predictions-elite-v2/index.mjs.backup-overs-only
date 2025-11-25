@@ -1205,9 +1205,8 @@ export default async (request, context) => {
       // Also run the model prediction for comparison
       const totalPredModel = predict(TOTAL_MODEL, totalFeatures);
       
-      // PRODUCTION FIX: Use 100% model prediction (proven +8.12% ROI)
-      // Previous 70/30 blend was losing -4.23% ROI
-      // Strategy: OVERS always + high-edge UNDERS only (6.5+ edge)
+      // OVERS-ONLY BACKUP: Use 100% model prediction (proven +6.85% ROI on OVERS)
+      // This version filters for OVERS only
       const totalPred = totalPredModel;
       
       // Calculate base confidence
@@ -1557,12 +1556,11 @@ export default async (request, context) => {
         if (totalEdge >= 4) {
           const pickOver = totalPred > fairLine;
           
-          // OPTIMAL STRATEGY: OVERS always + high-edge UNDERS only (6.5+)
-          // Backtest results: OVERS +6.85% ROI, high-edge UNDERS +9.09% ROI
-          // Combined strategy: +8.12% ROI on 176 bets (vs -4.23% with old blend)
-          const isHighEdgeUnder = !pickOver && totalEdge >= 6.5;
-          
-          if (pickOver || isHighEdgeUnder) {
+          // OVERS-ONLY BACKUP: Filter for OVERS only (+6.85% ROI strategy)
+          if (!pickOver) {
+            // Skip UNDERS in this backup version
+            totalOpp = null;
+          } else {
             // Use fair odds for edge, placement odds for bet
             const fairOdds = pickOver ? gameVegasLines.total.fair.overPrice : gameVegasLines.total.fair.underPrice;
             const placementOdds = pickOver 
