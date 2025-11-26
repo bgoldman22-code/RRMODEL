@@ -1,0 +1,20 @@
+{
+  "generated_at": "2025-11-26T14:34:58.315Z",
+  "model_version": "nba_phase3.5_mixed_logistic_lgbm_v1_20251125",
+  "source": "Phase 3.5: Logistic PRA + LightGBM per-market",
+  "filters": {
+    "assists_prob_min": 0.55,
+    "points_prob_min": 0.6,
+    "rebounds_prob_min": 0.52
+  },
+  "picks": [],
+  "stats": {
+    "total_picks": 0,
+    "by_market": {
+      "points": 0,
+      "rebounds": 0,
+      "assists": 0
+    },
+    "errors": 0
+  }
+}
