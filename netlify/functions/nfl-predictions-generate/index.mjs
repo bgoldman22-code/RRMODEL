@@ -3862,8 +3862,15 @@ export default async (request, context) => {
           const seasonStart = new Date('2025-09-04');
           const nowDay = now.getDay();
           let adjustedDate = new Date(now);
+          // WEEK TRANSITION FIX: Week advances on Tuesday (day 2) not just Monday
+          // This ensures we're on the current week by Tuesday morning
           if (nowDay === 1) {
+            // Monday: still previous week
             adjustedDate.setDate(adjustedDate.getDate() - 1);
+          } else if (nowDay >= 2) {
+            // Tuesday onward: current week
+            // Add 1 day to bump into the next week
+            adjustedDate.setDate(adjustedDate.getDate() + 1);
           }
           const daysSinceStart = Math.floor((adjustedDate - seasonStart) / (24 * 60 * 60 * 1000));
           currentWeek = Math.max(1, Math.min(22, Math.floor(daysSinceStart / 7) + 1));
