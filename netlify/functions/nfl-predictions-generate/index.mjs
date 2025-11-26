@@ -1806,11 +1806,18 @@ async function loadLiveOdds() {
     ? `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds?apiKey=${encodeURIComponent(apiKey)}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso`
     : null;
 
-  // Primary: Fetch directly from The Odds API
+  // Primary: Fetch directly from The Odds API with strict timeout
   if (oddsApiUrl) {
     try {
       console.log('[ODDS] Fetching from The Odds API');
-      const res = await fetch(oddsApiUrl, { timeout: 5000 }); // Reduced from 15000 to 5000ms
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
+      const res = await fetch(oddsApiUrl, { 
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      
       if (res.ok) {
         const data = await res.json();
         console.log(`[ODDS] Loaded ${Array.isArray(data) ? data.length : 0} games from The Odds API`);
@@ -1819,29 +1826,36 @@ async function loadLiveOdds() {
         console.warn(`[ODDS] The Odds API responded ${res.status}`);
       }
     } catch (err) {
-      console.warn('[ODDS] The Odds API fetch failed, will try fallback:', err?.message || err);
+      console.warn('[ODDS] The Odds API fetch failed:', err?.message || err);
+      // Don't try fallback if we timed out - just return empty
+      if (err.name === 'AbortError') {
+        console.warn('[ODDS] Timeout reached, returning empty odds to avoid function timeout');
+        return [];
+      }
     }
   } else {
     console.warn('[ODDS] Missing ODDS_API_KEY, skipping direct The Odds API fetch');
   }
 
-  // Fallback: Use internal aggregator (with timeout)
+  // Fallback: Use internal aggregator (only if primary didn't timeout)
   try {
     console.log('[ODDS] Fallback: fetching from internal nfl-odds-get');
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // Even shorter 3 second timeout for fallback
+    
     const oddsRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals', {
       signal: controller.signal
     });
     clearTimeout(timeoutId);
+    
     if (!oddsRes.ok) throw new Error(`Fallback odds endpoint failed: ${oddsRes.status}`);
     const oddsResponse = await oddsRes.json();
     const oddsData = oddsResponse.games || oddsResponse || [];
     console.log(`[ODDS] Fallback loaded ${oddsData.length} games`);
     return oddsData;
   } catch (fallbackErr) {
-    console.error('[ODDS] All odds sources failed:', fallbackErr?.message || fallbackErr);
-    return []; // Return empty array instead of throwing
+    console.error('[ODDS] Fallback failed:', fallbackErr?.message || fallbackErr);
+    return []; // Return empty array - predictions can still generate without odds
   }
 }
 
