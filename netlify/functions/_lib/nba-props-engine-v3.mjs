@@ -26,6 +26,7 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = join(__dirname, '../../..');
+const featureShapeChecked = new Set();
 
 /**
  * Load the model registry
@@ -244,9 +245,24 @@ export async function createInferenceEngine() {
     let probability;
     
     if (modelConfig.engine === 'logistic_pra') {
-      // Use Logistic PRA model
+      // Use Logistic PRA model (normalize features first)
       const model = side === 'Over' ? modelConfig.overModel : modelConfig.underModel;
-      probability = predictLogistic(features, model);
+      const normalizedFeatures = normalizeFeatures(features, model);
+      
+      // One-time shape assertion for Logistic models
+      const shapeKey = `${modelKey}_${side}`;
+      if (!featureShapeChecked.has(shapeKey)) {
+        featureShapeChecked.add(shapeKey);
+        const expectedCount = model.feature_columns.length;
+        const actualCount = Object.keys(normalizedFeatures).length;
+        if (actualCount !== expectedCount) {
+          throw new Error(`Feature count mismatch for ${shapeKey}: expected ${expectedCount}, got ${actualCount}`);
+        } else {
+          console.log(`[FeatureShape] ${shapeKey}: ${actualCount} features`);
+        }
+      }
+      
+      probability = predictLogistic(normalizedFeatures, model);
       
     } else if (modelConfig.engine === 'lightgbm') {
       // Use LightGBM model (Python subprocess)
@@ -256,25 +272,31 @@ export async function createInferenceEngine() {
       // CRITICAL: Use the model's EXACT feature columns (not registry's feature_list)
       const featureColumns = metadata.feature_columns;
       
-      // Debug logging for feature mismatch (one-time check)
-      const liveKeys = Object.keys(features).length;
+      // Normalize features to match EXACT feature columns expected by this model
+      const normalizedFeatures = normalizeFeatures(features, metadata);
+      const normalizedKeys = Object.keys(normalizedFeatures);
       const expectedKeys = featureColumns.length;
-      if (liveKeys !== expectedKeys) {
+      const missing = featureColumns.filter(c => !(c in normalizedFeatures));
+      const extra = normalizedKeys.filter(c => !featureColumns.includes(c));
+
+      if (missing.length || extra.length || normalizedKeys.length !== expectedKeys) {
         console.warn('[FEATURE MISMATCH]', {
           model: metadata.model_name || modelKey,
           expected: expectedKeys,
-          live: liveKeys,
-          missing: featureColumns.filter(c => !(c in features)),
-          extra: Object.keys(features).filter(c => !featureColumns.includes(c))
+          live: normalizedKeys.length,
+          missing,
+          extra
         });
       }
-      
-      // Normalize features to match EXACT feature columns expected by this model
-      const normalizedFeatures = {};
-      for (const col of featureColumns) {
-        normalizedFeatures[col] = (features[col] !== undefined && features[col] !== null)
-          ? features[col]
-          : 0;
+
+      const shapeKey = `${modelKey}_${side}`;
+      if (!featureShapeChecked.has(shapeKey)) {
+        featureShapeChecked.add(shapeKey);
+        if (normalizedKeys.length !== expectedKeys) {
+          throw new Error(`Feature count mismatch for ${shapeKey}: expected ${expectedKeys}, got ${normalizedKeys.length}`);
+        } else {
+          console.log(`[FeatureShape] ${shapeKey}: ${normalizedKeys.length} features`);
+        }
       }
       
       probability = await predictLightGBM(normalizedFeatures, modelPath, featureColumns);

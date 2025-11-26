@@ -245,7 +245,7 @@ export default function NFLPredictionsV5() {
       
       // Create export container
       const exportDiv = document.createElement('div');
-      exportDiv.style.cssText = 'position:fixed;left:-9999px;top:0;background:white;padding:40px;width:1400px;';
+      exportDiv.style.cssText = 'position:fixed;left:-9999px;top:0;background:white;padding:40px;width:1600px;';
       
       const week = meta?.week || selectedWeek;
       
@@ -258,6 +258,7 @@ export default function NFLPredictionsV5() {
           <thead style="background:#1e3a5f;color:white;">
             <tr>
               <th style="padding:12px 10px;text-align:left;font-weight:bold;border:1px solid #2c4a6f;">Matchup</th>
+              <th style="padding:12px 10px;text-align:left;font-weight:bold;border:1px solid #2c4a6f;">Kickoff</th>
               <th style="padding:12px 10px;text-align:left;font-weight:bold;border:1px solid #2c4a6f;">Spread Pick</th>
               <th style="padding:12px 10px;text-align:left;font-weight:bold;border:1px solid #2c4a6f;">Total Pick</th>
               <th style="padding:12px 10px;text-align:left;font-weight:bold;border:1px solid #2c4a6f;">Moneyline</th>
@@ -276,23 +277,41 @@ export default function NFLPredictionsV5() {
         const edges = [spread.edge, total.edge, moneyline.edge].filter(e => e > 0);
         const bestEdge = edges.length > 0 ? Math.max(...edges) : 0;
         
-        // Format picks
+        // Format kickoff time
+        const kickoffText = pred.kickoff 
+          ? new Date(pred.kickoff).toLocaleString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              timeZoneName: 'short'
+            })
+          : '—';
+        
+        // Format picks to match table display exactly
         const spreadText = spread.pick 
-          ? `${spread.pick} ${spread.line > 0 ? '+' : ''}${spread.line} (${spread.recommended_units?.toFixed(1)}U, ${spread.edge?.toFixed(1)}%)`
-          : 'NO BET';
+          ? `<div style="font-weight:600;margin-bottom:4px;">${spread.pick} ${spread.line > 0 ? '+' : ''}${spread.line}</div>
+             <div style="font-size:11px;color:#666;">Edge: ${spread.edge?.toFixed(1)}% | Units: ${spread.recommended_units?.toFixed(1)}</div>`
+          : '<span style="color:#999;">—</span>';
         
         const totalText = total.pick
-          ? `${total.pick} ${total.line} (${total.recommended_units?.toFixed(1)}U, ${total.edge?.toFixed(1)}%)`
-          : 'NO BET';
+          ? `<div style="font-weight:600;margin-bottom:4px;">${total.pick} ${total.line}</div>
+             <div style="font-size:11px;color:#666;">Edge: ${total.edge?.toFixed(1)}% | Units: ${total.recommended_units?.toFixed(1)}</div>`
+          : '<span style="color:#999;">—</span>';
         
         const mlText = moneyline.pick
-          ? `${moneyline.pick} ML (${moneyline.recommended_units?.toFixed(1)}U, ${moneyline.edge?.toFixed(1)}%)`
-          : 'NO BET';
+          ? `<div style="font-weight:600;margin-bottom:4px;">${moneyline.pick}</div>
+             <div style="font-size:11px;color:#666;">Edge: ${moneyline.edge?.toFixed(1)}% | Units: ${moneyline.recommended_units?.toFixed(1)}</div>`
+          : '<span style="color:#999;">—</span>';
         
         const rowStyle = idx % 2 === 0 ? 'background:white;' : 'background:#f8f9fa;';
         tableHTML += `
           <tr style="${rowStyle}">
-            <td style="padding:10px;border:1px solid #ccc;font-weight:600;">${pred.matchup}</td>
+            <td style="padding:10px;border:1px solid #ccc;">
+              <div style="font-weight:600;margin-bottom:2px;">${pred.matchup}</div>
+              <div style="font-size:11px;color:#666;">${pred.away_team} @ ${pred.home_team}</div>
+            </td>
+            <td style="padding:10px;border:1px solid #ccc;font-size:12px;color:#666;">${kickoffText}</td>
             <td style="padding:10px;border:1px solid #ccc;">${spreadText}</td>
             <td style="padding:10px;border:1px solid #ccc;">${totalText}</td>
             <td style="padding:10px;border:1px solid #ccc;">${mlText}</td>
@@ -317,8 +336,8 @@ export default function NFLPredictionsV5() {
         backgroundColor: '#ffffff',
         scale: 2,
         logging: false,
-        width: 1400,
-        windowWidth: 1400
+        width: 1600,
+        windowWidth: 1600
       });
       
       // Download

@@ -45,7 +45,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Import Phase 3.5 inference engine
-import { createInferenceEngine, normalizeFeatures } from '../../netlify/functions/_lib/nba-props-engine-v3.mjs';
+import { createInferenceEngine } from '../../netlify/functions/_lib/nba-props-engine-v3.mjs';
 
 // ====================================================================
 // CONFIGURATION
@@ -168,30 +168,47 @@ function calculateFeatures(playerName, targetDate, opponent, isHome) {
     games_played: priorGames.length
   };
 
-  // Rolling windows: L5, L10, L20, L40, L999 (all games)
-  for (const [label, window] of [['L5', 5], ['L10', 10], ['L20', 20], ['L40', 40], ['L999', 999]]) {
-    const windowGames = window === 999 ? priorGames : priorGames.slice(-window);
+  // Rolling windows: L5, L10, L20, L40 (full stat suite) + L999 (points/rebounds/assists/PRA only)
+  const rollingWindows = [
+    { label: 'L5', size: 5, includeMinutes: true, includeShooting: true },
+    { label: 'L10', size: 10, includeMinutes: true, includeShooting: true },
+    { label: 'L20', size: 20, includeMinutes: true, includeShooting: true },
+    { label: 'L40', size: 40, includeMinutes: true, includeShooting: true },
+    { label: 'L999', size: 999, includeMinutes: false, includeShooting: false }
+  ];
+
+  for (const { label, size, includeMinutes, includeShooting } of rollingWindows) {
+    const windowGames = size === 999 ? priorGames : priorGames.slice(-size);
     const n = windowGames.length;
-    
+
     if (n > 0) {
-      features[`${label}_games`] = n;
       features[`${label}_ppg`] = windowGames.reduce((sum, g) => sum + (g.points || 0), 0) / n;
       features[`${label}_rpg`] = windowGames.reduce((sum, g) => sum + (g.rebounds || 0), 0) / n;
       features[`${label}_apg`] = windowGames.reduce((sum, g) => sum + (g.assists || 0), 0) / n;
       features[`${label}_pra`] = windowGames.reduce((sum, g) => sum + ((g.points || 0) + (g.rebounds || 0) + (g.assists || 0)), 0) / n;
-      features[`${label}_minutes`] = windowGames.reduce((sum, g) => sum + (g.minutes || 0), 0) / n;
-      features[`${label}_fga`] = windowGames.reduce((sum, g) => sum + (g.fga || 0), 0) / n;
-      features[`${label}_fta`] = windowGames.reduce((sum, g) => sum + (g.fta || 0), 0) / n;
+
+      if (includeMinutes) {
+        features[`${label}_minutes`] = windowGames.reduce((sum, g) => sum + (g.minutes || 0), 0) / n;
+      }
+
+      if (includeShooting) {
+        features[`${label}_fga`] = windowGames.reduce((sum, g) => sum + (g.fgAtt || g.fga || 0), 0) / n;
+        features[`${label}_fta`] = windowGames.reduce((sum, g) => sum + (g.ftAtt || g.fta || 0), 0) / n;
+      }
     } else {
-      // Fill with zeros if no games in window
-      features[`${label}_games`] = 0;
       features[`${label}_ppg`] = 0;
       features[`${label}_rpg`] = 0;
       features[`${label}_apg`] = 0;
       features[`${label}_pra`] = 0;
-      features[`${label}_minutes`] = 0;
-      features[`${label}_fga`] = 0;
-      features[`${label}_fta`] = 0;
+
+      if (includeMinutes) {
+        features[`${label}_minutes`] = 0;
+      }
+
+      if (includeShooting) {
+        features[`${label}_fga`] = 0;
+        features[`${label}_fta`] = 0;
+      }
     }
   }
 
@@ -207,8 +224,8 @@ function calculateFeatures(playerName, targetDate, opponent, isHome) {
     features.season_apg = seasonGames.reduce((sum, g) => sum + (g.assists || 0), 0) / n;
     features.season_pra = seasonGames.reduce((sum, g) => sum + ((g.points || 0) + (g.rebounds || 0) + (g.assists || 0)), 0) / n;
     features.season_minutes = seasonGames.reduce((sum, g) => sum + (g.minutes || 0), 0) / n;
-    features.season_fga = seasonGames.reduce((sum, g) => sum + (g.fga || 0), 0) / n;
-    features.season_fta = seasonGames.reduce((sum, g) => sum + (g.fta || 0), 0) / n;
+    features.season_fga = seasonGames.reduce((sum, g) => sum + (g.fgAtt || g.fga || 0), 0) / n;
+    features.season_fta = seasonGames.reduce((sum, g) => sum + (g.ftAtt || g.fta || 0), 0) / n;
   } else {
     features.season_games_played = 0;
     features.season_ppg = 0;
@@ -231,8 +248,8 @@ function calculateFeatures(playerName, targetDate, opponent, isHome) {
     features.h2h_apg = h2hGames.reduce((sum, g) => sum + (g.assists || 0), 0) / n;
     features.h2h_pra = h2hGames.reduce((sum, g) => sum + ((g.points || 0) + (g.rebounds || 0) + (g.assists || 0)), 0) / n;
     features.h2h_minutes = h2hGames.reduce((sum, g) => sum + (g.minutes || 0), 0) / n;
-    features.h2h_fga = h2hGames.reduce((sum, g) => sum + (g.fga || 0), 0) / n;
-    features.h2h_fta = h2hGames.reduce((sum, g) => sum + (g.fta || 0), 0) / n;
+    features.h2h_fga = h2hGames.reduce((sum, g) => sum + (g.fgAtt || g.fga || 0), 0) / n;
+    features.h2h_fta = h2hGames.reduce((sum, g) => sum + (g.ftAtt || g.fta || 0), 0) / n;
   } else {
     features.h2h_games_played = 0;
     features.h2h_ppg = 0;
@@ -481,6 +498,33 @@ function parseOdds(oddsData) {
   return Array.from(bestOddsMap.values());
 }
 
+function computeMarketBreakdown(picks) {
+  return picks.reduce((acc, pick) => {
+    const market = pick.propType;
+    acc[market] = (acc[market] || 0) + 1;
+    return acc;
+  }, { points: 0, rebounds: 0, assists: 0 });
+}
+
+function canonicalizePicks(picks) {
+  const grouped = new Map();
+
+  for (const pick of picks) {
+    const key = `${pick.player}|${pick.propType}|${pick.betSide}`;
+    const edgeValue = Number(pick.edge);
+    if (!Number.isFinite(edgeValue) || edgeValue <= 0) continue;
+
+    const lineValue = Number(pick.vegasLine);
+    const existing = grouped.get(key);
+
+    if (!existing || edgeValue > existing.edge || (edgeValue === existing.edge && lineValue > existing.line)) {
+      grouped.set(key, { edge: edgeValue, line: lineValue, pick });
+    }
+  }
+
+  return Array.from(grouped.values()).map(entry => entry.pick);
+}
+
 // ====================================================================
 // PREDICTION GENERATION
 // ====================================================================
@@ -521,11 +565,8 @@ for (const prop of allProps) {
     // Add the line value to features (models were trained with this)
     features.line = line;
 
-    // Normalize features to match model requirements
-    const normalizedFeatures = normalizeFeatures(features, engine.registry);
-
-    // Predict using Phase 3.5 engine
-    const result = await engine.predict(market, normalizedFeatures, line, odds, side);
+  // Predict using Phase 3.5 engine (engine normalizes per-model)
+  const result = await engine.predict(market, features, line, odds, side);
 
     // Only include picks that meet threshold
     if (!result.meetsThreshold) {
@@ -573,6 +614,16 @@ if (errors.length > 0) {
   }
 }
 
+const rawMarketBreakdown = computeMarketBreakdown(predictions);
+const canonicalPicks = canonicalizePicks(predictions);
+const canonicalMarketBreakdown = computeMarketBreakdown(canonicalPicks);
+
+console.log('\n📊 Raw summary');
+console.log(`   Props parsed: ${allProps.length}`);
+console.log(`   Raw picks: ${predictions.length} (points: ${rawMarketBreakdown.points}, rebounds: ${rawMarketBreakdown.rebounds}, assists: ${rawMarketBreakdown.assists})`);
+console.log('📉 Canonical summary');
+console.log(`   Canonical picks: ${canonicalPicks.length} (points: ${canonicalMarketBreakdown.points}, rebounds: ${canonicalMarketBreakdown.rebounds}, assists: ${canonicalMarketBreakdown.assists})`);
+
 // ====================================================================
 // OUTPUT GENERATION (ATOMIC WRITE)
 // ====================================================================
@@ -588,13 +639,13 @@ const output = {
     points_prob_min: 0.60,
     rebounds_prob_min: 0.52
   },
-  picks: predictions,
+  picks: canonicalPicks,
   stats: {
-    total_picks: predictions.length,
+    total_picks: canonicalPicks.length,
     by_market: {
-      points: predictions.filter(p => p.propType === 'points').length,
-      rebounds: predictions.filter(p => p.propType === 'rebounds').length,
-      assists: predictions.filter(p => p.propType === 'assists').length
+      points: canonicalMarketBreakdown.points,
+      rebounds: canonicalMarketBreakdown.rebounds,
+      assists: canonicalMarketBreakdown.assists
     },
     errors: errors.length
   }
@@ -614,7 +665,8 @@ renameSync(tmpPath, finalPath);
 
 console.log(`✅ Output written to: ${finalPath}`);
 console.log('\n=== Generation Complete ===');
-console.log('Picks:', predictions.length);
+console.log('Raw picks:', predictions.length);
+console.log('Canonical picks:', canonicalPicks.length);
 console.log('  - Assists:', output.stats.by_market.assists);
 console.log('  - Points:', output.stats.by_market.points);
 console.log('  - Rebounds:', output.stats.by_market.rebounds);
