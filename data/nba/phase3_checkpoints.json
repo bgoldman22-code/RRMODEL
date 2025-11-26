@@ -352,6 +352,30 @@
         "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/raw/boxscores_2025_26.json"
       ],
       "notes": "Fetched 1 seasons: 2025-26"
+    },
+    {
+      "timestamp": "2025-11-26T14:15:21.846376",
+      "step": "train_phase3_lgbm_models",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_over_v2_20251126.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_over_v2_20251126.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_under_v2_20251126.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_under_v2_20251126.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_over_v2_20251126.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_over_v2_20251126.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_under_v2_20251126.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_under_v2_20251126.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_over_v2_20251126.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_over_v2_20251126.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_under_v2_20251126.txt",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_under_v2_20251126.json",
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/training_summary_v2_20251126.json"
+      ],
+      "summary": {
+        "n_models": 6,
+        "avg_test_auc": 0.533381216218735
+      },
+      "notes": "Trained 6 LightGBM models (Points/Rebounds/Assists \u00d7 Over/Under) with per-market optimization"
     }
   ]
 }

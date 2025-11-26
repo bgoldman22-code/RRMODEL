@@ -3,19 +3,27 @@
   "created_at": "2025-11-25T00:00:00.000Z",
   "description": "Production NBA Player Props Model Registry - Phase 3.5 Mixed Logistic + LightGBM",
   "metadata": {
-    "training_file": "data/nba/training/phase3_training_v1_20251125.jsonl",
-    "n_features": 60,
+    "training_file": "data/nba/training/phase3_training_v1_20251124.jsonl",
+    "n_features": 72,
     "feature_list": [
-      "games_played", "L5_games", "L5_ppg", "L5_rpg", "L5_apg", "L5_pra", "L5_minutes", "L5_fga", "L5_fta",
-      "L10_games", "L10_ppg", "L10_rpg", "L10_apg", "L10_pra", "L10_minutes", "L10_fga", "L10_fta",
-      "L20_games", "L20_ppg", "L20_rpg", "L20_apg", "L20_pra", "L20_minutes", "L20_fga", "L20_fta",
-      "L40_games", "L40_ppg", "L40_rpg", "L40_apg", "L40_pra", "L40_minutes", "L40_fga", "L40_fta",
-      "L999_games", "L999_ppg", "L999_rpg", "L999_apg", "L999_pra", "L999_minutes", "L999_fga", "L999_fta",
-      "season_games_played", "season_ppg", "season_rpg", "season_apg", "season_pra", "season_minutes", "season_fga", "season_fta",
-      "h2h_games_played", "h2h_ppg", "h2h_rpg", "h2h_apg", "h2h_pra", "h2h_minutes", "h2h_fga", "h2h_fta",
-      "opp_def_L5_pra_allowed", "opp_def_L5_ppg_allowed", "opp_def_L5_rpg_allowed", "opp_def_L5_apg_allowed",
-      "opp_def_L10_pra_allowed", "opp_def_L10_ppg_allowed", "opp_def_L10_rpg_allowed", "opp_def_L10_apg_allowed",
-      "rest_days", "home"
+      "L5_ppg", "L10_ppg", "L20_ppg", "L40_ppg", "L999_ppg",
+      "L5_rpg", "L10_rpg", "L20_rpg", "L40_rpg", "L999_rpg",
+      "L5_apg", "L10_apg", "L20_apg", "L40_apg", "L999_apg",
+      "L5_pra", "L10_pra", "L20_pra", "L40_pra", "L999_pra",
+      "L5_minutes", "L10_minutes", "L20_minutes", "L40_minutes",
+      "L5_fga", "L10_fga", "L20_fga", "L40_fga",
+      "L5_fta", "L10_fta", "L20_fta", "L40_fta",
+      "season_ppg", "season_rpg", "season_apg", "season_pra",
+      "season_minutes", "season_fga", "season_fta", "season_games_played",
+      "h2h_ppg", "h2h_rpg", "h2h_apg", "h2h_pra",
+      "h2h_minutes", "h2h_fga", "h2h_fta", "h2h_games_played",
+      "opp_def_L5_pra_allowed", "opp_def_L10_pra_allowed",
+      "opp_def_L5_ppg_allowed", "opp_def_L10_ppg_allowed",
+      "opp_def_L5_rpg_allowed", "opp_def_L10_rpg_allowed",
+      "opp_def_L5_apg_allowed", "opp_def_L10_apg_allowed",
+      "rest_days", "home", "line", "games_played",
+      "line_minus_L5_ppg", "line_minus_L10_ppg", "line_minus_L20_ppg", "line_minus_L40_ppg", "line_minus_L999_ppg", "line_z_L10_ppg",
+      "line_minus_L5_rpg", "line_minus_L10_rpg", "line_minus_L20_rpg", "line_minus_L40_rpg", "line_minus_L999_rpg", "line_z_L10_rpg"
     ],
     "backtest_results": {
       "assists_logistic_055": {
@@ -76,12 +84,12 @@
       "market": "player_rebounds",
       "description": "LightGBM per-market model - MODEST for Rebounds (54.2% WR, +1.1% ROI)",
       "model_files": {
-        "over": "data/nba/models/phase3_lgbm/rebounds_over_v1_20251125.txt",
-        "under": "data/nba/models/phase3_lgbm/rebounds_under_v1_20251125.txt"
+        "over": "data/nba/models/phase3_lgbm/rebounds_over_v2_20251126.txt",
+        "under": "data/nba/models/phase3_lgbm/rebounds_under_v2_20251126.txt"
       },
       "metadata_files": {
-        "over": "data/nba/models/phase3_lgbm/rebounds_over_v1_20251125.json",
-        "under": "data/nba/models/phase3_lgbm/rebounds_under_v1_20251125.json"
+        "over": "data/nba/models/phase3_lgbm/rebounds_over_v2_20251126.json",
+        "under": "data/nba/models/phase3_lgbm/rebounds_under_v2_20251126.json"
       },
       "threshold": 0.52,
       "enabled": true,

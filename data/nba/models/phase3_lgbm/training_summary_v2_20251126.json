@@ -1,0 +1,79 @@
+{
+  "version": "v2",
+  "created": "2025-11-26T14:15:21.845653",
+  "n_models": 6,
+  "models": [
+    {
+      "name": "points_over",
+      "market": "player_points",
+      "side": "Over",
+      "test_auc": 0.543373404785672,
+      "test_accuracy": 0.5123655913978494,
+      "n_test": 1860,
+      "artifacts": {
+        "model_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_over_v2_20251126.txt",
+        "json_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_over_v2_20251126.json"
+      }
+    },
+    {
+      "name": "points_under",
+      "market": "player_points",
+      "side": "Under",
+      "test_auc": 0.5310969198613366,
+      "test_accuracy": 0.5037634408602151,
+      "n_test": 1860,
+      "artifacts": {
+        "model_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_under_v2_20251126.txt",
+        "json_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/points_under_v2_20251126.json"
+      }
+    },
+    {
+      "name": "rebounds_over",
+      "market": "player_rebounds",
+      "side": "Over",
+      "test_auc": 0.5414603304408403,
+      "test_accuracy": 0.5490196078431373,
+      "n_test": 1785,
+      "artifacts": {
+        "model_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_over_v2_20251126.txt",
+        "json_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_over_v2_20251126.json"
+      }
+    },
+    {
+      "name": "rebounds_under",
+      "market": "player_rebounds",
+      "side": "Under",
+      "test_auc": 0.5487712172097667,
+      "test_accuracy": 0.5391937290033595,
+      "n_test": 1786,
+      "artifacts": {
+        "model_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_under_v2_20251126.txt",
+        "json_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/rebounds_under_v2_20251126.json"
+      }
+    },
+    {
+      "name": "assists_over",
+      "market": "player_assists",
+      "side": "Over",
+      "test_auc": 0.5221593156645571,
+      "test_accuracy": 0.5094339622641509,
+      "n_test": 1272,
+      "artifacts": {
+        "model_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_over_v2_20251126.txt",
+        "json_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_over_v2_20251126.json"
+      }
+    },
+    {
+      "name": "assists_under",
+      "market": "player_assists",
+      "side": "Under",
+      "test_auc": 0.5134261093502377,
+      "test_accuracy": 0.5129819040125885,
+      "n_test": 1271,
+      "artifacts": {
+        "model_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_under_v2_20251126.txt",
+        "json_file": "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/models/phase3_lgbm/assists_under_v2_20251126.json"
+      }
+    }
+  ]
+}

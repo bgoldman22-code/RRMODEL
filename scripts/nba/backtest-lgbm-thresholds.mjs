@@ -34,12 +34,14 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import { augmentLineAwareFeatures } from './_lib/line-feature-utils.mjs';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.join(__dirname, '..', '..');
 
 // Paths
-const TRAINING_FILE = path.join(REPO_ROOT, 'data', 'nba', 'training', 'phase3_training_v1_20251125.jsonl');  // UPDATED
+const TRAINING_FILE = path.join(REPO_ROOT, 'data', 'nba', 'training', 'phase3_training_v1_20251124.jsonl');
 const MODEL_DIR = path.join(REPO_ROOT, 'data', 'nba', 'models', 'phase3_lgbm');
 const OUTPUT_DIR = path.join(REPO_ROOT, 'data', 'nba', 'backtests');
 const CHECKPOINT_FILE = path.join(REPO_ROOT, 'data', 'nba', 'phase3_checkpoints.json');
@@ -68,10 +70,18 @@ function loadTrainingData() {
   
   const lines = fs.readFileSync(TRAINING_FILE, 'utf-8').split('\n').filter(l => l.trim());
   const examples = lines.map(line => JSON.parse(line));
+  augmentExamplesWithLineFeatures(examples);
   
   console.log(`  ✅ Loaded ${examples.length.toLocaleString()} examples`);
   
   return examples;
+}
+
+function augmentExamplesWithLineFeatures(examples) {
+  for (const ex of examples) {
+    if (!ex || ex.line === undefined) continue;
+    augmentLineAwareFeatures(ex, ex.market, ex.line);
+  }
 }
 
 /**
@@ -132,7 +142,7 @@ model_configs = [
 
 for market, side, name in model_configs:
     # Find the model file (latest version)
-    model_files = list(MODEL_DIR.glob(f'{name}_v1_*.txt'))
+  model_files = list(MODEL_DIR.glob(f'{name}_v*_*.txt'))
     if model_files:
         model_file = sorted(model_files)[-1]  # Latest version
         models[f'{market}_{side}'] = lgb.Booster(model_file=str(model_file))
@@ -140,31 +150,39 @@ for market, side, name in model_configs:
 
 # Feature columns (updated with L20, L40, season, H2H)
 FEATURE_COLUMNS = [
-    # Rolling player stats (L5, L10, L20, L40, L999)
-    'L5_ppg', 'L10_ppg', 'L20_ppg', 'L40_ppg', 'L999_ppg',
-    'L5_rpg', 'L10_rpg', 'L20_rpg', 'L40_rpg', 'L999_rpg',
-    'L5_apg', 'L10_apg', 'L20_apg', 'L40_apg', 'L999_apg',
-    'L5_pra', 'L10_pra', 'L20_pra', 'L40_pra', 'L999_pra',
-    'L5_minutes', 'L10_minutes', 'L20_minutes', 'L40_minutes',
-    'L5_fga', 'L10_fga', 'L20_fga', 'L40_fga',
-    'L5_fta', 'L10_fta', 'L20_fta', 'L40_fta',
-    
-    # Season-to-date stats
-    'season_ppg', 'season_rpg', 'season_apg', 'season_pra',
-    'season_minutes', 'season_fga', 'season_fta', 'season_games_played',
-    
-    # Head-to-head stats
-    'h2h_ppg', 'h2h_rpg', 'h2h_apg', 'h2h_pra',
-    'h2h_minutes', 'h2h_fga', 'h2h_fta', 'h2h_games_played',
-    
-    # Opponent defense
-    'opp_def_L5_pra_allowed', 'opp_def_L10_pra_allowed',
-    'opp_def_L5_ppg_allowed', 'opp_def_L10_ppg_allowed',
-    'opp_def_L5_rpg_allowed', 'opp_def_L10_rpg_allowed',
-    'opp_def_L5_apg_allowed', 'opp_def_L10_apg_allowed',
-    
-    # Context
-    'rest_days', 'home', 'line', 'games_played'
+  # Rolling player stats (L5, L10, L20, L40, L999)
+  'L5_ppg', 'L10_ppg', 'L20_ppg', 'L40_ppg', 'L999_ppg',
+  'L5_rpg', 'L10_rpg', 'L20_rpg', 'L40_rpg', 'L999_rpg',
+  'L5_apg', 'L10_apg', 'L20_apg', 'L40_apg', 'L999_apg',
+  'L5_pra', 'L10_pra', 'L20_pra', 'L40_pra', 'L999_pra',
+  'L5_minutes', 'L10_minutes', 'L20_minutes', 'L40_minutes',
+  'L5_fga', 'L10_fga', 'L20_fga', 'L40_fga',
+  'L5_fta', 'L10_fta', 'L20_fta', 'L40_fta',
+
+  # Season-to-date stats
+  'season_ppg', 'season_rpg', 'season_apg', 'season_pra',
+  'season_minutes', 'season_fga', 'season_fta', 'season_games_played',
+
+  # Head-to-head stats
+  'h2h_ppg', 'h2h_rpg', 'h2h_apg', 'h2h_pra',
+  'h2h_minutes', 'h2h_fga', 'h2h_fta', 'h2h_games_played',
+
+  # Opponent defense
+  'opp_def_L5_pra_allowed', 'opp_def_L10_pra_allowed',
+  'opp_def_L5_ppg_allowed', 'opp_def_L10_ppg_allowed',
+  'opp_def_L5_rpg_allowed', 'opp_def_L10_rpg_allowed',
+  'opp_def_L5_apg_allowed', 'opp_def_L10_apg_allowed',
+
+  # Context
+  'rest_days', 'home', 'line', 'games_played',
+
+  # Line-aware deltas (points)
+  'line_minus_L5_ppg', 'line_minus_L10_ppg', 'line_minus_L20_ppg',
+  'line_minus_L40_ppg', 'line_minus_L999_ppg', 'line_z_L10_ppg',
+
+  # Line-aware deltas (rebounds)
+  'line_minus_L5_rpg', 'line_minus_L10_rpg', 'line_minus_L20_rpg',
+  'line_minus_L40_rpg', 'line_minus_L999_rpg', 'line_z_L10_rpg'
 ]
 
 # Read examples from stdin

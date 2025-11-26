@@ -41,6 +41,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import https from 'https';
 
+import { augmentLineAwareFeatures } from './_lib/line-feature-utils.mjs';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -84,6 +86,12 @@ function isAllowedBook(bookmakerName) {
 const OUTPUT_DIR = path.join(__dirname, '../../public/data/nba');
 const OUTPUT_FILE = 'nba-props-v2-live.json';
 const OUTPUT_TMP = 'nba-props-v2-live.json.tmp';
+
+const MODEL_VERSION_TAGS = {
+  player_points: 'points_v1',
+  player_rebounds: 'rebounds_v2',
+  player_assists: 'assists_logistic'
+};
 
 // ====================================================================
 // DATA LOADING
@@ -650,8 +658,9 @@ for (const prop of allProps) {
       continue;
     }
 
-    // Add the line value to features (models were trained with this)
-    features.line = line;
+  // Add the line value and derived line-awareness features
+  features.line = line;
+  augmentLineAwareFeatures(features, market, line);
 
   // Predict using Phase 3.5 engine (engine normalizes per-model)
   const result = await engine.predict(market, features, line, odds, side);
@@ -683,7 +692,8 @@ for (const prop of allProps) {
       model: result.use_this_model,
       threshold: result.threshold,
       kellyStake: kellyUnits,
-      kellyFraction
+      kellyFraction,
+      modelVersion: MODEL_VERSION_TAGS[market] || result.use_this_model
     });
 
   } catch (err) {

@@ -55,8 +55,25 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 TRAINING_FILE = REPO_ROOT / 'data' / 'nba' / 'training' / 'phase3_training_v1_20251124.jsonl'
 OUTPUT_DIR = REPO_ROOT / 'data' / 'nba' / 'models' / 'phase3_lgbm'
 CHECKPOINT_FILE = REPO_ROOT / 'data' / 'nba' / 'phase3_checkpoints.json'
+MODEL_VERSION = 'v2'
 
 # Feature columns (same as Phase 3 logistic + new advanced features)
+POINTS_LINE_DELTA_FEATURES = [
+    ('L5_ppg', 'line_minus_L5_ppg'),
+    ('L10_ppg', 'line_minus_L10_ppg'),
+    ('L20_ppg', 'line_minus_L20_ppg'),
+    ('L40_ppg', 'line_minus_L40_ppg'),
+    ('L999_ppg', 'line_minus_L999_ppg')
+]
+
+REBOUNDS_LINE_DELTA_FEATURES = [
+    ('L5_rpg', 'line_minus_L5_rpg'),
+    ('L10_rpg', 'line_minus_L10_rpg'),
+    ('L20_rpg', 'line_minus_L20_rpg'),
+    ('L40_rpg', 'line_minus_L40_rpg'),
+    ('L999_rpg', 'line_minus_L999_rpg')
+]
+
 FEATURE_COLUMNS = [
     # Rolling player stats (L5, L10, L20, L40, L999)
     'L5_ppg', 'L10_ppg', 'L20_ppg', 'L40_ppg', 'L999_ppg',
@@ -82,8 +99,18 @@ FEATURE_COLUMNS = [
     'opp_def_L5_apg_allowed', 'opp_def_L10_apg_allowed',
     
     # Context
-    'rest_days', 'home', 'line', 'games_played'
+    'rest_days', 'home', 'line', 'games_played',
+
+    # Line-aware deltas (points markets)
+    'line_minus_L5_ppg', 'line_minus_L10_ppg', 'line_minus_L20_ppg',
+    'line_minus_L40_ppg', 'line_minus_L999_ppg', 'line_z_L10_ppg',
+
+    # Line-aware deltas (rebounds markets)
+    'line_minus_L5_rpg', 'line_minus_L10_rpg', 'line_minus_L20_rpg',
+    'line_minus_L40_rpg', 'line_minus_L999_rpg', 'line_z_L10_rpg'
 ]
+
+LINE_Z_EPS = 1e-6
 
 # LightGBM hyperparameters (optimized for AUC and calibration)
 LGBM_PARAMS = {
@@ -175,6 +202,75 @@ def prepare_features(examples):
         y.append(ex['result'])
     
     return np.array(X), np.array(y)
+
+
+def safe_float(value):
+    """Best-effort float conversion that treats None/NaN as None"""
+    if value is None:
+        return None
+    try:
+        val = float(value)
+        if np.isnan(val):
+            return None
+        return val
+    except (TypeError, ValueError):
+        return None
+
+
+def augment_line_features(examples):
+    """Add explicit line-minus-stat features for points and rebounds"""
+    points_diffs = []
+    rebounds_diffs = []
+
+    # First pass: compute deltas and collect L10 diffs for std calc
+    for ex in examples:
+        line = safe_float(ex.get('line'))
+        market = ex.get('market')
+
+        if line is None:
+            continue
+
+        if market == 'player_points':
+            for source_key, target_key in POINTS_LINE_DELTA_FEATURES:
+                source_val = safe_float(ex.get(source_key))
+                ex[target_key] = line - source_val if source_val is not None else 0.0
+            points_diffs.append(ex.get('line_minus_L10_ppg', 0.0))
+        elif market == 'player_rebounds':
+            for source_key, target_key in REBOUNDS_LINE_DELTA_FEATURES:
+                source_val = safe_float(ex.get(source_key))
+                ex[target_key] = line - source_val if source_val is not None else 0.0
+            rebounds_diffs.append(ex.get('line_minus_L10_rpg', 0.0))
+
+    points_std = np.std(points_diffs) if points_diffs else 1.0
+    rebounds_std = np.std(rebounds_diffs) if rebounds_diffs else 1.0
+
+    if points_std < LINE_Z_EPS:
+        points_std = 1.0
+    if rebounds_std < LINE_Z_EPS:
+        rebounds_std = 1.0
+
+    # Second pass: assign z-score style features & default zeros for other markets
+    for ex in examples:
+        market = ex.get('market')
+
+        if market == 'player_points':
+            diff = ex.get('line_minus_L10_ppg', 0.0)
+            ex['line_z_L10_ppg'] = diff / (points_std + LINE_Z_EPS)
+        else:
+            ex['line_z_L10_ppg'] = 0.0
+
+        if market == 'player_rebounds':
+            diff = ex.get('line_minus_L10_rpg', 0.0)
+            ex['line_z_L10_rpg'] = diff / (rebounds_std + LINE_Z_EPS)
+        else:
+            ex['line_z_L10_rpg'] = 0.0
+
+        # Ensure all delta keys exist even for markets where they don't apply
+        for _, target_key in POINTS_LINE_DELTA_FEATURES:
+            ex.setdefault(target_key, 0.0)
+        for _, target_key in REBOUNDS_LINE_DELTA_FEATURES:
+            ex.setdefault(target_key, 0.0)
+
 
 
 def calculate_scale_pos_weight(y_train):
@@ -334,16 +430,16 @@ def save_model(result, date_str):
     model_name = result['model_name']
     
     # Save LightGBM model as text file
-    model_file = OUTPUT_DIR / f'{model_name}_v1_{date_str}.txt'
+    model_file = OUTPUT_DIR / f'{model_name}_{MODEL_VERSION}_{date_str}.txt'
     result['model'].save_model(str(model_file))
     print(f'  ✅ Saved LightGBM model: {model_file.name}')
     
     # Save JSON metadata (for inference)
-    json_file = OUTPUT_DIR / f'{model_name}_v1_{date_str}.json'
+    json_file = OUTPUT_DIR / f'{model_name}_{MODEL_VERSION}_{date_str}.json'
     
     # Remove model object before JSON serialization
     json_data = {k: v for k, v in result.items() if k != 'model'}
-    json_data['version'] = 'v1'
+    json_data['version'] = MODEL_VERSION
     json_data['created'] = datetime.now().isoformat()
     json_data['model_file'] = model_file.name
     
@@ -391,6 +487,7 @@ def main():
     
     # Load data
     examples = load_training_data()
+    augment_line_features(examples)
     
     # Define model configurations
     print('\n[2/8] Preparing model configurations...')
@@ -455,10 +552,10 @@ def main():
     # Save summary
     print('\n[5/8] Saving training summary...')
     
-    summary_file = OUTPUT_DIR / f'training_summary_v1_{date_str}.json'
+    summary_file = OUTPUT_DIR / f'training_summary_{MODEL_VERSION}_{date_str}.json'
     
     summary = {
-        'version': 'v1',
+    'version': MODEL_VERSION,
         'created': datetime.now().isoformat(),
         'n_models': len(results),
         'models': [
