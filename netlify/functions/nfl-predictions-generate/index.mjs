@@ -3569,19 +3569,24 @@ export default async (request, context) => {
 
     let games = [];
     let season = '2025';
+    let currentWeek = null; // Initialize at top level
     const saveToBlobs = request.method === 'GET';
 
     if (request.method === 'POST') {
       const body = await request.json();
       games = body.games || [];
       season = body.season || '2025';
+      // For POST requests, try to extract week from games data
+      if (games.length > 0 && games[0].week) {
+        currentWeek = games[0].week;
+      }
     } else if (request.method === 'GET') {
       const url = new URL(request.url);
       season = url.searchParams.get('season') || '2025';
       const requestedWeek = url.searchParams.get('week');
 
       // CACHING DISABLED: Always generate fresh predictions
-      // The caching system was causing issues with stale data and locking
+      // The caching system was causing issues with stale data and lockingR
       console.log('🔄 Generating fresh predictions (caching disabled)');
 
       // Fetch games and regenerate - READ FROM LOCAL SCHEDULE FILE
@@ -3594,7 +3599,6 @@ export default async (request, context) => {
         const fullSchedule = scheduleModule.default;
         
         // Determine which week to load
-        let currentWeek;
         if (requestedWeek) {
           // Use explicitly requested week (allows looking ahead)
           currentWeek = parseInt(requestedWeek, 10);
