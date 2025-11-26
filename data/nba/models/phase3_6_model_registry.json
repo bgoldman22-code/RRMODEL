@@ -1,0 +1,79 @@
+{
+  "version": "phase3.6_beta_20251126",
+  "description": "Phase 3.6 line-aware projection + distribution + calibrated probability stack",
+  "created_at": "2025-11-26T00:00:00.000Z",
+  "training_data": "data/nba/training/phase3_training_v1_20251124.jsonl",
+  "feature_source": "scripts/nba/train-phase3.6/feature_config.py",
+  "models": {
+    "player_points": {
+      "enabled": true,
+      "threshold": 0.60,
+      "market": "player_points",
+      "line_sensitivity_target": 0.085,
+      "artifacts": {
+        "projection": {
+          "metadata_path": "models/phase3.6/points/projection_metadata.json"
+        },
+        "distribution": {
+          "metadata_path": "models/phase3.6/points/distribution_metadata.json"
+        },
+        "probability": {
+          "metadata_path": "models/phase3.6/points/probability_metadata.json"
+        },
+        "calibration": "models/phase3.6/points/calibration.json"
+      }
+    },
+    "player_rebounds": {
+      "enabled": true,
+      "threshold": 0.57,
+      "market": "player_rebounds",
+      "line_sensitivity_target": 0.070,
+      "artifacts": {
+        "projection": {
+          "metadata_path": "models/phase3.6/rebounds/projection_metadata.json"
+        },
+        "distribution": {
+          "metadata_path": "models/phase3.6/rebounds/distribution_metadata.json"
+        },
+        "probability": {
+          "metadata_path": "models/phase3.6/rebounds/probability_metadata.json"
+        },
+        "calibration": "models/phase3.6/rebounds/calibration.json"
+      }
+    },
+    "player_assists": {
+      "enabled": true,
+      "threshold": 0.62,
+      "market": "player_assists",
+      "line_sensitivity_target": 0.080,
+      "artifacts": {
+        "projection": {
+          "metadata_path": "models/phase3.6/assists/projection_metadata.json"
+        },
+        "distribution": {
+          "metadata_path": "models/phase3.6/assists/distribution_metadata.json"
+        },
+        "probability": {
+          "metadata_path": "models/phase3.6/assists/probability_metadata.json"
+        },
+        "calibration": "models/phase3.6/assists/calibration.json"
+      }
+    }
+  },
+  "backtest": {
+    "walkforward_windows": "Oct-Jan train, Feb val, Mar-Apr test (rolling +14d)",
+    "metrics_file": "backtest-results/phase3.6/walkforward_summary.json",
+    "roi_vs_minus110": {
+      "points": 0.142,
+      "rebounds": 0.088,
+      "assists": 0.156
+    }
+  },
+  "pipeline": {
+    "inference_layer": "netlify/functions/_lib/nba-props-engine-v4.mjs",
+    "generator_script": "scripts/nba/generate-predictions-phase3.6.mjs",
+    "output_file": "public/data/nba/nba-props-v3-live.json",
+    "api_endpoint": "/api/nba-props-v3",
+    "frontend_page": "/nba-player-props-v3"
+  }
+}

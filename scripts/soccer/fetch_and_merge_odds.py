@@ -16,8 +16,14 @@ import time
 from pathlib import Path
 from datetime import datetime, timedelta
 import re
+import os
 
-API_KEY = 'c5d3fe15e6c5be83b2acd8695cff012b'  # WILL BE REMOVED AFTER RUN
+API_KEY = os.environ.get('ODDS_API_KEY')  # Set via: export ODDS_API_KEY=your_key
+
+if not API_KEY:
+    print("❌ ERROR: ODDS_API_KEY environment variable not set")
+    print("Please run: export ODDS_API_KEY=your_key")
+    exit(1)
 
 LEAGUES = {
     'bundesliga': {

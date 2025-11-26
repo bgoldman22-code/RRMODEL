@@ -18,8 +18,14 @@ import re
 from datetime import datetime
 import requests
 import time
+import os
 
-API_KEY = 'c5d3fe15e6c5be83b2acd8695cff012b'  # Will be removed after run
+API_KEY = os.environ.get('ODDS_API_KEY')  # Set via: export ODDS_API_KEY=your_key
+
+if not API_KEY:
+    print("❌ ERROR: ODDS_API_KEY environment variable not set")
+    print("Please run: export ODDS_API_KEY=your_key")
+    exit(1)
 
 def fetch_bundesliga_from_git():
     """
