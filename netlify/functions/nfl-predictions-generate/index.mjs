@@ -3634,6 +3634,21 @@ export default async (request, context) => {
       }
     }
 
+    // Ensure currentWeek has a valid value before proceeding
+    if (!currentWeek) {
+      // Fallback to date-based calculation
+      const now = new Date();
+      const seasonStart = new Date('2025-09-04');
+      const nowDay = now.getDay();
+      let adjustedDate = new Date(now);
+      if (nowDay === 1) {
+        adjustedDate.setDate(adjustedDate.getDate() - 1);
+      }
+      const daysSinceStart = Math.floor((adjustedDate - seasonStart) / (24 * 60 * 60 * 1000));
+      currentWeek = Math.max(1, Math.min(22, Math.floor(daysSinceStart / 7) + 1));
+      console.log(`📅 Fallback: Using date-based week ${currentWeek}`);
+    }
+
     const result = await generateAdvancedPredictions(games, season, currentWeek);
     
     // ========================================
