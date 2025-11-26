@@ -288,24 +288,30 @@ export default function NFLPredictionsV5() {
             })
           : '—';
         
-        // Format picks
+        // Format picks to match table display exactly
         const spreadText = spread.pick 
-          ? `${spread.pick} ${spread.line > 0 ? '+' : ''}${spread.line} (${spread.recommended_units?.toFixed(1)}U, ${spread.edge?.toFixed(1)}%)`
-          : 'NO BET';
+          ? `<div style="font-weight:600;margin-bottom:4px;">${spread.pick} ${spread.line > 0 ? '+' : ''}${spread.line}</div>
+             <div style="font-size:11px;color:#666;">Edge: ${spread.edge?.toFixed(1)}% | Units: ${spread.recommended_units?.toFixed(1)}</div>`
+          : '<span style="color:#999;">—</span>';
         
         const totalText = total.pick
-          ? `${total.pick} ${total.line} (${total.recommended_units?.toFixed(1)}U, ${total.edge?.toFixed(1)}%)`
-          : 'NO BET';
+          ? `<div style="font-weight:600;margin-bottom:4px;">${total.pick} ${total.line}</div>
+             <div style="font-size:11px;color:#666;">Edge: ${total.edge?.toFixed(1)}% | Units: ${total.recommended_units?.toFixed(1)}</div>`
+          : '<span style="color:#999;">—</span>';
         
         const mlText = moneyline.pick
-          ? `${moneyline.pick} ML (${moneyline.recommended_units?.toFixed(1)}U, ${moneyline.edge?.toFixed(1)}%)`
-          : 'NO BET';
+          ? `<div style="font-weight:600;margin-bottom:4px;">${moneyline.pick}</div>
+             <div style="font-size:11px;color:#666;">Edge: ${moneyline.edge?.toFixed(1)}% | Units: ${moneyline.recommended_units?.toFixed(1)}</div>`
+          : '<span style="color:#999;">—</span>';
         
         const rowStyle = idx % 2 === 0 ? 'background:white;' : 'background:#f8f9fa;';
         tableHTML += `
           <tr style="${rowStyle}">
-            <td style="padding:10px;border:1px solid #ccc;font-weight:600;">${pred.matchup}</td>
-            <td style="padding:10px;border:1px solid #ccc;font-size:12px;">${kickoffText}</td>
+            <td style="padding:10px;border:1px solid #ccc;">
+              <div style="font-weight:600;margin-bottom:2px;">${pred.matchup}</div>
+              <div style="font-size:11px;color:#666;">${pred.away_team} @ ${pred.home_team}</div>
+            </td>
+            <td style="padding:10px;border:1px solid #ccc;font-size:12px;color:#666;">${kickoffText}</td>
             <td style="padding:10px;border:1px solid #ccc;">${spreadText}</td>
             <td style="padding:10px;border:1px solid #ccc;">${totalText}</td>
             <td style="padding:10px;border:1px solid #ccc;">${mlText}</td>
