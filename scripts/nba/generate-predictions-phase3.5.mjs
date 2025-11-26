@@ -57,6 +57,29 @@ const ODDS_API_REGIONS = 'us';
 const ODDS_API_MARKETS = 'player_points,player_rebounds,player_assists';
 const ODDS_API_ODDS_FORMAT = 'american';
 
+// Whitelist of allowed sportsbooks (case-insensitive matching)
+const ALLOWED_BOOKS = [
+  'betmgm',
+  'caesars',
+  'draftkings',
+  'espnbet',
+  'scorebet',
+  'fanatics',
+  'fanduel',
+  'novig'
+];
+
+/**
+ * Check if a bookmaker is in the allowed list
+ * @param {string} bookmakerName - The bookmaker name from the API
+ * @returns {boolean} - True if allowed, false otherwise
+ */
+function isAllowedBook(bookmakerName) {
+  if (!bookmakerName) return false;
+  const normalized = bookmakerName.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return ALLOWED_BOOKS.some(allowed => normalized.includes(allowed));
+}
+
 // Output path (with atomic write)
 const OUTPUT_DIR = path.join(__dirname, '../../public/data/nba');
 const OUTPUT_FILE = 'nba-props-v2-live.json';
@@ -427,6 +450,10 @@ function parseOdds(oddsData) {
   
   // Map to store best odds: key = "player|market|line|side"
   const bestOddsMap = new Map();
+  
+  // Track unique sportsbooks seen (for logging)
+  const booksSeenSet = new Set();
+  const booksFilteredSet = new Set();
 
   for (const event of events) {
     const { home_team, away_team, commence_time, bookmakers, markets } = event;
@@ -438,6 +465,14 @@ function parseOdds(oddsData) {
     if (bookmakers) {
       // TheOddsAPI format
       for (const bookmaker of bookmakers) {
+        booksSeenSet.add(bookmaker.title);
+        
+        // Filter to only allowed sportsbooks
+        if (!isAllowedBook(bookmaker.title)) {
+          booksFilteredSet.add(bookmaker.title);
+          continue;
+        }
+        
         for (const market of bookmaker.markets) {
           const marketKey = market.key; // 'player_points', 'player_rebounds', 'player_assists'
 
@@ -473,6 +508,14 @@ function parseOdds(oddsData) {
         for (const outcome of outcomes) {
           const { player: playerName, side, line, odds, bookmaker } = outcome;
           
+          if (bookmaker) booksSeenSet.add(bookmaker);
+          
+          // Filter to only allowed sportsbooks
+          if (!isAllowedBook(bookmaker)) {
+            if (bookmaker) booksFilteredSet.add(bookmaker);
+            continue;
+          }
+          
           const key = `${playerName}|${marketKey}|${line}|${side}`;
           const existing = bestOddsMap.get(key);
           
@@ -493,6 +536,18 @@ function parseOdds(oddsData) {
         }
       }
     }
+  }
+  
+  // Log sportsbook filtering stats
+  const booksUsed = Array.from(booksSeenSet).filter(book => !booksFilteredSet.has(book));
+  const booksFiltered = Array.from(booksFilteredSet);
+  
+  console.log(`   📚 Sportsbooks: ${booksUsed.length} used, ${booksFiltered.length} filtered`);
+  if (booksUsed.length > 0) {
+    console.log(`      ✅ Used: ${booksUsed.join(', ')}`);
+  }
+  if (booksFiltered.length > 0) {
+    console.log(`      ❌ Filtered: ${booksFiltered.join(', ')}`);
   }
 
   return Array.from(bestOddsMap.values());
