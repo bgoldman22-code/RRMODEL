@@ -65,12 +65,16 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
+          # Reset any node_modules changes (these happen in CI and shouldn't be committed)
+          git restore node_modules/ 2>/dev/null || true
+          
           # Add all NBA data files (including injuries, games, advanced)
           git add data/nba/games/ data/nba/advanced/ data/nba/injuries/ 2>/dev/null || true
           
           # Check if there are staged changes
           if git diff --staged --quiet; then
             echo "ℹ️ No new data to commit"
+            exit 0
           else
             git commit -m "🏀 NBA Data Update: $(date +%Y-%m-%d)"
             git push origin main42
