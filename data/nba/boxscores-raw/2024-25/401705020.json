@@ -1,0 +1,435 @@
+{
+  "gameId": "401705020",
+  "gameDate": "2025-01-01",
+  "home": {
+    "team": "LAL",
+    "score": 110,
+    "players": [
+      {
+        "playerId": "1966",
+        "name": "LeBron James",
+        "stats": {
+          "min": 34.0,
+          "pts": 23,
+          "reb": 4,
+          "ast": 7,
+          "stl": 0,
+          "blk": 1,
+          "tov": 2,
+          "fgm": 9,
+          "fga": 17,
+          "fg3m": 3,
+          "fg3a": 6,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 4,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "6583",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 37.0,
+          "pts": 28,
+          "reb": 13,
+          "ast": 4,
+          "stl": 3,
+          "blk": 2,
+          "tov": 1,
+          "fgm": 12,
+          "fga": 23,
+          "fg3m": 2,
+          "fg3a": 4,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 1,
+          "dreb": 12,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4066648",
+        "name": "Rui Hachimura",
+        "stats": {
+          "min": 30.0,
+          "pts": 7,
+          "reb": 5,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 3,
+          "fga": 10,
+          "fg3m": 0,
+          "fg3a": 3,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 3,
+          "dreb": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4066457",
+        "name": "Austin Reaves",
+        "stats": {
+          "min": 38.0,
+          "pts": 35,
+          "reb": 9,
+          "ast": 10,
+          "stl": 1,
+          "blk": 0,
+          "tov": 4,
+          "fgm": 11,
+          "fga": 20,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 12,
+          "fta": 13,
+          "oreb": 1,
+          "dreb": 8,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4432582",
+        "name": "Max Christie",
+        "stats": {
+          "min": 28.0,
+          "pts": 5,
+          "reb": 1,
+          "ast": 2,
+          "stl": 1,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 1,
+          "fg3a": 5,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "2578185",
+        "name": "Dorian Finney-Smith",
+        "stats": {
+          "min": 20.0,
+          "pts": 2,
+          "reb": 2,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 1,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 2,
+          "dreb": 0,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4897943",
+        "name": "Dalton Knecht",
+        "stats": {
+          "min": 22.0,
+          "pts": 4,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 2,
+          "fga": 8,
+          "fg3m": 0,
+          "fg3a": 5,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4395627",
+        "name": "Cam Reddish",
+        "stats": {
+          "min": 19.0,
+          "pts": 0,
+          "reb": 4,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 4,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "3915195",
+        "name": "Shake Milton",
+        "stats": {
+          "min": 10.0,
+          "pts": 6,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 2,
+          "fg3a": 4,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 2,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "CLE",
+    "score": 122,
+    "players": [
+      {
+        "playerId": "3912848",
+        "name": "Dean Wade",
+        "stats": {
+          "min": 24.0,
+          "pts": 3,
+          "reb": 9,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 1,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 3,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 2,
+          "dreb": 7,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4066328",
+        "name": "Jarrett Allen",
+        "stats": {
+          "min": 31.0,
+          "pts": 27,
+          "reb": 14,
+          "ast": 1,
+          "stl": 1,
+          "blk": 3,
+          "tov": 1,
+          "fgm": 12,
+          "fga": 14,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 3,
+          "dreb": 11,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4432158",
+        "name": "Evan Mobley",
+        "stats": {
+          "min": 32.0,
+          "pts": 20,
+          "reb": 6,
+          "ast": 1,
+          "stl": 1,
+          "blk": 1,
+          "tov": 2,
+          "fgm": 8,
+          "fga": 14,
+          "fg3m": 2,
+          "fg3a": 4,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 1,
+          "dreb": 5,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "3908809",
+        "name": "Donovan Mitchell",
+        "stats": {
+          "min": 32.0,
+          "pts": 26,
+          "reb": 4,
+          "ast": 4,
+          "stl": 0,
+          "blk": 0,
+          "tov": 3,
+          "fgm": 8,
+          "fga": 20,
+          "fg3m": 6,
+          "fg3a": 13,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 1,
+          "dreb": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4396907",
+        "name": "Darius Garland",
+        "stats": {
+          "min": 32.0,
+          "pts": 14,
+          "reb": 2,
+          "ast": 14,
+          "stl": 2,
+          "blk": 1,
+          "tov": 3,
+          "fgm": 5,
+          "fga": 16,
+          "fg3m": 2,
+          "fg3a": 8,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "2990969",
+        "name": "Georges Niang",
+        "stats": {
+          "min": 18.0,
+          "pts": 9,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 3,
+          "fga": 5,
+          "fg3m": 2,
+          "fg3a": 3,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 1,
+          "dreb": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "2991043",
+        "name": "Caris LeVert",
+        "stats": {
+          "min": 23.0,
+          "pts": 3,
+          "reb": 1,
+          "ast": 2,
+          "stl": 1,
+          "blk": 1,
+          "tov": 1,
+          "fgm": 1,
+          "fga": 4,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4065733",
+        "name": "Ty Jerome",
+        "stats": {
+          "min": 14.0,
+          "pts": 5,
+          "reb": 6,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 5,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4065778",
+        "name": "Max Strus",
+        "stats": {
+          "min": 26.0,
+          "pts": 15,
+          "reb": 3,
+          "ast": 4,
+          "stl": 0,
+          "blk": 2,
+          "tov": 0,
+          "fgm": 5,
+          "fga": 9,
+          "fg3m": 4,
+          "fg3a": 8,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 1,
+          "dreb": 2,
+          "pf": 5
+        }
+      },
+      {
+        "playerId": "4066757",
+        "name": "Sam Merrill",
+        "stats": {
+          "min": 8.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "pace": null
+}

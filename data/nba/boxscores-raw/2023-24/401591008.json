@@ -1,0 +1,193 @@
+{
+  "gameId": "401591008",
+  "gameDate": "2023-11-09",
+  "home": {
+    "team": "DEN",
+    "score": 111,
+    "players": [
+      {
+        "playerId": "jokic",
+        "name": "Nikola Jokic",
+        "stats": {
+          "min": 36,
+          "pts": 24,
+          "reb": 11,
+          "ast": 5,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 8,
+          "fga": 18,
+          "fg3m": 2,
+          "fg3a": 8,
+          "ftm": 4,
+          "fta": 6,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "den_bench_0",
+        "name": "DEN Bench Player 1",
+        "stats": {
+          "min": 18,
+          "pts": 6,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "den_bench_1",
+        "name": "DEN Bench Player 2",
+        "stats": {
+          "min": 12,
+          "pts": 5,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "den_bench_2",
+        "name": "DEN Bench Player 3",
+        "stats": {
+          "min": 21,
+          "pts": 7,
+          "reb": 4,
+          "ast": 2,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "DAL",
+    "score": 122,
+    "players": [
+      {
+        "playerId": "luka",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 30,
+          "pts": 25,
+          "reb": 4,
+          "ast": 8,
+          "stl": 1,
+          "blk": 1,
+          "fgm": 8,
+          "fga": 18,
+          "fg3m": 3,
+          "fg3a": 8,
+          "ftm": 5,
+          "fta": 6,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 4
+        }
+      },
+      {
+        "playerId": "dal_bench_0",
+        "name": "DAL Bench Player 1",
+        "stats": {
+          "min": 10,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 0,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "dal_bench_1",
+        "name": "DAL Bench Player 2",
+        "stats": {
+          "min": 14,
+          "pts": 5,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 4
+        }
+      },
+      {
+        "playerId": "dal_bench_2",
+        "name": "DAL Bench Player 3",
+        "stats": {
+          "min": 12,
+          "pts": 3,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 4,
+          "pf": 3
+        }
+      }
+    ]
+  },
+  "pace": 95
+}

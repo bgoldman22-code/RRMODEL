@@ -1,0 +1,435 @@
+{
+  "gameId": "401584924",
+  "gameDate": "2023-12-12",
+  "home": {
+    "team": "ATL",
+    "score": 122,
+    "players": [
+      {
+        "playerId": "3102529",
+        "name": "Clint Capela",
+        "stats": {
+          "min": 28.0,
+          "pts": 0,
+          "reb": 8,
+          "ast": 4,
+          "stl": 14,
+          "blk": 4,
+          "fgm": 2,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 54,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 6
+        }
+      },
+      {
+        "playerId": "3907497",
+        "name": "Dejounte Murray",
+        "stats": {
+          "min": 38.0,
+          "pts": 37,
+          "reb": 6,
+          "ast": 2,
+          "stl": 21,
+          "blk": 4,
+          "fgm": 3,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 36,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "3913180",
+        "name": "Garrison Mathews",
+        "stats": {
+          "min": 17.0,
+          "pts": 20,
+          "reb": 0,
+          "ast": 0,
+          "stl": 3,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 20,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "4277905",
+        "name": "Trae Young",
+        "stats": {
+          "min": 26.0,
+          "pts": 40,
+          "reb": 1,
+          "ast": 1,
+          "stl": 19,
+          "blk": 0,
+          "fgm": 9,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 5,
+          "ftm": 0,
+          "fta": 41,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4397136",
+        "name": "Saddiq Bey",
+        "stats": {
+          "min": 40.0,
+          "pts": 25,
+          "reb": 4,
+          "ast": 3,
+          "stl": 16,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 54,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4431680",
+        "name": "Onyeka Okongwu",
+        "stats": {
+          "min": 28.0,
+          "pts": 0,
+          "reb": 6,
+          "ast": 4,
+          "stl": 7,
+          "blk": 2,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 60,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4432585",
+        "name": "AJ Griffin",
+        "stats": {
+          "min": 9.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4032",
+        "name": "Wesley Matthews",
+        "stats": {
+          "min": 18.0,
+          "pts": 0,
+          "reb": 5,
+          "ast": 4,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 20,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "3037789",
+        "name": "Bogdan Bogdanovic",
+        "stats": {
+          "min": 36.0,
+          "pts": 58,
+          "reb": 3,
+          "ast": 2,
+          "stl": 40,
+          "blk": 1,
+          "fgm": 3,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 58,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "DEN",
+    "score": 129,
+    "players": [
+      {
+        "playerId": "3064290",
+        "name": "Aaron Gordon",
+        "stats": {
+          "min": 29.0,
+          "pts": 0,
+          "reb": 12,
+          "ast": 5,
+          "stl": 18,
+          "blk": 7,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 70,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 9
+        }
+      },
+      {
+        "playerId": "4278104",
+        "name": "Michael Porter Jr.",
+        "stats": {
+          "min": 26.0,
+          "pts": 0,
+          "reb": 7,
+          "ast": 5,
+          "stl": 3,
+          "blk": 2,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 9,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "3112335",
+        "name": "Nikola Jokic",
+        "stats": {
+          "min": 36.0,
+          "pts": 100,
+          "reb": 8,
+          "ast": 6,
+          "stl": 25,
+          "blk": 2,
+          "fgm": 9,
+          "fga": 3,
+          "fg3m": 2,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 69,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 6
+        }
+      },
+      {
+        "playerId": "2581018",
+        "name": "Kentavious Caldwell-Pope",
+        "stats": {
+          "min": 30.0,
+          "pts": 0,
+          "reb": 3,
+          "ast": 3,
+          "stl": 8,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 16,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "3936299",
+        "name": "Jamal Murray",
+        "stats": {
+          "min": 29.0,
+          "pts": 80,
+          "reb": 9,
+          "ast": 8,
+          "stl": 29,
+          "blk": 1,
+          "fgm": 4,
+          "fga": 1,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 0,
+          "fta": 80,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 7
+        }
+      },
+      {
+        "playerId": "4431690",
+        "name": "Zeke Nnaji",
+        "stats": {
+          "min": 12.0,
+          "pts": 0,
+          "reb": 4,
+          "ast": 3,
+          "stl": 3,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 2,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "6443",
+        "name": "Reggie Jackson",
+        "stats": {
+          "min": 19.0,
+          "pts": 20,
+          "reb": 1,
+          "ast": 1,
+          "stl": 12,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4431767",
+        "name": "Christian Braun",
+        "stats": {
+          "min": 11.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 2,
+          "stl": 6,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 66,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4432181",
+        "name": "Julian Strawther",
+        "stats": {
+          "min": 28.0,
+          "pts": 54,
+          "reb": 1,
+          "ast": 1,
+          "stl": 22,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4576087",
+        "name": "Peyton Watson",
+        "stats": {
+          "min": 20.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 1,
+          "stl": 3,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      }
+    ]
+  },
+  "pace": 100
+}

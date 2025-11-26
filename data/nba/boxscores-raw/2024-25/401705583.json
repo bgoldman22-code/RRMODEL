@@ -1,0 +1,523 @@
+{
+  "gameId": "401705583",
+  "gameDate": "2025-03-22",
+  "home": {
+    "team": "OKC",
+    "score": 141,
+    "players": [
+      {
+        "playerId": "4222252",
+        "name": "Isaiah Hartenstein",
+        "stats": {
+          "min": 25.0,
+          "pts": 12,
+          "reb": 10,
+          "ast": 4,
+          "stl": 0,
+          "blk": 1,
+          "tov": 1,
+          "fgm": 6,
+          "fga": 13,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 5,
+          "dreb": 5,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4433255",
+        "name": "Chet Holmgren",
+        "stats": {
+          "min": 28.0,
+          "pts": 14,
+          "reb": 5,
+          "ast": 1,
+          "stl": 1,
+          "blk": 3,
+          "tov": 1,
+          "fgm": 6,
+          "fga": 12,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 4,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4278073",
+        "name": "Shai Gilgeous-Alexander",
+        "stats": {
+          "min": 30.0,
+          "pts": 30,
+          "reb": 6,
+          "ast": 9,
+          "stl": 1,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 13,
+          "fga": 18,
+          "fg3m": 2,
+          "fg3a": 2,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 6,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4397183",
+        "name": "Aaron Wiggins",
+        "stats": {
+          "min": 27.0,
+          "pts": 11,
+          "reb": 2,
+          "ast": 1,
+          "stl": 3,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 4,
+          "fga": 9,
+          "fg3m": 3,
+          "fg3a": 6,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4683692",
+        "name": "Cason Wallace",
+        "stats": {
+          "min": 26.0,
+          "pts": 11,
+          "reb": 3,
+          "ast": 5,
+          "stl": 2,
+          "blk": 1,
+          "tov": 1,
+          "fgm": 5,
+          "fga": 8,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 2,
+          "dreb": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4432823",
+        "name": "Jaylin Williams",
+        "stats": {
+          "min": 23.0,
+          "pts": 14,
+          "reb": 5,
+          "ast": 4,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 4,
+          "fga": 7,
+          "fg3m": 3,
+          "fg3a": 5,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 0,
+          "dreb": 5,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4592435",
+        "name": "Branden Carlson",
+        "stats": {
+          "min": 7.0,
+          "pts": 3,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "tov": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "2991350",
+        "name": "Alex Caruso",
+        "stats": {
+          "min": 15.0,
+          "pts": 9,
+          "reb": 3,
+          "ast": 0,
+          "stl": 1,
+          "blk": 1,
+          "tov": 0,
+          "fgm": 2,
+          "fga": 3,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 4,
+          "fta": 4,
+          "oreb": 0,
+          "dreb": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "3133626",
+        "name": "Kenrich Williams",
+        "stats": {
+          "min": 17.0,
+          "pts": 11,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 3,
+          "fga": 4,
+          "fg3m": 3,
+          "fg3a": 4,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4395702",
+        "name": "Isaiah Joe",
+        "stats": {
+          "min": 21.0,
+          "pts": 14,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 2,
+          "fgm": 5,
+          "fga": 10,
+          "fg3m": 4,
+          "fg3a": 9,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 1,
+          "pf": 4
+        }
+      },
+      {
+        "playerId": "4397654",
+        "name": "Adam Flagler",
+        "stats": {
+          "min": 7.0,
+          "pts": 5,
+          "reb": 2,
+          "ast": 4,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 2,
+          "fga": 3,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 1,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4432971",
+        "name": "Alex Ducas",
+        "stats": {
+          "min": 6.0,
+          "pts": 3,
+          "reb": 0,
+          "ast": 0,
+          "stl": 2,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 1,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4702159",
+        "name": "Dillon Jones",
+        "stats": {
+          "min": 9.0,
+          "pts": 4,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 3,
+          "pf": 0
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "CHA",
+    "score": 106,
+    "players": [
+      {
+        "playerId": "4066383",
+        "name": "Miles Bridges",
+        "stats": {
+          "min": 26.0,
+          "pts": 20,
+          "reb": 3,
+          "ast": 4,
+          "stl": 1,
+          "blk": 1,
+          "tov": 1,
+          "fgm": 5,
+          "fga": 12,
+          "fg3m": 4,
+          "fg3a": 10,
+          "ftm": 6,
+          "fta": 6,
+          "oreb": 0,
+          "dreb": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "3102530",
+        "name": "Jusuf Nurkic",
+        "stats": {
+          "min": 24.0,
+          "pts": 6,
+          "reb": 9,
+          "ast": 5,
+          "stl": 1,
+          "blk": 1,
+          "tov": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 1,
+          "dreb": 8,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "3913220",
+        "name": "DaQuan Jeffries",
+        "stats": {
+          "min": 24.0,
+          "pts": 11,
+          "reb": 0,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "tov": 1,
+          "fgm": 3,
+          "fga": 10,
+          "fg3m": 3,
+          "fg3a": 6,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4432811",
+        "name": "Josh Green",
+        "stats": {
+          "min": 25.0,
+          "pts": 12,
+          "reb": 1,
+          "ast": 2,
+          "stl": 1,
+          "blk": 0,
+          "tov": 3,
+          "fgm": 5,
+          "fga": 10,
+          "fg3m": 2,
+          "fg3a": 5,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4683834",
+        "name": "KJ Simpson",
+        "stats": {
+          "min": 33.0,
+          "pts": 10,
+          "reb": 1,
+          "ast": 8,
+          "stl": 1,
+          "blk": 0,
+          "tov": 2,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 2,
+          "fg3a": 3,
+          "ftm": 4,
+          "fta": 4,
+          "oreb": 0,
+          "dreb": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "3986",
+        "name": "Taj Gibson",
+        "stats": {
+          "min": 12.0,
+          "pts": 4,
+          "reb": 3,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 2,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4433249",
+        "name": "Moussa Diabate",
+        "stats": {
+          "min": 22.0,
+          "pts": 12,
+          "reb": 7,
+          "ast": 3,
+          "stl": 1,
+          "blk": 0,
+          "tov": 2,
+          "fgm": 6,
+          "fga": 8,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 3,
+          "dreb": 4,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4592187",
+        "name": "Wendell Moore Jr.",
+        "stats": {
+          "min": 27.0,
+          "pts": 6,
+          "reb": 5,
+          "ast": 1,
+          "stl": 1,
+          "blk": 1,
+          "tov": 2,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 2,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "2326307",
+        "name": "Seth Curry",
+        "stats": {
+          "min": 22.0,
+          "pts": 11,
+          "reb": 0,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 5,
+          "fga": 8,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4683686",
+        "name": "Nick Smith Jr.",
+        "stats": {
+          "min": 26.0,
+          "pts": 14,
+          "reb": 0,
+          "ast": 3,
+          "stl": 0,
+          "blk": 0,
+          "tov": 4,
+          "fgm": 5,
+          "fga": 14,
+          "fg3m": 4,
+          "fg3a": 9,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "pace": null
+}

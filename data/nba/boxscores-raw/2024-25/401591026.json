@@ -1,0 +1,281 @@
+{
+  "gameId": "401591026",
+  "gameDate": "2024-12-13",
+  "home": {
+    "team": "BKN",
+    "score": 125,
+    "players": [
+      {
+        "playerId": "simmons",
+        "name": "Ben Simmons",
+        "stats": {
+          "min": 23,
+          "pts": 5,
+          "reb": 3,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "bkn_bench_0",
+        "name": "BKN Bench Player 1",
+        "stats": {
+          "min": 21,
+          "pts": 4,
+          "reb": 2,
+          "ast": 1,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 4,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "bkn_bench_1",
+        "name": "BKN Bench Player 2",
+        "stats": {
+          "min": 12,
+          "pts": 5,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "bkn_bench_2",
+        "name": "BKN Bench Player 3",
+        "stats": {
+          "min": 25,
+          "pts": 7,
+          "reb": 2,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 3,
+          "pf": 0
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "CLE",
+    "score": 119,
+    "players": [
+      {
+        "playerId": "tatum",
+        "name": "Jayson Tatum",
+        "stats": {
+          "min": 29,
+          "pts": 26,
+          "reb": 8,
+          "ast": 4,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 9,
+          "fga": 19,
+          "fg3m": 3,
+          "fg3a": 9,
+          "ftm": 5,
+          "fta": 6,
+          "oreb": 2,
+          "dreb": 5,
+          "tov": 0,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "giannis",
+        "name": "Giannis Antetokounmpo",
+        "stats": {
+          "min": 23,
+          "pts": 20,
+          "reb": 11,
+          "ast": 3,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "embiid",
+        "name": "Joel Embiid",
+        "stats": {
+          "min": 33,
+          "pts": 44,
+          "reb": 12,
+          "ast": 5,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 15,
+          "fga": 33,
+          "fg3m": 5,
+          "fg3a": 15,
+          "ftm": 8,
+          "fta": 11,
+          "oreb": 3,
+          "dreb": 8,
+          "tov": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "randle",
+        "name": "Julius Randle",
+        "stats": {
+          "min": 26,
+          "pts": 14,
+          "reb": 8,
+          "ast": 3,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 4,
+          "fga": 10,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 2,
+          "fta": 3,
+          "oreb": 2,
+          "dreb": 5,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "green",
+        "name": "Draymond Green",
+        "stats": {
+          "min": 25,
+          "pts": 10,
+          "reb": 3,
+          "ast": 4,
+          "stl": 0,
+          "blk": 4,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "cle_bench_0",
+        "name": "CLE Bench Player 1",
+        "stats": {
+          "min": 19,
+          "pts": 3,
+          "reb": 2,
+          "ast": 1,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "cle_bench_1",
+        "name": "CLE Bench Player 2",
+        "stats": {
+          "min": 14,
+          "pts": 2,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "cle_bench_2",
+        "name": "CLE Bench Player 3",
+        "stats": {
+          "min": 15,
+          "pts": 6,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 0,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "pace": 104
+}

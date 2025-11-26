@@ -260,7 +260,7 @@
         "n_models": 6,
         "avg_test_auc": 0.5214558738434263
       },
-      "notes": "Trained 6 LightGBM models (Points/Rebounds/Assists × Over/Under) with per-market optimization"
+      "notes": "Trained 6 LightGBM models (Points/Rebounds/Assists \u00d7 Over/Under) with per-market optimization"
     },
     {
       "timestamp": "2025-11-25T14:11:33.240Z",
@@ -326,7 +326,7 @@
         "n_models": 6,
         "avg_test_auc": 0.5214558738434263
       },
-      "notes": "Trained 6 LightGBM models (Points/Rebounds/Assists × Over/Under) with per-market optimization"
+      "notes": "Trained 6 LightGBM models (Points/Rebounds/Assists \u00d7 Over/Under) with per-market optimization"
     },
     {
       "timestamp": "2025-11-25T15:16:17.549Z",
@@ -344,6 +344,14 @@
         }
       },
       "notes": "LightGBM threshold sweep analysis to identify optimal confidence thresholds per market"
+    },
+    {
+      "timestamp": "2025-11-25T19:16:59.655921Z",
+      "step": "fetch_multiseason_boxscores",
+      "artifacts": [
+        "/Users/brentgoldman/Desktop/REPO33/RRMODEL/data/nba/raw/boxscores_2025_26.json"
+      ],
+      "notes": "Fetched 1 seasons: 2025-26"
     }
   ]
 }

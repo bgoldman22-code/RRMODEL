@@ -1,0 +1,523 @@
+{
+  "gameId": "401809786",
+  "gameDate": "2025-11-15",
+  "home": {
+    "team": "MIN",
+    "score": 124,
+    "players": [
+      {
+        "playerId": "3064514",
+        "name": "Julius Randle",
+        "stats": {
+          "min": 32.0,
+          "pts": 26,
+          "reb": 11,
+          "ast": 5,
+          "stl": 1,
+          "blk": 0,
+          "tov": 2,
+          "fgm": 9,
+          "fga": 16,
+          "fg3m": 2,
+          "fg3a": 4,
+          "ftm": 6,
+          "fta": 9,
+          "oreb": 3,
+          "dreb": 8,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4431671",
+        "name": "Jaden McDaniels",
+        "stats": {
+          "min": 31.0,
+          "pts": 13,
+          "reb": 4,
+          "ast": 3,
+          "stl": 0,
+          "blk": 0,
+          "tov": 4,
+          "fgm": 6,
+          "fga": 9,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 1,
+          "dreb": 3,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "3032976",
+        "name": "Rudy Gobert",
+        "stats": {
+          "min": 34.0,
+          "pts": 11,
+          "reb": 8,
+          "ast": 1,
+          "stl": 1,
+          "blk": 1,
+          "tov": 1,
+          "fgm": 4,
+          "fga": 6,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 3,
+          "fta": 8,
+          "oreb": 2,
+          "dreb": 6,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "3934673",
+        "name": "Donte DiVincenzo",
+        "stats": {
+          "min": 30.0,
+          "pts": 20,
+          "reb": 6,
+          "ast": 5,
+          "stl": 1,
+          "blk": 0,
+          "tov": 2,
+          "fgm": 6,
+          "fga": 11,
+          "fg3m": 5,
+          "fg3a": 10,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 5,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4594268",
+        "name": "Anthony Edwards",
+        "stats": {
+          "min": 36.0,
+          "pts": 30,
+          "reb": 4,
+          "ast": 4,
+          "stl": 2,
+          "blk": 0,
+          "tov": 3,
+          "fgm": 9,
+          "fga": 20,
+          "fg3m": 1,
+          "fg3a": 7,
+          "ftm": 11,
+          "fta": 12,
+          "oreb": 0,
+          "dreb": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "5044385",
+        "name": "Leonard Miller",
+        "stats": {
+          "min": 1.0,
+          "pts": 1,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 1,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "5279133",
+        "name": "Joan Beringer",
+        "stats": {
+          "min": 1.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4396971",
+        "name": "Naz Reid",
+        "stats": {
+          "min": 25.0,
+          "pts": 12,
+          "reb": 12,
+          "ast": 4,
+          "stl": 2,
+          "blk": 2,
+          "tov": 3,
+          "fgm": 5,
+          "fga": 12,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 3,
+          "dreb": 9,
+          "pf": 5
+        }
+      },
+      {
+        "playerId": "3195",
+        "name": "Mike Conley",
+        "stats": {
+          "min": 18.0,
+          "pts": 6,
+          "reb": 1,
+          "ast": 3,
+          "stl": 1,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 2,
+          "fg3a": 5,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4432247",
+        "name": "Jaylen Clark",
+        "stats": {
+          "min": 22.0,
+          "pts": 5,
+          "reb": 1,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 1,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4432817",
+        "name": "Johnny Juzang",
+        "stats": {
+          "min": 1.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4592492",
+        "name": "Bones Hyland",
+        "stats": {
+          "min": 0.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4684275",
+        "name": "Rob Dillingham",
+        "stats": {
+          "min": 9.0,
+          "pts": 0,
+          "reb": 3,
+          "ast": 3,
+          "stl": 1,
+          "blk": 0,
+          "tov": 2,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 2,
+          "dreb": 1,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "SAC",
+    "score": 110,
+    "players": [
+      {
+        "playerId": "4431679",
+        "name": "Precious Achiuwa",
+        "stats": {
+          "min": 20.0,
+          "pts": 4,
+          "reb": 3,
+          "ast": 0,
+          "stl": 3,
+          "blk": 1,
+          "tov": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 1,
+          "dreb": 2,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "3155942",
+        "name": "Domantas Sabonis",
+        "stats": {
+          "min": 39.0,
+          "pts": 34,
+          "reb": 11,
+          "ast": 3,
+          "stl": 0,
+          "blk": 1,
+          "tov": 2,
+          "fgm": 14,
+          "fga": 24,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 5,
+          "fta": 8,
+          "oreb": 4,
+          "dreb": 7,
+          "pf": 5
+        }
+      },
+      {
+        "playerId": "3468",
+        "name": "Russell Westbrook",
+        "stats": {
+          "min": 31.0,
+          "pts": 13,
+          "reb": 10,
+          "ast": 14,
+          "stl": 0,
+          "blk": 0,
+          "tov": 6,
+          "fgm": 5,
+          "fga": 11,
+          "fg3m": 2,
+          "fg3a": 5,
+          "ftm": 1,
+          "fta": 4,
+          "oreb": 5,
+          "dreb": 5,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "3978",
+        "name": "DeMar DeRozan",
+        "stats": {
+          "min": 34.0,
+          "pts": 6,
+          "reb": 3,
+          "ast": 5,
+          "stl": 2,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 3,
+          "fga": 10,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 3,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "3064440",
+        "name": "Zach LaVine",
+        "stats": {
+          "min": 36.0,
+          "pts": 25,
+          "reb": 6,
+          "ast": 3,
+          "stl": 1,
+          "blk": 1,
+          "tov": 4,
+          "fgm": 8,
+          "fga": 17,
+          "fg3m": 4,
+          "fg3a": 8,
+          "ftm": 5,
+          "fta": 5,
+          "oreb": 0,
+          "dreb": 6,
+          "pf": 4
+        }
+      },
+      {
+        "playerId": "3914285",
+        "name": "Drew Eubanks",
+        "stats": {
+          "min": 7.0,
+          "pts": 5,
+          "reb": 3,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 1,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "3032979",
+        "name": "Dennis Schroder",
+        "stats": {
+          "min": 28.0,
+          "pts": 14,
+          "reb": 6,
+          "ast": 6,
+          "stl": 1,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 5,
+          "fga": 13,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 2,
+          "fta": 5,
+          "oreb": 0,
+          "dreb": 6,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4066262",
+        "name": "Malik Monk",
+        "stats": {
+          "min": 16.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 0,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4702177",
+        "name": "Keon Ellis",
+        "stats": {
+          "min": 22.0,
+          "pts": 9,
+          "reb": 1,
+          "ast": 0,
+          "stl": 4,
+          "blk": 1,
+          "tov": 1,
+          "fgm": 3,
+          "fga": 8,
+          "fg3m": 3,
+          "fg3a": 7,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 0,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "4702384",
+        "name": "Nique Clifford",
+        "stats": {
+          "min": 7.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "pace": null
+}

@@ -1,0 +1,193 @@
+{
+  "gameId": "401591032",
+  "gameDate": "2024-12-25",
+  "home": {
+    "team": "PHI",
+    "score": 107,
+    "players": [
+      {
+        "playerId": "embiid",
+        "name": "Joel Embiid",
+        "stats": {
+          "min": 21,
+          "pts": 20,
+          "reb": 7,
+          "ast": 4,
+          "stl": 0,
+          "blk": 2,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "phi_bench_0",
+        "name": "PHI Bench Player 1",
+        "stats": {
+          "min": 11,
+          "pts": 5,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "phi_bench_1",
+        "name": "PHI Bench Player 2",
+        "stats": {
+          "min": 18,
+          "pts": 8,
+          "reb": 4,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "phi_bench_2",
+        "name": "PHI Bench Player 3",
+        "stats": {
+          "min": 19,
+          "pts": 5,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 0,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "DAL",
+    "score": 101,
+    "players": [
+      {
+        "playerId": "luka",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 28,
+          "pts": 6,
+          "reb": 7,
+          "ast": 4,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "dal_bench_0",
+        "name": "DAL Bench Player 1",
+        "stats": {
+          "min": 10,
+          "pts": 0,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "dal_bench_1",
+        "name": "DAL Bench Player 2",
+        "stats": {
+          "min": 16,
+          "pts": 8,
+          "reb": 0,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "dal_bench_2",
+        "name": "DAL Bench Player 3",
+        "stats": {
+          "min": 20,
+          "pts": 7,
+          "reb": 0,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "pace": 102
+}

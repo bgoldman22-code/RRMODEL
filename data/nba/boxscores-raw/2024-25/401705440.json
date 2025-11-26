@@ -1,0 +1,457 @@
+{
+  "gameId": "401705440",
+  "gameDate": "2025-03-03",
+  "home": {
+    "team": "LAL",
+    "score": 108,
+    "players": [
+      {
+        "playerId": "1966",
+        "name": "LeBron James",
+        "stats": {
+          "min": 17.0,
+          "pts": 6,
+          "reb": 9,
+          "ast": 8,
+          "stl": 1,
+          "blk": 1,
+          "tov": 2,
+          "fgm": 1,
+          "fga": 6,
+          "fg3m": 4,
+          "fg3a": 4,
+          "ftm": 5,
+          "fta": 0,
+          "oreb": 4,
+          "dreb": 2,
+          "pf": 36
+        }
+      },
+      {
+        "playerId": "2578185",
+        "name": "Dorian Finney-Smith",
+        "stats": {
+          "min": 11.0,
+          "pts": 4,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "tov": 1,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 4,
+          "fta": 0,
+          "oreb": 3,
+          "dreb": 0,
+          "pf": 37
+        }
+      },
+      {
+        "playerId": "4397077",
+        "name": "Jaxson Hayes",
+        "stats": {
+          "min": 6.0,
+          "pts": 2,
+          "reb": 0,
+          "ast": 2,
+          "stl": 2,
+          "blk": 2,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 2,
+          "fg3a": 3,
+          "ftm": 7,
+          "fta": 0,
+          "oreb": 5,
+          "dreb": 2,
+          "pf": 26
+        }
+      },
+      {
+        "playerId": "3137259",
+        "name": "Gabe Vincent",
+        "stats": {
+          "min": 9.0,
+          "pts": 3,
+          "reb": 2,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 3,
+          "fga": 6,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 3,
+          "fta": 0,
+          "oreb": 3,
+          "dreb": 3,
+          "pf": 31
+        }
+      },
+      {
+        "playerId": "3945274",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 29.0,
+          "pts": 9,
+          "reb": 9,
+          "ast": 6,
+          "stl": 0,
+          "blk": 0,
+          "tov": 2,
+          "fgm": 5,
+          "fga": 12,
+          "fg3m": 6,
+          "fg3a": 9,
+          "ftm": 6,
+          "fta": 0,
+          "oreb": 6,
+          "dreb": 2,
+          "pf": 37
+        }
+      },
+      {
+        "playerId": "4278077",
+        "name": "Jarred Vanderbilt",
+        "stats": {
+          "min": 8.0,
+          "pts": 4,
+          "reb": 1,
+          "ast": 0,
+          "stl": 2,
+          "blk": 5,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 9,
+          "fta": 0,
+          "oreb": 4,
+          "dreb": 1,
+          "pf": 22
+        }
+      },
+      {
+        "playerId": "4395623",
+        "name": "Trey Jemison III",
+        "stats": {
+          "min": 3.0,
+          "pts": 1,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 2,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 5,
+          "pf": 18
+        }
+      },
+      {
+        "playerId": "4897943",
+        "name": "Dalton Knecht",
+        "stats": {
+          "min": 19.0,
+          "pts": 7,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "tov": 2,
+          "fgm": 5,
+          "fga": 8,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 4,
+          "fta": 0,
+          "oreb": 3,
+          "dreb": 0,
+          "pf": 25
+        }
+      },
+      {
+        "playerId": "3915195",
+        "name": "Shake Milton",
+        "stats": {
+          "min": 6.0,
+          "pts": 2,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 2,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 1,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 1,
+          "pf": 8
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "LAC",
+    "score": 102,
+    "players": [
+      {
+        "playerId": "6450",
+        "name": "Kawhi Leonard",
+        "stats": {
+          "min": 33.0,
+          "pts": 13,
+          "reb": 0,
+          "ast": 3,
+          "stl": 0,
+          "blk": 4,
+          "tov": 0,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 4,
+          "fg3a": 5,
+          "ftm": 10,
+          "fta": 0,
+          "oreb": 6,
+          "dreb": 2,
+          "pf": 40
+        }
+      },
+      {
+        "playerId": "4017837",
+        "name": "Ivica Zubac",
+        "stats": {
+          "min": 12.0,
+          "pts": 5,
+          "reb": 3,
+          "ast": 2,
+          "stl": 0,
+          "blk": 2,
+          "tov": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 2,
+          "fg3a": 2,
+          "ftm": 10,
+          "fta": 0,
+          "oreb": 8,
+          "dreb": 6,
+          "pf": 34
+        }
+      },
+      {
+        "playerId": "3992",
+        "name": "James Harden",
+        "stats": {
+          "min": 13.0,
+          "pts": 4,
+          "reb": 8,
+          "ast": 3,
+          "stl": 0,
+          "blk": 0,
+          "tov": 2,
+          "fgm": 2,
+          "fga": 9,
+          "fg3m": 3,
+          "fg3a": 4,
+          "ftm": 2,
+          "fta": 0,
+          "oreb": 2,
+          "dreb": 4,
+          "pf": 38
+        }
+      },
+      {
+        "playerId": "2595516",
+        "name": "Norman Powell",
+        "stats": {
+          "min": 4.0,
+          "pts": 1,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 0,
+          "fga": 3,
+          "fg3m": 2,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 0,
+          "pf": 9
+        }
+      },
+      {
+        "playerId": "2991139",
+        "name": "Kris Dunn",
+        "stats": {
+          "min": 15.0,
+          "pts": 7,
+          "reb": 4,
+          "ast": 3,
+          "stl": 1,
+          "blk": 1,
+          "tov": 1,
+          "fgm": 1,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 2,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 3,
+          "pf": 27
+        }
+      },
+      {
+        "playerId": "3416",
+        "name": "Nicolas Batum",
+        "stats": {
+          "min": 6.0,
+          "pts": 2,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 2,
+          "fgm": 2,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 1,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 1,
+          "pf": 16
+        }
+      },
+      {
+        "playerId": "3914285",
+        "name": "Drew Eubanks",
+        "stats": {
+          "min": 4.0,
+          "pts": 2,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 2,
+          "tov": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 5,
+          "fta": 0,
+          "oreb": 3,
+          "dreb": 0,
+          "pf": 12
+        }
+      },
+      {
+        "playerId": "3037789",
+        "name": "Bogdan Bogdanovic",
+        "stats": {
+          "min": 12.0,
+          "pts": 4,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "tov": 0,
+          "fgm": 4,
+          "fga": 11,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 4,
+          "fta": 0,
+          "oreb": 3,
+          "dreb": 4,
+          "pf": 31
+        }
+      },
+      {
+        "playerId": "4066387",
+        "name": "Amir Coffey",
+        "stats": {
+          "min": 3.0,
+          "pts": 0,
+          "reb": 3,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 3,
+          "fg3a": 4,
+          "ftm": 3,
+          "fta": 0,
+          "oreb": 3,
+          "dreb": 2,
+          "pf": 22
+        }
+      },
+      {
+        "playerId": "4396818",
+        "name": "Jordan Miller",
+        "stats": {
+          "min": 0.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 1,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 0,
+          "pf": 5
+        }
+      },
+      {
+        "playerId": "4431752",
+        "name": "Kobe Brown",
+        "stats": {
+          "min": 0.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 1,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 0,
+          "pf": 5
+        }
+      }
+    ]
+  },
+  "pace": null
+}

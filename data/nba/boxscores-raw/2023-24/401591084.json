@@ -1,0 +1,281 @@
+{
+  "gameId": "401591084",
+  "gameDate": "2024-04-09",
+  "home": {
+    "team": "DAL",
+    "score": 116,
+    "players": [
+      {
+        "playerId": "luka",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 29,
+          "pts": 27,
+          "reb": 8,
+          "ast": 4,
+          "stl": 4,
+          "blk": 1,
+          "fgm": 9,
+          "fga": 20,
+          "fg3m": 3,
+          "fg3a": 9,
+          "ftm": 5,
+          "fta": 6,
+          "oreb": 2,
+          "dreb": 5,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "dal_bench_0",
+        "name": "DAL Bench Player 1",
+        "stats": {
+          "min": 18,
+          "pts": 6,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "dal_bench_1",
+        "name": "DAL Bench Player 2",
+        "stats": {
+          "min": 13,
+          "pts": 4,
+          "reb": 1,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "dal_bench_2",
+        "name": "DAL Bench Player 3",
+        "stats": {
+          "min": 22,
+          "pts": 5,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 0,
+          "pf": 3
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "ATL",
+    "score": 95,
+    "players": [
+      {
+        "playerId": "jokic",
+        "name": "Nikola Jokic",
+        "stats": {
+          "min": 37,
+          "pts": 28,
+          "reb": 14,
+          "ast": 11,
+          "stl": 3,
+          "blk": 4,
+          "fgm": 9,
+          "fga": 21,
+          "fg3m": 3,
+          "fg3a": 9,
+          "ftm": 5,
+          "fta": 7,
+          "oreb": 4,
+          "dreb": 9,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "stephen_curry",
+        "name": "Stephen Curry",
+        "stats": {
+          "min": 35,
+          "pts": 19,
+          "reb": 5,
+          "ast": 5,
+          "stl": 3,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 14,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 3,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "giannis",
+        "name": "Giannis Antetokounmpo",
+        "stats": {
+          "min": 28,
+          "pts": 26,
+          "reb": 8,
+          "ast": 3,
+          "stl": 1,
+          "blk": 2,
+          "fgm": 9,
+          "fga": 19,
+          "fg3m": 3,
+          "fg3a": 9,
+          "ftm": 5,
+          "fta": 6,
+          "oreb": 2,
+          "dreb": 5,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "randle",
+        "name": "Julius Randle",
+        "stats": {
+          "min": 38,
+          "pts": 20,
+          "reb": 15,
+          "ast": 6,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 4,
+          "dreb": 10,
+          "tov": 1,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "tatum",
+        "name": "Jayson Tatum",
+        "stats": {
+          "min": 25,
+          "pts": 21,
+          "reb": 3,
+          "ast": 4,
+          "stl": 3,
+          "blk": 1,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 0,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "atl_bench_0",
+        "name": "ATL Bench Player 1",
+        "stats": {
+          "min": 11,
+          "pts": 0,
+          "reb": 1,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "atl_bench_1",
+        "name": "ATL Bench Player 2",
+        "stats": {
+          "min": 18,
+          "pts": 2,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 0,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "atl_bench_2",
+        "name": "ATL Bench Player 3",
+        "stats": {
+          "min": 23,
+          "pts": 6,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 0,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "pace": 97
+}

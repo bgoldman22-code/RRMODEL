@@ -1,0 +1,303 @@
+{
+  "gameId": "401591036",
+  "gameDate": "2024-01-04",
+  "home": {
+    "team": "ATL",
+    "score": 108,
+    "players": [
+      {
+        "playerId": "lillard",
+        "name": "Damian Lillard",
+        "stats": {
+          "min": 30,
+          "pts": 24,
+          "reb": 4,
+          "ast": 6,
+          "stl": 1,
+          "blk": 1,
+          "fgm": 8,
+          "fga": 18,
+          "fg3m": 2,
+          "fg3a": 8,
+          "ftm": 4,
+          "fta": 6,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "westbrook",
+        "name": "Russell Westbrook",
+        "stats": {
+          "min": 37,
+          "pts": 18,
+          "reb": 5,
+          "ast": 8,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 13,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 3,
+          "tov": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "simmons",
+        "name": "Ben Simmons",
+        "stats": {
+          "min": 22,
+          "pts": 5,
+          "reb": 3,
+          "ast": 4,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 0,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "jokic",
+        "name": "Nikola Jokic",
+        "stats": {
+          "min": 27,
+          "pts": 19,
+          "reb": 14,
+          "ast": 7,
+          "stl": 0,
+          "blk": 2,
+          "fgm": 6,
+          "fga": 14,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 4,
+          "dreb": 9,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "tatum",
+        "name": "Jayson Tatum",
+        "stats": {
+          "min": 23,
+          "pts": 16,
+          "reb": 4,
+          "ast": 1,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 5,
+          "fga": 12,
+          "fg3m": 1,
+          "fg3a": 5,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 0,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "atl_bench_0",
+        "name": "ATL Bench Player 1",
+        "stats": {
+          "min": 18,
+          "pts": 1,
+          "reb": 3,
+          "ast": 1,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "atl_bench_1",
+        "name": "ATL Bench Player 2",
+        "stats": {
+          "min": 11,
+          "pts": 0,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "atl_bench_2",
+        "name": "ATL Bench Player 3",
+        "stats": {
+          "min": 20,
+          "pts": 4,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "LAL",
+    "score": 102,
+    "players": [
+      {
+        "playerId": "lebron_james",
+        "name": "LeBron James",
+        "stats": {
+          "min": 23,
+          "pts": 20,
+          "reb": 5,
+          "ast": 7,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 1,
+          "dreb": 3,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "anthony_davis",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 38,
+          "pts": 26,
+          "reb": 13,
+          "ast": 2,
+          "stl": 1,
+          "blk": 1,
+          "fgm": 9,
+          "fga": 19,
+          "fg3m": 3,
+          "fg3a": 9,
+          "ftm": 5,
+          "fta": 6,
+          "oreb": 3,
+          "dreb": 9,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "lal_bench_0",
+        "name": "LAL Bench Player 1",
+        "stats": {
+          "min": 16,
+          "pts": 2,
+          "reb": 0,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "lal_bench_1",
+        "name": "LAL Bench Player 2",
+        "stats": {
+          "min": 22,
+          "pts": 5,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "lal_bench_2",
+        "name": "LAL Bench Player 3",
+        "stats": {
+          "min": 13,
+          "pts": 3,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "pace": 101
+}

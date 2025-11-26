@@ -1,0 +1,215 @@
+{
+  "gameId": "401591083",
+  "gameDate": "2025-04-06",
+  "home": {
+    "team": "BOS",
+    "score": 119,
+    "players": [
+      {
+        "playerId": "tatum",
+        "name": "Jayson Tatum",
+        "stats": {
+          "min": 27,
+          "pts": 36,
+          "reb": 10,
+          "ast": 5,
+          "stl": 0,
+          "blk": 2,
+          "fgm": 12,
+          "fga": 27,
+          "fg3m": 4,
+          "fg3a": 12,
+          "ftm": 7,
+          "fta": 9,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "bos_bench_0",
+        "name": "BOS Bench Player 1",
+        "stats": {
+          "min": 10,
+          "pts": 5,
+          "reb": 1,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "bos_bench_1",
+        "name": "BOS Bench Player 2",
+        "stats": {
+          "min": 21,
+          "pts": 3,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "bos_bench_2",
+        "name": "BOS Bench Player 3",
+        "stats": {
+          "min": 19,
+          "pts": 5,
+          "reb": 2,
+          "ast": 1,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 4,
+          "pf": 3
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "MIL",
+    "score": 119,
+    "players": [
+      {
+        "playerId": "giannis",
+        "name": "Giannis Antetokounmpo",
+        "stats": {
+          "min": 31,
+          "pts": 24,
+          "reb": 12,
+          "ast": 4,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 8,
+          "fga": 18,
+          "fg3m": 2,
+          "fg3a": 8,
+          "ftm": 4,
+          "fta": 6,
+          "oreb": 3,
+          "dreb": 8,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "lillard",
+        "name": "Damian Lillard",
+        "stats": {
+          "min": 21,
+          "pts": 22,
+          "reb": 2,
+          "ast": 3,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 16,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "mil_bench_0",
+        "name": "MIL Bench Player 1",
+        "stats": {
+          "min": 21,
+          "pts": 5,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "mil_bench_1",
+        "name": "MIL Bench Player 2",
+        "stats": {
+          "min": 12,
+          "pts": 4,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 4,
+          "pf": 4
+        }
+      },
+      {
+        "playerId": "mil_bench_2",
+        "name": "MIL Bench Player 3",
+        "stats": {
+          "min": 21,
+          "pts": 6,
+          "reb": 3,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 0,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "pace": 107
+}

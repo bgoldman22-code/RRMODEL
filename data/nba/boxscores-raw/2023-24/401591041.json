@@ -1,0 +1,193 @@
+{
+  "gameId": "401591041",
+  "gameDate": "2024-01-14",
+  "home": {
+    "team": "LAC",
+    "score": 97,
+    "players": [
+      {
+        "playerId": "westbrook",
+        "name": "Russell Westbrook",
+        "stats": {
+          "min": 32,
+          "pts": 18,
+          "reb": 4,
+          "ast": 6,
+          "stl": 3,
+          "blk": 2,
+          "fgm": 6,
+          "fga": 13,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "lac_bench_0",
+        "name": "LAC Bench Player 1",
+        "stats": {
+          "min": 24,
+          "pts": 3,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "lac_bench_1",
+        "name": "LAC Bench Player 2",
+        "stats": {
+          "min": 10,
+          "pts": 3,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "lac_bench_2",
+        "name": "LAC Bench Player 3",
+        "stats": {
+          "min": 19,
+          "pts": 5,
+          "reb": 3,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "PHX",
+    "score": 96,
+    "players": [
+      {
+        "playerId": "durant",
+        "name": "Kevin Durant",
+        "stats": {
+          "min": 33,
+          "pts": 38,
+          "reb": 7,
+          "ast": 4,
+          "stl": 2,
+          "blk": 4,
+          "fgm": 13,
+          "fga": 28,
+          "fg3m": 4,
+          "fg3a": 13,
+          "ftm": 7,
+          "fta": 9,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "phx_bench_0",
+        "name": "PHX Bench Player 1",
+        "stats": {
+          "min": 20,
+          "pts": 5,
+          "reb": 1,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "phx_bench_1",
+        "name": "PHX Bench Player 2",
+        "stats": {
+          "min": 19,
+          "pts": 5,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 0,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "phx_bench_2",
+        "name": "PHX Bench Player 3",
+        "stats": {
+          "min": 18,
+          "pts": 5,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "pace": 106
+}

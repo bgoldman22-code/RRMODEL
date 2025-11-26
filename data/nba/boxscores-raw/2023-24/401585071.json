@@ -1,0 +1,413 @@
+{
+  "gameId": "401585071",
+  "gameDate": "2023-12-31",
+  "home": {
+    "team": "MIN",
+    "score": 108,
+    "players": [
+      {
+        "playerId": "4431671",
+        "name": "Jaden McDaniels",
+        "stats": {
+          "min": 26.0,
+          "pts": 0,
+          "reb": 3,
+          "ast": 3,
+          "stl": 6,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 33,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "3032976",
+        "name": "Rudy Gobert",
+        "stats": {
+          "min": 38.0,
+          "pts": 0,
+          "reb": 13,
+          "ast": 9,
+          "stl": 13,
+          "blk": 4,
+          "fgm": 0,
+          "fga": 2,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 0,
+          "fta": 85,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 10
+        }
+      },
+      {
+        "playerId": "3136195",
+        "name": "Karl-Anthony Towns",
+        "stats": {
+          "min": 29.0,
+          "pts": 25,
+          "reb": 9,
+          "ast": 7,
+          "stl": 9,
+          "blk": 2,
+          "fgm": 2,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 5,
+          "ftm": 0,
+          "fta": 42,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 7
+        }
+      },
+      {
+        "playerId": "3195",
+        "name": "Mike Conley",
+        "stats": {
+          "min": 33.0,
+          "pts": 44,
+          "reb": 4,
+          "ast": 3,
+          "stl": 15,
+          "blk": 1,
+          "fgm": 7,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 36,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4594268",
+        "name": "Anthony Edwards",
+        "stats": {
+          "min": 38.0,
+          "pts": 25,
+          "reb": 3,
+          "ast": 3,
+          "stl": 31,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 3,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 43,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "2993874",
+        "name": "Kyle Anderson",
+        "stats": {
+          "min": 24.0,
+          "pts": 0,
+          "reb": 3,
+          "ast": 3,
+          "stl": 4,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4278508",
+        "name": "Troy Brown Jr.",
+        "stats": {
+          "min": 8.0,
+          "pts": 50,
+          "reb": 3,
+          "ast": 3,
+          "stl": 3,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 33,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4396971",
+        "name": "Naz Reid",
+        "stats": {
+          "min": 27.0,
+          "pts": 40,
+          "reb": 5,
+          "ast": 5,
+          "stl": 21,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 2,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 72,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4278039",
+        "name": "Nickeil Alexander-Walker",
+        "stats": {
+          "min": 16.0,
+          "pts": 50,
+          "reb": 2,
+          "ast": 2,
+          "stl": 6,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "LAL",
+    "score": 106,
+    "players": [
+      {
+        "playerId": "1966",
+        "name": "LeBron James",
+        "stats": {
+          "min": 39.0,
+          "pts": 25,
+          "reb": 3,
+          "ast": 3,
+          "stl": 26,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 3,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 47,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "6583",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 39.0,
+          "pts": 50,
+          "reb": 17,
+          "ast": 13,
+          "stl": 33,
+          "blk": 4,
+          "fgm": 8,
+          "fga": 4,
+          "fg3m": 2,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 70,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 5,
+          "dreb": 12
+        }
+      },
+      {
+        "playerId": "2990962",
+        "name": "Taurean Prince",
+        "stats": {
+          "min": 33.0,
+          "pts": 50,
+          "reb": 2,
+          "ast": 2,
+          "stl": 9,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 33,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4278077",
+        "name": "Jarred Vanderbilt",
+        "stats": {
+          "min": 27.0,
+          "pts": 0,
+          "reb": 5,
+          "ast": 4,
+          "stl": 8,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 42,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4395627",
+        "name": "Cam Reddish",
+        "stats": {
+          "min": 22.0,
+          "pts": 0,
+          "reb": 3,
+          "ast": 2,
+          "stl": 4,
+          "blk": 1,
+          "fgm": 4,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 28,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "3058254",
+        "name": "Christian Wood",
+        "stats": {
+          "min": 13.0,
+          "pts": 100,
+          "reb": 5,
+          "ast": 5,
+          "stl": 7,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4066648",
+        "name": "Rui Hachimura",
+        "stats": {
+          "min": 17.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 0,
+          "stl": 5,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 25,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "3136776",
+        "name": "D'Angelo Russell",
+        "stats": {
+          "min": 20.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 5,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 25,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4066457",
+        "name": "Austin Reaves",
+        "stats": {
+          "min": 29.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 1,
+          "stl": 9,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 18,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      }
+    ]
+  },
+  "pace": 100
+}

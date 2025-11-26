@@ -1,0 +1,303 @@
+{
+  "gameId": "401591013",
+  "gameDate": "2023-11-19",
+  "home": {
+    "team": "CLE",
+    "score": 125,
+    "players": [
+      {
+        "playerId": "westbrook",
+        "name": "Russell Westbrook",
+        "stats": {
+          "min": 38,
+          "pts": 14,
+          "reb": 6,
+          "ast": 10,
+          "stl": 1,
+          "blk": 1,
+          "fgm": 4,
+          "fga": 10,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 2,
+          "fta": 3,
+          "oreb": 1,
+          "dreb": 4,
+          "tov": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "lebron_james",
+        "name": "LeBron James",
+        "stats": {
+          "min": 21,
+          "pts": 9,
+          "reb": 5,
+          "ast": 4,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 6,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 1,
+          "dreb": 3,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "green",
+        "name": "Draymond Green",
+        "stats": {
+          "min": 37,
+          "pts": 10,
+          "reb": 10,
+          "ast": 9,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "embiid",
+        "name": "Joel Embiid",
+        "stats": {
+          "min": 30,
+          "pts": 41,
+          "reb": 11,
+          "ast": 5,
+          "stl": 0,
+          "blk": 2,
+          "fgm": 14,
+          "fga": 30,
+          "fg3m": 4,
+          "fg3a": 14,
+          "ftm": 8,
+          "fta": 10,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "simmons",
+        "name": "Ben Simmons",
+        "stats": {
+          "min": 22,
+          "pts": 7,
+          "reb": 3,
+          "ast": 2,
+          "stl": 1,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 4,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "cle_bench_0",
+        "name": "CLE Bench Player 1",
+        "stats": {
+          "min": 15,
+          "pts": 4,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "cle_bench_1",
+        "name": "CLE Bench Player 2",
+        "stats": {
+          "min": 18,
+          "pts": 0,
+          "reb": 0,
+          "ast": 1,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "cle_bench_2",
+        "name": "CLE Bench Player 3",
+        "stats": {
+          "min": 23,
+          "pts": 6,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 0,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "GSW",
+    "score": 98,
+    "players": [
+      {
+        "playerId": "stephen_curry",
+        "name": "Stephen Curry",
+        "stats": {
+          "min": 24,
+          "pts": 25,
+          "reb": 3,
+          "ast": 4,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 8,
+          "fga": 18,
+          "fg3m": 3,
+          "fg3a": 8,
+          "ftm": 5,
+          "fta": 6,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "green",
+        "name": "Draymond Green",
+        "stats": {
+          "min": 37,
+          "pts": 11,
+          "reb": 8,
+          "ast": 2,
+          "stl": 6,
+          "blk": 2,
+          "fgm": 3,
+          "fga": 8,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 2,
+          "dreb": 5,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "gsw_bench_0",
+        "name": "GSW Bench Player 1",
+        "stats": {
+          "min": 24,
+          "pts": 7,
+          "reb": 3,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "gsw_bench_1",
+        "name": "GSW Bench Player 2",
+        "stats": {
+          "min": 16,
+          "pts": 4,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "gsw_bench_2",
+        "name": "GSW Bench Player 3",
+        "stats": {
+          "min": 21,
+          "pts": 5,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "pace": 98
+}

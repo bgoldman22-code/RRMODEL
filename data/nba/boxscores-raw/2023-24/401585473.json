@@ -1,0 +1,435 @@
+{
+  "gameId": "401585473",
+  "gameDate": "2024-02-29",
+  "home": {
+    "team": "MIN",
+    "score": 110,
+    "players": [
+      {
+        "playerId": "4431671",
+        "name": "Jaden McDaniels",
+        "stats": {
+          "min": 34.0,
+          "pts": 50,
+          "reb": 2,
+          "ast": 2,
+          "stl": 12,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 3,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 71,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "3032976",
+        "name": "Rudy Gobert",
+        "stats": {
+          "min": 27.0,
+          "pts": 0,
+          "reb": 8,
+          "ast": 6,
+          "stl": 8,
+          "blk": 2,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 2,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 75,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 6
+        }
+      },
+      {
+        "playerId": "3136195",
+        "name": "Karl-Anthony Towns",
+        "stats": {
+          "min": 37.0,
+          "pts": 42,
+          "reb": 11,
+          "ast": 10,
+          "stl": 13,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 3,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 0,
+          "fta": 38,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 8
+        }
+      },
+      {
+        "playerId": "3195",
+        "name": "Mike Conley",
+        "stats": {
+          "min": 28.0,
+          "pts": 25,
+          "reb": 5,
+          "ast": 4,
+          "stl": 4,
+          "blk": 1,
+          "fgm": 7,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 25,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4594268",
+        "name": "Anthony Edwards",
+        "stats": {
+          "min": 40.0,
+          "pts": 16,
+          "reb": 2,
+          "ast": 2,
+          "stl": 34,
+          "blk": 0,
+          "fgm": 4,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 52,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4396971",
+        "name": "Naz Reid",
+        "stats": {
+          "min": 26.0,
+          "pts": 66,
+          "reb": 6,
+          "ast": 5,
+          "stl": 19,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 0,
+          "fg3m": 2,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 54,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "3059310",
+        "name": "Monte Morris",
+        "stats": {
+          "min": 21.0,
+          "pts": 33,
+          "reb": 4,
+          "ast": 4,
+          "stl": 5,
+          "blk": 0,
+          "fgm": 5,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 28,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "3134916",
+        "name": "Jordan McLaughlin",
+        "stats": {
+          "min": 4.0,
+          "pts": 50,
+          "reb": 0,
+          "ast": 0,
+          "stl": 3,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "4278039",
+        "name": "Nickeil Alexander-Walker",
+        "stats": {
+          "min": 24.0,
+          "pts": 33,
+          "reb": 1,
+          "ast": 1,
+          "stl": 12,
+          "blk": 0,
+          "fgm": 5,
+          "fga": 0,
+          "fg3m": 4,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "MEM",
+    "score": 101,
+    "players": [
+      {
+        "playerId": "4277961",
+        "name": "Jaren Jackson Jr.",
+        "stats": {
+          "min": 38.0,
+          "pts": 30,
+          "reb": 13,
+          "ast": 9,
+          "stl": 33,
+          "blk": 4,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 47,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 10
+        }
+      },
+      {
+        "playerId": "4433137",
+        "name": "Ziaire Williams",
+        "stats": {
+          "min": 36.0,
+          "pts": 33,
+          "reb": 8,
+          "ast": 5,
+          "stl": 16,
+          "blk": 3,
+          "fgm": 2,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 42,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 6
+        }
+      },
+      {
+        "playerId": "4593125",
+        "name": "Santi Aldama",
+        "stats": {
+          "min": 36.0,
+          "pts": 33,
+          "reb": 5,
+          "ast": 4,
+          "stl": 11,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 2,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 38,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4278402",
+        "name": "Jordan Goodwin",
+        "stats": {
+          "min": 31.0,
+          "pts": 33,
+          "reb": 8,
+          "ast": 5,
+          "stl": 5,
+          "blk": 3,
+          "fgm": 8,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 12,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 6
+        }
+      },
+      {
+        "playerId": "4397227",
+        "name": "Vince Williams Jr.",
+        "stats": {
+          "min": 31.0,
+          "pts": 20,
+          "reb": 6,
+          "ast": 4,
+          "stl": 11,
+          "blk": 2,
+          "fgm": 6,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 26,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4066405",
+        "name": "Lamar Stevens",
+        "stats": {
+          "min": 10.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 0,
+          "stl": 4,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 33,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4592691",
+        "name": "Jake LaRavia",
+        "stats": {
+          "min": 19.0,
+          "pts": 25,
+          "reb": 5,
+          "ast": 4,
+          "stl": 5,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 25,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "5105550",
+        "name": "GG Jackson",
+        "stats": {
+          "min": 27.0,
+          "pts": 50,
+          "reb": 3,
+          "ast": 1,
+          "stl": 14,
+          "blk": 2,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 71,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "3133838",
+        "name": "Yuta Watanabe",
+        "stats": {
+          "min": 7.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "3456",
+        "name": "Derrick Rose",
+        "stats": {
+          "min": 6.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      }
+    ]
+  },
+  "pace": 100
+}

@@ -1,0 +1,369 @@
+{
+  "gameId": "401591057",
+  "gameDate": "2025-02-13",
+  "home": {
+    "team": "CHI",
+    "score": 110,
+    "players": [
+      {
+        "playerId": "luka",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 36,
+          "pts": 38,
+          "reb": 9,
+          "ast": 9,
+          "stl": 3,
+          "blk": 1,
+          "fgm": 13,
+          "fga": 28,
+          "fg3m": 4,
+          "fg3a": 13,
+          "ftm": 7,
+          "fta": 9,
+          "oreb": 2,
+          "dreb": 6,
+          "tov": 3,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "green",
+        "name": "Draymond Green",
+        "stats": {
+          "min": 23,
+          "pts": 6,
+          "reb": 2,
+          "ast": 4,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 4,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "sabonis",
+        "name": "Domantas Sabonis",
+        "stats": {
+          "min": 34,
+          "pts": 20,
+          "reb": 12,
+          "ast": 9,
+          "stl": 1,
+          "blk": 2,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 3,
+          "dreb": 8,
+          "tov": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "giannis",
+        "name": "Giannis Antetokounmpo",
+        "stats": {
+          "min": 27,
+          "pts": 18,
+          "reb": 9,
+          "ast": 3,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 13,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 2,
+          "dreb": 6,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "durant",
+        "name": "Kevin Durant",
+        "stats": {
+          "min": 24,
+          "pts": 31,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 10,
+          "fga": 23,
+          "fg3m": 3,
+          "fg3a": 10,
+          "ftm": 6,
+          "fta": 7,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 0,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "chi_bench_0",
+        "name": "CHI Bench Player 1",
+        "stats": {
+          "min": 17,
+          "pts": 4,
+          "reb": 3,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "chi_bench_1",
+        "name": "CHI Bench Player 2",
+        "stats": {
+          "min": 22,
+          "pts": 3,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "chi_bench_2",
+        "name": "CHI Bench Player 3",
+        "stats": {
+          "min": 22,
+          "pts": 5,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 1,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "ORL",
+    "score": 123,
+    "players": [
+      {
+        "playerId": "tatum",
+        "name": "Jayson Tatum",
+        "stats": {
+          "min": 35,
+          "pts": 36,
+          "reb": 11,
+          "ast": 5,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 12,
+          "fga": 27,
+          "fg3m": 4,
+          "fg3a": 12,
+          "ftm": 7,
+          "fta": 9,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "green",
+        "name": "Draymond Green",
+        "stats": {
+          "min": 22,
+          "pts": 8,
+          "reb": 3,
+          "ast": 8,
+          "stl": 0,
+          "blk": 2,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "lebron_james",
+        "name": "LeBron James",
+        "stats": {
+          "min": 34,
+          "pts": 35,
+          "reb": 7,
+          "ast": 6,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 12,
+          "fga": 26,
+          "fg3m": 4,
+          "fg3a": 12,
+          "ftm": 7,
+          "fta": 8,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "randle",
+        "name": "Julius Randle",
+        "stats": {
+          "min": 25,
+          "pts": 22,
+          "reb": 12,
+          "ast": 3,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 16,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 3,
+          "dreb": 8,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "jokic",
+        "name": "Nikola Jokic",
+        "stats": {
+          "min": 31,
+          "pts": 20,
+          "reb": 12,
+          "ast": 9,
+          "stl": 3,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 3,
+          "dreb": 8,
+          "tov": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "orl_bench_0",
+        "name": "ORL Bench Player 1",
+        "stats": {
+          "min": 16,
+          "pts": 2,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "orl_bench_1",
+        "name": "ORL Bench Player 2",
+        "stats": {
+          "min": 11,
+          "pts": 3,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "orl_bench_2",
+        "name": "ORL Bench Player 3",
+        "stats": {
+          "min": 23,
+          "pts": 3,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "pace": 95
+}

@@ -1,0 +1,281 @@
+{
+  "gameId": "401591065",
+  "gameDate": "2025-03-01",
+  "home": {
+    "team": "MIA",
+    "score": 97,
+    "players": [
+      {
+        "playerId": "giannis",
+        "name": "Giannis Antetokounmpo",
+        "stats": {
+          "min": 38,
+          "pts": 39,
+          "reb": 14,
+          "ast": 4,
+          "stl": 0,
+          "blk": 3,
+          "fgm": 13,
+          "fga": 29,
+          "fg3m": 4,
+          "fg3a": 13,
+          "ftm": 7,
+          "fta": 9,
+          "oreb": 4,
+          "dreb": 9,
+          "tov": 2,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "simmons",
+        "name": "Ben Simmons",
+        "stats": {
+          "min": 38,
+          "pts": 10,
+          "reb": 8,
+          "ast": 4,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 2,
+          "dreb": 5,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "stephen_curry",
+        "name": "Stephen Curry",
+        "stats": {
+          "min": 23,
+          "pts": 27,
+          "reb": 4,
+          "ast": 5,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 9,
+          "fga": 20,
+          "fg3m": 3,
+          "fg3a": 9,
+          "ftm": 5,
+          "fta": 6,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "lillard",
+        "name": "Damian Lillard",
+        "stats": {
+          "min": 21,
+          "pts": 18,
+          "reb": 2,
+          "ast": 5,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 13,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "tatum",
+        "name": "Jayson Tatum",
+        "stats": {
+          "min": 30,
+          "pts": 25,
+          "reb": 7,
+          "ast": 5,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 8,
+          "fga": 18,
+          "fg3m": 3,
+          "fg3a": 8,
+          "ftm": 5,
+          "fta": 6,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "mia_bench_0",
+        "name": "MIA Bench Player 1",
+        "stats": {
+          "min": 19,
+          "pts": 6,
+          "reb": 1,
+          "ast": 1,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "mia_bench_1",
+        "name": "MIA Bench Player 2",
+        "stats": {
+          "min": 12,
+          "pts": 0,
+          "reb": 2,
+          "ast": 1,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "mia_bench_2",
+        "name": "MIA Bench Player 3",
+        "stats": {
+          "min": 20,
+          "pts": 1,
+          "reb": 3,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "BKN",
+    "score": 100,
+    "players": [
+      {
+        "playerId": "simmons",
+        "name": "Ben Simmons",
+        "stats": {
+          "min": 20,
+          "pts": 3,
+          "reb": 4,
+          "ast": 4,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "bkn_bench_0",
+        "name": "BKN Bench Player 1",
+        "stats": {
+          "min": 18,
+          "pts": 0,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "bkn_bench_1",
+        "name": "BKN Bench Player 2",
+        "stats": {
+          "min": 12,
+          "pts": 0,
+          "reb": 0,
+          "ast": 1,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "bkn_bench_2",
+        "name": "BKN Bench Player 3",
+        "stats": {
+          "min": 23,
+          "pts": 7,
+          "reb": 2,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 0
+        }
+      }
+    ]
+  },
+  "pace": 98
+}

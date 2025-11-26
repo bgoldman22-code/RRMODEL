@@ -1,0 +1,413 @@
+{
+  "gameId": "401585031",
+  "gameDate": "2023-12-25",
+  "home": {
+    "team": "LAL",
+    "score": 115,
+    "players": [
+      {
+        "playerId": "1966",
+        "name": "LeBron James",
+        "stats": {
+          "min": 37.0,
+          "pts": 50,
+          "reb": 9,
+          "ast": 9,
+          "stl": 16,
+          "blk": 0,
+          "fgm": 8,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 35,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 7
+        }
+      },
+      {
+        "playerId": "6583",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 39.0,
+          "pts": 50,
+          "reb": 13,
+          "ast": 8,
+          "stl": 40,
+          "blk": 5,
+          "fgm": 4,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 57,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 10
+        }
+      },
+      {
+        "playerId": "2990962",
+        "name": "Taurean Prince",
+        "stats": {
+          "min": 39.0,
+          "pts": 41,
+          "reb": 4,
+          "ast": 4,
+          "stl": 17,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 46,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4278077",
+        "name": "Jarred Vanderbilt",
+        "stats": {
+          "min": 23.0,
+          "pts": 0,
+          "reb": 6,
+          "ast": 2,
+          "stl": 6,
+          "blk": 4,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 60,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4395627",
+        "name": "Cam Reddish",
+        "stats": {
+          "min": 18.0,
+          "pts": 100,
+          "reb": 0,
+          "ast": 0,
+          "stl": 5,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "4066648",
+        "name": "Rui Hachimura",
+        "stats": {
+          "min": 29.0,
+          "pts": 22,
+          "reb": 3,
+          "ast": 3,
+          "stl": 12,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 35,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4397077",
+        "name": "Jaxson Hayes",
+        "stats": {
+          "min": 9.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "3136776",
+        "name": "D'Angelo Russell",
+        "stats": {
+          "min": 18.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 8,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 66,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4066457",
+        "name": "Austin Reaves",
+        "stats": {
+          "min": 28.0,
+          "pts": 66,
+          "reb": 6,
+          "ast": 2,
+          "stl": 11,
+          "blk": 4,
+          "fgm": 3,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 44,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "BOS",
+    "score": 126,
+    "players": [
+      {
+        "playerId": "4065648",
+        "name": "Jayson Tatum",
+        "stats": {
+          "min": 41.0,
+          "pts": 16,
+          "reb": 8,
+          "ast": 8,
+          "stl": 25,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 40,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 6
+        }
+      },
+      {
+        "playerId": "3102531",
+        "name": "Kristaps Porzingis",
+        "stats": {
+          "min": 35.0,
+          "pts": 25,
+          "reb": 11,
+          "ast": 8,
+          "stl": 28,
+          "blk": 3,
+          "fgm": 2,
+          "fga": 1,
+          "fg3m": 2,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 57,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 8
+        }
+      },
+      {
+        "playerId": "3995",
+        "name": "Jrue Holiday",
+        "stats": {
+          "min": 38.0,
+          "pts": 60,
+          "reb": 7,
+          "ast": 5,
+          "stl": 18,
+          "blk": 2,
+          "fgm": 7,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 70,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "3078576",
+        "name": "Derrick White",
+        "stats": {
+          "min": 35.0,
+          "pts": 50,
+          "reb": 2,
+          "ast": 2,
+          "stl": 18,
+          "blk": 0,
+          "fgm": 11,
+          "fga": 2,
+          "fg3m": 2,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 61,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "3917376",
+        "name": "Jaylen Brown",
+        "stats": {
+          "min": 33.0,
+          "pts": 20,
+          "reb": 5,
+          "ast": 2,
+          "stl": 19,
+          "blk": 3,
+          "fgm": 2,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 41,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4065804",
+        "name": "Sam Hauser",
+        "stats": {
+          "min": 15.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 1,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 20,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "3213",
+        "name": "Al Horford",
+        "stats": {
+          "min": 23.0,
+          "pts": 50,
+          "reb": 6,
+          "ast": 6,
+          "stl": 6,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4397424",
+        "name": "Neemias Queta",
+        "stats": {
+          "min": 7.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4066354",
+        "name": "Payton Pritchard",
+        "stats": {
+          "min": 13.0,
+          "pts": 33,
+          "reb": 2,
+          "ast": 0,
+          "stl": 10,
+          "blk": 2,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      }
+    ]
+  },
+  "pace": 100
+}

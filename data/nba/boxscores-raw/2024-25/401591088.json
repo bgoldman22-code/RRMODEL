@@ -1,0 +1,193 @@
+{
+  "gameId": "401591088",
+  "gameDate": "2025-04-16",
+  "home": {
+    "team": "PHX",
+    "score": 97,
+    "players": [
+      {
+        "playerId": "durant",
+        "name": "Kevin Durant",
+        "stats": {
+          "min": 24,
+          "pts": 13,
+          "reb": 4,
+          "ast": 2,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 4,
+          "fga": 9,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 2,
+          "fta": 3,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "phx_bench_0",
+        "name": "PHX Bench Player 1",
+        "stats": {
+          "min": 19,
+          "pts": 8,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "phx_bench_1",
+        "name": "PHX Bench Player 2",
+        "stats": {
+          "min": 11,
+          "pts": 4,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "phx_bench_2",
+        "name": "PHX Bench Player 3",
+        "stats": {
+          "min": 13,
+          "pts": 3,
+          "reb": 2,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 1,
+          "pf": 3
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "NYK",
+    "score": 125,
+    "players": [
+      {
+        "playerId": "randle",
+        "name": "Julius Randle",
+        "stats": {
+          "min": 24,
+          "pts": 19,
+          "reb": 7,
+          "ast": 4,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 14,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 2,
+          "pf": 4
+        }
+      },
+      {
+        "playerId": "nyk_bench_0",
+        "name": "NYK Bench Player 1",
+        "stats": {
+          "min": 24,
+          "pts": 10,
+          "reb": 3,
+          "ast": 2,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "nyk_bench_1",
+        "name": "NYK Bench Player 2",
+        "stats": {
+          "min": 19,
+          "pts": 7,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "nyk_bench_2",
+        "name": "NYK Bench Player 3",
+        "stats": {
+          "min": 15,
+          "pts": 3,
+          "reb": 2,
+          "ast": 1,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "pace": 110
+}

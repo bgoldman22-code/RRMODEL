@@ -1,0 +1,369 @@
+{
+  "gameId": "401591028",
+  "gameDate": "2024-12-17",
+  "home": {
+    "team": "CHI",
+    "score": 124,
+    "players": [
+      {
+        "playerId": "luka",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 36,
+          "pts": 35,
+          "reb": 11,
+          "ast": 12,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 12,
+          "fga": 26,
+          "fg3m": 4,
+          "fg3a": 12,
+          "ftm": 7,
+          "fta": 8,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "jokic",
+        "name": "Nikola Jokic",
+        "stats": {
+          "min": 30,
+          "pts": 31,
+          "reb": 15,
+          "ast": 4,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 10,
+          "fga": 23,
+          "fg3m": 3,
+          "fg3a": 10,
+          "ftm": 6,
+          "fta": 7,
+          "oreb": 4,
+          "dreb": 10,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "simmons",
+        "name": "Ben Simmons",
+        "stats": {
+          "min": 31,
+          "pts": 6,
+          "reb": 6,
+          "ast": 3,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 1,
+          "dreb": 4,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "randle",
+        "name": "Julius Randle",
+        "stats": {
+          "min": 22,
+          "pts": 16,
+          "reb": 6,
+          "ast": 2,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 5,
+          "fga": 12,
+          "fg3m": 1,
+          "fg3a": 5,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 4,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "anthony_davis",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 33,
+          "pts": 26,
+          "reb": 7,
+          "ast": 2,
+          "stl": 2,
+          "blk": 2,
+          "fgm": 9,
+          "fga": 19,
+          "fg3m": 3,
+          "fg3a": 9,
+          "ftm": 5,
+          "fta": 6,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 0,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "chi_bench_0",
+        "name": "CHI Bench Player 1",
+        "stats": {
+          "min": 18,
+          "pts": 3,
+          "reb": 4,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "chi_bench_1",
+        "name": "CHI Bench Player 2",
+        "stats": {
+          "min": 22,
+          "pts": 9,
+          "reb": 1,
+          "ast": 2,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 6,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "chi_bench_2",
+        "name": "CHI Bench Player 3",
+        "stats": {
+          "min": 14,
+          "pts": 4,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 4,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "ATL",
+    "score": 109,
+    "players": [
+      {
+        "playerId": "giannis",
+        "name": "Giannis Antetokounmpo",
+        "stats": {
+          "min": 20,
+          "pts": 28,
+          "reb": 11,
+          "ast": 4,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 9,
+          "fga": 21,
+          "fg3m": 3,
+          "fg3a": 9,
+          "ftm": 5,
+          "fta": 7,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "durant",
+        "name": "Kevin Durant",
+        "stats": {
+          "min": 29,
+          "pts": 21,
+          "reb": 5,
+          "ast": 5,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 1,
+          "dreb": 3,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "sabonis",
+        "name": "Domantas Sabonis",
+        "stats": {
+          "min": 22,
+          "pts": 20,
+          "reb": 11,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "green",
+        "name": "Draymond Green",
+        "stats": {
+          "min": 35,
+          "pts": 8,
+          "reb": 10,
+          "ast": 8,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "embiid",
+        "name": "Joel Embiid",
+        "stats": {
+          "min": 37,
+          "pts": 39,
+          "reb": 14,
+          "ast": 5,
+          "stl": 0,
+          "blk": 2,
+          "fgm": 13,
+          "fga": 29,
+          "fg3m": 4,
+          "fg3a": 13,
+          "ftm": 7,
+          "fta": 9,
+          "oreb": 4,
+          "dreb": 9,
+          "tov": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "atl_bench_0",
+        "name": "ATL Bench Player 1",
+        "stats": {
+          "min": 10,
+          "pts": 2,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "atl_bench_1",
+        "name": "ATL Bench Player 2",
+        "stats": {
+          "min": 21,
+          "pts": 6,
+          "reb": 1,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "atl_bench_2",
+        "name": "ATL Bench Player 3",
+        "stats": {
+          "min": 14,
+          "pts": 2,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "pace": 99
+}

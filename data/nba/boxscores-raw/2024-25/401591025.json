@@ -1,0 +1,281 @@
+{
+  "gameId": "401591025",
+  "gameDate": "2024-12-11",
+  "home": {
+    "team": "LAC",
+    "score": 95,
+    "players": [
+      {
+        "playerId": "westbrook",
+        "name": "Russell Westbrook",
+        "stats": {
+          "min": 24,
+          "pts": 14,
+          "reb": 3,
+          "ast": 6,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 4,
+          "fga": 10,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 2,
+          "fta": 3,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 5,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "lac_bench_0",
+        "name": "LAC Bench Player 1",
+        "stats": {
+          "min": 11,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "lac_bench_1",
+        "name": "LAC Bench Player 2",
+        "stats": {
+          "min": 16,
+          "pts": 8,
+          "reb": 2,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "lac_bench_2",
+        "name": "LAC Bench Player 3",
+        "stats": {
+          "min": 16,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 3
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "CHI",
+    "score": 102,
+    "players": [
+      {
+        "playerId": "lebron_james",
+        "name": "LeBron James",
+        "stats": {
+          "min": 22,
+          "pts": 12,
+          "reb": 4,
+          "ast": 3,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 4,
+          "fga": 9,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 2,
+          "fta": 3,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 0,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "green",
+        "name": "Draymond Green",
+        "stats": {
+          "min": 24,
+          "pts": 7,
+          "reb": 7,
+          "ast": 5,
+          "stl": 1,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "sabonis",
+        "name": "Domantas Sabonis",
+        "stats": {
+          "min": 29,
+          "pts": 13,
+          "reb": 9,
+          "ast": 7,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 4,
+          "fga": 9,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 2,
+          "fta": 3,
+          "oreb": 2,
+          "dreb": 6,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "westbrook",
+        "name": "Russell Westbrook",
+        "stats": {
+          "min": 34,
+          "pts": 10,
+          "reb": 6,
+          "ast": 9,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 1,
+          "dreb": 4,
+          "tov": 2,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "stephen_curry",
+        "name": "Stephen Curry",
+        "stats": {
+          "min": 31,
+          "pts": 38,
+          "reb": 5,
+          "ast": 4,
+          "stl": 1,
+          "blk": 1,
+          "fgm": 13,
+          "fga": 28,
+          "fg3m": 4,
+          "fg3a": 13,
+          "ftm": 7,
+          "fta": 9,
+          "oreb": 1,
+          "dreb": 3,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "chi_bench_0",
+        "name": "CHI Bench Player 1",
+        "stats": {
+          "min": 13,
+          "pts": 5,
+          "reb": 3,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "chi_bench_1",
+        "name": "CHI Bench Player 2",
+        "stats": {
+          "min": 19,
+          "pts": 4,
+          "reb": 3,
+          "ast": 2,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "chi_bench_2",
+        "name": "CHI Bench Player 3",
+        "stats": {
+          "min": 21,
+          "pts": 5,
+          "reb": 3,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 0,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "pace": 97
+}

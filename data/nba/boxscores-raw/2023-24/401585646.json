@@ -1,0 +1,435 @@
+{
+  "gameId": "401585646",
+  "gameDate": "2024-03-23",
+  "home": {
+    "team": "LAL",
+    "score": 101,
+    "players": [
+      {
+        "playerId": "1966",
+        "name": "LeBron James",
+        "stats": {
+          "min": 38.0,
+          "pts": 33,
+          "reb": 8,
+          "ast": 8,
+          "stl": 20,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 8,
+          "ftm": 0,
+          "fta": 46,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 6
+        }
+      },
+      {
+        "playerId": "6583",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 40.0,
+          "pts": 50,
+          "reb": 19,
+          "ast": 12,
+          "stl": 23,
+          "blk": 7,
+          "fgm": 4,
+          "fga": 0,
+          "fg3m": 4,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 62,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 5,
+          "dreb": 14
+        }
+      },
+      {
+        "playerId": "4066648",
+        "name": "Rui Hachimura",
+        "stats": {
+          "min": 24.0,
+          "pts": 33,
+          "reb": 7,
+          "ast": 6,
+          "stl": 14,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 40,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "3136776",
+        "name": "D'Angelo Russell",
+        "stats": {
+          "min": 37.0,
+          "pts": 40,
+          "reb": 5,
+          "ast": 5,
+          "stl": 14,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 5,
+          "ftm": 0,
+          "fta": 30,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4066457",
+        "name": "Austin Reaves",
+        "stats": {
+          "min": 33.0,
+          "pts": 40,
+          "reb": 6,
+          "ast": 5,
+          "stl": 14,
+          "blk": 1,
+          "fgm": 5,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 37,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4395627",
+        "name": "Cam Reddish",
+        "stats": {
+          "min": 19.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4397077",
+        "name": "Jaxson Hayes",
+        "stats": {
+          "min": 8.0,
+          "pts": 0,
+          "reb": 5,
+          "ast": 4,
+          "stl": 5,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 100,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "2580782",
+        "name": "Spencer Dinwiddie",
+        "stats": {
+          "min": 24.0,
+          "pts": 50,
+          "reb": 0,
+          "ast": 0,
+          "stl": 11,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 37,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "4432582",
+        "name": "Max Christie",
+        "stats": {
+          "min": 16.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "PHI",
+    "score": 94,
+    "players": [
+      {
+        "playerId": "6440",
+        "name": "Tobias Harris",
+        "stats": {
+          "min": 41.0,
+          "pts": 16,
+          "reb": 13,
+          "ast": 11,
+          "stl": 16,
+          "blk": 2,
+          "fgm": 4,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 33,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 10
+        }
+      },
+      {
+        "playerId": "4277919",
+        "name": "Mo Bamba",
+        "stats": {
+          "min": 32.0,
+          "pts": 40,
+          "reb": 7,
+          "ast": 6,
+          "stl": 11,
+          "blk": 1,
+          "fgm": 3,
+          "fga": 2,
+          "fg3m": 3,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 42,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "3012",
+        "name": "Kyle Lowry",
+        "stats": {
+          "min": 32.0,
+          "pts": 25,
+          "reb": 2,
+          "ast": 1,
+          "stl": 5,
+          "blk": 1,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 16,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "3133603",
+        "name": "Kelly Oubre Jr.",
+        "stats": {
+          "min": 35.0,
+          "pts": 20,
+          "reb": 6,
+          "ast": 4,
+          "stl": 19,
+          "blk": 2,
+          "fgm": 3,
+          "fga": 3,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 33,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4431678",
+        "name": "Tyrese Maxey",
+        "stats": {
+          "min": 39.0,
+          "pts": 11,
+          "reb": 2,
+          "ast": 2,
+          "stl": 27,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 38,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "3416",
+        "name": "Nicolas Batum",
+        "stats": {
+          "min": 20.0,
+          "pts": 0,
+          "reb": 5,
+          "ast": 4,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4278562",
+        "name": "Paul Reed",
+        "stats": {
+          "min": 13.0,
+          "pts": 0,
+          "reb": 5,
+          "ast": 1,
+          "stl": 4,
+          "blk": 4,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 66,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4431828",
+        "name": "KJ Martin",
+        "stats": {
+          "min": 3.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 2,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "3064230",
+        "name": "Cameron Payne",
+        "stats": {
+          "min": 12.0,
+          "pts": 33,
+          "reb": 0,
+          "ast": 0,
+          "stl": 7,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 33,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "2990984",
+        "name": "Buddy Hield",
+        "stats": {
+          "min": 13.0,
+          "pts": 33,
+          "reb": 0,
+          "ast": 0,
+          "stl": 5,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 33,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      }
+    ]
+  },
+  "pace": 100
+}

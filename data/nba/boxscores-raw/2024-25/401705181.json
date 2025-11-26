@@ -1,0 +1,435 @@
+{
+  "gameId": "401705181",
+  "gameDate": "2025-01-23",
+  "home": {
+    "team": "HOU",
+    "score": 109,
+    "players": [
+      {
+        "playerId": "3155526",
+        "name": "Dillon Brooks",
+        "stats": {
+          "min": 32.0,
+          "pts": 4,
+          "reb": 0,
+          "ast": 1,
+          "stl": 1,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 0,
+          "pf": 4
+        }
+      },
+      {
+        "playerId": "4871144",
+        "name": "Alperen Sengun",
+        "stats": {
+          "min": 29.0,
+          "pts": 18,
+          "reb": 11,
+          "ast": 4,
+          "stl": 0,
+          "blk": 1,
+          "tov": 3,
+          "fgm": 7,
+          "fga": 13,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 4,
+          "fta": 6,
+          "oreb": 2,
+          "dreb": 9,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "2991230",
+        "name": "Fred VanVleet",
+        "stats": {
+          "min": 40.0,
+          "pts": 26,
+          "reb": 3,
+          "ast": 5,
+          "stl": 0,
+          "blk": 0,
+          "tov": 6,
+          "fgm": 8,
+          "fga": 15,
+          "fg3m": 7,
+          "fg3a": 12,
+          "ftm": 3,
+          "fta": 3,
+          "oreb": 0,
+          "dreb": 3,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "4437244",
+        "name": "Jalen Green",
+        "stats": {
+          "min": 33.0,
+          "pts": 10,
+          "reb": 2,
+          "ast": 5,
+          "stl": 0,
+          "blk": 0,
+          "tov": 3,
+          "fgm": 4,
+          "fga": 16,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 2,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "4684740",
+        "name": "Amen Thompson",
+        "stats": {
+          "min": 36.0,
+          "pts": 16,
+          "reb": 16,
+          "ast": 4,
+          "stl": 4,
+          "blk": 0,
+          "tov": 5,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 9,
+          "dreb": 7,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "3136777",
+        "name": "Jae'Sean Tate",
+        "stats": {
+          "min": 10.0,
+          "pts": 4,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "4433192",
+        "name": "Tari Eason",
+        "stats": {
+          "min": 20.0,
+          "pts": 12,
+          "reb": 6,
+          "ast": 2,
+          "stl": 3,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 4,
+          "fga": 10,
+          "fg3m": 3,
+          "fg3a": 5,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 3,
+          "dreb": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "5105592",
+        "name": "Cam Whitmore",
+        "stats": {
+          "min": 21.0,
+          "pts": 16,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 2,
+          "tov": 2,
+          "fgm": 6,
+          "fga": 12,
+          "fg3m": 2,
+          "fg3a": 5,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "2991235",
+        "name": "Steven Adams",
+        "stats": {
+          "min": 19.0,
+          "pts": 3,
+          "reb": 11,
+          "ast": 2,
+          "stl": 0,
+          "blk": 2,
+          "tov": 1,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 1,
+          "fta": 4,
+          "oreb": 5,
+          "dreb": 6,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "CLE",
+    "score": 108,
+    "players": [
+      {
+        "playerId": "3912848",
+        "name": "Dean Wade",
+        "stats": {
+          "min": 31.0,
+          "pts": 8,
+          "reb": 8,
+          "ast": 3,
+          "stl": 2,
+          "blk": 1,
+          "tov": 0,
+          "fgm": 3,
+          "fga": 8,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 2,
+          "dreb": 6,
+          "pf": 5
+        }
+      },
+      {
+        "playerId": "4066328",
+        "name": "Jarrett Allen",
+        "stats": {
+          "min": 32.0,
+          "pts": 17,
+          "reb": 13,
+          "ast": 3,
+          "stl": 2,
+          "blk": 3,
+          "tov": 3,
+          "fgm": 7,
+          "fga": 11,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 3,
+          "fta": 3,
+          "oreb": 5,
+          "dreb": 8,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "3908809",
+        "name": "Donovan Mitchell",
+        "stats": {
+          "min": 35.0,
+          "pts": 19,
+          "reb": 3,
+          "ast": 3,
+          "stl": 0,
+          "blk": 1,
+          "tov": 1,
+          "fgm": 7,
+          "fga": 21,
+          "fg3m": 1,
+          "fg3a": 8,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 2,
+          "dreb": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4065778",
+        "name": "Max Strus",
+        "stats": {
+          "min": 23.0,
+          "pts": 5,
+          "reb": 1,
+          "ast": 5,
+          "stl": 1,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 1,
+          "dreb": 0,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4396907",
+        "name": "Darius Garland",
+        "stats": {
+          "min": 33.0,
+          "pts": 26,
+          "reb": 2,
+          "ast": 5,
+          "stl": 3,
+          "blk": 0,
+          "tov": 3,
+          "fgm": 10,
+          "fga": 21,
+          "fg3m": 3,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 8,
+          "oreb": 1,
+          "dreb": 1,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "2990969",
+        "name": "Georges Niang",
+        "stats": {
+          "min": 20.0,
+          "pts": 8,
+          "reb": 5,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 2,
+          "fg3a": 4,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 2,
+          "dreb": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "6474",
+        "name": "Tristan Thompson",
+        "stats": {
+          "min": 13.0,
+          "pts": 0,
+          "reb": 3,
+          "ast": 3,
+          "stl": 0,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 2,
+          "dreb": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4065733",
+        "name": "Ty Jerome",
+        "stats": {
+          "min": 25.0,
+          "pts": 18,
+          "reb": 4,
+          "ast": 0,
+          "stl": 3,
+          "blk": 0,
+          "tov": 3,
+          "fgm": 6,
+          "fga": 12,
+          "fg3m": 3,
+          "fg3a": 7,
+          "ftm": 3,
+          "fta": 3,
+          "oreb": 2,
+          "dreb": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "4066757",
+        "name": "Sam Merrill",
+        "stats": {
+          "min": 23.0,
+          "pts": 7,
+          "reb": 5,
+          "ast": 3,
+          "stl": 0,
+          "blk": 0,
+          "tov": 1,
+          "fgm": 3,
+          "fga": 9,
+          "fg3m": 1,
+          "fg3a": 6,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 3,
+          "dreb": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "4683747",
+        "name": "Jaylon Tyson",
+        "stats": {
+          "min": 5.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "tov": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "pf": 0
+        }
+      }
+    ]
+  },
+  "pace": null
+}

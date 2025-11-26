@@ -1,0 +1,457 @@
+{
+  "gameId": "401703371",
+  "gameDate": "2024-11-13",
+  "home": {
+    "team": "DET",
+    "score": 123,
+    "players": [
+      {
+        "playerId": "6440",
+        "name": "Tobias Harris",
+        "stats": {
+          "min": 40.0,
+          "pts": 50,
+          "reb": 7,
+          "ast": 5,
+          "stl": 18,
+          "blk": 2,
+          "fgm": 4,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 46,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4433621",
+        "name": "Jalen Duren",
+        "stats": {
+          "min": 30.0,
+          "pts": 0,
+          "reb": 11,
+          "ast": 8,
+          "stl": 8,
+          "blk": 3,
+          "fgm": 5,
+          "fga": 0,
+          "fg3m": 2,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 80,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 8
+        }
+      },
+      {
+        "playerId": "2528210",
+        "name": "Tim Hardaway Jr.",
+        "stats": {
+          "min": 19.0,
+          "pts": 25,
+          "reb": 1,
+          "ast": 1,
+          "stl": 11,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4432166",
+        "name": "Cade Cunningham",
+        "stats": {
+          "min": 38.0,
+          "pts": 28,
+          "reb": 7,
+          "ast": 7,
+          "stl": 21,
+          "blk": 0,
+          "fgm": 9,
+          "fga": 0,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 0,
+          "fta": 40,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4433218",
+        "name": "Jaden Ivey",
+        "stats": {
+          "min": 41.0,
+          "pts": 20,
+          "reb": 9,
+          "ast": 7,
+          "stl": 19,
+          "blk": 2,
+          "fgm": 7,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 44,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 7
+        }
+      },
+      {
+        "playerId": "3899664",
+        "name": "Simone Fontecchio",
+        "stats": {
+          "min": 23.0,
+          "pts": 40,
+          "reb": 2,
+          "ast": 2,
+          "stl": 10,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4432810",
+        "name": "Isaiah Stewart",
+        "stats": {
+          "min": 23.0,
+          "pts": 0,
+          "reb": 10,
+          "ast": 5,
+          "stl": 13,
+          "blk": 5,
+          "fgm": 1,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 66,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 7
+        }
+      },
+      {
+        "playerId": "4683771",
+        "name": "Ronald Holland II",
+        "stats": {
+          "min": 16.0,
+          "pts": 0,
+          "reb": 4,
+          "ast": 2,
+          "stl": 2,
+          "blk": 2,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "3907822",
+        "name": "Malik Beasley",
+        "stats": {
+          "min": 35.0,
+          "pts": 45,
+          "reb": 5,
+          "ast": 4,
+          "stl": 21,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 4,
+          "ftm": 0,
+          "fta": 41,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "MIA",
+    "score": 121,
+    "players": [
+      {
+        "playerId": "3449",
+        "name": "Kevin Love",
+        "stats": {
+          "min": 10.0,
+          "pts": 25,
+          "reb": 2,
+          "ast": 2,
+          "stl": 3,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 25,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4291678",
+        "name": "Haywood Highsmith",
+        "stats": {
+          "min": 36.0,
+          "pts": 33,
+          "reb": 5,
+          "ast": 4,
+          "stl": 9,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 60,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4066261",
+        "name": "Bam Adebayo",
+        "stats": {
+          "min": 44.0,
+          "pts": 100,
+          "reb": 12,
+          "ast": 6,
+          "stl": 20,
+          "blk": 6,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 61,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 9
+        }
+      },
+      {
+        "playerId": "3074752",
+        "name": "Terry Rozier",
+        "stats": {
+          "min": 40.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 2,
+          "stl": 7,
+          "blk": 0,
+          "fgm": 5,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 21,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4395725",
+        "name": "Tyler Herro",
+        "stats": {
+          "min": 42.0,
+          "pts": 58,
+          "reb": 5,
+          "ast": 5,
+          "stl": 40,
+          "blk": 0,
+          "fgm": 8,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 51,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "3157465",
+        "name": "Duncan Robinson",
+        "stats": {
+          "min": 36.0,
+          "pts": 20,
+          "reb": 6,
+          "ast": 4,
+          "stl": 14,
+          "blk": 2,
+          "fgm": 3,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 37,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4432848",
+        "name": "Jaime Jaquez Jr.",
+        "stats": {
+          "min": 25.0,
+          "pts": 0,
+          "reb": 5,
+          "ast": 3,
+          "stl": 14,
+          "blk": 2,
+          "fgm": 3,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 66,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4997528",
+        "name": "Nikola Jovic",
+        "stats": {
+          "min": 3.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 100,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "5105623",
+        "name": "Kel'el Ware",
+        "stats": {
+          "min": 9.0,
+          "pts": 50,
+          "reb": 2,
+          "ast": 2,
+          "stl": 5,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "2581190",
+        "name": "Josh Richardson",
+        "stats": {
+          "min": 8.0,
+          "pts": 100,
+          "reb": 0,
+          "ast": 0,
+          "stl": 5,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 66,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "4601025",
+        "name": "Pelle Larsson",
+        "stats": {
+          "min": 13.0,
+          "pts": 0,
+          "reb": 3,
+          "ast": 2,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 20,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      }
+    ]
+  },
+  "pace": 100
+}

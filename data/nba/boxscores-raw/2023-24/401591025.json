@@ -1,0 +1,369 @@
+{
+  "gameId": "401591025",
+  "gameDate": "2023-12-13",
+  "home": {
+    "team": "WAS",
+    "score": 119,
+    "players": [
+      {
+        "playerId": "embiid",
+        "name": "Joel Embiid",
+        "stats": {
+          "min": 35,
+          "pts": 41,
+          "reb": 20,
+          "ast": 3,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 14,
+          "fga": 30,
+          "fg3m": 4,
+          "fg3a": 14,
+          "ftm": 8,
+          "fta": 10,
+          "oreb": 6,
+          "dreb": 14,
+          "tov": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "durant",
+        "name": "Kevin Durant",
+        "stats": {
+          "min": 23,
+          "pts": 18,
+          "reb": 6,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 13,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 4,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "simmons",
+        "name": "Ben Simmons",
+        "stats": {
+          "min": 38,
+          "pts": 6,
+          "reb": 10,
+          "ast": 7,
+          "stl": 0,
+          "blk": 2,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "luka",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 34,
+          "pts": 31,
+          "reb": 12,
+          "ast": 6,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 10,
+          "fga": 23,
+          "fg3m": 3,
+          "fg3a": 10,
+          "ftm": 6,
+          "fta": 7,
+          "oreb": 3,
+          "dreb": 8,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "lebron_james",
+        "name": "LeBron James",
+        "stats": {
+          "min": 32,
+          "pts": 34,
+          "reb": 10,
+          "ast": 5,
+          "stl": 3,
+          "blk": 1,
+          "fgm": 11,
+          "fga": 25,
+          "fg3m": 4,
+          "fg3a": 11,
+          "ftm": 6,
+          "fta": 8,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "was_bench_0",
+        "name": "WAS Bench Player 1",
+        "stats": {
+          "min": 12,
+          "pts": 1,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "was_bench_1",
+        "name": "WAS Bench Player 2",
+        "stats": {
+          "min": 20,
+          "pts": 3,
+          "reb": 0,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "was_bench_2",
+        "name": "WAS Bench Player 3",
+        "stats": {
+          "min": 25,
+          "pts": 7,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 3,
+          "pf": 0
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "ORL",
+    "score": 114,
+    "players": [
+      {
+        "playerId": "luka",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 25,
+          "pts": 30,
+          "reb": 2,
+          "ast": 7,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 10,
+          "fga": 22,
+          "fg3m": 3,
+          "fg3a": 10,
+          "ftm": 6,
+          "fta": 7,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "embiid",
+        "name": "Joel Embiid",
+        "stats": {
+          "min": 20,
+          "pts": 17,
+          "reb": 8,
+          "ast": 2,
+          "stl": 1,
+          "blk": 2,
+          "fgm": 5,
+          "fga": 12,
+          "fg3m": 2,
+          "fg3a": 5,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 2,
+          "dreb": 5,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "durant",
+        "name": "Kevin Durant",
+        "stats": {
+          "min": 28,
+          "pts": 17,
+          "reb": 6,
+          "ast": 5,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 5,
+          "fga": 12,
+          "fg3m": 2,
+          "fg3a": 5,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 4,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "lebron_james",
+        "name": "LeBron James",
+        "stats": {
+          "min": 27,
+          "pts": 18,
+          "reb": 7,
+          "ast": 7,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 13,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "tatum",
+        "name": "Jayson Tatum",
+        "stats": {
+          "min": 24,
+          "pts": 22,
+          "reb": 7,
+          "ast": 2,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 16,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 0,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "orl_bench_0",
+        "name": "ORL Bench Player 1",
+        "stats": {
+          "min": 22,
+          "pts": 5,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "orl_bench_1",
+        "name": "ORL Bench Player 2",
+        "stats": {
+          "min": 22,
+          "pts": 7,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "orl_bench_2",
+        "name": "ORL Bench Player 3",
+        "stats": {
+          "min": 20,
+          "pts": 7,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 1,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "pace": 104
+}

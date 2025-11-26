@@ -72,16 +72,29 @@ console.log();
 
 // Load current season boxscores
 console.log('[1/6] Loading boxscore data...');
-const boxscoresPath = path.join(__dirname, '../../data/nba/player-boxscores-2025-26.json');
+const boxscoresPath = path.join(__dirname, '../../data/nba/player-history-2024-2026.json');
 
 if (!existsSync(boxscoresPath)) {
   console.error('❌ ERROR: Boxscores file not found:', boxscoresPath);
-  console.error('Please ensure data/nba/player-boxscores-2025-26.json exists.');
+  console.error('Please ensure data/nba/player-history-2024-2026.json exists.');
   process.exit(1);
 }
 
 const allBoxscores = JSON.parse(readFileSync(boxscoresPath, 'utf-8'));
+
+// Normalize date format: "Nov 25, 2025" → "2025-11-25"
+allBoxscores.forEach(g => {
+  if (g.gameDate && g.gameDate.includes(',')) {
+    // Convert "Nov 25, 2025" to "2025-11-25"
+    const d = new Date(g.gameDate);
+    g.date = d.toISOString().split('T')[0];
+  } else if (g.gameDate) {
+    g.date = g.gameDate; // Already in correct format
+  }
+});
+
 console.log(`✅ Loaded ${allBoxscores.length} player-game records`);
+console.log(`   Data includes 2024-25 + 2025-26 seasons`);
 
 // Load inference engine
 console.log('[2/6] Loading Phase 3.5 inference engine...');
@@ -137,6 +150,16 @@ function calculateFeatures(playerName, targetDate, opponent, isHome) {
     .sort((a, b) => a.date.localeCompare(b.date)); // Chronological order
 
   if (priorGames.length === 0) {
+    // DEBUG: Log first few failures to diagnose
+    const allPlayerGames = allBoxscores.filter(g => g.playerName === playerName);
+    if (Math.random() < 0.01) { // 1% sample
+      console.log(`   DEBUG: No data for ${playerName} before ${targetDate}`);
+      console.log(`   DEBUG: Total games for ${playerName}: ${allPlayerGames.length}`);
+      if (allPlayerGames.length > 0) {
+        const dates = allPlayerGames.map(g => g.date).sort();
+        console.log(`   DEBUG: Date range: ${dates[0]} → ${dates[dates.length-1]}`);
+      }
+    }
     return null; // No historical data
   }
 
@@ -402,7 +425,8 @@ function parseOdds(oddsData) {
           const marketKey = market.key; // 'player_points', 'player_rebounds', 'player_assists'
 
           for (const outcome of market.outcomes) {
-            const { name: playerName, description: side, price: odds, point: line } = outcome;
+            // TheOddsAPI format: name=side, description=player (opposite of what you'd expect!)
+            const { name: side, description: playerName, price: odds, point: line } = outcome;
             
             const key = `${playerName}|${marketKey}|${line}|${side}`;
             const existing = bestOddsMap.get(key);
@@ -493,6 +517,9 @@ for (const prop of allProps) {
       skipped.noFeatures++;
       continue;
     }
+
+    // Add the line value to features (models were trained with this)
+    features.line = line;
 
     // Normalize features to match model requirements
     const normalizedFeatures = normalizeFeatures(features, engine.registry);

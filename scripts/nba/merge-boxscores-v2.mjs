@@ -1,0 +1,124 @@
+#!/usr/bin/env node
+/**
+ * Merge multiseason historical data with current season data
+ * Handles date format differences: "2025-01-23" vs "Nov 23, 2025"
+ */
+import { readFileSync, writeFileSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Normalize date to YYYY-MM-DD format
+function normalizeDate(dateStr) {
+  if (!dateStr) return null;
+  
+  // Already in YYYY-MM-DD format
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return dateStr;
+  }
+  
+  // Handle "Nov 23, 2025" format
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) {
+    console.warn(`Invalid date: ${dateStr}`);
+    return null;
+  }
+  
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+console.log('📦 Merging boxscore datasets...');
+
+// Load multiseason data (historical)
+const multiSeasonPath = path.join(__dirname, '../../data/nba/boxscores_multiseason_2022_26_v1.json');
+const multiSeasonData = JSON.parse(readFileSync(multiSeasonPath, 'utf-8'));
+const historicalGames = (multiSeasonData.games || []).map(g => ({
+  ...g,
+  date: normalizeDate(g.date)
+}));
+console.log(`✅ Loaded ${historicalGames.length} historical games`);
+
+// Load current season data
+const currentPath = path.join(__dirname, '../../data/nba/player-boxscores-2025-26.json');
+const currentGames = JSON.parse(readFileSync(currentPath, 'utf-8'));
+console.log(`✅ Loaded ${currentGames.length} current season games`);
+
+// Normalize current season to historical format
+const normalizedCurrent = currentGames.map(g => ({
+  player_name: g.playerName,
+  date: normalizeDate(g.gameDate),
+  points: g.pts,
+  rebounds: g.reb,
+  assists: g.ast,
+  steals: g.stl,
+  blocks: g.blk,
+  turnovers: g.tov,
+  minutes: parseFloat(g.min) || 0,
+  fga: g.fga,
+  fgm: g.fgm,
+  fg_pct: g.fg_pct,
+  fg3a: g.fg3a,
+  fg3m: g.fg3m,
+  fg3_pct: g.fg3_pct,
+  fta: g.fta,
+  ftm: g.ftm,
+  ft_pct: g.ft_pct,
+  oreb: g.oreb,
+  dreb: g.dreb,
+  fouls: g.pf,
+  plus_minus: g.plus_minus,
+  team: g.teamAbbreviation,
+  opponent: g.matchup?.includes('@') ? g.matchup.split('@')[1].trim() : g.matchup?.split('vs.')[1]?.trim(),
+  home: g.matchup?.includes('vs.') || false,
+  season: g.season || '2025-26',
+  game_id: g.gameId
+})).filter(g => g.date !== null);
+
+console.log(`✅ Normalized ${normalizedCurrent.length} current games`);
+
+// Find latest date in historical data
+const latestHistorical = historicalGames.reduce((max, g) => 
+  g.date && g.date > max ? g.date : max, '2000-01-01');
+
+console.log(`📅 Latest historical date: ${latestHistorical}`);
+
+// Only add games newer than historical data
+const newGames = normalizedCurrent.filter(g => g.date > latestHistorical);
+console.log(`📊 Found ${newGames.length} new games after ${latestHistorical}`);
+
+// Sample of new game dates
+if (newGames.length > 0) {
+  const sampleDates = [...new Set(newGames.map(g => g.date))].sort().slice(0, 10);
+  console.log(`   Sample dates: ${sampleDates.join(', ')}`);
+}
+
+// Merge datasets
+const mergedGames = [...historicalGames, ...newGames];
+console.log(`✅ Merged total: ${mergedGames.length} games`);
+
+// Find new date range
+const dates = mergedGames.map(g => g.date).filter(Boolean).sort();
+const dateRange = {
+  earliest: dates[0],
+  latest: dates[dates.length - 1]
+};
+
+// Create output
+const output = {
+  ...multiSeasonData,
+  games: mergedGames,
+  total_games: mergedGames.length,
+  date_range: dateRange,
+  last_updated: new Date().toISOString()
+};
+
+// Write merged file
+const outputPath = path.join(__dirname, '../../data/nba/boxscores_merged.json');
+writeFileSync(outputPath, JSON.stringify(output));
+console.log(`✅ Wrote merged data to ${outputPath}`);
+console.log(`📅 Date range: ${dateRange.earliest} to ${dateRange.latest}`);

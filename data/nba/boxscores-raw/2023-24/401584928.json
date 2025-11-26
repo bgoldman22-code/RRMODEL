@@ -1,0 +1,435 @@
+{
+  "gameId": "401584928",
+  "gameDate": "2023-12-12",
+  "home": {
+    "team": "MIL",
+    "score": 133,
+    "players": [
+      {
+        "playerId": "6609",
+        "name": "Khris Middleton",
+        "stats": {
+          "min": 33.0,
+          "pts": 0,
+          "reb": 13,
+          "ast": 12,
+          "stl": 13,
+          "blk": 1,
+          "fgm": 6,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 4,
+          "ftm": 0,
+          "fta": 45,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 10
+        }
+      },
+      {
+        "playerId": "3032977",
+        "name": "Giannis Antetokounmpo",
+        "stats": {
+          "min": 41.0,
+          "pts": 0,
+          "reb": 12,
+          "ast": 11,
+          "stl": 32,
+          "blk": 1,
+          "fgm": 6,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 69,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 9
+        }
+      },
+      {
+        "playerId": "3448",
+        "name": "Brook Lopez",
+        "stats": {
+          "min": 40.0,
+          "pts": 33,
+          "reb": 3,
+          "ast": 1,
+          "stl": 19,
+          "blk": 2,
+          "fgm": 3,
+          "fga": 1,
+          "fg3m": 3,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 54,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "3907822",
+        "name": "Malik Beasley",
+        "stats": {
+          "min": 40.0,
+          "pts": 62,
+          "reb": 4,
+          "ast": 4,
+          "stl": 19,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 63,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "6606",
+        "name": "Damian Lillard",
+        "stats": {
+          "min": 41.0,
+          "pts": 22,
+          "reb": 4,
+          "ast": 4,
+          "stl": 14,
+          "blk": 0,
+          "fgm": 9,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 17,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "3064482",
+        "name": "Bobby Portis",
+        "stats": {
+          "min": 25.0,
+          "pts": 33,
+          "reb": 7,
+          "ast": 5,
+          "stl": 17,
+          "blk": 2,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 63,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4432179",
+        "name": "MarJon Beauchamp",
+        "stats": {
+          "min": 14.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "3064230",
+        "name": "Cameron Payne",
+        "stats": {
+          "min": 18.0,
+          "pts": 50,
+          "reb": 0,
+          "ast": 0,
+          "stl": 5,
+          "blk": 0,
+          "fgm": 5,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "4397475",
+        "name": "AJ Green",
+        "stats": {
+          "min": 14.0,
+          "pts": 80,
+          "reb": 5,
+          "ast": 5,
+          "stl": 12,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 66,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "CHI",
+    "score": 129,
+    "players": [
+      {
+        "playerId": "4431687",
+        "name": "Patrick Williams",
+        "stats": {
+          "min": 41.0,
+          "pts": 50,
+          "reb": 7,
+          "ast": 3,
+          "stl": 15,
+          "blk": 4,
+          "fgm": 2,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 42,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "6478",
+        "name": "Nikola Vucevic",
+        "stats": {
+          "min": 39.0,
+          "pts": 40,
+          "reb": 10,
+          "ast": 9,
+          "stl": 14,
+          "blk": 1,
+          "fgm": 5,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 37,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 7
+        }
+      },
+      {
+        "playerId": "3978",
+        "name": "DeMar DeRozan",
+        "stats": {
+          "min": 42.0,
+          "pts": 50,
+          "reb": 2,
+          "ast": 2,
+          "stl": 41,
+          "blk": 0,
+          "fgm": 11,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 46,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4395651",
+        "name": "Coby White",
+        "stats": {
+          "min": 45.0,
+          "pts": 60,
+          "reb": 6,
+          "ast": 6,
+          "stl": 33,
+          "blk": 0,
+          "fgm": 4,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 60,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4397002",
+        "name": "Ayo Dosunmu",
+        "stats": {
+          "min": 26.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "4433159",
+        "name": "Dalen Terry",
+        "stats": {
+          "min": 11.0,
+          "pts": 50,
+          "reb": 0,
+          "ast": 0,
+          "stl": 3,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "5105553",
+        "name": "Julian Phillips",
+        "stats": {
+          "min": 4.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "2528693",
+        "name": "Torrey Craig",
+        "stats": {
+          "min": 29.0,
+          "pts": 20,
+          "reb": 5,
+          "ast": 4,
+          "stl": 7,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 22,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "6585",
+        "name": "Andre Drummond",
+        "stats": {
+          "min": 14.0,
+          "pts": 0,
+          "reb": 16,
+          "ast": 5,
+          "stl": 9,
+          "blk": 11,
+          "fgm": 1,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 25,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 4,
+          "dreb": 12
+        }
+      },
+      {
+        "playerId": "3133635",
+        "name": "Jevon Carter",
+        "stats": {
+          "min": 13.0,
+          "pts": 50,
+          "reb": 5,
+          "ast": 4,
+          "stl": 7,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 60,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      }
+    ]
+  },
+  "pace": 100
+}

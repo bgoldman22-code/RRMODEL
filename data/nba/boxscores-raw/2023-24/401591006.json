@@ -1,0 +1,281 @@
+{
+  "gameId": "401591006",
+  "gameDate": "2023-11-05",
+  "home": {
+    "team": "BKN",
+    "score": 117,
+    "players": [
+      {
+        "playerId": "simmons",
+        "name": "Ben Simmons",
+        "stats": {
+          "min": 34,
+          "pts": 7,
+          "reb": 5,
+          "ast": 6,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 1,
+          "dreb": 3,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "bkn_bench_0",
+        "name": "BKN Bench Player 1",
+        "stats": {
+          "min": 14,
+          "pts": 4,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "bkn_bench_1",
+        "name": "BKN Bench Player 2",
+        "stats": {
+          "min": 12,
+          "pts": 2,
+          "reb": 2,
+          "ast": 0,
+          "stl": 1,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "bkn_bench_2",
+        "name": "BKN Bench Player 3",
+        "stats": {
+          "min": 20,
+          "pts": 4,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 0
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "CHI",
+    "score": 118,
+    "players": [
+      {
+        "playerId": "simmons",
+        "name": "Ben Simmons",
+        "stats": {
+          "min": 32,
+          "pts": 7,
+          "reb": 10,
+          "ast": 5,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "jokic",
+        "name": "Nikola Jokic",
+        "stats": {
+          "min": 24,
+          "pts": 19,
+          "reb": 7,
+          "ast": 7,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 14,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "stephen_curry",
+        "name": "Stephen Curry",
+        "stats": {
+          "min": 34,
+          "pts": 37,
+          "reb": 5,
+          "ast": 5,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 12,
+          "fga": 27,
+          "fg3m": 4,
+          "fg3a": 12,
+          "ftm": 7,
+          "fta": 9,
+          "oreb": 1,
+          "dreb": 3,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "lebron_james",
+        "name": "LeBron James",
+        "stats": {
+          "min": 33,
+          "pts": 15,
+          "reb": 5,
+          "ast": 6,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 5,
+          "fga": 11,
+          "fg3m": 1,
+          "fg3a": 5,
+          "ftm": 3,
+          "fta": 3,
+          "oreb": 1,
+          "dreb": 3,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "luka",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 37,
+          "pts": 35,
+          "reb": 12,
+          "ast": 12,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 12,
+          "fga": 26,
+          "fg3m": 4,
+          "fg3a": 12,
+          "ftm": 7,
+          "fta": 8,
+          "oreb": 3,
+          "dreb": 8,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "chi_bench_0",
+        "name": "CHI Bench Player 1",
+        "stats": {
+          "min": 14,
+          "pts": 0,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "chi_bench_1",
+        "name": "CHI Bench Player 2",
+        "stats": {
+          "min": 23,
+          "pts": 5,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "chi_bench_2",
+        "name": "CHI Bench Player 3",
+        "stats": {
+          "min": 19,
+          "pts": 7,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "pace": 98
+}

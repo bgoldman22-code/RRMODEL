@@ -1,0 +1,215 @@
+{
+  "gameId": "401591078",
+  "gameDate": "2025-03-27",
+  "home": {
+    "team": "LAL",
+    "score": 108,
+    "players": [
+      {
+        "playerId": "lebron_james",
+        "name": "LeBron James",
+        "stats": {
+          "min": 35,
+          "pts": 22,
+          "reb": 8,
+          "ast": 7,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 16,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 2,
+          "dreb": 5,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "anthony_davis",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 29,
+          "pts": 17,
+          "reb": 15,
+          "ast": 2,
+          "stl": 1,
+          "blk": 2,
+          "fgm": 5,
+          "fga": 12,
+          "fg3m": 2,
+          "fg3a": 5,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 4,
+          "dreb": 10,
+          "tov": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "lal_bench_0",
+        "name": "LAL Bench Player 1",
+        "stats": {
+          "min": 13,
+          "pts": 0,
+          "reb": 3,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "lal_bench_1",
+        "name": "LAL Bench Player 2",
+        "stats": {
+          "min": 11,
+          "pts": 0,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "lal_bench_2",
+        "name": "LAL Bench Player 3",
+        "stats": {
+          "min": 20,
+          "pts": 3,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 3,
+          "pf": 3
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "LAC",
+    "score": 125,
+    "players": [
+      {
+        "playerId": "westbrook",
+        "name": "Russell Westbrook",
+        "stats": {
+          "min": 32,
+          "pts": 16,
+          "reb": 3,
+          "ast": 6,
+          "stl": 1,
+          "blk": 2,
+          "fgm": 5,
+          "fga": 12,
+          "fg3m": 1,
+          "fg3a": 5,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "lac_bench_0",
+        "name": "LAC Bench Player 1",
+        "stats": {
+          "min": 13,
+          "pts": 2,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "lac_bench_1",
+        "name": "LAC Bench Player 2",
+        "stats": {
+          "min": 22,
+          "pts": 10,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "lac_bench_2",
+        "name": "LAC Bench Player 3",
+        "stats": {
+          "min": 22,
+          "pts": 1,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "pace": 101
+}

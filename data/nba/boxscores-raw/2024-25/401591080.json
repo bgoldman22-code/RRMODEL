@@ -1,0 +1,193 @@
+{
+  "gameId": "401591080",
+  "gameDate": "2025-03-31",
+  "home": {
+    "team": "DAL",
+    "score": 114,
+    "players": [
+      {
+        "playerId": "luka",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 32,
+          "pts": 40,
+          "reb": 7,
+          "ast": 10,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 14,
+          "fga": 30,
+          "fg3m": 4,
+          "fg3a": 14,
+          "ftm": 8,
+          "fta": 10,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "dal_bench_0",
+        "name": "DAL Bench Player 1",
+        "stats": {
+          "min": 18,
+          "pts": 3,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "dal_bench_1",
+        "name": "DAL Bench Player 2",
+        "stats": {
+          "min": 12,
+          "pts": 0,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 1,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "dal_bench_2",
+        "name": "DAL Bench Player 3",
+        "stats": {
+          "min": 18,
+          "pts": 0,
+          "reb": 0,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 4,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "NYK",
+    "score": 97,
+    "players": [
+      {
+        "playerId": "randle",
+        "name": "Julius Randle",
+        "stats": {
+          "min": 35,
+          "pts": 34,
+          "reb": 8,
+          "ast": 5,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 11,
+          "fga": 25,
+          "fg3m": 4,
+          "fg3a": 11,
+          "ftm": 6,
+          "fta": 8,
+          "oreb": 2,
+          "dreb": 5,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "nyk_bench_0",
+        "name": "NYK Bench Player 1",
+        "stats": {
+          "min": 20,
+          "pts": 4,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "nyk_bench_1",
+        "name": "NYK Bench Player 2",
+        "stats": {
+          "min": 14,
+          "pts": 2,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "nyk_bench_2",
+        "name": "NYK Bench Player 3",
+        "stats": {
+          "min": 17,
+          "pts": 1,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 3,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "pace": 107
+}

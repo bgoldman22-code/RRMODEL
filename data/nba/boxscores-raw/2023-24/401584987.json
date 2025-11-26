@@ -1,0 +1,435 @@
+{
+  "gameId": "401584987",
+  "gameDate": "2023-12-19",
+  "home": {
+    "team": "LAL",
+    "score": 109,
+    "players": [
+      {
+        "playerId": "1966",
+        "name": "LeBron James",
+        "stats": {
+          "min": 39.0,
+          "pts": 25,
+          "reb": 11,
+          "ast": 10,
+          "stl": 25,
+          "blk": 1,
+          "fgm": 11,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 43,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 8
+        }
+      },
+      {
+        "playerId": "6583",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 35.0,
+          "pts": 100,
+          "reb": 14,
+          "ast": 12,
+          "stl": 32,
+          "blk": 2,
+          "fgm": 2,
+          "fga": 1,
+          "fg3m": 2,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 63,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 4,
+          "dreb": 10
+        }
+      },
+      {
+        "playerId": "2990962",
+        "name": "Taurean Prince",
+        "stats": {
+          "min": 39.0,
+          "pts": 23,
+          "reb": 2,
+          "ast": 1,
+          "stl": 9,
+          "blk": 1,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 23,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4395627",
+        "name": "Cam Reddish",
+        "stats": {
+          "min": 27.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 1,
+          "stl": 4,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 22,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "3136776",
+        "name": "D'Angelo Russell",
+        "stats": {
+          "min": 28.0,
+          "pts": 50,
+          "reb": 3,
+          "ast": 3,
+          "stl": 9,
+          "blk": 0,
+          "fgm": 4,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 30,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4066648",
+        "name": "Rui Hachimura",
+        "stats": {
+          "min": 17.0,
+          "pts": 50,
+          "reb": 2,
+          "ast": 0,
+          "stl": 8,
+          "blk": 2,
+          "fgm": 0,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4278077",
+        "name": "Jarred Vanderbilt",
+        "stats": {
+          "min": 14.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 2,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4397077",
+        "name": "Jaxson Hayes",
+        "stats": {
+          "min": 8.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 2,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 100,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4066457",
+        "name": "Austin Reaves",
+        "stats": {
+          "min": 33.0,
+          "pts": 42,
+          "reb": 3,
+          "ast": 3,
+          "stl": 20,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 4,
+          "ftm": 0,
+          "fta": 40,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "NY",
+    "score": 114,
+    "players": [
+      {
+        "playerId": "3064514",
+        "name": "Julius Randle",
+        "stats": {
+          "min": 43.0,
+          "pts": 25,
+          "reb": 14,
+          "ast": 13,
+          "stl": 27,
+          "blk": 1,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 54,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 4,
+          "dreb": 10
+        }
+      },
+      {
+        "playerId": "4395625",
+        "name": "RJ Barrett",
+        "stats": {
+          "min": 30.0,
+          "pts": 0,
+          "reb": 5,
+          "ast": 4,
+          "stl": 12,
+          "blk": 1,
+          "fgm": 4,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 30,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4277922",
+        "name": "Jericho Sims",
+        "stats": {
+          "min": 3.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "3934672",
+        "name": "Jalen Brunson",
+        "stats": {
+          "min": 37.0,
+          "pts": 50,
+          "reb": 4,
+          "ast": 3,
+          "stl": 29,
+          "blk": 1,
+          "fgm": 3,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 0,
+          "fta": 47,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "3934673",
+        "name": "Donte DiVincenzo",
+        "stats": {
+          "min": 19.0,
+          "pts": 50,
+          "reb": 1,
+          "ast": 1,
+          "stl": 8,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 60,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "3986",
+        "name": "Taj Gibson",
+        "stats": {
+          "min": 6.0,
+          "pts": 0,
+          "reb": 3,
+          "ast": 2,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4222252",
+        "name": "Isaiah Hartenstein",
+        "stats": {
+          "min": 39.0,
+          "pts": 0,
+          "reb": 17,
+          "ast": 10,
+          "stl": 9,
+          "blk": 7,
+          "fgm": 2,
+          "fga": 2,
+          "fg3m": 2,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 75,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 5,
+          "dreb": 12
+        }
+      },
+      {
+        "playerId": "3062679",
+        "name": "Josh Hart",
+        "stats": {
+          "min": 22.0,
+          "pts": 0,
+          "reb": 5,
+          "ast": 5,
+          "stl": 6,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 0,
+          "fta": 33,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4395724",
+        "name": "Immanuel Quickley",
+        "stats": {
+          "min": 29.0,
+          "pts": 42,
+          "reb": 3,
+          "ast": 3,
+          "stl": 20,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 53,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4397014",
+        "name": "Quentin Grimes",
+        "stats": {
+          "min": 11.0,
+          "pts": 25,
+          "reb": 0,
+          "ast": 0,
+          "stl": 3,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 20,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      }
+    ]
+  },
+  "pace": 100
+}

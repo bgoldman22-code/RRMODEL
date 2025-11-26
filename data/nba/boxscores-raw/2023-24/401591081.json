@@ -1,0 +1,193 @@
+{
+  "gameId": "401591081",
+  "gameDate": "2024-04-03",
+  "home": {
+    "team": "DAL",
+    "score": 117,
+    "players": [
+      {
+        "playerId": "luka",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 24,
+          "pts": 31,
+          "reb": 10,
+          "ast": 7,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 10,
+          "fga": 23,
+          "fg3m": 3,
+          "fg3a": 10,
+          "ftm": 6,
+          "fta": 7,
+          "oreb": 3,
+          "dreb": 7,
+          "tov": 1,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "dal_bench_0",
+        "name": "DAL Bench Player 1",
+        "stats": {
+          "min": 15,
+          "pts": 3,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 3,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "dal_bench_1",
+        "name": "DAL Bench Player 2",
+        "stats": {
+          "min": 15,
+          "pts": 4,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "dal_bench_2",
+        "name": "DAL Bench Player 3",
+        "stats": {
+          "min": 23,
+          "pts": 6,
+          "reb": 0,
+          "ast": 0,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "PHX",
+    "score": 124,
+    "players": [
+      {
+        "playerId": "durant",
+        "name": "Kevin Durant",
+        "stats": {
+          "min": 30,
+          "pts": 35,
+          "reb": 7,
+          "ast": 4,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 12,
+          "fga": 26,
+          "fg3m": 4,
+          "fg3a": 12,
+          "ftm": 7,
+          "fta": 8,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 4,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "phx_bench_0",
+        "name": "PHX Bench Player 1",
+        "stats": {
+          "min": 24,
+          "pts": 5,
+          "reb": 4,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "phx_bench_1",
+        "name": "PHX Bench Player 2",
+        "stats": {
+          "min": 12,
+          "pts": 4,
+          "reb": 2,
+          "ast": 0,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 4,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "phx_bench_2",
+        "name": "PHX Bench Player 3",
+        "stats": {
+          "min": 14,
+          "pts": 5,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 3,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "pace": 95
+}

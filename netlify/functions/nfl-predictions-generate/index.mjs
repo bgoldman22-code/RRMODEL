@@ -37,6 +37,145 @@ import {
   PRIORITY_BOOK_ORDER
 } from '../_lib/odds-constants.mjs';
 
+// ========================================
+// MODULE-LEVEL CACHES WITH TTL
+// ========================================
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+const moduleCache = {
+  schedule: { data: null, loadedAt: null, promise: null },
+  advancedMetrics: { data: null, loadedAt: null },
+  injuries: { data: null, loadedAt: null },
+  depthCharts: new Map() // Map<weekNumber, {data, loadedAt}>
+};
+
+/**
+ * Check if cached data is still valid (within TTL)
+ */
+function isCacheValid(cacheEntry) {
+  if (!cacheEntry || !cacheEntry.loadedAt) return false;
+  return (Date.now() - cacheEntry.loadedAt) < CACHE_TTL_MS;
+}
+
+/**
+ * Get schedule data from cache or load it (static import alternative)
+ */
+async function getScheduleFull() {
+  // Return existing valid cache
+  if (moduleCache.schedule.data && isCacheValid(moduleCache.schedule)) {
+    console.log('📦 Using cached schedule');
+    return moduleCache.schedule.data;
+  }
+  
+  // If already loading, wait for that promise
+  if (moduleCache.schedule.promise) {
+    console.log('⏳ Waiting for in-flight schedule load');
+    return moduleCache.schedule.promise;
+  }
+  
+  // Load schedule
+  console.log('🔄 Loading schedule from file');
+  const loadPromise = (async () => {
+    try {
+      const scheduleModule = await import('../../../netlify/data/nfl/2025/schedule.full.json', {
+        assert: { type: 'json' }
+      });
+      const data = scheduleModule.default;
+      moduleCache.schedule.data = data;
+      moduleCache.schedule.loadedAt = Date.now();
+      moduleCache.schedule.promise = null;
+      return data;
+    } catch (error) {
+      moduleCache.schedule.promise = null;
+      throw error;
+    }
+  })();
+  
+  moduleCache.schedule.promise = loadPromise;
+  return loadPromise;
+}
+
+/**
+ * Load depth charts for multiple weeks at once (pre-loading optimization)
+ */
+async function loadDepthChartsForWeeks(weeks, season = 2025) {
+  const results = new Map();
+  console.log(`📊 Pre-loading depth charts for weeks: ${weeks.join(', ')}`);
+  
+  const { loadDepthChart } = await import('../_lib/depth-chart-change-detector.js');
+  
+  for (const week of weeks) {
+    try {
+      // Check cache first
+      const cacheKey = `${season}_${week}`;
+      const cached = moduleCache.depthCharts.get(cacheKey);
+      
+      if (cached && isCacheValid(cached)) {
+        console.log(`  ✅ Week ${week}: Using cached depth chart`);
+        results.set(week, cached.data);
+        continue;
+      }
+      
+      // Load from file
+      const depthChart = loadDepthChart(week, season);
+      if (depthChart) {
+        // Cache it
+        moduleCache.depthCharts.set(cacheKey, {
+          data: depthChart,
+          loadedAt: Date.now()
+        });
+        results.set(week, depthChart);
+        console.log(`  ✅ Week ${week}: Loaded and cached depth chart`);
+      } else {
+        console.warn(`  ⚠️ Week ${week}: No depth chart available`);
+        results.set(week, null);
+      }
+    } catch (error) {
+      console.warn(`  ❌ Week ${week}: Failed to load depth chart:`, error.message);
+      results.set(week, null);
+    }
+  }
+  
+  return results;
+}
+
+/**
+ * Process games with concurrency limit to avoid overwhelming the function
+ */
+async function processGamesWithConcurrencyLimit(items, limit, processFn) {
+  const results = [];
+  const executing = [];
+  
+  for (const [index, item] of items.entries()) {
+    const promise = (async () => {
+      try {
+        return await processFn(item, index);
+      } catch (error) {
+        console.error(`Error processing item ${index}:`, error);
+        throw error;
+      }
+    })();
+    
+    results.push(promise);
+    executing.push(promise);
+    
+    if (executing.length >= limit) {
+      // Wait for at least one to complete before continuing
+      await Promise.race(executing);
+      // Remove completed promises from executing array
+      const settled = executing.filter(p => {
+        let done = false;
+        p.then(() => { done = true; }).catch(() => { done = true; });
+        return !done;
+      });
+      executing.length = 0;
+      executing.push(...settled);
+    }
+  }
+  
+  return Promise.all(results);
+}
+
 // LINE MOVEMENT: Gates and sizing modifiers
 import { applyPreBetGates, applyLineMovementSizingModifiers } from '../_lib/sizing-gates.mjs';
 
@@ -994,7 +1133,7 @@ function calculateDefaultInjuryImpact(position, teamCode) {
   };
 }
 
-async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1) {
+async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber = 1, preloadedDepthCharts = null) {
   const teamInjuries = injuries.teams?.[teamCode] || {};
 
   // FALLBACK NORMALIZATION: If legacy fields (qb_name, *_injuries) are absent but a raw
@@ -1050,12 +1189,19 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
   // PHASE 1: Load current depth chart for replacement identification
   let currentDepthChart = null;
   try {
-    const { loadDepthChart } = await import('../_lib/depth-chart-change-detector.js');
-    currentDepthChart = loadDepthChart(weekNumber, 2025);
-    if (currentDepthChart) {
-      console.log(`✅ Loaded depth chart for Week ${weekNumber}`);
+    // Use preloaded depth charts if available (performance optimization)
+    if (preloadedDepthCharts && preloadedDepthCharts.has(weekNumber)) {
+      currentDepthChart = preloadedDepthCharts.get(weekNumber);
+      console.log(`✅ Using preloaded depth chart for Week ${weekNumber}`);
     } else {
-      console.warn(`⚠️ No depth chart available for Week ${weekNumber}, using generic backup values`);
+      // Fallback to dynamic loading if preloaded not available
+      const { loadDepthChart } = await import('../_lib/depth-chart-change-detector.js');
+      currentDepthChart = loadDepthChart(weekNumber, 2025);
+      if (currentDepthChart) {
+        console.log(`✅ Loaded depth chart for Week ${weekNumber} (fallback)`);
+      } else {
+        console.warn(`⚠️ No depth chart available for Week ${weekNumber}, using generic backup values`);
+      }
     }
   } catch (error) {
     console.warn(`⚠️ Failed to load depth chart:`, error.message);
@@ -1800,6 +1946,42 @@ function calculateConfidence(modelProb, marketProb, edge, scoreConfidence, evide
 }
 
 // v8 WORKING ODDS: Load live odds directly from The Odds API
+/**
+ * Load live odds only for games within 24 hours of kickoff
+ * This optimization skips odds fetching for future games to reduce API overhead
+ */
+async function loadLiveOddsForGames(games) {
+  if (!games || games.length === 0) {
+    console.log('[ODDS] No games provided, skipping odds fetch');
+    return [];
+  }
+  
+  // Filter games to only those within 24 hours
+  const now = Date.now();
+  const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+  
+  const upcomingGames = games.filter(game => {
+    if (!game.start) return true; // Include if no kickoff time
+    const kickoff = new Date(game.start).getTime();
+    const timeUntilKickoff = kickoff - now;
+    return timeUntilKickoff <= TWENTY_FOUR_HOURS;
+  });
+  
+  console.log(`[ODDS] Games within 24h: ${upcomingGames.length}/${games.length}`);
+  
+  // If no games within 24 hours, skip odds entirely
+  if (upcomingGames.length === 0) {
+    console.log('[ODDS] No games within 24 hours, skipping odds API call');
+    return [];
+  }
+  
+  // Otherwise fetch odds normally
+  return loadLiveOdds();
+}
+
+/**
+ * Internal odds loading function (called by loadLiveOddsForGames)
+ */
 async function loadLiveOdds() {
   const apiKey = process.env.ODDS_API_KEY;
   const oddsApiUrl = apiKey
@@ -2612,16 +2794,30 @@ function generateResponsibleParlays(components) {
 
 // MAIN PREDICTION FUNCTION: v13 Logic + v8 Odds Integration
 async function generateAdvancedPredictions(games, season, weekOverride = null) {
-  console.log('=== v13 LOGIC + v8 WORKING ODDS INTEGRATION ===');
+  const perfStart = Date.now();
+  console.log('=== v13 LOGIC + v8 WORKING ODDS INTEGRATION (WITH PERFORMANCE OPTIMIZATIONS) ===');
   
   let advancedMetrics = null;
   let injuries = null;
-  // Ensure currentWeek is available before any injury-duration updates
   let currentWeek = weekOverride || 1;
   
+  // ========================================
+  // STAGE 1: LOAD METRICS (WITH CACHING)
+  // ========================================
+  const metricsStart = Date.now();
   try {
-    advancedMetrics = await loadAdvancedMetrics(season);
-    // Determine current week as soon as metrics are available (unless overridden)
+    // Check cache first
+    if (moduleCache.advancedMetrics.data && isCacheValid(moduleCache.advancedMetrics)) {
+      console.log('📦 Using cached advanced metrics');
+      advancedMetrics = moduleCache.advancedMetrics.data;
+    } else {
+      console.log('🔄 Loading fresh advanced metrics');
+      advancedMetrics = await loadAdvancedMetrics(season);
+      moduleCache.advancedMetrics.data = advancedMetrics;
+      moduleCache.advancedMetrics.loadedAt = Date.now();
+    }
+    
+    // Determine current week
     if (!weekOverride) {
       try {
         currentWeek = getCurrentWeek(advancedMetrics);
@@ -2633,14 +2829,34 @@ async function generateAdvancedPredictions(games, season, weekOverride = null) {
     } else {
       console.log(`📅 Using overridden week: ${weekOverride}`);
     }
-    injuries = await loadInjuries();
+  } catch (error) {
+    console.warn('Enhanced metrics loading failed:', error);
+  }
+  console.log(`⏱️ Metrics loaded in ${Date.now() - metricsStart}ms`);
+  
+  // ========================================
+  // STAGE 2: LOAD INJURIES (WITH CACHING)
+  // ========================================
+  const injuriesStart = Date.now();
+  try {
+    // Check cache first
+    if (moduleCache.injuries.data && isCacheValid(moduleCache.injuries)) {
+      console.log('📦 Using cached injuries');
+      injuries = moduleCache.injuries.data;
+    } else {
+      console.log('🔄 Loading fresh injuries');
+      injuries = await loadInjuries();
+      moduleCache.injuries.data = injuries;
+      moduleCache.injuries.loadedAt = Date.now();
+    }
     
-    // **NEW: Initialize injury duration tracking when injuries are loaded**
-    // SKIP for GET requests to avoid write operations that slow down response
-    if (injuries && injuries.teams && Object.keys(injuries.teams).length > 0 && !saveToBlobs) {
+    // **Update injury duration tracking ONCE per request (not per game)**
+    // SKIP for GET requests to avoid write operations
+    const isGetRequest = typeof saveToBlobs !== 'undefined' && !saveToBlobs;
+    if (injuries && injuries.teams && Object.keys(injuries.teams).length > 0 && isGetRequest) {
       console.log('⏭️  Skipping injury duration update for GET request (read-only mode)');
     } else if (injuries && injuries.teams && Object.keys(injuries.teams).length > 0) {
-      console.log('🔄 Updating injury duration tracking...');
+      console.log('🔄 Updating injury duration tracking (once per request)...');
       await updateInjuryDurations(injuries, currentWeek);
     }
     
@@ -2648,14 +2864,20 @@ async function generateAdvancedPredictions(games, season, weekOverride = null) {
       injuriesIsNull: injuries === null,
       injuriesType: typeof injuries,
       hasTeams: !!(injuries && injuries.teams),
-      teamCount: injuries && injuries.teams ? Object.keys(injuries.teams).length : 0,
-      wasTeam: injuries && injuries.teams && injuries.teams.WAS ? 'has WAS data' : 'no WAS data'
+      teamCount: injuries && injuries.teams ? Object.keys(injuries.teams).length : 0
     });
-    
-    // Injury data is loaded from Netlify Blobs - no test harness needed
   } catch (error) {
-    console.warn('Enhanced metrics loading failed:', error);
+    console.warn('Injuries loading failed:', error);
   }
+  console.log(`⏱️ Injuries loaded in ${Date.now() - injuriesStart}ms`);
+
+  // ========================================
+  // STAGE 3: PRE-LOAD DEPTH CHARTS
+  // ========================================
+  const depthChartsStart = Date.now();
+  const weeksToLoad = currentWeek > 1 ? [currentWeek, currentWeek - 1] : [currentWeek];
+  const depthChartsMap = await loadDepthChartsForWeeks(weeksToLoad, season);
+  console.log(`⏱️ Depth charts loaded in ${Date.now() - depthChartsStart}ms`);
 
   const validMetrics = validateAdvancedMetrics(advancedMetrics);
   
@@ -2683,12 +2905,20 @@ async function generateAdvancedPredictions(games, season, weekOverride = null) {
 
   const league = advancedMetrics?.league || { means: {}, stds: {} };
   
-  // v8 WORKING ODDS: Load live odds using proven working method
-  const allOdds = await loadLiveOdds();
+  // ========================================
+  // STAGE 4: LOAD ODDS (WITH TIME FILTER)
+  // ========================================
+  const oddsStart = Date.now();
+  const allOdds = await loadLiveOddsForGames(games);
+  console.log(`⏱️ Odds loaded in ${Date.now() - oddsStart}ms`);
 
   console.log(`v13 logic + v8 odds: Processing ${games.length} games with working odds integration`);
 
-  const predictions = await Promise.all(games.map(async (game) => {
+  // ========================================
+  // STAGE 5: PROCESS GAMES (WITH CONCURRENCY LIMIT)
+  // ========================================
+  const gamesStart = Date.now();
+  const predictions = await processGamesWithConcurrencyLimit(games, 5, async (game) => {
     const homeCode = game.home_team;
     const awayCode = game.away_team;
 
@@ -2732,8 +2962,9 @@ async function generateAdvancedPredictions(games, season, weekOverride = null) {
             normalized: awayInj._normalized_legacy_fields === true
         });
       }
-      homeScoreData = await applyInjuryAdjustments(homeScoreData, homeCode, injuries, currentWeek);
-      awayScoreData = await applyInjuryAdjustments(awayScoreData, awayCode, injuries, currentWeek);
+      // Apply injury adjustments (will use preloaded depth charts internally via closure)
+      homeScoreData = await applyInjuryAdjustments(homeScoreData, homeCode, injuries, currentWeek, depthChartsMap);
+      awayScoreData = await applyInjuryAdjustments(awayScoreData, awayCode, injuries, currentWeek, depthChartsMap);
       
       // v4.1 SAFEGUARDS: Apply depth chart safeguards to injury impacts
       if (homeScoreData.injuryAnalysis?.adjustments?.length > 0) {
@@ -3384,7 +3615,9 @@ async function generateAdvancedPredictions(games, season, weekOverride = null) {
         }
       }
     };
-  }));
+  });
+  console.log(`⏱️ Games processed in ${Date.now() - gamesStart}ms`);
+  console.log(`⏱️ TOTAL RUNTIME: ${Date.now() - perfStart}ms`);
 
   const parlayComponents = await generateParlayComponents(games, predictions);
   const parlaySuggestions = generateResponsibleParlays(parlayComponents);
@@ -3615,11 +3848,8 @@ export default async (request, context) => {
       // Fetch games and regenerate - READ FROM LOCAL SCHEDULE FILE
       try {
         console.log('🔄 Loading current NFL games from local schedule...');
-        // Import schedule from local file
-        const scheduleModule = await import('../../../netlify/data/nfl/2025/schedule.full.json', {
-          assert: { type: 'json' }
-        });
-        const fullSchedule = scheduleModule.default;
+        // Use cached schedule loader (performance optimization)
+        const fullSchedule = await getScheduleFull();
         
         // Determine which week to load
         if (requestedWeek) {

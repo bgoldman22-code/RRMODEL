@@ -1,0 +1,215 @@
+{
+  "gameId": "401591026",
+  "gameDate": "2023-12-15",
+  "home": {
+    "team": "LAL",
+    "score": 113,
+    "players": [
+      {
+        "playerId": "lebron_james",
+        "name": "LeBron James",
+        "stats": {
+          "min": 25,
+          "pts": 18,
+          "reb": 4,
+          "ast": 3,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 13,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "anthony_davis",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 30,
+          "pts": 18,
+          "reb": 12,
+          "ast": 1,
+          "stl": 0,
+          "blk": 2,
+          "fgm": 6,
+          "fga": 13,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 3,
+          "dreb": 8,
+          "tov": 2,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "lal_bench_0",
+        "name": "LAL Bench Player 1",
+        "stats": {
+          "min": 15,
+          "pts": 1,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 4,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "lal_bench_1",
+        "name": "LAL Bench Player 2",
+        "stats": {
+          "min": 13,
+          "pts": 4,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 0,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "lal_bench_2",
+        "name": "LAL Bench Player 3",
+        "stats": {
+          "min": 20,
+          "pts": 5,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 3
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "BOS",
+    "score": 101,
+    "players": [
+      {
+        "playerId": "tatum",
+        "name": "Jayson Tatum",
+        "stats": {
+          "min": 31,
+          "pts": 30,
+          "reb": 9,
+          "ast": 3,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 10,
+          "fga": 22,
+          "fg3m": 3,
+          "fg3a": 10,
+          "ftm": 6,
+          "fta": 7,
+          "oreb": 2,
+          "dreb": 6,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "bos_bench_0",
+        "name": "BOS Bench Player 1",
+        "stats": {
+          "min": 20,
+          "pts": 5,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "bos_bench_1",
+        "name": "BOS Bench Player 2",
+        "stats": {
+          "min": 11,
+          "pts": 0,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 3,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "bos_bench_2",
+        "name": "BOS Bench Player 3",
+        "stats": {
+          "min": 10,
+          "pts": 0,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 0
+        }
+      }
+    ]
+  },
+  "pace": 95
+}

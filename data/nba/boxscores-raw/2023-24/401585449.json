@@ -1,0 +1,479 @@
+{
+  "gameId": "401585449",
+  "gameDate": "2024-02-26",
+  "home": {
+    "team": "ATL",
+    "score": 109,
+    "players": [
+      {
+        "playerId": "4701230",
+        "name": "Jalen Johnson",
+        "stats": {
+          "min": 39.0,
+          "pts": 40,
+          "reb": 10,
+          "ast": 8,
+          "stl": 21,
+          "blk": 2,
+          "fgm": 7,
+          "fga": 1,
+          "fg3m": 2,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 47,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 7
+        }
+      },
+      {
+        "playerId": "3102529",
+        "name": "Clint Capela",
+        "stats": {
+          "min": 17.0,
+          "pts": 0,
+          "reb": 7,
+          "ast": 3,
+          "stl": 4,
+          "blk": 4,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 25,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "3037789",
+        "name": "Bogdan Bogdanovic",
+        "stats": {
+          "min": 36.0,
+          "pts": 60,
+          "reb": 5,
+          "ast": 5,
+          "stl": 17,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 45,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "3907497",
+        "name": "Dejounte Murray",
+        "stats": {
+          "min": 39.0,
+          "pts": 40,
+          "reb": 9,
+          "ast": 8,
+          "stl": 25,
+          "blk": 1,
+          "fgm": 11,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 55,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 7
+        }
+      },
+      {
+        "playerId": "4397136",
+        "name": "Saddiq Bey",
+        "stats": {
+          "min": 35.0,
+          "pts": 40,
+          "reb": 2,
+          "ast": 1,
+          "stl": 12,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 45,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4065732",
+        "name": "De'Andre Hunter",
+        "stats": {
+          "min": 28.0,
+          "pts": 66,
+          "reb": 7,
+          "ast": 6,
+          "stl": 18,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 62,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4277952",
+        "name": "Bruno Fernando",
+        "stats": {
+          "min": 19.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 7,
+          "blk": 0,
+          "fgm": 4,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 40,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "3913180",
+        "name": "Garrison Mathews",
+        "stats": {
+          "min": 17.0,
+          "pts": 25,
+          "reb": 2,
+          "ast": 2,
+          "stl": 3,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 25,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4683736",
+        "name": "Kobe Bufkin",
+        "stats": {
+          "min": 11.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 25,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "ORL",
+    "score": 92,
+    "players": [
+      {
+        "playerId": "4566434",
+        "name": "Franz Wagner",
+        "stats": {
+          "min": 33.0,
+          "pts": 33,
+          "reb": 8,
+          "ast": 7,
+          "stl": 19,
+          "blk": 1,
+          "fgm": 5,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 43,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 6
+        }
+      },
+      {
+        "playerId": "4277847",
+        "name": "Wendell Carter Jr.",
+        "stats": {
+          "min": 34.0,
+          "pts": 40,
+          "reb": 10,
+          "ast": 6,
+          "stl": 18,
+          "blk": 4,
+          "fgm": 1,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 58,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 7
+        }
+      },
+      {
+        "playerId": "4348700",
+        "name": "Goga Bitadze",
+        "stats": {
+          "min": 19.0,
+          "pts": 0,
+          "reb": 5,
+          "ast": 3,
+          "stl": 2,
+          "blk": 2,
+          "fgm": 2,
+          "fga": 0,
+          "fg3m": 3,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 20,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4432165",
+        "name": "Jalen Suggs",
+        "stats": {
+          "min": 28.0,
+          "pts": 50,
+          "reb": 2,
+          "ast": 2,
+          "stl": 14,
+          "blk": 0,
+          "fgm": 6,
+          "fga": 2,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 60,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4712849",
+        "name": "Anthony Black",
+        "stats": {
+          "min": 27.0,
+          "pts": 33,
+          "reb": 8,
+          "ast": 6,
+          "stl": 4,
+          "blk": 2,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 14,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 6
+        }
+      },
+      {
+        "playerId": "2968436",
+        "name": "Joe Ingles",
+        "stats": {
+          "min": 19.0,
+          "pts": 50,
+          "reb": 2,
+          "ast": 1,
+          "stl": 3,
+          "blk": 1,
+          "fgm": 3,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "3150844",
+        "name": "Moritz Wagner",
+        "stats": {
+          "min": 13.0,
+          "pts": 0,
+          "reb": 5,
+          "ast": 4,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 4
+        }
+      },
+      {
+        "playerId": "4065654",
+        "name": "Jonathan Isaac",
+        "stats": {
+          "min": 2.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4278052",
+        "name": "Chuma Okeke",
+        "stats": {
+          "min": 2.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4066636",
+        "name": "Markelle Fultz",
+        "stats": {
+          "min": 12.0,
+          "pts": 0,
+          "reb": 4,
+          "ast": 1,
+          "stl": 3,
+          "blk": 3,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 20,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4432809",
+        "name": "Cole Anthony",
+        "stats": {
+          "min": 30.0,
+          "pts": 33,
+          "reb": 3,
+          "ast": 3,
+          "stl": 15,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 1,
+          "fg3m": 2,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 37,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4433623",
+        "name": "Caleb Houstan",
+        "stats": {
+          "min": 21.0,
+          "pts": 44,
+          "reb": 2,
+          "ast": 2,
+          "stl": 12,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 44,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      }
+    ]
+  },
+  "pace": 100
+}

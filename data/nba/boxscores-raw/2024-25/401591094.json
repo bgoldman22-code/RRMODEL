@@ -1,0 +1,281 @@
+{
+  "gameId": "401591094",
+  "gameDate": "2025-04-28",
+  "home": {
+    "team": "IND",
+    "score": 95,
+    "players": [
+      {
+        "playerId": "jokic",
+        "name": "Nikola Jokic",
+        "stats": {
+          "min": 25,
+          "pts": 21,
+          "reb": 2,
+          "ast": 8,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "sabonis",
+        "name": "Domantas Sabonis",
+        "stats": {
+          "min": 38,
+          "pts": 23,
+          "reb": 16,
+          "ast": 10,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 8,
+          "fga": 17,
+          "fg3m": 2,
+          "fg3a": 8,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 4,
+          "dreb": 11,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "stephen_curry",
+        "name": "Stephen Curry",
+        "stats": {
+          "min": 29,
+          "pts": 37,
+          "reb": 4,
+          "ast": 5,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 12,
+          "fga": 27,
+          "fg3m": 4,
+          "fg3a": 12,
+          "ftm": 7,
+          "fta": 9,
+          "oreb": 1,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "lebron_james",
+        "name": "LeBron James",
+        "stats": {
+          "min": 33,
+          "pts": 39,
+          "reb": 9,
+          "ast": 10,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 13,
+          "fga": 29,
+          "fg3m": 4,
+          "fg3a": 13,
+          "ftm": 7,
+          "fta": 9,
+          "oreb": 2,
+          "dreb": 6,
+          "tov": 2,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "luka",
+        "name": "Luka Doncic",
+        "stats": {
+          "min": 24,
+          "pts": 10,
+          "reb": 2,
+          "ast": 10,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "ind_bench_0",
+        "name": "IND Bench Player 1",
+        "stats": {
+          "min": 13,
+          "pts": 1,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "ind_bench_1",
+        "name": "IND Bench Player 2",
+        "stats": {
+          "min": 12,
+          "pts": 4,
+          "reb": 2,
+          "ast": 1,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "ind_bench_2",
+        "name": "IND Bench Player 3",
+        "stats": {
+          "min": 21,
+          "pts": 3,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 1,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "NYK",
+    "score": 120,
+    "players": [
+      {
+        "playerId": "randle",
+        "name": "Julius Randle",
+        "stats": {
+          "min": 37,
+          "pts": 24,
+          "reb": 12,
+          "ast": 4,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 8,
+          "fga": 18,
+          "fg3m": 2,
+          "fg3a": 8,
+          "ftm": 4,
+          "fta": 6,
+          "oreb": 3,
+          "dreb": 8,
+          "tov": 2,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "nyk_bench_0",
+        "name": "NYK Bench Player 1",
+        "stats": {
+          "min": 22,
+          "pts": 8,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 5,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "nyk_bench_1",
+        "name": "NYK Bench Player 2",
+        "stats": {
+          "min": 23,
+          "pts": 9,
+          "reb": 3,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 6,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "nyk_bench_2",
+        "name": "NYK Bench Player 3",
+        "stats": {
+          "min": 14,
+          "pts": 4,
+          "reb": 1,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "pace": 101
+}

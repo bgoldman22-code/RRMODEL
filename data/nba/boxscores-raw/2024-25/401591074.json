@@ -1,0 +1,369 @@
+{
+  "gameId": "401591074",
+  "gameDate": "2025-03-19",
+  "home": {
+    "team": "TOR",
+    "score": 117,
+    "players": [
+      {
+        "playerId": "simmons",
+        "name": "Ben Simmons",
+        "stats": {
+          "min": 37,
+          "pts": 10,
+          "reb": 9,
+          "ast": 7,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 2,
+          "dreb": 6,
+          "tov": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "durant",
+        "name": "Kevin Durant",
+        "stats": {
+          "min": 27,
+          "pts": 19,
+          "reb": 6,
+          "ast": 5,
+          "stl": 3,
+          "blk": 1,
+          "fgm": 6,
+          "fga": 14,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 1,
+          "dreb": 4,
+          "tov": 2,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "anthony_davis",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 23,
+          "pts": 25,
+          "reb": 9,
+          "ast": 2,
+          "stl": 4,
+          "blk": 4,
+          "fgm": 8,
+          "fga": 18,
+          "fg3m": 3,
+          "fg3a": 8,
+          "ftm": 5,
+          "fta": 6,
+          "oreb": 2,
+          "dreb": 6,
+          "tov": 5,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "green",
+        "name": "Draymond Green",
+        "stats": {
+          "min": 26,
+          "pts": 8,
+          "reb": 5,
+          "ast": 7,
+          "stl": 2,
+          "blk": 2,
+          "fgm": 2,
+          "fga": 6,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 2,
+          "oreb": 1,
+          "dreb": 3,
+          "tov": 3,
+          "pf": 0
+        }
+      },
+      {
+        "playerId": "randle",
+        "name": "Julius Randle",
+        "stats": {
+          "min": 22,
+          "pts": 13,
+          "reb": 7,
+          "ast": 3,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 4,
+          "fga": 9,
+          "fg3m": 1,
+          "fg3a": 4,
+          "ftm": 2,
+          "fta": 3,
+          "oreb": 2,
+          "dreb": 4,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "tor_bench_0",
+        "name": "TOR Bench Player 1",
+        "stats": {
+          "min": 10,
+          "pts": 6,
+          "reb": 1,
+          "ast": 1,
+          "stl": 1,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 4,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 2,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "tor_bench_1",
+        "name": "TOR Bench Player 2",
+        "stats": {
+          "min": 21,
+          "pts": 7,
+          "reb": 2,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 2,
+          "pf": 4
+        }
+      },
+      {
+        "playerId": "tor_bench_2",
+        "name": "TOR Bench Player 3",
+        "stats": {
+          "min": 17,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 3,
+          "pf": 2
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "MIA",
+    "score": 99,
+    "players": [
+      {
+        "playerId": "embiid",
+        "name": "Joel Embiid",
+        "stats": {
+          "min": 34,
+          "pts": 34,
+          "reb": 9,
+          "ast": 3,
+          "stl": 3,
+          "blk": 3,
+          "fgm": 11,
+          "fga": 25,
+          "fg3m": 4,
+          "fg3a": 11,
+          "ftm": 6,
+          "fta": 8,
+          "oreb": 2,
+          "dreb": 6,
+          "tov": 3,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "westbrook",
+        "name": "Russell Westbrook",
+        "stats": {
+          "min": 31,
+          "pts": 10,
+          "reb": 1,
+          "ast": 3,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 4,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "green",
+        "name": "Draymond Green",
+        "stats": {
+          "min": 36,
+          "pts": 10,
+          "reb": 8,
+          "ast": 7,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 3,
+          "fga": 7,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 2,
+          "fta": 2,
+          "oreb": 2,
+          "dreb": 5,
+          "tov": 0,
+          "pf": 1
+        }
+      },
+      {
+        "playerId": "anthony_davis",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 20,
+          "pts": 18,
+          "reb": 12,
+          "ast": 2,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 6,
+          "fga": 13,
+          "fg3m": 2,
+          "fg3a": 6,
+          "ftm": 3,
+          "fta": 4,
+          "oreb": 3,
+          "dreb": 8,
+          "tov": 2,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "lillard",
+        "name": "Damian Lillard",
+        "stats": {
+          "min": 26,
+          "pts": 21,
+          "reb": 3,
+          "ast": 8,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 7,
+          "fga": 15,
+          "fg3m": 2,
+          "fg3a": 7,
+          "ftm": 4,
+          "fta": 5,
+          "oreb": 0,
+          "dreb": 2,
+          "tov": 2,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "mia_bench_0",
+        "name": "MIA Bench Player 1",
+        "stats": {
+          "min": 21,
+          "pts": 7,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 5,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 1,
+          "fta": 1,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 1,
+          "pf": 2
+        }
+      },
+      {
+        "playerId": "mia_bench_1",
+        "name": "MIA Bench Player 2",
+        "stats": {
+          "min": 12,
+          "pts": 0,
+          "reb": 1,
+          "ast": 0,
+          "stl": 0,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 0,
+          "tov": 1,
+          "pf": 3
+        }
+      },
+      {
+        "playerId": "mia_bench_2",
+        "name": "MIA Bench Player 3",
+        "stats": {
+          "min": 21,
+          "pts": 3,
+          "reb": 2,
+          "ast": 1,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 1,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "oreb": 0,
+          "dreb": 1,
+          "tov": 4,
+          "pf": 1
+        }
+      }
+    ]
+  },
+  "pace": 103
+}

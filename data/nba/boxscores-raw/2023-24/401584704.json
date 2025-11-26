@@ -1,0 +1,435 @@
+{
+  "gameId": "401584704",
+  "gameDate": "2023-10-27",
+  "home": {
+    "team": "LAL",
+    "score": 100,
+    "players": [
+      {
+        "playerId": "1966",
+        "name": "LeBron James",
+        "stats": {
+          "min": 35.0,
+          "pts": 20,
+          "reb": 8,
+          "ast": 7,
+          "stl": 21,
+          "blk": 1,
+          "fgm": 9,
+          "fga": 2,
+          "fg3m": 2,
+          "fg3a": 5,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 6
+        }
+      },
+      {
+        "playerId": "6583",
+        "name": "Anthony Davis",
+        "stats": {
+          "min": 39.0,
+          "pts": 50,
+          "reb": 12,
+          "ast": 9,
+          "stl": 30,
+          "blk": 3,
+          "fgm": 2,
+          "fga": 3,
+          "fg3m": 3,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 58,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 9
+        }
+      },
+      {
+        "playerId": "2990962",
+        "name": "Taurean Prince",
+        "stats": {
+          "min": 18.0,
+          "pts": 0,
+          "reb": 0,
+          "ast": 0,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "3136776",
+        "name": "D'Angelo Russell",
+        "stats": {
+          "min": 33.0,
+          "pts": 14,
+          "reb": 4,
+          "ast": 4,
+          "stl": 14,
+          "blk": 0,
+          "fgm": 5,
+          "fga": 2,
+          "fg3m": 1,
+          "fg3a": 3,
+          "ftm": 0,
+          "fta": 37,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "4066457",
+        "name": "Austin Reaves",
+        "stats": {
+          "min": 28.0,
+          "pts": 50,
+          "reb": 2,
+          "ast": 1,
+          "stl": 10,
+          "blk": 1,
+          "fgm": 1,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 57,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "3058254",
+        "name": "Christian Wood",
+        "stats": {
+          "min": 21.0,
+          "pts": 0,
+          "reb": 10,
+          "ast": 8,
+          "stl": 7,
+          "blk": 2,
+          "fgm": 1,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 28,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 7
+        }
+      },
+      {
+        "playerId": "4066648",
+        "name": "Rui Hachimura",
+        "stats": {
+          "min": 12.0,
+          "pts": 50,
+          "reb": 0,
+          "ast": 0,
+          "stl": 7,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 66,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 0
+        }
+      },
+      {
+        "playerId": "4395627",
+        "name": "Cam Reddish",
+        "stats": {
+          "min": 12.0,
+          "pts": 0,
+          "reb": 1,
+          "ast": 1,
+          "stl": 4,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 40,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4397077",
+        "name": "Jaxson Hayes",
+        "stats": {
+          "min": 6.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 2,
+          "stl": 0,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "3137259",
+        "name": "Gabe Vincent",
+        "stats": {
+          "min": 35.0,
+          "pts": 0,
+          "reb": 3,
+          "ast": 2,
+          "stl": 7,
+          "blk": 1,
+          "fgm": 6,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 30,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 3
+        }
+      }
+    ]
+  },
+  "away": {
+    "team": "PHX",
+    "score": 95,
+    "players": [
+      {
+        "playerId": "3202",
+        "name": "Kevin Durant",
+        "stats": {
+          "min": 39.0,
+          "pts": 20,
+          "reb": 11,
+          "ast": 11,
+          "stl": 39,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 8,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 3,
+          "dreb": 8
+        }
+      },
+      {
+        "playerId": "3102530",
+        "name": "Jusuf Nurkic",
+        "stats": {
+          "min": 28.0,
+          "pts": 0,
+          "reb": 9,
+          "ast": 6,
+          "stl": 4,
+          "blk": 3,
+          "fgm": 3,
+          "fga": 3,
+          "fg3m": 0,
+          "fg3a": 4,
+          "ftm": 0,
+          "fta": 20,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 7
+        }
+      },
+      {
+        "playerId": "3431",
+        "name": "Eric Gordon",
+        "stats": {
+          "min": 30.0,
+          "pts": 25,
+          "reb": 2,
+          "ast": 1,
+          "stl": 15,
+          "blk": 1,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 37,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "3135045",
+        "name": "Grayson Allen",
+        "stats": {
+          "min": 35.0,
+          "pts": 50,
+          "reb": 6,
+          "ast": 5,
+          "stl": 6,
+          "blk": 1,
+          "fgm": 4,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 0,
+          "ftm": 0,
+          "fta": 33,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      },
+      {
+        "playerId": "4065663",
+        "name": "Josh Okogie",
+        "stats": {
+          "min": 33.0,
+          "pts": 50,
+          "reb": 8,
+          "ast": 4,
+          "stl": 10,
+          "blk": 4,
+          "fgm": 3,
+          "fga": 0,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 60,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 2,
+          "dreb": 6
+        }
+      },
+      {
+        "playerId": "3914285",
+        "name": "Drew Eubanks",
+        "stats": {
+          "min": 17.0,
+          "pts": 0,
+          "reb": 4,
+          "ast": 3,
+          "stl": 2,
+          "blk": 1,
+          "fgm": 2,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 2,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 3
+        }
+      },
+      {
+        "playerId": "3133838",
+        "name": "Yuta Watanabe",
+        "stats": {
+          "min": 15.0,
+          "pts": 100,
+          "reb": 1,
+          "ast": 1,
+          "stl": 3,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 0,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 50,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 1
+        }
+      },
+      {
+        "playerId": "4395652",
+        "name": "Nassir Little",
+        "stats": {
+          "min": 13.0,
+          "pts": 0,
+          "reb": 2,
+          "ast": 2,
+          "stl": 2,
+          "blk": 0,
+          "fgm": 0,
+          "fga": 1,
+          "fg3m": 1,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 0,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 0,
+          "dreb": 2
+        }
+      },
+      {
+        "playerId": "4278402",
+        "name": "Jordan Goodwin",
+        "stats": {
+          "min": 30.0,
+          "pts": 20,
+          "reb": 6,
+          "ast": 6,
+          "stl": 14,
+          "blk": 0,
+          "fgm": 2,
+          "fga": 2,
+          "fg3m": 0,
+          "fg3a": 1,
+          "ftm": 0,
+          "fta": 40,
+          "tov": 0,
+          "pf": 0,
+          "oreb": 1,
+          "dreb": 5
+        }
+      }
+    ]
+  },
+  "pace": 100
+}

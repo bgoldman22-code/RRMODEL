@@ -16,10 +16,28 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { 
+  samplesToCSV, 
+  trainWithLightGBM, 
+  BoosterStateManager,
+  testLightGBMHealth 
+} from './lib/lightgbm-client.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '../..');
+
+// ============================================================================
+// ARGUMENT PARSING
+// ============================================================================
+
+function getArg(name, defaultValue = null) {
+  const arg = process.argv.find(a => a.startsWith(`--${name}=`));
+  if (arg) {
+    return arg.split('=')[1];
+  }
+  return defaultValue;
+}
 
 // ============================================================================
 // CONFIGURATION
@@ -29,7 +47,13 @@ const CONFIG = {
   MIN_TRAINING_GAMES: 1000,
   REFIT_INTERVAL: 500,
   TEST_WINDOW: 500,
-  MIN_PLAYER_HISTORY: 3
+  MIN_PLAYER_HISTORY: 3,
+  MAX_CYCLES: parseInt(getArg('maxCycles', '999999')),
+  TEST_START_DATE: getArg('testStartDate', null),
+  MODEL_VERSION: getArg('modelVersion', 'baseline'),
+  USE_LIGHTGBM: getArg('useLightGBM', 'false') === 'true',
+  LIGHTGBM_ENDPOINT: getArg('lightgbmEndpoint', process.env.LIGHTGBM_ENDPOINT || null),
+  OUTPUT_FILE: getArg('outputFile', null)
 };
 
 // ============================================================================
@@ -209,6 +233,99 @@ function projectShots(playerHistory, gameContext, params) {
 }
 
 // ============================================================================
+// FEATURE VECTOR BUILDER (for LightGBM)
+// ============================================================================
+
+/**
+ * Build 33-feature vector for a game
+ * Features match the baseline model's projection logic
+ */
+function buildFeatureVector(game, historicalGames, params) {
+  // Get player history
+  const playerHistory = historicalGames.filter(g => g.playerId.toString() === game.playerId.toString());
+  
+  if (playerHistory.length < CONFIG.MIN_PLAYER_HISTORY) {
+    return null;
+  }
+  
+  const recentGames = playerHistory.slice(-10);
+  const position = game.position;
+  const positionBaseline = params.positionBaselines[position] || 1.7;
+  
+  // Calculate weighted average (exponential recency)
+  let weightedSum = 0;
+  let weightSum = 0;
+  recentGames.forEach((g, i) => {
+    const gamesAgo = recentGames.length - 1 - i;
+    const weight = Math.pow(params.recencyWeights.decay, gamesAgo);
+    weightedSum += g.shots * weight;
+    weightSum += weight;
+  });
+  const weightedAvg = weightSum > 0 ? weightedSum / weightSum : mean(recentGames.map(g => g.shots));
+  
+  // Team effects
+  const team = game.team;
+  const teamEffect = params.homeAwayEffects[team] || { home: 1.05, away: 1.0 };
+  
+  // Player efficiency
+  const playerId = game.playerId;
+  const playerEff = params.playerEfficiency[playerId] || null;
+  const avgTOI = mean(recentGames.map(g => g.toiMinutes));
+  
+  // PP indicator
+  const recentPP = recentGames.filter(g => {
+    const ppTime = g.ppToi ? parseFloat(g.ppToi.split(':')[0]) : 0;
+    return ppTime > 0;
+  });
+  const hasPP = recentPP.length >= 3 ? 1 : 0;
+  
+  // Streak detection
+  const last3 = playerHistory.slice(-3);
+  const last3Avg = mean(last3.map(g => g.shots));
+  const baseRate = weightedAvg * 0.7 + positionBaseline * 0.3;
+  let streakHot = 0;
+  let streakCold = 0;
+  if (last3Avg > baseRate * 1.4) streakHot = 1;
+  if (last3Avg < baseRate * 0.6) streakCold = 1;
+  
+  // Build 33-feature vector
+  // (22 baseline + 5 opponent + 6 QoO)
+  const features = [
+    // Baseline features (22)
+    positionBaseline,
+    weightedAvg,
+    baseRate,
+    game.isHome ? 1 : 0,
+    game.isHome ? teamEffect.home : teamEffect.away,
+    playerEff || 0,
+    avgTOI,
+    Math.pow(avgTOI / 15, 1.1), // TOI factor
+    hasPP,
+    params.ppBoost,
+    streakHot,
+    streakCold,
+    last3Avg,
+    mean(recentGames.map(g => g.shots)),
+    Math.max(...recentGames.map(g => g.shots)),
+    Math.min(...recentGames.map(g => g.shots)),
+    recentGames.length,
+    playerHistory.length,
+    position === 'D' ? 1 : 0,
+    position === 'F' ? 1 : 0,
+    position === 'C' ? 1 : 0,
+    position === 'L' ? 1 : 0,
+    
+    // Opponent suppression features (5)
+    0, 0, 0, 0, 0, // Placeholder - would need opponent data
+    
+    // Quality of Opposition features (6)
+    0, 0, 0, 0, 0, 0 // Placeholder - would need opponent data
+  ];
+  
+  return features;
+}
+
+// ============================================================================
 // MAIN WALK-FORWARD BACKTEST
 // ============================================================================
 
@@ -254,34 +371,165 @@ async function main() {
   let testEndIdx = trainEndIdx + CONFIG.TEST_WINDOW;
   let cycleNum = 1;
   
-  while (testEndIdx <= allGames.length) {
+  // LightGBM state management
+  const boosterManager = new BoosterStateManager();
+
+  // Print configuration
+  console.log(`🔧 Configuration:`);
+  console.log(`   Max Cycles: ${CONFIG.MAX_CYCLES === 999999 ? 'Unlimited' : CONFIG.MAX_CYCLES}`);
+  console.log(`   Test Start Date: ${CONFIG.TEST_START_DATE || 'All data'}`);
+  console.log(`   Model Version: ${CONFIG.MODEL_VERSION}`);
+  console.log(`   Use LightGBM: ${CONFIG.USE_LIGHTGBM}`);
+  if (CONFIG.LIGHTGBM_ENDPOINT) {
+    console.log(`   LightGBM Endpoint: ${CONFIG.LIGHTGBM_ENDPOINT}`);
+  }
+  console.log('');
+  
+  // Test LightGBM connection if enabled
+  if (CONFIG.USE_LIGHTGBM) {
+    try {
+      const baseUrl = CONFIG.LIGHTGBM_ENDPOINT.replace(/\/train-lgbm$/, '');
+      const health = await testLightGBMHealth(baseUrl);
+      console.log(`✅ LightGBM server connected: ${health.status} (v${health.version})`);
+      console.log('');
+    } catch (error) {
+      console.error(`❌ LightGBM health check failed: ${error.message}`);
+      console.error('   Falling back to baseline model...');
+      CONFIG.USE_LIGHTGBM = false;
+      console.log('');
+    }
+  }
+
+  while (testEndIdx <= allGames.length && cycleNum <= CONFIG.MAX_CYCLES) {
     const trainingGames = allGames.slice(0, trainEndIdx);
     console.log(`🔄 Cycle ${cycleNum}: Training on ${trainingGames.length.toLocaleString()} games (up to ${trainingGames[trainingGames.length - 1].gameDate})`);
-    
+
     currentParams = fitParametersOnSubset(trainingGames);
-    
+
     const testGames = allGames.slice(trainEndIdx, testEndIdx);
+
+    // Skip if test games are before TEST_START_DATE
+    if (CONFIG.TEST_START_DATE && testGames[testGames.length - 1].gameDate < CONFIG.TEST_START_DATE) {
+      console.log(`   ⏭️  Skipping (before ${CONFIG.TEST_START_DATE})`);
+      console.log('');
+      trainEndIdx = testEndIdx;
+      testEndIdx = Math.min(trainEndIdx + CONFIG.TEST_WINDOW, allGames.length);
+      cycleNum++;
+      continue;
+    }
+
     console.log(`   Testing on ${testGames.length.toLocaleString()} games (${testGames[0].gameDate} → ${testGames[testGames.length - 1].gameDate})`);
-    
+
+    // Use LightGBM or baseline model
+    if (CONFIG.USE_LIGHTGBM) {
+      // ============================================================================
+      // LIGHTGBM PATH: Train on training games, get predictions for test games
+      // ============================================================================
+      
+      // Build training samples from training games
+      const trainingSamples = [];
+      trainingGames.forEach(g => {
+        // Build 33-feature vector (same as baseline model uses)
+        const features = buildFeatureVector(g, trainingGames, currentParams);
+        if (features) {
+          trainingSamples.push({
+            features: features,
+            target: g.shots
+          });
+        }
+      });
+      
+      console.log(`   🔬 LightGBM: ${trainingSamples.length.toLocaleString()} training samples`);
+      
+      // Convert to CSV
+      const csvData = samplesToCSV(trainingSamples);
+      
+      // Train with warm-start
+      try {
+        const lgbmResult = await trainWithLightGBM(
+          csvData,
+          boosterManager.getState(),
+          CONFIG.LIGHTGBM_ENDPOINT
+        );
+        
+        // Update booster state
+        boosterManager.updateState(lgbmResult.boosterState, cycleNum);
+        
+        console.log(`   ✅ LightGBM trained: MAE ${lgbmResult.metrics.mae?.toFixed(3)} (train), ${lgbmResult.metrics.val_mae?.toFixed(3)} (val)`);
+        
+        // Now generate predictions for test games
+        // Build test samples
+        const testSamples = [];
+        const testGamesList = [];
+        
+        testGames.forEach(testGame => {
+          const playerHistory = trainingGames.filter(g => g.playerId.toString() === testGame.playerId.toString());
+          
+          if (playerHistory.length >= CONFIG.MIN_PLAYER_HISTORY) {
+            const features = buildFeatureVector(testGame, trainingGames, currentParams);
+            if (features) {
+              testSamples.push({
+                features: features,
+                target: 0 // Dummy target, not used for prediction
+              });
+              testGamesList.push(testGame);
+            }
+          }
+        });
+        
+        if (testSamples.length > 0) {
+          const testCSV = samplesToCSV(testSamples);
+          const testPredictions = await trainWithLightGBM(testCSV, lgbmResult.boosterState, CONFIG.LIGHTGBM_ENDPOINT);
+          
+          // Store predictions
+          testPredictions.predictions.forEach((pred, idx) => {
+            const testGame = testGamesList[idx];
+            predictions.push({
+              playerId: testGame.playerId,
+              playerName: testGame.playerName,
+              position: testGame.position,
+              gameDate: testGame.gameDate,
+              projection: pred,
+              actual: testGame.shots,
+              error: Math.abs(pred - testGame.shots),
+              trainedOn: trainEndIdx,
+              cycle: cycleNum,
+              model: 'lightgbm'
+            });
+          });
+          
+          console.log(`   ✅ Cycle ${cycleNum}: ${testPredictions.predictions.length} LightGBM predictions made`);
+        }
+        
+      } catch (error) {
+        console.error(`   ❌ LightGBM error: ${error.message}`);
+        console.error(`   Skipping cycle ${cycleNum}`);
+      }
+      
+    } else {
+      // ============================================================================
+      // BASELINE PATH: Use improved model with position-specific baselines
+      // ============================================================================
+
     const playerGames = {};
     testGames.forEach(g => {
       if (!playerGames[g.playerId]) playerGames[g.playerId] = [];
       playerGames[g.playerId].push(g);
     });
-    
+
     let cycleTotal = 0;
     let skippedNoHistory = 0;
     let skippedNullProjection = 0;
-    
+
     Object.keys(playerGames).forEach(playerId => {
       const playerTestGames = playerGames[playerId];
       const playerHistory = trainingGames.filter(g => g.playerId.toString() === playerId.toString());
-      
+
       if (playerHistory.length < CONFIG.MIN_PLAYER_HISTORY) {
         skippedNoHistory++;
         return;
       }
-      
+
       playerTestGames.forEach(testGame => {
         const gameContext = {
           team: testGame.team,
@@ -289,9 +537,9 @@ async function main() {
           isHome: testGame.isHome,
           gameDate: testGame.gameDate
         };
-        
+
         const projection = projectShots(playerHistory, gameContext, currentParams);
-        
+
         if (projection) {
           predictions.push({
             playerId: testGame.playerId,
@@ -311,14 +559,16 @@ async function main() {
         }
       });
     });
-    
+
     console.log(`   ✅ Cycle ${cycleNum}: ${cycleTotal} predictions made (skipped ${skippedNoHistory} no-history, ${skippedNullProjection} null-projection)`);
     console.log('');
     
+    } // End baseline path
+
     trainEndIdx = testEndIdx;
     testEndIdx = Math.min(trainEndIdx + CONFIG.TEST_WINDOW, allGames.length);
     cycleNum++;
-    
+
     if (testEndIdx - trainEndIdx < 100) break;
   }
   
@@ -378,7 +628,7 @@ async function main() {
   console.log('');
   
   // Save results
-  const outputPath = path.join(REPO_ROOT, 'data/nhl/walkforward_backtest_improved_results.json');
+  const outputPath = CONFIG.OUTPUT_FILE || path.join(REPO_ROOT, 'data/nhl/walkforward_backtest_improved_results.json');
   fs.writeFileSync(outputPath, JSON.stringify({
     model: 'improved',
     timestamp: new Date().toISOString(),
