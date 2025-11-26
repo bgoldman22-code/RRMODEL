@@ -3576,9 +3576,10 @@ export default async (request, context) => {
       const body = await request.json();
       games = body.games || [];
       season = body.season || '2025';
-      // For POST requests, try to extract week from games data
-      if (games.length > 0 && games[0].week) {
-        currentWeek = games[0].week;
+      // For POST requests, try to extract week from body or games data
+      currentWeek = body.week || (games.length > 0 && games[0].week) || null;
+      if (currentWeek) {
+        console.log(`📅 POST request week: ${currentWeek}`);
       }
     } else if (request.method === 'GET') {
       const url = new URL(request.url);

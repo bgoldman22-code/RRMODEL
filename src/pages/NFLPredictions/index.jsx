@@ -79,6 +79,7 @@ export default function NFLPredictionsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           season: season,
+          week: parseInt(week, 10), // Include week in POST body
           games: transformedGames
         })
       });
