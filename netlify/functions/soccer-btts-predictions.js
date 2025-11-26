@@ -56,7 +56,7 @@ const LEAGUES = {
     name: 'UEFA Champions League',
     season: '2025-26',
     historical_season: '2024-25', 
-    btts_baseline: 0.48,
+    btts_baseline: 0.375, // CORRECTED: Historical UCL avg 36-42% (was 48% - too high!)
     goals_per_game: 2.9,
     ha_log: 0.06, // Lower home advantage in European games
     liquidity: 'medium',
@@ -135,10 +135,20 @@ function calculateTeamRatings(home, away, league) {
   const leagueBaseline = Math.log(league.goals_per_game / 2);
   
   // Calculate raw attack/defense ratings (log scale, centered on 0)
-  const homeAttack = calculateAttackRating(home, league, shrinkage_games);
-  const homeDefense = calculateDefenseRating(home, league, shrinkage_games);
-  const awayAttack = calculateAttackRating(away, league, shrinkage_games);
-  const awayDefense = calculateDefenseRating(away, league, shrinkage_games);
+  let homeAttack = calculateAttackRating(home, league, shrinkage_games);
+  let homeDefense = calculateDefenseRating(home, league, shrinkage_games);
+  let awayAttack = calculateAttackRating(away, league, shrinkage_games);
+  let awayDefense = calculateDefenseRating(away, league, shrinkage_games);
+  
+  // UCL FIX: Apply 25% discount to domestic stats when predicting elite competition
+  // Elite teams inflated vs domestic opponents → discount when facing elite UCL opponents
+  if (league.name === 'UEFA Champions League') {
+    const uclDiscount = 0.75; // Bring down inflated domestic ratings
+    homeAttack *= uclDiscount;
+    homeDefense *= uclDiscount;
+    awayAttack *= uclDiscount;
+    awayDefense *= uclDiscount;
+  }
   
   // Professional feature integration
   const professionalFeatures = calculateProfessionalFeatures(home, away, league);
@@ -3852,6 +3862,18 @@ exports.handler = async (event, context) => {
               modelUncertainty, 
               oddsQuality
             );
+            
+            // UCL FIX: Require 65% confidence minimum due to elite competition uncertainty
+            if (league === 'champions-league' && professionalValueBet?.recommendation === 'BET') {
+              if (confidence < 65) {
+                professionalValueBet = {
+                  ...professionalValueBet,
+                  recommendation: 'NO_EDGE',
+                  reason: `UCL requires ≥65% confidence (current: ${Math.round(confidence)}%)`,
+                  original_recommendation: 'BET'
+                };
+              }
+            }
           } else {
             // FALLBACK: Create basic value analysis even without perfect odds
             const modelImpliedOdds = {

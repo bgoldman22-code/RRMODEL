@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-26T17:09:36.763Z",
+  "generated_at": "2025-11-26T17:51:27.241Z",
   "model_version": "nba_phase3.5_mixed_logistic_lgbm_v1_20251125",
   "source": "Phase 3.5: Logistic PRA + LightGBM per-market",
   "filters": {
@@ -25,7 +25,8 @@
       "gameTime": "2025-11-26T22:10:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.23763508604279016
     },
     {
       "player": "Jordan Walsh",
@@ -44,7 +45,8 @@
       "gameTime": "2025-11-26T22:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.06468744953544225
     },
     {
       "player": "Sam Hauser",
@@ -55,15 +57,16 @@
       "modelProbability": 0.5998158954278984,
       "vegasLine": 3.5,
       "betSide": "OVER",
-      "edge": 12.36254192374222,
+      "edge": 13.68529324649354,
       "confidence": 60,
-      "odds": 110,
-      "book": "BetMGM",
+      "odds": 116,
+      "book": "FanDuel",
       "game": "Boston Celtics @ Detroit Pistons",
       "gameTime": "2025-11-26T22:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.2548295983829832
     },
     {
       "player": "Miles McBride",
@@ -82,7 +85,8 @@
       "gameTime": "2025-11-27T00:10:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.2682077402053207
     },
     {
       "player": "Kon Knueppel",
@@ -93,15 +97,16 @@
       "modelProbability": 0.6201093526059486,
       "vegasLine": 16.5,
       "betSide": "UNDER",
-      "edge": 12.505984765545353,
+      "edge": 13.23044745571681,
       "confidence": 62,
-      "odds": 102,
-      "book": "BetRivers",
+      "odds": 105,
+      "book": "Bovada",
       "game": "Charlotte Hornets @ New York Knicks",
       "gameTime": "2025-11-27T00:10:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.2583087360401852
     },
     {
       "player": "Brandon Miller",
@@ -112,15 +117,16 @@
       "modelProbability": 0.6275670345628418,
       "vegasLine": 17.5,
       "betSide": "UNDER",
-      "edge": 12.261653951333685,
+      "edge": 11.537191261162228,
       "confidence": 63,
-      "odds": -102,
-      "book": "DraftKings",
+      "odds": -105,
+      "book": "Bovada",
       "game": "Charlotte Hornets @ New York Knicks",
       "gameTime": "2025-11-27T00:10:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.23651242085382568
     },
     {
       "player": "Jordan Clarkson",
@@ -134,12 +140,13 @@
       "edge": 12.624227179243675,
       "confidence": 63,
       "odds": 100,
-      "book": "BetMGM",
+      "book": "Bovada",
       "game": "Charlotte Hornets @ New York Knicks",
       "gameTime": "2025-11-27T00:10:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.2524845435848735
     },
     {
       "player": "LaMelo Ball",
@@ -150,15 +157,16 @@
       "modelProbability": 0.640140707383303,
       "vegasLine": 19.5,
       "betSide": "OVER",
-      "edge": 13.033678581467555,
+      "edge": 13.519021233379803,
       "confidence": 64,
-      "odds": -104,
+      "odds": -102,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ New York Knicks",
       "gameTime": "2025-11-27T00:10:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.27308422891427203
     },
     {
       "player": "Ryan Kalkbrenner",
@@ -177,7 +185,28 @@
       "gameTime": "2025-11-27T00:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.06324028152270528
+    },
+    {
+      "player": "Miles McBride",
+      "team": "Charlotte Hornets",
+      "opponent": "New York Knicks",
+      "propType": "rebounds",
+      "prediction": 0.5467453839691504,
+      "modelProbability": 0.5467453839691504,
+      "vegasLine": 2.5,
+      "betSide": "UNDER",
+      "edge": 0.33663885353604206,
+      "confidence": 55,
+      "odds": -119,
+      "book": "BetOnline.ag",
+      "game": "Charlotte Hornets @ New York Knicks",
+      "gameTime": "2025-11-27T00:10:00Z",
+      "model": "rebounds_lightgbm",
+      "threshold": 0.52,
+      "kellyStake": 2.9,
+      "kellyFraction": 0.007372390892439462
     },
     {
       "player": "Collin Sexton",
@@ -196,7 +225,8 @@
       "gameTime": "2025-11-27T00:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.19904349619011208
     },
     {
       "player": "Jakob Poeltl",
@@ -215,7 +245,8 @@
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.1821031588540804
     },
     {
       "player": "Ben Sheppard",
@@ -226,15 +257,16 @@
       "modelProbability": 0.6204617691104402,
       "vegasLine": 6.5,
       "betSide": "OVER",
-      "edge": 13.265689106165969,
+      "edge": 12.78509316720165,
       "confidence": 62,
-      "odds": 105,
-      "book": "Fanatics",
+      "odds": 103,
+      "book": "BetOnline.ag",
       "game": "Toronto Raptors @ Indiana Pacers",
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.25197804980018795
     },
     {
       "player": "Jamal Shead",
@@ -245,15 +277,16 @@
       "modelProbability": 0.6086277110253192,
       "vegasLine": 7.5,
       "betSide": "OVER",
-      "edge": 9.88237894566918,
+      "edge": 10.12385484637428,
       "confidence": 61,
-      "odds": -104,
-      "book": "FanDuel",
+      "odds": -103,
+      "book": "BetOnline.ag",
       "game": "Toronto Raptors @ Indiana Pacers",
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.205514253381398
     },
     {
       "player": "T.J. McConnell",
@@ -264,15 +297,16 @@
       "modelProbability": 0.6051251657623364,
       "vegasLine": 9.5,
       "betSide": "OVER",
-      "edge": 8.821695320195,
+      "edge": 8.13156419528126,
       "confidence": 61,
-      "odds": -107,
-      "book": "DraftKings",
+      "odds": -110,
+      "book": "BetMGM",
       "game": "Toronto Raptors @ Indiana Pacers",
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.17076284810090653
     },
     {
       "player": "Jarace Walker",
@@ -291,7 +325,8 @@
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.1412910436968301
     },
     {
       "player": "Isaiah Jackson",
@@ -310,7 +345,8 @@
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.11517246221068855
     },
     {
       "player": "Ben Sheppard",
@@ -329,7 +365,8 @@
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.20793542263690817
     },
     {
       "player": "Jarace Walker",
@@ -348,7 +385,8 @@
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.1427304614439584
     },
     {
       "player": "Ja'Kobe Walter",
@@ -359,15 +397,16 @@
       "modelProbability": 0.5502595128941713,
       "vegasLine": 1.5,
       "betSide": "OVER",
-      "edge": 6.245463484539082,
+      "edge": 5.025951289417129,
       "confidence": 55,
-      "odds": 105,
-      "book": "Fanatics",
+      "odds": 100,
+      "book": "BetMGM",
       "game": "Toronto Raptors @ Indiana Pacers",
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "assists_logistic_pra",
       "threshold": 0.55,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.1005190257883426
     },
     {
       "player": "Ja'Kobe Walter",
@@ -386,7 +425,8 @@
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.3135607186735788
     },
     {
       "player": "T.J. McConnell",
@@ -405,7 +445,8 @@
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.14664290797242152
     },
     {
       "player": "Jamal Shead",
@@ -424,7 +465,8 @@
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.08917465964410959
     },
     {
       "player": "Collin Murray-Boyles",
@@ -443,7 +485,8 @@
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.2823485513927952
     },
     {
       "player": "Andrew Wiggins",
@@ -452,36 +495,18 @@
       "propType": "points",
       "prediction": 0.6100762525130602,
       "modelProbability": 0.6100762525130602,
-      "vegasLine": 13.5,
+      "vegasLine": 12.5,
       "betSide": "UNDER",
-      "edge": 7.519253158282768,
+      "edge": 12.227137446427971,
       "confidence": 61,
-      "odds": -115,
-      "book": "Fanatics",
+      "odds": 105,
+      "book": "Bovada",
       "game": "Miami Heat @ Milwaukee Bucks",
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
-    },
-    {
-      "player": "Tyler Herro",
-      "team": "Miami Heat",
-      "opponent": "Milwaukee Bucks",
-      "propType": "rebounds",
-      "prediction": 0.6052419570835369,
-      "modelProbability": 0.6052419570835369,
-      "vegasLine": 4.5,
-      "betSide": "UNDER",
-      "edge": 0.20673539089337556,
-      "confidence": 61,
-      "odds": -152,
-      "book": "DraftKings",
-      "game": "Miami Heat @ Milwaukee Bucks",
-      "gameTime": "2025-11-27T00:40:00Z",
-      "model": "rebounds_lightgbm",
-      "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.23872030252549842
     },
     {
       "player": "Kel'el Ware",
@@ -492,34 +517,16 @@
       "modelProbability": 0.5762136931383653,
       "vegasLine": 11.5,
       "betSide": "OVER",
-      "edge": 5.0147342427464885,
+      "edge": 5.240416932884151,
       "confidence": 58,
-      "odds": -111,
-      "book": "DraftKings",
+      "odds": -110,
+      "book": "BetOnline.ag",
       "game": "Miami Heat @ Milwaukee Bucks",
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
-    },
-    {
-      "player": "Bam Adebayo",
-      "team": "Miami Heat",
-      "opponent": "Milwaukee Bucks",
-      "propType": "assists",
-      "prediction": 0.5650683977942428,
-      "modelProbability": 0.5650683977942428,
-      "vegasLine": 3.5,
-      "betSide": "OVER",
-      "edge": 13.403391503562212,
-      "confidence": 57,
-      "odds": 132,
-      "book": "Caesars",
-      "game": "Miami Heat @ Milwaukee Bucks",
-      "gameTime": "2025-11-27T00:40:00Z",
-      "model": "assists_logistic_pra",
-      "threshold": 0.55,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.11004875559056726
     },
     {
       "player": "Norman Powell",
@@ -530,15 +537,56 @@
       "modelProbability": 0.5432549281458177,
       "vegasLine": 2.5,
       "betSide": "UNDER",
-      "edge": 8.870947360036313,
+      "edge": 10.84723194501655,
       "confidence": 54,
-      "odds": 120,
-      "book": "BetMGM",
+      "odds": 130,
+      "book": "Caesars",
       "game": "Miami Heat @ Milwaukee Bucks",
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.19191256518106198
+    },
+    {
+      "player": "Bam Adebayo",
+      "team": "Miami Heat",
+      "opponent": "Milwaukee Bucks",
+      "propType": "assists",
+      "prediction": 0.5650683977942428,
+      "modelProbability": 0.5650683977942428,
+      "vegasLine": 3.5,
+      "betSide": "OVER",
+      "edge": 12.062395334979836,
+      "confidence": 57,
+      "odds": 125,
+      "book": "Bovada",
+      "game": "Miami Heat @ Milwaukee Bucks",
+      "gameTime": "2025-11-27T00:40:00Z",
+      "model": "assists_logistic_pra",
+      "threshold": 0.55,
+      "kellyStake": 6,
+      "kellyFraction": 0.21712311602963702
+    },
+    {
+      "player": "Tyler Herro",
+      "team": "Miami Heat",
+      "opponent": "Milwaukee Bucks",
+      "propType": "rebounds",
+      "prediction": 0.5941314119937765,
+      "modelProbability": 0.5941314119937765,
+      "vegasLine": 3.5,
+      "betSide": "UNDER",
+      "edge": 13.958595744832197,
+      "confidence": 59,
+      "odds": 120,
+      "book": "Fanatics",
+      "game": "Miami Heat @ Milwaukee Bucks",
+      "gameTime": "2025-11-27T00:40:00Z",
+      "model": "rebounds_lightgbm",
+      "threshold": 0.52,
+      "kellyStake": 6,
+      "kellyFraction": 0.255907588655257
     },
     {
       "player": "Chet Holmgren",
@@ -557,7 +605,8 @@
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.060669057141988336
     },
     {
       "player": "Cason Wallace",
@@ -568,15 +617,16 @@
       "modelProbability": 0.5382801129906397,
       "vegasLine": 2.5,
       "betSide": "UNDER",
-      "edge": 5.284321978675621,
+      "edge": 4.323060804014467,
       "confidence": 54,
-      "odds": 106,
-      "book": "FanDuel",
+      "odds": 102,
+      "book": "DraftKings",
       "game": "Oklahoma City Thunder @ Minnesota Timberwolves",
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.08561355709911
     },
     {
       "player": "Mike Conley",
@@ -587,15 +637,16 @@
       "modelProbability": 0.5709444082006596,
       "vegasLine": 1.5,
       "betSide": "UNDER",
-      "edge": 7.094440820065961,
+      "edge": 5.874928624944009,
       "confidence": 57,
-      "odds": 100,
+      "odds": -105,
       "book": "BetMGM",
       "game": "Oklahoma City Thunder @ Minnesota Timberwolves",
       "gameTime": "2025-11-27T00:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.12043603681135218
     },
     {
       "player": "Jock Landale",
@@ -606,15 +657,16 @@
       "modelProbability": 0.6131107645225233,
       "vegasLine": 9.5,
       "betSide": "OVER",
-      "edge": 13.692028833204716,
+      "edge": 12.530588647374286,
       "confidence": 61,
-      "odds": 110,
+      "odds": 105,
       "book": "Bovada",
       "game": "New Orleans Pelicans @ Memphis Grizzlies",
       "gameTime": "2025-11-27T01:10:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.2446448259725455
     },
     {
       "player": "Kentavious Caldwell-Pope",
@@ -633,7 +685,8 @@
       "gameTime": "2025-11-27T01:10:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.23992602907534727
     },
     {
       "player": "Jock Landale",
@@ -644,15 +697,16 @@
       "modelProbability": 0.5946048331720583,
       "vegasLine": 4.5,
       "betSide": "OVER",
-      "edge": 5.972111224182575,
+      "edge": 3.3201324400128462,
       "confidence": 59,
-      "odds": -115,
-      "book": "BetMGM",
+      "odds": -128,
+      "book": "Caesars",
       "game": "New Orleans Pelicans @ Memphis Grizzlies",
       "gameTime": "2025-11-27T01:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.07569901963229286
     },
     {
       "player": "Cam Spencer",
@@ -671,7 +725,8 @@
       "gameTime": "2025-11-27T01:10:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.2989502251031617
     },
     {
       "player": "Kentavious Caldwell-Pope",
@@ -690,7 +745,8 @@
       "gameTime": "2025-11-27T01:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.1626221438692404
     },
     {
       "player": "Yves Missi",
@@ -709,7 +765,8 @@
       "gameTime": "2025-11-27T01:10:00Z",
       "model": "assists_logistic_pra",
       "threshold": 0.55,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.17880045256641985
     },
     {
       "player": "Zach Edey",
@@ -728,7 +785,8 @@
       "gameTime": "2025-11-27T01:10:00Z",
       "model": "assists_logistic_pra",
       "threshold": 0.55,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.12872662423997838
     },
     {
       "player": "Trey Murphy III",
@@ -747,7 +805,8 @@
       "gameTime": "2025-11-27T01:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.20875416838641475
     },
     {
       "player": "Clint Capela",
@@ -766,7 +825,8 @@
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.06412585471179322
     },
     {
       "player": "Josh Okogie",
@@ -777,15 +837,16 @@
       "modelProbability": 0.6242994227586111,
       "vegasLine": 4.5,
       "betSide": "OVER",
-      "edge": 19.876750786499404,
+      "edge": 19.694899540818373,
       "confidence": 62,
-      "odds": 135,
-      "book": "Caesars",
+      "odds": 134,
+      "book": "FanDuel",
       "game": "Golden State Warriors @ Houston Rockets",
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.3439258576530969
     },
     {
       "player": "Will Richard",
@@ -804,7 +865,8 @@
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.23201016660137852
     },
     {
       "player": "Clint Capela",
@@ -823,7 +885,8 @@
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "assists_logistic_pra",
       "threshold": 0.55,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.2429078994468969
     },
     {
       "player": "Devin Booker",
@@ -842,7 +905,8 @@
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.19244173127161418
     },
     {
       "player": "DeMar DeRozan",
@@ -853,15 +917,16 @@
       "modelProbability": 0.5372093433811486,
       "vegasLine": 3.5,
       "betSide": "UNDER",
-      "edge": 0.6692911456265938,
+      "edge": 0.8907456588695739,
       "confidence": 54,
-      "odds": -113,
+      "odds": -112,
       "book": "BetRivers",
       "game": "Sacramento Kings @ Phoenix Suns",
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.018883807968034905
     },
     {
       "player": "Malik Monk",
@@ -875,12 +940,13 @@
       "edge": 0.9467020572140217,
       "confidence": 57,
       "odds": -130,
-      "book": "BetOnline.ag",
+      "book": "Fanatics",
       "game": "Sacramento Kings @ Phoenix Suns",
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "assists_logistic_pra",
       "threshold": 0.55,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.02177414731592231
     },
     {
       "player": "Precious Achiuwa",
@@ -891,15 +957,16 @@
       "modelProbability": 0.5863122757922795,
       "vegasLine": 6.5,
       "betSide": "OVER",
-      "edge": 12.119599672251208,
+      "edge": 13.176682124682499,
       "confidence": 59,
-      "odds": 115,
+      "odds": 120,
       "book": "Bovada",
       "game": "Sacramento Kings @ Phoenix Suns",
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.24157250561917915
     },
     {
       "player": "Mark Williams",
@@ -910,15 +977,16 @@
       "modelProbability": 0.5548747448540093,
       "vegasLine": 1.5,
       "betSide": "OVER",
-      "edge": 17.02593602386247,
+      "edge": 16.27178821089113,
       "confidence": 55,
-      "odds": 160,
+      "odds": 155,
       "book": "BetMGM",
       "game": "Sacramento Kings @ Phoenix Suns",
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "assists_logistic_pra",
       "threshold": 0.55,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.26769716088885404
     },
     {
       "player": "De'Aaron Fox",
@@ -937,7 +1005,8 @@
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.15913946591087696
     },
     {
       "player": "Kris Murray",
@@ -948,15 +1017,16 @@
       "modelProbability": 0.582041454429757,
       "vegasLine": 3.5,
       "betSide": "OVER",
-      "edge": 8.204145442975697,
+      "edge": 8.452901661881167,
       "confidence": 58,
-      "odds": 100,
-      "book": "Fanatics",
+      "odds": 101,
+      "book": "DraftKings",
       "game": "Portland Trail Blazers @ San Antonio Spurs",
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.1682211122810014
     },
     {
       "player": "Donovan Clingan",
@@ -975,7 +1045,8 @@
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.52,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.1363330446430846
     },
     {
       "player": "Luke Kornet",
@@ -994,14 +1065,15 @@
       "gameTime": "2025-11-27T03:10:00Z",
       "model": "points_lightgbm",
       "threshold": 0.6,
-      "kellyStake": 0
+      "kellyStake": 6,
+      "kellyFraction": 0.27380590069047794
     }
   ],
   "stats": {
-    "total_picks": 52,
+    "total_picks": 53,
     "by_market": {
       "points": 16,
-      "rebounds": 29,
+      "rebounds": 30,
       "assists": 7
     },
     "errors": 0
