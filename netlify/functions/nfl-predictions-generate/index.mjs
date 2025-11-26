@@ -1810,7 +1810,7 @@ async function loadLiveOdds() {
   if (oddsApiUrl) {
     try {
       console.log('[ODDS] Fetching from The Odds API');
-      const res = await fetch(oddsApiUrl, { timeout: 15000 });
+      const res = await fetch(oddsApiUrl, { timeout: 5000 }); // Reduced from 15000 to 5000ms
       if (res.ok) {
         const data = await res.json();
         console.log(`[ODDS] Loaded ${Array.isArray(data) ? data.length : 0} games from The Odds API`);
@@ -1825,10 +1825,15 @@ async function loadLiveOdds() {
     console.warn('[ODDS] Missing ODDS_API_KEY, skipping direct The Odds API fetch');
   }
 
-  // Fallback: Use internal aggregator
+  // Fallback: Use internal aggregator (with timeout)
   try {
     console.log('[ODDS] Fallback: fetching from internal nfl-odds-get');
-    const oddsRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals');
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    const oddsRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals', {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
     if (!oddsRes.ok) throw new Error(`Fallback odds endpoint failed: ${oddsRes.status}`);
     const oddsResponse = await oddsRes.json();
     const oddsData = oddsResponse.games || oddsResponse || [];
@@ -1836,7 +1841,7 @@ async function loadLiveOdds() {
     return oddsData;
   } catch (fallbackErr) {
     console.error('[ODDS] All odds sources failed:', fallbackErr?.message || fallbackErr);
-    return [];
+    return []; // Return empty array instead of throwing
   }
 }
 
