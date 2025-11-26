@@ -143,7 +143,7 @@ const extra = normalizedKeys.filter(c => !featureColumns.includes(c));
 
 ```bash
 cd ~/Desktop/REPO33/RRMODEL
-export ODDS_API_KEY="c5d3fe15e6c5be83b2acd8695cff012b"
+export ODDS_API_KEY="<YOUR_THEODDS_API_KEY>"
 node scripts/nba/generate-predictions-phase3.5.mjs
 ```
 

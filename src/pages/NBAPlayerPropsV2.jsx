@@ -89,15 +89,42 @@ export default function NBAPlayerPropsV2() {
     loadPredictions(true);
   };
 
+  const computeKellyUnits = (probability = 0, odds = 0) => {
+    const p = Number(probability) || 0;
+    const american = Number(odds) || 0;
+    const decimalOdds = american > 0 ? 1 + american / 100 : 1 + 100 / Math.abs(american || 1);
+    const b = decimalOdds - 1;
+    if (b <= 0) return 0;
+    const k = p - ((1 - p) / b);
+    const stakeFraction = Math.max(0, k);
+    const units = stakeFraction * 400;
+    const capped = Math.min(units, 6);
+    return Math.round(capped * 10) / 10;
+  };
+
+  const formatOdds = (odds) => {
+    const american = Number(odds);
+    if (!Number.isFinite(american) || american === 0) return 'EVEN';
+    return american > 0 ? `+${Math.round(american)}` : `${Math.round(american)}`;
+  };
+
   const filteredPredictions = predictions
+    .map(pred => ({
+      ...pred,
+      derivedKelly: computeKellyUnits(pred.modelProbability ?? pred.prediction, pred.odds)
+    }))
     .filter(p => filter === 'all' || p.propType === filter)
     .filter(p => sideFilter === 'all' || p.betSide.toLowerCase() === sideFilter)
     .sort((a, b) => {
-      if (sortBy === 'edge') return Math.abs(b.edge) - Math.abs(a.edge);
-      if (sortBy === 'kelly') return (b.kellyStake || 0) - (a.kellyStake || 0);
-      if (sortBy === 'modelProb') return (b.modelProbability || 0) - (a.modelProbability || 0);
+      if (sortBy === 'kelly') return (b.derivedKelly || 0) - (a.derivedKelly || 0);
+      if (sortBy === 'modelProb') return (b.modelProbability || b.prediction || 0) - (a.modelProbability || a.prediction || 0);
       if (sortBy === 'player') return a.player.localeCompare(b.player);
-      return 0;
+      // Default: edge priority with tie-breakers (probability, player)
+      const edgeDiff = (Number(b.edge) || 0) - (Number(a.edge) || 0);
+      if (edgeDiff !== 0) return edgeDiff;
+      const probDiff = (b.modelProbability || b.prediction || 0) - (a.modelProbability || a.prediction || 0);
+      if (probDiff !== 0) return probDiff;
+      return a.player.localeCompare(b.player);
     });
 
   // Format last updated time
@@ -134,10 +161,14 @@ export default function NBAPlayerPropsV2() {
           <thead>
             <tr style="background: #f9fafb;">
               <th style="padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Player</th>
-              <th style="padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Prop</th>
+              <th style="padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Market</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Side</th>
               <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Line</th>
-              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Pick</th>
-              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Stake</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Odds</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Model Prob</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Edge</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Units (Kelly)</th>
+              <th style="padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Book</th>
             </tr>
           </thead>
           <tbody>
@@ -154,13 +185,18 @@ export default function NBAPlayerPropsV2() {
                     'background: #dbeafe; color: #2563eb;'
                   }">${pred.propType.toUpperCase()}</span>
                 </td>
-                <td style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 13px; color: #111827;">${pred.vegasLine}</td>
                 <td style="padding: 10px 12px; text-align: center;">
                   <span style="display: inline-block; padding: 4px 12px; font-size: 11px; font-weight: 700; border-radius: 6px; ${
                     pred.betSide === 'OVER' ? 'background: #d1fae5; color: #065f46;' : 'background: #fee2e2; color: #991b1b;'
                   }">${pred.betSide}</span>
                 </td>
-                <td style="padding: 10px 12px; text-align: center; font-weight: 700; font-size: 13px; color: #f59e0b;">${(pred.kellyStake || 0).toFixed(1)}U</td>
+                <td style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 13px; color: #111827;">${pred.vegasLine}</td>
+                <td style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 13px; color: #111827;">${formatOdds(pred.odds)}</td>
+                <td style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 13px; color: #111827;">${((pred.modelProbability || pred.prediction || 0) * 100).toFixed(2)}%</td>
+                <td style="padding: 10px 12px; text-align: center; font-weight: 700; font-size: 13px; color: #065f46;">${(Number(pred.edge) || 0).toFixed(1)}%</td>
+                <td style="padding: 10px 12px; text-align: center; font-weight: 700; font-size: 13px; color: #f59e0b;">${computeKellyUnits(pred.modelProbability || pred.prediction || 0, pred.odds).toFixed(1)}U</td>
+                <td style="padding: 10px 12px; font-weight: 600; font-size: 12px; color: #111827;">${pred.book || ''}</td>
+                </td>
               </tr>
             `).join('')}
           </tbody>
@@ -271,9 +307,9 @@ export default function NBAPlayerPropsV2() {
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <h1 className="text-3xl font-bold">🏀 NBA Player Props V2</h1>
-          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Phase 3.5 Hybrid</span>
+          <h1 className="text-3xl font-bold">NBA Player Props — Phase 3.5 (Hybrid Logistic + LightGBM)</h1>
         </div>
+        <p className="text-sm text-gray-600 mb-2">Using canonical mainlines (no ladders)</p>
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-green-600">Performance:</span>
@@ -303,8 +339,10 @@ export default function NBAPlayerPropsV2() {
           </div>
           <div><label className="text-sm font-medium text-gray-700 mr-2">Sort:</label>
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="border rounded px-3 py-1.5 text-sm">
-              <option value="edge">Edge</option><option value="kelly">Kelly</option>
-              <option value="modelProb">Model Prob</option><option value="player">Player</option>
+              <option value="edge">Edge (Default)</option>
+              <option value="kelly">Kelly</option>
+              <option value="modelProb">Model Prob</option>
+              <option value="player">Player</option>
             </select>
           </div>
           <button onClick={loadPredictions} className="bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 text-sm">Refresh</button>
@@ -330,47 +368,55 @@ export default function NBAPlayerPropsV2() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Player</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prop</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Market</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Side</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Line</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Pick</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Odds</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Model Prob</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Edge</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Kelly</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Units (Kelly)</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Book</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredPredictions.map((pred, idx) => (
-                <tr key={idx} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-gray-900">{pred.player}</div>
-                    <div className="text-xs text-gray-500">{pred.team}</div>
-                    <div className="text-xs text-gray-400">vs {pred.opponent}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      pred.propType === 'points' ? 'bg-yellow-100 text-yellow-800' :
-                      pred.propType === 'rebounds' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-                    }`}>{pred.propType.toUpperCase()}</span>
-                  </td>
-                  <td className="px-6 py-4 text-center font-medium">{pred.vegasLine}</td>
-                  <td className="px-6 py-4 text-center">
-                    <span className={`inline-flex px-3 py-1 text-xs font-bold rounded ${
-                      pred.betSide === 'OVER' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>{pred.betSide}</span>
-                    <div className="text-xs text-gray-500 mt-1">{pred.odds > 0 ? `+${pred.odds}` : pred.odds}</div>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex items-center justify-center">
-                      <div className="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                        <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${(pred.modelProbability * 100).toFixed(0)}%` }}></div>
+              {filteredPredictions.map((pred, idx) => {
+                const probability = pred.modelProbability ?? pred.prediction ?? 0;
+                const kellyUnits = pred.derivedKelly ?? computeKellyUnits(probability, pred.odds);
+                const oddsLabel = formatOdds(pred.odds);
+                return (
+                  <tr key={idx} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-gray-900">{pred.player}</div>
+                      <div className="text-xs text-gray-500">{pred.team}</div>
+                      <div className="text-xs text-gray-400">vs {pred.opponent}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        pred.propType === 'points' ? 'bg-yellow-100 text-yellow-800' :
+                        pred.propType === 'rebounds' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                      }`}>{pred.propType.toUpperCase()}</span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span className={`inline-flex px-3 py-1 text-xs font-bold rounded ${
+                        pred.betSide === 'OVER' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>{pred.betSide}</span>
+                    </td>
+                    <td className="px-6 py-4 text-center font-medium">{pred.vegasLine}</td>
+                    <td className="px-6 py-4 text-center font-mono font-semibold">{oddsLabel}</td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex items-center justify-center">
+                        <div className="w-20 bg-gray-200 rounded-full h-2 mr-2">
+                          <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${(probability * 100).toFixed(0)}%` }}></div>
+                        </div>
+                        <span className="text-sm font-semibold">{(probability * 100).toFixed(2)}%</span>
                       </div>
-                      <span className="text-sm font-semibold">{(pred.modelProbability * 100).toFixed(1)}%</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center font-bold text-green-600">{typeof pred.edge === 'number' ? pred.edge.toFixed(1) : pred.edge}%</td>
-                  <td className="px-6 py-4 text-center font-bold text-yellow-600">{(pred.kellyStake || 0).toFixed(1)}U</td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4 text-center font-bold text-green-600">{(Number(pred.edge) || 0).toFixed(1)}%</td>
+                    <td className="px-6 py-4 text-center font-bold text-yellow-600">{kellyUnits.toFixed(1)}U</td>
+                    <td className="px-6 py-4 text-left text-sm font-semibold text-gray-800">{pred.book || '—'}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

@@ -3869,6 +3869,18 @@ exports.handler = async (event, context) => {
                              finalProb < 0.45 ? 'LEAN_NO' : 'NO_ANALYSIS'
             };
           }
+        } else {
+          // EPL: Initialize professionalValueBet early so it exists even if Profile C doesn't bet
+          if (effectiveOdds.btts_yes && effectiveOdds.btts_no) {
+            // Default: odds exist but no value bet (will be overridden by Profile C if it recommends)
+            professionalValueBet = {
+              selection: null,
+              kelly_fraction: 0,
+              expected_value: 0,
+              recommendation: 'INSUFFICIENT_DATA',
+              reason: 'Profile C awaiting evaluation'
+            };
+          }
         }
         
         // Portfolio correlation check (basic implementation) - SKIP FOR EPL (Profile C handles this)
@@ -3941,6 +3953,15 @@ exports.handler = async (event, context) => {
               }
               
               console.log('⛔ Profile C: NO BET', logData);
+              
+              // Update professionalValueBet with "no value" status (odds exist but no bet)
+              professionalValueBet = {
+                selection: null,
+                kelly_fraction: 0,
+                expected_value: 0,
+                recommendation: 'NO_VALUE',
+                reason: profileC.reason || 'Probability not in profitable band [0.61-0.66]'
+              };
             }
           } catch (error) {
             console.error('Profile C error:', error);

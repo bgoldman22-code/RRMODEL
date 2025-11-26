@@ -506,6 +506,15 @@ function computeMarketBreakdown(picks) {
   }, { points: 0, rebounds: 0, assists: 0 });
 }
 
+function oddsToImpliedProbability(odds) {
+  const american = Number(odds);
+  if (!Number.isFinite(american) || american === 0) return 0.5;
+  if (american > 0) {
+    return 100 / (american + 100);
+  }
+  return -american / (-american + 100);
+}
+
 function canonicalizePicks(picks) {
   const grouped = new Map();
 
@@ -515,14 +524,38 @@ function canonicalizePicks(picks) {
     if (!Number.isFinite(edgeValue) || edgeValue <= 0) continue;
 
     const lineValue = Number(pick.vegasLine);
+    const impliedProbability = oddsToImpliedProbability(pick.odds);
+    const closenessToMain = Math.abs(impliedProbability - 0.5);
     const existing = grouped.get(key);
 
-    if (!existing || edgeValue > existing.edge || (edgeValue === existing.edge && lineValue > existing.line)) {
-      grouped.set(key, { edge: edgeValue, line: lineValue, pick });
+    const shouldReplace =
+      !existing ||
+      closenessToMain < existing.closeness ||
+      (closenessToMain === existing.closeness && edgeValue > existing.edge) ||
+      (closenessToMain === existing.closeness && edgeValue === existing.edge && lineValue > existing.line);
+
+    if (shouldReplace) {
+      grouped.set(key, { edge: edgeValue, line: lineValue, closeness: closenessToMain, pick });
     }
   }
 
   return Array.from(grouped.values()).map(entry => entry.pick);
+}
+
+function calculateKellyUnits(probability, odds, bankrollUnits = 400, maxUnits = 6) {
+  const p = Number(probability) || 0;
+  const american = Number(odds) || 0;
+  const decimalOdds = american > 0 ? 1 + american / 100 : 1 + 100 / Math.abs(american || 1);
+  const b = decimalOdds - 1;
+  if (b <= 0) {
+    return { units: 0, fraction: 0 };
+  }
+  const k = p - ((1 - p) / b);
+  const stakeFraction = Math.max(0, k);
+  const unitsRaw = stakeFraction * bankrollUnits;
+  const capped = Math.min(unitsRaw, maxUnits);
+  const rounded = Math.round(capped * 10) / 10;
+  return { units: rounded, fraction: stakeFraction };
 }
 
 // ====================================================================
@@ -574,6 +607,8 @@ for (const prop of allProps) {
       continue;
     }
 
+    const { units: kellyUnits, fraction: kellyFraction } = calculateKellyUnits(result.prob_win, odds);
+
     // Add to predictions
     predictions.push({
       player,
@@ -592,7 +627,8 @@ for (const prop of allProps) {
       gameTime: commence_time,
       model: result.use_this_model,
       threshold: result.threshold,
-      kellyStake: 0 // Placeholder for frontend (Kelly sizing not implemented yet)
+      kellyStake: kellyUnits,
+      kellyFraction
     });
 
   } catch (err) {
