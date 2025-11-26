@@ -1,194 +1,728 @@
 {
   "ARI": {
-    "QB": ["Kyler Murray", "Jacoby Brissett"],
-    "RB": ["James Conner", "Trey Benson", "Emari Demercado"],
-    "WR": ["Marvin Harrison Jr.", "Michael Wilson", "Zay Jones", "Greg Dortch"],
-    "TE": ["Trey McBride", "Elijah Higgins"]
+    "QB": [
+      "Jacoby Brissett",
+      "Kyler Murray"
+    ],
+    "RB": [
+      "Zonovan Knight",
+      "Trey Benson",
+      "Michael Carter",
+      "Jermar Jefferson",
+      "Emari Demercado"
+    ],
+    "WR": [
+      "Michael Wilson",
+      "Greg Dortch",
+      "Marvin Harrison Jr.",
+      "Xavier Weaver"
+    ],
+    "TE": [
+      "Trey McBride",
+      "Elijah Higgins"
+    ]
   },
   "ATL": {
-    "QB": ["Michael Penix Jr.", "Kirk Cousins"],
-    "RB": ["Bijan Robinson", "Tyler Allgeier"],
-    "WR": ["Drake London", "Darnell Mooney", "Ray-Ray McCloud III", "Chris Blair"],
-    "TE": ["Kyle Pitts Sr."]
+    "QB": [
+      "Kirk Cousins"
+    ],
+    "RB": [
+      "Bijan Robinson",
+      "Tyler Allgeier"
+    ],
+    "WR": [
+      "Darnell Mooney",
+      "David Sills V",
+      "KhaDarel Hodge",
+      "Drake London"
+    ],
+    "TE": [
+      "Kyle Pitts Sr."
+    ]
   },
   "BAL": {
-    "QB": ["Lamar Jackson", "Cooper Rush"],
-    "RB": ["Derrick Henry", "Justice Hill", "Rasheen Ali", "Keaton Mitchell", "D'Ernest Johnson"],
-    "WR": ["Zay Flowers", "Rashod Bateman", "DeAndre Hopkins", "Devontez Walker", "Tylan Wallace"],
-    "TE": ["Mark Andrews", "Charlie Kolar", "Isaiah Likely"]
+    "QB": [
+      "Lamar Jackson",
+      "Tyler Huntley",
+      "Cooper Rush"
+    ],
+    "RB": [
+      "Derrick Henry",
+      "Keaton Mitchell",
+      "Justice Hill",
+      "Patrick Ricard"
+    ],
+    "WR": [
+      "Zay Flowers",
+      "DeAndre Hopkins",
+      "Rashod Bateman",
+      "Devontez Walker",
+      "Tylan Wallace"
+    ],
+    "TE": [
+      "Mark Andrews",
+      "Isaiah Likely",
+      "Charlie Kolar"
+    ]
   },
   "BUF": {
-    "QB": ["Josh Allen", "Mitchell Trubisky"],
-    "RB": ["James Cook III", "Ray Davis", "Ty Johnson"],
-    "WR": ["Keon Coleman", "Khalil Shakir", "Joshua Palmer", "Elijah Moore", "Curtis Samuel", "Tyrell Shavers", "Gabe Davis"],
-    "TE": ["Dalton Kincaid", "Dawson Knox"]
+    "QB": [
+      "Josh Allen",
+      "Mitchell Trubisky"
+    ],
+    "RB": [
+      "James Cook III",
+      "Ty Johnson",
+      "Ray Davis"
+    ],
+    "WR": [
+      "Khalil Shakir",
+      "Joshua Palmer",
+      "Gabe Davis",
+      "Tyrell Shavers",
+      "Keon Coleman",
+      "Elijah Moore",
+      "Curtis Samuel"
+    ],
+    "TE": [
+      "Dawson Knox",
+      "Jackson Hawes",
+      "Dalton Kincaid"
+    ]
   },
   "CAR": {
-    "QB": ["Bryce Young", "Andy Dalton", "Hendon Hooker"],
-    "RB": ["Chuba Hubbard", "Rico Dowdle", "Trevor Etienne"],
-    "WR": ["Tetairoa McMillan", "Xavier Legette", "Hunter Renfrow", "Brycen Tremayne", "Jalen Coker", "Jimmy Horn Jr."],
-    "TE": ["Ja'Tavion Sanders", "Tommy Tremble", "Mitchell Evans"]
+    "QB": [
+      "Bryce Young",
+      "Andy Dalton"
+    ],
+    "RB": [
+      "Rico Dowdle",
+      "Chuba Hubbard",
+      "Trevor Etienne"
+    ],
+    "WR": [
+      "Tetairoa McMillan",
+      "Jalen Coker",
+      "Xavier Legette",
+      "Jimmy Horn Jr.",
+      "Hunter Renfrow"
+    ],
+    "TE": [
+      "Ja'Tavion Sanders",
+      "Tommy Tremble",
+      "Mitchell Evans"
+    ]
   },
   "CHI": {
-    "QB": ["Caleb Williams", "Tyson Bagent"],
-    "RB": ["D'Andre Swift", "Kyle Monangai", "Roschon Johnson"],
-    "WR": ["Rome Odunze", "DJ Moore", "Olamide Zaccheaus", "Luther Burden III"],
-    "TE": ["Colston Loveland", "Cole Kmet"]
+    "QB": [
+      "Caleb Williams",
+      "Tyson Bagent"
+    ],
+    "RB": [
+      "D'Andre Swift",
+      "Kyle Monangai",
+      "Brittain Brown",
+      "Roschon Johnson"
+    ],
+    "WR": [
+      "Rome Odunze",
+      "DJ Moore",
+      "Luther Burden III",
+      "Olamide Zaccheaus"
+    ],
+    "TE": [
+      "Colston Loveland",
+      "Cole Kmet"
+    ]
   },
   "CIN": {
-    "QB": ["Jake Browning", "Joe Burrow"],
-    "RB": ["Chase Brown", "Samaje Perine", "Tahj Brooks"],
-    "WR": ["Ja'Marr Chase", "Tee Higgins", "Andrei Iosivas", "Mitchell Tinsley", "Jermaine Burton"],
-    "TE": ["Mike Gesicki", "Noah Fant", "Drew Sample", "Tanner Hudson"]
+    "QB": [
+      "Joe Burrow",
+      "Joe Flacco",
+      "Jake Browning"
+    ],
+    "RB": [
+      "Chase Brown",
+      "Tahj Brooks",
+      "Kendall Milton",
+      "Samaje Perine",
+      "Gary Brightwell"
+    ],
+    "WR": [
+      "Ja'Marr Chase",
+      "Andrei Iosivas",
+      "Mitch Tinsley",
+      "Tee Higgins"
+    ],
+    "TE": [
+      "Mike Gesicki",
+      "Noah Fant",
+      "Tanner Hudson",
+      "Drew Sample"
+    ]
   },
   "CLE": {
-    "QB": ["Joe Flacco", "Dillon Gabriel", "Shedeur Sanders", "Deshaun Watson"],
-    "RB": ["Quinshon Judkins", "Dylan Sampson", "Jerome Ford", "Raheim Sanders"],
-    "WR": ["Jerry Jeudy", "Cedric Tillman", "Isaiah Bond", "Jamari Thrash", "DeAndre Carter", "Malachi Corley"],
-    "TE": ["Harold Fannin Jr.", "David Njoku"]
+    "QB": [
+      "Shedeur Sanders",
+      "Dillon Gabriel",
+      "Bailey Zappe"
+    ],
+    "RB": [
+      "Quinshon Judkins",
+      "Dylan Sampson",
+      "Jerome Ford"
+    ],
+    "WR": [
+      "Jerry Jeudy",
+      "Cedric Tillman",
+      "Isaiah Bond",
+      "Jamari Thrash"
+    ],
+    "TE": [
+      "Harold Fannin Jr.",
+      "David Njoku"
+    ]
   },
   "DAL": {
-    "QB": ["Dak Prescott", "Joe Milton III"],
-    "RB": ["Javonte Williams", "Miles Sanders", "Hunter Luepke", "Jaydon Blue", "Phil Mafah"],
-    "WR": ["CeeDee Lamb", "George Pickens", "KaVontae Turpin", "Jalen Tolbert", "Jonathan Mingo"],
-    "TE": ["Jake Ferguson", "Luke Schoonmaker"]
+    "QB": [
+      "Dak Prescott",
+      "Joe Milton III"
+    ],
+    "RB": [
+      "Javonte Williams",
+      "Malik Davis",
+      "Jaydon Blue",
+      "Hunter Luepke",
+      "Phil Mafah"
+    ],
+    "WR": [
+      "George Pickens",
+      "CeeDee Lamb",
+      "KaVontae Turpin",
+      "Ryan Flournoy",
+      "Jalen Tolbert"
+    ],
+    "TE": [
+      "Jake Ferguson",
+      "Luke Schoonmaker"
+    ]
   },
   "DEN": {
-    "QB": ["Bo Nix", "Jarrett Stidham"],
-    "RB": ["J.K. Dobbins", "RJ Harvey", "Tyler Badie", "Jaleel McLaughlin", "Adam Prentice"],
-    "WR": ["Courtland Sutton", "Troy Franklin", "Marvin Mims Jr.", "Pat Bryant"],
-    "TE": ["Evan Engram", "Adam Trautman", "Lucas Krull"]
+    "QB": [
+      "Bo Nix"
+    ],
+    "RB": [
+      "RJ Harvey",
+      "Jaleel McLaughlin",
+      "Tyler Badie",
+      "J.K. Dobbins"
+    ],
+    "WR": [
+      "Troy Franklin",
+      "Courtland Sutton",
+      "Pat Bryant",
+      "Marvin Mims Jr."
+    ],
+    "TE": [
+      "Evan Engram",
+      "Adam Trautman"
+    ]
   },
   "DET": {
-    "QB": ["Jared Goff", "Kyle Allen"],
-    "RB": ["Jahmyr Gibbs", "David Montgomery", "Craig Reynolds", "Sione Vaki"],
-    "WR": ["Amon-Ra St. Brown", "Jameson Williams", "Isaac TeSlaa", "Kalif Raymond"],
-    "TE": ["Sam LaPorta", "Brock Wright"]
+    "QB": [
+      "Jared Goff",
+      "Kyle Allen"
+    ],
+    "RB": [
+      "Jahmyr Gibbs",
+      "David Montgomery"
+    ],
+    "WR": [
+      "Amon-Ra St. Brown",
+      "Jameson Williams",
+      "Isaac TeSlaa",
+      "Kalif Raymond"
+    ],
+    "TE": [
+      "Brock Wright",
+      "Sam LaPorta"
+    ]
   },
   "GB": {
-    "QB": ["Jordan Love", "Malik Willis"],
-    "RB": ["Josh Jacobs", "Chris Brooks", "Emanuel Wilson", "MarShawn Lloyd"],
-    "WR": ["Romeo Doubs", "Matthew Golden", "Dontayvion Wicks", "Savion Williams", "Jayden Reed", "Christian Watson"],
-    "TE": ["Tucker Kraft", "Luke Musgrave", "John FitzPatrick"]
+    "QB": [
+      "Jordan Love",
+      "Malik Willis"
+    ],
+    "RB": [
+      "Josh Jacobs",
+      "Emanuel Wilson",
+      "Chris Brooks",
+      "Pierre Strong Jr.",
+      "MarShawn Lloyd"
+    ],
+    "WR": [
+      "Christian Watson",
+      "Romeo Doubs",
+      "Dontayvion Wicks",
+      "Savion Williams",
+      "Matthew Golden",
+      "Jayden Reed"
+    ],
+    "TE": [
+      "Luke Musgrave",
+      "John FitzPatrick"
+    ]
   },
   "HOU": {
-    "QB": ["C.J. Stroud", "Davis Mills"],
-    "RB": ["Nick Chubb", "Woody Marks", "Dameon Pierce", "Dare Ogunbowale", "Joe Mixon"],
-    "WR": ["Nico Collins", "Christian Kirk", "Jayden Higgins", "Xavier Hutchinson", "Jaylin Noel", "Tank Dell"],
-    "TE": ["Dalton Schultz", "Harrison Bryant", "Cade Stover"]
+    "QB": [
+      "C.J. Stroud",
+      "Davis Mills"
+    ],
+    "RB": [
+      "Woody Marks",
+      "Nick Chubb",
+      "Dare Ogunbowale",
+      "Joe Mixon"
+    ],
+    "WR": [
+      "Nico Collins",
+      "Jayden Higgins",
+      "Christian Kirk",
+      "Jaylin Noel",
+      "Xavier Hutchinson"
+    ],
+    "TE": [
+      "Dalton Schultz",
+      "Cade Stover"
+    ]
   },
   "IND": {
-    "QB": ["Daniel Jones", "Anthony Richardson Sr."],
-    "RB": ["Jonathan Taylor", "DJ Giddens", "Tyler Goodson"],
-    "WR": ["Michael Pittman Jr.", "Josh Downs", "Alec Pierce", "Adonai Mitchell"],
-    "TE": ["Tyler Warren", "Mo Alie-Cox"]
+    "QB": [
+      "Daniel Jones",
+      "Anthony Richardson Sr."
+    ],
+    "RB": [
+      "Jonathan Taylor",
+      "Ameer Abdullah",
+      "Tyler Goodson",
+      "DJ Giddens"
+    ],
+    "WR": [
+      "Michael Pittman Jr.",
+      "Alec Pierce",
+      "Josh Downs"
+    ],
+    "TE": [
+      "Tyler Warren"
+    ]
   },
   "JAX": {
-    "QB": ["Trevor Lawrence", "Nick Mullens"],
-    "RB": ["Travis Etienne Jr.", "Bhayshul Tuten", "LeQuint Allen Jr.", "Ja'Quinden Jackson"],
-    "WR": ["Brian Thomas Jr.", "Travis Hunter", "Dyami Brown", "Parker Washington", "Tim Patrick"],
-    "TE": ["Brenton Strange", "Hunter Long", "Johnny Mundt"]
+    "QB": [
+      "Trevor Lawrence",
+      "Nick Mullens"
+    ],
+    "RB": [
+      "Travis Etienne Jr.",
+      "Bhayshul Tuten",
+      "LeQuint Allen Jr."
+    ],
+    "WR": [
+      "Jakobi Meyers",
+      "Parker Washington",
+      "Brian Thomas Jr.",
+      "Tim Patrick",
+      "Dyami Brown"
+    ],
+    "TE": [
+      "Brenton Strange",
+      "Johnny Mundt",
+      "Hunter Long"
+    ]
   },
   "KC": {
-    "QB": ["Patrick Mahomes II", "Gardner Minshew II"],
-    "RB": ["Isiah Pacheco", "Kareem Hunt", "Brashard Smith", "Elijah Mitchell", "Carson Steele", "Clyde Edwards-Helaire"],
-    "WR": ["Marquise Brown", "Tyquan Thornton", "Xavier Worthy", "JuJu Smith-Schuster", "Rashee Rice", "Jalen Royals"],
-    "TE": ["Travis Kelce", "Noah Gray", "Jared Wiley", "Robert Tonyan"]
+    "QB": [
+      "Patrick Mahomes II",
+      "Gardner Minshew II"
+    ],
+    "RB": [
+      "Kareem Hunt",
+      "Brashard Smith",
+      "Isiah Pacheco",
+      "Clyde Edwards-Helaire",
+      "Dameon Pierce",
+      "Elijah Mitchell"
+    ],
+    "WR": [
+      "Rashee Rice",
+      "Xavier Worthy",
+      "Marquise Brown",
+      "Tyquan Thornton",
+      "JuJu Smith-Schuster",
+      "Jalen Royals"
+    ],
+    "TE": [
+      "Travis Kelce",
+      "Noah Gray",
+      "Jared Wiley"
+    ]
   },
   "LAC": {
-    "QB": ["Justin Herbert", "Trey Lance"],
-    "RB": ["Omarion Hampton", "Najee Harris", "Hassan Haskins", "Kimani Vidal"],
-    "WR": ["Ladd McConkey", "Keenan Allen", "Quentin Johnston", "Tre Harris", "KeAndre Lambert-Smith"],
-    "TE": ["Will Dissly", "Tyler Conklin", "Oronde Gadsden II"]
+    "QB": [
+      "Justin Herbert",
+      "Trey Lance"
+    ],
+    "RB": [
+      "Kimani Vidal",
+      "Omarion Hampton",
+      "Hassan Haskins",
+      "Jaret Patterson"
+    ],
+    "WR": [
+      "Ladd McConkey",
+      "Quentin Johnston",
+      "Keenan Allen",
+      "Tre Harris",
+      "KeAndre Lambert-Smith"
+    ],
+    "TE": [
+      "Oronde Gadsden II",
+      "Tyler Conklin",
+      "Will Dissly"
+    ]
   },
   "LAR": {
-    "QB": ["Matthew Stafford", "Jimmy Garoppolo"],
-    "RB": ["Kyren Williams", "Blake Corum", "Jarquez Hunter", "Ronnie Rivers"],
-    "WR": ["Puka Nacua", "Davante Adams", "Tutu Atwell", "Jordan Whittington"],
-    "TE": ["Tyler Higbee", "Terrance Ferguson", "Davis Allen", "Colby Parkinson"]
+    "QB": [
+      "Matthew Stafford",
+      "Jimmy Garoppolo"
+    ],
+    "RB": [
+      "Kyren Williams",
+      "Blake Corum",
+      "Jarquez Hunter"
+    ],
+    "WR": [
+      "Puka Nacua",
+      "Davante Adams",
+      "Jordan Whittington",
+      "Konata Mumpfield",
+      "Tutu Atwell"
+    ],
+    "TE": [
+      "Colby Parkinson",
+      "Davis Allen",
+      "Terrance Ferguson",
+      "Tyler Higbee"
+    ]
   },
   "LV": {
-    "QB": ["Geno Smith", "Kenny Pickett", "Aidan O'Connell"],
-    "RB": ["Ashton Jeanty", "Zamir White", "Dylan Laube", "Raheem Mostert"],
-    "WR": ["Jakobi Meyers", "Tre Tucker", "Dont'e Thornton Jr.", "Jack Bech"],
-    "TE": ["Brock Bowers", "Michael Mayer"]
+    "QB": [
+      "Geno Smith",
+      "Kenny Pickett",
+      "Aidan O'Connell"
+    ],
+    "RB": [
+      "Ashton Jeanty",
+      "Raheem Mostert",
+      "Dylan Laube",
+      "Zamir White"
+    ],
+    "WR": [
+      "Tre Tucker",
+      "Tyler Lockett",
+      "Dont'e Thornton Jr.",
+      "Jack Bech"
+    ],
+    "TE": [
+      "Brock Bowers",
+      "Michael Mayer"
+    ]
   },
   "MIA": {
-    "QB": ["Tua Tagovailoa", "Zach Wilson", "Quinn Ewers"],
-    "RB": ["De'Von Achane", "Ollie Gordon II", "Jaylen Wright", "Alec Ingold"],
-    "WR": ["Tyreek Hill", "Jaylen Waddle", "Malik Washington", "Nick Westbrook-Ikhine", "Theo Wease Jr."],
-    "TE": ["Tanner Conner", "Julian Hill", "Darren Waller", "Greg Dulcich"]
+    "QB": [
+      "Tua Tagovailoa",
+      "Zach Wilson",
+      "Quinn Ewers"
+    ],
+    "RB": [
+      "De'Von Achane",
+      "Ollie Gordon II",
+      "Jaylen Wright"
+    ],
+    "WR": [
+      "Jaylen Waddle",
+      "Malik Washington",
+      "Nick Westbrook-Ikhine"
+    ],
+    "TE": [
+      "Greg Dulcich",
+      "Darren Waller"
+    ]
   },
   "MIN": {
-    "QB": ["Carson Wentz", "J.J. McCarthy"],
-    "RB": ["Jordan Mason", "Cam Akers", "Xazavian Valladay", "Aaron Jones Sr.", "Ty Chandler"],
-    "WR": ["Justin Jefferson", "Jalen Nailor", "Adam Thielen", "Zavier Scott", "Tai Felton", "Jordan Addison"],
-    "TE": ["T.J. Hockenson", "Josh Oliver"]
+    "QB": [
+      "Max Brosmer",
+      "J.J. McCarthy"
+    ],
+    "RB": [
+      "Aaron Jones Sr.",
+      "Jordan Mason",
+      "Zavier Scott",
+      "C.J. Ham"
+    ],
+    "WR": [
+      "Justin Jefferson",
+      "Jordan Addison",
+      "Jalen Nailor",
+      "Adam Thielen"
+    ],
+    "TE": [
+      "T.J. Hockenson",
+      "Josh Oliver"
+    ]
   },
   "NE": {
-    "QB": ["Drake Maye", "Joshua Dobbs"],
-    "RB": ["Rhamondre Stevenson", "TreVeyon Henderson", "Antonio Gibson"],
-    "WR": ["Stefon Diggs", "Kayshon Boutte", "DeMario Douglas", "Mack Hollins", "Kyle Williams", "Efton Chism III"],
-    "TE": ["Hunter Henry", "Austin Hooper"]
+    "QB": [
+      "Drake Maye",
+      "Joshua Dobbs"
+    ],
+    "RB": [
+      "TreVeyon Henderson",
+      "Rhamondre Stevenson",
+      "Terrell Jennings",
+      "D'Ernest Johnson"
+    ],
+    "WR": [
+      "Stefon Diggs",
+      "Kayshon Boutte",
+      "Mack Hollins",
+      "DeMario Douglas",
+      "Kyle Williams"
+    ],
+    "TE": [
+      "Hunter Henry",
+      "Austin Hooper"
+    ]
   },
   "NO": {
-    "QB": ["Spencer Rattler", "Tyler Shough"],
-    "RB": ["Alvin Kamara", "Kendre Miller", "Devin Neal", "Chris Tyree"],
-    "WR": ["Chris Olave", "Rashid Shaheed", "Brandin Cooks", "Devaughn Vele"],
-    "TE": ["Juwan Johnson", "Taysom Hill", "Foster Moreau"]
+    "QB": [
+      "Tyler Shough",
+      "Spencer Rattler"
+    ],
+    "RB": [
+      "Devin Neal",
+      "Alvin Kamara",
+      "Audric Estime"
+    ],
+    "WR": [
+      "Chris Olave",
+      "Devaughn Vele",
+      "Mason Tipton"
+    ],
+    "TE": [
+      "Juwan Johnson",
+      "Taysom Hill",
+      "Foster Moreau"
+    ]
   },
   "NYG": {
-    "QB": ["Russell Wilson", "Jaxson Dart", "Jameis Winston"],
-    "RB": ["Cam Skattebo", "Tyrone Tracy Jr.", "Devin Singletary"],
-    "WR": ["Malik Nabers", "Wan'Dale Robinson", "Darius Slayton", "Jalin Hyatt"],
-    "TE": ["Theo Johnson", "Daniel Bellinger"]
+    "QB": [
+      "Jaxson Dart",
+      "Jameis Winston",
+      "Russell Wilson"
+    ],
+    "RB": [
+      "Tyrone Tracy Jr.",
+      "Devin Singletary",
+      "Dante Miller"
+    ],
+    "WR": [
+      "Wan'Dale Robinson",
+      "Darius Slayton",
+      "Isaiah Hodgins",
+      "Jalin Hyatt",
+      "Ray-Ray McCloud III"
+    ],
+    "TE": [
+      "Theo Johnson",
+      "Daniel Bellinger"
+    ]
   },
   "NYJ": {
-    "QB": ["Tyrod Taylor", "Justin Fields"],
-    "RB": ["Breece Hall", "Braelon Allen", "Isaiah Davis"],
-    "WR": ["Garrett Wilson", "Tyler Johnson", "Allen Lazard", "Arian Smith", "Josh Reynolds"],
-    "TE": ["Mason Taylor", "Jeremy Ruckert", "Stone Smartt", "Jelani Woods"]
+    "QB": [
+      "Tyrod Taylor",
+      "Justin Fields"
+    ],
+    "RB": [
+      "Breece Hall",
+      "Isaiah Davis",
+      "Braelon Allen"
+    ],
+    "WR": [
+      "John Metchie III",
+      "Adonai Mitchell",
+      "Isaiah Williams",
+      "Garrett Wilson",
+      "Josh Reynolds",
+      "Tyler Johnson",
+      "Arian Smith"
+    ],
+    "TE": [
+      "Mason Taylor",
+      "Jeremy Ruckert"
+    ]
   },
   "PHI": {
-    "QB": ["Jalen Hurts", "Tanner McKee", "Sam Howell"],
-    "RB": ["Saquon Barkley", "A.J. Dillon", "Tank Bigsby", "Will Shipley"],
-    "WR": ["A.J. Brown", "DeVonta Smith", "Jahan Dotson", "Javon Baker"],
-    "TE": ["Dallas Goedert", "Grant Calcaterra", "Kylen Granson"]
+    "QB": [
+      "Jalen Hurts",
+      "Sam Howell"
+    ],
+    "RB": [
+      "Saquon Barkley",
+      "Tank Bigsby",
+      "Will Shipley",
+      "A.J. Dillon"
+    ],
+    "WR": [
+      "A.J. Brown",
+      "DeVonta Smith",
+      "Jahan Dotson"
+    ],
+    "TE": [
+      "Dallas Goedert",
+      "Grant Calcaterra"
+    ]
   },
   "PIT": {
-    "QB": ["Aaron Rodgers", "Mason Rudolph", "Will Howard"],
-    "RB": ["Jaylen Warren", "Kenneth Gainwell", "Kaleb Johnson", "Trey Sermon"],
-    "WR": ["DK Metcalf", "Calvin Austin III", "Roman Wilson", "Ben Skowronek", "Scotty Miller"],
-    "TE": ["Jonnu Smith", "Pat Freiermuth", "Darnell Washington"]
-  },
-  "SF": {
-    "QB": ["Mac Jones", "Brock Purdy"],
-    "RB": ["Christian McCaffrey", "Brian Robinson Jr.", "Isaac Guerendo", "Sincere McCormick", "Kyle Juszczyk", "Jordan James"],
-    "WR": ["Jauan Jennings", "Ricky Pearsall", "Kendrick Bourne", "Marquez Valdes-Scantling", "Russell Gage Jr.", "Brandon Aiyuk", "Demarcus Robinson", "Skyy Moore", "Jacob Cowing", "Jordan Watkins"],
-    "TE": ["Jake Tonges", "Luke Farrell", "George Kittle"]
+    "QB": [
+      "Aaron Rodgers",
+      "Mason Rudolph"
+    ],
+    "RB": [
+      "Jaylen Warren",
+      "Kenneth Gainwell",
+      "Kaleb Johnson"
+    ],
+    "WR": [
+      "DK Metcalf",
+      "Calvin Austin III",
+      "Roman Wilson"
+    ],
+    "TE": [
+      "Jonnu Smith",
+      "Darnell Washington",
+      "Pat Freiermuth"
+    ]
   },
   "SEA": {
-    "QB": ["Sam Darnold", "Jalen Milroe", "Drew Lock"],
-    "RB": ["Kenneth Walker III", "Zach Charbonnet", "George Holani", "Damien Martinez"],
-    "WR": ["Jaxon Smith-Njigba", "Cooper Kupp", "Tory Horton", "Jake Bobo", "Ricky White III"],
-    "TE": ["AJ Barner", "Elijah Arroyo"]
+    "QB": [
+      "Sam Darnold",
+      "Jalen Milroe"
+    ],
+    "RB": [
+      "Kenneth Walker III",
+      "Zach Charbonnet",
+      "George Holani"
+    ],
+    "WR": [
+      "Jaxon Smith-Njigba",
+      "Rashid Shaheed",
+      "Cooper Kupp",
+      "Tory Horton"
+    ],
+    "TE": [
+      "AJ Barner",
+      "Elijah Arroyo"
+    ]
+  },
+  "SF": {
+    "QB": [
+      "Brock Purdy",
+      "Mac Jones"
+    ],
+    "RB": [
+      "Christian McCaffrey",
+      "Brian Robinson Jr.",
+      "Kyle Juszczyk",
+      "Isaac Guerendo",
+      "Jordan James"
+    ],
+    "WR": [
+      "Jauan Jennings",
+      "Ricky Pearsall",
+      "Demarcus Robinson",
+      "Kendrick Bourne",
+      "Brandon Aiyuk"
+    ],
+    "TE": [
+      "George Kittle",
+      "Jake Tonges"
+    ]
   },
   "TB": {
-    "QB": ["Baker Mayfield", "Teddy Bridgewater"],
-    "RB": ["Bucky Irving", "Rachaad White", "Sean Tucker"],
-    "WR": ["Mike Evans", "Emeka Egbuka", "Sterling Shepard", "Tez Johnson", "Chris Godwin Jr.", "Jalen McMillan"],
-    "TE": ["Cade Otton", "Payne Durham"]
+    "QB": [
+      "Baker Mayfield",
+      "Teddy Bridgewater"
+    ],
+    "RB": [
+      "Bucky Irving",
+      "Sean Tucker",
+      "Rachaad White"
+    ],
+    "WR": [
+      "Emeka Egbuka",
+      "Chris Godwin Jr.",
+      "Tez Johnson",
+      "Sterling Shepard",
+      "Mike Evans",
+      "Jalen McMillan"
+    ],
+    "TE": [
+      "Cade Otton"
+    ]
   },
   "TEN": {
-    "QB": ["Cam Ward"],
-    "RB": ["Tony Pollard", "Julius Chestnut", "Jordan Mims", "Tyjae Spears", "Kalel Mullings"],
-    "WR": ["Calvin Ridley", "Elic Ayomanor", "Tyler Lockett", "Chimere Dike", "Xavier Restrepo", "Van Jefferson"],
-    "TE": ["Chig Okonkwo", "Gunnar Helm"]
+    "QB": [
+      "Cam Ward"
+    ],
+    "RB": [
+      "Tony Pollard",
+      "Tyjae Spears",
+      "Julius Chestnut",
+      "Kalel Mullings"
+    ],
+    "WR": [
+      "Chimere Dike",
+      "Van Jefferson",
+      "Elic Ayomanor",
+      "Mason Kinsey",
+      "Calvin Ridley"
+    ],
+    "TE": [
+      "Chig Okonkwo",
+      "Gunnar Helm"
+    ]
   },
   "WAS": {
-    "QB": ["Jayden Daniels", "Marcus Mariota"],
-    "RB": ["Jacory Croskey-Merritt", "Jeremy McNichols", "Chris Rodriguez Jr.", "Donovan Edwards"],
-    "WR": ["Deebo Samuel Sr.", "Terry McLaurin", "Noah Brown", "Jaylin Lane", "Luke McCaffrey"],
-    "TE": ["Zach Ertz", "Ben Sinnott", "John Bates"]
+    "QB": [
+      "Marcus Mariota",
+      "Jayden Daniels"
+    ],
+    "RB": [
+      "Chris Rodriguez Jr.",
+      "Jacory Croskey-Merritt",
+      "Jeremy McNichols"
+    ],
+    "WR": [
+      "Deebo Samuel Sr.",
+      "Terry McLaurin",
+      "Chris Moore",
+      "Jaylin Lane",
+      "Luke McCaffrey",
+      "Noah Brown"
+    ],
+    "TE": [
+      "Zach Ertz",
+      "Ben Sinnott"
+    ]
   }
 }
