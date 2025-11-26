@@ -2636,7 +2636,10 @@ async function generateAdvancedPredictions(games, season, weekOverride = null) {
     injuries = await loadInjuries();
     
     // **NEW: Initialize injury duration tracking when injuries are loaded**
-    if (injuries && injuries.teams && Object.keys(injuries.teams).length > 0) {
+    // SKIP for GET requests to avoid write operations that slow down response
+    if (injuries && injuries.teams && Object.keys(injuries.teams).length > 0 && !saveToBlobs) {
+      console.log('⏭️  Skipping injury duration update for GET request (read-only mode)');
+    } else if (injuries && injuries.teams && Object.keys(injuries.teams).length > 0) {
       console.log('🔄 Updating injury duration tracking...');
       await updateInjuryDurations(injuries, currentWeek);
     }
