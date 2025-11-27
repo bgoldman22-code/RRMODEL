@@ -1,8 +1,8 @@
 {
   "season": "20252026",
-  "generatedAt": "2025-11-25T14:30:20.964Z",
-  "totalPlayers": 41,
-  "teams": 22,
+  "generatedAt": "2025-11-27T14:10:50.149Z",
+  "totalPlayers": 43,
+  "teams": 23,
   "players": [
     {
       "playerId": 8482768,
@@ -12,7 +12,7 @@
       "sweaterNumber": 40,
       "season": {
         "playerId": 8482768,
-        "gamesPlayed": 20,
+        "gamesPlayed": 21,
         "goals": 1,
         "assists": 1,
         "points": 2,
@@ -25,22 +25,36 @@
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.25",
+        "shotsPerGame": "1.19",
         "pointsPerGame": "0.10"
       },
       "L5": {
         "shots": "0.80",
         "points": "0.20",
-        "toi": "11.0",
+        "toi": "11.7",
         "games": 5
       },
       "L10": {
         "shots": "0.60",
         "points": "0.20",
-        "toi": "11.0",
+        "toi": "11.4",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020361,
+          "gameDate": "2025-11-26",
+          "opponent": "DET",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "14:54",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020357,
           "gameDate": "2025-11-24",
@@ -166,23 +180,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020183,
-          "gameDate": "2025-11-01",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "10:50",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:34.201Z"
+      "lastUpdated": "2025-11-27T14:09:59.277Z"
     },
     {
       "playerId": 8482103,
@@ -192,35 +192,49 @@
       "sweaterNumber": 89,
       "season": {
         "playerId": 8482103,
-        "gamesPlayed": 19,
+        "gamesPlayed": 20,
         "goals": 0,
         "assists": 3,
         "points": 3,
-        "shots": 17,
+        "shots": 18,
         "shootingPct": 0,
-        "plusMinus": -9,
+        "plusMinus": -8,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.89",
-        "pointsPerGame": "0.16"
+        "shotsPerGame": "0.90",
+        "pointsPerGame": "0.15"
       },
       "L5": {
-        "shots": "0.80",
+        "shots": "1.00",
         "points": "0.20",
-        "toi": "10.7",
+        "toi": "10.8",
         "games": 5
       },
       "L10": {
         "shots": "0.80",
         "points": "0.10",
-        "toi": "11.0",
+        "toi": "10.6",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020361,
+          "gameDate": "2025-11-26",
+          "opponent": "DET",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "9:53",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020357,
           "gameDate": "2025-11-24",
@@ -346,23 +360,9 @@
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020183,
-          "gameDate": "2025-11-01",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "13:58",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:34.409Z"
+      "lastUpdated": "2025-11-27T14:09:59.423Z"
     },
     {
       "playerId": 8484241,
@@ -372,11 +372,11 @@
       "sweaterNumber": 71,
       "season": {
         "playerId": 8484241,
-        "gamesPlayed": 15,
+        "gamesPlayed": 16,
         "goals": 6,
         "assists": 4,
         "points": 10,
-        "shots": 32,
+        "shots": 33,
         "shootingPct": 0,
         "plusMinus": -4,
         "powerPlayGoals": 2,
@@ -385,22 +385,36 @@
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "2.13",
-        "pointsPerGame": "0.67"
+        "shotsPerGame": "2.06",
+        "pointsPerGame": "0.63"
       },
       "L5": {
-        "shots": "2.00",
-        "points": "0.60",
-        "toi": "14.7",
+        "shots": "1.00",
+        "points": "0.00",
+        "toi": "13.2",
         "games": 5
       },
       "L10": {
-        "shots": "2.10",
-        "points": "0.80",
+        "shots": "1.90",
+        "points": "0.60",
         "toi": "13.5",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020361,
+          "gameDate": "2025-11-26",
+          "opponent": "DET",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "9:52",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020357,
           "gameDate": "2025-11-24",
@@ -526,23 +540,9 @@
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025020183,
-          "gameDate": "2025-11-01",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 1,
-          "assists": 1,
-          "points": 2,
-          "shots": 3,
-          "toi": "10:00",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 1
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:34.567Z"
+      "lastUpdated": "2025-11-27T14:09:59.585Z"
     },
     {
       "playerId": 8482111,
@@ -722,7 +722,7 @@
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:34.701Z"
+      "lastUpdated": "2025-11-27T14:09:59.758Z"
     },
     {
       "playerId": 8483565,
@@ -732,35 +732,49 @@
       "sweaterNumber": 37,
       "season": {
         "playerId": 8483565,
-        "gamesPlayed": 12,
-        "goals": 2,
-        "assists": 5,
-        "points": 7,
-        "shots": 21,
+        "gamesPlayed": 13,
+        "goals": 3,
+        "assists": 6,
+        "points": 9,
+        "shots": 22,
         "shootingPct": 0,
-        "plusMinus": -8,
+        "plusMinus": -7,
         "powerPlayGoals": 2,
-        "powerPlayPoints": 3,
+        "powerPlayPoints": 4,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.75",
-        "pointsPerGame": "0.58"
+        "shotsPerGame": "1.69",
+        "pointsPerGame": "0.69"
       },
       "L5": {
-        "shots": "2.00",
-        "points": "0.20",
-        "toi": "19.2",
+        "shots": "1.20",
+        "points": "0.60",
+        "toi": "18.3",
         "games": 5
       },
       "L10": {
-        "shots": "1.70",
-        "points": "0.70",
-        "toi": "20.5",
+        "shots": "1.80",
+        "points": "0.80",
+        "toi": "20.2",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020361,
+          "gameDate": "2025-11-26",
+          "opponent": "DET",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 1,
+          "points": 2,
+          "shots": 1,
+          "toi": "16:12",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 1
+        },
         {
           "gameId": 2025020357,
           "gameDate": "2025-11-24",
@@ -886,23 +900,9 @@
           "plusMinus": -1,
           "powerPlayGoals": 1,
           "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025020183,
-          "gameDate": "2025-11-01",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 0,
-          "toi": "19:22",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:34.838Z"
+      "lastUpdated": "2025-11-27T14:09:59.873Z"
     },
     {
       "playerId": 8479980,
@@ -912,35 +912,49 @@
       "sweaterNumber": 41,
       "season": {
         "playerId": 8479980,
-        "gamesPlayed": 14,
+        "gamesPlayed": 15,
         "goals": 1,
         "assists": 2,
         "points": 3,
         "shots": 11,
         "shootingPct": 0,
-        "plusMinus": -10,
+        "plusMinus": -8,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.79",
-        "pointsPerGame": "0.21"
+        "shotsPerGame": "0.73",
+        "pointsPerGame": "0.20"
       },
       "L5": {
-        "shots": "1.00",
+        "shots": "0.80",
         "points": "0.00",
-        "toi": "19.4",
+        "toi": "19.1",
         "games": 5
       },
       "L10": {
         "shots": "0.90",
         "points": "0.20",
-        "toi": "19.9",
+        "toi": "19.7",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020361,
+          "gameDate": "2025-11-26",
+          "opponent": "DET",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "17:06",
+          "plusMinus": 2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020357,
           "gameDate": "2025-11-24",
@@ -1066,23 +1080,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020183,
-          "gameDate": "2025-11-01",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "19:22",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:36.062Z"
+      "lastUpdated": "2025-11-27T14:10:01.139Z"
     },
     {
       "playerId": 8474600,
@@ -1092,35 +1092,49 @@
       "sweaterNumber": 59,
       "season": {
         "playerId": 8474600,
-        "gamesPlayed": 10,
-        "goals": 1,
+        "gamesPlayed": 11,
+        "goals": 2,
         "assists": 5,
-        "points": 6,
-        "shots": 29,
+        "points": 7,
+        "shots": 32,
         "shootingPct": 0,
-        "plusMinus": -8,
+        "plusMinus": -6,
         "powerPlayGoals": 0,
         "powerPlayPoints": 2,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "2.90",
-        "pointsPerGame": "0.60"
+        "shotsPerGame": "2.91",
+        "pointsPerGame": "0.64"
       },
       "L5": {
         "shots": "3.40",
-        "points": "0.40",
-        "toi": "21.7",
+        "points": "0.60",
+        "toi": "21.6",
         "games": 5
       },
       "L10": {
-        "shots": "2.90",
+        "shots": "3.00",
         "points": "0.60",
-        "toi": "23.5",
+        "toi": "23.6",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020361,
+          "gameDate": "2025-11-26",
+          "opponent": "DET",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 3,
+          "toi": "23:57",
+          "plusMinus": 2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020357,
           "gameDate": "2025-11-24",
@@ -1246,23 +1260,9 @@
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020016,
-          "gameDate": "2025-10-09",
-          "opponent": "CBJ",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 2,
-          "toi": "22:51",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 1
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:36.248Z"
+      "lastUpdated": "2025-11-27T14:10:01.393Z"
     },
     {
       "playerId": 8480246,
@@ -1272,35 +1272,49 @@
       "sweaterNumber": 48,
       "season": {
         "playerId": 8480246,
-        "gamesPlayed": 22,
+        "gamesPlayed": 23,
         "goals": 2,
         "assists": 1,
         "points": 3,
-        "shots": 28,
+        "shots": 29,
         "shootingPct": 0,
-        "plusMinus": -10,
+        "plusMinus": -9,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.27",
-        "pointsPerGame": "0.14"
+        "shotsPerGame": "1.26",
+        "pointsPerGame": "0.13"
       },
       "L5": {
-        "shots": "0.80",
+        "shots": "0.60",
         "points": "0.00",
-        "toi": "20.4",
+        "toi": "20.0",
         "games": 5
       },
       "L10": {
-        "shots": "1.10",
+        "shots": "1.00",
         "points": "0.00",
-        "toi": "20.0",
+        "toi": "19.9",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020361,
+          "gameDate": "2025-11-26",
+          "opponent": "DET",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "19:45",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020357,
           "gameDate": "2025-11-24",
@@ -1426,23 +1440,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020183,
-          "gameDate": "2025-11-01",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "21:03",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:36.462Z"
+      "lastUpdated": "2025-11-27T14:10:01.656Z"
     },
     {
       "playerId": 8476869,
@@ -1452,35 +1452,49 @@
       "sweaterNumber": 76,
       "season": {
         "playerId": 8476869,
-        "gamesPlayed": 22,
+        "gamesPlayed": 23,
         "goals": 0,
         "assists": 6,
         "points": 6,
-        "shots": 36,
+        "shots": 37,
         "shootingPct": 0,
-        "plusMinus": -16,
+        "plusMinus": -15,
         "powerPlayGoals": 0,
         "powerPlayPoints": 2,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.64",
-        "pointsPerGame": "0.27"
+        "shotsPerGame": "1.61",
+        "pointsPerGame": "0.26"
       },
       "L5": {
-        "shots": "2.40",
-        "points": "0.40",
-        "toi": "21.1",
+        "shots": "2.20",
+        "points": "0.20",
+        "toi": "20.4",
         "games": 5
       },
       "L10": {
-        "shots": "1.90",
+        "shots": "2.00",
         "points": "0.30",
-        "toi": "22.1",
+        "toi": "21.7",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020361,
+          "gameDate": "2025-11-26",
+          "opponent": "DET",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "18:42",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020357,
           "gameDate": "2025-11-24",
@@ -1606,23 +1620,9 @@
           "plusMinus": -2,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020183,
-          "gameDate": "2025-11-01",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "22:51",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:36.705Z"
+      "lastUpdated": "2025-11-27T14:10:01.898Z"
     },
     {
       "playerId": 8481056,
@@ -1632,13 +1632,13 @@
       "sweaterNumber": 24,
       "season": {
         "playerId": 8481056,
-        "gamesPlayed": 22,
+        "gamesPlayed": 23,
         "goals": 1,
         "assists": 6,
         "points": 7,
-        "shots": 20,
+        "shots": 21,
         "shootingPct": 0,
-        "plusMinus": -3,
+        "plusMinus": -2,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
@@ -1646,21 +1646,35 @@
         "avgToi": "0:00",
         "faceoffWinPct": 0,
         "shotsPerGame": "0.91",
-        "pointsPerGame": "0.32"
+        "pointsPerGame": "0.30"
       },
       "L5": {
-        "shots": "1.40",
+        "shots": "1.20",
         "points": "0.00",
-        "toi": "15.0",
+        "toi": "13.9",
         "games": 5
       },
       "L10": {
-        "shots": "1.10",
-        "points": "0.30",
-        "toi": "15.5",
+        "shots": "1.00",
+        "points": "0.20",
+        "toi": "14.9",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020361,
+          "gameDate": "2025-11-26",
+          "opponent": "DET",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "10:28",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020357,
           "gameDate": "2025-11-24",
@@ -1786,23 +1800,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020183,
-          "gameDate": "2025-11-01",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 2,
-          "toi": "16:58",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:36.871Z"
+      "lastUpdated": "2025-11-27T14:10:02.148Z"
     },
     {
       "playerId": 8482482,
@@ -1812,7 +1812,7 @@
       "sweaterNumber": 83,
       "season": {
         "playerId": 8482482,
-        "gamesPlayed": 14,
+        "gamesPlayed": 15,
         "goals": 0,
         "assists": 2,
         "points": 2,
@@ -1825,22 +1825,36 @@
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.14",
-        "pointsPerGame": "0.14"
+        "shotsPerGame": "1.07",
+        "pointsPerGame": "0.13"
       },
       "L5": {
-        "shots": "1.40",
+        "shots": "1.00",
         "points": "0.00",
-        "toi": "13.5",
+        "toi": "11.5",
         "games": 5
       },
       "L10": {
         "shots": "1.40",
         "points": "0.00",
-        "toi": "16.7",
+        "toi": "15.6",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020361,
+          "gameDate": "2025-11-26",
+          "opponent": "DET",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "9:56",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020296,
           "gameDate": "2025-11-16",
@@ -1966,23 +1980,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020062,
-          "gameDate": "2025-10-16",
-          "opponent": "MTL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "20:55",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:37.934Z"
+      "lastUpdated": "2025-11-27T14:10:03.368Z"
     },
     {
       "playerId": 8478445,
@@ -1992,11 +1992,11 @@
       "sweaterNumber": 13,
       "season": {
         "playerId": 8478445,
-        "gamesPlayed": 22,
-        "goals": 6,
+        "gamesPlayed": 23,
+        "goals": 7,
         "assists": 11,
-        "points": 17,
-        "shots": 56,
+        "points": 18,
+        "shots": 58,
         "shootingPct": 0,
         "plusMinus": 7,
         "powerPlayGoals": 0,
@@ -2005,22 +2005,36 @@
         "gameWinningGoals": 1,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "2.55",
-        "pointsPerGame": "0.77"
+        "shotsPerGame": "2.52",
+        "pointsPerGame": "0.78"
       },
       "L5": {
-        "shots": "3.80",
-        "points": "0.40",
-        "toi": "22.0",
+        "shots": "3.00",
+        "points": "0.60",
+        "toi": "22.2",
         "games": 5
       },
       "L10": {
-        "shots": "2.90",
+        "shots": "3.10",
         "points": "0.70",
-        "toi": "21.6",
+        "toi": "22.0",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 2,
+          "toi": "24:51",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -2146,23 +2160,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 0,
-          "toi": "20:46",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:38.075Z"
+      "lastUpdated": "2025-11-27T14:10:03.614Z"
     },
     {
       "playerId": 8475231,
@@ -2172,35 +2172,49 @@
       "sweaterNumber": 53,
       "season": {
         "playerId": 8475231,
-        "gamesPlayed": 23,
+        "gamesPlayed": 24,
         "goals": 1,
         "assists": 4,
         "points": 5,
         "shots": 15,
         "shootingPct": 0,
-        "plusMinus": -3,
+        "plusMinus": -4,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.65",
-        "pointsPerGame": "0.22"
+        "shotsPerGame": "0.63",
+        "pointsPerGame": "0.21"
       },
       "L5": {
         "shots": "0.40",
         "points": "0.40",
-        "toi": "9.4",
+        "toi": "10.1",
         "games": 5
       },
       "L10": {
-        "shots": "0.60",
+        "shots": "0.40",
         "points": "0.20",
-        "toi": "9.1",
+        "toi": "8.9",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "9:30",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -2326,23 +2340,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "11:11",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:38.307Z"
+      "lastUpdated": "2025-11-27T14:10:03.889Z"
     },
     {
       "playerId": 8477494,
@@ -2352,11 +2352,11 @@
       "sweaterNumber": 29,
       "season": {
         "playerId": 8477494,
-        "gamesPlayed": 22,
+        "gamesPlayed": 23,
         "goals": 3,
         "assists": 11,
         "points": 14,
-        "shots": 29,
+        "shots": 33,
         "shootingPct": 0,
         "plusMinus": 6,
         "powerPlayGoals": 0,
@@ -2365,22 +2365,36 @@
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.32",
-        "pointsPerGame": "0.64"
+        "shotsPerGame": "1.43",
+        "pointsPerGame": "0.61"
       },
       "L5": {
-        "shots": "1.60",
+        "shots": "2.00",
         "points": "0.00",
-        "toi": "19.9",
+        "toi": "19.8",
         "games": 5
       },
       "L10": {
-        "shots": "1.30",
+        "shots": "1.70",
         "points": "0.70",
-        "toi": "19.2",
+        "toi": "19.8",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 4,
+          "toi": "20:49",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -2506,23 +2520,9 @@
           "plusMinus": 2,
           "powerPlayGoals": 0,
           "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "14:52",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:38.478Z"
+      "lastUpdated": "2025-11-27T14:10:04.116Z"
     },
     {
       "playerId": 8477407,
@@ -2532,13 +2532,13 @@
       "sweaterNumber": 11,
       "season": {
         "playerId": 8477407,
-        "gamesPlayed": 23,
+        "gamesPlayed": 24,
         "goals": 3,
         "assists": 4,
         "points": 7,
-        "shots": 26,
+        "shots": 27,
         "shootingPct": 0,
-        "plusMinus": 3,
+        "plusMinus": 2,
         "powerPlayGoals": 1,
         "powerPlayPoints": 1,
         "shortHandedGoals": 0,
@@ -2546,21 +2546,35 @@
         "avgToi": "0:00",
         "faceoffWinPct": 0,
         "shotsPerGame": "1.13",
-        "pointsPerGame": "0.30"
+        "pointsPerGame": "0.29"
       },
       "L5": {
-        "shots": "0.60",
+        "shots": "0.80",
         "points": "0.20",
-        "toi": "11.4",
+        "toi": "11.3",
         "games": 5
       },
       "L10": {
         "shots": "0.60",
         "points": "0.30",
-        "toi": "11.4",
+        "toi": "11.2",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "10:06",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -2686,23 +2700,9 @@
           "plusMinus": 2,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "11:50",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:38.728Z"
+      "lastUpdated": "2025-11-27T14:10:04.370Z"
     },
     {
       "playerId": 8482476,
@@ -2712,35 +2712,49 @@
       "sweaterNumber": 51,
       "season": {
         "playerId": 8482476,
-        "gamesPlayed": 23,
+        "gamesPlayed": 24,
         "goals": 9,
         "assists": 6,
         "points": 15,
-        "shots": 45,
+        "shots": 46,
         "shootingPct": 0,
-        "plusMinus": 5,
+        "plusMinus": 4,
         "powerPlayGoals": 1,
         "powerPlayPoints": 1,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.96",
-        "pointsPerGame": "0.65"
+        "shotsPerGame": "1.92",
+        "pointsPerGame": "0.63"
       },
       "L5": {
         "shots": "1.00",
-        "points": "0.60",
-        "toi": "15.9",
+        "points": "0.40",
+        "toi": "16.6",
         "games": 5
       },
       "L10": {
-        "shots": "1.80",
-        "points": "0.70",
-        "toi": "15.7",
+        "shots": "1.40",
+        "points": "0.60",
+        "toi": "15.9",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "18:04",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -2866,23 +2880,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 1,
-          "assists": 0,
-          "points": 1,
-          "shots": 5,
-          "toi": "15:36",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:38.911Z"
+      "lastUpdated": "2025-11-27T14:10:04.596Z"
     },
     {
       "playerId": 8481601,
@@ -2892,11 +2892,11 @@
       "sweaterNumber": 10,
       "season": {
         "playerId": 8481601,
-        "gamesPlayed": 22,
+        "gamesPlayed": 23,
         "goals": 4,
         "assists": 5,
         "points": 9,
-        "shots": 21,
+        "shots": 23,
         "shootingPct": 0,
         "plusMinus": -6,
         "powerPlayGoals": 0,
@@ -2905,22 +2905,36 @@
         "gameWinningGoals": 1,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.95",
-        "pointsPerGame": "0.41"
+        "shotsPerGame": "1.00",
+        "pointsPerGame": "0.39"
       },
       "L5": {
         "shots": "0.60",
         "points": "0.00",
-        "toi": "15.8",
+        "toi": "14.3",
         "games": 5
       },
       "L10": {
-        "shots": "0.80",
+        "shots": "0.90",
         "points": "0.10",
-        "toi": "16.6",
+        "toi": "16.0",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "12:15",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -3046,23 +3060,9 @@
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020205,
-          "gameDate": "2025-11-04",
-          "opponent": "BOS",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "18:29",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:40.187Z"
+      "lastUpdated": "2025-11-27T14:10:05.887Z"
     },
     {
       "playerId": 8477500,
@@ -3072,35 +3072,49 @@
       "sweaterNumber": 14,
       "season": {
         "playerId": 8477500,
-        "gamesPlayed": 23,
+        "gamesPlayed": 24,
         "goals": 14,
         "assists": 11,
         "points": 25,
-        "shots": 79,
+        "shots": 81,
         "shootingPct": 0,
-        "plusMinus": 13,
+        "plusMinus": 11,
         "powerPlayGoals": 3,
         "powerPlayPoints": 8,
         "shortHandedGoals": 0,
         "gameWinningGoals": 3,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "3.43",
-        "pointsPerGame": "1.09"
+        "shotsPerGame": "3.38",
+        "pointsPerGame": "1.04"
       },
       "L5": {
-        "shots": "4.00",
+        "shots": "3.20",
         "points": "0.40",
-        "toi": "18.7",
+        "toi": "18.9",
         "games": 5
       },
       "L10": {
-        "shots": "3.40",
-        "points": "1.00",
-        "toi": "19.3",
+        "shots": "3.20",
+        "points": "0.90",
+        "toi": "19.6",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "23:49",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -3226,23 +3240,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 1,
           "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 4,
-          "toi": "20:15",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:40.432Z"
+      "lastUpdated": "2025-11-27T14:10:06.117Z"
     },
     {
       "playerId": 8475314,
@@ -3252,35 +3252,49 @@
       "sweaterNumber": 27,
       "season": {
         "playerId": 8475314,
-        "gamesPlayed": 23,
+        "gamesPlayed": 24,
         "goals": 4,
         "assists": 8,
         "points": 12,
-        "shots": 56,
+        "shots": 62,
         "shootingPct": 0,
-        "plusMinus": -2,
+        "plusMinus": -1,
         "powerPlayGoals": 0,
         "powerPlayPoints": 1,
         "shortHandedGoals": 0,
         "gameWinningGoals": 1,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "2.43",
-        "pointsPerGame": "0.52"
+        "shotsPerGame": "2.58",
+        "pointsPerGame": "0.50"
       },
       "L5": {
-        "shots": "1.80",
+        "shots": "2.80",
         "points": "0.20",
-        "toi": "16.3",
+        "toi": "17.5",
         "games": 5
       },
       "L10": {
-        "shots": "1.60",
-        "points": "0.30",
-        "toi": "15.5",
+        "shots": "2.00",
+        "points": "0.20",
+        "toi": "15.8",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 6,
+          "toi": "19:29",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -3406,23 +3420,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 2,
-          "toi": "15:47",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:40.665Z"
+      "lastUpdated": "2025-11-27T14:10:06.389Z"
     },
     {
       "playerId": 8481237,
@@ -3602,7 +3602,7 @@
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:40.850Z"
+      "lastUpdated": "2025-11-27T14:10:06.632Z"
     },
     {
       "playerId": 8476419,
@@ -3782,7 +3782,7 @@
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:41.062Z"
+      "lastUpdated": "2025-11-27T14:10:06.912Z"
     },
     {
       "playerId": 8475151,
@@ -3792,35 +3792,49 @@
       "sweaterNumber": 21,
       "season": {
         "playerId": 8475151,
-        "gamesPlayed": 23,
+        "gamesPlayed": 24,
         "goals": 6,
         "assists": 11,
         "points": 17,
-        "shots": 65,
+        "shots": 71,
         "shootingPct": 0,
-        "plusMinus": 0,
+        "plusMinus": -2,
         "powerPlayGoals": 1,
         "powerPlayPoints": 5,
         "shortHandedGoals": 0,
         "gameWinningGoals": 1,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "2.83",
-        "pointsPerGame": "0.74"
+        "shotsPerGame": "2.96",
+        "pointsPerGame": "0.71"
       },
       "L5": {
-        "shots": "2.60",
-        "points": "0.80",
+        "shots": "3.20",
+        "points": "0.60",
         "toi": "19.2",
         "games": 5
       },
       "L10": {
-        "shots": "2.60",
+        "shots": "2.90",
         "points": "0.70",
-        "toi": "18.4",
+        "toi": "19.0",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 6,
+          "toi": "22:28",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -3946,23 +3960,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "16:55",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:42.244Z"
+      "lastUpdated": "2025-11-27T14:10:08.223Z"
     },
     {
       "playerId": 8484221,
@@ -3972,11 +3972,11 @@
       "sweaterNumber": 64,
       "season": {
         "playerId": 8484221,
-        "gamesPlayed": 13,
+        "gamesPlayed": 14,
         "goals": 2,
         "assists": 1,
         "points": 3,
-        "shots": 14,
+        "shots": 18,
         "shootingPct": 0,
         "plusMinus": 2,
         "powerPlayGoals": 0,
@@ -3985,22 +3985,36 @@
         "gameWinningGoals": 1,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.08",
-        "pointsPerGame": "0.23"
+        "shotsPerGame": "1.29",
+        "pointsPerGame": "0.21"
       },
       "L5": {
-        "shots": "1.80",
+        "shots": "2.60",
         "points": "0.60",
-        "toi": "10.5",
+        "toi": "11.4",
         "games": 5
       },
       "L10": {
-        "shots": "1.30",
+        "shots": "1.60",
         "points": "0.30",
-        "toi": "10.1",
+        "toi": "10.0",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 4,
+          "toi": "11:38",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -4126,23 +4140,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "12:42",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:42.474Z"
+      "lastUpdated": "2025-11-27T14:10:08.466Z"
     },
     {
       "playerId": 8485702,
@@ -4152,11 +4152,11 @@
       "sweaterNumber": 49,
       "season": {
         "playerId": 8485702,
-        "gamesPlayed": 11,
+        "gamesPlayed": 12,
         "goals": 3,
         "assists": 3,
         "points": 6,
-        "shots": 15,
+        "shots": 17,
         "shootingPct": 0,
         "plusMinus": 0,
         "powerPlayGoals": 0,
@@ -4165,22 +4165,36 @@
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.36",
-        "pointsPerGame": "0.55"
+        "shotsPerGame": "1.42",
+        "pointsPerGame": "0.50"
       },
       "L5": {
         "shots": "1.40",
         "points": "0.60",
-        "toi": "12.4",
+        "toi": "12.9",
         "games": 5
       },
       "L10": {
-        "shots": "1.40",
+        "shots": "1.30",
         "points": "0.50",
-        "toi": "12.2",
+        "toi": "12.3",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "13:13",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -4306,23 +4320,9 @@
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020028,
-          "gameDate": "2025-10-11",
-          "opponent": "WSH",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "12:53",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:42.674Z"
+      "lastUpdated": "2025-11-27T14:10:08.723Z"
     },
     {
       "playerId": 8484958,
@@ -4332,26 +4332,26 @@
       "sweaterNumber": 7,
       "season": {
         "playerId": 8484958,
-        "gamesPlayed": 14,
+        "gamesPlayed": 15,
         "goals": 1,
         "assists": 0,
         "points": 1,
         "shots": 11,
         "shootingPct": 0,
-        "plusMinus": -6,
+        "plusMinus": -7,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.79",
+        "shotsPerGame": "0.73",
         "pointsPerGame": "0.07"
       },
       "L5": {
-        "shots": "0.40",
+        "shots": "0.20",
         "points": "0.00",
-        "toi": "8.4",
+        "toi": "8.1",
         "games": 5
       },
       "L10": {
@@ -4361,6 +4361,20 @@
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "8:23",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -4486,23 +4500,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020115,
-          "gameDate": "2025-10-23",
-          "opponent": "DET",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "8:40",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:42.943Z"
+      "lastUpdated": "2025-11-27T14:10:08.944Z"
     },
     {
       "playerId": 8478451,
@@ -4541,7 +4541,7 @@
         "games": 0
       },
       "recentGames": [],
-      "lastUpdated": "2025-11-25T14:29:43.268Z"
+      "lastUpdated": "2025-11-27T14:10:09.170Z"
     },
     {
       "playerId": 8480871,
@@ -4551,35 +4551,49 @@
       "sweaterNumber": 34,
       "season": {
         "playerId": 8480871,
-        "gamesPlayed": 9,
+        "gamesPlayed": 10,
         "goals": 0,
         "assists": 1,
         "points": 1,
-        "shots": 2,
+        "shots": 3,
         "shootingPct": 0,
-        "plusMinus": 1,
+        "plusMinus": 0,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.22",
-        "pointsPerGame": "0.11"
+        "shotsPerGame": "0.30",
+        "pointsPerGame": "0.10"
       },
       "L5": {
-        "shots": "0.20",
+        "shots": "0.40",
         "points": "0.20",
         "toi": "12.8",
         "games": 5
       },
       "L10": {
-        "shots": "0.22",
-        "points": "0.11",
-        "toi": "12.9",
-        "games": 9
+        "shots": "0.30",
+        "points": "0.10",
+        "toi": "12.8",
+        "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "11:16",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -4707,7 +4721,7 @@
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:44.507Z"
+      "lastUpdated": "2025-11-27T14:10:10.398Z"
     },
     {
       "playerId": 8477950,
@@ -4717,11 +4731,11 @@
       "sweaterNumber": 77,
       "season": {
         "playerId": 8477950,
-        "gamesPlayed": 23,
+        "gamesPlayed": 24,
         "goals": 1,
-        "assists": 7,
-        "points": 8,
-        "shots": 41,
+        "assists": 8,
+        "points": 9,
+        "shots": 43,
         "shootingPct": 0,
         "plusMinus": -3,
         "powerPlayGoals": 0,
@@ -4730,22 +4744,36 @@
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.78",
-        "pointsPerGame": "0.35"
+        "shotsPerGame": "1.79",
+        "pointsPerGame": "0.38"
       },
       "L5": {
-        "shots": "1.40",
+        "shots": "1.60",
         "points": "0.20",
-        "toi": "18.4",
+        "toi": "18.6",
         "games": 5
       },
       "L10": {
         "shots": "1.30",
-        "points": "0.30",
-        "toi": "16.4",
+        "points": "0.40",
+        "toi": "16.5",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 2,
+          "toi": "18:00",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -4871,23 +4899,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "17:12",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:44.715Z"
+      "lastUpdated": "2025-11-27T14:10:10.660Z"
     },
     {
       "playerId": 8476429,
@@ -4897,35 +4911,49 @@
       "sweaterNumber": 24,
       "season": {
         "playerId": 8476429,
-        "gamesPlayed": 21,
+        "gamesPlayed": 22,
         "goals": 0,
         "assists": 3,
         "points": 3,
-        "shots": 17,
+        "shots": 19,
         "shootingPct": 0,
-        "plusMinus": 0,
+        "plusMinus": -1,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.81",
+        "shotsPerGame": "0.86",
         "pointsPerGame": "0.14"
       },
       "L5": {
-        "shots": "0.40",
+        "shots": "0.80",
         "points": "0.00",
-        "toi": "17.3",
+        "toi": "16.6",
         "games": 5
       },
       "L10": {
-        "shots": "0.60",
+        "shots": "0.70",
         "points": "0.00",
-        "toi": "18.8",
+        "toi": "18.4",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "15:13",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -5051,23 +5079,48 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020195,
-          "gameDate": "2025-11-02",
-          "opponent": "CBJ",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "19:08",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:44.920Z"
+      "lastUpdated": "2025-11-27T14:10:10.912Z"
+    },
+    {
+      "playerId": 8484262,
+      "name": "Travis Mitchell",
+      "team": "NYI",
+      "position": "D",
+      "sweaterNumber": 38,
+      "season": {
+        "playerId": 8484262,
+        "gamesPlayed": 0,
+        "goals": 0,
+        "assists": 0,
+        "points": 0,
+        "shots": 0,
+        "shootingPct": 0,
+        "plusMinus": 0,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "shortHandedGoals": 0,
+        "gameWinningGoals": 0,
+        "avgToi": "0:00",
+        "faceoffWinPct": 0,
+        "shotsPerGame": 0,
+        "pointsPerGame": 0
+      },
+      "L5": {
+        "shots": 0,
+        "points": 0,
+        "toi": 0,
+        "games": 0
+      },
+      "L10": {
+        "shots": 0,
+        "points": 0,
+        "toi": 0,
+        "games": 0
+      },
+      "recentGames": [],
+      "lastUpdated": "2025-11-27T14:10:11.122Z"
     },
     {
       "playerId": 8476917,
@@ -5077,35 +5130,49 @@
       "sweaterNumber": 3,
       "season": {
         "playerId": 8476917,
-        "gamesPlayed": 23,
+        "gamesPlayed": 24,
         "goals": 0,
         "assists": 2,
         "points": 2,
-        "shots": 30,
+        "shots": 31,
         "shootingPct": 0,
-        "plusMinus": 9,
+        "plusMinus": 8,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.30",
-        "pointsPerGame": "0.09"
+        "shotsPerGame": "1.29",
+        "pointsPerGame": "0.08"
       },
       "L5": {
-        "shots": "1.60",
+        "shots": "1.40",
         "points": "0.00",
-        "toi": "20.3",
+        "toi": "20.7",
         "games": 5
       },
       "L10": {
         "shots": "1.40",
         "points": "0.00",
-        "toi": "20.0",
+        "toi": "20.1",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "19:59",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -5231,23 +5298,9 @@
           "plusMinus": 2,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "18:58",
-          "plusMinus": 2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:45.160Z"
+      "lastUpdated": "2025-11-27T14:10:11.407Z"
     },
     {
       "playerId": 8477506,
@@ -5257,11 +5310,11 @@
       "sweaterNumber": 6,
       "season": {
         "playerId": 8477506,
-        "gamesPlayed": 23,
+        "gamesPlayed": 24,
         "goals": 0,
         "assists": 9,
         "points": 9,
-        "shots": 26,
+        "shots": 28,
         "shootingPct": 0,
         "plusMinus": 7,
         "powerPlayGoals": 0,
@@ -5270,22 +5323,36 @@
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.13",
-        "pointsPerGame": "0.39"
+        "shotsPerGame": "1.17",
+        "pointsPerGame": "0.38"
       },
       "L5": {
-        "shots": "1.80",
+        "shots": "2.00",
         "points": "0.40",
-        "toi": "20.1",
+        "toi": "20.5",
         "games": 5
       },
       "L10": {
-        "shots": "1.30",
-        "points": "0.40",
-        "toi": "21.2",
+        "shots": "1.40",
+        "points": "0.30",
+        "toi": "20.9",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "18:13",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -5411,23 +5478,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 1,
-          "toi": "20:56",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:45.346Z"
+      "lastUpdated": "2025-11-27T14:10:12.621Z"
     },
     {
       "playerId": 8481014,
@@ -5607,7 +5660,7 @@
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:46.536Z"
+      "lastUpdated": "2025-11-27T14:10:12.865Z"
     },
     {
       "playerId": 8485366,
@@ -5617,11 +5670,11 @@
       "sweaterNumber": 48,
       "season": {
         "playerId": 8485366,
-        "gamesPlayed": 23,
+        "gamesPlayed": 24,
         "goals": 7,
-        "assists": 8,
-        "points": 15,
-        "shots": 64,
+        "assists": 9,
+        "points": 16,
+        "shots": 71,
         "shootingPct": 0,
         "plusMinus": 8,
         "powerPlayGoals": 4,
@@ -5630,22 +5683,36 @@
         "gameWinningGoals": 2,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "2.78",
-        "pointsPerGame": "0.65"
+        "shotsPerGame": "2.96",
+        "pointsPerGame": "0.67"
       },
       "L5": {
-        "shots": "2.00",
-        "points": "0.00",
-        "toi": "24.4",
+        "shots": "3.00",
+        "points": "0.20",
+        "toi": "25.1",
         "games": 5
       },
       "L10": {
-        "shots": "2.30",
-        "points": "0.40",
-        "toi": "24.3",
+        "shots": "2.90",
+        "points": "0.50",
+        "toi": "24.5",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025020365,
+          "gameDate": "2025-11-26",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 7,
+          "toi": "25:18",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025020349,
           "gameDate": "2025-11-23",
@@ -5771,856 +5838,690 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020228,
-          "gameDate": "2025-11-07",
-          "opponent": "MIN",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "23:59",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:46.686Z"
+      "lastUpdated": "2025-11-27T14:10:13.112Z"
     },
     {
-      "playerId": 8479022,
-      "name": "Rodrigo Abols",
-      "team": "PHI",
+      "playerId": 8477380,
+      "name": "Jonny Brodzinski",
+      "team": "NYR",
       "position": "C",
-      "sweaterNumber": 18,
+      "sweaterNumber": 22,
       "season": {
-        "playerId": 8479022,
-        "gamesPlayed": 16,
-        "goals": 1,
-        "assists": 0,
-        "points": 1,
-        "shots": 17,
+        "playerId": 8477380,
+        "gamesPlayed": 14,
+        "goals": 2,
+        "assists": 2,
+        "points": 4,
+        "shots": 16,
         "shootingPct": 0,
-        "plusMinus": -4,
+        "plusMinus": 3,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.06",
-        "pointsPerGame": "0.06"
+        "shotsPerGame": "1.14",
+        "pointsPerGame": "0.29"
       },
       "L5": {
-        "shots": "1.00",
-        "points": "0.20",
-        "toi": "10.7",
+        "shots": "1.40",
+        "points": "0.40",
+        "toi": "13.9",
         "games": 5
       },
       "L10": {
-        "shots": "1.10",
-        "points": "0.10",
-        "toi": "10.0",
+        "shots": "1.40",
+        "points": "0.30",
+        "toi": "12.9",
         "games": 10
       },
       "recentGames": [
         {
-          "gameId": 2025020353,
-          "gameDate": "2025-11-24",
-          "opponent": "TBL",
+          "gameId": 2025020368,
+          "gameDate": "2025-11-26",
+          "opponent": "CAR",
           "homeRoad": "R",
           "goals": 0,
           "assists": 0,
           "points": 0,
-          "shots": 0,
-          "toi": "7:35",
+          "shots": 2,
+          "toi": "11:50",
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020339,
-          "gameDate": "2025-11-22",
-          "opponent": "NJD",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "12:41",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020324,
-          "gameDate": "2025-11-20",
+          "gameId": 2025020355,
+          "gameDate": "2025-11-24",
           "opponent": "STL",
           "homeRoad": "H",
-          "goals": 1,
-          "assists": 0,
+          "goals": 0,
+          "assists": 1,
           "points": 1,
-          "shots": 4,
-          "toi": "10:20",
+          "shots": 3,
+          "toi": "15:50",
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020293,
-          "gameDate": "2025-11-15",
-          "opponent": "DAL",
+          "gameId": 2025020344,
+          "gameDate": "2025-11-22",
+          "opponent": "UTA",
           "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "11:14",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020280,
-          "gameDate": "2025-11-14",
-          "opponent": "STL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "11:47",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020266,
-          "gameDate": "2025-11-12",
-          "opponent": "EDM",
-          "homeRoad": "H",
           "goals": 0,
           "assists": 0,
           "points": 0,
           "shots": 1,
-          "toi": "6:21",
+          "toi": "15:20",
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020232,
+          "gameId": 2025020326,
+          "gameDate": "2025-11-20",
+          "opponent": "COL",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "10:28",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020313,
+          "gameDate": "2025-11-18",
+          "opponent": "VGK",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 1,
+          "toi": "16:13",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020299,
+          "gameDate": "2025-11-16",
+          "opponent": "DET",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "10:06",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020237,
           "gameDate": "2025-11-08",
-          "opponent": "OTT",
+          "opponent": "NYI",
           "homeRoad": "H",
           "goals": 0,
           "assists": 0,
           "points": 0,
           "shots": 1,
-          "toi": "8:38",
+          "toi": "12:36",
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020223,
-          "gameDate": "2025-11-06",
-          "opponent": "NSH",
+          "gameId": 2025020227,
+          "gameDate": "2025-11-07",
+          "opponent": "DET",
           "homeRoad": "R",
           "goals": 0,
           "assists": 0,
           "points": 0,
-          "shots": 0,
-          "toi": "9:47",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020196,
-          "gameDate": "2025-11-02",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
           "shots": 1,
-          "toi": "10:45",
+          "toi": "11:28",
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020188,
-          "gameDate": "2025-11-01",
-          "opponent": "TOR",
+          "gameId": 2025020206,
+          "gameDate": "2025-11-04",
+          "opponent": "CAR",
           "homeRoad": "H",
           "goals": 0,
           "assists": 0,
           "points": 0,
           "shots": 3,
-          "toi": "11:08",
+          "toi": "13:25",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020193,
+          "gameDate": "2025-11-01",
+          "opponent": "SEA",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 0,
+          "toi": "12:01",
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:46.867Z"
+      "lastUpdated": "2025-11-27T14:10:13.365Z"
     },
     {
-      "playerId": 8481553,
-      "name": "Bobby Brink",
-      "team": "PHI",
-      "position": "R",
-      "sweaterNumber": 10,
+      "playerId": 8475842,
+      "name": "Sam Carrick",
+      "team": "NYR",
+      "position": "C",
+      "sweaterNumber": 39,
       "season": {
-        "playerId": 8481553,
-        "gamesPlayed": 21,
-        "goals": 6,
-        "assists": 4,
-        "points": 10,
-        "shots": 39,
+        "playerId": 8475842,
+        "gamesPlayed": 25,
+        "goals": 1,
+        "assists": 5,
+        "points": 6,
+        "shots": 24,
         "shootingPct": 0,
-        "plusMinus": -5,
-        "powerPlayGoals": 2,
-        "powerPlayPoints": 4,
+        "plusMinus": 3,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.86",
-        "pointsPerGame": "0.48"
+        "shotsPerGame": "0.96",
+        "pointsPerGame": "0.24"
       },
       "L5": {
-        "shots": "1.80",
+        "shots": "0.20",
         "points": "0.20",
-        "toi": "15.9",
+        "toi": "9.2",
         "games": 5
       },
       "L10": {
-        "shots": "2.00",
-        "points": "0.30",
-        "toi": "15.8",
+        "shots": "0.20",
+        "points": "0.10",
+        "toi": "9.8",
         "games": 10
       },
       "recentGames": [
         {
-          "gameId": 2025020353,
+          "gameId": 2025020368,
+          "gameDate": "2025-11-26",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "8:46",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020355,
           "gameDate": "2025-11-24",
+          "opponent": "STL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "11:29",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020344,
+          "gameDate": "2025-11-22",
+          "opponent": "UTA",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "8:22",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020326,
+          "gameDate": "2025-11-20",
+          "opponent": "COL",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 1,
+          "toi": "9:57",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020313,
+          "gameDate": "2025-11-18",
+          "opponent": "VGK",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "7:36",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020299,
+          "gameDate": "2025-11-16",
+          "opponent": "DET",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "11:38",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020290,
+          "gameDate": "2025-11-15",
+          "opponent": "CBJ",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "9:44",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020265,
+          "gameDate": "2025-11-12",
           "opponent": "TBL",
           "homeRoad": "R",
           "goals": 0,
           "assists": 0,
           "points": 0,
-          "shots": 1,
-          "toi": "15:18",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020339,
-          "gameDate": "2025-11-22",
-          "opponent": "NJD",
-          "homeRoad": "H",
-          "goals": 1,
-          "assists": 0,
-          "points": 1,
-          "shots": 3,
-          "toi": "13:44",
-          "plusMinus": 2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020324,
-          "gameDate": "2025-11-20",
-          "opponent": "STL",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "14:57",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020293,
-          "gameDate": "2025-11-15",
-          "opponent": "DAL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "16:03",
+          "shots": 0,
+          "toi": "8:33",
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020280,
-          "gameDate": "2025-11-14",
-          "opponent": "STL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "19:23",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020266,
-          "gameDate": "2025-11-12",
-          "opponent": "EDM",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "17:04",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020232,
-          "gameDate": "2025-11-08",
-          "opponent": "OTT",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "16:37",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020223,
-          "gameDate": "2025-11-06",
+          "gameId": 2025020253,
+          "gameDate": "2025-11-10",
           "opponent": "NSH",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "15:54",
-          "plusMinus": 2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020204,
-          "gameDate": "2025-11-04",
-          "opponent": "MTL",
-          "homeRoad": "R",
-          "goals": 2,
-          "assists": 0,
-          "points": 2,
-          "shots": 3,
-          "toi": "15:25",
-          "plusMinus": 0,
-          "powerPlayGoals": 1,
-          "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025020196,
-          "gameDate": "2025-11-02",
-          "opponent": "CGY",
           "homeRoad": "H",
           "goals": 0,
           "assists": 0,
           "points": 0,
-          "shots": 2,
-          "toi": "13:45",
+          "shots": 0,
+          "toi": "9:25",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020237,
+          "gameDate": "2025-11-08",
+          "opponent": "NYI",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "12:12",
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:47.078Z"
+      "lastUpdated": "2025-11-27T14:10:13.605Z"
     },
     {
-      "playerId": 8480220,
-      "name": "Noah Cates",
-      "team": "PHI",
+      "playerId": 8482157,
+      "name": "Will Cuylle",
+      "team": "NYR",
       "position": "L",
-      "sweaterNumber": 27,
+      "sweaterNumber": 50,
       "season": {
-        "playerId": 8480220,
-        "gamesPlayed": 21,
-        "goals": 5,
-        "assists": 8,
-        "points": 13,
-        "shots": 41,
+        "playerId": 8482157,
+        "gamesPlayed": 25,
+        "goals": 7,
+        "assists": 7,
+        "points": 14,
+        "shots": 56,
         "shootingPct": 0,
-        "plusMinus": 5,
-        "powerPlayGoals": 1,
+        "plusMinus": -5,
+        "powerPlayGoals": 3,
         "powerPlayPoints": 4,
         "shortHandedGoals": 0,
-        "gameWinningGoals": 2,
+        "gameWinningGoals": 1,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.95",
-        "pointsPerGame": "0.62"
+        "shotsPerGame": "2.24",
+        "pointsPerGame": "0.56"
       },
       "L5": {
-        "shots": "1.40",
+        "shots": "1.80",
         "points": "0.60",
         "toi": "16.8",
         "games": 5
       },
       "L10": {
-        "shots": "1.80",
-        "points": "0.60",
-        "toi": "17.4",
+        "shots": "2.00",
+        "points": "0.70",
+        "toi": "17.3",
         "games": 10
       },
       "recentGames": [
         {
-          "gameId": 2025020353,
-          "gameDate": "2025-11-24",
-          "opponent": "TBL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "16:53",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020339,
-          "gameDate": "2025-11-22",
-          "opponent": "NJD",
-          "homeRoad": "H",
-          "goals": 1,
-          "assists": 2,
-          "points": 3,
-          "shots": 4,
-          "toi": "16:28",
-          "plusMinus": 3,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020324,
-          "gameDate": "2025-11-20",
-          "opponent": "STL",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "18:17",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020293,
-          "gameDate": "2025-11-15",
-          "opponent": "DAL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "15:09",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020280,
-          "gameDate": "2025-11-14",
-          "opponent": "STL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "17:09",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020266,
-          "gameDate": "2025-11-12",
-          "opponent": "EDM",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "19:07",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020232,
-          "gameDate": "2025-11-08",
-          "opponent": "OTT",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "18:54",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020223,
-          "gameDate": "2025-11-06",
-          "opponent": "NSH",
+          "gameId": 2025020368,
+          "gameDate": "2025-11-26",
+          "opponent": "CAR",
           "homeRoad": "R",
           "goals": 1,
           "assists": 0,
           "points": 1,
-          "shots": 1,
-          "toi": "15:41",
+          "shots": 3,
+          "toi": "15:08",
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020204,
-          "gameDate": "2025-11-04",
-          "opponent": "MTL",
+          "gameId": 2025020355,
+          "gameDate": "2025-11-24",
+          "opponent": "STL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 1,
+          "toi": "17:39",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020344,
+          "gameDate": "2025-11-22",
+          "opponent": "UTA",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "16:02",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020326,
+          "gameDate": "2025-11-20",
+          "opponent": "COL",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "16:27",
+          "plusMinus": -3,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020313,
+          "gameDate": "2025-11-18",
+          "opponent": "VGK",
           "homeRoad": "R",
           "goals": 0,
           "assists": 1,
           "points": 1,
-          "shots": 4,
-          "toi": "18:44",
+          "shots": 2,
+          "toi": "18:57",
           "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020299,
+          "gameDate": "2025-11-16",
+          "opponent": "DET",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 0,
+          "toi": "17:12",
+          "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 1
         },
         {
-          "gameId": 2025020196,
-          "gameDate": "2025-11-02",
-          "opponent": "CGY",
+          "gameId": 2025020290,
+          "gameDate": "2025-11-15",
+          "opponent": "CBJ",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 3,
+          "toi": "17:36",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020265,
+          "gameDate": "2025-11-12",
+          "opponent": "TBL",
+          "homeRoad": "R",
+          "goals": 2,
+          "assists": 0,
+          "points": 2,
+          "shots": 2,
+          "toi": "18:00",
+          "plusMinus": 0,
+          "powerPlayGoals": 1,
+          "powerPlayPoints": 1
+        },
+        {
+          "gameId": 2025020253,
+          "gameDate": "2025-11-10",
+          "opponent": "NSH",
+          "homeRoad": "H",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 2,
+          "toi": "17:06",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020237,
+          "gameDate": "2025-11-08",
+          "opponent": "NYI",
           "homeRoad": "H",
           "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 1,
-          "toi": "17:12",
-          "plusMinus": 1,
+          "assists": 0,
+          "points": 0,
+          "shots": 4,
+          "toi": "18:37",
+          "plusMinus": -2,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:47.310Z"
+      "lastUpdated": "2025-11-27T14:10:13.731Z"
     },
     {
-      "playerId": 8476461,
-      "name": "Sean Couturier",
-      "team": "PHI",
+      "playerId": 8481726,
+      "name": "Adam Edstrom",
+      "team": "NYR",
       "position": "C",
-      "sweaterNumber": 14,
+      "sweaterNumber": 84,
       "season": {
-        "playerId": 8476461,
-        "gamesPlayed": 20,
+        "playerId": 8481726,
+        "gamesPlayed": 22,
         "goals": 2,
-        "assists": 11,
-        "points": 13,
-        "shots": 29,
+        "assists": 2,
+        "points": 4,
+        "shots": 18,
         "shootingPct": 0,
-        "plusMinus": -1,
+        "plusMinus": 4,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 1,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.45",
-        "pointsPerGame": "0.65"
+        "shotsPerGame": "0.82",
+        "pointsPerGame": "0.18"
       },
       "L5": {
-        "shots": "1.20",
-        "points": "0.60",
-        "toi": "16.3",
-        "games": 5
-      },
-      "L10": {
-        "shots": "1.30",
+        "shots": "1.00",
         "points": "0.40",
-        "toi": "17.8",
-        "games": 10
-      },
-      "recentGames": [
-        {
-          "gameId": 2025020353,
-          "gameDate": "2025-11-24",
-          "opponent": "TBL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "16:26",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020339,
-          "gameDate": "2025-11-22",
-          "opponent": "NJD",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 2,
-          "points": 2,
-          "shots": 1,
-          "toi": "15:16",
-          "plusMinus": 2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020324,
-          "gameDate": "2025-11-20",
-          "opponent": "STL",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 0,
-          "toi": "15:17",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020293,
-          "gameDate": "2025-11-15",
-          "opponent": "DAL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "16:34",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020280,
-          "gameDate": "2025-11-14",
-          "opponent": "STL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "17:50",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020266,
-          "gameDate": "2025-11-12",
-          "opponent": "EDM",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "19:51",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020232,
-          "gameDate": "2025-11-08",
-          "opponent": "OTT",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "16:39",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020223,
-          "gameDate": "2025-11-06",
-          "opponent": "NSH",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 2,
-          "toi": "20:34",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020204,
-          "gameDate": "2025-11-04",
-          "opponent": "MTL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "19:48",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020196,
-          "gameDate": "2025-11-02",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "19:31",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        }
-      ],
-      "lastUpdated": "2025-11-25T14:29:47.555Z"
-    },
-    {
-      "playerId": 8475235,
-      "name": "Nicolas Deslauriers",
-      "team": "PHI",
-      "position": "L",
-      "sweaterNumber": 44,
-      "season": {
-        "playerId": 8475235,
-        "gamesPlayed": 11,
-        "goals": 0,
-        "assists": 0,
-        "points": 0,
-        "shots": 4,
-        "shootingPct": 0,
-        "plusMinus": -2,
-        "powerPlayGoals": 0,
-        "powerPlayPoints": 0,
-        "shortHandedGoals": 0,
-        "gameWinningGoals": 0,
-        "avgToi": "0:00",
-        "faceoffWinPct": 0,
-        "shotsPerGame": "0.36",
-        "pointsPerGame": "0.00"
-      },
-      "L5": {
-        "shots": "0.40",
-        "points": "0.00",
-        "toi": "9.0",
+        "toi": "8.2",
         "games": 5
       },
       "L10": {
-        "shots": "0.30",
-        "points": "0.00",
-        "toi": "8.3",
+        "shots": "1.00",
+        "points": "0.20",
+        "toi": "8.9",
         "games": 10
       },
       "recentGames": [
         {
-          "gameId": 2025020353,
+          "gameId": 2025020368,
+          "gameDate": "2025-11-26",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "7:43",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020355,
           "gameDate": "2025-11-24",
+          "opponent": "STL",
+          "homeRoad": "H",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 1,
+          "toi": "8:35",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020344,
+          "gameDate": "2025-11-22",
+          "opponent": "UTA",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "8:55",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020326,
+          "gameDate": "2025-11-20",
+          "opponent": "COL",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 1,
+          "toi": "5:52",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020299,
+          "gameDate": "2025-11-16",
+          "opponent": "DET",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "9:42",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020290,
+          "gameDate": "2025-11-15",
+          "opponent": "CBJ",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "8:06",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020265,
+          "gameDate": "2025-11-12",
           "opponent": "TBL",
           "homeRoad": "R",
           "goals": 0,
           "assists": 0,
           "points": 0,
-          "shots": 0,
-          "toi": "6:17",
-          "plusMinus": 0,
+          "shots": 2,
+          "toi": "9:46",
+          "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020339,
-          "gameDate": "2025-11-22",
-          "opponent": "NJD",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "11:49",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020324,
-          "gameDate": "2025-11-20",
-          "opponent": "STL",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "10:16",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020280,
-          "gameDate": "2025-11-14",
-          "opponent": "STL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "9:34",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020266,
-          "gameDate": "2025-11-12",
-          "opponent": "EDM",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "6:59",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020223,
-          "gameDate": "2025-11-06",
+          "gameId": 2025020253,
+          "gameDate": "2025-11-10",
           "opponent": "NSH",
-          "homeRoad": "R",
+          "homeRoad": "H",
           "goals": 0,
           "assists": 0,
           "points": 0,
@@ -6631,77 +6532,769 @@
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020204,
+          "gameId": 2025020206,
           "gameDate": "2025-11-04",
-          "opponent": "MTL",
+          "opponent": "CAR",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "10:25",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020193,
+          "gameDate": "2025-11-01",
+          "opponent": "SEA",
           "homeRoad": "R",
           "goals": 0,
           "assists": 0,
           "points": 0,
+          "shots": 1,
+          "toi": "9:31",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        }
+      ],
+      "lastUpdated": "2025-11-27T14:10:13.968Z"
+    },
+    {
+      "playerId": 8483690,
+      "name": "Noah Laba",
+      "team": "NYR",
+      "position": "C",
+      "sweaterNumber": 42,
+      "season": {
+        "playerId": 8483690,
+        "gamesPlayed": 25,
+        "goals": 4,
+        "assists": 3,
+        "points": 7,
+        "shots": 24,
+        "shootingPct": 0,
+        "plusMinus": 4,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 1,
+        "shortHandedGoals": 0,
+        "gameWinningGoals": 1,
+        "avgToi": "0:00",
+        "faceoffWinPct": 0,
+        "shotsPerGame": "0.96",
+        "pointsPerGame": "0.28"
+      },
+      "L5": {
+        "shots": "1.00",
+        "points": "0.20",
+        "toi": "14.5",
+        "games": 5
+      },
+      "L10": {
+        "shots": "0.80",
+        "points": "0.20",
+        "toi": "13.9",
+        "games": 10
+      },
+      "recentGames": [
+        {
+          "gameId": 2025020368,
+          "gameDate": "2025-11-26",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 1,
+          "toi": "13:41",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020355,
+          "gameDate": "2025-11-24",
+          "opponent": "STL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
           "shots": 0,
-          "toi": "6:24",
+          "toi": "13:27",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020344,
+          "gameDate": "2025-11-22",
+          "opponent": "UTA",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "15:30",
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020170,
-          "gameDate": "2025-10-30",
+          "gameId": 2025020326,
+          "gameDate": "2025-11-20",
+          "opponent": "COL",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "14:39",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020313,
+          "gameDate": "2025-11-18",
+          "opponent": "VGK",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "15:22",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020299,
+          "gameDate": "2025-11-16",
+          "opponent": "DET",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "10:34",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020290,
+          "gameDate": "2025-11-15",
+          "opponent": "CBJ",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "13:21",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020265,
+          "gameDate": "2025-11-12",
+          "opponent": "TBL",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "15:08",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020253,
+          "gameDate": "2025-11-10",
+          "opponent": "NSH",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 0,
+          "toi": "14:05",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020237,
+          "gameDate": "2025-11-08",
+          "opponent": "NYI",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "13:43",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        }
+      ],
+      "lastUpdated": "2025-11-27T14:10:14.199Z"
+    },
+    {
+      "playerId": 8482109,
+      "name": "Alexis Lafrenière",
+      "team": "NYR",
+      "position": "L",
+      "sweaterNumber": 13,
+      "season": {
+        "playerId": 8482109,
+        "gamesPlayed": 25,
+        "goals": 5,
+        "assists": 8,
+        "points": 13,
+        "shots": 48,
+        "shootingPct": 0,
+        "plusMinus": -5,
+        "powerPlayGoals": 1,
+        "powerPlayPoints": 2,
+        "shortHandedGoals": 0,
+        "gameWinningGoals": 1,
+        "avgToi": "0:00",
+        "faceoffWinPct": 0,
+        "shotsPerGame": "1.92",
+        "pointsPerGame": "0.52"
+      },
+      "L5": {
+        "shots": "1.00",
+        "points": "0.20",
+        "toi": "15.9",
+        "games": 5
+      },
+      "L10": {
+        "shots": "1.50",
+        "points": "0.50",
+        "toi": "16.2",
+        "games": 10
+      },
+      "recentGames": [
+        {
+          "gameId": 2025020368,
+          "gameDate": "2025-11-26",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "15:49",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020355,
+          "gameDate": "2025-11-24",
+          "opponent": "STL",
+          "homeRoad": "H",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 1,
+          "toi": "14:56",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020344,
+          "gameDate": "2025-11-22",
+          "opponent": "UTA",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "18:47",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020326,
+          "gameDate": "2025-11-20",
+          "opponent": "COL",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "13:30",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020313,
+          "gameDate": "2025-11-18",
+          "opponent": "VGK",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "16:27",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020299,
+          "gameDate": "2025-11-16",
+          "opponent": "DET",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "15:33",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020290,
+          "gameDate": "2025-11-15",
+          "opponent": "CBJ",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "19:54",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020265,
+          "gameDate": "2025-11-12",
+          "opponent": "TBL",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 3,
+          "toi": "13:51",
+          "plusMinus": 3,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020253,
+          "gameDate": "2025-11-10",
+          "opponent": "NSH",
+          "homeRoad": "H",
+          "goals": 1,
+          "assists": 2,
+          "points": 3,
+          "shots": 2,
+          "toi": "15:09",
+          "plusMinus": 3,
+          "powerPlayGoals": 1,
+          "powerPlayPoints": 1
+        },
+        {
+          "gameId": 2025020237,
+          "gameDate": "2025-11-08",
+          "opponent": "NYI",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "17:51",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        }
+      ],
+      "lastUpdated": "2025-11-27T14:10:15.407Z"
+    },
+    {
+      "playerId": 8476468,
+      "name": "J.T. Miller",
+      "team": "NYR",
+      "position": "C",
+      "sweaterNumber": 8,
+      "season": {
+        "playerId": 8476468,
+        "gamesPlayed": 23,
+        "goals": 6,
+        "assists": 7,
+        "points": 13,
+        "shots": 51,
+        "shootingPct": 0,
+        "plusMinus": -6,
+        "powerPlayGoals": 2,
+        "powerPlayPoints": 4,
+        "shortHandedGoals": 0,
+        "gameWinningGoals": 1,
+        "avgToi": "0:00",
+        "faceoffWinPct": 0,
+        "shotsPerGame": "2.22",
+        "pointsPerGame": "0.57"
+      },
+      "L5": {
+        "shots": "1.00",
+        "points": "0.80",
+        "toi": "20.0",
+        "games": 5
+      },
+      "L10": {
+        "shots": "1.60",
+        "points": "0.50",
+        "toi": "19.9",
+        "games": 10
+      },
+      "recentGames": [
+        {
+          "gameId": 2025020368,
+          "gameDate": "2025-11-26",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 0,
+          "toi": "18:00",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020326,
+          "gameDate": "2025-11-20",
+          "opponent": "COL",
+          "homeRoad": "R",
+          "goals": 2,
+          "assists": 0,
+          "points": 2,
+          "shots": 3,
+          "toi": "20:33",
+          "plusMinus": -4,
+          "powerPlayGoals": 2,
+          "powerPlayPoints": 2
+        },
+        {
+          "gameId": 2025020313,
+          "gameDate": "2025-11-18",
+          "opponent": "VGK",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 0,
+          "toi": "20:14",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020299,
+          "gameDate": "2025-11-16",
+          "opponent": "DET",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "19:47",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020290,
+          "gameDate": "2025-11-15",
+          "opponent": "CBJ",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "21:23",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020265,
+          "gameDate": "2025-11-12",
+          "opponent": "TBL",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 2,
+          "toi": "21:22",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020253,
+          "gameDate": "2025-11-10",
           "opponent": "NSH",
           "homeRoad": "H",
           "goals": 0,
           "assists": 0,
           "points": 0,
           "shots": 0,
-          "toi": "7:45",
-          "plusMinus": 0,
+          "toi": "17:54",
+          "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020150,
-          "gameDate": "2025-10-28",
-          "opponent": "PIT",
+          "gameId": 2025020237,
+          "gameDate": "2025-11-08",
+          "opponent": "NYI",
           "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "20:33",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020227,
+          "gameDate": "2025-11-07",
+          "opponent": "DET",
+          "homeRoad": "R",
           "goals": 0,
           "assists": 0,
           "points": 0,
           "shots": 1,
-          "toi": "9:22",
+          "toi": "19:11",
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020081,
-          "gameDate": "2025-10-18",
-          "opponent": "MIN",
+          "gameId": 2025020206,
+          "gameDate": "2025-11-04",
+          "opponent": "CAR",
           "homeRoad": "H",
           "goals": 0,
           "assists": 0,
           "points": 0,
-          "shots": 0,
-          "toi": "4:54",
-          "plusMinus": 0,
+          "shots": 6,
+          "toi": "20:27",
+          "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:47.745Z"
+      "lastUpdated": "2025-11-27T14:10:15.636Z"
     },
     {
-      "playerId": 8477989,
-      "name": "Christian Dvorak",
-      "team": "PHI",
-      "position": "C",
-      "sweaterNumber": 22,
+      "playerId": 8478550,
+      "name": "Artemi Panarin",
+      "team": "NYR",
+      "position": "L",
+      "sweaterNumber": 10,
       "season": {
-        "playerId": 8477989,
-        "gamesPlayed": 21,
-        "goals": 6,
-        "assists": 8,
-        "points": 14,
-        "shots": 36,
+        "playerId": 8478550,
+        "gamesPlayed": 25,
+        "goals": 7,
+        "assists": 15,
+        "points": 22,
+        "shots": 66,
+        "shootingPct": 0,
+        "plusMinus": -4,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 6,
+        "shortHandedGoals": 0,
+        "gameWinningGoals": 2,
+        "avgToi": "0:00",
+        "faceoffWinPct": 0,
+        "shotsPerGame": "2.64",
+        "pointsPerGame": "0.88"
+      },
+      "L5": {
+        "shots": "1.20",
+        "points": "0.80",
+        "toi": "20.6",
+        "games": 5
+      },
+      "L10": {
+        "shots": "2.30",
+        "points": "1.20",
+        "toi": "20.2",
+        "games": 10
+      },
+      "recentGames": [
+        {
+          "gameId": 2025020368,
+          "gameDate": "2025-11-26",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 1,
+          "points": 2,
+          "shots": 1,
+          "toi": "22:00",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020355,
+          "gameDate": "2025-11-24",
+          "opponent": "STL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "19:12",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020344,
+          "gameDate": "2025-11-22",
+          "opponent": "UTA",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 1,
+          "toi": "22:37",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020326,
+          "gameDate": "2025-11-20",
+          "opponent": "COL",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "18:48",
+          "plusMinus": -4,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020313,
+          "gameDate": "2025-11-18",
+          "opponent": "VGK",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 1,
+          "toi": "20:21",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020299,
+          "gameDate": "2025-11-16",
+          "opponent": "DET",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 1,
+          "toi": "20:36",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 1
+        },
+        {
+          "gameId": 2025020290,
+          "gameDate": "2025-11-15",
+          "opponent": "CBJ",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 6,
+          "toi": "21:35",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 1
+        },
+        {
+          "gameId": 2025020265,
+          "gameDate": "2025-11-12",
+          "opponent": "TBL",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 4,
+          "points": 4,
+          "shots": 1,
+          "toi": "16:17",
+          "plusMinus": 2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 1
+        },
+        {
+          "gameId": 2025020253,
+          "gameDate": "2025-11-10",
+          "opponent": "NSH",
+          "homeRoad": "H",
+          "goals": 2,
+          "assists": 0,
+          "points": 2,
+          "shots": 4,
+          "toi": "17:48",
+          "plusMinus": 2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020237,
+          "gameDate": "2025-11-08",
+          "opponent": "NYI",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 5,
+          "toi": "22:18",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        }
+      ],
+      "lastUpdated": "2025-11-27T14:10:15.898Z"
+    },
+    {
+      "playerId": 8479390,
+      "name": "Taylor Raddysh",
+      "team": "NYR",
+      "position": "R",
+      "sweaterNumber": 14,
+      "season": {
+        "playerId": 8479390,
+        "gamesPlayed": 25,
+        "goals": 5,
+        "assists": 2,
+        "points": 7,
+        "shots": 23,
         "shootingPct": 0,
         "plusMinus": 3,
         "powerPlayGoals": 0,
@@ -6710,524 +7303,164 @@
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.71",
-        "pointsPerGame": "0.67"
+        "shotsPerGame": "0.92",
+        "pointsPerGame": "0.28"
       },
       "L5": {
-        "shots": "1.60",
-        "points": "1.00",
-        "toi": "17.3",
-        "games": 5
-      },
-      "L10": {
-        "shots": "2.00",
-        "points": "0.80",
-        "toi": "17.9",
-        "games": 10
-      },
-      "recentGames": [
-        {
-          "gameId": 2025020353,
-          "gameDate": "2025-11-24",
-          "opponent": "TBL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "18:05",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020339,
-          "gameDate": "2025-11-22",
-          "opponent": "NJD",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 0,
-          "toi": "15:56",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020324,
-          "gameDate": "2025-11-20",
-          "opponent": "STL",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "18:57",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020293,
-          "gameDate": "2025-11-15",
-          "opponent": "DAL",
-          "homeRoad": "R",
-          "goals": 1,
-          "assists": 0,
-          "points": 1,
-          "shots": 2,
-          "toi": "17:15",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020280,
-          "gameDate": "2025-11-14",
-          "opponent": "STL",
-          "homeRoad": "R",
-          "goals": 2,
-          "assists": 1,
-          "points": 3,
-          "shots": 3,
-          "toi": "16:14",
-          "plusMinus": 2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020266,
-          "gameDate": "2025-11-12",
-          "opponent": "EDM",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "15:28",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020232,
-          "gameDate": "2025-11-08",
-          "opponent": "OTT",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 2,
-          "points": 2,
-          "shots": 1,
-          "toi": "16:51",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020223,
-          "gameDate": "2025-11-06",
-          "opponent": "NSH",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 4,
-          "toi": "18:40",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020204,
-          "gameDate": "2025-11-04",
-          "opponent": "MTL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 4,
-          "toi": "23:56",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020196,
-          "gameDate": "2025-11-02",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "17:55",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        }
-      ],
-      "lastUpdated": "2025-11-25T14:29:48.951Z"
-    },
-    {
-      "playerId": 8482159,
-      "name": "Tyson Foerster",
-      "team": "PHI",
-      "position": "R",
-      "sweaterNumber": 71,
-      "season": {
-        "playerId": 8482159,
-        "gamesPlayed": 17,
-        "goals": 7,
-        "assists": 3,
-        "points": 10,
-        "shots": 35,
-        "shootingPct": 0,
-        "plusMinus": 5,
-        "powerPlayGoals": 2,
-        "powerPlayPoints": 2,
-        "shortHandedGoals": 0,
-        "gameWinningGoals": 1,
-        "avgToi": "0:00",
-        "faceoffWinPct": 0,
-        "shotsPerGame": "2.06",
-        "pointsPerGame": "0.59"
-      },
-      "L5": {
-        "shots": "2.80",
-        "points": "0.60",
-        "toi": "17.3",
-        "games": 5
-      },
-      "L10": {
-        "shots": "2.20",
-        "points": "0.40",
-        "toi": "18.4",
-        "games": 10
-      },
-      "recentGames": [
-        {
-          "gameId": 2025020353,
-          "gameDate": "2025-11-24",
-          "opponent": "TBL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "18:29",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020339,
-          "gameDate": "2025-11-22",
-          "opponent": "NJD",
-          "homeRoad": "H",
-          "goals": 2,
-          "assists": 0,
-          "points": 2,
-          "shots": 3,
-          "toi": "17:20",
-          "plusMinus": 2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020324,
-          "gameDate": "2025-11-20",
-          "opponent": "STL",
-          "homeRoad": "H",
-          "goals": 1,
-          "assists": 0,
-          "points": 1,
-          "shots": 3,
-          "toi": "18:03",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020293,
-          "gameDate": "2025-11-15",
-          "opponent": "DAL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "16:08",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020280,
-          "gameDate": "2025-11-14",
-          "opponent": "STL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 4,
-          "toi": "16:34",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020266,
-          "gameDate": "2025-11-12",
-          "opponent": "EDM",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "19:26",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020188,
-          "gameDate": "2025-11-01",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 1,
-          "assists": 0,
-          "points": 1,
-          "shots": 2,
-          "toi": "18:17",
-          "plusMinus": -1,
-          "powerPlayGoals": 1,
-          "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025020170,
-          "gameDate": "2025-10-30",
-          "opponent": "NSH",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "17:05",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020150,
-          "gameDate": "2025-10-28",
-          "opponent": "PIT",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "20:20",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020127,
-          "gameDate": "2025-10-25",
-          "opponent": "NYI",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "22:44",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        }
-      ],
-      "lastUpdated": "2025-11-25T14:29:49.200Z"
-    },
-    {
-      "playerId": 8483733,
-      "name": "Nikita Grebenkin",
-      "team": "PHI",
-      "position": "R",
-      "sweaterNumber": 29,
-      "season": {
-        "playerId": 8483733,
-        "gamesPlayed": 12,
-        "goals": 1,
-        "assists": 2,
-        "points": 3,
-        "shots": 6,
-        "shootingPct": 0,
-        "plusMinus": -3,
-        "powerPlayGoals": 0,
-        "powerPlayPoints": 0,
-        "shortHandedGoals": 0,
-        "gameWinningGoals": 0,
-        "avgToi": "0:00",
-        "faceoffWinPct": 0,
-        "shotsPerGame": "0.50",
-        "pointsPerGame": "0.25"
-      },
-      "L5": {
-        "shots": "1.00",
+        "shots": "0.20",
         "points": "0.20",
-        "toi": "10.2",
+        "toi": "10.6",
         "games": 5
       },
       "L10": {
-        "shots": "0.50",
-        "points": "0.20",
-        "toi": "9.6",
+        "shots": "0.30",
+        "points": "0.10",
+        "toi": "11.5",
         "games": 10
       },
       "recentGames": [
         {
-          "gameId": 2025020293,
-          "gameDate": "2025-11-15",
-          "opponent": "DAL",
+          "gameId": 2025020368,
+          "gameDate": "2025-11-26",
+          "opponent": "CAR",
           "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "12:24",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020232,
-          "gameDate": "2025-11-08",
-          "opponent": "OTT",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "8:27",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020223,
-          "gameDate": "2025-11-06",
-          "opponent": "NSH",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "8:26",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020204,
-          "gameDate": "2025-11-04",
-          "opponent": "MTL",
-          "homeRoad": "R",
-          "goals": 1,
-          "assists": 0,
-          "points": 1,
-          "shots": 1,
-          "toi": "9:41",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020196,
-          "gameDate": "2025-11-02",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "12:06",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020188,
-          "gameDate": "2025-11-01",
-          "opponent": "TOR",
-          "homeRoad": "H",
           "goals": 0,
           "assists": 1,
           "points": 1,
-          "shots": 0,
-          "toi": "10:44",
-          "plusMinus": 0,
+          "shots": 1,
+          "toi": "9:23",
+          "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020127,
-          "gameDate": "2025-10-25",
-          "opponent": "NYI",
+          "gameId": 2025020355,
+          "gameDate": "2025-11-24",
+          "opponent": "STL",
           "homeRoad": "H",
           "goals": 0,
           "assists": 0,
           "points": 0,
           "shots": 0,
-          "toi": "7:35",
-          "plusMinus": -1,
+          "toi": "12:05",
+          "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020112,
-          "gameDate": "2025-10-23",
-          "opponent": "OTT",
+          "gameId": 2025020344,
+          "gameDate": "2025-11-22",
+          "opponent": "UTA",
           "homeRoad": "R",
           "goals": 0,
           "assists": 0,
           "points": 0,
           "shots": 0,
-          "toi": "7:12",
-          "plusMinus": 0,
+          "toi": "14:22",
+          "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020094,
-          "gameDate": "2025-10-20",
-          "opponent": "SEA",
-          "homeRoad": "H",
+          "gameId": 2025020326,
+          "gameDate": "2025-11-20",
+          "opponent": "COL",
+          "homeRoad": "R",
           "goals": 0,
           "assists": 0,
           "points": 0,
           "shots": 0,
-          "toi": "7:38",
+          "toi": "8:18",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020313,
+          "gameDate": "2025-11-18",
+          "opponent": "VGK",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "8:43",
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         },
         {
-          "gameId": 2025020066,
-          "gameDate": "2025-10-16",
-          "opponent": "WPG",
+          "gameId": 2025020299,
+          "gameDate": "2025-11-16",
+          "opponent": "DET",
           "homeRoad": "H",
           "goals": 0,
           "assists": 0,
           "points": 0,
           "shots": 0,
           "toi": "11:37",
-          "plusMinus": -2,
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020290,
+          "gameDate": "2025-11-15",
+          "opponent": "CBJ",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "10:21",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020265,
+          "gameDate": "2025-11-12",
+          "opponent": "TBL",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "10:32",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020253,
+          "gameDate": "2025-11-10",
+          "opponent": "NSH",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "14:28",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020237,
+          "gameDate": "2025-11-08",
+          "opponent": "NYI",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "14:52",
+          "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2025-11-25T14:29:49.345Z"
+      "lastUpdated": "2025-11-27T14:10:16.126Z"
     }
   ]
 }
