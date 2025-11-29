@@ -2729,6 +2729,8 @@
     "gametime": "13:00",
     "away_team": "GB",
     "home_team": "DET",
+    "away_score": 31,
+    "home_score": 24,
     "game_type": "REG",
     "roof": "dome",
     "surface": "fieldturf"
@@ -2741,6 +2743,8 @@
     "gametime": "16:30",
     "away_team": "KC",
     "home_team": "DAL",
+    "away_score": 28,
+    "home_score": 31,
     "game_type": "REG",
     "roof": "closed",
     "surface": "matrixturf"
@@ -2753,9 +2757,13 @@
     "gametime": "20:20",
     "away_team": "CIN",
     "home_team": "BAL",
+    "away_score": 32,
+    "home_score": 14,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": "grass"
+    "surface": "grass",
+    "temp": 38,
+    "wind": 11
   },
   {
     "week": 13,
@@ -2765,9 +2773,13 @@
     "gametime": "15:00",
     "away_team": "CHI",
     "home_team": "PHI",
+    "away_score": 24,
+    "home_score": 15,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": "grass"
+    "surface": "grass",
+    "temp": 42,
+    "wind": 18
   },
   {
     "week": 13,
