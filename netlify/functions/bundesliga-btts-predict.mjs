@@ -218,8 +218,11 @@ async function fetchFixturesFromOddsAPI(apiKey) {
  */
 function runPythonScript(scriptPath, inputData) {
   return new Promise((resolve, reject) => {
-    // Use Python from virtual environment if available
-    const pythonCmd = process.env.PYTHON_PATH || 'python3';
+    // Use Python from Netlify build environment
+    // Netlify installs Python to /opt/buildhome/python3.11/bin/python3.11
+    const pythonCmd = process.env.PYTHON_PATH || 
+                      '/opt/buildhome/python3.11/bin/python3.11' ||
+                      'python3';
 
     const python = spawn(pythonCmd, [scriptPath], {
       cwd: cwd(),
