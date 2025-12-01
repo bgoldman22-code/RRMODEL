@@ -23,6 +23,28 @@
 import { spawn } from 'child_process';
 import { resolve } from 'path';
 import { cwd } from 'process';
+import { execSync } from 'child_process';
+
+// Find Python at runtime
+function findPython() {
+  try {
+    // Try to find python3 in PATH
+    const pythonPath = execSync('which python3 || which python', { encoding: 'utf8' }).trim();
+    if (pythonPath) return pythonPath;
+  } catch (e) {
+    // Ignore errors, fall through to hardcoded paths
+  }
+  
+  // Try common Netlify/Lambda paths
+  const commonPaths = [
+    '/opt/buildhome/python3.11/bin/python3.11',
+    '/usr/bin/python3',
+    '/usr/local/bin/python3',
+    'python3'
+  ];
+  
+  return commonPaths[0]; // Return first path as default
+}
 
 export const handler = async (event, context) => {
   // CORS headers
@@ -218,11 +240,10 @@ async function fetchFixturesFromOddsAPI(apiKey) {
  */
 function runPythonScript(scriptPath, inputData) {
   return new Promise((resolve, reject) => {
-    // Use Python from Netlify build environment
-    // Netlify installs Python to /opt/buildhome/python3.11/bin/python3.11
-    const pythonCmd = process.env.PYTHON_PATH || 
-                      '/opt/buildhome/python3.11/bin/python3.11' ||
-                      'python3';
+    // Find Python executable
+    const pythonCmd = process.env.PYTHON_PATH || findPython();
+    
+    console.log(`Using Python: ${pythonCmd}`);
 
     const python = spawn(pythonCmd, [scriptPath], {
       cwd: cwd(),
