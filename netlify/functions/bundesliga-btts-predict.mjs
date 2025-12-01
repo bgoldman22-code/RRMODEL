@@ -29,7 +29,7 @@ export const handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Content-Type': 'application/json',
   };
 
@@ -42,7 +42,14 @@ export const handler = async (event, context) => {
     };
   }
 
-  // Only POST allowed
+  // Handle GET with auto-fetch
+  if (event.httpMethod === 'GET') {
+    // GET requests trigger auto-fetch mode
+    event.body = JSON.stringify({ auto_fetch: true });
+    event.httpMethod = 'POST'; // Process as POST internally
+  }
+
+  // Only POST allowed (or GET converted to POST above)
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,

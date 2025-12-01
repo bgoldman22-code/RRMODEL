@@ -14,97 +14,112 @@ const fmtPercent = (prob) => prob ? `${Math.round(prob * 100)}%` : '—';
 async function fetchBTTSPredictions(league = 'premier-league', limit = 20) {
   // Use NEW trained ensemble model for Bundesliga
   if (league === 'bundesliga') {
-    const url = `/.netlify/functions/bundesliga-btts-predict`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'cache-control': 'no-cache' 
-      },
-      body: JSON.stringify({ auto_fetch: true })
-    });
+    const bundesligaUrl = `/.netlify/functions/bundesliga-btts-predict`;
     
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const response = await res.json();
-    
-    // Transform ensemble format to match existing UI
-    const predictions = (response.predictions || []).map(pred => ({
-      fixture_id: pred.home_team + '-' + pred.away_team,
-      matchup: `${pred.home_team} vs ${pred.away_team}`,
-      venue: null,
-      league: 'Bundesliga',
-      kickoff: pred.commence_time || null,
-      btts_prediction: pred.model_probability >= 0.5 ? 'YES' : 'NO',
-      btts_probability: pred.model_probability,
-      confidence: Math.round(pred.model_probability * 100),
-      edge_pct: pred.edge ? (pred.edge * 100).toFixed(1) : 0,
-      market_odds: pred.market_odds ? {
-        btts_yes: pred.market_odds.btts_yes,
-        btts_no: pred.market_odds.btts_no,
-        btts_yes_american: ((pred.market_odds.btts_yes - 1) * 100).toFixed(0),
-        btts_no_american: ((pred.market_odds.btts_no - 1) * 100).toFixed(0),
-        bookmaker: pred.market_odds.bookmaker || 'The Odds API',
-        implied_prob_yes: pred.market_probability,
-        implied_prob_no: 1 - pred.market_probability
-      } : null,
-      value_bet: pred.bet_decision ? {
-        recommendation: pred.bet_decision.should_bet ? 'BET' : 'PASS',
-        selection: pred.bet_decision.should_bet ? 'YES' : null,
-        kelly_fraction: pred.bet_decision.should_bet 
-          ? `${pred.bet_decision.recommended_stake_pct.toFixed(2)}%` 
-          : null,
-        expected_value: pred.expected_value 
-          ? `${(pred.expected_value * 100).toFixed(1)}%` 
-          : null
-      } : null,
-      team_form: pred.key_features ? {
-        home_team: {
-          recent_form: 'N/A',
-          goals_scored_per_game: pred.key_features.home_season_avg_goals_for.toFixed(1),
-          btts_rate: `${(pred.key_features.home_form_btts_rate * 100).toFixed(0)}%`
+    try {
+      const res = await fetch(bundesligaUrl, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'cache-control': 'no-cache' 
         },
-        away_team: {
-          recent_form: 'N/A',
-          goals_scored_per_game: pred.key_features.away_season_avg_goals_against.toFixed(1),
-          btts_rate: `${(pred.key_features.away_form_btts_rate * 100).toFixed(0)}%`
-        }
-      } : null,
-      // NEW: Ensemble-specific data
-      model_breakdown: {
-        dixon_coles: pred.dixon_coles_prob,
-        xgboost: pred.xgboost_prob,
-        ensemble_weights: { xgb: 0.774, dc: 0.226 }
-      },
-      expected_goals: {
-        home: pred.expected_home_goals,
-        away: pred.expected_away_goals
+        body: JSON.stringify({ auto_fetch: true })
+      });
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.warn(`Bundesliga endpoint failed (${res.status}): ${errorText}`);
+        throw new Error(`HTTP ${res.status}`);
       }
-    }));
+      
+      const response = await res.json();
     
-    return {
-      predictions,
-      metadata: {
-        model_version: response.model || 'Ensemble v1.0',
-        validation_roi: response.validation_roi,
-        hit_rate: response.hit_rate,
-        total_fixtures: response.total_predictions,
-        high_confidence: response.recommended_bets
-      },
-      league
-    };
+      // Transform ensemble format to match existing UI
+      const predictions = (response.predictions || []).map(pred => ({
+        fixture_id: pred.home_team + '-' + pred.away_team,
+        matchup: `${pred.home_team} vs ${pred.away_team}`,
+        venue: null,
+        league: 'Bundesliga',
+        kickoff: pred.commence_time || null,
+        btts_prediction: pred.model_probability >= 0.5 ? 'YES' : 'NO',
+        btts_probability: pred.model_probability,
+        confidence: Math.round(pred.model_probability * 100),
+        edge_pct: pred.edge ? (pred.edge * 100).toFixed(1) : 0,
+        market_odds: pred.market_odds ? {
+          btts_yes: pred.market_odds.btts_yes,
+          btts_no: pred.market_odds.btts_no,
+          btts_yes_american: ((pred.market_odds.btts_yes - 1) * 100).toFixed(0),
+          btts_no_american: ((pred.market_odds.btts_no - 1) * 100).toFixed(0),
+          bookmaker: pred.market_odds.bookmaker || 'The Odds API',
+          implied_prob_yes: pred.market_probability,
+          implied_prob_no: 1 - pred.market_probability
+        } : null,
+        value_bet: pred.bet_decision ? {
+          recommendation: pred.bet_decision.should_bet ? 'BET' : 'PASS',
+          selection: pred.bet_decision.should_bet ? 'YES' : null,
+          kelly_fraction: pred.bet_decision.should_bet 
+            ? pred.bet_decision.recommended_stake_pct / 100  // Convert to decimal
+            : 0,
+          expected_value: pred.expected_value || 0
+        } : null,
+        team_form: pred.key_features ? {
+          home_team: {
+            recent_form: 'N/A',
+            goals_scored_per_game: pred.key_features.home_season_avg_goals_for.toFixed(1),
+            btts_rate: `${(pred.key_features.home_form_btts_rate * 100).toFixed(0)}%`
+          },
+          away_team: {
+            recent_form: 'N/A',
+            goals_scored_per_game: pred.key_features.away_season_avg_goals_against.toFixed(1),
+            btts_rate: `${(pred.key_features.away_form_btts_rate * 100).toFixed(0)}%`
+          }
+        } : null,
+        // NEW: Ensemble-specific data
+        model_breakdown: {
+          dixon_coles: pred.dixon_coles_prob,
+          xgboost: pred.xgboost_prob,
+          ensemble_weights: { xgb: 0.774, dc: 0.226 }
+        },
+        expected_goals: {
+          home: pred.expected_home_goals,
+          away: pred.expected_away_goals
+        }
+      }));
+    
+      return {
+        predictions,
+        metadata: {
+          model_version: response.model || 'Ensemble v1.0',
+          validation_roi: response.validation_roi,
+          hit_rate: response.hit_rate,
+          total_fixtures: response.total_predictions,
+          high_confidence: response.recommended_bets
+        },
+        league
+      };
+    } catch (err) {
+      console.error('Bundesliga prediction error:', err);
+      throw err;
+    }
   }
   
   // Use legacy Dixon-Coles model for other leagues
-  const url = `/.netlify/functions/soccer-btts-predictions?league=${league}&limit=${limit}`;
-  const res = await fetch(url, {
+  const legacyUrl = `/.netlify/functions/soccer-btts-predictions?league=${league}&limit=${limit}`;
+  const res = await fetch(legacyUrl, {
     headers: { 'cache-control': 'no-cache' }
   });
   
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const response = await res.json();
   
+  // Transform professional_value_bet → value_bet for UI consistency
+  const transformedPredictions = (response.predictions || []).map(pred => ({
+    ...pred,
+    value_bet: pred.professional_value_bet || pred.value_bet
+  }));
+  
   return {
-    predictions: response.predictions || [],
+    predictions: transformedPredictions,
     metadata: response.metadata || {},
     league: response.league || league
   };
