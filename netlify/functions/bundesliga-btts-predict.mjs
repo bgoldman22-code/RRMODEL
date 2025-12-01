@@ -186,7 +186,7 @@ function runPythonScript(scriptPath, inputData) {
     const pythonCmd = process.env.PYTHON_PATH || 'python3';
 
     const python = spawn(pythonCmd, [scriptPath], {
-      cwd: join(__dirname, '..', '..'),
+      cwd: cwd(),
       env: { ...process.env },
     });
 
