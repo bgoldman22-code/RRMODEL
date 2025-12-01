@@ -9,6 +9,7 @@ import NflTd from "./pages/NflTd";  // Simple TD system
 import NFLTouchdownPropsComprehensive from "./pages/NFLTouchdownPropsComprehensive";  // Advanced TD system
 import NFLPredictions from "./pages/NFLPredictions";
 import NFLPredictionsV5 from "./pages/NFLPredictionsV5";
+import FantasySitStart from "./pages/FantasySitStart";  // Fantasy Sit/Start Analyzer
 import SoccerBTTS from "./pages/SoccerBTTS";  // Soccer BTTS predictions
 import NHL from "./NHL";  // Elite NHL SOG Props
 import NBAPredictionsV2 from "./pages/NBAPredictionsV2";  // NBA Elite V2 Game Predictions
@@ -75,7 +76,8 @@ export default function App() {
       items: [
         { label: 'TD Advanced', path: '/nfl-td-comprehensive' },
         { label: 'Game Predictions (V1)', path: '/predictions' },
-        { label: 'Game Predictions V5 🚀', path: '/nfl-v5' }
+        { label: 'Game Predictions V5 🚀', path: '/nfl-v5' },
+        { label: 'Fantasy Sit/Start 🏈', path: '/fantasy-sitstart' }
       ]
     },
     soccer: {
@@ -129,6 +131,7 @@ export default function App() {
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/predictions" element={<NFLPredictions />} />
           <Route path="/nfl-v5" element={<NFLPredictionsV5 />} />
+          <Route path="/fantasy-sitstart" element={<FantasySitStart />} />
           <Route path="/soccer-btts" element={<SoccerBTTS />} />
           <Route path="/nhl-sog" element={<NHL />} />
           <Route path="/nba-predictions-v2" element={<NBAPredictionsV2 />} />
