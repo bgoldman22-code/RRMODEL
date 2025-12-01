@@ -131,52 +131,81 @@ export const handler = async (event, context) => {
 
 /**
  * Fetch upcoming Bundesliga fixtures from The Odds API
+ * Note: BTTS market requires /events/{eventId}/odds endpoint (not /odds)
  */
 async function fetchFixturesFromOddsAPI(apiKey) {
-  const url = `https://api.the-odds-api.com/v4/sports/soccer_germany_bundesliga/odds/?` +
+  // Step 1: Get all upcoming Bundesliga games
+  const eventsUrl = `https://api.the-odds-api.com/v4/sports/soccer_germany_bundesliga/odds/?` +
     `apiKey=${apiKey}&` +
     `regions=eu&` +
-    `markets=btts&` +
+    `markets=h2h&` + // Use h2h to get event list
     `oddsFormat=decimal&` +
     `dateFormat=iso`;
 
   try {
-    const response = await fetch(url);
+    const eventsResponse = await fetch(eventsUrl);
     
-    if (!response.ok) {
-      throw new Error(`Odds API returned ${response.status}: ${response.statusText}`);
+    if (!eventsResponse.ok) {
+      throw new Error(`Odds API returned ${eventsResponse.status}: ${eventsResponse.statusText}`);
     }
 
-    const data = await response.json();
+    const events = await eventsResponse.json();
+    console.log(`Found ${events.length} upcoming Bundesliga games`);
+    
+    // Step 2: Fetch BTTS odds for each event using /events/{eventId}/odds
+    const fixtures = [];
+    
+    for (const event of events) {
+      const eventUrl = `https://api.the-odds-api.com/v4/sports/soccer_germany_bundesliga/events/${event.id}/odds?` +
+        `apiKey=${apiKey}&` +
+        `regions=eu&` +
+        `markets=btts&` +
+        `oddsFormat=decimal`;
+      
+      try {
+        const oddsResponse = await fetch(eventUrl);
+        
+        if (!oddsResponse.ok) {
+          console.warn(`Failed to fetch BTTS for ${event.home_team} vs ${event.away_team}: ${oddsResponse.status}`);
+          continue;
+        }
+        
+        const oddsData = await oddsResponse.json();
+        
+        // Extract BTTS odds from first bookmaker
+        const bookmaker = oddsData.bookmakers?.[0];
+        const bttsMarket = bookmaker?.markets?.find(m => m.key === 'btts');
+        
+        const bttsYes = bttsMarket?.outcomes?.find(o => o.name === 'Yes')?.price || null;
+        const bttsNo = bttsMarket?.outcomes?.find(o => o.name === 'No')?.price || null;
+
+        fixtures.push({
+          id: event.id,
+          home_team: event.home_team,
+          away_team: event.away_team,
+          commence_time: event.commence_time,
+          odds: bttsYes && bttsNo ? {
+            btts_yes: bttsYes,
+            btts_no: bttsNo,
+            bookmaker: bookmaker?.key || 'unknown'
+          } : null
+        });
+        
+        // Small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+      } catch (error) {
+        console.error(`Error fetching BTTS for event ${event.id}:`, error.message);
+      }
+    }
     
     // Check remaining requests
-    const remaining = response.headers.get('x-requests-remaining');
+    const remaining = eventsResponse.headers.get('x-requests-remaining');
     if (remaining) {
       console.log(`Odds API requests remaining: ${remaining}`);
     }
 
-    // Transform to our format
-    const fixtures = data.map(game => {
-      const bookmaker = game.bookmakers?.[0]; // Use first bookmaker
-      const bttsMarket = bookmaker?.markets?.find(m => m.key === 'btts');
-      
-      const bttsYes = bttsMarket?.outcomes?.find(o => o.name === 'Yes')?.price || null;
-      const bttsNo = bttsMarket?.outcomes?.find(o => o.name === 'No')?.price || null;
-
-      return {
-        id: game.id,
-        home_team: game.home_team,
-        away_team: game.away_team,
-        commence_time: game.commence_time,
-        odds: bttsYes && bttsNo ? {
-          btts_yes: bttsYes,
-          btts_no: bttsNo,
-          bookmaker: bookmaker?.key || 'unknown'
-        } : null
-      };
-    });
-
-    console.log(`Fetched ${fixtures.length} fixtures from Odds API`);
+    console.log(`Fetched BTTS odds for ${fixtures.length} fixtures`);
     return fixtures;
   } catch (error) {
     console.error('Error fetching from Odds API:', error);
