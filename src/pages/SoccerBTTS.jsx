@@ -369,9 +369,14 @@ export default function SoccerBTTS() {
                                 Bet {pred.value_bet.selection}
                               </div>
                               <div className="text-xs text-gray-600">
-                                Stake: {typeof pred.value_bet.kelly_fraction === 'number' 
-                                  ? `${(pred.value_bet.kelly_fraction * 100).toFixed(2)}%` 
-                                  : pred.value_bet.kelly_fraction} of bankroll
+                                {(() => {
+                                  // Convert kelly_fraction to units (10U = 1% of bankroll, cap at 6U)
+                                  const kellyPct = typeof pred.value_bet.kelly_fraction === 'number' 
+                                    ? pred.value_bet.kelly_fraction * 100
+                                    : parseFloat(pred.value_bet.kelly_fraction) || 0;
+                                  const units = Math.min(6, Math.round(kellyPct * 10) / 10); // Cap at 6U, round to 1 decimal
+                                  return `Stake: ${units.toFixed(1)}U`;
+                                })()}
                               </div>
                               <div className="text-xs text-green-600">
                                 Expected value: {typeof pred.value_bet.expected_value === 'number'
@@ -414,6 +419,7 @@ export default function SoccerBTTS() {
         <div className="mt-4 text-xs text-gray-500">
           <p><strong>BTTS Prediction:</strong> Model's recommended bet (YES/NO) with confidence percentage.</p>
           <p><strong>Value Bet:</strong> Calculated using Kelly Criterion - only recommends when expected value is positive.</p>
+          <p><strong>Stake:</strong> Shown in units (1U = 1% of bankroll). Stakes are capped at 6U maximum.</p>
           <p><strong>Team Form:</strong> Goals scored/conceded per game and historical BTTS rates.</p>
           <p><strong>Edge:</strong> Model probability vs baseline (coin flip) difference.</p>
         </div>
