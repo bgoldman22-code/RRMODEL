@@ -332,6 +332,139 @@ scripts/soccer/
 
 ---
 
+**Status**: ✅ **TRAINING COMPLETE** - Bundesliga ensemble deployed  
+**Latest Results**: 21.2% validation ROI (Ensemble model, Dec 2025)  
+**Priority**: HIGH (Serie A training next, pending odds collection)  
+**Next Steps**: Deploy Bundesliga ensemble → Netlify function integration
+
+---
+
+## 🎯 December 2025 Update: Multi-Model Training Complete
+
+### Bundesliga Results (2023-24 Validation)
+
+**NEW Training Pipeline**: `train_multimodel_comparison.py`
+
+| Model | ROI | Profit | Bets | Hit Rate | AUC | Status |
+|-------|-----|--------|------|----------|-----|--------|
+| **Ensemble** | **21.2%** | +6.6u | 31 | 80.6% | 0.675 | ✅ **Deploy** |
+| XGBoost | 4.3% | +1.6u | 36 | 69.4% | 0.658 | ⚠️ Overfit |
+| Dixon-Coles | 9.7% | +2.2u | 23 | 73.9% | 0.603 | ℹ️ Baseline |
+
+**Ensemble Weights** (optimized via validation log loss):
+- XGBoost: 77.4%
+- Dixon-Coles: 22.6%
+
+**Key Features** (XGBoost importance):
+1. `combined_form_btts_rate` (8.3%)
+2. `away_season_avg_goals_against` (5.9%)
+3. `away_form_games_played` (5.5%)
+
+**Generated Artifacts**:
+- `data/bundesliga/ensemble_model.json` - Production-ready weights
+- `data/bundesliga/xgboost_model.json` - Feature importance + hyperparams
+- `data/bundesliga/dixon_coles_model.json` - Team ratings
+- `data/bundesliga/model_comparison.png` - 6-panel visualization
+- `data/bundesliga/model_comparison_report.md` - Full analysis
+
+**Recommendation**: Deploy ensemble for live predictions (exceeds 15% ROI threshold)
+
+---
+
+## 📋 Updated Quick Start
+
+### NEW: Multi-Model Training (Recommended)
+
+```bash
+# 1. Install dependencies
+pip install -r ml/requirements.txt
+
+# 2. Set API key for odds
+export ODDS_API_KEY=your_key_here
+
+# 3. Collect comprehensive features (44 features per match)
+python scripts/soccer/fetch_comprehensive_features.py
+
+# 4. Fetch historical odds (2023-24, 2024-25)
+python scripts/soccer/fetch_historical_completed.py
+
+# 5. Train Dixon-Coles + XGBoost + Ensemble
+python scripts/soccer/train_multimodel_comparison.py
+```
+
+**Output**:
+- All model artifacts in `data/bundesliga/`
+- Comparison report with ROI analysis
+- Feature importance rankings
+- Deployment recommendations
+
+---
+
+## 🔧 Available Training Scripts
+
+### 1. `train_multimodel_comparison.py` ⭐ **RECOMMENDED**
+**Description**: Trains and compares three models (Dixon-Coles, XGBoost, Ensemble)
+
+**Features**:
+- 44 rich features (form, H2H, season stats, attack/defense strength)
+- Time-based train/validation split (70/30)
+- Comprehensive evaluation (ROI, AUC, log loss, Brier score)
+- Automated visualization and reporting
+- Production-ready model artifacts
+
+**Requirements**:
+- `data/{league}/matches_with_features.csv` (from `fetch_comprehensive_features.py`)
+- `data/{league}/historical_completed_with_odds.csv` (from `fetch_historical_completed.py`)
+
+**Usage**:
+```bash
+python scripts/soccer/train_multimodel_comparison.py
+```
+
+**Results** (Bundesliga):
+- ✅ 21.2% validation ROI
+- ✅ 80.6% hit rate
+- ✅ Exceeds 15% deployment threshold
+
+---
+
+### 2. `train_league_profile_c.py` (Original)
+**Description**: Dixon-Coles only, Profile C methodology
+
+**Features**:
+- Traditional Poisson-based approach
+- Profitable probability band identification
+- League-specific calibration
+
+**Use When**:
+- Want interpretable baseline
+- Limited computational resources
+- Comparing to EPL Profile C approach
+
+---
+
+## 📊 Data Collection Scripts
+
+### Feature Extraction
+- **`fetch_comprehensive_features.py`** ⭐ **For multi-model training**
+  - Extracts 44 features from openfootball data
+  - Form metrics (last 5 matches)
+  - Season aggregates (goals, clean sheets, etc.)
+  - Head-to-head statistics
+  - Attack/defense strength differentials
+
+### Odds Collection
+- **`fetch_historical_completed.py`** ⭐ **For multi-model training**
+  - Two-step historical odds via The Odds API
+  - Step 1: Fetch completed events (h2h endpoint)
+  - Step 2: Get BTTS odds per event using pre-match timestamp
+  - Prioritizes sharp bookmakers (Pinnacle, Betfair, William Hill)
+
+- **`fetch_current_odds.py`** - Live odds for upcoming fixtures
+- **`fetch_historical_odds.py`** - Original single-step approach (deprecated)
+
+---
+
 **Status**: ✅ Scripts ready, awaiting odds data  
 **Priority**: HIGH (Bundesliga + Serie A are top-tier candidates)  
 **ETA**: 3 weeks (1 week data + 2 weeks validation)

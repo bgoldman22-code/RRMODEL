@@ -1,0 +1,230 @@
+/**
+ * Bundesliga BTTS Live Predictions - Netlify Function
+ * 
+ * Endpoint: /.netlify/functions/bundesliga-btts-predict
+ * 
+ * POST Request Body:
+ * {
+ *   "fixtures": [
+ *     {
+ *       "home_team": "Bayern München",
+ *       "away_team": "Borussia Dortmund",
+ *       "odds": {
+ *         "btts_yes": 1.65,
+ *         "btts_no": 2.20
+ *       }
+ *     }
+ *   ]
+ * }
+ * 
+ * Returns: JSON with predictions and betting recommendations
+ */
+
+import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export const handler = async (event, context) => {
+  // CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json',
+  };
+
+  // Handle preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: '',
+    };
+  }
+
+  // Only POST allowed
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ error: 'Method not allowed' }),
+    };
+  }
+
+  try {
+    // Parse request
+    const body = JSON.parse(event.body || '{}');
+    let { fixtures, auto_fetch } = body;
+
+    // Auto-fetch mode: Get fixtures from The Odds API
+    if (auto_fetch && process.env.ODDS_API_KEY) {
+      console.log('Auto-fetch mode: Fetching fixtures from The Odds API...');
+      fixtures = await fetchFixturesFromOddsAPI(process.env.ODDS_API_KEY);
+      
+      if (fixtures.length === 0) {
+        return {
+          statusCode: 503,
+          headers,
+          body: JSON.stringify({
+            error: 'No fixtures available',
+            message: 'Unable to fetch upcoming Bundesliga fixtures from The Odds API',
+          }),
+        };
+      }
+    }
+
+    if (!fixtures || !Array.isArray(fixtures) || fixtures.length === 0) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          error: 'Invalid request',
+          message: 'Provide an array of fixtures with home_team and away_team, or set auto_fetch: true',
+        }),
+      };
+    }
+
+    // Validate fixture format
+    for (const fixture of fixtures) {
+      if (!fixture.home_team || !fixture.away_team) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({
+            error: 'Invalid fixture',
+            message: 'Each fixture must have home_team and away_team',
+          }),
+        };
+      }
+    }
+
+    // Call Python prediction script
+    const scriptPath = join(__dirname, '..', '..', 'scripts', 'soccer', 'predict_live_bundesliga.py');
+    const predictions = await runPythonScript(scriptPath, body);
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify(predictions),
+    };
+  } catch (error) {
+    console.error('Bundesliga prediction error:', error);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        error: 'Prediction failed',
+        message: error.message,
+      }),
+    };
+  }
+};
+
+/**
+ * Fetch upcoming Bundesliga fixtures from The Odds API
+ */
+async function fetchFixturesFromOddsAPI(apiKey) {
+  const url = `https://api.the-odds-api.com/v4/sports/soccer_germany_bundesliga/odds/?` +
+    `apiKey=${apiKey}&` +
+    `regions=eu&` +
+    `markets=btts&` +
+    `oddsFormat=decimal&` +
+    `dateFormat=iso`;
+
+  try {
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Odds API returned ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    // Check remaining requests
+    const remaining = response.headers.get('x-requests-remaining');
+    if (remaining) {
+      console.log(`Odds API requests remaining: ${remaining}`);
+    }
+
+    // Transform to our format
+    const fixtures = data.map(game => {
+      const bookmaker = game.bookmakers?.[0]; // Use first bookmaker
+      const bttsMarket = bookmaker?.markets?.find(m => m.key === 'btts');
+      
+      const bttsYes = bttsMarket?.outcomes?.find(o => o.name === 'Yes')?.price || null;
+      const bttsNo = bttsMarket?.outcomes?.find(o => o.name === 'No')?.price || null;
+
+      return {
+        id: game.id,
+        home_team: game.home_team,
+        away_team: game.away_team,
+        commence_time: game.commence_time,
+        odds: bttsYes && bttsNo ? {
+          btts_yes: bttsYes,
+          btts_no: bttsNo,
+          bookmaker: bookmaker?.key || 'unknown'
+        } : null
+      };
+    });
+
+    console.log(`Fetched ${fixtures.length} fixtures from Odds API`);
+    return fixtures;
+  } catch (error) {
+    console.error('Error fetching from Odds API:', error);
+    throw error;
+  }
+}
+
+/**
+ * Run Python prediction script
+ */
+function runPythonScript(scriptPath, inputData) {
+  return new Promise((resolve, reject) => {
+    // Use Python from virtual environment if available
+    const pythonCmd = process.env.PYTHON_PATH || 'python3';
+
+    const python = spawn(pythonCmd, [scriptPath], {
+      cwd: join(__dirname, '..', '..'),
+      env: { ...process.env },
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    // Send input data via stdin
+    python.stdin.write(JSON.stringify(inputData));
+    python.stdin.end();
+
+    // Collect output
+    python.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    python.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    python.on('close', (code) => {
+      if (code !== 0) {
+        console.error('Python stderr:', stderr);
+        reject(new Error(`Python script exited with code ${code}: ${stderr}`));
+        return;
+      }
+
+      try {
+        const result = JSON.parse(stdout);
+        resolve(result);
+      } catch (e) {
+        console.error('Failed to parse Python output:', stdout);
+        reject(new Error(`Invalid JSON output from Python: ${e.message}`));
+      }
+    });
+
+    python.on('error', (err) => {
+      reject(new Error(`Failed to spawn Python process: ${err.message}`));
+    });
+  });
+}

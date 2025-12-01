@@ -12,6 +12,89 @@ const fmtDecimal = (odds) => odds ? odds.toFixed(2) : '—';
 const fmtPercent = (prob) => prob ? `${Math.round(prob * 100)}%` : '—';
 
 async function fetchBTTSPredictions(league = 'premier-league', limit = 20) {
+  // Use NEW trained ensemble model for Bundesliga
+  if (league === 'bundesliga') {
+    const url = `/.netlify/functions/bundesliga-btts-predict`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'cache-control': 'no-cache' 
+      },
+      body: JSON.stringify({ auto_fetch: true })
+    });
+    
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const response = await res.json();
+    
+    // Transform ensemble format to match existing UI
+    const predictions = (response.predictions || []).map(pred => ({
+      fixture_id: pred.home_team + '-' + pred.away_team,
+      matchup: `${pred.home_team} vs ${pred.away_team}`,
+      venue: null,
+      league: 'Bundesliga',
+      kickoff: pred.commence_time || null,
+      btts_prediction: pred.model_probability >= 0.5 ? 'YES' : 'NO',
+      btts_probability: pred.model_probability,
+      confidence: Math.round(pred.model_probability * 100),
+      edge_pct: pred.edge ? (pred.edge * 100).toFixed(1) : 0,
+      market_odds: pred.market_odds ? {
+        btts_yes: pred.market_odds.btts_yes,
+        btts_no: pred.market_odds.btts_no,
+        btts_yes_american: ((pred.market_odds.btts_yes - 1) * 100).toFixed(0),
+        btts_no_american: ((pred.market_odds.btts_no - 1) * 100).toFixed(0),
+        bookmaker: pred.market_odds.bookmaker || 'The Odds API',
+        implied_prob_yes: pred.market_probability,
+        implied_prob_no: 1 - pred.market_probability
+      } : null,
+      value_bet: pred.bet_decision ? {
+        recommendation: pred.bet_decision.should_bet ? 'BET' : 'PASS',
+        selection: pred.bet_decision.should_bet ? 'YES' : null,
+        kelly_fraction: pred.bet_decision.should_bet 
+          ? `${pred.bet_decision.recommended_stake_pct.toFixed(2)}%` 
+          : null,
+        expected_value: pred.expected_value 
+          ? `${(pred.expected_value * 100).toFixed(1)}%` 
+          : null
+      } : null,
+      team_form: pred.key_features ? {
+        home_team: {
+          recent_form: 'N/A',
+          goals_scored_per_game: pred.key_features.home_season_avg_goals_for.toFixed(1),
+          btts_rate: `${(pred.key_features.home_form_btts_rate * 100).toFixed(0)}%`
+        },
+        away_team: {
+          recent_form: 'N/A',
+          goals_scored_per_game: pred.key_features.away_season_avg_goals_against.toFixed(1),
+          btts_rate: `${(pred.key_features.away_form_btts_rate * 100).toFixed(0)}%`
+        }
+      } : null,
+      // NEW: Ensemble-specific data
+      model_breakdown: {
+        dixon_coles: pred.dixon_coles_prob,
+        xgboost: pred.xgboost_prob,
+        ensemble_weights: { xgb: 0.774, dc: 0.226 }
+      },
+      expected_goals: {
+        home: pred.expected_home_goals,
+        away: pred.expected_away_goals
+      }
+    }));
+    
+    return {
+      predictions,
+      metadata: {
+        model_version: response.model || 'Ensemble v1.0',
+        validation_roi: response.validation_roi,
+        hit_rate: response.hit_rate,
+        total_fixtures: response.total_predictions,
+        high_confidence: response.recommended_bets
+      },
+      league
+    };
+  }
+  
+  // Use legacy Dixon-Coles model for other leagues
   const url = `/.netlify/functions/soccer-btts-predictions?league=${league}&limit=${limit}`;
   const res = await fetch(url, {
     headers: { 'cache-control': 'no-cache' }
@@ -110,6 +193,37 @@ export default function SoccerBTTS() {
         </div>
       </div>
 
+      {/* NEW: Trained Model Badge for Bundesliga */}
+      {selectedLeague === 'bundesliga' && metadata.validation_roi && (
+        <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg">
+          <div className="flex items-start gap-3">
+            <div className="text-3xl">🎯</div>
+            <div className="flex-1">
+              <div className="font-semibold text-green-900 text-lg mb-1">
+                NEW: Trained Ensemble ML Model
+              </div>
+              <div className="text-sm text-green-800">
+                This model was trained on 416 historical Bundesliga matches with real betting outcomes
+              </div>
+              <div className="flex gap-6 mt-2 text-sm">
+                <div>
+                  <span className="font-semibold text-green-900">Validation ROI:</span>{' '}
+                  <span className="text-green-700">{(metadata.validation_roi * 100).toFixed(1)}%</span>
+                </div>
+                <div>
+                  <span className="font-semibold text-green-900">Hit Rate:</span>{' '}
+                  <span className="text-green-700">{(metadata.hit_rate * 100).toFixed(1)}%</span>
+                </div>
+                <div>
+                  <span className="font-semibold text-green-900">Model:</span>{' '}
+                  <span className="text-green-700">77.4% XGBoost + 22.6% Dixon-Coles</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {error && (
         <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg">Error: {error}</div>
       )}
@@ -183,6 +297,30 @@ export default function SoccerBTTS() {
                             <div className="text-xs text-purple-600">
                               {pred.edge_pct || 0}% edge
                             </div>
+                            {/* NEW: Show ensemble breakdown for Bundesliga */}
+                            {pred.model_breakdown && (
+                              <details className="mt-2">
+                                <summary className="text-xs text-blue-600 cursor-pointer hover:text-blue-800">
+                                  📊 Model breakdown
+                                </summary>
+                                <div className="mt-1 p-2 bg-blue-50 rounded text-xs space-y-1">
+                                  <div>
+                                    <strong>Dixon-Coles:</strong> {(pred.model_breakdown.dixon_coles * 100).toFixed(1)}%
+                                  </div>
+                                  <div>
+                                    <strong>XGBoost:</strong> {(pred.model_breakdown.xgboost * 100).toFixed(1)}%
+                                  </div>
+                                  <div className="text-gray-600 pt-1 border-t border-blue-200">
+                                    Ensemble: {(pred.model_breakdown.ensemble_weights.xgb * 100).toFixed(1)}% XGB + {(pred.model_breakdown.ensemble_weights.dc * 100).toFixed(1)}% DC
+                                  </div>
+                                  {pred.expected_goals && (
+                                    <div className="text-gray-600 pt-1 border-t border-blue-200">
+                                      Expected Goals: {pred.expected_goals.home.toFixed(1)} - {pred.expected_goals.away.toFixed(1)}
+                                    </div>
+                                  )}
+                                </div>
+                              </details>
+                            )}
                           </>
                         )}
                       </div>

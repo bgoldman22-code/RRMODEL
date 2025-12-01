@@ -1,0 +1,772 @@
+{
+  "model_type": "dixon_coles",
+  "home_advantage": 0.1,
+  "tau_00": -0.15,
+  "team_ratings": {
+    "20.30  SV Werder Bremen": {
+      "attack": -2.3025850929940455,
+      "defense": -1.3862943611198906,
+      "games": 1,
+      "avg_goals_for": 0.0,
+      "avg_goals_against": 4.0
+    },
+    "15.30  Bayer 04 Leverkusen": {
+      "attack": 1.0986122886681098,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 2.0
+    },
+    "FC Augsburg": {
+      "attack": 0.6061358035703155,
+      "defense": -0.5108256237659907,
+      "games": 6,
+      "avg_goals_for": 1.8333333333333333,
+      "avg_goals_against": 1.6666666666666667
+    },
+    "20.30  RB Leipzig": {
+      "attack": 1.6094379124341003,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 5.0,
+      "avg_goals_against": 1.0
+    },
+    "18.30  Borussia M\u00f6nchengladbach": {
+      "attack": -0.6931471805599453,
+      "defense": -0.9162907318741551,
+      "games": 2,
+      "avg_goals_for": 0.5,
+      "avg_goals_against": 2.5
+    },
+    "17.30  FC Bayern M\u00fcnchen": {
+      "attack": 1.0986122886681098,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 1.0
+    },
+    "15.30  1. FSV Mainz 05": {
+      "attack": 0.0,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 1.0
+    },
+    "TSG 1899 Hoffenheim": {
+      "attack": 0.9162907318741551,
+      "defense": -0.6931471805599453,
+      "games": 2,
+      "avg_goals_for": 2.5,
+      "avg_goals_against": 2.0
+    },
+    "SV Werder Bremen": {
+      "attack": 0.6931471805599453,
+      "defense": -0.0,
+      "games": 3,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 1.0
+    },
+    "20.30  FC Bayern M\u00fcnchen": {
+      "attack": 0.9162907318741551,
+      "defense": -0.0,
+      "games": 2,
+      "avg_goals_for": 2.5,
+      "avg_goals_against": 1.0
+    },
+    "15.30  RB Leipzig": {
+      "attack": 0.4054651081081644,
+      "defense": 0.6931471805599453,
+      "games": 2,
+      "avg_goals_for": 1.5,
+      "avg_goals_against": 0.5
+    },
+    "1. FSV Mainz 05": {
+      "attack": -0.15415067982725836,
+      "defense": -0.25131442828090617,
+      "games": 7,
+      "avg_goals_for": 0.8571428571428571,
+      "avg_goals_against": 1.2857142857142858
+    },
+    "Borussia M\u00f6nchengladbach": {
+      "attack": -0.40546510810816444,
+      "defense": 0.40546510810816444,
+      "games": 3,
+      "avg_goals_for": 0.6666666666666666,
+      "avg_goals_against": 0.6666666666666666
+    },
+    "Borussia Dortmund": {
+      "attack": 0.0,
+      "defense": 2.3025850929940455,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 0.0
+    },
+    "20.30  TSG 1899 Hoffenheim": {
+      "attack": 0.0,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 3.0
+    },
+    "15.30  VfL Wolfsburg": {
+      "attack": 0.5596157879354227,
+      "defense": -0.22314355131420976,
+      "games": 4,
+      "avg_goals_for": 1.75,
+      "avg_goals_against": 1.25
+    },
+    "18.30  RB Leipzig": {
+      "attack": 0.8109302162163288,
+      "defense": -0.4054651081081644,
+      "games": 4,
+      "avg_goals_for": 2.25,
+      "avg_goals_against": 1.5
+    },
+    "20.30  Borussia M\u00f6nchengladbach": {
+      "attack": 0.9808292530117262,
+      "defense": -0.28768207245178085,
+      "games": 3,
+      "avg_goals_for": 2.6666666666666665,
+      "avg_goals_against": 1.3333333333333333
+    },
+    "18.30  SV Werder Bremen": {
+      "attack": 0.28768207245178085,
+      "defense": -0.6931471805599453,
+      "games": 3,
+      "avg_goals_for": 1.3333333333333333,
+      "avg_goals_against": 2.0
+    },
+    "VfB Stuttgart": {
+      "attack": 1.0986122886681098,
+      "defense": -0.3364722366212129,
+      "games": 5,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 1.4
+    },
+    "20.30  Borussia Dortmund": {
+      "attack": 0.0,
+      "defense": 0.6931471805599453,
+      "games": 2,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 0.5
+    },
+    "15.30  TSG 1899 Hoffenheim": {
+      "attack": 0.0,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 3.0
+    },
+    "VfL Wolfsburg": {
+      "attack": 0.28768207245178085,
+      "defense": -0.5108256237659907,
+      "games": 3,
+      "avg_goals_for": 1.3333333333333333,
+      "avg_goals_against": 1.6666666666666667
+    },
+    "18.30  1. FSV Mainz 05": {
+      "attack": 0.0,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 3.0
+    },
+    "15.30  Eintracht Frankfurt": {
+      "attack": 0.9162907318741551,
+      "defense": -0.9162907318741551,
+      "games": 2,
+      "avg_goals_for": 2.5,
+      "avg_goals_against": 2.5
+    },
+    "18.30  Borussia Dortmund": {
+      "attack": 0.0,
+      "defense": -1.252762968495368,
+      "games": 2,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 3.5
+    },
+    "17.30  SV Werder Bremen": {
+      "attack": 0.6931471805599453,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 2.0
+    },
+    "18.30  Eintracht Frankfurt": {
+      "attack": 0.0,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 2.0
+    },
+    "15.30  Borussia Dortmund": {
+      "attack": 1.3862943611198906,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 4.0,
+      "avg_goals_against": 2.0
+    },
+    "17.30  TSG 1899 Hoffenheim": {
+      "attack": 0.4054651081081644,
+      "defense": -0.0,
+      "games": 2,
+      "avg_goals_for": 1.5,
+      "avg_goals_against": 1.0
+    },
+    "18.30  VfB Stuttgart": {
+      "attack": 0.6931471805599453,
+      "defense": 2.3025850929940455,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 0.0
+    },
+    "19.30  FC Augsburg": {
+      "attack": 0.6931471805599453,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 1.0
+    },
+    "17.30  Bayer 04 Leverkusen": {
+      "attack": 0.6931471805599453,
+      "defense": 0.6931471805599453,
+      "games": 2,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 0.5
+    },
+    "Eintracht Frankfurt": {
+      "attack": 1.252762968495368,
+      "defense": -0.0,
+      "games": 2,
+      "avg_goals_for": 3.5,
+      "avg_goals_against": 1.0
+    },
+    "15.30  VfB Stuttgart": {
+      "attack": 0.6931471805599453,
+      "defense": -0.0,
+      "games": 2,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 1.0
+    },
+    "19.30  FC Bayern M\u00fcnchen": {
+      "attack": 1.0986122886681098,
+      "defense": 2.3025850929940455,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 0.0
+    },
+    "17.30  Borussia M\u00f6nchengladbach": {
+      "attack": 0.6931471805599453,
+      "defense": -0.4054651081081644,
+      "games": 2,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 1.5
+    },
+    "15.30  FC Bayern M\u00fcnchen": {
+      "attack": 1.3862943611198906,
+      "defense": -0.0,
+      "games": 2,
+      "avg_goals_for": 4.0,
+      "avg_goals_against": 1.0
+    },
+    "20.30  Eintracht Frankfurt": {
+      "attack": 0.0,
+      "defense": 2.3025850929940455,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 0.0
+    },
+    "18.30  Bayer 04 Leverkusen": {
+      "attack": 0.4054651081081644,
+      "defense": 2.3025850929940455,
+      "games": 2,
+      "avg_goals_for": 1.5,
+      "avg_goals_against": 0.0
+    },
+    "15.30  FC Augsburg": {
+      "attack": 0.6931471805599453,
+      "defense": -0.9162907318741551,
+      "games": 2,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 2.5
+    },
+    "FC Bayern M\u00fcnchen": {
+      "attack": 1.0986122886681098,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 1.0
+    },
+    "20.30  Bayer 04 Leverkusen": {
+      "attack": 0.6931471805599453,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 1.0
+    },
+    "18.30  FC Bayern M\u00fcnchen": {
+      "attack": 0.6931471805599453,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 1.0
+    },
+    "17.30  Borussia Dortmund": {
+      "attack": 0.6931471805599453,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 3.0
+    },
+    "18.30  VfL Wolfsburg": {
+      "attack": 0.6931471805599453,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 3.0
+    },
+    "17.30  Eintracht Frankfurt": {
+      "attack": 1.0986122886681098,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 1.0
+    },
+    "19.30  Bayer 04 Leverkusen": {
+      "attack": 0.6931471805599453,
+      "defense": 2.3025850929940455,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 0.0
+    },
+    "(0-1)  FC Bayern M\u00fcnchen": {
+      "attack": 1.3862943611198906,
+      "defense": 2.3025850929940455,
+      "games": 1,
+      "avg_goals_for": 4.0,
+      "avg_goals_against": 0.0
+    },
+    "(2-1)  RB Leipzig": {
+      "attack": 0.6931471805599453,
+      "defense": -1.3862943611198906,
+      "games": 2,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 4.0
+    },
+    "(3-3)  Borussia M\u00f6nchengladbach": {
+      "attack": 1.3862943611198906,
+      "defense": -1.3862943611198906,
+      "games": 1,
+      "avg_goals_for": 4.0,
+      "avg_goals_against": 4.0
+    },
+    "(0-1)  VfB Stuttgart": {
+      "attack": 0.6931471805599453,
+      "defense": -1.252762968495368,
+      "games": 2,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 3.5
+    },
+    "(0-2)  Bayer 04 Leverkusen": {
+      "attack": 1.0986122886681098,
+      "defense": 0.40546510810816444,
+      "games": 3,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 0.6666666666666666
+    },
+    "(2-0)  FC Augsburg": {
+      "attack": -0.6931471805599453,
+      "defense": -1.0986122886681098,
+      "games": 2,
+      "avg_goals_for": 0.5,
+      "avg_goals_against": 3.0
+    },
+    "(1-0)  Eintracht Frankfurt": {
+      "attack": -0.2231435513142097,
+      "defense": -0.6931471805599453,
+      "games": 5,
+      "avg_goals_for": 0.8,
+      "avg_goals_against": 2.0
+    },
+    "(1-0)  FC Bayern M\u00fcnchen": {
+      "attack": 0.0,
+      "defense": -0.6931471805599453,
+      "games": 2,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 2.0
+    },
+    "(1-1)  VfL Wolfsburg": {
+      "attack": 0.0,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 3.0
+    },
+    "(1-0)  1. FSV Mainz 05": {
+      "attack": -2.3025850929940455,
+      "defense": -1.3862943611198906,
+      "games": 1,
+      "avg_goals_for": 0.0,
+      "avg_goals_against": 4.0
+    },
+    "(1-1)  Bayer 04 Leverkusen": {
+      "attack": 0.6931471805599453,
+      "defense": -0.4054651081081644,
+      "games": 2,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 1.5
+    },
+    "(3-0)  FC Augsburg": {
+      "attack": -2.3025850929940455,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 0.0,
+      "avg_goals_against": 3.0
+    },
+    "(0-0)  VfB Stuttgart": {
+      "attack": 1.0986122886681098,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 1.0
+    },
+    "(0-0)  RB Leipzig": {
+      "attack": -0.2876820724517809,
+      "defense": -0.22314355131420976,
+      "games": 4,
+      "avg_goals_for": 0.75,
+      "avg_goals_against": 1.25
+    },
+    "(0-0)  VfL Wolfsburg": {
+      "attack": -2.3025850929940455,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 0.0,
+      "avg_goals_against": 1.0
+    },
+    "(2-1)  1. FSV Mainz 05": {
+      "attack": 0.0,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 2.0
+    },
+    "(1-2)  Borussia Dortmund": {
+      "attack": 1.0986122886681098,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 1.0
+    },
+    "(0-1)  Bayer 04 Leverkusen": {
+      "attack": 1.0986122886681098,
+      "defense": 2.3025850929940455,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 0.0
+    },
+    "(2-0)  FC Bayern M\u00fcnchen": {
+      "attack": 0.6931471805599453,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 2.0
+    },
+    "(1-1)  1. FSV Mainz 05": {
+      "attack": 0.28768207245178085,
+      "defense": -0.5108256237659907,
+      "games": 3,
+      "avg_goals_for": 1.3333333333333333,
+      "avg_goals_against": 1.6666666666666667
+    },
+    "(1-2)  TSG 1899 Hoffenheim": {
+      "attack": 1.0986122886681098,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 2.0
+    },
+    "(0-1)  VfL Wolfsburg": {
+      "attack": 0.0,
+      "defense": -0.6931471805599453,
+      "games": 2,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 2.0
+    },
+    "(0-0)  SV Werder Bremen": {
+      "attack": -0.6931471805599453,
+      "defense": 0.6931471805599453,
+      "games": 2,
+      "avg_goals_for": 0.5,
+      "avg_goals_against": 0.5
+    },
+    "(1-3)  Eintracht Frankfurt": {
+      "attack": 1.0986122886681098,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 1.0
+    },
+    "(1-2)  FC Bayern M\u00fcnchen": {
+      "attack": 0.9162907318741551,
+      "defense": -0.0,
+      "games": 2,
+      "avg_goals_for": 2.5,
+      "avg_goals_against": 1.0
+    },
+    "(0-2)  TSG 1899 Hoffenheim": {
+      "attack": 1.0986122886681098,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 2.0
+    },
+    "(1-2)  VfL Wolfsburg": {
+      "attack": 0.6931471805599453,
+      "defense": -0.9162907318741551,
+      "games": 2,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 2.5
+    },
+    "(2-1)  Borussia Dortmund": {
+      "attack": 1.0986122886681098,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 3.0
+    },
+    "(0-2)  FC Bayern M\u00fcnchen": {
+      "attack": 1.252762968495368,
+      "defense": -0.0,
+      "games": 2,
+      "avg_goals_for": 3.5,
+      "avg_goals_against": 1.0
+    },
+    "(1-1)  SV Werder Bremen": {
+      "attack": 0.6931471805599453,
+      "defense": -0.6931471805599453,
+      "games": 2,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 2.0
+    },
+    "(2-0)  VfL Wolfsburg": {
+      "attack": -2.3025850929940455,
+      "defense": -1.3862943611198906,
+      "games": 1,
+      "avg_goals_for": 0.0,
+      "avg_goals_against": 4.0
+    },
+    "(1-1)  Borussia Dortmund": {
+      "attack": 0.0,
+      "defense": -0.4054651081081644,
+      "games": 2,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 1.5
+    },
+    "(0-1)  TSG 1899 Hoffenheim": {
+      "attack": 0.4054651081081644,
+      "defense": -0.4054651081081644,
+      "games": 2,
+      "avg_goals_for": 1.5,
+      "avg_goals_against": 1.5
+    },
+    "(1-0)  RB Leipzig": {
+      "attack": 0.0,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 2.0
+    },
+    "(1-2)  VfB Stuttgart": {
+      "attack": 0.6931471805599453,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 1.0
+    },
+    "(3-2)  Borussia M\u00f6nchengladbach": {
+      "attack": 0.6931471805599453,
+      "defense": -1.3862943611198906,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 4.0
+    },
+    "(0-1)  1. FSV Mainz 05": {
+      "attack": 0.0,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 1.0
+    },
+    "(1-0)  SV Werder Bremen": {
+      "attack": -2.3025850929940455,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 0.0,
+      "avg_goals_against": 2.0
+    },
+    "(0-0)  TSG 1899 Hoffenheim": {
+      "attack": 0.0,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 2.0
+    },
+    "(0-1)  Borussia Dortmund": {
+      "attack": 0.0,
+      "defense": -0.0,
+      "games": 2,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 1.0
+    },
+    "(1-1)  RB Leipzig": {
+      "attack": 0.9162907318741551,
+      "defense": -0.6931471805599453,
+      "games": 2,
+      "avg_goals_for": 2.5,
+      "avg_goals_against": 2.0
+    },
+    "(1-0)  FC Augsburg": {
+      "attack": -0.40546510810816444,
+      "defense": -0.28768207245178085,
+      "games": 3,
+      "avg_goals_for": 0.6666666666666666,
+      "avg_goals_against": 1.3333333333333333
+    },
+    "(3-1)  FC Bayern M\u00fcnchen": {
+      "attack": 0.0,
+      "defense": -1.6094379124341003,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 5.0
+    },
+    "(1-0)  Bayer 04 Leverkusen": {
+      "attack": 0.6931471805599453,
+      "defense": -0.4054651081081644,
+      "games": 2,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 1.5
+    },
+    "(1-1)  TSG 1899 Hoffenheim": {
+      "attack": 0.0,
+      "defense": -1.0986122886681098,
+      "games": 2,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 3.0
+    },
+    "(1-0)  VfB Stuttgart": {
+      "attack": -2.3025850929940455,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 0.0,
+      "avg_goals_against": 3.0
+    },
+    "(0-1)  Borussia M\u00f6nchengladbach": {
+      "attack": 0.0,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 2.0
+    },
+    "(1-0)  TSG 1899 Hoffenheim": {
+      "attack": -2.3025850929940455,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 0.0,
+      "avg_goals_against": 3.0
+    },
+    "(0-1)  Eintracht Frankfurt": {
+      "attack": 0.0,
+      "defense": 2.3025850929940455,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 0.0
+    },
+    "(0-0)  Bayer 04 Leverkusen": {
+      "attack": 0.0,
+      "defense": 2.3025850929940455,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 0.0
+    },
+    "(2-0)  VfB Stuttgart": {
+      "attack": 0.0,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 3.0
+    },
+    "(0-0)  1. FSV Mainz 05": {
+      "attack": -2.3025850929940455,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 0.0,
+      "avg_goals_against": 1.0
+    },
+    "(1-1)  Borussia M\u00f6nchengladbach": {
+      "attack": 0.0,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 3.0
+    },
+    "(0-1)  SV Werder Bremen": {
+      "attack": 0.0,
+      "defense": 2.3025850929940455,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 0.0
+    },
+    "(2-0)  1. FSV Mainz 05": {
+      "attack": 0.0,
+      "defense": -1.0986122886681098,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 3.0
+    },
+    "(1-0)  Borussia M\u00f6nchengladbach": {
+      "attack": -0.6931471805599453,
+      "defense": -0.4054651081081644,
+      "games": 2,
+      "avg_goals_for": 0.5,
+      "avg_goals_against": 1.5
+    },
+    "(2-1)  TSG 1899 Hoffenheim": {
+      "attack": 1.0986122886681098,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 3.0,
+      "avg_goals_against": 2.0
+    },
+    "(2-0)  SV Werder Bremen": {
+      "attack": 0.0,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 2.0
+    },
+    "(0-2)  Borussia Dortmund": {
+      "attack": 0.6931471805599453,
+      "defense": -0.0,
+      "games": 1,
+      "avg_goals_for": 2.0,
+      "avg_goals_against": 1.0
+    },
+    "(3-1)  1. FSV Mainz 05": {
+      "attack": 0.0,
+      "defense": -2.0794415416798357,
+      "games": 1,
+      "avg_goals_for": 1.0,
+      "avg_goals_against": 8.0
+    },
+    "(1-0)  VfL Wolfsburg": {
+      "attack": -2.3025850929940455,
+      "defense": -0.6931471805599453,
+      "games": 1,
+      "avg_goals_for": 0.0,
+      "avg_goals_against": 2.0
+    }
+  },
+  "trained_on": "2023-08-18 to 2024-03-10",
+  "num_matches": 93
+}

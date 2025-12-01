@@ -1,0 +1,163 @@
+{
+  "model_type": "xgboost",
+  "params": {
+    "objective": "binary:logistic",
+    "eval_metric": [
+      "logloss",
+      "auc"
+    ],
+    "max_depth": 5,
+    "learning_rate": 0.05,
+    "n_estimators": 200,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "min_child_weight": 3,
+    "random_state": 42,
+    "verbosity": 0
+  },
+  "feature_importance": [
+    {
+      "feature": "combined_form_btts_rate",
+      "importance": 0.08296067267656326
+    },
+    {
+      "feature": "away_season_avg_goals_against",
+      "importance": 0.05901949480175972
+    },
+    {
+      "feature": "away_form_games_played",
+      "importance": 0.054763421416282654
+    },
+    {
+      "feature": "home_season_win_rate",
+      "importance": 0.05310596153140068
+    },
+    {
+      "feature": "home_season_avg_goals_for",
+      "importance": 0.052802782505750656
+    },
+    {
+      "feature": "away_form_btts_rate",
+      "importance": 0.04675116017460823
+    },
+    {
+      "feature": "home_form_btts_rate",
+      "importance": 0.04308632016181946
+    },
+    {
+      "feature": "away_season_games",
+      "importance": 0.04264470562338829
+    },
+    {
+      "feature": "attack_strength_diff",
+      "importance": 0.041556261479854584
+    },
+    {
+      "feature": "home_form_goals_scored",
+      "importance": 0.03975699096918106
+    },
+    {
+      "feature": "defense_strength_diff",
+      "importance": 0.03762305527925491
+    },
+    {
+      "feature": "home_form_goals_conceded",
+      "importance": 0.03711340203881264
+    },
+    {
+      "feature": "away_season_goals_conceded",
+      "importance": 0.03649294748902321
+    },
+    {
+      "feature": "home_form_avg_total_goals",
+      "importance": 0.03331360965967178
+    },
+    {
+      "feature": "away_form_goals_scored",
+      "importance": 0.03298679366707802
+    },
+    {
+      "feature": "home_season_clean_sheets",
+      "importance": 0.03268365189433098
+    },
+    {
+      "feature": "away_season_avg_goals_for",
+      "importance": 0.032681092619895935
+    },
+    {
+      "feature": "away_form_avg_total_goals",
+      "importance": 0.03209381923079491
+    },
+    {
+      "feature": "away_form_goals_conceded",
+      "importance": 0.03028835915029049
+    },
+    {
+      "feature": "combined_form_goals",
+      "importance": 0.029923710972070694
+    },
+    {
+      "feature": "home_season_avg_goals_against",
+      "importance": 0.028515979647636414
+    },
+    {
+      "feature": "home_season_btts_rate",
+      "importance": 0.028140239417552948
+    },
+    {
+      "feature": "away_season_goals_scored",
+      "importance": 0.02786308154463768
+    },
+    {
+      "feature": "home_season_goals_conceded",
+      "importance": 0.02714177966117859
+    },
+    {
+      "feature": "home_season_goals_scored",
+      "importance": 0.025303293019533157
+    },
+    {
+      "feature": "away_season_btts_rate",
+      "importance": 0.01138738077133894
+    },
+    {
+      "feature": "home_season_failed_to_score",
+      "importance": 0.0
+    },
+    {
+      "feature": "away_season_failed_to_score",
+      "importance": 0.0
+    },
+    {
+      "feature": "away_season_clean_sheets",
+      "importance": 0.0
+    },
+    {
+      "feature": "away_season_win_rate",
+      "importance": 0.0
+    },
+    {
+      "feature": "home_season_games",
+      "importance": 0.0
+    },
+    {
+      "feature": "h2h_avg_goals",
+      "importance": 0.0
+    },
+    {
+      "feature": "h2h_btts_rate",
+      "importance": 0.0
+    },
+    {
+      "feature": "h2h_games",
+      "importance": 0.0
+    },
+    {
+      "feature": "home_form_games_played",
+      "importance": 0.0
+    }
+  ],
+  "num_features": 35,
+  "trained_on": "2023-08-18 to 2024-03-10",
+  "num_matches": 93
+}
