@@ -2,96 +2,57 @@
 
 ## ✅ Completed
 
-1. **FantasyAI Repository Setup**
-   - Created standalone repo: https://github.com/bgoldman22-code/FantasyAI
-   - Added `netlify.toml` configuration
-   - All serverless functions ready (ff-run.mjs, ff-auth-start.mjs, ff-auth-callback.mjs, etc.)
+1. **Fantasy Functions Integration**
+   - All Fantasy Football serverless functions copied to `netlify/functions/`
+   - Functions: ff-run.mjs, ff-auth-start.mjs, ff-auth-callback.mjs, ff-get-leagues.mjs, ff-debug-leagues.mjs, ff-weekly-roast.mjs
+   - Utilities in `_lib/`: ff-scoring.mjs (457 lines), ff-yahoo.mjs (494 lines), ff-odds.mjs (428 lines), ff-blobs.mjs (310 lines), ff-cookies.mjs (188 lines)
 
 2. **RRMODEL Integration**
    - Created `src/pages/FantasySitStart.jsx` component
    - Added "Fantasy Sit/Start 🏈" to NFL dropdown menu
    - Routing configured at `/fantasy-sitstart`
+   - Uses local Netlify functions hosted on bgroundrobin.com (no separate deployment needed)
 
-## 🚀 Deployment Steps
+## 🚀 Setup Steps
 
-### Step 1: Deploy FantasyAI to Netlify
-
-1. Go to https://app.netlify.com/
-2. Click "Add new site" → "Import an existing project"
-3. Connect to GitHub and select `bgoldman22-code/FantasyAI`
-4. Build settings (should auto-detect from netlify.toml):
-   - **Build command:** `echo 'No build needed - serverless functions only'`
-   - **Publish directory:** `.`
-   - **Functions directory:** `netlify/functions`
-5. Click "Deploy site"
-6. Note your site URL (e.g., `https://fantasyai-xyz.netlify.app`)
-
-### Step 2: Configure Yahoo API Credentials
+### Step 1: Configure Yahoo API Credentials
 
 You need Yahoo API credentials for OAuth authentication.
 
 #### Get Yahoo Credentials:
 1. Go to https://developer.yahoo.com/apps/
 2. Create a new app or use existing one
-3. Set **Redirect URI** to: `https://YOUR-FANTASYAI-SITE.netlify.app/.netlify/functions/ff-auth-callback`
+3. Set **Redirect URI** to: `https://bgroundrobin.com/.netlify/functions/ff-auth-callback`
 4. Copy your **Client ID** and **Client Secret**
 
 #### Add to Netlify:
-1. In Netlify dashboard → Site settings → Environment variables
+1. In Netlify dashboard → RRMODEL site → Site settings → Environment variables
 2. Add these variables:
    ```
    YAHOO_CLIENT_ID=your_client_id_here
    YAHOO_CLIENT_SECRET=your_client_secret_here
-   YAHOO_REDIRECT_URI=https://YOUR-FANTASYAI-SITE.netlify.app/.netlify/functions/ff-auth-callback
+   YAHOO_REDIRECT_URI=https://bgroundrobin.com/.netlify/functions/ff-auth-callback
    ```
 
-### Step 3: Optional - Add Odds API Key
+### Step 2: Optional - Add Odds API Key
 
 For enhanced player props and game context:
 
-1. In Netlify (FantasyAI) → Environment variables
-2. Add:
+1. In Netlify (RRMODEL) → Site settings → Environment variables
+2. Add your The Odds API key (get one at https://the-odds-api.com):
    ```
-   ODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b
+   ODDS_API_KEY=your_odds_api_key_here
    ```
+   **⚠️ Security Note:** Never commit actual API keys to the repository. Store them only in Netlify's environment variables.
 
-### Step 4: Update RRMODEL Configuration
+### Step 3: Deploy and Test
 
-1. Open `src/pages/FantasySitStart.jsx`
-2. Update line 5:
-   ```javascript
-   const FANTASY_API_BASE = 'https://YOUR-FANTASYAI-SITE.netlify.app/.netlify/functions';
-   ```
-3. Commit and push:
-   ```bash
-   git add src/pages/FantasySitStart.jsx
-   git commit -m "Update Fantasy API base URL"
-   git push origin main42
-   ```
-
-## 🧪 Testing
-
-### Test FantasyAI Functions Directly:
-
-1. **Check authentication endpoint:**
-   ```bash
-   curl https://YOUR-FANTASYAI-SITE.netlify.app/.netlify/functions/ff-auth-start
-   ```
-   Should redirect to Yahoo OAuth
-
-2. **Test with authenticated session:**
-   After logging in via the frontend, check:
-   ```bash
-   curl https://YOUR-FANTASYAI-SITE.netlify.app/.netlify/functions/ff-get-leagues
-   ```
-
-### Test RRMODEL Frontend:
-
-1. Visit https://bgroundrobin.com/fantasy-sitstart
-2. Click "Connect Yahoo Account"
-3. Authorize with Yahoo
-4. Select your league and week
-5. Click "Get Sit/Start Recommendations"
+1. The functions are already in the repo, so they'll deploy automatically with your next commit
+2. Visit https://bgroundrobin.com/fantasy-sitstart
+3. Click "Connect Yahoo Account"
+4. Authorize with Yahoo
+5. Select your league and week
+6. Click "Get Sit/Start Recommendations"
 
 ## 🏗️ Architecture
 
@@ -99,31 +60,39 @@ For enhanced player props and game context:
 User Browser
     ↓
 RRMODEL Frontend (bgroundrobin.com)
-    ↓ API calls
-FantasyAI Netlify Functions
+    ↓ Calls /.netlify/functions/ff-*
+RRMODEL Netlify Functions
     ↓
 Yahoo Fantasy API + Odds API
 ```
 
+**All-in-One Deployment:**
+- Frontend and backend both hosted on bgroundrobin.com
+- No separate FantasyAI deployment needed
+- Single Netlify site with integrated functions
+
 **Key Components:**
 
-### FantasyAI (Backend)
+### Netlify Functions (Backend)
 - `ff-auth-start.mjs` - Initiates Yahoo OAuth flow
-- `ff-auth-callback.mjs` - Handles OAuth callback, stores tokens in KV
+- `ff-auth-callback.mjs` - Handles OAuth callback, stores tokens in Netlify Blobs
 - `ff-get-leagues.mjs` - Fetches user's fantasy leagues
 - `ff-run.mjs` - Main analysis endpoint:
-  - Fetches roster data
-  - Gets betting lines and props
+  - Fetches roster data from Yahoo
+  - Gets betting lines and props from Odds API
   - Calculates Expected Fantasy Points (EFP)
   - Generates sit/start recommendations
   - Suggests FLEX optimizations
+- `ff-debug-leagues.mjs` - Debug endpoint for troubleshooting
+- `ff-weekly-roast.mjs` - AI-powered weekly league roasts (bonus feature)
 
-### RRMODEL (Frontend)
-- `FantasySitStart.jsx` - React component:
+### Frontend (React Component)
+- `src/pages/FantasySitStart.jsx`:
   - Handles authentication flow
   - League/week selection
-  - Displays recommendations with color-coded cards
+  - Displays recommendations with color-coded cards (green=START, red=SIT)
   - Shows FLEX swap suggestions
+  - Integrated into NFL dropdown menu
 
 ## 📊 Features
 
@@ -141,43 +110,38 @@ Yahoo Fantasy API + Odds API
 ### Scoring Methods
 - Expected Fantasy Points (EFP) calculation
 - Multi-TD bonus support
-- League-specific scoring rules
+- League-specific scoring rules (PPR, standard, etc.)
 - Matchup context (home/away, spread, total)
 
 ## 🔐 Security Notes
 
-1. **OAuth tokens** stored in Netlify KV (key-value store)
-2. **Auto-refresh** handles expired tokens
+1. **OAuth tokens** stored in Netlify Blobs (key-value store)
+2. **Auto-refresh** handles expired Yahoo tokens
 3. **Optional API key protection** (set `FF_API_KEY` env var to require x-api-key header)
 4. **CORS** configured for cross-origin requests
+5. **Secret scanning** - Never commit API keys or secrets to the repository
 
 ## 🐛 Troubleshooting
 
+### Build fails with "Secrets scanning detected secrets"
+- **Cause:** An actual API key was committed to the repository
+- **Fix:** Remove the key from all files, replace with placeholder like `your_api_key_here`
+- **Prevention:** Always use environment variables, never hardcode secrets
+
 ### "Not authenticated" error
-- Check Yahoo credentials in Netlify env vars
-- Verify redirect URI matches exactly
+- Check Yahoo credentials in Netlify env vars (YAHOO_CLIENT_ID, YAHOO_CLIENT_SECRET)
+- Verify redirect URI matches exactly: `https://bgroundrobin.com/.netlify/functions/ff-auth-callback`
 - Clear browser cookies and retry authentication
 
 ### "Failed to fetch recommendations"
-- Check FantasyAI site is deployed and functions are live
-- Verify FANTASY_API_BASE URL is correct in RRMODEL
-- Check browser console for CORS errors
+- Check Netlify function logs for errors
+- Verify Yahoo OAuth tokens are valid
+- Check browser console for CORS or network errors
 
 ### "No leagues found"
 - Make sure you've authorized the correct Yahoo account
-- Verify you have active fantasy football leagues
-- Check Netlify function logs for errors
-
-## 📝 Future Enhancements
-
-Potential additions:
-- [ ] Waiver wire recommendations
-- [ ] Trade analyzer
-- [ ] Season-long projections
-- [ ] Head-to-head matchup predictions
-- [ ] Player consistency scoring
-- [ ] Injury impact analysis
-- [ ] Weekly roast feature integration
+- Verify you have active fantasy football leagues for current season
+- Check Netlify function logs (`ff-get-leagues`) for API errors
 
 ## 🔗 Related Files
 
@@ -185,11 +149,19 @@ Potential additions:
 - `src/pages/FantasySitStart.jsx` - Frontend component
 - `src/App.jsx` - Menu and routing
 
-**FantasyAI:**
-- `netlify/functions/ff-run.mjs` - Main analysis endpoint
-- `netlify/functions/_lib/ff-scoring.mjs` - EFP calculations (457 lines)
-- `netlify/functions/_lib/ff-yahoo.mjs` - Yahoo API integration (494 lines)
-- `netlify/functions/_lib/ff-odds.mjs` - Odds API integration (428 lines)
-- `netlify/functions/_lib/ff-blobs.mjs` - KV storage for tokens (310 lines)
+**Netlify Functions:**
+- `netlify/functions/ff-run.mjs` - Main analysis endpoint (11,315 bytes)
+- `netlify/functions/ff-auth-start.mjs` - OAuth start (1,577 bytes)
+- `netlify/functions/ff-auth-callback.mjs` - OAuth callback (7,445 bytes)
+- `netlify/functions/ff-get-leagues.mjs` - Fetch user leagues (2,493 bytes)
+- `netlify/functions/ff-debug-leagues.mjs` - Debug endpoint (3,912 bytes)
+- `netlify/functions/ff-weekly-roast.mjs` - Bonus roast feature (25,030 bytes)
 
-Total: **2,382 lines** of core logic + UI components
+**Utilities (_lib/):**
+- `netlify/functions/_lib/ff-scoring.mjs` - EFP calculations (14,390 bytes)
+- `netlify/functions/_lib/ff-yahoo.mjs` - Yahoo API integration (17,094 bytes)
+- `netlify/functions/_lib/ff-odds.mjs` - Odds API integration (16,405 bytes)
+- `netlify/functions/_lib/ff-blobs.mjs` - Netlify Blobs storage for tokens (9,185 bytes)
+- `netlify/functions/_lib/ff-cookies.mjs` - Cookie utilities (6,099 bytes)
+
+**Total:** 2,382 lines of core logic + UI components

@@ -1,8 +1,8 @@
 // src/pages/FantasySitStart.jsx
 import React, { useState, useEffect } from 'react';
 
-// CONFIGURATION: Update this URL after deploying FantasyAI to Netlify
-const FANTASY_API_BASE = 'https://your-fantasyai-site.netlify.app/.netlify/functions';
+// Use local Netlify functions hosted on bgroundrobin.com
+const FANTASY_API_BASE = '/.netlify/functions';
 
 export default function FantasySitStart() {
   const [loading, setLoading] = useState(false);
@@ -153,13 +153,6 @@ export default function FantasySitStart() {
           >
             Connect Yahoo Account
           </button>
-        </div>
-
-        <div className="mt-8 p-4 bg-yellow-50 border border-yellow-300 rounded-lg">
-          <p className="text-sm text-gray-700">
-            <strong>Note:</strong> Before using this feature, make sure the FantasyAI service is deployed to Netlify 
-            and update the <code className="bg-gray-200 px-1 rounded">FANTASY_API_BASE</code> URL in this component.
-          </p>
         </div>
       </div>
     );
