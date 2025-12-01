@@ -21,11 +21,8 @@
  */
 
 import { spawn } from 'child_process';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { resolve } from 'path';
+import { cwd } from 'process';
 
 export const handler = async (event, context) => {
   // CORS headers
@@ -102,7 +99,8 @@ export const handler = async (event, context) => {
     }
 
     // Call Python prediction script
-    const scriptPath = join(__dirname, '..', '..', 'scripts', 'soccer', 'predict_live_bundesliga.py');
+    // In Netlify, working directory is the repo root
+    const scriptPath = resolve(cwd(), 'scripts', 'soccer', 'predict_live_bundesliga.py');
     const predictions = await runPythonScript(scriptPath, body);
 
     return {
@@ -118,6 +116,7 @@ export const handler = async (event, context) => {
       body: JSON.stringify({
         error: 'Prediction failed',
         message: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       }),
     };
   }

@@ -1,7 +1,7 @@
 # netlify.toml - NBA V2 Configuration
 
 [build]
-  command = "npm run build"
+  command = "pip install -r ml/requirements.txt && npm run build"
   functions = "netlify/functions"
   publish = "dist"
 
@@ -12,10 +12,11 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs", "node-fetch"]
-  included_files = ["public/**"]
+  included_files = ["public/**", "scripts/soccer/**", "data/bundesliga/**", "ml/requirements.txt"]
 
 [build.environment]
   NODE_VERSION = "20"
+  PYTHON_VERSION = "3.8"
   NETLIFY_USE_YARN = "false"
   NPM_FLAGS = "--legacy-peer-deps"
   BLOBS_STORE_NFL = "nfl-td"
