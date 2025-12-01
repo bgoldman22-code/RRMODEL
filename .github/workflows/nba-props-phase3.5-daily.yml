@@ -68,9 +68,9 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # Add all modified data files
-          git add data/nba/player-boxscores-2025-26.json
-          git add data/nba/player-history-2024-2026.json
+          # Add all modified data files (force-add to bypass .gitignore)
+          git add -f data/nba/player-boxscores-2025-26.json
+          git add -f data/nba/player-history-2024-2026.json
           git add public/data/nba/nba-props-v2-live.json
           
           # Only commit if there are changes

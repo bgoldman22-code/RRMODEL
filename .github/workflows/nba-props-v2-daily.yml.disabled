@@ -1,0 +1,95 @@
+name: NBA Props V2 Daily Update
+
+on:
+  # Run daily at 9:00 AM ET (14:00 UTC)
+  schedule:
+    - cron: '0 14 * * *'
+  
+  # Run when pushed to main42 (so it runs TODAY when you push this)
+  push:
+    branches:
+      - main42
+    paths:
+      - '.github/workflows/nba-props-v2-daily.yml'
+      - 'scripts/nba/fetch-player-boxscores-2025-26.mjs'
+      - 'scripts/nba/collect-opponent-defense.mjs'
+      - 'scripts/nba/generate-pra-predictions-v2.mjs'
+  
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+
+# Prevent concurrent runs
+concurrency:
+  group: nba-props-v2-update
+  cancel-in-progress: false
+
+jobs:
+  update-v2-predictions:
+    name: Update NBA Props V2 (PRA Model)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: 📦 Install dependencies (if needed)
+        run: |
+          if [ -f "package.json" ]; then
+            npm ci --only=production
+          fi
+      
+      - name: 📊 Update 2025-26 boxscores (last 3 days)
+        run: |
+          echo "Fetching recent boxscores..."
+          node scripts/nba/fetch-player-boxscores-2025-26.mjs --daily
+          echo "Boxscores updated ✓"
+      
+      - name: 🎯 Generate V2 predictions (Phase 3 PRA)
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          echo "Generating PRA predictions..."
+          node scripts/nba/generate-pra-predictions-v2.mjs
+          echo "Predictions generated ✓"
+      
+      - name: 📝 Check for changes
+        id: changes
+        run: |
+          git diff --quiet data/nba/ public/data/nba/ || echo "changed=true" >> $GITHUB_OUTPUT
+      
+      - name: 🔧 Configure Git
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: 💾 Commit changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git add data/nba/player-boxscores-2025-26.json
+          git add data/nba/opponent-defense-stats.json
+          git add public/data/nba/nba-props-v2-live.json
+          git commit -m "🤖 Auto-update NBA Props V2 - $(date -u +%Y-%m-%d)"
+      
+      - name: 🚀 Push changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git push
+      
+      - name: ✅ Success
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          echo "✅ NBA Props V2 successfully updated and pushed"
+          echo "📊 Updated: Boxscores, Opponent Defense, V2 Predictions"
+      
+      - name: ℹ️ No changes
+        if: steps.changes.outputs.changed != 'true'
+        run: |
+          echo "ℹ️ No changes detected - predictions are up to date"
