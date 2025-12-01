@@ -369,10 +369,14 @@ export default function SoccerBTTS() {
                                 Bet {pred.value_bet.selection}
                               </div>
                               <div className="text-xs text-gray-600">
-                                Stake: {pred.value_bet.kelly_fraction} of bankroll
+                                Stake: {typeof pred.value_bet.kelly_fraction === 'number' 
+                                  ? `${(pred.value_bet.kelly_fraction * 100).toFixed(2)}%` 
+                                  : pred.value_bet.kelly_fraction} of bankroll
                               </div>
                               <div className="text-xs text-green-600">
-                                Expected value: {pred.value_bet.expected_value}
+                                Expected value: {typeof pred.value_bet.expected_value === 'number'
+                                  ? `${(pred.value_bet.expected_value * 100).toFixed(1)}%`
+                                  : pred.value_bet.expected_value}
                               </div>
                             </>
                           )}
