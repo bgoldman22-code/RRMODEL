@@ -232,8 +232,8 @@ export function getInjurySummary(injuries) {
   return {
     count: adjustment.count,
     severity: adjustment.severity,
-    deltaOff: adjustment.deltaOff.toFixed(2),
-    deltaDef: adjustment.deltaDef.toFixed(2),
+    deltaOff: adjustment.deltaOff,  // Keep as NUMBER
+    deltaDef: adjustment.deltaDef,  // Keep as NUMBER
     impact: adjustment.count === 0 ? 'HEALTHY' : `${adjustment.severity} (${adjustment.count} injured)`,
     players: adjustment.details.map(d => `${d.player} (${d.status})`).join(', ')
   };
