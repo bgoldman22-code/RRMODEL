@@ -1314,24 +1314,25 @@ export default async (request, context) => {
           const betHome = modelSpreadVegasConvention < fairLine;
           const pickTeam = betHome ? home.team.abbreviation : away.team.abbreviation;
           
-          // Use PLACEMENT odds (best available price) for actual bet recommendation
-          const placementLine = gameVegasLines.spread.placement?.homeLine || fairLine;
-          const placementPrice = gameVegasLines.spread.placement?.homePrice || fairHomePrice;
+          // Get the line and price for the side we're betting
+          // homeLine is from home's perspective, so if betting home use it directly
+          // If betting away, we need the away line which is the opposite sign
+          const placementHomeLine = gameVegasLines.spread.placement?.homeLine || fairLine;
+          const placementHomePrice = gameVegasLines.spread.placement?.homePrice || fairHomePrice;
+          const placementAwayPrice = gameVegasLines.spread.placement?.awayPrice || fairAwayPrice;
           const placementBook = gameVegasLines.spread.placement?.book || gameVegasLines.spread.fair.book;
           
-          // Pick line is what we're actually betting
-          // If betting home and line is negative (home favored), we take that
-          // If betting home and line is positive (away favored), we take the home side (positive)
-          // If betting away, flip the sign
-          const pickLine = betHome ? placementLine : -placementLine;
-          const pickSign = pickLine >= 0 ? '+' : '';
+          // Format the pick: if betting home use homeLine, if betting away use opposite of homeLine
+          const displayLine = betHome ? placementHomeLine : -placementHomeLine;
+          const displayPrice = betHome ? placementHomePrice : placementAwayPrice;
+          const pickSign = displayLine >= 0 ? '+' : '';
           
           spreadOpp = {
             market: 'Spread',
-            pick: `${pickTeam} ${pickSign}${pickLine}`,
+            pick: `${pickTeam} ${pickSign}${displayLine}`,
             modelLine: spreadPred.toFixed(1),
             vegasLine: fairLine, // Show fair line for transparency
-            odds: placementPrice, // Use placement price
+            odds: displayPrice, // Use the correct side's price
             edge: spreadEdge.edgePoints,
             edgePercent: spreadEdge.edgePercent,
             kelly: spreadEdge.kellyFraction,

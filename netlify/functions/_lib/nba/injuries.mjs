@@ -29,6 +29,7 @@ function normalizeTeamAbbr(espnAbbr) {
 // Cache for injury data (resets on each serverless invocation)
 let injuryCache = null;
 let cacheTime = null;
+let fetchPromise = null; // Prevent parallel duplicate fetches
 const CACHE_TTL = 60000; // 60 seconds
 
 /**
@@ -38,6 +39,11 @@ export async function fetchInjuries() {
   // Return cached data if still fresh
   if (injuryCache && cacheTime && (Date.now() - cacheTime < CACHE_TTL)) {
     return injuryCache;
+  }
+  
+  // If a fetch is already in progress, wait for it instead of starting another
+  if (fetchPromise) {
+    return fetchPromise;
   }
   try {
     console.log('[Injuries] Fetching from ESPN...');
