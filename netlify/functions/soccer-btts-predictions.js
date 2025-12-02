@@ -1054,10 +1054,11 @@ function calculateProfessionalValueBet(finalProbability, odds, modelUncertainty,
   bestBet.unit_tier = unitInfo.tier;
   bestBet.unit_reasoning = unitInfo.reasoning;
   
-  // Final recommendation based on unit size instead of kelly fraction
-  if (bestBet.recommended_units >= 1.0) {
+  // Final recommendation based on unit size - RELAXED thresholds for soccer
+  // Soccer BTTS has good historical performance so we want to show more picks
+  if (bestBet.recommended_units >= 0.5) {
     bestBet.recommendation = 'BET';
-  } else if (bestBet.recommended_units >= 0.5) {
+  } else if (bestBet.recommended_units >= 0.25) {
     bestBet.recommendation = 'CONSIDER';
   } else {
     bestBet.recommendation = 'PASS';
@@ -1099,12 +1100,13 @@ function enforceOddsQualityGates(oddsQuality) {
  */
 function calculateUncertaintyHaircut(modelUncertainty) {
   // Higher uncertainty = lower stake
-  // σ < 0.10 = full stake, σ > 0.25 = 50% haircut
+  // RELAXED THRESHOLDS: σ < 0.10 = full stake, σ > 0.35 = 50% haircut
+  // This allows confidence ≥ 65% to get reasonable stakes
   if (modelUncertainty < 0.10) return 1.0;
-  if (modelUncertainty > 0.25) return 0.5;
+  if (modelUncertainty > 0.35) return 0.5;
   
-  // Linear scaling between 10-25% uncertainty
-  return 1.0 - ((modelUncertainty - 0.10) / 0.15) * 0.5;
+  // Linear scaling between 10-35% uncertainty
+  return 1.0 - ((modelUncertainty - 0.10) / 0.25) * 0.5;
 }
 
 /**

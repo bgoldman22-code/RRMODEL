@@ -64,12 +64,28 @@ export const handler = async (event, context) => {
     };
   }
 
+  // TEMPORARY: Python not available in Netlify functions runtime
+  // Return friendly error with explanation
+  return {
+    statusCode: 503,
+    headers,
+    body: JSON.stringify({
+      error: 'Service Temporarily Unavailable',
+      message: 'Bundesliga predictions require Python runtime which is not currently available in Netlify serverless functions.',
+      details: 'The model will be ported to JavaScript or deployed with Python support soon.',
+      fallback: 'Please use Premier League predictions in the meantime.'
+    })
+  };
+
+  // OLD CODE - Python execution (disabled until runtime is available)
+  /*
   // Handle GET with auto-fetch
   if (event.httpMethod === 'GET') {
     // GET requests trigger auto-fetch mode
     event.body = JSON.stringify({ auto_fetch: true });
     event.httpMethod = 'POST'; // Process as POST internally
   }
+  */
 
   // Only POST allowed (or GET converted to POST above)
   if (event.httpMethod !== 'POST') {
