@@ -114,14 +114,113 @@ function getTeamAbbreviation(fullName) {
  * 3. If still pending after retries, fall back to direct generator
  */
 export async function loadPredictionsWithPolling({ season, week, games, onProgress }) {
-  // TEMPORARY: Skip cache due to Blob store issues, go straight to generator
-  console.warn('[CACHE_DISABLED] Skipping cache, using direct generator');
+  // Generate predictions WITHOUT odds (faster, avoids timeout)
+  console.log('[PREDICTIONS] Generating predictions without odds to avoid timeout');
   onProgress?.({ 
-    stage: 'fallback', 
-    message: 'Generating predictions (15-20s)…' 
+    stage: 'generating', 
+    message: 'Generating predictions (10-15s)…' 
   });
   
-  return await fetchPredictionsDirect({ season, week, games });
+  const predictions = await fetchPredictionsDirect({ season, week, games });
+  
+  // Load odds separately in parallel (fast, 2-3s)
+  console.log('[ODDS] Loading odds separately');
+  onProgress?.({ 
+    stage: 'odds', 
+    message: 'Loading live odds…' 
+  });
+  
+  try {
+    const oddsRes = await fetch('/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals&oddsFormat=american');
+    if (oddsRes.ok) {
+      const oddsData = await oddsRes.json();
+      console.log(`[ODDS] Loaded odds for ${oddsData.length || 0} games`);
+      
+      // Merge odds into predictions
+      if (Array.isArray(oddsData) && predictions.rows) {
+        predictions.rows = predictions.rows.map(pred => {
+          const gameOdds = oddsData.find(o => 
+            o.home_team === pred.home_team && o.away_team === pred.away_team
+          );
+          
+          if (gameOdds) {
+            // Extract odds from first bookmaker
+            const book = gameOdds.bookmakers?.[0];
+            if (book) {
+              const markets = {};
+              book.markets?.forEach(m => {
+                markets[m.key] = m.outcomes;
+              });
+              
+              // Build odds structure
+              const odds = {};
+              
+              // Moneyline
+              if (markets.h2h) {
+                const homeML = markets.h2h.find(o => o.name === pred.home_team);
+                const awayML = markets.h2h.find(o => o.name === pred.away_team);
+                odds.moneyline = {
+                  home: homeML?.price,
+                  away: awayML?.price
+                };
+                odds.display = {
+                  h2h: {
+                    home: homeML?.price,
+                    away: awayML?.price
+                  }
+                };
+              }
+              
+              // Spreads
+              if (markets.spreads) {
+                const homeSpread = markets.spreads.find(o => o.name === pred.home_team);
+                const awaySpread = markets.spreads.find(o => o.name === pred.away_team);
+                odds.spread = {
+                  line: homeSpread?.point,
+                  home_line: homeSpread?.point,
+                  away_line: awaySpread?.point
+                };
+                if (!odds.display) odds.display = {};
+                odds.display.spread = {
+                  home_price: homeSpread?.price,
+                  away_price: awaySpread?.price,
+                  home_line: homeSpread?.point,
+                  away_line: awaySpread?.point
+                };
+              }
+              
+              // Totals
+              if (markets.totals) {
+                const over = markets.totals.find(o => o.name === 'Over');
+                const under = markets.totals.find(o => o.name === 'Under');
+                odds.total = {
+                  line: over?.point
+                };
+                if (!odds.display) odds.display = {};
+                odds.display.total = {
+                  over: { line: over?.point, price: over?.price },
+                  under: { line: under?.point, price: under?.price }
+                };
+              }
+              
+              odds.display_book = book.title;
+              pred.odds = odds;
+            }
+          }
+          
+          return pred;
+        });
+        
+        console.log(`[ODDS] Merged odds into ${predictions.rows.length} predictions`);
+      }
+    }
+  } catch (oddsError) {
+    console.warn('[ODDS] Failed to load odds:', oddsError.message);
+    // Continue without odds - predictions still work
+  }
+  
+  onProgress?.({ stage: 'ready', message: 'Ready' });
+  return predictions;
   
   /* CACHE POLLING CODE - RE-ENABLE WHEN BLOBS FIXED
   let delay = 1500; // ms

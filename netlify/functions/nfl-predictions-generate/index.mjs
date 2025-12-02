@@ -2906,13 +2906,12 @@ async function generateAdvancedPredictions(games, season, weekOverride = null) {
   const league = advancedMetrics?.league || { means: {}, stds: {} };
   
   // ========================================
-  // STAGE 4: LOAD ODDS (WITH TIME FILTER)
+  // STAGE 4: SKIP ODDS LOADING (loaded separately by frontend for speed)
   // ========================================
-  const oddsStart = Date.now();
-  const allOdds = await loadLiveOddsForGames(games);
-  console.log(`⏱️ Odds loaded in ${Date.now() - oddsStart}ms`);
+  console.log('⚡ PERFORMANCE: Skipping odds loading (frontend loads separately)');
+  const allOdds = []; // Empty - frontend will fetch odds via nfl-odds-get
 
-  console.log(`v13 logic + v8 odds: Processing ${games.length} games with working odds integration`);
+  console.log(`v13 logic: Processing ${games.length} games WITHOUT odds integration (faster)`);
 
   // ========================================
   // STAGE 5: PROCESS GAMES (WITH CONCURRENCY LIMIT)
