@@ -1,0 +1,141 @@
+name: Bundesliga BTTS Cache Update
+
+on:
+  # Run twice daily at 6:00 AM and 6:00 PM ET (10:00 and 22:00 UTC)
+  schedule:
+    - cron: '0 10 * * *'  # 6:00 AM ET
+    - cron: '0 22 * * *'  # 6:00 PM ET
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+# Prevent concurrent runs
+concurrency:
+  group: bundesliga-btts-cache
+  cancel-in-progress: false
+
+jobs:
+  generate-cache:
+    name: Generate Bundesliga BTTS Predictions Cache
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: 📦 Install Python dependencies
+        run: |
+          if [ -f ml/requirements.txt ]; then
+            pip install -r ml/requirements.txt
+          elif [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "Installing core dependencies..."
+            pip install pandas numpy scipy xgboost requests
+          fi
+      
+      - name: 🔮 Generate Bundesliga BTTS cache
+        id: generate
+        run: |
+          echo "Starting Bundesliga BTTS cache generation..."
+          python3 scripts/soccer/generate_bundesliga_btts_cache.py
+          
+          # Check if cache file changed
+          if git diff --quiet data/bundesliga/cache/bundesliga_btts_latest.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No cache changes detected"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Cache changes detected"
+          fi
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+      
+      - name: 📊 Generate cache summary
+        if: steps.generate.outputs.changed == 'true'
+        id: summary
+        run: |
+          # Extract stats from cache JSON
+          TOTAL_PREDICTIONS=$(jq '.total_predictions' data/bundesliga/cache/bundesliga_btts_latest.json)
+          RECOMMENDED_BETS=$(jq '.recommended_bets' data/bundesliga/cache/bundesliga_btts_latest.json)
+          VALIDATION_ROI=$(jq '.validation_roi' data/bundesliga/cache/bundesliga_btts_latest.json)
+          HIT_RATE=$(jq '.hit_rate' data/bundesliga/cache/bundesliga_btts_latest.json)
+          GENERATED_AT=$(jq -r '.generated_at' data/bundesliga/cache/bundesliga_btts_latest.json)
+          
+          echo "total_predictions=${TOTAL_PREDICTIONS}" >> $GITHUB_OUTPUT
+          echo "recommended_bets=${RECOMMENDED_BETS}" >> $GITHUB_OUTPUT
+          echo "validation_roi=${VALIDATION_ROI}" >> $GITHUB_OUTPUT
+          echo "hit_rate=${HIT_RATE}" >> $GITHUB_OUTPUT
+          echo "generated_at=${GENERATED_AT}" >> $GITHUB_OUTPUT
+          
+          # Create summary
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## ⚽ Bundesliga BTTS Cache Update
+          
+          **Generated**: ${GENERATED_AT}
+          **Model**: Ensemble v1.0 (XGBoost 77.4% + Dixon-Coles 22.6%)
+          
+          ### Predictions Summary
+          - 🎯 Total Predictions: ${TOTAL_PREDICTIONS}
+          - 💰 Recommended Bets: ${RECOMMENDED_BETS}
+          - 📈 Validation ROI: $(echo "scale=1; ${VALIDATION_ROI} * 100" | bc)%
+          - ✅ Hit Rate: $(echo "scale=1; ${HIT_RATE} * 100" | bc)%
+          
+          ### Next Steps
+          - Cache will be committed with [skip ci] tag
+          - Netlify will serve these pre-generated predictions
+          - No Python execution required at runtime
+          EOF
+      
+      - name: 🔧 Configure Git
+        if: steps.generate.outputs.changed == 'true'
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: 💾 Commit cache
+        if: steps.generate.outputs.changed == 'true'
+        run: |
+          git add data/bundesliga/cache/bundesliga_btts_latest.json
+          
+          COMMIT_MSG="🤖 Update Bundesliga BTTS cache [skip ci]"
+          COMMIT_MSG="${COMMIT_MSG}\n\n"
+          COMMIT_MSG="${COMMIT_MSG}Generated: ${{ steps.summary.outputs.generated_at }}\n"
+          COMMIT_MSG="${COMMIT_MSG}Predictions: ${{ steps.summary.outputs.total_predictions }}\n"
+          COMMIT_MSG="${COMMIT_MSG}Recommended bets: ${{ steps.summary.outputs.recommended_bets }}"
+          
+          git commit -m "${COMMIT_MSG}"
+      
+      - name: 🚀 Push cache
+        if: steps.generate.outputs.changed == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+      
+      - name: ✅ Success notification
+        if: steps.generate.outputs.changed == 'true'
+        run: |
+          echo "✅ Bundesliga BTTS cache successfully updated and pushed"
+          echo "🎯 ${{ steps.summary.outputs.total_predictions }} predictions, ${{ steps.summary.outputs.recommended_bets }} recommended bets"
+      
+      - name: ⏭️ No changes notification
+        if: steps.generate.outputs.changed == 'false'
+        run: |
+          echo "ℹ️ No cache changes - predictions are still fresh"
+          echo "This is normal if no new fixtures or odds changes"
+      
+      - name: ❌ Failure notification
+        if: failure()
+        run: |
+          echo "❌ Bundesliga BTTS cache generation failed"
+          echo "Check logs above for error details"
+          echo "Netlify will continue serving the last successful cache"

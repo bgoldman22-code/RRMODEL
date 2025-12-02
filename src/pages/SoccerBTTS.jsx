@@ -93,7 +93,9 @@ async function fetchBTTSPredictions(league = 'premier-league', limit = 20) {
           validation_roi: response.validation_roi,
           hit_rate: response.hit_rate,
           total_fixtures: response.total_predictions,
-          high_confidence: response.recommended_bets
+          high_confidence: response.recommended_bets,
+          generated_at: response.generated_at,
+          cache_age_hours: response.cache_age_hours
         },
         league
       };
@@ -234,6 +236,20 @@ export default function SoccerBTTS() {
                   <span className="text-green-700">77.4% XGBoost + 22.6% Dixon-Coles</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cache Info for Bundesliga */}
+      {selectedLeague === 'bundesliga' && metadata.generated_at && (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center gap-2 text-sm text-blue-800">
+            <span className="text-lg">ℹ️</span>
+            <div>
+              <strong>Predictions updated twice daily via CI.</strong>
+              {' '}Last update: {new Date(metadata.generated_at).toLocaleString()}{' '}
+              {metadata.cache_age_hours && `(${metadata.cache_age_hours}h ago)`}
             </div>
           </div>
         </div>

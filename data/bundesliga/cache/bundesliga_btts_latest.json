@@ -1,0 +1,348 @@
+{
+  "model": "Bundesliga BTTS Ensemble v1.0",
+  "generated_at": "2025-12-02T15:25:18.407018+00:00",
+  "validation_roi": 0.212,
+  "hit_rate": 0.806,
+  "total_predictions": 9,
+  "recommended_bets": 0,
+  "predictions": [
+    {
+      "home_team": "FSV Mainz 05",
+      "away_team": "Borussia Monchengladbach",
+      "commence_time": "2025-12-05T19:30:00+00:00",
+      "model_probability": 0.37834744156724115,
+      "dixon_coles_prob": 0.44106485965927567,
+      "xgboost_prob": 0.36,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 1.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.5,
+        "home_form_btts_rate": 0.5,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.5,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.57,
+        "btts_no": 2.3,
+        "bookmaker": "williamhill"
+      },
+      "market_probability": 0.5943152454780362,
+      "edge": -0.215967803910795,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-21.6%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "1. FC Heidenheim",
+      "away_team": "SC Freiburg",
+      "commence_time": "2025-12-06T14:30:00+00:00",
+      "model_probability": 0.37834744156724115,
+      "dixon_coles_prob": 0.44106485965927567,
+      "xgboost_prob": 0.36,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 1.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.5,
+        "home_form_btts_rate": 0.5,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.5,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.73,
+        "btts_no": 2.05,
+        "bookmaker": "williamhill"
+      },
+      "market_probability": 0.5423280423280423,
+      "edge": -0.16398060076080118,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-16.4%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "1. FC Köln",
+      "away_team": "FC St. Pauli",
+      "commence_time": "2025-12-06T14:30:00+00:00",
+      "model_probability": 0.37834744156724115,
+      "dixon_coles_prob": 0.44106485965927567,
+      "xgboost_prob": 0.36,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 1.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.5,
+        "home_form_btts_rate": 0.5,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.5,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.65,
+        "btts_no": 2.2,
+        "bookmaker": "williamhill"
+      },
+      "market_probability": 0.5714285714285715,
+      "edge": -0.19308112986133036,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-19.3%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "Augsburg",
+      "away_team": "Bayer Leverkusen",
+      "commence_time": "2025-12-06T14:30:00+00:00",
+      "model_probability": 0.37834744156724115,
+      "dixon_coles_prob": 0.44106485965927567,
+      "xgboost_prob": 0.36,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 1.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.5,
+        "home_form_btts_rate": 0.5,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.5,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.55,
+        "btts_no": 2.38,
+        "bookmaker": "williamhill"
+      },
+      "market_probability": 0.6055979643765903,
+      "edge": -0.22725052280934915,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-22.7%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "VfB Stuttgart",
+      "away_team": "Bayern Munich",
+      "commence_time": "2025-12-06T14:30:00+00:00",
+      "model_probability": 0.37834744156724115,
+      "dixon_coles_prob": 0.44106485965927567,
+      "xgboost_prob": 0.36,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 1.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.5,
+        "home_form_btts_rate": 0.5,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.5,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.4,
+        "btts_no": 2.8,
+        "bookmaker": "williamhill"
+      },
+      "market_probability": 0.6666666666666667,
+      "edge": -0.2883192250994256,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-28.8%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "VfL Wolfsburg",
+      "away_team": "Union Berlin",
+      "commence_time": "2025-12-06T14:30:00+00:00",
+      "model_probability": 0.37834744156724115,
+      "dixon_coles_prob": 0.44106485965927567,
+      "xgboost_prob": 0.36,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 1.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.5,
+        "home_form_btts_rate": 0.5,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.5,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.67,
+        "btts_no": 2.1,
+        "bookmaker": "williamhill"
+      },
+      "market_probability": 0.557029177718833,
+      "edge": -0.17868173615159183,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-17.9%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "RB Leipzig",
+      "away_team": "Eintracht Frankfurt",
+      "commence_time": "2025-12-06T17:30:00+00:00",
+      "model_probability": 0.37834744156724115,
+      "dixon_coles_prob": 0.44106485965927567,
+      "xgboost_prob": 0.36,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 1.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.5,
+        "home_form_btts_rate": 0.5,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.5,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.4,
+        "btts_no": 2.8,
+        "bookmaker": "williamhill"
+      },
+      "market_probability": 0.6666666666666667,
+      "edge": -0.2883192250994256,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-28.8%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "Hamburger SV",
+      "away_team": "Werder Bremen",
+      "commence_time": "2025-12-07T14:30:00+00:00",
+      "model_probability": 0.37834744156724115,
+      "dixon_coles_prob": 0.44106485965927567,
+      "xgboost_prob": 0.36,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 1.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.5,
+        "home_form_btts_rate": 0.5,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.5,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.5,
+        "btts_no": 2.45,
+        "bookmaker": "williamhill"
+      },
+      "market_probability": 0.6202531645569621,
+      "edge": -0.24190572298972096,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-24.2%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "Borussia Dortmund",
+      "away_team": "TSG Hoffenheim",
+      "commence_time": "2025-12-07T16:30:00+00:00",
+      "model_probability": 0.37834744156724115,
+      "dixon_coles_prob": 0.44106485965927567,
+      "xgboost_prob": 0.36,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 1.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.5,
+        "home_form_btts_rate": 0.5,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.5,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.5,
+        "btts_no": 2.45,
+        "bookmaker": "williamhill"
+      },
+      "market_probability": 0.6202531645569621,
+      "edge": -0.24190572298972096,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-24.2%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    }
+  ],
+  "bets": [],
+  "league": "Bundesliga",
+  "source": "Bundesliga BTTS Ensemble v1.0",
+  "cache_version": "1.0",
+  "note": "Bundesliga BTTS predictions are pre-generated by CI. Odds may be slightly stale but predictions are fresh."
+}
