@@ -1210,13 +1210,14 @@ export default function NFLPredictions() {
                 
                 // ELITE PRO: Calculate TRUE devigged edges (replace vigged backend calculations)
                 let enhancedML = ml || {};
-                if (ml && odds.moneyline?.home_price && odds.moneyline?.away_price) {
+                // Use odds.moneyline.home/away (not home_price/away_price)
+                if (ml && odds.moneyline?.home && odds.moneyline?.away) {
                   // Get model probabilities for both sides
                   const modelProbHome = ml.pick === r.home_team ? ((ml.confidence || 0) / 100) : (1 - (ml.confidence || 0) / 100);
                   const modelProbAway = 1 - modelProbHome;
                   
                   // Calculate proper devigged edge with both sides
-                  const derigInfo = calculateDeriggedMLEdge(odds.moneyline.home_price, odds.moneyline.away_price, modelProbHome, modelProbAway);
+                  const derigInfo = calculateDeriggedMLEdge(odds.moneyline.home, odds.moneyline.away, modelProbHome, modelProbAway);
                   
                   if (derigInfo) {
                     // Determine which side we're betting and get the correct edge
@@ -1227,7 +1228,7 @@ export default function NFLPredictions() {
                     const trueEdge = isHomeBet ? derigInfo.edgeHome : derigInfo.edgeAway;
                     
                     // Calculate Kelly unit sizing for ML bet
-                    const mlOdds = isHomeBet ? odds.moneyline.home_price : odds.moneyline.away_price;
+                    const mlOdds = isHomeBet ? odds.moneyline.home : odds.moneyline.away;
                     const mlDecimalOdds = mlOdds ? americanToDecimal(mlOdds) : 2.0;
                     const kellyUnitsML = kellyUnits(modelProb, mlDecimalOdds); // Use model prob for Kelly
                     
@@ -1252,11 +1253,12 @@ export default function NFLPredictions() {
                 
                 // ELITE PRO: Calculate devigged spread edges when we have both sides
                 let enhancedSpread = spread || {};
-                if (spread && odds.spread?.home_price && odds.spread?.away_price) {
+                // Use odds.display.spread.home_price/away_price (not odds.spread.home_price)
+                if (spread && odds.display?.spread?.home_price && odds.display?.spread?.away_price) {
                   try {
                     // Convert spread odds to probabilities and devig
-                    const homeSpreadDecimal = americanToDecimal(odds.spread.home_price);
-                    const awaySpreadDecimal = americanToDecimal(odds.spread.away_price);
+                    const homeSpreadDecimal = americanToDecimal(odds.display.spread.home_price);
+                    const awaySpreadDecimal = americanToDecimal(odds.display.spread.away_price);
                     const homeSpreadImplied = decimalToImpliedProb(homeSpreadDecimal);
                     const awaySpreadImplied = decimalToImpliedProb(awaySpreadDecimal);
                     
@@ -1268,7 +1270,7 @@ export default function NFLPredictions() {
                     
                     if (Math.abs(deriggedSpreadEdge) > 0.02) { // 2% edge threshold for spreads
                       // Calculate Kelly unit sizing for spread bet
-                      const spreadOdds = spread.pick === r.home_team ? odds.spread.home_price : odds.spread.away_price;
+                      const spreadOdds = spread.pick === r.home_team ? odds.display.spread.home_price : odds.display.spread.away_price;
                       const spreadDecimalOdds = spreadOdds ? americanToDecimal(spreadOdds) : 1.91; // Default to -110
                       const modelProbSpread = (spread.confidence || 0) / 100;
                       const kellyUnitsSpread = kellyUnits(modelProbSpread, spreadDecimalOdds);
