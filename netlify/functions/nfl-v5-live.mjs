@@ -250,7 +250,69 @@ async function generateV5Predictions({ season, week }) {
     }
     
     console.log(`Found ${weekGames.length} games for Week ${week}`);
-    console.log(`Found ${weekGames.length} games for Week ${week}`);
+    
+    // 3.5. Fetch real-time odds from The Odds API (replaces stale NFLverse lines)
+    let liveOddsMap = {};
+    try {
+      console.log('Fetching live odds from nfl-odds-get...');
+      const oddsResponse = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals&oddsFormat=american');
+      
+      if (oddsResponse.ok) {
+        const oddsData = await oddsResponse.json();
+        console.log(`Loaded live odds for ${oddsData.length || 0} games`);
+        
+        // Map odds by team matchup (home_team + away_team)
+        if (Array.isArray(oddsData)) {
+          oddsData.forEach(game => {
+            const key = `${game.away_team}_${game.home_team}`;
+            liveOddsMap[key] = game;
+          });
+        }
+      } else {
+        console.warn(`Live odds fetch failed: ${oddsResponse.status}, using NFLverse lines as fallback`);
+      }
+    } catch (err) {
+      console.warn('Live odds fetch error:', err.message, '- using NFLverse lines as fallback');
+    }
+    
+    // Apply live odds to games (if available)
+    weekGames.forEach(game => {
+      const oddsKey = `${game.away_team}_${game.home_team}`;
+      const liveOdds = liveOddsMap[oddsKey];
+      
+      if (liveOdds && liveOdds.bookmakers && liveOdds.bookmakers.length > 0) {
+        const book = liveOdds.bookmakers[0]; // Use primary bookmaker
+        const markets = {};
+        
+        book.markets?.forEach(m => {
+          markets[m.key] = m.outcomes;
+        });
+        
+        // Extract spread line (away perspective)
+        if (markets.spreads) {
+          const awaySpread = markets.spreads.find(o => o.name === game.away_team);
+          if (awaySpread) {
+            game.spread_line = awaySpread.point;
+            game.spread_line_source = 'live_odds';
+          }
+        }
+        
+        // Extract total line
+        if (markets.totals) {
+          const overLine = markets.totals.find(o => o.name === 'Over');
+          if (overLine) {
+            game.total_line = overLine.point;
+            game.total_line_source = 'live_odds';
+          }
+        }
+        
+        // Store full odds for later use
+        game.live_odds = liveOdds;
+      }
+    });
+    
+    const liveOddsCount = weekGames.filter(g => g.spread_line_source === 'live_odds').length;
+    console.log(`Applied live odds to ${liveOddsCount}/${weekGames.length} games`);
     
     // 4. Compute rolling metrics for each team (16-game window)
     const teamMetrics = {};
