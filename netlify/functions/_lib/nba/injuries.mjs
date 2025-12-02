@@ -11,6 +11,22 @@ const ESPN_INJURIES = 'https://site.api.espn.com/apis/site/v2/sports/basketball/
 const NBA_OFFICIAL = 'https://official.nba.com/nba-injury-report-2024-25-season/';
 
 /**
+ * Normalize ESPN abbreviations to NBA Stats API abbreviations
+ */
+function normalizeTeamAbbr(espnAbbr) {
+  const mapping = {
+    'GS': 'GSW',      // Golden State Warriors
+    'NO': 'NOP',      // New Orleans Pelicans
+    'NY': 'NYK',      // New York Knicks
+    'SA': 'SAS',      // San Antonio Spurs
+    'UTAH': 'UTA',    // Utah Jazz
+    'WSH': 'WAS'      // Washington Wizards (sometimes)
+  };
+  
+  return mapping[espnAbbr] || espnAbbr;
+}
+
+/**
  * Fetch current injuries from ESPN
  */
 export async function fetchInjuries() {
@@ -29,10 +45,13 @@ export async function fetchInjuries() {
         : null;
       
       for (const injury of team.injuries || []) {
+        const rawAbbr = injury.athlete?.team?.abbreviation || teamAbbr;
+        const normalizedAbbr = normalizeTeamAbbr(rawAbbr);
+        
         injuries.push({
           playerId: injury.athlete?.id,
           playerName: injury.athlete?.displayName,
-          team: injury.athlete?.team?.abbreviation || teamAbbr,
+          team: normalizedAbbr,
           teamId: injury.athlete?.team?.id,
           position: injury.athlete?.position?.abbreviation,
           status: injury.status, // 'Out', 'Questionable', 'Doubtful', 'Day-To-Day'
