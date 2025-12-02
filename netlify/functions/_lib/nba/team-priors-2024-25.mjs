@@ -33,7 +33,7 @@ export const TEAM_PRIORS_2024_25 = {
   PHX: { offRtg: 116.0, defRtg: 113.4, netRtg: 2.6, pace: 99.3, efg: 0.576, ts: 0.596, tovPct: 0.120, orbPct: 0.223, ftRate: 0.248 },
   POR: { offRtg: 108.6, defRtg: 117.8, netRtg: -9.2, pace: 98.9, efg: 0.532, ts: 0.562, tovPct: 0.136, orbPct: 0.246, ftRate: 0.293 },
   SAC: { offRtg: 115.9, defRtg: 117.1, netRtg: -1.2, pace: 100.4, efg: 0.569, ts: 0.590, tovPct: 0.127, orbPct: 0.217, ftRate: 0.247 },
-  SA: { offRtg: 109.5, defRtg: 116.3, netRtg: -6.8, pace: 99.9, efg: 0.545, ts: 0.572, tovPct: 0.123, orbPct: 0.265, ftRate: 0.278 },
+  SAS: { offRtg: 109.5, defRtg: 116.3, netRtg: -6.8, pace: 99.9, efg: 0.545, ts: 0.572, tovPct: 0.123, orbPct: 0.265, ftRate: 0.278 },
   TOR: { offRtg: 111.5, defRtg: 116.5, netRtg: -5.0, pace: 98.1, efg: 0.546, ts: 0.574, tovPct: 0.128, orbPct: 0.241, ftRate: 0.260 },
   UTAH: { offRtg: 115.3, defRtg: 122.6, netRtg: -7.3, pace: 99.1, efg: 0.565, ts: 0.590, tovPct: 0.131, orbPct: 0.257, ftRate: 0.264 },
   WAS: { offRtg: 112.3, defRtg: 121.5, netRtg: -9.2, pace: 99.4, efg: 0.552, ts: 0.580, tovPct: 0.126, orbPct: 0.231, ftRate: 0.284 }
