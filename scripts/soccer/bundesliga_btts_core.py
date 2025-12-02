@@ -162,8 +162,14 @@ def normalize_team_name(name: str) -> str:
     import re
 
     name = str(name).lower()
+    
+    # Remove timestamp prefixes like "20.30  " or "15.30  " at the start
     name = re.sub(r"^\d+\.\d+\s+", "", name)
+    
+    # Remove record like "(12-5)" 
     name = re.sub(r"\(\d+-\d+\)\s*", "", name)
+    
+    # Remove common German football prefixes/suffixes
     for word in [
         "fc",
         "sc",
@@ -179,9 +185,12 @@ def normalize_team_name(name: str) -> str:
         "05",
         "1899",
     ]:
-        name = re.sub(r"\b" + word + r"\b", "", name)
+        name = re.sub(r"\b" + word + r"\b", "", name, flags=re.IGNORECASE)
+    
+    # Clean up extra spaces
     name = re.sub(r"\s+", " ", name).strip()
 
+    # Normalize common team names to canonical forms
     mappings = {
         "bayern münchen": "bayern",
         "bayern munich": "bayern",
@@ -193,7 +202,9 @@ def normalize_team_name(name: str) -> str:
         "borussia dortmund": "dortmund",
         "dortmund": "dortmund",
         "borussia mönchengladbach": "monchengladbach",
+        "mönchengladbach": "monchengladbach",
         "monchengladbach": "monchengladbach",
+        "gladbach": "monchengladbach",
         "rb leipzig": "leipzig",
         "leipzig": "leipzig",
         "bayer leverkusen": "leverkusen",
@@ -201,23 +212,33 @@ def normalize_team_name(name: str) -> str:
         "hoffenheim": "hoffenheim",
         "mainz": "mainz",
         "köln": "köln",
+        "koln": "köln",
+        "cologne": "köln",
         "wolfsburg": "wolfsburg",
         "stuttgart": "stuttgart",
         "freiburg": "freiburg",
         "schalke": "schalke",
         "hertha": "hertha",
+        "hertha bsc": "hertha",
         "union berlin": "union",
         "union": "union",
         "augsburg": "augsburg",
         "bielefeld": "bielefeld",
+        "arminia bielefeld": "bielefeld",
         "bochum": "bochum",
         "heidenheim": "heidenheim",
         "darmstadt": "darmstadt",
+        "st. pauli": "pauli",
+        "st pauli": "pauli",
+        "pauli": "pauli",
+        "hamburger sv": "hamburg",
+        "hamburg": "hamburg",
     }
 
     if name in mappings:
         return mappings[name]
 
+    # If no mapping found, return the longest word (likely the city name)
     words = [w for w in name.split() if len(w) > 2]
     if words:
         words.sort(key=len, reverse=True)
@@ -252,6 +273,14 @@ def calculate_match_features(home_team, away_team, historical_data):
 
     current_season = historical_data["season"].max()
     recent_data = historical_data[historical_data["season"] == current_season].copy()
+    
+    # Normalize team names in the historical data to match fixture team names
+    recent_data["home"] = recent_data["home"].apply(normalize_team_name)
+    recent_data["away"] = recent_data["away"].apply(normalize_team_name)
+    
+    # Also normalize the input team names for matching
+    home_team_normalized = normalize_team_name(home_team)
+    away_team_normalized = normalize_team_name(away_team)
 
     def get_team_recent_matches(team, n=5):
         home_matches = recent_data[recent_data["home"] == team].copy()
@@ -306,22 +335,22 @@ def calculate_match_features(home_team, away_team, historical_data):
             "avg_goals_against": total_ga / total_games if total_games else 1.5,
         }
 
-    home_recent = get_team_recent_matches(home_team, 5)
+    home_recent = get_team_recent_matches(home_team_normalized, 5)
     features["home_form_games_played"] = len(home_recent)
     features["home_form_goals_scored"] = home_recent["goals_for"].sum() if len(home_recent) else 0
     features["home_form_goals_conceded"] = home_recent["goals_against"].sum() if len(home_recent) else 0
     features["home_form_btts_rate"] = home_recent["btts"].mean() if len(home_recent) else 0.5
     features["home_form_avg_total_goals"] = home_recent["total_goals"].mean() if len(home_recent) else 2.5
 
-    away_recent = get_team_recent_matches(away_team, 5)
+    away_recent = get_team_recent_matches(away_team_normalized, 5)
     features["away_form_games_played"] = len(away_recent)
     features["away_form_goals_scored"] = away_recent["goals_for"].sum() if len(away_recent) else 0
     features["away_form_goals_conceded"] = away_recent["goals_against"].sum() if len(away_recent) else 0
     features["away_form_btts_rate"] = away_recent["btts"].mean() if len(away_recent) else 0.5
     features["away_form_avg_total_goals"] = away_recent["total_goals"].mean() if len(away_recent) else 2.5
 
-    home_season = get_team_season_stats(home_team)
-    away_season = get_team_season_stats(away_team)
+    home_season = get_team_season_stats(home_team_normalized)
+    away_season = get_team_season_stats(away_team_normalized)
 
     for prefix, season_stats in (("home", home_season), ("away", away_season)):
         features[f"{prefix}_season_games"] = season_stats["games"]
@@ -335,8 +364,8 @@ def calculate_match_features(home_team, away_team, historical_data):
         features[f"{prefix}_season_avg_goals_against"] = season_stats["avg_goals_against"]
 
     h2h = recent_data[
-        ((recent_data["home"] == home_team) & (recent_data["away"] == away_team))
-        | ((recent_data["home"] == away_team) & (recent_data["away"] == home_team))
+        ((recent_data["home"] == home_team_normalized) & (recent_data["away"] == away_team_normalized))
+        | ((recent_data["home"] == away_team_normalized) & (recent_data["away"] == home_team_normalized))
     ].sort_values("date", ascending=False).head(5)
 
     features["h2h_games"] = len(h2h)
