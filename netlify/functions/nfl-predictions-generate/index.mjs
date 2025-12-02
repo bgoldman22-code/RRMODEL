@@ -1993,7 +1993,7 @@ async function loadLiveOdds() {
     try {
       console.log('[ODDS] Fetching from The Odds API');
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 2000); // REDUCED to 2 seconds to prevent function timeout
       
       const res = await fetch(oddsApiUrl, { 
         signal: controller.signal
@@ -2011,7 +2011,7 @@ async function loadLiveOdds() {
       console.warn('[ODDS] The Odds API fetch failed:', err?.message || err);
       // Don't try fallback if we timed out - just return empty
       if (err.name === 'AbortError') {
-        console.warn('[ODDS] Timeout reached, returning empty odds to avoid function timeout');
+        console.warn('[ODDS] The Odds API timeout (2s), skipping to prevent function timeout');
         return [];
       }
     }
@@ -2023,7 +2023,7 @@ async function loadLiveOdds() {
   try {
     console.log('[ODDS] Fallback: fetching from internal nfl-odds-get');
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // Even shorter 3 second timeout for fallback
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // REDUCED to 2 seconds to match primary
     
     const oddsRes = await fetch('https://bgroundrobin.com/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals', {
       signal: controller.signal
