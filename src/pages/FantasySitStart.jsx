@@ -20,11 +20,13 @@ export default function FantasySitStart() {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch(`${FANTASY_API_BASE}/ff-get-leagues`);
+      const response = await fetch(`${FANTASY_API_BASE}/ff-get-leagues`, {
+        credentials: 'include'  // Include HTTP-only cookies
+      });
       if (response.ok) {
         const data = await response.json();
         setIsAuthenticated(true);
-        setLeagues(data.leagues || []);
+        setLeagues(data || []);  // API returns array directly, not {leagues: [...]}
       } else {
         setIsAuthenticated(false);
       }
@@ -59,7 +61,9 @@ export default function FantasySitStart() {
         params.append('week', selectedWeek);
       }
 
-      const response = await fetch(`${FANTASY_API_BASE}/ff-run?${params.toString()}`);
+      const response = await fetch(`${FANTASY_API_BASE}/ff-run?${params.toString()}`, {
+        credentials: 'include'  // Include HTTP-only cookies
+      });
       
       if (!response.ok) {
         throw new Error(`Failed to fetch recommendations: ${response.statusText}`);

@@ -4,9 +4,11 @@ import { ensureAuth } from './_lib/ff-cookies.mjs';
 export async function handler(event) {
   console.log('🏈 [ff-get-leagues] Request received');
 
-  // CORS headers
+  // CORS headers - allow credentials
+  const origin = event.headers.origin || event.headers.Origin || 'https://bgroundrobin.com';
   const headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Content-Type': 'application/json',

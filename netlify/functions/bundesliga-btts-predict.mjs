@@ -14,12 +14,7 @@
  */
 
 import { readFile } from 'fs/promises';
-import { resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { join } from 'path';
 
 export const handler = async (event, context) => {
   // CORS headers
@@ -40,14 +35,34 @@ export const handler = async (event, context) => {
   }
 
   try {
-    // Resolve path to cache file
-    // In Netlify build, functions are bundled, so we need to find the repo root
-    const cachePath = resolve(__dirname, '../../data/bundesliga/cache/bundesliga_btts_latest.json');
+    // In Netlify, the cache file is included via netlify.toml and available at these paths
+    const possiblePaths = [
+      // Netlify's function directory structure
+      join(process.cwd(), 'data', 'bundesliga', 'cache', 'bundesliga_btts_latest.json'),
+      // Alternative bundled location
+      '/var/task/data/bundesliga/cache/bundesliga_btts_latest.json',
+    ];
     
-    console.log('Reading Bundesliga BTTS cache from:', cachePath);
+    let rawCache = null;
+    let usedPath = null;
     
-    // Read and parse cache
-    const rawCache = await readFile(cachePath, 'utf8');
+    // Try each path until one works
+    for (const path of possiblePaths) {
+      try {
+        console.log('Trying cache path:', path);
+        rawCache = await readFile(path, 'utf8');
+        usedPath = path;
+        console.log('✓ Successfully read cache from:', path);
+        break;
+      } catch (err) {
+        console.log('✗ Failed to read from:', path, '-', err.message);
+      }
+    }
+    
+    if (!rawCache) {
+      throw new Error('Cache file not found in any expected location. Paths tried: ' + possiblePaths.join(', '));
+    }
+    
     const cache = JSON.parse(rawCache);
     
     // Filter predictions to only include upcoming fixtures

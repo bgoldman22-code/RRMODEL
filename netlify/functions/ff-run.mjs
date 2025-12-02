@@ -48,7 +48,28 @@ import {
   tryFlexSwaps 
 } from './_lib/ff-scoring.mjs';
 
+// Helper to generate CORS headers with credential support
+function getCorsHeaders(event, additionalHeaders = {}) {
+  const origin = event.headers.origin || event.headers.Origin || 'https://bgroundrobin.com';
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Headers': 'Content-Type, x-api-key, X-API-Key',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    ...additionalHeaders
+  };
+}
+
 export const handler = async (event, context) => {
+  // Handle preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 204,
+      headers: getCorsHeaders(event),
+      body: ''
+    };
+  }
+
   try {
     // Optional API key protection
     const requiredApiKey = process.env.FF_API_KEY;
@@ -57,7 +78,7 @@ export const handler = async (event, context) => {
       if (providedKey !== requiredApiKey) {
         return {
           statusCode: 401,
-          headers: { 'Content-Type': 'application/json' },
+          headers: getCorsHeaders(event, { 'Content-Type': 'application/json' }),
           body: JSON.stringify({ 
             error: 'Unauthorized',
             message: 'Invalid or missing x-api-key header'
@@ -82,7 +103,7 @@ export const handler = async (event, context) => {
     if (!accessToken) {
       return {
         statusCode: 401,
-        headers: { 'Content-Type': 'application/json' },
+        headers: getCorsHeaders(event, { 'Content-Type': 'application/json' }),
         body: JSON.stringify({ 
           error: 'Authentication required',
           message: 'Please complete OAuth flow at /.netlify/functions/ff-auth-start',
@@ -104,7 +125,7 @@ export const handler = async (event, context) => {
     if (leagues.length === 0) {
       return {
         statusCode: 404,
-        headers: { 'Content-Type': 'application/json' },
+        headers: getCorsHeaders(event, { 'Content-Type': 'application/json' }),
         body: JSON.stringify({ 
           error: 'No leagues found',
           message: `You do not have any fantasy leagues for this season (game key: ${gameKey}). Yahoo returned 0 leagues. This might mean your league hasn't started yet or is for a different season.`,
@@ -139,7 +160,7 @@ export const handler = async (event, context) => {
     if (roster.length === 0) {
       return {
         statusCode: 404,
-        headers: { 'Content-Type': 'application/json' },
+        headers: getCorsHeaders(event, { 'Content-Type': 'application/json' }),
         body: JSON.stringify({ 
           error: 'No roster found',
           message: 'Could not fetch roster for specified team'
@@ -257,10 +278,10 @@ export const handler = async (event, context) => {
     if (format === 'json') {
       return {
         statusCode: 200,
-        headers: { 
+        headers: getCorsHeaders(event, { 
           'Content-Type': 'application/json',
           'Cache-Control': 'no-cache'
-        },
+        }),
         body: JSON.stringify({
           meta,
           starters: starters.map(formatPlayer),
@@ -276,11 +297,11 @@ export const handler = async (event, context) => {
       const csv = convertToCSV([...starters, ...bench]);
       return {
         statusCode: 200,
-        headers: { 
+        headers: getCorsHeaders(event, { 
           'Content-Type': 'text/csv',
           'Content-Disposition': `attachment; filename="sitstart-week${week}.csv"`,
           'Cache-Control': 'no-cache'
-        },
+        }),
         body: csv
       };
     }
@@ -288,7 +309,7 @@ export const handler = async (event, context) => {
     // Unknown format
     return {
       statusCode: 400,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getCorsHeaders(event, { 'Content-Type': 'application/json' }),
       body: JSON.stringify({ 
         error: 'Invalid format',
         message: 'Format must be "json" or "csv"'
@@ -301,7 +322,7 @@ export const handler = async (event, context) => {
     
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getCorsHeaders(event, { 'Content-Type': 'application/json' }),
       body: JSON.stringify({ 
         error: 'Internal server error',
         message: error.message,
