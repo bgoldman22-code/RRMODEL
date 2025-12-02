@@ -281,41 +281,45 @@ async function generateV5Predictions({ season, week }) {
       const spreadEdge = game.spread_line ? Math.abs(Math.abs(spreadPred.raw_prediction) - Math.abs(game.spread_line)) : 0;
       const totalEdge = game.total_line ? Math.abs(totalPred.p50 - game.total_line) : 0;
       
-      // 🚨 THE GOLDEN DEFINITION OF SPREAD PICKS
-      // 1. Model prediction (raw_prediction)
-      //    Positive = away predicted margin
-      //    Negative = home predicted margin
-      // 2. Vegas line (spread_line) 
-      //    Negative = home favorite
-      //    Positive = away favorite
-      // 3. Pick the team whose predicted margin beats the Vegas line:
-      //    if predicted_margin > spread_line: pick = home
-      //    else: pick = away
-      // 4. Display the Vegas line from the PICK'S perspective:
-      //    If pick is favorite → show negative spread
-      //    If pick is underdog → show positive spread
+      // 🚨 CORRECT SPREAD LOGIC
+      // Model raw_prediction: from HOME perspective (positive = home favored by X)
+      // NFLverse spread_line: from AWAY perspective (positive = away is +X underdog)
+      // 
+      // To compare apples-to-apples, convert to same perspective:
+      // Model: +1.42 = home by 1.42 = away by -1.42
+      // Vegas: +3 = away gets 3 = home gives -3
+      //
+      // Who covers? Compare model's predicted margin vs what's needed to cover
+      // If model says home by 1.42, and Vegas has home -3, then home doesn't cover (only wins by 1.42, needs 3)
+      // So pick the away team +3
       
-      const predictedMargin = spreadPred.raw_prediction;
-      const vegasLine = game.spread_line || predictedMargin;
+      const modelHomeMargin = spreadPred.raw_prediction;  // Positive = home favored
+      const vegasAwayLine = game.spread_line || 0;        // Positive = away gets points
       
-      // Determine which team covers
-      const spreadPick = predictedMargin > vegasLine ? game.home_team : game.away_team;
+      // Convert both to home perspective for comparison:
+      // modelHomeMargin is already home perspective
+      // vegasAwayLine needs to flip sign: +3 away line = -3 home line
+      const vegasHomeMargin = -vegasAwayLine;
       
-      // Format the spread line from the pick's perspective
-      let spreadLine = vegasLine;
+      // Pick: if model thinks home wins by MORE than Vegas requires, pick home. Else pick away.
+      const spreadPick = modelHomeMargin > vegasHomeMargin ? game.home_team : game.away_team;
+      
+      // Format the spread line from the PICKED TEAM's perspective
+      let spreadLine = vegasAwayLine;  // Start with away team's line
       
       if (spreadLine !== null) {
-        // Determine who the market favorite is (negative line = home favorite)
-        const marketFavorite = spreadLine < 0 ? game.home_team : game.away_team;
+        // Determine who the market favorite is
+        // Positive spread_line = away is underdog (home is favorite)
+        // Negative spread_line = away is favorite (home is underdog)
+        const marketFavorite = spreadLine > 0 ? game.home_team : game.away_team;
+        const isFavorite = spreadPick === marketFavorite;
         
         // Display the line from the pick's perspective:
-        // If we're picking the favorite, show negative spread
-        // If we're picking the underdog, show positive spread
-        if (spreadPick === marketFavorite) {
-          // Picking favorite - use negative spread
+        // If picking favorite → show negative spread
+        // If picking underdog → show positive spread
+        if (isFavorite) {
           spreadLine = -Math.abs(spreadLine);
         } else {
-          // Picking underdog - use positive spread
           spreadLine = Math.abs(spreadLine);
         }
       }
