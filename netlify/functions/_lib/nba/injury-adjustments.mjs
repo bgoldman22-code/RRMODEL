@@ -79,6 +79,7 @@ export function calculateInjuryAdjustment(injuries) {
       severity: 'NONE',
       count: 0,
       details: [],
+      rawImpact: 0,
       uncertaintyMultiplier: 1.0
     };
   }
