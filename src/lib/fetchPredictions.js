@@ -133,15 +133,19 @@ export async function loadPredictionsWithPolling({ season, week, games, onProgre
   try {
     const oddsRes = await fetch('/.netlify/functions/nfl-odds-get?regions=us&markets=h2h,spreads,totals&oddsFormat=american');
     if (oddsRes.ok) {
-      const oddsData = await oddsRes.json();
+      const oddsResponse = await oddsRes.json();
+      const oddsData = oddsResponse.games || oddsResponse || []; // Extract games array from response
       console.log(`[ODDS] Loaded odds for ${oddsData.length || 0} games`);
       
       // Merge odds into predictions
       if (Array.isArray(oddsData) && predictions.rows) {
         predictions.rows = predictions.rows.map(pred => {
-          const gameOdds = oddsData.find(o => 
-            o.home_team === pred.home_team && o.away_team === pred.away_team
-          );
+          // Match by team names (odds use full names like "Detroit Lions", predictions use abbreviations like "DET")
+          const gameOdds = oddsData.find(o => {
+            const homeMatch = o.home_team === pred.home_team || getTeamAbbreviation(o.home_team) === pred.home_team;
+            const awayMatch = o.away_team === pred.away_team || getTeamAbbreviation(o.away_team) === pred.away_team;
+            return homeMatch && awayMatch;
+          });
           
           if (gameOdds) {
             // Extract odds from first bookmaker
