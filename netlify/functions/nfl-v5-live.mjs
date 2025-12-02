@@ -281,20 +281,34 @@ async function generateV5Predictions({ season, week }) {
       const spreadEdge = game.spread_line ? Math.abs(Math.abs(spreadPred.raw_prediction) - Math.abs(game.spread_line)) : 0;
       const totalEdge = game.total_line ? Math.abs(totalPred.p50 - game.total_line) : 0;
       
-      // Determine picks with CORRECT favorite/underdog logic
-      const spreadPick = spreadPred.raw_prediction < 0 ? game.home_team : game.away_team;
+      // 🚨 THE GOLDEN DEFINITION OF SPREAD PICKS
+      // 1. Model prediction (raw_prediction)
+      //    Positive = away predicted margin
+      //    Negative = home predicted margin
+      // 2. Vegas line (spread_line) 
+      //    Negative = home favorite
+      //    Positive = away favorite
+      // 3. Pick the team whose predicted margin beats the Vegas line:
+      //    if predicted_margin > spread_line: pick = home
+      //    else: pick = away
+      // 4. Display the Vegas line from the PICK'S perspective:
+      //    If pick is favorite → show negative spread
+      //    If pick is underdog → show positive spread
       
-      // CRITICAL: Spread line must match the picked team's role (favorite vs underdog)
-      // NFLverse spread_line is from HOME team perspective:
-      //   - Negative = home is favorite (e.g., -3.5 means home favored by 3.5)
-      //   - Positive = home is underdog (e.g., +3.5 means away favored by 3.5)
+      const predictedMargin = spreadPred.raw_prediction;
+      const vegasLine = game.spread_line || predictedMargin;
       
-      let spreadLine = game.spread_line || spreadPred.line;
+      // Determine which team covers
+      const spreadPick = predictedMargin > vegasLine ? game.home_team : game.away_team;
+      
+      // Format the spread line from the pick's perspective
+      let spreadLine = vegasLine;
       
       if (spreadLine !== null) {
-        // Determine who the market favorite is
+        // Determine who the market favorite is (negative line = home favorite)
         const marketFavorite = spreadLine < 0 ? game.home_team : game.away_team;
         
+        // Display the line from the pick's perspective:
         // If we're picking the favorite, show negative spread
         // If we're picking the underdog, show positive spread
         if (spreadPick === marketFavorite) {
