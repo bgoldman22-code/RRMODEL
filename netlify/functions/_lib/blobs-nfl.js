@@ -310,27 +310,26 @@ export async function loadAdvancedMetrics(season = '2025') {
 function detectCurrentWeek() {
   const now = new Date();
   
-  // 2025 NFL Season started September 4, 2025 (Thursday Night Football)
-  const seasonStart = new Date('2025-09-04');
+  // 2025 NFL Season Week 1 started Tuesday, September 2, 2025
+  // (Thursday Night Football on Sept 4 was in Week 1)
+  const seasonStart = new Date('2025-09-02'); // First Tuesday of Week 1
   
-  // NFL weeks run Tuesday to Monday, not Sunday to Saturday
-  // Week 1: Sept 2-8 (includes TNF Sept 4, games through MNF Sept 8)
-  // Week 2: Sept 9-15, Week 3: Sept 16-22, etc.
+  // NFL weeks run Tuesday to Monday
+  // Week 1: Sept 2-8, Week 2: Sept 9-15, etc.
   
   const nowDay = now.getDay(); // 0=Sunday, 1=Monday, 2=Tuesday...
   let adjustedDate = new Date(now);
   
-  // If it's Monday, it's still the current week (final day)
-  // If it's Tuesday, it's the start of the new week
+  // If it's Monday, treat it as part of the previous week for calculation
   if (nowDay === 1) {
-    // Monday: still current week, subtract 1 day for calculation
+    // Monday: still current week, subtract 1 day to stay in previous week
     adjustedDate.setDate(adjustedDate.getDate() - 1);
   }
   
-  // Calculate days since season start with adjustment
+  // Calculate days since Week 1 Tuesday
   const daysSinceStart = Math.floor((adjustedDate - seasonStart) / (24 * 60 * 60 * 1000));
   
-  // Convert to weeks with proper NFL week boundaries
+  // Convert to weeks: divide by 7 and add 1
   const weeksSinceStart = Math.floor(daysSinceStart / 7) + 1;
   
   console.log(`=== NFL WEEK DETECTION (FIXED) ===`);
