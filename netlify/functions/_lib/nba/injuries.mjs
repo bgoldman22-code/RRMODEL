@@ -26,10 +26,19 @@ function normalizeTeamAbbr(espnAbbr) {
   return mapping[espnAbbr] || espnAbbr;
 }
 
+// Cache for injury data (resets on each serverless invocation)
+let injuryCache = null;
+let cacheTime = null;
+const CACHE_TTL = 60000; // 60 seconds
+
 /**
  * Fetch current injuries from ESPN
  */
 export async function fetchInjuries() {
+  // Return cached data if still fresh
+  if (injuryCache && cacheTime && (Date.now() - cacheTime < CACHE_TTL)) {
+    return injuryCache;
+  }
   try {
     console.log('[Injuries] Fetching from ESPN...');
     
@@ -68,6 +77,10 @@ export async function fetchInjuries() {
     }
     
     console.log(`[Injuries] ✅ Found ${injuries.length} active injuries`);
+    
+    // Cache the result
+    injuryCache = injuries;
+    cacheTime = Date.now();
     
     return injuries;
     
