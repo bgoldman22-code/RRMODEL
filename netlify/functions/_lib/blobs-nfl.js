@@ -209,8 +209,13 @@ export async function loadAdvancedMetrics(season = '2025') {
       const generatedTime = new Date(rPipelineData.metadata.generated_at);
       const hoursOld = (Date.now() - generatedTime.getTime()) / (1000 * 60 * 60);
       
-      if (hoursOld < 12) { // Use R pipeline data if less than 12 hours old
-        console.log(`✅ Using fresh R pipeline data (${hoursOld.toFixed(1)} hours old)`);
+      // FIXED: Also check if the week number is current (not just timestamp)
+      const actualCurrentWeek = detectCurrentWeek();
+      const rPipelineWeek = rPipelineData.metadata.week;
+      const weekIsCurrent = rPipelineWeek === actualCurrentWeek;
+      
+      if (hoursOld < 12 && weekIsCurrent) { // Use R pipeline data if fresh AND correct week
+        console.log(`✅ Using fresh R pipeline data (${hoursOld.toFixed(1)} hours old, Week ${rPipelineWeek})`);
         
         // Convert R pipeline player data to team aggregates for EPA model
         const teamMetrics = aggregatePlayerDataToTeams(rPipelineData);
@@ -222,7 +227,11 @@ export async function loadAdvancedMetrics(season = '2025') {
           ...teamMetrics
         };
       } else {
-        console.log(`⚠️  R pipeline data is stale (${hoursOld.toFixed(1)} hours old), falling back to blobs`);
+        if (!weekIsCurrent) {
+          console.log(`⚠️  R pipeline data has wrong week (has ${rPipelineWeek}, need ${actualCurrentWeek}), falling back to blobs`);
+        } else {
+          console.log(`⚠️  R pipeline data is stale (${hoursOld.toFixed(1)} hours old), falling back to blobs`);
+        }
       }
     }
   } catch (error) {
