@@ -143,12 +143,13 @@ export const handler = async (event, context) => {
     console.log(`Cookie expires at: ${cookieExpiryString}`);
 
     // Return HTML success page with cookies set
+    // NOTE: Set-Cookie must be a single string with cookies joined by commas (Netlify requirement)
     return {
       statusCode: 200,
       headers: { 
         'Content-Type': 'text/html',
         'Cache-Control': 'no-cache',
-        'Set-Cookie': cookies
+        'Set-Cookie': cookies.join(', ')
       },
       body: `
 <!DOCTYPE html>
