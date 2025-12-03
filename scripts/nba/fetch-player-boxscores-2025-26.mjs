@@ -283,11 +283,12 @@ async function main() {
       const gameBoxscores = extractPlayerBoxscores(summary);
       console.log(`      ✓ Extracted ${gameBoxscores.length} player boxscores`);
       
-      // Merge new boxscores
+      // Merge/update boxscores (overwrites existing to fix corrupted data)
       for (const bs of gameBoxscores) {
         const key = `${bs.gameDate}|${bs.playerId}`;
-        if (!existingMap.has(key)) {
-          existingMap.set(key, bs);
+        const isNew = !existingMap.has(key);
+        existingMap.set(key, bs); // Always set (updates if exists, inserts if new)
+        if (isNew) {
           newEntries++;
         }
       }
