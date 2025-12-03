@@ -48,8 +48,8 @@ jobs:
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          echo "📦 Fetching latest NBA boxscores..."
-          node scripts/nba/fetch-player-boxscores-2025-26.mjs --daily
+          echo "📦 Fetching NBA boxscores (FULL BACKFILL - correcting historical data)..."
+          node scripts/nba/fetch-player-boxscores-2025-26.mjs --backfill --through=2025-12-03
       
       - name: Merge boxscores into canonical history
         run: |
