@@ -44,7 +44,7 @@ export default function NBAPlayerPropsV2() {
         const fallback = await fetch('/data/nba/nba-props-v2-live.json');
         if (fallback.ok) {
           const data = await fallback.json();
-          setPredictions(data.predictions || []);
+          setPredictions(data.predictions || data.picks || []);
           setMetadata({
             generated: data.generated || data.generated_at,
             season: data.season,
