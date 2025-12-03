@@ -124,23 +124,35 @@ function extractPlayerBoxscores(summary) {
     for (const player of teamData.statistics?.[0]?.athletes || []) {
       const stats = player.stats || [];
       
-      // Map stats array to named values
+      // ESPN API stats order: [MIN, PTS, FG, 3PT, FT, REB, AST, TO, STL, BLK, OREB, DREB, PF, +/-]
+      // FG/3PT/FT are strings like "3-6" (made-attempted)
       const minutes = parseFloat(stats[0]) || 0;
-      const fgMade = parseInt(stats[1]) || 0;
-      const fgAtt = parseInt(stats[2]) || 0;
-      const fg3Made = parseInt(stats[3]) || 0;
-      const fg3Att = parseInt(stats[4]) || 0;
-      const ftMade = parseInt(stats[5]) || 0;
-      const ftAtt = parseInt(stats[6]) || 0;
-      const oreb = parseInt(stats[7]) || 0;
-      const dreb = parseInt(stats[8]) || 0;
-      const rebounds = parseInt(stats[9]) || 0;
-      const assists = parseInt(stats[10]) || 0;
-      const steals = parseInt(stats[11]) || 0;
-      const blocks = parseInt(stats[12]) || 0;
-      const turnovers = parseInt(stats[13]) || 0;
-      const fouls = parseInt(stats[14]) || 0;
-      const points = parseInt(stats[15]) || 0;
+      const points = parseInt(stats[1]) || 0;
+      
+      // Parse FG (made-attempted)
+      const fgParts = (stats[2] || '0-0').split('-');
+      const fgMade = parseInt(fgParts[0]) || 0;
+      const fgAtt = parseInt(fgParts[1]) || 0;
+      
+      // Parse 3PT (made-attempted)
+      const fg3Parts = (stats[3] || '0-0').split('-');
+      const fg3Made = parseInt(fg3Parts[0]) || 0;
+      const fg3Att = parseInt(fg3Parts[1]) || 0;
+      
+      // Parse FT (made-attempted)
+      const ftParts = (stats[4] || '0-0').split('-');
+      const ftMade = parseInt(ftParts[0]) || 0;
+      const ftAtt = parseInt(ftParts[1]) || 0;
+      
+      const rebounds = parseInt(stats[5]) || 0;
+      const assists = parseInt(stats[6]) || 0;
+      const turnovers = parseInt(stats[7]) || 0;
+      const steals = parseInt(stats[8]) || 0;
+      const blocks = parseInt(stats[9]) || 0;
+      const oreb = parseInt(stats[10]) || 0;
+      const dreb = parseInt(stats[11]) || 0;
+      const fouls = parseInt(stats[12]) || 0;
+      const plusMinus = stats[13] || null;
       
       boxscores.push({
         gameDate,
@@ -166,7 +178,8 @@ function extractPlayerBoxscores(summary) {
         ftAtt,
         oreb,
         dreb,
-        fouls
+        fouls,
+        plusMinus
       });
     }
   }
