@@ -336,6 +336,55 @@ function calculateFeatures(playerName, targetDate, opponent, isHome) {
   return features;
 }
 
+/**
+ * Calculate L5/L10 Over/Under hit rates vs a specific line
+ * Shows how often player went Over the line in recent games
+ * 
+ * @param {string} playerName - Player name
+ * @param {string} market - Market type ('player_points', 'player_rebounds', 'player_assists')
+ * @param {number} line - The betting line value
+ * @param {string} targetDate - Target date (YYYY-MM-DD)
+ * @returns {Object} - { L5_over_pct, L10_over_pct, L5_sample_size, L10_sample_size }
+ */
+function calculateLineHitRates(playerName, market, line, targetDate) {
+  // Get stat field based on market
+  const statField = market === 'player_points' ? 'points' :
+                    market === 'player_rebounds' ? 'rebounds' : 'assists';
+  
+  // Get all games for this player BEFORE target date
+  const priorGames = allBoxscores
+    .filter(g => g.playerName === playerName && g.date < targetDate)
+    .sort((a, b) => b.date.localeCompare(a.date)); // Reverse chronological (most recent first)
+
+  if (priorGames.length === 0) {
+    return {
+      L5_over_pct: null,
+      L10_over_pct: null,
+      L5_sample_size: 0,
+      L10_sample_size: 0
+    };
+  }
+
+  // Calculate L5 hit rate
+  const L5_games = priorGames.slice(0, 5);
+  const L5_overs = L5_games.filter(g => (g[statField] || 0) > line).length;
+  const L5_sample_size = L5_games.length;
+  const L5_over_pct = L5_sample_size > 0 ? L5_overs / L5_sample_size : null;
+
+  // Calculate L10 hit rate
+  const L10_games = priorGames.slice(0, 10);
+  const L10_overs = L10_games.filter(g => (g[statField] || 0) > line).length;
+  const L10_sample_size = L10_games.length;
+  const L10_over_pct = L10_sample_size > 0 ? L10_overs / L10_sample_size : null;
+
+  return {
+    L5_over_pct,
+    L10_over_pct,
+    L5_sample_size,
+    L10_sample_size
+  };
+}
+
 // ====================================================================
 // ODDS API INTEGRATION
 // ====================================================================
@@ -673,6 +722,9 @@ for (const prop of allProps) {
 
     const { units: kellyUnits, fraction: kellyFraction } = calculateKellyUnits(result.prob_win, odds);
 
+    // Calculate L5/L10 hit rates vs this line
+    const hitRates = calculateLineHitRates(player, market, line, today);
+
     // Add to predictions
     predictions.push({
       player,
@@ -693,7 +745,12 @@ for (const prop of allProps) {
       threshold: result.threshold,
       kellyStake: kellyUnits,
       kellyFraction,
-      modelVersion: MODEL_VERSION_TAGS[market] || result.use_this_model
+      modelVersion: MODEL_VERSION_TAGS[market] || result.use_this_model,
+      // Recent form: L5/L10 hit rates vs this line
+      L5_over_pct: hitRates.L5_over_pct,
+      L10_over_pct: hitRates.L10_over_pct,
+      L5_sample_size: hitRates.L5_sample_size,
+      L10_sample_size: hitRates.L10_sample_size
     });
 
   } catch (err) {

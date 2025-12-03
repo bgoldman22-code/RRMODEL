@@ -108,6 +108,15 @@ export default function NBAPlayerPropsV2() {
     return american > 0 ? `+${Math.round(american)}` : `${Math.round(american)}`;
   };
 
+  const formatHitRate = (pct, sampleSize) => {
+    if (pct === null || pct === undefined || sampleSize === 0) {
+      return { display: 'N/A', color: 'gray' };
+    }
+    const percentage = Math.round(pct * 100);
+    const color = percentage >= 60 ? 'green' : percentage <= 40 ? 'red' : 'gray';
+    return { display: `${percentage}%`, color, sampleSize };
+  };
+
   const filteredPredictions = predictions
     .map(pred => ({
       ...pred,
@@ -153,7 +162,7 @@ export default function NBAPlayerPropsV2() {
 
   const generateTableHTML = (props, title) => {
     return `
-      <div style="width: 900px;">
+      <div style="width: 1200px;">
         <div style="margin-bottom: 20px; text-align: center;">
           <h2 style="font-size: 24px; font-weight: bold; margin: 0; color: #1f2937;">${title}</h2>
         </div>
@@ -165,14 +174,20 @@ export default function NBAPlayerPropsV2() {
               <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Side</th>
               <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Line</th>
               <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Odds</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">L5 Hit%<br/><span style="font-size: 9px;">(Avg)</span></th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">L10 Hit%<br/><span style="font-size: 9px;">(Avg)</span></th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">L20 Hit%<br/><span style="font-size: 9px;">(Avg)</span></th>
               <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Model Prob</th>
               <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Edge</th>
-              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Units (Kelly)</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Units</th>
               <th style="padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;">Book</th>
             </tr>
           </thead>
           <tbody>
-            ${props.map((pred, idx) => `
+            ${props.map((pred, idx) => {
+              const hitRates = pred.hitRates || {};
+              
+              return `
               <tr style="background: ${idx % 2 === 0 ? '#ffffff' : '#f9fafb'}; border-bottom: 1px solid #e5e7eb;">
                 <td style="padding: 10px 12px;">
                   <div style="font-weight: 600; font-size: 13px; color: #111827;">${pred.player}</div>
@@ -192,13 +207,37 @@ export default function NBAPlayerPropsV2() {
                 </td>
                 <td style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 13px; color: #111827;">${pred.vegasLine}</td>
                 <td style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 13px; color: #111827;">${formatOdds(pred.odds)}</td>
+                <td style="padding: 10px 12px; text-align: center;">
+                  <div style="font-weight: 600; font-size: 12px; color: #111827;">
+                    ${hitRates.L5_hitRate !== null && hitRates.L5_hitRate !== undefined ? hitRates.L5_hitRate + '%' : 'N/A'}
+                  </div>
+                  <div style="font-size: 9px; color: #6b7280;">
+                    (${hitRates.L5_avg !== null && hitRates.L5_avg !== undefined ? hitRates.L5_avg : '-'})
+                  </div>
+                </td>
+                <td style="padding: 10px 12px; text-align: center;">
+                  <div style="font-weight: 600; font-size: 12px; color: #111827;">
+                    ${hitRates.L10_hitRate !== null && hitRates.L10_hitRate !== undefined ? hitRates.L10_hitRate + '%' : 'N/A'}
+                  </div>
+                  <div style="font-size: 9px; color: #6b7280;">
+                    (${hitRates.L10_avg !== null && hitRates.L10_avg !== undefined ? hitRates.L10_avg : '-'})
+                  </div>
+                </td>
+                <td style="padding: 10px 12px; text-align: center;">
+                  <div style="font-weight: 600; font-size: 12px; color: #111827;">
+                    ${hitRates.L20_hitRate !== null && hitRates.L20_hitRate !== undefined ? hitRates.L20_hitRate + '%' : 'N/A'}
+                  </div>
+                  <div style="font-size: 9px; color: #6b7280;">
+                    (${hitRates.L20_avg !== null && hitRates.L20_avg !== undefined ? hitRates.L20_avg : '-'})
+                  </div>
+                </td>
                 <td style="padding: 10px 12px; text-align: center; font-weight: 600; font-size: 13px; color: #111827;">${((pred.modelProbability || pred.prediction || 0) * 100).toFixed(2)}%</td>
                 <td style="padding: 10px 12px; text-align: center; font-weight: 700; font-size: 13px; color: #065f46;">${(Number(pred.edge) || 0).toFixed(1)}%</td>
                 <td style="padding: 10px 12px; text-align: center; font-weight: 700; font-size: 13px; color: #f59e0b;">${computeKellyUnits(pred.modelProbability || pred.prediction || 0, pred.odds).toFixed(1)}U</td>
                 <td style="padding: 10px 12px; font-weight: 600; font-size: 12px; color: #111827;">${pred.book || ''}</td>
                 </td>
               </tr>
-            `).join('')}
+            `}).join('')}
           </tbody>
         </table>
       </div>
@@ -220,7 +259,7 @@ export default function NBAPlayerPropsV2() {
     const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     
     exportDiv.innerHTML = `
-      <div style="width: 900px;">
+      <div style="width: 1000px;">
         <div style="margin-bottom: 30px; text-align: center;">
           <h1 style="font-size: 32px; font-weight: bold; margin: 0 0 10px 0; color: #1f2937;">🏀 NBA Player Props V2 (Phase 3.5)</h1>
           <p style="font-size: 16px; color: #6b7280; margin: 0;">Top 20 Picks • ${today}</p>
@@ -228,7 +267,7 @@ export default function NBAPlayerPropsV2() {
         </div>
         ${generateTableHTML(top20, 'TOP 20 (#1-20)')}
         <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #9ca3af;">
-          Model: Phase 3.5 (Hybrid) | Assists: Logistic | Points/Rebounds: LightGBM | bgroundrobin.com
+          Model: Phase 3.5 (Hybrid) | Assists: Logistic | Points/Rebounds: LightGBM | Recent Form: L5/L10 O/U vs Line | bgroundrobin.com
         </div>
       </div>
     `;
@@ -271,7 +310,7 @@ export default function NBAPlayerPropsV2() {
     const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     
     exportDiv.innerHTML = `
-      <div style="width: 900px;">
+      <div style="width: 1000px;">
         <div style="margin-bottom: 30px; text-align: center;">
           <h1 style="font-size: 32px; font-weight: bold; margin: 0 0 10px 0; color: #1f2937;">🏀 NBA Player Props V2 (Phase 3.5)</h1>
           <p style="font-size: 16px; color: #6b7280; margin: 0;">Next 20 Picks (#21-40) • ${today}</p>
@@ -279,7 +318,7 @@ export default function NBAPlayerPropsV2() {
         </div>
         ${generateTableHTML(next20, 'NEXT 20 (#21-40)')}
         <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #9ca3af;">
-          Model: Phase 3.5 (Hybrid) | Assists: Logistic | Points/Rebounds: LightGBM | bgroundrobin.com
+          Model: Phase 3.5 (Hybrid) | Assists: Logistic | Points/Rebounds: LightGBM | Recent Form: L5/L10 O/U vs Line | bgroundrobin.com
         </div>
       </div>
     `;
@@ -372,6 +411,18 @@ export default function NBAPlayerPropsV2() {
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Side</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Line</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Odds</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  L5 Hit %<br/>
+                  <span className="text-[10px] font-normal">(Avg)</span>
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  L10 Hit %<br/>
+                  <span className="text-[10px] font-normal">(Avg)</span>
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  L20 Hit %<br/>
+                  <span className="text-[10px] font-normal">(Avg)</span>
+                </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Model Prob</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Edge</th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Units (Kelly)</th>
@@ -383,6 +434,8 @@ export default function NBAPlayerPropsV2() {
                 const probability = pred.modelProbability ?? pred.prediction ?? 0;
                 const kellyUnits = pred.derivedKelly ?? computeKellyUnits(probability, pred.odds);
                 const oddsLabel = formatOdds(pred.odds);
+                const hitRates = pred.hitRates || {};
+                
                 return (
                   <tr key={idx} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
@@ -403,6 +456,37 @@ export default function NBAPlayerPropsV2() {
                     </td>
                     <td className="px-6 py-4 text-center font-medium">{pred.vegasLine}</td>
                     <td className="px-6 py-4 text-center font-mono font-semibold">{oddsLabel}</td>
+                    
+                    {/* L5 Hit Rate */}
+                    <td className="px-6 py-4 text-center">
+                      <div className="font-semibold text-gray-900">
+                        {hitRates.L5_hitRate !== null && hitRates.L5_hitRate !== undefined ? `${hitRates.L5_hitRate}%` : 'N/A'}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        ({hitRates.L5_avg !== null && hitRates.L5_avg !== undefined ? hitRates.L5_avg : '-'})
+                      </div>
+                    </td>
+                    
+                    {/* L10 Hit Rate */}
+                    <td className="px-6 py-4 text-center">
+                      <div className="font-semibold text-gray-900">
+                        {hitRates.L10_hitRate !== null && hitRates.L10_hitRate !== undefined ? `${hitRates.L10_hitRate}%` : 'N/A'}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        ({hitRates.L10_avg !== null && hitRates.L10_avg !== undefined ? hitRates.L10_avg : '-'})
+                      </div>
+                    </td>
+                    
+                    {/* L20 Hit Rate */}
+                    <td className="px-6 py-4 text-center">
+                      <div className="font-semibold text-gray-900">
+                        {hitRates.L20_hitRate !== null && hitRates.L20_hitRate !== undefined ? `${hitRates.L20_hitRate}%` : 'N/A'}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        ({hitRates.L20_avg !== null && hitRates.L20_avg !== undefined ? hitRates.L20_avg : '-'})
+                      </div>
+                    </td>
+                    
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center">
                         <div className="w-20 bg-gray-200 rounded-full h-2 mr-2">
