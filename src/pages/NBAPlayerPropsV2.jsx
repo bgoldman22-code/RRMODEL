@@ -384,7 +384,13 @@ export default function NBAPlayerPropsV2() {
               <option value="player">Player</option>
             </select>
           </div>
-          <button onClick={loadPredictions} className="bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 text-sm">Refresh</button>
+          <button 
+            onClick={handleRefresh} 
+            disabled={refreshing}
+            className="bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 text-sm disabled:bg-gray-400"
+          >
+            {refreshing ? 'Refreshing...' : 'Refresh'}
+          </button>
           <button onClick={exportTop20PNG} disabled={!predictions.length} className="bg-green-600 text-white px-4 py-1.5 rounded hover:bg-green-700 text-sm disabled:bg-gray-400">Export Top 20</button>
           <button onClick={exportNext20PNG} disabled={predictions.length < 21} className="bg-green-600 text-white px-4 py-1.5 rounded hover:bg-green-700 text-sm disabled:bg-gray-400">Export Next 20</button>
         </div>
