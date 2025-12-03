@@ -337,16 +337,17 @@ function calculateFeatures(playerName, targetDate, opponent, isHome) {
 }
 
 /**
- * Calculate L5/L10 Over/Under hit rates vs a specific line
- * Shows how often player went Over the line in recent games
+ * Calculate L5/L10/L20 hit rates vs a specific line
+ * Shows how often player hit the line in the direction we're betting
  * 
  * @param {string} playerName - Player name
  * @param {string} market - Market type ('player_points', 'player_rebounds', 'player_assists')
  * @param {number} line - The betting line value
  * @param {string} targetDate - Target date (YYYY-MM-DD)
- * @returns {Object} - { L5_over_pct, L10_over_pct, L5_sample_size, L10_sample_size }
+ * @param {string} side - 'over' or 'under' - which way we're betting
+ * @returns {Object} - { L5_over_pct, L10_over_pct, L20_over_pct, L5_avg, L10_avg, L20_avg, L5_sample_size, L10_sample_size, L20_sample_size }
  */
-function calculateLineHitRates(playerName, market, line, targetDate) {
+function calculateLineHitRates(playerName, market, line, targetDate, side) {
   // Get stat field based on market
   const statField = market === 'player_points' ? 'points' :
                     market === 'player_rebounds' ? 'rebounds' : 'assists';
@@ -360,28 +361,55 @@ function calculateLineHitRates(playerName, market, line, targetDate) {
     return {
       L5_over_pct: null,
       L10_over_pct: null,
+      L20_over_pct: null,
+      L5_avg: null,
+      L10_avg: null,
+      L20_avg: null,
       L5_sample_size: 0,
-      L10_sample_size: 0
+      L10_sample_size: 0,
+      L20_sample_size: 0
     };
   }
 
-  // Calculate L5 hit rate
-  const L5_games = priorGames.slice(0, 5);
-  const L5_overs = L5_games.filter(g => (g[statField] || 0) > line).length;
-  const L5_sample_size = L5_games.length;
-  const L5_over_pct = L5_sample_size > 0 ? L5_overs / L5_sample_size : null;
+  const calcWindow = (games) => {
+    if (games.length === 0) return { hitRate: null, avg: null, sampleSize: 0 };
+    
+    const validGames = games.filter(g => {
+      const val = g[statField];
+      return val !== null && val !== undefined && !isNaN(val);
+    });
+    
+    if (validGames.length === 0) return { hitRate: null, avg: null, sampleSize: 0 };
+    
+    // Count hits based on which side we're betting
+    const hitCount = side.toLowerCase() === 'over' 
+      ? validGames.filter(g => g[statField] > line).length
+      : validGames.filter(g => g[statField] < line).length;
+    
+    const hitRate = hitCount / validGames.length;
+    const avg = validGames.reduce((sum, g) => sum + g[statField], 0) / validGames.length;
+    
+    return {
+      hitRate,
+      avg: parseFloat(avg.toFixed(1)),
+      sampleSize: validGames.length
+    };
+  };
 
-  // Calculate L10 hit rate
-  const L10_games = priorGames.slice(0, 10);
-  const L10_overs = L10_games.filter(g => (g[statField] || 0) > line).length;
-  const L10_sample_size = L10_games.length;
-  const L10_over_pct = L10_sample_size > 0 ? L10_overs / L10_sample_size : null;
+  const L5 = calcWindow(priorGames.slice(0, 5));
+  const L10 = calcWindow(priorGames.slice(0, 10));
+  const L20 = calcWindow(priorGames.slice(0, 20));
 
   return {
-    L5_over_pct,
-    L10_over_pct,
-    L5_sample_size,
-    L10_sample_size
+    L5_over_pct: L5.hitRate,
+    L10_over_pct: L10.hitRate,
+    L20_over_pct: L20.hitRate,
+    L5_avg: L5.avg,
+    L10_avg: L10.avg,
+    L20_avg: L20.avg,
+    L5_sample_size: L5.sampleSize,
+    L10_sample_size: L10.sampleSize,
+    L20_sample_size: L20.sampleSize
   };
 }
 
@@ -722,8 +750,8 @@ for (const prop of allProps) {
 
     const { units: kellyUnits, fraction: kellyFraction } = calculateKellyUnits(result.prob_win, odds);
 
-    // Calculate L5/L10 hit rates vs this line
-    const hitRates = calculateLineHitRates(player, market, line, today);
+    // Calculate L5/L10/L20 hit rates vs this line (based on predicted side)
+    const hitRates = calculateLineHitRates(player, market, line, today, side);
 
     // Add to predictions
     predictions.push({
@@ -746,7 +774,19 @@ for (const prop of allProps) {
       kellyStake: kellyUnits,
       kellyFraction,
       modelVersion: MODEL_VERSION_TAGS[market] || result.use_this_model,
-      // Recent form: L5/L10 hit rates vs this line
+      // Hit rates: L5/L10/L20 hit rates and averages vs this specific line and side
+      hitRates: {
+        L5_hitRate: hitRates.L5_over_pct !== null ? parseFloat((hitRates.L5_over_pct * 100).toFixed(1)) : null,
+        L5_avg: hitRates.L5_avg,
+        L5_games: hitRates.L5_sample_size,
+        L10_hitRate: hitRates.L10_over_pct !== null ? parseFloat((hitRates.L10_over_pct * 100).toFixed(1)) : null,
+        L10_avg: hitRates.L10_avg,
+        L10_games: hitRates.L10_sample_size,
+        L20_hitRate: hitRates.L20_over_pct !== null ? parseFloat((hitRates.L20_over_pct * 100).toFixed(1)) : null,
+        L20_avg: hitRates.L20_avg,
+        L20_games: hitRates.L20_sample_size
+      },
+      // Legacy fields for backward compatibility
       L5_over_pct: hitRates.L5_over_pct,
       L10_over_pct: hitRates.L10_over_pct,
       L5_sample_size: hitRates.L5_sample_size,
