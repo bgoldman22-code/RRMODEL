@@ -1,86 +1,11 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2025-12-07T10:07:46.708847+00:00",
+  "generated_at": "2025-12-07T22:06:49.825467+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
-  "total_predictions": 2,
+  "total_predictions": 0,
   "recommended_bets": 0,
-  "predictions": [
-    {
-      "home_team": "Hamburger SV",
-      "away_team": "Werder Bremen",
-      "commence_time": "2025-12-07T14:30:00+00:00",
-      "model_probability": 0.5501020942608085,
-      "dixon_coles_prob": 0.44106485965927567,
-      "xgboost_prob": 0.5820000000000001,
-      "expected_home_goals": 1.1051709180756477,
-      "expected_away_goals": 1.0,
-      "key_features": {
-        "combined_form_btts_rate": 0.65,
-        "home_form_btts_rate": 0.5,
-        "away_form_btts_rate": 0.8,
-        "home_season_avg_goals_for": 1.5,
-        "away_season_avg_goals_against": 1.588235294117647
-      },
-      "market_odds": {
-        "btts_yes": 1.5,
-        "btts_no": 2.45,
-        "bookmaker": "williamhill"
-      },
-      "market_probability": 0.6202531645569621,
-      "edge": -0.07015107029615364,
-      "expected_value": null,
-      "gates_passed": [
-        "max_ev_cap",
-        "min_odds"
-      ],
-      "gates_failed": [
-        "min_edge (edge=-7.0%, need 5%)"
-      ],
-      "bet_decision": {
-        "should_bet": false,
-        "recommended_stake_pct": 0.0,
-        "confidence": "LOW"
-      }
-    },
-    {
-      "home_team": "Borussia Dortmund",
-      "away_team": "TSG Hoffenheim",
-      "commence_time": "2025-12-07T16:30:00+00:00",
-      "model_probability": 0.6630578568430643,
-      "dixon_coles_prob": 0.44106485965927567,
-      "xgboost_prob": 0.728,
-      "expected_home_goals": 1.1051709180756477,
-      "expected_away_goals": 1.0,
-      "key_features": {
-        "combined_form_btts_rate": 0.7,
-        "home_form_btts_rate": 0.6,
-        "away_form_btts_rate": 0.8,
-        "home_season_avg_goals_for": 2.0,
-        "away_season_avg_goals_against": 1.9411764705882353
-      },
-      "market_odds": {
-        "btts_yes": 1.5,
-        "btts_no": 2.45,
-        "bookmaker": "williamhill"
-      },
-      "market_probability": 0.6202531645569621,
-      "edge": 0.042804692286102175,
-      "expected_value": null,
-      "gates_passed": [
-        "max_ev_cap",
-        "min_odds"
-      ],
-      "gates_failed": [
-        "min_edge (edge=4.3%, need 5%)"
-      ],
-      "bet_decision": {
-        "should_bet": false,
-        "recommended_stake_pct": 0.0,
-        "confidence": "LOW"
-      }
-    }
-  ],
+  "predictions": [],
   "bets": [],
   "league": "Bundesliga",
   "source": "Bundesliga BTTS Ensemble v1.0",
