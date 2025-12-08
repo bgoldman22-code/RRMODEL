@@ -1602,12 +1602,13 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
   }
   
   // ==================================================
-  // DEPTH CHART CHANGE DETECTION (NEW)
+  // DEPTH CHART CHANGE DETECTION (DISABLED)
   // ==================================================
-  // Detect non-injury personnel changes (benching, promotion, etc.)
-  console.log(`📊 Checking depth chart changes for ${teamCode}, Week ${weekNumber}...`);
+  // DISABLED: This system was causing false positives (e.g., Joe Burrow → Jake Browning when Burrow was healthy)
+  // We keep the canonical injury system (based on official injury reports) which is more reliable
+  console.log(`⚠️ Depth chart change detection DISABLED (injury reports only)`);
   
-  try {
+  if (false) { // DISABLED: Depth chart detection removed due to false positives
     const { getDepthChartImpactsForTeam } = await import('../_lib/depth-chart-change-detector.js');
     const depthChartChanges = getDepthChartImpactsForTeam(teamCode, weekNumber, 2025);
     
@@ -1743,9 +1744,10 @@ async function applyInjuryAdjustments(scoreData, teamCode, injuries, weekNumber 
     } else {
       console.log(`ℹ️ No significant depth chart changes for ${teamCode}`);
     }
-  } catch (err) {
-    console.warn(`⚠️ Depth chart change detection failed for ${teamCode}: ${err.message}`);
-  }
+  } // END DISABLED DEPTH CHART DETECTION BLOCK
+  
+  // Depth chart detection disabled - keeping only injury-based adjustments
+  console.log(`✅ Injury adjustments complete for ${teamCode} (depth chart detection DISABLED)`);
   
   return {
     score: scoreData.score + totalDelta,
@@ -2872,12 +2874,21 @@ async function generateAdvancedPredictions(games, season, weekOverride = null) {
   console.log(`⏱️ Injuries loaded in ${Date.now() - injuriesStart}ms`);
 
   // ========================================
-  // STAGE 3: PRE-LOAD DEPTH CHARTS
+  // STAGE 3: PRE-LOAD DEPTH CHARTS (OPTIONAL FOR HYBRID MODE)
   // ========================================
   const depthChartsStart = Date.now();
-  const weeksToLoad = currentWeek > 1 ? [currentWeek, currentWeek - 1] : [currentWeek];
-  const depthChartsMap = await loadDepthChartsForWeeks(weeksToLoad, season);
-  console.log(`⏱️ Depth charts loaded in ${Date.now() - depthChartsStart}ms`);
+  let depthChartsMap = {};
+  
+  // Check if depth charts are disabled (hybrid lightweight mode)
+  const skipDepthCharts = typeof disableDepthCharts !== 'undefined' && disableDepthCharts === true;
+  
+  if (skipDepthCharts) {
+    console.log('⚡ HYBRID MODE: Skipping depth chart loading for speed');
+  } else {
+    const weeksToLoad = currentWeek > 1 ? [currentWeek, currentWeek - 1] : [currentWeek];
+    depthChartsMap = await loadDepthChartsForWeeks(weeksToLoad, season);
+    console.log(`⏱️ Depth charts loaded in ${Date.now() - depthChartsStart}ms`);
+  }
 
   const validMetrics = validateAdvancedMetrics(advancedMetrics);
   
@@ -3646,6 +3657,15 @@ async function generateAdvancedPredictions(games, season, weekOverride = null) {
         p.teamStats?.away?.injuryImpact?.adjustments?.length
       ).length,
       lastUpdated: injuries?.asOf || null
+    },
+    // ODDS METADATA: Track when odds were fetched for staleness detection
+    oddsMetadata: {
+      fetchTime: new Date().toISOString(),
+      gamesWithOdds: predictions.filter(p => 
+        p.odds?.spread || p.odds?.moneyline || p.odds?.total
+      ).length,
+      source: process.env.ODDS_API_KEY ? 'TheOddsAPI (fresh)' : 'fallback or cached',
+      apiKeyPresent: !!process.env.ODDS_API_KEY
     }
   };
 }
@@ -3824,6 +3844,7 @@ export default async (request, context) => {
     let games = [];
     let season = '2025';
     let currentWeek = null; // Initialize at top level
+    let disableDepthCharts = false; // NEW: Hybrid mode flag
     const saveToBlobs = request.method === 'GET';
 
     if (request.method === 'POST') {
@@ -3832,8 +3853,12 @@ export default async (request, context) => {
       season = body.season || '2025';
       // For POST requests, try to extract week from body or games data
       currentWeek = body.week || (games.length > 0 && games[0].week) || null;
+      disableDepthCharts = body.disable_depth_charts || false;  // NEW: Hybrid mode flag
       if (currentWeek) {
         console.log(`📅 POST request week: ${currentWeek}`);
+      }
+      if (disableDepthCharts) {
+        console.log(`⚡ HYBRID MODE: Depth charts disabled for lightweight predictions`);
       }
     } else if (request.method === 'GET') {
       const url = new URL(request.url);
