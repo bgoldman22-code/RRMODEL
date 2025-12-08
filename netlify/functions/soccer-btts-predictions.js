@@ -3146,6 +3146,43 @@ async function fetchLiveTeamStats(league) {
       return await fetchHistoricalTeamStats(league);
     }
     
+    // CRITICAL FIX: If TheSportsDB returns incomplete data BUT we have CSV data, use CSV as primary source
+    if (realStrengthData && Object.keys(realStrengthData).length > table.length) {
+      console.warn(`⚠️ TheSportsDB only returned ${table.length} teams, but CSV has ${Object.keys(realStrengthData).length} teams`);
+      console.log(`✅ Using Football-Data.co.uk CSV as primary data source`);
+      
+      // Convert CSV data to teamStats format
+      const teamStats = {};
+      Object.entries(realStrengthData).forEach(([teamName, csvData]) => {
+        const totalGames = csvData.homeGames + csvData.awayGames;
+        teamStats[teamName] = {
+          name: teamName,
+          games_home: csvData.homeGames,
+          goals_scored_home: csvData.homeGoalsFor,
+          goals_conceded_home: csvData.homeGoalsAgainst,
+          games_away: csvData.awayGames,
+          goals_scored_away: csvData.awayGoalsFor,
+          goals_conceded_away: csvData.awayGoalsAgainst,
+          // Use CSV-calculated form data
+          recent_form_attack: csvData.recent_form_attack,
+          recent_form_defense: csvData.recent_form_defense,
+          // Calculate BTTS rates from CSV data
+          btts_rate_home: Math.min(0.85, Math.max(0.25, 
+            0.5 + ((csvData.homeGoalsFor / Math.max(csvData.homeGames, 1)) - 1.4) * 0.15 + 
+            ((csvData.homeGoalsAgainst / Math.max(csvData.homeGames, 1)) - 1.4) * 0.10
+          )),
+          btts_rate_away: Math.min(0.85, Math.max(0.25,
+            0.5 + ((csvData.awayGoalsFor / Math.max(csvData.awayGames, 1)) - 1.4) * 0.15 + 
+            ((csvData.awayGoalsAgainst / Math.max(csvData.awayGames, 1)) - 1.4) * 0.10
+          )),
+          last_updated: new Date().toISOString(),
+          data_source: 'football_data_co_uk_csv_primary'
+        };
+      });
+      console.log(`✅ Populated ${Object.keys(teamStats).length} teams from CSV data`);
+      return teamStats;
+    }
+    
     const teamStats = {};
     
     table.forEach(team => {
