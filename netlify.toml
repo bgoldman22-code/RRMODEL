@@ -12,7 +12,8 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs", "node-fetch"]
-  included_files = ["public/**", "scripts/soccer/**", "data/bundesliga/**", "ml/requirements.txt"]
+  # Removed bloated included_files - functions should only include what they specifically need
+  # Individual functions can declare their own included_files if required
 
 [build.environment]
   NODE_VERSION = "20"
