@@ -3544,17 +3544,31 @@ function combineSeasonalData(currentStats, historicalStats, currentWeight = 3) {
     const current = currentStats?.[teamName];
     const historical = historicalStats?.[teamName];
     
-    if (current && current.games_home > 3) {
+    // PRIORITY FIX: If we have live data with recent_form_attack/defense from Football-Data.co.uk,
+    // ALWAYS use it - this is the most accurate real-time data
+    if (current && current.recent_form_attack && current.recent_form_defense) {
+      // Use live API data with form calculations (best quality)
+      combinedStats[teamName] = {
+        ...current,
+        data_mix: `live_api_with_form`,
+        data_source: current.data_source || 'live_api_2025_26'
+      };
+      console.log(`✅ ${teamName}: Using LIVE form data - ATT ${(current.recent_form_attack * 100).toFixed(0)}% | DEF ${(current.recent_form_defense * 100).toFixed(0)}%`);
+      
+    } else if (current && current.games_home > 3) {
       // Use current season data if team has played enough games
       combinedStats[teamName] = {
         ...current,
         data_mix: `current_${current.games_home + current.games_away}games`
       };
     } else if (current && historical) {
-      // Blend current limited data with historical
+      // Blend current limited data with historical (only for basic stats like goals)
       const totalWeight = currentWeight + 1;
       const cw = currentWeight / totalWeight; // current weight
       const hw = 1 / totalWeight; // historical weight
+      
+      // If current has form data, use it even if games < 3
+      const useCurrentForm = current.recent_form_attack && current.recent_form_defense;
       
       combinedStats[teamName] = {
         name: teamName,
@@ -3566,10 +3580,18 @@ function combineSeasonalData(currentStats, historicalStats, currentWeight = 3) {
         goals_conceded_away: Math.round((current.goals_conceded_away * cw) + (historical.goals_conceded_away * hw)),
         btts_rate_home: Math.round(((current.btts_rate_home * cw) + (historical.btts_rate_home * hw)) * 100) / 100,
         btts_rate_away: Math.round(((current.btts_rate_away * cw) + (historical.btts_rate_away * hw)) * 100) / 100,
+        // CRITICAL: Use live form data if available, don't blend with historical
+        recent_form_attack: useCurrentForm ? current.recent_form_attack : undefined,
+        recent_form_defense: useCurrentForm ? current.recent_form_defense : undefined,
         last_updated: current.last_updated || new Date().toISOString(),
-        data_source: 'blended_current_historical',
-        data_mix: `${Math.round(cw*100)}% current, ${Math.round(hw*100)}% historical`
+        data_source: useCurrentForm ? 'live_form_blended_goals' : 'blended_current_historical',
+        data_mix: useCurrentForm ? `live form + ${Math.round(cw*100)}% current goals` : `${Math.round(cw*100)}% current, ${Math.round(hw*100)}% historical`
       };
+      
+      if (useCurrentForm) {
+        console.log(`✅ ${teamName}: Using LIVE form (${current.games_home + current.games_away} games) - ATT ${(current.recent_form_attack * 100).toFixed(0)}% | DEF ${(current.recent_form_defense * 100).toFixed(0)}%`);
+      }
+      
     } else if (historical) {
       // Only historical data available (newly promoted teams get estimated stats)
       combinedStats[teamName] = {
