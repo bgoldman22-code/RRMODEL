@@ -5,6 +5,7 @@
 *.rds
 data/nfl_r_pipeline/*.rds
 .env
+.env.local
 
 # Large NBA data files (stored in Netlify Blobs instead)
 # These update daily and should NOT be in Git - use Blobs!
