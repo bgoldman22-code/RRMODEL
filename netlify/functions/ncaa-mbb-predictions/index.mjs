@@ -20,8 +20,8 @@ export default async function handler(event, context) {
     
     // Path to NCAA MBB Model (assuming it's in the same parent directory)
     const ncaaModelPath = path.join(__dirname, '../../../..', 'NCAAMBBModel');
-    const outputPath = path.join(ncaaModelPath, 'data/ncaabb/picks', `variant_b_picks_${today}.json`);
-    const csvPath = path.join(ncaaModelPath, 'data/ncaabb/picks', `variant_b_picks_${today}.csv`);
+    const outputPath = path.join(ncaaModelPath, 'data/ncaabb/picks', `variant_b_picks_odds_aware_${today}.json`);
+    const csvPath = path.join(ncaaModelPath, 'data/ncaabb/picks', `variant_b_picks_odds_aware_${today}.csv`);
     
     // Check if today's picks already exist (cached)
     try {
@@ -50,13 +50,7 @@ export default async function handler(event, context) {
     }
     
     // Generate fresh picks using live mode
-    const command = `cd ${ncaaModelPath} && python3 scripts/ncaabb/generate_variant_b_picks.py \
-      --date ${today} \
-      --mode live \
-      --min-edge 0.15 \
-      --kelly-fraction 0.25 \
-      --bankroll 10000 \
-      --output ${outputPath}`;
+    const command = `cd ${ncaaModelPath} && python3 scripts/ncaabb/run_daily_variant_b_live.py`;
     
     console.log(`[NCAA MBB] Running: ${command}`);
     
@@ -64,7 +58,11 @@ export default async function handler(event, context) {
       timeout: 60000, // 60 second timeout
       env: {
         ...process.env,
-        ODDS_API_KEY: process.env.ODDS_API_KEY || process.env.REACT_APP_ODDS_API_KEY
+        ODDS_API_KEY: process.env.ODDS_API_KEY || process.env.REACT_APP_ODDS_API_KEY,
+        VARIANT_B_MIN_EDGE: '0.1',  // Lower threshold to 10% to get more games
+        VARIANT_B_KELLY_FRACTION: '0.25',
+        VARIANT_B_BANKROLL: '10000',
+        VARIANT_B_MODE: 'live'
       }
     });
     
