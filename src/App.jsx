@@ -16,6 +16,7 @@ import NBAPredictionsV2 from "./pages/NBAPredictionsV2";  // NBA Elite V2 Game P
 import NBAPlayerProps from "./pages/NBAPlayerProps";  // NBA Player Props (Rebounds + Assists)
 import NBAPlayerPropsV2 from "./pages/NBAPlayerPropsV2";  // NBA Player Props V2 (Phase 3 PRA)
 import NBADDTDPage from "./pages/NBADDTDPage";  // NBA DD/TD Picks Page
+import NCAAMBBPredictions from "./pages/NCAAMBBPredictions";  // NCAA MBB Predictions
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
@@ -100,6 +101,12 @@ export default function App() {
         { label: 'Player Props V2 (PRA) 🚀', path: '/nba-player-props-v2' },
         { label: 'DD/TD Picks 🎯', path: '/nba-ddtd' }
       ]
+    },
+    ncaa: {
+      label: 'NCAA',
+      items: [
+        { label: 'MBB Moneyline 🏀', path: '/ncaa-mbb' }
+      ]
     }
   };
 
@@ -138,6 +145,7 @@ export default function App() {
           <Route path="/nba-player-props" element={<NBAPlayerProps />} />
           <Route path="/nba-player-props-v2" element={<NBAPlayerPropsV2 />} />
           <Route path="/nba-ddtd" element={<NBADDTDPage />} />
+          <Route path="/ncaa-mbb" element={<NCAAMBBPredictions />} />
         </Routes>
       </div>
     </BrowserRouter>
