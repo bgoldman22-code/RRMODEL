@@ -135,6 +135,12 @@ def prepare_walkforward_data(results, odds):
     if 'date_odds' in combined.columns:
         combined = combined.drop('date_odds', axis=1)
     
+    # Standardize column names for goals
+    if 'home_score' in combined.columns:
+        combined['home_goals'] = combined['home_score']
+    if 'away_score' in combined.columns:
+        combined['away_goals'] = combined['away_score']
+    
     # Keep only necessary columns
     keep_cols = [
         'date', 'season', 'home', 'away', 'home_normalized', 'away_normalized',

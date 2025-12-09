@@ -23,7 +23,11 @@ const __dirname = dirname(__filename);
 const ROOT = join(__dirname, '../..');
 
 // TheOddsAPI Configuration
-const ODDS_API_KEY = 'c5d3fe15e6c5be83b2acd8695cff012b';
+const ODDS_API_KEY = process.env.ODDS_API_KEY || process.env.THEODDS_API_KEY;
+if (!ODDS_API_KEY) {
+  console.error('Error: ODDS_API_KEY environment variable is required');
+  process.exit(1);
+}
 const ODDS_API_URL = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/';
 
 // Parse command line args

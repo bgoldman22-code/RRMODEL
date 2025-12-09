@@ -22,7 +22,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuration
-const ODDS_API_KEY = process.env.ODDS_API_KEY || process.env.THEODDS_API_KEY || 'c5d3fe15e6c5be83b2acd8695cff012b';
+const ODDS_API_KEY = process.env.ODDS_API_KEY || process.env.THEODDS_API_KEY;
+if (!ODDS_API_KEY) {
+  console.error('Error: ODDS_API_KEY environment variable is required');
+  process.exit(1);
+}
 const MIN_EDGE_PCT = 2.0; // Minimum 2% edge to bet
 const CONFIDENCE_THRESHOLD = 55; // Minimum confidence to bet
 

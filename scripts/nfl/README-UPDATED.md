@@ -91,10 +91,10 @@ All systems that fetch live odds require a TheOddsAPI key:
 
 ```bash
 # Set environment variable
-export ODDS_API_KEY="c5d3fe15e6c5be83b2acd8695cff012b"
+export ODDS_API_KEY="your-api-key-here"
 
 # Or in .env.local file
-echo 'ODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b' >> .env.local
+echo 'ODDS_API_KEY=your-api-key-here' >> .env.local
 ```
 
 **Get your free key:** https://the-odds-api.com/  
