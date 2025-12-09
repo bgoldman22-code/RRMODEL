@@ -19,14 +19,13 @@ export default async function handler(event, context) {
     if (!response.ok) {
       if (response.status === 404) {
         console.log(`[NCAA MBB] No picks found for ${today}`);
-        return {
-          statusCode: 200,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ok: false,
-            message: `No games available for ${today}. Picks are generated daily at 10 AM ET.`
-          })
-        };
+        return new Response(JSON.stringify({
+          ok: false,
+          message: `No games available for ${today}. Picks are generated daily at 10 AM ET.`
+        }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
       }
       throw new Error(`GitHub fetch failed: ${response.status} ${response.statusText}`);
     }
@@ -37,32 +36,30 @@ export default async function handler(event, context) {
     // Transform to frontend format
     const transformed = transformPicks(data, today);
     
-    return {
-      statusCode: 200,
+    return new Response(JSON.stringify({
+      ok: true,
+      predictions: transformed.predictions,
+      metadata: transformed.metadata,
+      generated: new Date().toISOString(),
+      source: 'github'
+    }), {
+      status: 200,
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=900'
-      },
-      body: JSON.stringify({
-        ok: true,
-        predictions: transformed.predictions,
-        metadata: transformed.metadata,
-        generated: new Date().toISOString(),
-        source: 'github'
-      })
-    };
+      }
+    });
     
   } catch (error) {
     console.error('[NCAA MBB] Error:', error);
     
-    return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ok: false,
-        message: error.message
-      })
-    };
+    return new Response(JSON.stringify({
+      ok: false,
+      message: error.message
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
 
