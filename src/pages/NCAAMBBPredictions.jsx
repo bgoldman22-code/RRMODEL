@@ -15,7 +15,7 @@ const NCAAMBBPredictions = () => {
     try {
       setLoading(true);
       const timestamp = Date.now();
-      const response = await fetch(`/.netlify/functions/ncaa-mbb-predictions?_t=${timestamp}`);
+      const response = await fetch(`/.netlify/functions/ncaa-mbb-predictions-github?_t=${timestamp}`);
       const data = await response.json();
 
       if (!data.ok || !data.predictions || data.predictions.length === 0) {

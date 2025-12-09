@@ -1,0 +1,59 @@
+name: Generate NCAA MBB Picks
+
+on:
+  schedule:
+    # Run at 3 PM UTC (10 AM ET) every day during basketball season
+    - cron: '0 15 * * *'
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  generate-picks:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout RRMODEL
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Checkout NCAA MBB Model
+        uses: actions/checkout@v3
+        with:
+          repository: bgoldman22-code/NCAAMBBModel
+          path: NCAAMBBModel
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install NCAA MBB Model dependencies
+        run: |
+          cd NCAAMBBModel
+          pip install pandas numpy scikit-learn requests beautifulsoup4 cbbpy
+          
+      - name: Generate Today's Picks
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          VARIANT_B_MIN_EDGE: '0.1'
+          VARIANT_B_KELLY_FRACTION: '0.25'
+          VARIANT_B_BANKROLL: '10000'
+          VARIANT_B_MODE: 'live'
+        run: |
+          cd NCAAMBBModel
+          python3 scripts/ncaabb/run_daily_variant_b_live.py
+          
+      - name: Copy picks to RRMODEL
+        run: |
+          TODAY=$(date +%Y-%m-%d)
+          mkdir -p data/ncaa-mbb
+          cp NCAAMBBModel/data/ncaabb/picks/variant_b_picks_odds_aware_${TODAY}.json data/ncaa-mbb/latest.json
+          cp NCAAMBBModel/data/ncaabb/picks/variant_b_picks_odds_aware_${TODAY}.csv data/ncaa-mbb/latest.csv
+          
+      - name: Commit picks
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add data/ncaa-mbb/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: Update NCAA MBB picks for $(date +%Y-%m-%d)" && git push)

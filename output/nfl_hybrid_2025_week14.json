@@ -1,0 +1,739 @@
+{
+  "meta": {
+    "model_version": "NFL_Hybrid_V5+V1",
+    "season": "2025-2026",
+    "week": 14,
+    "generated_at": "2025-12-08T19:14:31.111Z",
+    "games_count": 14,
+    "config": {
+      "alpha": 0.4,
+      "disagreement_clamp": 4,
+      "spread_edge_threshold": 1.5,
+      "total_edge_threshold": 2.5
+    },
+    "notes": [
+      "Hybrid model combines V5 (backbone) + V1 (context overlay)",
+      "Spreads: V5 + (0.4 × V1_disagreement) clamped to ±4pts",
+      "Totals: V5 p50 as canonical, V1 for volatility detection only",
+      "Disagreement guardrails: Stakes reduced/blocked when models diverge",
+      "Injury adjustments: YES (from V1)",
+      "Depth charts: NO (disabled for speed)"
+    ]
+  },
+  "games": [
+    {
+      "game_id": "2025_14_DAL_DET",
+      "season": 2025,
+      "week": 14,
+      "home_team": "DET",
+      "away_team": "DAL",
+      "matchup": "DAL @ DET",
+      "model": {
+        "v5": {
+          "spread_home_margin": 5.703681256310252,
+          "total_p50": 48.5
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": 5.703681256310252,
+          "total_p50": 48.5
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "DAL -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "STRONG",
+          "side": "DET",
+          "display": "DAL -0.0",
+          "edge_pts": 5.7,
+          "units": 3
+        },
+        "total": {
+          "category": "CONSIDER",
+          "side": "over",
+          "line": 44,
+          "predicted": 48.5,
+          "edge_pts": 4.5,
+          "units": 1,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_SEA_ATL",
+      "season": 2025,
+      "week": 14,
+      "home_team": "ATL",
+      "away_team": "SEA",
+      "matchup": "SEA @ ATL",
+      "model": {
+        "v5": {
+          "spread_home_margin": -3.9444898349772552,
+          "total_p50": 45.5
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": -3.9444898349772552,
+          "total_p50": 45.5
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "SEA -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "CONSIDER",
+          "side": "SEA",
+          "display": "SEA -0.0",
+          "edge_pts": 3.9,
+          "units": 2
+        },
+        "total": {
+          "category": "TRACK",
+          "side": "no_bet",
+          "line": 44,
+          "predicted": 45.5,
+          "edge_pts": 0,
+          "units": 0,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_TEN_CLE",
+      "season": 2025,
+      "week": 14,
+      "home_team": "CLE",
+      "away_team": "TEN",
+      "matchup": "TEN @ CLE",
+      "model": {
+        "v5": {
+          "spread_home_margin": 2.568156971047763,
+          "total_p50": 42
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": 2.568156971047763,
+          "total_p50": 42
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "TEN -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "CONSIDER",
+          "side": "CLE",
+          "display": "TEN -0.0",
+          "edge_pts": 2.6,
+          "units": 1
+        },
+        "total": {
+          "category": "TRACK",
+          "side": "no_bet",
+          "line": 44,
+          "predicted": 42,
+          "edge_pts": 0,
+          "units": 0,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_CHI_GB",
+      "season": 2025,
+      "week": 14,
+      "home_team": "GB",
+      "away_team": "CHI",
+      "matchup": "CHI @ GB",
+      "model": {
+        "v5": {
+          "spread_home_margin": 3.4646056332078397,
+          "total_p50": 47.5
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": 3.4646056332078397,
+          "total_p50": 47.5
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "CHI -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "CONSIDER",
+          "side": "GB",
+          "display": "CHI -0.0",
+          "edge_pts": 3.5,
+          "units": 2
+        },
+        "total": {
+          "category": "CONSIDER",
+          "side": "over",
+          "line": 44,
+          "predicted": 47.5,
+          "edge_pts": 3.5,
+          "units": 1,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_IND_JAX",
+      "season": 2025,
+      "week": 14,
+      "home_team": "JAX",
+      "away_team": "IND",
+      "matchup": "IND @ JAX",
+      "model": {
+        "v5": {
+          "spread_home_margin": -3.98875207522014,
+          "total_p50": 48
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": -3.98875207522014,
+          "total_p50": 48
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "IND -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "CONSIDER",
+          "side": "IND",
+          "display": "IND -0.0",
+          "edge_pts": 4,
+          "units": 2
+        },
+        "total": {
+          "category": "CONSIDER",
+          "side": "over",
+          "line": 44,
+          "predicted": 48,
+          "edge_pts": 4,
+          "units": 1,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_WAS_MIN",
+      "season": 2025,
+      "week": 14,
+      "home_team": "MIN",
+      "away_team": "WAS",
+      "matchup": "WAS @ MIN",
+      "model": {
+        "v5": {
+          "spread_home_margin": 2.4729760933011633,
+          "total_p50": 45.5
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": 2.4729760933011633,
+          "total_p50": 45.5
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "WAS -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "CONSIDER",
+          "side": "MIN",
+          "display": "WAS -0.0",
+          "edge_pts": 2.5,
+          "units": 1
+        },
+        "total": {
+          "category": "TRACK",
+          "side": "no_bet",
+          "line": 44,
+          "predicted": 45.5,
+          "edge_pts": 0,
+          "units": 0,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_MIA_NYJ",
+      "season": 2025,
+      "week": 14,
+      "home_team": "NYJ",
+      "away_team": "MIA",
+      "matchup": "MIA @ NYJ",
+      "model": {
+        "v5": {
+          "spread_home_margin": 1.71489119832269,
+          "total_p50": 45.5
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": 1.71489119832269,
+          "total_p50": 45.5
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "MIA -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "CONSIDER",
+          "side": "NYJ",
+          "display": "MIA -0.0",
+          "edge_pts": 1.7,
+          "units": 1
+        },
+        "total": {
+          "category": "TRACK",
+          "side": "no_bet",
+          "line": 44,
+          "predicted": 45.5,
+          "edge_pts": 0,
+          "units": 0,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_PIT_BAL",
+      "season": 2025,
+      "week": 14,
+      "home_team": "BAL",
+      "away_team": "PIT",
+      "matchup": "PIT @ BAL",
+      "model": {
+        "v5": {
+          "spread_home_margin": 3.185520857877561,
+          "total_p50": 47
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": 3.185520857877561,
+          "total_p50": 47
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "PIT -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "CONSIDER",
+          "side": "BAL",
+          "display": "PIT -0.0",
+          "edge_pts": 3.2,
+          "units": 2
+        },
+        "total": {
+          "category": "CONSIDER",
+          "side": "over",
+          "line": 44,
+          "predicted": 47,
+          "edge_pts": 3,
+          "units": 1,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_NO_TB",
+      "season": 2025,
+      "week": 14,
+      "home_team": "TB",
+      "away_team": "NO",
+      "matchup": "NO @ TB",
+      "model": {
+        "v5": {
+          "spread_home_margin": 4.858620907014963,
+          "total_p50": 45
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": 4.858620907014963,
+          "total_p50": 45
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "NO -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "STRONG",
+          "side": "TB",
+          "display": "NO -0.0",
+          "edge_pts": 4.9,
+          "units": 3
+        },
+        "total": {
+          "category": "TRACK",
+          "side": "no_bet",
+          "line": 44,
+          "predicted": 45,
+          "edge_pts": 0,
+          "units": 0,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_DEN_LV",
+      "season": 2025,
+      "week": 14,
+      "home_team": "LV",
+      "away_team": "DEN",
+      "matchup": "DEN @ LV",
+      "model": {
+        "v5": {
+          "spread_home_margin": -1.8848641868484606,
+          "total_p50": 45.5
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": -1.8848641868484606,
+          "total_p50": 45.5
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "DEN -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "CONSIDER",
+          "side": "DEN",
+          "display": "DEN -0.0",
+          "edge_pts": 1.9,
+          "units": 1
+        },
+        "total": {
+          "category": "TRACK",
+          "side": "no_bet",
+          "line": 44,
+          "predicted": 45.5,
+          "edge_pts": 0,
+          "units": 0,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_CIN_BUF",
+      "season": 2025,
+      "week": 14,
+      "home_team": "BUF",
+      "away_team": "CIN",
+      "matchup": "CIN @ BUF",
+      "model": {
+        "v5": {
+          "spread_home_margin": 6.57077550687601,
+          "total_p50": 48.5
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": 6.57077550687601,
+          "total_p50": 48.5
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "CIN -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "STRONG",
+          "side": "BUF",
+          "display": "CIN -0.0",
+          "edge_pts": 6.6,
+          "units": 3
+        },
+        "total": {
+          "category": "CONSIDER",
+          "side": "over",
+          "line": 44,
+          "predicted": 48.5,
+          "edge_pts": 4.5,
+          "units": 1,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_LAR_ARI",
+      "season": 2025,
+      "week": 14,
+      "home_team": "ARI",
+      "away_team": "LA",
+      "matchup": "LA @ ARI",
+      "model": {
+        "v5": {
+          "spread_home_margin": -4.527504674883578,
+          "total_p50": 48
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": -4.527504674883578,
+          "total_p50": 48
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "LA -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "STRONG",
+          "side": "LA",
+          "display": "LA -0.0",
+          "edge_pts": 4.5,
+          "units": 3
+        },
+        "total": {
+          "category": "CONSIDER",
+          "side": "over",
+          "line": 44,
+          "predicted": 48,
+          "edge_pts": 4,
+          "units": 1,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_HOU_KC",
+      "season": 2025,
+      "week": 14,
+      "home_team": "KC",
+      "away_team": "HOU",
+      "matchup": "HOU @ KC",
+      "model": {
+        "v5": {
+          "spread_home_margin": 5.3019328699229815,
+          "total_p50": 46
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": 5.3019328699229815,
+          "total_p50": 46
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "HOU -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "STRONG",
+          "side": "KC",
+          "display": "HOU -0.0",
+          "edge_pts": 5.3,
+          "units": 3
+        },
+        "total": {
+          "category": "TRACK",
+          "side": "no_bet",
+          "line": 44,
+          "predicted": 46,
+          "edge_pts": 0,
+          "units": 0,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    },
+    {
+      "game_id": "2025_14_PHI_LAC",
+      "season": 2025,
+      "week": 14,
+      "home_team": "LAC",
+      "away_team": "PHI",
+      "matchup": "PHI @ LAC",
+      "model": {
+        "v5": {
+          "spread_home_margin": 4.339106216124539,
+          "total_p50": 45.5
+        },
+        "v1": {
+          "home_margin": null,
+          "total_estimate": null
+        },
+        "hybrid": {
+          "spread_home_margin": 4.339106216124539,
+          "total_p50": 45.5
+        }
+      },
+      "market": {
+        "spread_home_margin": 0,
+        "spread_display": "PHI -0.0",
+        "total": 44,
+        "bookmaker": null
+      },
+      "picks": {
+        "spread": {
+          "category": "CONSIDER",
+          "side": "LAC",
+          "display": "PHI -0.0",
+          "edge_pts": 4.3,
+          "units": 2
+        },
+        "total": {
+          "category": "TRACK",
+          "side": "no_bet",
+          "line": 44,
+          "predicted": 45.5,
+          "edge_pts": 0,
+          "units": 0,
+          "high_variance": false
+        }
+      },
+      "meta": {
+        "spread_disagreement": 0,
+        "total_disagreement": null,
+        "alpha_used": 0
+      }
+    }
+  ]
+}

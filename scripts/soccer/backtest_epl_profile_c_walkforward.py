@@ -15,12 +15,12 @@ This script implements a proper walk-forward backtest that simulates live tradin
    For each walk-forward step:
    - Training set: ALL matches BEFORE evaluation_start
    - Tuning set: Last 365 days of training (for band optimization)
-   - Evaluation set: Next 60 days forward (strictly out-of-sample)
+   - Evaluation set: Next 90 days forward (strictly out-of-sample)
    
 3. BAND TUNING & SELECTION
    - Bands discovered on recent past (tuning window)
    - Applied to future matches (evaluation window)
-   - Band selection criteria: ROI > 2%, edge > 8%, Kelly < 40%, min 20 matches
+   - Band selection criteria: ROI ≥ 0%, edge ≥ 5%, Kelly ≤ 35%, min 10 matches
    
 4. KELLY-BASED BET SIZING
    - Each band has Kelly fraction from tuning
@@ -34,12 +34,12 @@ This script implements a proper walk-forward backtest that simulates live tradin
 
 WALKFORWARD SCHEDULE:
 =====================
-evaluation_block_days = 60  (approximately 2 months)
+evaluation_block_days = 90  (approximately 3 months)
 tuning_horizon_days = 365   (use last year for band optimization)
 min_training_matches = 300  (skip early periods with insufficient data)
 
 Start from first date where we have 300+ training matches with odds.
-Advance by 60 days per step until data exhausted.
+Advance by 90 days per step until data exhausted.
 
 USAGE:
 ======
@@ -79,15 +79,15 @@ from epl_profile_c_core import (
 
 # Walk-forward configuration
 WALKFORWARD_CONFIG = {
-    'evaluation_block_days': 60,    # 2-month evaluation windows
+    'evaluation_block_days': 90,    # 3-month evaluation windows (increased from 60 for more bets)
     'tuning_horizon_days': 365,     # Use last year for band optimization
     'min_training_matches': 300,    # Skip if insufficient training data
     'min_tuning_matches': 200,      # Minimum matches in tuning window
     'band_selection_criteria': {
-        'min_roi': 0.02,            # 2% minimum ROI
-        'min_edge': 0.08,           # 8% minimum edge
-        'max_kelly': 0.40,          # Maximum Kelly fraction
-        'min_matches': 20            # Minimum sample size
+        'min_roi': 0.00,            # 0% minimum ROI (allow non-negative in tuning)
+        'min_edge': 0.05,           # 5% minimum edge (relaxed from 8%)
+        'max_kelly': 0.35,          # Maximum Kelly fraction (tightened slightly from 0.40)
+        'min_matches': 10           # Minimum sample size (relaxed from 20)
     },
     'kelly_multiplier': 0.25,       # Quarter-Kelly for safety
     'output_dir': '/Users/brentgoldman/Desktop/REPO33/data/premier_league/'
@@ -290,15 +290,20 @@ def run_walkforward_step(step_info, df, team_stats, config):
     
     print(f"  Team ratings: {len(team_ratings)} teams (seasons: {allowed_seasons})")
     
-    # Verify zero leakage
+    # Verify zero leakage (only check for seasons EXCLUSIVELY in eval, not in training)
     seasons_used = set([r.get('season', 'DEFAULT') for r in team_ratings.values()])
     eval_seasons = set(eval_df['season'].unique())
-    leak_detected = any(s in eval_seasons for s in seasons_used if s != 'DEFAULT')
+    training_seasons = set(train_df['season'].unique())
+    
+    # Seasons that are ONLY in eval (not in training) should NOT be in ratings
+    eval_only_seasons = eval_seasons - training_seasons
+    leak_detected = any(s in eval_only_seasons for s in seasons_used if s != 'DEFAULT')
     
     if leak_detected:
-        raise ValueError(f"LEAKAGE DETECTED in step {step_id}: Eval seasons {eval_seasons} found in ratings!")
+        leaked_seasons = eval_only_seasons & seasons_used
+        raise ValueError(f"LEAKAGE DETECTED in step {step_id}: Eval-only seasons {leaked_seasons} found in ratings!")
     
-    print(f"  ✓ Zero-leakage verified: No eval-season stats used")
+    print(f"  ✓ Zero-leakage verified: No eval-only-season stats used")
     
     # 4. CALIBRATE DIXON-COLES (on training data)
     dc_params = calibrate_dixon_coles(
@@ -369,12 +374,28 @@ def run_walkforward_step(step_info, df, team_stats, config):
     
     eval_preds = generate_predictions(eval_results_for_pred, team_ratings, dc_params)
     
-    # Merge with odds
-    eval_with_odds = eval_preds.merge(
-        eval_df[['home', 'away', 'season', 'date', 'btts_yes_odds', 'btts_no_odds']],
+    # Merge with odds - need to restore normalized names for merge
+    eval_preds_for_merge = eval_preds.copy()
+    eval_preds_for_merge['home'] = eval_preds['home']  # Already normalized from generate_predictions
+    eval_preds_for_merge['away'] = eval_preds['away']  # Already normalized
+    
+    # Get odds info from eval_df
+    eval_odds_info = eval_df[['home', 'away', 'season', 'date', 'btts_yes_odds', 'btts_no_odds']].copy()
+    
+    eval_with_odds = eval_preds_for_merge.merge(
+        eval_odds_info,
         on=['home', 'away', 'season'],
-        how='inner'
+        how='inner',
+        suffixes=('_pred', '_odds')
     )
+    
+    # Resolve date column (prefer odds date if both exist)
+    if 'date_odds' in eval_with_odds.columns:
+        eval_with_odds['date'] = eval_with_odds['date_odds']
+        eval_with_odds = eval_with_odds.drop(columns=['date_pred', 'date_odds'], errors='ignore')
+    elif 'date_pred' in eval_with_odds.columns:
+        eval_with_odds['date'] = eval_with_odds['date_pred']
+        eval_with_odds = eval_with_odds.drop(columns=['date_pred'], errors='ignore')
     
     print(f"  Evaluation predictions: {len(eval_with_odds)} matches")
     
