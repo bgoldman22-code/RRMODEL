@@ -178,7 +178,7 @@ Files saved to: `output/nfl-analysis/2025_week14/`
 
 ## 🎯 TheOddsAPI Usage
 
-- **API Key**: c5d3fe15e6c5be83b2acd8695cff012b
+- **API Key**: Set via ODDS_API_KEY environment variable
 - **Usage**: ~1 call per run (30 games fetched)
 - **Remaining**: ~498 requests this month
 - **Books**: DraftKings, FanDuel, BetMGM

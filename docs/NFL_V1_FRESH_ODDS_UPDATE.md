@@ -112,7 +112,7 @@ CIN @ BUF: BUF -2.0 (CORRECT - no false QB change penalty)
 # node scripts/nfl/run-v1-local.mjs 2025 14
 
 # Use new fresh odds script:
-ODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b node scripts/nfl/run-v1-fresh-odds.mjs 2025 14
+ODDS_API_KEY=your-api-key-here node scripts/nfl/run-v1-fresh-odds.mjs 2025 14
 ```
 
 ### 2. Check Odds Metadata

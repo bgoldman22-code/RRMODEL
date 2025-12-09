@@ -33,7 +33,7 @@ The hybrid system is currently working with V5-only:
 ### **Option 3: Manual V1 Run** (When PHI worked)
 When you ran PHI successfully, you used:
 ```bash
-ODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b node scripts/nfl/run-v1-fresh-odds.mjs 2025 14 PHI
+ODDS_API_KEY=your-api-key-here node scripts/nfl/run-v1-fresh-odds.mjs 2025 14 PHI
 ```
 
 This called the production API which was working then. It's returning 502 now.

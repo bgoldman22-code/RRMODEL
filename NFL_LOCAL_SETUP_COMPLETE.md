@@ -15,7 +15,7 @@ node scripts/nfl/run-v1-lite-local.mjs 2025 14
 
 **What it does:**
 - Fetches Week 14 schedule from NFLverse (GitHub)
-- Fetches live odds from TheOddsAPI (your key: c5d3fe15e6c5be83b2acd8695cff012b)
+- Fetches live odds from TheOddsAPI (configure your key via environment variable)
 - Shows current spreads, totals, and moneylines for all 14 games
 - Runs in ~3 seconds, 100% locally
 
@@ -85,14 +85,11 @@ node scripts/nfl/run-v5-local.mjs 2025 14
 
 ## 🔑 **Your OddsAPI Key**
 
-Already configured in the V1 Lite script:
-```
-c5d3fe15e6c5be83b2acd8695cff012b
-```
+Already configured in the V1 Lite script via environment variable.
 
-**Usage so far today:**
-- 1 successful call (30 games fetched)
-- 499 requests remaining this month
+**Usage tracking:**
+- Monitor your usage at https://the-odds-api.com/dashboard
+- Free tier: 500 requests/month
 
 ---
 

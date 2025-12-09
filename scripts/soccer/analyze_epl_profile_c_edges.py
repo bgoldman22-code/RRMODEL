@@ -135,16 +135,10 @@ def prepare_walkforward_data(results, odds):
     if 'date_odds' in combined.columns:
         combined = combined.drop('date_odds', axis=1)
     
-    # Standardize column names for goals
-    if 'home_score' in combined.columns:
-        combined['home_goals'] = combined['home_score']
-    if 'away_score' in combined.columns:
-        combined['away_goals'] = combined['away_score']
-    
-    # Keep only necessary columns
+    # Keep only necessary columns (use home_score/away_score as core functions expect)
     keep_cols = [
         'date', 'season', 'home', 'away', 'home_normalized', 'away_normalized',
-        'home_goals', 'away_goals', 'btts', 'btts_yes_odds', 'btts_no_odds'
+        'home_score', 'away_score', 'btts', 'btts_yes_odds', 'btts_no_odds'
     ]
     available_cols = [c for c in keep_cols if c in combined.columns]
     combined = combined[available_cols].copy()
@@ -247,7 +241,7 @@ def compute_edge_universe_for_step(step_info, df, team_stats, config):
         return None
     
     # Calculate league average goals
-    league_avg_goals = train_df[['home_goals', 'away_goals']].values.flatten().mean()
+    league_avg_goals = train_df[['home_score', 'away_score']].values.flatten().mean()
     print(f"  League avg goals: {league_avg_goals:.2f}")
     
     # Calculate team ratings (with zero-leakage season filter)
