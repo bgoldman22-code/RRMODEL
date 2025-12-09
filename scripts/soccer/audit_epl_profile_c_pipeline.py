@@ -21,15 +21,20 @@ from pathlib import Path
 import sys
 
 # Add parent directory to path for imports
-sys.path.append(str(Path(__file__).parent.parent.parent))
+sys.path.append(str(Path(__file__).parent))
 
-from scripts.soccer.epl_profile_c_core import (
-    load_epl_data,
-    calculate_team_ratings,
-    calibrate_dixon_coles,
-    generate_predictions,
-    shin_implied_prob
-)
+try:
+    from epl_profile_c_core import (
+        load_epl_data,
+        calculate_team_ratings,
+        calibrate_dixon_coles,
+        generate_predictions,
+        shin_implied_prob
+    )
+    CORE_AVAILABLE = True
+except ImportError:
+    CORE_AVAILABLE = False
+    print("⚠️ Warning: Could not import epl_profile_c_core (not needed for basic audit)")
 
 # Output file
 OUTPUT_FILE = Path(__file__).parent.parent.parent / "EPL_PROFILE_C_DATA_PIPELINE_AUDIT.md"
@@ -134,8 +139,13 @@ def audit_raw_data():
         report_lines.append(f"**Rows:** {len(odds_df):,}\n")
         report_lines.append(f"**Columns:** {list(odds_df.columns)}\n")
         
+        # Detect actual column names (flexible)
+        date_col = 'date' if 'date' in odds_df.columns else 'commence_time'
+        home_col = 'home' if 'home' in odds_df.columns else 'home_team'
+        away_col = 'away' if 'away' in odds_df.columns else 'away_team'
+        
         # Check for key columns
-        key_cols = ['commence_time', 'home_team', 'away_team', 'btts_yes_odds', 'btts_no_odds']
+        key_cols = [date_col, home_col, away_col, 'btts_yes_odds', 'btts_no_odds']
         missing_cols = [col for col in key_cols if col not in odds_df.columns]
         if missing_cols:
             report_lines.append(f"⚠️ **Missing key columns:** {missing_cols}\n")
@@ -163,11 +173,11 @@ def audit_raw_data():
                 report_lines.append(f"- `{col}`: {invalid.sum():,} rows\n")
         
         # Date coverage
-        if 'commence_time' in odds_df.columns:
-            odds_df['commence_parsed'] = pd.to_datetime(odds_df['commence_time'], errors='coerce')
-            valid_dates = odds_df['commence_parsed'].dropna()
+        if date_col in odds_df.columns:
+            odds_df['date_parsed'] = pd.to_datetime(odds_df[date_col], errors='coerce')
+            valid_dates = odds_df['date_parsed'].dropna()
             if len(valid_dates) > 0:
-                report_lines.append("\n**Date coverage (commence_time):**\n")
+                report_lines.append(f"\n**Date coverage ({date_col}):**\n")
                 report_lines.append(f"- **Min date:** {valid_dates.min().strftime('%Y-%m-%d %H:%M:%S')}\n")
                 report_lines.append(f"- **Max date:** {valid_dates.max().strftime('%Y-%m-%d %H:%M:%S')}\n")
                 report_lines.append(f"- **Date range:** {(valid_dates.max() - valid_dates.min()).days:,} days\n")
@@ -265,13 +275,18 @@ def audit_merge_logic(results_df, odds_df):
     results_pc = results_df.copy()
     odds_pc = odds_df.copy()
     
+    # Detect column names
+    odds_date_col = 'date' if 'date' in odds_pc.columns else 'commence_time'
+    odds_home_col = 'home' if 'home' in odds_pc.columns else 'home_team'
+    odds_away_col = 'away' if 'away' in odds_pc.columns else 'away_team'
+    
     # Parse dates
-    results_pc['date'] = pd.to_datetime(results_pc['date'])
-    odds_pc['commence_time'] = pd.to_datetime(odds_pc['commence_time'])
+    results_pc['date'] = pd.to_datetime(results_pc['date']).dt.tz_localize(None)
+    odds_pc['date_odds'] = pd.to_datetime(odds_pc[odds_date_col]).dt.tz_localize(None)
     
     # Normalize to date only (remove time component)
     results_pc['date_normalized'] = results_pc['date'].dt.normalize()
-    odds_pc['date_normalized'] = odds_pc['commence_time'].dt.normalize()
+    odds_pc['date_normalized'] = odds_pc['date_odds'].dt.normalize()
     
     # Standardize team names (basic)
     def standardize_team(name):
@@ -281,8 +296,8 @@ def audit_merge_logic(results_df, odds_df):
     
     results_pc['home_std'] = results_pc['home'].apply(standardize_team)
     results_pc['away_std'] = results_pc['away'].apply(standardize_team)
-    odds_pc['home_std'] = odds_pc['home_team'].apply(standardize_team)
-    odds_pc['away_std'] = odds_pc['away_team'].apply(standardize_team)
+    odds_pc['home_std'] = odds_pc[odds_home_col].apply(standardize_team)
+    odds_pc['away_std'] = odds_pc[odds_away_col].apply(standardize_team)
     
     # Merge on date + home + away
     merged_pc = pd.merge(
@@ -326,7 +341,10 @@ def audit_merge_logic(results_df, odds_df):
         report_lines.append(f"\n**Unmatched odds rows:** {len(unmatched_odds_idx):,}\n")
         report_lines.append("**Sample unmatched odds (first 10):**\n")
         for _, row in unmatched_odds.iterrows():
-            report_lines.append(f"- {row['commence_time'].strftime('%Y-%m-%d')}: {row['home_team']} vs {row['away_team']}\n")
+            date_str = row['date_odds'].strftime('%Y-%m-%d') if 'date_odds' in row else 'N/A'
+            home_name = row[odds_home_col] if odds_home_col in row else 'N/A'
+            away_name = row[odds_away_col] if odds_away_col in row else 'N/A'
+            report_lines.append(f"- {date_str}: {home_name} vs {away_name}\n")
     
     # ---- Edge Explorer Merge Logic ----
     report_lines.append("\n### 2.2 Edge Explorer Merge Logic (analyze_epl_profile_c_edges.py)\n")
@@ -349,19 +367,24 @@ def audit_merge_logic(results_df, odds_df):
     results_ee = results_df.copy()
     odds_ee = odds_df.copy()
     
+    # Detect column names
+    odds_date_col_ee = 'date' if 'date' in odds_ee.columns else 'commence_time'
+    odds_home_col_ee = 'home' if 'home' in odds_ee.columns else 'home_team'
+    odds_away_col_ee = 'away' if 'away' in odds_ee.columns else 'away_team'
+    
     # Parse dates
-    results_ee['date'] = pd.to_datetime(results_ee['date'])
-    odds_ee['commence_time'] = pd.to_datetime(odds_ee['commence_time'])
+    results_ee['date'] = pd.to_datetime(results_ee['date']).dt.tz_localize(None)
+    odds_ee['date_odds'] = pd.to_datetime(odds_ee[odds_date_col_ee]).dt.tz_localize(None)
     
     # Edge Explorer uses 'match_date' from commence_time
-    odds_ee['match_date'] = odds_ee['commence_time'].dt.date
+    odds_ee['match_date'] = odds_ee['date_odds'].dt.date
     results_ee['match_date'] = results_ee['date'].dt.date
     
     # Standardize team names
     results_ee['home_std'] = results_ee['home'].apply(standardize_team)
     results_ee['away_std'] = results_ee['away'].apply(standardize_team)
-    odds_ee['home_std'] = odds_ee['home_team'].apply(standardize_team)
-    odds_ee['away_std'] = odds_ee['away_team'].apply(standardize_team)
+    odds_ee['home_std'] = odds_ee[odds_home_col_ee].apply(standardize_team)
+    odds_ee['away_std'] = odds_ee[odds_away_col_ee].apply(standardize_team)
     
     # Merge
     merged_ee = pd.merge(

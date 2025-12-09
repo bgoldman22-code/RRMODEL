@@ -7,7 +7,14 @@
 
 [build.processing.secrets]
   # Documentation files contain placeholder references, not actual secrets
-  omit_paths = ["ACTION_REQUIRED.md", "GITHUB_ACTION_RAPIDAPI_SETUP.md", "RAPIDAPI_INTEGRATION_SUMMARY.md"]
+  # NCAAMBBModel is a submodule with its own documentation
+  omit_paths = [
+    "ACTION_REQUIRED.md", 
+    "GITHUB_ACTION_RAPIDAPI_SETUP.md", 
+    "RAPIDAPI_INTEGRATION_SUMMARY.md",
+    "NCAAMBBModel/**",
+    "docs/SECURITY_FIX_API_KEY_REMOVAL.md"
+  ]
 
 [functions]
   node_bundler = "esbuild"

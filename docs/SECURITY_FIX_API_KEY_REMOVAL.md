@@ -19,7 +19,7 @@ Build script returned non-zero exit code: 2
 
 ## Root Cause
 
-The hardcoded API key `c5d3fe15e6c5be83b2acd8695cff012b` (TheOddsAPI) was found in:
+A hardcoded TheOddsAPI key was found in:
 
 ### Wave 1 Issues (Fixed in commit 3b4741a0)
 1. `scripts/nfl/README-UPDATED.md` (line 97)
@@ -46,7 +46,7 @@ The hardcoded API key `c5d3fe15e6c5be83b2acd8695cff012b` (TheOddsAPI) was found 
 ### 1. Script Files (JavaScript/Python)
 **Before:**
 ```javascript
-const ODDS_API_KEY = 'c5d3fe15e6c5be83b2acd8695cff012b';
+const ODDS_API_KEY = '<hardcoded-key-value>';
 ```
 
 **After:**
@@ -61,7 +61,7 @@ if (!ODDS_API_KEY) {
 ### 2. Documentation Files
 **Before:**
 ```markdown
-export ODDS_API_KEY="c5d3fe15e6c5be83b2acd8695cff012b"
+export ODDS_API_KEY="<hardcoded-key-value>"
 ```
 
 **After:**
@@ -72,7 +72,7 @@ export ODDS_API_KEY="your-api-key-here"
 ### 3. Environment Files (.env.local)
 **Before:**
 ```bash
-ODDS_API_KEY=c5d3fe15e6c5be83b2acd8695cff012b
+ODDS_API_KEY=<hardcoded-key-value>
 ```
 
 **After:**
@@ -127,13 +127,13 @@ Files cleaned:
 
 ### Before Fix
 ```bash
-$ grep -r "c5d3fe15e6c5be83b2acd8695cff012b" .
+$ grep -r "<api-key-pattern>" .
 # 18 matches found
 ```
 
 ### After Fix
 ```bash
-$ grep -r "c5d3fe15e6c5be83b2acd8695cff012b" .
+$ grep -r "<api-key-pattern>" .
 # No matches found ✅
 ```
 
@@ -197,7 +197,7 @@ fi
 ## Impact Assessment
 
 ### What Was Exposed
-- **API Key:** TheOddsAPI key (`c5d3fe15e6c5be83b2acd8695cff012b`)
+- **API Key:** TheOddsAPI key (value removed from documentation)
 - **Service:** https://the-odds-api.com
 - **Exposure Duration:** Multiple commits over time
 - **Visibility:** Public GitHub repository
