@@ -8,7 +8,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const execAsync = promisify(exec);
-const functionDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default async function handler(event, context) {
   console.log('[NCAA MBB] Starting predictions...');
@@ -18,8 +17,8 @@ export default async function handler(event, context) {
     const today = new Date().toISOString().split('T')[0];
     console.log(`[NCAA MBB] Generating predictions for ${today}`);
     
-    // Path to NCAA MBB Model (assuming it's in the same parent directory)
-    const ncaaModelPath = path.join(functionDir, '../../../..', 'NCAAMBBModel');
+    // Path to NCAA MBB Model - use environment variable or default path
+    const ncaaModelPath = process.env.NCAA_MBB_MODEL_PATH || '/opt/build/repo/../NCAAMBBModel';
     const outputPath = path.join(ncaaModelPath, 'data/ncaabb/picks', `variant_b_picks_odds_aware_${today}.json`);
     const csvPath = path.join(ncaaModelPath, 'data/ncaabb/picks', `variant_b_picks_odds_aware_${today}.csv`);
     
