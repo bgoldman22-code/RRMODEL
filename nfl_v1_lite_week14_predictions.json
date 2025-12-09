@@ -1,0 +1,503 @@
+{
+  "season": 2025,
+  "week": 14,
+  "generated_at": "2025-12-04T16:10:53.124Z",
+  "model": "v1_lite_local",
+  "predictions": [
+    {
+      "game_id": "2025_14_DAL_DET",
+      "home_team": "DET",
+      "away_team": "DAL",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-04",
+      "predictions": {
+        "spread": {
+          "predicted": -3,
+          "market_line": -3,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -112,
+          "away_price": -108
+        },
+        "total": {
+          "predicted": 54.5,
+          "market_line": 54.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -110,
+          "under_price": -110
+        },
+        "moneyline": {
+          "home_price": -166,
+          "away_price": 140,
+          "home_implied_prob": 0.6240601503759399,
+          "away_implied_prob": 0.4166666666666667
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_SEA_ATL",
+      "home_team": "ATL",
+      "away_team": "SEA",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": 7,
+          "market_line": 7,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -115,
+          "away_price": -105
+        },
+        "total": {
+          "predicted": 44.5,
+          "market_line": 44.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -112,
+          "under_price": -108
+        },
+        "moneyline": {
+          "home_price": 280,
+          "away_price": -355,
+          "home_implied_prob": 0.2631578947368421,
+          "away_implied_prob": 0.7802197802197802
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_PIT_BAL",
+      "home_team": "BAL",
+      "away_team": "PIT",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": -6,
+          "market_line": -6,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -108,
+          "away_price": -112
+        },
+        "total": {
+          "predicted": 42.5,
+          "market_line": 42.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -118,
+          "under_price": -102
+        },
+        "moneyline": {
+          "home_price": -290,
+          "away_price": 235,
+          "home_implied_prob": 0.7435897435897436,
+          "away_implied_prob": 0.29850746268656714
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_CIN_BUF",
+      "home_team": "BUF",
+      "away_team": "CIN",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": -5.5,
+          "market_line": -5.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -120,
+          "away_price": 100
+        },
+        "total": {
+          "predicted": 53.5,
+          "market_line": 53.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -112,
+          "under_price": -108
+        },
+        "moneyline": {
+          "home_price": -270,
+          "away_price": 220,
+          "home_implied_prob": 0.7297297297297297,
+          "away_implied_prob": 0.3125
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_TEN_CLE",
+      "home_team": "CLE",
+      "away_team": "TEN",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": -4.5,
+          "market_line": -4.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -105,
+          "away_price": -115
+        },
+        "total": {
+          "predicted": 33.5,
+          "market_line": 33.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -115,
+          "under_price": -105
+        },
+        "moneyline": {
+          "home_price": -205,
+          "away_price": 170,
+          "home_implied_prob": 0.6721311475409836,
+          "away_implied_prob": 0.37037037037037035
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_IND_JAX",
+      "home_team": "JAX",
+      "away_team": "IND",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": 1.5,
+          "market_line": 1.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -108,
+          "away_price": -112
+        },
+        "total": {
+          "predicted": 47.5,
+          "market_line": 47.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -115,
+          "under_price": -105
+        },
+        "moneyline": {
+          "home_price": 105,
+          "away_price": -125,
+          "home_implied_prob": 0.4878048780487805,
+          "away_implied_prob": 0.5555555555555556
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_WAS_MIN",
+      "home_team": "MIN",
+      "away_team": "WAS",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": -2.5,
+          "market_line": -2.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -105,
+          "away_price": -115
+        },
+        "total": {
+          "predicted": 42.5,
+          "market_line": 42.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -105,
+          "under_price": -115
+        },
+        "moneyline": {
+          "home_price": -130,
+          "away_price": 110,
+          "home_implied_prob": 0.5652173913043478,
+          "away_implied_prob": 0.47619047619047616
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_MIA_NYJ",
+      "home_team": "NYJ",
+      "away_team": "MIA",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": 2.5,
+          "market_line": 2.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": 100,
+          "away_price": -120
+        },
+        "total": {
+          "predicted": 41.5,
+          "market_line": 41.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -110,
+          "under_price": -110
+        },
+        "moneyline": {
+          "home_price": 130,
+          "away_price": -155,
+          "home_implied_prob": 0.43478260869565216,
+          "away_implied_prob": 0.6078431372549019
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_NO_TB",
+      "home_team": "TB",
+      "away_team": "NO",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": -8.5,
+          "market_line": -8.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -108,
+          "away_price": -112
+        },
+        "total": {
+          "predicted": 41.5,
+          "market_line": 41.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -110,
+          "under_price": -110
+        },
+        "moneyline": {
+          "home_price": -440,
+          "away_price": 340,
+          "home_implied_prob": 0.8148148148148148,
+          "away_implied_prob": 0.22727272727272727
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_DEN_LV",
+      "home_team": "LV",
+      "away_team": "DEN",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": 7.5,
+          "market_line": 7.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -112,
+          "away_price": -108
+        },
+        "total": {
+          "predicted": 40.5,
+          "market_line": 40.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": 102,
+          "under_price": -122
+        },
+        "moneyline": {
+          "home_price": 320,
+          "away_price": -410,
+          "home_implied_prob": 0.23809523809523808,
+          "away_implied_prob": 0.803921568627451
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_LA_ARI",
+      "home_team": "ARI",
+      "away_team": "LA",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": 7.5,
+          "market_line": 7.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -105,
+          "away_price": -115
+        },
+        "total": {
+          "predicted": 47.5,
+          "market_line": 47.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -110,
+          "under_price": -110
+        },
+        "moneyline": {
+          "home_price": 330,
+          "away_price": -425,
+          "home_implied_prob": 0.23255813953488372,
+          "away_implied_prob": 0.8095238095238095
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_CHI_GB",
+      "home_team": "GB",
+      "away_team": "CHI",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": -6.5,
+          "market_line": -6.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -115,
+          "away_price": -105
+        },
+        "total": {
+          "predicted": 44.5,
+          "market_line": 44.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -110,
+          "under_price": -110
+        },
+        "moneyline": {
+          "home_price": -340,
+          "away_price": 270,
+          "home_implied_prob": 0.7727272727272727,
+          "away_implied_prob": 0.2702702702702703
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_HOU_KC",
+      "home_team": "KC",
+      "away_team": "HOU",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-07",
+      "predictions": {
+        "spread": {
+          "predicted": -3.5,
+          "market_line": -3.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -105,
+          "away_price": -115
+        },
+        "total": {
+          "predicted": 41.5,
+          "market_line": 41.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -115,
+          "under_price": -105
+        },
+        "moneyline": {
+          "home_price": -180,
+          "away_price": 150,
+          "home_implied_prob": 0.6428571428571429,
+          "away_implied_prob": 0.4
+        }
+      },
+      "odds_source": "draftkings"
+    },
+    {
+      "game_id": "2025_14_PHI_LAC",
+      "home_team": "LAC",
+      "away_team": "PHI",
+      "week": 14,
+      "season": 2025,
+      "kickoff": "2025-12-08",
+      "predictions": {
+        "spread": {
+          "predicted": 3,
+          "market_line": 3,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "home_price": -115,
+          "away_price": -105
+        },
+        "total": {
+          "predicted": 40.5,
+          "market_line": 40.5,
+          "edge": 0,
+          "confidence": 50,
+          "recommendation": "NO BET",
+          "over_price": -115,
+          "under_price": -105
+        },
+        "moneyline": {
+          "home_price": 130,
+          "away_price": -155,
+          "home_implied_prob": 0.43478260869565216,
+          "away_implied_prob": 0.6078431372549019
+        }
+      },
+      "odds_source": "draftkings"
+    }
+  ],
+  "summary": {
+    "total_games": 14,
+    "games_with_odds": 14,
+    "games_without_odds": 0
+  }
+}

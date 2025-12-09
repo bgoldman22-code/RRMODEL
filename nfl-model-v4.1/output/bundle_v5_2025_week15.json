@@ -1,0 +1,633 @@
+{
+  "season": 2025,
+  "week": 15,
+  "model_version": "V5-Reconstructed-Ridge-ZeroDef-2025-11-14",
+  "model_metadata": {
+    "spread_model": {
+      "name": "V5 Multi-Feature EPA",
+      "method": "OLS",
+      "training_window": "2020-2024",
+      "training_games": 1349,
+      "mae_validation": 10.62,
+      "coefficients_file": "v5_coefficients_spread.json",
+      "features": [
+        "epa_diff",
+        "success_diff",
+        "explosive_diff",
+        "hfa"
+      ]
+    },
+    "total_model": {
+      "name": "V5 Ridge Regression (λ=500)",
+      "method": "Ridge with epa_def_sum zero-weighted in serving",
+      "training_window": "2020-2024",
+      "training_games": 1349,
+      "mae_validation": 10.84,
+      "coefficients_file": "v5_coefficients_total_ridge.json",
+      "features": [
+        "pace_combined",
+        "epa_off_sum",
+        "epa_def_sum (zero)",
+        "success_sum",
+        "explosive_sum"
+      ],
+      "notes": "epa_def_sum coefficient set to 0.0 at serving time to prevent defensive leakage"
+    }
+  },
+  "generated_at": "2025-12-08T19:23:34.962Z",
+  "games_count": 16,
+  "games": [
+    {
+      "game_id": "2025_15_ATL_TB",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "TB",
+      "away_team": "ATL",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 3.1156693008873066,
+        "home_favorite": false,
+        "favorite_team": "ATL",
+        "line": 3.1156693008873066,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.0460805640733645,
+          "success_diff": -0.8348281377913519,
+          "explosive_diff": 0.38217151209276184,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 35.5,
+        "p50": 45,
+        "p75": 53.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 170.05555555555554,
+          "epa_off_sum": -0.01652695578217845,
+          "epa_def_sum": 0.002505056847989951,
+          "success_sum": 43.31771084717631,
+          "explosive_sum": 4.10445145045972
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_CLE_CHI",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "CHI",
+      "away_team": "CLE",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 7.201766611714267,
+        "home_favorite": false,
+        "favorite_team": "CLE",
+        "line": 7.201766611714267,
+        "confidence": 0.53,
+        "features": {
+          "epa_diff": 0.046150874743764815,
+          "success_diff": 3.8396853834576223,
+          "explosive_diff": 1.3122236953711959,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 35.5,
+        "p50": 45,
+        "p75": 54,
+        "spread": 18,
+        "features": {
+          "pace_combined": 173.5,
+          "epa_off_sum": -0.055331353863551425,
+          "epa_def_sum": -0.005622572432683097,
+          "success_sum": 41.53272707257369,
+          "explosive_sum": 4.025423564887461
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_BAL_CIN",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "CIN",
+      "away_team": "BAL",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": -0.807068007709959,
+        "home_favorite": true,
+        "favorite_team": "CIN",
+        "line": 0.807068007709959,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": -0.056094875545767045,
+          "success_diff": 0.5404061239869029,
+          "explosive_diff": -0.4204286528350632,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 39,
+        "p50": 48.5,
+        "p75": 57,
+        "spread": 18,
+        "features": {
+          "pace_combined": 173.27777777777777,
+          "epa_off_sum": 0.024061429257658223,
+          "epa_def_sum": 0.10070780448048453,
+          "success_sum": 44.405788790532384,
+          "explosive_sum": 6.492932169220665
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_ARI_HOU",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "HOU",
+      "away_team": "ARI",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 4.208418162436523,
+        "home_favorite": false,
+        "favorite_team": "ARI",
+        "line": 4.208418162436523,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.06150303503293416,
+          "success_diff": -0.009237235723222326,
+          "explosive_diff": 0.3471681536320721,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 36.5,
+        "p50": 46,
+        "p75": 54.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 174.05555555555554,
+          "epa_off_sum": -0.007107012687330135,
+          "epa_def_sum": -0.05156758098427273,
+          "success_sum": 43.324499566021956,
+          "explosive_sum": 3.994312772809345
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_NYJ_JAX",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "JAX",
+      "away_team": "NYJ",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 2.4106202357891355,
+        "home_favorite": false,
+        "favorite_team": "NYJ",
+        "line": 2.4106202357891355,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.035659600004795566,
+          "success_diff": 0.8075973779778589,
+          "explosive_diff": -0.8563671994125132,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 38,
+        "p50": 47.5,
+        "p75": 56,
+        "spread": 18,
+        "features": {
+          "pace_combined": 175.36111111111111,
+          "epa_off_sum": -0.00005760148368159955,
+          "epa_def_sum": 0.049013370163469974,
+          "success_sum": 44.547009877717045,
+          "explosive_sum": 4.591465090215321
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_LAC_KC",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "KC",
+      "away_team": "LAC",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 4.422040850051232,
+        "home_favorite": false,
+        "favorite_team": "LAC",
+        "line": 4.422040850051232,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.034489954657976885,
+          "success_diff": 0.8219327296988876,
+          "explosive_diff": 0.11141954563059046,
+          "hfa": 2.5
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 37.5,
+        "p50": 46.5,
+        "p75": 55.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 165.84444444444443,
+          "epa_off_sum": 0.08221973260502836,
+          "epa_def_sum": -0.007013418480565288,
+          "success_sum": 49.42682939845768,
+          "explosive_sum": 4.702780311634704
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_BUF_NE",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "NE",
+      "away_team": "BUF",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 1.3862906963205575,
+        "home_favorite": false,
+        "favorite_team": "BUF",
+        "line": 1.3862906963205575,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.014011575160280003,
+          "success_diff": -1.6597033901839309,
+          "explosive_diff": -0.10500639009783479,
+          "hfa": 2.3
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 37.5,
+        "p50": 47,
+        "p75": 55.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 166.66666666666669,
+          "epa_off_sum": 0.09737946895478097,
+          "epa_def_sum": 0.00459812189149513,
+          "success_sum": 47.3915348316663,
+          "explosive_sum": 5.430012056383187
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_WAS_NYG",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "NYG",
+      "away_team": "WAS",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 2.029567266986704,
+        "home_favorite": false,
+        "favorite_team": "WAS",
+        "line": 2.029567266986704,
+        "confidence": 0.53,
+        "features": {
+          "epa_diff": 0.010774888487220451,
+          "success_diff": -1.710882610428441,
+          "explosive_diff": 1.140846939171679,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 38,
+        "p50": 47.5,
+        "p75": 56,
+        "spread": 18,
+        "features": {
+          "pace_combined": 175.10000000000002,
+          "epa_off_sum": 0.029092306248820834,
+          "epa_def_sum": 0.10830431905288596,
+          "success_sum": 44.23355590688595,
+          "explosive_sum": 4.832024249698541
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_LV_PHI",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "PHI",
+      "away_team": "LV",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 4.507100548055833,
+        "home_favorite": false,
+        "favorite_team": "LV",
+        "line": 4.507100548055833,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.08333092575764153,
+          "success_diff": 1.277601713182805,
+          "explosive_diff": -0.8950843127380721,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 34.5,
+        "p50": 44,
+        "p75": 53,
+        "spread": 18,
+        "features": {
+          "pace_combined": 168.11111111111111,
+          "epa_off_sum": -0.03922292789752101,
+          "epa_def_sum": 0.00594782291881743,
+          "success_sum": 40.30344389779135,
+          "explosive_sum": 5.0099380800187765
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_GB_DEN",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "DEN",
+      "away_team": "GB",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 1.9594901551352941,
+        "home_favorite": false,
+        "favorite_team": "GB",
+        "line": 1.9594901551352941,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.0053088301856336895,
+          "success_diff": -2.050146988597584,
+          "explosive_diff": -0.28317628057841493,
+          "hfa": 3
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 37,
+        "p50": 46.5,
+        "p75": 55.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 176.3,
+          "epa_off_sum": 0.038676820201786304,
+          "epa_def_sum": -0.02760738350593966,
+          "success_sum": 43.111672489060375,
+          "explosive_sum": 4.097033900878166
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_CAR_NO",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "NO",
+      "away_team": "CAR",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": -0.6071126229861177,
+        "home_favorite": true,
+        "favorite_team": "NO",
+        "line": 0.6071126229861177,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": -0.03483018069982179,
+          "success_diff": -2.3318021020090867,
+          "explosive_diff": 0.7104784676575472,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 35,
+        "p50": 44.5,
+        "p75": 53,
+        "spread": 18,
+        "features": {
+          "pace_combined": 167.9,
+          "epa_off_sum": -0.07349299771343404,
+          "epa_def_sum": 0.028180514642327903,
+          "success_sum": 43.58551044817083,
+          "explosive_sum": 4.047173827737233
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_DET_LAR",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "LA",
+      "away_team": "DET",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 2.2021744675195047,
+        "home_favorite": false,
+        "favorite_team": "DET",
+        "line": 2.2021744675195047,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.011182068987290988,
+          "success_diff": 0.21281165021613813,
+          "explosive_diff": 0.15236398292381298,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 39,
+        "p50": 48.5,
+        "p75": 57,
+        "spread": 18,
+        "features": {
+          "pace_combined": 170.72222222222223,
+          "epa_off_sum": 0.09647193934451899,
+          "epa_def_sum": -0.03941787487225797,
+          "success_sum": 49.41777742914945,
+          "explosive_sum": 4.903281133120409
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_IND_SEA",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "SEA",
+      "away_team": "IND",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 0.9984771102063386,
+        "home_favorite": false,
+        "favorite_team": "IND",
+        "line": 0.9984771102063386,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": -0.006449918498308303,
+          "success_diff": -2.739927768007036,
+          "explosive_diff": 0.5385288609789336,
+          "hfa": 2.5
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 38.5,
+        "p50": 48,
+        "p75": 56.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 171.8388888888889,
+          "epa_off_sum": 0.11413282765970106,
+          "epa_def_sum": -0.049072600715458256,
+          "success_sum": 46.955525422678136,
+          "explosive_sum": 5.2051902070457245
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_TEN_SF",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "SF",
+      "away_team": "TEN",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 9.315573979540517,
+        "home_favorite": false,
+        "favorite_team": "TEN",
+        "line": 9.315573979540517,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.09826385673569439,
+          "success_diff": 4.6137047998719645,
+          "explosive_diff": 0.9568572460123912,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 36,
+        "p50": 45.5,
+        "p75": 54.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 169.72222222222223,
+          "epa_off_sum": -0.04132286355998938,
+          "epa_def_sum": 0.06530425267674811,
+          "success_sum": 43.73075224193426,
+          "explosive_sum": 4.619358384666664
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_MIN_DAL",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "DAL",
+      "away_team": "MIN",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 1.9953206139703559,
+        "home_favorite": false,
+        "favorite_team": "MIN",
+        "line": 1.9953206139703559,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.005059050657194919,
+          "success_diff": 2.5101579999496053,
+          "explosive_diff": -1.1711203771639602,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 38.5,
+        "p50": 48,
+        "p75": 57,
+        "spread": 18,
+        "features": {
+          "pace_combined": 177.55555555555554,
+          "epa_off_sum": 0.02110407145859812,
+          "epa_def_sum": 0.046018744115574176,
+          "success_sum": 43.74198295265652,
+          "explosive_sum": 5.027016418715995
+        }
+      },
+      "actual": null
+    },
+    {
+      "game_id": "2025_15_MIA_PIT",
+      "season": 2025,
+      "week": 15,
+      "gameday": "2025-W15",
+      "home_team": "PIT",
+      "away_team": "MIA",
+      "spread_model": {
+        "model_name": "v5_multi_feature_epa",
+        "predicted_spread": 2.0824604791130055,
+        "home_favorite": false,
+        "favorite_team": "MIA",
+        "line": 2.0824604791130055,
+        "confidence": 0.5,
+        "features": {
+          "epa_diff": 0.028949497516743507,
+          "success_diff": -0.21002053861705894,
+          "explosive_diff": -0.321901858481961,
+          "hfa": 2
+        }
+      },
+      "total_model": {
+        "model_name": "v5_total_ridge_zero_edef",
+        "p25": 35,
+        "p50": 44.5,
+        "p75": 53.5,
+        "spread": 18,
+        "features": {
+          "pace_combined": 167.48333333333335,
+          "epa_off_sum": 0.022482840406751494,
+          "epa_def_sum": 0.06154244923068947,
+          "success_sum": 40.788131592724916,
+          "explosive_sum": 5.705755613224165
+        }
+      },
+      "actual": null
+    }
+  ]
+}
