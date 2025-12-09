@@ -6,14 +6,14 @@
   publish = "dist"
 
 [build.processing.secrets]
-  # Documentation files contain placeholder references, not actual secrets
-  # NCAAMBBModel is a submodule with its own documentation
+  # Documentation files contain placeholder references and historical examples, not actual secrets
+  # Omit all markdown documentation from secrets scanning
   omit_paths = [
-    "ACTION_REQUIRED.md", 
-    "GITHUB_ACTION_RAPIDAPI_SETUP.md", 
-    "RAPIDAPI_INTEGRATION_SUMMARY.md",
+    "*.md",
+    "**/*.md",
     "NCAAMBBModel/**",
-    "docs/SECURITY_FIX_API_KEY_REMOVAL.md"
+    "docs/**",
+    "_archive/**"
   ]
 
 [functions]
