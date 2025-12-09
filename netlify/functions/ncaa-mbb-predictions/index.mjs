@@ -17,8 +17,8 @@ export default async function handler(event, context) {
     const today = new Date().toISOString().split('T')[0];
     console.log(`[NCAA MBB] Generating predictions for ${today}`);
     
-    // Path to NCAA MBB Model - use environment variable or default path
-    const ncaaModelPath = process.env.NCAA_MBB_MODEL_PATH || '/opt/build/repo/../NCAAMBBModel';
+    // Path to NCAA MBB Model - use submodule in repo
+    const ncaaModelPath = process.env.NCAA_MBB_MODEL_PATH || path.join(process.cwd(), 'NCAAMBBModel');
     const outputPath = path.join(ncaaModelPath, 'data/ncaabb/picks', `variant_b_picks_odds_aware_${today}.json`);
     const csvPath = path.join(ncaaModelPath, 'data/ncaabb/picks', `variant_b_picks_odds_aware_${today}.csv`);
     
