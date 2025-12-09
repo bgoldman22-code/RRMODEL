@@ -2995,7 +2995,7 @@
     "home_score": 9,
     "game_type": "REG",
     "roof": "closed",
-    "surface": ""
+    "surface": "fieldturf"
   },
   {
     "week": 14,
@@ -3009,7 +3009,9 @@
     "home_score": 22,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 44,
+    "wind": 6
   },
   {
     "week": 14,
@@ -3023,7 +3025,9 @@
     "home_score": 39,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "a_turf",
+    "temp": 31,
+    "wind": 12
   },
   {
     "week": 14,
@@ -3037,7 +3041,9 @@
     "home_score": 29,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 33,
+    "wind": 6
   },
   {
     "week": 14,
@@ -3051,7 +3057,9 @@
     "home_score": 36,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 61,
+    "wind": 7
   },
   {
     "week": 14,
@@ -3065,7 +3073,7 @@
     "home_score": 31,
     "game_type": "REG",
     "roof": "dome",
-    "surface": ""
+    "surface": "sportturf"
   },
   {
     "week": 14,
@@ -3079,7 +3087,9 @@
     "home_score": 10,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "fieldturf",
+    "temp": 41,
+    "wind": 6
   },
   {
     "week": 14,
@@ -3093,7 +3103,9 @@
     "home_score": 20,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 73,
+    "wind": 6
   },
   {
     "week": 14,
@@ -3107,7 +3119,7 @@
     "home_score": 17,
     "game_type": "REG",
     "roof": "dome",
-    "surface": ""
+    "surface": "grass"
   },
   {
     "week": 14,
@@ -3121,7 +3133,7 @@
     "home_score": 17,
     "game_type": "REG",
     "roof": "closed",
-    "surface": ""
+    "surface": "grass"
   },
   {
     "week": 14,
@@ -3135,7 +3147,9 @@
     "home_score": 28,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 16,
+    "wind": 9
   },
   {
     "week": 14,
@@ -3149,7 +3163,9 @@
     "home_score": 10,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 27,
+    "wind": 8
   },
   {
     "week": 14,
@@ -3159,6 +3175,8 @@
     "gametime": "20:15",
     "away_team": "PHI",
     "home_team": "LAC",
+    "away_score": 19,
+    "home_score": 22,
     "game_type": "REG",
     "roof": "dome",
     "surface": "matrixturf"
@@ -3393,18 +3411,6 @@
   },
   {
     "week": 16,
-    "game_id": "2025_16_NE_BAL",
-    "gameday": "2025-12-21",
-    "weekday": "Sunday",
-    "gametime": "13:00",
-    "away_team": "NE",
-    "home_team": "BAL",
-    "game_type": "REG",
-    "roof": "outdoors",
-    "surface": "grass"
-  },
-  {
-    "week": 16,
     "game_id": "2025_16_TB_CAR",
     "gameday": "2025-12-21",
     "weekday": "Sunday",
@@ -3438,6 +3444,18 @@
     "game_type": "REG",
     "roof": "closed",
     "surface": "matrixturf"
+  },
+  {
+    "week": 16,
+    "game_id": "2025_16_CIN_MIA",
+    "gameday": "2025-12-21",
+    "weekday": "Sunday",
+    "gametime": "13:00",
+    "away_team": "CIN",
+    "home_team": "MIA",
+    "game_type": "REG",
+    "roof": "outdoors",
+    "surface": "grass"
   },
   {
     "week": 16,
@@ -3525,12 +3543,12 @@
   },
   {
     "week": 16,
-    "game_id": "2025_16_CIN_MIA",
+    "game_id": "2025_16_NE_BAL",
     "gameday": "2025-12-21",
     "weekday": "Sunday",
     "gametime": "20:20",
-    "away_team": "CIN",
-    "home_team": "MIA",
+    "away_team": "NE",
+    "home_team": "BAL",
     "game_type": "REG",
     "roof": "outdoors",
     "surface": "grass"
