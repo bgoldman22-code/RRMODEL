@@ -3189,9 +3189,13 @@
     "gametime": "20:15",
     "away_team": "ATL",
     "home_team": "TB",
+    "away_score": 29,
+    "home_score": 28,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": "grass"
+    "surface": "grass",
+    "temp": 56,
+    "wind": 5
   },
   {
     "week": 15,
@@ -3387,24 +3391,24 @@
   },
   {
     "week": 16,
-    "game_id": "2025_16_GB_CHI",
-    "gameday": "2025-12-19",
-    "weekday": "Friday",
-    "gametime": "13:00",
-    "away_team": "GB",
-    "home_team": "CHI",
+    "game_id": "2025_16_PHI_WAS",
+    "gameday": "2025-12-20",
+    "weekday": "Saturday",
+    "gametime": "17:00",
+    "away_team": "PHI",
+    "home_team": "WAS",
     "game_type": "REG",
     "roof": "outdoors",
     "surface": "grass"
   },
   {
     "week": 16,
-    "game_id": "2025_16_PHI_WAS",
-    "gameday": "2025-12-19",
-    "weekday": "Friday",
-    "gametime": "13:00",
-    "away_team": "PHI",
-    "home_team": "WAS",
+    "game_id": "2025_16_GB_CHI",
+    "gameday": "2025-12-20",
+    "weekday": "Saturday",
+    "gametime": "20:20",
+    "away_team": "GB",
+    "home_team": "CHI",
     "game_type": "REG",
     "roof": "outdoors",
     "surface": "grass"
@@ -3603,6 +3607,30 @@
   },
   {
     "week": 17,
+    "game_id": "2025_17_HOU_LAC",
+    "gameday": "2025-12-27",
+    "weekday": "Saturday",
+    "gametime": "16:30",
+    "away_team": "HOU",
+    "home_team": "LAC",
+    "game_type": "REG",
+    "roof": "dome",
+    "surface": "matrixturf"
+  },
+  {
+    "week": 17,
+    "game_id": "2025_17_BAL_GB",
+    "gameday": "2025-12-27",
+    "weekday": "Saturday",
+    "gametime": "20:00",
+    "away_team": "BAL",
+    "home_team": "GB",
+    "game_type": "REG",
+    "roof": "outdoors",
+    "surface": "grass"
+  },
+  {
+    "week": 17,
     "game_id": "2025_17_SEA_CAR",
     "gameday": "2025-12-28",
     "weekday": "Sunday",
@@ -3639,18 +3667,6 @@
   },
   {
     "week": 17,
-    "game_id": "2025_17_BAL_GB",
-    "gameday": "2025-12-28",
-    "weekday": "Sunday",
-    "gametime": "13:00",
-    "away_team": "BAL",
-    "home_team": "GB",
-    "game_type": "REG",
-    "roof": "outdoors",
-    "surface": "grass"
-  },
-  {
-    "week": 17,
     "game_id": "2025_17_JAX_IND",
     "gameday": "2025-12-28",
     "weekday": "Sunday",
@@ -3660,30 +3676,6 @@
     "game_type": "REG",
     "roof": "closed",
     "surface": "fieldturf"
-  },
-  {
-    "week": 17,
-    "game_id": "2025_17_HOU_LAC",
-    "gameday": "2025-12-28",
-    "weekday": "Sunday",
-    "gametime": "13:00",
-    "away_team": "HOU",
-    "home_team": "LAC",
-    "game_type": "REG",
-    "roof": "dome",
-    "surface": "matrixturf"
-  },
-  {
-    "week": 17,
-    "game_id": "2025_17_NYG_LV",
-    "gameday": "2025-12-28",
-    "weekday": "Sunday",
-    "gametime": "13:00",
-    "away_team": "NYG",
-    "home_team": "LV",
-    "game_type": "REG",
-    "roof": "dome",
-    "surface": "grass"
   },
   {
     "week": 17,
@@ -3719,6 +3711,18 @@
     "home_team": "TEN",
     "game_type": "REG",
     "roof": "outdoors",
+    "surface": "grass"
+  },
+  {
+    "week": 17,
+    "game_id": "2025_17_NYG_LV",
+    "gameday": "2025-12-28",
+    "weekday": "Sunday",
+    "gametime": "16:05",
+    "away_team": "NYG",
+    "home_team": "LV",
+    "game_type": "REG",
+    "roof": "dome",
     "surface": "grass"
   },
   {

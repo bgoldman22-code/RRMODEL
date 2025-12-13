@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2025-12-10T16:39:28Z",
+    "generated_at": "2025-12-13T14:34:29Z",
     "season": 2025,
     "week": 15,
-    "total_players": 632,
+    "total_players": 633,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -2014,14 +2014,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.075,
+      "multiple_td_prob": 0.067,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.075
+      "multiple_td": 0.0667
     },
     {
       "player_id": "00-0033923",
@@ -6571,14 +6571,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.077,
+      "multiple_td_prob": 0.135,
       "multiple_confidence": "high",
       "anytime_value_score": 0.33,
       "first_value_score": 0,
-      "multiple_value_score": 0,
+      "multiple_value_score": 0.022,
       "anytime_td": 0.81,
       "first_td": 0,
-      "multiple_td": 0.0771
+      "multiple_td": 0.135
     },
     {
       "player_id": "00-0036971",
@@ -9103,7 +9103,7 @@
     {
       "player_id": "00-0038496",
       "name": "X.Gipson",
-      "team": "PHI",
+      "team": "NYG",
       "position": "WR",
       "opponent": "TBD",
       "is_home": true,
@@ -9154,14 +9154,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.201,
+      "multiple_td_prob": 0.193,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.0483,
+      "multiple_value_score": 0.045,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.2009
+      "multiple_td": 0.1925
     },
     {
       "player_id": "00-0038543",
@@ -10141,14 +10141,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.22,
+      "multiple_td_prob": 0.189,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.056,
+      "multiple_value_score": 0.0434,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.22
+      "multiple_td": 0.1886
     },
     {
       "player_id": "00-0038976",
@@ -11617,6 +11617,27 @@
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.85,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
+      "player_id": "00-0039754",
+      "name": "D.Culp",
+      "team": "TB",
+      "position": "TE",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "TE",
+      "anytime_td_prob": 0.765,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.3075,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.765,
       "first_td": 0,
       "multiple_td": 0
     },
