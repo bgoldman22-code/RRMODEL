@@ -1,27 +1,41 @@
 {
-  "date": "2025-12-14",
+  "date": "2025-12-15",
   "model": "Variant B",
   "min_edge": 0.1,
   "kelly_fraction": 0.25,
   "bankroll": 10000.0,
-  "num_picks": 1,
-  "total_bet_size": 1000,
-  "avg_edge": 0.2263682265546928,
-  "max_edge": 0.2263682265546928,
+  "num_picks": 2,
+  "total_bet_size": 2000,
+  "avg_edge": 0.2934124962726525,
+  "max_edge": 0.34283012061527274,
   "picks": [
     {
-      "date": "2025-12-14",
-      "home_team": "UAB Blazers",
-      "away_team": "Troy Trojans",
-      "side": "home",
-      "odds": -335,
-      "model_prob": 0.9964831690834284,
-      "implied_prob": 0.7701149425287356,
-      "edge": 0.2263682265546928,
-      "kelly_full": 0.758333558958221,
+      "date": "2025-12-17",
+      "home_team": "Tennessee Volunteers",
+      "away_team": "Louisville",
+      "side": "away",
+      "odds": -118,
+      "model_prob": 0.8841145242849975,
+      "implied_prob": 0.5412844036697247,
+      "edge": 0.34283012061527274,
+      "kelly_full": 0.40453954232602185,
       "kelly_applied": 0.1,
       "bet_size_dollars": 1000,
-      "market": "home_ml"
+      "market": "away_ml"
+    },
+    {
+      "date": "2025-12-16",
+      "home_team": "South Dakota St Jackrabbits",
+      "away_team": "Wyoming Cowboys",
+      "side": "away",
+      "odds": -225,
+      "model_prob": 0.9363025642377245,
+      "implied_prob": 0.6923076923076923,
+      "edge": 0.24399487193003222,
+      "kelly_full": 0.5489884618425726,
+      "kelly_applied": 0.1,
+      "bet_size_dollars": 1000,
+      "market": "away_ml"
     }
   ]
 }
