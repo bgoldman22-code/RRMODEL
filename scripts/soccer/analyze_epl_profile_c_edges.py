@@ -56,12 +56,15 @@ sys.path.insert(0, str(project_dir))
 # Import core functions from refactored module (read-only reuse)
 from epl_profile_c_core import (
     load_epl_data,
-    normalize_team_name,
     calculate_team_ratings,
     calibrate_dixon_coles,
     generate_predictions,
     shin_implied_prob
 )
+
+# Import team name normalization from canonical source
+sys.path.insert(0, str(script_dir))
+from team_name_utils import standardize_team_name
 
 # Analysis configuration (matches walk-forward exactly)
 ANALYSIS_CONFIG = {
@@ -110,41 +113,67 @@ ODDS_BUCKETS = [
 
 def prepare_walkforward_data(results, odds):
     """
-    Prepare combined dataset for walk-forward (same as main script)
+    Prepare combined dataset for walk-forward (3-KEY MERGE)
+    
+    Uses SAME merge strategy as backtest_epl_profile_c_walkforward.py:
+    - 3-key merge on (season, home_norm, away_norm)
+    - Cannot use date (results file has YYYY-08-01 placeholders)
+    - Team names normalized using standardize_team_name()
+    
+    Args:
+        results: Match results DataFrame
+        odds: BTTS odds DataFrame
+        
+    Returns:
+        DataFrame: Combined data sorted by date with BTTS odds
     """
-    # Normalize team names in both datasets
-    results['home_normalized'] = results['home'].apply(normalize_team_name)
-    results['away_normalized'] = results['away'].apply(normalize_team_name)
-    odds['home_normalized'] = odds['home'].apply(normalize_team_name)
-    odds['away_normalized'] = odds['away'].apply(normalize_team_name)
+    # Normalize team names in both datasets using canonical function
+    results = results.copy()
+    odds = odds.copy()
     
-    # Convert date columns
-    results['date'] = pd.to_datetime(results['date'])
-    odds['date'] = pd.to_datetime(odds['date'])
+    results['home_norm'] = results['home'].apply(standardize_team_name)
+    results['away_norm'] = results['away'].apply(standardize_team_name)
+    odds['home_norm'] = odds['home'].apply(standardize_team_name)
+    odds['away_norm'] = odds['away'].apply(standardize_team_name)
     
-    # Merge on home, away, season
-    combined = pd.merge(
-        results,
-        odds,
-        on=['home_normalized', 'away_normalized', 'season'],
-        suffixes=('', '_odds'),
-        how='inner'
+    # Rename date columns before merge to avoid conflicts
+    results_for_merge = results.rename(columns={'date': 'date_res'})
+    odds_for_merge = odds.rename(columns={'date': 'date_odds'})
+    
+    # 3-KEY MERGE: (season, home_norm, away_norm)
+    combined = results_for_merge.merge(
+        odds_for_merge,
+        on=['season', 'home_norm', 'away_norm'],
+        how='inner',
+        suffixes=('_results', '_odds')
     )
     
-    # Use results date (more reliable)
-    if 'date_odds' in combined.columns:
-        combined = combined.drop('date_odds', axis=1)
+    # Use odds date (actual match timestamp) not results date (YYYY-08-01 placeholder)
+    combined['date'] = pd.to_datetime(combined['date_odds'])
     
-    # Keep only necessary columns (use home_score/away_score as core functions expect)
+    # Sort by actual match date
+    combined = combined.sort_values('date').reset_index(drop=True)
+    
+    # Keep essential columns
     keep_cols = [
-        'date', 'season', 'home', 'away', 'home_normalized', 'away_normalized',
-        'home_score', 'away_score', 'btts', 'btts_yes_odds', 'btts_no_odds'
+        'date', 'season',
+        'home_results', 'away_results',  # Original full names from results
+        'home_norm', 'away_norm',  # Normalized names (used for merge)
+        'home_score', 'away_score', 'btts',
+        'btts_yes_odds', 'btts_no_odds'
     ]
+    
+    # Filter to available columns
     available_cols = [c for c in keep_cols if c in combined.columns]
     combined = combined[available_cols].copy()
     
-    # Sort by date
-    combined = combined.sort_values('date').reset_index(drop=True)
+    # Rename for consistency with downstream code
+    combined = combined.rename(columns={
+        'home_results': 'home_full',
+        'away_results': 'away_full',
+        'home_norm': 'home',  # Use normalized names as primary
+        'away_norm': 'away'
+    })
     
     return combined
 
@@ -275,24 +304,22 @@ def compute_edge_universe_for_step(step_info, df, team_stats, config):
     
     # Generate predictions for EVALUATION matches
     eval_results_for_pred = eval_df.copy()
-    eval_results_for_pred['home_full'] = eval_results_for_pred['home']
-    eval_results_for_pred['away_full'] = eval_results_for_pred['away']
-    eval_results_for_pred['home'] = eval_results_for_pred['home_normalized']
-    eval_results_for_pred['away'] = eval_results_for_pred['away_normalized']
+    # Note: eval_df already has 'home' and 'away' as normalized names from prepare_walkforward_data
+    # Just need to preserve full names if they exist
+    if 'home_full' not in eval_results_for_pred.columns:
+        eval_results_for_pred['home_full'] = eval_results_for_pred['home']
+    if 'away_full' not in eval_results_for_pred.columns:
+        eval_results_for_pred['away_full'] = eval_results_for_pred['away']
     
     eval_preds = generate_predictions(eval_results_for_pred, team_ratings, dc_params)
     
     # Merge predictions back with eval data (preserve original columns)
     eval_with_preds = eval_df.merge(
         eval_preds[['home', 'away', 'predicted_btts_prob', 'lambda_home', 'lambda_away']],
-        left_on=['home_normalized', 'away_normalized'],
-        right_on=['home', 'away'],
+        on=['home', 'away'],
         how='left',
         suffixes=('', '_pred')
     )
-    
-    # Drop duplicate columns from merge
-    eval_with_preds = eval_with_preds.drop(['home_pred', 'away_pred'], axis=1, errors='ignore')
     
     # Compute edges for BOTH YES and NO
     eval_with_preds['p_model_yes'] = eval_with_preds['predicted_btts_prob']

@@ -1,0 +1,239 @@
+{
+  "generated_at": "2025-12-11T13:28:48.723599Z",
+  "feature_count": 25,
+  "features": [
+    "home_xg_L5",
+    "home_attack_quality_pct",
+    "home_available_attack_quality",
+    "min_attack_quality",
+    "home_btts_momentum",
+    "home_availability_pct",
+    "home_xga_trend",
+    "away_avg_chance_of_playing",
+    "home_squad_size",
+    "away_xga_L10",
+    "home_btts_rate_L10",
+    "home_xg_L10",
+    "home_xga_L10",
+    "home_injured_count",
+    "away_xga_L5",
+    "away_available_attack_quality",
+    "home_missing_attack_quality",
+    "home_xg_trend",
+    "attack_strength_diff",
+    "away_available_count",
+    "away_xg_L10",
+    "away_xg_L5",
+    "away_availability_pct",
+    "home_avg_chance_of_playing",
+    "away_xga_trend"
+  ],
+  "details": [
+    {
+      "feature": "home_xg_L5",
+      "score": 0.0321536520997395,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_attack_quality_pct",
+      "score": 0.0312475718291116,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_available_attack_quality",
+      "score": 0.023385300657389,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "min_attack_quality",
+      "score": 0.0215065888438868,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_btts_momentum",
+      "score": 0.0194357228986846,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_availability_pct",
+      "score": 0.0177493390299417,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_xga_trend",
+      "score": 0.017356239982745,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    },
+    {
+      "feature": "away_avg_chance_of_playing",
+      "score": 0.0158677270531761,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_squad_size",
+      "score": 0.0156622280378124,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "away_xga_L10",
+      "score": 0.0149606752000948,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_btts_rate_L10",
+      "score": 0.0135133706616255,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_xg_L10",
+      "score": 0.0133210695584597,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_xga_L10",
+      "score": 0.0132409440082227,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_injured_count",
+      "score": 0.0126927405857607,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "away_xga_L5",
+      "score": 0.0124229208548831,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    },
+    {
+      "feature": "away_available_attack_quality",
+      "score": 0.0117055682178715,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_missing_attack_quality",
+      "score": 0.0114427731110364,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_xg_trend",
+      "score": 0.0112542221518711,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    },
+    {
+      "feature": "attack_strength_diff",
+      "score": 0.0107903522004354,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "away_available_count",
+      "score": 0.0103894990426852,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "away_xg_L10",
+      "score": 0.0100389328803679,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    },
+    {
+      "feature": "away_xg_L5",
+      "score": 0.0092477692445662,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    },
+    {
+      "feature": "away_availability_pct",
+      "score": 0.0091089662671622,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "home_avg_chance_of_playing",
+      "score": 0.0090743470184931,
+      "coverage": 0.9340659340659341,
+      "source": "ranking"
+    },
+    {
+      "feature": "away_xga_trend",
+      "score": 0.0087402981002219,
+      "coverage": 0.9725274725274725,
+      "source": "ranking"
+    }
+  ],
+  "dropped_summary": {
+    "not_prediction_safe": 28
+  },
+  "config": {
+    "max_features": 25,
+    "min_coverage": 0.7,
+    "safe_patterns": [
+      "_l5",
+      "_l10",
+      "_trend",
+      "_momentum",
+      "availability",
+      "available_count",
+      "available_attack_quality",
+      "attack_quality",
+      "expected_minutes",
+      "avg_chance",
+      "injured_count",
+      "doubtful_count",
+      "squad_size",
+      "min_attack_quality",
+      "missing_attack_quality",
+      "attack_strength_diff"
+    ],
+    "unsafe_patterns": [
+      "goals_fpl",
+      "home_goals",
+      "away_goals",
+      "btts_yes_odds",
+      "btts_no_odds",
+      "sum_xg",
+      "diff_xg",
+      "shot_quality",
+      "shots",
+      "passes",
+      "corners",
+      "saves",
+      "fouls",
+      "cards",
+      "danger_index",
+      "chaos_index",
+      "possession",
+      "referee",
+      "venue"
+    ],
+    "manual_includes": [],
+    "manual_excludes": [
+      "home_goals_fpl",
+      "away_goals_fpl",
+      "home_goals",
+      "away_goals"
+    ]
+  },
+  "total_rows": 910,
+  "candidate_columns": 90,
+  "ranked_features_available": 86
+}

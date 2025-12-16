@@ -1,0 +1,4 @@
+phase,model,auc,brier,logloss,cv_strategy
+Phase 1: Baseline,random_forest,0.8057296017822335,0.22219223869631305,4.107503940098901,TimeSeriesSplit(n_splits=5)
+Phase 1: Baseline,poisson,0.7007125949795123,0.22636447263519027,0.6439850318205487,Full data (simple baseline)
+Phase 1: Baseline,logistic,0.6991785018100808,0.2522015982590299,4.1697077866283285,TimeSeriesSplit(n_splits=5)

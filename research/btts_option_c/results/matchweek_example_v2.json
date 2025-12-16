@@ -1,0 +1,202 @@
+[
+  {
+    "fixture": {
+      "id": 12345,
+      "date": "2025-12-15",
+      "home": "Arsenal",
+      "away": "Chelsea",
+      "league": "Premier League"
+    },
+    "model": {
+      "prob_yes": 0.72,
+      "prob_no": 0.28,
+      "recommended_side": "YES",
+      "confidence": 0.72
+    },
+    "market": {
+      "odds_yes": 2.5,
+      "odds_no": 1.7,
+      "fair_prob_yes": 0.40476190476190477,
+      "fair_prob_no": 0.5952380952380952,
+      "edge_yes": 0.3152380952380952,
+      "edge_no": -0.3152380952380952,
+      "vig": -0.0117647058823529
+    },
+    "ranking": {
+      "score": 0.3152380952380952,
+      "edge_best": 0.3152380952380952,
+      "edge_abs": 0.3152380952380952
+    },
+    "betting": {
+      "side": "YES",
+      "chosen_edge": 0.3152380952380952,
+      "confidence": "HIGH",
+      "bet_size_multiplier": 1.5,
+      "reason": "Pure edge policy: YES edge +0.315 >= MIN_EDGE 0.0775"
+    },
+    "suggested": {
+      "side": "YES",
+      "reason": "Model lean YES at 72.0%, BET YES: edge +31.5%"
+    }
+  },
+  {
+    "fixture": {
+      "id": 12346,
+      "date": "2025-12-15",
+      "home": "Liverpool",
+      "away": "Man City",
+      "league": "Premier League"
+    },
+    "model": {
+      "prob_yes": 0.68,
+      "prob_no": 0.32,
+      "recommended_side": "YES",
+      "confidence": 0.68
+    },
+    "market": {
+      "odds_yes": 1.9,
+      "odds_no": 2.0,
+      "fair_prob_yes": 0.5128205128205129,
+      "fair_prob_no": 0.4871794871794872,
+      "edge_yes": 0.16717948717948716,
+      "edge_no": -0.16717948717948727,
+      "vig": 0.02631578947368407
+    },
+    "ranking": {
+      "score": 0.16717948717948716,
+      "edge_best": 0.16717948717948716,
+      "edge_abs": 0.16717948717948727
+    },
+    "betting": {
+      "side": "YES",
+      "chosen_edge": 0.16717948717948716,
+      "confidence": "HIGH",
+      "bet_size_multiplier": 1.5,
+      "reason": "Pure edge policy: YES edge +0.167 >= MIN_EDGE 0.0775"
+    },
+    "suggested": {
+      "side": "YES",
+      "reason": "Model lean YES at 68.0%, BET YES: edge +16.7%"
+    }
+  },
+  {
+    "fixture": {
+      "id": 12347,
+      "date": "2025-12-15",
+      "home": "Brighton",
+      "away": "Everton",
+      "league": "Premier League"
+    },
+    "model": {
+      "prob_yes": 0.32,
+      "prob_no": 0.68,
+      "recommended_side": "NO",
+      "confidence": 0.68
+    },
+    "market": {
+      "odds_yes": 2.3,
+      "odds_no": 1.7,
+      "fair_prob_yes": 0.425,
+      "fair_prob_no": 0.575,
+      "edge_yes": -0.10499999999999998,
+      "edge_no": 0.10499999999999998,
+      "vig": 0.023017902813299296
+    },
+    "ranking": {
+      "score": 0.10499999999999998,
+      "edge_best": 0.10499999999999998,
+      "edge_abs": 0.10499999999999998
+    },
+    "betting": {
+      "side": "NO",
+      "chosen_edge": 0.10499999999999998,
+      "confidence": "HIGH",
+      "bet_size_multiplier": 1.5,
+      "reason": "Pure edge policy: NO edge +0.105 >= MIN_EDGE 0.0775"
+    },
+    "suggested": {
+      "side": "NO",
+      "reason": "Model lean NO at 68.0%, BET NO: edge +10.5%"
+    }
+  },
+  {
+    "fixture": {
+      "id": 12348,
+      "date": "2025-12-15",
+      "home": "Wolves",
+      "away": "Burnley",
+      "league": "Premier League"
+    },
+    "model": {
+      "prob_yes": 0.48,
+      "prob_no": 0.52,
+      "recommended_side": "NO",
+      "confidence": 0.52
+    },
+    "market": {
+      "odds_yes": 3.5,
+      "odds_no": 1.35,
+      "fair_prob_yes": 0.2783505154639175,
+      "fair_prob_no": 0.7216494845360824,
+      "edge_yes": 0.2016494845360825,
+      "edge_no": -0.20164948453608234,
+      "vig": 0.02645502645502651
+    },
+    "ranking": {
+      "score": 0.2016494845360825,
+      "edge_best": 0.2016494845360825,
+      "edge_abs": 0.2016494845360825
+    },
+    "betting": {
+      "side": "YES",
+      "chosen_edge": 0.2016494845360825,
+      "confidence": "HIGH",
+      "bet_size_multiplier": 1.5,
+      "reason": "Pure edge policy: YES edge +0.202 >= MIN_EDGE 0.0775"
+    },
+    "suggested": {
+      "side": "NO",
+      "reason": "Model lean NO at 52.0%, BET YES: edge +20.2%"
+    }
+  },
+  {
+    "fixture": {
+      "id": 12349,
+      "date": "2025-12-15",
+      "home": "Fulham",
+      "away": "Newcastle",
+      "league": "Premier League"
+    },
+    "model": {
+      "prob_yes": 0.65,
+      "prob_no": 0.35,
+      "recommended_side": "YES",
+      "confidence": 0.65
+    },
+    "market": {
+      "odds_yes": null,
+      "odds_no": null,
+      "fair_prob_yes": null,
+      "fair_prob_no": null,
+      "edge_yes": null,
+      "edge_no": null,
+      "vig": null
+    },
+    "ranking": {
+      "score": null,
+      "edge_best": null,
+      "edge_abs": null
+    },
+    "betting": {
+      "side": "NO_BET",
+      "chosen_edge": null,
+      "confidence": "LOW",
+      "bet_size_multiplier": 0.0,
+      "reason": "No odds available (REQUIRE_ODDS=True)"
+    },
+    "suggested": {
+      "side": "YES",
+      "reason": "Model lean YES at 65.0% but NO_BET: no odds available"
+    }
+  }
+]

@@ -1,0 +1,50 @@
+{
+  "version": "Hardened_V2",
+  "model_type": "Poisson_BTTS",
+  "trained_on_n_matches": 910,
+  "date_range": {
+    "min_date": "2023-08-11 00:00:00",
+    "max_date": "2025-12-08 00:00:00"
+  },
+  "btts_rate": 0.5846153846153846,
+  "feature_list": [
+    "home_xg_L5",
+    "home_attack_quality_pct",
+    "home_available_attack_quality",
+    "min_attack_quality",
+    "home_btts_momentum",
+    "home_availability_pct",
+    "home_xga_trend",
+    "away_avg_chance_of_playing",
+    "home_squad_size",
+    "away_xga_L10",
+    "home_btts_rate_L10",
+    "home_xg_L10",
+    "home_xga_L10",
+    "home_injured_count",
+    "away_xga_L5",
+    "away_available_attack_quality",
+    "home_missing_attack_quality",
+    "home_xg_trend",
+    "attack_strength_diff",
+    "away_available_count",
+    "away_xg_L10",
+    "away_xg_L5",
+    "away_availability_pct",
+    "home_avg_chance_of_playing",
+    "away_xga_trend"
+  ],
+  "n_features": 25,
+  "poisson_params": {
+    "home_lambda": 1.6248791208791207,
+    "away_lambda": 1.3365604395604396
+  },
+  "safety_guarantees": [
+    "No banned features (home_goals, away_goals, *_goals_fpl)",
+    "25-feature prediction-safe allowlist enforced",
+    "Runtime assertions active",
+    "All rolling features use shift(1)",
+    "No target leakage"
+  ],
+  "generated_at": "2025-12-11T11:06:55.861191"
+}

@@ -5,17 +5,6 @@
   functions = "netlify/functions"
   publish = "dist"
 
-[build.processing.secrets]
-  # Documentation files contain placeholder references and historical examples, not actual secrets
-  # Omit all markdown documentation from secrets scanning
-  omit_paths = [
-    "*.md",
-    "**/*.md",
-    "NCAAMBBModel/**",
-    "docs/**",
-    "_archive/**"
-  ]
-
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs", "node-fetch"]

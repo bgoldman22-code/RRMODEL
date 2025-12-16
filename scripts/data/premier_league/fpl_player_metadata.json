@@ -1,0 +1,48 @@
+{
+  "generated_at": "2025-12-10T11:40:30.729631",
+  "source": "vaastav/Fantasy-Premier-League GitHub repository",
+  "seasons": [
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "total_matches": 850,
+  "date_range": {
+    "min": "2023-08-11",
+    "max": "2025-10-26"
+  },
+  "features": [
+    "season",
+    "gameweek",
+    "date",
+    "home_norm",
+    "away_norm",
+    "home_goals",
+    "away_goals",
+    "home_squad_size",
+    "home_available_count",
+    "home_injured_count",
+    "home_doubtful_count",
+    "home_availability_pct",
+    "home_avg_chance_of_playing",
+    "home_expected_minutes_pct",
+    "home_missing_attack_quality",
+    "home_available_attack_quality",
+    "home_attack_quality_pct",
+    "away_squad_size",
+    "away_available_count",
+    "away_injured_count",
+    "away_doubtful_count",
+    "away_availability_pct",
+    "away_avg_chance_of_playing",
+    "away_expected_minutes_pct",
+    "away_missing_attack_quality",
+    "away_available_attack_quality",
+    "away_attack_quality_pct"
+  ],
+  "coverage_by_season": {
+    "2023-24": 380,
+    "2024-25": 380,
+    "2025-26": 90
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "model_name": "poisson_btts",
+  "model_version": "1.0.0",
+  "trained_at": "2025-12-11T19:00:29.578866Z",
+  "training_window": {
+    "start_date": "2023-08-11 00:00:00",
+    "end_date": "2025-12-08 00:00:00",
+    "n_matches": 910,
+    "xg_coverage": 910,
+    "xg_coverage_pct": 100.0
+  },
+  "model_params": {
+    "home_lambda": 1.624879120879121,
+    "away_lambda": 1.3365604395604396,
+    "using_xg": true
+  },
+  "feature_list": [
+    "home_xg",
+    "away_xg"
+  ],
+  "code_hash": "1684eff9",
+  "output_paths": {
+    "model": "models/btts_poisson_production.joblib",
+    "metadata": "models/btts_poisson_production_meta.json"
+  }
+}

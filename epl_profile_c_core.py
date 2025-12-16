@@ -29,93 +29,15 @@ from pathlib import Path
 from scipy.optimize import minimize
 from scipy.stats import poisson
 from datetime import datetime
+import sys
 
-def normalize_team_name(name):
-    """
-    Normalize team names for consistent matching between results and odds files
-    
-    Results file uses: 'Manchester City FC', 'West Ham United FC', etc.
-    Odds file uses: 'mancity', 'westham', etc.
-    
-    Args:
-        name: Team name string
-        
-    Returns:
-        Normalized team name string
-    """
-    name = str(name).lower().strip()
-    
-    # Specific mappings first (before general cleanup)
-    direct_mappings = {
-        'manchester city fc': 'mancity',
-        'manchester united fc': 'manutd',
-        'west ham united fc': 'westham',
-        'aston villa fc': 'villa',
-        'tottenham hotspur fc': 'tottenham',
-        'newcastle united fc': 'newcastle',
-        'brighton & hove albion fc': 'brighton',
-        'brighton and hove albion fc': 'brighton',
-        'nottingham forest fc': 'forest',
-        'wolverhampton wanderers fc': 'wolves',
-        'leicester city fc': 'leicester',
-        'crystal palace fc': 'palace',
-        'leeds united fc': 'leeds',
-        'arsenal fc': 'arsenal',
-        'chelsea fc': 'chelsea',
-        'liverpool fc': 'liverpool',
-        'everton fc': 'everton',
-        'brentford fc': 'brentford',
-        'fulham fc': 'fulham',
-        'afc bournemouth': 'bournemouth',
-        'southampton fc': 'southampton',
-        'burnley fc': 'burnley',
-        'watford fc': 'watford',
-        'norwich city fc': 'norwich',
-        'sheffield united fc': 'sheffieldutd',
-        'west bromwich albion fc': 'westbrom',
-        'stoke city fc': 'stoke',
-        'swansea city': 'swansea',
-        'huddersfield town fc': 'huddersfield',
-        'cardiff city fc': 'cardiff',
-        'luton town fc': 'luton',
-        'ipswich town fc': 'ipswich',
-        'sunderland afc': 'sunderland',
-    }
-    
-    # Check direct mapping first
-    if name in direct_mappings:
-        return direct_mappings[name]
-    
-    # Fall back to algorithmic normalization
-    name = re.sub(r'\s+(fc|afc)$', '', name)
-    name = re.sub(r'\s+united$', '', name)
-    name = re.sub(r'\s+city$', '', name)
-    name = re.sub(r'\s+hotspur$', '', name)
-    name = re.sub(r'\s+&.*$', '', name)
-    name = re.sub(r'\s+and\s+.*$', '', name)
-    name = re.sub(r'\s+', '', name)
-    
-    fallback = {
-        'manchester': 'mancity',
-        'tottenham': 'tottenham',
-        'westham': 'westham',
-        'astonvilla': 'villa',
-        'newcastle': 'newcastle',
-        'brighton': 'brighton',
-        'nottinghamforest': 'forest',
-        'wolverhamptonwanderers': 'wolves',
-        'wolverhampton': 'wolves',
-        'leicester': 'leicester',
-        'crystalpalace': 'palace',
-        'sheffield': 'sheffieldutd',
-        'westbromwich': 'westbrom',
-        'westbromwichalbion': 'westbrom',
-        'luton': 'luton',
-        'ipswich': 'ipswich',
-        'sunderland': 'sunderland',
-    }
-    
-    return fallback.get(name, name)
+# Import canonical team name normalization
+script_dir = Path(__file__).resolve().parent
+sys.path.insert(0, str(script_dir / 'scripts' / 'soccer'))
+from team_name_utils import standardize_team_name
+
+# Alias for backward compatibility
+normalize_team_name = standardize_team_name
 
 def load_epl_data(data_dir='data/premier_league/'):
     """
@@ -138,9 +60,9 @@ def load_epl_data(data_dir='data/premier_league/'):
     results = pd.read_csv(results_path)
     results['date'] = pd.to_datetime(results['date'])
     
-    # Normalize team names for matching with odds
-    results['home_normalized'] = results['home'].apply(normalize_team_name)
-    results['away_normalized'] = results['away'].apply(normalize_team_name)
+    # Normalize team names for matching with odds (using canonical function)
+    results['home_normalized'] = results['home'].apply(standardize_team_name)
+    results['away_normalized'] = results['away'].apply(standardize_team_name)
     
     # Load team stats
     stats_path = data_path / 'team_stats_by_season.csv'
@@ -148,12 +70,19 @@ def load_epl_data(data_dir='data/premier_league/'):
         raise FileNotFoundError(f"Missing {stats_path}")
     team_stats = pd.read_csv(stats_path)
     
+    # Normalize team names in stats for consistency
+    team_stats['team_normalized'] = team_stats['team'].apply(standardize_team_name)
+    
     # Load closing odds
     odds_path = data_path / 'historical_completed_with_odds.csv'
     if not odds_path.exists():
         raise FileNotFoundError(f"Missing {odds_path}")
     odds = pd.read_csv(odds_path)
     odds['date'] = pd.to_datetime(odds['date']).dt.tz_localize(None)
+    
+    # Normalize team names in odds (they should already be normalized, but ensure consistency)
+    odds['home_normalized'] = odds['home'].apply(standardize_team_name)
+    odds['away_normalized'] = odds['away'].apply(standardize_team_name)
     
     return results, team_stats, odds
 

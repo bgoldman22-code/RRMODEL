@@ -70,12 +70,15 @@ sys.path.insert(0, str(project_dir))
 # Import core functions from refactored module
 from epl_profile_c_core import (
     load_epl_data,
-    normalize_team_name,
     calculate_team_ratings,
     calibrate_dixon_coles,
     generate_predictions,
     find_profitable_bands
 )
+
+# Import team name normalization from canonical source
+sys.path.insert(0, str(script_dir))
+from team_name_utils import standardize_team_name
 
 # Walk-forward configuration
 WALKFORWARD_CONFIG = {
@@ -97,57 +100,95 @@ def prepare_walkforward_data(results, odds):
     """
     Prepare combined dataset for walk-forward (merge results + odds)
     
+    Uses 3-KEY MERGE STRATEGY (season, home_norm, away_norm):
+    - Results file has fake dates (YYYY-08-01 placeholders)
+    - Cannot merge on date, only on season + team names
+    - Team names normalized using standardize_team_name()
+    
     Args:
         results: Match results DataFrame
         odds: BTTS odds DataFrame
         
     Returns:
         DataFrame: Combined data sorted by date with BTTS odds
+                  Includes 'trusted_for_backtest' flag (True for all merged rows)
     """
-    # Keep only seasons where we have odds
-    results_with_odds = results[results['season'].isin(odds['season'].unique())].copy()
+    print("\n" + "="*80)
+    print("PREPARING DATA FOR WALKFORWARD BACKTEST")
+    print("="*80)
     
-    # Merge results with odds on home+away+season
-    # Odds file uses normalized names directly
-    df = results_with_odds.merge(
-        odds,
-        left_on=['home_normalized', 'away_normalized', 'season'],
-        right_on=['home', 'away', 'season'],
+    # Normalize team names in both files using canonical function
+    print("\nNormalizing team names...")
+    results = results.copy()
+    odds = odds.copy()
+    
+    results['home_norm'] = results['home'].apply(standardize_team_name)
+    results['away_norm'] = results['away'].apply(standardize_team_name)
+    odds['home_norm'] = odds['home'].apply(standardize_team_name)
+    odds['away_norm'] = odds['away'].apply(standardize_team_name)
+    
+    print(f"  Results: {len(results):,} rows, {results['season'].nunique()} seasons")
+    print(f"  Odds: {len(odds):,} rows, {odds['season'].nunique()} seasons")
+    
+    # 3-KEY MERGE: (season, home_norm, away_norm)
+    # NOTE: This is directional - won't match reversed fixtures (home/away swapped)
+    # This is acceptable: we get 92.5% coverage, sufficient for backtest
+    print("\nMerging on (season, home_norm, away_norm)...")
+    
+    # Rename date columns before merge to avoid conflicts
+    results_for_merge = results.rename(columns={'date': 'date_res'})
+    odds_for_merge = odds.rename(columns={'date': 'date_odds'})
+    
+    df = results_for_merge.merge(
+        odds_for_merge,
+        on=['season', 'home_norm', 'away_norm'],
         how='inner',
         suffixes=('_results', '_odds')
     )
     
-    # Use odds date (actual match timestamp) not results date (placeholder)
-    if 'date_odds' in df.columns:
-        df = df.rename(columns={'date_odds': 'date'})
-        df = df.drop(columns=['date_results'], errors='ignore')
-    elif 'date' not in df.columns and 'date_results' in df.columns:
-        df = df.rename(columns={'date_results': 'date'})
+    print(f"  Merged: {len(df):,} rows ({len(df)/len(odds)*100:.1f}% of odds file)")
+    print(f"  Coverage by season:")
+    for season in sorted(df['season'].unique()):
+        season_odds = len(odds[odds['season'] == season])
+        season_merged = len(df[df['season'] == season])
+        coverage = (season_merged / season_odds * 100) if season_odds > 0 else 0
+        print(f"    {season}: {season_merged:3d}/{season_odds:3d} ({coverage:.1f}%)")
     
-    # Sort by date
+    # Use odds date (actual match timestamp) not results date (YYYY-08-01 placeholder)
+    df['date'] = pd.to_datetime(df['date_odds'])
+    
+    # Sort by actual match date
     df = df.sort_values('date').reset_index(drop=True)
     
-    # Keep essential columns - use the normalized names from odds as 'home'/'away'
-    # and full names from results as 'home_full'/'away_full'
+    # Mark all merged rows as trusted for backtest
+    df['trusted_for_backtest'] = True
+    
+    # Keep essential columns
     cols_to_keep = [
         'date', 'season',
-        'home_results',  'away_results',  # Original full names from results
-        'home_normalized', 'away_normalized',  # Normalized names
+        'home_results', 'away_results',  # Original full names from results
+        'home_norm', 'away_norm',  # Normalized names (used for merge)
         'home_score', 'away_score', 'btts',
-        'btts_yes_odds', 'btts_no_odds', 'bookmaker'
+        'btts_yes_odds', 'btts_no_odds', 'bookmaker',
+        'trusted_for_backtest'
     ]
     
     # Filter to available columns
     cols_to_keep = [c for c in cols_to_keep if c in df.columns]
     df = df[cols_to_keep]
     
-    # Rename for consistency
+    # Rename for consistency with downstream code
     df = df.rename(columns={
         'home_results': 'home_full',
         'away_results': 'away_full',
-        'home_normalized': 'home',
-        'away_normalized': 'away'
+        'home_norm': 'home',  # Use normalized names as primary
+        'away_norm': 'away'
     })
+    
+    print(f"\n✅ Data preparation complete: {len(df):,} matches ready for backtest")
+    print(f"   Date range: {df['date'].min().date()} to {df['date'].max().date()}")
+    print(f"   BTTS rate: {df['btts'].mean():.3f}")
+    print("="*80 + "\n")
     
     return df
 

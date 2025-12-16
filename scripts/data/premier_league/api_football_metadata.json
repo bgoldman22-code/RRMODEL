@@ -1,0 +1,63 @@
+{
+  "generated_at": "2025-12-10T11:21:21.629642",
+  "seasons": [
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "total_matches": 910,
+  "date_range": {
+    "min": "2023-08-11",
+    "max": "2025-12-08"
+  },
+  "features": [
+    "fixture_id",
+    "season",
+    "date",
+    "home",
+    "away",
+    "home_norm",
+    "away_norm",
+    "home_goals",
+    "away_goals",
+    "venue",
+    "referee",
+    "home_xg",
+    "home_shots_total",
+    "home_shots_on_target",
+    "home_shots_off_target",
+    "home_shots_inside_box",
+    "home_shots_outside_box",
+    "home_shots_blocked",
+    "home_possession_pct",
+    "home_passes_total",
+    "home_passes_accurate",
+    "home_pass_accuracy_pct",
+    "home_corners",
+    "home_gk_saves",
+    "home_fouls",
+    "home_yellow_cards",
+    "home_red_cards",
+    "away_xg",
+    "away_shots_total",
+    "away_shots_on_target",
+    "away_shots_off_target",
+    "away_shots_inside_box",
+    "away_shots_outside_box",
+    "away_shots_blocked",
+    "away_possession_pct",
+    "away_passes_total",
+    "away_passes_accurate",
+    "away_pass_accuracy_pct",
+    "away_corners",
+    "away_gk_saves",
+    "away_fouls",
+    "away_yellow_cards",
+    "away_red_cards"
+  ],
+  "coverage_by_season": {
+    "2023-24": 380,
+    "2024-25": 380,
+    "2025-26": 150
+  }
+}

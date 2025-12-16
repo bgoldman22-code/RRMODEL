@@ -348,171 +348,167 @@ print("=" * 80)
 print()
 
 # ============================================================================
-# STEP 3: NORMALIZE DATES AND PROVE A SINGLE MATCH MERGES
+# STEP 3: 3-KEY MERGE TEST (season, home_norm, away_norm)
 # ============================================================================
+# After discovering that results file has fake dates (YYYY-08-01 placeholders),
+# we cannot merge on date. Instead, we merge on 3 keys only:
+# (season, home_norm, away_norm)
 
 print("=" * 80)
-print("STEP 3: Normalize Dates and Test Single Match Merge")
+print("STEP 3 - 3-KEY MERGE TEST (season, home_norm, away_norm)")
 print("=" * 80)
 print()
 
-print("Normalizing dates to date-only format...")
-
-# Normalize dates (strip time, timezone)
-results['match_date'] = pd.to_datetime(results['date']).dt.date
-odds['match_date'] = pd.to_datetime(odds['date']).dt.date
-
-print(f"✅ Results match_date range: {results['match_date'].min()} to {results['match_date'].max()}")
-print(f"✅ Odds match_date range: {odds['match_date'].min()} to {odds['match_date'].max()}")
+print("BACKGROUND: Results file has fake dates (one YYYY-08-01 per season)")
+print("Cannot merge on date - using 3 keys only: (season, home_norm, away_norm)")
 print()
 
-# Test broader range of candidates to find overlapping matches
-print("--- TESTING CANDIDATE MATCHES (from odds file) ---")
-print()
+# Prepare separate date columns for display (to avoid suffix collision)
+results_for_merge = results.copy()
+odds_for_merge = odds.copy()
 
-golden_odds = None
-golden_result = None
+# Rename date columns before merge to avoid conflicts
+results_for_merge = results_for_merge.rename(columns={'date': 'date_res'})
+odds_for_merge = odds_for_merge.rename(columns={'date': 'date_odds'})
 
-# Try first 100 matches to find overlap
-candidates = odds.head(100)
-for i, (idx, odds_row) in enumerate(candidates.iterrows(), 1):
-    # Search for matching result
-    matching_results = results[
-        (results['home_norm'] == odds_row['home_norm']) &
-        (results['away_norm'] == odds_row['away_norm']) &
-        (results['match_date'] == odds_row['match_date'])
-    ]
-    
-    if len(matching_results) > 0:
-        result_row = matching_results.iloc[0]
-        print(f"✅ GOLDEN MATCH FOUND (candidate #{i})!")
-        print(f"  Odds row: {odds_row['match_date']} | {odds_row['home']} vs {odds_row['away']}")
-        print(f"  Results row: {result_row['date']} | {result_row['home']} vs {result_row['away']}")
-        print(f"  Normalized: {odds_row['home_norm']} vs {odds_row['away_norm']}")
-        print(f"  Score: {result_row['home_score']}-{result_row['away_score']} | BTTS: {result_row['btts']}")
-        print(f"  Odds: BTTS YES={odds_row['btts_yes_odds']:.2f}, NO={odds_row['btts_no_odds']:.2f}")
-        print()
-        
-        # Save first match as golden
-        golden_odds = odds_row
-        golden_result = result_row
-        break
-
-if golden_odds is None:
-    print("❌ No overlapping matches found in first 100 odds rows")
-    print("   Checking date overlap...")
-    print()
-    
-    # Analyze date overlap
-    results_dates = set(results['match_date'])
-    odds_dates = set(odds['match_date'])
-    common_dates = results_dates & odds_dates
-    
-    print(f"   Results date range: {min(results_dates)} to {max(results_dates)}")
-    print(f"   Odds date range: {min(odds_dates)} to {max(odds_dates)}")
-    print(f"   Common dates: {len(common_dates)}")
-    
-    if len(common_dates) > 0:
-        print(f"   Common date range: {min(common_dates)} to {max(common_dates)}")
-        print()
-        
-        # Try to find a match on a common date (middle of range)
-        common_date = sorted(common_dates)[len(common_dates)//2]
-        print(f"   Testing matches on common date: {common_date}")
-        
-        results_on_date = results[results['match_date'] == common_date]
-        odds_on_date = odds[odds['match_date'] == common_date]
-        
-        print(f"     Results on this date: {len(results_on_date)} matches")
-        print(f"     Odds on this date: {len(odds_on_date)} matches")
-        
-        # Try to find aligned match
-        for _, odds_row in odds_on_date.iterrows():
-            matching = results_on_date[
-                (results_on_date['home_norm'] == odds_row['home_norm']) &
-                (results_on_date['away_norm'] == odds_row['away_norm'])
-            ]
-            if len(matching) > 0:
-                golden_odds = odds_row
-                golden_result = matching.iloc[0]
-                print(f"     ✅ Found match: {golden_odds['home_norm']} vs {golden_odds['away_norm']}")
-                break
-        print()
-
-if golden_odds is not None:
-    print()
-    print("--- GOLDEN MATCH DETAILS ---")
-    print()
-    print("Join keys used:")
-    print("  - season (string)")
-    print("  - match_date (date object)")
-    print("  - home_norm (string)")
-    print("  - away_norm (string)")
-    print()
-    
-    print("Golden match - ODDS side:")
-    print(f"  Date: {golden_odds['match_date']}")
-    print(f"  Season: {golden_odds['season']}")
-    print(f"  Home (orig): {golden_odds['home']} → (norm): {golden_odds['home_norm']}")
-    print(f"  Away (orig): {golden_odds['away']} → (norm): {golden_odds['away_norm']}")
-    print(f"  BTTS YES odds: {golden_odds['btts_yes_odds']}")
-    print(f"  BTTS NO odds: {golden_odds['btts_no_odds']}")
-    print()
-    
-    print("Golden match - RESULTS side:")
-    print(f"  Date: {golden_result['match_date']}")
-    print(f"  Season: {golden_result['season']}")
-    print(f"  Home (orig): {golden_result['home']} → (norm): {golden_result['home_norm']}")
-    print(f"  Away (orig): {golden_result['away']} → (norm): {golden_result['away_norm']}")
-    print(f"  Score: {golden_result['home_score']}-{golden_result['away_score']}")
-    print(f"  BTTS: {golden_result['btts']}")
-    print()
-else:
-    print("⚠️ Could not find overlapping matches - date ranges may not overlap")
-    print()
-
-# Mini merge test
-print("--- MINI MERGE TEST (5 matches from each file) ---")
-print()
-
-results_subset = results.head(100)
-odds_subset = odds.head(100)
-
-merged_mini = results_subset.merge(
-    odds_subset,
-    on=['season', 'match_date', 'home_norm', 'away_norm'],
+# Inner join on season + normalized team names (NO DATE)
+merged = results_for_merge.merge(
+    odds_for_merge,
+    on=['season', 'home_norm', 'away_norm'],
     how='inner',
     suffixes=('_res', '_odds')
 )
 
-print(f"Results subset: {len(results_subset)} rows")
-print(f"Odds subset: {len(odds_subset)} rows")
-print(f"✅ Merged rows (inner join): {len(merged_mini)}")
+print(f"Total rows in results: {len(results):,}")
+print(f"Total rows in odds:    {len(odds):,}")
+print(f"Total rows in merged (3-key join): {len(merged):,}")
 print()
 
-if len(merged_mini) > 0:
-    print("✅ Merge successful!")
+# How many distinct matches by key
+key_counts = merged.groupby(['season', 'home_norm', 'away_norm']).size()
+dup_keys = key_counts[key_counts > 1]
+
+print(f"Distinct (season, home_norm, away_norm) keys in merged: {len(key_counts):,}")
+print(f"Keys with duplicates (>1 row): {len(dup_keys):,}")
+
+if len(dup_keys) > 0:
     print()
-    print("Sample merged row (first match):")
-    first_merged = merged_mini.iloc[0]
-    print(f"  Date: {first_merged['match_date']}")
-    print(f"  Season: {first_merged['season']}")
-    print(f"  Home: {first_merged['home_res']} (results) | {first_merged['home_odds']} (odds)")
-    print(f"  Away: {first_merged['away_res']} (results) | {first_merged['away_odds']} (odds)")
-    print(f"  Home (norm): {first_merged['home_norm']}")
-    print(f"  Away (norm): {first_merged['away_norm']}")
-    print(f"  Score: {first_merged['home_score']}-{first_merged['away_score']}")
-    print(f"  BTTS: {first_merged['btts']}")
-    print(f"  BTTS YES odds: {first_merged['btts_yes_odds']}")
-    print(f"  BTTS NO odds: {first_merged['btts_no_odds']}")
-else:
-    print("⚠️ No matches in first 100 rows of each file")
-    print("   Date ranges likely don't overlap - trying full merge in Step 4...")
+    print("⚠️ Sample duplicate keys (teams that matched multiple times):")
+    print("   This can happen if same teams play twice in a season (home/away)")
+    print()
+    for (season, home, away), count in dup_keys.head(10).items():
+        print(f"   {season}: {home} vs {away} → {count} merged rows")
+
+print()
+print("--- SAMPLE MERGED ROWS ---")
+print()
+
+# Show a few merged rows to visually confirm correctness
+cols_to_show = [
+    'season',
+    'date_res', 'home_res', 'away_res',
+    'date_odds', 'home_odds', 'away_odds',
+    'home_norm', 'away_norm',
+    'btts_yes_odds', 'btts_no_odds'
+]
+
+# Add score columns if they exist
+if 'home_score' in merged.columns:
+    cols_to_show.insert(3, 'home_score')
+    cols_to_show.insert(4, 'away_score')
+    cols_to_show.insert(5, 'btts')
+
+# Only show columns that actually exist
+cols_to_show = [c for c in cols_to_show if c in merged.columns]
+
+print("Showing first 20 merged rows:")
+print(merged[cols_to_show].head(20).to_string(index=False))
 
 print()
 print("=" * 80)
-if len(merged_mini) > 0:
-    print("✅ STEP 3 COMPLETE - Merge logic verified with normalized team names")
+if len(merged) > 0:
+    coverage_pct = (len(merged) / len(odds)) * 100
+    print(f"✅ STEP 3 COMPLETE - 3-key merge successful!")
+    print(f"   Merged {len(merged):,} matches ({coverage_pct:.1f}% of odds file)")
 else:
-    print("⚠️ STEP 3 NEEDS FULL DATASET TEST - Move to Step 4 for full merge")
+    print("❌ STEP 3 FAILED - No matches merged")
 print("=" * 80)
+print()
+
+# ============================================================================
+# STEP 4: SUMMARY SANITY CHECKS
+# ============================================================================
+
+print("=" * 80)
+print("STEP 4 - SUMMARY SANITY CHECKS")
+print("=" * 80)
+print()
+
+# 1) Coverage by season: how many merged matches per season?
+print("--- MERGED MATCHES BY SEASON ---")
+print()
+season_counts = merged['season'].value_counts().sort_index()
+print("Merged (results + odds):")
+for season, count in season_counts.items():
+    print(f"  {season}: {count:3d} matches")
+
+print()
+print("Odds-only (before merge):")
+odds_season_counts = odds['season'].value_counts().sort_index()
+for season, count in odds_season_counts.items():
+    merged_count = season_counts.get(season, 0)
+    coverage = (merged_count / count * 100) if count > 0 else 0
+    print(f"  {season}: {count:3d} matches → {merged_count:3d} merged ({coverage:.1f}% coverage)")
+
+print()
+
+# 2) BTTS rate sanity check
+if 'btts' in merged.columns:
+    btts_merged = merged['btts'].mean()
+    print(f"--- BTTS RATE IN MERGED DATA ---")
+    print(f"Merged BTTS rate (using results.btts): {btts_merged:.3f}")
+    print(f"Expected EPL BTTS rate: ~0.556 (55.6%)")
+    
+    diff = abs(btts_merged - 0.556)
+    if diff < 0.05:
+        print(f"✅ Within expected range (diff: {diff:.3f})")
+    else:
+        print(f"⚠️ Outside expected range (diff: {diff:.3f})")
+    print()
+
+# 3) Duplicate analysis
+if len(dup_keys) > 0:
+    print("--- DUPLICATE KEY ANALYSIS ---")
+    print()
+    print(f"Total duplicate keys: {len(dup_keys)}")
+    print(f"Total duplicate rows: {dup_keys.sum()}")
+    print()
+    
+    # Show distribution of duplicate counts
+    dup_dist = dup_keys.value_counts().sort_index()
+    print("Distribution of duplicate counts:")
+    for count, freq in dup_dist.items():
+        print(f"  {count} matches: {freq} team pairs")
+    print()
+    
+    # Show a sample duplicate to understand the pattern
+    if len(dup_keys) > 0:
+        sample_key = dup_keys.index[0]
+        season_sample, home_sample, away_sample = sample_key
+        sample_rows = merged[
+            (merged['season'] == season_sample) &
+            (merged['home_norm'] == home_sample) &
+            (merged['away_norm'] == away_sample)
+        ]
+        print(f"Sample duplicate: {season_sample} {home_sample} vs {away_sample}")
+        print(f"  Found {len(sample_rows)} rows for this key")
+        print()
+        sample_cols = ['date_res', 'date_odds', 'home_res', 'away_res']
+        sample_cols = [c for c in sample_cols if c in sample_rows.columns]
+        print(sample_rows[sample_cols].to_string(index=False))
+
+print()
+print("=" * 80)
+print("STEP 4 COMPLETE - Sanity checks finished")
+print("=" * 80)
+
