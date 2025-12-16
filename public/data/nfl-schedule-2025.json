@@ -3209,7 +3209,9 @@
     "home_score": 31,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 8,
+    "wind": 6
   },
   {
     "week": 15,
@@ -3223,7 +3225,9 @@
     "home_score": 0,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "fieldturf",
+    "temp": 10,
+    "wind": 7
   },
   {
     "week": 15,
@@ -3237,7 +3241,7 @@
     "home_score": 40,
     "game_type": "REG",
     "roof": "closed",
-    "surface": ""
+    "surface": "astroturf"
   },
   {
     "week": 15,
@@ -3251,7 +3255,9 @@
     "home_score": 48,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 70,
+    "wind": 11
   },
   {
     "week": 15,
@@ -3265,7 +3271,7 @@
     "home_score": 13,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass"
   },
   {
     "week": 15,
@@ -3279,7 +3285,9 @@
     "home_score": 31,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "fieldturf",
+    "temp": 32,
+    "wind": 6
   },
   {
     "week": 15,
@@ -3293,7 +3301,9 @@
     "home_score": 21,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "fieldturf",
+    "temp": 27,
+    "wind": 13
   },
   {
     "week": 15,
@@ -3307,7 +3317,9 @@
     "home_score": 31,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 30,
+    "wind": 20
   },
   {
     "week": 15,
@@ -3407,9 +3419,13 @@
     "gametime": "20:15",
     "away_team": "MIA",
     "home_team": "PIT",
+    "away_score": 15,
+    "home_score": 28,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": "grass"
+    "surface": "grass",
+    "temp": 17,
+    "wind": 7
   },
   {
     "week": 16,
