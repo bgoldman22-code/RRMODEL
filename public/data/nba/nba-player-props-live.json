@@ -1,5 +1,5 @@
 {
-  "generated": "2025-12-22T10:41:11.887Z",
+  "generated": "2025-12-22T16:12:32.579Z",
   "games": 7,
   "model": "Baseline v2",
   "dataSource": "GitHub Actions (Dec 22, 2025)",
@@ -22,52 +22,36 @@
   },
   "predictions": [
     {
-      "player": "Miles Bridges",
-      "team": "Charlotte Hornets",
-      "opponent": "Cleveland Cavaliers",
-      "propType": "assists",
-      "prediction": 5,
-      "vegasLine": 2.5,
-      "betSide": "OVER",
-      "edge": 100,
-      "confidence": 65,
-      "kellyStake": 0.6,
-      "odds": -170,
-      "book": "DraftKings",
-      "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
-    },
-    {
-      "player": "Brandin Podziemski",
-      "team": "Orlando Magic",
-      "opponent": "Golden State Warriors",
-      "propType": "assists",
-      "prediction": 5,
-      "vegasLine": 2.5,
-      "betSide": "OVER",
-      "edge": 100,
-      "confidence": 64,
-      "kellyStake": 0.5,
-      "odds": -174,
-      "book": "FanDuel",
-      "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
-    },
-    {
-      "player": "Derik Queen",
-      "team": "Dallas Mavericks",
-      "opponent": "New Orleans Pelicans",
-      "propType": "assists",
-      "prediction": 5.8,
+      "player": "Jerami Grant",
+      "team": "Detroit Pistons",
+      "opponent": "Portland Trail Blazers",
+      "propType": "rebounds",
+      "prediction": 6,
       "vegasLine": 3.5,
       "betSide": "OVER",
-      "edge": 65.7,
+      "edge": 71.4,
+      "confidence": 63,
+      "kellyStake": 0.6,
+      "odds": -155,
+      "book": "DraftKings",
+      "game": "Detroit Pistons @ Portland Trail Blazers",
+      "gameTime": "2025-12-23T03:00:00Z"
+    },
+    {
+      "player": "Isaiah Jackson",
+      "team": "Indiana Pacers",
+      "opponent": "Boston Celtics",
+      "propType": "rebounds",
+      "prediction": 8.9,
+      "vegasLine": 5.5,
+      "betSide": "OVER",
+      "edge": 61.3,
       "confidence": 65,
-      "kellyStake": 1.5,
-      "odds": -144,
+      "kellyStake": 1.3,
+      "odds": -148,
       "book": "FanDuel",
-      "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "game": "Indiana Pacers @ Boston Celtics",
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Kon Knueppel",
@@ -79,11 +63,11 @@
       "betSide": "OVER",
       "edge": 60,
       "confidence": 65,
-      "kellyStake": 2.5,
-      "odds": -114,
+      "kellyStake": 2.1,
+      "odds": -125,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Sion James",
@@ -95,11 +79,11 @@
       "betSide": "OVER",
       "edge": 60,
       "confidence": 65,
-      "kellyStake": 1.9,
-      "odds": -132,
-      "book": "FanDuel",
+      "kellyStake": 1.8,
+      "odds": -134,
+      "book": "DraftKings",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Saddiq Bey",
@@ -111,11 +95,11 @@
       "betSide": "OVER",
       "edge": 60,
       "confidence": 65,
-      "kellyStake": 1.7,
-      "odds": -138,
+      "kellyStake": 1.1,
+      "odds": -155,
       "book": "DraftKings",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Moses Moody",
@@ -128,10 +112,10 @@
       "edge": 60,
       "confidence": 64,
       "kellyStake": 0.5,
-      "odds": -173,
+      "odds": -169,
       "book": "DraftKings",
       "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
+      "gameTime": "2025-12-23T03:00:00Z"
     },
     {
       "player": "Brandon Miller",
@@ -143,11 +127,27 @@
       "betSide": "OVER",
       "edge": 55.6,
       "confidence": 63,
-      "kellyStake": 2.4,
-      "odds": -106,
+      "kellyStake": 1.3,
+      "odds": -136,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
+    },
+    {
+      "player": "Lauri Markkanen",
+      "team": "Utah Jazz",
+      "opponent": "Denver Nuggets",
+      "propType": "rebounds",
+      "prediction": 10,
+      "vegasLine": 6.5,
+      "betSide": "OVER",
+      "edge": 53.8,
+      "confidence": 62,
+      "kellyStake": 1.2,
+      "odds": -132,
+      "book": "FanDuel",
+      "game": "Utah Jazz @ Denver Nuggets",
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Donovan Mitchell",
@@ -163,7 +163,7 @@
       "odds": -152,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Draymond Green",
@@ -175,11 +175,11 @@
       "betSide": "UNDER",
       "edge": 45.5,
       "confidence": 61,
-      "kellyStake": 0.5,
-      "odds": -147,
+      "kellyStake": 0.7,
+      "odds": -139,
       "book": "DraftKings",
       "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
+      "gameTime": "2025-12-23T03:00:00Z"
     },
     {
       "player": "Anfernee Simons",
@@ -192,26 +192,10 @@
       "edge": 44,
       "confidence": 65,
       "kellyStake": 3,
-      "odds": 103,
+      "odds": 104,
       "book": "DraftKings",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
-    },
-    {
-      "player": "Jeremiah Fears",
-      "team": "Dallas Mavericks",
-      "opponent": "New Orleans Pelicans",
-      "propType": "rebounds",
-      "prediction": 3.6,
-      "vegasLine": 2.5,
-      "betSide": "OVER",
-      "edge": 44,
-      "confidence": 65,
-      "kellyStake": 0.7,
-      "odds": -165,
-      "book": "DraftKings",
-      "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Miles Bridges",
@@ -227,7 +211,7 @@
       "odds": 136,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Keyonte George",
@@ -243,7 +227,7 @@
       "odds": -136,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Cameron Johnson",
@@ -255,11 +239,11 @@
       "betSide": "OVER",
       "edge": 42.9,
       "confidence": 65,
-      "kellyStake": 0.8,
-      "odds": -164,
+      "kellyStake": 1,
+      "odds": -157,
       "book": "DraftKings",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Santi Aldama",
@@ -275,7 +259,7 @@
       "odds": -172,
       "book": "FanDuel",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Brandin Podziemski",
@@ -288,10 +272,10 @@
       "edge": 42.9,
       "confidence": 64,
       "kellyStake": 3,
-      "odds": 130,
+      "odds": 126,
       "book": "DraftKings",
       "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
+      "gameTime": "2025-12-23T03:00:00Z"
     },
     {
       "player": "Moussa Diabate",
@@ -303,11 +287,27 @@
       "betSide": "UNDER",
       "edge": 41.3,
       "confidence": 64,
-      "kellyStake": 2,
-      "odds": -122,
+      "kellyStake": 1.4,
+      "odds": -138,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
+    },
+    {
+      "player": "Lonzo Ball",
+      "team": "Charlotte Hornets",
+      "opponent": "Cleveland Cavaliers",
+      "propType": "rebounds",
+      "prediction": 4.8,
+      "vegasLine": 3.5,
+      "betSide": "OVER",
+      "edge": 37.1,
+      "confidence": 62,
+      "kellyStake": 0.5,
+      "odds": -158,
+      "book": "FanDuel",
+      "game": "Charlotte Hornets @ Cleveland Cavaliers",
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Cooper Flagg",
@@ -323,7 +323,7 @@
       "odds": -108,
       "book": "FanDuel",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Kentavious Caldwell-Pope",
@@ -336,42 +336,10 @@
       "edge": 37.1,
       "confidence": 64,
       "kellyStake": 3,
-      "odds": 130,
+      "odds": 116,
       "book": "FanDuel",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
-    },
-    {
-      "player": "Isaiah Jackson",
-      "team": "Indiana Pacers",
-      "opponent": "Boston Celtics",
-      "propType": "rebounds",
-      "prediction": 8.9,
-      "vegasLine": 6.5,
-      "betSide": "OVER",
-      "edge": 36.5,
-      "confidence": 65,
-      "kellyStake": 3,
-      "odds": 112,
-      "book": "FanDuel",
-      "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
-    },
-    {
-      "player": "Cedric Coward",
-      "team": "Memphis Grizzlies",
-      "opponent": "Oklahoma City Thunder",
-      "propType": "assists",
-      "prediction": 3.4,
-      "vegasLine": 2.5,
-      "betSide": "OVER",
-      "edge": 36,
-      "confidence": 64,
-      "kellyStake": 0.5,
-      "odds": -168,
-      "book": "DraftKings",
-      "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Jaylon Tyson",
@@ -387,23 +355,7 @@
       "odds": -144,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
-    },
-    {
-      "player": "Lauri Markkanen",
-      "team": "Utah Jazz",
-      "opponent": "Denver Nuggets",
-      "propType": "rebounds",
-      "prediction": 10,
-      "vegasLine": 7.5,
-      "betSide": "OVER",
-      "edge": 33.3,
-      "confidence": 62,
-      "kellyStake": 2.1,
-      "odds": -108,
-      "book": "FanDuel",
-      "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Jerami Grant",
@@ -416,8 +368,8 @@
       "edge": 33.3,
       "confidence": 63,
       "kellyStake": 3,
-      "odds": 121,
-      "book": "DraftKings",
+      "odds": 122,
+      "book": "FanDuel",
       "game": "Detroit Pistons @ Portland Trail Blazers",
       "gameTime": "2025-12-23T03:00:00Z"
     },
@@ -431,11 +383,27 @@
       "betSide": "OVER",
       "edge": 33.3,
       "confidence": 64,
-      "kellyStake": 3,
-      "odds": 108,
+      "kellyStake": 2.4,
+      "odds": -110,
       "book": "FanDuel",
       "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
+      "gameTime": "2025-12-23T03:00:00Z"
+    },
+    {
+      "player": "Moussa Diabate",
+      "team": "Charlotte Hornets",
+      "opponent": "Cleveland Cavaliers",
+      "propType": "rebounds",
+      "prediction": 4.4,
+      "vegasLine": 6.5,
+      "betSide": "UNDER",
+      "edge": 32.3,
+      "confidence": 64,
+      "kellyStake": 3,
+      "odds": 106,
+      "book": "DraftKings",
+      "game": "Charlotte Hornets @ Cleveland Cavaliers",
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Brandon Miller",
@@ -447,11 +415,11 @@
       "betSide": "OVER",
       "edge": 31.4,
       "confidence": 63,
-      "kellyStake": 1.7,
-      "odds": -125,
+      "kellyStake": 2.5,
+      "odds": -102,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Cason Wallace",
@@ -463,11 +431,11 @@
       "betSide": "UNDER",
       "edge": 31.4,
       "confidence": 64,
-      "kellyStake": 0.5,
-      "odds": -172,
+      "kellyStake": 0.9,
+      "odds": -154,
       "book": "FanDuel",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Anthony Black",
@@ -483,7 +451,23 @@
       "odds": -144,
       "book": "FanDuel",
       "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
+      "gameTime": "2025-12-23T03:00:00Z"
+    },
+    {
+      "player": "Derik Queen",
+      "team": "Dallas Mavericks",
+      "opponent": "New Orleans Pelicans",
+      "propType": "assists",
+      "prediction": 5.8,
+      "vegasLine": 4.5,
+      "betSide": "OVER",
+      "edge": 28.9,
+      "confidence": 65,
+      "kellyStake": 3,
+      "odds": 110,
+      "book": "FanDuel",
+      "game": "Dallas Mavericks @ New Orleans Pelicans",
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Shaedon Sharpe",
@@ -495,8 +479,8 @@
       "betSide": "UNDER",
       "edge": 28.9,
       "confidence": 64,
-      "kellyStake": 0.6,
-      "odds": -160,
+      "kellyStake": 1,
+      "odds": -151,
       "book": "DraftKings",
       "game": "Detroit Pistons @ Portland Trail Blazers",
       "gameTime": "2025-12-23T03:00:00Z"
@@ -515,7 +499,7 @@
       "odds": -128,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Jeremiah Fears",
@@ -531,7 +515,7 @@
       "odds": -114,
       "book": "FanDuel",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Trey Murphy III",
@@ -544,26 +528,10 @@
       "edge": 28,
       "confidence": 63,
       "kellyStake": 0.5,
-      "odds": -162,
+      "odds": -166,
       "book": "FanDuel",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
-    },
-    {
-      "player": "Toumani Camara",
-      "team": "Detroit Pistons",
-      "opponent": "Portland Trail Blazers",
-      "propType": "assists",
-      "prediction": 3.2,
-      "vegasLine": 2.5,
-      "betSide": "OVER",
-      "edge": 28,
-      "confidence": 64,
-      "kellyStake": 0.5,
-      "odds": -172,
-      "book": "DraftKings",
-      "game": "Detroit Pistons @ Portland Trail Blazers",
-      "gameTime": "2025-12-23T03:00:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Tyus Jones",
@@ -575,27 +543,11 @@
       "betSide": "UNDER",
       "edge": 25.7,
       "confidence": 64,
-      "kellyStake": 1.1,
-      "odds": -146,
-      "book": "FanDuel",
-      "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
-    },
-    {
-      "player": "Jusuf Nurkic",
-      "team": "Utah Jazz",
-      "opponent": "Denver Nuggets",
-      "propType": "rebounds",
-      "prediction": 9.4,
-      "vegasLine": 7.5,
-      "betSide": "OVER",
-      "edge": 25.3,
-      "confidence": 63,
       "kellyStake": 0.6,
-      "odds": -154,
-      "book": "FanDuel",
-      "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "odds": -161,
+      "book": "DraftKings",
+      "game": "Orlando Magic @ Golden State Warriors",
+      "gameTime": "2025-12-23T03:00:00Z"
     },
     {
       "player": "Bruce Brown",
@@ -611,7 +563,7 @@
       "odds": -106,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Neemias Queta",
@@ -623,11 +575,11 @@
       "betSide": "UNDER",
       "edge": 24.2,
       "confidence": 64,
-      "kellyStake": 1.9,
-      "odds": -125,
+      "kellyStake": 1.6,
+      "odds": -132,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Saddiq Bey",
@@ -643,23 +595,7 @@
       "odds": -102,
       "book": "FanDuel",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
-    },
-    {
-      "player": "Cam Spencer",
-      "team": "Memphis Grizzlies",
-      "opponent": "Oklahoma City Thunder",
-      "propType": "assists",
-      "prediction": 6.8,
-      "vegasLine": 5.5,
-      "betSide": "OVER",
-      "edge": 23.6,
-      "confidence": 63,
-      "kellyStake": 0.7,
-      "odds": -151,
-      "book": "DraftKings",
-      "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Pascal Siakam",
@@ -675,7 +611,7 @@
       "odds": -148,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "LaMelo Ball",
@@ -687,11 +623,11 @@
       "betSide": "OVER",
       "edge": 20,
       "confidence": 62,
-      "kellyStake": 1.7,
-      "odds": -118,
+      "kellyStake": 1.2,
+      "odds": -132,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Ryan Kalkbrenner",
@@ -703,11 +639,11 @@
       "betSide": "UNDER",
       "edge": 20,
       "confidence": 65,
-      "kellyStake": 1.7,
-      "odds": -138,
+      "kellyStake": 2.9,
+      "odds": -104,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Derrick White",
@@ -719,11 +655,11 @@
       "betSide": "UNDER",
       "edge": 20,
       "confidence": 64,
-      "kellyStake": 0.7,
-      "odds": -158,
+      "kellyStake": 1.5,
+      "odds": -136,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Andrew Nembhard",
@@ -739,7 +675,7 @@
       "odds": -114,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Anfernee Simons",
@@ -752,10 +688,10 @@
       "edge": 20,
       "confidence": 65,
       "kellyStake": 3,
-      "odds": 107,
+      "odds": 109,
       "book": "DraftKings",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Naji Marshall",
@@ -767,11 +703,11 @@
       "betSide": "UNDER",
       "edge": 20,
       "confidence": 65,
-      "kellyStake": 2.9,
-      "odds": -102,
+      "kellyStake": 2.3,
+      "odds": -120,
       "book": "FanDuel",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Derik Queen",
@@ -783,11 +719,11 @@
       "betSide": "OVER",
       "edge": 20,
       "confidence": 65,
-      "kellyStake": 2,
-      "odds": -128,
+      "kellyStake": 1.7,
+      "odds": -136,
       "book": "FanDuel",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Jusuf Nurkic",
@@ -799,11 +735,11 @@
       "betSide": "OVER",
       "edge": 20,
       "confidence": 63,
-      "kellyStake": 2.5,
-      "odds": -104,
+      "kellyStake": 2.1,
+      "odds": -114,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Isaiah Collier",
@@ -819,23 +755,7 @@
       "odds": -110,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
-    },
-    {
-      "player": "Jerami Grant",
-      "team": "Detroit Pistons",
-      "opponent": "Portland Trail Blazers",
-      "propType": "assists",
-      "prediction": 3,
-      "vegasLine": 2.5,
-      "betSide": "OVER",
-      "edge": 20,
-      "confidence": 63,
-      "kellyStake": 0.9,
-      "odds": -145,
-      "book": "DraftKings",
-      "game": "Detroit Pistons @ Portland Trail Blazers",
-      "gameTime": "2025-12-23T03:00:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Kris Murray",
@@ -863,9 +783,9 @@
       "betSide": "UNDER",
       "edge": 18.8,
       "confidence": 64,
-      "kellyStake": 0.6,
-      "odds": -160,
-      "book": "FanDuel",
+      "kellyStake": 1.5,
+      "odds": -135,
+      "book": "DraftKings",
       "game": "Detroit Pistons @ Portland Trail Blazers",
       "gameTime": "2025-12-23T03:00:00Z"
     },
@@ -879,11 +799,11 @@
       "betSide": "OVER",
       "edge": 16.4,
       "confidence": 65,
-      "kellyStake": 2.5,
-      "odds": -114,
+      "kellyStake": 3,
+      "odds": 110,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Jalen Williams",
@@ -899,7 +819,23 @@
       "odds": -118,
       "book": "FanDuel",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
+    },
+    {
+      "player": "Shai Gilgeous-Alexander",
+      "team": "Memphis Grizzlies",
+      "opponent": "Oklahoma City Thunder",
+      "propType": "rebounds",
+      "prediction": 4.6,
+      "vegasLine": 5.5,
+      "betSide": "UNDER",
+      "edge": 16.4,
+      "confidence": 63,
+      "kellyStake": 0.5,
+      "odds": -156,
+      "book": "DraftKings",
+      "game": "Memphis Grizzlies @ Oklahoma City Thunder",
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Desmond Bane",
@@ -915,7 +851,7 @@
       "odds": -146,
       "book": "FanDuel",
       "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
+      "gameTime": "2025-12-23T03:00:00Z"
     },
     {
       "player": "Chet Holmgren",
@@ -931,7 +867,7 @@
       "odds": -130,
       "book": "FanDuel",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Lonzo Ball",
@@ -944,10 +880,10 @@
       "edge": 14.3,
       "confidence": 62,
       "kellyStake": 0.5,
-      "odds": -157,
-      "book": "DraftKings",
+      "odds": -152,
+      "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Anthony Davis",
@@ -959,11 +895,11 @@
       "betSide": "UNDER",
       "edge": 14.3,
       "confidence": 63,
-      "kellyStake": 1.1,
-      "odds": -140,
+      "kellyStake": 1.2,
+      "odds": -138,
       "book": "FanDuel",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Ace Bailey",
@@ -979,7 +915,7 @@
       "odds": -120,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Jamal Murray",
@@ -991,11 +927,11 @@
       "betSide": "UNDER",
       "edge": 14.3,
       "confidence": 65,
-      "kellyStake": 1.9,
-      "odds": -132,
+      "kellyStake": 2.3,
+      "odds": -120,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Moses Moody",
@@ -1011,7 +947,7 @@
       "odds": 142,
       "book": "FanDuel",
       "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
+      "gameTime": "2025-12-23T03:00:00Z"
     },
     {
       "player": "Jaylon Tyson",
@@ -1024,10 +960,10 @@
       "edge": 13.8,
       "confidence": 65,
       "kellyStake": 3,
-      "odds": 109,
+      "odds": 104,
       "book": "DraftKings",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Nikola Jokic",
@@ -1043,7 +979,7 @@
       "odds": -140,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Jay Huff",
@@ -1056,10 +992,10 @@
       "edge": 12.7,
       "confidence": 65,
       "kellyStake": 3,
-      "odds": 118,
+      "odds": 102,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Jordan Walsh",
@@ -1071,11 +1007,11 @@
       "betSide": "OVER",
       "edge": 12.7,
       "confidence": 65,
-      "kellyStake": 1.1,
-      "odds": -153,
-      "book": "DraftKings",
+      "kellyStake": 2.4,
+      "odds": -118,
+      "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Cooper Flagg",
@@ -1087,11 +1023,11 @@
       "betSide": "OVER",
       "edge": 12.7,
       "confidence": 65,
-      "kellyStake": 1.1,
-      "odds": -154,
+      "kellyStake": 2.1,
+      "odds": -125,
       "book": "FanDuel",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Jalen Williams",
@@ -1103,11 +1039,11 @@
       "betSide": "UNDER",
       "edge": 12.7,
       "confidence": 64,
-      "kellyStake": 2.7,
-      "odds": -102,
+      "kellyStake": 1.9,
+      "odds": -125,
       "book": "FanDuel",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Ausar Thompson",
@@ -1119,8 +1055,8 @@
       "betSide": "UNDER",
       "edge": 12.7,
       "confidence": 65,
-      "kellyStake": 1.4,
-      "odds": -147,
+      "kellyStake": 1.3,
+      "odds": -148,
       "book": "DraftKings",
       "game": "Detroit Pistons @ Portland Trail Blazers",
       "gameTime": "2025-12-23T03:00:00Z"
@@ -1139,7 +1075,7 @@
       "odds": -138,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Jaylon Tyson",
@@ -1151,11 +1087,11 @@
       "betSide": "UNDER",
       "edge": 12,
       "confidence": 65,
-      "kellyStake": 0.8,
-      "odds": -164,
+      "kellyStake": 0.6,
+      "odds": -168,
       "book": "DraftKings",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Cason Wallace",
@@ -1167,11 +1103,11 @@
       "betSide": "UNDER",
       "edge": 12,
       "confidence": 64,
-      "kellyStake": 1.5,
-      "odds": -136,
-      "book": "FanDuel",
+      "kellyStake": 1.8,
+      "odds": -128,
+      "book": "DraftKings",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Kentavious Caldwell-Pope",
@@ -1183,11 +1119,11 @@
       "betSide": "OVER",
       "edge": 12,
       "confidence": 64,
-      "kellyStake": 1.7,
-      "odds": -131,
+      "kellyStake": 1.4,
+      "odds": -140,
       "book": "DraftKings",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Tobias Harris",
@@ -1200,26 +1136,10 @@
       "edge": 12,
       "confidence": 64,
       "kellyStake": 3,
-      "odds": 122,
+      "odds": 115,
       "book": "DraftKings",
       "game": "Detroit Pistons @ Portland Trail Blazers",
       "gameTime": "2025-12-23T03:00:00Z"
-    },
-    {
-      "player": "Kon Knueppel",
-      "team": "Charlotte Hornets",
-      "opponent": "Cleveland Cavaliers",
-      "propType": "rebounds",
-      "prediction": 5,
-      "vegasLine": 4.5,
-      "betSide": "OVER",
-      "edge": 11.1,
-      "confidence": 65,
-      "kellyStake": 0.8,
-      "odds": -162,
-      "book": "FanDuel",
-      "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
     },
     {
       "player": "LaMelo Ball",
@@ -1231,11 +1151,27 @@
       "betSide": "UNDER",
       "edge": 11.1,
       "confidence": 62,
-      "kellyStake": 2,
-      "odds": -110,
+      "kellyStake": 2.7,
+      "odds": 110,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
+    },
+    {
+      "player": "Kon Knueppel",
+      "team": "Charlotte Hornets",
+      "opponent": "Cleveland Cavaliers",
+      "propType": "rebounds",
+      "prediction": 5,
+      "vegasLine": 4.5,
+      "betSide": "OVER",
+      "edge": 11.1,
+      "confidence": 65,
+      "kellyStake": 1.2,
+      "odds": -151,
+      "book": "DraftKings",
+      "game": "Charlotte Hornets @ Cleveland Cavaliers",
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "T.J. McConnell",
@@ -1247,11 +1183,11 @@
       "betSide": "OVER",
       "edge": 11.1,
       "confidence": 65,
-      "kellyStake": 2,
-      "odds": -130,
+      "kellyStake": 3,
+      "odds": 100,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Cameron Johnson",
@@ -1267,7 +1203,7 @@
       "odds": 134,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Desmond Bane",
@@ -1283,7 +1219,7 @@
       "odds": -125,
       "book": "FanDuel",
       "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
+      "gameTime": "2025-12-23T03:00:00Z"
     },
     {
       "player": "Goga Bitadze",
@@ -1295,11 +1231,11 @@
       "betSide": "UNDER",
       "edge": 11.1,
       "confidence": 64,
-      "kellyStake": 2.1,
-      "odds": -120,
+      "kellyStake": 1.7,
+      "odds": -130,
       "book": "FanDuel",
       "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
+      "gameTime": "2025-12-23T03:00:00Z"
     },
     {
       "player": "Jaylen Brown",
@@ -1315,7 +1251,7 @@
       "odds": -140,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Jamal Murray",
@@ -1327,27 +1263,11 @@
       "betSide": "UNDER",
       "edge": 10.8,
       "confidence": 65,
-      "kellyStake": 2.5,
-      "odds": -114,
+      "kellyStake": 3,
+      "odds": 106,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
-    },
-    {
-      "player": "Draymond Green",
-      "team": "Orlando Magic",
-      "opponent": "Golden State Warriors",
-      "propType": "rebounds",
-      "prediction": 5.8,
-      "vegasLine": 6.5,
-      "betSide": "UNDER",
-      "edge": 10.8,
-      "confidence": 61,
-      "kellyStake": 0.5,
-      "odds": -150,
-      "book": "DraftKings",
-      "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Jusuf Nurkic",
@@ -1359,11 +1279,11 @@
       "betSide": "OVER",
       "edge": 10.6,
       "confidence": 63,
-      "kellyStake": 2.7,
-      "odds": 102,
-      "book": "DraftKings",
+      "kellyStake": 3,
+      "odds": 116,
+      "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Nikola Jokic",
@@ -1375,11 +1295,27 @@
       "betSide": "UNDER",
       "edge": 10.5,
       "confidence": 65,
-      "kellyStake": 1.9,
-      "odds": -132,
+      "kellyStake": 2.7,
+      "odds": -108,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
+    },
+    {
+      "player": "Kon Knueppel",
+      "team": "Charlotte Hornets",
+      "opponent": "Cleveland Cavaliers",
+      "propType": "rebounds",
+      "prediction": 5,
+      "vegasLine": 5.5,
+      "betSide": "UNDER",
+      "edge": 9.1,
+      "confidence": 65,
+      "kellyStake": 0.8,
+      "odds": -162,
+      "book": "FanDuel",
+      "game": "Charlotte Hornets @ Cleveland Cavaliers",
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Jaylen Brown",
@@ -1395,7 +1331,7 @@
       "odds": -106,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "De'Andre Hunter",
@@ -1411,7 +1347,7 @@
       "odds": -144,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Ajay Mitchell",
@@ -1427,7 +1363,7 @@
       "odds": 118,
       "book": "FanDuel",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Ajay Mitchell",
@@ -1440,10 +1376,10 @@
       "edge": 8.6,
       "confidence": 64,
       "kellyStake": 3,
-      "odds": 122,
+      "odds": 127,
       "book": "DraftKings",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Shaedon Sharpe",
@@ -1455,8 +1391,24 @@
       "betSide": "UNDER",
       "edge": 8.6,
       "confidence": 64,
-      "kellyStake": 0.9,
-      "odds": -153,
+      "kellyStake": 1,
+      "odds": -150,
+      "book": "DraftKings",
+      "game": "Detroit Pistons @ Portland Trail Blazers",
+      "gameTime": "2025-12-23T03:00:00Z"
+    },
+    {
+      "player": "Toumani Camara",
+      "team": "Detroit Pistons",
+      "opponent": "Portland Trail Blazers",
+      "propType": "assists",
+      "prediction": 3.2,
+      "vegasLine": 3.5,
+      "betSide": "UNDER",
+      "edge": 8.6,
+      "confidence": 64,
+      "kellyStake": 0.5,
+      "odds": -171,
       "book": "DraftKings",
       "game": "Detroit Pistons @ Portland Trail Blazers",
       "gameTime": "2025-12-23T03:00:00Z"
@@ -1471,11 +1423,11 @@
       "betSide": "OVER",
       "edge": 6.7,
       "confidence": 65,
-      "kellyStake": 2,
-      "odds": -130,
+      "kellyStake": 3,
+      "odds": 108,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Lonzo Ball",
@@ -1487,11 +1439,11 @@
       "betSide": "OVER",
       "edge": 6.7,
       "confidence": 62,
-      "kellyStake": 2.7,
-      "odds": 110,
+      "kellyStake": 3,
+      "odds": 122,
       "book": "DraftKings",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Payton Pritchard",
@@ -1504,10 +1456,10 @@
       "edge": 6.7,
       "confidence": 65,
       "kellyStake": 3,
-      "odds": 116,
+      "odds": 118,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "P.J. Washington",
@@ -1523,7 +1475,7 @@
       "odds": 114,
       "book": "FanDuel",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Kyle Filipowski",
@@ -1539,7 +1491,7 @@
       "odds": 100,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Jaylen Wells",
@@ -1552,10 +1504,10 @@
       "edge": 6.7,
       "confidence": 64,
       "kellyStake": 3,
-      "odds": 134,
+      "odds": 116,
       "book": "FanDuel",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Donovan Clingan",
@@ -1567,43 +1519,11 @@
       "betSide": "OVER",
       "edge": 6.7,
       "confidence": 60,
-      "kellyStake": 1.3,
-      "odds": -117,
+      "kellyStake": 1.8,
+      "odds": -105,
       "book": "DraftKings",
       "game": "Detroit Pistons @ Portland Trail Blazers",
       "gameTime": "2025-12-23T03:00:00Z"
-    },
-    {
-      "player": "Deni Avdija",
-      "team": "Detroit Pistons",
-      "opponent": "Portland Trail Blazers",
-      "propType": "rebounds",
-      "prediction": 6.1,
-      "vegasLine": 6.5,
-      "betSide": "UNDER",
-      "edge": 6.3,
-      "confidence": 64,
-      "kellyStake": 3,
-      "odds": 110,
-      "book": "DraftKings",
-      "game": "Detroit Pistons @ Portland Trail Blazers",
-      "gameTime": "2025-12-23T03:00:00Z"
-    },
-    {
-      "player": "Nikola Jokic",
-      "team": "Utah Jazz",
-      "opponent": "Denver Nuggets",
-      "propType": "rebounds",
-      "prediction": 10.8,
-      "vegasLine": 11.5,
-      "betSide": "UNDER",
-      "edge": 6.1,
-      "confidence": 65,
-      "kellyStake": 3,
-      "odds": 106,
-      "book": "DraftKings",
-      "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
     },
     {
       "player": "Anthony Davis",
@@ -1619,7 +1539,7 @@
       "odds": -136,
       "book": "DraftKings",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Miles Bridges",
@@ -1631,11 +1551,11 @@
       "betSide": "UNDER",
       "edge": 5.5,
       "confidence": 65,
-      "kellyStake": 1.7,
-      "odds": -138,
+      "kellyStake": 3,
+      "odds": 102,
       "book": "FanDuel",
       "game": "Charlotte Hornets @ Cleveland Cavaliers",
-      "gameTime": "2025-12-23T00:10:00Z"
+      "gameTime": "2025-12-23T00:00:00Z"
     },
     {
       "player": "Quinten Post",
@@ -1651,7 +1571,23 @@
       "odds": -125,
       "book": "FanDuel",
       "game": "Orlando Magic @ Golden State Warriors",
-      "gameTime": "2025-12-23T03:10:00Z"
+      "gameTime": "2025-12-23T03:00:00Z"
+    },
+    {
+      "player": "Draymond Green",
+      "team": "Orlando Magic",
+      "opponent": "Golden State Warriors",
+      "propType": "rebounds",
+      "prediction": 5.8,
+      "vegasLine": 5.5,
+      "betSide": "OVER",
+      "edge": 5.5,
+      "confidence": 61,
+      "kellyStake": 0.5,
+      "odds": -153,
+      "book": "DraftKings",
+      "game": "Orlando Magic @ Golden State Warriors",
+      "gameTime": "2025-12-23T03:00:00Z"
     },
     {
       "player": "Jalen Duren",
@@ -1663,8 +1599,8 @@
       "betSide": "UNDER",
       "edge": 4.8,
       "confidence": 64,
-      "kellyStake": 2.4,
-      "odds": -110,
+      "kellyStake": 2.9,
+      "odds": 103,
       "book": "DraftKings",
       "game": "Detroit Pistons @ Portland Trail Blazers",
       "gameTime": "2025-12-23T03:00:00Z"
@@ -1683,23 +1619,7 @@
       "odds": 116,
       "book": "FanDuel",
       "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
-    },
-    {
-      "player": "Jordan Walsh",
-      "team": "Indiana Pacers",
-      "opponent": "Boston Celtics",
-      "propType": "rebounds",
-      "prediction": 6.2,
-      "vegasLine": 6.5,
-      "betSide": "UNDER",
-      "edge": 4.6,
-      "confidence": 65,
-      "kellyStake": 1,
-      "odds": -158,
-      "book": "FanDuel",
-      "game": "Indiana Pacers @ Boston Celtics",
-      "gameTime": "2025-12-23T00:40:00Z"
+      "gameTime": "2025-12-23T00:30:00Z"
     },
     {
       "player": "Keyonte George",
@@ -1715,7 +1635,7 @@
       "odds": -106,
       "book": "FanDuel",
       "game": "Utah Jazz @ Denver Nuggets",
-      "gameTime": "2025-12-23T02:10:00Z"
+      "gameTime": "2025-12-23T02:00:00Z"
     },
     {
       "player": "Cam Spencer",
@@ -1731,7 +1651,7 @@
       "odds": 124,
       "book": "FanDuel",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Cedric Coward",
@@ -1743,11 +1663,11 @@
       "betSide": "UNDER",
       "edge": 4.6,
       "confidence": 64,
-      "kellyStake": 0.5,
-      "odds": -166,
+      "kellyStake": 1.2,
+      "odds": -144,
       "book": "FanDuel",
       "game": "Memphis Grizzlies @ Oklahoma City Thunder",
-      "gameTime": "2025-12-23T02:40:00Z"
+      "gameTime": "2025-12-23T02:30:00Z"
     },
     {
       "player": "Cade Cunningham",
@@ -1759,8 +1679,8 @@
       "betSide": "UNDER",
       "edge": 4.6,
       "confidence": 65,
-      "kellyStake": 1.5,
-      "odds": -143,
+      "kellyStake": 1.6,
+      "odds": -139,
       "book": "DraftKings",
       "game": "Detroit Pistons @ Portland Trail Blazers",
       "gameTime": "2025-12-23T03:00:00Z"
@@ -1776,10 +1696,10 @@
       "edge": 4,
       "confidence": 65,
       "kellyStake": 3,
-      "odds": 122,
+      "odds": 100,
       "book": "FanDuel",
       "game": "Dallas Mavericks @ New Orleans Pelicans",
-      "gameTime": "2025-12-23T01:10:00Z"
+      "gameTime": "2025-12-23T01:00:00Z"
     },
     {
       "player": "Ausar Thompson",
@@ -1791,8 +1711,8 @@
       "betSide": "OVER",
       "edge": 4,
       "confidence": 65,
-      "kellyStake": 3,
-      "odds": 108,
+      "kellyStake": 2.9,
+      "odds": -103,
       "book": "DraftKings",
       "game": "Detroit Pistons @ Portland Trail Blazers",
       "gameTime": "2025-12-23T03:00:00Z"
@@ -1807,9 +1727,9 @@
       "betSide": "UNDER",
       "edge": 4,
       "confidence": 63,
-      "kellyStake": 1.3,
-      "odds": -136,
-      "book": "FanDuel",
+      "kellyStake": 0.8,
+      "odds": -149,
+      "book": "DraftKings",
       "game": "Detroit Pistons @ Portland Trail Blazers",
       "gameTime": "2025-12-23T03:00:00Z"
     }
