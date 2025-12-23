@@ -1,24 +1,24 @@
 [
   {
-    "gameId": "401810251",
-    "date": "2025-12-21T20:30Z",
+    "gameId": "401810257",
+    "date": "2025-12-23T00:00Z",
     "status": "STATUS_FINAL",
     "homeTeam": {
-      "id": "1",
-      "name": "Atlanta Hawks",
-      "abbreviation": "ATL",
-      "score": "150",
-      "record": "15-15"
+      "id": "5",
+      "name": "Cleveland Cavaliers",
+      "abbreviation": "CLE",
+      "score": "139",
+      "record": "16-14"
     },
     "awayTeam": {
-      "id": "4",
-      "name": "Chicago Bulls",
-      "abbreviation": "CHI",
-      "score": "152",
-      "record": "13-15"
+      "id": "30",
+      "name": "Charlotte Hornets",
+      "abbreviation": "CHA",
+      "score": "132",
+      "record": "9-20"
     },
-    "venue": "State Farm Arena",
-    "attendance": 15110,
+    "venue": "Rocket Arena",
+    "attendance": 19432,
     "homeStats": {
       "fgm": 0,
       "fga": 0,
@@ -26,14 +26,14 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 35,
+      "rebounds": 31,
       "offRebounds": 6,
-      "defRebounds": 29,
-      "assists": 39,
-      "steals": 6,
-      "blocks": 7,
-      "turnovers": 10,
-      "fouls": 25
+      "defRebounds": 25,
+      "assists": 36,
+      "steals": 9,
+      "blocks": 2,
+      "turnovers": 13,
+      "fouls": 20
     },
     "awayStats": {
       "fgm": 0,
@@ -42,63 +42,63 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 40,
-      "offRebounds": 11,
-      "defRebounds": 29,
-      "assists": 41,
-      "steals": 9,
+      "rebounds": 44,
+      "offRebounds": 17,
+      "defRebounds": 27,
+      "assists": 29,
+      "steals": 10,
       "blocks": 3,
-      "turnovers": 11,
-      "fouls": 21
+      "turnovers": 19,
+      "fouls": 18
     },
     "highAltitude": false,
     "altitudeAdjustment": 0,
-    "gamePace": 2,
-    "homePossessions": 2,
-    "awayPossessions": 2,
+    "gamePace": 4.5,
+    "homePossessions": 4.5,
+    "awayPossessions": 4.5,
     "homeAdvanced": {
-      "pace": 2,
+      "pace": 4.5,
       "offRtg": 0,
       "defRtg": 0,
       "netRtg": null,
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 17.142857142857142,
+      "orbPct": 18.181818181818183,
       "ftFga": null
     },
     "awayAdvanced": {
-      "pace": 2,
+      "pace": 4.5,
       "offRtg": 0,
       "defRtg": 0,
       "netRtg": null,
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 27.500000000000004,
+      "orbPct": 40.476190476190474,
       "ftFga": null
     }
   },
   {
-    "gameId": "401810252",
-    "date": "2025-12-21T23:00Z",
+    "gameId": "401810258",
+    "date": "2025-12-23T00:30Z",
     "status": "STATUS_FINAL",
     "homeTeam": {
-      "id": "17",
-      "name": "Brooklyn Nets",
-      "abbreviation": "BKN",
-      "score": "96",
-      "record": "8-19"
+      "id": "2",
+      "name": "Boston Celtics",
+      "abbreviation": "BOS",
+      "score": "103",
+      "record": "18-11"
     },
     "awayTeam": {
-      "id": "28",
-      "name": "Toronto Raptors",
-      "abbreviation": "TOR",
-      "score": "81",
-      "record": "17-13"
+      "id": "11",
+      "name": "Indiana Pacers",
+      "abbreviation": "IND",
+      "score": "95",
+      "record": "6-23"
     },
-    "venue": "Barclays Center",
-    "attendance": 17548,
+    "venue": "TD Garden",
+    "attendance": 19156,
     "homeStats": {
       "fgm": 0,
       "fga": 0,
@@ -106,13 +106,173 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 48,
-      "offRebounds": 6,
-      "defRebounds": 42,
+      "rebounds": 49,
+      "offRebounds": 11,
+      "defRebounds": 38,
+      "assists": 19,
+      "steals": 6,
+      "blocks": 6,
+      "turnovers": 13,
+      "fouls": 16
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 36,
+      "offRebounds": 9,
+      "defRebounds": 27,
+      "assists": 19,
+      "steals": 4,
+      "blocks": 3,
+      "turnovers": 12,
+      "fouls": 21
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0,
+    "gamePace": 2.5,
+    "homePossessions": 2.5,
+    "awayPossessions": 2.5,
+    "homeAdvanced": {
+      "pace": 2.5,
+      "offRtg": 0,
+      "defRtg": 0,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 28.947368421052634,
+      "ftFga": null
+    },
+    "awayAdvanced": {
+      "pace": 2.5,
+      "offRtg": 0,
+      "defRtg": 0,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 19.148936170212767,
+      "ftFga": null
+    }
+  },
+  {
+    "gameId": "401810259",
+    "date": "2025-12-23T01:00Z",
+    "status": "STATUS_FINAL",
+    "homeTeam": {
+      "id": "3",
+      "name": "New Orleans Pelicans",
+      "abbreviation": "NO",
+      "score": "119",
+      "record": "8-22"
+    },
+    "awayTeam": {
+      "id": "6",
+      "name": "Dallas Mavericks",
+      "abbreviation": "DAL",
+      "score": "113",
+      "record": "11-19"
+    },
+    "venue": "Smoothie King Center",
+    "attendance": 16978,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 51,
+      "offRebounds": 14,
+      "defRebounds": 37,
+      "assists": 28,
+      "steals": 9,
+      "blocks": 2,
+      "turnovers": 12,
+      "fouls": 16
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 57,
+      "offRebounds": 18,
+      "defRebounds": 39,
       "assists": 29,
-      "steals": 7,
-      "blocks": 4,
-      "turnovers": 21,
+      "steals": 9,
+      "blocks": 5,
+      "turnovers": 16,
+      "fouls": 19
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0,
+    "gamePace": -2,
+    "homePossessions": -2,
+    "awayPossessions": -2,
+    "homeAdvanced": {
+      "pace": -2,
+      "offRtg": null,
+      "defRtg": null,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 26.41509433962264,
+      "ftFga": null
+    },
+    "awayAdvanced": {
+      "pace": -2,
+      "offRtg": null,
+      "defRtg": null,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 32.72727272727273,
+      "ftFga": null
+    }
+  },
+  {
+    "gameId": "401810260",
+    "date": "2025-12-23T02:00Z",
+    "status": "STATUS_FINAL",
+    "homeTeam": {
+      "id": "7",
+      "name": "Denver Nuggets",
+      "abbreviation": "DEN",
+      "score": "135",
+      "record": "21-7"
+    },
+    "awayTeam": {
+      "id": "26",
+      "name": "Utah Jazz",
+      "abbreviation": "UTAH",
+      "score": "112",
+      "record": "10-18"
+    },
+    "venue": "Ball Arena",
+    "attendance": 19887,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 51,
+      "offRebounds": 9,
+      "defRebounds": 42,
+      "assists": 37,
+      "steals": 8,
+      "blocks": 7,
+      "turnovers": 10,
       "fouls": 17
     },
     "awayStats": {
@@ -122,257 +282,17 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 39,
-      "offRebounds": 9,
-      "defRebounds": 30,
-      "assists": 23,
-      "steals": 6,
-      "blocks": 5,
-      "turnovers": 15,
-      "fouls": 19
-    },
-    "highAltitude": false,
-    "altitudeAdjustment": 0,
-    "gamePace": 10.5,
-    "homePossessions": 10.5,
-    "awayPossessions": 10.5,
-    "homeAdvanced": {
-      "pace": 10.5,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 16.666666666666664,
-      "ftFga": null
-    },
-    "awayAdvanced": {
-      "pace": 10.5,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 17.647058823529413,
-      "ftFga": null
-    }
-  },
-  {
-    "gameId": "401810253",
-    "date": "2025-12-21T23:00Z",
-    "status": "STATUS_FINAL",
-    "homeTeam": {
-      "id": "18",
-      "name": "New York Knicks",
-      "abbreviation": "NY",
-      "score": "132",
-      "record": "20-8"
-    },
-    "awayTeam": {
-      "id": "14",
-      "name": "Miami Heat",
-      "abbreviation": "MIA",
-      "score": "125",
-      "record": "15-14"
-    },
-    "venue": "Madison Square Garden",
-    "attendance": 19812,
-    "homeStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 36,
-      "offRebounds": 4,
-      "defRebounds": 32,
-      "assists": 28,
-      "steals": 7,
-      "blocks": 3,
-      "turnovers": 12,
-      "fouls": 25
-    },
-    "awayStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 45,
-      "offRebounds": 12,
-      "defRebounds": 33,
-      "assists": 26,
+      "rebounds": 49,
+      "offRebounds": 11,
+      "defRebounds": 38,
+      "assists": 30,
       "steals": 5,
       "blocks": 1,
-      "turnovers": 11,
-      "fouls": 14
-    },
-    "highAltitude": false,
-    "altitudeAdjustment": 0,
-    "gamePace": 3.5,
-    "homePossessions": 3.5,
-    "awayPossessions": 3.5,
-    "homeAdvanced": {
-      "pace": 3.5,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 10.81081081081081,
-      "ftFga": null
-    },
-    "awayAdvanced": {
-      "pace": 3.5,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 27.27272727272727,
-      "ftFga": null
-    }
-  },
-  {
-    "gameId": "401810254",
-    "date": "2025-12-22T00:00Z",
-    "status": "STATUS_FINAL",
-    "homeTeam": {
-      "id": "27",
-      "name": "Washington Wizards",
-      "abbreviation": "WSH",
-      "score": "113",
-      "record": "5-22"
-    },
-    "awayTeam": {
-      "id": "24",
-      "name": "San Antonio Spurs",
-      "abbreviation": "SA",
-      "score": "124",
-      "record": "21-7"
-    },
-    "venue": "Capital One Arena",
-    "attendance": 20028,
-    "homeStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 43,
-      "offRebounds": 8,
-      "defRebounds": 35,
-      "assists": 20,
-      "steals": 5,
-      "blocks": 7,
-      "turnovers": 5,
-      "fouls": 25
-    },
-    "awayStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 61,
-      "offRebounds": 20,
-      "defRebounds": 41,
-      "assists": 26,
-      "steals": 3,
-      "blocks": 5,
-      "turnovers": 9,
+      "turnovers": 14,
       "fouls": 19
     },
-    "highAltitude": false,
-    "altitudeAdjustment": 0,
-    "gamePace": -7,
-    "homePossessions": -7,
-    "awayPossessions": -7,
-    "homeAdvanced": {
-      "pace": -7,
-      "offRtg": null,
-      "defRtg": null,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 16.3265306122449,
-      "ftFga": null
-    },
-    "awayAdvanced": {
-      "pace": -7,
-      "offRtg": null,
-      "defRtg": null,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 36.36363636363637,
-      "ftFga": null
-    }
-  },
-  {
-    "gameId": "401810255",
-    "date": "2025-12-22T00:00Z",
-    "status": "STATUS_FINAL",
-    "homeTeam": {
-      "id": "16",
-      "name": "Minnesota Timberwolves",
-      "abbreviation": "MIN",
-      "score": "103",
-      "record": "19-10"
-    },
-    "awayTeam": {
-      "id": "15",
-      "name": "Milwaukee Bucks",
-      "abbreviation": "MIL",
-      "score": "100",
-      "record": "11-18"
-    },
-    "venue": "Target Center",
-    "attendance": 18978,
-    "homeStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 46,
-      "offRebounds": 11,
-      "defRebounds": 35,
-      "assists": 28,
-      "steals": 10,
-      "blocks": 4,
-      "turnovers": 10,
-      "fouls": 18
-    },
-    "awayStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 51,
-      "offRebounds": 11,
-      "defRebounds": 40,
-      "assists": 27,
-      "steals": 6,
-      "blocks": 2,
-      "turnovers": 16,
-      "fouls": 15
-    },
-    "highAltitude": false,
-    "altitudeAdjustment": 0,
+    "highAltitude": true,
+    "altitudeAdjustment": 2.5,
     "gamePace": 2,
     "homePossessions": 2,
     "awayPossessions": 2,
@@ -384,7 +304,7 @@
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 21.568627450980394,
+      "orbPct": 19.148936170212767,
       "ftFga": null
     },
     "awayAdvanced": {
@@ -395,30 +315,30 @@
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 23.91304347826087,
+      "orbPct": 20.754716981132077,
       "ftFga": null
     }
   },
   {
-    "gameId": "401810256",
-    "date": "2025-12-22T03:00Z",
+    "gameId": "401810261",
+    "date": "2025-12-23T02:30Z",
     "status": "STATUS_FINAL",
     "homeTeam": {
-      "id": "23",
-      "name": "Sacramento Kings",
-      "abbreviation": "SAC",
-      "score": "125",
-      "record": "7-22"
+      "id": "25",
+      "name": "Oklahoma City Thunder",
+      "abbreviation": "OKC",
+      "score": "119",
+      "record": "26-3"
     },
     "awayTeam": {
-      "id": "10",
-      "name": "Houston Rockets",
-      "abbreviation": "HOU",
-      "score": "124",
-      "record": "17-9"
+      "id": "29",
+      "name": "Memphis Grizzlies",
+      "abbreviation": "MEM",
+      "score": "103",
+      "record": "13-16"
     },
-    "venue": "Golden 1 Center",
-    "attendance": 15796,
+    "venue": "Paycom Center",
+    "attendance": 18203,
     "homeStats": {
       "fgm": 0,
       "fga": 0,
@@ -426,14 +346,14 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 55,
-      "offRebounds": 19,
-      "defRebounds": 36,
-      "assists": 29,
-      "steals": 8,
-      "blocks": 5,
-      "turnovers": 11,
-      "fouls": 21
+      "rebounds": 46,
+      "offRebounds": 9,
+      "defRebounds": 37,
+      "assists": 20,
+      "steals": 14,
+      "blocks": 4,
+      "turnovers": 13,
+      "fouls": 18
     },
     "awayStats": {
       "fgm": 0,
@@ -442,60 +362,289 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 47,
-      "offRebounds": 13,
-      "defRebounds": 34,
-      "assists": 31,
-      "steals": 9,
-      "blocks": 2,
-      "turnovers": 14,
-      "fouls": 20
+      "rebounds": 46,
+      "offRebounds": 10,
+      "defRebounds": 36,
+      "assists": 26,
+      "steals": 8,
+      "blocks": 5,
+      "turnovers": 21,
+      "fouls": 14
     },
     "highAltitude": false,
     "altitudeAdjustment": 0,
-    "gamePace": -3.5,
-    "homePossessions": -3.5,
-    "awayPossessions": -3.5,
+    "gamePace": 7.5,
+    "homePossessions": 7.5,
+    "awayPossessions": 7.5,
     "homeAdvanced": {
-      "pace": -3.5,
-      "offRtg": null,
-      "defRtg": null,
+      "pace": 7.5,
+      "offRtg": 0,
+      "defRtg": 0,
       "netRtg": null,
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 35.84905660377358,
+      "orbPct": 20,
       "ftFga": null
     },
     "awayAdvanced": {
-      "pace": -3.5,
-      "offRtg": null,
-      "defRtg": null,
+      "pace": 7.5,
+      "offRtg": 0,
+      "defRtg": 0,
       "netRtg": null,
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 26.53061224489796,
+      "orbPct": 21.27659574468085,
       "ftFga": null
     }
   },
   {
-    "gameId": "401810257",
-    "date": "2025-12-23T00:00Z",
+    "gameId": "401810262",
+    "date": "2025-12-23T03:00Z",
+    "status": "STATUS_FINAL",
+    "homeTeam": {
+      "id": "9",
+      "name": "Golden State Warriors",
+      "abbreviation": "GS",
+      "score": "120",
+      "record": "15-15"
+    },
+    "awayTeam": {
+      "id": "19",
+      "name": "Orlando Magic",
+      "abbreviation": "ORL",
+      "score": "97",
+      "record": "16-13"
+    },
+    "venue": "Chase Center",
+    "attendance": 18064,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 47,
+      "offRebounds": 14,
+      "defRebounds": 33,
+      "assists": 33,
+      "steals": 8,
+      "blocks": 6,
+      "turnovers": 13,
+      "fouls": 20
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 48,
+      "offRebounds": 16,
+      "defRebounds": 32,
+      "assists": 21,
+      "steals": 8,
+      "blocks": 5,
+      "turnovers": 18,
+      "fouls": 21
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0,
+    "gamePace": 0.5,
+    "homePossessions": 0.5,
+    "awayPossessions": 0.5,
+    "homeAdvanced": {
+      "pace": 0.5,
+      "offRtg": 0,
+      "defRtg": 0,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 30.434782608695656,
+      "ftFga": null
+    },
+    "awayAdvanced": {
+      "pace": 0.5,
+      "offRtg": 0,
+      "defRtg": 0,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 32.6530612244898,
+      "ftFga": null
+    }
+  },
+  {
+    "gameId": "401810263",
+    "date": "2025-12-23T03:00Z",
+    "status": "STATUS_FINAL",
+    "homeTeam": {
+      "id": "22",
+      "name": "Portland Trail Blazers",
+      "abbreviation": "POR",
+      "score": "102",
+      "record": "12-17"
+    },
+    "awayTeam": {
+      "id": "8",
+      "name": "Detroit Pistons",
+      "abbreviation": "DET",
+      "score": "110",
+      "record": "23-6"
+    },
+    "venue": "Moda Center",
+    "attendance": 19335,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 38,
+      "offRebounds": 9,
+      "defRebounds": 29,
+      "assists": 21,
+      "steals": 6,
+      "blocks": 6,
+      "turnovers": 18,
+      "fouls": 22
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 48,
+      "offRebounds": 22,
+      "defRebounds": 26,
+      "assists": 28,
+      "steals": 11,
+      "blocks": 7,
+      "turnovers": 8,
+      "fouls": 28
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0,
+    "gamePace": -2.5,
+    "homePossessions": -2.5,
+    "awayPossessions": -2.5,
+    "homeAdvanced": {
+      "pace": -2.5,
+      "offRtg": null,
+      "defRtg": null,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 25.71428571428571,
+      "ftFga": null
+    },
+    "awayAdvanced": {
+      "pace": -2.5,
+      "offRtg": null,
+      "defRtg": null,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 43.13725490196079,
+      "ftFga": null
+    }
+  },
+  {
+    "gameId": "401810264",
+    "date": "2025-12-24T00:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "30",
+      "name": "Charlotte Hornets",
+      "abbreviation": "CHA",
+      "score": "0",
+      "record": "9-20"
+    },
+    "awayTeam": {
+      "id": "27",
+      "name": "Washington Wizards",
+      "abbreviation": "WSH",
+      "score": "0",
+      "record": "5-22"
+    },
+    "venue": "Spectrum Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0
+  },
+  {
+    "gameId": "401810265",
+    "date": "2025-12-24T00:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "20",
+      "name": "Philadelphia 76ers",
+      "abbreviation": "PHI",
+      "score": "0",
+      "record": "16-11"
+    },
+    "awayTeam": {
+      "id": "17",
+      "name": "Brooklyn Nets",
+      "abbreviation": "BKN",
+      "score": "0",
+      "record": "8-19"
+    },
+    "venue": "Xfinity Mobile Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0
+  },
+  {
+    "gameId": "401810266",
+    "date": "2025-12-24T00:30Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "1",
+      "name": "Atlanta Hawks",
+      "abbreviation": "ATL",
+      "score": "0",
+      "record": "15-15"
+    },
+    "awayTeam": {
+      "id": "4",
+      "name": "Chicago Bulls",
+      "abbreviation": "CHI",
+      "score": "0",
+      "record": "13-15"
+    },
+    "venue": "State Farm Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0
+  },
+  {
+    "gameId": "401810267",
+    "date": "2025-12-24T00:30Z",
     "status": "STATUS_SCHEDULED",
     "homeTeam": {
       "id": "5",
       "name": "Cleveland Cavaliers",
       "abbreviation": "CLE",
       "score": "0",
-      "record": "15-14"
+      "record": "16-14"
     },
     "awayTeam": {
-      "id": "30",
-      "name": "Charlotte Hornets",
-      "abbreviation": "CHA",
+      "id": "3",
+      "name": "New Orleans Pelicans",
+      "abbreviation": "NO",
       "score": "0",
-      "record": "9-19"
+      "record": "8-22"
     },
     "venue": "Rocket Arena",
     "attendance": 0,
@@ -503,139 +652,231 @@
     "altitudeAdjustment": 0
   },
   {
-    "gameId": "401810258",
-    "date": "2025-12-23T00:30Z",
+    "gameId": "401810268",
+    "date": "2025-12-24T00:30Z",
     "status": "STATUS_SCHEDULED",
     "homeTeam": {
-      "id": "2",
-      "name": "Boston Celtics",
-      "abbreviation": "BOS",
-      "score": "0",
-      "record": "17-11"
-    },
-    "awayTeam": {
       "id": "11",
       "name": "Indiana Pacers",
       "abbreviation": "IND",
       "score": "0",
-      "record": "6-22"
+      "record": "6-23"
     },
-    "venue": "TD Garden",
+    "awayTeam": {
+      "id": "15",
+      "name": "Milwaukee Bucks",
+      "abbreviation": "MIL",
+      "score": "0",
+      "record": "11-18"
+    },
+    "venue": "Gainbridge Fieldhouse",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0
   },
   {
-    "gameId": "401810259",
-    "date": "2025-12-23T01:00Z",
+    "gameId": "401810269",
+    "date": "2025-12-24T00:30Z",
     "status": "STATUS_SCHEDULED",
     "homeTeam": {
-      "id": "3",
-      "name": "New Orleans Pelicans",
-      "abbreviation": "NO",
+      "id": "14",
+      "name": "Miami Heat",
+      "abbreviation": "MIA",
       "score": "0",
-      "record": "7-22"
+      "record": "15-14"
     },
     "awayTeam": {
+      "id": "28",
+      "name": "Toronto Raptors",
+      "abbreviation": "TOR",
+      "score": "0",
+      "record": "17-13"
+    },
+    "venue": "Kaseya Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0
+  },
+  {
+    "gameId": "401810270",
+    "date": "2025-12-24T01:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
       "id": "6",
       "name": "Dallas Mavericks",
       "abbreviation": "DAL",
       "score": "0",
-      "record": "11-18"
+      "record": "11-19"
     },
-    "venue": "Smoothie King Center",
+    "awayTeam": {
+      "id": "7",
+      "name": "Denver Nuggets",
+      "abbreviation": "DEN",
+      "score": "0",
+      "record": "21-7"
+    },
+    "venue": "American Airlines Center",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0
   },
   {
-    "gameId": "401810260",
-    "date": "2025-12-23T02:00Z",
+    "gameId": "401810271",
+    "date": "2025-12-24T01:00Z",
     "status": "STATUS_SCHEDULED",
     "homeTeam": {
-      "id": "7",
-      "name": "Denver Nuggets",
-      "abbreviation": "DEN",
+      "id": "16",
+      "name": "Minnesota Timberwolves",
+      "abbreviation": "MIN",
       "score": "0",
-      "record": "20-7"
+      "record": "19-10"
     },
     "awayTeam": {
-      "id": "26",
-      "name": "Utah Jazz",
-      "abbreviation": "UTAH",
+      "id": "18",
+      "name": "New York Knicks",
+      "abbreviation": "NY",
       "score": "0",
-      "record": "10-17"
+      "record": "20-8"
     },
-    "venue": "Ball Arena",
+    "venue": "Target Center",
     "attendance": 0,
-    "highAltitude": true,
-    "altitudeAdjustment": 2.5
+    "highAltitude": false,
+    "altitudeAdjustment": 0
   },
   {
-    "gameId": "401810261",
-    "date": "2025-12-23T02:30Z",
+    "gameId": "401810272",
+    "date": "2025-12-24T01:30Z",
     "status": "STATUS_SCHEDULED",
     "homeTeam": {
+      "id": "24",
+      "name": "San Antonio Spurs",
+      "abbreviation": "SA",
+      "score": "0",
+      "record": "21-7"
+    },
+    "awayTeam": {
       "id": "25",
       "name": "Oklahoma City Thunder",
       "abbreviation": "OKC",
       "score": "0",
-      "record": "25-3"
+      "record": "26-3"
+    },
+    "venue": "Frost Bank Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0
+  },
+  {
+    "gameId": "401810273",
+    "date": "2025-12-24T02:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "21",
+      "name": "Phoenix Suns",
+      "abbreviation": "PHX",
+      "score": "0",
+      "record": "15-13"
+    },
+    "awayTeam": {
+      "id": "13",
+      "name": "Los Angeles Lakers",
+      "abbreviation": "LAL",
+      "score": "0",
+      "record": "19-8"
+    },
+    "venue": "Mortgage Matchup Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0
+  },
+  {
+    "gameId": "401810274",
+    "date": "2025-12-24T02:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "26",
+      "name": "Utah Jazz",
+      "abbreviation": "UTAH",
+      "score": "0",
+      "record": "10-18"
     },
     "awayTeam": {
       "id": "29",
       "name": "Memphis Grizzlies",
       "abbreviation": "MEM",
       "score": "0",
-      "record": "13-15"
+      "record": "13-16"
     },
-    "venue": "Paycom Center",
+    "venue": "Delta Center",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0
   },
   {
-    "gameId": "401810262",
-    "date": "2025-12-23T03:00Z",
-    "status": "STATUS_SCHEDULED",
-    "homeTeam": {
-      "id": "9",
-      "name": "Golden State Warriors",
-      "abbreviation": "GS",
-      "score": "0",
-      "record": "14-15"
-    },
-    "awayTeam": {
-      "id": "19",
-      "name": "Orlando Magic",
-      "abbreviation": "ORL",
-      "score": "0",
-      "record": "16-12"
-    },
-    "venue": "Chase Center",
-    "attendance": 0,
-    "highAltitude": false,
-    "altitudeAdjustment": 0
-  },
-  {
-    "gameId": "401810263",
-    "date": "2025-12-23T03:00Z",
+    "gameId": "401810275",
+    "date": "2025-12-24T03:00Z",
     "status": "STATUS_SCHEDULED",
     "homeTeam": {
       "id": "22",
       "name": "Portland Trail Blazers",
       "abbreviation": "POR",
       "score": "0",
-      "record": "12-16"
+      "record": "12-17"
+    },
+    "awayTeam": {
+      "id": "19",
+      "name": "Orlando Magic",
+      "abbreviation": "ORL",
+      "score": "0",
+      "record": "16-13"
+    },
+    "venue": "Moda Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0
+  },
+  {
+    "gameId": "401810276",
+    "date": "2025-12-24T03:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "23",
+      "name": "Sacramento Kings",
+      "abbreviation": "SAC",
+      "score": "0",
+      "record": "7-22"
     },
     "awayTeam": {
       "id": "8",
       "name": "Detroit Pistons",
       "abbreviation": "DET",
       "score": "0",
-      "record": "22-6"
+      "record": "23-6"
     },
-    "venue": "Moda Center",
+    "venue": "Golden 1 Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0
+  },
+  {
+    "gameId": "401810277",
+    "date": "2025-12-24T03:30Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "12",
+      "name": "LA Clippers",
+      "abbreviation": "LAC",
+      "score": "0",
+      "record": "7-21"
+    },
+    "awayTeam": {
+      "id": "10",
+      "name": "Houston Rockets",
+      "abbreviation": "HOU",
+      "score": "0",
+      "record": "17-9"
+    },
+    "venue": "Intuit Dome",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0
