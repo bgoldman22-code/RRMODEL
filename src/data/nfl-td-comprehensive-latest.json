@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2025-12-22T12:42:03Z",
+    "generated_at": "2025-12-23T16:38:57Z",
     "season": 2025,
-    "week": 16,
-    "total_players": 641,
+    "week": 17,
+    "total_players": 642,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -1006,14 +1006,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.133,
+      "multiple_td_prob": 0.12,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.0213,
+      "multiple_value_score": 0.016,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.1333
+      "multiple_td": 0.12
     },
     {
       "player_id": "00-0032918",
@@ -1258,14 +1258,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.254,
+      "multiple_td_prob": 0.269,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.0695,
+      "multiple_value_score": 0.0756,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.2538
+      "multiple_td": 0.2689
     },
     {
       "player_id": "00-0033281",
@@ -1321,14 +1321,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.095,
+      "multiple_td_prob": 0.09,
       "multiple_confidence": "high",
       "anytime_value_score": 0.33,
       "first_value_score": 0,
-      "multiple_value_score": 0.0061,
+      "multiple_value_score": 0.004,
       "anytime_td": 0.81,
       "first_td": 0,
-      "multiple_td": 0.0953
+      "multiple_td": 0.09
     },
     {
       "player_id": "00-0033293",
@@ -4807,14 +4807,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.258,
+      "multiple_td_prob": 0.248,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.0713,
+      "multiple_value_score": 0.067,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.2583
+      "multiple_td": 0.2475
     },
     {
       "player_id": "00-0036231",
@@ -4933,14 +4933,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.164,
+      "multiple_td_prob": 0.15,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.0335,
+      "multiple_value_score": 0.028,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.1636
+      "multiple_td": 0.15
     },
     {
       "player_id": "00-0036261",
@@ -8142,18 +8142,18 @@
       "opponent": "TBD",
       "is_home": true,
       "depth_chart_position": "WR",
-      "anytime_td_prob": 0.85,
+      "anytime_td_prob": 0.9,
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0,
+      "multiple_td_prob": 0.05,
       "multiple_confidence": "high",
-      "anytime_value_score": 0.35,
+      "anytime_value_score": 0.375,
       "first_value_score": 0,
       "multiple_value_score": 0,
-      "anytime_td": 0.85,
+      "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0
+      "multiple_td": 0.05
     },
     {
       "player_id": "00-0037666",
@@ -9790,6 +9790,27 @@
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.85,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
+      "player_id": "00-0038625",
+      "name": "D.Winters",
+      "team": "SF",
+      "position": "LB",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "OLB",
+      "anytime_td_prob": 0.68,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.265,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.68,
       "first_td": 0,
       "multiple_td": 0
     },

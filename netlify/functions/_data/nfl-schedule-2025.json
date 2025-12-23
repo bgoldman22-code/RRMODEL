@@ -3487,7 +3487,9 @@
     "home_score": 23,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 61,
+    "wind": 8
   },
   {
     "week": 16,
@@ -3501,7 +3503,9 @@
     "home_score": 20,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 25,
+    "wind": 16
   },
   {
     "week": 16,
@@ -3515,7 +3519,7 @@
     "home_score": 17,
     "game_type": "REG",
     "roof": "closed",
-    "surface": ""
+    "surface": "matrixturf"
   },
   {
     "week": 16,
@@ -3529,7 +3533,9 @@
     "home_score": 21,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 81,
+    "wind": 7
   },
   {
     "week": 16,
@@ -3543,7 +3549,7 @@
     "home_score": 29,
     "game_type": "REG",
     "roof": "dome",
-    "surface": ""
+    "surface": "sportturf"
   },
   {
     "week": 16,
@@ -3557,7 +3563,9 @@
     "home_score": 13,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "fieldturf",
+    "temp": 46,
+    "wind": 20
   },
   {
     "week": 16,
@@ -3571,7 +3579,9 @@
     "home_score": 26,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 51,
+    "wind": 8
   },
   {
     "week": 16,
@@ -3585,7 +3595,7 @@
     "home_score": 19,
     "game_type": "REG",
     "roof": "closed",
-    "surface": ""
+    "surface": "grass"
   },
   {
     "week": 16,
@@ -3599,7 +3609,9 @@
     "home_score": 20,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 62,
+    "wind": 3
   },
   {
     "week": 16,
@@ -3613,7 +3625,7 @@
     "home_score": 24,
     "game_type": "REG",
     "roof": "dome",
-    "surface": ""
+    "surface": "fieldturf"
   },
   {
     "week": 16,
@@ -3627,7 +3639,7 @@
     "home_score": 23,
     "game_type": "REG",
     "roof": "closed",
-    "surface": ""
+    "surface": "astroturf"
   },
   {
     "week": 16,
@@ -3641,7 +3653,9 @@
     "home_score": 24,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 40,
+    "wind": 2
   },
   {
     "week": 16,
@@ -3651,6 +3665,8 @@
     "gametime": "20:15",
     "away_team": "SF",
     "home_team": "IND",
+    "away_score": 48,
+    "home_score": 27,
     "game_type": "REG",
     "roof": "closed",
     "surface": "fieldturf"
