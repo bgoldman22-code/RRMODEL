@@ -1,10 +1,26 @@
 {
   "season": "2025-26",
   "basketballReference": {},
-  "calculated": {},
+  "calculated": {
+    "undefined": {
+      "teamId": "undefined",
+      "season": "2025-26",
+      "games": 10,
+      "pace": 2,
+      "offRtg": 0,
+      "defRtg": 0,
+      "netRtg": 0,
+      "efg": 0,
+      "ts": 0,
+      "tovPct": 100,
+      "orbPct": 24.842411763777285,
+      "ftFga": 0,
+      "source": "calculated"
+    }
+  },
   "metadata": {
-    "totalGames": 5,
-    "calculatedGames": 0,
+    "totalGames": 14,
+    "calculatedGames": 5,
     "validatedGames": 0,
     "withinTolerance": 0,
     "accuracy": null
