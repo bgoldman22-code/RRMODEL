@@ -3679,9 +3679,13 @@
     "gametime": "13:00",
     "away_team": "DAL",
     "home_team": "WAS",
+    "away_score": 30,
+    "home_score": 23,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": "grass"
+    "surface": "grass",
+    "temp": 50,
+    "wind": 7
   },
   {
     "week": 17,
@@ -3691,6 +3695,8 @@
     "gametime": "16:30",
     "away_team": "DET",
     "home_team": "MIN",
+    "away_score": 10,
+    "home_score": 23,
     "game_type": "REG",
     "roof": "dome",
     "surface": "sportturf"
@@ -3703,6 +3709,8 @@
     "gametime": "20:15",
     "away_team": "DEN",
     "home_team": "KC",
+    "away_score": 20,
+    "home_score": 13,
     "game_type": "REG",
     "roof": "outdoors",
     "surface": "grass"
