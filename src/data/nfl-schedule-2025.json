@@ -3723,6 +3723,8 @@
     "gametime": "16:30",
     "away_team": "HOU",
     "home_team": "LAC",
+    "away_score": 20,
+    "home_score": 16,
     "game_type": "REG",
     "roof": "dome",
     "surface": "matrixturf"
@@ -3735,9 +3737,13 @@
     "gametime": "20:00",
     "away_team": "BAL",
     "home_team": "GB",
+    "away_score": 41,
+    "home_score": 24,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": "grass"
+    "surface": "grass",
+    "temp": 36,
+    "wind": 10
   },
   {
     "week": 17,
