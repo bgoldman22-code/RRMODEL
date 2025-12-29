@@ -43,7 +43,8 @@ PRODUCTION_CONFIG = {
 }
 
 # API Configuration
-THEODDS_API_KEY = "c5d3fe15e6c5be83b2acd8695cff012b"
+# NOTE: Never hardcode keys in the repo. Use environment variables in production.
+THEODDS_API_KEY = os.environ.get("THEODDS_API_KEY") or os.environ.get("ODDS_API_KEY") or ""
 THEODDS_BASE_URL = "https://api.the-odds-api.com/v4"
 
 # Matchday 16 fixtures (Dec 13-15, 2025)

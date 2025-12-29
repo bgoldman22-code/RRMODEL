@@ -11,7 +11,7 @@
 ### ✅ **Production Pipeline Components**
 
 1. **REAL Odds from TheOddsAPI** ✅
-   - API Key: `c5d3fe15e6c5be83b2acd8695cff012b`
+   - API Key: `<REDACTED>`
    - Endpoint: `https://api.the-odds-api.com/v4/sports/soccer_epl/odds`
    - Markets: BTTS (Both Teams To Score)
    - Format: Decimal odds
@@ -206,7 +206,7 @@ The MIN_EDGE threshold of **7.75%** is **ROI-optimal** from walk-forward validat
        'REQUIRE_ODDS': True,
        'EDGE_MODE': 'fair'
    }
-   THEODDS_API_KEY = "c5d3fe15e6c5be83b2acd8695cff012b"
+   THEODDS_API_KEY = "<REDACTED>"  # use env var in real runs
    ```
 
 2. **Fixture Data**

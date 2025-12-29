@@ -1,3 +1,11 @@
+[build]
+  # (If your repo already has a build command/publish dir configured in Netlify UI,
+  # this can stay minimal. This file is primarily to tune secrets scanning.)
+
+[build.environment]
+  # Keep secrets scanning enabled, but omit generated/build output that often contains
+  # high-entropy strings and vendored content which can trigger false positives.
+  SECRETS_SCAN_OMIT_PATHS = "dist/**,.netlify/**,node_modules/**,.venv/**,temp_fpl_data/**"
 # netlify.toml - NBA V2 Configuration
 
 [build]
