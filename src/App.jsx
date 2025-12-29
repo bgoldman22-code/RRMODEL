@@ -17,6 +17,7 @@ import NBAPlayerProps from "./pages/NBAPlayerProps";  // NBA Player Props (Rebou
 import NBAPlayerPropsV2 from "./pages/NBAPlayerPropsV2";  // NBA Player Props V2 (Phase 3 PRA)
 import NBADDTDPage from "./pages/NBADDTDPage";  // NBA DD/TD Picks Page
 import NCAAMBBPredictions from "./pages/NCAAMBBPredictions";  // NCAA MBB Predictions
+import NFLAnytimeTDV2 from "./pages/NFLAnytimeTDV2"; // NFL Anytime TD V2 (live)
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
@@ -76,6 +77,7 @@ export default function App() {
       label: 'NFL',
       items: [
         { label: 'TD Advanced', path: '/nfl-td-comprehensive' },
+        { label: 'Anytime TD V2 (Live) 🚀', path: '/nfl-anytime-td-v2' },
         { label: 'Game Predictions (V1)', path: '/predictions' },
         { label: 'Game Predictions V5 🚀', path: '/nfl-v5' },
         { label: 'Fantasy Sit/Start 🏈', path: '/fantasy-sitstart' }
@@ -136,6 +138,7 @@ export default function App() {
           <Route path="/mlb-rr" element={<MLBRoundRobin />} />
           {/* CHANGED: Removed simple NFL TD route */}
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
+          <Route path="/nfl-anytime-td-v2" element={<NFLAnytimeTDV2 />} />
           <Route path="/predictions" element={<NFLPredictions />} />
           <Route path="/nfl-v5" element={<NFLPredictionsV5 />} />
           <Route path="/fantasy-sitstart" element={<FantasySitStart />} />

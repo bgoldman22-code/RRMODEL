@@ -1,0 +1,94 @@
+name: NFL Anytime TD V2 Daily Update
+
+on:
+  # Run daily at 7:00 AM ET
+  # Dec–early Mar: EST = UTC-5 => 12:00 UTC
+  # During DST: EDT = UTC-4 => 11:00 UTC
+  # We'll keep consistent with other workflows in repo (often 11:00 UTC).
+  schedule:
+    - cron: '0 11 * * *'
+
+  workflow_dispatch:
+
+# Prevent concurrent runs
+concurrency:
+  group: nfl-anytime-td-v2-update
+  cancel-in-progress: false
+
+jobs:
+  update-nfl-anytime-td-v2:
+    name: Update NFL Anytime TD V2 JSON
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: 📦 Install Node dependencies
+        run: |
+          if [ -f "package.json" ]; then
+            npm ci
+          fi
+
+      - name: 📦 Install Python dependencies (ml requirements)
+        run: |
+          if [ -f "ml/requirements.txt" ]; then
+            pip install -r ml/requirements.txt
+          else
+            pip install pandas numpy scikit-learn lightgbm
+          fi
+
+      # Optional: refresh nflverse-derived data (uncomment if needed)
+      # - name: 🏈 Refresh nflverse data
+      #   run: |
+      #     Rscript models/nfl_anytime_td/scripts/01_collect_nflverse_data_v2.R
+
+      - name: 🎯 Generate NFL Anytime TD V2 live JSON
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python3 models/nfl_anytime_td/scripts/17_generate_live_json_v2.py
+
+      - name: 📝 Check for changes
+        id: changes
+        run: |
+          git diff --quiet public/data/nfl/nfl-anytime-td-v2-live.json || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: 🔧 Configure Git
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: 💾 Commit changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git add public/data/nfl/nfl-anytime-td-v2-live.json
+          git commit -m "🤖 Auto-update NFL Anytime TD V2 - $(date -u +%Y-%m-%d)"
+
+      - name: 🚀 Push changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git push
+
+      - name: ✅ Success
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          echo "✅ NFL Anytime TD V2 JSON updated and pushed"
+
+      - name: ℹ️ No changes
+        if: steps.changes.outputs.changed != 'true'
+        run: |
+          echo "ℹ️ No changes detected - JSON is up to date"
