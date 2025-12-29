@@ -1,12 +1,6 @@
-[build]
-  # (If your repo already has a build command/publish dir configured in Netlify UI,
-  # this can stay minimal. This file is primarily to tune secrets scanning.)
-
-[build.environment]
-  # Keep secrets scanning enabled, but omit generated/build output that often contains
-  # high-entropy strings and vendored content which can trigger false positives.
-  SECRETS_SCAN_OMIT_PATHS = "dist/**,.netlify/**,node_modules/**,.venv/**,temp_fpl_data/**"
-# netlify.toml - NBA V2 Configuration
+## netlify.toml
+## NOTE: TOML does not allow duplicate tables like multiple [build] blocks.
+## Keep everything consolidated here.
 
 [build]
   command = "pip install -r ml/requirements.txt && npm run build"
@@ -27,6 +21,9 @@
   NFL_SCHEDULE_URL = "nfl-schedule-get"
   NFL_ODDS_BRIDGE_URL = "odds-get"
   NFLVERSE_TEAM_FORM_URL = "/nflverse-team-form.json"
+  # Keep secrets scanning enabled, but omit generated/build output that often contains
+  # high-entropy strings and vendored content which can trigger false positives.
+  SECRETS_SCAN_OMIT_PATHS = "dist/**,.netlify/**,node_modules/**,.venv/**,temp_fpl_data/**"
 
 # Background injury analysis - runs every 30 minutes
 [[scheduled.functions]]
