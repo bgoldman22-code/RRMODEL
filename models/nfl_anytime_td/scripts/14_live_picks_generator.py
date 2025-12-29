@@ -32,7 +32,8 @@ DATA_DIR = BASE_DIR / 'data'
 MODEL_DIR = BASE_DIR / 'v1'
 GATE_DIR = BASE_DIR / 'v1.2'
 OUTPUT_DIR = DATA_DIR / 'live_picks'
-OUTPUT_DIR.mkdir(exist_ok=True)
+# On fresh environments (e.g. GitHub Actions runners), parent dirs may not exist.
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Odds API config
 ODDS_API_BASE = "https://api.the-odds-api.com/v4"
