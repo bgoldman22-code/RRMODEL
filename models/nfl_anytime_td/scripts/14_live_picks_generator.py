@@ -29,8 +29,15 @@ import numpy as np
 # Paths
 BASE_DIR = Path(__file__).parent.parent
 DATA_DIR = BASE_DIR / 'data'
-MODEL_DIR = BASE_DIR / 'v1'
-GATE_DIR = BASE_DIR / 'v1.2'
+
+# NOTE: Model artifacts may *not* be committed to the repo (common for large binaries).
+# We support several locations so CI / Netlify / local runs can provide them.
+# Priority:
+#   1) Explicit env vars (MODEL_DIR / GATE_DIR)
+#   2) Legacy locations under BASE_DIR (v1, v1.2)
+#   3) Data locations under BASE_DIR/data (v1, v1.2)
+MODEL_DIR = Path(os.environ.get('NFL_ANYTIME_TD_MODEL_DIR', os.environ.get('MODEL_DIR', str(BASE_DIR / 'v1'))))
+GATE_DIR = Path(os.environ.get('NFL_ANYTIME_TD_GATE_DIR', os.environ.get('GATE_DIR', str(BASE_DIR / 'v1.2'))))
 OUTPUT_DIR = DATA_DIR / 'live_picks'
 # On fresh environments (e.g. GitHub Actions runners), parent dirs may not exist.
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -150,20 +157,54 @@ def american_to_decimal(american):
 def load_model_artifacts():
     """Load trained model and configuration."""
     print("📦 Loading model artifacts...")
-    
+
+    # Candidate directories (in priority order)
+    model_dirs = [MODEL_DIR, BASE_DIR / 'v1', DATA_DIR / 'v1']
+    gate_dirs = [GATE_DIR, BASE_DIR / 'v1.2', DATA_DIR / 'v1.2']
+
+    def _first_existing(paths):
+        for p in paths:
+            if p.exists():
+                return p
+        return None
+
+    model_dir = _first_existing(model_dirs)
+    gate_dir = _first_existing(gate_dirs)
+
+    if model_dir is None:
+        raise FileNotFoundError(
+            "Missing model directory. Looked in: " + ", ".join(str(p) for p in model_dirs)
+        )
+    if gate_dir is None:
+        raise FileNotFoundError(
+            "Missing gate directory. Looked in: " + ", ".join(str(p) for p in gate_dirs)
+        )
+
     # Load model
-    model_path = MODEL_DIR / 'lightgbm_v1.pkl'
+    model_path = model_dir / 'lightgbm_v1.pkl'
+    if not model_path.exists():
+        raise FileNotFoundError(
+            "Missing model file lightgbm_v1.pkl. Looked in: " + ", ".join(str(p / 'lightgbm_v1.pkl') for p in model_dirs)
+        )
     with open(model_path, 'rb') as f:
         model = pickle.load(f)
-    
+
     # Load features
-    features_path = MODEL_DIR / 'feature_list_v1.json'
+    features_path = model_dir / 'feature_list_v1.json'
+    if not features_path.exists():
+        raise FileNotFoundError(
+            "Missing features file feature_list_v1.json. Looked in: " + ", ".join(str(p / 'feature_list_v1.json') for p in model_dirs)
+        )
     with open(features_path, 'r') as f:
         features_data = json.load(f)
     features = features_data.get('features', features_data)
-    
+
     # Load gate config
-    gate_path = GATE_DIR / 'gate_config_v1.2.json'
+    gate_path = gate_dir / 'gate_config_v1.2.json'
+    if not gate_path.exists():
+        raise FileNotFoundError(
+            "Missing gate config gate_config_v1.2.json. Looked in: " + ", ".join(str(p / 'gate_config_v1.2.json') for p in gate_dirs)
+        )
     with open(gate_path, 'r') as f:
         gate_config = json.load(f)
     
