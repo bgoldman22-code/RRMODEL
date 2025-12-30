@@ -3757,7 +3757,9 @@
     "home_score": 10,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 43,
+    "wind": 2
   },
   {
     "week": 17,
@@ -3771,7 +3773,9 @@
     "home_score": 37,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "fieldturf",
+    "temp": 65,
+    "wind": 9
   },
   {
     "week": 17,
@@ -3785,7 +3789,9 @@
     "home_score": 13,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 45,
+    "wind": 14
   },
   {
     "week": 17,
@@ -3799,7 +3805,7 @@
     "home_score": 17,
     "game_type": "REG",
     "roof": "closed",
-    "surface": ""
+    "surface": "fieldturf"
   },
   {
     "week": 17,
@@ -3813,7 +3819,9 @@
     "home_score": 20,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 80,
+    "wind": 3
   },
   {
     "week": 17,
@@ -3827,7 +3835,9 @@
     "home_score": 10,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "fieldturf",
+    "temp": 29,
+    "wind": 4
   },
   {
     "week": 17,
@@ -3841,7 +3851,9 @@
     "home_score": 26,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 71,
+    "wind": 14
   },
   {
     "week": 17,
@@ -3855,7 +3867,7 @@
     "home_score": 10,
     "game_type": "REG",
     "roof": "dome",
-    "surface": ""
+    "surface": "grass"
   },
   {
     "week": 17,
@@ -3869,7 +3881,9 @@
     "home_score": 12,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "a_turf",
+    "temp": 38,
+    "wind": 6
   },
   {
     "week": 17,
@@ -3883,7 +3897,9 @@
     "home_score": 42,
     "game_type": "REG",
     "roof": "outdoors",
-    "surface": ""
+    "surface": "grass",
+    "temp": 53,
+    "wind": 5
   },
   {
     "week": 17,
@@ -3893,6 +3909,8 @@
     "gametime": "20:15",
     "away_team": "LA",
     "home_team": "ATL",
+    "away_score": 24,
+    "home_score": 27,
     "game_type": "REG",
     "roof": "closed",
     "surface": "fieldturf"
