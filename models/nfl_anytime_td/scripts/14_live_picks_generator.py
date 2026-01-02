@@ -218,6 +218,10 @@ def load_player_data(season=2025, max_week=15):
     """Load player historical data for feature computation."""
     df = pd.read_csv(DATA_DIR / 'player_td_core.csv')
     
+    # Normalize column names (R script uses recent_team, we expect team)
+    if 'recent_team' in df.columns and 'team' not in df.columns:
+        df = df.rename(columns={'recent_team': 'team'})
+    
     # Filter to recent data for lagged features
     df = df[(df['season'] == season) & (df['week'] <= max_week)]
     
@@ -302,7 +306,12 @@ def match_odds_to_predictions(odds_df, pred_df):
     pred_df = pred_df.copy()
     
     odds_df['player_name_norm'] = odds_df['player_name'].apply(normalize_name)
-    pred_df['player_name_norm'] = pred_df['player_name'].apply(normalize_name)
+    # Use player_display_name for matching (full name like "Rico Dowdle")
+    # Fall back to player_name if display name not available
+    if 'player_display_name' in pred_df.columns:
+        pred_df['player_name_norm'] = pred_df['player_display_name'].apply(normalize_name)
+    else:
+        pred_df['player_name_norm'] = pred_df['player_name'].apply(normalize_name)
     
     # Create team mappings
     odds_df['home_abbrev'] = odds_df['home_team'].map(TEAM_ABBREV)

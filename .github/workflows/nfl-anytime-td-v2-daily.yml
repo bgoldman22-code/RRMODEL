@@ -51,9 +51,14 @@ jobs:
         with:
           r-version: '4.3'
 
+      - name: 📦 Install system dependencies for R
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
+
       - name: 📦 Install R dependencies
         run: |
-          Rscript -e "install.packages(c('nflreadr','dplyr','tidyr','arrow'), repos='https://cloud.r-project.org')"
+          Rscript -e "install.packages(c('curl','nflreadr','dplyr','tidyr'), repos='https://cloud.r-project.org')"
 
       - name: 🏈 Collect nflverse data (if needed)
         run: |
