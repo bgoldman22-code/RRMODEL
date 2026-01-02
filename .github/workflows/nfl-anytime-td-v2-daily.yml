@@ -44,16 +44,34 @@ jobs:
 
       - name: 📦 Install Python dependencies (ml requirements)
         run: |
-          if [ -f "ml/requirements.txt" ]; then
-            pip install -r ml/requirements.txt
+          pip install pandas numpy scikit-learn lightgbm requests
+
+      - name: 🔧 Setup R (for nflverse data collection)
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3'
+
+      - name: 📦 Install R dependencies
+        run: |
+          Rscript -e "install.packages(c('nflreadr','dplyr','tidyr','arrow'), repos='https://cloud.r-project.org')"
+
+      - name: 🏈 Collect nflverse data (if needed)
+        run: |
+          if [ ! -f "models/nfl_anytime_td/data/player_td_core.csv" ]; then
+            echo "📂 player_td_core.csv missing — running R collection script..."
+            Rscript models/nfl_anytime_td/scripts/01_collect_nflverse_data_v2.R
           else
-            pip install pandas numpy scikit-learn lightgbm
+            echo "✅ player_td_core.csv already exists"
           fi
 
-      # Optional: refresh nflverse-derived data (uncomment if needed)
-      # - name: 🏈 Refresh nflverse data
-      #   run: |
-      #     Rscript models/nfl_anytime_td/scripts/01_collect_nflverse_data_v2.R
+      - name: 🤖 Train model (if artifacts missing)
+        run: |
+          if [ ! -f "models/nfl_anytime_td/data/v1/lightgbm_v1.pkl" ]; then
+            echo "📂 Model artifacts missing — running training script..."
+            python3 models/nfl_anytime_td/scripts/02_train_lightgbm_v1.py
+          else
+            echo "✅ Model artifacts already exist"
+          fi
 
       - name: 🎯 Generate NFL Anytime TD V2 live JSON
         env:
