@@ -175,9 +175,16 @@ function calculateRollingStats(games, window, stat) {
  * @returns {Object} - Feature object with all 60 features
  */
 function calculateFeatures(playerName, targetDate, opponent, isHome) {
-  // Get all games for this player BEFORE target date
+  // Get all games for this player BEFORE target date, excluding DNP games (minutes = 0)
   const priorGames = allBoxscores
-    .filter(g => g.playerName === playerName && g.date < targetDate)
+    .filter(g => {
+      if (g.playerName !== playerName) return false;
+      if (g.date >= targetDate) return false;
+      // Exclude DNP games (player didn't play)
+      const minutes = g.minutes || 0;
+      if (minutes === 0 || minutes === '0') return false;
+      return true;
+    })
     .sort((a, b) => a.date.localeCompare(b.date)); // Chronological order
 
   if (priorGames.length === 0) {
@@ -352,9 +359,16 @@ function calculateLineHitRates(playerName, market, line, targetDate, side) {
   const statField = market === 'player_points' ? 'points' :
                     market === 'player_rebounds' ? 'rebounds' : 'assists';
   
-  // Get all games for this player BEFORE target date
+  // Get all games for this player BEFORE target date, excluding DNP games (minutes = 0)
   const priorGames = allBoxscores
-    .filter(g => g.playerName === playerName && g.date < targetDate)
+    .filter(g => {
+      if (g.playerName !== playerName) return false;
+      if (g.date >= targetDate) return false;
+      // Exclude DNP games (player didn't play)
+      const minutes = g.minutes || 0;
+      if (minutes === 0 || minutes === '0') return false;
+      return true;
+    })
     .sort((a, b) => b.date.localeCompare(a.date)); // Reverse chronological (most recent first)
 
   if (priorGames.length === 0) {
@@ -374,8 +388,12 @@ function calculateLineHitRates(playerName, market, line, targetDate, side) {
   const calcWindow = (games) => {
     if (games.length === 0) return { hitRate: null, avg: null, sampleSize: 0 };
     
+    // Filter out DNP games (minutes = 0) and ensure stat value exists
     const validGames = games.filter(g => {
       const val = g[statField];
+      const minutes = g.minutes || 0;
+      // Exclude games where player didn't play (DNP/injury/rest)
+      if (minutes === 0 || minutes === '0') return false;
       return val !== null && val !== undefined && !isNaN(val);
     });
     
