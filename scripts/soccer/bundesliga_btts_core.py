@@ -305,8 +305,21 @@ def calculate_dixon_coles_prob(home_team, away_team, dc_model):
     home_adv = dc_model["home_advantage"]
     tau_00 = dc_model["tau_00"]
 
-    home_rating = team_ratings.get(home_team, {"attack": 0, "defense": 0})
-    away_rating = team_ratings.get(away_team, {"attack": 0, "defense": 0})
+    # Normalize input team names
+    home_norm = normalize_team_name(home_team)
+    away_norm = normalize_team_name(away_team)
+    
+    # Create a normalized lookup map for team ratings
+    # This handles dirty team names in the model file (e.g., "20.30  SV Werder Bremen")
+    normalized_ratings = {}
+    for raw_name, rating in team_ratings.items():
+        norm_name = normalize_team_name(raw_name)
+        # Keep the first match (or the one with more games)
+        if norm_name not in normalized_ratings or rating.get("games", 0) > normalized_ratings[norm_name].get("games", 0):
+            normalized_ratings[norm_name] = rating
+    
+    home_rating = normalized_ratings.get(home_norm, {"attack": 0, "defense": 0})
+    away_rating = normalized_ratings.get(away_norm, {"attack": 0, "defense": 0})
 
     lambda_home = np.exp(home_adv + home_rating["attack"] - away_rating["defense"])
     lambda_away = np.exp(away_rating["attack"] - home_rating["defense"])
