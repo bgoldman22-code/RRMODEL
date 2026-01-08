@@ -60,58 +60,112 @@ def load_models() -> Dict[str, Any]:
     }
 
 
-def _odds_api_url(api_key: str) -> str:
+def _events_api_url(api_key: str) -> str:
+    """Get the events list endpoint."""
     return (
-        "https://api.the-odds-api.com/v4/sports/soccer_germany_bundesliga/odds/?"
-        f"apiKey={api_key}&regions=eu&markets=btts&oddsFormat=decimal&dateFormat=iso"
+        "https://api.the-odds-api.com/v4/sports/soccer_germany_bundesliga/events/?"
+        f"apiKey={api_key}&dateFormat=iso"
+    )
+
+
+def _event_odds_api_url(api_key: str, event_id: str) -> str:
+    """Get BTTS odds for a specific event."""
+    return (
+        f"https://api.the-odds-api.com/v4/sports/soccer_germany_bundesliga/events/{event_id}/odds?"
+        f"apiKey={api_key}&regions=eu&markets=btts&oddsFormat=decimal"
     )
 
 
 def _fetch_from_odds_api(limit: Optional[int] = None) -> List[Dict[str, Any]]:
+    """
+    Fetch Bundesliga fixtures with BTTS odds.
+    
+    Uses a two-step process:
+    1. Get all upcoming events from /events endpoint
+    2. Fetch BTTS odds for each event from /events/{id}/odds endpoint
+    
+    This is required because BTTS market isn't available on the bulk /odds endpoint.
+    """
     api_key = os.getenv("ODDS_API_KEY")
     if not api_key:
         logger.debug("ODDS_API_KEY not set; skipping live Odds API fetch")
         return []
 
-    url = _odds_api_url(api_key)
+    # Step 1: Get list of events
+    events_url = _events_api_url(api_key)
     try:
-        resp = requests.get(url, timeout=30)
+        resp = requests.get(events_url, timeout=30)
         resp.raise_for_status()
-        payload = resp.json()
+        events = resp.json()
+        logger.info("Found %d upcoming Bundesliga events", len(events))
     except requests.RequestException as exc:
-        logger.warning("Odds API request failed: %s", exc)
+        logger.warning("Odds API events request failed: %s", exc)
         return []
 
+    if not events:
+        logger.warning("No upcoming Bundesliga events found")
+        return []
+
+    # Step 2: Fetch BTTS odds for each event
     fixtures: List[Dict[str, Any]] = []
-    for event in payload:
-        bookmaker = (event.get("bookmakers") or [{}])[0] or {}
-        markets = bookmaker.get("markets") or []
-        btts_market = next((m for m in markets if m.get("key") == "btts"), None)
-        outcomes = btts_market.get("outcomes") if btts_market else []
-        yes_price = next((o.get("price") for o in outcomes if o.get("name") == "Yes"), None)
-        no_price = next((o.get("price") for o in outcomes if o.get("name") == "No"), None)
+    for event in events:
+        if limit and len(fixtures) >= limit:
+            break
+            
+        event_id = event.get("id")
+        if not event_id:
+            continue
+            
+        # Fetch BTTS odds for this specific event
+        odds_url = _event_odds_api_url(api_key, event_id)
+        try:
+            odds_resp = requests.get(odds_url, timeout=15)
+            odds_resp.raise_for_status()
+            odds_data = odds_resp.json()
+        except requests.RequestException as exc:
+            logger.debug("Failed to fetch BTTS odds for %s: %s", event_id, exc)
+            odds_data = {}
+        
+        # Extract BTTS odds from response
+        bookmakers = odds_data.get("bookmakers") or []
+        btts_yes = None
+        btts_no = None
+        bookmaker_name = None
+        
+        for bookmaker in bookmakers:
+            markets = bookmaker.get("markets") or []
+            btts_market = next((m for m in markets if m.get("key") == "btts"), None)
+            if btts_market:
+                outcomes = btts_market.get("outcomes") or []
+                btts_yes = next((o.get("price") for o in outcomes if o.get("name") == "Yes"), None)
+                btts_no = next((o.get("price") for o in outcomes if o.get("name") == "No"), None)
+                bookmaker_name = bookmaker.get("key")
+                if btts_yes and btts_no:
+                    break  # Found valid BTTS odds
 
         fixture = {
-            "id": event.get("id"),
+            "id": event_id,
             "home_team": event.get("home_team"),
             "away_team": event.get("away_team"),
             "commence_time": event.get("commence_time"),
             "odds": (
                 {
-                    "btts_yes": yes_price,
-                    "btts_no": no_price,
-                    "bookmaker": bookmaker.get("key") or "odds_api",
+                    "btts_yes": btts_yes,
+                    "btts_no": btts_no,
+                    "bookmaker": bookmaker_name or "odds_api",
                 }
-                if yes_price and no_price
+                if btts_yes and btts_no
                 else None
             ),
         }
         fixtures.append(fixture)
+        
+        # Brief pause to avoid rate limiting
+        import time
+        time.sleep(0.1)
 
-        if limit and len(fixtures) >= limit:
-            break
-
-    logger.info("Fetched %d fixtures from Odds API", len(fixtures))
+    logger.info("Fetched %d fixtures with %d having BTTS odds", 
+                len(fixtures), sum(1 for f in fixtures if f.get("odds")))
     return fixtures
 
 
