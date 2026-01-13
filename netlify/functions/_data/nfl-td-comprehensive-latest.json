@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2026-01-12T12:43:48Z",
+    "generated_at": "2026-01-13T16:39:46Z",
     "season": 2025,
-    "week": 19,
-    "total_players": 659,
+    "week": 20,
+    "total_players": 660,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -12146,6 +12146,27 @@
       "multiple_td": 0
     },
     {
+      "player_id": "00-0039838",
+      "name": "C.Bullock",
+      "team": "HOU",
+      "position": "DB",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "FS",
+      "anytime_td_prob": 0.68,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.265,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.68,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
       "player_id": "00-0039841",
       "name": "C.DeJean",
       "team": "PHI",
@@ -13312,14 +13333,14 @@
       "anytime_confidence": "medium",
       "first_td_prob": 0,
       "first_confidence": "medium",
-      "multiple_td_prob": 0.132,
+      "multiple_td_prob": 0.11,
       "multiple_confidence": "medium",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.0208,
+      "multiple_value_score": 0.012,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.132
+      "multiple_td": 0.11
     },
     {
       "player_id": "00-0040584",
