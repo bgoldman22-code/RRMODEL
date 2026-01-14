@@ -15,6 +15,7 @@ import NHL from "./NHL";  // Elite NHL SOG Props
 import NBAPredictionsV2 from "./pages/NBAPredictionsV2";  // NBA Elite V2 Game Predictions
 import NBAPlayerProps from "./pages/NBAPlayerProps";  // NBA Player Props (Rebounds + Assists)
 import NBAPlayerPropsV2 from "./pages/NBAPlayerPropsV2";  // NBA Player Props V2 (Phase 3 PRA)
+import NBAPropsAligned from "./pages/NBAPropsAligned";  // NBA Props Aligned (Best of Both Models)
 import NBADDTDPage from "./pages/NBADDTDPage";  // NBA DD/TD Picks Page
 import NCAAMBBPredictions from "./pages/NCAAMBBPredictions";  // NCAA MBB Predictions
 import NFLAnytimeTDV2 from "./pages/NFLAnytimeTDV2"; // NFL Anytime TD V2 (live)
@@ -101,6 +102,7 @@ export default function App() {
         { label: 'Game Predictions (Elite) ⭐', path: '/nba-predictions-v2' },
         { label: 'Player Props (R + A) 💰', path: '/nba-player-props' },
         { label: 'Player Props V2 (PRA) 🚀', path: '/nba-player-props-v2' },
+        { label: 'Best Picks (Aligned) 🎯', path: '/nba-props-aligned' },
         { label: 'DD/TD Picks 🎯', path: '/nba-ddtd' }
       ]
     },
@@ -147,6 +149,7 @@ export default function App() {
           <Route path="/nba-predictions-v2" element={<NBAPredictionsV2 />} />
           <Route path="/nba-player-props" element={<NBAPlayerProps />} />
           <Route path="/nba-player-props-v2" element={<NBAPlayerPropsV2 />} />
+          <Route path="/nba-props-aligned" element={<NBAPropsAligned />} />
           <Route path="/nba-ddtd" element={<NBADDTDPage />} />
           <Route path="/ncaa-mbb" element={<NCAAMBBPredictions />} />
         </Routes>
