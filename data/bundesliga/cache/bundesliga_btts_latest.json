@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-01-13T22:07:51.595804+00:00",
+  "generated_at": "2026-01-14T10:10:25.563702+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 14,
@@ -23,19 +23,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.74,
-        "btts_no": 2.0,
+        "btts_yes": 1.77,
+        "btts_no": 1.96,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5347593582887701,
-      "edge": -0.10585980044985954,
+      "market_probability": 0.5254691689008043,
+      "edge": -0.09656961106189377,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-10.6%, need 5%)"
+        "min_edge (edge=-9.7%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -60,19 +60,19 @@
         "away_season_avg_goals_against": 1.3235294117647058
       },
       "market_odds": {
-        "btts_yes": 1.59,
-        "btts_no": 2.24,
+        "btts_yes": 1.6,
+        "btts_no": 2.22,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5848563968668407,
-      "edge": -0.024103207870934118,
+      "market_probability": 0.5811518324607331,
+      "edge": -0.02039864346482656,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-2.4%, need 5%)"
+        "min_edge (edge=-2.0%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -97,13 +97,13 @@
         "away_season_avg_goals_against": 1.9705882352941178
       },
       "market_odds": {
-        "btts_yes": 1.53,
-        "btts_no": 2.37,
+        "btts_yes": 1.52,
+        "btts_no": 2.4,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6076923076923076,
-      "edge": 0.09720945365590994,
-      "expected_value": 0.06353559062477773,
+      "market_probability": 0.6122448979591837,
+      "edge": 0.0926568633890339,
+      "expected_value": 0.06095846275594335,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -133,13 +133,13 @@
         "away_season_avg_goals_against": 1.7058823529411764
       },
       "market_odds": {
-        "btts_yes": 1.52,
-        "btts_no": 2.35,
+        "btts_yes": 1.55,
+        "btts_no": 2.25,
         "bookmaker": "tipico_de"
       },
-      "market_probability": 0.6072351421188631,
-      "edge": 0.19829025972307335,
-      "expected_value": 0.13045411823886405,
+      "market_probability": 0.5921052631578947,
+      "edge": 0.21342013868404175,
+      "expected_value": 0.13769041205422047,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -280,19 +280,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.59,
-        "btts_no": 2.24,
+        "btts_yes": 1.58,
+        "btts_no": 2.26,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5848563968668407,
-      "edge": -0.061680588718121654,
+      "market_probability": 0.5885416666666665,
+      "edge": -0.06536585851794752,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-6.2%, need 5%)"
+        "min_edge (edge=-6.5%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -317,13 +317,13 @@
         "away_season_avg_goals_against": 0.7058823529411765
       },
       "market_odds": {
-        "btts_yes": 1.42,
-        "btts_no": 2.6,
+        "btts_yes": 1.4,
+        "btts_no": 2.7,
         "bookmaker": "tipico_de"
       },
-      "market_probability": 0.6467661691542289,
-      "edge": 0.0662309949515214,
-      "expected_value": 0.046641545740508036,
+      "market_probability": 0.6585365853658537,
+      "edge": 0.054460578739896626,
+      "expected_value": 0.03890041338564045,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -390,19 +390,19 @@
         "away_season_avg_goals_against": 1.9705882352941178
       },
       "market_odds": {
-        "btts_yes": 1.58,
-        "btts_no": 2.26,
+        "btts_yes": 1.59,
+        "btts_no": 2.24,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5885416666666665,
-      "edge": -0.1313065720726091,
+      "market_probability": 0.5848563968668407,
+      "edge": -0.12762130227278323,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-13.1%, need 5%)"
+        "min_edge (edge=-12.8%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -537,13 +537,13 @@
         "away_season_avg_goals_against": 1.9705882352941178
       },
       "market_odds": {
-        "btts_yes": 1.53,
-        "btts_no": 2.37,
+        "btts_yes": 1.52,
+        "btts_no": 2.4,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6076923076923076,
-      "edge": 0.09720945365590994,
-      "expected_value": 0.06353559062477773,
+      "market_probability": 0.6122448979591837,
+      "edge": 0.0926568633890339,
+      "expected_value": 0.06095846275594335,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -573,13 +573,13 @@
         "away_season_avg_goals_against": 1.7058823529411764
       },
       "market_odds": {
-        "btts_yes": 1.52,
-        "btts_no": 2.35,
+        "btts_yes": 1.55,
+        "btts_no": 2.25,
         "bookmaker": "tipico_de"
       },
-      "market_probability": 0.6072351421188631,
-      "edge": 0.19829025972307335,
-      "expected_value": 0.13045411823886405,
+      "market_probability": 0.5921052631578947,
+      "edge": 0.21342013868404175,
+      "expected_value": 0.13769041205422047,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -609,13 +609,13 @@
         "away_season_avg_goals_against": 0.7058823529411765
       },
       "market_odds": {
-        "btts_yes": 1.42,
-        "btts_no": 2.6,
+        "btts_yes": 1.4,
+        "btts_no": 2.7,
         "bookmaker": "tipico_de"
       },
-      "market_probability": 0.6467661691542289,
-      "edge": 0.0662309949515214,
-      "expected_value": 0.046641545740508036,
+      "market_probability": 0.6585365853658537,
+      "edge": 0.054460578739896626,
+      "expected_value": 0.03890041338564045,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
