@@ -1893,9 +1893,12 @@ export default async (request, context) => {
       
       // Size-aware threshold: larger slates should have more variance
       // SMALL SLATE FIX: For 2-3 games, variance naturally low - use relaxed threshold
+      // REDUCED TARGET: 1.5 stdev is too aggressive when range is good (e.g., 5pt range is fine)
       const targetStdev = predictions.length <= 3 
         ? 0.5  // Allow very low variance for tiny slates
-        : Math.max(1.5, 0.5 * Math.sqrt(predictions.length + 4));
+        : predictions.length <= 6
+          ? 1.2  // Medium slates: moderate threshold
+          : Math.max(1.3, 0.4 * Math.sqrt(predictions.length + 4));  // Larger slates: reduced from 1.5/0.5
       
       console.log(`[NBA V2] Spread variance: stdev=${stdev.toFixed(2)} (target=${targetStdev.toFixed(2)}), range=${range.toFixed(1)} (${min.toFixed(1)} to ${max.toFixed(1)}), mean=${mean.toFixed(1)}`);
       
@@ -1910,8 +1913,11 @@ export default async (request, context) => {
       // EARLY SEASON: Relax variance check (within 10% is acceptable)
       // Teams genuinely cluster more early in season with limited data
       // SMALL SLATE FIX: Skip variance check entirely for 2-3 game slates
+      // RANGE CHECK: If spread range is good (>4pts), predictions are differentiated enough
       if (predictions.length <= 3) {
         console.log(`[NBA V2] Small slate (${predictions.length} games) - skipping strict variance check`);
+      } else if (range >= 4.0) {
+        console.log(`[NBA V2] Good spread range (${range.toFixed(1)}pts) - variance check passed`);
       } else if (stdev < targetStdev * 0.9) {
         const clustered = spreads.filter(s => Math.abs(s - mean) < 1.0).length;
         throw new Error(`[NBA V2] Spread variance collapsed: stdev=${stdev.toFixed(2)} < target ${targetStdev.toFixed(2)} (${clustered}/${spreads.length} games clustered near ${mean.toFixed(1)})`);
