@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2026-01-17T14:35:26Z",
+    "generated_at": "2026-01-18T14:40:22Z",
     "season": 2025,
     "week": 20,
-    "total_players": 660,
+    "total_players": 661,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -9154,14 +9154,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.206,
+      "multiple_td_prob": 0.233,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.0505,
+      "multiple_value_score": 0.0612,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.2062
+      "multiple_td": 0.2329
     },
     {
       "player_id": "00-0038136",
@@ -9448,14 +9448,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.106,
+      "multiple_td_prob": 0.1,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.0104,
+      "multiple_value_score": 0.008,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.1059
+      "multiple_td": 0.1
     },
     {
       "player_id": "00-0038544",
@@ -10477,14 +10477,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.133,
+      "multiple_td_prob": 0.12,
       "multiple_confidence": "high",
       "anytime_value_score": 0.375,
       "first_value_score": 0,
-      "multiple_value_score": 0.0213,
+      "multiple_value_score": 0.016,
       "anytime_td": 0.9,
       "first_td": 0,
-      "multiple_td": 0.1333
+      "multiple_td": 0.12
     },
     {
       "player_id": "00-0038977",
@@ -11764,6 +11764,27 @@
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.765,
+      "first_td": 0,
+      "multiple_td": 0
+    },
+    {
+      "player_id": "00-0039568",
+      "name": "F.Crum",
+      "team": "DEN",
+      "position": "OL",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "T",
+      "anytime_td_prob": 0.68,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.265,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.68,
       "first_td": 0,
       "multiple_td": 0
     },
