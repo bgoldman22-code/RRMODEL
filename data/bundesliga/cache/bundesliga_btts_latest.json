@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-01-29T22:09:41.643055+00:00",
+  "generated_at": "2026-01-30T10:15:15.079959+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -24,18 +24,18 @@
       },
       "market_odds": {
         "btts_yes": 1.55,
-        "btts_no": 2.54,
+        "btts_no": 2.58,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.6210268948655256,
-      "edge": -0.07721300124758101,
+      "market_probability": 0.6246973365617434,
+      "edge": -0.08088344294379879,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-7.7%, need 5%)"
+        "min_edge (edge=-8.1%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -426,13 +426,13 @@
         "away_season_avg_goals_against": 1.7647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.72,
-        "btts_no": 2.02,
+        "btts_yes": 1.71,
+        "btts_no": 2.04,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5401069518716577,
-      "edge": 0.10597077216803885,
-      "expected_value": 0.06161091405118538,
+      "market_probability": 0.5439999999999999,
+      "edge": 0.10207772403969662,
+      "expected_value": 0.05969457546181089,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -828,13 +828,13 @@
         "away_season_avg_goals_against": 1.7647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.72,
-        "btts_no": 2.02,
+        "btts_yes": 1.71,
+        "btts_no": 2.04,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5401069518716577,
-      "edge": 0.10597077216803885,
-      "expected_value": 0.06161091405118538,
+      "market_probability": 0.5439999999999999,
+      "edge": 0.10207772403969662,
+      "expected_value": 0.05969457546181089,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
