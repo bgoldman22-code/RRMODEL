@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import html2canvas from 'html2canvas';
 
 const NCAAMBBPredictions = () => {
   const [predictions, setPredictions] = useState([]);
@@ -6,6 +7,27 @@ const NCAAMBBPredictions = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const exportRef = useRef(null);
+
+  // Export to PNG
+  const handleExport = async () => {
+    if (!exportRef.current) return;
+    try {
+      const canvas = await html2canvas(exportRef.current, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        width: 800, // Fixed width for consistent mobile/desktop exports
+        windowWidth: 800
+      });
+      const link = document.createElement('a');
+      link.download = `ncaa-mbb-picks-${new Date().toISOString().split('T')[0]}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed: ' + error.message);
+    }
+  };
 
   useEffect(() => {
     loadPredictions();
@@ -115,6 +137,71 @@ const NCAAMBBPredictions = () => {
           </div>
         </div>
       )}
+
+      {/* Export Button */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={handleExport}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        >
+          📸 Export PNG
+        </button>
+      </div>
+
+      {/* Hidden Export Container (without Stake) */}
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+        <div ref={exportRef} style={{ width: '800px', backgroundColor: '#ffffff', padding: '20px' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px' }}>🏀 NCAA MBB Picks</h2>
+            <p style={{ fontSize: '12px', color: '#666' }}>
+              {lastUpdated ? new Date(lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()} | {predictions.length} Picks
+            </p>
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#f3f4f6' }}>
+                <th style={{ padding: '10px 8px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Game</th>
+                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Pick</th>
+                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Odds</th>
+                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Model Win %</th>
+                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Edge</th>
+                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Confidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              {predictions.map((pred, idx) => {
+                const badge = getConfidenceBadge(pred.betting.edge);
+                return (
+                  <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                    <td style={{ padding: '10px 8px' }}>{pred.awayTeam} @ {pred.homeTeam}</td>
+                    <td style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 'bold' }}>{pred.prediction.pick}</td>
+                    <td style={{ padding: '10px 8px', textAlign: 'center' }}>{formatOdds(pred.vegasLines.moneyline.favorite)}</td>
+                    <td style={{ padding: '10px 8px', textAlign: 'center' }}>{pred.prediction.winProbability.favoritePercent.toFixed(1)}%</td>
+                    <td style={{ padding: '10px 8px', textAlign: 'center', color: '#16a34a', fontWeight: 'bold' }}>+{(pred.betting.edge * 100).toFixed(1)}%</td>
+                    <td style={{ padding: '10px 8px', textAlign: 'center' }}>
+                      <span style={{ 
+                        padding: '2px 8px', 
+                        borderRadius: '4px', 
+                        color: '#fff', 
+                        fontWeight: 'bold',
+                        fontSize: '12px',
+                        backgroundColor: badge.color === 'bg-purple-600' ? '#9333ea' : 
+                                         badge.color === 'bg-green-600' ? '#16a34a' : 
+                                         badge.color === 'bg-yellow-600' ? '#ca8a04' : '#4b5563'
+                      }}>
+                        {badge.label}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div style={{ marginTop: '12px', fontSize: '10px', color: '#9ca3af', textAlign: 'center' }}>
+            bgroundrobin.com/ncaa-mbb | Model: Variant B (KenPom-style)
+          </div>
+        </div>
+      </div>
 
       {/* Picks Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">

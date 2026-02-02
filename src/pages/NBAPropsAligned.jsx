@@ -197,7 +197,9 @@ export default function NBAPropsAligned() {
     try {
       const canvas = await html2canvas(exportRef.current, {
         backgroundColor: '#ffffff',
-        scale: 2
+        scale: 2,
+        width: 1000, // Fixed width for consistent mobile/desktop exports
+        windowWidth: 1000
       });
       const link = document.createElement('a');
       const tabName = activeTab === 'strong' ? 'strong-signals' : activeTab;
