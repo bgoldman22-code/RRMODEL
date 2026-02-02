@@ -72,15 +72,15 @@ export default function NBAParlays() {
     }
   }, [saferMode, allowSafetyAlt]);
 
-  // Export to PNG
+  // Export to PNG - uses hidden clean container
   const handleExport = async () => {
     if (!exportRef.current) return;
     try {
       const canvas = await html2canvas(exportRef.current, {
         backgroundColor: '#ffffff',
         scale: 2,
-        width: 1200,
-        windowWidth: 1200
+        width: 900,
+        windowWidth: 900
       });
       const link = document.createElement('a');
       link.download = `nba_parlays_${new Date().toISOString().split('T')[0]}.png`;
@@ -145,7 +145,7 @@ export default function NBAParlays() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-6 px-4">
-      <div className="max-w-7xl mx-auto" ref={exportRef}>
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">🎰 NBA Parlays</h1>
@@ -272,8 +272,8 @@ export default function NBAParlays() {
         {/* Section 3: SGP-style Parlays */}
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            🔥 SGP-style Parlays
-            <span className="text-sm font-normal text-gray-500">(Aligned + Phase 3.5 Points)</span>
+            🔥 Same Game Parlays
+            <span className="text-sm font-normal text-gray-500">(All legs from one game)</span>
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -329,6 +329,48 @@ export default function NBAParlays() {
         <div className="mt-6 text-center text-xs text-gray-400">
           <p>Generated: {metadata.generated ? new Date(metadata.generated).toLocaleString() : 'N/A'}</p>
           <p>bgroundrobin.com/nba-parlays</p>
+        </div>
+      </div>
+
+      {/* Hidden Export Container - Clean layout for PNG */}
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+        <div ref={exportRef} style={{ width: '900px', backgroundColor: '#ffffff', padding: '24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+          {/* Export Header */}
+          <div style={{ textAlign: 'center', marginBottom: '20px', borderBottom: '2px solid #e5e7eb', paddingBottom: '16px' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 0 4px 0' }}>🎰 NBA Parlays</h1>
+            <p style={{ fontSize: '12px', color: '#6b7280', margin: '0' }}>
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+          </div>
+
+          {/* SGP Parlays Section */}
+          {sgpParlays.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px', color: '#1f2937' }}>🔥 Same Game Parlays</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                {sgpParlays.map((parlay, idx) => (
+                  <ExportParlayCard key={idx} parlay={parlay} formatOdds={formatOdds} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Confidence Parlays Section */}
+          {confidenceParlays.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px', color: '#1f2937' }}>🎯 Confidence Parlays</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                {confidenceParlays.slice(0, 4).map((parlay, idx) => (
+                  <ExportParlayCard key={idx} parlay={parlay} formatOdds={formatOdds} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Footer */}
+          <div style={{ textAlign: 'center', fontSize: '10px', color: '#9ca3af', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #e5e7eb' }}>
+            bgroundrobin.com/nba-parlays
+          </div>
         </div>
       </div>
     </div>
@@ -423,6 +465,87 @@ function ParlayCard({ parlay, formatOdds, getLegTypeChip, getSourceChip, formatH
             Sources: {parlay.sources.aligned} Aligned, {parlay.sources.phase35} Phase 3.5
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// Export-only Parlay Card (inline styles for html2canvas)
+function ExportParlayCard({ parlay, formatOdds }) {
+  return (
+    <div style={{ 
+      backgroundColor: '#ffffff', 
+      borderRadius: '8px', 
+      overflow: 'hidden',
+      border: '1px solid #e5e7eb'
+    }}>
+      <div style={{ 
+        backgroundColor: '#1f2937', 
+        color: '#ffffff', 
+        padding: '8px 12px' 
+      }}>
+        <div style={{ fontWeight: '600', fontSize: '13px' }}>{parlay.name}</div>
+        <div style={{ fontSize: '10px', color: '#9ca3af' }}>{parlay.legs.length} legs</div>
+      </div>
+      
+      <div style={{ padding: '12px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+              <th style={{ textAlign: 'left', padding: '4px 0', color: '#6b7280', fontSize: '10px', fontWeight: '600' }}>Leg</th>
+              <th style={{ textAlign: 'center', padding: '4px 0', color: '#6b7280', fontSize: '10px', fontWeight: '600' }}>Pick</th>
+              <th style={{ textAlign: 'center', padding: '4px 0', color: '#6b7280', fontSize: '10px', fontWeight: '600' }}>Odds</th>
+            </tr>
+          </thead>
+          <tbody>
+            {parlay.legs.map((leg, idx) => (
+              <tr key={idx} style={{ borderBottom: idx < parlay.legs.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
+                <td style={{ padding: '6px 0' }}>
+                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                    <span style={{ 
+                      padding: '2px 6px', 
+                      borderRadius: '4px', 
+                      fontSize: '9px', 
+                      fontWeight: '600',
+                      backgroundColor: leg.type === 'PROP' ? '#f3e8ff' : leg.type === 'ML' ? '#dcfce7' : '#dbeafe',
+                      color: leg.type === 'PROP' ? '#7c3aed' : leg.type === 'ML' ? '#16a34a' : '#2563eb'
+                    }}>
+                      {leg.type}
+                    </span>
+                    {leg.source && (
+                      <span style={{ 
+                        padding: '2px 6px', 
+                        borderRadius: '4px', 
+                        fontSize: '9px', 
+                        fontWeight: '600',
+                        backgroundColor: leg.source === 'Aligned' ? '#e0e7ff' : '#fef3c7',
+                        color: leg.source === 'Aligned' ? '#4f46e5' : '#d97706'
+                      }}>
+                        {leg.source === 'Aligned' ? 'Aligned' : 'P3.5'}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#374151', marginTop: '2px' }}>
+                    {leg.player || leg.game}
+                    {leg.propType && <span style={{ color: '#9ca3af', marginLeft: '4px' }}>({leg.propType})</span>}
+                  </div>
+                </td>
+                <td style={{ padding: '6px 0', textAlign: 'center' }}>
+                  <span style={{ 
+                    fontWeight: '500',
+                    color: leg.betSide === 'OVER' || leg.type === 'ML' ? '#16a34a' : 
+                           leg.betSide === 'UNDER' ? '#dc2626' : '#374151'
+                  }}>
+                    {leg.type === 'PROP' ? `${leg.betSide} ${leg.vegasLine || leg.line}` : leg.pick}
+                  </span>
+                </td>
+                <td style={{ padding: '6px 0', textAlign: 'center', fontFamily: 'monospace', fontSize: '11px' }}>
+                  {formatOdds(leg.odds)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

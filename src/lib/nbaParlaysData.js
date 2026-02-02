@@ -486,8 +486,8 @@ export function generateConfidenceParlays(strongSignals, gamePredictions, rng, s
   return parlays;
 }
 
-// Generate SGP-style parlays (aligned + Phase 3.5 points)
-export function generateSGPParlays(strongSignals, v2Props, rng, saferMode = false) {
+// Generate SGP-style parlays (SAME GAME - all legs from one game)
+export function generateSGPParlays(strongSignals, v2Props, gamePredictions, rng, saferMode = false) {
   const parlays = [];
   
   // Get Phase 3.5 POINTS picks that meet strict criteria
@@ -501,9 +501,8 @@ export function generateSGPParlays(strongSignals, v2Props, rng, saferMode = fals
       score: scorePropPick(pick, saferMode)
     }));
   
-  // Add aligned picks (non-points since aligned doesn't produce points well)
-  const alignedNonPoints = strongSignals
-    .filter(p => p.propType?.toLowerCase() !== 'points')
+  // Add aligned picks (all prop types)
+  const alignedPicks = strongSignals
     .map(pick => ({
       ...pick,
       type: 'PROP',
@@ -512,60 +511,147 @@ export function generateSGPParlays(strongSignals, v2Props, rng, saferMode = fals
       score: scorePropPick(pick, saferMode)
     }));
   
-  // Combine and sort by score (prioritize hit probability)
-  const allLegs = [...phase35Points, ...alignedNonPoints];
-  allLegs.sort((a, b) => {
-    // For SGP, weight hit rates more than edge
-    const aHitScore = (getHitRate(a, 10) || 0) + (getHitRate(a, 20) || 0);
-    const bHitScore = (getHitRate(b, 10) || 0) + (getHitRate(b, 20) || 0);
-    return bHitScore - aHitScore;
+  // Combine all props
+  const allProps = [...phase35Points, ...alignedPicks];
+  
+  // Group props by game
+  const gamePropsMap = new Map();
+  allProps.forEach(prop => {
+    const gameKey = prop.gameId;
+    if (!gamePropsMap.has(gameKey)) {
+      gamePropsMap.set(gameKey, []);
+    }
+    gamePropsMap.get(gameKey).push(prop);
   });
   
-  const shuffled = seededShuffle(allLegs, rng);
-  
-  // Generate 2 x 3-leg SGPs
-  for (let i = 0; i < 2; i++) {
-    const offset = i * 4;
-    const legs = selectDiverseLegs(shuffled.slice(offset), 3, saferMode);
+  // Also add game ML legs to each game's pool
+  gamePredictions.forEach(pred => {
+    const winProb = pred.prediction?.winProbability?.favoritePercent || 0;
+    const mlOpp = pred.opportunities?.find(o => o.market === 'Moneyline');
     
-    if (legs.length >= 3) {
-      const sources = legs.map(l => l.source);
-      const hasPhase35 = sources.includes('Phase35');
-      const hasAligned = sources.includes('Aligned');
+    if (winProb >= 55 && mlOpp) {
+      // Try to match game to existing props
+      const homeTeam = pred.homeTeam;
+      const awayTeam = pred.awayTeam;
       
-      parlays.push({
-        name: `SGP-Style 3-Leg #${i + 1}`,
-        legs: legs.slice(0, 3),
-        sources: {
-          aligned: legs.filter(l => l.source === 'Aligned').length,
-          phase35: legs.filter(l => l.source === 'Phase35').length
-        },
-        reasoning: [
-          hasPhase35 && hasAligned ? 'Mix of Aligned and Phase 3.5 points' :
-            hasPhase35 ? 'All from Phase 3.5 (points)' : 'All from Aligned picks',
-          'Strict filter: L5>50%, L10≥60%, L20≥60%',
-          'Prioritizes hit probability over edge'
-        ]
+      // Check both directions for game key matching
+      for (const [gameKey, props] of gamePropsMap.entries()) {
+        if (gameKey.includes(homeTeam) || gameKey.includes(awayTeam) ||
+            props.some(p => p.team === homeTeam || p.team === awayTeam || 
+                          p.opponent === homeTeam || p.opponent === awayTeam)) {
+          props.push({
+            type: 'ML',
+            source: 'Game',
+            game: pred.game,
+            gameId: gameKey,
+            pick: pred.prediction?.winProbability?.favoriteTeam,
+            odds: mlOpp.odds,
+            winProb,
+            score: winProb
+          });
+          break;
+        }
+      }
+    }
+  });
+  
+  // Find games with enough legs for SGPs (3+ unique players)
+  const eligibleGames = [];
+  for (const [gameKey, props] of gamePropsMap.entries()) {
+    // Get unique players in this game
+    const uniquePlayers = new Set(props.filter(p => p.player).map(p => p.player?.toLowerCase()));
+    const hasML = props.some(p => p.type === 'ML');
+    
+    // Need at least 3 different players OR 2 players + ML
+    if (uniquePlayers.size >= 3 || (uniquePlayers.size >= 2 && hasML)) {
+      // Score the game by average prop quality
+      const avgScore = props.reduce((sum, p) => sum + (p.score || 0), 0) / props.length;
+      eligibleGames.push({
+        gameKey,
+        props,
+        uniquePlayers: uniquePlayers.size,
+        hasML,
+        avgScore
       });
     }
   }
   
-  // Generate 1 x 4-leg SGP
-  const fourLeg = selectDiverseLegs(shuffled.slice(8), 4, saferMode);
-  if (fourLeg.length >= 4) {
-    parlays.push({
-      name: 'SGP-Style 4-Leg',
-      legs: fourLeg.slice(0, 4),
-      sources: {
-        aligned: fourLeg.filter(l => l.source === 'Aligned').length,
-        phase35: fourLeg.filter(l => l.source === 'Phase35').length
-      },
-      reasoning: [
-        'Longer parlay for maximum boost value',
-        'Mix of aligned props and Phase 3.5 points',
-        'All legs meet strict hit-rate thresholds'
-      ]
-    });
+  // Sort games by quality (more players, higher avg score)
+  eligibleGames.sort((a, b) => {
+    // Prefer games with more unique players
+    if (b.uniquePlayers !== a.uniquePlayers) return b.uniquePlayers - a.uniquePlayers;
+    return b.avgScore - a.avgScore;
+  });
+  
+  // Shuffle with some randomness but keep best games first
+  const shuffledGames = seededShuffle(eligibleGames, rng);
+  
+  // Generate SGPs from best games
+  let sgpCount = 0;
+  const maxSGPs = 3; // 2x 3-leg + 1x 4-leg
+  
+  for (const game of shuffledGames) {
+    if (sgpCount >= maxSGPs) break;
+    
+    const { gameKey, props } = game;
+    
+    // Select legs for this SGP - different players only
+    const selectedLegs = [];
+    const usedPlayers = new Set();
+    let hasMLLeg = false;
+    
+    // Sort props by score
+    const sortedProps = [...props].sort((a, b) => (b.score || 0) - (a.score || 0));
+    
+    for (const prop of sortedProps) {
+      if (prop.type === 'ML') {
+        if (!hasMLLeg && selectedLegs.length < 4) {
+          selectedLegs.push(prop);
+          hasMLLeg = true;
+        }
+        continue;
+      }
+      
+      const playerKey = prop.player?.toLowerCase();
+      if (playerKey && !usedPlayers.has(playerKey)) {
+        selectedLegs.push(prop);
+        usedPlayers.add(playerKey);
+      }
+      
+      if (selectedLegs.length >= 4) break;
+    }
+    
+    // Create 3-leg or 4-leg parlay based on available legs
+    const legCount = sgpCount < 2 ? 3 : 4; // First 2 are 3-leg, last is 4-leg
+    
+    if (selectedLegs.length >= legCount) {
+      const legs = selectedLegs.slice(0, legCount);
+      const gameDisplay = legs[0]?.game || `${legs[0]?.team} vs ${legs[0]?.opponent}`;
+      
+      parlays.push({
+        name: `SGP ${legCount}-Leg: ${gameDisplay}`,
+        legs,
+        game: gameDisplay,
+        isSameGame: true,
+        sources: {
+          aligned: legs.filter(l => l.source === 'Aligned').length,
+          phase35: legs.filter(l => l.source === 'Phase35').length,
+          game: legs.filter(l => l.source === 'Game').length
+        },
+        reasoning: [
+          `All ${legCount} legs from the same game`,
+          'Different players for each prop leg',
+          'Strict filter: L5>50%, L10≥60%, L20≥60%'
+        ]
+      });
+      
+      sgpCount++;
+    }
+  }
+  
+  // If we didn't get enough SGPs, note it
+  if (parlays.length === 0) {
+    console.log('No games with enough qualifying props for SGPs');
   }
   
   return parlays;
@@ -593,7 +679,7 @@ export async function generateAllParlays(clickCount = 0, saferMode = false, allo
   // Generate all parlay types
   const gameParlays = generateGameParlays(gamePredictions, rng, saferMode);
   const confidenceParlays = generateConfidenceParlays(strongSignals, gamePredictions, rng, saferMode, allowSafetyAlt);
-  const sgpParlays = generateSGPParlays(strongSignals, v2Props, rng, saferMode);
+  const sgpParlays = generateSGPParlays(strongSignals, v2Props, gamePredictions, rng, saferMode);
   
   return {
     gameParlays,
