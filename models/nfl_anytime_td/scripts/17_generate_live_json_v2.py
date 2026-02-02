@@ -187,10 +187,10 @@ def generate(date_from: date, date_to: date) -> Dict[str, Any]:
 
 
 def main() -> None:
-    # Defaults: today -> today+6
+    # Defaults: today -> today+7 (extended to capture Super Bowl week)
     today = date.today()
     date_from = today
-    date_to = today + timedelta(days=6)
+    date_to = today + timedelta(days=7)
 
     payload = generate(date_from, date_to)
     _atomic_write_json(PUBLIC_OUT, payload)
