@@ -35,16 +35,27 @@ async function fetchBTTSPredictions(league = 'premier-league', limit = 20) {
       const response = await res.json();
     
       // Transform ensemble format to match existing UI
-      const predictions = (response.predictions || []).map(pred => ({
+      const predictions = (response.predictions || []).map(pred => {
+        const isYes = pred.model_probability >= 0.5;
+        const predictedSideProb = isYes ? pred.model_probability : (1 - pred.model_probability);
+        // Calculate edge for the predicted side
+        const impliedYes = pred.market_probability || 0.5;
+        const impliedNo = 1 - impliedYes;
+        const edgeForSide = isYes 
+          ? (pred.model_probability - impliedYes) 
+          : ((1 - pred.model_probability) - impliedNo);
+        
+        return {
         fixture_id: pred.home_team + '-' + pred.away_team,
         matchup: `${pred.home_team} vs ${pred.away_team}`,
         venue: null,
         league: 'Bundesliga',
         kickoff: pred.commence_time || null,
-        btts_prediction: pred.model_probability >= 0.5 ? 'YES' : 'NO',
-        btts_probability: pred.model_probability,
-        confidence: Math.round(pred.model_probability * 100),
-        edge_pct: pred.edge ? (pred.edge * 100).toFixed(1) : 0,
+        btts_prediction: isYes ? 'YES' : 'NO',
+        btts_probability: pred.model_probability, // Keep raw YES probability for other calculations
+        btts_probability_display: predictedSideProb, // For display: probability of predicted side
+        confidence: Math.round(predictedSideProb * 100), // Confidence based on predicted side
+        edge_pct: (edgeForSide * 100).toFixed(1), // Edge for predicted side
         market_odds: pred.market_odds ? {
           btts_yes: pred.market_odds.btts_yes,
           btts_no: pred.market_odds.btts_no,
@@ -84,7 +95,8 @@ async function fetchBTTSPredictions(league = 'premier-league', limit = 20) {
           home: pred.expected_home_goals,
           away: pred.expected_away_goals
         }
-      }));
+      };
+      });
     
       return {
         predictions,
@@ -320,13 +332,33 @@ export default function SoccerBTTS() {
                               BTTS {pred.btts_prediction}
                             </div>
                             <div className="text-xs text-gray-600">
-                              {Math.round((pred.btts_probability || 0) * 100)}% probability
+                              {/* Show probability for the PREDICTED side, not always YES */}
+                              {(() => {
+                                const yesProb = pred.btts_probability || 0;
+                                const displayProb = pred.btts_prediction === 'YES' ? yesProb : (1 - yesProb);
+                                return Math.round(displayProb * 100);
+                              })()}% probability
                             </div>
                             <div className={`text-xs px-2 py-1 rounded ${getConfidenceColor(pred.confidence || 0)}`}>
                               {pred.confidence || 0}% confidence
                             </div>
                             <div className="text-xs text-purple-600">
-                              {pred.edge_pct || 0}% edge
+                              {/* Show edge for the PREDICTED side */}
+                              {(() => {
+                                // For Bundesliga, edge_pct is already calculated correctly
+                                if (pred.btts_probability_display !== undefined) {
+                                  return pred.edge_pct || 0;
+                                }
+                                // For EPL/UCL: Calculate edge for predicted side
+                                const yesProb = pred.btts_probability || 0;
+                                const impliedYes = pred.market_odds?.implied_prob_yes || 0.5;
+                                const impliedNo = pred.market_odds?.implied_prob_no || 0.5;
+                                if (pred.btts_prediction === 'YES') {
+                                  return ((yesProb - impliedYes) * 100).toFixed(1);
+                                } else {
+                                  return (((1 - yesProb) - impliedNo) * 100).toFixed(1);
+                                }
+                              })()}% edge
                             </div>
                             {/* NEW: Show ensemble breakdown for Bundesliga */}
                             {pred.model_breakdown && (

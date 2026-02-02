@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "game_pk": 632457,
+    "season": 2021,
+    "game_type": "R",
+    "game_date": "2021-09-16",
+    "scheduled_first_pitch_utc": "2021-09-16T16:20:00Z",
+    "actual_first_pitch_utc": null,
+    "day_night": "day",
+    "home_team_id": 144,
+    "home_team_abbrev": "ATL",
+    "home_team_name": "Atlanta Braves",
+    "away_team_id": 115,
+    "away_team_abbrev": "COL",
+    "away_team_name": "Colorado Rockies",
+    "venue_id": 4705,
+    "venue_name": "Truist Park",
+    "venue_city": "Atlanta",
+    "venue_state": "Georgia",
+    "venue_roof": "Open",
+    "venue_surface": "Grass",
+    "venue_capacity": 41149,
+    "venue_dimensions": {
+      "left": 335,
+      "left_center": 385,
+      "center": 400,
+      "right_center": 375,
+      "right": 325
+    },
+    "status": "Cancelled",
+    "is_final": true
+  },
+  "pregame": {
+    "home_lineup": [],
+    "away_lineup": [],
+    "home_sp": {},
+    "away_sp": {},
+    "weather": {
+      "condition": null,
+      "temp_f": null,
+      "wind_speed_mph": null,
+      "wind_direction": null,
+      "source": "mlb_api"
+    },
+    "lineup_source": "boxscore_batting_order",
+    "lineup_confirmed": false
+  },
+  "outcomes": {
+    "game_final_status": "Cancelled",
+    "innings_played": 9,
+    "home_score": 0,
+    "away_score": 0,
+    "total_runs": 0,
+    "f5_home_score": 0,
+    "f5_away_score": 0,
+    "f5_total": 0,
+    "f5_complete": false,
+    "home_sp_outcome": null,
+    "away_sp_outcome": null,
+    "batter_outcomes": [],
+    "home_team_hr": 0,
+    "away_team_hr": 0,
+    "home_team_sb": 0,
+    "away_team_sb": 0
+  },
+  "qa": {
+    "schema_version": "v1.1",
+    "generated_at": "2026-01-08T19:04:57.077Z",
+    "lineup_source": "boxscore_batting_order",
+    "lineup_complete": false,
+    "weather_available": true,
+    "actual_first_pitch_available": false,
+    "anomalies": [
+      "missing_actual_first_pitch",
+      "incomplete_home_lineup_0",
+      "incomplete_away_lineup_0"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "v1_baseline": {
+    "features": 15,
+    "train_auc": 0.7872,
+    "test_auc": 0.7224
+  },
+  "v2_with_defense": {
+    "features": 18,
+    "train_auc": 0.937,
+    "test_auc": 0.9141
+  },
+  "improvement": {
+    "auc_gain": 0.1917,
+    "pct_gain": 26.53
+  },
+  "defense_features": [
+    "opp_tds_allowed_L5",
+    "opp_tds_allowed_to_pos_L5",
+    "opp_rz_td_rate_L5"
+  ]
+}

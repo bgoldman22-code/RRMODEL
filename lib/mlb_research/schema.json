@@ -1,0 +1,670 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rrmodel.dev/schemas/mlb-research-v1.json",
+  "title": "MLB Research Game V1",
+  "description": "Complete game record for MLB research with strict pregame/outcome separation to prevent data leakage",
+  "type": "object",
+  "required": ["schema_version", "game_id", "home_team", "away_team", "pregame", "features", "outcome", "meta"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema version for compatibility tracking"
+    },
+    "game_id": {
+      "$ref": "#/definitions/GameId"
+    },
+    "home_team": {
+      "$ref": "#/definitions/TeamInfo"
+    },
+    "away_team": {
+      "$ref": "#/definitions/TeamInfo"
+    },
+    "pregame": {
+      "$ref": "#/definitions/PregameContext"
+    },
+    "features": {
+      "$ref": "#/definitions/FeaturePacks"
+    },
+    "outcome": {
+      "$ref": "#/definitions/GameOutcome"
+    },
+    "meta": {
+      "$ref": "#/definitions/RecordMeta"
+    }
+  },
+  "definitions": {
+    "GameId": {
+      "type": "object",
+      "required": ["game_pk", "game_date", "season", "scheduled_first_pitch_utc"],
+      "properties": {
+        "game_pk": {
+          "type": "integer",
+          "description": "MLB Stats API unique game identifier"
+        },
+        "game_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Game date in YYYY-MM-DD format"
+        },
+        "season": {
+          "type": "integer",
+          "minimum": 2021,
+          "maximum": 2025,
+          "description": "Season year"
+        },
+        "scheduled_first_pitch_utc": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Scheduled first pitch in UTC"
+        },
+        "actual_first_pitch_utc": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Actual first pitch in UTC (null if not started)"
+        }
+      }
+    },
+    "TeamInfo": {
+      "type": "object",
+      "required": ["team_id", "abbreviation", "full_name", "league", "division"],
+      "properties": {
+        "team_id": {
+          "type": "integer"
+        },
+        "abbreviation": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 3
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "league": {
+          "type": "string",
+          "enum": ["AL", "NL"]
+        },
+        "division": {
+          "type": "string",
+          "enum": ["East", "Central", "West"]
+        }
+      }
+    },
+    "PlayerInfo": {
+      "type": "object",
+      "required": ["player_id", "full_name", "primary_position", "bats", "throws"],
+      "properties": {
+        "player_id": {
+          "type": "integer"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "primary_position": {
+          "type": "string"
+        },
+        "bats": {
+          "type": "string",
+          "enum": ["L", "R", "S"]
+        },
+        "throws": {
+          "type": "string",
+          "enum": ["L", "R"]
+        }
+      }
+    },
+    "PregameLineup": {
+      "type": "object",
+      "required": ["batting_order", "player", "position", "source", "confirmed_at_utc"],
+      "properties": {
+        "batting_order": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9
+        },
+        "player": {
+          "$ref": "#/definitions/PlayerInfo"
+        },
+        "position": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["mlb_api_confirmed", "mlb_api_probable", "fallback_rotowire", "fallback_espn"]
+        },
+        "confirmed_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PregameStartingPitcher": {
+      "type": "object",
+      "required": ["player", "status", "source", "confirmed_at_utc"],
+      "properties": {
+        "player": {
+          "$ref": "#/definitions/PlayerInfo"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["confirmed", "probable", "expected"]
+        },
+        "source": {
+          "type": "string",
+          "enum": ["mlb_api", "rotowire", "espn"]
+        },
+        "confirmed_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PregameWeather": {
+      "type": "object",
+      "required": ["temperature_f", "wind_speed_mph", "wind_direction_degrees", "wind_relative_to_field", "humidity_percent", "precip_prob_percent", "condition", "source", "forecast_made_at_utc"],
+      "properties": {
+        "temperature_f": {
+          "type": "number"
+        },
+        "wind_speed_mph": {
+          "type": "number"
+        },
+        "wind_direction_degrees": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 360
+        },
+        "wind_relative_to_field": {
+          "type": "string",
+          "enum": ["out", "in", "cross_lf", "cross_rf", "calm"]
+        },
+        "humidity_percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "precip_prob_percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "condition": {
+          "type": "string",
+          "enum": ["clear", "cloudy", "partly_cloudy", "overcast", "rain", "drizzle", "dome"]
+        },
+        "source": {
+          "type": "string",
+          "enum": ["openweathermap", "visualcrossing", "weatherapi", "dome_default"]
+        },
+        "forecast_made_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "VenueInfo": {
+      "type": "object",
+      "required": ["venue_id", "name", "city", "state", "has_roof", "surface", "park_factor_runs", "park_factor_hr", "park_factor_hr_lhb", "park_factor_hr_rhb", "cf_distance_ft", "lf_distance_ft", "rf_distance_ft", "lf_wall_height_ft", "rf_wall_height_ft", "elevation_ft"],
+      "properties": {
+        "venue_id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "has_roof": {
+          "type": "boolean"
+        },
+        "roof_status": {
+          "type": "string",
+          "enum": ["open", "closed", "unknown"]
+        },
+        "surface": {
+          "type": "string",
+          "enum": ["grass", "turf"]
+        },
+        "park_factor_runs": {
+          "type": "number"
+        },
+        "park_factor_hr": {
+          "type": "number"
+        },
+        "park_factor_hr_lhb": {
+          "type": "number"
+        },
+        "park_factor_hr_rhb": {
+          "type": "number"
+        },
+        "cf_distance_ft": {
+          "type": "number"
+        },
+        "lf_distance_ft": {
+          "type": "number"
+        },
+        "rf_distance_ft": {
+          "type": "number"
+        },
+        "lf_wall_height_ft": {
+          "type": "number"
+        },
+        "rf_wall_height_ft": {
+          "type": "number"
+        },
+        "elevation_ft": {
+          "type": "number"
+        }
+      }
+    },
+    "PregameOdds": {
+      "type": "object",
+      "required": ["home_ml", "away_ml", "run_line", "run_line_home_odds", "run_line_away_odds", "total", "over_odds", "under_odds", "source", "snapshot_at_utc"],
+      "properties": {
+        "home_ml": {
+          "type": "number"
+        },
+        "away_ml": {
+          "type": "number"
+        },
+        "run_line": {
+          "type": "number"
+        },
+        "run_line_home_odds": {
+          "type": "number"
+        },
+        "run_line_away_odds": {
+          "type": "number"
+        },
+        "total": {
+          "type": "number"
+        },
+        "over_odds": {
+          "type": "number"
+        },
+        "under_odds": {
+          "type": "number"
+        },
+        "f5_total": {
+          "type": "number"
+        },
+        "source": {
+          "type": "string"
+        },
+        "snapshot_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PregameContext": {
+      "type": "object",
+      "required": ["home_lineup", "away_lineup", "home_starter", "away_starter", "venue", "day_night", "day_of_week"],
+      "properties": {
+        "home_lineup": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PregameLineup"
+          },
+          "minItems": 9,
+          "maxItems": 9
+        },
+        "away_lineup": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PregameLineup"
+          },
+          "minItems": 9,
+          "maxItems": 9
+        },
+        "home_starter": {
+          "$ref": "#/definitions/PregameStartingPitcher"
+        },
+        "away_starter": {
+          "$ref": "#/definitions/PregameStartingPitcher"
+        },
+        "weather": {
+          "oneOf": [
+            { "$ref": "#/definitions/PregameWeather" },
+            { "type": "null" }
+          ]
+        },
+        "venue": {
+          "$ref": "#/definitions/VenueInfo"
+        },
+        "odds": {
+          "oneOf": [
+            { "$ref": "#/definitions/PregameOdds" },
+            { "type": "null" }
+          ]
+        },
+        "day_night": {
+          "type": "string",
+          "enum": ["day", "night"]
+        },
+        "day_of_week": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "double_header_game": {
+          "type": "integer",
+          "enum": [1, 2]
+        }
+      }
+    },
+    "BatterRollingStats": {
+      "type": "object",
+      "required": ["player_id", "games", "pa", "ab", "h", "doubles", "triples", "hr", "rbi", "runs", "bb", "k", "sb", "cs", "avg", "obp", "slg", "ops", "iso", "babip", "k_rate", "bb_rate", "hr_rate"],
+      "properties": {
+        "player_id": { "type": "integer" },
+        "games": { "type": "integer" },
+        "pa": { "type": "integer" },
+        "ab": { "type": "integer" },
+        "h": { "type": "integer" },
+        "doubles": { "type": "integer" },
+        "triples": { "type": "integer" },
+        "hr": { "type": "integer" },
+        "rbi": { "type": "integer" },
+        "runs": { "type": "integer" },
+        "bb": { "type": "integer" },
+        "k": { "type": "integer" },
+        "sb": { "type": "integer" },
+        "cs": { "type": "integer" },
+        "avg": { "type": "number" },
+        "obp": { "type": "number" },
+        "slg": { "type": "number" },
+        "ops": { "type": "number" },
+        "iso": { "type": "number" },
+        "babip": { "type": "number" },
+        "k_rate": { "type": "number" },
+        "bb_rate": { "type": "number" },
+        "hr_rate": { "type": "number" },
+        "hard_hit_rate": { "type": "number" },
+        "barrel_rate": { "type": "number" },
+        "avg_exit_velo": { "type": "number" },
+        "avg_launch_angle": { "type": "number" },
+        "xba": { "type": "number" },
+        "xslg": { "type": "number" },
+        "xwoba": { "type": "number" }
+      }
+    },
+    "BatterRollingWindows": {
+      "type": "object",
+      "properties": {
+        "L3": { "$ref": "#/definitions/BatterRollingStats" },
+        "L5": { "$ref": "#/definitions/BatterRollingStats" },
+        "L10": { "$ref": "#/definitions/BatterRollingStats" },
+        "L20": { "$ref": "#/definitions/BatterRollingStats" },
+        "L40": { "$ref": "#/definitions/BatterRollingStats" },
+        "STD": { "$ref": "#/definitions/BatterRollingStats" }
+      }
+    },
+    "BatterFeaturePack": {
+      "type": "object",
+      "required": ["player", "batting_order", "rolling", "splits", "matchup", "days_rest", "games_last_7d", "is_hot", "is_cold"],
+      "properties": {
+        "player": { "$ref": "#/definitions/PlayerInfo" },
+        "batting_order": { "type": "integer", "minimum": 1, "maximum": 9 },
+        "rolling": { "$ref": "#/definitions/BatterRollingWindows" },
+        "splits": {
+          "type": "object",
+          "required": ["vs_lhp", "vs_rhp"],
+          "properties": {
+            "vs_lhp": { "$ref": "#/definitions/BatterRollingStats" },
+            "vs_rhp": { "$ref": "#/definitions/BatterRollingStats" }
+          }
+        },
+        "matchup": {
+          "type": "object",
+          "properties": {
+            "vs_pitcher": { "$ref": "#/definitions/BatterRollingStats" },
+            "vs_venue": { "$ref": "#/definitions/BatterRollingStats" },
+            "vs_team_std": { "$ref": "#/definitions/BatterRollingStats" }
+          }
+        },
+        "days_rest": { "type": "integer" },
+        "games_last_7d": { "type": "integer" },
+        "is_hot": { "type": "boolean" },
+        "is_cold": { "type": "boolean" }
+      }
+    },
+    "PitcherRollingStats": {
+      "type": "object",
+      "required": ["player_id", "games", "ip", "bf", "h", "r", "er", "hr", "bb", "k", "era", "whip", "k_9", "bb_9", "hr_9", "k_rate", "bb_rate", "k_bb"],
+      "properties": {
+        "player_id": { "type": "integer" },
+        "games": { "type": "integer" },
+        "ip": { "type": "number" },
+        "bf": { "type": "integer" },
+        "h": { "type": "integer" },
+        "r": { "type": "integer" },
+        "er": { "type": "integer" },
+        "hr": { "type": "integer" },
+        "bb": { "type": "integer" },
+        "k": { "type": "integer" },
+        "era": { "type": "number" },
+        "whip": { "type": "number" },
+        "k_9": { "type": "number" },
+        "bb_9": { "type": "number" },
+        "hr_9": { "type": "number" },
+        "k_rate": { "type": "number" },
+        "bb_rate": { "type": "number" },
+        "k_bb": { "type": "number" },
+        "gb_rate": { "type": "number" },
+        "fb_rate": { "type": "number" },
+        "hard_hit_rate": { "type": "number" },
+        "barrel_rate": { "type": "number" },
+        "avg_exit_velo": { "type": "number" },
+        "xera": { "type": "number" },
+        "xfip": { "type": "number" },
+        "siera": { "type": "number" },
+        "last_start_pitches": { "type": "integer" },
+        "last_start_outs": { "type": "integer" }
+      }
+    },
+    "PitcherRollingWindows": {
+      "type": "object",
+      "properties": {
+        "L2": { "$ref": "#/definitions/PitcherRollingStats" },
+        "L3": { "$ref": "#/definitions/PitcherRollingStats" },
+        "L5": { "$ref": "#/definitions/PitcherRollingStats" },
+        "L10": { "$ref": "#/definitions/PitcherRollingStats" },
+        "L20": { "$ref": "#/definitions/PitcherRollingStats" },
+        "STD": { "$ref": "#/definitions/PitcherRollingStats" }
+      }
+    },
+    "PitcherFeaturePack": {
+      "type": "object",
+      "required": ["player", "home_away", "rolling", "splits", "matchup", "days_rest", "opp_lineup_lhb_pct"],
+      "properties": {
+        "player": { "$ref": "#/definitions/PlayerInfo" },
+        "home_away": { "type": "string", "enum": ["home", "away"] },
+        "rolling": { "$ref": "#/definitions/PitcherRollingWindows" },
+        "splits": {
+          "type": "object",
+          "required": ["vs_lhb", "vs_rhb"],
+          "properties": {
+            "vs_lhb": { "$ref": "#/definitions/PitcherRollingStats" },
+            "vs_rhb": { "$ref": "#/definitions/PitcherRollingStats" }
+          }
+        },
+        "matchup": {
+          "type": "object",
+          "properties": {
+            "vs_team": { "$ref": "#/definitions/PitcherRollingStats" },
+            "vs_venue": { "$ref": "#/definitions/PitcherRollingStats" }
+          }
+        },
+        "days_rest": { "type": "integer" },
+        "avg_pitches_l5": { "type": "number" },
+        "avg_outs_l5": { "type": "number" },
+        "opp_lineup_lhb_pct": { "type": "number" }
+      }
+    },
+    "TeamFeaturePack": {
+      "type": "object",
+      "required": ["team", "rolling_L10", "bullpen_std"],
+      "properties": {
+        "team": { "$ref": "#/definitions/TeamInfo" },
+        "rolling_L10": {
+          "type": "object",
+          "required": ["runs_scored_avg", "runs_allowed_avg", "win_pct", "ops", "era"],
+          "properties": {
+            "runs_scored_avg": { "type": "number" },
+            "runs_allowed_avg": { "type": "number" },
+            "win_pct": { "type": "number" },
+            "ops": { "type": "number" },
+            "era": { "type": "number" }
+          }
+        },
+        "bullpen_std": {
+          "type": "object",
+          "required": ["era", "whip", "k_9", "bb_9", "usage_last_3d"],
+          "properties": {
+            "era": { "type": "number" },
+            "whip": { "type": "number" },
+            "k_9": { "type": "number" },
+            "bb_9": { "type": "number" },
+            "war": { "type": "number" },
+            "usage_last_3d": { "type": "number" }
+          }
+        }
+      }
+    },
+    "FeaturePacks": {
+      "type": "object",
+      "required": ["home_batters", "away_batters", "home_pitcher", "away_pitcher", "home_team", "away_team"],
+      "properties": {
+        "home_batters": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/BatterFeaturePack" },
+          "minItems": 9,
+          "maxItems": 9
+        },
+        "away_batters": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/BatterFeaturePack" },
+          "minItems": 9,
+          "maxItems": 9
+        },
+        "home_pitcher": { "$ref": "#/definitions/PitcherFeaturePack" },
+        "away_pitcher": { "$ref": "#/definitions/PitcherFeaturePack" },
+        "home_team": { "$ref": "#/definitions/TeamFeaturePack" },
+        "away_team": { "$ref": "#/definitions/TeamFeaturePack" }
+      }
+    },
+    "BatterGameOutcome": {
+      "type": "object",
+      "required": ["player_id", "pa", "ab", "h", "doubles", "triples", "hr", "rbi", "runs", "bb", "k", "sb", "h_r_rbi", "total_bases", "hit_hr", "hit_2_hr", "hits_2_plus", "h_r_rbi_3_plus"],
+      "properties": {
+        "player_id": { "type": "integer" },
+        "pa": { "type": "integer" },
+        "ab": { "type": "integer" },
+        "h": { "type": "integer" },
+        "doubles": { "type": "integer" },
+        "triples": { "type": "integer" },
+        "hr": { "type": "integer" },
+        "rbi": { "type": "integer" },
+        "runs": { "type": "integer" },
+        "bb": { "type": "integer" },
+        "k": { "type": "integer" },
+        "sb": { "type": "integer" },
+        "h_r_rbi": { "type": "integer" },
+        "total_bases": { "type": "integer" },
+        "hit_hr": { "type": "boolean" },
+        "hit_2_hr": { "type": "boolean" },
+        "hits_2_plus": { "type": "boolean" },
+        "h_r_rbi_3_plus": { "type": "boolean" }
+      }
+    },
+    "PitcherGameOutcome": {
+      "type": "object",
+      "required": ["player_id", "ip", "outs_recorded", "bf", "h", "r", "er", "hr", "bb", "k", "pitches", "strikes", "quality_start", "win", "loss", "k_5_plus", "k_6_plus", "k_7_plus", "outs_15_plus", "outs_18_plus"],
+      "properties": {
+        "player_id": { "type": "integer" },
+        "ip": { "type": "number" },
+        "outs_recorded": { "type": "integer" },
+        "bf": { "type": "integer" },
+        "h": { "type": "integer" },
+        "r": { "type": "integer" },
+        "er": { "type": "integer" },
+        "hr": { "type": "integer" },
+        "bb": { "type": "integer" },
+        "k": { "type": "integer" },
+        "pitches": { "type": "integer" },
+        "strikes": { "type": "integer" },
+        "quality_start": { "type": "boolean" },
+        "win": { "type": "boolean" },
+        "loss": { "type": "boolean" },
+        "k_5_plus": { "type": "boolean" },
+        "k_6_plus": { "type": "boolean" },
+        "k_7_plus": { "type": "boolean" },
+        "outs_15_plus": { "type": "boolean" },
+        "outs_18_plus": { "type": "boolean" }
+      }
+    },
+    "GameOutcome": {
+      "type": "object",
+      "required": ["home_score", "away_score", "innings", "home_f5_score", "away_f5_score", "total_runs", "f5_total_runs", "home_win", "home_batters", "away_batters", "home_pitcher", "away_pitcher", "total_hr", "total_sb", "duration_minutes"],
+      "properties": {
+        "home_score": { "type": "integer" },
+        "away_score": { "type": "integer" },
+        "innings": { "type": "integer" },
+        "home_f5_score": { "type": "integer" },
+        "away_f5_score": { "type": "integer" },
+        "total_runs": { "type": "integer" },
+        "f5_total_runs": { "type": "integer" },
+        "home_win": { "type": "boolean" },
+        "home_cover_rl": { "type": "boolean" },
+        "over": { "type": "boolean" },
+        "home_batters": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/BatterGameOutcome" }
+        },
+        "away_batters": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/BatterGameOutcome" }
+        },
+        "home_pitcher": { "$ref": "#/definitions/PitcherGameOutcome" },
+        "away_pitcher": { "$ref": "#/definitions/PitcherGameOutcome" },
+        "total_hr": { "type": "integer" },
+        "total_sb": { "type": "integer" },
+        "duration_minutes": { "type": "integer" },
+        "delay_reason": { "type": "string" }
+      }
+    },
+    "RecordMeta": {
+      "type": "object",
+      "required": ["created_at_utc", "features_computed_at_utc", "quality_flags"],
+      "properties": {
+        "created_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "features_computed_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "quality_flags": {
+          "type": "object",
+          "required": ["lineup_confirmed", "weather_available", "odds_available", "statcast_available", "issues"],
+          "properties": {
+            "lineup_confirmed": { "type": "boolean" },
+            "weather_available": { "type": "boolean" },
+            "odds_available": { "type": "boolean" },
+            "statcast_available": { "type": "boolean" },
+            "issues": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
