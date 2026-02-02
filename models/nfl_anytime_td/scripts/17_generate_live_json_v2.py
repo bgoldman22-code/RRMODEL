@@ -108,7 +108,7 @@ def generate(date_from: date, date_to: date) -> Dict[str, Any]:
     events = lpg.fetch_nfl_events(
         api_key,
         datetime.combine(date_from, datetime.min.time()),
-        datetime.combine(date_to, datetime.min.time()),
+        datetime.combine(date_to, datetime.max.time()),  # Use end of day to capture all games on date_to
     )
 
     # Early exit if no games found
