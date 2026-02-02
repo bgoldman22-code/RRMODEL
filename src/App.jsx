@@ -17,6 +17,7 @@ import NBAPlayerProps from "./pages/NBAPlayerProps";  // NBA Player Props (Rebou
 import NBAPlayerPropsV2 from "./pages/NBAPlayerPropsV2";  // NBA Player Props V2 (Phase 3 PRA)
 import NBAPropsAligned from "./pages/NBAPropsAligned";  // NBA Props Aligned (Best of Both Models)
 import NBADDTDPage from "./pages/NBADDTDPage";  // NBA DD/TD Picks Page
+import NBAParlays from "./pages/NBAParlays";  // NBA Parlays (Confidence + SGP)
 import NCAAMBBPredictions from "./pages/NCAAMBBPredictions";  // NCAA MBB Predictions
 import NFLAnytimeTDV2 from "./pages/NFLAnytimeTDV2"; // NFL Anytime TD V2 (live)
 import HRR from "./HRR";
@@ -103,7 +104,8 @@ export default function App() {
         { label: 'Player Props (R + A) 💰', path: '/nba-player-props' },
         { label: 'Player Props V2 (PRA) 🚀', path: '/nba-player-props-v2' },
         { label: 'Best Picks (Aligned) 🎯', path: '/nba-props-aligned' },
-        { label: 'DD/TD Picks 🎯', path: '/nba-ddtd' }
+        { label: 'DD/TD Picks 🎯', path: '/nba-ddtd' },
+        { label: 'Parlays 🎰', path: '/nba-parlays' }
       ]
     },
     ncaa: {
@@ -151,6 +153,7 @@ export default function App() {
           <Route path="/nba-player-props-v2" element={<NBAPlayerPropsV2 />} />
           <Route path="/nba-props-aligned" element={<NBAPropsAligned />} />
           <Route path="/nba-ddtd" element={<NBADDTDPage />} />
+          <Route path="/nba-parlays" element={<NBAParlays />} />
           <Route path="/ncaa-mbb" element={<NCAAMBBPredictions />} />
         </Routes>
       </div>
