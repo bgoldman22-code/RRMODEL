@@ -15,9 +15,9 @@ const NCAAMBBPredictions = () => {
     try {
       const canvas = await html2canvas(exportRef.current, {
         backgroundColor: '#ffffff',
-        scale: 2,
-        width: 800, // Fixed width for consistent mobile/desktop exports
-        windowWidth: 800
+        scale: 3, // Higher scale for crisp export
+        width: 900,
+        windowWidth: 900
       });
       const link = document.createElement('a');
       link.download = `ncaa-mbb-picks-${new Date().toISOString().split('T')[0]}.png`;
@@ -150,22 +150,22 @@ const NCAAMBBPredictions = () => {
 
       {/* Hidden Export Container (without Stake) */}
       <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
-        <div ref={exportRef} style={{ width: '800px', backgroundColor: '#ffffff', padding: '20px' }}>
-          <div style={{ marginBottom: '16px' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px' }}>🏀 NCAA MBB Picks</h2>
-            <p style={{ fontSize: '12px', color: '#666' }}>
+        <div ref={exportRef} style={{ width: '900px', backgroundColor: '#ffffff', padding: '24px', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '6px', margin: 0 }}>🏀 NCAA MBB Picks</h2>
+            <p style={{ fontSize: '14px', color: '#6b7280', margin: '6px 0 0 0' }}>
               {lastUpdated ? new Date(lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()} | {predictions.length} Picks
             </p>
           </div>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
             <thead>
               <tr style={{ backgroundColor: '#f3f4f6' }}>
-                <th style={{ padding: '10px 8px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Game</th>
-                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Pick</th>
-                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Odds</th>
-                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Model Win %</th>
-                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Edge</th>
-                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #e5e7eb' }}>Confidence</th>
+                <th style={{ padding: '12px 10px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #d1d5db', width: '30%' }}>Game</th>
+                <th style={{ padding: '12px 10px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #d1d5db', width: '18%' }}>Pick</th>
+                <th style={{ padding: '12px 10px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #d1d5db', width: '10%' }}>Odds</th>
+                <th style={{ padding: '12px 10px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #d1d5db', width: '14%' }}>Model Win %</th>
+                <th style={{ padding: '12px 10px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #d1d5db', width: '12%' }}>Edge</th>
+                <th style={{ padding: '12px 10px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #d1d5db', width: '16%' }}>Confidence</th>
               </tr>
             </thead>
             <tbody>
@@ -173,18 +173,21 @@ const NCAAMBBPredictions = () => {
                 const badge = getConfidenceBadge(pred.betting.edge);
                 return (
                   <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                    <td style={{ padding: '10px 8px' }}>{pred.awayTeam} @ {pred.homeTeam}</td>
-                    <td style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 'bold' }}>{pred.prediction.pick}</td>
-                    <td style={{ padding: '10px 8px', textAlign: 'center' }}>{formatOdds(pred.vegasLines.moneyline.favorite)}</td>
-                    <td style={{ padding: '10px 8px', textAlign: 'center' }}>{pred.prediction.winProbability.favoritePercent.toFixed(1)}%</td>
-                    <td style={{ padding: '10px 8px', textAlign: 'center', color: '#16a34a', fontWeight: 'bold' }}>+{(pred.betting.edge * 100).toFixed(1)}%</td>
-                    <td style={{ padding: '10px 8px', textAlign: 'center' }}>
+                    <td style={{ padding: '12px 10px' }}>{pred.awayTeam} @ {pred.homeTeam}</td>
+                    <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 'bold' }}>{pred.prediction.pick}</td>
+                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>{formatOdds(pred.vegasLines.moneyline.favorite)}</td>
+                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>{pred.prediction.winProbability.favoritePercent.toFixed(1)}%</td>
+                    <td style={{ padding: '12px 10px', textAlign: 'center', color: '#16a34a', fontWeight: 'bold' }}>+{(pred.betting.edge * 100).toFixed(1)}%</td>
+                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>
                       <span style={{ 
-                        padding: '2px 8px', 
-                        borderRadius: '4px', 
+                        display: 'inline-block',
+                        padding: '4px 12px', 
+                        borderRadius: '6px', 
                         color: '#fff', 
                         fontWeight: 'bold',
-                        fontSize: '12px',
+                        fontSize: '11px',
+                        letterSpacing: '0.5px',
+                        minWidth: '60px',
                         backgroundColor: badge.color === 'bg-purple-600' ? '#9333ea' : 
                                          badge.color === 'bg-green-600' ? '#16a34a' : 
                                          badge.color === 'bg-yellow-600' ? '#ca8a04' : '#4b5563'
@@ -197,7 +200,7 @@ const NCAAMBBPredictions = () => {
               })}
             </tbody>
           </table>
-          <div style={{ marginTop: '12px', fontSize: '10px', color: '#9ca3af', textAlign: 'center' }}>
+          <div style={{ marginTop: '16px', fontSize: '11px', color: '#9ca3af', textAlign: 'center' }}>
             bgroundrobin.com/ncaa-mbb | Model: Variant B (KenPom-style)
           </div>
         </div>
