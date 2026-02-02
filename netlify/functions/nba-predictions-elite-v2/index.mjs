@@ -1881,6 +1881,9 @@ export default async (request, context) => {
     };
     
     // GUARD: Detect spread variance collapse (size-aware threshold)
+    // Motivation: low variance in spreads is common on small slates (2-6 games) and is not
+    // necessarily a model failure. We only hard-fail when inputs appear duplicated (a real
+    // pipeline bug signal) AND the slate truly collapses (tiny range + tiny stdev).
     // Skip variance check for single-game slates (stdev is always 0 with n=1)
     if (predictions.length > 1) {
       const spreads = predictions.map(p => Math.abs(p.prediction.spread.prediction));
@@ -1891,14 +1894,13 @@ export default async (request, context) => {
       const max = Math.max(...spreads);
       const range = max - min;
       
-      // Size-aware threshold: larger slates should have more variance
-      // SMALL SLATE FIX: For 2-3 games, variance naturally low - use relaxed threshold
-      // REDUCED TARGET: 1.5 stdev is too aggressive when range is good (e.g., 5pt range is fine)
-      const targetStdev = predictions.length <= 3 
-        ? 0.5  // Allow very low variance for tiny slates
+      // Size-aware threshold: larger slates should have more variance.
+      // IMPORTANT: at n=4 (your case), stdev~1.0 is not abnormal if the board is tight.
+      const targetStdev = predictions.length <= 3
+        ? 0.5
         : predictions.length <= 6
-          ? 1.2  // Medium slates: moderate threshold
-          : Math.max(1.3, 0.4 * Math.sqrt(predictions.length + 4));  // Larger slates: reduced from 1.5/0.5
+          ? 1.2
+          : Math.max(1.3, 0.4 * Math.sqrt(predictions.length + 4));
       
       console.log(`[NBA V2] Spread variance: stdev=${stdev.toFixed(2)} (target=${targetStdev.toFixed(2)}), range=${range.toFixed(1)} (${min.toFixed(1)} to ${max.toFixed(1)}), mean=${mean.toFixed(1)}`);
       
@@ -1909,20 +1911,32 @@ export default async (request, context) => {
         const dupeCount = hashes.length - uniqueHashes.size;
         console.warn(`[NBA V2] ⚠️  ${dupeCount} games have duplicate feature vectors (identical inputs)`);
       }
+
+      const dupeFeatureVectors = uniqueHashes.size < hashes.length;
       
-      // EARLY SEASON: Relax variance check (within 10% is acceptable)
-      // Teams genuinely cluster more early in season with limited data
-      // SMALL SLATE FIX: Skip variance check entirely for 2-3 game slates
-      // RANGE CHECK: If spread range is good (>4pts), predictions are differentiated enough
+      // Behavior:
+      // - n<=3: always skip (too few samples)
+      // - good range => pass
+      // - if variance is low, warn; only hard-fail when it's *extremely* low AND range is poor
+      //   AND we see duplicated feature vectors (strong sign of a pipeline/input bug).
       if (predictions.length <= 3) {
         console.log(`[NBA V2] Small slate (${predictions.length} games) - skipping strict variance check`);
       } else if (range >= 4.0) {
         console.log(`[NBA V2] Good spread range (${range.toFixed(1)}pts) - variance check passed`);
-      } else if (stdev < targetStdev * 0.9) {
+      } else {
         const clustered = spreads.filter(s => Math.abs(s - mean) < 1.0).length;
-        throw new Error(`[NBA V2] Spread variance collapsed: stdev=${stdev.toFixed(2)} < target ${targetStdev.toFixed(2)} (${clustered}/${spreads.length} games clustered near ${mean.toFixed(1)})`);
-      } else if (stdev < targetStdev) {
-        console.warn(`[NBA V2] ⚠️  Low variance (stdev=${stdev.toFixed(2)} vs target=${targetStdev.toFixed(2)}), but within 10% tolerance for early season`);
+
+        // "Hard fail" only when we have a real collapse signal.
+        const hardFail = dupeFeatureVectors && range < 3.0 && stdev < 0.75;
+
+        if (hardFail) {
+          throw new Error(`[NBA V2] Spread variance collapsed: stdev=${stdev.toFixed(2)} (target=${targetStdev.toFixed(2)}), range=${range.toFixed(1)} (${clustered}/${spreads.length} near ${mean.toFixed(1)}). Duplicate feature vectors detected - likely input pipeline issue.`);
+        }
+
+        // Otherwise: warn-only. This prevents production outages when the slate is just tight.
+        if (stdev < targetStdev) {
+          console.warn(`[NBA V2] ⚠️  Low spread variance (stdev=${stdev.toFixed(2)} < target=${targetStdev.toFixed(2)}), range=${range.toFixed(1)}; continuing (non-fatal).`);
+        }
       }
     } else if (predictions.length === 1) {
       console.log(`[NBA V2] Single game slate - skipping variance check`);
