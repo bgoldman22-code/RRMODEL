@@ -111,12 +111,46 @@ def generate(date_from: date, date_to: date) -> Dict[str, Any]:
         datetime.combine(date_to, datetime.min.time()),
     )
 
+    # Early exit if no games found
+    if not events:
+        print("   ⚠️ No NFL games found in date range - returning empty payload")
+        meta = Metadata(
+            generated_at=datetime.utcnow().isoformat() + "Z",
+            date_from=str(date_from),
+            date_to=str(date_to),
+            total_games=0,
+            total_props=0,
+            total_matched=0,
+            total_best_odds_players=0,
+            total_profitable=0,
+            model_version="LightGBM v1.5 (Anytime TD)",
+            pipeline="nfl_anytime_td_v2_live_json",
+        )
+        return {"metadata": asdict(meta), "picks": [], "message": "No NFL games scheduled in this date range"}
+
     all_odds: List[Dict[str, Any]] = []
     for event in events:
         odds = lpg.fetch_player_props(api_key, event["id"])
         all_odds.extend(odds)
 
     odds_df = pd.DataFrame(all_odds)
+
+    # Early exit if no odds data found
+    if odds_df.empty:
+        print("   ⚠️ No odds data found for games - returning empty payload")
+        meta = Metadata(
+            generated_at=datetime.utcnow().isoformat() + "Z",
+            date_from=str(date_from),
+            date_to=str(date_to),
+            total_games=len(events),
+            total_props=0,
+            total_matched=0,
+            total_best_odds_players=0,
+            total_profitable=0,
+            model_version="LightGBM v1.5 (Anytime TD)",
+            pipeline="nfl_anytime_td_v2_live_json",
+        )
+        return {"metadata": asdict(meta), "picks": [], "message": "No odds available for scheduled games"}
 
     model, features, gate_config = lpg.load_model_artifacts()
     season_week = _infer_season_week(date_from)
