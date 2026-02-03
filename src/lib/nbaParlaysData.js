@@ -99,6 +99,15 @@ export function createPickKey(pick) {
   return `${player}|${propType}|${line}|${side}`;
 }
 
+// Normalize game key so both team perspectives map to same key
+// e.g., "MEM-LAL" and "LAL-MEM" both become "LAL-MEM" (alphabetical order)
+export function normalizeGameKey(team, opponent) {
+  const t1 = (team || '').toUpperCase().trim();
+  const t2 = (opponent || '').toUpperCase().trim();
+  // Sort alphabetically to ensure consistent key
+  return t1 < t2 ? `${t1}-${t2}` : `${t2}-${t1}`;
+}
+
 // Get hit rate value (handles both V1 and V2 formats)
 export function getHitRate(pick, window) {
   if (pick.hitRates) {
@@ -662,7 +671,7 @@ export function generateSGPParlays(strongSignals, v2Props, gamePredictions, rng,
       ...pick,
       type: 'PROP',
       source: 'Phase35',
-      gameId: `${pick.team}-${pick.opponent}`,
+      gameId: normalizeGameKey(pick.team, pick.opponent),
       score: scorePropPick(pick, saferMode)
     }));
   
@@ -672,7 +681,7 @@ export function generateSGPParlays(strongSignals, v2Props, gamePredictions, rng,
       ...pick,
       type: 'PROP',
       source: 'Aligned',
-      gameId: `${pick.team}-${pick.opponent}`,
+      gameId: normalizeGameKey(pick.team, pick.opponent),
       score: scorePropPick(pick, saferMode)
     }));
   
@@ -705,32 +714,30 @@ export function generateSGPParlays(strongSignals, v2Props, gamePredictions, rng,
     
     if (!opp) return;
     
-    // Try to match game to existing props
-    const homeTeam = pred.homeTeam;
-    const awayTeam = pred.awayTeam;
+    // Get normalized game key for this prediction
+    const homeTeam = pred.homeTeam || pred.teams?.home?.abbreviation || '';
+    const awayTeam = pred.awayTeam || pred.teams?.away?.abbreviation || '';
+    const normalizedKey = normalizeGameKey(homeTeam, awayTeam);
     
-    // Check both directions for game key matching
-    for (const [gameKey, props] of gamePropsMap.entries()) {
-      if (gameKey.includes(homeTeam) || gameKey.includes(awayTeam) ||
-          props.some(p => p.team === homeTeam || p.team === awayTeam || 
-                        p.opponent === homeTeam || p.opponent === awayTeam)) {
-        props.push({
-          type: betType,
-          source: 'Game',
-          game: pred.game,
-          gameId: gameKey,
-          pick: betType === 'ML' 
-            ? pred.prediction?.winProbability?.favoriteTeam 
-            : opp.pick,
-          odds: opp.odds,
-          winProb,
-          edge: mlEdge,
-          isAnchor: true,
-          score: winProb + (mlEdge * 2) // Higher score for edges
-        });
-        break;
-      }
+    // Add to existing game or create new entry
+    if (!gamePropsMap.has(normalizedKey)) {
+      gamePropsMap.set(normalizedKey, []);
     }
+    
+    gamePropsMap.get(normalizedKey).push({
+      type: betType,
+      source: 'Game',
+      game: pred.game,
+      gameId: normalizedKey,
+      pick: betType === 'ML' 
+        ? pred.prediction?.winProbability?.favoriteTeam 
+        : opp.pick,
+      odds: opp.odds,
+      winProb,
+      edge: mlEdge,
+      isAnchor: true,
+      score: winProb + (mlEdge * 2) // Higher score for edges
+    });
   });
   
   // Find games with enough legs for SGPs (3+ unique players)
