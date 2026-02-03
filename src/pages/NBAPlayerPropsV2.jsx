@@ -1,5 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { exportToPNG } from '../lib/exportUtils';
 import html2canvas from 'html2canvas';
+
+// iOS detection and file sharing helpers (for dynamic HTML exports)
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+};
+
+const canShareFiles = () => {
+  return navigator.share && navigator.canShare;
+};
+
+// Helper to save canvas as PNG with iOS share sheet support
+const saveCanvasAsPNG = async (canvas, filename) => {
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  
+  if (isIOS() && canShareFiles()) {
+    const file = new File([blob], filename, { type: 'image/png' });
+    
+    if (navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: filename.replace('.png', ''),
+        });
+        return;
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Share failed, falling back to download:', err);
+        } else {
+          return;
+        }
+      }
+    }
+  }
+  
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = canvas.toDataURL();
+  link.click();
+};
 
 /**
  * NBA Player Props V2 - Phase 3.5 Production
@@ -279,10 +320,7 @@ export default function NBAPlayerPropsV2() {
         backgroundColor: '#ffffff',
         logging: false
       });
-      const link = document.createElement('a');
-      link.download = `nba-props-v2-top20-${new Date().toISOString().split('T')[0]}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      await saveCanvasAsPNG(canvas, `nba-props-v2-top20-${new Date().toISOString().split('T')[0]}.png`);
     } catch (error) {
       console.error('Export failed:', error);
       alert('Export failed. Please try again.');
@@ -330,10 +368,7 @@ export default function NBAPlayerPropsV2() {
         backgroundColor: '#ffffff',
         logging: false
       });
-      const link = document.createElement('a');
-      link.download = `nba-props-v2-next20-${new Date().toISOString().split('T')[0]}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      await saveCanvasAsPNG(canvas, `nba-props-v2-next20-${new Date().toISOString().split('T')[0]}.png`);
     } catch (error) {
       console.error('Export failed:', error);
       alert('Export failed. Please try again.');

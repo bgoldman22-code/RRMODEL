@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import html2canvas from 'html2canvas';
+import { exportToPNG } from '../lib/exportUtils';
 
 /**
  * NBA Props Aligned - Best Picks from Both Models
@@ -191,21 +191,17 @@ export default function NBAPropsAligned() {
 
   const currentPicks = getCurrentPicks();
 
-  // Export to PNG
+  // Export to PNG (iOS saves to Photos via share sheet, desktop downloads)
   const handleExport = async () => {
     if (!exportRef.current) return;
     try {
-      const canvas = await html2canvas(exportRef.current, {
-        backgroundColor: '#ffffff',
+      const tabName = activeTab === 'strong' ? 'strong-signals' : activeTab;
+      const filename = `nba-props-${tabName}-${new Date().toISOString().split('T')[0]}`;
+      await exportToPNG(exportRef.current, filename, {
         scale: 2,
-        width: 1000, // Fixed width for consistent mobile/desktop exports
+        width: 1000,
         windowWidth: 1000
       });
-      const link = document.createElement('a');
-      const tabName = activeTab === 'strong' ? 'strong-signals' : activeTab;
-      link.download = `nba-props-${tabName}-${new Date().toISOString().split('T')[0]}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
     } catch (error) {
       console.error('Export failed:', error);
       alert('Export failed: ' + error.message);

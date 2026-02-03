@@ -161,34 +161,76 @@ export function findStrongSignals(v1Predictions, v2Predictions) {
 }
 
 // Score a prop pick for parlay inclusion (higher = better)
+// PRIORITY ORDER: Role+minutes > Edge > L10/L20 > L5 (tiebreaker only)
 export function scorePropPick(pick, saferMode = false) {
   let score = 0;
   
-  // Base score from edge
-  const edge = Number(pick.edge) || 0;
-  score += edge * 2;
+  // ===== PROP FILTERS (HARD RULES) =====
+  const line = Number(pick.vegasLine || pick.line) || 0;
+  const propType = pick.propType?.toLowerCase();
+  const betSide = pick.betSide?.toUpperCase();
   
-  // Hit rate bonuses
-  const l5 = getHitRate(pick, 5);
+  // AVOID: Unders on lines <= 3.5 (MAJOR penalty)
+  if (betSide === 'UNDER' && line <= 3.5) {
+    score -= 50;
+  }
+  
+  // AVOID: Assists unders in low ranges
+  if (propType === 'assists' && betSide === 'UNDER' && line <= 4.5) {
+    score -= 30;
+  }
+  
+  // PRIORITIZE: Overs on 4.5+ (bonus)
+  if (betSide === 'OVER' && line >= 4.5) {
+    score += 15;
+  }
+  
+  // PRIORITIZE: Unders on 6.5+ (safer cushion)
+  if (betSide === 'UNDER' && line >= 6.5) {
+    score += 20;
+  }
+  
+  // ===== 1. ROLE + MINUTES CERTAINTY (highest priority) =====
+  // Proxy via kelly stake (higher kelly = model more certain)
+  const kellyStake = Number(pick.kellyStake) || 0;
+  if (kellyStake >= 2.5) score += 25;  // High conviction
+  else if (kellyStake >= 1.5) score += 15;
+  else if (kellyStake >= 1.0) score += 8;
+  
+  // Confidence as role proxy
+  const confidence = Number(pick.confidence) || 0;
+  if (confidence >= 68) score += 15;
+  else if (confidence >= 65) score += 8;
+  
+  // Stable rebound and points props tied to minutes (bonus)
+  if ((propType === 'rebounds' || propType === 'points') && line >= 5.5) {
+    score += 10; // These correlate well with minutes
+  }
+  
+  // ===== 2. MODEL EDGE % (second priority) =====
+  const edge = Number(pick.edge) || 0;
+  if (edge >= 10) score += 35;      // PRIORITIZE: 10%+ edge is elite
+  else if (edge >= 8) score += 25;
+  else if (edge >= 5) score += 15;
+  else if (edge >= 3) score += 8;
+  
+  // ===== 3. L10/L20 CONSISTENCY (third priority) =====
   const l10 = getHitRate(pick, 10);
   const l20 = getHitRate(pick, 20);
   
-  if (l5 !== null && l5 >= 0.60) score += 15;
-  else if (l5 !== null && l5 >= 0.50) score += 5;
+  if (l10 !== null && l10 >= 0.70) score += 20;
+  else if (l10 !== null && l10 >= 0.60) score += 12;
   
-  if (l10 !== null && l10 >= 0.60) score += 20;
-  if (l20 !== null && l20 >= 0.60) score += 15;
+  if (l20 !== null && l20 >= 0.70) score += 15;
+  else if (l20 !== null && l20 >= 0.60) score += 8;
   
-  // Consistency bonus (L10 and L20 both strong)
-  if (l10 !== null && l20 !== null && l10 >= 0.60 && l20 >= 0.60) score += 10;
+  // ===== 4. L5 AS TIEBREAKER ONLY =====
+  const l5 = getHitRate(pick, 5);
+  if (l5 !== null && l5 >= 0.80) score += 8;  // Only small bonus
+  else if (l5 !== null && l5 >= 0.60) score += 3;
+  // L5 alone should NEVER override edge or role certainty
   
-  // Penalize unders on very low lines
-  const line = Number(pick.vegasLine || pick.line) || 0;
-  if (pick.betSide === 'UNDER' && line <= 3.5) {
-    score -= 10;
-    if (!saferMode) score -= 5; // Additional penalty if not safer mode
-  }
-  
+  // ===== OTHER FACTORS =====
   // Prefer reasonable odds range
   const odds = Number(pick.odds) || -110;
   if (odds >= -160 && odds <= 130) score += 5;
@@ -196,6 +238,11 @@ export function scorePropPick(pick, saferMode = false) {
   
   // Aligned pick bonus
   if (pick.isAligned) score += 15;
+  
+  // Safer mode adjustments
+  if (saferMode && betSide === 'UNDER' && line <= 4.5) {
+    score -= 15; // Extra penalty for risky unders
+  }
   
   return score;
 }
@@ -207,27 +254,145 @@ export function scoreGameLeg(pred, betType, saferMode = false) {
   const confidence = pred.prediction?.confidence || 0;
   const spread = Math.abs(pred.prediction?.spread?.prediction || 0);
   const vegasSpread = Math.abs(parseFloat(pred.vegasLines?.spread?.line) || 0);
+  const winProb = pred.prediction?.winProbability?.favoritePercent || 0;
+  const mlOdds = parseFloat(pred.vegasLines?.moneyline?.favorite) || -150;
+  
+  // Calculate edge from opportunities if available
+  const mlOpp = pred.opportunities?.find(o => o.market === 'Moneyline');
+  const spreadOpp = pred.opportunities?.find(o => o.market === 'Spread');
+  const mlEdge = mlOpp?.edgePercent || 0;
+  const spreadEdge = spreadOpp?.edgePercent || 0;
+  
+  // Check for STRONG label (high-conviction anchor candidate)
+  const isStrong = pred.strength === 'STRONG' || confidence >= 70 || 
+                   (winProb >= 68 && mlEdge >= 5) || mlEdge >= 8;
   
   // Base confidence score
   score += confidence * 0.5;
   
   if (betType === 'ML') {
+    // ANCHOR LOGIC: Only anchor if win probability >= 66% or edge >= 8%
+    if (winProb >= 66) score += 25;
+    else if (winProb >= 60) score += 10;
+    
+    // Edge bonus (8%+ edge = value underdog play)
+    if (mlEdge >= 8) score += 30;
+    else if (mlEdge >= 5) score += 15;
+    
     // ML preferred when spread is close
-    if (spread <= 3 || vegasSpread <= 3) score += 20;
+    if (spread <= 3 || vegasSpread <= 3) score += 15;
     if (saferMode) score += 10;
-    // Check win probability
-    const winProb = pred.prediction?.winProbability?.favoritePercent || 0;
-    if (winProb >= 65) score += 15;
-    if (winProb >= 75) score += 10;
+    
+    // STRONG games get major boost
+    if (isStrong) score += 25;
+    
+    // Penalty for heavily juiced ML (should use spread instead)
+    if (mlOdds <= -240) score -= 40;
+    else if (mlOdds <= -200) score -= 15;
+    
   } else if (betType === 'spread') {
-    // Spread preferred when there's clear separation
+    // Only use spread if ML is too juiced and model has conviction
+    if (mlOdds <= -240 && confidence >= 65) score += 25;
     if (spread >= 4 && confidence >= 65) score += 15;
-    // Check edge
-    const spreadEdge = pred.opportunities?.find(o => o.market === 'Spread')?.edgePercent || 0;
     score += spreadEdge * 2;
+    
+    // If ML is reasonable, don't prefer spread
+    if (mlOdds > -200) score -= 20;
   }
   
   return score;
+}
+
+// Check if a game qualifies as an SGP anchor
+export function qualifiesAsAnchor(pred) {
+  const winProb = pred.prediction?.winProbability?.favoritePercent || 0;
+  const mlOpp = pred.opportunities?.find(o => o.market === 'Moneyline');
+  const mlEdge = mlOpp?.edgePercent || 0;
+  const isStrong = pred.strength === 'STRONG';
+  
+  // ANCHOR CRITERIA (from framework):
+  // - Model win probability >= 66-68%
+  // - OR game is labeled STRONG
+  // - OR edge >= 8% and ML not excessively juiced
+  if (winProb >= 66) return true;
+  if (isStrong) return true;
+  
+  const mlOdds = parseFloat(pred.vegasLines?.moneyline?.favorite) || -150;
+  if (mlEdge >= 8 && mlOdds > -300) return true;
+  
+  return false;
+}
+
+// Determine bet type (ML vs Spread) for anchor
+export function getAnchorBetType(pred) {
+  const mlOdds = parseFloat(pred.vegasLines?.moneyline?.favorite) || -150;
+  const spread = Math.abs(pred.prediction?.spread?.prediction || 0);
+  const confidence = pred.prediction?.confidence || 0;
+  
+  // Use spread only if ML is worse than -240 AND spread is modest
+  if (mlOdds <= -240 && spread <= 6 && confidence >= 65) {
+    return 'SPREAD';
+  }
+  return 'ML';
+}
+
+// CORRELATION LOGIC: Score prop correlation with game anchor
+export function scoreCorrelation(prop, anchor, gameTotal) {
+  let bonus = 0;
+  
+  if (!anchor || !prop) return 0;
+  
+  const propType = prop.propType?.toLowerCase();
+  const betSide = prop.betSide?.toUpperCase();
+  const isOpponent = prop.team !== anchor.pick; // Prop player is on opponent team
+  const favoriteWins = anchor.type === 'ML';
+  
+  // ===== PREFERRED CORRELATIONS =====
+  
+  // Team ML + opponent star UNDER points (opponent loses = less time)
+  if (favoriteWins && isOpponent && propType === 'points' && betSide === 'UNDER') {
+    const line = Number(prop.vegasLine || prop.line) || 0;
+    if (line >= 15) bonus += 15; // Star player under
+  }
+  
+  // Team ML + team rebound overs (winning team controls boards)
+  if (favoriteWins && !isOpponent && propType === 'rebounds' && betSide === 'OVER') {
+    bonus += 12;
+  }
+  
+  // Over total + primary ball-handler assists OVER
+  if (gameTotal === 'OVER' && propType === 'assists' && betSide === 'OVER') {
+    const line = Number(prop.vegasLine || prop.line) || 0;
+    if (line >= 5.5) bonus += 12; // Primary ball handler
+  }
+  
+  // Under total + low-usage scoring unders
+  if (gameTotal === 'UNDER' && propType === 'points' && betSide === 'UNDER') {
+    bonus += 10;
+  }
+  
+  // ===== DE-EMPHASIZED (avoid generic blowout logic) =====
+  // Bench player overs: slight bonus only if other conditions met
+  // Not giving automatic bonus for "blowout = bench minutes"
+  
+  return bonus;
+}
+
+// Check if 4th leg meets stability requirements
+export function meetsStabilityForFourthLeg(pick) {
+  const l10 = getHitRate(pick, 10);
+  const l20 = getHitRate(pick, 20);
+  const kellyStake = Number(pick.kellyStake) || 0;
+  const confidence = Number(pick.confidence) || 0;
+  const edge = Number(pick.edge) || 0;
+  
+  // 4th leg needs: role certainty (high kelly/confidence) AND strong splits
+  const hasRoleCertainty = kellyStake >= 2.0 || confidence >= 67;
+  const hasStrongSplits = (l10 !== null && l10 >= 0.60) && (l20 !== null && l20 >= 0.60);
+  const hasGoodEdge = edge >= 8;
+  
+  // Must have role certainty AND (strong splits OR good edge)
+  return hasRoleCertainty && (hasStrongSplits || hasGoodEdge);
 }
 
 // Check if safety alt-line should be applied
@@ -524,33 +689,46 @@ export function generateSGPParlays(strongSignals, v2Props, gamePredictions, rng,
     gamePropsMap.get(gameKey).push(prop);
   });
   
-  // Also add game ML legs to each game's pool
+  // Also add game ML legs to each game's pool (ONLY IF QUALIFIES AS ANCHOR)
   gamePredictions.forEach(pred => {
+    // Use new anchor qualification logic
+    if (!qualifiesAsAnchor(pred)) return;
+    
     const winProb = pred.prediction?.winProbability?.favoritePercent || 0;
     const mlOpp = pred.opportunities?.find(o => o.market === 'Moneyline');
+    const spreadOpp = pred.opportunities?.find(o => o.market === 'Spread');
+    const mlEdge = mlOpp?.edgePercent || 0;
     
-    if (winProb >= 55 && mlOpp) {
-      // Try to match game to existing props
-      const homeTeam = pred.homeTeam;
-      const awayTeam = pred.awayTeam;
-      
-      // Check both directions for game key matching
-      for (const [gameKey, props] of gamePropsMap.entries()) {
-        if (gameKey.includes(homeTeam) || gameKey.includes(awayTeam) ||
-            props.some(p => p.team === homeTeam || p.team === awayTeam || 
-                          p.opponent === homeTeam || p.opponent === awayTeam)) {
-          props.push({
-            type: 'ML',
-            source: 'Game',
-            game: pred.game,
-            gameId: gameKey,
-            pick: pred.prediction?.winProbability?.favoriteTeam,
-            odds: mlOpp.odds,
-            winProb,
-            score: winProb
-          });
-          break;
-        }
+    // Determine bet type (ML vs Spread)
+    const betType = getAnchorBetType(pred);
+    const opp = betType === 'ML' ? mlOpp : spreadOpp;
+    
+    if (!opp) return;
+    
+    // Try to match game to existing props
+    const homeTeam = pred.homeTeam;
+    const awayTeam = pred.awayTeam;
+    
+    // Check both directions for game key matching
+    for (const [gameKey, props] of gamePropsMap.entries()) {
+      if (gameKey.includes(homeTeam) || gameKey.includes(awayTeam) ||
+          props.some(p => p.team === homeTeam || p.team === awayTeam || 
+                        p.opponent === homeTeam || p.opponent === awayTeam)) {
+        props.push({
+          type: betType,
+          source: 'Game',
+          game: pred.game,
+          gameId: gameKey,
+          pick: betType === 'ML' 
+            ? pred.prediction?.winProbability?.favoriteTeam 
+            : opp.pick,
+          odds: opp.odds,
+          winProb,
+          edge: mlEdge,
+          isAnchor: true,
+          score: winProb + (mlEdge * 2) // Higher score for edges
+        });
+        break;
       }
     }
   });
@@ -595,19 +773,32 @@ export function generateSGPParlays(strongSignals, v2Props, gamePredictions, rng,
     
     const { gameKey, props } = game;
     
+    // Check if this game has a qualifying anchor
+    const anchorLeg = props.find(p => p.isAnchor);
+    
     // Select legs for this SGP - different players only
     const selectedLegs = [];
     const usedPlayers = new Set();
-    let hasMLLeg = false;
+    let hasAnchorLeg = false;
     
     // Sort props by score
     const sortedProps = [...props].sort((a, b) => (b.score || 0) - (a.score || 0));
     
+    // First, add anchor if available (prioritize anchored SGPs)
+    if (anchorLeg) {
+      selectedLegs.push(anchorLeg);
+      hasAnchorLeg = true;
+    }
+    
     for (const prop of sortedProps) {
-      if (prop.type === 'ML') {
-        if (!hasMLLeg && selectedLegs.length < 4) {
+      // Skip if already added as anchor
+      if (prop.isAnchor && hasAnchorLeg) continue;
+      
+      if (prop.type === 'ML' || prop.type === 'SPREAD') {
+        // Only add game leg if we don't have one yet
+        if (!hasAnchorLeg && selectedLegs.length < 4) {
           selectedLegs.push(prop);
-          hasMLLeg = true;
+          hasAnchorLeg = true;
         }
         continue;
       }
@@ -621,24 +812,39 @@ export function generateSGPParlays(strongSignals, v2Props, gamePredictions, rng,
       if (selectedLegs.length >= 4) break;
     }
     
-    // Create 3-leg or 4-leg parlay based on available legs
-    const legCount = sgpCount < 2 ? 3 : 4; // First 2 are 3-leg, last is 4-leg
+    // Determine leg count: 3-leg default, 4-leg only with tight gating
+    let legCount = 3;
+    const wantsFourLeg = sgpCount >= 2; // Third parlay can be 4-leg
+    
+    if (wantsFourLeg && selectedLegs.length >= 4) {
+      // 4-LEG GATING: 4th leg must meet stability requirements
+      const fourthLeg = selectedLegs[3];
+      if (fourthLeg && (fourthLeg.isAnchor || meetsStabilityForFourthLeg(fourthLeg))) {
+        legCount = 4;
+      }
+      // If 4th leg doesn't meet stability, fall back to 3-leg
+    }
     
     if (selectedLegs.length >= legCount) {
       const legs = selectedLegs.slice(0, legCount);
       const gameDisplay = legs[0]?.game || `${legs[0]?.team} vs ${legs[0]?.opponent}`;
+      const hasAnchor = legs.some(l => l.isAnchor);
       
       parlays.push({
         name: `SGP ${legCount}-Leg: ${gameDisplay}`,
         legs,
         game: gameDisplay,
         isSameGame: true,
+        hasAnchor,
         sources: {
           aligned: legs.filter(l => l.source === 'Aligned').length,
           phase35: legs.filter(l => l.source === 'Phase35').length,
           game: legs.filter(l => l.source === 'Game').length
         },
         reasoning: [
+          hasAnchor 
+            ? `Anchored by ${legs.find(l => l.isAnchor)?.type} (${legs.find(l => l.isAnchor)?.winProb}% win prob)`
+            : 'Props-only (no qualifying game anchor)',
           `All ${legCount} legs from the same game`,
           'Different players for each prop leg',
           'Strict filter: L5>50%, L10≥60%, L20≥60%'

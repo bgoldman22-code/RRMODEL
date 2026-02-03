@@ -4,6 +4,46 @@ import { getCurrentNFLWeek } from '../utils/nflWeek.js';
 import { loadPredictionsWithPolling } from '../lib/fetchPredictions.js';
 import { autoLockStartedGames, mergeLockedPicks, getLockedGamesSummary } from '../utils/lockManager.js';
 
+// iOS detection and file sharing helpers (for dynamic HTML exports)
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+};
+
+const canShareFiles = () => {
+  return navigator.share && navigator.canShare;
+};
+
+// Helper to save canvas as PNG with iOS share sheet support
+const saveCanvasAsPNG = async (canvas, filename) => {
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  
+  if (isIOS() && canShareFiles()) {
+    const file = new File([blob], filename, { type: 'image/png' });
+    
+    if (navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: filename.replace('.png', ''),
+        });
+        return;
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Share failed, falling back to download:', err);
+        } else {
+          return;
+        }
+      }
+    }
+  }
+  
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = canvas.toDataURL();
+  link.click();
+};
+
 /**
  * NFL Predictions Page with Live Odds Display and Parlay Suggestions
  * Shows real sportsbook lines alongside model predictions and responsible parlay suggestions
@@ -1033,11 +1073,8 @@ export default function NFLPredictions() {
       // Remove temp div
       document.body.removeChild(exportDiv);
       
-      // Download
-      const link = document.createElement('a');
-      link.download = `NFL_Week${week}_Model_Picks.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      // Download (with iOS share sheet support)
+      await saveCanvasAsPNG(canvas, `NFL_Week${week}_Model_Picks.png`);
       
     } catch (error) {
       console.error('Export error:', error);

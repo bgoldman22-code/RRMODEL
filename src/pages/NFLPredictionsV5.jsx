@@ -11,6 +11,46 @@
 
 import { useState, useEffect } from 'react';
 
+// iOS detection and file sharing helpers (for dynamic HTML exports)
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+};
+
+const canShareFiles = () => {
+  return navigator.share && navigator.canShare;
+};
+
+// Helper to save canvas as PNG with iOS share sheet support
+const saveCanvasAsPNG = async (canvas, filename) => {
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  
+  if (isIOS() && canShareFiles()) {
+    const file = new File([blob], filename, { type: 'image/png' });
+    
+    if (navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: filename.replace('.png', ''),
+        });
+        return;
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Share failed, falling back to download:', err);
+        } else {
+          return;
+        }
+      }
+    }
+  }
+  
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = canvas.toDataURL();
+  link.click();
+};
+
 // Auto-detect current NFL week
 function getCurrentNFLWeek() {
   const now = new Date();
@@ -340,11 +380,8 @@ export default function NFLPredictionsV5() {
         windowWidth: 1600
       });
       
-      // Download
-      const link = document.createElement('a');
-      link.download = `nfl-v5-week${week}-predictions.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      // Download (with iOS share sheet support)
+      await saveCanvasAsPNG(canvas, `nfl-v5-week${week}-predictions.png`);
       
       // Cleanup
       document.body.removeChild(exportDiv);

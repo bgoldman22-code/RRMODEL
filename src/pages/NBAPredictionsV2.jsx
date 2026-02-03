@@ -1,5 +1,48 @@
 import React, { useState, useEffect } from 'react';
 
+// iOS detection and file sharing helpers
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+};
+
+const canShareFiles = () => {
+  return navigator.share && navigator.canShare;
+};
+
+// Helper to save canvas as PNG with iOS share sheet support
+const saveCanvasAsPNG = async (canvas, filename) => {
+  // Convert canvas to blob
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  
+  // On iOS, use share sheet so user can save to Photos
+  if (isIOS() && canShareFiles()) {
+    const file = new File([blob], filename, { type: 'image/png' });
+    
+    if (navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: filename.replace('.png', ''),
+        });
+        return;
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Share failed, falling back to download:', err);
+        } else {
+          return; // User cancelled, don't fall back
+        }
+      }
+    }
+  }
+  
+  // Fallback: traditional download for desktop/unsupported browsers
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = canvas.toDataURL();
+  link.click();
+};
+
 const NBAPredictionsV2 = () => {
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,10 +154,7 @@ const NBAPredictionsV2 = () => {
       
       // Generate Full Slate PNG
       const fullSlateCanvas = await html2canvas(fullSlateDiv, { scale: 2, backgroundColor: '#ffffff' });
-      const fullSlateLink = document.createElement('a');
-      fullSlateLink.download = `nba_picks_full_slate_${new Date().toISOString().split('T')[0]}.png`;
-      fullSlateLink.href = fullSlateCanvas.toDataURL();
-      fullSlateLink.click();
+      await saveCanvasAsPNG(fullSlateCanvas, `nba_picks_full_slate_${new Date().toISOString().split('T')[0]}.png`);
       
       // Cleanup
       document.body.removeChild(container);
@@ -248,10 +288,7 @@ const NBAPredictionsV2 = () => {
       
       // Generate Picks PNG
       const picksCanvas = await html2canvas(picksDiv, { scale: 2, backgroundColor: '#ffffff' });
-      const picksLink = document.createElement('a');
-      picksLink.download = `nba_picks_recommended_${new Date().toISOString().split('T')[0]}.png`;
-      picksLink.href = picksCanvas.toDataURL();
-      picksLink.click();
+      await saveCanvasAsPNG(picksCanvas, `nba_picks_recommended_${new Date().toISOString().split('T')[0]}.png`);
       
       // Cleanup
       document.body.removeChild(container);

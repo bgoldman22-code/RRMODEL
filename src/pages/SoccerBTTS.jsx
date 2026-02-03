@@ -176,9 +176,15 @@ export default function SoccerBTTS() {
 
   const getRecommendationColor = (recommendation) => {
     switch (recommendation) {
-      case 'BET': return 'bg-green-100 text-green-800';
-      case 'CONSIDER': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-red-100 text-red-800';
+      case 'BET': 
+      case 'YES':  // Profile C YES bet
+        return 'bg-green-100 text-green-800';
+      case 'NO':   // Profile C NO bet  
+        return 'bg-blue-100 text-blue-800';
+      case 'CONSIDER': 
+        return 'bg-yellow-100 text-yellow-800';
+      default: 
+        return 'bg-red-100 text-red-800';
     }
   };
 

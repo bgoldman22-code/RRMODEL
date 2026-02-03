@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import html2canvas from 'html2canvas';
+import { exportToPNG } from '../lib/exportUtils';
 
 export default function NFLAnytimeTDV2() {
   const [picks, setPicks] = useState([]);
@@ -128,11 +128,13 @@ export default function NFLAnytimeTDV2() {
     if (!exportRef.current) return;
     if (!filtered.length) return alert('No picks to export');
 
-    const canvas = await html2canvas(exportRef.current, { scale: 2, backgroundColor: '#ffffff' });
-    const link = document.createElement('a');
-    link.download = `nfl-anytime-td-v2-${new Date().toISOString().slice(0,10)}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    try {
+      const filename = `nfl-anytime-td-v2-${new Date().toISOString().slice(0,10)}`;
+      await exportToPNG(exportRef.current, filename, { scale: 2 });
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed: ' + error.message);
+    }
   };
 
   const tiersForDropdown = useMemo(() => {

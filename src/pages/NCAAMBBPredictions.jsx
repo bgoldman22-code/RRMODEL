@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import html2canvas from 'html2canvas';
+import { exportToPNG } from '../lib/exportUtils';
 
 const NCAAMBBPredictions = () => {
   const [predictions, setPredictions] = useState([]);
@@ -9,20 +9,16 @@ const NCAAMBBPredictions = () => {
   const [lastUpdated, setLastUpdated] = useState(null);
   const exportRef = useRef(null);
 
-  // Export to PNG
+  // Export to PNG (iOS saves to Photos via share sheet, desktop downloads)
   const handleExport = async () => {
     if (!exportRef.current) return;
     try {
-      const canvas = await html2canvas(exportRef.current, {
-        backgroundColor: '#ffffff',
-        scale: 3, // Higher scale for crisp export
+      const filename = `ncaa-mbb-picks-${new Date().toISOString().split('T')[0]}`;
+      await exportToPNG(exportRef.current, filename, {
+        scale: 3,
         width: 900,
         windowWidth: 900
       });
-      const link = document.createElement('a');
-      link.download = `ncaa-mbb-picks-${new Date().toISOString().split('T')[0]}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
     } catch (error) {
       console.error('Export failed:', error);
       alert('Export failed: ' + error.message);

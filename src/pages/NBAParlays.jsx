@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import html2canvas from 'html2canvas';
 import { generateAllParlays, getHitRate } from '../lib/nbaParlaysData';
+import { exportToPNG } from '../lib/exportUtils';
 
 /**
  * NBA Parlays Page
@@ -72,20 +72,16 @@ export default function NBAParlays() {
     }
   }, [saferMode, allowSafetyAlt]);
 
-  // Export to PNG - uses hidden clean container
+  // Export to PNG (iOS saves to Photos via share sheet, desktop downloads)
   const handleExport = async () => {
     if (!exportRef.current) return;
     try {
-      const canvas = await html2canvas(exportRef.current, {
-        backgroundColor: '#ffffff',
+      const filename = `nba_parlays_${new Date().toISOString().split('T')[0]}`;
+      await exportToPNG(exportRef.current, filename, {
         scale: 2,
         width: 900,
         windowWidth: 900
       });
-      const link = document.createElement('a');
-      link.download = `nba_parlays_${new Date().toISOString().split('T')[0]}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
     } catch (error) {
       console.error('Export failed:', error);
       alert('Export failed: ' + error.message);
