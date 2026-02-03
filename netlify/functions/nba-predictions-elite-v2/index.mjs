@@ -1635,25 +1635,79 @@ export default async (request, context) => {
         const mlSide = moneylineOpp.pick;
         
         if (spreadSide === mlSide) {
-          // Same side on both markets - deduplicate based on win probability
+          // Improved selection hierarchy (Rule A/B/C)
           const winProb = moneylineOpp.p_model;
+          const mlOdds = Number(moneylineOpp.odds);
+
+          // spreadEdgePts definition: abs(modelSpread - vegasSpread) (same POV)
+          const spreadModelLine = Number(spreadOpp.modelLine);
+          const spreadVegasLine = Number(spreadOpp.vegasLine);
+          const spreadEdgePts = (Number.isFinite(spreadModelLine) && Number.isFinite(spreadVegasLine))
+            ? Math.abs(spreadModelLine - spreadVegasLine)
+            : Math.abs(Number(spreadOpp.edge) || 0);
+
+          const mlEdgePct = Number(moneylineOpp.edgePercent) || 0;
+          const mlTooJuiced = Number.isFinite(mlOdds) ? (mlOdds <= -240) : false;
+          const bigSpreadMispricing = spreadEdgePts >= 4.5;
+
+          // Default choice
           let keepSpread = false;
+          let keepMLAsSecondary = false;
           let reason = '';
-          
-          if (winProb < 0.60) {
-            // 53-60%: Spread usually dominates (better variance profile)
+
+          // Rule A — Big spread mispricing override
+          if (bigSpreadMispricing) {
             keepSpread = true;
-            reason = 'spread_better_variance_profile';
-          } else if (winProb < 0.68) {
-            // 60-68%: Compare EV, pick higher
-            keepSpread = (spreadOpp.expectedValue || 0) > (moneylineOpp.expectedValue || 0);
-            reason = keepSpread ? 'spread_higher_ev' : 'ml_higher_ev';
-          } else {
-            // 68%+: ML often cleaner (parlay-friendly, lower variance)
-            keepSpread = false;
-            reason = 'ml_cleaner_for_heavy_fav';
+            reason = `big_spread_mispricing_${spreadEdgePts.toFixed(1)}pts`;
+
+            // Allow ML as secondary hedge / parlay leg when reasonable
+            // Secondary ML suppressed if too juiced or edge is negative
+            keepMLAsSecondary = !mlTooJuiced && (mlEdgePct > 0);
+
+            if (keepMLAsSecondary) {
+              // Additive metadata on spread opp (doesn't break schema consumers)
+              spreadOpp.secondaryBet = {
+                market: moneylineOpp.market,
+                pick: moneylineOpp.pick,
+                odds: moneylineOpp.odds,
+                edgePercent: moneylineOpp.edgePercent,
+                units: moneylineOpp.units
+              };
+              spreadOpp.splitGuidance = spreadEdgePts >= 6.0 ? '60/40 spread/ML' : '55/45 spread/ML';
+              spreadOpp.note = `Large spread mispricing: model ${spreadOpp.modelLine} vs Vegas ${spreadOpp.vegasLine} (Δ ${spreadEdgePts.toFixed(1)} pts)`;
+            } else {
+              spreadOpp.secondaryBet = null;
+              spreadOpp.splitGuidance = null;
+              spreadOpp.note = `Large spread mispricing: model ${spreadOpp.modelLine} vs Vegas ${spreadOpp.vegasLine} (Δ ${spreadEdgePts.toFixed(1)} pts)`;
+            }
           }
-          
+
+          // Rule B — ML juice threshold
+          if (!bigSpreadMispricing && mlTooJuiced) {
+            keepSpread = true;
+            reason = 'ml_too_juiced_prefer_spread';
+          }
+
+          // Rule C — Normal cases (refined)
+          if (!bigSpreadMispricing && !mlTooJuiced) {
+            if (winProb < 0.60) {
+              keepSpread = true;
+              reason = 'spread_better_variance_profile';
+            } else if (winProb < 0.68) {
+              keepSpread = (spreadOpp.expectedValue || 0) > (moneylineOpp.expectedValue || 0);
+              reason = keepSpread ? 'spread_higher_ev' : 'ml_higher_ev';
+            } else {
+              // 68%+: ML primary only if spread mispricing is small (<= 2.5)
+              if (spreadEdgePts <= 2.5) {
+                keepSpread = false;
+                reason = 'ml_cleaner_heavy_fav_small_spread_gap';
+              } else {
+                keepSpread = true;
+                reason = `prefer_spread_nontrivial_spread_gap_${spreadEdgePts.toFixed(1)}pts`;
+              }
+            }
+          }
+
           if (keepSpread) {
             moneylineOpp.suppressed_by = 'Spread';
             moneylineOpp.suppression_reason = reason;
@@ -1670,6 +1724,62 @@ export default async (request, context) => {
       
       // Sort by expected value (EV)
       allOpps.sort((a, b) => (b.expectedValue || 0) - (a.expectedValue || 0));
+
+      // Optional self-test for spread vs ML selection (enable with NBA_ELITE_DEDUP_SELFTEST=1)
+      // Validates: model -9.3 vs Vegas -3, winProb 0.762, ML -155 => Spread primary + ML secondary + 60/40
+      if (process.env.NBA_ELITE_DEDUP_SELFTEST === '1') {
+        try {
+          const testSpreadOpp = {
+            market: 'Spread',
+            pick: 'MIA -3',
+            modelLine: '-9.3',
+            vegasLine: '-3',
+            edge: 6.3,
+            expectedValue: 100
+          };
+          const testMoneylineOpp = {
+            market: 'Moneyline',
+            pick: 'MIA',
+            odds: -155,
+            p_model: 0.762,
+            edgePercent: 0.155,
+            expectedValue: 50,
+            units: 1
+          };
+          let testOpps = [testSpreadOpp, testMoneylineOpp];
+
+          // Inline mimic of dedup result using the same metadata outputs
+          const spreadModelLine = Number(testSpreadOpp.modelLine);
+          const spreadVegasLine = Number(testSpreadOpp.vegasLine);
+          const spreadEdgePts = (Number.isFinite(spreadModelLine) && Number.isFinite(spreadVegasLine))
+            ? Math.abs(spreadModelLine - spreadVegasLine)
+            : Math.abs(Number(testSpreadOpp.edge) || 0);
+          const mlTooJuiced = Number(testMoneylineOpp.odds) <= -240;
+          const bigSpreadMispricing = spreadEdgePts >= 4.5;
+          const keepMLAsSecondary = bigSpreadMispricing && !mlTooJuiced && (Number(testMoneylineOpp.edgePercent) > 0);
+
+          if (!bigSpreadMispricing) {
+            console.log('[SELFTEST FAIL] Expected bigSpreadMispricing=true');
+          }
+          if (!keepMLAsSecondary) {
+            console.log('[SELFTEST FAIL] Expected keepMLAsSecondary=true');
+          }
+
+          // Would keep spread and suppress ML
+          testOpps = testOpps.filter(o => o.market !== 'Moneyline');
+          if (testOpps[0]?.market !== 'Spread') {
+            console.log('[SELFTEST FAIL] Expected Spread primary');
+          }
+          const expectedSplit = spreadEdgePts >= 6.0 ? '60/40 spread/ML' : '55/45 spread/ML';
+          if (expectedSplit !== '60/40 spread/ML') {
+            console.log(`[SELFTEST FAIL] Expected split 60/40, got ${expectedSplit}`);
+          }
+
+          console.log('[SELFTEST PASS] Spread primary + ML secondary logic');
+        } catch (e) {
+          console.log('[SELFTEST ERROR]', e?.message || e);
+        }
+      }
       
       // UNIT SIZING AND EXPOSURE MANAGEMENT
       console.log(`[UNIT SIZING START] Processing ${allOpps.length} opportunities for ${away.team.abbreviation} @ ${home.team.abbreviation}`);

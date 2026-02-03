@@ -335,6 +335,7 @@ const NBAPredictionsV2 = () => {
           : `Rec: ${opp.units.toFixed(1)}U`
         : null;
       
+      const hedge = opp.secondaryBet;
       const betCard = (
         <div key={idx} className="bet-card">
           <strong>{opp.market}: {pickDisplay}</strong>
@@ -344,6 +345,31 @@ const NBAPredictionsV2 = () => {
             <span>{opp.book}</span>
           </div>
           {unitsDisplay && <div style={{ color: opp.units === 0 ? '#888' : '#00ff88', fontSize: '12px' }}>{unitsDisplay}</div>}
+
+          {opp.note && (
+            <div style={{ marginTop: '6px', fontSize: '12px', color: '#cbd5e1' }}>
+              {opp.note}
+            </div>
+          )}
+
+          {hedge && (
+            <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.12)' }}>
+              <div style={{ fontSize: '12px', color: '#ffd166', fontWeight: 700 }}>
+                Hedge / Parlay Leg
+              </div>
+              <div style={{ fontSize: '13px', marginTop: '2px' }}>
+                <strong>{hedge.market}: {hedge.pick}</strong>
+                <span style={{ marginLeft: '10px' }}>
+                  Odds: {hedge.odds > 0 ? '+' : ''}{hedge.odds}
+                </span>
+              </div>
+              {opp.splitGuidance && (
+                <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '2px' }}>
+                  Suggested split: {opp.splitGuidance}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       );
       
