@@ -205,12 +205,12 @@ const NBAPredictionsV2 = () => {
 
           // Add optional details (note + hedge leg + split guidance) as subtle sub-lines.
           if (opp.note) {
-            pickHtml += `<div style="margin-top: 2px; font-size: 9px; color: #555;">${opp.note}</div>`;
+            pickHtml += `<div style="margin-top: 2px; font-size: 10px; line-height: 1.2; color: #555;">${opp.note}</div>`;
           }
           if (hedge) {
-            pickHtml += `<div style="margin-top: 3px; font-size: 9px; color: #6b4f00;"><strong>Hedge:</strong> ${hedge.market}: ${hedge.pick} (${hedgeOddsStr})</div>`;
+            pickHtml += `<div style="margin-top: 3px; font-size: 10px; line-height: 1.2; color: #6b4f00;"><strong>Hedge:</strong> ${hedge.market}: ${hedge.pick} (${hedgeOddsStr})</div>`;
             if (opp.splitGuidance) {
-              pickHtml += `<div style="margin-top: 1px; font-size: 9px; color: #555;">Split: ${opp.splitGuidance}</div>`;
+              pickHtml += `<div style="margin-top: 1px; font-size: 10px; line-height: 1.2; color: #555;">Split: ${opp.splitGuidance}</div>`;
             }
           }
           allBets.push({
@@ -245,17 +245,16 @@ const NBAPredictionsV2 = () => {
             🟡 <span style="color: #856404; font-weight: bold;">YELLOW</span> = Consider | 
             🔴 <span style="color: #721c24; font-weight: bold;">RED</span> = Track Only
           </p>
-          <table style="width: 100%; border-collapse: collapse; border: 1px solid #bdc3c7;">
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #bdc3c7; table-layout: fixed;">
             <thead>
               <tr style="background: #2c3e50; color: white;">
                 <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Category</th>
                 <th style="padding: 10px; text-align: left; border: 1px solid #bdc3c7; font-size: 11px;">Game</th>
                 <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Bet Type</th>
-                <th style="padding: 10px; text-align: left; border: 1px solid #bdc3c7; font-size: 11px;">Pick</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #bdc3c7; font-size: 11px; width: 330px;">Pick</th>
                 <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Edge</th>
                 <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Odds</th>
                 <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Book</th>
-                <th style="padding: 10px; text-align: center; border: 1px solid #bdc3c7; font-size: 11px;">Stake</th>
               </tr>
             </thead>
             <tbody>
@@ -279,11 +278,10 @@ const NBAPredictionsV2 = () => {
             <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-weight: bold; color: ${textColor}; font-size: 10px;">${bet.category}</td>
             <td style="padding: 8px; border: 1px solid #bdc3c7; font-size: 10px;">${bet.game}</td>
             <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${bet.betType}</td>
-            <td style="padding: 8px; border: 1px solid #bdc3c7; font-size: 10px;">${bet.pick}</td>
+            <td style="padding: 8px; border: 1px solid #bdc3c7; font-size: 10px; line-height: 1.25; white-space: normal; word-break: break-word;">${bet.pick}</td>
             <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${bet.edge}</td>
             <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${bet.odds}</td>
             <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${bet.book}</td>
-            <td style="padding: 8px; border: 1px solid #bdc3c7; text-align: center; font-size: 10px;">${bet.stake}</td>
           </tr>
         `;
       });
