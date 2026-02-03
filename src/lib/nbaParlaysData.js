@@ -318,30 +318,55 @@ export function qualifiesAsAnchor(pred) {
   const mlOpp = pred.opportunities?.find(o => o.market === 'Moneyline');
   const mlEdge = mlOpp?.edgePercent || 0;
   const isStrong = pred.strength === 'STRONG';
+  const confidence = pred.prediction?.confidence || 0;
   
-  // ANCHOR CRITERIA (from framework):
-  // - Model win probability >= 66-68%
-  // - OR game is labeled STRONG
-  // - OR edge >= 8% and ML not excessively juiced
+  // Get spread info for underdog spread anchors
+  const spreadValue = Math.abs(pred.prediction?.spread?.prediction || 0);
+  const vegasSpread = parseFloat(pred.vegasLines?.spread?.line) || 0;
+  const isUnderdog = vegasSpread > 0; // Positive spread = underdog
+  
+  // ANCHOR CRITERIA:
+  // 1. High confidence ML (66%+ win prob)
   if (winProb >= 66) return true;
+  
+  // 2. Game labeled STRONG
   if (isStrong) return true;
   
+  // 3. Good edge with reasonable odds
   const mlOdds = parseFloat(pred.vegasLines?.moneyline?.favorite) || -150;
   if (mlEdge >= 8 && mlOdds > -300) return true;
+  
+  // 4. SPREAD ANCHOR: Model pick with large spread cushion
+  // If confidence >= 60% (model likes the team) and spread is +6 or more,
+  // the underdog covering is a strong anchor bet
+  if (confidence >= 60 && isUnderdog && Math.abs(vegasSpread) >= 6) return true;
+  
+  // 5. Alternative: Model has moderate win prob (55%+) with big spread (8+)
+  if (winProb >= 55 && isUnderdog && Math.abs(vegasSpread) >= 8) return true;
   
   return false;
 }
 
 // Determine bet type (ML vs Spread) for anchor
 export function getAnchorBetType(pred) {
+  const winProb = pred.prediction?.winProbability?.favoritePercent || 0;
   const mlOdds = parseFloat(pred.vegasLines?.moneyline?.favorite) || -150;
-  const spread = Math.abs(pred.prediction?.spread?.prediction || 0);
+  const vegasSpread = parseFloat(pred.vegasLines?.spread?.line) || 0;
+  const isUnderdog = vegasSpread > 0;
   const confidence = pred.prediction?.confidence || 0;
   
-  // Use spread only if ML is worse than -240 AND spread is modest
-  if (mlOdds <= -240 && spread <= 6 && confidence >= 65) {
+  // PREFER SPREAD when:
+  // 1. Model pick is underdog with big spread cushion (safer than ML)
+  if (isUnderdog && Math.abs(vegasSpread) >= 6 && winProb < 66) {
     return 'SPREAD';
   }
+  
+  // 2. ML is heavily juiced (worse than -240) - spread is safer
+  if (mlOdds <= -240 && confidence >= 65) {
+    return 'SPREAD';
+  }
+  
+  // Default to ML for high confidence picks
   return 'ML';
 }
 
