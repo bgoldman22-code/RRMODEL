@@ -195,13 +195,31 @@ const NBAPredictionsV2 = () => {
       predictions.forEach(pred => {
         pred.opportunities?.forEach(opp => {
           const category = opp.edgePercent > 5 ? 'STRONG' : opp.units === 0 ? 'TRACK' : 'CONSIDER';
+          const oddsStr = opp.odds > 0 ? `+${opp.odds}` : `${opp.odds}`;
+          const hedge = opp.secondaryBet;
+          const hedgeOddsStr = hedge ? (hedge.odds > 0 ? `+${hedge.odds}` : `${hedge.odds}`) : '';
+
+          let pickHtml = (opp.market === 'Moneyline' && opp.modelWinProb)
+            ? `${opp.pick} (${opp.modelWinProb})`
+            : `${opp.pick}`;
+
+          // Add optional details (note + hedge leg + split guidance) as subtle sub-lines.
+          if (opp.note) {
+            pickHtml += `<div style="margin-top: 2px; font-size: 9px; color: #555;">${opp.note}</div>`;
+          }
+          if (hedge) {
+            pickHtml += `<div style="margin-top: 3px; font-size: 9px; color: #6b4f00;"><strong>Hedge:</strong> ${hedge.market}: ${hedge.pick} (${hedgeOddsStr})</div>`;
+            if (opp.splitGuidance) {
+              pickHtml += `<div style="margin-top: 1px; font-size: 9px; color: #555;">Split: ${opp.splitGuidance}</div>`;
+            }
+          }
           allBets.push({
             category,
             game: pred.game,
             betType: opp.market,
-            pick: opp.market === 'Moneyline' && opp.modelWinProb ? `${opp.pick} (${opp.modelWinProb})` : opp.pick,
+            pick: pickHtml,
             edge: opp.edge,
-            odds: opp.odds > 0 ? `+${opp.odds}` : opp.odds,
+            odds: oddsStr,
             book: opp.book,
             stake: opp.units === 0 ? '0.0U' : `${opp.units.toFixed(1)}U`
           });
