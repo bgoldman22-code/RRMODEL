@@ -48,17 +48,23 @@ const NBAPredictionsV2 = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [exporting, setExporting] = useState(false);
+  const [useV21, setUseV21] = useState(false); // Toggle for V2.1 injury system
+  const [modelVersion, setModelVersion] = useState('V2'); // Track which version loaded
 
   useEffect(() => {
     loadPredictions();
-  }, []);
+  }, [useV21]); // Reload when toggle changes
 
   const loadPredictions = async () => {
     try {
       setLoading(true);
       // Add cache-busting parameter to force fresh data
       const timestamp = Date.now();
-      const response = await fetch(`/.netlify/functions/nba-predictions-elite-v2?_t=${timestamp}`);
+      // Use V2.1 endpoint if toggle is on
+      const endpoint = useV21 
+        ? `/.netlify/functions/nba-predictions-elite-v2-1?_t=${timestamp}`
+        : `/.netlify/functions/nba-predictions-elite-v2?_t=${timestamp}`;
+      const response = await fetch(endpoint);
       const data = await response.json();
 
       if (!data.ok || !data.predictions || data.predictions.length === 0) {
@@ -67,6 +73,7 @@ const NBAPredictionsV2 = () => {
       }
 
       setPredictions(data.predictions);
+      setModelVersion(data.modelInfo?.version || 'V2'); // Track version from response
       setError(null); // Clear any previous errors
     } catch (err) {
       setError(`Error loading predictions: ${err.message}`);
@@ -658,11 +665,81 @@ const NBAPredictionsV2 = () => {
           background: #ff4444; 
           color: #fff; 
         }
+        .version-toggle {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: #1a1e3a;
+          padding: 6px 12px;
+          border-radius: 20px;
+          margin-left: 15px;
+          font-size: 13px;
+        }
+        .version-toggle label {
+          cursor: pointer;
+          user-select: none;
+        }
+        .version-toggle input[type="checkbox"] {
+          width: 40px;
+          height: 20px;
+          appearance: none;
+          background: #333;
+          border-radius: 10px;
+          position: relative;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .version-toggle input[type="checkbox"]:checked {
+          background: #00ff88;
+        }
+        .version-toggle input[type="checkbox"]::before {
+          content: '';
+          position: absolute;
+          width: 16px;
+          height: 16px;
+          background: white;
+          border-radius: 50%;
+          top: 2px;
+          left: 2px;
+          transition: transform 0.2s;
+        }
+        .version-toggle input[type="checkbox"]:checked::before {
+          transform: translateX(20px);
+        }
+        .version-badge {
+          font-size: 11px;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-weight: bold;
+        }
+        .version-badge.v2 {
+          background: #666;
+          color: #fff;
+        }
+        .version-badge.v21 {
+          background: #00ff88;
+          color: #000;
+        }
       `}</style>
       
-      <h1>🏀 NBA Elite V2 Predictions</h1>
+      <h1>🏀 NBA Elite {useV21 ? 'V2.1' : 'V2'} Predictions</h1>
       <div className="subtitle">
-        Powered by ESPN + NBA CDN • Live L5/L10/L20 Data • No GitHub Dependencies
+        Powered by ESPN + NBA CDN • Live L5/L10/L20 Data • {useV21 ? '⭐ Production Share Injury Weighting' : 'Position-Based Injury Weighting'}
+        
+        <div className="version-toggle">
+          <span className={`version-badge ${useV21 ? 'v2' : 'v21'}`}>V2</span>
+          <input 
+            type="checkbox" 
+            checked={useV21} 
+            onChange={(e) => setUseV21(e.target.checked)}
+            disabled={loading}
+          />
+          <span className={`version-badge ${useV21 ? 'v21' : 'v2'}`}>V2.1</span>
+          <span style={{ color: '#888', fontSize: '11px' }}>
+            {useV21 ? '(Star players weighted by production share)' : '(Position-only weights)'}
+          </span>
+        </div>
+        
         <button 
           onClick={loadPredictions} 
           disabled={loading}
