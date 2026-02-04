@@ -14,8 +14,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __playerImpactFilename = fileURLToPath(import.meta.url);
+const __playerImpactDirname = path.dirname(__playerImpactFilename);
 
 // Cache for production shares (calculated once per invocation)
 let productionShareCache = null;
@@ -27,7 +27,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
  */
 function loadPlayerBoxscores() {
   const possiblePaths = [
-    path.join(__dirname, '../../../../data/nba/player-boxscores-2025-26.json'),
+    path.join(__playerImpactDirname, '../../../../data/nba/player-boxscores-2025-26.json'),
     path.join(process.cwd(), 'data/nba/player-boxscores-2025-26.json'),
     '/opt/build/repo/data/nba/player-boxscores-2025-26.json',
     '/var/task/data/nba/player-boxscores-2025-26.json'
