@@ -25,11 +25,59 @@
 
 import { createHash } from 'crypto';
 import { SPREAD_MODEL, TOTAL_MODEL } from '../_lib/nba/models-inline.mjs';
-import { applyRCIAdjustment, getRCISummary } from '../_lib/nba/rci-adjustments.mjs';
+import { applyRCIAdjustment, getRCISummary, getRawRCI } from '../_lib/nba/rci-adjustments.mjs';
 import { getTeamInjuries } from '../_lib/nba/injuries.mjs';
 import { applyInjuryAdjustment, getInjurySummary, getInjuryAdvantage } from '../_lib/nba/injury-adjustments.mjs';
 import { fetchTeamRollingStats, loadTeamInfo } from '../_lib/nba/loaders.mjs';
 import { saveGamePredictions } from '../nba-tracking-save-predictions.mjs';
+
+/**
+ * Trade deadline date for 2025-26 season (Feb 6, 2026 at 3pm ET)
+ * We'll apply a penalty in the 7-day window leading up to the deadline
+ */
+const TRADE_DEADLINE_2026 = new Date('2026-02-06T20:00:00Z'); // 3pm ET = 8pm UTC
+
+/**
+ * Check if we're in the trade deadline uncertainty window (7 days before deadline)
+ */
+function isInTradeDeadlineWindow() {
+  const now = new Date();
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const daysUntilDeadline = (TRADE_DEADLINE_2026 - now) / msPerDay;
+  return daysUntilDeadline >= 0 && daysUntilDeadline <= 7;
+}
+
+/**
+ * Calculate roster turbulence multiplier based on RCI values
+ * Lower RCI = more roster churn = higher uncertainty = lower multiplier
+ * 
+ * @param {number} homeRCI - Home team RCI (0-1)
+ * @param {number} awayRCI - Away team RCI (0-1)
+ * @returns {{ multiplier: number, note: string|null, level: string }}
+ */
+function getRosterTurbulenceAdjustment(homeRCI, awayRCI) {
+  // Use the LOWER of the two team's RCIs (worst case drives uncertainty)
+  const minRCI = Math.min(homeRCI, awayRCI);
+  
+  if (minRCI < 0.55) {
+    // High churn (e.g., PHX 0.498, NO 0.533, BKN 0.548)
+    return {
+      multiplier: 0.70,
+      level: 'HIGH',
+      note: `ROSTER TURBULENCE: Low continuity (RCI ${minRCI.toFixed(2)}) – 30% units reduction.`
+    };
+  } else if (minRCI < 0.70) {
+    // Moderate churn (e.g., ATL 0.627, DET 0.602, HOU 0.657)
+    return {
+      multiplier: 0.85,
+      level: 'MODERATE',
+      note: `ROSTER TURBULENCE: Moderate continuity (RCI ${minRCI.toFixed(2)}) – 15% units reduction.`
+    };
+  }
+  
+  // Stable rosters (RCI >= 0.70) - no penalty
+  return { multiplier: 1.0, level: 'STABLE', note: null };
+}
 
 /**
  * ESPN → NBA abbreviation normalization
@@ -1242,6 +1290,37 @@ export default async (request, context) => {
       
       confidence = Math.floor(confidence * seasonAdjustment);
       
+      // =========================================================================
+      // ROSTER TURBULENCE ADJUSTMENT (RCI-based)
+      // Teams with low roster continuity have higher variance → reduce units
+      // =========================================================================
+      const homeRCIValue = getRawRCI(homeAbbr);
+      const awayRCIValue = getRawRCI(awayAbbr);
+      const turbulence = getRosterTurbulenceAdjustment(homeRCIValue, awayRCIValue);
+      
+      let turbulenceNote = turbulence.note;
+      let unitsMultiplier = seasonAdjustment * turbulence.multiplier;
+      
+      if (turbulence.level !== 'STABLE') {
+        console.log(`[TURBULENCE] ${homeAbbr} vs ${awayAbbr}: ${turbulence.level} (home RCI ${homeRCIValue.toFixed(2)}, away RCI ${awayRCIValue.toFixed(2)}) → ${(turbulence.multiplier * 100).toFixed(0)}% units`);
+      }
+      
+      // =========================================================================
+      // TRADE DEADLINE WINDOW PENALTY
+      // 7 days before deadline = extra uncertainty across league
+      // =========================================================================
+      let tradeDeadlineNote = null;
+      if (isInTradeDeadlineWindow()) {
+        const deadlinePenalty = 0.85; // 15% reduction
+        unitsMultiplier *= deadlinePenalty;
+        confidence = Math.floor(confidence * deadlinePenalty);
+        tradeDeadlineNote = 'TRADE DEADLINE: League-wide uncertainty – 15% units reduction.';
+        console.log(`[TRADE DEADLINE] Applying 15% penalty (within 7-day window)`);
+      }
+      
+      // Combine all adjustment notes
+      const allAdjustmentNotes = [seasonNote, turbulenceNote, tradeDeadlineNote].filter(Boolean);
+
       // Win probability from spread
       // CRITICAL: Spread-to-probability conversion
       // NBA historical data shows: Each point of spread ≈ 2.5-3% win probability
@@ -1781,6 +1860,21 @@ export default async (request, context) => {
         }
       }
       
+      // =========================================================================
+      // APPLY ROSTER/DEADLINE MULTIPLIER TO ALL UNITS
+      // This applies the RCI turbulence + trade deadline adjustments
+      // =========================================================================
+      if (unitsMultiplier < 1.0) {
+        console.log(`[UNITS MULTIPLIER] Applying ${(unitsMultiplier * 100).toFixed(0)}% multiplier to all bets`);
+        allOpps.forEach(opp => {
+          if (opp.units && opp.units > 0 && !opp.isTrackOnly) {
+            const oldUnits = opp.units;
+            opp.units = Math.round(opp.units * unitsMultiplier * 10) / 10;
+            console.log(`  ${opp.market} ${opp.pick}: ${oldUnits.toFixed(1)}U → ${opp.units.toFixed(1)}U`);
+          }
+        });
+      }
+      
       // UNIT SIZING AND EXPOSURE MANAGEMENT
       console.log(`[UNIT SIZING START] Processing ${allOpps.length} opportunities for ${away.team.abbreviation} @ ${home.team.abbreviation}`);
       allOpps.forEach((opp, idx) => {
@@ -1899,7 +1993,8 @@ export default async (request, context) => {
             favoritePercent: parseFloat((Math.max(winProb, 1 - winProb) * 100).toFixed(1))
           },
           confidence,
-          seasonNote // Early season warning if applicable
+          adjustmentNotes: allAdjustmentNotes.length > 0 ? allAdjustmentNotes : null, // All adjustment notes (season, turbulence, deadline)
+          seasonNote // Legacy: Early season warning if applicable
         },
         keyFactors: generateKeyFactors(
           home, away, homeL10, awayL10, 

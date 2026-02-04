@@ -95,5 +95,14 @@ export function getRCISummary(teamAbbr, gamesPlayed = 0) {
   return formatRCILog(abbr, rci, gamesPlayed);
 }
 
+/**
+ * Get raw RCI value for a team (0-1 scale, higher = more continuity)
+ * Used for turbulence/trade-uncertainty calculations
+ */
+export function getRawRCI(teamAbbr) {
+  const abbr = teamAbbr === 'GS' ? 'GS' : teamAbbr;
+  return RCI_DATA[abbr] ?? 0.75; // Default to moderate if unknown
+}
+
 // Export constants for reference
 export { RCI_CONSTANTS };

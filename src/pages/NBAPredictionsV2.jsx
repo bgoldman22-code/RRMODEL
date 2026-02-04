@@ -236,6 +236,18 @@ const NBAPredictionsV2 = () => {
       const totalActiveBets = strongBets.length + considerBets.length;
       const totalActiveUnits = strongUnits + considerUnits;
       
+      // Collect game-level adjustment notes (roster turbulence, trade deadline, early season)
+      const gameAdjustmentNotes = [];
+      predictions.forEach(pred => {
+        if (pred.prediction?.adjustmentNotes?.length > 0) {
+          pred.prediction.adjustmentNotes.forEach(note => {
+            if (!gameAdjustmentNotes.includes(note)) {
+              gameAdjustmentNotes.push(note);
+            }
+          });
+        }
+      });
+      
       let picksHTML = `
         <div style="font-family: Helvetica, Arial, sans-serif;">
           <h2 style="font-size: 20px; margin-bottom: 10px;">Recommended Picks with Stakes</h2>
@@ -245,6 +257,12 @@ const NBAPredictionsV2 = () => {
             🟡 <span style="color: #856404; font-weight: bold;">YELLOW</span> = Consider | 
             🔴 <span style="color: #721c24; font-weight: bold;">RED</span> = Track Only
           </p>
+          ${gameAdjustmentNotes.length > 0 ? `
+          <div style="padding: 10px; margin-bottom: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; font-size: 11px; color: #856404;">
+            <strong>⚠️ Active Adjustments:</strong><br/>
+            ${gameAdjustmentNotes.map(note => `• ${note}`).join('<br/>')}
+          </div>
+          ` : ''}
           <table style="width: 100%; border-collapse: collapse; border: 1px solid #bdc3c7; table-layout: fixed;">
             <thead>
               <tr style="background: #2c3e50; color: white;">
@@ -404,6 +422,25 @@ const NBAPredictionsV2 = () => {
         </div>
         
         <div className="pick-summary">{pickSummary}</div>
+        
+        {/* Adjustment notes (roster turbulence, trade deadline, early season) */}
+        {pred.prediction?.adjustmentNotes?.length > 0 && (
+          <div style={{ 
+            padding: '8px 12px', 
+            margin: '8px 0', 
+            background: 'rgba(255, 193, 7, 0.15)', 
+            borderLeft: '3px solid #ffc107',
+            borderRadius: '4px',
+            fontSize: '12px',
+            color: '#ffc107'
+          }}>
+            {pred.prediction.adjustmentNotes.map((note, i) => (
+              <div key={i} style={{ marginBottom: i < pred.prediction.adjustmentNotes.length - 1 ? '4px' : 0 }}>
+                ⚠️ {note}
+              </div>
+            ))}
+          </div>
+        )}
         
         <div className="prediction">
           <div className="stat">
