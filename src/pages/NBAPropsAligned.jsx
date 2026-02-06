@@ -208,8 +208,8 @@ export default function NBAPropsAligned() {
       const filename = `nba-props-${tabName}-${new Date().toISOString().split('T')[0]}`;
       await exportToPNG(exportRef.current, filename, {
         scale: 2,
-        width: 1000,
-        windowWidth: 1000
+        width: 1200,
+        windowWidth: 1200
       });
     } catch (error) {
       console.error('Export failed:', error);
