@@ -851,9 +851,9 @@ const output = {
   model_version: 'nba_phase3.5_mixed_logistic_lgbm_v1_20251125',
   source: 'Phase 3.5: Logistic PRA + LightGBM per-market',
   filters: {
-    assists_prob_min: 0.55,
-    points_prob_min: 0.60,
-    rebounds_prob_min: 0.52
+    assists_prob_min: 0.534,
+    points_prob_min: 0.57,
+    rebounds_prob_min: 0.535
   },
   picks: canonicalPicks,
   stats: {

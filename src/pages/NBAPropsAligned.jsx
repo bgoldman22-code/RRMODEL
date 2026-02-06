@@ -159,6 +159,14 @@ export default function NBAPropsAligned() {
     return aligned.filter(meetsPhase35Criteria);
   };
 
+  // Phase 3.5 Points picks (V2 only — V1 doesn't cover points)
+  const findPointsPicks = () => {
+    return v2Predictions
+      .filter(p => p.propType === 'points')
+      .filter(meetsPhase35Criteria)
+      .sort((a, b) => (Number(b.edge) || 0) - (Number(a.edge) || 0));
+  };
+
   const formatOdds = (odds) => {
     const american = Number(odds);
     if (!Number.isFinite(american) || american === 0) return 'EVEN';
@@ -190,6 +198,7 @@ export default function NBAPropsAligned() {
   };
 
   const currentPicks = getCurrentPicks();
+  const pointsPicks = findPointsPicks();
 
   // Export to PNG (iOS saves to Photos via share sheet, desktop downloads)
   const handleExport = async () => {
@@ -286,8 +295,9 @@ export default function NBAPropsAligned() {
           </button>
         </div>
 
-        {/* Picks Table */}
-        <div ref={exportRef} className="bg-white rounded-lg shadow overflow-hidden">
+        {/* Picks Table + Points Table (wrapped for export) */}
+        <div ref={exportRef}>
+        <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="bg-gray-800 text-white px-4 py-3">
             <h2 className="text-lg font-semibold">{getTabTitle()}</h2>
             <p className="text-sm text-gray-300">{currentPicks.length} picks meet the criteria</p>
@@ -370,6 +380,75 @@ export default function NBAPropsAligned() {
             </div>
           )}
         </div>
+
+        {/* Phase 3.5 Points Picks — V2 Only (V1 doesn't cover points) */}
+        {pointsPicks.length > 0 && (
+          <div className="bg-white rounded-lg shadow overflow-hidden mt-6">
+            <div className="bg-amber-700 text-white px-4 py-3">
+              <h2 className="text-lg font-semibold">🏀 Phase 3.5 Points Picks (V2 Model Only)</h2>
+              <p className="text-sm text-amber-200">{pointsPicks.length} points picks meet Phase 3.5 criteria — V1 model does not cover points</p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-amber-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Player</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Line</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Pick</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Odds</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">L5</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">L10</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">L20</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Edge</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Model Prob</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Book</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {pointsPicks.map((pick, idx) => {
+                    const l5 = getHitRate(pick, 5);
+                    const l10 = getHitRate(pick, 10);
+                    const l20 = getHitRate(pick, 20);
+                    const l5Fmt = formatHitRate(l5);
+                    const l10Fmt = formatHitRate(l10);
+                    const l20Fmt = formatHitRate(l20);
+                    const prob = pick.modelProbability || pick.prediction || 0;
+
+                    return (
+                      <tr key={`pts-${idx}`} className={idx % 2 === 0 ? 'bg-white' : 'bg-amber-50/30'}>
+                        <td className="px-4 py-3">
+                          <div className="font-medium text-gray-900">{pick.player}</div>
+                          <div className="text-xs text-gray-500">{pick.team} vs {pick.opponent}</div>
+                        </td>
+                        <td className="px-4 py-3 text-center font-medium">{pick.vegasLine}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`font-bold ${pick.betSide === 'OVER' ? 'text-green-600' : 'text-red-600'}`}>
+                            {pick.betSide}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center font-mono text-sm">{formatOdds(pick.odds)}</td>
+                        <td className={`px-4 py-3 text-center ${l5Fmt.color}`}>{l5Fmt.display}</td>
+                        <td className={`px-4 py-3 text-center ${l10Fmt.color}`}>{l10Fmt.display}</td>
+                        <td className={`px-4 py-3 text-center ${l20Fmt.color}`}>{l20Fmt.display}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`font-semibold ${Number(pick.edge) >= 8 ? 'text-green-600' : 'text-gray-700'}`}>
+                            {formatEdge(pick.edge)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center font-semibold text-sm">
+                          {(prob * 100).toFixed(1)}%
+                        </td>
+                        <td className="px-4 py-3 text-left text-sm font-medium text-gray-800">{pick.book || '—'}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+        </div>{/* end exportRef wrapper */}
 
         {/* Legend */}
         <div className="mt-6 bg-white rounded-lg p-4 shadow">

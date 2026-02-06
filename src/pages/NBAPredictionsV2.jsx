@@ -201,45 +201,75 @@ const NBAPredictionsV2 = () => {
       const allBets = [];
       predictions.forEach(pred => {
         pred.opportunities?.forEach(opp => {
-          const category = opp.edgePercent > 5 ? 'STRONG' : opp.units === 0 ? 'TRACK' : 'CONSIDER';
+          const edgeVal = opp.edgePercent || opp.edge || 0;
+          const category = edgeVal > 5 ? 'STRONG' : opp.units === 0 ? 'TRACK' : 'CONSIDER';
           const oddsStr = opp.odds > 0 ? `+${opp.odds}` : `${opp.odds}`;
-          const hedge = opp.secondaryBet;
-          const hedgeOddsStr = hedge ? (hedge.odds > 0 ? `+${hedge.odds}` : `${hedge.odds}`) : '';
+          
+          // New V2 hedge/double-down fields
+          const hedgeBet = opp.hedgeBet;
+          const doubleDownBet = opp.doubleDownBet;
+          const stakeGuidance = opp.stakeGuidance;
+          
+          // Legacy fallback
+          const legacyHedge = opp.secondaryBet;
 
           let pickHtml = (opp.market === 'Moneyline' && opp.modelWinProb)
             ? `${opp.pick} (${opp.modelWinProb})`
             : `${opp.pick}`;
 
-          // Add optional details (note + hedge leg + split guidance) as subtle sub-lines.
+          // Add optional details (note + hedge/DD + stake guidance) as subtle sub-lines.
           if (opp.note) {
             pickHtml += `<div style="margin-top: 2px; font-size: 10px; line-height: 1.2; color: #555;">${opp.note}</div>`;
           }
-          if (hedge) {
-            pickHtml += `<div style="margin-top: 3px; font-size: 10px; line-height: 1.2; color: #6b4f00;"><strong>Hedge:</strong> ${hedge.market}: ${hedge.pick} (${hedgeOddsStr})</div>`;
+          
+          // V2 Hedge
+          if (hedgeBet) {
+            const hedgeOddsStr = hedgeBet.odds > 0 ? `+${hedgeBet.odds}` : `${hedgeBet.odds}`;
+            pickHtml += `<div style="margin-top: 3px; font-size: 10px; line-height: 1.2; color: #b8860b;"><strong>⚖️ HEDGE:</strong> ${hedgeBet.market}: ${hedgeBet.pick} (${hedgeOddsStr}) - ${hedgeBet.units?.toFixed(1)}U</div>`;
+          }
+          
+          // V2 Double Down
+          if (doubleDownBet) {
+            const ddOddsStr = doubleDownBet.odds > 0 ? `+${doubleDownBet.odds}` : `${doubleDownBet.odds}`;
+            pickHtml += `<div style="margin-top: 3px; font-size: 10px; line-height: 1.2; color: #228b22;"><strong>🎯 DD:</strong> ${doubleDownBet.market}: ${doubleDownBet.pick} (${ddOddsStr}) - ${doubleDownBet.units?.toFixed(1)}U</div>`;
+          }
+          
+          // Stake guidance
+          if (stakeGuidance && (hedgeBet || doubleDownBet)) {
+            pickHtml += `<div style="margin-top: 2px; font-size: 9px; line-height: 1.2; color: #666;">📊 ${stakeGuidance}</div>`;
+          }
+          
+          // Legacy hedge fallback
+          if (legacyHedge && !hedgeBet) {
+            const hedgeOddsStr = legacyHedge.odds > 0 ? `+${legacyHedge.odds}` : `${legacyHedge.odds}`;
+            pickHtml += `<div style="margin-top: 3px; font-size: 10px; line-height: 1.2; color: #6b4f00;"><strong>Hedge:</strong> ${legacyHedge.market}: ${legacyHedge.pick} (${hedgeOddsStr})</div>`;
             if (opp.splitGuidance) {
               pickHtml += `<div style="margin-top: 1px; font-size: 10px; line-height: 1.2; color: #555;">Split: ${opp.splitGuidance}</div>`;
             }
           }
+          
           allBets.push({
             category,
             game: pred.game,
             betType: opp.market,
             pick: pickHtml,
-            edge: opp.edge,
+            edge: edgeVal.toFixed ? edgeVal.toFixed(1) : edgeVal,
             odds: oddsStr,
             book: opp.book,
-            stake: opp.units === 0 ? '0.0U' : `${opp.units.toFixed(1)}U`
+            stake: opp.units === 0 ? '0.0U' : `${opp.units.toFixed(1)}U`,
+            hedgeUnits: hedgeBet?.units || 0,
+            ddUnits: doubleDownBet?.units || 0
           });
         });
       });
       
-      // Calculate summaries
+      // Calculate summaries (include hedge/DD units)
       const strongBets = allBets.filter(b => b.category === 'STRONG');
       const considerBets = allBets.filter(b => b.category === 'CONSIDER');
       const trackBets = allBets.filter(b => b.category === 'TRACK');
       
-      const strongUnits = strongBets.reduce((sum, b) => sum + parseFloat(b.stake), 0);
-      const considerUnits = considerBets.reduce((sum, b) => sum + parseFloat(b.stake), 0);
+      const strongUnits = strongBets.reduce((sum, b) => sum + parseFloat(b.stake) + (b.hedgeUnits || 0) + (b.ddUnits || 0), 0);
+      const considerUnits = considerBets.reduce((sum, b) => sum + parseFloat(b.stake) + (b.hedgeUnits || 0) + (b.ddUnits || 0), 0);
       const totalActiveBets = strongBets.length + considerBets.length;
       const totalActiveUnits = strongUnits + considerUnits;
       
@@ -376,16 +406,27 @@ const NBAPredictionsV2 = () => {
           : `Rec: ${opp.units.toFixed(1)}U`
         : null;
       
-      const hedge = opp.secondaryBet;
+      // New V2 hedge/double-down fields
+      const hedgeBet = opp.hedgeBet;
+      const doubleDownBet = opp.doubleDownBet;
+      const stakeGuidance = opp.stakeGuidance;
+      const hedgingNotes = opp.hedgingNotes;
+      
+      // Legacy fallback for secondaryBet
+      const legacyHedge = opp.secondaryBet;
+      
       const betCard = (
         <div key={idx} className="bet-card">
-          <strong>{opp.market}: {pickDisplay}</strong>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
-            <span>Edge: <span className="edge-value">{opp.edge}%</span></span>
-            <span>Odds: {opp.odds > 0 ? '+' : ''}{opp.odds}</span>
-            <span>{opp.book}</span>
+          {/* PRIMARY BET */}
+          <div style={{ marginBottom: hedgeBet || doubleDownBet ? '10px' : '0' }}>
+            <strong>{opp.market}: {pickDisplay}</strong>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
+              <span>Edge: <span className="edge-value">{opp.edgePercent?.toFixed(1) || opp.edge}%</span></span>
+              <span>Odds: {opp.odds > 0 ? '+' : ''}{opp.odds}</span>
+              <span>{opp.book}</span>
+            </div>
+            {unitsDisplay && <div style={{ color: opp.units === 0 ? '#888' : '#00ff88', fontSize: '12px' }}>{unitsDisplay}</div>}
           </div>
-          {unitsDisplay && <div style={{ color: opp.units === 0 ? '#888' : '#00ff88', fontSize: '12px' }}>{unitsDisplay}</div>}
 
           {opp.note && (
             <div style={{ marginTop: '6px', fontSize: '12px', color: '#cbd5e1' }}>
@@ -393,15 +434,99 @@ const NBAPredictionsV2 = () => {
             </div>
           )}
 
-          {hedge && (
+          {/* HEDGE BET (V2) */}
+          {hedgeBet && (
+            <div style={{ 
+              marginTop: '10px', 
+              paddingTop: '10px', 
+              borderTop: '1px solid rgba(255,255,255,0.12)',
+              background: 'rgba(255, 193, 7, 0.1)',
+              padding: '10px',
+              borderRadius: '6px'
+            }}>
+              <div style={{ fontSize: '12px', color: '#ffc107', fontWeight: 700, marginBottom: '4px' }}>
+                ⚖️ HEDGE ({hedgeBet.hedgeStakePct || '25%'} of primary)
+              </div>
+              <div style={{ fontSize: '13px' }}>
+                <strong>{hedgeBet.market}: {hedgeBet.pick}</strong>
+                <span style={{ marginLeft: '10px' }}>
+                  Odds: {hedgeBet.odds > 0 ? '+' : ''}{hedgeBet.odds}
+                </span>
+                <span style={{ marginLeft: '10px', color: '#ffc107' }}>
+                  {hedgeBet.units?.toFixed(1)}U
+                </span>
+              </div>
+              {hedgeBet.notes && (
+                <div style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '4px' }}>
+                  {hedgeBet.notes}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* DOUBLE DOWN BET (V2) */}
+          {doubleDownBet && (
+            <div style={{ 
+              marginTop: '10px', 
+              paddingTop: '10px', 
+              borderTop: '1px solid rgba(255,255,255,0.12)',
+              background: 'rgba(0, 255, 136, 0.1)',
+              padding: '10px',
+              borderRadius: '6px'
+            }}>
+              <div style={{ fontSize: '12px', color: '#00ff88', fontWeight: 700, marginBottom: '4px' }}>
+                🎯 DOUBLE DOWN ({doubleDownBet.sprinklePct || '20%'} sprinkle)
+              </div>
+              <div style={{ fontSize: '13px' }}>
+                <strong>{doubleDownBet.market}: {doubleDownBet.pick}</strong>
+                <span style={{ marginLeft: '10px' }}>
+                  Odds: {doubleDownBet.odds > 0 ? '+' : ''}{doubleDownBet.odds}
+                </span>
+                <span style={{ marginLeft: '10px', color: '#00ff88' }}>
+                  {doubleDownBet.units?.toFixed(1)}U
+                </span>
+              </div>
+              {doubleDownBet.notes && (
+                <div style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '4px' }}>
+                  {doubleDownBet.notes}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* STAKE GUIDANCE */}
+          {stakeGuidance && (hedgeBet || doubleDownBet) && (
+            <div style={{ 
+              marginTop: '8px', 
+              fontSize: '12px', 
+              color: '#cbd5e1',
+              fontStyle: 'italic'
+            }}>
+              📊 Stake: {stakeGuidance}
+            </div>
+          )}
+
+          {/* HEDGING NOTES */}
+          {hedgingNotes && (
+            <div style={{ 
+              marginTop: '4px', 
+              fontSize: '11px', 
+              color: '#888'
+            }}>
+              {hedgingNotes}
+            </div>
+          )}
+
+          {/* LEGACY HEDGE (fallback for old API) */}
+          {legacyHedge && !hedgeBet && (
             <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.12)' }}>
               <div style={{ fontSize: '12px', color: '#ffd166', fontWeight: 700 }}>
                 Hedge / Parlay Leg
               </div>
               <div style={{ fontSize: '13px', marginTop: '2px' }}>
-                <strong>{hedge.market}: {hedge.pick}</strong>
+                <strong>{legacyHedge.market}: {legacyHedge.pick}</strong>
                 <span style={{ marginLeft: '10px' }}>
-                  Odds: {hedge.odds > 0 ? '+' : ''}{hedge.odds}
+                  Odds: {legacyHedge.odds > 0 ? '+' : ''}{legacyHedge.odds}
                 </span>
               </div>
               {opp.splitGuidance && (
@@ -414,7 +539,7 @@ const NBAPredictionsV2 = () => {
         </div>
       );
       
-      if (opp.edge > 5) {
+      if ((opp.edgePercent || opp.edge) > 5) {
         recommendedBets.push(betCard);
       } else {
         edgeBets.push(betCard);

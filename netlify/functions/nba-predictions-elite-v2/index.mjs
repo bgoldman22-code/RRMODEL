@@ -25,59 +25,11 @@
 
 import { createHash } from 'crypto';
 import { SPREAD_MODEL, TOTAL_MODEL } from '../_lib/nba/models-inline.mjs';
-import { applyRCIAdjustment, getRCISummary, getRawRCI } from '../_lib/nba/rci-adjustments.mjs';
+import { applyRCIAdjustment, getRCISummary } from '../_lib/nba/rci-adjustments.mjs';
 import { getTeamInjuries } from '../_lib/nba/injuries.mjs';
 import { applyInjuryAdjustment, getInjurySummary, getInjuryAdvantage } from '../_lib/nba/injury-adjustments.mjs';
 import { fetchTeamRollingStats, loadTeamInfo } from '../_lib/nba/loaders.mjs';
 import { saveGamePredictions } from '../nba-tracking-save-predictions.mjs';
-
-/**
- * Trade deadline date for 2025-26 season (Feb 6, 2026 at 3pm ET)
- * We'll apply a penalty in the 7-day window leading up to the deadline
- */
-const TRADE_DEADLINE_2026 = new Date('2026-02-06T20:00:00Z'); // 3pm ET = 8pm UTC
-
-/**
- * Check if we're in the trade deadline uncertainty window (7 days before deadline)
- */
-function isInTradeDeadlineWindow() {
-  const now = new Date();
-  const msPerDay = 24 * 60 * 60 * 1000;
-  const daysUntilDeadline = (TRADE_DEADLINE_2026 - now) / msPerDay;
-  return daysUntilDeadline >= 0 && daysUntilDeadline <= 7;
-}
-
-/**
- * Calculate roster turbulence multiplier based on RCI values
- * Lower RCI = more roster churn = higher uncertainty = lower multiplier
- * 
- * @param {number} homeRCI - Home team RCI (0-1)
- * @param {number} awayRCI - Away team RCI (0-1)
- * @returns {{ multiplier: number, note: string|null, level: string }}
- */
-function getRosterTurbulenceAdjustment(homeRCI, awayRCI) {
-  // Use the LOWER of the two team's RCIs (worst case drives uncertainty)
-  const minRCI = Math.min(homeRCI, awayRCI);
-  
-  if (minRCI < 0.55) {
-    // High churn (e.g., PHX 0.498, NO 0.533, BKN 0.548)
-    return {
-      multiplier: 0.70,
-      level: 'HIGH',
-      note: `ROSTER TURBULENCE: Low continuity (RCI ${minRCI.toFixed(2)}) – 30% units reduction.`
-    };
-  } else if (minRCI < 0.70) {
-    // Moderate churn (e.g., ATL 0.627, DET 0.602, HOU 0.657)
-    return {
-      multiplier: 0.85,
-      level: 'MODERATE',
-      note: `ROSTER TURBULENCE: Moderate continuity (RCI ${minRCI.toFixed(2)}) – 15% units reduction.`
-    };
-  }
-  
-  // Stable rosters (RCI >= 0.70) - no penalty
-  return { multiplier: 1.0, level: 'STABLE', note: null };
-}
 
 /**
  * ESPN → NBA abbreviation normalization
@@ -1290,37 +1242,6 @@ export default async (request, context) => {
       
       confidence = Math.floor(confidence * seasonAdjustment);
       
-      // =========================================================================
-      // ROSTER TURBULENCE ADJUSTMENT (RCI-based)
-      // Teams with low roster continuity have higher variance → reduce units
-      // =========================================================================
-      const homeRCIValue = getRawRCI(homeAbbr);
-      const awayRCIValue = getRawRCI(awayAbbr);
-      const turbulence = getRosterTurbulenceAdjustment(homeRCIValue, awayRCIValue);
-      
-      let turbulenceNote = turbulence.note;
-      let unitsMultiplier = seasonAdjustment * turbulence.multiplier;
-      
-      if (turbulence.level !== 'STABLE') {
-        console.log(`[TURBULENCE] ${homeAbbr} vs ${awayAbbr}: ${turbulence.level} (home RCI ${homeRCIValue.toFixed(2)}, away RCI ${awayRCIValue.toFixed(2)}) → ${(turbulence.multiplier * 100).toFixed(0)}% units`);
-      }
-      
-      // =========================================================================
-      // TRADE DEADLINE WINDOW PENALTY
-      // 7 days before deadline = extra uncertainty across league
-      // =========================================================================
-      let tradeDeadlineNote = null;
-      if (isInTradeDeadlineWindow()) {
-        const deadlinePenalty = 0.85; // 15% reduction
-        unitsMultiplier *= deadlinePenalty;
-        confidence = Math.floor(confidence * deadlinePenalty);
-        tradeDeadlineNote = 'TRADE DEADLINE: League-wide uncertainty – 15% units reduction.';
-        console.log(`[TRADE DEADLINE] Applying 15% penalty (within 7-day window)`);
-      }
-      
-      // Combine all adjustment notes
-      const allAdjustmentNotes = [seasonNote, turbulenceNote, tradeDeadlineNote].filter(Boolean);
-
       // Win probability from spread
       // CRITICAL: Spread-to-probability conversion
       // NBA historical data shows: Each point of spread ≈ 2.5-3% win probability
@@ -1714,79 +1635,25 @@ export default async (request, context) => {
         const mlSide = moneylineOpp.pick;
         
         if (spreadSide === mlSide) {
-          // Improved selection hierarchy (Rule A/B/C)
+          // Same side on both markets - deduplicate based on win probability
           const winProb = moneylineOpp.p_model;
-          const mlOdds = Number(moneylineOpp.odds);
-
-          // spreadEdgePts definition: abs(modelSpread - vegasSpread) (same POV)
-          const spreadModelLine = Number(spreadOpp.modelLine);
-          const spreadVegasLine = Number(spreadOpp.vegasLine);
-          const spreadEdgePts = (Number.isFinite(spreadModelLine) && Number.isFinite(spreadVegasLine))
-            ? Math.abs(spreadModelLine - spreadVegasLine)
-            : Math.abs(Number(spreadOpp.edge) || 0);
-
-          const mlEdgePct = Number(moneylineOpp.edgePercent) || 0;
-          const mlTooJuiced = Number.isFinite(mlOdds) ? (mlOdds <= -240) : false;
-          const bigSpreadMispricing = spreadEdgePts >= 4.5;
-
-          // Default choice
           let keepSpread = false;
-          let keepMLAsSecondary = false;
           let reason = '';
-
-          // Rule A — Big spread mispricing override
-          if (bigSpreadMispricing) {
+          
+          if (winProb < 0.60) {
+            // 53-60%: Spread usually dominates (better variance profile)
             keepSpread = true;
-            reason = `big_spread_mispricing_${spreadEdgePts.toFixed(1)}pts`;
-
-            // Allow ML as secondary hedge / parlay leg when reasonable
-            // Secondary ML suppressed if too juiced or edge is negative
-            keepMLAsSecondary = !mlTooJuiced && (mlEdgePct > 0);
-
-            if (keepMLAsSecondary) {
-              // Additive metadata on spread opp (doesn't break schema consumers)
-              spreadOpp.secondaryBet = {
-                market: moneylineOpp.market,
-                pick: moneylineOpp.pick,
-                odds: moneylineOpp.odds,
-                edgePercent: moneylineOpp.edgePercent,
-                units: moneylineOpp.units
-              };
-              spreadOpp.splitGuidance = spreadEdgePts >= 6.0 ? '60/40 spread/ML' : '55/45 spread/ML';
-              spreadOpp.note = `Large spread mispricing: model ${spreadOpp.modelLine} vs Vegas ${spreadOpp.vegasLine} (Δ ${spreadEdgePts.toFixed(1)} pts)`;
-            } else {
-              spreadOpp.secondaryBet = null;
-              spreadOpp.splitGuidance = null;
-              spreadOpp.note = `Large spread mispricing: model ${spreadOpp.modelLine} vs Vegas ${spreadOpp.vegasLine} (Δ ${spreadEdgePts.toFixed(1)} pts)`;
-            }
+            reason = 'spread_better_variance_profile';
+          } else if (winProb < 0.68) {
+            // 60-68%: Compare EV, pick higher
+            keepSpread = (spreadOpp.expectedValue || 0) > (moneylineOpp.expectedValue || 0);
+            reason = keepSpread ? 'spread_higher_ev' : 'ml_higher_ev';
+          } else {
+            // 68%+: ML often cleaner (parlay-friendly, lower variance)
+            keepSpread = false;
+            reason = 'ml_cleaner_for_heavy_fav';
           }
-
-          // Rule B — ML juice threshold
-          if (!bigSpreadMispricing && mlTooJuiced) {
-            keepSpread = true;
-            reason = 'ml_too_juiced_prefer_spread';
-          }
-
-          // Rule C — Normal cases (refined)
-          if (!bigSpreadMispricing && !mlTooJuiced) {
-            if (winProb < 0.60) {
-              keepSpread = true;
-              reason = 'spread_better_variance_profile';
-            } else if (winProb < 0.68) {
-              keepSpread = (spreadOpp.expectedValue || 0) > (moneylineOpp.expectedValue || 0);
-              reason = keepSpread ? 'spread_higher_ev' : 'ml_higher_ev';
-            } else {
-              // 68%+: ML primary only if spread mispricing is small (<= 2.5)
-              if (spreadEdgePts <= 2.5) {
-                keepSpread = false;
-                reason = 'ml_cleaner_heavy_fav_small_spread_gap';
-              } else {
-                keepSpread = true;
-                reason = `prefer_spread_nontrivial_spread_gap_${spreadEdgePts.toFixed(1)}pts`;
-              }
-            }
-          }
-
+          
           if (keepSpread) {
             moneylineOpp.suppressed_by = 'Spread';
             moneylineOpp.suppression_reason = reason;
@@ -1803,77 +1670,6 @@ export default async (request, context) => {
       
       // Sort by expected value (EV)
       allOpps.sort((a, b) => (b.expectedValue || 0) - (a.expectedValue || 0));
-
-      // Optional self-test for spread vs ML selection (enable with NBA_ELITE_DEDUP_SELFTEST=1)
-      // Validates: model -9.3 vs Vegas -3, winProb 0.762, ML -155 => Spread primary + ML secondary + 60/40
-      if (process.env.NBA_ELITE_DEDUP_SELFTEST === '1') {
-        try {
-          const testSpreadOpp = {
-            market: 'Spread',
-            pick: 'MIA -3',
-            modelLine: '-9.3',
-            vegasLine: '-3',
-            edge: 6.3,
-            expectedValue: 100
-          };
-          const testMoneylineOpp = {
-            market: 'Moneyline',
-            pick: 'MIA',
-            odds: -155,
-            p_model: 0.762,
-            edgePercent: 0.155,
-            expectedValue: 50,
-            units: 1
-          };
-          let testOpps = [testSpreadOpp, testMoneylineOpp];
-
-          // Inline mimic of dedup result using the same metadata outputs
-          const spreadModelLine = Number(testSpreadOpp.modelLine);
-          const spreadVegasLine = Number(testSpreadOpp.vegasLine);
-          const spreadEdgePts = (Number.isFinite(spreadModelLine) && Number.isFinite(spreadVegasLine))
-            ? Math.abs(spreadModelLine - spreadVegasLine)
-            : Math.abs(Number(testSpreadOpp.edge) || 0);
-          const mlTooJuiced = Number(testMoneylineOpp.odds) <= -240;
-          const bigSpreadMispricing = spreadEdgePts >= 4.5;
-          const keepMLAsSecondary = bigSpreadMispricing && !mlTooJuiced && (Number(testMoneylineOpp.edgePercent) > 0);
-
-          if (!bigSpreadMispricing) {
-            console.log('[SELFTEST FAIL] Expected bigSpreadMispricing=true');
-          }
-          if (!keepMLAsSecondary) {
-            console.log('[SELFTEST FAIL] Expected keepMLAsSecondary=true');
-          }
-
-          // Would keep spread and suppress ML
-          testOpps = testOpps.filter(o => o.market !== 'Moneyline');
-          if (testOpps[0]?.market !== 'Spread') {
-            console.log('[SELFTEST FAIL] Expected Spread primary');
-          }
-          const expectedSplit = spreadEdgePts >= 6.0 ? '60/40 spread/ML' : '55/45 spread/ML';
-          if (expectedSplit !== '60/40 spread/ML') {
-            console.log(`[SELFTEST FAIL] Expected split 60/40, got ${expectedSplit}`);
-          }
-
-          console.log('[SELFTEST PASS] Spread primary + ML secondary logic');
-        } catch (e) {
-          console.log('[SELFTEST ERROR]', e?.message || e);
-        }
-      }
-      
-      // =========================================================================
-      // APPLY ROSTER/DEADLINE MULTIPLIER TO ALL UNITS
-      // This applies the RCI turbulence + trade deadline adjustments
-      // =========================================================================
-      if (unitsMultiplier < 1.0) {
-        console.log(`[UNITS MULTIPLIER] Applying ${(unitsMultiplier * 100).toFixed(0)}% multiplier to all bets`);
-        allOpps.forEach(opp => {
-          if (opp.units && opp.units > 0 && !opp.isTrackOnly) {
-            const oldUnits = opp.units;
-            opp.units = Math.round(opp.units * unitsMultiplier * 10) / 10;
-            console.log(`  ${opp.market} ${opp.pick}: ${oldUnits.toFixed(1)}U → ${opp.units.toFixed(1)}U`);
-          }
-        });
-      }
       
       // UNIT SIZING AND EXPOSURE MANAGEMENT
       console.log(`[UNIT SIZING START] Processing ${allOpps.length} opportunities for ${away.team.abbreviation} @ ${home.team.abbreviation}`);
@@ -1993,8 +1789,7 @@ export default async (request, context) => {
             favoritePercent: parseFloat((Math.max(winProb, 1 - winProb) * 100).toFixed(1))
           },
           confidence,
-          adjustmentNotes: allAdjustmentNotes.length > 0 ? allAdjustmentNotes : null, // All adjustment notes (season, turbulence, deadline)
-          seasonNote // Legacy: Early season warning if applicable
+          seasonNote // Early season warning if applicable
         },
         keyFactors: generateKeyFactors(
           home, away, homeL10, awayL10, 
@@ -2086,9 +1881,6 @@ export default async (request, context) => {
     };
     
     // GUARD: Detect spread variance collapse (size-aware threshold)
-    // Motivation: low variance in spreads is common on small slates (2-6 games) and is not
-    // necessarily a model failure. We only hard-fail when inputs appear duplicated (a real
-    // pipeline bug signal) AND the slate truly collapses (tiny range + tiny stdev).
     // Skip variance check for single-game slates (stdev is always 0 with n=1)
     if (predictions.length > 1) {
       const spreads = predictions.map(p => Math.abs(p.prediction.spread.prediction));
@@ -2099,13 +1891,14 @@ export default async (request, context) => {
       const max = Math.max(...spreads);
       const range = max - min;
       
-      // Size-aware threshold: larger slates should have more variance.
-      // IMPORTANT: at n=4 (your case), stdev~1.0 is not abnormal if the board is tight.
-      const targetStdev = predictions.length <= 3
-        ? 0.5
+      // Size-aware threshold: larger slates should have more variance
+      // SMALL SLATE FIX: For 2-3 games, variance naturally low - use relaxed threshold
+      // REDUCED TARGET: 1.5 stdev is too aggressive when range is good (e.g., 5pt range is fine)
+      const targetStdev = predictions.length <= 3 
+        ? 0.5  // Allow very low variance for tiny slates
         : predictions.length <= 6
-          ? 1.2
-          : Math.max(1.3, 0.4 * Math.sqrt(predictions.length + 4));
+          ? 1.2  // Medium slates: moderate threshold
+          : Math.max(1.3, 0.4 * Math.sqrt(predictions.length + 4));  // Larger slates: reduced from 1.5/0.5
       
       console.log(`[NBA V2] Spread variance: stdev=${stdev.toFixed(2)} (target=${targetStdev.toFixed(2)}), range=${range.toFixed(1)} (${min.toFixed(1)} to ${max.toFixed(1)}), mean=${mean.toFixed(1)}`);
       
@@ -2116,32 +1909,20 @@ export default async (request, context) => {
         const dupeCount = hashes.length - uniqueHashes.size;
         console.warn(`[NBA V2] ⚠️  ${dupeCount} games have duplicate feature vectors (identical inputs)`);
       }
-
-      const dupeFeatureVectors = uniqueHashes.size < hashes.length;
       
-      // Behavior:
-      // - n<=3: always skip (too few samples)
-      // - good range => pass
-      // - if variance is low, warn; only hard-fail when it's *extremely* low AND range is poor
-      //   AND we see duplicated feature vectors (strong sign of a pipeline/input bug).
+      // EARLY SEASON: Relax variance check (within 10% is acceptable)
+      // Teams genuinely cluster more early in season with limited data
+      // SMALL SLATE FIX: Skip variance check entirely for 2-3 game slates
+      // RANGE CHECK: If spread range is good (>4pts), predictions are differentiated enough
       if (predictions.length <= 3) {
         console.log(`[NBA V2] Small slate (${predictions.length} games) - skipping strict variance check`);
       } else if (range >= 4.0) {
         console.log(`[NBA V2] Good spread range (${range.toFixed(1)}pts) - variance check passed`);
-      } else {
+      } else if (stdev < targetStdev * 0.9) {
         const clustered = spreads.filter(s => Math.abs(s - mean) < 1.0).length;
-
-        // "Hard fail" only when we have a real collapse signal.
-        const hardFail = dupeFeatureVectors && range < 3.0 && stdev < 0.75;
-
-        if (hardFail) {
-          throw new Error(`[NBA V2] Spread variance collapsed: stdev=${stdev.toFixed(2)} (target=${targetStdev.toFixed(2)}), range=${range.toFixed(1)} (${clustered}/${spreads.length} near ${mean.toFixed(1)}). Duplicate feature vectors detected - likely input pipeline issue.`);
-        }
-
-        // Otherwise: warn-only. This prevents production outages when the slate is just tight.
-        if (stdev < targetStdev) {
-          console.warn(`[NBA V2] ⚠️  Low spread variance (stdev=${stdev.toFixed(2)} < target=${targetStdev.toFixed(2)}), range=${range.toFixed(1)}; continuing (non-fatal).`);
-        }
+        throw new Error(`[NBA V2] Spread variance collapsed: stdev=${stdev.toFixed(2)} < target ${targetStdev.toFixed(2)} (${clustered}/${spreads.length} games clustered near ${mean.toFixed(1)})`);
+      } else if (stdev < targetStdev) {
+        console.warn(`[NBA V2] ⚠️  Low variance (stdev=${stdev.toFixed(2)} vs target=${targetStdev.toFixed(2)}), but within 10% tolerance for early season`);
       }
     } else if (predictions.length === 1) {
       console.log(`[NBA V2] Single game slate - skipping variance check`);

@@ -59,7 +59,7 @@
         "over": "data/nba/models/phase3/pra_over_coefficients_v1_20251124.json",
         "under": "data/nba/models/phase3/pra_under_coefficients_v1_20251124.json"
       },
-      "threshold": 0.55,
+      "threshold": 0.534,
       "enabled": true,
       "notes": "Use Logistic PRA for Assists - proven superior to LightGBM on this market"
     },
@@ -75,9 +75,9 @@
         "over": "data/nba/models/phase3_lgbm/points_over_v1_20251125.json",
         "under": "data/nba/models/phase3_lgbm/points_under_v1_20251125.json"
       },
-      "threshold": 0.60,
+      "threshold": 0.57,
       "enabled": true,
-      "notes": "High threshold (0.60) for quality over quantity - 121 bets/season"
+      "notes": "Threshold 0.57 for quality over quantity"
     },
     "rebounds": {
       "engine": "lightgbm",
@@ -91,9 +91,9 @@
         "over": "data/nba/models/phase3_lgbm/rebounds_over_v2_20251126.json",
         "under": "data/nba/models/phase3_lgbm/rebounds_under_v2_20251126.json"
       },
-      "threshold": 0.52,
+      "threshold": 0.535,
       "enabled": true,
-      "notes": "Lower threshold (0.52) for volume - 875 bets/season, modest but positive ROI"
+      "notes": "Threshold 0.535 to reduce low-confidence flood while keeping volume"
     }
   },
   "inactive_models": {

@@ -555,7 +555,7 @@ export default function NBAPlayerPropsV2() {
           <li>• <strong>Engine:</strong> Logistic PRA for Assists, LightGBM for Points/Rebounds</li>
           <li>• <strong>Features:</strong> 60 (L5/L10/L20/L40/L999, season-to-date, H2H, opponent defense, rest days)</li>
           <li>• <strong>Markets:</strong> Points (LGBM), Rebounds (LGBM), Assists (Logistic)</li>
-          <li>• <strong>Thresholds:</strong> Assists 0.55 | Points 0.60 | Rebounds 0.52</li>
+          <li>• <strong>Thresholds:</strong> Assists 0.534 | Points 0.57 | Rebounds 0.535</li>
           <li>• <strong>Backtest Results:</strong> Assists 61% WR (+14.2% ROI), Points 58.7% WR (+10.3% ROI), Rebounds 54.2% WR (+1.1% ROI)</li>
           <li>• <strong>Data Source:</strong> Real 2025-26 season boxscores + opponent defense stats</li>
           <li>• <strong>Status:</strong> ✅ Production-ready | Automated daily updates via GitHub Actions</li>
