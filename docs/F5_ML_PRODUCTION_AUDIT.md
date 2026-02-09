@@ -13,21 +13,22 @@
 ┌─────────────────────────────────────────────────────────────────────┐
 │                     GitHub Actions (cron */30)                       │
 │                                                                     │
-│  ┌──────────────┐     ┌──────────────────┐     ┌────────────────┐  │
-│  │ decide_run   │────▶│ generate_f5_ml   │────▶│ upload_to_     │  │
-│  │   .mjs       │     │   .py            │     │   blobs.mjs    │  │
-│  │              │     │                  │     │                │  │
-│  │ • MLB API    │     │ • Load artifacts │     │ • Validate     │  │
-│  │ • Trigger    │     │ • Download data  │     │ • Write snap   │  │
-│  │   windows    │     │   from Blobs     │     │   + metadata   │  │
-│  │ • De-dupe    │     │ • Score model    │     │ • Write latest │  │
-│  │   via Blobs  │     │ • Filter picks   │     │   (if >0)      │  │
-│  └──────┬───────┘     │ • Validate JSON  │     └──────┬─────────┘  │
-│         │             └──────────────────┘            │            │
-│         │ SHOULD_RUN=false → skip                     │            │
-└─────────┼─────────────────────────────────────────────┼────────────┘
-          │                                             │
-          │                                             ▼
+│  ┌──────────────┐  ┌───────────────┐  ┌────────────┐  ┌─────────┐ │
+│  │ decide_run   │─▶│ fetch_odds_   │─▶│ generate_  │─▶│ upload_ │ │
+│  │   .mjs       │  │  today.mjs    │  │  f5_ml.py  │  │ to_     │ │
+│  │              │  │               │  │            │  │ blobs   │ │
+│  │ • MLB API    │  │ • TheOddsAPI  │  │ • Artifacts│  │  .mjs   │ │
+│  │ • Trigger    │  │   F5 ML odds  │  │ • Features │  │         │ │
+│  │   windows    │  │ • Consensus   │  │ • Live or  │  │ • Valid │ │
+│  │ • De-dupe    │  │   (median)    │  │   static   │  │ • Snap  │ │
+│  │   via Blobs  │  │ • game_pk     │  │   odds     │  │ • Meta  │ │
+│  │              │  │   resolution  │  │ • Score    │  │ • Latest│ │
+│  └──────┬───────┘  │ • → Blobs     │  │ • Filter  │  └────┬────┘ │
+│         │          └───────────────┘  └────────────┘       │     │
+│         │ SHOULD_RUN=false → skip                          │     │
+└─────────┼──────────────────────────────────────────────────┼─────┘
+          │                                                  │
+          │                                                  ▼
           │                              ┌──────────────────────────┐
           │                              │    Netlify Blobs         │
           │                              │    (rrmodelblobs)        │
@@ -35,6 +36,7 @@
           │     de-dupe read ◀───────────│ mlb/f5_ml/DATE_label.json│
           │                              │ mlb/f5_ml/latest.json    │
           │                              │ mlb/f5_ml/data/*.parquet │
+          │                              │ mlb/f5_ml/odds/live/*.json│
           │                              └────────────┬─────────────┘
           │                                           │
           │                              ┌────────────▼─────────────┐
@@ -131,7 +133,8 @@
 | `mlb/f5_ml/latest.json` | Most recent picks (only overwritten when picks > 0) | 60s | upload_to_blobs |
 | `mlb/f5_ml/{date}_{label}.json` | Immutable daily snapshot | 3600s | upload_to_blobs |
 | `mlb/f5_ml/data/features_v2.parquet` | Feature matrix | N/A (seed) | seed_data_to_blobs |
-| `mlb/f5_ml/data/consensus_{year}.parquet` | Odds by year | N/A (seed) | seed_data_to_blobs |
+| `mlb/f5_ml/data/consensus_{year}.parquet` | Static odds by year (historical) | N/A (seed) | seed_data_to_blobs |
+| `mlb/f5_ml/odds/live/{date}.json` | Live consensus odds (in-season) | N/A (daily) | fetch_odds_today |
 
 ### Snapshot Metadata (attached to each snapshot blob)
 
@@ -209,7 +212,7 @@
 | Function supports `?date=&label=` | ✅ | URL param parsing |
 | `html2canvas@^1.4.1` in `package.json` | ✅ | line 25 |
 | `@netlify/blobs@^7.4.0` in `package.json` | ✅ | dependency |
-| Workflow YAML references correct scripts | ✅ | steps 3/5/6 |
+| Workflow YAML references correct scripts | ✅ | steps 3/4/6/7 |
 | FORCE_DATE/FORCE_LABEL wired end-to-end | ✅ | YAML inputs → env → decide_run.mjs |
 
 ---
@@ -219,10 +222,11 @@
 | File | Lines | Status | Changes Applied |
 |------|-------|--------|-----------------|
 | `scripts/mlb_f5/decide_run.mjs` | 317 | ✅ | FORCE_DATE/FORCE_LABEL support, getWithMetadata de-dupe |
-| `scripts/mlb_f5/generate_f5_ml.py` | 389 | ✅ | Retry logic (HTTPAdapter×3), `_validate_output()` schema check |
+| `scripts/mlb_f5/fetch_odds_today.mjs` | ~310 | ✅ | **NEW** — live F5 odds via TheOddsAPI → consensus → Blobs |
+| `scripts/mlb_f5/generate_f5_ml.py` | ~460 | ✅ | Retry, validation, **live odds JSON fallback** (live → static parquet) |
 | `scripts/mlb_f5/upload_to_blobs.mjs` | 141 | ✅ | Metadata on snapshot upload (generated_at, pick_count, label, date, model_id) |
 | `scripts/mlb_f5/seed_data_to_blobs.mjs` | 77 | ✅ | Clean — no changes needed |
-| `.github/workflows/mlb-f5-ml-smart.yml` | 113 | ✅ | Clean — no changes needed |
+| `.github/workflows/mlb-f5-ml-smart.yml` | ~130 | ✅ | Added step 4 (fetch_odds_today) with ODDS_API_KEY secret |
 | `.github/workflows/mlb-f5-ml-seed.yml` | 60 | ✅ | **NEW** — cloud seed workflow (workflow_dispatch) |
 | `netlify/functions/f5-ml-latest.mjs` | 92 | ✅ | Cache headers (60s latest / 3600s snapshots), 404 for missing snapshots |
 | `netlify/functions/_blobs-helper.mjs` | 40 | ✅ | Clean — no changes needed |
@@ -262,6 +266,7 @@
 - [ ] **Set GitHub Actions secrets:**
   - `NETLIFY_SITE_ID` — your Netlify site ID
   - `NETLIFY_TOKEN` — Netlify personal access token with Blobs scope
+  - `ODDS_API_KEY` — TheOddsAPI key (for live F5 odds ingestion)
 - [ ] **Seed data to Blobs** (choose one):
   - **Cloud:** Commit parquet files to repo, trigger `mlb-f5-ml-seed` workflow
   - **Local:** `NETLIFY_SITE_ID=xxx NETLIFY_TOKEN=yyy node scripts/mlb_f5/seed_data_to_blobs.mjs --features <path> --odds-dir <path>`
@@ -276,17 +281,129 @@
 
 ### Mid-Season Data Refresh
 
-1. Add new `consensus_{year}.parquet` to repo
-2. Run `mlb-f5-ml-seed` workflow to upload to Blobs
-3. Features file only changes between seasons
+1. Features parquet only changes between seasons
+2. **Live odds are fetched automatically** via `fetch_odds_today.mjs` — no manual refresh needed
+3. For historical replay, add `consensus_{year}.parquet` to repo and run `mlb-f5-ml-seed` workflow
 
 ---
 
-## 8. Failure Modes & Monitoring
+## 8. Live Odds Pipeline (TheOddsAPI)
+
+### Architecture
+
+```
+TheOddsAPI                    MLB Stats API
+     │                             │
+     │ GET /v4/sports/             │ GET /api/v1/schedule
+     │   baseball_mlb/odds         │   ?sportId=1&date=YYYY-MM-DD
+     │   ?markets=h2h_1st_5_innings│
+     │   &regions=us               │
+     │   &oddsFormat=american      │
+     └──────────┬──────────────────┘
+                │
+                ▼
+    ┌──────────────────────┐
+    │  fetch_odds_today    │
+    │       .mjs           │
+    │                      │
+    │  1. Match events by  │
+    │     team names →     │
+    │     game_pk          │
+    │                      │
+    │  2. Collect American  │
+    │     odds per side    │
+    │     per sportsbook   │
+    │                      │
+    │  3. Compute median   │
+    │     (consensus)      │
+    │                      │
+    │  4. Compute no-vig   │
+    │     implied probs    │
+    └──────────┬───────────┘
+               │
+               ▼
+    ┌──────────────────────┐
+    │   Netlify Blobs      │
+    │                      │
+    │   mlb/f5_ml/odds/    │
+    │     live/YYYY-MM-DD  │
+    │     .json            │
+    └──────────┬───────────┘
+               │
+               ▼
+    ┌──────────────────────┐
+    │  generate_f5_ml.py   │
+    │                      │
+    │  _load_odds():       │
+    │  1. Try live JSON    │
+    │  2. Fall back to     │
+    │     static parquet   │
+    └──────────────────────┘
+```
+
+### Live Odds JSON Schema
+
+```json
+[
+  {
+    "game_pk": 778551,
+    "game_date": "2026-04-10",
+    "bet_side": "home",
+    "team_home": "New York Yankees",
+    "team_away": "Boston Red Sox",
+    "odds_decimal": 1.6452,
+    "odds_american": -155,
+    "implied_prob_raw": 0.6079,
+    "implied_prob_novig": 0.5800,
+    "books_available": 7,
+    "median_american": -155,
+    "snapshot_utc": "2026-04-10T14:30:00.000Z"
+  }
+]
+```
+
+### Team Name Resolution
+
+TheOddsAPI returns full team names (e.g., "New York Yankees"). These are matched
+to MLB Stats API `gamePk` values by normalizing and comparing home/away team name
+pairs. A comprehensive alias map handles edge cases (e.g., "LA Angels" → "Los Angeles Angels").
+
+### Consensus (Median) Pricing
+
+- All available US-region sportsbooks' American odds are collected per game/side
+- **Median** is used (not mean) — robust to outliers from one book
+- No-vig implied probability is calculated by normalizing home + away raw probs to sum to 1.0
+- `books_available` tracks how many sportsbooks contributed to the consensus
+
+### Fallback Logic in `generate_f5_ml.py`
+
+Priority order via `_load_odds()`:
+1. **Live JSON** (`mlb/f5_ml/odds/live/{date}.json`) — used for in-season dates
+2. **Static Parquet** (`mlb/f5_ml/data/consensus_{year}.parquet`) — used for historical dates
+
+This means:
+- 2023–2025 seasons: static parquets (already seeded)
+- 2026+ seasons: live JSON fetched daily from TheOddsAPI
+- Zero manual intervention for future seasons
+
+### API Quota
+
+- Cost per call: **1 credit** (1 market × 1 region)
+- Called once per workflow trigger window (max 3 per day)
+- Typical season usage: ~3/day × 180 days = ~540 credits/season
+
+---
+
+## 9. Failure Modes & Monitoring
 
 | Failure | Log Signature | Impact | Recovery |
 |---------|--------------|--------|----------|
 | MLB API down | `NO-OP: MLB API error: HTTP 5xx` | No picks this tick | Auto-retry next 30-min tick |
+| TheOddsAPI down | `TheOddsAPI error: HTTP 5xx` | Workflow step fails | Generator falls back to static parquet if available |
+| TheOddsAPI rate limited | `TheOddsAPI rate limited (429)` | No live odds | Falls back to static parquet; check quota |
+| Missing ODDS_API_KEY | `Missing ODDS_API_KEY environment variable` | Odds step fails | Set secret in repo Settings → Secrets |
+| No F5 odds available | `No F5 odds available from TheOddsAPI` | Empty odds file | Normal before bookmakers open lines |
+| Team name mismatch | `Unmatched odds event: ...` | Some games miss odds | Add alias to ODDS_TEAM_ALIASES map |
 | Blobs download fail (Python) | `Blobs download failed: HTTP 502` | Retries 3× automatically | If all fail: 0 picks; next tick retries |
 | No games on date | `NO-OP: No games scheduled today` | None (expected) | N/A |
 | De-duped | `NO-OP: All candidate snapshots already exist` | None (expected) | N/A |
@@ -301,16 +418,23 @@
 🟢  TRIGGER: morning for 2026-04-10       ← trigger fired
 ⏭️  NO-OP: Off-season (month 2)           ← expected off-season skip
 ⏭️  NO-OP: All candidate snapshots…       ← de-dupe working correctly
+🎰  Fetching F5 ML odds from TheOddsAPI…  ← odds fetch started
+  Quota: used=5, remaining=495, cost=1    ← API usage tracking
+  Resolved: 15 matched, 0 unmatched       ← team name resolution
+📊  Consensus: 30 records (15 games…)     ← consensus built
+  ☁️  Uploaded 30 records → Blobs          ← odds saved to Blobs
+✅  Loaded 30 live odds records for…       ← Python loaded live odds
 ✅  Output validation passed               ← schema verified
 ✅  F5 ML: 6 picks for 2026-04-10         ← generation success
 F5 ML: ran morning for 2026-04-10…       ← upload success
 ❌  Output validation failed:              ← data/model issue
 ❌  Upload error:                          ← Blobs write issue
+❌  fetch_odds_today error:                ← odds API issue
 ```
 
 ---
 
-## 9. Local Testing Commands (Sanity Only — Production Never Depends on Local)
+## 10. Local Testing Commands (Sanity Only — Production Never Depends on Local)
 
 ```bash
 # 1. Test decision script (uses real MLB API for today)
@@ -319,13 +443,16 @@ node scripts/mlb_f5/decide_run.mjs
 # 2. Test with force override
 FORCE_DATE=2025-07-15 FORCE_LABEL=morning node scripts/mlb_f5/decide_run.mjs
 
-# 3. Test Python generator (needs data in Blobs or local cache)
+# 3. Test live odds fetch (requires ODDS_API_KEY)
+ODDS_API_KEY=xxx node scripts/mlb_f5/fetch_odds_today.mjs --date 2025-07-15
+
+# 4. Test Python generator (needs data in Blobs or local cache)
 python scripts/mlb_f5/generate_f5_ml.py \
   --date 2025-07-15 --run-label morning \
   --outdir tmp/f5_ml_out \
   --first-pitch-et 13:10 --last-pitch-et 22:10 --games-count 15
 
-# 4. Test upload (needs Netlify creds)
+# 5. Test upload (needs Netlify creds)
 NETLIFY_SITE_ID=xxx NETLIFY_TOKEN=yyy \
   node scripts/mlb_f5/upload_to_blobs.mjs \
     --file tmp/f5_ml_out/2025-07-15_morning.json \
@@ -334,6 +461,6 @@ NETLIFY_SITE_ID=xxx NETLIFY_TOKEN=yyy \
 
 ---
 
-## 10. Verdict
+## 11. Verdict
 
-**🟢 GO** — All blockers resolved, all should-fixes applied. Cloud seeding available via workflow_dispatch. Output validated at two layers (Python + upload). Cache headers differentiated. De-dupe reliable with `getWithMetadata` + snapshot metadata. Secrets + seed + smoke test → ship.
+**🟢 GO** — All blockers resolved, all should-fixes applied. Live odds ingestion via TheOddsAPI fully integrated (fetch → consensus → Blobs → Python fallback). Cloud seeding available via workflow_dispatch. Output validated at two layers (Python + upload). Cache headers differentiated. De-dupe reliable with `getWithMetadata` + snapshot metadata. Zero manual intervention needed for 2026+ seasons. Secrets (3 total: NETLIFY_SITE_ID, NETLIFY_TOKEN, ODDS_API_KEY) + seed + smoke test → ship.

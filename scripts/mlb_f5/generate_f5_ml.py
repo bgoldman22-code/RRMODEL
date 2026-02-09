@@ -123,6 +123,92 @@ def _implied_prob(d: float) -> float:
 
 
 # ═══════════════════════════════════════════════════════════════
+# LIVE ODDS LOADING (JSON from Blobs, fallback to static parquet)
+# ═══════════════════════════════════════════════════════════════
+
+def _load_live_odds_json(game_date: str) -> pd.DataFrame | None:
+    """
+    Try to load live odds JSON from Netlify Blobs.
+    Key: mlb/f5_ml/odds/live/{YYYY-MM-DD}.json
+
+    Returns a DataFrame with columns matching the consensus parquet schema
+    (game_pk, bet_side, odds_decimal, odds_american, implied_prob_raw, etc.)
+    or None if not available.
+    """
+    blob_key   = f"mlb/f5_ml/odds/live/{game_date}.json"
+    cache_name = f"live_odds_{game_date}.json"
+    cached     = CACHE_DIR / cache_name
+
+    # Try local cache first
+    if cached.exists():
+        logger.info("Using cached live odds: %s", cached)
+    else:
+        if not _download_from_blobs(blob_key, cached):
+            return None
+
+    try:
+        import json as _json
+        raw = cached.read_text()
+        records = _json.loads(raw)
+        if not isinstance(records, list) or len(records) == 0:
+            logger.info("Live odds JSON is empty for %s", game_date)
+            return None
+        df = pd.DataFrame(records)
+        # Ensure game_pk is numeric (float64 to match parquet convention)
+        if "game_pk" in df.columns:
+            df["game_pk"] = pd.to_numeric(df["game_pk"], errors="coerce")
+        logger.info("✅  Loaded %d live odds records for %s", len(df), game_date)
+        return df
+    except Exception as e:
+        logger.warning("Failed to parse live odds JSON: %s", e)
+        return None
+
+
+def _load_static_parquet_odds(game_date: str, target_ts: pd.Timestamp) -> pd.DataFrame | None:
+    """
+    Fall back to the static consensus parquet for historical dates.
+    """
+    year = int(game_date[:4])
+    odds_key  = f"mlb/f5_ml/data/consensus_{year}.parquet"
+    odds_file = f"consensus_{year}.parquet"
+
+    try:
+        odds_path = _ensure_data_file(odds_key, odds_file)
+    except FileNotFoundError:
+        logger.info("No static consensus parquet for %d", year)
+        return None
+
+    odds = pd.read_parquet(odds_path)
+    odds["game_date"] = pd.to_datetime(odds["game_date"], errors="coerce")
+    odds = odds[odds["game_date"].dt.normalize() == target_ts].copy()
+
+    if odds.empty:
+        logger.info("Static parquet exists but no rows for %s", game_date)
+        return None
+
+    logger.info("✅  Loaded %d static parquet odds for %s", len(odds), game_date)
+    return odds
+
+
+def _load_odds(game_date: str, target_ts: pd.Timestamp) -> pd.DataFrame | None:
+    """
+    Load odds with priority: live JSON → static parquet.
+    """
+    # 1) Try live JSON first (in-season / current dates)
+    live = _load_live_odds_json(game_date)
+    if live is not None and not live.empty:
+        return live
+
+    # 2) Fall back to static parquet (historical / pre-seeded)
+    static = _load_static_parquet_odds(game_date, target_ts)
+    if static is not None and not static.empty:
+        return static
+
+    logger.warning("No odds available for %s (neither live nor static)", game_date)
+    return None
+
+
+# ═══════════════════════════════════════════════════════════════
 # CORE GENERATOR
 # ═══════════════════════════════════════════════════════════════
 
@@ -172,21 +258,9 @@ def generate(
     feats = feats.reset_index(drop=True)
     feats["p_home"] = p_home
 
-    # 4. Load consensus odds
-    year = int(game_date[:4])
-    odds_key  = f"mlb/f5_ml/data/consensus_{year}.parquet"
-    odds_file = f"consensus_{year}.parquet"
-    try:
-        odds_path = _ensure_data_file(odds_key, odds_file)
-    except FileNotFoundError:
-        return _empty_response(cfg, game_date, run_label, ts_start,
-                               first_pitch_et, last_pitch_et, games_count, f"No odds file for {year}")
-
-    odds = pd.read_parquet(odds_path)
-    odds["game_date"] = pd.to_datetime(odds["game_date"], errors="coerce")
-    odds = odds[odds["game_date"].dt.normalize() == target_ts].copy()
-
-    if odds.empty:
+    # 4. Load consensus odds — try live JSON first, fall back to static parquet
+    odds = _load_odds(game_date, target_ts)
+    if odds is None or odds.empty:
         return _empty_response(cfg, game_date, run_label, ts_start,
                                first_pitch_et, last_pitch_et, games_count, "No odds for date")
 
