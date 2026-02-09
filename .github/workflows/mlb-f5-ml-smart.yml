@@ -1,0 +1,112 @@
+name: MLB F5 ML Smart Scheduler
+
+on:
+  schedule:
+    # Every 30 minutes during baseball season hours (12:00–04:00 UTC = 8am–midnight ET)
+    - cron: '*/30 12-23 * * *'
+    - cron: '*/30 0-3 * * *'
+  workflow_dispatch:
+    inputs:
+      force_date:
+        description: 'Force a specific date (YYYY-MM-DD)'
+        required: false
+      force_label:
+        description: 'Force a run label (morning|pre_afternoon|pre_night)'
+        required: false
+
+concurrency:
+  group: mlb-f5-ml-smart
+  cancel-in-progress: true
+
+jobs:
+  smart-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ───────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Node.js ────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install npm dependencies
+        run: npm install
+
+      # ── 3. Decide whether to run ──────────────────────────
+      - name: Decide run
+        id: decide
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          FORCE_DATE: ${{ github.event.inputs.force_date || '' }}
+          FORCE_LABEL: ${{ github.event.inputs.force_label || '' }}
+        run: node scripts/mlb_f5/decide_run.mjs
+
+      # ── 4. Python setup (only when running) ────────────────
+      - name: Setup Python
+        if: steps.decide.outputs.SHOULD_RUN == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        if: steps.decide.outputs.SHOULD_RUN == 'true'
+        run: |
+          pip install --upgrade pip
+          pip install pandas scikit-learn joblib numpy pyarrow requests
+
+      # ── 5. Generate picks ─────────────────────────────────
+      - name: Generate F5 ML picks
+        if: steps.decide.outputs.SHOULD_RUN == 'true'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          python scripts/mlb_f5/generate_f5_ml.py \
+            --date "${{ steps.decide.outputs.TARGET_DATE }}" \
+            --run-label "${{ steps.decide.outputs.RUN_LABEL }}" \
+            --outdir tmp/f5_ml_out \
+            --first-pitch-et "${{ steps.decide.outputs.FIRST_PITCH_ET }}" \
+            --last-pitch-et "${{ steps.decide.outputs.LAST_PITCH_ET }}" \
+            --games-count "${{ steps.decide.outputs.GAMES_COUNT }}"
+
+      # ── 6. Upload picks to Netlify Blobs ───────────────────
+      - name: Upload to Blobs
+        if: steps.decide.outputs.SHOULD_RUN == 'true'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          node scripts/mlb_f5/upload_to_blobs.mjs \
+            --file tmp/f5_ml_out/${{ steps.decide.outputs.TARGET_DATE }}_${{ steps.decide.outputs.RUN_LABEL }}.json \
+            --label "${{ steps.decide.outputs.RUN_LABEL }}" \
+            --date "${{ steps.decide.outputs.TARGET_DATE }}"
+
+      # ── 7. Summary ────────────────────────────────────────
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## MLB F5 ML Smart Run" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date -u +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**Should Run:** ${{ steps.decide.outputs.SHOULD_RUN }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.decide.outputs.SHOULD_RUN }}" == "true" ]; then
+            echo "**Target Date:** ${{ steps.decide.outputs.TARGET_DATE }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Run Label:** ${{ steps.decide.outputs.RUN_LABEL }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Games:** ${{ steps.decide.outputs.GAMES_COUNT }}" >> $GITHUB_STEP_SUMMARY
+            echo "**First Pitch ET:** ${{ steps.decide.outputs.FIRST_PITCH_ET }}" >> $GITHUB_STEP_SUMMARY
+            if [ -f "tmp/f5_ml_out/${{ steps.decide.outputs.TARGET_DATE }}_${{ steps.decide.outputs.RUN_LABEL }}.json" ]; then
+              PICK_COUNT=$(cat "tmp/f5_ml_out/${{ steps.decide.outputs.TARGET_DATE }}_${{ steps.decide.outputs.RUN_LABEL }}.json" | python -c "import sys,json;print(json.load(sys.stdin)['meta']['total_picks'])" 2>/dev/null || echo "?")
+              echo "**Picks Generated:** $PICK_COUNT" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "**Reason:** ${{ steps.decide.outputs.SKIP_REASON || 'No trigger window' }}" >> $GITHUB_STEP_SUMMARY
+          fi

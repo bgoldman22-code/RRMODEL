@@ -1,0 +1,19 @@
+{
+  "market": "f5_ml",
+  "version": "2.0.0",
+  "target": "label_f5_home_win",
+  "features_count": 253,
+  "train_seasons": [
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "train_size": 8201,
+  "model_class": "LogisticRegression",
+  "model_params": {
+    "C": 0.01,
+    "max_iter": 1000
+  },
+  "timestamp": "20260109_141643"
+}

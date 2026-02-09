@@ -179,12 +179,20 @@ export function scorePropPick(pick, saferMode = false) {
   const propType = pick.propType?.toLowerCase();
   const betSide = pick.betSide?.toUpperCase();
   
-  // AVOID: Unders on lines <= 3.5 (MAJOR penalty)
+  // HARD GATE: Unders on lines <= 3.5 are BLOCKED unless 80%+ L5 AND 70%+ L10
+  // These are volatile low-line props — only include if consistency is elite
   if (betSide === 'UNDER' && line <= 3.5) {
-    score -= 50;
+    const l5 = getHitRate(pick, 5);
+    const l10 = getHitRate(pick, 10);
+    const passesGate = (l5 !== null && l5 >= 0.80) && (l10 !== null && l10 >= 0.70);
+    if (!passesGate) {
+      return -9999; // Hard block — cannot enter any parlay
+    }
+    // If it passes the gate, small bonus for proving consistency on a tough line
+    score += 5;
   }
   
-  // AVOID: Assists unders in low ranges
+  // AVOID: Assists unders in low ranges (soft penalty, not hard block)
   if (propType === 'assists' && betSide === 'UNDER' && line <= 4.5) {
     score -= 30;
   }
@@ -247,6 +255,10 @@ export function scorePropPick(pick, saferMode = false) {
   
   // Aligned pick bonus
   if (pick.isAligned) score += 15;
+  
+  // DUAL-SIGNAL CONVICTION: Pick appears in both V1+V2 aligned AND Phase 3.5
+  // This means two independent models agree — highest conviction possible
+  if (pick.isDualSignal) score += 25;
   
   // Safer mode adjustments
   if (saferMode && betSide === 'UNDER' && line <= 4.5) {
@@ -585,46 +597,128 @@ function selectDiverseLegs(legs, count, saferMode) {
 }
 
 // Generate confidence parlays (props + safe game legs)
-export function generateConfidenceParlays(strongSignals, gamePredictions, rng, saferMode = false, allowSafetyAlt = true) {
+export function generateConfidenceParlays(strongSignals, v2Props, gamePredictions, rng, saferMode = false, allowSafetyAlt = true) {
   const parlays = [];
   
-  // Score and sort props
-  const scoredProps = strongSignals.map(pick => ({
-    ...pick,
-    type: 'PROP',
-    gameId: `${pick.team}-${pick.opponent}`,
-    score: scorePropPick(pick, saferMode)
-  })).sort((a, b) => b.score - a.score);
+  // ===== PHASE 3.5 POINTS PICKS (feed into confidence parlays, not just SGPs) =====
+  const phase35Points = (v2Props || [])
+    .filter(p => p.propType?.toLowerCase() === 'points' && meetsPhase35Criteria(p))
+    .map(pick => ({
+      ...pick,
+      type: 'PROP',
+      source: 'Phase35',
+      gameId: normalizeGameKey(pick.team, pick.opponent),
+      score: scorePropPick(pick, saferMode)
+    }))
+    .filter(p => p.score > -9999); // Respect hard gates
   
-  // Get safe game legs (ML from high confidence games)
+  // ===== DUAL-SIGNAL DETECTION =====
+  // Mark picks that appear in BOTH aligned (strongSignals) AND Phase 3.5
+  const phase35Keys = new Set(phase35Points.map(p => createPickKey(p)));
+  
+  // Score and sort props — include aligned + Phase 3.5 points
+  const scoredProps = strongSignals.map(pick => {
+    const key = createPickKey(pick);
+    const isDualSignal = phase35Keys.has(key);
+    return {
+      ...pick,
+      type: 'PROP',
+      source: 'Aligned',
+      gameId: normalizeGameKey(pick.team, pick.opponent),
+      isDualSignal,
+      score: scorePropPick({ ...pick, isDualSignal }, saferMode)
+    };
+  }).filter(p => p.score > -9999); // Respect hard gates
+  
+  // Add Phase 3.5 points picks that aren't already in aligned (avoid dupes)
+  const alignedKeys = new Set(scoredProps.map(p => createPickKey(p)));
+  const uniquePhase35 = phase35Points.filter(p => !alignedKeys.has(createPickKey(p)));
+  
+  const allProps = [...scoredProps, ...uniquePhase35].sort((a, b) => b.score - a.score);
+  
+  // ===== GAME LEGS: ML, heavy ML, and STRONG spreads =====
   const safeGameLegs = [];
   gamePredictions.forEach(pred => {
     const winProb = pred.prediction?.winProbability?.favoritePercent || 0;
     const mlOpp = pred.opportunities?.find(o => o.market === 'Moneyline');
+    const spreadOpp = pred.opportunities?.find(o => o.market === 'Spread');
+    const mlEdge = mlOpp?.edgePercent || 0;
+    const spreadEdge = spreadOpp?.edgePercent || 0;
+    const mlOdds = Number(mlOpp?.odds) || -150;
+    const homeTeam = pred.homeTeam || pred.teams?.home?.abbreviation || '';
+    const awayTeam = pred.awayTeam || pred.teams?.away?.abbreviation || '';
+    const gameId = normalizeGameKey(homeTeam, awayTeam);
     
-    // Safe ML: high win probability even if not "edge" pick
+    // 1. Standard ML leg: high win probability (60%+)
     if (winProb >= 60 && mlOpp) {
       safeGameLegs.push({
         type: 'ML',
         game: pred.game,
-        gameId: pred.homeTeam + pred.awayTeam,
-        pick: pred.prediction?.winProbability?.favoriteTeam,
+        gameId,
+        pick: mlOpp.pick,
         odds: mlOpp.odds,
+        edge: mlEdge,
         winProb,
         isSafeGameLeg: true,
-        score: winProb + (mlOpp.edgePercent || 0)
+        score: winProb + (mlEdge * 2)
+      });
+    }
+    
+    // 2. Heavy favorite ML (-200 or better) when model agrees with big edge
+    // These are safe "anchor" legs for profit boosts
+    if (mlOdds <= -200 && mlEdge >= 3 && winProb >= 65 && mlOpp) {
+      // Don't double-add if already added above — just boost the score
+      const existing = safeGameLegs.find(l => l.gameId === gameId && l.type === 'ML');
+      if (existing) {
+        existing.score += 15; // Heavy fav alignment bonus
+        existing.isHeavyFav = true;
+      } else {
+        safeGameLegs.push({
+          type: 'ML',
+          game: pred.game,
+          gameId,
+          pick: mlOpp.pick,
+          odds: mlOpp.odds,
+          edge: mlEdge,
+          winProb,
+          isSafeGameLeg: true,
+          isHeavyFav: true,
+          score: winProb + (mlEdge * 2) + 15
+        });
+      }
+    }
+    
+    // 3. STRONG spread legs: big spread mispricing (edge >= 10%)
+    if (spreadOpp && spreadEdge >= 10) {
+      safeGameLegs.push({
+        type: 'SPREAD',
+        game: pred.game,
+        gameId,
+        pick: spreadOpp.pick,
+        odds: spreadOpp.odds,
+        edge: spreadEdge,
+        winProb,
+        isSafeGameLeg: true,
+        isStrongSpread: true,
+        score: spreadEdge * 3 + 20 // Big edge spreads get high score
       });
     }
   });
   
-  // Combine and shuffle
-  const allLegs = [...scoredProps, ...safeGameLegs];
-  const shuffled = seededShuffle(allLegs, rng);
+  safeGameLegs.sort((a, b) => b.score - a.score);
+  
+  // Combine all legs, then LOCK top 40% by score, shuffle only bottom 60%
+  // This ensures elite picks (highest edge, dual-signal) always appear
+  const allLegs = [...allProps, ...safeGameLegs].sort((a, b) => b.score - a.score);
+  const lockCount = Math.max(3, Math.ceil(allLegs.length * 0.4));
+  const locked = allLegs.slice(0, lockCount);
+  const shuffleable = seededShuffle(allLegs.slice(lockCount), rng);
+  const combined = [...locked, ...shuffleable];
   
   // Generate 3 x 3-leg parlays
   for (let i = 0; i < 3; i++) {
     const offset = i * 4;
-    let legs = selectDiverseLegs(shuffled.slice(offset), 3, saferMode);
+    let legs = selectDiverseLegs(combined.slice(offset), 3, saferMode);
     
     // Apply safety alt to at most 1 leg per parlay
     if (allowSafetyAlt && legs.length >= 3) {
@@ -643,11 +737,14 @@ export function generateConfidenceParlays(strongSignals, gamePredictions, rng, s
         name: `Confidence 3-Leg #${i + 1}`,
         legs: legs.slice(0, 3),
         reasoning: [
-          'Mix of aligned props and safe game legs',
+          'Mix of aligned props, Phase 3.5 points, and game legs',
+          legs.some(l => l.isDualSignal) ? '🔥 Contains dual-signal conviction pick' : '',
+          legs.some(l => l.isStrongSpread) ? '📊 Contains STRONG spread mispricing' : '',
+          legs.some(l => l.isHeavyFav) ? '🏠 Heavy favorite ML aligns with model' : '',
           allowSafetyAlt && legs.some(l => l.safetyAltApplied) ? 
-            'Safety alt-line applied to 1 borderline leg' : 'No safety adjustments needed',
+            'Safety alt-line applied to 1 borderline leg' : '',
           'Designed for profit boost usage'
-        ]
+        ].filter(Boolean)
       });
     }
   }
@@ -655,7 +752,7 @@ export function generateConfidenceParlays(strongSignals, gamePredictions, rng, s
   // Generate 2 x 4-leg parlays
   for (let i = 0; i < 2; i++) {
     const offset = 12 + (i * 5);
-    let legs = selectDiverseLegs(shuffled.slice(offset), 4, saferMode);
+    let legs = selectDiverseLegs(combined.slice(offset), 4, saferMode);
     
     // Apply safety alt to at most 1 leg
     if (allowSafetyAlt && legs.length >= 4) {
@@ -675,9 +772,10 @@ export function generateConfidenceParlays(strongSignals, gamePredictions, rng, s
         legs: legs.slice(0, 4),
         reasoning: [
           'Higher leg count for bigger boost multipliers',
-          'Props from aligned picks + safe ML legs',
+          'Props from aligned + Phase 3.5 + game legs',
+          legs.some(l => l.isDualSignal) ? '🔥 Contains dual-signal conviction pick' : '',
           'At most 1 safety alt-line adjustment allowed'
-        ]
+        ].filter(Boolean)
       });
     }
   }
@@ -698,7 +796,8 @@ export function generateSGPParlays(strongSignals, v2Props, gamePredictions, rng,
       source: 'Phase35',
       gameId: normalizeGameKey(pick.team, pick.opponent),
       score: scorePropPick(pick, saferMode)
-    }));
+    }))
+    .filter(p => p.score > -9999); // Respect hard gates
   
   // Add aligned picks (all prop types)
   const alignedPicks = strongSignals
@@ -708,7 +807,8 @@ export function generateSGPParlays(strongSignals, v2Props, gamePredictions, rng,
       source: 'Aligned',
       gameId: normalizeGameKey(pick.team, pick.opponent),
       score: scorePropPick(pick, saferMode)
-    }));
+    }))
+    .filter(p => p.score > -9999); // Respect hard gates (≤3.5 under rule)
   
   // Combine all props
   const allProps = [...phase35Points, ...alignedPicks];
@@ -786,21 +886,32 @@ export function generateSGPParlays(strongSignals, v2Props, gamePredictions, rng,
     }
   }
   
-  // Sort games by quality (more players, higher avg score)
+  // Sort games by quality — prioritize anchored games with high edge, then player count
   eligibleGames.sort((a, b) => {
-    // Prefer games with more unique players
+    // Anchored games always first
+    const aHasAnchor = a.props.some(p => p.isAnchor) ? 1 : 0;
+    const bHasAnchor = b.props.some(p => p.isAnchor) ? 1 : 0;
+    if (bHasAnchor !== aHasAnchor) return bHasAnchor - aHasAnchor;
+    // Then by max edge among props
+    const aMaxEdge = Math.max(...a.props.map(p => Number(p.edge) || p.score || 0));
+    const bMaxEdge = Math.max(...b.props.map(p => Number(p.edge) || p.score || 0));
+    if (bMaxEdge !== aMaxEdge) return bMaxEdge - aMaxEdge;
+    // Then by player count
     if (b.uniquePlayers !== a.uniquePlayers) return b.uniquePlayers - a.uniquePlayers;
     return b.avgScore - a.avgScore;
   });
   
-  // Shuffle with some randomness but keep best games first
-  const shuffledGames = seededShuffle(eligibleGames, rng);
+  // Lock top 2 games by quality, shuffle the rest for variety
+  const sgpLockCount = Math.min(2, eligibleGames.length);
+  const lockedGames = eligibleGames.slice(0, sgpLockCount);
+  const shuffledRest = seededShuffle(eligibleGames.slice(sgpLockCount), rng);
+  const orderedGames = [...lockedGames, ...shuffledRest];
   
   // Generate SGPs from best games
   let sgpCount = 0;
   const maxSGPs = 3; // 2x 3-leg + 1x 4-leg
   
-  for (const game of shuffledGames) {
+  for (const game of orderedGames) {
     if (sgpCount >= maxSGPs) break;
     
     const { gameKey, props } = game;
@@ -895,6 +1006,279 @@ export function generateSGPParlays(strongSignals, v2Props, gamePredictions, rng,
   return parlays;
 }
 
+// =============================================================================
+// CROSS-GAME CONFIDENCE PARLAYS
+// The most important parlay type: stacks STRONG anchors from different games
+// with the highest-edge props across the entire slate.
+// =============================================================================
+
+export function generateCrossGameParlays(strongSignals, v2Props, gamePredictions, rng, saferMode = false) {
+  const parlays = [];
+  
+  // ===== 1. COLLECT ALL STRONG ANCHORS (ML + Spread) =====
+  const strongAnchors = [];
+  
+  gamePredictions.forEach(pred => {
+    const winProb = pred.prediction?.winProbability?.favoritePercent || 0;
+    const confidence = pred.prediction?.confidence || 0;
+    const mlOpp = pred.opportunities?.find(o => o.market === 'Moneyline');
+    const spreadOpp = pred.opportunities?.find(o => o.market === 'Spread');
+    const mlEdge = mlOpp?.edgePercent || 0;
+    const spreadEdge = spreadOpp?.edgePercent || 0;
+    const mlOdds = Number(mlOpp?.odds) || -150;
+    const homeTeam = pred.homeTeam || pred.teams?.home?.abbreviation || '';
+    const awayTeam = pred.awayTeam || pred.teams?.away?.abbreviation || '';
+    const gameId = normalizeGameKey(homeTeam, awayTeam);
+    
+    // STRONG ML anchors: labeled STRONG, OR big edge (8%+), OR high win prob (66%+)
+    if (mlOpp && (mlEdge >= 8 || winProb >= 66 || pred.strength === 'STRONG')) {
+      strongAnchors.push({
+        type: 'ML',
+        source: 'Game',
+        game: pred.game,
+        gameId,
+        pick: mlOpp.pick,
+        odds: mlOpp.odds,
+        edge: mlEdge,
+        winProb,
+        confidence,
+        isAnchor: true,
+        isStrong: mlEdge >= 8 || pred.strength === 'STRONG',
+        // Score: strongly favor high edge + high win prob
+        score: (mlEdge * 3) + (winProb * 0.8) + (pred.strength === 'STRONG' ? 30 : 0)
+      });
+    }
+    
+    // Heavy favorite ML (-200 or deeper) when model has edge — safe anchor legs
+    if (mlOpp && mlOdds <= -200 && mlEdge >= 3 && winProb >= 65) {
+      // Check if already added as strong anchor (avoid dupe)
+      const alreadyAdded = strongAnchors.find(a => a.gameId === gameId && a.type === 'ML');
+      if (alreadyAdded) {
+        alreadyAdded.isHeavyFav = true;
+        alreadyAdded.score += 10;
+      } else {
+        strongAnchors.push({
+          type: 'ML',
+          source: 'Game',
+          game: pred.game,
+          gameId,
+          pick: mlOpp.pick,
+          odds: mlOpp.odds,
+          edge: mlEdge,
+          winProb,
+          confidence,
+          isAnchor: true,
+          isHeavyFav: true,
+          score: (mlEdge * 3) + (winProb * 0.8) + 10
+        });
+      }
+    }
+    
+    // STRONG spread mispricing (edge >= 10%)
+    if (spreadOpp && spreadEdge >= 10) {
+      strongAnchors.push({
+        type: 'SPREAD',
+        source: 'Game',
+        game: pred.game,
+        gameId,
+        pick: spreadOpp.pick,
+        odds: spreadOpp.odds,
+        edge: spreadEdge,
+        winProb,
+        confidence,
+        isAnchor: true,
+        isStrongSpread: true,
+        score: (spreadEdge * 3) + 25
+      });
+    }
+  });
+  
+  // Sort anchors by score (highest edge / conviction first)
+  strongAnchors.sort((a, b) => b.score - a.score);
+  
+  // ===== 2. COLLECT ALL STRONG PROPS =====
+  // Combine aligned + Phase 3.5 points, mark dual-signal
+  const phase35All = (v2Props || [])
+    .filter(p => meetsPhase35Criteria(p))
+    .map(p => ({ ...p, isPhase35: true }));
+  const phase35Keys = new Set(phase35All.map(p => createPickKey(p)));
+  
+  const strongProps = [
+    ...strongSignals.map(pick => {
+      const isDualSignal = phase35Keys.has(createPickKey(pick));
+      return {
+        ...pick,
+        type: 'PROP',
+        source: isDualSignal ? 'DualSignal' : 'Aligned',
+        gameId: normalizeGameKey(pick.team, pick.opponent),
+        isDualSignal,
+        score: scorePropPick({ ...pick, isDualSignal }, saferMode)
+      };
+    }),
+    // Phase 3.5 points not in aligned
+    ...phase35All
+      .filter(p => p.propType?.toLowerCase() === 'points')
+      .filter(p => !strongSignals.some(ss => createPickKey(ss) === createPickKey(p)))
+      .map(pick => ({
+        ...pick,
+        type: 'PROP',
+        source: 'Phase35',
+        gameId: normalizeGameKey(pick.team, pick.opponent),
+        score: scorePropPick(pick, saferMode)
+      }))
+  ]
+    .filter(p => p.score > -9999) // Hard gate
+    .sort((a, b) => b.score - a.score);
+  
+  // ===== 3. BUILD CROSS-GAME PARLAYS =====
+  
+  if (strongAnchors.length === 0) {
+    console.log('[CrossGame] No strong anchors available');
+    return parlays;
+  }
+  
+  // --- PARLAY A: "Best Value" — 2 STRONG anchors + best prop (3-leg) ---
+  if (strongAnchors.length >= 2) {
+    const anchor1 = strongAnchors[0];
+    const anchor2 = strongAnchors.find(a => a.gameId !== anchor1.gameId);
+    
+    if (anchor2) {
+      // Find best prop NOT from either anchor game
+      const bestProp = strongProps.find(p => 
+        p.gameId !== anchor1.gameId && p.gameId !== anchor2.gameId
+      ) || strongProps.find(p => p.gameId !== anchor1.gameId); // Fallback: just avoid anchor1's game
+      
+      const legs = [anchor1, anchor2];
+      if (bestProp) legs.push(bestProp);
+      
+      if (legs.length >= 2) {
+        parlays.push({
+          name: '🔥 Cross-Game: Best Value',
+          legs,
+          isCrossGame: true,
+          reasoning: [
+            `${anchor1.type} anchor: ${anchor1.pick} (${anchor1.edge?.toFixed?.(1) || anchor1.edge}% edge)`,
+            `${anchor2.type} anchor: ${anchor2.pick} (${anchor2.edge?.toFixed?.(1) || anchor2.edge}% edge)`,
+            bestProp ? `Best prop: ${bestProp.player} ${bestProp.betSide} ${bestProp.vegasLine || bestProp.line} (${Number(bestProp.edge)?.toFixed?.(1) || bestProp.edge}% edge)` : '',
+            bestProp?.isDualSignal ? '🔥 Prop has dual-signal conviction (V1+V2 agree)' : '',
+            'Stacks STRONG anchors from different games'
+          ].filter(Boolean)
+        });
+      }
+    }
+  }
+  
+  // --- PARLAY B: "High Edge Props" — 1 anchor + 2 highest-edge props (3-leg) ---
+  {
+    const anchor = strongAnchors[0];
+    const topProps = strongProps
+      .filter(p => p.gameId !== anchor.gameId)
+      .slice(0, 2);
+    
+    // If not enough props from other games, allow same game
+    if (topProps.length < 2) {
+      const sameGameProps = strongProps
+        .filter(p => p.player?.toLowerCase() !== anchor.pick?.toLowerCase())
+        .slice(0, 2 - topProps.length);
+      topProps.push(...sameGameProps);
+    }
+    
+    if (topProps.length >= 2) {
+      const legs = [anchor, ...topProps];
+      parlays.push({
+        name: '🎯 Cross-Game: Highest Edge Props',
+        legs,
+        isCrossGame: true,
+        reasoning: [
+          `Anchored by ${anchor.type}: ${anchor.pick} (${anchor.edge?.toFixed?.(1) || anchor.edge}% edge)`,
+          `Prop 1: ${topProps[0].player} (${Number(topProps[0].edge)?.toFixed?.(1) || topProps[0].edge}% edge)`,
+          `Prop 2: ${topProps[1].player} (${Number(topProps[1].edge)?.toFixed?.(1) || topProps[1].edge}% edge)`,
+          topProps.some(p => p.isDualSignal) ? '🔥 Contains dual-signal conviction pick' : '',
+          'Highest model-edge props from the entire slate'
+        ].filter(Boolean)
+      });
+    }
+  }
+  
+  // --- PARLAY C: "4-Leg Power" — 2 anchors + 2 props (or 1 anchor + 3 props) ---
+  {
+    const usedGames = new Set();
+    const usedPlayers = new Set();
+    const fourLegs = [];
+    
+    // Grab up to 2 anchors from different games
+    for (const anchor of strongAnchors) {
+      if (fourLegs.length >= 2) break;
+      if (usedGames.has(anchor.gameId)) continue;
+      fourLegs.push(anchor);
+      usedGames.add(anchor.gameId);
+    }
+    
+    // Fill remaining slots with best props from different players/games
+    for (const prop of strongProps) {
+      if (fourLegs.length >= 4) break;
+      const playerKey = prop.player?.toLowerCase();
+      if (playerKey && usedPlayers.has(playerKey)) continue;
+      // Allow max 2 legs from same game
+      const gameCount = fourLegs.filter(l => l.gameId === prop.gameId).length;
+      if (gameCount >= 2) continue;
+      fourLegs.push(prop);
+      if (playerKey) usedPlayers.add(playerKey);
+    }
+    
+    if (fourLegs.length >= 4) {
+      parlays.push({
+        name: '💪 Cross-Game: 4-Leg Power',
+        legs: fourLegs.slice(0, 4),
+        isCrossGame: true,
+        reasoning: [
+          `${fourLegs.filter(l => l.isAnchor).length} game anchors + ${fourLegs.filter(l => l.type === 'PROP').length} prop legs`,
+          fourLegs.some(l => l.isDualSignal) ? '🔥 Contains dual-signal conviction pick' : '',
+          fourLegs.some(l => l.isStrongSpread) ? '📊 Contains STRONG spread mispricing' : '',
+          fourLegs.some(l => l.isHeavyFav) ? '🏠 Heavy favorite ML aligns with model' : '',
+          'Cross-game diversification for higher multiplier'
+        ].filter(Boolean)
+      });
+    }
+  }
+  
+  // --- PARLAY D: "Underdog Value" — Stack 2+ underdog/plus-money anchors (if available) ---
+  {
+    const underdogAnchors = strongAnchors.filter(a => Number(a.odds) > 0);
+    if (underdogAnchors.length >= 2) {
+      const legs = [];
+      const usedGames = new Set();
+      
+      for (const anchor of underdogAnchors) {
+        if (legs.length >= 2) break;
+        if (usedGames.has(anchor.gameId)) continue;
+        legs.push(anchor);
+        usedGames.add(anchor.gameId);
+      }
+      
+      // Add best prop to round it out
+      const bestProp = strongProps.find(p => !usedGames.has(p.gameId));
+      if (bestProp) legs.push(bestProp);
+      
+      if (legs.length >= 2) {
+        parlays.push({
+          name: '🎲 Cross-Game: Underdog Value Stack',
+          legs,
+          isCrossGame: true,
+          reasoning: [
+            `${legs.filter(l => l.isAnchor).length} plus-money anchors stacked`,
+            ...legs.filter(l => l.isAnchor).map(l => `${l.pick} at ${l.odds > 0 ? '+' : ''}${l.odds} (${l.edge?.toFixed?.(1) || l.edge}% edge)`),
+            bestProp ? `Plus highest-edge prop: ${bestProp.player}` : '',
+            'High upside: plus-money legs with model backing'
+          ].filter(Boolean)
+        });
+      }
+    }
+  }
+  
+  return parlays;
+}
+
 // Master function to generate all parlays
 export async function generateAllParlays(clickCount = 0, saferMode = false, allowSafetyAlt = true) {
   // Load all data sources
@@ -916,13 +1300,15 @@ export async function generateAllParlays(clickCount = 0, saferMode = false, allo
   
   // Generate all parlay types
   const gameParlays = generateGameParlays(gamePredictions, rng, saferMode);
-  const confidenceParlays = generateConfidenceParlays(strongSignals, gamePredictions, rng, saferMode, allowSafetyAlt);
+  const confidenceParlays = generateConfidenceParlays(strongSignals, v2Props, gamePredictions, rng, saferMode, allowSafetyAlt);
   const sgpParlays = generateSGPParlays(strongSignals, v2Props, gamePredictions, rng, saferMode);
+  const crossGameParlays = generateCrossGameParlays(strongSignals, v2Props, gamePredictions, rng, saferMode);
   
   return {
     gameParlays,
     confidenceParlays,
     sgpParlays,
+    crossGameParlays,
     metadata: {
       ...metadata,
       generated: new Date().toISOString(),

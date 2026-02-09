@@ -1,0 +1,31 @@
+{
+  "model_id": "f5_ml_v2_0_0",
+  "frozen_at": "2026-02-09T08:59:42.417626",
+  "description": "Frozen production artifacts for F5 ML v2.0.0 \u2014 consensus pricing, EV>=10%/Edge>=7%",
+  "artifacts": {
+    "features.json": {
+      "sha256": "a48da0b21a61011dd87080e121075b14b11bd711cfd9aa38528ed63f20799db0"
+    },
+    "means.json": {
+      "sha256": "244a343842cce8688b0cc323c597b59ec1827de7c3b02a6b7b3ac5bb7a57d21b"
+    },
+    "model.joblib": {
+      "sha256": "8c50a0d06175b7a9045b5249c7041921f29bd4c9881bd5a75d40988d47ee5c81"
+    },
+    "prod_config.json": {
+      "sha256": "68ce7113dcfa7f1d3d67ca06b274ec57aa3be4de88f6a2eeb27e89be4109ebf6"
+    },
+    "scaler.joblib": {
+      "sha256": "2993cbfa2037bb5c928b8ed4c2098c314e4692b991ef13bbc63f217dc1b7ae2c"
+    },
+    "training_config.json": {
+      "sha256": "4513ab7f183eab31ca488e0f3fb7b0443c6b2e221c0f48515ffbc42e0d75aece"
+    }
+  },
+  "validation": {
+    "consensus_roi_2023": "+25.68%",
+    "consensus_roi_2024h2": "+22.28%",
+    "consensus_roi_2025": "+15.92%",
+    "go_no_go": "BRANCH_A_STRONG_GO"
+  }
+}

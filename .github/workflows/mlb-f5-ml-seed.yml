@@ -1,0 +1,62 @@
+name: MLB F5 ML — Seed Data to Blobs
+
+# Manual-only — run once before season or when data is refreshed
+on:
+  workflow_dispatch:
+    inputs:
+      features_path:
+        description: 'Path to features_v2.parquet (relative to repo root, e.g. data/mlb_research/features_v2.parquet)'
+        required: true
+        default: 'data/mlb_research/features_v2.parquet'
+      odds_dir:
+        description: 'Directory containing consensus_YYYY.parquet files (relative to repo root)'
+        required: true
+        default: 'data/mlb_research/derived/f5_ml'
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Verify source files exist
+        run: |
+          echo "Checking features file…"
+          ls -lh "${{ github.event.inputs.features_path }}" || { echo "❌ Features file not found"; exit 1; }
+          echo ""
+          echo "Checking odds directory…"
+          ls -lh "${{ github.event.inputs.odds_dir }}"/*.parquet || { echo "❌ No parquet files in odds dir"; exit 1; }
+
+      - name: Seed data to Netlify Blobs
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+        run: |
+          node scripts/mlb_f5/seed_data_to_blobs.mjs \
+            --features "${{ github.event.inputs.features_path }}" \
+            --odds-dir "${{ github.event.inputs.odds_dir }}"
+
+      - name: Job summary
+        run: |
+          echo "## MLB F5 ML — Data Seed Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date -u +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**Features:** ${{ github.event.inputs.features_path }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Odds Dir:** ${{ github.event.inputs.odds_dir }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Data seeded to Netlify Blobs store \`rrmodelblobs\`." >> $GITHUB_STEP_SUMMARY
+          echo "Keys: \`mlb/f5_ml/data/features_v2.parquet\`, \`mlb/f5_ml/data/consensus_*.parquet\`" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,64 @@
+{
+  "model_id": "f5_ml_v2_0_0",
+  "schema_version": 1,
+  "market": "f5_ml",
+  "version": "2.0.0",
+
+  "pricing": {
+    "mode": "consensus",
+    "rationale": "Consensus pricing eliminates best-price bias and reflects executable odds"
+  },
+
+  "thresholds": {
+    "ev_min": 0.10,
+    "edge_min": 0.07,
+    "min_odds_american": -200,
+    "max_odds_american": 300,
+    "rationale": "RCA v3 truth backtest: EV≥10%/Edge≥7% → 2023=+25.68%, 2024H2=+22.28%, 2025=+15.92% consensus ROI"
+  },
+
+  "stake": {
+    "unit": 100,
+    "currency": "USD"
+  },
+
+  "model": {
+    "class": "LogisticRegression",
+    "calibration": "CalibratedClassifierCV(cv='prefit', method='isotonic')",
+    "params": {
+      "C": 0.01,
+      "max_iter": 1000
+    },
+    "target": "label_f5_home_win",
+    "features_count": 253,
+    "train_seasons": [2022, 2023, 2024, 2025],
+    "train_size": 8201
+  },
+
+  "artifacts": {
+    "dir": "ml/f5_ml/artifacts",
+    "model": "model.joblib",
+    "scaler": "scaler.joblib",
+    "features": "features.json",
+    "means": "means.json",
+    "config": "prod_config.json"
+  },
+
+  "push_handling": {
+    "rule": "push_pnl_zero",
+    "description": "Ties in first 5 innings → PnL = 0, outcome = 'push'"
+  },
+
+  "bet_side_mapping": {
+    "home": "over",
+    "away": "under",
+    "description": "EV engine convention: home→over, away→under for p_model calculation"
+  },
+
+  "provenance": {
+    "rca_report": "logs/F5_ML_RCA_REPORT_v3_2026-02-06.md",
+    "truth_backtest": "scripts/diagnostics/rca_v3_truth_backtest.py",
+    "training_script": "scripts/train_models.py",
+    "frozen_at": "2026-02-06"
+  }
+}

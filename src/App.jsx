@@ -20,6 +20,7 @@ import NBADDTDPage from "./pages/NBADDTDPage";  // NBA DD/TD Picks Page
 import NBAParlays from "./pages/NBAParlays";  // NBA Parlays (Confidence + SGP)
 import NCAAMBBPredictions from "./pages/NCAAMBBPredictions";  // NCAA MBB Predictions
 import NFLAnytimeTDV2 from "./pages/NFLAnytimeTDV2"; // NFL Anytime TD V2 (live)
+import MLBF5ML from "./pages/MLBF5ML";  // MLB F5 Moneyline (Smart Scheduler)
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
@@ -72,7 +73,8 @@ export default function App() {
         { label: 'Home Runs', path: '/mlb-hr' },
         { label: '2+ Hits', path: '/mlb-hits2' },
         { label: 'HRR (Hit-Run-RBI)', path: '/hrr' },
-        { label: 'Round Robin V2 🎯', path: '/mlb-rr' }
+        { label: 'Round Robin V2 🎯', path: '/mlb-rr' },
+        { label: 'F5 Moneyline ⚾', path: '/mlb-f5-ml' }
       ]
     },
     nfl: {
@@ -140,6 +142,7 @@ export default function App() {
           <Route path="/mlb-hits2" element={<MLB_HITS2 />} />
           <Route path="/hrr" element={<HRR />} />
           <Route path="/mlb-rr" element={<MLBRoundRobin />} />
+          <Route path="/mlb-f5-ml" element={<MLBF5ML />} />
           {/* CHANGED: Removed simple NFL TD route */}
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/nfl-anytime-td-v2" element={<NFLAnytimeTDV2 />} />

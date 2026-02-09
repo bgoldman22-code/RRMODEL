@@ -17,6 +17,7 @@ export default function NBAParlays() {
   const [gameParlays, setGameParlays] = useState([]);
   const [confidenceParlays, setConfidenceParlays] = useState([]);
   const [sgpParlays, setSgpParlays] = useState([]);
+  const [crossGameParlays, setCrossGameParlays] = useState([]);
   const [metadata, setMetadata] = useState({});
   const [clickCount, setClickCount] = useState(0);
   const [saferMode, setSaferMode] = useState(false);
@@ -43,6 +44,7 @@ export default function NBAParlays() {
       setGameParlays(result.gameParlays);
       setConfidenceParlays(result.confidenceParlays);
       setSgpParlays(result.sgpParlays);
+      setCrossGameParlays(result.crossGameParlays || []);
       setMetadata(result.metadata);
       
     } catch (error) {
@@ -209,7 +211,7 @@ export default function NBAParlays() {
           <div className="bg-white rounded-lg p-4 shadow">
             <div className="text-sm text-gray-500">Total Parlays</div>
             <div className="text-2xl font-bold text-purple-600">
-              {gameParlays.length + confidenceParlays.length + sgpParlays.length}
+              {gameParlays.length + confidenceParlays.length + sgpParlays.length + crossGameParlays.length}
             </div>
           </div>
           <div className="bg-white rounded-lg p-4 shadow">
@@ -293,6 +295,34 @@ export default function NBAParlays() {
           </div>
         </div>
 
+        {/* Section 4: Cross-Game Confidence Parlays */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            🌐 Cross-Game Confidence Parlays
+            <span className="text-sm font-normal text-gray-500">(STRONG anchors + best props across games)</span>
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {crossGameParlays.map((parlay, idx) => (
+              <ParlayCard 
+                key={idx} 
+                parlay={parlay} 
+                formatOdds={formatOdds} 
+                getLegTypeChip={getLegTypeChip}
+                getSourceChip={getSourceChip}
+                formatHitRate={formatHitRate}
+                showHitRates
+                showSources
+              />
+            ))}
+            {crossGameParlays.length === 0 && (
+              <div className="col-span-2 bg-gray-100 rounded-lg p-6 text-center text-gray-500">
+                No cross-game parlays available - need STRONG ML/spread anchors from multiple games
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Legend */}
         <div className="bg-white rounded-lg shadow p-4">
           <h3 className="font-semibold text-gray-800 mb-3">Legend & Info</h3>
@@ -345,6 +375,18 @@ export default function NBAParlays() {
               <h2 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px', color: '#1f2937' }}>🔥 Same Game Parlays</h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 {sgpParlays.map((parlay, idx) => (
+                  <ExportParlayCard key={idx} parlay={parlay} formatOdds={formatOdds} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Cross-Game Confidence Parlays Section */}
+          {crossGameParlays.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px', color: '#1f2937' }}>🌐 Cross-Game Confidence Parlays</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                {crossGameParlays.map((parlay, idx) => (
                   <ExportParlayCard key={idx} parlay={parlay} formatOdds={formatOdds} />
                 ))}
               </div>
