@@ -1736,34 +1736,13 @@ export default async (request, context) => {
 
           // Default choice
           let keepSpread = false;
-          let keepMLAsSecondary = false;
           let reason = '';
 
           // Rule A — Big spread mispricing override
           if (bigSpreadMispricing) {
             keepSpread = true;
             reason = `big_spread_mispricing_${spreadEdgePts.toFixed(1)}pts`;
-
-            // Allow ML as secondary hedge / parlay leg when reasonable
-            // Secondary ML suppressed if too juiced or edge is negative
-            keepMLAsSecondary = !mlTooJuiced && (mlEdgePct > 0);
-
-            if (keepMLAsSecondary) {
-              // Additive metadata on spread opp (doesn't break schema consumers)
-              spreadOpp.secondaryBet = {
-                market: moneylineOpp.market,
-                pick: moneylineOpp.pick,
-                odds: moneylineOpp.odds,
-                edgePercent: moneylineOpp.edgePercent,
-                units: moneylineOpp.units
-              };
-              spreadOpp.splitGuidance = spreadEdgePts >= 6.0 ? '60/40 spread/ML' : '55/45 spread/ML';
-              spreadOpp.note = `Large spread mispricing: model ${spreadOpp.modelLine} vs Vegas ${spreadOpp.vegasLine} (Δ ${spreadEdgePts.toFixed(1)} pts)`;
-            } else {
-              spreadOpp.secondaryBet = null;
-              spreadOpp.splitGuidance = null;
-              spreadOpp.note = `Large spread mispricing: model ${spreadOpp.modelLine} vs Vegas ${spreadOpp.vegasLine} (Δ ${spreadEdgePts.toFixed(1)} pts)`;
-            }
+            spreadOpp.note = `Large spread mispricing: model ${spreadOpp.modelLine} vs Vegas ${spreadOpp.vegasLine} (Δ ${spreadEdgePts.toFixed(1)} pts)`;
           }
 
           // Rule B — ML juice threshold
@@ -1808,62 +1787,6 @@ export default async (request, context) => {
       
       // Sort by expected value (EV)
       allOpps.sort((a, b) => (b.expectedValue || 0) - (a.expectedValue || 0));
-
-      // Optional self-test for spread vs ML selection (enable with NBA_ELITE_DEDUP_SELFTEST=1)
-      // Validates: model -9.3 vs Vegas -3, winProb 0.762, ML -155 => Spread primary + ML secondary + 60/40
-      if (process.env.NBA_ELITE_DEDUP_SELFTEST === '1') {
-        try {
-          const testSpreadOpp = {
-            market: 'Spread',
-            pick: 'MIA -3',
-            modelLine: '-9.3',
-            vegasLine: '-3',
-            edge: 6.3,
-            expectedValue: 100
-          };
-          const testMoneylineOpp = {
-            market: 'Moneyline',
-            pick: 'MIA',
-            odds: -155,
-            p_model: 0.762,
-            edgePercent: 0.155,
-            expectedValue: 50,
-            units: 1
-          };
-          let testOpps = [testSpreadOpp, testMoneylineOpp];
-
-          // Inline mimic of dedup result using the same metadata outputs
-          const spreadModelLine = Number(testSpreadOpp.modelLine);
-          const spreadVegasLine = Number(testSpreadOpp.vegasLine);
-          const spreadEdgePts = (Number.isFinite(spreadModelLine) && Number.isFinite(spreadVegasLine))
-            ? Math.abs(spreadModelLine - spreadVegasLine)
-            : Math.abs(Number(testSpreadOpp.edge) || 0);
-          const mlTooJuiced = Number(testMoneylineOpp.odds) <= -240;
-          const bigSpreadMispricing = spreadEdgePts >= 4.5;
-          const keepMLAsSecondary = bigSpreadMispricing && !mlTooJuiced && (Number(testMoneylineOpp.edgePercent) > 0);
-
-          if (!bigSpreadMispricing) {
-            console.log('[SELFTEST FAIL] Expected bigSpreadMispricing=true');
-          }
-          if (!keepMLAsSecondary) {
-            console.log('[SELFTEST FAIL] Expected keepMLAsSecondary=true');
-          }
-
-          // Would keep spread and suppress ML
-          testOpps = testOpps.filter(o => o.market !== 'Moneyline');
-          if (testOpps[0]?.market !== 'Spread') {
-            console.log('[SELFTEST FAIL] Expected Spread primary');
-          }
-          const expectedSplit = spreadEdgePts >= 6.0 ? '60/40 spread/ML' : '55/45 spread/ML';
-          if (expectedSplit !== '60/40 spread/ML') {
-            console.log(`[SELFTEST FAIL] Expected split 60/40, got ${expectedSplit}`);
-          }
-
-          console.log('[SELFTEST PASS] Spread primary + ML secondary logic');
-        } catch (e) {
-          console.log('[SELFTEST ERROR]', e?.message || e);
-        }
-      }
       
       // =========================================================================
       // APPLY ROSTER/DEADLINE MULTIPLIER TO ALL UNITS
@@ -1926,9 +1849,9 @@ export default async (request, context) => {
       const finalExposure = allOpps.reduce((sum, opp) => sum + (opp.units || 0), 0);
       console.log(`[FINAL EXPOSURE] Game total: ${finalExposure.toFixed(1)}U (${allOpps.filter(o => !o.isTrackOnly).length} active bets)`);
       
-      // Apply hedging system to add hedge/double-down bets
+      // Apply hedging system to add hedge/double-down bets (EV-aware V2)
       const { applyHedgingSystem } = await import('../_lib/nba/bet-hedging.mjs');
-      const enhancedOpps = applyHedgingSystem(allOpps, { home: home.team, away: away.team });
+      const enhancedOpps = applyHedgingSystem(allOpps, { home: home.team, away: away.team }, gameVegasLines);
       
       // Add top 3 opportunities (or all if fewer)
       opportunities.push(...enhancedOpps.slice(0, 3));

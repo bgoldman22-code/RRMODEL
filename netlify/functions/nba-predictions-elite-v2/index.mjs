@@ -1717,8 +1717,12 @@ export default async (request, context) => {
       const finalExposure = allOpps.reduce((sum, opp) => sum + (opp.units || 0), 0);
       console.log(`[FINAL EXPOSURE] Game total: ${finalExposure.toFixed(1)}U (${allOpps.filter(o => !o.isTrackOnly).length} active bets)`);
       
+      // Apply hedging system to add hedge/double-down bets (EV-aware V2)
+      const { applyHedgingSystem } = await import('../_lib/nba/bet-hedging.mjs');
+      const enhancedOpps = applyHedgingSystem(allOpps, { home: home.team, away: away.team }, gameVegasLines);
+      
       // Add top 3 opportunities (or all if fewer)
-      opportunities.push(...allOpps.slice(0, 3));
+      opportunities.push(...enhancedOpps.slice(0, 3));
       
       // Store team totals for advanced users
       const teamTotals = {

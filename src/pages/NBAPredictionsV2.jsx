@@ -209,9 +209,6 @@ const NBAPredictionsV2 = () => {
           const hedgeBet = opp.hedgeBet;
           const doubleDownBet = opp.doubleDownBet;
           const stakeGuidance = opp.stakeGuidance;
-          
-          // Legacy fallback
-          const legacyHedge = opp.secondaryBet;
 
           let pickHtml = (opp.market === 'Moneyline' && opp.modelWinProb)
             ? `${opp.pick} (${opp.modelWinProb})`
@@ -237,15 +234,6 @@ const NBAPredictionsV2 = () => {
           // Stake guidance
           if (stakeGuidance && (hedgeBet || doubleDownBet)) {
             pickHtml += `<div style="margin-top: 2px; font-size: 9px; line-height: 1.2; color: #666;">📊 ${stakeGuidance}</div>`;
-          }
-          
-          // Legacy hedge fallback
-          if (legacyHedge && !hedgeBet) {
-            const hedgeOddsStr = legacyHedge.odds > 0 ? `+${legacyHedge.odds}` : `${legacyHedge.odds}`;
-            pickHtml += `<div style="margin-top: 3px; font-size: 10px; line-height: 1.2; color: #6b4f00;"><strong>Hedge:</strong> ${legacyHedge.market}: ${legacyHedge.pick} (${hedgeOddsStr})</div>`;
-            if (opp.splitGuidance) {
-              pickHtml += `<div style="margin-top: 1px; font-size: 10px; line-height: 1.2; color: #555;">Split: ${opp.splitGuidance}</div>`;
-            }
           }
           
           allBets.push({
@@ -412,9 +400,6 @@ const NBAPredictionsV2 = () => {
       const stakeGuidance = opp.stakeGuidance;
       const hedgingNotes = opp.hedgingNotes;
       
-      // Legacy fallback for secondaryBet
-      const legacyHedge = opp.secondaryBet;
-      
       const betCard = (
         <div key={idx} className="bet-card">
           {/* PRIMARY BET */}
@@ -517,25 +502,6 @@ const NBAPredictionsV2 = () => {
             </div>
           )}
 
-          {/* LEGACY HEDGE (fallback for old API) */}
-          {legacyHedge && !hedgeBet && (
-            <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.12)' }}>
-              <div style={{ fontSize: '12px', color: '#ffd166', fontWeight: 700 }}>
-                Hedge / Parlay Leg
-              </div>
-              <div style={{ fontSize: '13px', marginTop: '2px' }}>
-                <strong>{legacyHedge.market}: {legacyHedge.pick}</strong>
-                <span style={{ marginLeft: '10px' }}>
-                  Odds: {legacyHedge.odds > 0 ? '+' : ''}{legacyHedge.odds}
-                </span>
-              </div>
-              {opp.splitGuidance && (
-                <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '2px' }}>
-                  Suggested split: {opp.splitGuidance}
-                </div>
-              )}
-            </div>
-          )}
         </div>
       );
       
