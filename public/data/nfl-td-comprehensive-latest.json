@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2026-02-08T14:46:20Z",
+    "generated_at": "2026-02-09T12:52:38Z",
     "season": 2025,
     "week": 23,
-    "total_players": 661,
+    "total_players": 662,
     "pipeline_version": "cloud-optimized-1.0"
   },
   "predictions": [
@@ -2337,6 +2337,27 @@
       "anytime_td": 0.884,
       "first_td": 0,
       "multiple_td": 0.024
+    },
+    {
+      "player_id": "00-0034350",
+      "name": "U.Nwosu",
+      "team": "SEA",
+      "position": "LB",
+      "opponent": "TBD",
+      "is_home": true,
+      "depth_chart_position": "OLB",
+      "anytime_td_prob": 0.68,
+      "anytime_confidence": "medium",
+      "first_td_prob": 0,
+      "first_confidence": "medium",
+      "multiple_td_prob": 0,
+      "multiple_confidence": "medium",
+      "anytime_value_score": 0.265,
+      "first_value_score": 0,
+      "multiple_value_score": 0,
+      "anytime_td": 0.68,
+      "first_td": 0,
+      "multiple_td": 0
     },
     {
       "player_id": "00-0034351",
@@ -6361,14 +6382,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.22,
+      "multiple_td_prob": 0.206,
       "multiple_confidence": "high",
       "anytime_value_score": 0.4,
       "first_value_score": 0,
-      "multiple_value_score": 0.056,
+      "multiple_value_score": 0.0505,
       "anytime_td": 0.95,
       "first_td": 0,
-      "multiple_td": 0.22
+      "multiple_td": 0.2062
     },
     {
       "player_id": "00-0036876",
@@ -12073,14 +12094,14 @@
       "anytime_confidence": "high",
       "first_td_prob": 0,
       "first_confidence": "high",
-      "multiple_td_prob": 0.054,
+      "multiple_td_prob": 0.049,
       "multiple_confidence": "high",
       "anytime_value_score": 0.33,
       "first_value_score": 0,
       "multiple_value_score": 0,
       "anytime_td": 0.81,
       "first_td": 0,
-      "multiple_td": 0.054
+      "multiple_td": 0.0491
     },
     {
       "player_id": "00-0039794",
