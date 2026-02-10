@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       features_path:
-        description: 'Path to features_v2.parquet (relative to repo root, e.g. data/mlb_research/features_v2.parquet)'
+        description: 'Path to features_v2.parquet (relative to repo root, e.g. data/mlb_research/features/features_v2.parquet)'
         required: true
-        default: 'data/mlb_research/features_v2.parquet'
+        default: 'data/mlb_research/features/features_v2.parquet'
       odds_dir:
         description: 'Directory containing consensus_YYYY.parquet files (relative to repo root)'
         required: true
