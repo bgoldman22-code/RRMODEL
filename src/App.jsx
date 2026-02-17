@@ -19,6 +19,7 @@ import NBAPropsAligned from "./pages/NBAPropsAligned";  // NBA Props Aligned (Be
 import NBADDTDPage from "./pages/NBADDTDPage";  // NBA DD/TD Picks Page
 import NBAParlays from "./pages/NBAParlays";  // NBA Parlays (Confidence + SGP)
 import NCAAMBBPredictions from "./pages/NCAAMBBPredictions";  // NCAA MBB Predictions
+import NCAAMBBV2Predictions from "./pages/NCAAMBBV2Predictions";  // NCAA MBB V2 (Calibrated + Away Dog Filter)
 import NFLAnytimeTDV2 from "./pages/NFLAnytimeTDV2"; // NFL Anytime TD V2 (live)
 import MLBF5ML from "./pages/MLBF5ML";  // MLB F5 Moneyline (Smart Scheduler)
 import HRR from "./HRR";
@@ -113,7 +114,8 @@ export default function App() {
     ncaa: {
       label: 'NCAA',
       items: [
-        { label: 'MBB Moneyline 🏀', path: '/ncaa-mbb' }
+        { label: 'MBB Moneyline 🏀', path: '/ncaa-mbb' },
+        { label: 'MBB V2 (Calibrated) 🎯', path: '/ncaa-mbb-v2' }
       ]
     }
   };
@@ -158,6 +160,7 @@ export default function App() {
           <Route path="/nba-ddtd" element={<NBADDTDPage />} />
           <Route path="/nba-parlays" element={<NBAParlays />} />
           <Route path="/ncaa-mbb" element={<NCAAMBBPredictions />} />
+          <Route path="/ncaa-mbb-v2" element={<NCAAMBBV2Predictions />} />
         </Routes>
       </div>
     </BrowserRouter>
