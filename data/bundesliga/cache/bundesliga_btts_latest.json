@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-02-17T22:11:23.050507+00:00",
+  "generated_at": "2026-02-18T10:22:53.091052+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -23,19 +23,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.64,
-        "btts_no": 2.15,
+        "btts_yes": 1.65,
+        "btts_no": 2.13,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5672823218997362,
-      "edge": -0.09357286270393678,
+      "market_probability": 0.5634920634920635,
+      "edge": -0.08978260429626411,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-9.4%, need 5%)"
+        "min_edge (edge=-9.0%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -318,18 +318,18 @@
       },
       "market_odds": {
         "btts_yes": 1.53,
-        "btts_no": 2.36,
+        "btts_no": 2.37,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6066838046272494,
-      "edge": -0.016158407251798068,
+      "market_probability": 0.6076923076923076,
+      "edge": -0.017166910316856354,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-1.6%, need 5%)"
+        "min_edge (edge=-1.7%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -354,19 +354,19 @@
         "away_season_avg_goals_against": 1.7647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.56,
-        "btts_no": 2.3,
+        "btts_yes": 1.58,
+        "btts_no": 2.26,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5958549222797926,
-      "edge": 0.025475736559441575,
+      "market_probability": 0.5885416666666665,
+      "edge": 0.0327889921725677,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=2.5%, need 5%)"
+        "min_edge (edge=3.3%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -463,19 +463,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.78,
-        "btts_no": 1.95,
+        "btts_yes": 1.76,
+        "btts_no": 1.97,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5227882037533512,
-      "edge": -0.0469850385978271,
+      "market_probability": 0.5281501340482575,
+      "edge": -0.05234696889273338,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-4.7%, need 5%)"
+        "min_edge (edge=-5.2%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -500,13 +500,13 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.8,
-        "btts_no": 1.92,
+        "btts_yes": 1.79,
+        "btts_no": 1.94,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5161290322580646,
-      "edge": 0.11778654484988604,
-      "expected_value": 0.0654369693610478,
+      "market_probability": 0.520107238605898,
+      "edge": 0.11380833850205263,
+      "expected_value": 0.0635800773754484,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -828,13 +828,13 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.8,
-        "btts_no": 1.92,
+        "btts_yes": 1.79,
+        "btts_no": 1.94,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5161290322580646,
-      "edge": 0.11778654484988604,
-      "expected_value": 0.0654369693610478,
+      "market_probability": 0.520107238605898,
+      "edge": 0.11380833850205263,
+      "expected_value": 0.0635800773754484,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
