@@ -1,1 +1,232 @@
-[]
+[
+  {
+    "gameId": "401810647",
+    "date": "2026-02-20T00:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "30",
+      "name": "Charlotte Hornets",
+      "abbreviation": "CHA",
+      "score": "0",
+      "record": "26-29"
+    },
+    "awayTeam": {
+      "id": "10",
+      "name": "Houston Rockets",
+      "abbreviation": "HOU",
+      "score": "0",
+      "record": "33-20"
+    },
+    "venue": "Spectrum Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810648",
+    "date": "2026-02-20T00:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "5",
+      "name": "Cleveland Cavaliers",
+      "abbreviation": "CLE",
+      "score": "0",
+      "record": "34-21"
+    },
+    "awayTeam": {
+      "id": "17",
+      "name": "Brooklyn Nets",
+      "abbreviation": "BKN",
+      "score": "0",
+      "record": "15-38"
+    },
+    "venue": "Rocket Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810649",
+    "date": "2026-02-20T00:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "20",
+      "name": "Philadelphia 76ers",
+      "abbreviation": "PHI",
+      "score": "0",
+      "record": "30-24"
+    },
+    "awayTeam": {
+      "id": "1",
+      "name": "Atlanta Hawks",
+      "abbreviation": "ATL",
+      "score": "0",
+      "record": "26-30"
+    },
+    "venue": "Xfinity Mobile Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810650",
+    "date": "2026-02-20T00:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "27",
+      "name": "Washington Wizards",
+      "abbreviation": "WSH",
+      "score": "0",
+      "record": "14-39"
+    },
+    "awayTeam": {
+      "id": "11",
+      "name": "Indiana Pacers",
+      "abbreviation": "IND",
+      "score": "0",
+      "record": "15-40"
+    },
+    "venue": "Capital One Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810651",
+    "date": "2026-02-20T00:30Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "18",
+      "name": "New York Knicks",
+      "abbreviation": "NY",
+      "score": "0",
+      "record": "35-20"
+    },
+    "awayTeam": {
+      "id": "8",
+      "name": "Detroit Pistons",
+      "abbreviation": "DET",
+      "score": "0",
+      "record": "40-13"
+    },
+    "venue": "Madison Square Garden",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810652",
+    "date": "2026-02-20T01:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "4",
+      "name": "Chicago Bulls",
+      "abbreviation": "CHI",
+      "score": "0",
+      "record": "24-31"
+    },
+    "awayTeam": {
+      "id": "28",
+      "name": "Toronto Raptors",
+      "abbreviation": "TOR",
+      "score": "0",
+      "record": "32-23"
+    },
+    "venue": "United Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810653",
+    "date": "2026-02-20T01:30Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "24",
+      "name": "San Antonio Spurs",
+      "abbreviation": "SA",
+      "score": "0",
+      "record": "38-16"
+    },
+    "awayTeam": {
+      "id": "21",
+      "name": "Phoenix Suns",
+      "abbreviation": "PHX",
+      "score": "0",
+      "record": "32-23"
+    },
+    "venue": "Moody Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810654",
+    "date": "2026-02-20T03:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "9",
+      "name": "Golden State Warriors",
+      "abbreviation": "GS",
+      "score": "0",
+      "record": "29-26"
+    },
+    "awayTeam": {
+      "id": "2",
+      "name": "Boston Celtics",
+      "abbreviation": "BOS",
+      "score": "0",
+      "record": "35-19"
+    },
+    "venue": "Chase Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810655",
+    "date": "2026-02-20T03:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "23",
+      "name": "Sacramento Kings",
+      "abbreviation": "SAC",
+      "score": "0",
+      "record": "12-44"
+    },
+    "awayTeam": {
+      "id": "19",
+      "name": "Orlando Magic",
+      "abbreviation": "ORL",
+      "score": "0",
+      "record": "28-25"
+    },
+    "venue": "Golden 1 Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810656",
+    "date": "2026-02-20T03:30Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "12",
+      "name": "LA Clippers",
+      "abbreviation": "LAC",
+      "score": "0",
+      "record": "26-28"
+    },
+    "awayTeam": {
+      "id": "7",
+      "name": "Denver Nuggets",
+      "abbreviation": "DEN",
+      "score": "0",
+      "record": "35-20"
+    },
+    "venue": "Intuit Dome",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  }
+]
