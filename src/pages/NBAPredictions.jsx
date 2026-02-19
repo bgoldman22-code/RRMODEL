@@ -112,6 +112,7 @@ const NBAPredictions = () => {
             betSize: opp.betSize,
             book: opp.book,
             modelLine: opp.modelLine,
+            modelLineDisplay: opp.modelLineDisplay,
             vegasLine: opp.vegasLine
           })),
           // Map vegasLines to marketOdds format
@@ -176,6 +177,7 @@ const NBAPredictions = () => {
               edgePercent: edgePercent,
               pick: opp.pick,
               modelLine: opp.modelLine,
+              modelLineDisplay: opp.modelLineDisplay,
               vegasLine: opp.vegasLine,
               units: opp.units,
               book: opp.book,
@@ -453,7 +455,7 @@ const NBAPredictions = () => {
                       <div className="rec-details">
                         <div className="detail-item">
                           <span className="detail-label">Model Line</span>
-                          <span className="detail-value">{opp.modelLine}</span>
+                          <span className="detail-value">{opp.modelLineDisplay || opp.modelLine}</span>
                         </div>
                         <div className="detail-item">
                           <span className="detail-label">Vegas Line</span>
@@ -613,7 +615,7 @@ const NBAPredictions = () => {
                 <div className="comparison">
                   <div className="comp-col">
                     <span className="comp-label">Model Line</span>
-                    <span className="comp-value model">{ineff.modelLine}</span>
+                    <span className="comp-value model">{ineff.modelLineDisplay || ineff.modelLine}</span>
                   </div>
                   <div className="comp-arrow">→</div>
                   <div className="comp-col">

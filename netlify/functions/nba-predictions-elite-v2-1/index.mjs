@@ -1411,10 +1411,15 @@ export default async (request, context) => {
           const displayPrice = betHome ? placementHomePrice : placementAwayPrice;
           const pickSign = displayLine >= 0 ? '+' : '';
           
+          // Display string for model line: home team perspective with label
+          const modelLineSign = modelSpreadVegasConvention >= 0 ? '+' : '';
+          const modelLineDisplay = `${home.team.abbreviation} ${modelLineSign}${modelSpreadVegasConvention.toFixed(1)}`;
+          
           spreadOpp = {
             market: 'Spread',
             pick: `${pickTeam} ${pickSign}${displayLine}`,
-            modelLine: spreadPred.toFixed(1),
+            modelLine: modelSpreadVegasConvention.toFixed(1), // Home-line convention (same as vegasLine)
+            modelLineDisplay, // Team-labeled string for UI (e.g. "GS +11.1")
             vegasLine: fairLine, // Show fair line for transparency
             odds: displayPrice, // Use the correct side's price
             edge: spreadEdge.edgePoints,
@@ -1742,7 +1747,8 @@ export default async (request, context) => {
           if (bigSpreadMispricing) {
             keepSpread = true;
             reason = `big_spread_mispricing_${spreadEdgePts.toFixed(1)}pts`;
-            spreadOpp.note = `Large spread mispricing: model ${spreadOpp.modelLine} vs Vegas ${spreadOpp.vegasLine} (Δ ${spreadEdgePts.toFixed(1)} pts)`;
+            const vegasSign = Number(spreadOpp.vegasLine) >= 0 ? '+' : '';
+            spreadOpp.note = `Large spread mispricing: model ${spreadOpp.modelLineDisplay} vs Vegas ${home.team.abbreviation} ${vegasSign}${spreadOpp.vegasLine} (Δ ${spreadEdgePts.toFixed(1)} pts)`;
           }
 
           // Rule B — ML juice threshold

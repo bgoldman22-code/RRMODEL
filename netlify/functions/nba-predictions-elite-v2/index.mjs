@@ -1327,10 +1327,15 @@ export default async (request, context) => {
           const displayPrice = betHome ? placementHomePrice : placementAwayPrice;
           const pickSign = displayLine >= 0 ? '+' : '';
           
+          // Display string for model line: home team perspective with label
+          const modelLineSign = modelSpreadVegasConvention >= 0 ? '+' : '';
+          const modelLineDisplay = `${home.team.abbreviation} ${modelLineSign}${modelSpreadVegasConvention.toFixed(1)}`;
+          
           spreadOpp = {
             market: 'Spread',
             pick: `${pickTeam} ${pickSign}${displayLine}`,
-            modelLine: spreadPred.toFixed(1),
+            modelLine: modelSpreadVegasConvention.toFixed(1), // Home-line convention (same as vegasLine)
+            modelLineDisplay, // Team-labeled string for UI (e.g. "GS +11.1")
             vegasLine: fairLine, // Show fair line for transparency
             odds: displayPrice, // Use the correct side's price
             edge: spreadEdge.edgePoints,
