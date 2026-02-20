@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-02-19T22:11:52.521584+00:00",
+  "generated_at": "2026-02-20T10:17:41.081917+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -11,7 +11,7 @@
       "away_team": "Hamburger SV",
       "commence_time": "2026-02-20T19:30:00Z",
       "model_probability": 0.4737094591957994,
-      "dixon_coles_prob": 0.4590430197103924,
+      "dixon_coles_prob": 0.4590430197103923,
       "xgboost_prob": 0.478,
       "expected_home_goals": 0.947289358350555,
       "expected_away_goals": 1.2857142857142858,
@@ -23,19 +23,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.64,
-        "btts_no": 2.15,
+        "btts_yes": 1.66,
+        "btts_no": 2.12,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5672823218997362,
-      "edge": -0.09357286270393678,
+      "market_probability": 0.5608465608465608,
+      "edge": -0.08713710165076144,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-9.4%, need 5%)"
+        "min_edge (edge=-8.7%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -50,7 +50,7 @@
       "model_probability": 0.6680447548220843,
       "dixon_coles_prob": 0.8186038010419097,
       "xgboost_prob": 0.624,
-      "expected_home_goals": 2.210341836151295,
+      "expected_home_goals": 2.2103418361512954,
       "expected_away_goals": 2.5,
       "key_features": {
         "combined_form_btts_rate": 0.7,
@@ -85,10 +85,10 @@
       "away_team": "Augsburg",
       "commence_time": "2026-02-21T14:30:00Z",
       "model_probability": 0.5977926475758953,
-      "dixon_coles_prob": 0.8637127751655079,
+      "dixon_coles_prob": 0.8637127751655078,
       "xgboost_prob": 0.5199999999999999,
       "expected_home_goals": 3.2234151777206383,
-      "expected_away_goals": 2.2916666666666665,
+      "expected_away_goals": 2.291666666666666,
       "key_features": {
         "combined_form_btts_rate": 0.5,
         "home_form_btts_rate": 0.4,
@@ -195,7 +195,7 @@
       "away_team": "Borussia Dortmund",
       "commence_time": "2026-02-21T17:30:00Z",
       "model_probability": 0.6688691551895364,
-      "dixon_coles_prob": 0.5624539799521273,
+      "dixon_coles_prob": 0.5624539799521274,
       "xgboost_prob": 0.7,
       "expected_home_goals": 1.2433172828351036,
       "expected_away_goals": 1.5,
@@ -381,7 +381,7 @@
       "model_probability": 0.6517490710985694,
       "dixon_coles_prob": 0.5688516468742104,
       "xgboost_prob": 0.676,
-      "expected_home_goals": 2.210341836151295,
+      "expected_home_goals": 2.2103418361512954,
       "expected_away_goals": 1.0,
       "key_features": {
         "combined_form_btts_rate": 0.8,
@@ -418,7 +418,7 @@
       "dixon_coles_prob": 0.43034481729238655,
       "xgboost_prob": 0.7000000000000001,
       "expected_home_goals": 4.262802112577499,
-      "expected_away_goals": 0.5714285714285714,
+      "expected_away_goals": 0.5714285714285713,
       "key_features": {
         "combined_form_btts_rate": 0.8,
         "home_form_btts_rate": 0.8,
@@ -428,12 +428,12 @@
       },
       "market_odds": {
         "btts_yes": 1.61,
-        "btts_no": 2.2,
+        "btts_no": 2.19,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5774278215223098,
-      "edge": 0.061541014927583904,
-      "expected_value": 0.03822423287427571,
+      "market_probability": 0.5763157894736841,
+      "edge": 0.06265304697620955,
+      "expected_value": 0.03891493601006804,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -442,7 +442,7 @@
       "gates_failed": [],
       "bet_decision": {
         "should_bet": true,
-        "recommended_stake_pct": 2.5221727429337664,
+        "recommended_stake_pct": 2.567747826893833,
         "confidence": "LOW"
       }
     },
@@ -560,11 +560,11 @@
       "home_team": "VfB Stuttgart",
       "away_team": "VfL Wolfsburg",
       "commence_time": "2026-03-01T14:30:00Z",
-      "model_probability": 0.6863373989014302,
-      "dixon_coles_prob": 0.8994265478894546,
+      "model_probability": 0.6863373989014301,
+      "dixon_coles_prob": 0.8994265478894545,
       "xgboost_prob": 0.6240000000000001,
       "expected_home_goals": 4.144390942783679,
-      "expected_away_goals": 2.45,
+      "expected_away_goals": 2.4499999999999997,
       "key_features": {
         "combined_form_btts_rate": 0.5,
         "home_form_btts_rate": 0.6,
@@ -578,8 +578,8 @@
         "bookmaker": "onexbet"
       },
       "market_probability": 0.6076923076923076,
-      "edge": 0.07864509120912255,
-      "expected_value": 0.051402020398119315,
+      "edge": 0.07864509120912244,
+      "expected_value": 0.051402020398119246,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -746,7 +746,7 @@
       "model_probability": 0.6517490710985694,
       "dixon_coles_prob": 0.5688516468742104,
       "xgboost_prob": 0.676,
-      "expected_home_goals": 2.210341836151295,
+      "expected_home_goals": 2.2103418361512954,
       "expected_away_goals": 1.0,
       "key_features": {
         "combined_form_btts_rate": 0.8,
@@ -783,7 +783,7 @@
       "dixon_coles_prob": 0.43034481729238655,
       "xgboost_prob": 0.7000000000000001,
       "expected_home_goals": 4.262802112577499,
-      "expected_away_goals": 0.5714285714285714,
+      "expected_away_goals": 0.5714285714285713,
       "key_features": {
         "combined_form_btts_rate": 0.8,
         "home_form_btts_rate": 0.8,
@@ -793,12 +793,12 @@
       },
       "market_odds": {
         "btts_yes": 1.61,
-        "btts_no": 2.2,
+        "btts_no": 2.19,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5774278215223098,
-      "edge": 0.061541014927583904,
-      "expected_value": 0.03822423287427571,
+      "market_probability": 0.5763157894736841,
+      "edge": 0.06265304697620955,
+      "expected_value": 0.03891493601006804,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -807,7 +807,7 @@
       "gates_failed": [],
       "bet_decision": {
         "should_bet": true,
-        "recommended_stake_pct": 2.5221727429337664,
+        "recommended_stake_pct": 2.567747826893833,
         "confidence": "LOW"
       }
     },
@@ -851,11 +851,11 @@
       "home_team": "VfB Stuttgart",
       "away_team": "VfL Wolfsburg",
       "commence_time": "2026-03-01T14:30:00Z",
-      "model_probability": 0.6863373989014302,
-      "dixon_coles_prob": 0.8994265478894546,
+      "model_probability": 0.6863373989014301,
+      "dixon_coles_prob": 0.8994265478894545,
       "xgboost_prob": 0.6240000000000001,
       "expected_home_goals": 4.144390942783679,
-      "expected_away_goals": 2.45,
+      "expected_away_goals": 2.4499999999999997,
       "key_features": {
         "combined_form_btts_rate": 0.5,
         "home_form_btts_rate": 0.6,
@@ -869,8 +869,8 @@
         "bookmaker": "onexbet"
       },
       "market_probability": 0.6076923076923076,
-      "edge": 0.07864509120912255,
-      "expected_value": 0.051402020398119315,
+      "edge": 0.07864509120912244,
+      "expected_value": 0.051402020398119246,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
