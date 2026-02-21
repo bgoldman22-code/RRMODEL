@@ -1,10 +1,10 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-02-20T22:08:18.845058+00:00",
+  "generated_at": "2026-02-21T10:10:00.882737+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 17,
-  "recommended_bets": 7,
+  "recommended_bets": 8,
   "predictions": [
     {
       "home_team": "1. FC Köln",
@@ -23,23 +23,22 @@
         "away_season_avg_goals_against": 1.9411764705882353
       },
       "market_odds": {
-        "btts_yes": 1.49,
-        "btts_no": 2.48,
+        "btts_yes": 1.55,
+        "btts_no": 2.32,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6246851385390428,
-      "edge": 0.04335961628304141,
-      "expected_value": null,
+      "market_probability": 0.599483204134367,
+      "edge": 0.0685615506877173,
+      "expected_value": 0.044233258508204705,
       "gates_passed": [
+        "min_edge",
         "max_ev_cap",
         "min_odds"
       ],
-      "gates_failed": [
-        "min_edge (edge=4.3%, need 5%)"
-      ],
+      "gates_failed": [],
       "bet_decision": {
-        "should_bet": false,
-        "recommended_stake_pct": 0.0,
+        "should_bet": true,
+        "recommended_stake_pct": 3.0,
         "confidence": "LOW"
       }
     },
@@ -134,13 +133,13 @@
         "away_season_avg_goals_against": 1.4705882352941178
       },
       "market_odds": {
-        "btts_yes": 1.6,
-        "btts_no": 2.2,
+        "btts_yes": 1.67,
+        "btts_no": 2.1,
         "bookmaker": "williamhill"
       },
-      "market_probability": 0.5789473684210527,
-      "edge": 0.12705016975192374,
-      "expected_value": 0.07940635609495234,
+      "market_probability": 0.557029177718833,
+      "edge": 0.1489683604541434,
+      "expected_value": 0.08920261105038528,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -631,6 +630,42 @@
   ],
   "bets": [
     {
+      "home_team": "1. FC Köln",
+      "away_team": "TSG Hoffenheim",
+      "commence_time": "2026-02-21T14:30:00Z",
+      "model_probability": 0.6680447548220843,
+      "dixon_coles_prob": 0.8186038010419097,
+      "xgboost_prob": 0.624,
+      "expected_home_goals": 2.210341836151295,
+      "expected_away_goals": 2.5,
+      "key_features": {
+        "combined_form_btts_rate": 0.7,
+        "home_form_btts_rate": 0.6,
+        "away_form_btts_rate": 0.8,
+        "home_season_avg_goals_for": 0.8235294117647058,
+        "away_season_avg_goals_against": 1.9411764705882353
+      },
+      "market_odds": {
+        "btts_yes": 1.55,
+        "btts_no": 2.32,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.599483204134367,
+      "edge": 0.0685615506877173,
+      "expected_value": 0.044233258508204705,
+      "gates_passed": [
+        "min_edge",
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [],
+      "bet_decision": {
+        "should_bet": true,
+        "recommended_stake_pct": 3.0,
+        "confidence": "LOW"
+      }
+    },
+    {
       "home_team": "Bayern Munich",
       "away_team": "Eintracht Frankfurt",
       "commence_time": "2026-02-21T14:30:00Z",
@@ -647,13 +682,13 @@
         "away_season_avg_goals_against": 1.4705882352941178
       },
       "market_odds": {
-        "btts_yes": 1.6,
-        "btts_no": 2.2,
+        "btts_yes": 1.67,
+        "btts_no": 2.1,
         "bookmaker": "williamhill"
       },
-      "market_probability": 0.5789473684210527,
-      "edge": 0.12705016975192374,
-      "expected_value": 0.07940635609495234,
+      "market_probability": 0.557029177718833,
+      "edge": 0.1489683604541434,
+      "expected_value": 0.08920261105038528,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
