@@ -1,24 +1,24 @@
 [
   {
-    "gameId": "401810718",
-    "date": "2026-02-28T18:00Z",
+    "gameId": "401810723",
+    "date": "2026-03-01T18:00Z",
     "status": "STATUS_FINAL",
     "homeTeam": {
-      "id": "30",
-      "name": "Charlotte Hornets",
-      "abbreviation": "CHA",
-      "score": "109",
-      "record": "30-31"
+      "id": "18",
+      "name": "New York Knicks",
+      "abbreviation": "NY",
+      "score": "114",
+      "record": "39-22"
     },
     "awayTeam": {
-      "id": "22",
-      "name": "Portland Trail Blazers",
-      "abbreviation": "POR",
-      "score": "93",
-      "record": "29-32"
+      "id": "24",
+      "name": "San Antonio Spurs",
+      "abbreviation": "SA",
+      "score": "89",
+      "record": "43-17"
     },
-    "venue": "Spectrum Center",
-    "attendance": 19634,
+    "venue": "Madison Square Garden",
+    "attendance": 19812,
     "homeStats": {
       "fgm": 0,
       "fga": 0,
@@ -26,178 +26,13 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 55,
-      "offRebounds": 20,
-      "defRebounds": 35,
-      "assists": 24,
-      "steals": 11,
-      "blocks": 0,
-      "turnovers": 16,
-      "fouls": 22
-    },
-    "awayStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 39,
-      "offRebounds": 11,
-      "defRebounds": 28,
-      "assists": 22,
-      "steals": 8,
-      "blocks": 7,
-      "turnovers": 16,
-      "fouls": 19
-    },
-    "highAltitude": false,
-    "altitudeAdjustment": 0.0
-  },
-  {
-    "gameId": "401810719",
-    "date": "2026-02-28T20:30Z",
-    "status": "STATUS_FINAL",
-    "homeTeam": {
-      "id": "14",
-      "name": "Miami Heat",
-      "abbreviation": "MIA",
-      "score": "115",
-      "record": "32-29"
-    },
-    "awayTeam": {
-      "id": "10",
-      "name": "Houston Rockets",
-      "abbreviation": "HOU",
-      "score": "105",
-      "record": "37-22"
-    },
-    "venue": "Kaseya Center",
-    "attendance": 19700,
-    "homeStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 47,
-      "offRebounds": 14,
-      "defRebounds": 33,
-      "assists": 22,
-      "steals": 3,
-      "blocks": 4,
-      "turnovers": 13,
-      "fouls": 18
-    },
-    "awayStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 47,
-      "offRebounds": 15,
-      "defRebounds": 32,
-      "assists": 26,
-      "steals": 6,
-      "blocks": 2,
-      "turnovers": 11,
-      "fouls": 18
-    },
-    "highAltitude": false,
-    "altitudeAdjustment": 0.0
-  },
-  {
-    "gameId": "401810720",
-    "date": "2026-03-01T00:00Z",
-    "status": "STATUS_FINAL",
-    "homeTeam": {
-      "id": "27",
-      "name": "Washington Wizards",
-      "abbreviation": "WSH",
-      "score": "125",
-      "record": "16-43"
-    },
-    "awayTeam": {
-      "id": "28",
-      "name": "Toronto Raptors",
-      "abbreviation": "TOR",
-      "score": "134",
-      "record": "35-25"
-    },
-    "venue": "Capital One Arena",
-    "attendance": 17429,
-    "homeStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 35,
-      "offRebounds": 12,
-      "defRebounds": 23,
-      "assists": 23,
-      "steals": 3,
-      "blocks": 8,
-      "turnovers": 13,
-      "fouls": 20
-    },
-    "awayStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 35,
-      "offRebounds": 8,
-      "defRebounds": 27,
-      "assists": 31,
-      "steals": 7,
+      "rebounds": 54,
+      "offRebounds": 18,
+      "defRebounds": 36,
+      "assists": 27,
+      "steals": 13,
       "blocks": 3,
-      "turnovers": 9,
-      "fouls": 22
-    },
-    "highAltitude": false,
-    "altitudeAdjustment": 0.0
-  },
-  {
-    "gameId": "401810721",
-    "date": "2026-03-01T01:30Z",
-    "status": "STATUS_FINAL",
-    "homeTeam": {
-      "id": "9",
-      "name": "Golden State Warriors",
-      "abbreviation": "GS",
-      "score": "101",
-      "record": "31-29"
-    },
-    "awayTeam": {
-      "id": "13",
-      "name": "Los Angeles Lakers",
-      "abbreviation": "LAL",
-      "score": "129",
-      "record": "35-24"
-    },
-    "venue": "Chase Center",
-    "attendance": 18064,
-    "homeStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 40,
-      "offRebounds": 9,
-      "defRebounds": 31,
-      "assists": 32,
-      "steals": 6,
-      "blocks": 4,
-      "turnovers": 10,
+      "turnovers": 13,
       "fouls": 19
     },
     "awayStats": {
@@ -207,39 +42,220 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 47,
+      "rebounds": 41,
       "offRebounds": 10,
-      "defRebounds": 37,
-      "assists": 29,
+      "defRebounds": 31,
+      "assists": 25,
       "steals": 7,
       "blocks": 5,
-      "turnovers": 9,
-      "fouls": 11
+      "turnovers": 22,
+      "fouls": 21
     },
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   },
   {
-    "gameId": "401810722",
-    "date": "2026-03-01T02:30Z",
+    "gameId": "401810724",
+    "date": "2026-03-01T20:30Z",
     "status": "STATUS_FINAL",
     "homeTeam": {
-      "id": "26",
-      "name": "Utah Jazz",
-      "abbreviation": "UTAH",
-      "score": "105",
-      "record": "18-42"
+      "id": "17",
+      "name": "Brooklyn Nets",
+      "abbreviation": "BKN",
+      "score": "102",
+      "record": "15-45"
     },
     "awayTeam": {
-      "id": "3",
-      "name": "New Orleans Pelicans",
-      "abbreviation": "NO",
-      "score": "115",
-      "record": "19-42"
+      "id": "5",
+      "name": "Cleveland Cavaliers",
+      "abbreviation": "CLE",
+      "score": "106",
+      "record": "38-24"
     },
-    "venue": "Delta Center",
-    "attendance": 18186,
+    "venue": "Barclays Center",
+    "attendance": 17804,
     "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 32,
+      "offRebounds": 3,
+      "defRebounds": 29,
+      "assists": 27,
+      "steals": 10,
+      "blocks": 4,
+      "turnovers": 17,
+      "fouls": 28
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 38,
+      "offRebounds": 8,
+      "defRebounds": 30,
+      "assists": 25,
+      "steals": 9,
+      "blocks": 7,
+      "turnovers": 15,
+      "fouls": 21
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810725",
+    "date": "2026-03-01T20:30Z",
+    "status": "STATUS_FINAL",
+    "homeTeam": {
+      "id": "4",
+      "name": "Chicago Bulls",
+      "abbreviation": "CHI",
+      "score": "120",
+      "record": "25-36"
+    },
+    "awayTeam": {
+      "id": "15",
+      "name": "Milwaukee Bucks",
+      "abbreviation": "MIL",
+      "score": "97",
+      "record": "26-33"
+    },
+    "venue": "United Center",
+    "attendance": 20749,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 50,
+      "offRebounds": 7,
+      "defRebounds": 43,
+      "assists": 34,
+      "steals": 14,
+      "blocks": 8,
+      "turnovers": 18,
+      "fouls": 14
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 45,
+      "offRebounds": 11,
+      "defRebounds": 34,
+      "assists": 26,
+      "steals": 9,
+      "blocks": 3,
+      "turnovers": 19,
+      "fouls": 19
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810726",
+    "date": "2026-03-01T20:30Z",
+    "status": "STATUS_FINAL",
+    "homeTeam": {
+      "id": "7",
+      "name": "Denver Nuggets",
+      "abbreviation": "DEN",
+      "score": "108",
+      "record": "37-24"
+    },
+    "awayTeam": {
+      "id": "16",
+      "name": "Minnesota Timberwolves",
+      "abbreviation": "MIN",
+      "score": "117",
+      "record": "38-23"
+    },
+    "venue": "Ball Arena",
+    "attendance": 19895,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 44,
+      "offRebounds": 11,
+      "defRebounds": 33,
+      "assists": 21,
+      "steals": 2,
+      "blocks": 4,
+      "turnovers": 13,
+      "fouls": 14
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 41,
+      "offRebounds": 7,
+      "defRebounds": 34,
+      "assists": 33,
+      "steals": 11,
+      "blocks": 5,
+      "turnovers": 13,
+      "fouls": 21
+    },
+    "highAltitude": true,
+    "altitudeAdjustment": 2.5
+  },
+  {
+    "gameId": "401810727",
+    "date": "2026-03-01T22:00Z",
+    "status": "STATUS_FINAL",
+    "homeTeam": {
+      "id": "11",
+      "name": "Indiana Pacers",
+      "abbreviation": "IND",
+      "score": "106",
+      "record": "15-46"
+    },
+    "awayTeam": {
+      "id": "29",
+      "name": "Memphis Grizzlies",
+      "abbreviation": "MEM",
+      "score": "125",
+      "record": "23-36"
+    },
+    "venue": "Gainbridge Fieldhouse",
+    "attendance": 16695,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 31,
+      "offRebounds": 7,
+      "defRebounds": 24,
+      "assists": 29,
+      "steals": 5,
+      "blocks": 9,
+      "turnovers": 18,
+      "fouls": 13
+    },
+    "awayStats": {
       "fgm": 0,
       "fga": 0,
       "fg3m": 0,
@@ -249,11 +265,50 @@
       "rebounds": 40,
       "offRebounds": 13,
       "defRebounds": 27,
-      "assists": 24,
+      "assists": 34,
+      "steals": 12,
+      "blocks": 9,
+      "turnovers": 12,
+      "fouls": 16
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810728",
+    "date": "2026-03-01T23:00Z",
+    "status": "STATUS_FINAL",
+    "homeTeam": {
+      "id": "1",
+      "name": "Atlanta Hawks",
+      "abbreviation": "ATL",
+      "score": "135",
+      "record": "31-31"
+    },
+    "awayTeam": {
+      "id": "22",
+      "name": "Portland Trail Blazers",
+      "abbreviation": "POR",
+      "score": "101",
+      "record": "29-33"
+    },
+    "venue": "State Farm Arena",
+    "attendance": 15498,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 54,
+      "offRebounds": 13,
+      "defRebounds": 41,
+      "assists": 36,
       "steals": 10,
       "blocks": 5,
-      "turnovers": 7,
-      "fouls": 20
+      "turnovers": 13,
+      "fouls": 25
     },
     "awayStats": {
       "fgm": 0,
@@ -262,267 +317,381 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 58,
-      "offRebounds": 12,
-      "defRebounds": 46,
-      "assists": 32,
+      "rebounds": 38,
+      "offRebounds": 9,
+      "defRebounds": 29,
+      "assists": 23,
       "steals": 5,
-      "blocks": 11,
-      "turnovers": 19,
-      "fouls": 23
+      "blocks": 6,
+      "turnovers": 17,
+      "fouls": 15
     },
-    "highAltitude": false,
-    "altitudeAdjustment": 0.0
-  },
-  {
-    "gameId": "401810723",
-    "date": "2026-03-01T18:00Z",
-    "status": "STATUS_SCHEDULED",
-    "homeTeam": {
-      "id": "18",
-      "name": "New York Knicks",
-      "abbreviation": "NY",
-      "score": "0",
-      "record": "38-22"
-    },
-    "awayTeam": {
-      "id": "24",
-      "name": "San Antonio Spurs",
-      "abbreviation": "SA",
-      "score": "0",
-      "record": "43-16"
-    },
-    "venue": "Madison Square Garden",
-    "attendance": 0,
-    "highAltitude": false,
-    "altitudeAdjustment": 0.0
-  },
-  {
-    "gameId": "401810724",
-    "date": "2026-03-01T20:30Z",
-    "status": "STATUS_SCHEDULED",
-    "homeTeam": {
-      "id": "17",
-      "name": "Brooklyn Nets",
-      "abbreviation": "BKN",
-      "score": "0",
-      "record": "15-44"
-    },
-    "awayTeam": {
-      "id": "5",
-      "name": "Cleveland Cavaliers",
-      "abbreviation": "CLE",
-      "score": "0",
-      "record": "37-24"
-    },
-    "venue": "Barclays Center",
-    "attendance": 0,
-    "highAltitude": false,
-    "altitudeAdjustment": 0.0
-  },
-  {
-    "gameId": "401810725",
-    "date": "2026-03-01T20:30Z",
-    "status": "STATUS_SCHEDULED",
-    "homeTeam": {
-      "id": "4",
-      "name": "Chicago Bulls",
-      "abbreviation": "CHI",
-      "score": "0",
-      "record": "24-36"
-    },
-    "awayTeam": {
-      "id": "15",
-      "name": "Milwaukee Bucks",
-      "abbreviation": "MIL",
-      "score": "0",
-      "record": "26-32"
-    },
-    "venue": "United Center",
-    "attendance": 0,
-    "highAltitude": false,
-    "altitudeAdjustment": 0.0
-  },
-  {
-    "gameId": "401810726",
-    "date": "2026-03-01T20:30Z",
-    "status": "STATUS_SCHEDULED",
-    "homeTeam": {
-      "id": "7",
-      "name": "Denver Nuggets",
-      "abbreviation": "DEN",
-      "score": "0",
-      "record": "37-23"
-    },
-    "awayTeam": {
-      "id": "16",
-      "name": "Minnesota Timberwolves",
-      "abbreviation": "MIN",
-      "score": "0",
-      "record": "37-23"
-    },
-    "venue": "Ball Arena",
-    "attendance": 0,
-    "highAltitude": true,
-    "altitudeAdjustment": 2.5
-  },
-  {
-    "gameId": "401810727",
-    "date": "2026-03-01T22:00Z",
-    "status": "STATUS_SCHEDULED",
-    "homeTeam": {
-      "id": "11",
-      "name": "Indiana Pacers",
-      "abbreviation": "IND",
-      "score": "0",
-      "record": "15-45"
-    },
-    "awayTeam": {
-      "id": "29",
-      "name": "Memphis Grizzlies",
-      "abbreviation": "MEM",
-      "score": "0",
-      "record": "22-36"
-    },
-    "venue": "Gainbridge Fieldhouse",
-    "attendance": 0,
-    "highAltitude": false,
-    "altitudeAdjustment": 0.0
-  },
-  {
-    "gameId": "401810728",
-    "date": "2026-03-01T23:00Z",
-    "status": "STATUS_SCHEDULED",
-    "homeTeam": {
-      "id": "1",
-      "name": "Atlanta Hawks",
-      "abbreviation": "ATL",
-      "score": "0",
-      "record": "30-31"
-    },
-    "awayTeam": {
-      "id": "22",
-      "name": "Portland Trail Blazers",
-      "abbreviation": "POR",
-      "score": "0",
-      "record": "29-32"
-    },
-    "venue": "State Farm Arena",
-    "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   },
   {
     "gameId": "401810730",
     "date": "2026-03-01T23:00Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "19",
       "name": "Orlando Magic",
       "abbreviation": "ORL",
-      "score": "0",
-      "record": "31-27"
+      "score": "92",
+      "record": "31-28"
     },
     "awayTeam": {
       "id": "8",
       "name": "Detroit Pistons",
       "abbreviation": "DET",
-      "score": "0",
-      "record": "44-14"
+      "score": "106",
+      "record": "45-14"
     },
     "venue": "Kia Center",
-    "attendance": 0,
+    "attendance": 19015,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 41,
+      "offRebounds": 9,
+      "defRebounds": 32,
+      "assists": 20,
+      "steals": 8,
+      "blocks": 4,
+      "turnovers": 19,
+      "fouls": 17
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 56,
+      "offRebounds": 14,
+      "defRebounds": 42,
+      "assists": 24,
+      "steals": 14,
+      "blocks": 6,
+      "turnovers": 13,
+      "fouls": 21
+    },
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   },
   {
     "gameId": "401810729",
     "date": "2026-03-02T01:00Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "2",
       "name": "Boston Celtics",
       "abbreviation": "BOS",
-      "score": "0",
-      "record": "39-20"
+      "score": "114",
+      "record": "40-20"
     },
     "awayTeam": {
       "id": "20",
       "name": "Philadelphia 76ers",
       "abbreviation": "PHI",
-      "score": "0",
-      "record": "33-26"
+      "score": "98",
+      "record": "33-27"
     },
     "venue": "TD Garden",
-    "attendance": 0,
+    "attendance": 19156,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 59,
+      "offRebounds": 19,
+      "defRebounds": 40,
+      "assists": 27,
+      "steals": 4,
+      "blocks": 7,
+      "turnovers": 13,
+      "fouls": 19
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 37,
+      "offRebounds": 10,
+      "defRebounds": 27,
+      "assists": 21,
+      "steals": 10,
+      "blocks": 4,
+      "turnovers": 6,
+      "fouls": 17
+    },
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   },
   {
     "gameId": "401810731",
     "date": "2026-03-02T01:00Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "6",
       "name": "Dallas Mavericks",
       "abbreviation": "DAL",
-      "score": "0",
-      "record": "21-38"
+      "score": "87",
+      "record": "21-39"
     },
     "awayTeam": {
       "id": "25",
       "name": "Oklahoma City Thunder",
       "abbreviation": "OKC",
-      "score": "0",
-      "record": "46-15"
+      "score": "100",
+      "record": "47-15"
     },
     "venue": "American Airlines Center",
-    "attendance": 0,
+    "attendance": 18900,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 49,
+      "offRebounds": 9,
+      "defRebounds": 40,
+      "assists": 20,
+      "steals": 6,
+      "blocks": 1,
+      "turnovers": 17,
+      "fouls": 18
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 46,
+      "offRebounds": 7,
+      "defRebounds": 39,
+      "assists": 22,
+      "steals": 9,
+      "blocks": 8,
+      "turnovers": 8,
+      "fouls": 17
+    },
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   },
   {
     "gameId": "401810732",
     "date": "2026-03-02T02:00Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "12",
       "name": "LA Clippers",
       "abbreviation": "LAC",
-      "score": "0",
-      "record": "27-31"
+      "score": "137",
+      "record": "28-31"
     },
     "awayTeam": {
       "id": "3",
       "name": "New Orleans Pelicans",
       "abbreviation": "NO",
-      "score": "0",
-      "record": "19-42"
+      "score": "117",
+      "record": "19-43"
     },
     "venue": "Intuit Dome",
-    "attendance": 0,
+    "attendance": 17003,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 38,
+      "offRebounds": 10,
+      "defRebounds": 28,
+      "assists": 29,
+      "steals": 11,
+      "blocks": 3,
+      "turnovers": 8,
+      "fouls": 22
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 41,
+      "offRebounds": 14,
+      "defRebounds": 27,
+      "assists": 22,
+      "steals": 6,
+      "blocks": 4,
+      "turnovers": 16,
+      "fouls": 21
+    },
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   },
   {
     "gameId": "401810733",
     "date": "2026-03-02T02:30Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "13",
       "name": "Los Angeles Lakers",
       "abbreviation": "LAL",
-      "score": "0",
-      "record": "35-24"
+      "score": "128",
+      "record": "36-24"
     },
     "awayTeam": {
       "id": "23",
       "name": "Sacramento Kings",
       "abbreviation": "SAC",
-      "score": "0",
-      "record": "14-47"
+      "score": "104",
+      "record": "14-48"
     },
     "venue": "crypto.com Arena",
+    "attendance": 18272,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 37,
+      "offRebounds": 9,
+      "defRebounds": 28,
+      "assists": 34,
+      "steals": 14,
+      "blocks": 9,
+      "turnovers": 9,
+      "fouls": 12
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 52,
+      "offRebounds": 16,
+      "defRebounds": 36,
+      "assists": 30,
+      "steals": 4,
+      "blocks": 8,
+      "turnovers": 20,
+      "fouls": 16
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810734",
+    "date": "2026-03-03T00:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "27",
+      "name": "Washington Wizards",
+      "abbreviation": "WSH",
+      "score": "0",
+      "record": "16-43"
+    },
+    "awayTeam": {
+      "id": "10",
+      "name": "Houston Rockets",
+      "abbreviation": "HOU",
+      "score": "0",
+      "record": "37-22"
+    },
+    "venue": "Capital One Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810735",
+    "date": "2026-03-03T00:30Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "15",
+      "name": "Milwaukee Bucks",
+      "abbreviation": "MIL",
+      "score": "0",
+      "record": "26-33"
+    },
+    "awayTeam": {
+      "id": "2",
+      "name": "Boston Celtics",
+      "abbreviation": "BOS",
+      "score": "0",
+      "record": "40-20"
+    },
+    "venue": "Fiserv Forum",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810736",
+    "date": "2026-03-03T02:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "26",
+      "name": "Utah Jazz",
+      "abbreviation": "UTAH",
+      "score": "0",
+      "record": "18-42"
+    },
+    "awayTeam": {
+      "id": "7",
+      "name": "Denver Nuggets",
+      "abbreviation": "DEN",
+      "score": "0",
+      "record": "37-24"
+    },
+    "venue": "Delta Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401810737",
+    "date": "2026-03-03T03:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "9",
+      "name": "Golden State Warriors",
+      "abbreviation": "GS",
+      "score": "0",
+      "record": "31-29"
+    },
+    "awayTeam": {
+      "id": "12",
+      "name": "LA Clippers",
+      "abbreviation": "LAC",
+      "score": "0",
+      "record": "28-31"
+    },
+    "venue": "Chase Center",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0.0
