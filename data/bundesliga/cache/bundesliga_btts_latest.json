@@ -1,10 +1,10 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-03-02T22:11:34.527517+00:00",
+  "generated_at": "2026-03-03T10:19:53.159296+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 19,
-  "recommended_bets": 7,
+  "recommended_bets": 6,
   "predictions": [
     {
       "home_team": "Hamburger SV",
@@ -353,22 +353,23 @@
         "away_season_avg_goals_against": 1.588235294117647
       },
       "market_odds": {
-        "btts_yes": 1.75,
-        "btts_no": 1.98,
+        "btts_yes": 1.74,
+        "btts_no": 2.0,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5308310991957105,
-      "edge": 0.05185916916483346,
-      "expected_value": 0.029633810951333408,
+      "market_probability": 0.5347593582887701,
+      "edge": 0.04793091007177386,
+      "expected_value": null,
       "gates_passed": [
-        "min_edge",
         "max_ev_cap",
         "min_odds"
       ],
-      "gates_failed": [],
+      "gates_failed": [
+        "min_edge (edge=4.8%, need 5%)"
+      ],
       "bet_decision": {
-        "should_bet": true,
-        "recommended_stake_pct": 1.7286389721611155,
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
         "confidence": "LOW"
       }
     },
@@ -682,19 +683,19 @@
         "away_season_avg_goals_against": 1.1470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.34,
-        "btts_no": 3.04,
+        "btts_yes": 1.33,
+        "btts_no": 3.08,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6940639269406392,
-      "edge": 0.06264732375777915,
+      "market_probability": 0.6984126984126984,
+      "edge": 0.05829855228572001,
       "expected_value": null,
       "gates_passed": [
         "min_edge",
         "max_ev_cap"
       ],
       "gates_failed": [
-        "min_odds (odds=1.34, min 1.40)"
+        "min_odds (odds=1.33, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -810,42 +811,6 @@
         "should_bet": true,
         "recommended_stake_pct": 3.0,
         "confidence": "HIGH"
-      }
-    },
-    {
-      "home_team": "Union Berlin",
-      "away_team": "Werder Bremen",
-      "commence_time": "2026-03-08T16:30:00Z",
-      "model_probability": 0.5826902683605439,
-      "dixon_coles_prob": 0.5850498261880088,
-      "xgboost_prob": 0.5820000000000001,
-      "expected_home_goals": 1.1051709180756477,
-      "expected_away_goals": 2.0,
-      "key_features": {
-        "combined_form_btts_rate": 0.65,
-        "home_form_btts_rate": 0.5,
-        "away_form_btts_rate": 0.8,
-        "home_season_avg_goals_for": 1.5,
-        "away_season_avg_goals_against": 1.588235294117647
-      },
-      "market_odds": {
-        "btts_yes": 1.75,
-        "btts_no": 1.98,
-        "bookmaker": "onexbet"
-      },
-      "market_probability": 0.5308310991957105,
-      "edge": 0.05185916916483346,
-      "expected_value": 0.029633810951333408,
-      "gates_passed": [
-        "min_edge",
-        "max_ev_cap",
-        "min_odds"
-      ],
-      "gates_failed": [],
-      "bet_decision": {
-        "should_bet": true,
-        "recommended_stake_pct": 1.7286389721611155,
-        "confidence": "LOW"
       }
     },
     {
