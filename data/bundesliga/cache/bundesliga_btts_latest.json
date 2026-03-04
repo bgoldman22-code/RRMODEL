@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-03-03T22:10:30.448903+00:00",
+  "generated_at": "2026-03-04T10:17:20.577205+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 19,
@@ -23,19 +23,19 @@
         "away_season_avg_goals_against": 0.7058823529411765
       },
       "market_odds": {
-        "btts_yes": 1.59,
-        "btts_no": 2.24,
+        "btts_yes": 1.61,
+        "btts_no": 2.2,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5848563968668407,
-      "edge": -0.10211119204760533,
+      "market_probability": 0.5774278215223098,
+      "edge": -0.09468261670307443,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-10.2%, need 5%)"
+        "min_edge (edge=-9.5%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -86,7 +86,7 @@
       "model_probability": 0.7082755743719288,
       "dixon_coles_prob": 0.8186038010419097,
       "xgboost_prob": 0.676,
-      "expected_home_goals": 2.2103418361512954,
+      "expected_home_goals": 2.210341836151295,
       "expected_away_goals": 2.5,
       "key_features": {
         "combined_form_btts_rate": 0.8,
@@ -123,7 +123,7 @@
       "dixon_coles_prob": 0.9213845224876209,
       "xgboost_prob": 0.78,
       "expected_home_goals": 4.144390942783678,
-      "expected_away_goals": 2.7499999999999996,
+      "expected_away_goals": 2.75,
       "key_features": {
         "combined_form_btts_rate": 0.8,
         "home_form_btts_rate": 1.0,
@@ -230,7 +230,7 @@
       "away_team": "Hamburger SV",
       "commence_time": "2026-03-07T14:30:00Z",
       "model_probability": 0.42889955783891054,
-      "dixon_coles_prob": 0.6165637893576226,
+      "dixon_coles_prob": 0.6165637893576225,
       "xgboost_prob": 0.374,
       "expected_home_goals": 1.9340491066323833,
       "expected_away_goals": 1.25,
@@ -306,7 +306,7 @@
       "model_probability": 0.5226836295303681,
       "dixon_coles_prob": 0.4976739373627465,
       "xgboost_prob": 0.53,
-      "expected_home_goals": 2.2103418361512954,
+      "expected_home_goals": 2.210341836151295,
       "expected_away_goals": 0.8,
       "key_features": {
         "combined_form_btts_rate": 0.75,
@@ -526,7 +526,7 @@
       "dixon_coles_prob": 0.9392713328697807,
       "xgboost_prob": 0.676,
       "expected_home_goals": 3.453659118986399,
-      "expected_away_goals": 3.5000000000000004,
+      "expected_away_goals": 3.5,
       "key_features": {
         "combined_form_btts_rate": 0.6000000000000001,
         "home_form_btts_rate": 0.8,
@@ -598,7 +598,7 @@
       "model_probability": 0.6031996579987922,
       "dixon_coles_prob": 0.5457707205898713,
       "xgboost_prob": 0.6200000000000001,
-      "expected_home_goals": 2.8418680750516656,
+      "expected_home_goals": 2.841868075051665,
       "expected_away_goals": 0.8571428571428571,
       "key_features": {
         "combined_form_btts_rate": 0.8,
@@ -747,7 +747,7 @@
       "model_probability": 0.7082755743719288,
       "dixon_coles_prob": 0.8186038010419097,
       "xgboost_prob": 0.676,
-      "expected_home_goals": 2.2103418361512954,
+      "expected_home_goals": 2.210341836151295,
       "expected_away_goals": 2.5,
       "key_features": {
         "combined_form_btts_rate": 0.8,
@@ -784,7 +784,7 @@
       "dixon_coles_prob": 0.9213845224876209,
       "xgboost_prob": 0.78,
       "expected_home_goals": 4.144390942783678,
-      "expected_away_goals": 2.7499999999999996,
+      "expected_away_goals": 2.75,
       "key_features": {
         "combined_form_btts_rate": 0.8,
         "home_form_btts_rate": 1.0,
@@ -928,7 +928,7 @@
       "dixon_coles_prob": 0.9392713328697807,
       "xgboost_prob": 0.676,
       "expected_home_goals": 3.453659118986399,
-      "expected_away_goals": 3.5000000000000004,
+      "expected_away_goals": 3.5,
       "key_features": {
         "combined_form_btts_rate": 0.6000000000000001,
         "home_form_btts_rate": 0.8,
