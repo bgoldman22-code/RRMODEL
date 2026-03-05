@@ -30,7 +30,7 @@ const NCAAMBBV2Predictions = () => {
       const data = await response.json();
 
       if (!data.ok || !data.predictions || data.predictions.length === 0) {
-        setError(data.message || 'No V2 picks available today. This model only plays away underdogs ≤ +150 — some days have 0 qualifying picks.');
+        setError(data.message || 'No V2 picks available today. This model only plays underdogs ≤ +150 — some days have 0 qualifying picks.');
         setMetadata(data.metadata || null);
         return;
       }
@@ -60,7 +60,7 @@ const NCAAMBBV2Predictions = () => {
     return (
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">🏀 NCAA MBB V2 — Calibrated Picks</h1>
-        <p className="text-gray-500 text-sm mb-4">Away Dogs ≤ +150 · Isotonic Calibration · ≥5% Calibrated Edge</p>
+        <p className="text-gray-500 text-sm mb-4">Underdogs ≤ +150 · Isotonic Calibration · ≥5% Calibrated Edge</p>
         
         <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-4">
           <div className="flex items-center">
@@ -113,7 +113,7 @@ const NCAAMBBV2Predictions = () => {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-1">🏀 NCAA MBB V2 — Calibrated Picks</h1>
         <p className="text-gray-500 text-sm">
-          Away Dogs ≤ +150 · Walk-Forward Isotonic Calibration · ≥5% Calibrated Edge
+          Underdogs ≤ +150 · Walk-Forward Isotonic Calibration · ≥5% Calibrated Edge
         </p>
         <div className="flex flex-wrap gap-3 mt-2">
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
@@ -173,7 +173,7 @@ const NCAAMBBV2Predictions = () => {
           <div style={{ marginBottom: '20px' }}>
             <h2 style={{ fontSize: '26px', fontWeight: 'bold', margin: 0 }}>🏀 NCAA MBB V2 Picks (Calibrated)</h2>
             <p style={{ fontSize: '13px', color: '#6b7280', margin: '4px 0 0 0' }}>
-              {lastUpdated ? new Date(lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()} | {predictions.length} Picks | Away Dogs ≤ +150 | ≥5% Calibrated Edge
+              {lastUpdated ? new Date(lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()} | {predictions.length} Picks | Dogs ≤ +150 | ≥5% Calibrated Edge
             </p>
           </div>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
@@ -214,7 +214,7 @@ const NCAAMBBV2Predictions = () => {
             </tbody>
           </table>
           <div style={{ marginTop: '14px', fontSize: '11px', color: '#9ca3af', textAlign: 'center' }}>
-            bgroundrobin.com/ncaa-mbb-v2 | V2: Isotonic Calibration + Away Dog ≤ +150
+            bgroundrobin.com/ncaa-mbb-v2 | V2: Isotonic Calibration + Dogs ≤ +150
           </div>
         </div>
       </div>
@@ -299,13 +299,13 @@ const NCAAMBBV2Predictions = () => {
         <h3 className="text-sm font-semibold text-emerald-800 mb-2">V2 Model Information</h3>
         <ul className="text-sm text-emerald-700 space-y-1">
           <li>• <strong>Model:</strong> NCAA MBB V2 — Walk-Forward Isotonic Calibration</li>
-          <li>• <strong>Filter:</strong> Away underdogs only, odds ≤ +150</li>
+          <li>• <strong>Filter:</strong> Underdogs only (home or away), odds ≤ +150</li>
           <li>• <strong>Min Edge:</strong> 5% calibrated edge (after probability correction)</li>
           <li>• <strong>Calibration:</strong> Isotonic regression trained on all prior results (walk-forward, no data leakage)</li>
-          <li>• <strong>Backtest:</strong> {metadata?.backtestRecord || '64-58 (52.5%)'} · {metadata?.backtestROI || '+13.5%'} ROI over 63 days</li>
+          <li>• <strong>Backtest:</strong> {metadata?.backtestRecord || '13-8 (61.9%)'} · {metadata?.backtestROI || '+26.3%'} ROI over 16 days</li>
           <li>• <strong>Kelly Fraction:</strong> 25% (conservative sizing)</li>
           <li>• <strong>Bankroll:</strong> $10,000</li>
-          <li>• <strong>Why V2?</strong> V1 is overconfident (ECE=33%). Calibration corrects probabilities. Away dogs ≤ +150 is where the model has genuine edge.</li>
+          <li>• <strong>Why V2?</strong> V1 is overconfident (ECE=33%). Calibration corrects probabilities. Dogs ≤ +150 is where the model has genuine edge — home/away doesn't matter.</li>
         </ul>
       </div>
 

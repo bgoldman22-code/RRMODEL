@@ -1,12 +1,12 @@
-// NCAA MBB V2 Predictions — Calibrated + Away Dog Filter
-// Walk-forward isotonic calibration → filter to away dogs <+150 → ≥5% calibrated edge
+// NCAA MBB V2 Predictions — Calibrated + Underdog Filter
+// Walk-forward isotonic calibration → filter to underdogs ≤ +150 → ≥5% calibrated edge
 //
 // Data flow:
 //   1. Fetch today's raw Variant B picks from GitHub
 //   2. Fetch historical picks (last 30 days min) for calibration training
 //   3. Train isotonic regression on historical results (walk-forward: only past data)
 //   4. Apply calibration to today's picks
-//   5. Filter: away underdogs with odds < +150 only
+//   5. Filter: underdogs with odds ≤ +150 (home or away)
 //   6. Require ≥5% calibrated edge
 //   7. Re-size bets with calibrated probabilities
 
@@ -116,10 +116,8 @@ function calculateBetSize(calibratedProb, odds) {
   return { betSize, edge, skip: betSize === 0 };
 }
 
-// ─── Is this pick an away underdog with odds ≤ +MAX_DOG_ODDS? ─
+// ─── Is this pick an underdog with odds ≤ +MAX_DOG_ODDS? ─────
 function passesV2Filter(pick) {
-  // Must be picking the away team
-  if (pick.side !== 'away') return false;
   // Must be an underdog (positive odds)
   if (pick.odds <= 0) return false;
   // Odds must be ≤ +150
@@ -260,11 +258,10 @@ export default async function handler(event, context) {
     // ── Step 6: Apply calibration + filter to today's picks ─
     const v2Picks = [];
     let totalFiltered = 0;
-    let filteredByType = { notAway: 0, notDog: 0, oddsTooHigh: 0, lowEdge: 0 };
+    let filteredByType = { notDog: 0, oddsTooHigh: 0, lowEdge: 0 };
 
     for (const pick of rawPicks) {
-      // Apply filter: away dog ≤ +150
-      if (pick.side !== 'away') { filteredByType.notAway++; totalFiltered++; continue; }
+      // Apply filter: underdog ≤ +150 (home or away)
       if (pick.odds <= 0) { filteredByType.notDog++; totalFiltered++; continue; }
       if (pick.odds > MAX_DOG_ODDS) { filteredByType.oddsTooHigh++; totalFiltered++; continue; }
 
@@ -286,12 +283,12 @@ export default async function handler(event, context) {
         raw_edge: pick.edge,
         calibrated_edge: calibratedEdge,
         bet_size_dollars: betSize || pick.bet_size_dollars,
-        v2_filter: 'away_dog_lt150'
+        v2_filter: 'dog_lt150'
       });
     }
 
     console.log(`[NCAA MBB V2] After filter: ${v2Picks.length} picks (filtered ${totalFiltered})`);
-    console.log(`[NCAA MBB V2] Filter breakdown: not-away=${filteredByType.notAway}, not-dog=${filteredByType.notDog}, odds>+150=${filteredByType.oddsTooHigh}, low-edge=${filteredByType.lowEdge}`);
+    console.log(`[NCAA MBB V2] Filter breakdown: not-dog=${filteredByType.notDog}, odds>+150=${filteredByType.oddsTooHigh}, low-edge=${filteredByType.lowEdge}`);
 
     // ── Step 7: Transform for frontend ──────────────────────
     const transformed = transformV2Picks(v2Picks, today, trainingData.length, filteredByType, rawPicks.length);
@@ -322,13 +319,16 @@ function transformV2Picks(picks, date, trainingSize, filterBreakdown, rawTotal) 
       favOdds = underdogOdds;
     }
 
+    const pickTeam = pick.side === 'away' ? pick.away_team : pick.home_team;
+    const oppTeam  = pick.side === 'away' ? pick.home_team : pick.away_team;
+
     return {
       game: `${pick.away_team} @ ${pick.home_team}`,
       awayTeam: pick.away_team,
       homeTeam: pick.home_team,
       prediction: {
-        pick: pick.away_team, // always away team for V2
-        side: 'away',
+        pick: pickTeam,
+        side: pick.side,
         confidence: Math.round(pick.calibrated_edge * 100),
         winProbability: {
           rawModelPercent: pick.raw_model_prob * 100,
@@ -339,9 +339,9 @@ function transformV2Picks(picks, date, trainingSize, filterBreakdown, rawTotal) 
       vegasLines: {
         moneyline: {
           pick: underdogOdds,
-          pickTeam: pick.away_team,
+          pickTeam: pickTeam,
           opponent: favOdds,
-          opponentTeam: pick.home_team
+          opponentTeam: oppTeam
         }
       },
       betting: {
@@ -353,7 +353,7 @@ function transformV2Picks(picks, date, trainingSize, filterBreakdown, rawTotal) 
       metadata: {
         date: date,
         model: 'NCAA MBB V2 (Calibrated)',
-        filter: 'Away Dog ≤ +150',
+        filter: 'Underdog ≤ +150',
         market: pick.market
       }
     };
@@ -381,14 +381,13 @@ function transformV2Picks(picks, date, trainingSize, filterBreakdown, rawTotal) 
       model: 'NCAA MBB V2 (Isotonic Calibration)',
       calibrationTrainingSize: trainingSize,
       filters: [
-        'Away team only',
         'Underdog (positive odds)',
         `Odds ≤ +${MAX_DOG_ODDS}`,
         `Calibrated edge ≥ ${CALIBRATED_EDGE_MIN * 100}%`,
         'Walk-forward isotonic calibration'
       ],
-      backtestROI: '+13.5%',
-      backtestRecord: '64-58 (52.5%)'
+      backtestROI: '+26.3%',
+      backtestRecord: '13-8 (61.9%)'
     }
   };
 }
