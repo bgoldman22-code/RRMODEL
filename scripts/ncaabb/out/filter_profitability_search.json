@@ -1,0 +1,1025 @@
+{
+  "baseline": {
+    "record": "531-431",
+    "winPct": "55.2",
+    "wagered": 839028,
+    "pl": -46654,
+    "roi": "-5.6"
+  },
+  "profitable_filters": [
+    {
+      "label": "Edge ≥ 40%",
+      "count": 152,
+      "wins": 73,
+      "losses": 79,
+      "winPct": 48.026315789473685,
+      "wagered": 142750,
+      "pl": 7522,
+      "roi": 5.27
+    },
+    {
+      "label": "Edge 40%+",
+      "count": 152,
+      "wins": 73,
+      "losses": 79,
+      "winPct": 48.026315789473685,
+      "wagered": 142750,
+      "pl": 7522,
+      "roi": 5.27
+    },
+    {
+      "label": "Dog only (odds > 0)",
+      "count": 284,
+      "wins": 120,
+      "losses": 164,
+      "winPct": 42.25352112676056,
+      "wagered": 186512,
+      "pl": 4678,
+      "roi": 2.51
+    },
+    {
+      "label": "Model prob < 90%",
+      "count": 371,
+      "wins": 184,
+      "losses": 187,
+      "winPct": 49.59568733153639,
+      "wagered": 249742,
+      "pl": 380,
+      "roi": 0.15
+    }
+  ],
+  "all_single_results": [
+    {
+      "label": "Edge ≥ 40%",
+      "count": 152,
+      "wins": 73,
+      "losses": 79,
+      "winPct": 48.026315789473685,
+      "wagered": 142750,
+      "pl": 7522,
+      "roi": 5.27
+    },
+    {
+      "label": "Edge 40%+",
+      "count": 152,
+      "wins": 73,
+      "losses": 79,
+      "winPct": 48.026315789473685,
+      "wagered": 142750,
+      "pl": 7522,
+      "roi": 5.27
+    },
+    {
+      "label": "Dog only (odds > 0)",
+      "count": 284,
+      "wins": 120,
+      "losses": 164,
+      "winPct": 42.25352112676056,
+      "wagered": 186512,
+      "pl": 4678,
+      "roi": 2.51
+    },
+    {
+      "label": "Model prob < 90%",
+      "count": 371,
+      "wins": 184,
+      "losses": 187,
+      "winPct": 49.59568733153639,
+      "wagered": 249742,
+      "pl": 380,
+      "roi": 0.15
+    },
+    {
+      "label": "No big fav (odds > -200)",
+      "count": 627,
+      "wins": 315,
+      "losses": 312,
+      "winPct": 50.23923444976076,
+      "wagered": 506853,
+      "pl": -5677,
+      "roi": -1.12
+    },
+    {
+      "label": "Edge ≥ 30%",
+      "count": 418,
+      "wins": 213,
+      "losses": 205,
+      "winPct": 50.95693779904307,
+      "wagered": 384464,
+      "pl": -4525,
+      "roi": -1.18
+    },
+    {
+      "label": "Edge 30%+",
+      "count": 418,
+      "wins": 213,
+      "losses": 205,
+      "winPct": 50.95693779904307,
+      "wagered": 384464,
+      "pl": -4525,
+      "roi": -1.18
+    },
+    {
+      "label": "Odds -200 to +150",
+      "count": 538,
+      "wins": 287,
+      "losses": 251,
+      "winPct": 53.3457249070632,
+      "wagered": 481014,
+      "pl": -7849,
+      "roi": -1.63
+    },
+    {
+      "label": "Odds -150 to +150",
+      "count": 379,
+      "wins": 187,
+      "losses": 192,
+      "winPct": 49.340369393139845,
+      "wagered": 330543,
+      "pl": -6838,
+      "roi": -2.07
+    },
+    {
+      "label": "Edge ≥ 25%",
+      "count": 540,
+      "wins": 287,
+      "losses": 253,
+      "winPct": 53.148148148148145,
+      "wagered": 498335,
+      "pl": -10366,
+      "roi": -2.08
+    },
+    {
+      "label": "No big fav (odds > -250)",
+      "count": 732,
+      "wins": 381,
+      "losses": 351,
+      "winPct": 52.04918032786885,
+      "wagered": 609073,
+      "pl": -14626,
+      "roi": -2.4
+    },
+    {
+      "label": "Odds -200 to +100",
+      "count": 371,
+      "wins": 212,
+      "losses": 159,
+      "winPct": 57.14285714285714,
+      "wagered": 344574,
+      "pl": -9639,
+      "roi": -2.8
+    },
+    {
+      "label": "Away picks only",
+      "count": 727,
+      "wins": 392,
+      "losses": 335,
+      "winPct": 53.920220082530946,
+      "wagered": 622161,
+      "pl": -19097,
+      "roi": -3.07
+    },
+    {
+      "label": "Edge ≥ 35%",
+      "count": 293,
+      "wins": 139,
+      "losses": 154,
+      "winPct": 47.44027303754266,
+      "wagered": 272266,
+      "pl": -9805,
+      "roi": -3.6
+    },
+    {
+      "label": "No big fav (odds > -300)",
+      "count": 828,
+      "wins": 443,
+      "losses": 385,
+      "winPct": 53.5024154589372,
+      "wagered": 705028,
+      "pl": -25636,
+      "roi": -3.64
+    },
+    {
+      "label": "Odds -250 to +100",
+      "count": 484,
+      "wins": 285,
+      "losses": 199,
+      "winPct": 58.88429752066116,
+      "wagered": 455705,
+      "pl": -17433,
+      "roi": -3.83
+    },
+    {
+      "label": "Odds -300 to +200",
+      "count": 796,
+      "wins": 442,
+      "losses": 354,
+      "winPct": 55.527638190954775,
+      "wagered": 715498,
+      "pl": -29938,
+      "roi": -4.18
+    },
+    {
+      "label": "Odds -300 to +150",
+      "count": 756,
+      "wins": 427,
+      "losses": 329,
+      "winPct": 56.481481481481474,
+      "wagered": 697145,
+      "pl": -29908,
+      "roi": -4.29
+    },
+    {
+      "label": "Model prob < 80%",
+      "count": 191,
+      "wins": 76,
+      "losses": 115,
+      "winPct": 39.79057591623037,
+      "wagered": 86661,
+      "pl": -4078,
+      "roi": -4.71
+    },
+    {
+      "label": "Edge ≥ 20%",
+      "count": 732,
+      "wins": 394,
+      "losses": 338,
+      "winPct": 53.825136612021865,
+      "wagered": 661188,
+      "pl": -31761,
+      "roi": -4.8
+    },
+    {
+      "label": "Edge ≥ 15%",
+      "count": 946,
+      "wins": 528,
+      "losses": 418,
+      "winPct": 55.81395348837209,
+      "wagered": 836443,
+      "pl": -45508,
+      "roi": -5.44
+    },
+    {
+      "label": "Bet size ≥ $500",
+      "count": 854,
+      "wins": 492,
+      "losses": 362,
+      "winPct": 57.61124121779859,
+      "wagered": 802223,
+      "pl": -45234,
+      "roi": -5.64
+    },
+    {
+      "label": "Edge 20-35%",
+      "count": 439,
+      "wins": 255,
+      "losses": 184,
+      "winPct": 58.08656036446469,
+      "wagered": 388922,
+      "pl": -21956,
+      "roi": -5.65
+    },
+    {
+      "label": "Odds -300 to +100",
+      "count": 589,
+      "wins": 352,
+      "losses": 237,
+      "winPct": 59.7623089983022,
+      "wagered": 560705,
+      "pl": -31698,
+      "roi": -5.65
+    },
+    {
+      "label": "No big dog (odds < +200)",
+      "count": 900,
+      "wins": 511,
+      "losses": 389,
+      "winPct": 56.777777777777786,
+      "wagered": 819498,
+      "pl": -46283,
+      "roi": -5.65
+    },
+    {
+      "label": "Model prob ≥ 80%",
+      "count": 771,
+      "wins": 455,
+      "losses": 316,
+      "winPct": 59.014267185473415,
+      "wagered": 752367,
+      "pl": -42576,
+      "roi": -5.66
+    },
+    {
+      "label": "Model prob ≥ 70%",
+      "count": 865,
+      "wins": 495,
+      "losses": 370,
+      "winPct": 57.22543352601156,
+      "wagered": 807396,
+      "pl": -46264,
+      "roi": -5.73
+    },
+    {
+      "label": "Model prob ≥ 60%",
+      "count": 916,
+      "wins": 515,
+      "losses": 401,
+      "winPct": 56.222707423580786,
+      "wagered": 828223,
+      "pl": -47507,
+      "roi": -5.74
+    },
+    {
+      "label": "No big dog (odds < +150)",
+      "count": 860,
+      "wins": 496,
+      "losses": 364,
+      "winPct": 57.674418604651166,
+      "wagered": 801145,
+      "pl": -46253,
+      "roi": -5.77
+    },
+    {
+      "label": "Model prob ≥ 75%",
+      "count": 817,
+      "wins": 475,
+      "losses": 342,
+      "winPct": 58.139534883720934,
+      "wagered": 782298,
+      "pl": -45382,
+      "roi": -5.8
+    },
+    {
+      "label": "Model prob ≥ 85%",
+      "count": 697,
+      "wins": 411,
+      "losses": 286,
+      "winPct": 58.96700143472023,
+      "wagered": 691772,
+      "pl": -41015,
+      "roi": -5.93
+    },
+    {
+      "label": "Bet size ≥ $800",
+      "count": 738,
+      "wins": 435,
+      "losses": 303,
+      "winPct": 58.94308943089431,
+      "wagered": 727028,
+      "pl": -43748,
+      "roi": -6.02
+    },
+    {
+      "label": "Fav -300 to -150",
+      "count": 377,
+      "wins": 240,
+      "losses": 137,
+      "winPct": 63.660477453580896,
+      "wagered": 366602,
+      "pl": -23070,
+      "roi": -6.29
+    },
+    {
+      "label": "Edge 15-35%",
+      "count": 653,
+      "wins": 389,
+      "losses": 264,
+      "winPct": 59.57120980091884,
+      "wagered": 564177,
+      "pl": -35703,
+      "roi": -6.33
+    },
+    {
+      "label": "No big dog (odds < +130)",
+      "count": 829,
+      "wins": 482,
+      "losses": 347,
+      "winPct": 58.14234016887817,
+      "wagered": 774784,
+      "pl": -49389,
+      "roi": -6.37
+    },
+    {
+      "label": "Odds -300 to -100",
+      "count": 574,
+      "wins": 342,
+      "losses": 232,
+      "winPct": 59.58188153310105,
+      "wagered": 548516,
+      "pl": -34987,
+      "roi": -6.38
+    },
+    {
+      "label": "Edge < 35%",
+      "count": 669,
+      "wins": 392,
+      "losses": 277,
+      "winPct": 58.594917787742894,
+      "wagered": 566762,
+      "pl": -36849,
+      "roi": -6.5
+    },
+    {
+      "label": "Odds -150 to -100 (sm fav)",
+      "count": 197,
+      "wins": 102,
+      "losses": 95,
+      "winPct": 51.776649746192895,
+      "wagered": 181914,
+      "pl": -11917,
+      "roi": -6.55
+    },
+    {
+      "label": "Edge 20-40%",
+      "count": 580,
+      "wins": 321,
+      "losses": 259,
+      "winPct": 55.344827586206904,
+      "wagered": 518438,
+      "pl": -39283,
+      "roi": -7.58
+    },
+    {
+      "label": "Bet size = $1000 (flat)",
+      "count": 609,
+      "wins": 364,
+      "losses": 245,
+      "winPct": 59.77011494252874,
+      "wagered": 609000,
+      "pl": -46630,
+      "roi": -7.66
+    },
+    {
+      "label": "Edge < 40%",
+      "count": 810,
+      "wins": 458,
+      "losses": 352,
+      "winPct": 56.54320987654321,
+      "wagered": 696278,
+      "pl": -54176,
+      "roi": -7.78
+    },
+    {
+      "label": "Fav only (odds < 0)",
+      "count": 678,
+      "wins": 411,
+      "losses": 267,
+      "winPct": 60.61946902654868,
+      "wagered": 652516,
+      "pl": -51332,
+      "roi": -7.87
+    },
+    {
+      "label": "Model prob ≥ 90%",
+      "count": 591,
+      "wins": 347,
+      "losses": 244,
+      "winPct": 58.71404399323181,
+      "wagered": 589286,
+      "pl": -47034,
+      "roi": -7.98
+    },
+    {
+      "label": "Model prob ≥ 95%",
+      "count": 374,
+      "wins": 229,
+      "losses": 145,
+      "winPct": 61.229946524064175,
+      "wagered": 373950,
+      "pl": -31263,
+      "roi": -8.36
+    },
+    {
+      "label": "Edge < 20%",
+      "count": 230,
+      "wins": 137,
+      "losses": 93,
+      "winPct": 59.56521739130435,
+      "wagered": 177840,
+      "pl": -14893,
+      "roi": -8.37
+    },
+    {
+      "label": "Edge 10-20%",
+      "count": 230,
+      "wins": 137,
+      "losses": 93,
+      "winPct": 59.56521739130435,
+      "wagered": 177840,
+      "pl": -14893,
+      "roi": -8.37
+    },
+    {
+      "label": "Edge 15-30%",
+      "count": 528,
+      "wins": 315,
+      "losses": 213,
+      "winPct": 59.65909090909091,
+      "wagered": 451979,
+      "pl": -40983,
+      "roi": -9.07
+    },
+    {
+      "label": "Edge < 30%",
+      "count": 544,
+      "wins": 318,
+      "losses": 226,
+      "winPct": 58.45588235294118,
+      "wagered": 454564,
+      "pl": -42129,
+      "roi": -9.27
+    },
+    {
+      "label": "Edge 10-30%",
+      "count": 544,
+      "wins": 318,
+      "losses": 226,
+      "winPct": 58.45588235294118,
+      "wagered": 454564,
+      "pl": -42129,
+      "roi": -9.27
+    },
+    {
+      "label": "Edge < 25%",
+      "count": 422,
+      "wins": 244,
+      "losses": 178,
+      "winPct": 57.81990521327014,
+      "wagered": 340693,
+      "pl": -36288,
+      "roi": -10.65
+    },
+    {
+      "label": "Edge 10-25%",
+      "count": 422,
+      "wins": 244,
+      "losses": 178,
+      "winPct": 57.81990521327014,
+      "wagered": 340693,
+      "pl": -36288,
+      "roi": -10.65
+    },
+    {
+      "label": "Home picks only",
+      "count": 235,
+      "wins": 139,
+      "losses": 96,
+      "winPct": 59.148936170212764,
+      "wagered": 216867,
+      "pl": -27557,
+      "roi": -12.71
+    }
+  ],
+  "all_combo_results": [
+    {
+      "label": "Odds -250 to +150 + Model ≥ 80%",
+      "count": 557,
+      "wins": 318,
+      "losses": 239,
+      "winPct": 57.09156193895871,
+      "wagered": 539753,
+      "pl": -10291,
+      "roi": -1.91
+    },
+    {
+      "label": "Odds -300 to +150 + Model ≥ 85%",
+      "count": 590,
+      "wins": 341,
+      "losses": 249,
+      "winPct": 57.79661016949152,
+      "wagered": 585501,
+      "pl": -24338,
+      "roi": -4.16
+    },
+    {
+      "label": "Edge<30% + Away + Odds(-300,+150)",
+      "count": 255,
+      "wins": 157,
+      "losses": 98,
+      "winPct": 61.568627450980394,
+      "wagered": 218937,
+      "pl": -9876,
+      "roi": -4.51
+    },
+    {
+      "label": "Edge < 35% + Odds -300 to +150",
+      "count": 495,
+      "wins": 299,
+      "losses": 196,
+      "winPct": 60.4040404040404,
+      "wagered": 442254,
+      "pl": -20722,
+      "roi": -4.69
+    },
+    {
+      "label": "Edge < 30% + No big fav/dog (-250,+150)",
+      "count": 260,
+      "wins": 150,
+      "losses": 110,
+      "winPct": 57.692307692307686,
+      "wagered": 211068,
+      "pl": -10023,
+      "roi": -4.75
+    },
+    {
+      "label": "No big dog (<+150) + Model ≥ 85%",
+      "count": 694,
+      "wins": 410,
+      "losses": 284,
+      "winPct": 59.0778097982709,
+      "wagered": 689501,
+      "pl": -40683,
+      "roi": -5.9
+    },
+    {
+      "label": "Edge 10-25% + Odds -250 to +150",
+      "count": 182,
+      "wins": 103,
+      "losses": 79,
+      "winPct": 56.59340659340659,
+      "wagered": 138337,
+      "pl": -8317,
+      "roi": -6.01
+    },
+    {
+      "label": "Edge 15-35% + Fav only",
+      "count": 543,
+      "wins": 346,
+      "losses": 197,
+      "winPct": 63.72007366482505,
+      "wagered": 517979,
+      "pl": -32261,
+      "roi": -6.23
+    },
+    {
+      "label": "Edge<30% + Fav(-300,-100) + Model≥85% + Away",
+      "count": 153,
+      "wins": 100,
+      "losses": 53,
+      "winPct": 65.359477124183,
+      "wagered": 152517,
+      "pl": -9580,
+      "roi": -6.28
+    },
+    {
+      "label": "Edge<30% + Away + Fav",
+      "count": 250,
+      "wins": 161,
+      "losses": 89,
+      "winPct": 64.4,
+      "wagered": 234310,
+      "pl": -15297,
+      "roi": -6.53
+    },
+    {
+      "label": "Edge < 30% + No big fav/dog (-300,+150)",
+      "count": 356,
+      "wins": 212,
+      "losses": 144,
+      "winPct": 59.55056179775281,
+      "wagered": 307023,
+      "pl": -21033,
+      "roi": -6.85
+    },
+    {
+      "label": "Edge 10-30% + Odds -300 to -100",
+      "count": 338,
+      "wins": 211,
+      "losses": 127,
+      "winPct": 62.42603550295858,
+      "wagered": 314023,
+      "pl": -23181,
+      "roi": -7.38
+    },
+    {
+      "label": "Edge 10-30% + Odds -300 to +150",
+      "count": 386,
+      "wins": 231,
+      "losses": 155,
+      "winPct": 59.84455958549223,
+      "wagered": 337023,
+      "pl": -25706,
+      "roi": -7.63
+    },
+    {
+      "label": "Edge < 25% + No big fav/dog (-300,+150)",
+      "count": 238,
+      "wins": 139,
+      "losses": 99,
+      "winPct": 58.40336134453782,
+      "wagered": 194337,
+      "pl": -15430,
+      "roi": -7.94
+    },
+    {
+      "label": "Edge 10-25% + Odds -300 to -100",
+      "count": 227,
+      "wins": 142,
+      "losses": 85,
+      "winPct": 62.55506607929515,
+      "wagered": 205565,
+      "pl": -16542,
+      "roi": -8.05
+    },
+    {
+      "label": "Edge 20-40% + Fav only",
+      "count": 475,
+      "wins": 281,
+      "losses": 194,
+      "winPct": 59.15789473684211,
+      "wagered": 464913,
+      "pl": -37755,
+      "roi": -8.12
+    },
+    {
+      "label": "No big dog (<+130) + Model ≥ 90%",
+      "count": 567,
+      "wins": 335,
+      "losses": 232,
+      "winPct": 59.082892416225754,
+      "wagered": 566784,
+      "pl": -50882,
+      "roi": -8.98
+    },
+    {
+      "label": "Fav only + Model ≥ 85%",
+      "count": 579,
+      "wins": 351,
+      "losses": 228,
+      "winPct": 60.62176165803109,
+      "wagered": 577245,
+      "pl": -52115,
+      "roi": -9.03
+    },
+    {
+      "label": "Edge<30% + Odds(-300,+150) + Model≥85%",
+      "count": 241,
+      "wins": 153,
+      "losses": 88,
+      "winPct": 63.48547717842323,
+      "wagered": 240403,
+      "pl": -22428,
+      "roi": -9.33
+    },
+    {
+      "label": "Edge 10-30% + Fav -300 to -100 + M≥85%",
+      "count": 241,
+      "wins": 153,
+      "losses": 88,
+      "winPct": 63.48547717842323,
+      "wagered": 240403,
+      "pl": -22428,
+      "roi": -9.33
+    },
+    {
+      "label": "Edge 10-30% + Odds(-300,+150) + M≥85%",
+      "count": 241,
+      "wins": 153,
+      "losses": 88,
+      "winPct": 63.48547717842323,
+      "wagered": 240403,
+      "pl": -22428,
+      "roi": -9.33
+    },
+    {
+      "label": "Edge 10-30% + Fav only",
+      "count": 442,
+      "wins": 280,
+      "losses": 162,
+      "winPct": 63.348416289592755,
+      "wagered": 418023,
+      "pl": -39526,
+      "roi": -9.46
+    },
+    {
+      "label": "Edge 15-30% + Fav only",
+      "count": 442,
+      "wins": 280,
+      "losses": 162,
+      "winPct": 63.348416289592755,
+      "wagered": 418023,
+      "pl": -39526,
+      "roi": -9.46
+    },
+    {
+      "label": "Edge < 30% + Model ≥ 80%",
+      "count": 409,
+      "wins": 262,
+      "losses": 147,
+      "winPct": 64.05867970660147,
+      "wagered": 397343,
+      "pl": -39267,
+      "roi": -9.88
+    },
+    {
+      "label": "Odds -300 to -100 + Model ≥ 90%",
+      "count": 384,
+      "wins": 227,
+      "losses": 157,
+      "winPct": 59.114583333333336,
+      "wagered": 384000,
+      "pl": -37929,
+      "roi": -9.88
+    },
+    {
+      "label": "Fav only + Model ≥ 95%",
+      "count": 321,
+      "wins": 203,
+      "losses": 118,
+      "winPct": 63.2398753894081,
+      "wagered": 321000,
+      "pl": -33790,
+      "roi": -10.53
+    },
+    {
+      "label": "Edge 10-25% + Fav only",
+      "count": 331,
+      "wins": 211,
+      "losses": 120,
+      "winPct": 63.74622356495468,
+      "wagered": 309565,
+      "pl": -32887,
+      "roi": -10.62
+    },
+    {
+      "label": "Edge<30% + Fav(-300,-100) + Model≥90% + Away",
+      "count": 127,
+      "wins": 81,
+      "losses": 46,
+      "winPct": 63.77952755905512,
+      "wagered": 127000,
+      "pl": -13720,
+      "roi": -10.8
+    },
+    {
+      "label": "Fav only + Model ≥ 90%",
+      "count": 488,
+      "wins": 296,
+      "losses": 192,
+      "winPct": 60.65573770491803,
+      "wagered": 488000,
+      "pl": -54274,
+      "roi": -11.12
+    },
+    {
+      "label": "Edge < 30% + Model ≥ 85%",
+      "count": 345,
+      "wins": 222,
+      "losses": 123,
+      "winPct": 64.34782608695652,
+      "wagered": 344403,
+      "pl": -38773,
+      "roi": -11.26
+    },
+    {
+      "label": "Edge 10-30% + Model ≥ 85%",
+      "count": 345,
+      "wins": 222,
+      "losses": 123,
+      "winPct": 64.34782608695652,
+      "wagered": 344403,
+      "pl": -38773,
+      "roi": -11.26
+    },
+    {
+      "label": "Edge<30% + Fav + Model≥85%",
+      "count": 345,
+      "wins": 222,
+      "losses": 123,
+      "winPct": 64.34782608695652,
+      "wagered": 344403,
+      "pl": -38773,
+      "roi": -11.26
+    },
+    {
+      "label": "Edge 10-25% + Model ≥ 85%",
+      "count": 247,
+      "wins": 162,
+      "losses": 85,
+      "winPct": 65.58704453441295,
+      "wagered": 246663,
+      "pl": -29549,
+      "roi": -11.98
+    },
+    {
+      "label": "Edge<25% + Fav + Model≥85%",
+      "count": 247,
+      "wins": 162,
+      "losses": 85,
+      "winPct": 65.58704453441295,
+      "wagered": 246663,
+      "pl": -29549,
+      "roi": -11.98
+    },
+    {
+      "label": "Edge<25% + Odds(-250,+150) + Model≥90%",
+      "count": 33,
+      "wins": 20,
+      "losses": 13,
+      "winPct": 60.60606060606061,
+      "wagered": 33000,
+      "pl": -4216,
+      "roi": -12.78
+    },
+    {
+      "label": "Edge<30% + Away + Model≥90%",
+      "count": 160,
+      "wins": 101,
+      "losses": 59,
+      "winPct": 63.125,
+      "wagered": 160000,
+      "pl": -20913,
+      "roi": -13.07
+    },
+    {
+      "label": "Edge 10-25% + Fav -300 to -100 + M≥90%",
+      "count": 119,
+      "wins": 75,
+      "losses": 44,
+      "winPct": 63.02521008403361,
+      "wagered": 119000,
+      "pl": -16002,
+      "roi": -13.45
+    },
+    {
+      "label": "Edge<30% + Odds(-300,+150) + Model≥90%",
+      "count": 200,
+      "wins": 123,
+      "losses": 77,
+      "winPct": 61.5,
+      "wagered": 200000,
+      "pl": -28185,
+      "roi": -14.09
+    },
+    {
+      "label": "Edge < 25% + Model ≥ 90%",
+      "count": 223,
+      "wins": 144,
+      "losses": 79,
+      "winPct": 64.57399103139014,
+      "wagered": 223000,
+      "pl": -32347,
+      "roi": -14.51
+    },
+    {
+      "label": "Edge<25% + Fav + Model≥90%",
+      "count": 223,
+      "wins": 144,
+      "losses": 79,
+      "winPct": 64.57399103139014,
+      "wagered": 223000,
+      "pl": -32347,
+      "roi": -14.51
+    },
+    {
+      "label": "Edge 10-25% + Fav + Model≥90%",
+      "count": 223,
+      "wins": 144,
+      "losses": 79,
+      "winPct": 64.57399103139014,
+      "wagered": 223000,
+      "pl": -32347,
+      "roi": -14.51
+    },
+    {
+      "label": "Edge < 30% + Model ≥ 90%",
+      "count": 304,
+      "wins": 192,
+      "losses": 112,
+      "winPct": 63.1578947368421,
+      "wagered": 304000,
+      "pl": -44530,
+      "roi": -14.65
+    },
+    {
+      "label": "Edge 10-30% + Model ≥ 90%",
+      "count": 304,
+      "wins": 192,
+      "losses": 112,
+      "winPct": 63.1578947368421,
+      "wagered": 304000,
+      "pl": -44530,
+      "roi": -14.65
+    },
+    {
+      "label": "Edge<30% + Fav + Model≥90%",
+      "count": 304,
+      "wins": 192,
+      "losses": 112,
+      "winPct": 63.1578947368421,
+      "wagered": 304000,
+      "pl": -44530,
+      "roi": -14.65
+    },
+    {
+      "label": "Edge<25% + Fav + Model≥90% + Away",
+      "count": 102,
+      "wins": 64,
+      "losses": 38,
+      "winPct": 62.745098039215684,
+      "wagered": 102000,
+      "pl": -15463,
+      "roi": -15.16
+    }
+  ]
+}

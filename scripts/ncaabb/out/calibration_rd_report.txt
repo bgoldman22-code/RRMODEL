@@ -1,0 +1,150 @@
+
+🧪 NCAAMBB Variant B — Calibration R&D
+══════════════════════════════════════════════════════════════════════════════════════════
+Full season: 2025-12-16 → 2026-02-16 (63 days)
+Production model is UNCHANGED — this is simulation only.
+
+Total graded picks: 962
+Original: 531-431 (55.2%)  Wagered: $839,028  P/L: $-46,654  ROI: -5.6%
+
+══════════════════════════════════════════════════════════════════════════════════════════
+📏 SECTION 2: DETAILED MISCALIBRATION ANALYSIS
+══════════════════════════════════════════════════════════════════════════════════════════
+
+Model Prob    Count      W-L  Expected   Actual      Gap  Direction
+──────────────────────────────────────────────────────────────────────
+40-45%            5      2-3     42.5%    40.0%   -2.5%       ✅ OK
+45-50%           12     2-10     47.5%    16.7%  -30.8%   📉 UNDER
+50-55%            8      5-3     52.5%    62.5% +  10.0%    📈 OVER
+55-60%           21     7-14     57.5%    33.3%  -24.2%   📉 UNDER
+60-65%           20     7-13     62.5%    35.0%  -27.5%   📉 UNDER
+65-70%           31    13-18     67.5%    41.9%  -25.6%   📉 UNDER
+70-75%           48    20-28     72.5%    41.7%  -30.8%   📉 UNDER
+75-80%           46    20-26     77.5%    43.5%  -34.0%   📉 UNDER
+80-85%           74    44-30     82.5%    59.5%  -23.0%   📉 UNDER
+85-90%          106    64-42     87.5%    60.4%  -27.1%   📉 UNDER
+90-95%          217   118-99     92.5%    54.4%  -38.1%   📉 UNDER
+95-100%         374  229-145     97.5%    61.2%  -36.3%   📉 UNDER
+
+Expected Calibration Error (ECE): 33.03%
+Average model probability: 88.1%
+Actual season win rate:    55.2%
+Overconfidence gap:        32.9 percentage points
+
+══════════════════════════════════════════════════════════════════════════════════════════
+🔧 SECTION 3: CALIBRATOR TRAINING (full-season fit)
+══════════════════════════════════════════════════════════════════════════════════════════
+
+Platt Scaling: A=0.3516, B=-0.0846
+  Raw 0.95 → Calibrated 56.2%
+  Raw 0.90 → Calibrated 55.8%
+  Raw 0.80 → Calibrated 54.9%
+  Raw 0.70 → Calibrated 54.0%
+  Raw 0.60 → Calibrated 53.2%
+  Raw 0.50 → Calibrated 52.3%
+
+Isotonic Regression: 14 knots
+  Raw 0.95 → Calibrated 60.5%
+  Raw 0.90 → Calibrated 55.3%
+  Raw 0.80 → Calibrated 54.1%
+  Raw 0.70 → Calibrated 40.3%
+  Raw 0.60 → Calibrated 38.5%
+  Raw 0.50 → Calibrated 25.9%
+
+Binned Calibration (10 bins):
+  Bin 40-50%: n=17, avg model=45.9%, actual win=23.5%
+  Bin 50-60%: n=29, avg model=55.7%, actual win=41.4%
+  Bin 60-70%: n=51, avg model=65.3%, actual win=39.2%
+  Bin 70-80%: n=94, avg model=74.8%, actual win=42.6%
+  Bin 80-90%: n=180, avg model=85.6%, actual win=60.0%
+  Bin 90-100%: n=591, avg model=95.7%, actual win=58.7%
+
+══════════════════════════════════════════════════════════════════════════════════════════
+📊 SECTION 4: FULL-SEASON RE-SIMULATION (hindsight, no walk-forward)
+══════════════════════════════════════════════════════════════════════════════════════════
+
+NOTE: This uses calibrators trained on ALL data (in-sample). Walk-forward follows.
+
+Original (no calibration)      531-431 (55.2%)  Bet: 962  Skip: 0  Wag: $944,595  P/L: -$48,031  ROI: -5.1%
+Platt Scaling                  65-105 (38.2%)  Bet: 170  Skip: 792  Wag: $110,476  P/L: +$1,554  ROI: 1.4%
+Isotonic Regression            48-60 (44.4%)  Bet: 108  Skip: 854  Wag: $71,862  P/L: -$590  ROI: -0.8%
+Binned (10 bins)               54-69 (43.9%)  Bet: 123  Skip: 839  Wag: $72,681  P/L: +$381  ROI: 0.5%
+
+══════════════════════════════════════════════════════════════════════════════════════════
+🚶 SECTION 5: WALK-FORWARD SIMULATION (out-of-sample)
+══════════════════════════════════════════════════════════════════════════════════════════
+
+Method: Train calibrator on all picks BEFORE each day, then apply to that day's picks.
+Minimum training window: 14 days of picks data.
+
+
+── Edge threshold: 5% ──────────────────────────────────
+  Original (no cal)      531-431 (55.2%)  Bet: 962  Skip: 0  Wag: $839,028  P/L: -$46,665  ROI: -5.6%
+  WF Platt Scaling       189-214 (46.9%)  Bet: 403  Skip: 559  Wag: $300,785  P/L: -$2,171  ROI: -0.7%
+  WF Isotonic            166-175 (48.7%)  Bet: 341  Skip: 621  Wag: $292,999  P/L: -$11,528  ROI: -3.9%
+  WF Binned (10)         175-185 (48.6%)  Bet: 360  Skip: 602  Wag: $301,625  P/L: -$4,431  ROI: -1.5%
+  WF Binned (5)          172-190 (47.5%)  Bet: 362  Skip: 600  Wag: $294,740  P/L: -$6,523  ROI: -2.2%
+
+── Edge threshold: 10% ──────────────────────────────────
+  Original (no cal)      531-431 (55.2%)  Bet: 962  Skip: 0  Wag: $839,028  P/L: -$46,665  ROI: -5.6%
+  WF Platt Scaling       135-159 (45.9%)  Bet: 294  Skip: 668  Wag: $212,950  P/L: -$6,432  ROI: -3.0%
+  WF Isotonic            133-126 (51.4%)  Bet: 259  Skip: 703  Wag: $228,172  P/L: -$2,990  ROI: -1.3%
+  WF Binned (10)         131-138 (48.7%)  Bet: 269  Skip: 693  Wag: $224,449  P/L: -$3,390  ROI: -1.5%
+  WF Binned (5)          124-132 (48.4%)  Bet: 256  Skip: 706  Wag: $211,860  P/L: -$6,386  ROI: -3.0%
+
+── Edge threshold: 15% ──────────────────────────────────
+  Original (no cal)      528-418 (55.8%)  Bet: 946  Skip: 16  Wag: $836,443  P/L: -$45,518  ROI: -5.4%
+  WF Platt Scaling       106-116 (47.7%)  Bet: 222  Skip: 740  Wag: $152,294  P/L: -$2,168  ROI: -1.4%
+  WF Isotonic            96-95 (50.3%)  Bet: 191  Skip: 771  Wag: $170,242  P/L: -$14,395  ROI: -8.5%
+  WF Binned (10)         91-93 (49.5%)  Bet: 184  Skip: 778  Wag: $152,185  P/L: -$8,063  ROI: -5.3%
+  WF Binned (5)          89-85 (51.1%)  Bet: 174  Skip: 788  Wag: $147,379  P/L: -$5,960  ROI: -4.0%
+
+══════════════════════════════════════════════════════════════════════════════════════════
+💰 SECTION 6: WALK-FORWARD WITH CALIBRATED BET SIZING
+══════════════════════════════════════════════════════════════════════════════════════════
+
+Same walk-forward, but bet size is recalculated using calibrated edge + quarter-Kelly.
+
+── Edge threshold: 5% ──────────────────────────────────
+  Original (no cal)      531-431 (55.2%)  Bet: 962  Skip: 0  Wag: $944,595  P/L: -$48,031  ROI: -5.1%
+  WF Platt Scaling       135-159 (45.9%)  Bet: 294  Skip: 668  Wag: $238,007  P/L: -$3,628  ROI: -1.5%
+  WF Isotonic            133-126 (51.4%)  Bet: 259  Skip: 703  Wag: $215,682  P/L: -$6,570  ROI: -3.0%
+  WF Binned (10)         131-138 (48.7%)  Bet: 269  Skip: 693  Wag: $218,023  P/L: -$6,654  ROI: -3.1%
+  WF Binned (5)          124-132 (48.4%)  Bet: 256  Skip: 706  Wag: $205,452  P/L: -$7,413  ROI: -3.6%
+
+── Edge threshold: 10% ──────────────────────────────────
+  Original (no cal)      531-431 (55.2%)  Bet: 962  Skip: 0  Wag: $944,595  P/L: -$48,031  ROI: -5.1%
+  WF Platt Scaling       135-159 (45.9%)  Bet: 294  Skip: 668  Wag: $238,007  P/L: -$3,628  ROI: -1.5%
+  WF Isotonic            133-126 (51.4%)  Bet: 259  Skip: 703  Wag: $215,682  P/L: -$6,570  ROI: -3.0%
+  WF Binned (10)         131-138 (48.7%)  Bet: 269  Skip: 693  Wag: $218,023  P/L: -$6,654  ROI: -3.1%
+  WF Binned (5)          124-132 (48.4%)  Bet: 256  Skip: 706  Wag: $205,452  P/L: -$7,413  ROI: -3.6%
+
+══════════════════════════════════════════════════════════════════════════════════════════
+🏆 SECTION 7: CALIBRATED + FILTER COMBOS (walk-forward)
+══════════════════════════════════════════════════════════════════════════════════════════
+
+Testing: Best calibrator from above + profitable filter combos from filter search.
+
+── WF Platt ──────────────────────────────────
+  All picks              189-214 (46.9%)  Bet: 403  Skip: 559  Wag: $300,785  P/L: -$2,171  ROI: -0.7%
+  Fav only               70-50 (58.3%)  Bet: 120  Skip: 842  Wag: $114,773  P/L: -$6,350  ROI: -5.5%
+  Dog only               119-164 (42.0%)  Bet: 283  Skip: 679  Wag: $186,012  P/L: +$4,179  ROI: 2.2% ✅
+  Odds -300 to +150      148-144 (50.7%)  Bet: 292  Skip: 670  Wag: $253,902  P/L: -$296  ROI: -0.1%
+  No big fav (>-250)     170-208 (45.0%)  Bet: 378  Skip: 584  Wag: $275,785  P/L: -$2,340  ROI: -0.8%
+  Away only              166-187 (47.0%)  Bet: 353  Skip: 609  Wag: $260,986  P/L: +$7,016  ROI: 2.7% ✅
+
+── WF Isotonic ──────────────────────────────────
+  All picks              166-175 (48.7%)  Bet: 341  Skip: 621  Wag: $292,999  P/L: -$11,528  ROI: -3.9%
+  Fav only               81-64 (55.9%)  Bet: 145  Skip: 817  Wag: $141,130  P/L: -$17,463  ROI: -12.4%
+  Dog only               85-111 (43.4%)  Bet: 196  Skip: 766  Wag: $151,869  P/L: +$5,935  ROI: 3.9% ✅
+  Odds -300 to +150      137-126 (52.1%)  Bet: 263  Skip: 699  Wag: $250,149  P/L: -$5,999  ROI: -2.4%
+  No big fav (>-250)     140-165 (45.9%)  Bet: 305  Skip: 657  Wag: $256,999  P/L: -$10,031  ROI: -3.9%
+  Away only              146-150 (49.3%)  Bet: 296  Skip: 666  Wag: $252,178  P/L: +$926  ROI: 0.4% ✅
+
+── WF Binned(5) ──────────────────────────────────
+  All picks              172-190 (47.5%)  Bet: 362  Skip: 600  Wag: $294,740  P/L: -$6,523  ROI: -2.2%
+  Fav only               80-68 (54.1%)  Bet: 148  Skip: 814  Wag: $142,945  P/L: -$14,875  ROI: -10.4%
+  Dog only               92-122 (43.0%)  Bet: 214  Skip: 748  Wag: $151,795  P/L: +$8,353  ROI: 5.5% ✅
+  Odds -300 to +150      137-127 (51.9%)  Bet: 264  Skip: 698  Wag: $252,855  P/L: -$3,320  ROI: -1.3%
+  No big fav (>-250)     153-184 (45.4%)  Bet: 337  Skip: 625  Wag: $269,740  P/L: -$6,692  ROI: -2.5%
+  Away only              153-168 (47.7%)  Bet: 321  Skip: 641  Wag: $258,542  P/L: +$2,499  ROI: 1.0% ✅

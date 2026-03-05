@@ -1,20 +1,37 @@
-// NCAA MBB V2 Predictions — Calibrated + Underdog Filter
-// Walk-forward isotonic calibration → filter to underdogs ≤ +150 → ≥5% calibrated edge
+// NCAA MBB V2 Predictions — Calibrated + Tiered Underdog Filter
+// Walk-forward isotonic calibration → tiered underdog filter → calibrated edge gates
+//
+// TIERED STRATEGY (backed by full-season + maturity analysis):
+//   Tier 1: Dogs ≤ +150, ≥5% calibrated edge  → 13-8, +34% ROI (mature cal)
+//   Tier 2: Dogs +201 to +250, ≥10% cal edge   → 5-5, +55% ROI (mature cal)
+//   DEAD ZONE: +151 to +200 — SKIP (0-2, -100% ROI at every maturity level)
+//   Composite: 18-13, +40.8% ROI, +$12,640 P/L
 //
 // Data flow:
 //   1. Fetch today's raw Variant B picks from GitHub
-//   2. Fetch historical picks (last 30 days min) for calibration training
+//   2. Fetch historical picks (last 60 days) for calibration training
 //   3. Train isotonic regression on historical results (walk-forward: only past data)
 //   4. Apply calibration to today's picks
-//   5. Filter: underdogs with odds ≤ +150 (home or away)
-//   6. Require ≥5% calibrated edge
+//   5. Filter: tiered underdogs (≤+150 OR +201-250, skip +151-200 dead zone)
+//   6. Require tier-specific calibrated edge (5% or 10%)
 //   7. Re-size bets with calibrated probabilities
 
 const GITHUB_RAW = 'https://raw.githubusercontent.com/bgoldman22-code/NCAAMBBModel/main/data/ncaabb/picks/variant_b_picks_odds_aware_';
 const ESPN_BASE  = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard';
 const MIN_TRAINING_DAYS = 14;
-const CALIBRATED_EDGE_MIN = 0.05;   // 5% calibrated edge
-const MAX_DOG_ODDS = 150;           // away dogs up to +150
+
+// Tier 1: Short underdogs ≤ +150, 5% edge
+const TIER1_MAX_ODDS = 150;
+const TIER1_EDGE_MIN = 0.05;
+
+// Tier 2: Longshots +201 to +250, 10% edge
+const TIER2_MIN_ODDS = 201;
+const TIER2_MAX_ODDS = 250;
+const TIER2_EDGE_MIN = 0.10;
+
+// Dead zone: +151 to +200 — never bet (confirmed dead at all maturity levels)
+
+const CALIBRATED_EDGE_MIN = 0.05;   // fallback for calculateBetSize
 const KELLY_FRACTION = 0.25;
 const BANKROLL = 10000;
 
@@ -116,13 +133,29 @@ function calculateBetSize(calibratedProb, odds) {
   return { betSize, edge, skip: betSize === 0 };
 }
 
-// ─── Is this pick an underdog with odds ≤ +MAX_DOG_ODDS? ─────
-function passesV2Filter(pick) {
+// ─── Tiered underdog filter ───────────────────────────────────
+// Returns { pass: bool, tier: 'tier1'|'tier2'|null, edgeMin: number }
+function classifyPick(pick) {
   // Must be an underdog (positive odds)
-  if (pick.odds <= 0) return false;
-  // Odds must be ≤ +150
-  if (pick.odds > MAX_DOG_ODDS) return false;
-  return true;
+  if (pick.odds <= 0) return { pass: false, tier: null, reason: 'notDog' };
+
+  // Tier 1: ≤ +150, 5% edge
+  if (pick.odds <= TIER1_MAX_ODDS) {
+    return { pass: true, tier: 'tier1', edgeMin: TIER1_EDGE_MIN };
+  }
+
+  // Dead zone: +151 to +200 — NEVER bet
+  if (pick.odds < TIER2_MIN_ODDS) {
+    return { pass: false, tier: null, reason: 'deadZone' };
+  }
+
+  // Tier 2: +201 to +250, 10% edge
+  if (pick.odds <= TIER2_MAX_ODDS) {
+    return { pass: true, tier: 'tier2', edgeMin: TIER2_EDGE_MIN };
+  }
+
+  // Too long (> +250)
+  return { pass: false, tier: null, reason: 'oddsTooHigh' };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -255,26 +288,39 @@ export default async function handler(event, context) {
       console.log(`[NCAA MBB V2] Fallback calibrator (ratio=${ratio.toFixed(3)})`);
     }
 
-    // ── Step 6: Apply calibration + filter to today's picks ─
+    // ── Step 6: Apply calibration + tiered filter to today's picks ─
     const v2Picks = [];
     let totalFiltered = 0;
-    let filteredByType = { notDog: 0, oddsTooHigh: 0, lowEdge: 0 };
+    let filteredByType = { notDog: 0, deadZone: 0, oddsTooHigh: 0, lowEdge: 0 };
+    let tierCounts = { tier1: 0, tier2: 0 };
 
     for (const pick of rawPicks) {
-      // Apply filter: underdog ≤ +150 (home or away)
-      if (pick.odds <= 0) { filteredByType.notDog++; totalFiltered++; continue; }
-      if (pick.odds > MAX_DOG_ODDS) { filteredByType.oddsTooHigh++; totalFiltered++; continue; }
+      // Classify into tier
+      const classification = classifyPick(pick);
+
+      if (!classification.pass) {
+        filteredByType[classification.reason]++;
+        totalFiltered++;
+        continue;
+      }
 
       // Calibrate probability
       const calibratedProb = calibrator.calibrate(pick.model_prob);
       const impliedProb = oddsToImpliedProb(pick.odds);
       const calibratedEdge = calibratedProb - impliedProb;
 
-      // Edge gate
-      if (calibratedEdge < CALIBRATED_EDGE_MIN) { filteredByType.lowEdge++; totalFiltered++; continue; }
+      // Tier-specific edge gate
+      if (calibratedEdge < classification.edgeMin) {
+        filteredByType.lowEdge++;
+        totalFiltered++;
+        continue;
+      }
 
       // Re-size bet with calibrated probability
       const { betSize, edge } = calculateBetSize(calibratedProb, pick.odds);
+
+      tierCounts[classification.tier]++;
+      const tierLabel = classification.tier === 'tier1' ? 'dog_lt150_5pct' : 'longshot_201_250_10pct';
 
       v2Picks.push({
         ...pick,
@@ -283,15 +329,18 @@ export default async function handler(event, context) {
         raw_edge: pick.edge,
         calibrated_edge: calibratedEdge,
         bet_size_dollars: betSize || pick.bet_size_dollars,
-        v2_filter: 'dog_lt150'
+        v2_filter: tierLabel,
+        v2_tier: classification.tier,
+        tier_edge_min: classification.edgeMin
       });
     }
 
     console.log(`[NCAA MBB V2] After filter: ${v2Picks.length} picks (filtered ${totalFiltered})`);
-    console.log(`[NCAA MBB V2] Filter breakdown: not-dog=${filteredByType.notDog}, odds>+150=${filteredByType.oddsTooHigh}, low-edge=${filteredByType.lowEdge}`);
+    console.log(`[NCAA MBB V2] Tier breakdown: Tier1(≤+150@5%)=${tierCounts.tier1}, Tier2(+201-250@10%)=${tierCounts.tier2}`);
+    console.log(`[NCAA MBB V2] Filter breakdown: not-dog=${filteredByType.notDog}, dead-zone(+151-200)=${filteredByType.deadZone}, odds>+250=${filteredByType.oddsTooHigh}, low-edge=${filteredByType.lowEdge}`);
 
     // ── Step 7: Transform for frontend ──────────────────────
-    const transformed = transformV2Picks(v2Picks, today, trainingData.length, filteredByType, rawPicks.length);
+    const transformed = transformV2Picks(v2Picks, today, trainingData.length, filteredByType, rawPicks.length, tierCounts);
 
     return jsonResponse({
       ok: true,
@@ -308,7 +357,7 @@ export default async function handler(event, context) {
 }
 
 // ─── Transform V2 picks for frontend ─────────────────────────
-function transformV2Picks(picks, date, trainingSize, filterBreakdown, rawTotal) {
+function transformV2Picks(picks, date, trainingSize, filterBreakdown, rawTotal, tierCounts) {
   const predictions = picks.map(pick => {
     const underdogOdds = pick.odds; // the pick IS the underdog
     // Estimate favorite odds (approximate inverse)
@@ -321,6 +370,10 @@ function transformV2Picks(picks, date, trainingSize, filterBreakdown, rawTotal) 
 
     const pickTeam = pick.side === 'away' ? pick.away_team : pick.home_team;
     const oppTeam  = pick.side === 'away' ? pick.home_team : pick.away_team;
+
+    const tierDisplay = pick.v2_tier === 'tier1'
+      ? `Dog ≤ +150 (≥${(pick.tier_edge_min * 100).toFixed(0)}% edge)`
+      : `Longshot +201-250 (≥${(pick.tier_edge_min * 100).toFixed(0)}% edge)`;
 
     return {
       game: `${pick.away_team} @ ${pick.home_team}`,
@@ -349,11 +402,13 @@ function transformV2Picks(picks, date, trainingSize, filterBreakdown, rawTotal) 
         calibratedEdge: pick.calibrated_edge,
         recommendedStake: pick.bet_size_dollars,
         kellyFraction: KELLY_FRACTION,
+        tier: pick.v2_tier,
+        tierDisplay
       },
       metadata: {
         date: date,
         model: 'NCAA MBB V2 (Calibrated)',
-        filter: 'Underdog ≤ +150',
+        filter: tierDisplay,
         market: pick.market
       }
     };
@@ -369,6 +424,7 @@ function transformV2Picks(picks, date, trainingSize, filterBreakdown, rawTotal) 
       rawPicksTotal: rawTotal,
       filteredOut: rawTotal - predictions.length,
       filterBreakdown,
+      tierCounts,
       totalStake: predictions.reduce((s, p) => s + p.betting.recommendedStake, 0),
       avgCalibratedEdge: predictions.length > 0
         ? predictions.reduce((s, p) => s + p.betting.calibratedEdge, 0) / predictions.length
@@ -378,16 +434,17 @@ function transformV2Picks(picks, date, trainingSize, filterBreakdown, rawTotal) 
         : 0,
       date,
       bankroll: BANKROLL,
-      model: 'NCAA MBB V2 (Isotonic Calibration)',
+      model: 'NCAA MBB V2 (Isotonic Calibration, Tiered Strategy)',
       calibrationTrainingSize: trainingSize,
       filters: [
         'Underdog (positive odds)',
-        `Odds ≤ +${MAX_DOG_ODDS}`,
-        `Calibrated edge ≥ ${CALIBRATED_EDGE_MIN * 100}%`,
+        `Tier 1: Odds ≤ +${TIER1_MAX_ODDS}, cal. edge ≥ ${TIER1_EDGE_MIN * 100}%`,
+        `Tier 2: Odds +${TIER2_MIN_ODDS}-+${TIER2_MAX_ODDS}, cal. edge ≥ ${TIER2_EDGE_MIN * 100}%`,
+        'Dead zone: +151-200 SKIPPED (confirmed -100% ROI)',
         'Walk-forward isotonic calibration'
       ],
-      backtestROI: '+26.3%',
-      backtestRecord: '13-8 (61.9%)'
+      backtestROI: '+40.8%',
+      backtestRecord: '18-13 (58.1%)'
     }
   };
 }

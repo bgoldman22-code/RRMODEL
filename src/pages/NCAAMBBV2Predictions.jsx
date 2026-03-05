@@ -30,7 +30,7 @@ const NCAAMBBV2Predictions = () => {
       const data = await response.json();
 
       if (!data.ok || !data.predictions || data.predictions.length === 0) {
-        setError(data.message || 'No V2 picks available today. This model only plays underdogs ≤ +150 — some days have 0 qualifying picks.');
+        setError(data.message || 'No V2 picks available today. This model plays tiered dogs (≤+150 @5% edge, +201-250 @10% edge) — some days have 0 qualifying picks.');
         setMetadata(data.metadata || null);
         return;
       }
@@ -60,7 +60,7 @@ const NCAAMBBV2Predictions = () => {
     return (
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">🏀 NCAA MBB V2 — Calibrated Picks</h1>
-        <p className="text-gray-500 text-sm mb-4">Underdogs ≤ +150 · Isotonic Calibration · ≥5% Calibrated Edge</p>
+        <p className="text-gray-500 text-sm mb-4">Tiered Dogs: ≤+150 @5% · +201-250 @10% · Isotonic Calibration</p>
         
         <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-4">
           <div className="flex items-center">
@@ -78,9 +78,9 @@ const NCAAMBBV2Predictions = () => {
             </p>
             {metadata.filterBreakdown && (
               <ul className="text-xs text-gray-500 mt-2 space-y-1">
-                <li>• Home picks removed: {metadata.filterBreakdown.notAway}</li>
                 <li>• Favorites removed: {metadata.filterBreakdown.notDog}</li>
-                <li>• Odds &gt; +150 removed: {metadata.filterBreakdown.oddsTooHigh}</li>
+                <li>• Dead zone +151-200 (removed): {metadata.filterBreakdown.deadZone}</li>
+                <li>• Odds &gt; +250 removed: {metadata.filterBreakdown.oddsTooHigh}</li>
                 <li>• Low calibrated edge: {metadata.filterBreakdown.lowEdge}</li>
               </ul>
             )}
@@ -113,7 +113,7 @@ const NCAAMBBV2Predictions = () => {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-1">🏀 NCAA MBB V2 — Calibrated Picks</h1>
         <p className="text-gray-500 text-sm">
-          Underdogs ≤ +150 · Walk-Forward Isotonic Calibration · ≥5% Calibrated Edge
+          Tiered Dogs: ≤+150 @5% · +201-250 @10% · Walk-Forward Isotonic Calibration
         </p>
         <div className="flex flex-wrap gap-3 mt-2">
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
@@ -173,23 +173,24 @@ const NCAAMBBV2Predictions = () => {
           <div style={{ marginBottom: '20px' }}>
             <h2 style={{ fontSize: '26px', fontWeight: 'bold', margin: 0 }}>🏀 NCAA MBB V2 Picks (Calibrated)</h2>
             <p style={{ fontSize: '13px', color: '#6b7280', margin: '4px 0 0 0' }}>
-              {lastUpdated ? new Date(lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()} | {predictions.length} Picks | Dogs ≤ +150 | ≥5% Calibrated Edge
+              {lastUpdated ? new Date(lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()} | {predictions.length} Picks | Tiered Dogs ≤+150 @5% · +201-250 @10%
             </p>
           </div>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
             <thead>
               <tr style={{ backgroundColor: '#ecfdf5' }}>
                 <th style={{ padding: '10px 8px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #a7f3d0', width: '30%' }}>Game</th>
-                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #a7f3d0', width: '18%' }}>Pick (Away)</th>
+                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #a7f3d0', width: '18%' }}>Pick</th>
                 <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #a7f3d0', width: '10%' }}>Odds</th>
                 <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #a7f3d0', width: '14%' }}>Cal. Win %</th>
                 <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #a7f3d0', width: '12%' }}>Cal. Edge</th>
-                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #a7f3d0', width: '16%' }}>Rating</th>
+                <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #a7f3d0', width: '16%' }}>Tier</th>
               </tr>
             </thead>
             <tbody>
               {predictions.map((pred, idx) => {
                 const badge = getEdgeBadge(pred.betting.calibratedEdge);
+                const isTier2 = pred.betting.tier === 'tier2';
                 return (
                   <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f0fdf4', borderBottom: '1px solid #e5e7eb' }}>
                     <td style={{ padding: '10px 8px' }}>{pred.awayTeam} @ {pred.homeTeam}</td>
@@ -201,11 +202,9 @@ const NCAAMBBV2Predictions = () => {
                       <span style={{
                         display: 'inline-block', padding: '3px 10px', borderRadius: '6px',
                         color: '#fff', fontWeight: 'bold', fontSize: '11px',
-                        backgroundColor: badge.color === 'bg-emerald-600' ? '#059669' :
-                                         badge.color === 'bg-blue-600' ? '#2563eb' :
-                                         badge.color === 'bg-amber-600' ? '#d97706' : '#4b5563'
+                        backgroundColor: isTier2 ? '#7c3aed' : '#059669'
                       }}>
-                        {badge.label}
+                        {isTier2 ? 'LONGSHOT' : 'DOG ≤150'}
                       </span>
                     </td>
                   </tr>
@@ -214,7 +213,7 @@ const NCAAMBBV2Predictions = () => {
             </tbody>
           </table>
           <div style={{ marginTop: '14px', fontSize: '11px', color: '#9ca3af', textAlign: 'center' }}>
-            bgroundrobin.com/ncaa-mbb-v2 | V2: Isotonic Calibration + Dogs ≤ +150
+            bgroundrobin.com/ncaa-mbb-v2 | V2: Isotonic Calibration + Tiered Dogs (≤+150 @5%, +201-250 @10%)
           </div>
         </div>
       </div>
@@ -226,19 +225,20 @@ const NCAAMBBV2Predictions = () => {
             <thead className="bg-emerald-50">
               <tr>
                 <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Game</th>
-                <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Pick (Away)</th>
+                <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Pick</th>
                 <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Odds</th>
                 <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Raw Prob</th>
                 <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Cal. Prob</th>
                 <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Implied</th>
                 <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Cal. Edge</th>
-                <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
+                <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tier</th>
                 <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Stake</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {predictions.map((pred, idx) => {
                 const badge = getEdgeBadge(pred.betting.calibratedEdge);
+                const isTier2 = pred.betting.tier === 'tier2';
                 return (
                   <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-emerald-50/30'}>
                     <td className="px-5 py-4 whitespace-nowrap">
@@ -247,7 +247,7 @@ const NCAAMBBV2Predictions = () => {
                       </div>
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap text-center">
-                      <span className="inline-flex px-3 py-1 text-sm font-bold rounded-full bg-emerald-100 text-emerald-800">
+                      <span className={`inline-flex px-3 py-1 text-sm font-bold rounded-full ${isTier2 ? 'bg-purple-100 text-purple-800' : 'bg-emerald-100 text-emerald-800'}`}>
                         {pred.prediction.pick}
                       </span>
                     </td>
@@ -277,8 +277,8 @@ const NCAAMBBV2Predictions = () => {
                       </span>
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap text-center">
-                      <span className={`inline-flex px-2 py-1 text-xs font-bold text-white rounded ${badge.color}`}>
-                        {badge.label}
+                      <span className={`inline-flex px-2 py-1 text-xs font-bold text-white rounded ${isTier2 ? 'bg-purple-600' : 'bg-emerald-600'}`}>
+                        {isTier2 ? 'LONGSHOT' : 'DOG ≤150'}
                       </span>
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap text-center">
@@ -298,14 +298,15 @@ const NCAAMBBV2Predictions = () => {
       <div className="mt-6 bg-emerald-50 border border-emerald-200 rounded-lg p-4">
         <h3 className="text-sm font-semibold text-emerald-800 mb-2">V2 Model Information</h3>
         <ul className="text-sm text-emerald-700 space-y-1">
-          <li>• <strong>Model:</strong> NCAA MBB V2 — Walk-Forward Isotonic Calibration</li>
-          <li>• <strong>Filter:</strong> Underdogs only (home or away), odds ≤ +150</li>
-          <li>• <strong>Min Edge:</strong> 5% calibrated edge (after probability correction)</li>
+          <li>• <strong>Model:</strong> NCAA MBB V2 — Walk-Forward Isotonic Calibration + Tiered Strategy</li>
+          <li>• <strong>Tier 1:</strong> Underdogs ≤ +150, ≥5% calibrated edge → 13-8, +34% ROI (mature cal)</li>
+          <li>• <strong>Tier 2:</strong> Longshots +201-250, ≥10% calibrated edge → 5-5, +55% ROI (mature cal)</li>
+          <li>• <strong>Dead Zone:</strong> +151-200 SKIPPED — confirmed -100% ROI at every maturity level</li>
+          <li>• <strong>Composite Backtest:</strong> {metadata?.backtestRecord || '18-13 (58.1%)'} · {metadata?.backtestROI || '+40.8%'} ROI · +$12,640 P/L</li>
           <li>• <strong>Calibration:</strong> Isotonic regression trained on all prior results (walk-forward, no data leakage)</li>
-          <li>• <strong>Backtest:</strong> {metadata?.backtestRecord || '13-8 (61.9%)'} · {metadata?.backtestROI || '+26.3%'} ROI over 16 days</li>
           <li>• <strong>Kelly Fraction:</strong> 25% (conservative sizing)</li>
           <li>• <strong>Bankroll:</strong> $10,000</li>
-          <li>• <strong>Why V2?</strong> V1 is overconfident (ECE=33%). Calibration corrects probabilities. Dogs ≤ +150 is where the model has genuine edge — home/away doesn't matter.</li>
+          <li>• <strong>Why V2?</strong> V1 is overconfident (ECE=33%). Calibration corrects probabilities. Tiered dogs is where the model has genuine edge.</li>
         </ul>
       </div>
 
@@ -315,11 +316,17 @@ const NCAAMBBV2Predictions = () => {
           <h3 className="text-sm font-semibold text-gray-700 mb-2">Today's Filter Breakdown</h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm text-gray-600">
             <div>V1 Total: <strong>{metadata.rawPicksTotal}</strong></div>
-            <div>Home (removed): <strong>{metadata.filterBreakdown.notAway}</strong></div>
             <div>Favorites (removed): <strong>{metadata.filterBreakdown.notDog}</strong></div>
-            <div>Odds &gt; +150 (removed): <strong>{metadata.filterBreakdown.oddsTooHigh}</strong></div>
+            <div>Dead zone +151-200: <strong>{metadata.filterBreakdown.deadZone}</strong></div>
+            <div>Odds &gt; +250 (removed): <strong>{metadata.filterBreakdown.oddsTooHigh}</strong></div>
             <div>Low edge (removed): <strong>{metadata.filterBreakdown.lowEdge}</strong></div>
           </div>
+          {metadata.tierCounts && (
+            <div className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-2 text-sm text-gray-600">
+              <div>🟢 Tier 1 (≤+150 @5%): <strong>{metadata.tierCounts.tier1}</strong></div>
+              <div>🟣 Tier 2 (+201-250 @10%): <strong>{metadata.tierCounts.tier2}</strong></div>
+            </div>
+          )}
         </div>
       )}
 

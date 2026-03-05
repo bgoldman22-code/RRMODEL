@@ -1,0 +1,152 @@
+/**
+ * Shadow Eval – Report Generator
+ * 
+ * Generates CSV, JSON summary, and Markdown report from evaluation results.
+ * Pure output module – no side effects.
+ */
+
+import fs from 'fs';
+import path from 'path';
+
+/**
+ * Write per-game CSV file.
+ */
+export function writeCSV(rows, outPath) {
+  if (rows.length === 0) {
+    fs.writeFileSync(outPath, 'No data\n');
+    return;
+  }
+
+  const headers = [
+    'date', 'game_id', 'home', 'away',
+    'pred_margin', 'pred_total', 'pred_win_prob_home',
+    'actual_margin', 'actual_home_win', 'actual_total',
+    'closing_spread', 'closing_total',
+    'completed', 'error',
+  ];
+
+  const lines = [headers.join(',')];
+  for (const r of rows) {
+    const vals = headers.map(h => {
+      const v = r[h];
+      if (v === null || v === undefined) return '';
+      return String(v);
+    });
+    lines.push(vals.join(','));
+  }
+  fs.writeFileSync(outPath, lines.join('\n') + '\n');
+  console.log(`[Report] CSV written: ${outPath} (${rows.length} rows)`);
+}
+
+/**
+ * Write JSON summary file.
+ */
+export function writeSummaryJSON(summary, outPath) {
+  fs.writeFileSync(outPath, JSON.stringify(summary, null, 2));
+  console.log(`[Report] JSON summary written: ${outPath}`);
+}
+
+/**
+ * Write markdown report.
+ */
+export function writeMarkdownReport(summary, outPath) {
+  const { pre, post, meta } = summary;
+
+  const lines = [
+    '# 🏀 NBA Shadow Evaluation Report',
+    '',
+    `**Generated:** ${meta.timestamp}`,
+    `**Model Version:** ${meta.model_version}`,
+    `**Freeze Level:** ${meta.freeze_level}`,
+    `**Date Range:** ${meta.date_start} → ${meta.date_end}`,
+    `**Deadline:** ${meta.deadline}`,
+    `**Commit:** ${meta.commit_hash || 'unknown'}`,
+    '',
+    '---',
+    '',
+    '## Summary Comparison',
+    '',
+    '| Metric | PRE Deadline | POST Deadline | Delta |',
+    '|--------|-------------|---------------|-------|',
+  ];
+
+  const metricRows = [
+    ['Games', 'n_completed', 0],
+    ['MAE (margin)', 'mae', 3],
+    ['RMSE (margin)', 'rmse', 3],
+    ['Mean Error (bias)', 'mean_error', 3],
+    ['Median Abs Error', 'median_abs_error', 3],
+    ['Correct Side %', 'correct_side_pct', 3],
+    ['Total MAE', 'total_mae', 3],
+    ['Total RMSE', 'total_rmse', 3],
+    ['Brier Score', 'brier', 4],
+    ['Log Loss', 'log_loss', 4],
+  ];
+
+  for (const [label, key, decimals] of metricRows) {
+    const preVal = pre?.[key];
+    const postVal = post?.[key];
+    const preStr = preVal != null ? (decimals === 0 ? String(preVal) : preVal.toFixed(decimals)) : '—';
+    const postStr = postVal != null ? (decimals === 0 ? String(postVal) : postVal.toFixed(decimals)) : '—';
+    let delta = '—';
+    if (preVal != null && postVal != null) {
+      const d = postVal - preVal;
+      const sign = d > 0 ? '+' : '';
+      delta = `${sign}${decimals === 0 ? String(d) : d.toFixed(decimals)}`;
+    }
+    lines.push(`| ${label} | ${preStr} | ${postStr} | ${delta} |`);
+  }
+
+  // Calibration tables
+  for (const [label, period] of [['PRE', pre], ['POST', post]]) {
+    if (period?.calibration?.bins?.length > 0) {
+      lines.push('', `## Calibration – ${label} Deadline`, '');
+      lines.push('| Bin | Count | Avg Pred | Actual Win Rate | Error |');
+      lines.push('|-----|-------|----------|-----------------|-------|');
+      for (const b of period.calibration.bins) {
+        lines.push(`| ${b.bin} | ${b.count} | ${(b.avg_pred * 100).toFixed(1)}% | ${(b.actual_win_rate * 100).toFixed(1)}% | ${(b.error * 100).toFixed(1)}% |`);
+      }
+      if (period.calibration.slope != null) {
+        lines.push('', `**Calibration slope:** ${period.calibration.slope} | **Intercept:** ${period.calibration.intercept} | **R²:** ${period.calibration.r_squared}`);
+      }
+    }
+  }
+
+  // Favorite/underdog split
+  const favDogSection = [];
+  for (const [label, period] of [['PRE', pre], ['POST', post]]) {
+    if (period?.fav_mae != null || period?.dog_mae != null) {
+      favDogSection.push(`### ${label} Deadline`);
+      if (period.fav_mae != null) favDogSection.push(`- Favorite MAE: ${period.fav_mae.toFixed(3)} (n=${period.fav_n})`);
+      if (period.dog_mae != null) favDogSection.push(`- Underdog MAE: ${period.dog_mae.toFixed(3)} (n=${period.dog_n})`);
+    }
+  }
+  if (favDogSection.length > 0) {
+    lines.push('', '## Favorite / Underdog Split', '', ...favDogSection);
+  }
+
+  // Interpretation
+  lines.push(
+    '', '---', '',
+    '## Interpretation Guide', '',
+    '- **MAE increase > 1.0**: Likely a real regime shift — consider weighted retrain.',
+    '- **Brier increase > 0.02**: Calibration is degrading — check probability model.',
+    '- **Calibration slope < 0.7**: Model is overconfident — needs recalibration.',
+    '- **Correct Side % drop > 5%**: Fundamental prediction quality declining.',
+    '- **Mean Error shift**: Positive = model overestimates home, Negative = underestimates.',
+    '',
+    '---',
+    `*Report generated by shadow_eval harness – does NOT affect live predictions.*`,
+  );
+
+  fs.writeFileSync(outPath, lines.join('\n') + '\n');
+  console.log(`[Report] Markdown report written: ${outPath}`);
+}
+
+/**
+ * Write run metadata JSON.
+ */
+export function writeRunMetadata(meta, outPath) {
+  fs.writeFileSync(outPath, JSON.stringify(meta, null, 2));
+  console.log(`[Report] Run metadata written: ${outPath}`);
+}
