@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.join(__dirname, '..');
 
-const API_KEY = '9888007c6503d89ff87b4331ab77546b';
+const API_KEY = process.env.ODDS_API_KEY || 'SET_ODDS_API_KEY_ENV_VAR';
 const ODDS_DIR = path.join(ROOT, 'data/nba/historical_odds/game_totals');
 
 if (!existsSync(ODDS_DIR)) mkdirSync(ODDS_DIR, { recursive: true });

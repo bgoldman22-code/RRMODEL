@@ -38,7 +38,7 @@ The existing `TOTAL_MODEL` (18 features, L10-only elastic net) suffers from **se
 ### Data Collection (`scripts/collect-historical-odds.mjs`)
 
 - Collected **249 dates / 4,842 games** of historical odds from The Odds API
-- API key: `9888007c6503d89ff87b4331ab77546b` (~5M requests remaining)
+- API key: stored as `ODDS_API_KEY` env var in Netlify (~5M requests remaining)
 - Coverage now: 2023-10 → 2026-03 (all 3 available seasons)
 - Stored in: `data/nba/historical_odds/game_totals/` (~755 JSON files)
 
