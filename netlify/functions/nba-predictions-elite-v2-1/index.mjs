@@ -1375,9 +1375,12 @@ export default async (request, context) => {
         console.log(`[TOTAL DEBUG] raw ppg: home=${homeL10WithInjuries?.ppg?.toFixed(1) ?? homeL10?.ppg?.toFixed(1) ?? 'N/A'}, away=${awayL10WithInjuries?.ppg?.toFixed(1) ?? awayL10?.ppg?.toFixed(1) ?? 'N/A'}`);
       }
       
-      // PRODUCTION FIX: Use 100% model prediction (proven +8.12% ROI)
-      // Previous 70/30 blend was losing -4.23% ROI
-      // Strategy: OVERS always + high-edge UNDERS only (6.5+ edge)
+      // PRODUCTION: Use 100% model prediction (backtest proven +8.12% ROI)
+      // Model intentionally predicts below Vegas (finds UNDER value).
+      // Strategy: Take ALL overs (strong signal when model agrees) +
+      //           high-edge UNDERS only (6.5+ pts, 57% win rate, +9% ROI).
+      // Previous 70/30 blend predicted ABOVE Vegas → false OVER edge → -4.23% ROI.
+      // DO NOT BLEND - the systematic under-prediction IS the edge.
       const totalPred = totalPredModel;
       
       // Calculate base confidence

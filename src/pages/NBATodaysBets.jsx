@@ -260,7 +260,7 @@ export default function NBATodaysBets() {
       return b.market === marketFilter;
     });
 
-  const totalUnits = filteredBets.reduce((sum, b) => sum + (b.units || 0), 0);
+  const totalUnits = Math.round(filteredBets.reduce((sum, b) => sum + (b.units || 0), 0) * 10) / 10;
   const totalBets = filteredBets.length;
 
   // ─── Format Helpers ───────────────────────────────────────────────────────
@@ -334,7 +334,7 @@ export default function NBATodaysBets() {
           <!-- Header -->
           <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #334155;">
             <h1 style="font-size: 28px; font-weight: 800; margin: 0 0 6px 0; color: #f1f5f9;">🏀 Today's NBA Bets</h1>
-            <p style="font-size: 14px; color: #94a3b8; margin: 0;">${today} • ${betsToExport.length} Picks • ${betsToExport.reduce((s, b) => s + b.units, 0)} Total Units</p>
+            <p style="font-size: 14px; color: #94a3b8; margin: 0;">${today} • ${betsToExport.length} Picks • ${Math.round(betsToExport.reduce((s, b) => s + b.units, 0) * 10) / 10} Total Units</p>
           </div>
 
           <!-- Table -->
@@ -393,8 +393,9 @@ export default function NBATodaysBets() {
         
         {/* ── Header ──────────────────────────────────────────────────────────── */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '36px', fontWeight: 800, margin: '0 0 8px 0', background: 'linear-gradient(135deg, #3b82f6, #10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            🏀 Today's NBA Bets
+          <h1 style={{ fontSize: '36px', fontWeight: 800, margin: '0 0 8px 0' }}>
+            <span>🏀 </span>
+            <span style={{ background: 'linear-gradient(135deg, #3b82f6, #10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Today's NBA Bets</span>
           </h1>
           <p style={{ fontSize: '14px', color: '#94a3b8', margin: '0 0 4px 0' }}>
             Aggregated picks from all NBA models • Smart unit staking
