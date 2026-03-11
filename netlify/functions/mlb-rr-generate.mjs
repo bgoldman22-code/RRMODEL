@@ -1,391 +1,407 @@
 /**
- * MLB Round Robin V2 - Live Prediction Generator
- * 
- * Generates daily MLB HR Round Robin predictions with:
- * - Top 10 by Probability
- * - Top 20 by EV
- * - RR structure recommendations (2s, 3s, 4s, 5s, 6s)
- * - WHY explanations for each pick
- * 
- * Called by frontend on-demand or cached by scheduled function
+ * MLB Round Robin V3 - Live Prediction Generator
+ *
+ * Real MLB StatsAPI pipeline — no mock data.
+ * Fetches today's schedule, active rosters, season stats,
+ * probable pitchers, park factors, weather, and OddsAPI HR odds
+ * then scores every rostered hitter and surfaces:
+ *   - Top 10 by Probability
+ *   - Top 20 by EV
+ *   - RR structure recommendations
+ *   - WHY explanations for each pick
+ *
+ * Called by frontend on-demand; cached 10 min in Netlify Blobs.
  */
 
-import axios from 'axios';
 import { getStore } from '@netlify/blobs';
+import { pitcherHRMultiplier } from './lib/hrPitcherMultiplier.js';
+import { parkHRFactorForAbbrev } from './lib/parkFactors.js';
+import { weatherHRMultiplier }   from './lib/weatherMultiplier.js';
 
-const MLB_API = 'https://statsapi.mlb.com/api/v1';
+// ── API endpoints ──────────────────────────────────────────
+const MLB_API      = 'https://statsapi.mlb.com/api/v1';
+const SCHEDULE_URL = (date) => `${MLB_API}/schedule?sportId=1&date=${encodeURIComponent(date)}&gameType=R,D,L,W,F&hydrate=probablePitcher,venue`;
+const TEAMS_URL    = (season) => `${MLB_API}/teams?sportId=1&season=${season}`;
+const ROSTER_URL   = (tid) => `${MLB_API}/teams/${tid}/roster?rosterType=active`;
+const PEOPLE_URL   = (ids, season) => `${MLB_API}/people?personIds=${ids.join(',')}&hydrate=stats(group=hitting,type=season,season=${season})`;
 const ODDS_API_KEY = process.env.ODDS_API_KEY;
 const ODDS_API_URL = 'https://api.the-odds-api.com/v4';
 
-// Park factors (RHH/LHH multipliers)
-const PARK_FACTORS = {
-  'Yankee Stadium': { rhh: 1.15, lhh: 1.08 },
-  'Coors Field': { rhh: 1.35, lhh: 1.32 },
-  'Great American Ball Park': { rhh: 1.18, lhh: 1.12 },
-  'Chase Field': { rhh: 1.12, lhh: 1.10 },
-  'Wrigley Field': { rhh: 1.08, lhh: 1.05 },
-  'Citizens Bank Park': { rhh: 1.12, lhh: 1.08 },
-  'Camden Yards': { rhh: 1.10, lhh: 1.06 },
-  'Globe Life Field': { rhh: 1.10, lhh: 1.08 },
-  'Truist Park': { rhh: 1.08, lhh: 1.05 },
-  'Fenway Park': { rhh: 1.05, lhh: 0.98 },
-  'Oracle Park': { rhh: 0.85, lhh: 0.90 },
-  'T-Mobile Park': { rhh: 0.88, lhh: 0.92 },
-  'Marlins Park': { rhh: 0.90, lhh: 0.93 }
-};
+// ── Bayesian prior for early-season HR estimation ──────────
+const PRIOR_PA      = 60;
+const PRIOR_HR_RATE = 0.04;
+const EXP_PA        = 4.1;   // expected PA per game
+const CAP_PROB      = 0.40;  // max per-game HR prob
 
-function getTodayDate() {
-  return new Date().toISOString().split('T')[0];
+// ── Helpers ────────────────────────────────────────────────
+function dateET(d = new Date()) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
 }
-
+function seasonFromET(d = new Date()) {
+  return Number(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric' }).format(d)) || new Date().getFullYear();
+}
 function isMLBSeasonActive() {
   const now = new Date();
   const month = now.getMonth() + 1;
   return month >= 3 && month <= 10; // March-October
 }
-
-/**
- * Fetch today's MLB schedule
- */
-async function fetchTodayGames() {
+async function fetchJSON(url, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const today = getTodayDate();
-    const url = `${MLB_API}/schedule`;
-    const params = {
-      sportId: 1,
-      date: today,
-      gameType: 'R,D,L,W', // Regular, Division, League, Wild Card
-      hydrate: 'probablePitcher,venue'
-    };
-    
-    const response = await axios.get(url, { params, timeout: 10000 });
-    
-    const games = [];
-    for (const date of response.data.dates || []) {
-      for (const game of date.games || []) {
-        if (['S', 'P', 'D'].includes(game.status.statusCode)) {
-          games.push({
-            gamePk: game.gamePk,
-            gameDate: game.gameDate,
-            home: game.teams.home.team.name,
-            away: game.teams.away.team.name,
-            venue: game.venue?.name || 'Unknown',
-            homeStarter: game.teams.home.probablePitcher?.fullName || 'TBD',
-            awayStarter: game.teams.away.probablePitcher?.fullName || 'TBD'
-          });
-        }
-      }
-    }
-    
-    return games;
-  } catch (error) {
-    console.error('Error fetching games:', error.message);
-    return [];
-  }
+    const r = await fetch(url, { headers: { accept: 'application/json' }, signal: controller.signal });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } finally { clearTimeout(t); }
 }
 
-/**
- * Fetch HR odds from TheOddsAPI
- */
-async function fetchHROdds() {
-  if (!ODDS_API_KEY) {
-    console.warn('No ODDS_API_KEY - using mock odds');
-    return [];
+// ── Fetch probable pitchers via live feed ──────────────────
+async function getProbablePitcherMap(games) {
+  const out = new Map(); // teamId → { pitcherId, name, hand }
+  for (const g of games) {
+    const gamePk = g?.gamePk;
+    if (!gamePk) continue;
+    try {
+      const feed = await fetchJSON(`https://statsapi.mlb.com/api/v1.1/game/${gamePk}/feed/live`);
+      const homeId = g?.teams?.home?.team?.id;
+      const awayId = g?.teams?.away?.team?.id;
+      const probHome = feed?.gameData?.probablePitchers?.home?.id || g?.teams?.home?.probablePitcher?.id;
+      const probAway = feed?.gameData?.probablePitchers?.away?.id || g?.teams?.away?.probablePitcher?.id;
+      const homeName = feed?.gameData?.probablePitchers?.home?.fullName || g?.teams?.home?.probablePitcher?.fullName || null;
+      const awayName = feed?.gameData?.probablePitchers?.away?.fullName || g?.teams?.away?.probablePitcher?.fullName || null;
+      if (homeId && probAway) out.set(homeId, { pitcherId: probAway, name: awayName, hand: null });
+      if (awayId && probHome) out.set(awayId, { pitcherId: probHome, name: homeName, hand: null });
+    } catch { /* skip single game */ }
   }
-  
+  return out;
+}
+
+// ── Weather extraction ─────────────────────────────────────
+async function extractWeather(game) {
   try {
-    const url = `${ODDS_API_URL}/sports/baseball_mlb/odds`;
-    const params = {
-      apiKey: ODDS_API_KEY,
-      regions: 'us',
-      markets: 'player_home_runs',
-      oddsFormat: 'american'
-    };
-    
-    const response = await axios.get(url, { params, timeout: 10000 });
-    
-    const hrOdds = [];
-    for (const game of response.data || []) {
-      for (const bookmaker of game.bookmakers || []) {
-        for (const market of bookmaker.markets || []) {
-          if (market.key === 'player_home_runs') {
-            for (const outcome of market.outcomes || []) {
-              hrOdds.push({
-                player: outcome.description,
-                odds: outcome.price,
-                bookmaker: bookmaker.key,
-                game: `${game.away_team} @ ${game.home_team}`
-              });
-            }
+    const gamePk = game?.gamePk;
+    if (!gamePk) return { tempF: null, windOutMph: null, precip: false };
+    const feed = await fetchJSON(`https://statsapi.mlb.com/api/v1.1/game/${gamePk}/feed/live`);
+    const w = feed?.gameData?.weather || {};
+    const tempF = typeof w?.temp === 'number' ? w.temp : null;
+    let windOutMph = null;
+    if (typeof w?.windSpeed === 'number') {
+      const dir = String(w?.windDirection || '').toLowerCase();
+      windOutMph = /out.*center|out.*cf/.test(dir) ? w.windSpeed : (/in.*center|in.*cf/.test(dir) ? -w.windSpeed : 0);
+    }
+    return { tempF, windOutMph, precip: String(w?.condition || '').toLowerCase().includes('rain') };
+  } catch { return { tempF: null, windOutMph: null, precip: false }; }
+}
+
+// ── EV math ────────────────────────────────────────────────
+function americanToDecimal(am) {
+  return am > 0 ? am / 100 + 1 : 100 / Math.abs(am) + 1;
+}
+function calculateEV(probability, americanOdds) {
+  return probability * americanToDecimal(americanOdds) - 1;
+}
+function probToAmerican(p) {
+  if (p <= 0 || p >= 1) return 0;
+  return p >= 0.5 ? Math.round(-100 * p / (1 - p)) : Math.round(100 * (1 - p) / p);
+}
+
+// ── WHY builder ────────────────────────────────────────────
+function generateWHY({ probability, ev, parkMult, pitcherName, weatherMult, seasonHR, seasonPA }) {
+  const reasons = [];
+  if (parkMult >= 1.08) reasons.push(`🏟️ Park boost +${((parkMult - 1) * 100).toFixed(0)}%`);
+  if (parkMult <= 0.92) reasons.push(`🏟️ Pitcher park −${((1 - parkMult) * 100).toFixed(0)}%`);
+  if (pitcherName) reasons.push(`⚾ vs ${pitcherName}`);
+  if (weatherMult > 1.04) reasons.push(`🌡️ Weather +${((weatherMult - 1) * 100).toFixed(0)}%`);
+  if (seasonPA > 0 && seasonHR / seasonPA >= 0.06) reasons.push(`💪 ${seasonHR} HR in ${seasonPA} PA`);
+  if (probability >= 0.22) reasons.push('🔥 Elite HR rate');
+  else if (probability >= 0.18) reasons.push('💪 Strong HR rate');
+  if (ev >= 0.15) reasons.push('💰 Excellent value');
+  else if (ev >= 0.08) reasons.push('💵 Good value');
+  return reasons.join(' • ') || 'Solid baseline stats';
+}
+
+// ── Fetch HR odds from TheOddsAPI ──────────────────────────
+async function fetchHROdds() {
+  if (!ODDS_API_KEY) { console.log('⚠️ No ODDS_API_KEY — odds will be model-only'); return new Map(); }
+  try {
+    const url = `${ODDS_API_URL}/sports/baseball_mlb/odds?apiKey=${ODDS_API_KEY}&regions=us&markets=player_home_runs&oddsFormat=american`;
+    const data = await fetchJSON(url, 12000);
+    const byPlayer = new Map(); // normalized name → { odds:[], books:Set }
+    const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[.]/g, '').trim();
+    for (const game of data || []) {
+      for (const bk of game.bookmakers || []) {
+        for (const mkt of bk.markets || []) {
+          if (mkt.key !== 'player_home_runs') continue;
+          for (const o of mkt.outcomes || []) {
+            const key = norm(o.description);
+            if (!byPlayer.has(key)) byPlayer.set(key, { odds: [], books: new Set() });
+            const rec = byPlayer.get(key);
+            rec.odds.push(o.price);
+            rec.books.add(bk.key);
           }
         }
       }
     }
-    
-    return hrOdds;
-  } catch (error) {
-    console.error('Error fetching odds:', error.message);
-    return [];
-  }
+    // Compute median odds per player
+    const out = new Map();
+    for (const [key, rec] of byPlayer) {
+      const sorted = [...rec.odds].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      const median = sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+      out.set(key, { american: median, books: rec.books.size });
+    }
+    return out;
+  } catch (e) { console.error('OddsAPI error:', e.message); return new Map(); }
 }
 
-/**
- * Calculate HR probability from base stats + park factor
- */
-function calculateProbability(player, game, stats = {}) {
-  const baseProb = stats.hrRate || 0.08; // Default 8% HR rate
-  const parkMultiplier = PARK_FACTORS[game.venue]?.rhh || 1.0;
-  const hotColdMultiplier = stats.hotStreak ? 1.15 : 0.95;
-  
-  const adjustedProb = baseProb * parkMultiplier * hotColdMultiplier;
-  return Math.min(adjustedProb, 0.50); // Cap at 50%
+// ── Round Robin recommendations ────────────────────────────
+function recommendRR(count) {
+  if (count < 3) return [{ legs: 2, structure: 'by 2s', parlays: 1, description: 'Too few candidates' }];
+  const C = (n, k) => { let r = 1; for (let i = 0; i < k; i++) r = r * (n - i) / (i + 1); return Math.round(r); };
+  const recs = [];
+  if (count >= 4 && count <= 6)  recs.push({ legs: count, structure: `${count}-Pick`, parlays: 1, roi: '+31%', description: 'OPTIMAL — Best ROI/variance balance', recommended: true });
+  if (C(count, 3) <= 100)        recs.push({ legs: 3, structure: `${count}-Pick by 3s`, parlays: C(count, 3), roi: '+36%', description: 'High ROI, moderate variance' });
+  if (C(count, 2) <= 50)         recs.push({ legs: 2, structure: `${count}-Pick by 2s`, parlays: C(count, 2), roi: '+81%', description: 'Highest ROI, higher variance' });
+  return recs.length ? recs : [{ legs: 3, structure: 'by 3s', parlays: C(count, 3), description: 'Standard approach' }];
 }
 
-/**
- * Calculate EV from probability and odds
- */
-function calculateEV(probability, americanOdds) {
-  const decimal = americanOdds > 0 
-    ? (americanOdds / 100) + 1 
-    : (100 / Math.abs(americanOdds)) + 1;
-  
-  const ev = (probability * decimal) - 1;
-  return ev;
-}
-
-/**
- * Generate WHY explanation
- */
-function generateWHY(player, probability, ev, game) {
-  const reasons = [];
-  
-  const parkMultiplier = PARK_FACTORS[game.venue]?.rhh || 1.0;
-  if (parkMultiplier >= 1.10) {
-    reasons.push(`🏟️ Hitter-friendly park (+${((parkMultiplier - 1) * 100).toFixed(0)}%)`);
-  }
-  
-  if (probability >= 0.20) {
-    reasons.push('💪 Strong HR rate');
-  }
-  
-  if (ev >= 0.15) {
-    reasons.push('💰 Excellent value');
-  } else if (ev >= 0.08) {
-    reasons.push('💵 Good value');
-  }
-  
-  return reasons.join(' • ') || 'Solid baseline stats';
-}
-
-/**
- * Generate Round Robin recommendations
- */
-function recommendRR(candidatesCount) {
-  if (candidatesCount < 3) {
-    return [{ legs: 2, structure: 'by 2s', parlays: 1, description: 'Too few candidates' }];
-  }
-  
-  // Calculate combo counts
-  const combos = {
-    2: (candidatesCount * (candidatesCount - 1)) / 2,
-    3: (candidatesCount * (candidatesCount - 1) * (candidatesCount - 2)) / 6,
-    4: (candidatesCount * (candidatesCount - 1) * (candidatesCount - 2) * (candidatesCount - 3)) / 24,
-    5: candidatesCount >= 5 ? (candidatesCount * (candidatesCount - 1) * (candidatesCount - 2) * (candidatesCount - 3) * (candidatesCount - 4)) / 120 : 0,
-    6: candidatesCount >= 6 ? (candidatesCount * (candidatesCount - 1) * (candidatesCount - 2) * (candidatesCount - 3) * (candidatesCount - 4) * (candidatesCount - 5)) / 720 : 0
-  };
-  
-  const recommendations = [];
-  
-  if (candidatesCount >= 4 && candidatesCount <= 6) {
-    recommendations.push({
-      legs: candidatesCount,
-      structure: `${candidatesCount}-Pick`,
-      parlays: 1,
-      roi: '+31%',
-      description: 'OPTIMAL - Best ROI/variance balance',
-      recommended: true
-    });
-  }
-  
-  if (combos[3] > 0 && combos[3] <= 100) {
-    recommendations.push({
-      legs: 3,
-      structure: `${candidatesCount}-Pick by 3s`,
-      parlays: combos[3],
-      roi: '+36%',
-      description: 'High ROI, moderate variance'
-    });
-  }
-  
-  if (combos[2] > 0 && combos[2] <= 50) {
-    recommendations.push({
-      legs: 2,
-      structure: `${candidatesCount}-Pick by 2s`,
-      parlays: combos[2],
-      roi: '+81%',
-      description: 'Highest ROI, higher variance'
-    });
-  }
-  
-  return recommendations.length > 0 ? recommendations : [
-    { legs: 3, structure: 'by 3s', parlays: combos[3] || 0, description: 'Standard approach' }
-  ];
-}
-
-/**
- * Main handler
- */
-export async function handler(event, context) {
+// ── Hot/cold (14-day) lookup ───────────────────────────────
+async function getHotColdBulk(ids) {
+  const out = new Map();
+  if (!ids.length) return out;
   try {
-    const today = getTodayDate();
+    const now = new Date();
+    const end = dateET(now);
+    const d = new Date(end + 'T00:00:00');
+    d.setDate(d.getDate() - 13);
+    const beg = dateET(d);
+    const chunks = [];
+    for (let i = 0; i < ids.length; i += 100) chunks.push(ids.slice(i, i + 100));
+    for (const chunk of chunks) {
+      const url = `${MLB_API}/people?personIds=${chunk.join(',')}&hydrate=stats(group=hitting,type=byDateRange,startDate=${beg},endDate=${end})`;
+      const j = await fetchJSON(url);
+      for (const p of j.people || []) {
+        let hr14 = 0, pa14 = 0;
+        for (const s of p.stats || []) for (const sp of s.splits || []) {
+          hr14 += Number(sp?.stat?.homeRuns || 0);
+          pa14 += Number(sp?.stat?.plateAppearances || 0);
+        }
+        out.set(String(p.id), { hr14, pa14 });
+      }
+    }
+  } catch { /* best effort */ }
+  return out;
+}
+function hotColdMultiplier(hr14, pa14, seasonHR, seasonPA) {
+  if (pa14 < 20) return 1.0;
+  const recent = hr14 / pa14;
+  const season = seasonPA > 0 ? seasonHR / seasonPA : 0.04;
+  const ratio = season > 0 ? recent / season : 1.0;
+  // Clamp to ±15%
+  return Math.max(0.85, Math.min(1.15, ratio));
+}
+
+// ════════════════════════════════════════════════════════════
+// MAIN HANDLER
+// ════════════════════════════════════════════════════════════
+export async function handler(event) {
+  try {
+    const today = dateET();
+    const season = seasonFromET();
     const forceRefresh = event.queryStringParameters?.refresh === 'true';
-    
-    // Try to load from cache first (unless force refresh)
+
+    // ── Cache check (10 min) ───────────────────────────────
     if (!forceRefresh) {
       try {
         const store = getStore('mlb-rr-predictions');
         const cached = await store.get('latest', { type: 'json' });
-        
-        if (cached && cached.date === today) {
-          console.log('✅ Serving from cache');
-          return {
-            statusCode: 200,
-            headers: { 
-              'Content-Type': 'application/json',
-              'Cache-Control': 'public, max-age=300' // 5 min
-            },
-            body: JSON.stringify({
-              ...cached,
-              cached: true
-            })
-          };
+        if (cached && cached.date === today && typeof cached.ts === 'number' && (Date.now() - cached.ts) < 10 * 60 * 1000) {
+          console.log('✅ RR cache hit');
+          return { statusCode: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' }, body: JSON.stringify({ ...cached, cached: true }) };
         }
-      } catch (err) {
-        console.log('Cache miss, generating fresh...');
-      }
+      } catch { /* cache miss */ }
     }
-    
-    // Check if season is active
+
+    // ── Offseason guard ────────────────────────────────────
     if (!isMLBSeasonActive()) {
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ok: true,
-          offseason: true,
-          message: 'MLB offseason - Opening Day 2026 in April',
-          date: today,
-          topByProb: [],
-          topByEV: [],
-          recommendations: [],
-          meta: {
-            season: 2026,
-            openingDay: '2026-03-26',
-            gamesCount: 0
-          }
+          ok: true, offseason: true,
+          message: 'MLB offseason — Opening Day 2026 in late March',
+          date: today, topByProb: [], topByEV: [], recommendations: [],
+          meta: { season: 2026, openingDay: '2026-03-26', gamesCount: 0 }
         })
       };
     }
-    
-    // Fetch data
-    console.log('Fetching MLB games...');
-    const games = await fetchTodayGames();
-    
+
+    // ═══ 1) Today's schedule ═══════════════════════════════
+    console.log(`⚾ Fetching MLB schedule for ${today}…`);
+    const sched = await fetchJSON(SCHEDULE_URL(today));
+    const rawGames = (sched?.dates?.[0]?.games) || [];
+    // Only scheduled / pre-game
+    const games = rawGames.filter(g => ['S', 'P', 'PW'].includes(g?.status?.statusCode));
     if (games.length === 0) {
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ok: true,
-          message: 'No MLB games today',
-          date: today,
-          topByProb: [],
-          topByEV: [],
-          recommendations: [],
-          meta: { gamesCount: 0 }
-        })
-      };
+      return { statusCode: 200, headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ok: true, message: 'No MLB games today', date: today, topByProb: [], topByEV: [], recommendations: [], meta: { gamesCount: 0 } }) };
     }
-    
-    console.log(`Found ${games.length} games, fetching odds...`);
-    const hrOdds = await fetchHROdds();
-    
-    // Generate candidates (mock data for now - will be replaced with real stats)
+    console.log(`  ${games.length} scheduled games`);
+
+    // ═══ 2) Teams abbreviation map ═════════════════════════
+    const teamsJ = await fetchJSON(TEAMS_URL(season));
+    const abbrevById = new Map();
+    for (const t of teamsJ?.teams || []) abbrevById.set(t.id, t.abbreviation || t.teamCode || t.name);
+
+    // ═══ 3) Team ↔ game mapping ════════════════════════════
+    const teamGameMap = new Map();
+    for (const g of games) {
+      const hid = g?.teams?.home?.team?.id, aid = g?.teams?.away?.team?.id;
+      if (!hid || !aid) continue;
+      teamGameMap.set(hid, { oppId: aid, game: g, side: 'home' });
+      teamGameMap.set(aid, { oppId: hid, game: g, side: 'away' });
+    }
+    const teamIds = [...teamGameMap.keys()];
+
+    // ═══ 4) Active rosters (hitters only) ══════════════════
+    const rosterByTeam = new Map();
+    await Promise.all(teamIds.map(async tid => {
+      try {
+        const r = await fetchJSON(ROSTER_URL(tid));
+        rosterByTeam.set(tid, (r?.roster || []).filter(x => String(x?.position?.code).toUpperCase() !== 'P'));
+      } catch { rosterByTeam.set(tid, []); }
+    }));
+
+    // ═══ 5) Season stats ═══════════════════════════════════
+    const allPids = [...new Set(teamIds.flatMap(tid => (rosterByTeam.get(tid) || []).map(r => r?.person?.id).filter(Boolean)))];
+    const statById = new Map();
+    const chunks = [];
+    for (let i = 0; i < allPids.length; i += 100) chunks.push(allPids.slice(i, i + 100));
+    await Promise.all(chunks.map(async chunk => {
+      try {
+        const pj = await fetchJSON(PEOPLE_URL(chunk, season));
+        for (const p of pj?.people || []) {
+          let hr = 0, pa = 0;
+          for (const s of p?.stats || []) for (const sp of s?.splits || []) {
+            hr += Number(sp?.stat?.homeRuns || 0);
+            pa += Number(sp?.stat?.plateAppearances || 0);
+          }
+          statById.set(p.id, { name: p.fullName || p.firstLastName || 'Player', hr, pa });
+        }
+      } catch { /* skip chunk */ }
+    }));
+
+    // ═══ 6) Pitchers, weather, odds, hot/cold in parallel ═
+    const learn = getStore('mlb-learning');
+    const [pitcherMap, oddsMap, hotMap] = await Promise.all([
+      getProbablePitcherMap(games),
+      fetchHROdds(),
+      getHotColdBulk(allPids),
+    ]);
+    // Weather per game (sequential — each hits live feed)
+    const weatherByPk = new Map();
+    for (const g of games) weatherByPk.set(g.gamePk, await extractWeather(g));
+
+    // ═══ 7) Score every hitter ═════════════════════════════
+    const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[.]/g, '').trim();
     const candidates = [];
-    
-    // Mock top players for demo (will be replaced with real pipeline)
-    const mockPlayers = [
-      { name: 'Aaron Judge', hrRate: 0.128, hotStreak: true, team: 'NYY' },
-      { name: 'Shohei Ohtani', hrRate: 0.115, hotStreak: true, team: 'LAD' },
-      { name: 'Kyle Schwarber', hrRate: 0.105, hotStreak: false, team: 'PHI' },
-      { name: 'Juan Soto', hrRate: 0.098, hotStreak: true, team: 'NYM' },
-      { name: 'Pete Alonso', hrRate: 0.095, hotStreak: false, team: 'NYM' }
-    ];
-    
-    for (const game of games.slice(0, 5)) {
-      for (const player of mockPlayers) {
-        const probability = calculateProbability(player, game, player);
-        const odds = hrOdds.find(o => o.player.includes(player.name.split(' ')[1]))?.odds || 400;
-        const ev = calculateEV(probability, odds);
-        
+
+    for (const tid of teamIds) {
+      const meta = teamGameMap.get(tid);
+      if (!meta) continue;
+      const teamAb = abbrevById.get(tid) || 'TEAM';
+      const oppAb  = abbrevById.get(meta.oppId) || 'OPP';
+      const homeAb = meta.side === 'home' ? teamAb : oppAb;
+      const gameLabel = meta.side === 'home' ? `${oppAb} @ ${teamAb}` : `${teamAb} @ ${oppAb}`;
+      const homeStarter = meta.game?.teams?.home?.probablePitcher?.fullName || 'TBD';
+      const awayStarter = meta.game?.teams?.away?.probablePitcher?.fullName || 'TBD';
+      const starterFacing = meta.side === 'home' ? awayStarter : homeStarter;
+      const venue = meta.game?.venue?.name || 'Unknown';
+
+      for (const r of rosterByTeam.get(tid) || []) {
+        const pid = r?.person?.id;
+        const st  = statById.get(pid);
+        if (!st) continue;
+        const seasonHR = Number(st.hr || 0);
+        const seasonPA = Number(st.pa || 0);
+        if (seasonPA <= 0) continue;
+
+        // Bayesian HR rate
+        const adjHR = seasonHR + PRIOR_PA * PRIOR_HR_RATE;
+        const adjPA = seasonPA + PRIOR_PA;
+        const p_pa  = Math.max(0, Math.min(0.15, adjHR / adjPA));
+
+        // Pitcher multiplier
+        let pitcherMult = 1.0, pitcherName = null;
+        try {
+          const info = pitcherMap.get(tid);
+          if (info?.pitcherId) {
+            const prof = await learn.get(`profiles/pitcher/${info.pitcherId}.json`, { type: 'json' });
+            if (prof?.samples && prof?.hr) pitcherMult = pitcherHRMultiplier({ samples: prof.samples, hr: prof.hr });
+            pitcherName = info.name || null;
+          }
+        } catch { /* 1.0 */ }
+
+        // Park + weather
+        const parkMult    = parkHRFactorForAbbrev(homeAb);
+        const wx          = weatherByPk.get(meta.game?.gamePk) || {};
+        const weatherMult = weatherHRMultiplier(wx);
+
+        // Hot/cold
+        const hc = hotMap.get(String(pid)) || { hr14: 0, pa14: 0 };
+        const hcMult = hotColdMultiplier(hc.hr14, hc.pa14, seasonHR, seasonPA);
+
+        // Per-game HR probability
+        const p_pa_adj = Math.max(0, Math.min(0.15, p_pa * pitcherMult * parkMult * weatherMult * hcMult));
+        const p_game   = 1 - Math.pow(1 - p_pa_adj, EXP_PA);
+        const probability = Math.min(CAP_PROB, Math.max(0.001, p_game));
+
+        // Odds
+        const oddsRec = oddsMap.get(norm(st.name));
+        const odds    = oddsRec ? oddsRec.american : probToAmerican(probability);
+        const ev      = calculateEV(probability, odds);
+
         candidates.push({
-          player: player.name,
-          team: player.team,
-          opponent: game.home,
-          venue: game.venue,
-          probability: probability,
-          odds: odds,
-          ev: ev,
-          why: generateWHY(player, probability, ev, game),
-          game: `${game.away} @ ${game.home}`,
-          starter: game.homeStarter
+          player: st.name,
+          team: teamAb,
+          opponent: oppAb,
+          venue,
+          probability,
+          odds,
+          ev,
+          why: generateWHY({ probability, ev, parkMult, pitcherName, weatherMult, seasonHR, seasonPA }),
+          game: gameLabel,
+          starter: starterFacing,
+          booksCount: oddsRec?.books || 0,
         });
       }
     }
-    
-    // Sort and filter
-    const topByProb = candidates
-      .sort((a, b) => b.probability - a.probability)
-      .slice(0, 10);
-    
-    const topByEV = candidates
-      .filter(c => c.ev > 0.05 && c.probability >= 0.15)
-      .sort((a, b) => b.ev - a.ev)
-      .slice(0, 20);
-    
+
+    // ═══ 8) Sort, filter, recommend ════════════════════════
+    const topByProb = [...candidates].sort((a, b) => b.probability - a.probability).slice(0, 10);
+    const topByEV   = candidates.filter(c => c.ev > 0.02 && c.probability >= 0.12).sort((a, b) => b.ev - a.ev).slice(0, 20);
     const recommendations = recommendRR(Math.min(topByEV.length, 6));
-    
-    return {
-      statusCode: 200,
-      headers: { 
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300' // 5 min cache
+
+    // ═══ 9) Response + cache ═══════════════════════════════
+    const payload = {
+      ok: true, date: today, topByProb, topByEV, recommendations,
+      meta: {
+        gamesCount: games.length,
+        candidatesCount: candidates.length,
+        oddsAvailable: oddsMap.size > 0,
+        season,
+        generatedAt: new Date().toISOString(),
       },
-      body: JSON.stringify({
-        ok: true,
-        date: today,
-        topByProb,
-        topByEV,
-        recommendations,
-        meta: {
-          gamesCount: games.length,
-          candidatesCount: candidates.length,
-          oddsAvailable: hrOdds.length > 0,
-          season: 2026,
-          generatedAt: new Date().toISOString()
-        }
-      })
     };
-    
+    try {
+      const store = getStore('mlb-rr-predictions');
+      await store.set('latest', JSON.stringify({ ...payload, ts: Date.now() }));
+    } catch { /* cache write failure is non-fatal */ }
+
+    return { statusCode: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' }, body: JSON.stringify(payload) };
+
   } catch (error) {
-    console.error('Error generating RR:', error);
-    return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ok: false,
-        error: error.message
-      })
-    };
+    console.error('❌ RR generate error:', error);
+    return { statusCode: 500, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ok: false, error: error.message }) };
   }
 }

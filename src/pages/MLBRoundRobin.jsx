@@ -139,7 +139,7 @@ export default function MLBRoundRobin() {
               <p className="text-3xl font-bold text-green-600 mt-1">
                 {recommendations[0]?.roi || '+0%'}
               </p>
-              <p className="text-xs text-gray-500 mt-2">2024-2025 backtest</p>
+              <p className="text-xs text-gray-500 mt-2">Backtested ROI</p>
             </div>
             <div className="text-4xl text-green-600 opacity-50">📈</div>
           </div>
