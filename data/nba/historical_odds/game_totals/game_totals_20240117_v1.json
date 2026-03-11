@@ -1,0 +1,751 @@
+{
+  "date": "2024-01-17",
+  "sport": "basketball_nba",
+  "market": "totals",
+  "collectedAt": "2026-03-10T14:58:54.357Z",
+  "games": [
+    {
+      "id": "45b17d96edd0edcd13e817abc9476041",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-01-17T00:40:00Z",
+      "home_team": "Philadelphia 76ers",
+      "away_team": "Denver Nuggets",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-01-16T23:55:07Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:07Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -112,
+                  "point": 233
+                },
+                {
+                  "name": "Under",
+                  "price": -108,
+                  "point": 233
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-01-16T23:55:17Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:17Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -112,
+                  "point": 233
+                },
+                {
+                  "name": "Under",
+                  "price": -108,
+                  "point": 233
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2024-01-16T23:53:43Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:53:43Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -115,
+                  "point": 232.5
+                },
+                {
+                  "name": "Under",
+                  "price": -105,
+                  "point": 232.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6a820ec7d38d636f04bca79e58755054",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-01-17T02:10:00Z",
+      "home_team": "Phoenix Suns",
+      "away_team": "Sacramento Kings",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-01-16T23:55:07Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:07Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 244
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 244
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-01-16T23:55:17Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:17Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -108,
+                  "point": 244.5
+                },
+                {
+                  "name": "Under",
+                  "price": -112,
+                  "point": 244.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2024-01-16T23:53:43Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:53:43Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -115,
+                  "point": 243.5
+                },
+                {
+                  "name": "Under",
+                  "price": -105,
+                  "point": 243.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "666b7193a26420eac24cc589dd27ec26",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-01-17T03:10:00Z",
+      "home_team": "Los Angeles Clippers",
+      "away_team": "Oklahoma City Thunder",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-01-16T23:55:07Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:07Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -112,
+                  "point": 237.5
+                },
+                {
+                  "name": "Under",
+                  "price": -108,
+                  "point": 237.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-01-16T23:55:17Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:17Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 237.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 237.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2024-01-16T23:53:43Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:53:43Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 237.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 237.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "179265bb5908c9704c41763de6c4fff6",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-01-18T00:10:00Z",
+      "home_team": "Detroit Pistons",
+      "away_team": "Minnesota Timberwolves",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-01-16T23:55:07Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:07Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 221.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 221.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-01-16T23:55:17Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:17Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 220.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 220.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "62dcee435e3cb956f963c018cbf041ac",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-01-18T00:40:00Z",
+      "home_team": "Atlanta Hawks",
+      "away_team": "Orlando Magic",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-01-16T23:55:07Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:07Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 233
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 233
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-01-16T23:55:17Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:17Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 233.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 233.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2024-01-16T23:53:43Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:53:43Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -115,
+                  "point": 232.5
+                },
+                {
+                  "name": "Under",
+                  "price": -105,
+                  "point": 232.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2e55003043b3875249a8a346e3e7e99c",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-01-18T00:40:00Z",
+      "home_team": "Boston Celtics",
+      "away_team": "San Antonio Spurs",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-01-16T23:55:07Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:07Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 237.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 237.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "23bb80a23cd3dfb63ca5f8b105268095",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-01-18T00:40:00Z",
+      "home_team": "Cleveland Cavaliers",
+      "away_team": "Milwaukee Bucks",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-01-16T23:55:07Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:07Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 238
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 238
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-01-16T23:55:17Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:17Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 236
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 236
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2024-01-16T23:53:43Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:53:43Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -105,
+                  "point": 238.5
+                },
+                {
+                  "name": "Under",
+                  "price": -115,
+                  "point": 238.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3e034222cba6403461f2e8e06103392e",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-01-18T00:40:00Z",
+      "home_team": "New York Knicks",
+      "away_team": "Houston Rockets",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-01-16T23:55:07Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:07Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 217.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 217.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ac88bd22b5257db0d217d03625165365",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-01-18T00:40:00Z",
+      "home_team": "Toronto Raptors",
+      "away_team": "Miami Heat",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-01-16T23:55:07Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:07Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 228
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 228
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-01-16T23:55:17Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:17Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 228
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 228
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2024-01-16T23:53:43Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:53:43Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -115,
+                  "point": 227.5
+                },
+                {
+                  "name": "Under",
+                  "price": -105,
+                  "point": 227.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5b48478ad132bedc104652877d51110d",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-01-18T01:10:00Z",
+      "home_team": "New Orleans Pelicans",
+      "away_team": "Charlotte Hornets",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-01-16T23:55:07Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:07Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 230.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 230.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2024-01-16T23:53:43Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:53:43Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 230.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 230.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-01-16T23:55:17Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:17Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 229.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 229.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "36e7461f05a993188963028c3eef01ec",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-01-18T02:10:00Z",
+      "home_team": "Utah Jazz",
+      "away_team": "Golden State Warriors",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-01-16T23:55:07Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:07Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 244.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 244.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2024-01-16T23:53:43Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:53:43Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 244.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 244.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-01-16T23:55:17Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-01-16T23:55:17Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 244.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 244.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

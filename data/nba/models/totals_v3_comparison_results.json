@@ -1,0 +1,368 @@
+{
+  "timestamp": "2026-03-10T15:06:45.662Z",
+  "trainSize": 2718,
+  "testSize": 1375,
+  "trainCutoff": "2024-10-01",
+  "oldModel": {
+    "features": 18,
+    "mae": 14.981308245511118,
+    "predictionSpread": {
+      "min": 217.6992459047439,
+      "max": 241.45196909260508,
+      "mean": 228.59363013711132,
+      "std": 3.656156951043564,
+      "range": 23.752723187861193
+    }
+  },
+  "newModel": {
+    "features": 82,
+    "mae": 14.771401489935043,
+    "predictionSpread": {
+      "min": 207.41923887516361,
+      "max": 254.67641525535544,
+      "mean": 228.23291607535825,
+      "std": 7.760018646375625,
+      "range": 47.25717638019182
+    },
+    "topFeatures": [
+      {
+        "feature": "h20_pace",
+        "weight": 1.4121704219028952
+      },
+      {
+        "feature": "h10_fg3Pct",
+        "weight": -1.0120382045181449
+      },
+      {
+        "feature": "a20_pace",
+        "weight": 0.8657040403163155
+      },
+      {
+        "feature": "home_pace_trend",
+        "weight": -0.8496299790901627
+      },
+      {
+        "feature": "ppg_sum_l20",
+        "weight": 0.841309114817953
+      },
+      {
+        "feature": "h20_ppg",
+        "weight": 0.7180914309688885
+      },
+      {
+        "feature": "h10_defRtg",
+        "weight": 0.7060657981699401
+      },
+      {
+        "feature": "winPct_diff",
+        "weight": 0.690833353009212
+      },
+      {
+        "feature": "h3_defRtg",
+        "weight": 0.6625279974814724
+      },
+      {
+        "feature": "expected_total_l10",
+        "weight": 0.6551591006191478
+      },
+      {
+        "feature": "a20_defRtg",
+        "weight": 0.6304730568554815
+      },
+      {
+        "feature": "h3_fg3Pct",
+        "weight": -0.6265456857739593
+      },
+      {
+        "feature": "expected_total_l3",
+        "weight": 0.6161117083907267
+      },
+      {
+        "feature": "h10_pace",
+        "weight": 0.6018967157673442
+      },
+      {
+        "feature": "pace_avg_l10",
+        "weight": 0.6009538353519303
+      },
+      {
+        "feature": "pace_product",
+        "weight": 0.5780846312462262
+      },
+      {
+        "feature": "pace_avg_l3",
+        "weight": 0.5768593483359984
+      },
+      {
+        "feature": "a3_pace",
+        "weight": 0.5764702693402869
+      },
+      {
+        "feature": "a20_ppg",
+        "weight": 0.5398947549419301
+      },
+      {
+        "feature": "away_off_vs_home_def",
+        "weight": -0.5168602151923647
+      }
+    ]
+  },
+  "roiComparison": {
+    "old": {
+      "edge_3": {
+        "count": 926,
+        "wins": 510,
+        "losses": 416,
+        "profit": "5240",
+        "wagered": "101860",
+        "roi": "5.14",
+        "winRate": "55.1",
+        "overs": {
+          "count": 502,
+          "wins": 284,
+          "roi": "8.00",
+          "winRate": "56.6"
+        },
+        "unders": {
+          "count": 424,
+          "wins": 226,
+          "roi": "1.76",
+          "winRate": "53.3"
+        }
+      },
+      "edge_4": {
+        "count": 777,
+        "wins": 429,
+        "losses": 348,
+        "profit": "4620",
+        "wagered": "85470",
+        "roi": "5.41",
+        "winRate": "55.2",
+        "overs": {
+          "count": 426,
+          "wins": 238,
+          "roi": "6.66",
+          "winRate": "55.9"
+        },
+        "unders": {
+          "count": 351,
+          "wins": 191,
+          "roi": "3.89",
+          "winRate": "54.4"
+        }
+      },
+      "edge_5": {
+        "count": 662,
+        "wins": 368,
+        "losses": 294,
+        "profit": "4460",
+        "wagered": "72820",
+        "roi": "6.12",
+        "winRate": "55.6",
+        "overs": {
+          "count": 374,
+          "wins": 209,
+          "roi": "6.68",
+          "winRate": "55.9"
+        },
+        "unders": {
+          "count": 288,
+          "wins": 159,
+          "roi": "5.40",
+          "winRate": "55.2"
+        }
+      },
+      "edge_6": {
+        "count": 534,
+        "wins": 295,
+        "losses": 239,
+        "profit": "3210",
+        "wagered": "58740",
+        "roi": "5.46",
+        "winRate": "55.2",
+        "overs": {
+          "count": 301,
+          "wins": 166,
+          "roi": "5.29",
+          "winRate": "55.1"
+        },
+        "unders": {
+          "count": 233,
+          "wins": 129,
+          "roi": "5.70",
+          "winRate": "55.4"
+        }
+      },
+      "edge_7": {
+        "count": 424,
+        "wins": 228,
+        "losses": 196,
+        "profit": "1240",
+        "wagered": "46640",
+        "roi": "2.66",
+        "winRate": "53.8",
+        "overs": {
+          "count": 245,
+          "wins": 127,
+          "roi": "-1.04",
+          "winRate": "51.8"
+        },
+        "unders": {
+          "count": 179,
+          "wins": 101,
+          "roi": "7.72",
+          "winRate": "56.4"
+        }
+      },
+      "edge_8": {
+        "count": 344,
+        "wins": 181,
+        "losses": 163,
+        "profit": "170",
+        "wagered": "37840",
+        "roi": "0.45",
+        "winRate": "52.6",
+        "overs": {
+          "count": 206,
+          "wins": 104,
+          "roi": "-3.62",
+          "winRate": "50.5"
+        },
+        "unders": {
+          "count": 138,
+          "wins": 77,
+          "roi": "6.52",
+          "winRate": "55.8"
+        }
+      }
+    },
+    "new": {
+      "edge_3": {
+        "count": 761,
+        "wins": 407,
+        "losses": 354,
+        "profit": "1760",
+        "wagered": "83710",
+        "roi": "2.10",
+        "winRate": "53.5",
+        "overs": {
+          "count": 411,
+          "wins": 218,
+          "roi": "1.26",
+          "winRate": "53.0"
+        },
+        "unders": {
+          "count": 350,
+          "wins": 189,
+          "roi": "3.09",
+          "winRate": "54.0"
+        }
+      },
+      "edge_4": {
+        "count": 581,
+        "wins": 312,
+        "losses": 269,
+        "profit": "1610",
+        "wagered": "63910",
+        "roi": "2.52",
+        "winRate": "53.7",
+        "overs": {
+          "count": 314,
+          "wins": 170,
+          "roi": "3.36",
+          "winRate": "54.1"
+        },
+        "unders": {
+          "count": 267,
+          "wins": 142,
+          "roi": "1.53",
+          "winRate": "53.2"
+        }
+      },
+      "edge_5": {
+        "count": 452,
+        "wins": 247,
+        "losses": 205,
+        "profit": "2150",
+        "wagered": "49720",
+        "roi": "4.32",
+        "winRate": "54.6",
+        "overs": {
+          "count": 237,
+          "wins": 125,
+          "roi": "0.69",
+          "winRate": "52.7"
+        },
+        "unders": {
+          "count": 215,
+          "wins": 122,
+          "roi": "8.33",
+          "winRate": "56.7"
+        }
+      },
+      "edge_6": {
+        "count": 322,
+        "wins": 179,
+        "losses": 143,
+        "profit": "2170",
+        "wagered": "35420",
+        "roi": "6.13",
+        "winRate": "55.6",
+        "overs": {
+          "count": 172,
+          "wins": 88,
+          "roi": "-2.33",
+          "winRate": "51.2"
+        },
+        "unders": {
+          "count": 150,
+          "wins": 91,
+          "roi": "15.82",
+          "winRate": "60.7"
+        }
+      },
+      "edge_7": {
+        "count": 234,
+        "wins": 139,
+        "losses": 95,
+        "profit": "3450",
+        "wagered": "25740",
+        "roi": "13.40",
+        "winRate": "59.4",
+        "overs": {
+          "count": 125,
+          "wins": 68,
+          "roi": "3.85",
+          "winRate": "54.4"
+        },
+        "unders": {
+          "count": 109,
+          "wins": 71,
+          "roi": "24.35",
+          "winRate": "65.1"
+        }
+      },
+      "edge_8": {
+        "count": 166,
+        "wins": 100,
+        "losses": 66,
+        "profit": "2740",
+        "wagered": "18260",
+        "roi": "15.01",
+        "winRate": "60.2",
+        "overs": {
+          "count": 89,
+          "wins": 49,
+          "roi": "5.11",
+          "winRate": "55.1"
+        },
+        "unders": {
+          "count": 77,
+          "wins": 51,
+          "roi": "26.45",
+          "winRate": "66.2"
+        }
+      }
+    }
+  }
+}

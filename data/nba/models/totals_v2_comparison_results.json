@@ -1,0 +1,281 @@
+{
+  "timestamp": "2026-03-09T16:18:13.935Z",
+  "trainSize": 2785,
+  "testSize": 1476,
+  "oldModel": {
+    "features": 18,
+    "mae": 15.14821804289056,
+    "rmse": 19.068658783007894,
+    "backtestByThreshold": {
+      "4": {
+        "bets": 821,
+        "wins": 433,
+        "losses": 388,
+        "winRate": "52.7",
+        "pnl": 620,
+        "roi": "0.69",
+        "overs": {
+          "bets": 476,
+          "wins": 253,
+          "pnl": 770,
+          "roi": "1.47"
+        },
+        "unders": {
+          "bets": 345,
+          "wins": 180,
+          "pnl": -150,
+          "roi": "-0.40"
+        }
+      },
+      "5": {
+        "bets": 688,
+        "wins": 364,
+        "losses": 324,
+        "winRate": "52.9",
+        "pnl": 760,
+        "roi": "1.00",
+        "overs": {
+          "bets": 407,
+          "wins": 215,
+          "pnl": 380,
+          "roi": "0.85"
+        },
+        "unders": {
+          "bets": 281,
+          "wins": 149,
+          "pnl": 380,
+          "roi": "1.23"
+        }
+      },
+      "6": {
+        "bets": 574,
+        "wins": 302,
+        "losses": 272,
+        "winRate": "52.6",
+        "pnl": 280,
+        "roi": "0.44",
+        "overs": {
+          "bets": 341,
+          "wins": 176,
+          "pnl": -550,
+          "roi": "-1.47"
+        },
+        "unders": {
+          "bets": 233,
+          "wins": 126,
+          "pnl": 830,
+          "roi": "3.24"
+        }
+      },
+      "5.5": {
+        "bets": 623,
+        "wins": 327,
+        "losses": 296,
+        "winRate": "52.5",
+        "pnl": 140,
+        "roi": "0.20",
+        "overs": {
+          "bets": 367,
+          "wins": 191,
+          "pnl": -260,
+          "roi": "-0.64"
+        },
+        "unders": {
+          "bets": 256,
+          "wins": 136,
+          "pnl": 400,
+          "roi": "1.42"
+        }
+      },
+      "6.5": {
+        "bets": 510,
+        "wins": 264,
+        "losses": 246,
+        "winRate": "51.8",
+        "pnl": -660,
+        "roi": "-1.18",
+        "overs": {
+          "bets": 314,
+          "wins": 158,
+          "pnl": -1360,
+          "roi": "-3.94"
+        },
+        "unders": {
+          "bets": 196,
+          "wins": 106,
+          "pnl": 700,
+          "roi": "3.25"
+        }
+      }
+    }
+  },
+  "newModel": {
+    "features": 28,
+    "mae": 14.796228304877655,
+    "rmse": 18.55409217151604,
+    "backtestByThreshold": {
+      "4": {
+        "bets": 661,
+        "wins": 338,
+        "losses": 323,
+        "winRate": "51.1",
+        "pnl": -1730,
+        "roi": "-2.38",
+        "overs": {
+          "bets": 425,
+          "wins": 217,
+          "pnl": -1180,
+          "roi": "-2.52"
+        },
+        "unders": {
+          "bets": 236,
+          "wins": 121,
+          "pnl": -550,
+          "roi": "-2.12"
+        }
+      },
+      "5": {
+        "bets": 500,
+        "wins": 255,
+        "losses": 245,
+        "winRate": "51.0",
+        "pnl": -1450,
+        "roi": "-2.64",
+        "overs": {
+          "bets": 325,
+          "wins": 163,
+          "pnl": -1520,
+          "roi": "-4.25"
+        },
+        "unders": {
+          "bets": 175,
+          "wins": 92,
+          "pnl": 70,
+          "roi": "0.36"
+        }
+      },
+      "6": {
+        "bets": 376,
+        "wins": 189,
+        "losses": 187,
+        "winRate": "50.3",
+        "pnl": -1670,
+        "roi": "-4.04",
+        "overs": {
+          "bets": 253,
+          "wins": 124,
+          "pnl": -1790,
+          "roi": "-6.43"
+        },
+        "unders": {
+          "bets": 123,
+          "wins": 65,
+          "pnl": 120,
+          "roi": "0.89"
+        }
+      },
+      "5.5": {
+        "bets": 439,
+        "wins": 222,
+        "losses": 217,
+        "winRate": "50.6",
+        "pnl": -1670,
+        "roi": "-3.46",
+        "overs": {
+          "bets": 289,
+          "wins": 148,
+          "pnl": -710,
+          "roi": "-2.23"
+        },
+        "unders": {
+          "bets": 150,
+          "wins": 74,
+          "pnl": -960,
+          "roi": "-5.82"
+        }
+      },
+      "6.5": {
+        "bets": 330,
+        "wins": 158,
+        "losses": 172,
+        "winRate": "47.9",
+        "pnl": -3120,
+        "roi": "-8.60",
+        "overs": {
+          "bets": 221,
+          "wins": 103,
+          "pnl": -2680,
+          "roi": "-11.02"
+        },
+        "unders": {
+          "bets": 109,
+          "wins": 55,
+          "pnl": -440,
+          "roi": "-3.67"
+        }
+      }
+    },
+    "topWeights": [
+      {
+        "feature": "expected_total",
+        "weight": 2.139541655723828
+      },
+      {
+        "feature": "pace_avg",
+        "weight": 1.9460305629389354
+      },
+      {
+        "feature": "home_l10_pace",
+        "weight": 1.683584106666121
+      },
+      {
+        "feature": "ppg_sum",
+        "weight": 1.681867246853298
+      },
+      {
+        "feature": "home_l10_defRtg",
+        "weight": 1.6397865890061583
+      },
+      {
+        "feature": "away_l10_pace",
+        "weight": 1.442114198548127
+      },
+      {
+        "feature": "home_l10_fg3Pct",
+        "weight": -1.2147412277927128
+      },
+      {
+        "feature": "away_l10_defRtg",
+        "weight": 0.773843412512641
+      },
+      {
+        "feature": "away_l10_fg3Pct",
+        "weight": -0.7566349998275492
+      },
+      {
+        "feature": "home_l10_offRtg",
+        "weight": 0.7465861801431152
+      },
+      {
+        "feature": "away_l10_assists",
+        "weight": 0.4452136003173159
+      },
+      {
+        "feature": "home_l10_assists",
+        "weight": 0.3675100766448919
+      },
+      {
+        "feature": "fg3Pct_diff",
+        "weight": -0.31166803217485783
+      },
+      {
+        "feature": "fgPct_diff",
+        "weight": 0.27089869054120014
+      },
+      {
+        "feature": "away_l10_ftPct",
+        "weight": -0.2618145051362202
+      }
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-// src/App.jsx
+GH// src/App.jsx
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import MLB_HR from "./MLB_HR";
@@ -18,6 +18,7 @@ import NBAPlayerPropsV2 from "./pages/NBAPlayerPropsV2";  // NBA Player Props V2
 import NBAPropsAligned from "./pages/NBAPropsAligned";  // NBA Props Aligned (Best of Both Models)
 import NBADDTDPage from "./pages/NBADDTDPage";  // NBA DD/TD Picks Page
 import NBAParlays from "./pages/NBAParlays";  // NBA Parlays (Confidence + SGP)
+import NBATodaysBets from "./pages/NBATodaysBets";  // Today's NBA Bets (Aggregated)
 import NCAAMBBPredictions from "./pages/NCAAMBBPredictions";  // NCAA MBB Predictions
 import NCAAMBBV2Predictions from "./pages/NCAAMBBV2Predictions";  // NCAA MBB V2 (Calibrated + Away Dog Filter)
 import NFLAnytimeTDV2 from "./pages/NFLAnytimeTDV2"; // NFL Anytime TD V2 (live)
@@ -103,6 +104,7 @@ export default function App() {
     nba: {
       label: 'NBA',
       items: [
+        { label: "Today's Bets 🔥", path: '/nba-todays-bets' },
         { label: 'Game Predictions (Elite) ⭐', path: '/nba-predictions-v2' },
         { label: 'Player Props (R + A) 💰', path: '/nba-player-props' },
         { label: 'Player Props V2 (PRA) 🚀', path: '/nba-player-props-v2' },
@@ -154,6 +156,7 @@ export default function App() {
           <Route path="/soccer-btts" element={<SoccerBTTS />} />
           <Route path="/nhl-sog" element={<NHL />} />
           <Route path="/nba-predictions-v2" element={<NBAPredictionsV2 />} />
+          <Route path="/nba-todays-bets" element={<NBATodaysBets />} />
           <Route path="/nba-player-props" element={<NBAPlayerProps />} />
           <Route path="/nba-player-props-v2" element={<NBAPlayerPropsV2 />} />
           <Route path="/nba-props-aligned" element={<NBAPropsAligned />} />

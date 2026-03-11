@@ -1,0 +1,86 @@
+{
+  "date": "2024-06-18",
+  "sport": "basketball_nba",
+  "market": "totals",
+  "collectedAt": "2026-03-10T15:01:07.517Z",
+  "games": [
+    {
+      "id": "48dbd6bbfeb72fae383de550504df9cc",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-06-18T00:40:00Z",
+      "home_team": "Boston Celtics",
+      "away_team": "Dallas Mavericks",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-06-17T23:55:33Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-06-17T23:55:33Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -112,
+                  "point": 210.5
+                },
+                {
+                  "name": "Under",
+                  "price": -108,
+                  "point": 210.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2024-06-17T23:53:58Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-06-17T23:53:58Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 210.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 210.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-06-17T23:55:32Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-06-17T23:55:32Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 210.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 210.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

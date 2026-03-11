@@ -1,9 +1,10 @@
 name: NBA Props V2 Daily Update
 
 on:
-  # Run daily at 9:00 AM ET (14:00 UTC)
+  # Run daily at 8:00 AM ET (12:00 UTC) and 3:30 PM ET (19:30 UTC)
   schedule:
-    - cron: '0 14 * * *'
+    - cron: '0 12 * * *'
+    - cron: '30 19 * * *'
   
   # Run when pushed to main42 (so it runs TODAY when you push this)
   push:

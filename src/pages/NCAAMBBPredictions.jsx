@@ -197,8 +197,9 @@ const NCAAMBBPredictions = () => {
             </tbody>
           </table>
           <div style={{ marginTop: '16px', fontSize: '11px', color: '#9ca3af', textAlign: 'center' }}>
-            bgroundrobin.com/ncaa-mbb | Model: Variant B (KenPom-style)
+            Model: Variant B (KenPom-style)
           </div>
+          <div style={{ marginTop: '6px', fontSize: '13px', color: '#6b7280', textAlign: 'center', fontWeight: 600, letterSpacing: '1px' }}>BNGBets</div>
         </div>
       </div>
 

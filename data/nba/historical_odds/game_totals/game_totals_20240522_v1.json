@@ -1,0 +1,164 @@
+{
+  "date": "2024-05-22",
+  "sport": "basketball_nba",
+  "market": "totals",
+  "collectedAt": "2026-03-10T15:00:56.768Z",
+  "games": [
+    {
+      "id": "6821a590bd9152ac58595e56cb4e0ab1",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-05-22T00:10:00Z",
+      "home_team": "Boston Celtics",
+      "away_team": "Indiana Pacers",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-05-21T23:55:25Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-05-21T23:55:25Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 223
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 223
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-05-21T23:55:35Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-05-21T23:55:35Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 222.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 222.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2024-05-21T23:55:13Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-05-21T23:55:13Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -115,
+                  "point": 222.5
+                },
+                {
+                  "name": "Under",
+                  "price": -105,
+                  "point": 222.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e94f506cd7d5d0925581597c6f204f66",
+      "sport_key": "basketball_nba",
+      "commence_time": "2024-05-23T00:35:00Z",
+      "home_team": "Minnesota Timberwolves",
+      "away_team": "Dallas Mavericks",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2024-05-21T23:55:25Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-05-21T23:55:25Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 207.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 207.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2024-05-21T23:55:35Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-05-21T23:55:35Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 207.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 207.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2024-05-21T23:55:13Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2024-05-21T23:55:13Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -105,
+                  "point": 208.5
+                },
+                {
+                  "name": "Under",
+                  "price": -115,
+                  "point": 208.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

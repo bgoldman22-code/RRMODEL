@@ -183,8 +183,9 @@ export default function NBAPlayerProps() {
         </div>
         ${generateTableHTML(top20, 'TOP 20 (#1-20)', 1)}
         <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #9ca3af;">
-          Model: Baseline v2 | Edge Threshold: 4%+ | Confidence: 60%+ | bgroundrobin.com
+          Model: Baseline v2 | Edge Threshold: 4%+ | Confidence: 60%+
         </div>
+        <div style="margin-top: 8px; text-align: center; font-size: 13px; color: #6b7280; font-weight: 600; letter-spacing: 1px;">BNGBets</div>
       </div>
     `;
     
@@ -234,8 +235,9 @@ export default function NBAPlayerProps() {
         </div>
         ${generateTableHTML(next20, 'NEXT 20 (#21-40)', 21)}
         <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #9ca3af;">
-          Model: Baseline v2 | Edge Threshold: 4%+ | Confidence: 60%+ | bgroundrobin.com
+          Model: Baseline v2 | Edge Threshold: 4%+ | Confidence: 60%+
         </div>
+        <div style="margin-top: 8px; text-align: center; font-size: 13px; color: #6b7280; font-weight: 600; letter-spacing: 1px;">BNGBets</div>
       </div>
     `;
     

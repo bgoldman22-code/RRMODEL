@@ -213,8 +213,9 @@ const NCAAMBBV2Predictions = () => {
             </tbody>
           </table>
           <div style={{ marginTop: '14px', fontSize: '11px', color: '#9ca3af', textAlign: 'center' }}>
-            bgroundrobin.com/ncaa-mbb-v2 | V2: Isotonic Calibration + Tiered Dogs (≤+150 @5%, +201-250 @10%)
+            V2: Isotonic Calibration + Tiered Dogs (≤+150 @5%, +201-250 @10%)
           </div>
+          <div style={{ marginTop: '6px', fontSize: '13px', color: '#6b7280', textAlign: 'center', fontWeight: 600, letterSpacing: '1px' }}>BNGBets</div>
         </div>
       </div>
 

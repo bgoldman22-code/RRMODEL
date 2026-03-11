@@ -1,0 +1,386 @@
+{
+  "date": "2025-12-15",
+  "fetched_at": "2026-03-09T16:16:33.988Z",
+  "source": "the-odds-api-historical",
+  "bookmakers": [
+    "fanduel",
+    "draftkings",
+    "betmgm"
+  ],
+  "markets": [
+    "spreads",
+    "totals",
+    "h2h"
+  ],
+  "games": [
+    {
+      "event_id": "122e4dc2b42cc3f47263cb1589333b79",
+      "home_team": "Boston Celtics",
+      "away_team": "Detroit Pistons",
+      "commence_time": "2025-12-16T00:10:00Z",
+      "bookmakers": {
+        "spreads": {
+          "fanduel": {
+            "home_line": -2,
+            "home_price": -108,
+            "away_line": 2,
+            "away_price": -112
+          },
+          "draftkings": {
+            "home_line": -1.5,
+            "home_price": -115,
+            "away_line": 1.5,
+            "away_price": -105
+          },
+          "betmgm": {
+            "home_line": -2.5,
+            "home_price": -102,
+            "away_line": 2.5,
+            "away_price": -118
+          }
+        },
+        "totals": {
+          "fanduel": {
+            "line": 230.5,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "draftkings": {
+            "line": 230.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "betmgm": {
+            "line": 230.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "fanduel": {
+            "home_price": -130,
+            "away_price": 110
+          },
+          "draftkings": {
+            "home_price": -125,
+            "away_price": 105
+          },
+          "betmgm": {
+            "home_price": -135,
+            "away_price": 110
+          }
+        }
+      },
+      "consensus": {
+        "totals": {
+          "line": 230.5
+        }
+      }
+    },
+    {
+      "event_id": "90b0a6bec1f7e52132fa1fbfbdd9c432",
+      "home_team": "Miami Heat",
+      "away_team": "Toronto Raptors",
+      "commence_time": "2025-12-16T00:40:00Z",
+      "bookmakers": {
+        "spreads": {
+          "fanduel": {
+            "home_line": -6,
+            "home_price": -110,
+            "away_line": 6,
+            "away_price": -110
+          },
+          "draftkings": {
+            "home_line": -5.5,
+            "home_price": -118,
+            "away_line": 5.5,
+            "away_price": -102
+          },
+          "betmgm": {
+            "home_line": -5.5,
+            "home_price": -118,
+            "away_line": 5.5,
+            "away_price": -102
+          }
+        },
+        "totals": {
+          "fanduel": {
+            "line": 235.5,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "draftkings": {
+            "line": 235.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "betmgm": {
+            "line": 235.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "fanduel": {
+            "home_price": -235,
+            "away_price": 194
+          },
+          "draftkings": {
+            "home_price": -225,
+            "away_price": 185
+          },
+          "betmgm": {
+            "home_price": -235,
+            "away_price": 190
+          }
+        }
+      },
+      "consensus": {
+        "totals": {
+          "line": 235.5
+        }
+      }
+    },
+    {
+      "event_id": "21aa1ed8a0bb40eb9edb2d5f94ff5457",
+      "home_team": "Utah Jazz",
+      "away_team": "Dallas Mavericks",
+      "commence_time": "2025-12-16T02:10:00Z",
+      "bookmakers": {
+        "spreads": {
+          "fanduel": {
+            "home_line": 1.5,
+            "home_price": -110,
+            "away_line": -1.5,
+            "away_price": -110
+          },
+          "draftkings": {
+            "home_line": 1.5,
+            "home_price": -108,
+            "away_line": -1.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": 1.5,
+            "home_price": -110,
+            "away_line": -1.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "fanduel": {
+            "line": 239.5,
+            "over_price": -110,
+            "under_price": -110
+          },
+          "draftkings": {
+            "line": 239.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "betmgm": {
+            "line": 239.5,
+            "over_price": -115,
+            "under_price": -105
+          }
+        },
+        "h2h": {
+          "fanduel": {
+            "home_price": 104,
+            "away_price": -122
+          },
+          "draftkings": {
+            "home_price": 100,
+            "away_price": -120
+          },
+          "betmgm": {
+            "home_price": 100,
+            "away_price": -120
+          }
+        }
+      },
+      "consensus": {
+        "totals": {
+          "line": 239.5
+        }
+      }
+    },
+    {
+      "event_id": "28162f3e97b5e5cf014e7ea0f6958f63",
+      "home_team": "Denver Nuggets",
+      "away_team": "Houston Rockets",
+      "commence_time": "2025-12-16T02:40:00Z",
+      "bookmakers": {
+        "spreads": {
+          "fanduel": {
+            "home_line": -1.5,
+            "home_price": -106,
+            "away_line": 1.5,
+            "away_price": -114
+          },
+          "draftkings": {
+            "home_line": -1.5,
+            "home_price": -108,
+            "away_line": 1.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": -1.5,
+            "home_price": -102,
+            "away_line": 1.5,
+            "away_price": -118
+          }
+        },
+        "totals": {
+          "fanduel": {
+            "line": 237.5,
+            "over_price": -106,
+            "under_price": -114
+          },
+          "draftkings": {
+            "line": 236.5,
+            "over_price": -115,
+            "under_price": -105
+          },
+          "betmgm": {
+            "line": 236.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "fanduel": {
+            "home_price": -112,
+            "away_price": -104
+          },
+          "draftkings": {
+            "home_price": -118,
+            "away_price": -102
+          },
+          "betmgm": {
+            "home_price": -115,
+            "away_price": -105
+          }
+        }
+      },
+      "consensus": {
+        "totals": {
+          "line": 236.83333333333334
+        }
+      }
+    },
+    {
+      "event_id": "258fbfcfd104d515372cebe0a5e42234",
+      "home_team": "Los Angeles Clippers",
+      "away_team": "Memphis Grizzlies",
+      "commence_time": "2025-12-16T03:40:00Z",
+      "bookmakers": {
+        "spreads": {
+          "fanduel": {
+            "home_line": -4.5,
+            "home_price": -106,
+            "away_line": 4.5,
+            "away_price": -114
+          },
+          "draftkings": {
+            "home_line": -4.5,
+            "home_price": -108,
+            "away_line": 4.5,
+            "away_price": -112
+          },
+          "betmgm": {
+            "home_line": -4.5,
+            "home_price": -110,
+            "away_line": 4.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "fanduel": {
+            "line": 228.5,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "draftkings": {
+            "line": 228.5,
+            "over_price": -108,
+            "under_price": -112
+          },
+          "betmgm": {
+            "line": 228.5,
+            "over_price": -110,
+            "under_price": -110
+          }
+        },
+        "h2h": {
+          "fanduel": {
+            "home_price": -172,
+            "away_price": 144
+          },
+          "draftkings": {
+            "home_price": -185,
+            "away_price": 154
+          },
+          "betmgm": {
+            "home_price": -175,
+            "away_price": 145
+          }
+        }
+      },
+      "consensus": {
+        "totals": {
+          "line": 228.5
+        }
+      }
+    },
+    {
+      "event_id": "42db7e7ed193f516e561773b04b56eca",
+      "home_team": "New York Knicks",
+      "away_team": "San Antonio Spurs",
+      "commence_time": "2025-12-17T01:40:00Z",
+      "bookmakers": {
+        "spreads": {
+          "draftkings": {
+            "home_line": -2.5,
+            "home_price": -110,
+            "away_line": 2.5,
+            "away_price": -110
+          },
+          "fanduel": {
+            "home_line": -2.5,
+            "home_price": -110,
+            "away_line": 2.5,
+            "away_price": -110
+          }
+        },
+        "totals": {
+          "draftkings": {
+            "line": 227.5,
+            "over_price": -112,
+            "under_price": -108
+          },
+          "fanduel": {
+            "line": 228.5,
+            "over_price": -106,
+            "under_price": -114
+          }
+        },
+        "h2h": {
+          "draftkings": {
+            "home_price": -135,
+            "away_price": 114
+          },
+          "fanduel": {
+            "home_price": -136,
+            "away_price": 116
+          }
+        }
+      },
+      "consensus": {
+        "totals": {
+          "line": 228
+        }
+      }
+    }
+  ]
+}

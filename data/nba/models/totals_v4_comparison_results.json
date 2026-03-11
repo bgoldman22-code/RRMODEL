@@ -1,0 +1,433 @@
+{
+  "timestamp": "2026-03-11T14:30:32.524Z",
+  "v3": {
+    "trainCutoff": "2024-10-01",
+    "trainSize": 2718,
+    "holdout_mae": 15.414787852698852,
+    "holdout_roi": {
+      "edge_3": {
+        "count": 354,
+        "wins": 180,
+        "losses": 174,
+        "profit": "-1140",
+        "wagered": "38940",
+        "roi": "-2.93",
+        "winRate": "50.8",
+        "overs": {
+          "count": 123,
+          "wins": 60,
+          "roi": "-6.87",
+          "winRate": "48.8"
+        },
+        "unders": {
+          "count": 231,
+          "wins": 120,
+          "roi": "-0.83",
+          "winRate": "51.9"
+        }
+      },
+      "edge_4": {
+        "count": 281,
+        "wins": 135,
+        "losses": 146,
+        "profit": "-2560",
+        "wagered": "30910",
+        "roi": "-8.28",
+        "winRate": "48.0",
+        "overs": {
+          "count": 89,
+          "wins": 41,
+          "roi": "-12.05",
+          "winRate": "46.1"
+        },
+        "unders": {
+          "count": 192,
+          "wins": 94,
+          "roi": "-6.53",
+          "winRate": "49.0"
+        }
+      },
+      "edge_5": {
+        "count": 211,
+        "wins": 98,
+        "losses": 113,
+        "profit": "-2630",
+        "wagered": "23210",
+        "roi": "-11.33",
+        "winRate": "46.4",
+        "overs": {
+          "count": 66,
+          "wins": 29,
+          "roi": "-16.12",
+          "winRate": "43.9"
+        },
+        "unders": {
+          "count": 145,
+          "wins": 69,
+          "roi": "-9.15",
+          "winRate": "47.6"
+        }
+      },
+      "edge_6": {
+        "count": 159,
+        "wins": 73,
+        "losses": 86,
+        "profit": "-2160",
+        "wagered": "17490",
+        "roi": "-12.35",
+        "winRate": "45.9",
+        "overs": {
+          "count": 44,
+          "wins": 18,
+          "roi": "-21.90",
+          "winRate": "40.9"
+        },
+        "unders": {
+          "count": 115,
+          "wins": 55,
+          "roi": "-8.70",
+          "winRate": "47.8"
+        }
+      },
+      "edge_7": {
+        "count": 116,
+        "wins": 57,
+        "losses": 59,
+        "profit": "-790",
+        "wagered": "12760",
+        "roi": "-6.19",
+        "winRate": "49.1",
+        "overs": {
+          "count": 34,
+          "wins": 16,
+          "roi": "-10.16",
+          "winRate": "47.1"
+        },
+        "unders": {
+          "count": 82,
+          "wins": 41,
+          "roi": "-4.55",
+          "winRate": "50.0"
+        }
+      },
+      "edge_8": {
+        "count": 86,
+        "wins": 42,
+        "losses": 44,
+        "profit": "-640",
+        "wagered": "9460",
+        "roi": "-6.77",
+        "winRate": "48.8",
+        "overs": {
+          "count": 23,
+          "wins": 10,
+          "roi": "-17.00",
+          "winRate": "43.5"
+        },
+        "unders": {
+          "count": 63,
+          "wins": 32,
+          "roi": "-3.03",
+          "winRate": "50.8"
+        }
+      }
+    },
+    "holdout_dual": {
+      "count": 173,
+      "wins": 80,
+      "losses": 93,
+      "profit": -2230,
+      "wagered": 19030,
+      "roi": "-11.72",
+      "winRate": "46.2",
+      "overs": {
+        "count": 28,
+        "wins": 11,
+        "roi": "-25.00"
+      },
+      "unders": {
+        "count": 145,
+        "wins": 69,
+        "roi": "-9.15"
+      },
+      "byMonth": {
+        "2025-12": {
+          "bets": 81,
+          "wins": 32,
+          "profit": -2190
+        },
+        "2026-01": {
+          "bets": 30,
+          "wins": 16,
+          "profit": 60
+        },
+        "2026-02": {
+          "bets": 46,
+          "wins": 23,
+          "profit": -230
+        },
+        "2026-03": {
+          "bets": 16,
+          "wins": 9,
+          "profit": 130
+        }
+      }
+    }
+  },
+  "v4": {
+    "trainCutoff": "2025-12-01",
+    "trainSize": 4306,
+    "holdout_mae": 15.225012851937194,
+    "holdout_roi": {
+      "edge_3": {
+        "count": 360,
+        "wins": 181,
+        "losses": 179,
+        "profit": "-1590",
+        "wagered": "39600",
+        "roi": "-4.02",
+        "winRate": "50.3",
+        "overs": {
+          "count": 134,
+          "wins": 64,
+          "roi": "-8.82",
+          "winRate": "47.8"
+        },
+        "unders": {
+          "count": 226,
+          "wins": 117,
+          "roi": "-1.17",
+          "winRate": "51.8"
+        }
+      },
+      "edge_4": {
+        "count": 288,
+        "wins": 144,
+        "losses": 144,
+        "profit": "-1440",
+        "wagered": "31680",
+        "roi": "-4.55",
+        "winRate": "50.0",
+        "overs": {
+          "count": 101,
+          "wins": 50,
+          "roi": "-5.49",
+          "winRate": "49.5"
+        },
+        "unders": {
+          "count": 187,
+          "wins": 94,
+          "roi": "-4.04",
+          "winRate": "50.3"
+        }
+      },
+      "edge_5": {
+        "count": 225,
+        "wins": 107,
+        "losses": 118,
+        "profit": "-2280",
+        "wagered": "24750",
+        "roi": "-9.21",
+        "winRate": "47.6",
+        "overs": {
+          "count": 77,
+          "wins": 35,
+          "roi": "-13.22",
+          "winRate": "45.5"
+        },
+        "unders": {
+          "count": 148,
+          "wins": 72,
+          "roi": "-7.13",
+          "winRate": "48.6"
+        }
+      },
+      "edge_6": {
+        "count": 163,
+        "wins": 83,
+        "losses": 80,
+        "profit": "-500",
+        "wagered": "17930",
+        "roi": "-2.79",
+        "winRate": "50.9",
+        "overs": {
+          "count": 50,
+          "wins": 26,
+          "roi": "-0.73",
+          "winRate": "52.0"
+        },
+        "unders": {
+          "count": 113,
+          "wins": 57,
+          "roi": "-3.70",
+          "winRate": "50.4"
+        }
+      },
+      "edge_7": {
+        "count": 112,
+        "wins": 58,
+        "losses": 54,
+        "profit": "-140",
+        "wagered": "12320",
+        "roi": "-1.14",
+        "winRate": "51.8",
+        "overs": {
+          "count": 35,
+          "wins": 18,
+          "roi": "-1.82",
+          "winRate": "51.4"
+        },
+        "unders": {
+          "count": 77,
+          "wins": 40,
+          "roi": "-0.83",
+          "winRate": "51.9"
+        }
+      },
+      "edge_8": {
+        "count": 82,
+        "wins": 43,
+        "losses": 39,
+        "profit": "10",
+        "wagered": "9020",
+        "roi": "0.11",
+        "winRate": "52.4",
+        "overs": {
+          "count": 26,
+          "wins": 15,
+          "roi": "10.14",
+          "winRate": "57.7"
+        },
+        "unders": {
+          "count": 56,
+          "wins": 28,
+          "roi": "-4.55",
+          "winRate": "50.0"
+        }
+      }
+    },
+    "holdout_dual": {
+      "count": 177,
+      "wins": 88,
+      "losses": 89,
+      "profit": -990,
+      "wagered": 19470,
+      "roi": "-5.08",
+      "winRate": "49.7",
+      "overs": {
+        "count": 29,
+        "wins": 16,
+        "roi": "5.33"
+      },
+      "unders": {
+        "count": 148,
+        "wins": 72,
+        "roi": "-7.13"
+      },
+      "byMonth": {
+        "2025-12": {
+          "bets": 74,
+          "wins": 31,
+          "profit": -1630
+        },
+        "2026-01": {
+          "bets": 37,
+          "wins": 21,
+          "profit": 340
+        },
+        "2026-02": {
+          "bets": 51,
+          "wins": 26,
+          "profit": -150
+        },
+        "2026-03": {
+          "bets": 15,
+          "wins": 10,
+          "profit": 450
+        }
+      }
+    },
+    "topFeatures": [
+      {
+        "feature": "h20_pace",
+        "weight": 1.154604533352127
+      },
+      {
+        "feature": "h10_fg3Pct",
+        "weight": -1.0156864170007665
+      },
+      {
+        "feature": "a20_pace",
+        "weight": 0.7528000497069957
+      },
+      {
+        "feature": "ppg_sum_l20",
+        "weight": 0.7397209419824772
+      },
+      {
+        "feature": "h20_defRtg",
+        "weight": 0.7027274490993709
+      },
+      {
+        "feature": "home_pace_trend",
+        "weight": -0.6728851728643778
+      },
+      {
+        "feature": "pace_avg_l10",
+        "weight": 0.6364378916391841
+      },
+      {
+        "feature": "h10_defRtg",
+        "weight": 0.6299979484606589
+      },
+      {
+        "feature": "pace_product",
+        "weight": 0.6103538578265387
+      },
+      {
+        "feature": "expected_total_l10",
+        "weight": 0.5953483134153074
+      },
+      {
+        "feature": "h10_pace",
+        "weight": 0.5599209089118352
+      },
+      {
+        "feature": "h20_ppg",
+        "weight": 0.5576359428147455
+      },
+      {
+        "feature": "a20_ppg",
+        "weight": 0.5519868716530931
+      },
+      {
+        "feature": "a3_pace",
+        "weight": 0.5477517303748946
+      },
+      {
+        "feature": "pace_avg_l3",
+        "weight": 0.5330792375484875
+      },
+      {
+        "feature": "a20_defRtg",
+        "weight": 0.5202137133454542
+      },
+      {
+        "feature": "expected_total_l3",
+        "weight": 0.5097929405148761
+      },
+      {
+        "feature": "h3_fg3Pct",
+        "weight": -0.5002067112540094
+      },
+      {
+        "feature": "matchup_defense_sum",
+        "weight": 0.4602981054171409
+      },
+      {
+        "feature": "a3_fg3Pct",
+        "weight": -0.4484391617690814
+      }
+    ]
+  }
+}

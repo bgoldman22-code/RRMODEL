@@ -1,0 +1,691 @@
+{
+  "date": "2023-12-26",
+  "sport": "basketball_nba",
+  "market": "totals",
+  "collectedAt": "2026-03-10T14:58:33.351Z",
+  "games": [
+    {
+      "id": "9cb979b834e23b9dc8737eebba4db760",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-25T22:08:20Z",
+      "home_team": "Los Angeles Lakers",
+      "away_team": "Boston Celtics",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 250.5
+                },
+                {
+                  "name": "Under",
+                  "price": -120,
+                  "point": 250.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -125,
+                  "point": 250.5
+                },
+                {
+                  "name": "Under",
+                  "price": -104,
+                  "point": 250.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2023-12-25T23:55:04Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:04Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -115,
+                  "point": 249.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 249.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "184da460295c1cfd98b0ff31e8fc2b13",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-26T01:10:00Z",
+      "home_team": "Miami Heat",
+      "away_team": "Philadelphia 76ers",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -112,
+                  "point": 227
+                },
+                {
+                  "name": "Under",
+                  "price": -108,
+                  "point": 227
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -112,
+                  "point": 227.5
+                },
+                {
+                  "name": "Under",
+                  "price": -108,
+                  "point": 227.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "96d0c38f9eae8242f2e363bdedd90c53",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-26T03:40:00Z",
+      "home_team": "Phoenix Suns",
+      "away_team": "Dallas Mavericks",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 242
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 242
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 242
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 242
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8811ddb0d366db1fd65c124566629813",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-27T00:10:00Z",
+      "home_team": "Detroit Pistons",
+      "away_team": "Brooklyn Nets",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 232.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 232.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 232.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 232.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "31086b15e5261feb16dbdc162c179d5b",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-27T00:10:00Z",
+      "home_team": "Washington Wizards",
+      "away_team": "Orlando Magic",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 237
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 237
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 237
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 237
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "332383bf7215581786c9cbfd78ba1795",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-27T01:00:00Z",
+      "home_team": "Chicago Bulls",
+      "away_team": "Atlanta Hawks",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 234
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 234
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 233.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 233.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "56dd286c7b687a83f42845b574d52fe3",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-27T01:10:00Z",
+      "home_team": "Houston Rockets",
+      "away_team": "Indiana Pacers",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 237
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 237
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -108,
+                  "point": 236.5
+                },
+                {
+                  "name": "Under",
+                  "price": -112,
+                  "point": 236.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "361d1c3e2282ef4c858c10568deaa7eb",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-27T01:10:00Z",
+      "home_team": "New Orleans Pelicans",
+      "away_team": "Memphis Grizzlies",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 229.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 229.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 229.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 229.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "467b39a8b732f8cd592bbe840c34250a",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-27T01:10:00Z",
+      "home_team": "Oklahoma City Thunder",
+      "away_team": "Minnesota Timberwolves",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 225.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 225.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 226.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 226.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b13dc2d9f54ba07ac49da52f10b508eb",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-27T01:10:00Z",
+      "home_team": "San Antonio Spurs",
+      "away_team": "Utah Jazz",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 242.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 242.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 242.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 242.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5808d941d68c0ed447581ddb43da48eb",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-27T03:10:00Z",
+      "home_team": "Portland Trail Blazers",
+      "away_team": "Sacramento Kings",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 236
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 236
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 236
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 236
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1ae80cb4d2a2f36dd4af929412f5555b",
+      "sport_key": "basketball_nba",
+      "commence_time": "2023-12-27T03:40:00Z",
+      "home_team": "Los Angeles Clippers",
+      "away_team": "Charlotte Hornets",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2023-12-25T23:55:26Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:26Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 228.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 228.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2023-12-25T23:55:16Z",
+          "markets": [
+            {
+              "key": "totals",
+              "last_update": "2023-12-25T23:55:16Z",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": -110,
+                  "point": 228.5
+                },
+                {
+                  "name": "Under",
+                  "price": -110,
+                  "point": 228.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

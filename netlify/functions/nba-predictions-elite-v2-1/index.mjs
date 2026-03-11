@@ -123,7 +123,9 @@ function getDefaultStats() {
     efg: 0.535, ts: 0.575, tovPct: 0.138, orbPct: 0.25,
     ftFga: 0.22, winPct: 0.50, games: 0, wins: 0, losses: 0,
     fgPct: 0.47, fg3Pct: 0.36, ftPct: 0.78,
-    rebounds: 0, assists: 0, turnovers: 0
+    rebounds: 43.5, assists: 25.5, turnovers: 13.5,
+    steals: 7.5, blocks: 5, fga: 88, fta: 22, fg3a: 35,
+    oreb: 10.5, dreb: 33, ppg: 114.5
   };
 }
 
@@ -872,31 +874,98 @@ function generateKeyFactors(home, away, homeL10, awayL10, spreadPred, totalPred,
 }
 
 /**
- * Build simple features for total model
+ * Build 82-feature vector for V4 totals model (multi-window: L3/L10/L20)
+ * Replaces old 18-feature buildSimpleFeatures
  */
-function buildSimpleFeatures(homeStats, awayStats) {
-  return {
-    home_l10_fgPct: homeStats.fgPct || homeStats.efg || 0.47,
-    home_l10_fg3Pct: homeStats.fg3Pct || (homeStats.ts - homeStats.efg) || 0.36,
-    home_l10_ftPct: homeStats.ftPct || 0.77,
-    home_l10_rebounds: homeStats.rebounds || 43,
-    home_l10_assists: homeStats.assists || 25,
-    home_l10_turnovers: homeStats.turnovers || (homeStats.tovPct * 100) || 13.5,
-    
-    away_l10_fgPct: awayStats.fgPct || awayStats.efg || 0.47,
-    away_l10_fg3Pct: awayStats.fg3Pct || (awayStats.ts - awayStats.efg) || 0.36,
-    away_l10_ftPct: awayStats.ftPct || 0.77,
-    away_l10_rebounds: awayStats.rebounds || 43,
-    away_l10_assists: awayStats.assists || 25,
-    away_l10_turnovers: awayStats.turnovers || (awayStats.tovPct * 100) || 13.5,
-    
-    fgPct_diff: (homeStats.fgPct || homeStats.efg || 0.47) - (awayStats.fgPct || awayStats.efg || 0.47),
-    fg3Pct_diff: (homeStats.fg3Pct || 0.36) - (awayStats.fg3Pct || 0.36),
-    rebounds_diff: (homeStats.rebounds || 43) - (awayStats.rebounds || 43),
-    assists_diff: (homeStats.assists || 25) - (awayStats.assists || 25),
-    turnovers_diff: (awayStats.turnovers || awayStats.tovPct * 100 || 13.5) - (homeStats.turnovers || homeStats.tovPct * 100 || 13.5),
-    home_court: 1
+function buildTotalFeaturesV4(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20) {
+  // Safe accessor — falls back to league average if stat missing
+  const s = (obj, key, fallback) => {
+    const v = obj?.[key];
+    return (v != null && Number.isFinite(v)) ? v : fallback;
   };
+
+  // L3 raw stats
+  const l3 = {
+    h3_pace: s(homeL3, 'pace', 101), h3_offRtg: s(homeL3, 'offRtg', 114.5),
+    h3_defRtg: s(homeL3, 'defRtg', 114.5), h3_ppg: s(homeL3, 'ppg', s(homeL3, 'offRtg', 114.5)),
+    h3_efg: s(homeL3, 'efg', 0.535), h3_fgPct: s(homeL3, 'fgPct', 0.47),
+    h3_fg3Pct: s(homeL3, 'fg3Pct', 0.36), h3_assists: s(homeL3, 'assists', 25.5),
+    h3_turnovers: s(homeL3, 'turnovers', 13.5),
+    a3_pace: s(awayL3, 'pace', 101), a3_offRtg: s(awayL3, 'offRtg', 114.5),
+    a3_defRtg: s(awayL3, 'defRtg', 114.5), a3_ppg: s(awayL3, 'ppg', s(awayL3, 'offRtg', 114.5)),
+    a3_efg: s(awayL3, 'efg', 0.535), a3_fgPct: s(awayL3, 'fgPct', 0.47),
+    a3_fg3Pct: s(awayL3, 'fg3Pct', 0.36), a3_assists: s(awayL3, 'assists', 25.5),
+    a3_turnovers: s(awayL3, 'turnovers', 13.5),
+  };
+
+  // L10 raw stats
+  const l10 = {
+    h10_pace: s(homeL10, 'pace', 101), h10_offRtg: s(homeL10, 'offRtg', 114.5),
+    h10_defRtg: s(homeL10, 'defRtg', 114.5), h10_ppg: s(homeL10, 'ppg', s(homeL10, 'offRtg', 114.5)),
+    h10_efg: s(homeL10, 'efg', 0.535), h10_fgPct: s(homeL10, 'fgPct', 0.47),
+    h10_fg3Pct: s(homeL10, 'fg3Pct', 0.36), h10_ftPct: s(homeL10, 'ftPct', 0.78),
+    h10_rebounds: s(homeL10, 'rebounds', 43.5), h10_assists: s(homeL10, 'assists', 25.5),
+    h10_turnovers: s(homeL10, 'turnovers', 13.5), h10_ts: s(homeL10, 'ts', 0.575),
+    a10_pace: s(awayL10, 'pace', 101), a10_offRtg: s(awayL10, 'offRtg', 114.5),
+    a10_defRtg: s(awayL10, 'defRtg', 114.5), a10_ppg: s(awayL10, 'ppg', s(awayL10, 'offRtg', 114.5)),
+    a10_efg: s(awayL10, 'efg', 0.535), a10_fgPct: s(awayL10, 'fgPct', 0.47),
+    a10_fg3Pct: s(awayL10, 'fg3Pct', 0.36), a10_ftPct: s(awayL10, 'ftPct', 0.78),
+    a10_rebounds: s(awayL10, 'rebounds', 43.5), a10_assists: s(awayL10, 'assists', 25.5),
+    a10_turnovers: s(awayL10, 'turnovers', 13.5), a10_ts: s(awayL10, 'ts', 0.575),
+  };
+
+  // L20 raw stats
+  const l20 = {
+    h20_pace: s(homeL20, 'pace', 101), h20_offRtg: s(homeL20, 'offRtg', 114.5),
+    h20_defRtg: s(homeL20, 'defRtg', 114.5), h20_ppg: s(homeL20, 'ppg', s(homeL20, 'offRtg', 114.5)),
+    h20_efg: s(homeL20, 'efg', 0.535),
+    a20_pace: s(awayL20, 'pace', 101), a20_offRtg: s(awayL20, 'offRtg', 114.5),
+    a20_defRtg: s(awayL20, 'defRtg', 114.5), a20_ppg: s(awayL20, 'ppg', s(awayL20, 'offRtg', 114.5)),
+    a20_efg: s(awayL20, 'efg', 0.535),
+  };
+
+  // Derived PPG values for interactions
+  const hPpg10 = l10.h10_ppg, aPpg10 = l10.a10_ppg;
+  const hPpg3 = l3.h3_ppg, aPpg3 = l3.a3_ppg;
+  const hPpg20 = l20.h20_ppg, aPpg20 = l20.a20_ppg;
+  
+  // Interactions
+  const interactions = {
+    pace_avg_l10: (l10.h10_pace + l10.a10_pace) / 2,
+    pace_diff_l10: l10.h10_pace - l10.a10_pace,
+    pace_avg_l3: (l3.h3_pace + l3.a3_pace) / 2,
+    pace_product: (l10.h10_pace * l10.a10_pace) / 10000,
+    ppg_sum_l10: hPpg10 + aPpg10,
+    ppg_sum_l3: hPpg3 + aPpg3,
+    ppg_sum_l20: hPpg20 + aPpg20,
+    ppg_diff_l10: hPpg10 - aPpg10,
+    expected_total_l10: ((l10.h10_pace + l10.a10_pace) / 2 / 100) *
+      (l10.h10_offRtg * (l10.a10_defRtg / 114.5) + l10.a10_offRtg * (l10.h10_defRtg / 114.5)),
+    expected_total_l3: ((l3.h3_pace + l3.a3_pace) / 2 / 100) *
+      (l3.h3_offRtg * (l3.a3_defRtg / 114.5) + l3.a3_offRtg * (l3.h3_defRtg / 114.5)),
+    home_off_vs_away_def: l10.h10_offRtg - l10.a10_defRtg,
+    away_off_vs_home_def: l10.a10_offRtg - l10.h10_defRtg,
+    matchup_offense_sum: l10.h10_offRtg + l10.a10_offRtg,
+    matchup_defense_sum: l10.h10_defRtg + l10.a10_defRtg,
+    efg_sum: l10.h10_efg + l10.a10_efg,
+    efg_diff: l10.h10_efg - l10.a10_efg,
+    ts_sum: l10.h10_ts + l10.a10_ts,
+    tov_sum: l10.h10_turnovers + l10.a10_turnovers,
+    tov_diff: l10.h10_turnovers - l10.a10_turnovers,
+    tovPct_avg: (s(homeL10, 'tovPct', 0.138) + s(awayL10, 'tovPct', 0.138)) / 2,
+    orbPct_avg: (s(homeL10, 'orbPct', 0.25) + s(awayL10, 'orbPct', 0.25)) / 2,
+    rebounds_sum: l10.h10_rebounds + l10.a10_rebounds,
+    fta_sum: s(homeL10, 'fta', 22) + s(awayL10, 'fta', 22),
+    home_form_trend: hPpg3 - hPpg20,
+    away_form_trend: aPpg3 - aPpg20,
+    home_pace_trend: l3.h3_pace - l20.h20_pace,
+    away_pace_trend: l3.a3_pace - l20.a20_pace,
+    winPct_sum: s(homeL10, 'winPct', 0.5) + s(awayL10, 'winPct', 0.5),
+    winPct_diff: s(homeL10, 'winPct', 0.5) - s(awayL10, 'winPct', 0.5),
+    home_court: 1,
+  };
+
+  return { ...l3, ...l10, ...l20, ...interactions };
 }
 
 /**
@@ -926,8 +995,8 @@ function predict(model, features) {
   }
   
   // Guard against low-information feature vectors
-  if (missing > 8) { // ~15% of 55 features
-    throw new Error(`[NBA V2] Feature vector low information (missing=${missing}/55 features)`);
+  if (missing > 20) { // ~25% of features (supports both 55-feature spread and 82-feature total models)
+    throw new Error(`[NBA V2] Feature vector low information (missing=${missing}/${Object.keys(weights).length} features)`);
   }
   
   return pred;
@@ -1112,8 +1181,8 @@ export default async (request, context) => {
         console.log(`[NBA Elite V2] ✅ Matched: ${awayAbbr} (ID ${awayTeamData.id}) @ ${homeAbbr} (ID ${homeTeamData.id})`);
         
         // V2: Use cached stats instead of fetching per game
-        const homeStats = statsCache[homeAbbr] || { l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
-        const awayStats = statsCache[awayAbbr] || { l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
+        const homeStats = statsCache[homeAbbr] || { l3: getDefaultStats(), l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
+        const awayStats = statsCache[awayAbbr] || { l3: getDefaultStats(), l5: getDefaultStats(), l10: getDefaultStats(), l20: getDefaultStats() };
       
       // DEBUG: Check if we're using cached data or defaults
       if (!statsCache[homeAbbr]) {
@@ -1124,12 +1193,12 @@ export default async (request, context) => {
       }
       console.log(`[DEBUG CACHE] ${homeAbbr}: cached=${!!statsCache[homeAbbr]}, ${awayAbbr}: cached=${!!statsCache[awayAbbr]}`);
       
-      // Use L10 as baseline, with L5 and L20 for specific features
-      const homeL3Raw = homeStats.l5 || getDefaultStats();  // Use L5 as proxy for L3
+      // Use L3 for V4 totals model, with L5 and L20 for specific features
+      const homeL3Raw = homeStats.l3 || homeStats.l5 || getDefaultStats();  // V4: Use real L3
       const homeL10Raw = homeStats.l10 || getDefaultStats();
       const homeL20Raw = homeStats.l20 || getDefaultStats();
       
-      const awayL3Raw = awayStats.l5 || getDefaultStats();
+      const awayL3Raw = awayStats.l3 || awayStats.l5 || getDefaultStats();  // V4: Use real L3
       const awayL10Raw = awayStats.l10 || getDefaultStats();
       const awayL20Raw = awayStats.l20 || getDefaultStats();
       
@@ -1207,19 +1276,22 @@ export default async (request, context) => {
           homeL3WithInjuries, homeL10WithInjuries, homeL20WithInjuries,
           awayL3WithInjuries, awayL10WithInjuries, awayL20WithInjuries
         );
-        var totalFeatures = buildSimpleFeatures(homeL10WithInjuries, awayL10WithInjuries);
+        var totalFeatures = buildTotalFeaturesV4(
+          homeL3WithInjuries, homeL10WithInjuries, homeL20WithInjuries,
+          awayL3WithInjuries, awayL10WithInjuries, awayL20WithInjuries
+        );
       } catch (injuryError) {
         console.log(`[INJURY] Error fetching injuries, using RCI-only adjustments:`, injuryError.message);
         
         // Fallback to RCI-only stats
         var spreadFeatures = buildEliteFeatures(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20);
-        var totalFeatures = buildSimpleFeatures(homeL10, awayL10);
+        var totalFeatures = buildTotalFeaturesV4(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20);
       }
       
       // Ensure features are defined (from either injury-adjusted or fallback)
       if (typeof spreadFeatures === 'undefined') {
         var spreadFeatures = buildEliteFeatures(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20);
-        var totalFeatures = buildSimpleFeatures(homeL10, awayL10);
+        var totalFeatures = buildTotalFeaturesV4(homeL3, homeL10, homeL20, awayL3, awayL10, awayL20);
       }
       
       // DIAGNOSTIC: Feature fingerprint to detect identical vectors
@@ -1643,73 +1715,91 @@ export default async (request, context) => {
         }
       }
       
-      // 4. TOTAL OPPORTUNITY  
+      // 4. TOTAL OPPORTUNITY (V4 — calibration-curve Kelly staking)
       let totalOpp = null;
       if (gameVegasLines.total?.fair?.line != null) {
         const fairLine = gameVegasLines.total.fair.line;
         const totalEdge = Math.abs(totalPred - fairLine);
+        const pickOver = totalPred > fairLine;
         
-        if (totalEdge >= 4) {
-          const pickOver = totalPred > fairLine;
-          
-          // OPTIMAL STRATEGY: OVERS always + high-edge UNDERS only (6.5+)
-          // Backtest results: OVERS +6.85% ROI, high-edge UNDERS +9.09% ROI
-          // Combined strategy: +8.12% ROI on 176 bets (vs -4.23% with old blend)
-          const isHighEdgeUnder = !pickOver && totalEdge >= 6.5;
-          
-          if (pickOver || isHighEdgeUnder) {
-            // Use fair odds for edge, placement odds for bet
-            const fairOdds = pickOver ? gameVegasLines.total.fair.overPrice : gameVegasLines.total.fair.underPrice;
-            const placementOdds = pickOver 
-              ? (gameVegasLines.total.placement?.overPrice || fairOdds)
-              : (gameVegasLines.total.placement?.underPrice || fairOdds);
-            const placementBook = gameVegasLines.total.placement?.book || gameVegasLines.total.fair.book;
-          
-            // Rough Kelly for totals (simplified)
-            const totalImpliedProb = Math.abs(fairOdds) / (Math.abs(fairOdds) + 100);
-            const totalEdgePercent = (totalEdge / fairLine) * 100;
-            
-            // Estimate total probability based on edge (calibrated to backtest data)
-            // Backtest showed: 6.5+ edge UNDERS achieved 57.1% win rate
-            // Formula calibrated: 0.5 + (edge / line) * 2.58 produces realistic probabilities
-            // Scale factor 2.58 derived from: (0.571 - 0.5) / (6.5 / 236.5) ≈ 2.58
-            // This converts point edges to win probabilities matching actual historical performance
-            const totalModelProb = pickOver 
-              ? 0.5 + (totalEdge / fairLine) * 2.58  // Calibrated to 57.1% WR at 6.5 edge
-              : 0.5 + (totalEdge / fairLine) * 2.58;
-            
-            // Calculate Kelly for totals
-            const fairOverPrice = gameVegasLines.total.fair.overPrice;
-            const fairUnderPrice = gameVegasLines.total.fair.underPrice;
-            
-            const totalKelly = calculateEdgeAndKelly(
-              totalModelProb * 100,
-              totalModelProb > 0.5 ? -110 : 110, // Dummy, we use actual odds
-              placementOdds,
-              totalModelProb,
-              5000,
-              seasonAdjustment,
-              pickOver ? fairUnderPrice : fairOverPrice // Pass opponent odds for devigging
-            );
-            
-            totalOpp = {
-              market: 'Total',
-              pick: pickOver ? `Over ${fairLine}` : `Under ${fairLine}`,
-              modelLine: totalPred.toFixed(1),
-              vegasLine: fairLine,
-              odds: placementOdds, // Placement odds
-              edge: totalEdge.toFixed(1),
-              edgePercent: totalEdgePercent,
-              kelly: totalKelly.kellyFraction,
-              betSize: totalKelly.betSize,
-              units: totalKelly.units,
-              confidence, // Add confidence level
-              book: placementBook,
-              fairBook: gameVegasLines.total.fair.book,
-              fairVig: gameVegasLines.total.fair.vig.toFixed(1),
-              expectedValue: totalEdgePercent * 50 // Rough estimate
-            };
+        // V4 CALIBRATION CURVE: edge bucket → empirical win rate
+        // Built from 2,041 games (Oct 2024 – Mar 2026), V4 model predictions
+        // Only bet when calibrated WR > 52.38% (breakeven at -110)
+        const TOTALS_CALIBRATION = [
+          { lo: 0,  hi: 1,  wr: 0.454 },  // NO BET — below breakeven
+          { lo: 1,  hi: 2,  wr: 0.542 },  // small edge
+          { lo: 2,  hi: 3,  wr: 0.549 },  // small edge
+          { lo: 3,  hi: 4,  wr: 0.494 },  // NO BET — dead zone
+          { lo: 4,  hi: 5,  wr: 0.569 },  // solid
+          { lo: 5,  hi: 6,  wr: 0.480 },  // NO BET — dead zone
+          { lo: 6,  hi: 7,  wr: 0.513 },  // NO BET — below breakeven
+          { lo: 7,  hi: 8,  wr: 0.529 },  // marginal (above breakeven)
+          { lo: 8,  hi: 9,  wr: 0.585 },  // good edge
+          { lo: 9,  hi: 10, wr: 0.511 },  // NO BET — below breakeven
+          { lo: 10, hi: 12, wr: 0.571 },  // solid
+          { lo: 12, hi: 15, wr: 0.625 },  // strong
+          { lo: 15, hi: 99, wr: 0.833 },  // very strong
+        ];
+        
+        // Look up calibrated win probability for this edge size
+        function getCalibratedWinProb(absEdge) {
+          for (const bucket of TOTALS_CALIBRATION) {
+            if (absEdge >= bucket.lo && absEdge < bucket.hi) return bucket.wr;
           }
+          return 0.50; // fallback
+        }
+        
+        const calibratedProb = getCalibratedWinProb(totalEdge);
+        const BREAKEVEN = 1 / 1.909; // 52.38% at -110
+        
+        // Only create opportunity if calibrated probability exceeds breakeven
+        if (calibratedProb > BREAKEVEN) {
+          // Use fair odds for edge, placement odds for bet
+          const fairOdds = pickOver ? gameVegasLines.total.fair.overPrice : gameVegasLines.total.fair.underPrice;
+          const placementOdds = pickOver 
+            ? (gameVegasLines.total.placement?.overPrice || fairOdds)
+            : (gameVegasLines.total.placement?.underPrice || fairOdds);
+          const placementBook = gameVegasLines.total.placement?.book || gameVegasLines.total.fair.book;
+          
+          const totalEdgePercent = (totalEdge / fairLine) * 100;
+          
+          // Quarter Kelly from calibration curve
+          // Kelly: f* = (bp - q) / b where b = decimal odds - 1
+          const decOdds = placementOdds > 0 
+            ? 1 + placementOdds / 100 
+            : 1 + 100 / Math.abs(placementOdds);
+          const b = decOdds - 1;
+          const q = 1 - calibratedProb;
+          const fullKelly = (b * calibratedProb - q) / b;
+          const quarterKelly = Math.max(0, Math.min(fullKelly * 0.25, 0.15)); // Cap at 15% bankroll
+          
+          // Convert to units (1 unit = 1% of bankroll, capped at 5 units)
+          const kellyUnits = Math.min(Math.round(quarterKelly * 100 * 10) / 10, 5);
+          const betSize = Math.round(quarterKelly * 5000); // $5000 assumed bankroll
+          
+          console.log(`[TOTAL V4] ${pickOver ? 'OVER' : 'UNDER'} ${fairLine} | Edge: ${totalEdge.toFixed(1)} | CalProb: ${(calibratedProb * 100).toFixed(1)}% | QKelly: ${(quarterKelly * 100).toFixed(2)}% | Units: ${kellyUnits}`);
+          
+          totalOpp = {
+            market: 'Total',
+            pick: pickOver ? `Over ${fairLine}` : `Under ${fairLine}`,
+            modelLine: totalPred.toFixed(1),
+            vegasLine: fairLine,
+            odds: placementOdds,
+            edge: totalEdge.toFixed(1),
+            edgePercent: totalEdgePercent,
+            kelly: quarterKelly,
+            betSize: betSize,
+            units: kellyUnits,
+            confidence,
+            book: placementBook,
+            fairBook: gameVegasLines.total.fair.book,
+            fairVig: gameVegasLines.total.fair.vig.toFixed(1),
+            expectedValue: totalEdgePercent * 50,
+            calibratedProb: (calibratedProb * 100).toFixed(1),
+            modelVersion: 'V4'
+          };
+        } else {
+          console.log(`[TOTAL V4] SKIP ${pickOver ? 'OVER' : 'UNDER'} ${fairLine} | Edge: ${totalEdge.toFixed(1)} | CalProb: ${(calibratedProb * 100).toFixed(1)}% < breakeven ${(BREAKEVEN * 100).toFixed(1)}%`);
         }
       }
       

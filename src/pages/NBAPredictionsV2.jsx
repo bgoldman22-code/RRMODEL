@@ -48,7 +48,7 @@ const NBAPredictionsV2 = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [exporting, setExporting] = useState(false);
-  const [useV21, setUseV21] = useState(false); // Toggle for V2.1 injury system
+  const [useV21, setUseV21] = useState(true); // Default to V2.1 (V4 totals + Kelly staking)
   const [modelVersion, setModelVersion] = useState('V2'); // Track which version loaded
 
   useEffect(() => {
