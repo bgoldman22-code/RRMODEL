@@ -66,8 +66,8 @@ export default function NBATodaysBets() {
   const [marketFilter, setMarketFilter] = useState('all');
   const [sources, setSources] = useState({
     elite: { loaded: false, count: 0, error: null },
-    propsV1: { loaded: false, count: 0, error: null },
-    propsV2: { loaded: false, count: 0, error: null },
+    strongSignals: { loaded: false, count: 0, error: null },
+    points: { loaded: false, count: 0, error: null },
   });
 
   useEffect(() => {
@@ -79,8 +79,8 @@ export default function NBATodaysBets() {
     const bets = [];
     const sourceStatus = { 
       elite: { loaded: false, count: 0, error: null },
-      propsV1: { loaded: false, count: 0, error: null },
-      propsV2: { loaded: false, count: 0, error: null },
+      strongSignals: { loaded: false, count: 0, error: null },
+      points: { loaded: false, count: 0, error: null },
     };
 
     // ─── 1. Elite V2.1 Game Predictions ──────────────────────────────────────
@@ -122,87 +122,119 @@ export default function NBATodaysBets() {
       sourceStatus.elite = { loaded: false, count: 0, error: err.message };
     }
 
-    // ─── 2. Player Props V1 (Rebounds + Assists) ──────────────────────────────
+    // ─── 2. Props: Strong Signals + Aligned + Points (from /nba-props-aligned) ─
+    // Replicates exact logic from NBAPropsAligned.jsx "Strong Signals" tab
+    // + Phase 3.5 Points picks with 8%+ edge
     try {
-      let propsV1Data = [];
-      const v1Res = await fetch('/api/nba-player-props').catch(() => null);
-      if (v1Res?.ok) {
-        const data = await v1Res.json();
-        propsV1Data = data.predictions || [];
-      } else {
-        const fallback = await fetch('/data/nba/nba-player-props-live.json');
-        if (fallback.ok) {
-          const data = await fallback.json();
-          propsV1Data = data.predictions || [];
+      // Load both V1 and V2 JSONs
+      const [v1Res, v2Res] = await Promise.all([
+        fetch('/data/nba/nba-player-props-live.json'),
+        fetch('/data/nba/nba-props-v2-live.json'),
+      ]);
+      const v1Data = v1Res.ok ? ((await v1Res.json()).predictions || []) : [];
+      const v2Data = v2Res.ok ? (d => d.predictions || d.picks || [])(await v2Res.json()) : [];
+
+      // ── Helper: create matching key (same as NBAPropsAligned) ──
+      const createPickKey = (pick) => {
+        const player = pick.player?.toLowerCase().trim();
+        const propType = pick.propType?.toLowerCase();
+        const line = pick.vegasLine || pick.line;
+        const side = pick.betSide?.toUpperCase();
+        return `${player}|${propType}|${line}|${side}`;
+      };
+
+      // ── Helper: get hit rate from V2's hitRates object ──
+      const getHitRate = (pick, window) => {
+        if (pick.hitRates) {
+          const key = `L${window}_hitRate`;
+          return pick.hitRates[key] !== undefined ? pick.hitRates[key] / 100 : null;
         }
-      }
-      propsV1Data.forEach(pred => {
-        const edgeVal = Math.abs(pred.edge || 0);
-        if (edgeVal < 4) return; // V1 threshold is 4%+
+        const overKey = `L${window}_over_pct`;
+        if (pick[overKey] !== undefined) return pick[overKey];
+        return null;
+      };
 
-        const propLabel = pred.propType === 'player_rebounds' ? 'Rebounds' 
-          : pred.propType === 'player_assists' ? 'Assists' 
-          : pred.propType?.replace('player_', '') || 'Prop';
+      // ── Phase 3.5 criteria: L5 > 50% AND (L10 ≥ 60% OR L20 ≥ 60%) ──
+      const meetsPhase35 = (pick) => {
+        const l5 = getHitRate(pick, 5);
+        const l10 = getHitRate(pick, 10);
+        const l20 = getHitRate(pick, 20);
+        if (l5 === null || l5 <= 0.50) return false;
+        const l10Pass = l10 !== null && l10 >= 0.60;
+        const l20Pass = l20 !== null && l20 >= 0.60;
+        return l10Pass || l20Pass;
+      };
 
-        bets.push({
-          source: 'Props V1',
-          sourceShort: 'R+A',
-          game: `${pred.team} vs ${pred.opponent}`,
-          market: propLabel,
-          pick: `${pred.player} ${pred.betSide} ${pred.line}`,
-          line: pred.line || '',
-          edge: edgeVal,
-          odds: pred.odds || 0,
-          book: pred.book || '',
-          units: 0, // Will be assigned by smart staking
-          confidence: pred.confidence || 0,
-        });
+      // ── Find aligned picks (both models agree) ──
+      const v1Keys = new Map();
+      v1Data.forEach(pick => v1Keys.set(createPickKey(pick), pick));
+
+      const aligned = [];
+      v2Data.forEach(v2Pick => {
+        const key = createPickKey(v2Pick);
+        if (v1Keys.has(key)) {
+          aligned.push({ ...v2Pick, isAligned: true });
+        }
       });
-      sourceStatus.propsV1 = { loaded: true, count: bets.filter(b => b.source === 'Props V1').length, error: null };
-    } catch (err) {
-      sourceStatus.propsV1 = { loaded: false, count: 0, error: err.message };
-    }
 
-    // ─── 3. Player Props V2 (Phase 3.5 PRA) ──────────────────────────────────
-    try {
-      let propsV2Data = [];
-      const v2Res = await fetch('/api/nba-props-v2').catch(() => null);
-      if (v2Res?.ok) {
-        const data = await v2Res.json();
-        propsV2Data = data.predictions || data.picks || [];
-      } else {
-        const fallback = await fetch('/data/nba/nba-props-v2-live.json');
-        if (fallback.ok) {
-          const data = await fallback.json();
-          propsV2Data = data.predictions || data.picks || [];
-        }
-      }
-      propsV2Data.forEach(pred => {
-        const edgeVal = Math.abs(pred.edge || 0);
-        if (edgeVal < 3) return; // V2 PRA threshold
+      // ── Strong Signals = Aligned + Phase 3.5 criteria ──
+      const strongSignals = aligned.filter(meetsPhase35);
 
-        const propLabel = pred.propType === 'player_points' ? 'Points'
-          : pred.propType === 'player_rebounds' ? 'Rebounds'
-          : pred.propType === 'player_assists' ? 'Assists'
-          : pred.propType?.replace('player_', '') || 'Prop';
+      strongSignals.forEach(pred => {
+        const pt = (pred.propType || '').toLowerCase().replace('player_', '');
+        const propLabel = pt === 'rebounds' ? 'Rebounds'
+          : pt === 'assists' ? 'Assists'
+          : pt === 'points' ? 'Points'
+          : pt.charAt(0).toUpperCase() + pt.slice(1) || 'Prop';
+        const shortMap = { rebounds: 'REB', assists: 'AST', points: 'PTS' };
+        const line = pred.vegasLine ?? pred.line ?? '';
 
         bets.push({
-          source: 'Phase 3.5',
-          sourceShort: 'PRA',
-          game: `${pred.team} vs ${pred.opponent}`,
+          source: 'Strong Signal',
+          sourceShort: shortMap[pt] || pt.toUpperCase().slice(0, 3),
+          game: pred.game || `${pred.team} vs ${pred.opponent}`,
           market: propLabel,
-          pick: `${pred.player} ${pred.betSide} ${pred.line}`,
-          line: pred.line || '',
-          edge: edgeVal,
+          pick: `${pred.player} ${pred.betSide} ${line}`,
+          line: line,
+          edge: Math.abs(Number(pred.edge) || 0),
           odds: pred.odds || 0,
           book: pred.book || '',
-          units: 0, // Will be assigned by smart staking
+          units: 0,
           confidence: pred.modelProbability || pred.confidence || 0,
         });
       });
-      sourceStatus.propsV2 = { loaded: true, count: bets.filter(b => b.source === 'Phase 3.5').length, error: null };
+      sourceStatus.strongSignals = { loaded: true, count: strongSignals.length, error: null };
+
+      // ── Phase 3.5 Points (V2 only, 8%+ edge, Phase 3.5 criteria) ──
+      // Exclude any points already included via strong signals
+      const strongKeys = new Set(strongSignals.map(createPickKey));
+      const pointsPicks = v2Data
+        .filter(p => (p.propType || '').toLowerCase() === 'points')
+        .filter(meetsPhase35)
+        .filter(p => Math.abs(Number(p.edge) || 0) >= 8)
+        .filter(p => !strongKeys.has(createPickKey(p)));
+
+      pointsPicks.forEach(pred => {
+        const line = pred.vegasLine ?? pred.line ?? '';
+        bets.push({
+          source: 'Points P3.5',
+          sourceShort: 'PTS',
+          game: pred.game || `${pred.team} vs ${pred.opponent}`,
+          market: 'Points',
+          pick: `${pred.player} ${pred.betSide} ${line}`,
+          line: line,
+          edge: Math.abs(Number(pred.edge) || 0),
+          odds: pred.odds || 0,
+          book: pred.book || '',
+          units: 0,
+          confidence: pred.modelProbability || pred.confidence || 0,
+        });
+      });
+      sourceStatus.points = { loaded: true, count: pointsPicks.length, error: null };
+
     } catch (err) {
-      sourceStatus.propsV2 = { loaded: false, count: 0, error: err.message };
+      sourceStatus.strongSignals = { loaded: false, count: 0, error: err.message };
+      sourceStatus.points = { loaded: false, count: 0, error: err.message };
     }
 
     // ─── Smart Staking Pass ─────────────────────────────────────────────────
@@ -241,8 +273,8 @@ export default function NBATodaysBets() {
   const getSourceColor = (source) => {
     switch (source) {
       case 'Elite V2.1': return '#3b82f6';
-      case 'Props V1': return '#8b5cf6';
-      case 'Phase 3.5': return '#10b981';
+      case 'Strong Signal': return '#8b5cf6';
+      case 'Points P3.5': return '#10b981';
       default: return '#6b7280';
     }
   };
@@ -376,8 +408,8 @@ export default function NBATodaysBets() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '24px' }}>
           {[
             { key: 'elite', label: 'Elite V2.1', emoji: '⭐', color: '#3b82f6', desc: 'Spread • ML • Totals' },
-            { key: 'propsV1', label: 'Props V1', emoji: '💰', color: '#8b5cf6', desc: 'Rebounds • Assists' },
-            { key: 'propsV2', label: 'Phase 3.5', emoji: '🚀', color: '#10b981', desc: 'Points • Reb • Ast' },
+            { key: 'strongSignals', label: 'Strong Signals', emoji: '🎯', color: '#8b5cf6', desc: 'Aligned R+A Props' },
+            { key: 'points', label: 'Points P3.5', emoji: '🏀', color: '#10b981', desc: 'Phase 3.5 Points (8%+)' },
           ].map(s => (
             <div key={s.key} style={{
               background: '#1e293b', borderRadius: '12px', padding: '16px',
@@ -414,8 +446,8 @@ export default function NBATodaysBets() {
             {[
               { value: 'all', label: 'All Sources' },
               { value: 'Elite V2.1', label: '⭐ Elite' },
-              { value: 'Props V1', label: '💰 R+A' },
-              { value: 'Phase 3.5', label: '🚀 PRA' },
+              { value: 'Strong Signal', label: '🎯 Strong' },
+              { value: 'Points P3.5', label: '🏀 Points' },
             ].map(opt => (
               <button
                 key={opt.value}

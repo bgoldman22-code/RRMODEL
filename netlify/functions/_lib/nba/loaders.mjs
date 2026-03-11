@@ -484,7 +484,8 @@ export function aggregateStats(gameStats) {
     fg3a: gameStats.reduce((sum, g) => sum + (g.fg3a || 0), 0) / games,
     oreb: gameStats.reduce((sum, g) => sum + (g.oreb || 0), 0) / games,
     dreb: gameStats.reduce((sum, g) => sum + (g.dreb || 0), 0) / games,
-    ppg: totalPts / games
+    ppg: totalPts / games,
+    oppPpg: totalOppPts / games
   };
 }
 

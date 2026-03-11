@@ -125,7 +125,7 @@ function getDefaultStats() {
     fgPct: 0.47, fg3Pct: 0.36, ftPct: 0.78,
     rebounds: 43.5, assists: 25.5, turnovers: 13.5,
     steals: 7.5, blocks: 5, fga: 88, fta: 22, fg3a: 35,
-    oreb: 10.5, dreb: 33, ppg: 114.5
+    oreb: 10.5, dreb: 33, ppg: 114.5, oppPpg: 114.5
   };
 }
 
@@ -572,7 +572,8 @@ function calculateAdvancedStats(games, teamId, window = 10) {
     return {
       pace: 100, offRtg: 114.5, defRtg: 114.5, netRtg: 0,
       efg: 0.535, ts: 0.575, tovPct: 0.138, orbPct: 0.25,
-      ftFga: 0.22, winPct: 0.50, games: 0
+      ftFga: 0.22, winPct: 0.50, games: 0,
+      ppg: 114.5, oppPpg: 114.5
     };
   }
   
@@ -580,7 +581,8 @@ function calculateAdvancedStats(games, teamId, window = 10) {
     pace: 0, offRtg: 0, defRtg: 0, efg: 0, ts: 0,
     tovPct: 0, orbPct: 0, ftFga: 0, wins: 0, games: 0,
     // NEW: Stats needed for TOTAL_MODEL
-    fgPct: 0, fg3Pct: 0, ftPct: 0, rebounds: 0, assists: 0, turnovers: 0
+    fgPct: 0, fg3Pct: 0, ftPct: 0, rebounds: 0, assists: 0, turnovers: 0,
+    totalPoints: 0, totalOppPoints: 0  // For ppg/oppPpg calculation
   };
   
   for (const game of teamGames) {
@@ -616,6 +618,8 @@ function calculateAdvancedStats(games, teamId, window = 10) {
     stats.rebounds += (teamStats.offRebounds || 0) + (teamStats.defRebounds || 0);
     stats.assists += teamStats.assists || 0;
     stats.turnovers += teamStats.turnovers || 0;
+    stats.totalPoints += teamScore || 0;
+    stats.totalOppPoints += oppScore || 0;
     
     if (teamScore > oppScore) stats.wins++;
     stats.games++;
@@ -623,13 +627,25 @@ function calculateAdvancedStats(games, teamId, window = 10) {
   
   // Average
   if (stats.games > 0) {
+    // Save totals before averaging (ppg = totalPoints / games, NOT averaged per-game)
+    const totalPts = stats.totalPoints;
+    const totalOppPts = stats.totalOppPoints;
+    
     Object.keys(stats).forEach(key => {
-      if (key !== 'wins' && key !== 'games') stats[key] /= stats.games;
+      if (key !== 'wins' && key !== 'games' && key !== 'totalPoints' && key !== 'totalOppPoints') stats[key] /= stats.games;
     });
+    
+    // Compute ppg and oppPpg from raw totals (matches training: ppg = total_pts / n)
+    stats.ppg = totalPts / stats.games;
+    stats.oppPpg = totalOppPts / stats.games;
   }
   
   stats.netRtg = stats.offRtg - stats.defRtg;
   stats.winPct = stats.games > 0 ? stats.wins / stats.games : 0.50;
+  
+  // Clean up intermediate fields
+  delete stats.totalPoints;
+  delete stats.totalOppPoints;
   
   return stats;
 }
@@ -1335,6 +1351,29 @@ export default async (request, context) => {
       
       // Also run the model prediction for comparison
       const totalPredModel = predict(TOTAL_MODEL, totalFeatures);
+      
+      // DEBUG: Log top feature contributions to diagnose under-prediction
+      if (predictions.length < 2) {
+        const { weights, means, stds } = TOTAL_MODEL;
+        const contributions = [];
+        for (const [key, weight] of Object.entries(weights)) {
+          const value = totalFeatures[key];
+          if (value == null || !Number.isFinite(value)) continue;
+          const mean = means[key] ?? 0;
+          const std = stds[key] ?? 1;
+          const normalized = std > 0 ? (value - mean) / std : 0;
+          const contribution = weight * normalized;
+          contributions.push({ key, value: +value.toFixed(3), mean: +mean.toFixed(3), std: +std.toFixed(3), normalized: +normalized.toFixed(3), weight: +weight.toFixed(4), contribution: +contribution.toFixed(3) });
+        }
+        contributions.sort((a, b) => a.contribution - b.contribution); // Most negative first
+        console.log(`[TOTAL DEBUG] ${awayAbbr}@${homeAbbr} prediction=${totalPredModel.toFixed(1)} (bias=${TOTAL_MODEL.bias.toFixed(1)})`);
+        console.log(`[TOTAL DEBUG] TOP 10 NEGATIVE contributors:`, contributions.slice(0, 10));
+        console.log(`[TOTAL DEBUG] TOP 10 POSITIVE contributors:`, contributions.slice(-10).reverse());
+        console.log(`[TOTAL DEBUG] Sum of all contributions: ${contributions.reduce((s, c) => s + c.contribution, 0).toFixed(2)}`);
+        console.log(`[TOTAL DEBUG] ppg_sum features: ppg_sum_l10=${totalFeatures.ppg_sum_l10?.toFixed(1)}, ppg_sum_l3=${totalFeatures.ppg_sum_l3?.toFixed(1)}, ppg_sum_l20=${totalFeatures.ppg_sum_l20?.toFixed(1)}`);
+        console.log(`[TOTAL DEBUG] pace features: pace_avg_l10=${totalFeatures.pace_avg_l10?.toFixed(1)}, pace_product=${totalFeatures.pace_product?.toFixed(4)}`);
+        console.log(`[TOTAL DEBUG] raw ppg: home=${homeL10WithInjuries?.ppg?.toFixed(1) ?? homeL10?.ppg?.toFixed(1) ?? 'N/A'}, away=${awayL10WithInjuries?.ppg?.toFixed(1) ?? awayL10?.ppg?.toFixed(1) ?? 'N/A'}`);
+      }
       
       // PRODUCTION FIX: Use 100% model prediction (proven +8.12% ROI)
       // Previous 70/30 blend was losing -4.23% ROI

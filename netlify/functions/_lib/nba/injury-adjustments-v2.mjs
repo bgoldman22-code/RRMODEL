@@ -220,11 +220,19 @@ function categorizeSeverity(impact) {
 export function applyInjuryAdjustment(stats, injuries, teamAbbr) {
   const adjustment = calculateInjuryAdjustment(injuries, teamAbbr);
   
-  return {
+  // Scale ppg by the same ratio as offRtg so V4 total model stays consistent
+  const adjustedOffRtg = stats.offRtg + adjustment.deltaOff;
+  const adjustedDefRtg = stats.defRtg - adjustment.deltaDef;
+  const offRtgRatio = stats.offRtg > 0 ? adjustedOffRtg / stats.offRtg : 1;
+  const defRtgRatio = stats.defRtg > 0 ? adjustedDefRtg / stats.defRtg : 1;
+  const adjustedPpg = stats.ppg != null ? stats.ppg * offRtgRatio : undefined;
+  const adjustedOppPpg = stats.oppPpg != null ? stats.oppPpg * defRtgRatio : undefined;
+
+  const result = {
     ...stats,
-    offRtg: stats.offRtg + adjustment.deltaOff,
-    defRtg: stats.defRtg - adjustment.deltaDef,
-    netRtg: (stats.offRtg + adjustment.deltaOff) - (stats.defRtg - adjustment.deltaDef),
+    offRtg: adjustedOffRtg,
+    defRtg: adjustedDefRtg,
+    netRtg: adjustedOffRtg - adjustedDefRtg,
     
     // Preserve original values
     offRtg_preInjury: stats.offRtg,
@@ -233,6 +241,12 @@ export function applyInjuryAdjustment(stats, injuries, teamAbbr) {
     // Include adjustment info
     injuryAdjustment: adjustment
   };
+
+  // Keep ppg/oppPpg in sync with offRtg/defRtg adjustments (V4 total model uses ppg)
+  if (adjustedPpg != null) result.ppg = adjustedPpg;
+  if (adjustedOppPpg != null) result.oppPpg = adjustedOppPpg;
+
+  return result;
 }
 
 /**

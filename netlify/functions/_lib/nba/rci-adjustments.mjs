@@ -70,8 +70,14 @@ export function applyRCIAdjustment(stats, teamAbbr, gamesPlayed = 0) {
   // Use core implementation
   const adjusted = applyRCIToStats(stats, rci, gamesPlayed);
   
+  // Scale ppg/oppPpg by the same ratios as offRtg/defRtg so V4 total model stays consistent
+  const offRtgRatio = stats.offRtg > 0 ? adjusted.offRtg / stats.offRtg : 1;
+  const defRtgRatio = stats.defRtg > 0 ? adjusted.defRtg / stats.defRtg : 1;
+  const adjustedPpg = stats.ppg != null ? stats.ppg * offRtgRatio : undefined;
+  const adjustedOppPpg = stats.oppPpg != null ? stats.oppPpg * defRtgRatio : undefined;
+
   // Return ALL original stats plus RCI adjustments
-  return {
+  const result = {
     ...stats, // Preserve all original fields (efg, ts, tovPct, winPct, etc.)
     offRtg: adjusted.offRtg,  // Override with RCI-adjusted values
     defRtg: adjusted.defRtg,
@@ -83,6 +89,12 @@ export function applyRCIAdjustment(stats, teamAbbr, gamesPlayed = 0) {
       capHit: adjusted._rciMetadata.capHit
     }
   };
+
+  // Keep ppg/oppPpg in sync with offRtg/defRtg adjustments (V4 total model uses ppg)
+  if (adjustedPpg != null) result.ppg = adjustedPpg;
+  if (adjustedOppPpg != null) result.oppPpg = adjustedOppPpg;
+
+  return result;
 }
 
 /**
