@@ -1,4 +1,4 @@
-GH// src/App.jsx
+// src/App.jsx
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import MLB_HR from "./MLB_HR";
