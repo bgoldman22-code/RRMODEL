@@ -401,7 +401,19 @@ function calculateBoxscoreStats(boxscore, teamTricode) {
     ftFga,
     fgPct: fga > 0 ? fgm / fga : 0.47,
     fg3Pct: fg3m > 0 ? fg3m / (stats.threePointersAttempted || 1) : 0.36,
-    ftPct: fta > 0 ? ftm / fta : 0.78
+    ftPct: fta > 0 ? ftm / fta : 0.78,
+    // V4 totals model fields
+    fga,
+    fta,
+    fg3a: stats.threePointersAttempted || 0,
+    oreb,
+    dreb,
+    rebounds: oreb + dreb,
+    assists: stats.assists || 0,
+    turnovers: tov,
+    steals: stats.steals || 0,
+    blocks: stats.blocks || 0,
+    won: pts > oppPts ? 1 : 0
   };
 }
 
@@ -461,9 +473,18 @@ export function aggregateStats(gameStats) {
     fgPct,
     fg3Pct,
     ftPct,
-    rebounds: 0,
-    assists: 0,
-    turnovers: 0
+    // V4 totals model fields — computed averages
+    rebounds: gameStats.reduce((sum, g) => sum + (g.rebounds || 0), 0) / games,
+    assists: gameStats.reduce((sum, g) => sum + (g.assists || 0), 0) / games,
+    turnovers: gameStats.reduce((sum, g) => sum + (g.turnovers || 0), 0) / games,
+    steals: gameStats.reduce((sum, g) => sum + (g.steals || 0), 0) / games,
+    blocks: gameStats.reduce((sum, g) => sum + (g.blocks || 0), 0) / games,
+    fga: gameStats.reduce((sum, g) => sum + (g.fga || 0), 0) / games,
+    fta: gameStats.reduce((sum, g) => sum + (g.fta || 0), 0) / games,
+    fg3a: gameStats.reduce((sum, g) => sum + (g.fg3a || 0), 0) / games,
+    oreb: gameStats.reduce((sum, g) => sum + (g.oreb || 0), 0) / games,
+    dreb: gameStats.reduce((sum, g) => sum + (g.dreb || 0), 0) / games,
+    ppg: totalPts / games
   };
 }
 
@@ -642,32 +663,35 @@ export async function fetchTeamRollingStats(teamId, season = '2025-26', leagueWi
     
     if (!l20 || !l20.gameStats || l20.gameStats.length === 0) {
       console.log(`[NBA] No games found for team ${teamId}, returning nulls`);
-      return { l5: null, l10: null, l20: null };
+      return { l3: null, l5: null, l10: null, l20: null };
     }
     
-    // Derive L5 and L10 from the L20 data (already fetched)
+    // Derive L3, L5 and L10 from the L20 data (already fetched)
     const allGames = l20.gameStats || [];
     
     // Always use available games, even if less than target window
     // E.g., if team has 7 games, L10 = all 7, L5 = last 5
     const l10Games = allGames.slice(-10);  // Takes up to 10, or whatever is available
     const l5Games = allGames.slice(-5);    // Takes up to 5, or whatever is available
+    const l3Games = allGames.slice(-3);    // Takes up to 3 — V4 totals model needs L3
     
     // Aggregate stats for each window (will work with fewer games)
     const l10 = l10Games.length > 0 ? aggregateStats(l10Games) : null;
     const l5 = l5Games.length > 0 ? aggregateStats(l5Games) : null;
+    const l3 = l3Games.length > 0 ? aggregateStats(l3Games) : null;
     
     // Tag sources
+    if (l3) l3.source = l20.source;
     if (l5) l5.source = l20.source;
     if (l10) l10.source = l20.source;
     
-    console.log(`[NBA] ✅ Team ${teamId}: L5=${l5?.games || 0}, L10=${l10?.games || 0}, L20=${l20?.games || 0} games`);
+    console.log(`[NBA] ✅ Team ${teamId}: L3=${l3?.games || 0}, L5=${l5?.games || 0}, L10=${l10?.games || 0}, L20=${l20?.games || 0} games`);
     
-    return { l5, l10, l20 };
+    return { l3, l5, l10, l20 };
     
   } catch (error) {
     console.error(`[NBA] Error fetching rolling stats for team ${teamId}:`, error);
-    return { l5: null, l10: null, l20: null };
+    return { l3: null, l5: null, l10: null, l20: null };
   }
 }
 

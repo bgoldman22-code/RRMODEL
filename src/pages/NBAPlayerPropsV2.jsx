@@ -308,8 +308,9 @@ export default function NBAPlayerPropsV2() {
         </div>
         ${generateTableHTML(top20, 'TOP 20 (#1-20)')}
         <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #9ca3af;">
-          Model: Phase 3.5 (Hybrid) | Assists: Logistic | Points/Rebounds: LightGBM | Recent Form: L5/L10 O/U vs Line | bgroundrobin.com
+          Model: Phase 3.5 (Hybrid) | Assists: Logistic | Points/Rebounds: LightGBM | Recent Form: L5/L10 O/U vs Line
         </div>
+        <div style="margin-top: 8px; text-align: center; font-size: 13px; color: #6b7280; font-weight: 600; letter-spacing: 1px;">BNGBets</div>
       </div>
     `;
     
@@ -356,8 +357,9 @@ export default function NBAPlayerPropsV2() {
         </div>
         ${generateTableHTML(next20, 'NEXT 20 (#21-40)')}
         <div style="margin-top: 20px; text-align: center; font-size: 11px; color: #9ca3af;">
-          Model: Phase 3.5 (Hybrid) | Assists: Logistic | Points/Rebounds: LightGBM | Recent Form: L5/L10 O/U vs Line | bgroundrobin.com
+          Model: Phase 3.5 (Hybrid) | Assists: Logistic | Points/Rebounds: LightGBM | Recent Form: L5/L10 O/U vs Line
         </div>
+        <div style="margin-top: 8px; text-align: center; font-size: 13px; color: #6b7280; font-weight: 600; letter-spacing: 1px;">BNGBets</div>
       </div>
     `;
     

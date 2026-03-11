@@ -109,7 +109,8 @@ const MLBF5ML = () => {
       });
 
       html += '</tbody></table>';
-      html += `<p style="text-align:center;font-size:11px;color:#475569;margin-top:16px;">bgroundrobin.com &bull; F5 ML v2 &bull; Consensus pricing &bull; ${data.picks.length} picks</p>`;
+      html += `<p style="text-align:center;font-size:11px;color:#475569;margin-top:16px;">F5 ML v2 &bull; Consensus pricing &bull; ${data.picks.length} picks</p>`;
+      html += `<p style="text-align:center;font-size:13px;color:#64748b;margin-top:6px;font-weight:600;letter-spacing:1px;">BNGBets</p>`;
       wrap.innerHTML = html;
       container.appendChild(wrap);
 
@@ -283,7 +284,7 @@ const MLBF5ML = () => {
         {/* ── Footer ────────────────────────────────── */}
         <div style={{ textAlign: 'center', marginTop: 32, color: '#475569', fontSize: 12 }}>
           <p>F5 ML v2 · Consensus Pricing · EV &ge; 10% · Edge &ge; 7%</p>
-          <p style={{ marginTop: 4 }}>bgroundrobin.com</p>
+          <p style={{ marginTop: 4, fontWeight: 600, letterSpacing: '1px' }}>BNGBets</p>
         </div>
       </div>
     </div>

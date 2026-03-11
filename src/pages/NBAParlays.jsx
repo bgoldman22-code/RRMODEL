@@ -354,7 +354,7 @@ export default function NBAParlays() {
         {/* Footer */}
         <div className="mt-6 text-center text-xs text-gray-400">
           <p>Generated: {metadata.generated ? new Date(metadata.generated).toLocaleString() : 'N/A'}</p>
-          <p>bgroundrobin.com/nba-parlays</p>
+          <p style={{ fontWeight: 600, letterSpacing: '1px', marginTop: '4px' }}>BNGBets</p>
         </div>
       </div>
 
@@ -407,7 +407,7 @@ export default function NBAParlays() {
 
           {/* Footer */}
           <div style={{ textAlign: 'center', fontSize: '10px', color: '#9ca3af', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #e5e7eb' }}>
-            bgroundrobin.com/nba-parlays
+            <span style={{ fontWeight: 600, letterSpacing: '1px', fontSize: '12px' }}>BNGBets</span>
           </div>
         </div>
       </div>
