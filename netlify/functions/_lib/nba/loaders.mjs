@@ -275,44 +275,134 @@ function getEspnTeamId(nbaTeamId) {
 }
 
 /**
- * Fetch NBA CDN game IDs from today's scoreboard
- * Builds a mapping of team abbr pairs + date → NBA game ID
+ * Fetch boxscore from ESPN summary API
+ * Returns parsed team stats for both teams in a game
+ * 
+ * @param {string} espnGameId - ESPN event ID (e.g., "401810793")
+ * @param {string} teamAbbr - Team abbreviation to extract stats for
+ * @returns {Promise<object|null>} - Parsed stats object or null
  */
-async function fetchNbaGameIdMap() {
+async function fetchEspnBoxscore(espnGameId, teamAbbr) {
   try {
-    // Fetch last 7 days of scoreboards to build game ID map
-    const gameIdMap = new Map();
-    const today = new Date();
+    const url = `${ESPN_BASE}/summary?event=${espnGameId}`;
     
-    for (let daysBack = 0; daysBack < 30; daysBack++) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - daysBack);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      // Try today's scoreboard for today, otherwise skip (historical blocked)
-      if (daysBack === 0) {
-        const url = `${NBA_CDN_BASE}/scoreboard/todaysScoreboard_00.json`;
-        const response = await fetch(url, { headers: NBA_CDN_HEADERS });
-        
-        if (response.ok) {
-          const data = await response.json();
-          const games = data.scoreboard?.games || [];
-          
-          for (const game of games) {
-            const key = `${game.awayTeam.teamTricode}_${game.homeTeam.teamTricode}_${dateStr}`;
-            gameIdMap.set(key, game.gameId);
-          }
-        }
-      }
-      
-      await new Promise(resolve => setTimeout(resolve, 100)); // Rate limit
+    // ESPN is more tolerant than stats.nba.com — use lighter rate limiting
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      console.log(`[NBA] ESPN summary unavailable for event ${espnGameId}: ${response.status}`);
+      return null;
     }
     
-    return gameIdMap;
+    const data = await response.json();
+    const boxscore = data.boxscore;
+    if (!boxscore || !boxscore.teams || boxscore.teams.length < 2) {
+      console.log(`[NBA] No boxscore data in ESPN summary for ${espnGameId}`);
+      return null;
+    }
+    
+    // Find our team and opponent
+    const teamData = boxscore.teams.find(t => normalizeAbbr(t.team?.abbreviation) === teamAbbr);
+    const oppData = boxscore.teams.find(t => normalizeAbbr(t.team?.abbreviation) !== teamAbbr);
+    
+    if (!teamData || !oppData) {
+      console.log(`[NBA] Could not find team ${teamAbbr} in boxscore for ${espnGameId}`);
+      return null;
+    }
+    
+    // Parse statistics array into a map { label: displayValue }
+    const parseStats = (teamObj) => {
+      const map = {};
+      for (const s of (teamObj.statistics || [])) {
+        map[s.label] = s.displayValue;
+      }
+      return map;
+    };
+    
+    const stats = parseStats(teamData);
+    const oppStats = parseStats(oppData);
+    
+    // Parse FG "51-97" format
+    const parseSplit = (val) => {
+      if (!val) return [0, 0];
+      const parts = val.split('-');
+      return [parseInt(parts[0]) || 0, parseInt(parts[1]) || 0];
+    };
+    
+    const [fgm, fga] = parseSplit(stats['FG']);
+    const [fg3m, fg3a] = parseSplit(stats['3PT']);
+    const [ftm, fta] = parseSplit(stats['FT']);
+    const [oppFgm, oppFga] = parseSplit(oppStats['FG']);
+    const [oppFg3m, oppFg3a] = parseSplit(oppStats['3PT']);
+    const [oppFtm, oppFta] = parseSplit(oppStats['FT']);
+    
+    const oreb = parseInt(stats['Offensive Rebounds']) || 0;
+    const dreb = parseInt(stats['Defensive Rebounds']) || 0;
+    const rebounds = parseInt(stats['Rebounds']) || (oreb + dreb);
+    const assists = parseInt(stats['Assists']) || 0;
+    const turnovers = parseInt(stats['Total Turnovers']) || parseInt(stats['Turnovers']) || 0;
+    const steals = parseInt(stats['Steals']) || 0;
+    const blocks = parseInt(stats['Blocks']) || 0;
+    
+    const oppOreb = parseInt(oppStats['Offensive Rebounds']) || 0;
+    const oppDreb = parseInt(oppStats['Defensive Rebounds']) || 0;
+    const oppTov = parseInt(oppStats['Total Turnovers']) || parseInt(oppStats['Turnovers']) || 0;
+    
+    // Points from header/boxscore
+    const pts = fgm * 2 + fg3m + ftm; // 2pt FG + extra for 3s + FT
+    const oppPts = oppFgm * 2 + oppFg3m + oppFtm;
+    
+    // Calculate possessions (standard formula)
+    const possessions = fga - oreb + turnovers + (0.44 * fta);
+    const oppPossessions = oppFga - oppOreb + oppTov + (0.44 * oppFta);
+    
+    // Advanced metrics
+    const pace = possessions;
+    const offRtg = possessions > 0 ? (pts / possessions) * 100 : 114.5;
+    const defRtg = oppPossessions > 0 ? (oppPts / oppPossessions) * 100 : 114.5;
+    const netRtg = offRtg - defRtg;
+    
+    // Four Factors
+    const efg = fga > 0 ? (fgm + 0.5 * fg3m) / fga : 0.535;
+    const ts = (fga + 0.44 * fta) > 0 ? pts / (2 * (fga + 0.44 * fta)) : 0.575;
+    const tovPct = possessions > 0 ? turnovers / possessions : 0.138;
+    const orbPct = (oreb + oppDreb) > 0 ? oreb / (oreb + oppDreb) : 0.25;
+    const ftFga = fga > 0 ? fta / fga : 0.22;
+    
+    return {
+      pts,
+      oppPts,
+      possessions,
+      pace,
+      offRtg,
+      defRtg,
+      netRtg,
+      efg,
+      ts,
+      tovPct,
+      orbPct,
+      ftFga,
+      fgPct: fga > 0 ? fgm / fga : 0.47,
+      fg3Pct: fg3a > 0 ? fg3m / fg3a : 0.36,
+      ftPct: fta > 0 ? ftm / fta : 0.78,
+      fga,
+      fta,
+      fg3a,
+      oreb,
+      dreb,
+      rebounds,
+      assists,
+      turnovers,
+      steals,
+      blocks,
+      won: pts > oppPts ? 1 : 0,
+      source: 'espn_boxscore'
+    };
     
   } catch (error) {
-    console.error('[NBA] Error building game ID map:', error);
-    return new Map();
+    console.error(`[NBA] Error fetching ESPN boxscore for ${espnGameId}:`, error.message);
+    return null;
   }
 }
 
@@ -491,7 +581,7 @@ export function aggregateStats(gameStats) {
 
 /**
  * Fetch team's last N games and calculate advanced stats
- * Uses ESPN schedule + NBA CDN boxscores
+ * Uses ESPN schedule + ESPN summary API for real boxscore stats
  * 
  * @param {number} teamId - NBA team ID
  * @param {string} season - '2025-26'
@@ -526,95 +616,75 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
     
     console.log(`[NBA] Found ${recentGames.length} completed games for ${team.abbreviation}`);
     
-    // Build game ID map from today's scoreboard
-    const gameIdMap = await fetchNbaGameIdMap();
-    
-    // Fetch boxscores and calculate stats
+    // Fetch real boxscores from ESPN summary API — batch 5 at a time for speed
     const gameStats = [];
+    const gamesToFetch = recentGames.slice(-lastN);
     
-    for (const game of recentGames.slice(-lastN)) {
-      // Try to find NBA CDN game ID
-      const dateStr = game.date.split('T')[0];
-      const key1 = `${game.awayTeam.abbr}_${game.homeTeam.abbr}_${dateStr}`;
-      const key2 = `${game.homeTeam.abbr}_${game.awayTeam.abbr}_${dateStr}`; // Try reverse
+    for (let i = 0; i < gamesToFetch.length; i += 5) {
+      const batch = gamesToFetch.slice(i, i + 5);
+      const batchResults = await Promise.all(
+        batch.map(game => fetchEspnBoxscore(game.espnId, team.abbreviation))
+      );
       
-      let nbaGameId = gameIdMap.get(key1) || gameIdMap.get(key2);
+      for (let j = 0; j < batch.length; j++) {
+        const game = batch[j];
+        const espnBoxscore = batchResults[j];
       
-      if (!nbaGameId) {
-        // Fallback: calculate stats from ESPN score data
-        const isHome = game.homeTeam.abbr === team.abbreviation;
-        const pts = isHome ? game.homeTeam.score : game.awayTeam.score;
-        const oppPts = isHome ? game.awayTeam.score : game.homeTeam.score;
+        if (espnBoxscore) {
+          gameStats.push(espnBoxscore);
+          console.log(`[NBA] ✅ ${team.abbreviation} game ${game.espnId}: pts=${espnBoxscore.pts}, reb=${espnBoxscore.rebounds}, ast=${espnBoxscore.assists}, to=${espnBoxscore.turnovers}`);
+        } else {
+          // Last resort fallback: ESPN summary API failed, use score-only estimation with priors
+          console.log(`[NBA] ⚠️ ESPN boxscore unavailable for ${game.espnId}, using score-only fallback`);
+          const isHome = game.homeTeam.abbr === team.abbreviation;
+          const pts = isHome ? game.homeTeam.score : game.awayTeam.score;
+          const oppPts = isHome ? game.awayTeam.score : game.homeTeam.score;
         
-        // Estimate possessions from score (rough approximation)
-        const estimatedPoss = (pts + oppPts) / 2.2; // Average NBA possessions ~100
+          const estimatedPoss = (pts + oppPts) / 2.2;
+          const prior = getRegressedPrior(team.abbreviation);
         
-        // Use team-specific priors (regressed 70% team + 30% league) from 2024-25 season
-        const prior = getRegressedPrior(team.abbreviation);
-        console.log(`[NBA FALLBACK] ${team.abbreviation} using prior: efg=${prior.efg.toFixed(3)}, ts=${prior.ts.toFixed(3)}, offRtg=${prior.offRtg.toFixed(1)}`);
+          // Estimate counting stats from pace/pts (better than zero)
+          const estFga = Math.round(estimatedPoss * 0.88);
+          const estFta = Math.round(pts * (prior.ftRate || 0.22));
+          const estFg3a = Math.round(estFga * 0.40);
+          const estReb = Math.round(estimatedPoss * 0.44);
+          const estOreb = Math.round(estReb * (prior.orbPct || 0.25));
+          const estDreb = estReb - estOreb;
+          const estAst = Math.round(pts * 0.23);
+          const estTov = Math.round(estimatedPoss * (prior.tovPct || 0.13));
         
-        gameStats.push({
-          pts,
-          oppPts,
-          possessions: estimatedPoss,
-          pace: estimatedPoss,
-          offRtg: (pts / estimatedPoss) * 100,
-          defRtg: (oppPts / estimatedPoss) * 100,
-          netRtg: ((pts - oppPts) / estimatedPoss) * 100,
-          efg: prior.efg,     // Team-specific prior, not flat league average
-          ts: prior.ts,
-          tovPct: prior.tovPct,
-          orbPct: prior.orbPct,
-          ftFga: prior.ftRate,
-          fgPct: prior.efg / 1.1, // Approximate FG% from eFG%
-          fg3Pct: 0.36,
-          ftPct: 0.78
-        });
-        
-        continue;
-      }
-      
-      // Fetch boxscore from NBA CDN
-      const boxscore = await fetchBoxscore(nbaGameId);
-      
-      if (boxscore) {
-        const stats = calculateBoxscoreStats(boxscore, team.abbreviation);
-        gameStats.push(stats);
-      } else {
-        // Fallback: CDN fetch failed, use score estimation with team-specific priors
-        console.log(`[NBA] CDN boxscore unavailable for ${nbaGameId}, using score estimation with team priors`);
-        const isHome = game.homeTeam.abbr === team.abbreviation;
-        const pts = isHome ? game.homeTeam.score : game.awayTeam.score;
-        const oppPts = isHome ? game.awayTeam.score : game.homeTeam.score;
-        
-        // Estimate possessions from score
-        const estimatedPoss = (pts + oppPts) / 2.2;
-        
-        // Use team-specific priors (regressed 70% team + 30% league) from 2024-25 season
-        const prior = getRegressedPrior(team.abbreviation);
-        
-        gameStats.push({
-          pts,
-          oppPts,
-          possessions: estimatedPoss,
-          pace: estimatedPoss,
-          offRtg: (pts / estimatedPoss) * 100,
-          defRtg: (oppPts / estimatedPoss) * 100,
-          netRtg: ((pts - oppPts) / estimatedPoss) * 100,
-          efg: prior.efg,     // Team-specific prior, not flat league average
-          ts: prior.ts,
-          tovPct: prior.tovPct,
-          orbPct: prior.orbPct,
-          ftFga: prior.ftRate,
-          fgPct: prior.efg / 1.1, // Approximate FG% from eFG%
-          fg3Pct: 0.36,
-          ftPct: 0.78
-        });
-      }
-      
-      // Rate limit
-      await new Promise(resolve => setTimeout(resolve, 150));
-    }
+          gameStats.push({
+            pts,
+            oppPts,
+            possessions: estimatedPoss,
+            pace: estimatedPoss,
+            offRtg: (pts / estimatedPoss) * 100,
+            defRtg: (oppPts / estimatedPoss) * 100,
+            netRtg: ((pts - oppPts) / estimatedPoss) * 100,
+            efg: prior.efg,
+            ts: prior.ts,
+            tovPct: prior.tovPct,
+            orbPct: prior.orbPct,
+            ftFga: prior.ftRate,
+            fgPct: prior.efg / 1.1,
+            fg3Pct: 0.36,
+            ftPct: 0.78,
+            fga: estFga,
+            fta: estFta,
+            fg3a: estFg3a,
+            oreb: estOreb,
+            dreb: estDreb,
+            rebounds: estReb,
+            assists: estAst,
+            turnovers: estTov,
+            steals: 7,
+            blocks: 5,
+            won: pts > oppPts ? 1 : 0,
+            source: 'fallback'
+          });
+        }
+      } // end inner for
+    } // end batch for
     
     if (gameStats.length === 0) {
       console.log(`[NBA] No valid game stats for ${team.abbreviation}`);
@@ -625,13 +695,11 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
     const aggregated = aggregateStats(gameStats);
     
     // Tag with source for debugging
-    aggregated.source = 'mixed'; // Will be cdn, fallback, or mixed
-    const cdnCount = gameStats.filter(g => g.source === 'cdn').length;
+    const espnCount = gameStats.filter(g => g.source === 'espn_boxscore').length;
     const fallbackCount = gameStats.filter(g => g.source === 'fallback').length;
-    if (cdnCount === gameStats.length) aggregated.source = 'cdn';
-    else if (fallbackCount === gameStats.length) aggregated.source = 'fallback';
+    aggregated.source = fallbackCount === 0 ? 'espn_boxscore' : (espnCount === 0 ? 'fallback' : 'mixed');
     
-    console.log(`[NBA] ✅ ${team.abbreviation} L${lastN}: ${aggregated.games} games, OffRtg=${aggregated.offRtg.toFixed(1)}, DefRtg=${aggregated.defRtg.toFixed(1)}, Source=${aggregated.source} (${cdnCount} CDN, ${fallbackCount} fallback)`);
+    console.log(`[NBA] ✅ ${team.abbreviation} L${lastN}: ${aggregated.games} games, OffRtg=${aggregated.offRtg.toFixed(1)}, DefRtg=${aggregated.defRtg.toFixed(1)}, Reb=${aggregated.rebounds.toFixed(1)}, Ast=${aggregated.assists.toFixed(1)}, Source=${aggregated.source} (${espnCount} ESPN, ${fallbackCount} fallback)`);
     
     // OPTIMIZATION: Return raw gameStats array so caller can slice for different windows
     aggregated.gameStats = gameStats;
@@ -646,11 +714,11 @@ export async function fetchTeamLastGames(teamId, season = '2025-26', lastN = 10)
 
 /**
  * Fetch team's rolling window stats (L5, L10, L20)
- * Uses ESPN + NBA CDN approach
+ * Uses ESPN schedule + ESPN summary API for real boxscore stats
  * 
  * @param {number} teamId - NBA team ID
  * @param {string} season - '2025-26'
- * @param {Map} leagueWindows - DEPRECATED (not used in CDN approach)
+ * @param {Map} leagueWindows - DEPRECATED (not used)
  * @returns {Promise<{l5, l10, l20}>}
  */
 export async function fetchTeamRollingStats(teamId, season = '2025-26', leagueWindows = null) {
