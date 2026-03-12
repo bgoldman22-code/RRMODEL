@@ -1861,8 +1861,9 @@ export default async (request, context) => {
         teamTotals // NEW: Individual team scoring projections
       });
       } catch (gameError) {
-        const homeTeam = home?.team?.abbreviation || event?.competitions?.[0]?.competitors?.find?.(c => c.homeAway === 'home')?.team?.abbreviation || '?';
-        const awayTeam = away?.team?.abbreviation || event?.competitions?.[0]?.competitors?.find?.(c => c.homeAway === 'away')?.team?.abbreviation || '?';
+        const comp = event.competitions?.[0];
+        const homeTeam = comp?.competitors?.find?.(c => c.homeAway === 'home')?.team?.abbreviation || '?';
+        const awayTeam = comp?.competitors?.find?.(c => c.homeAway === 'away')?.team?.abbreviation || '?';
         console.error(`[NBA Elite V2] Error processing ${awayTeam} @ ${homeTeam}:`, gameError.message);
         console.error(`[NBA Elite V2] Stack:`, gameError.stack);
         // Continue to next game instead of failing entire function

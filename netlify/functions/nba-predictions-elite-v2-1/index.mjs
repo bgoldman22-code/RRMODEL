@@ -1372,7 +1372,7 @@ export default async (request, context) => {
         console.log(`[TOTAL DEBUG] Sum of all contributions: ${contributions.reduce((s, c) => s + c.contribution, 0).toFixed(2)}`);
         console.log(`[TOTAL DEBUG] ppg_sum features: ppg_sum_l10=${totalFeatures.ppg_sum_l10?.toFixed(1)}, ppg_sum_l3=${totalFeatures.ppg_sum_l3?.toFixed(1)}, ppg_sum_l20=${totalFeatures.ppg_sum_l20?.toFixed(1)}`);
         console.log(`[TOTAL DEBUG] pace features: pace_avg_l10=${totalFeatures.pace_avg_l10?.toFixed(1)}, pace_product=${totalFeatures.pace_product?.toFixed(4)}`);
-        console.log(`[TOTAL DEBUG] raw ppg: home=${homeL10WithInjuries?.ppg?.toFixed(1) ?? homeL10?.ppg?.toFixed(1) ?? 'N/A'}, away=${awayL10WithInjuries?.ppg?.toFixed(1) ?? awayL10?.ppg?.toFixed(1) ?? 'N/A'}`);
+        console.log(`[TOTAL DEBUG] raw ppg: home=${homeL10?.ppg?.toFixed(1) ?? 'N/A'}, away=${awayL10?.ppg?.toFixed(1) ?? 'N/A'}`);
       }
       
       // PRODUCTION: Use 100% model prediction (backtest proven +8.12% ROI)
@@ -2127,8 +2127,9 @@ export default async (request, context) => {
         teamTotals // NEW: Individual team scoring projections
       });
       } catch (gameError) {
-        const homeTeam = home?.team?.abbreviation || event?.competitions?.[0]?.competitors?.find?.(c => c.homeAway === 'home')?.team?.abbreviation || '?';
-        const awayTeam = away?.team?.abbreviation || event?.competitions?.[0]?.competitors?.find?.(c => c.homeAway === 'away')?.team?.abbreviation || '?';
+        const comp = event.competitions?.[0];
+        const homeTeam = comp?.competitors?.find?.(c => c.homeAway === 'home')?.team?.abbreviation || '?';
+        const awayTeam = comp?.competitors?.find?.(c => c.homeAway === 'away')?.team?.abbreviation || '?';
         console.error(`[NBA Elite V2] Error processing ${awayTeam} @ ${homeTeam}:`, gameError.message);
         console.error(`[NBA Elite V2] Stack:`, gameError.stack);
         // Continue to next game instead of failing entire function
