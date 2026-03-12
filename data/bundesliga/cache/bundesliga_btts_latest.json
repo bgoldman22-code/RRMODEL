@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-03-11T22:10:10.185278+00:00",
+  "generated_at": "2026-03-12T10:20:01.635137+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -96,13 +96,13 @@
         "away_season_avg_goals_against": 1.7647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.69,
-        "btts_no": 2.07,
+        "btts_yes": 1.68,
+        "btts_no": 2.08,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.550531914893617,
-      "edge": 0.0889222296825003,
-      "expected_value": 0.05261670395414219,
+      "market_probability": 0.5531914893617021,
+      "edge": 0.08626265521441512,
+      "expected_value": 0.051346818580009,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -132,19 +132,19 @@
         "away_season_avg_goals_against": 1.3235294117647058
       },
       "market_odds": {
-        "btts_yes": 1.42,
-        "btts_no": 2.69,
+        "btts_yes": 1.43,
+        "btts_no": 2.66,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6545012165450123,
-      "edge": 0.04564754299770157,
+      "market_probability": 0.6503667481662593,
+      "edge": 0.04978201137645455,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=4.6%, need 5%)"
+        "min_edge (edge=5.0%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -160,7 +160,7 @@
       "dixon_coles_prob": 0.9392713328697807,
       "xgboost_prob": 0.676,
       "expected_home_goals": 3.453659118986399,
-      "expected_away_goals": 3.5000000000000004,
+      "expected_away_goals": 3.5,
       "key_features": {
         "combined_form_btts_rate": 0.6000000000000001,
         "home_form_btts_rate": 0.8,
@@ -232,7 +232,7 @@
       "model_probability": 0.6031996579987922,
       "dixon_coles_prob": 0.5457707205898713,
       "xgboost_prob": 0.6200000000000001,
-      "expected_home_goals": 2.8418680750516656,
+      "expected_home_goals": 2.841868075051665,
       "expected_away_goals": 0.8571428571428571,
       "key_features": {
         "combined_form_btts_rate": 0.8,
@@ -390,19 +390,19 @@
         "away_season_avg_goals_against": 0.7058823529411765
       },
       "market_odds": {
-        "btts_yes": 1.6,
-        "btts_no": 2.22,
+        "btts_yes": 1.61,
+        "btts_no": 2.2,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5811518324607331,
-      "edge": -0.007113614047619565,
+      "market_probability": 0.5774278215223098,
+      "edge": -0.0033896031091962264,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-0.7%, need 5%)"
+        "min_edge (edge=-0.3%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -488,7 +488,7 @@
       "away_team": "Werder Bremen",
       "commence_time": "2026-03-21T14:30:00Z",
       "model_probability": 0.6206609510278477,
-      "dixon_coles_prob": 0.7869996309568575,
+      "dixon_coles_prob": 0.7869996309568574,
       "xgboost_prob": 0.5720000000000001,
       "expected_home_goals": 1.9340491066323833,
       "expected_away_goals": 2.5,
@@ -723,13 +723,13 @@
         "away_season_avg_goals_against": 1.7647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.69,
-        "btts_no": 2.07,
+        "btts_yes": 1.68,
+        "btts_no": 2.08,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.550531914893617,
-      "edge": 0.0889222296825003,
-      "expected_value": 0.05261670395414219,
+      "market_probability": 0.5531914893617021,
+      "edge": 0.08626265521441512,
+      "expected_value": 0.051346818580009,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -750,7 +750,7 @@
       "dixon_coles_prob": 0.9392713328697807,
       "xgboost_prob": 0.676,
       "expected_home_goals": 3.453659118986399,
-      "expected_away_goals": 3.5000000000000004,
+      "expected_away_goals": 3.5,
       "key_features": {
         "combined_form_btts_rate": 0.6000000000000001,
         "home_form_btts_rate": 0.8,
