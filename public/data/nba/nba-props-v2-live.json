@@ -1,8 +1,12 @@
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "generated_at": "2026-03-13T15:35:59.266Z",
 =======
   "generated_at": "2026-03-13T15:47:40.026Z",
+>>>>>>> Stashed changes
+=======
+  "generated_at": "2026-03-13T15:52:30.119Z",
 >>>>>>> Stashed changes
   "model_version": "nba_phase3.5_mixed_logistic_lgbm_v1_20251125",
   "source": "Phase 3.5: Logistic PRA + LightGBM per-market",
@@ -94,10 +98,17 @@
       "vegasLine": 7.5,
       "betSide": "OVER",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "edge": 21.56387483197866,
       "confidence": 69,
       "odds": 111,
       "book": "Caesars",
+=======
+      "edge": 21.338192141840995,
+      "confidence": 69,
+      "odds": 110,
+      "book": "FanDuel",
+>>>>>>> Stashed changes
 =======
       "edge": 21.338192141840995,
       "confidence": 69,
@@ -110,7 +121,11 @@
       "threshold": 0.535,
       "kellyStake": 6,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "kellyFraction": 0.409907890950225,
+=======
+      "kellyFraction": 0.40736548634423714,
+>>>>>>> Stashed changes
 =======
       "kellyFraction": 0.40736548634423714,
 >>>>>>> Stashed changes
@@ -177,6 +192,7 @@
       "vegasLine": 6.5,
       "betSide": "OVER",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "edge": 7.843905973767617,
       "confidence": 61,
       "odds": -112,
@@ -185,13 +201,22 @@
       "edge": 9.454582457890947,
       "confidence": 61,
       "odds": -105,
+=======
+      "edge": 8.293142272060516,
+      "confidence": 61,
+      "odds": -110,
+>>>>>>> Stashed changes
       "book": "BetMGM",
       "game": "Cleveland Cavaliers @ Dallas Mavericks",
       "gameTime": "2026-03-13T23:40:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.535,
       "kellyStake": 6,
+<<<<<<< Updated upstream
       "kellyFraction": 0.19381894038676445,
+=======
+      "kellyFraction": 0.17415598771327095,
+>>>>>>> Stashed changes
       "modelVersion": "rebounds_v2",
       "hitRates": {
         "L5_hitRate": 60,
@@ -218,9 +243,9 @@
       "modelProbability": 0.5370464443908272,
       "vegasLine": 5.5,
       "betSide": "UNDER",
-      "edge": 4.924156634204668,
+      "edge": 6.0855968200351,
       "confidence": 54,
-      "odds": 105,
+      "odds": 110,
       "book": "Fanatics",
 >>>>>>> Stashed changes
       "game": "Cleveland Cavaliers @ Dallas Mavericks",
@@ -278,7 +303,7 @@
       "model": "rebounds_lightgbm",
       "threshold": 0.535,
       "kellyStake": 6,
-      "kellyFraction": 0.09613829619161485,
+      "kellyFraction": 0.11617957565521553,
       "modelVersion": "rebounds_v2",
       "hitRates": {
         "L5_hitRate": 40,
@@ -732,6 +757,7 @@
     },
     {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "player": "Aaron Nesmith",
       "team": "Indiana Pacers",
       "opponent": "New York Knicks",
@@ -768,6 +794,8 @@
       "L10_sample_size": 10
     },
     {
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
       "player": "Josh Hart",
@@ -887,12 +915,16 @@
       "vegasLine": 4.5,
       "betSide": "UNDER",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "edge": 7.17011428288577,
 =======
       "edge": 7.602789949206295,
 >>>>>>> Stashed changes
+=======
+      "edge": 7.602789949206295,
+>>>>>>> Stashed changes
       "confidence": 54,
-      "odds": 114,
+      "odds": 116,
       "book": "FanDuel",
       "game": "Phoenix Suns @ Toronto Raptors",
       "gameTime": "2026-03-13T23:40:00Z",
@@ -900,7 +932,11 @@
       "threshold": 0.534,
       "kellyStake": 6,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "kellyFraction": 0.13459688215241694,
+=======
+      "kellyFraction": 0.14156919215763453,
+>>>>>>> Stashed changes
 =======
       "kellyFraction": 0.14156919215763453,
 >>>>>>> Stashed changes
@@ -1114,7 +1150,11 @@
       "confidence": 56,
       "odds": -110,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "book": "BetMGM",
+=======
+      "book": "FanDuel",
+>>>>>>> Stashed changes
 =======
       "book": "FanDuel",
 >>>>>>> Stashed changes
@@ -2049,16 +2089,24 @@
       "prediction": 0.5848671325296703,
       "modelProbability": 0.5848671325296703,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "vegasLine": 11.5,
+=======
+      "vegasLine": 12.5,
+>>>>>>> Stashed changes
       "betSide": "UNDER",
-      "edge": 8.735469471872499,
+      "edge": 5.435070060478764,
       "confidence": 58,
+<<<<<<< Updated upstream
       "odds": 101,
 =======
       "vegasLine": 12.5,
       "betSide": "UNDER",
       "edge": 5.435070060478764,
       "confidence": 58,
+      "odds": -113,
+>>>>>>> Stashed changes
+=======
       "odds": -113,
 >>>>>>> Stashed changes
       "book": "DraftKings",
@@ -2068,7 +2116,11 @@
       "threshold": 0.57,
       "kellyStake": 6,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "kellyFraction": 0.17384449146993775,
+=======
+      "kellyFraction": 0.1157669922881977,
+>>>>>>> Stashed changes
 =======
       "kellyFraction": 0.1157669922881977,
 >>>>>>> Stashed changes
@@ -2243,9 +2295,15 @@
       "vegasLine": 4.5,
       "betSide": "OVER",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "edge": 8.41990633579417,
       "confidence": 56,
       "odds": 110,
+=======
+      "edge": 9.527326047865042,
+      "confidence": 56,
+      "odds": 115,
+>>>>>>> Stashed changes
 =======
       "edge": 9.527326047865042,
       "confidence": 56,
@@ -2258,7 +2316,11 @@
       "threshold": 0.535,
       "kellyStake": 6,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "kellyFraction": 0.16074366641061594,
+=======
+      "kellyFraction": 0.17811957393834638,
+>>>>>>> Stashed changes
 =======
       "kellyFraction": 0.17811957393834638,
 >>>>>>> Stashed changes
@@ -2361,10 +2423,17 @@
       "vegasLine": 9.5,
       "betSide": "OVER",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "edge": 6.0494244760594285,
       "confidence": 62,
       "odds": -125,
       "book": "Caesars",
+=======
+      "edge": 10.866063775457347,
+      "confidence": 62,
+      "odds": -103,
+      "book": "DraftKings",
+>>>>>>> Stashed changes
 =======
       "edge": 10.866063775457347,
       "confidence": 62,
@@ -2377,7 +2446,11 @@
       "threshold": 0.57,
       "kellyStake": 6,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "kellyFraction": 0.1361120507113372,
+=======
+      "kellyFraction": 0.22058109464178421,
+>>>>>>> Stashed changes
 =======
       "kellyFraction": 0.22058109464178421,
 >>>>>>> Stashed changes
@@ -2484,6 +2557,7 @@
       "L10_sample_size": 10
     },
     {
+<<<<<<< Updated upstream
       "player": "Kawhi Leonard",
       "team": "Los Angeles Clippers",
       "opponent": "Chicago Bulls",
@@ -2577,6 +2651,8 @@
       "L10_sample_size": 10
     },
     {
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
       "player": "Bennedict Mathurin",
       "team": "Los Angeles Clippers",
@@ -2688,10 +2764,17 @@
   ],
   "stats": {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "total_picks": 69,
     "by_market": {
       "points": 20,
       "rebounds": 34,
+=======
+    "total_picks": 67,
+    "by_market": {
+      "points": 20,
+      "rebounds": 32,
+>>>>>>> Stashed changes
 =======
     "total_picks": 67,
     "by_market": {
