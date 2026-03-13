@@ -1,10 +1,10 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-03-12T22:08:40.798098+00:00",
+  "generated_at": "2026-03-13T10:16:29.292397+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
-  "recommended_bets": 4,
+  "recommended_bets": 5,
   "predictions": [
     {
       "home_team": "Borussia Monchengladbach",
@@ -23,19 +23,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.98,
-        "btts_no": 1.75,
+        "btts_yes": 2.0,
+        "btts_no": 1.74,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.46916890080428963,
-      "edge": 0.006634264351234487,
+      "market_probability": 0.46524064171123,
+      "edge": 0.010562523444294147,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=0.7%, need 5%)"
+        "min_edge (edge=1.1%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -132,23 +132,22 @@
         "away_season_avg_goals_against": 1.3235294117647058
       },
       "market_odds": {
-        "btts_yes": 1.43,
-        "btts_no": 2.66,
+        "btts_yes": 1.47,
+        "btts_no": 2.53,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6503667481662593,
-      "edge": 0.04978201137645455,
-      "expected_value": null,
+      "market_probability": 0.6325,
+      "edge": 0.06764875954271388,
+      "expected_value": 0.04601956431477135,
       "gates_passed": [
+        "min_edge",
         "max_ev_cap",
         "min_odds"
       ],
-      "gates_failed": [
-        "min_edge (edge=5.0%, need 5%)"
-      ],
+      "gates_failed": [],
       "bet_decision": {
-        "should_bet": false,
-        "recommended_stake_pct": 0.0,
+        "should_bet": true,
+        "recommended_stake_pct": 3.0,
         "confidence": "LOW"
       }
     },
@@ -390,19 +389,19 @@
         "away_season_avg_goals_against": 0.7058823529411765
       },
       "market_odds": {
-        "btts_yes": 1.61,
-        "btts_no": 2.2,
+        "btts_yes": 1.6,
+        "btts_no": 2.22,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5774278215223098,
-      "edge": -0.0033896031091962264,
+      "market_probability": 0.5811518324607331,
+      "edge": -0.007113614047619565,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-0.3%, need 5%)"
+        "min_edge (edge=-0.7%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -740,6 +739,42 @@
         "should_bet": true,
         "recommended_stake_pct": 3.0,
         "confidence": "MEDIUM"
+      }
+    },
+    {
+      "home_team": "Bayer Leverkusen",
+      "away_team": "Bayern Munich",
+      "commence_time": "2026-03-14T14:30:00Z",
+      "model_probability": 0.7001487595427138,
+      "dixon_coles_prob": 0.7826969362513709,
+      "xgboost_prob": 0.676,
+      "expected_home_goals": 3.3155127542269436,
+      "expected_away_goals": 1.6666666666666667,
+      "key_features": {
+        "combined_form_btts_rate": 0.8,
+        "home_form_btts_rate": 0.8,
+        "away_form_btts_rate": 0.8,
+        "home_season_avg_goals_for": 2.6176470588235294,
+        "away_season_avg_goals_against": 1.3235294117647058
+      },
+      "market_odds": {
+        "btts_yes": 1.47,
+        "btts_no": 2.53,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.6325,
+      "edge": 0.06764875954271388,
+      "expected_value": 0.04601956431477135,
+      "gates_passed": [
+        "min_edge",
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [],
+      "bet_decision": {
+        "should_bet": true,
+        "recommended_stake_pct": 3.0,
+        "confidence": "LOW"
       }
     },
     {
