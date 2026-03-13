@@ -127,6 +127,47 @@ allBoxscores.forEach(g => {
 console.log(`✅ Loaded ${allBoxscores.length} player-game records`);
 console.log(`   Data includes 2024-25 + 2025-26 seasons`);
 
+// Build player → current team lookup (most recent game's teamTricode)
+const playerTeamMap = new Map();
+const sortedBoxscores = [...allBoxscores].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+for (const g of sortedBoxscores) {
+  if (g.playerName && g.teamTricode) {
+    playerTeamMap.set(g.playerName, g.teamTricode);
+  }
+}
+console.log(`   Built player→team map: ${playerTeamMap.size} players`);
+
+// Full team name → tricode mapping (Odds API uses full names)
+const TEAM_FULL_TO_TRICODE = {
+  'Atlanta Hawks': 'ATL', 'Boston Celtics': 'BOS', 'Brooklyn Nets': 'BKN',
+  'Charlotte Hornets': 'CHA', 'Chicago Bulls': 'CHI', 'Cleveland Cavaliers': 'CLE',
+  'Dallas Mavericks': 'DAL', 'Denver Nuggets': 'DEN', 'Detroit Pistons': 'DET',
+  'Golden State Warriors': 'GSW', 'Houston Rockets': 'HOU', 'Indiana Pacers': 'IND',
+  'Los Angeles Clippers': 'LAC', 'Los Angeles Lakers': 'LAL', 'LA Clippers': 'LAC',
+  'Memphis Grizzlies': 'MEM', 'Miami Heat': 'MIA', 'Milwaukee Bucks': 'MIL',
+  'Minnesota Timberwolves': 'MIN', 'New Orleans Pelicans': 'NOP',
+  'New York Knicks': 'NYK', 'Oklahoma City Thunder': 'OKC', 'Orlando Magic': 'ORL',
+  'Philadelphia 76ers': 'PHI', 'Phoenix Suns': 'PHX', 'Portland Trail Blazers': 'POR',
+  'Sacramento Kings': 'SAC', 'San Antonio Spurs': 'SAS', 'Toronto Raptors': 'TOR',
+  'Utah Jazz': 'UTA', 'Washington Wizards': 'WAS',
+};
+// Reverse: tricode → full name  
+const TEAM_TRICODE_TO_FULL = {};
+for (const [full, tri] of Object.entries(TEAM_FULL_TO_TRICODE)) {
+  TEAM_TRICODE_TO_FULL[tri] = full;
+}
+// Handle alternate tricodes that appear in boxscores (ESPN variants)
+const NORMALIZE_TRICODE = {
+  'GS': 'GSW', 'SA': 'SAS', 'NO': 'NOP', 'NY': 'NYK',
+  'PHO': 'PHX', 'UTAH': 'UTA', 'WSH': 'WAS',
+  // identity mappings
+  'GSW': 'GSW', 'SAS': 'SAS', 'NOP': 'NOP', 'NYK': 'NYK',
+  'PHX': 'PHX', 'UTA': 'UTA', 'WAS': 'WAS',
+};
+function normalizeTricode(tc) {
+  return NORMALIZE_TRICODE[tc] || tc;
+}
+
 // Load inference engine
 console.log('[2/6] Loading Phase 3.5 inference engine...');
 const engine = await createInferenceEngine();
@@ -738,14 +779,33 @@ for (const prop of allProps) {
   try {
     const { player, market, side, line, odds, bookmaker, home_team, away_team, commence_time } = prop;
 
-    // Determine team and opponent from home/away
-    // This is a simplified heuristic - you may need to enhance this
-    const team = home_team; // Placeholder
-    const opponent = away_team; // Placeholder
-    const isHome = 1; // Placeholder
+    // Determine player's actual team from boxscore history
+    const playerTricode = normalizeTricode(playerTeamMap.get(player) || '');
+    const homeTricode = normalizeTricode(TEAM_FULL_TO_TRICODE[home_team] || '');
+    const awayTricode = normalizeTricode(TEAM_FULL_TO_TRICODE[away_team] || '');
+
+    // Determine if player is home or away
+    let isHome;
+    let team, opponent;
+    if (playerTricode && playerTricode === homeTricode) {
+      isHome = 1;
+      team = home_team;
+      opponent = away_team;
+    } else if (playerTricode && playerTricode === awayTricode) {
+      isHome = 0;
+      team = away_team;
+      opponent = home_team;
+    } else {
+      // Fallback: can't determine — default to away (conservative)
+      isHome = 0;
+      team = away_team;
+      opponent = home_team;
+    }
 
     // Calculate features (walkforward, zero leakage)
-    const features = calculateFeatures(player, today, opponent, isHome);
+    // opponent param must be a tricode for H2H lookups against boxscore data
+    const opponentTricode = isHome === 1 ? awayTricode : homeTricode;
+    const features = calculateFeatures(player, today, opponentTricode, isHome);
 
     if (!features) {
       // No historical data for this player
@@ -785,7 +845,7 @@ for (const prop of allProps) {
       confidence: Math.round(result.prob_win * 100),
       odds,
       book: bookmaker,
-      game: `${home_team} @ ${away_team}`,
+      game: `${away_team} @ ${home_team}`,
       gameTime: commence_time,
       model: result.use_this_model,
       threshold: result.threshold,
