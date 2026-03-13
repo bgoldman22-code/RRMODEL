@@ -1,4 +1,4 @@
-name: NBA Props V2 Daily Update
+name: NBA Props Phase 3.5 (2x Daily)
 
 on:
   # Run daily at 8:00 AM ET (12:00 UTC) and 3:30 PM ET (19:30 UTC)
@@ -12,9 +12,9 @@ on:
       - main42
     paths:
       - '.github/workflows/nba-props-v2-daily.yml'
+      - 'scripts/nba/generate-predictions-phase3.5.mjs'
       - 'scripts/nba/fetch-player-boxscores-2025-26.mjs'
-      - 'scripts/nba/collect-opponent-defense.mjs'
-      - 'scripts/nba/generate-pra-predictions-v2.mjs'
+      - 'scripts/nba/merge-boxscores-history.mjs'
   
   # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:
@@ -25,72 +25,99 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  update-v2-predictions:
-    name: Update NBA Props V2 (PRA Model)
+  update-phase35-predictions:
+    name: Update NBA Props (Phase 3.5)
     runs-on: ubuntu-latest
     
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
+          cache: 'npm'
       
-      - name: 📦 Install dependencies (if needed)
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: 📦 Install Node dependencies
+        run: npm ci
+      
+      - name: 📦 Install Python dependencies
         run: |
-          if [ -f "package.json" ]; then
-            npm ci --only=production
-          fi
+          pip install --upgrade pip
+          pip install lightgbm>=4.0.0
+          pip install -r requirements-phase3.txt 2>/dev/null || true
+          pip install -r requirements-nba.txt 2>/dev/null || true
       
-      - name: 📊 Update 2025-26 boxscores (last 3 days)
+      - name: 📊 Fetch latest boxscores (last 3 days)
         run: |
           echo "Fetching recent boxscores..."
           node scripts/nba/fetch-player-boxscores-2025-26.mjs --daily
           echo "Boxscores updated ✓"
       
-      - name: 🎯 Generate V2 predictions (Phase 3 PRA)
+      - name: 🔄 Merge boxscores into canonical history
+        run: |
+          echo "Merging boxscores into canonical dataset..."
+          node scripts/nba/merge-boxscores-history.mjs
+          echo "History merged ✓"
+      
+      - name: 🎯 Generate Phase 3.5 predictions
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          echo "Generating PRA predictions..."
-          node scripts/nba/generate-pra-predictions-v2.mjs
+          echo "Generating Phase 3.5 predictions (Logistic + LightGBM)..."
+          node scripts/nba/generate-predictions-phase3.5.mjs
           echo "Predictions generated ✓"
       
-      - name: 📝 Check for changes
-        id: changes
-        run: |
-          git diff --quiet data/nba/ public/data/nba/ || echo "changed=true" >> $GITHUB_OUTPUT
-      
-      - name: 🔧 Configure Git
-        if: steps.changes.outputs.changed == 'true'
+      - name: 📝 Commit and push changes
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-      
-      - name: 💾 Commit changes
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git add data/nba/player-boxscores-2025-26.json
-          git add data/nba/opponent-defense-stats.json
+          
+          # Add all modified data files
+          git add -f data/nba/player-boxscores-2025-26.json
+          git add -f data/nba/player-history-2024-2026.json
           git add public/data/nba/nba-props-v2-live.json
-          git commit -m "🤖 Auto-update NBA Props V2 - $(date -u +%Y-%m-%d)"
-      
-      - name: 🚀 Push changes
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git push
-      
-      - name: ✅ Success
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          echo "✅ NBA Props V2 successfully updated and pushed"
-          echo "📊 Updated: Boxscores, Opponent Defense, V2 Predictions"
-      
-      - name: ℹ️ No changes
-        if: steps.changes.outputs.changed != 'true'
-        run: |
-          echo "ℹ️ No changes detected - predictions are up to date"
+          
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "✅ No changes to commit"
+          else
+            git stash --include-untracked || true
+            git pull --rebase origin ${{ github.ref_name }} || {
+              git rebase --abort 2>/dev/null || true
+              git pull origin ${{ github.ref_name }} --no-rebase
+            }
+            git stash pop || true
+            
+            # Re-add after pull
+            git add -f data/nba/player-boxscores-2025-26.json
+            git add -f data/nba/player-history-2024-2026.json
+            git add public/data/nba/nba-props-v2-live.json
+            
+            git commit -m "🤖 NBA Props Phase 3.5 update - $(date -u +%Y-%m-%d %H:%M)"
+            
+            MAX_RETRIES=3
+            RETRY_COUNT=0
+            until git push origin ${{ github.ref_name }}; do
+              RETRY_COUNT=$((RETRY_COUNT+1))
+              if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+                echo "❌ Failed to push after $MAX_RETRIES attempts"
+                exit 1
+              fi
+              echo "⚠️ Push failed, retrying ($RETRY_COUNT/$MAX_RETRIES)..."
+              sleep 5
+              git stash --include-untracked || true
+              git pull --rebase origin ${{ github.ref_name }} || git pull origin ${{ github.ref_name }} --no-rebase
+              git stash pop || true
+            done
+            echo "✅ Successfully pushed changes"
+          fi

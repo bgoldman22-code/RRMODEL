@@ -1,9 +1,10 @@
-name: NBA Props Phase 3.5 Daily Pipeline
+name: "NBA Props Phase 3.5 Daily Pipeline [DISABLED - see nba-props-v2-daily.yml]"
 
+# DISABLED: Consolidated into nba-props-v2-daily.yml which runs 2x/day (8am + 3:30pm ET)
+# Keeping file for reference. Do not re-enable.
 on:
-  schedule:
-    # Run at 9 AM ET daily (2 PM UTC)
-    - cron: '0 14 * * *'
+  # schedule:
+  #   - cron: '0 14 * * *'
   workflow_dispatch:
     inputs:
       skip_fetch:
