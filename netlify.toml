@@ -65,6 +65,11 @@
   name = "generate-daily-predictions"
   cron = "0 11 * * *"
 
+# 🏀 NBA Aggregator — Save all picks daily at noon ET (17:00 UTC)
+[[scheduled.functions]]
+  name = "nba-aggregator-save-daily"
+  cron = "0 17 * * *"
+
 # ⚽ Bundesliga BTTS Function - include cache file
 [functions."bundesliga-btts-predict"]
   included_files = ["data/bundesliga/cache/bundesliga_btts_latest.json"]
