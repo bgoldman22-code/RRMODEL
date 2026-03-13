@@ -82,42 +82,47 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Add all modified data files
-          git add -f data/nba/player-boxscores-2025-26.json
-          git add -f data/nba/player-history-2024-2026.json
-          git add public/data/nba/nba-props-v2-live.json
+          # Save our generated files to temp (these are the source of truth)
+          cp data/nba/player-boxscores-2025-26.json /tmp/boxscores-backup.json
+          cp data/nba/player-history-2024-2026.json /tmp/history-backup.json
+          cp public/data/nba/nba-props-v2-live.json /tmp/props-backup.json
           
-          # Only commit if there are changes
-          if git diff --staged --quiet; then
-            echo "✅ No changes to commit"
-          else
-            git stash --include-untracked || true
-            git pull --rebase origin ${{ github.ref_name }} || {
-              git rebase --abort 2>/dev/null || true
-              git pull origin ${{ github.ref_name }} --no-rebase
-            }
-            git stash pop || true
+          MAX_RETRIES=3
+          RETRY_COUNT=0
+          
+          while true; do
+            # Pull latest (discard any local conflicts on data files)
+            git checkout -- data/nba/player-boxscores-2025-26.json data/nba/player-history-2024-2026.json public/data/nba/nba-props-v2-live.json 2>/dev/null || true
+            git pull origin ${{ github.ref_name }} --no-rebase || true
             
-            # Re-add after pull
+            # Restore our generated files (overwrite whatever remote had)
+            cp /tmp/boxscores-backup.json data/nba/player-boxscores-2025-26.json
+            cp /tmp/history-backup.json data/nba/player-history-2024-2026.json
+            cp /tmp/props-backup.json public/data/nba/nba-props-v2-live.json
+            
+            # Stage and commit
             git add -f data/nba/player-boxscores-2025-26.json
             git add -f data/nba/player-history-2024-2026.json
             git add public/data/nba/nba-props-v2-live.json
             
-            git commit -m "🤖 NBA Props Phase 3.5 update - $(date -u +%Y-%m-%d %H:%M)"
+            if git diff --staged --quiet; then
+              echo "✅ No changes to commit"
+              break
+            fi
             
-            MAX_RETRIES=3
-            RETRY_COUNT=0
-            until git push origin ${{ github.ref_name }}; do
-              RETRY_COUNT=$((RETRY_COUNT+1))
-              if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
-                echo "❌ Failed to push after $MAX_RETRIES attempts"
-                exit 1
-              fi
-              echo "⚠️ Push failed, retrying ($RETRY_COUNT/$MAX_RETRIES)..."
-              sleep 5
-              git stash --include-untracked || true
-              git pull --rebase origin ${{ github.ref_name }} || git pull origin ${{ github.ref_name }} --no-rebase
-              git stash pop || true
-            done
-            echo "✅ Successfully pushed changes"
-          fi
+            git commit -m "🤖 NBA Props Phase 3.5 update - $(date -u +%Y-%m-%d\ %H:%M)"
+            
+            if git push origin ${{ github.ref_name }}; then
+              echo "✅ Successfully pushed changes"
+              break
+            fi
+            
+            RETRY_COUNT=$((RETRY_COUNT+1))
+            if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+              echo "❌ Failed to push after $MAX_RETRIES attempts"
+              exit 1
+            fi
+            echo "⚠️ Push failed, retrying ($RETRY_COUNT/$MAX_RETRIES)..."
+            sleep 5
+            git reset HEAD~1  # undo commit so we can re-pull
+          done
