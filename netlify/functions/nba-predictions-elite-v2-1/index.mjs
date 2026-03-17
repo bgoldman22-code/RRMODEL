@@ -1779,7 +1779,7 @@ export default async (request, context) => {
           { lo: 8,  hi: 9,  wr: 0.585 },  // good edge
           { lo: 9,  hi: 10, wr: 0.511 },  // NO BET — below breakeven
           { lo: 10, hi: 12, wr: 0.571 },  // solid
-          { lo: 12, hi: 15, wr: 0.625 },  // strong
+          { lo: 12, hi: 15, wr: 0.529 },  // marginal (backtest: 34 bets, 18 wins)
           { lo: 15, hi: 99, wr: 0.833 },  // very strong
         ];
         
