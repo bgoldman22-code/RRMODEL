@@ -13,6 +13,7 @@
  */
 
 import { getStore } from '@netlify/blobs';
+import { schedule } from '@netlify/functions';
 import fetch from 'node-fetch';
 
 // ─── Config ─────────────────────────────────────────────────────────────────
@@ -63,7 +64,7 @@ function todayET() {
 }
 
 // ─── Main ───────────────────────────────────────────────────────────────────
-export default async (req) => {
+const handler = async (event, context) => {
   const dateKey = todayET();
   console.log(`🏀 NBA Aggregator Save — ${dateKey}`);
   const bets = [];
@@ -83,8 +84,10 @@ export default async (req) => {
       if (data.ok && data.predictions) {
         data.predictions.forEach(pred => {
           (pred.opportunities || []).forEach(opp => {
+            const isTotalMkt = (opp.market || '').toLowerCase().includes('total');
             const edgeVal = opp.edgePercent || opp.edge || 0;
-            if (edgeVal < 2) return;
+            // Totals already passed calibration curve — don't filter on edgePercent
+            if (!isTotalMkt && edgeVal < 2) return;
 
             const pickDisplay = opp.market === 'Moneyline' && opp.modelWinProb
               ? `${opp.pick} (${opp.modelWinProb})`
@@ -216,9 +219,10 @@ export default async (req) => {
 
   if (bets.length === 0) {
     console.log('⚠️  No picks found — likely no games today. Skipping save.');
-    return new Response(JSON.stringify({ ok: true, skipped: true, reason: 'no-picks', date: dateKey }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: true, skipped: true, reason: 'no-picks', date: dateKey }),
+    };
   }
 
   const store = getStore(STORE_NAME);
@@ -241,13 +245,20 @@ export default async (req) => {
     console.log(`📋 Index updated: ${index.length} dates`);
   }
 
-  return new Response(JSON.stringify({
-    ok: true,
-    date: dateKey,
-    totalPicks: bets.length,
-    totalUnits,
-    sources: meta.sources,
-  }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      ok: true,
+      date: dateKey,
+      totalPicks: bets.length,
+      totalUnits,
+      sources: meta.sources,
+    }),
+  };
 };
+
+// Schedule for noon ET (17:00 UTC) daily
+export default schedule('0 17 * * *', handler);
+
+// Export raw handler for manual HTTP invocation
+export { handler as saveDaily };
