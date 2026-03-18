@@ -13,7 +13,6 @@
  */
 
 import { getStore } from '@netlify/blobs';
-import { schedule } from '@netlify/functions';
 import fetch from 'node-fetch';
 
 // ─── Config ─────────────────────────────────────────────────────────────────
@@ -64,7 +63,7 @@ function todayET() {
 }
 
 // ─── Main ───────────────────────────────────────────────────────────────────
-const handler = async (event, context) => {
+export default async (req) => {
   const dateKey = todayET();
   console.log(`🏀 NBA Aggregator Save — ${dateKey}`);
   const bets = [];
@@ -219,10 +218,9 @@ const handler = async (event, context) => {
 
   if (bets.length === 0) {
     console.log('⚠️  No picks found — likely no games today. Skipping save.');
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ ok: true, skipped: true, reason: 'no-picks', date: dateKey }),
-    };
+    return new Response(JSON.stringify({ ok: true, skipped: true, reason: 'no-picks', date: dateKey }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   const store = getStore(STORE_NAME);
@@ -245,20 +243,18 @@ const handler = async (event, context) => {
     console.log(`📋 Index updated: ${index.length} dates`);
   }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      ok: true,
-      date: dateKey,
-      totalPicks: bets.length,
-      totalUnits,
-      sources: meta.sources,
-    }),
-  };
+  return new Response(JSON.stringify({
+    ok: true,
+    date: dateKey,
+    totalPicks: bets.length,
+    totalUnits,
+    sources: meta.sources,
+  }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
 };
 
-// Schedule for noon ET (17:00 UTC) daily
-export default schedule('0 17 * * *', handler);
-
-// Export raw handler for manual HTTP invocation
-export { handler as saveDaily };
+// V2 scheduled function config — noon ET (17:00 UTC) daily
+export const config = {
+  schedule: '0 17 * * *',
+};
