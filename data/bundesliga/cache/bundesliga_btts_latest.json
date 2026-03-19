@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-03-19T10:20:14.688243+00:00",
+  "generated_at": "2026-03-19T22:09:06.414569+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -158,7 +158,7 @@
       "away_team": "Werder Bremen",
       "commence_time": "2026-03-21T14:30:00Z",
       "model_probability": 0.6206609510278477,
-      "dixon_coles_prob": 0.7869996309568574,
+      "dixon_coles_prob": 0.7869996309568575,
       "xgboost_prob": 0.5720000000000001,
       "expected_home_goals": 1.9340491066323833,
       "expected_away_goals": 2.5,
@@ -207,19 +207,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.72,
+        "btts_yes": 1.73,
         "btts_no": 2.02,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5401069518716577,
-      "edge": -0.06367967991699586,
+      "market_probability": 0.5386666666666667,
+      "edge": -0.0622393947120049,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-6.4%, need 5%)"
+        "min_edge (edge=-6.2%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -427,13 +427,13 @@
         "away_season_avg_goals_against": 1.6470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.64,
-        "btts_no": 2.15,
+        "btts_yes": 1.65,
+        "btts_no": 2.13,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5672823218997362,
-      "edge": 0.10926560042498468,
-      "expected_value": 0.06662536611279554,
+      "market_probability": 0.5634920634920635,
+      "edge": 0.11305585883265734,
+      "expected_value": 0.06851870232282263,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -487,11 +487,11 @@
       "home_team": "TSG Hoffenheim",
       "away_team": "FSV Mainz 05",
       "commence_time": "2026-04-04T13:30:00Z",
-      "model_probability": 0.7219959688541517,
-      "dixon_coles_prob": 0.7971852190779166,
+      "model_probability": 0.7219959688541516,
+      "dixon_coles_prob": 0.7971852190779165,
       "xgboost_prob": 0.7000000000000001,
       "expected_home_goals": 3.552335093814582,
-      "expected_away_goals": 1.7142857142857142,
+      "expected_away_goals": 1.714285714285714,
       "key_features": {
         "combined_form_btts_rate": 0.8,
         "home_form_btts_rate": 0.8,
@@ -505,8 +505,8 @@
         "bookmaker": "onexbet"
       },
       "market_probability": 0.6202531645569621,
-      "edge": 0.10174280429718963,
-      "expected_value": 0.06782853619812641,
+      "edge": 0.10174280429718952,
+      "expected_value": 0.06782853619812634,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -561,7 +561,7 @@
       "away_team": "Borussia Dortmund",
       "commence_time": "2026-04-04T16:30:00Z",
       "model_probability": 0.6007255387550718,
-      "dixon_coles_prob": 0.6168789402375496,
+      "dixon_coles_prob": 0.6168789402375495,
       "xgboost_prob": 0.5960000000000001,
       "expected_home_goals": 1.6577563771134718,
       "expected_away_goals": 1.4,
@@ -793,13 +793,13 @@
         "away_season_avg_goals_against": 1.6470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.64,
-        "btts_no": 2.15,
+        "btts_yes": 1.65,
+        "btts_no": 2.13,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5672823218997362,
-      "edge": 0.10926560042498468,
-      "expected_value": 0.06662536611279554,
+      "market_probability": 0.5634920634920635,
+      "edge": 0.11305585883265734,
+      "expected_value": 0.06851870232282263,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -816,11 +816,11 @@
       "home_team": "TSG Hoffenheim",
       "away_team": "FSV Mainz 05",
       "commence_time": "2026-04-04T13:30:00Z",
-      "model_probability": 0.7219959688541517,
-      "dixon_coles_prob": 0.7971852190779166,
+      "model_probability": 0.7219959688541516,
+      "dixon_coles_prob": 0.7971852190779165,
       "xgboost_prob": 0.7000000000000001,
       "expected_home_goals": 3.552335093814582,
-      "expected_away_goals": 1.7142857142857142,
+      "expected_away_goals": 1.714285714285714,
       "key_features": {
         "combined_form_btts_rate": 0.8,
         "home_form_btts_rate": 0.8,
@@ -834,8 +834,8 @@
         "bookmaker": "onexbet"
       },
       "market_probability": 0.6202531645569621,
-      "edge": 0.10174280429718963,
-      "expected_value": 0.06782853619812641,
+      "edge": 0.10174280429718952,
+      "expected_value": 0.06782853619812634,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
