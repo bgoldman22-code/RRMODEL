@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-03-19T22:09:06.414569+00:00",
+  "generated_at": "2026-03-20T10:18:09.133042+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -23,19 +23,19 @@
         "away_season_avg_goals_against": 1.9411764705882353
       },
       "market_odds": {
-        "btts_yes": 1.36,
-        "btts_no": 2.94,
+        "btts_yes": 1.35,
+        "btts_no": 2.98,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6837209302325581,
-      "edge": 0.17945584028668304,
+      "market_probability": 0.6882217090069285,
+      "edge": 0.17495506151231266,
       "expected_value": null,
       "gates_passed": [
         "min_edge",
         "max_ev_cap"
       ],
       "gates_failed": [
-        "min_odds (odds=1.36, min 1.40)"
+        "min_odds (odds=1.35, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -158,7 +158,7 @@
       "away_team": "Werder Bremen",
       "commence_time": "2026-03-21T14:30:00Z",
       "model_probability": 0.6206609510278477,
-      "dixon_coles_prob": 0.7869996309568575,
+      "dixon_coles_prob": 0.7869996309568574,
       "xgboost_prob": 0.5720000000000001,
       "expected_home_goals": 1.9340491066323833,
       "expected_away_goals": 2.5,
@@ -487,11 +487,11 @@
       "home_team": "TSG Hoffenheim",
       "away_team": "FSV Mainz 05",
       "commence_time": "2026-04-04T13:30:00Z",
-      "model_probability": 0.7219959688541516,
-      "dixon_coles_prob": 0.7971852190779165,
+      "model_probability": 0.7219959688541517,
+      "dixon_coles_prob": 0.7971852190779166,
       "xgboost_prob": 0.7000000000000001,
       "expected_home_goals": 3.552335093814582,
-      "expected_away_goals": 1.714285714285714,
+      "expected_away_goals": 1.7142857142857142,
       "key_features": {
         "combined_form_btts_rate": 0.8,
         "home_form_btts_rate": 0.8,
@@ -505,8 +505,8 @@
         "bookmaker": "onexbet"
       },
       "market_probability": 0.6202531645569621,
-      "edge": 0.10174280429718952,
-      "expected_value": 0.06782853619812634,
+      "edge": 0.10174280429718963,
+      "expected_value": 0.06782853619812641,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -561,7 +561,7 @@
       "away_team": "Borussia Dortmund",
       "commence_time": "2026-04-04T16:30:00Z",
       "model_probability": 0.6007255387550718,
-      "dixon_coles_prob": 0.6168789402375495,
+      "dixon_coles_prob": 0.6168789402375496,
       "xgboost_prob": 0.5960000000000001,
       "expected_home_goals": 1.6577563771134718,
       "expected_away_goals": 1.4,
@@ -816,11 +816,11 @@
       "home_team": "TSG Hoffenheim",
       "away_team": "FSV Mainz 05",
       "commence_time": "2026-04-04T13:30:00Z",
-      "model_probability": 0.7219959688541516,
-      "dixon_coles_prob": 0.7971852190779165,
+      "model_probability": 0.7219959688541517,
+      "dixon_coles_prob": 0.7971852190779166,
       "xgboost_prob": 0.7000000000000001,
       "expected_home_goals": 3.552335093814582,
-      "expected_away_goals": 1.714285714285714,
+      "expected_away_goals": 1.7142857142857142,
       "key_features": {
         "combined_form_btts_rate": 0.8,
         "home_form_btts_rate": 0.8,
@@ -834,8 +834,8 @@
         "bookmaker": "onexbet"
       },
       "market_probability": 0.6202531645569621,
-      "edge": 0.10174280429718952,
-      "expected_value": 0.06782853619812634,
+      "edge": 0.10174280429718963,
+      "expected_value": 0.06782853619812641,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
