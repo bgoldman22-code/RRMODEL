@@ -1,7 +1,41 @@
 {
-  "date": "2026-03-23",
+  "date": "2026-03-24",
   "model": "Variant B",
   "min_edge": 0.1,
-  "picks": [],
-  "note": "No bets passed odds-aware filtering"
+  "kelly_fraction": 0.25,
+  "bankroll": 10000.0,
+  "num_picks": 2,
+  "total_bet_size": 1994,
+  "avg_edge": 0.2744617085048433,
+  "max_edge": 0.315567080343526,
+  "picks": [
+    {
+      "date": "2026-03-26",
+      "home_team": "Nebraska Cornhuskers",
+      "away_team": "Iowa Hawkeyes",
+      "side": "home",
+      "odds": -126,
+      "model_prob": 0.8730892042373313,
+      "implied_prob": 0.5575221238938053,
+      "edge": 0.315567080343526,
+      "kelly_full": 0.3976145212328428,
+      "kelly_applied": 0.0994036303082107,
+      "bet_size_dollars": 994,
+      "market": "home_ml"
+    },
+    {
+      "date": "2026-03-26",
+      "home_team": "Purdue Boilermakers",
+      "away_team": "Texas Longhorns",
+      "side": "home",
+      "odds": -320,
+      "model_prob": 0.9952610985709225,
+      "implied_prob": 0.7619047619047619,
+      "edge": 0.23335633666616062,
+      "kelly_full": 0.746740277331714,
+      "kelly_applied": 0.1,
+      "bet_size_dollars": 1000,
+      "market": "home_ml"
+    }
+  ]
 }
