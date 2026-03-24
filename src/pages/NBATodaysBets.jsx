@@ -93,11 +93,11 @@ export default function NBATodaysBets() {
           data.predictions.forEach(pred => {
             // Extract opportunities (spread, ML, total bets)
             pred.opportunities?.forEach(opp => {
-              // For totals, edgePercent is tiny (pts/line*100 ≈ 0.5-2%)
-              // but these already passed calibration-curve breakeven check.
-              // Use edge in points for totals, edgePercent for spreads/ML.
+              // Use edge in POINTS for spreads & totals (the meaningful metric).
+              // Only moneyline uses edgePercent (win-probability edge).
               const isTotalMarket = opp.market === 'Total' || opp.market?.startsWith('Team Total');
-              const edgeVal = isTotalMarket ? parseFloat(opp.edge) || 0 : (opp.edgePercent || opp.edge || 0);
+              const isML = opp.market === 'Moneyline';
+              const edgeVal = isML ? (opp.edgePercent || opp.edge || 0) : (parseFloat(opp.edge) || 0);
               // Elite V2.1 totals already filtered by calibration curve (>52.38% WR).
               // Only apply min-edge filter to non-total markets.
               if (!isTotalMarket && edgeVal < 2) return;

@@ -201,9 +201,10 @@ const NBAPredictionsV2 = () => {
       const allBets = [];
       predictions.forEach(pred => {
         pred.opportunities?.forEach(opp => {
-          // For totals, edgePercent is tiny (pts/line*100), use edge in pts instead
-          const isTotalMkt = opp.market === 'Total' || opp.market?.startsWith('Team Total');
-          const edgeVal = isTotalMkt ? parseFloat(opp.edge) || 0 : (opp.edgePercent || opp.edge || 0);
+          // Use edge in POINTS for spreads & totals (the meaningful metric).
+          // Only moneyline uses edgePercent (win-probability edge).
+          const isML = opp.market === 'Moneyline';
+          const edgeVal = isML ? (opp.edgePercent || opp.edge || 0) : (parseFloat(opp.edge) || 0);
           const category = edgeVal > 5 ? 'STRONG' : opp.units === 0 ? 'TRACK' : 'CONSIDER';
           const oddsStr = opp.odds > 0 ? `+${opp.odds}` : `${opp.odds}`;
           
@@ -409,9 +410,9 @@ const NBAPredictionsV2 = () => {
             <strong>{opp.market}: {pickDisplay}</strong>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
               <span>Edge: <span className="edge-value">{
-                (opp.market === 'Total' || opp.market?.startsWith('Team Total'))
-                  ? `${opp.edge} pts`
-                  : `${opp.edgePercent?.toFixed(1) || opp.edge}%`
+                opp.market === 'Moneyline'
+                  ? `${opp.edgePercent?.toFixed(1) || opp.edge}%`
+                  : `${opp.edge} pts`
               }</span></span>
               <span>Odds: {opp.odds > 0 ? '+' : ''}{opp.odds}</span>
               <span>{opp.book}</span>
@@ -511,9 +512,9 @@ const NBAPredictionsV2 = () => {
         </div>
       );
       
-      // For totals, use edge in points for threshold check
-      const isTotalMarket = opp.market === 'Total' || opp.market?.startsWith('Team Total');
-      const edgeCheck = isTotalMarket ? parseFloat(opp.edge) || 0 : (opp.edgePercent || opp.edge);
+      // Use edge in points for spreads & totals, edgePercent for ML
+      const isMLMarket = opp.market === 'Moneyline';
+      const edgeCheck = isMLMarket ? (opp.edgePercent || opp.edge) : (parseFloat(opp.edge) || 0);
       if (edgeCheck > 5) {
         recommendedBets.push(betCard);
       } else {
