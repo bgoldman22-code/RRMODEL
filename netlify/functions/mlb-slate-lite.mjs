@@ -91,10 +91,11 @@ export default async (req) => {
     const capProb = Number(url.searchParams.get("cap")) || 0.40;
 
     // Cache check (15 min)
-    const cache = getStore('mlb-learning');
+    let cache = null;
+    try{ cache = getStore('mlb-learning'); }catch{ /* Blobs not configured */ }
     const cacheKey = `slates/${date}.json`;
     try{
-      const cached = await cache.get(cacheKey, { type:'json' });
+      const cached = await cache?.get(cacheKey, { type:'json' });
       if(cached && typeof cached.ts==='number' && (Date.now() - cached.ts) < 15*60*1000){
         return ok(cached.payload);
       }
@@ -167,8 +168,34 @@ export default async (req) => {
       }catch{ /* skip chunk on failure */ }
     }
 
+    // 5b) Early-season fallback: if ZERO players have PA in current season,
+    //     re-fetch using prior season so Opening Day still works.
+    const anyPA = [...statById.values()].some(s => s.pa > 0);
+    if(!anyPA && season > 2020){
+      const fallbackSeason = season - 1;
+      console.log(`⚠️ No ${season} stats yet — falling back to ${fallbackSeason}`);
+      for(const chunk of chunks){
+        try{
+          const pj = await fetchJSON(PEOPLE(chunk, fallbackSeason));
+          for(const p of (pj?.people||[])){
+            const id = p?.id;
+            const name = p?.fullName || p?.firstLastName || p?.lastFirstName;
+            let hr=0, pa=0;
+            for(const s of (p?.stats||[])){
+              for(const sp of (s?.splits||[])){
+                hr += Number(sp?.stat?.homeRuns||0);
+                pa += Number(sp?.stat?.plateAppearances||0);
+              }
+            }
+            statById.set(id, { name, hr, pa });
+          }
+        }catch{ /* skip chunk on failure */ }
+      }
+    }
+
     // 6) Multiplier sources
-    const learn = getStore('mlb-learning');
+    let learn = null;
+    try{ learn = getStore('mlb-learning'); }catch{ /* Blobs not configured */ }
     const teamToProbPitcher = await getProbablePitcherMap(games);
     const weatherByGamePk = new Map();
     for(const g of games){ weatherByGamePk.set(g.gamePk, await extractWeatherForGame(g)); }
@@ -199,7 +226,7 @@ export default async (req) => {
         try{
           const info = teamToProbPitcher.get(tid);
           if(info && info.pitcherId){
-            const prof = await learn.get(`profiles/pitcher/${info.pitcherId}.json`, { type:'json' }) || null;
+            const prof = await learn?.get(`profiles/pitcher/${info.pitcherId}.json`, { type:'json' }) || null;
             if(prof && typeof prof.samples==='number' && typeof prof.hr==='number'){
               pitcherMult = pitcherHRMultiplier({ samples: prof.samples, hr: prof.hr });
             }
@@ -235,7 +262,7 @@ export default async (req) => {
     }
 
     const payload = { ok:true, date, games: games.length, candidates };
-    try{ await cache.set(cacheKey, JSON.stringify({ ts: Date.now(), payload })); }catch{ /* ignore cache errors */ }
+    try{ await cache?.set(cacheKey, JSON.stringify({ ts: Date.now(), payload })); }catch{ /* ignore cache errors */ }
     return ok(payload);
   }catch(e){
     return ok({ ok:false, error:String(e?.message||e) });

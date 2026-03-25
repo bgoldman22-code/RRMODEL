@@ -229,9 +229,9 @@ export async function handler(event) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ok: true, offseason: true,
-          message: 'MLB offseason — Opening Day 2026 in late March',
+          message: 'MLB offseason — check back once the season starts.',
           date: today, topByProb: [], topByEV: [], recommendations: [],
-          meta: { season: 2026, openingDay: '2026-03-26', gamesCount: 0 }
+          meta: { season, gamesCount: 0 }
         })
       };
     }
@@ -291,8 +291,30 @@ export async function handler(event) {
       } catch { /* skip chunk */ }
     }));
 
+    // 5b) Early-season fallback: if ZERO players have PA in current season,
+    //     re-fetch using prior season so Opening Day still works.
+    const anyPA = [...statById.values()].some(s => s.pa > 0);
+    if (!anyPA && season > 2020) {
+      const fallbackSeason = season - 1;
+      console.log(`⚠️ No ${season} stats yet — falling back to ${fallbackSeason}`);
+      await Promise.all(chunks.map(async chunk => {
+        try {
+          const pj = await fetchJSON(PEOPLE_URL(chunk, fallbackSeason));
+          for (const p of pj?.people || []) {
+            let hr = 0, pa = 0;
+            for (const s of p?.stats || []) for (const sp of s?.splits || []) {
+              hr += Number(sp?.stat?.homeRuns || 0);
+              pa += Number(sp?.stat?.plateAppearances || 0);
+            }
+            statById.set(p.id, { name: p.fullName || p.firstLastName || 'Player', hr, pa });
+          }
+        } catch { /* skip chunk */ }
+      }));
+    }
+
     // ═══ 6) Pitchers, weather, odds, hot/cold in parallel ═
-    const learn = getStore('mlb-learning');
+    let learn = null;
+    try { learn = getStore('mlb-learning'); } catch { /* Blobs not configured — pitcher profiles unavailable */ }
     const [pitcherMap, oddsMap, hotMap] = await Promise.all([
       getProbablePitcherMap(games),
       fetchHROdds(),
@@ -336,7 +358,7 @@ export async function handler(event) {
         try {
           const info = pitcherMap.get(tid);
           if (info?.pitcherId) {
-            const prof = await learn.get(`profiles/pitcher/${info.pitcherId}.json`, { type: 'json' });
+            const prof = await learn?.get(`profiles/pitcher/${info.pitcherId}.json`, { type: 'json' });
             if (prof?.samples && prof?.hr) pitcherMult = pitcherHRMultiplier({ samples: prof.samples, hr: prof.hr });
             pitcherName = info.name || null;
           }

@@ -74,11 +74,11 @@ export async function handler(event) {
       });
     }
 
-    // No data — offseason response
+    // No data — not yet generated
     return json(200, {
       ok: true,
       offseason: true,
-      message: "No F5 ML picks available yet. Check back during the MLB season (April–October).",
+      message: "No F5 ML picks available yet. Picks are generated daily once the season is underway.",
       meta: {
         model_id: "f5_ml_v2_0_0",
         note: "Picks are generated daily during the MLB season via GitHub Actions smart scheduler.",
