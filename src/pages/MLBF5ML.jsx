@@ -158,7 +158,7 @@ const MLBF5ML = () => {
           <div style={{ fontSize: 48, marginBottom: 12 }}>&#9918;</div>
           <h2 style={{ fontSize: 22, color: '#e2e8f0', marginBottom: 8 }}>No F5 ML Picks Today</h2>
           <p style={{ fontSize: 14, lineHeight: 1.6 }}>
-            {data?.message || 'Picks are generated daily during the MLB season (April–October) before first pitch.'}
+            {data?.message || 'F5 ML picks will be available once enough 2026 season data has been collected. Check back soon!'}
           </p>
           <button onClick={fetchPicks} style={{ marginTop: 20, padding: '8px 20px', background: '#1e40af', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
             Refresh

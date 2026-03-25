@@ -13,10 +13,21 @@
  * Called by frontend on-demand; cached 10 min in Netlify Blobs.
  */
 
-import { getStore } from '@netlify/blobs';
 import { pitcherHRMultiplier } from './lib/hrPitcherMultiplier.js';
 import { parkHRFactorForAbbrev } from './lib/parkFactors.js';
 import { weatherHRMultiplier }   from './lib/weatherMultiplier.js';
+
+// Lazy Blobs import — avoids crash when Blobs env isn't configured
+let _getStore = null;
+async function safeGetStore(name) {
+  try {
+    if (!_getStore) {
+      const mod = await import('@netlify/blobs');
+      _getStore = mod.getStore;
+    }
+    return _getStore(name);
+  } catch { return null; }
+}
 
 // ── API endpoints ──────────────────────────────────────────
 const MLB_API      = 'https://statsapi.mlb.com/api/v1';
@@ -213,8 +224,8 @@ export async function handler(event) {
     // ── Cache check (10 min) ───────────────────────────────
     if (!forceRefresh) {
       try {
-        const store = getStore('mlb-rr-predictions');
-        const cached = await store.get('latest', { type: 'json' });
+        const store = await safeGetStore('mlb-rr-predictions');
+        const cached = await store?.get('latest', { type: 'json' });
         if (cached && cached.date === today && typeof cached.ts === 'number' && (Date.now() - cached.ts) < 10 * 60 * 1000) {
           console.log('✅ RR cache hit');
           return { statusCode: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' }, body: JSON.stringify({ ...cached, cached: true }) };
@@ -314,7 +325,7 @@ export async function handler(event) {
 
     // ═══ 6) Pitchers, weather, odds, hot/cold in parallel ═
     let learn = null;
-    try { learn = getStore('mlb-learning'); } catch { /* Blobs not configured — pitcher profiles unavailable */ }
+    try { learn = await safeGetStore('mlb-learning'); } catch { /* Blobs not configured — pitcher profiles unavailable */ }
     const [pitcherMap, oddsMap, hotMap] = await Promise.all([
       getProbablePitcherMap(games),
       fetchHROdds(),
@@ -416,8 +427,8 @@ export async function handler(event) {
       },
     };
     try {
-      const store = getStore('mlb-rr-predictions');
-      await store.set('latest', JSON.stringify({ ...payload, ts: Date.now() }));
+      const store = await safeGetStore('mlb-rr-predictions');
+      if (store) await store.set('latest', JSON.stringify({ ...payload, ts: Date.now() }));
     } catch { /* cache write failure is non-fatal */ }
 
     return { statusCode: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' }, body: JSON.stringify(payload) };
