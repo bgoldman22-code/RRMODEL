@@ -152,14 +152,25 @@ const MLBF5ML = () => {
 
   // ── OFFSEASON / NO DATA ───────────────────────────────────
   if (data?.offseason || !data?.picks?.length) {
+    const ranToday = data?.game_date && !data?.offseason;
+    const reason = data?.meta?.reason || '';
     return (
       <div style={{ background: '#0a0e27', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <div style={{ textAlign: 'center', color: '#94a3b8', maxWidth: 450 }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>&#9918;</div>
-          <h2 style={{ fontSize: 22, color: '#e2e8f0', marginBottom: 8 }}>No F5 ML Picks Today</h2>
+          <h2 style={{ fontSize: 22, color: '#e2e8f0', marginBottom: 8 }}>
+            {ranToday ? 'No Qualifying Picks Today' : 'No F5 ML Picks Today'}
+          </h2>
           <p style={{ fontSize: 14, lineHeight: 1.6 }}>
-            {data?.message || 'F5 ML picks will be available once enough 2026 season data has been collected. Check back soon!'}
+            {ranToday
+              ? `The model ran for ${data.game_date} (${data.run_label || 'latest'}) but no picks met the EV ≥ 10% / Edge ≥ 7% thresholds.${reason ? ' (' + reason + ')' : ''} Check back before the next slate.`
+              : (data?.message || 'F5 ML picks will be available once enough 2026 season data has been collected. Check back soon!')}
           </p>
+          {ranToday && data?.meta?.games_scored != null && (
+            <p style={{ fontSize: 12, color: '#64748b', marginTop: 8 }}>
+              Games scored: {data.meta.games_scored} / {data.meta.games_on_slate || '?'}
+            </p>
+          )}
           <button onClick={fetchPicks} style={{ marginTop: 20, padding: '8px 20px', background: '#1e40af', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
             Refresh
           </button>

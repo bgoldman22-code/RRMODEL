@@ -116,14 +116,10 @@ async function main() {
   });
   console.log(`  ✅  ${snapshotKey}`);
 
-  // 2) Only overwrite latest if we have picks
-  if (pickCount > 0) {
-    const latestKey = "mlb/f5_ml/latest.json";
-    await store.set(latestKey, raw, { contentType: "application/json" });
-    console.log(`  ✅  ${latestKey}  (updated — ${pickCount} picks)`);
-  } else {
-    console.log(`  ⚠️   Skipped latest.json — 0 picks (keeping previous version)`);
-  }
+  // 2) Always overwrite latest so the frontend knows we ran today
+  const latestKey = "mlb/f5_ml/latest.json";
+  await store.set(latestKey, raw, { contentType: "application/json" });
+  console.log(`  ✅  ${latestKey}  (updated — ${pickCount} picks)`);
 
   // 3) Summary line
   console.log(
