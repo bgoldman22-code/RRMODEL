@@ -241,14 +241,60 @@ def generate(
 
     logger.info("F5 ML generate: date=%s label=%s ev≥%.2f edge≥%.2f", game_date, run_label, ev_min, edge_min)
 
-    # 2. Load features
-    features_path = _ensure_data_file("mlb/f5_ml/data/features_v2.parquet", "features_v2.parquet")
-    feats = pd.read_parquet(features_path)
-    feats["game_date"] = pd.to_datetime(feats["game_date"], errors="coerce")
     target_ts = pd.Timestamp(game_date)
-    feats = feats[feats["game_date"].dt.normalize() == target_ts].copy()
 
-    if feats.empty:
+    # 2. Load features — try historical parquet first, fall back to live builder
+    feats = None
+    live_path = CACHE_DIR / f"live_features_{game_date}.parquet"
+
+    # Check if we already have freshly built live features (< 2 hours old)
+    if live_path.exists():
+        age_hours = (time.time() - live_path.stat().st_mtime) / 3600
+        if age_hours < 2:
+            logger.info("Using cached live features (%.1f hours old): %s", age_hours, live_path)
+            feats = pd.read_parquet(live_path)
+
+    # Try the historical parquet
+    if feats is None:
+        try:
+            features_path = _ensure_data_file("mlb/f5_ml/data/features_v2.parquet", "features_v2.parquet")
+            hist = pd.read_parquet(features_path)
+            hist["game_date"] = pd.to_datetime(hist["game_date"], errors="coerce")
+            hist = hist[hist["game_date"].dt.normalize() == target_ts].copy()
+            if not hist.empty:
+                feats = hist
+                logger.info("Using historical parquet: %d rows for %s", len(feats), game_date)
+        except FileNotFoundError:
+            logger.info("No historical features parquet available")
+
+    # If still no features, invoke live builder
+    if feats is None or feats.empty:
+        logger.info("No historical features for %s — invoking live feature builder…", game_date)
+        try:
+            from build_live_features import build_features_for_date
+            feats = build_features_for_date(game_date)
+            if not feats.empty:
+                CACHE_DIR.mkdir(parents=True, exist_ok=True)
+                feats.to_parquet(live_path, index=False)
+                logger.info("Live features built & cached: %d games → %s", len(feats), live_path)
+        except ImportError:
+            logger.warning("build_live_features not importable — trying subprocess fallback")
+            import subprocess
+            builder = Path(__file__).parent / "build_live_features.py"
+            result_code = subprocess.call(
+                [sys.executable, str(builder), "--date", game_date, "--outdir", str(CACHE_DIR)],
+                cwd=str(REPO_ROOT),
+            )
+            if result_code == 0 and live_path.exists():
+                feats = pd.read_parquet(live_path)
+                logger.info("Live features built via subprocess: %d games", len(feats))
+            else:
+                feats = pd.DataFrame()
+        except Exception as e:
+            logger.error("Live feature builder failed: %s", e)
+            feats = pd.DataFrame()
+
+    if feats is None or feats.empty:
         return _empty_response(cfg, game_date, run_label, ts_start,
                                first_pitch_et, last_pitch_et, games_count, "No feature rows for date")
 

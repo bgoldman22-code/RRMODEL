@@ -69,7 +69,15 @@ jobs:
         if: steps.decide.outputs.SHOULD_RUN == 'true'
         run: |
           pip install --upgrade pip
-          pip install pandas scikit-learn joblib numpy pyarrow requests
+          pip install pandas scikit-learn joblib numpy pyarrow requests pybaseball
+
+      # ── 5b. Build live features (Statcast + MLB API) ──────
+      - name: Build live features
+        if: steps.decide.outputs.SHOULD_RUN == 'true'
+        run: |
+          python scripts/mlb_f5/build_live_features.py \
+            --date "${{ steps.decide.outputs.TARGET_DATE }}" \
+            --outdir tmp/f5_ml_cache
 
       # ── 6. Generate picks ─────────────────────────────────
       - name: Generate F5 ML picks
