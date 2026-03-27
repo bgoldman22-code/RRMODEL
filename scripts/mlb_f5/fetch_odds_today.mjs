@@ -161,40 +161,100 @@ async function fetchMLBSchedule(dateStr) {
 // FETCH THEODDSAPI F5 ML ODDS
 // ──────────────────────────────────────────────────────────────
 
-async function fetchF5Odds(apiKey) {
+/**
+ * h2h_1st_5_innings is a "Game Period Market" (additional market).
+ * TheOddsAPI requires these to be fetched per-event via
+ *   /v4/sports/{sport}/events/{eventId}/odds
+ * NOT the bulk /v4/sports/{sport}/odds endpoint.
+ *
+ * Strategy:
+ *   1) Fetch all live/upcoming event IDs from /v4/sports/{sport}/events
+ *   2) For each event, fetch F5 odds via /v4/sports/{sport}/events/{id}/odds
+ */
+
+async function fetchEventList(apiKey) {
   const url =
-    `${ODDS_API_BASE}/sports/${SPORT}/odds` +
-    `?apiKey=${apiKey}` +
-    `&regions=${REGION}` +
-    `&markets=${MARKET}` +
-    `&oddsFormat=american`;
+    `${ODDS_API_BASE}/sports/${SPORT}/events` +
+    `?apiKey=${apiKey}`;
 
-  console.log(`🎰  Fetching F5 ML odds from TheOddsAPI…`);
-
+  console.log(`📋  Fetching MLB event list from TheOddsAPI…`);
   const resp = await fetch(url);
 
-  // Log quota headers
   const remaining = resp.headers.get("x-requests-remaining");
   const used      = resp.headers.get("x-requests-used");
   const last      = resp.headers.get("x-requests-last");
   console.log(`  Quota: used=${used}, remaining=${remaining}, cost=${last}`);
 
+  if (!resp.ok) {
+    const body = await resp.text().catch(() => "");
+    throw new Error(`TheOddsAPI events error: HTTP ${resp.status} — ${body}`);
+  }
+
+  const events = await resp.json();
+  if (!Array.isArray(events)) {
+    throw new Error(`TheOddsAPI events returned non-array: ${typeof events}`);
+  }
+  console.log(`  Found ${events.length} MLB event(s)`);
+  return events;
+}
+
+async function fetchF5OddsPerEvent(apiKey, eventId) {
+  const url =
+    `${ODDS_API_BASE}/sports/${SPORT}/events/${eventId}/odds` +
+    `?apiKey=${apiKey}` +
+    `&regions=${REGION}` +
+    `&markets=${MARKET}` +
+    `&oddsFormat=american`;
+
+  const resp = await fetch(url);
+
+  if (resp.status === 404) {
+    // Event may have already started / no odds available
+    return null;
+  }
   if (resp.status === 429) {
     throw new Error("TheOddsAPI rate limited (429). Try again later.");
   }
   if (!resp.ok) {
     const body = await resp.text().catch(() => "");
-    throw new Error(`TheOddsAPI error: HTTP ${resp.status} — ${body}`);
+    console.warn(`  ⚠️  Event ${eventId}: HTTP ${resp.status} — ${body}`);
+    return null;
   }
 
-  const events = await resp.json();
+  return resp.json();
+}
 
-  if (!Array.isArray(events)) {
-    throw new Error(`TheOddsAPI returned non-array: ${typeof events}`);
+async function fetchF5Odds(apiKey) {
+  // 1) Get all events
+  const eventList = await fetchEventList(apiKey);
+  if (eventList.length === 0) return [];
+
+  // 2) Fetch F5 odds per event (sequentially to be kind to rate limits)
+  console.log(`🎰  Fetching F5 ML odds per event (${eventList.length} events)…`);
+  const eventsWithOdds = [];
+  let oddsFound = 0;
+  let oddsEmpty = 0;
+
+  for (const evt of eventList) {
+    const eventOdds = await fetchF5OddsPerEvent(apiKey, evt.id);
+    if (eventOdds && eventOdds.bookmakers && eventOdds.bookmakers.length > 0) {
+      // Check if any bookmaker actually has the F5 market
+      const hasF5 = eventOdds.bookmakers.some(bk =>
+        bk.markets?.some(m => m.key === MARKET)
+      );
+      if (hasF5) {
+        eventsWithOdds.push(eventOdds);
+        oddsFound++;
+      } else {
+        oddsEmpty++;
+      }
+    } else {
+      oddsEmpty++;
+    }
   }
 
-  console.log(`  Received ${events.length} event(s) with F5 odds`);
-  return events;
+  console.log(`  F5 odds: ${oddsFound} events with odds, ${oddsEmpty} without`);
+  return eventsWithOdds;
 }
 
 // ──────────────────────────────────────────────────────────────
