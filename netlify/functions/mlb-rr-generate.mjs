@@ -132,27 +132,65 @@ function generateWHY({ probability, ev, parkMult, pitcherName, weatherMult, seas
 }
 
 // ── Fetch HR odds from TheOddsAPI ──────────────────────────
-async function fetchHROdds() {
+// Uses per-event endpoint with batter_home_runs market for real prop odds
+async function fetchHROdds(games) {
   if (!ODDS_API_KEY) { console.log('⚠️ No ODDS_API_KEY — odds will be model-only'); return new Map(); }
+  const byPlayer = new Map(); // normalized name → { odds:[], books:Set }
+  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[.]/g, '').trim();
+
   try {
-    const url = `${ODDS_API_URL}/sports/baseball_mlb/odds?apiKey=${ODDS_API_KEY}&regions=us&markets=player_home_runs&oddsFormat=american`;
-    const data = await fetchJSON(url, 12000);
-    const byPlayer = new Map(); // normalized name → { odds:[], books:Set }
-    const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[.]/g, '').trim();
-    for (const game of data || []) {
-      for (const bk of game.bookmakers || []) {
-        for (const mkt of bk.markets || []) {
-          if (mkt.key !== 'player_home_runs') continue;
-          for (const o of mkt.outcomes || []) {
-            const key = norm(o.description);
-            if (!byPlayer.has(key)) byPlayer.set(key, { odds: [], books: new Set() });
-            const rec = byPlayer.get(key);
-            rec.odds.push(o.price);
-            rec.books.add(bk.key);
+    // Step 1: Get OddsAPI event list to map MLB games → OddsAPI event IDs
+    const eventsUrl = `${ODDS_API_URL}/sports/baseball_mlb/events?apiKey=${ODDS_API_KEY}`;
+    const oddsEvents = await fetchJSON(eventsUrl, 10000);
+    if (!oddsEvents?.length) {
+      console.log('⚠️ No OddsAPI events found for MLB');
+      return new Map();
+    }
+
+    // Build lookup: "away @ home" → eventId
+    const eventMap = new Map();
+    for (const ev of oddsEvents) {
+      const key = `${norm(ev.away_team)}@${norm(ev.home_team)}`;
+      eventMap.set(key, ev.id);
+      // Also store by home/away individually for fuzzy matching
+      eventMap.set(norm(ev.home_team), ev.id);
+      eventMap.set(norm(ev.away_team), ev.id);
+    }
+
+    // Step 2: For each game, fetch per-event batter_home_runs odds
+    const teamAbbrevToName = new Map(); // populated during schedule fetch
+    const eventIds = new Set();
+    for (const ev of oddsEvents) eventIds.add(ev.id);
+
+    // Fetch HR odds per event (limit parallel requests to avoid rate limiting)
+    const batchSize = 5;
+    const eventList = [...eventIds];
+    for (let i = 0; i < eventList.length; i += batchSize) {
+      const batch = eventList.slice(i, i + batchSize);
+      const results = await Promise.allSettled(batch.map(async (eid) => {
+        const url = `${ODDS_API_URL}/sports/baseball_mlb/events/${eid}/odds?apiKey=${ODDS_API_KEY}&regions=us&markets=batter_home_runs&oddsFormat=american`;
+        return fetchJSON(url, 10000);
+      }));
+      for (const res of results) {
+        if (res.status !== 'fulfilled' || !res.value) continue;
+        const game = res.value;
+        for (const bk of game.bookmakers || []) {
+          for (const mkt of bk.markets || []) {
+            if (mkt.key !== 'batter_home_runs') continue;
+            for (const o of mkt.outcomes || []) {
+              if (o.name !== 'Over' || o.point !== 0.5) continue; // "Over 0.5 HR" = anytime HR
+              const key = norm(o.description);
+              if (!key) continue;
+              if (!byPlayer.has(key)) byPlayer.set(key, { odds: [], books: new Set() });
+              const rec = byPlayer.get(key);
+              rec.odds.push(o.price);
+              rec.books.add(bk.key);
+            }
           }
         }
       }
     }
+
     // Compute median odds per player
     const out = new Map();
     for (const [key, rec] of byPlayer) {
@@ -161,6 +199,7 @@ async function fetchHROdds() {
       const median = sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
       out.set(key, { american: median, books: rec.books.size });
     }
+    console.log(`📊 OddsAPI: ${out.size} players with real HR odds from ${eventList.length} events`);
     return out;
   } catch (e) { console.error('OddsAPI error:', e.message); return new Map(); }
 }
@@ -283,11 +322,17 @@ export async function handler(event) {
       } catch { rosterByTeam.set(tid, []); }
     }));
 
-    // ═══ 5) Season stats ═══════════════════════════════════
+    // ═══ 5) Season stats + prior-season blending ════════════
+    // Early in the season, blend current stats with prior year.
+    // Weight phases out linearly: 100% prior on Opening Day → 0% after ~200 PA.
+    const BLEND_PA_THRESHOLD = 200; // after this many PA, use 100% current season
     const allPids = [...new Set(teamIds.flatMap(tid => (rosterByTeam.get(tid) || []).map(r => r?.person?.id).filter(Boolean)))];
     const statById = new Map();
+    const priorStatById = new Map();
     const chunks = [];
     for (let i = 0; i < allPids.length; i += 100) chunks.push(allPids.slice(i, i + 100));
+
+    // Fetch current season stats
     await Promise.all(chunks.map(async chunk => {
       try {
         const pj = await fetchJSON(PEOPLE_URL(chunk, season));
@@ -302,25 +347,57 @@ export async function handler(event) {
       } catch { /* skip chunk */ }
     }));
 
-    // 5b) Early-season fallback: if ZERO players have PA in current season,
-    //     re-fetch using prior season so Opening Day still works.
-    const anyPA = [...statById.values()].some(s => s.pa > 0);
-    if (!anyPA && season > 2020) {
-      const fallbackSeason = season - 1;
-      console.log(`⚠️ No ${season} stats yet — falling back to ${fallbackSeason}`);
+    // Always fetch prior season to blend early-season
+    const priorSeason = season - 1;
+    if (priorSeason >= 2020) {
       await Promise.all(chunks.map(async chunk => {
         try {
-          const pj = await fetchJSON(PEOPLE_URL(chunk, fallbackSeason));
+          const pj = await fetchJSON(PEOPLE_URL(chunk, priorSeason));
           for (const p of pj?.people || []) {
             let hr = 0, pa = 0;
             for (const s of p?.stats || []) for (const sp of s?.splits || []) {
               hr += Number(sp?.stat?.homeRuns || 0);
               pa += Number(sp?.stat?.plateAppearances || 0);
             }
-            statById.set(p.id, { name: p.fullName || p.firstLastName || 'Player', hr, pa });
+            priorStatById.set(p.id, { hr, pa });
           }
         } catch { /* skip chunk */ }
       }));
+    }
+
+    // 5b) Blend: weight current season more as PA accumulates
+    //     blendedHR/PA = w_curr × (currHR, currPA) + w_prior × (priorHR, priorPA)
+    //     where w_curr = min(1, currPA / BLEND_PA_THRESHOLD)
+    //     and w_prior = 1 - w_curr
+    for (const [pid, curr] of statById) {
+      const prior = priorStatById.get(pid);
+      if (!prior || prior.pa === 0) continue; // no prior data, keep current as-is
+      const wCurr = Math.min(1.0, curr.pa / BLEND_PA_THRESHOLD);
+      const wPrior = 1.0 - wCurr;
+      if (wPrior <= 0) continue; // current season has enough data
+
+      // Weighted blend: treat prior season as a rate, scale to comparable PA sample
+      const priorRate = prior.hr / prior.pa;
+      const currRate = curr.pa > 0 ? curr.hr / curr.pa : 0;
+      const blendedRate = wCurr * currRate + wPrior * priorRate;
+      // Use effective PA = current PA + weighted prior contribution
+      const effectivePA = curr.pa + Math.round(wPrior * Math.min(prior.pa, 500));
+      const effectiveHR = Math.round(blendedRate * effectivePA);
+      statById.set(pid, { ...curr, hr: effectiveHR, pa: effectivePA, blended: true, wPrior: Math.round(wPrior * 100) });
+    }
+
+    // Handle true Opening Day (zero current PA) — use 100% prior season
+    const anyPA = [...statById.values()].some(s => s.pa > 0);
+    if (!anyPA) {
+      console.log(`⚠️ No ${season} stats yet — using 100% ${priorSeason} data`);
+      for (const [pid, prior] of priorStatById) {
+        const curr = statById.get(pid);
+        if (curr) statById.set(pid, { ...curr, hr: prior.hr, pa: prior.pa, blended: true, wPrior: 100 });
+      }
+    } else {
+      const blendCount = [...statById.values()].filter(s => s.blended).length;
+      const avgPrior = blendCount > 0 ? Math.round([...statById.values()].filter(s => s.blended).reduce((s, v) => s + v.wPrior, 0) / blendCount) : 0;
+      if (blendCount > 0) console.log(`📊 Blended ${blendCount} players with ${priorSeason} data (avg ${avgPrior}% prior weight)`);
     }
 
     // ═══ 6) Pitchers, weather, odds, hot/cold in parallel ═
@@ -328,7 +405,7 @@ export async function handler(event) {
     try { learn = await safeGetStore('mlb-learning'); } catch { /* Blobs not configured — pitcher profiles unavailable */ }
     const [pitcherMap, oddsMap, hotMap] = await Promise.all([
       getProbablePitcherMap(games),
-      fetchHROdds(),
+      fetchHROdds(games),
       getHotColdBulk(allPids),
     ]);
     // Weather per game (sequential — each hits live feed)
@@ -406,6 +483,7 @@ export async function handler(event) {
           game: gameLabel,
           starter: starterFacing,
           booksCount: oddsRec?.books || 0,
+          oddsSource: oddsRec ? 'live' : 'model',
         });
       }
     }
@@ -422,6 +500,7 @@ export async function handler(event) {
         gamesCount: games.length,
         candidatesCount: candidates.length,
         oddsAvailable: oddsMap.size > 0,
+        oddsPlayerCount: oddsMap.size,
         season,
         generatedAt: new Date().toISOString(),
       },

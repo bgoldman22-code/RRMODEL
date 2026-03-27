@@ -139,6 +139,7 @@ export default async (req) => {
     }
 
     // 5) Stats for hitters
+    const BLEND_PA_THRESHOLD = 200;
     const allIds = [];
     for(const tid of teamIds){
       for(const r of (rosterByTeam.get(tid)||[])){
@@ -150,6 +151,9 @@ export default async (req) => {
     const chunks = [];
     for(let i=0;i<uniqueIds.length;i+=100) chunks.push(uniqueIds.slice(i,i+100));
     const statById = new Map();
+    const priorStatById = new Map();
+
+    // Current season stats
     for(const chunk of chunks){
       try{
         const pj = await fetchJSON(PEOPLE(chunk, season));
@@ -168,18 +172,14 @@ export default async (req) => {
       }catch{ /* skip chunk on failure */ }
     }
 
-    // 5b) Early-season fallback: if ZERO players have PA in current season,
-    //     re-fetch using prior season so Opening Day still works.
-    const anyPA = [...statById.values()].some(s => s.pa > 0);
-    if(!anyPA && season > 2020){
-      const fallbackSeason = season - 1;
-      console.log(`⚠️ No ${season} stats yet — falling back to ${fallbackSeason}`);
+    // Prior season stats (always fetch for blending)
+    const priorSeason = season - 1;
+    if(priorSeason >= 2020){
       for(const chunk of chunks){
         try{
-          const pj = await fetchJSON(PEOPLE(chunk, fallbackSeason));
+          const pj = await fetchJSON(PEOPLE(chunk, priorSeason));
           for(const p of (pj?.people||[])){
             const id = p?.id;
-            const name = p?.fullName || p?.firstLastName || p?.lastFirstName;
             let hr=0, pa=0;
             for(const s of (p?.stats||[])){
               for(const sp of (s?.splits||[])){
@@ -187,9 +187,34 @@ export default async (req) => {
                 pa += Number(sp?.stat?.plateAppearances||0);
               }
             }
-            statById.set(id, { name, hr, pa });
+            priorStatById.set(id, { hr, pa });
           }
         }catch{ /* skip chunk on failure */ }
+      }
+    }
+
+    // 5b) Blend current + prior season stats (phases out over ~200 PA)
+    for(const [pid, curr] of statById){
+      const prior = priorStatById.get(pid);
+      if(!prior || prior.pa === 0) continue;
+      const wCurr = Math.min(1.0, curr.pa / BLEND_PA_THRESHOLD);
+      const wPrior = 1.0 - wCurr;
+      if(wPrior <= 0) continue;
+      const priorRate = prior.hr / prior.pa;
+      const currRate = curr.pa > 0 ? curr.hr / curr.pa : 0;
+      const blendedRate = wCurr * currRate + wPrior * priorRate;
+      const effectivePA = curr.pa + Math.round(wPrior * Math.min(prior.pa, 500));
+      const effectiveHR = Math.round(blendedRate * effectivePA);
+      statById.set(pid, { ...curr, hr: effectiveHR, pa: effectivePA });
+    }
+
+    // Handle true Opening Day (zero current PA)
+    const anyPA = [...statById.values()].some(s => s.pa > 0);
+    if(!anyPA){
+      console.log(`⚠️ No ${season} stats yet — using 100% ${priorSeason} data`);
+      for(const [pid, prior] of priorStatById){
+        const curr = statById.get(pid);
+        if(curr) statById.set(pid, { ...curr, hr: prior.hr, pa: prior.pa });
       }
     }
 
