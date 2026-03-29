@@ -1,9 +1,687 @@
 {
   "season": "20252026",
-  "generatedAt": "2026-03-28T14:18:18.498Z",
+  "generatedAt": "2026-03-29T14:19:19.850Z",
   "totalPlayers": 35,
-  "teams": 22,
+  "teams": 27,
   "players": [
+    {
+      "playerId": 8479370,
+      "name": "Tyson Jost",
+      "team": "NSH",
+      "position": "C",
+      "sweaterNumber": 17,
+      "season": {
+        "playerId": 8479370,
+        "gamesPlayed": 60,
+        "goals": 7,
+        "assists": 5,
+        "points": 12,
+        "shots": 75,
+        "shootingPct": 0,
+        "plusMinus": -15,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "shortHandedGoals": 0,
+        "gameWinningGoals": 0,
+        "avgToi": "0:00",
+        "faceoffWinPct": 0,
+        "shotsPerGame": "1.25",
+        "pointsPerGame": "0.20"
+      },
+      "L5": {
+        "shots": "1.80",
+        "points": "0.20",
+        "toi": "16.2",
+        "games": 5
+      },
+      "L10": {
+        "shots": "1.80",
+        "points": "0.40",
+        "toi": "15.0",
+        "games": 10
+      },
+      "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "19:11",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021144,
+          "gameDate": "2026-03-26",
+          "opponent": "NJD",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "14:36",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021129,
+          "gameDate": "2026-03-24",
+          "opponent": "SJS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "17:51",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021113,
+          "gameDate": "2026-03-22",
+          "opponent": "CHI",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "15:05",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021100,
+          "gameDate": "2026-03-21",
+          "opponent": "VGK",
+          "homeRoad": "H",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 4,
+          "toi": "14:20",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021087,
+          "gameDate": "2026-03-19",
+          "opponent": "SEA",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "16:08",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021071,
+          "gameDate": "2026-03-17",
+          "opponent": "WPG",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "17:42",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021061,
+          "gameDate": "2026-03-15",
+          "opponent": "EDM",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "12:03",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021038,
+          "gameDate": "2026-03-12",
+          "opponent": "VAN",
+          "homeRoad": "R",
+          "goals": 2,
+          "assists": 0,
+          "points": 2,
+          "shots": 4,
+          "toi": "13:00",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021024,
+          "gameDate": "2026-03-10",
+          "opponent": "SEA",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 2,
+          "toi": "9:52",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        }
+      ],
+      "lastUpdated": "2026-03-29T14:18:11.723Z"
+    },
+    {
+      "playerId": 8483465,
+      "name": "Joakim Kemell",
+      "team": "NSH",
+      "position": "R",
+      "sweaterNumber": 25,
+      "season": {
+        "playerId": 8483465,
+        "gamesPlayed": 7,
+        "goals": 0,
+        "assists": 0,
+        "points": 0,
+        "shots": 4,
+        "shootingPct": 0,
+        "plusMinus": -2,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "shortHandedGoals": 0,
+        "gameWinningGoals": 0,
+        "avgToi": "0:00",
+        "faceoffWinPct": 0,
+        "shotsPerGame": "0.57",
+        "pointsPerGame": "0.00"
+      },
+      "L5": {
+        "shots": "0.60",
+        "points": "0.00",
+        "toi": "11.2",
+        "games": 5
+      },
+      "L10": {
+        "shots": "0.57",
+        "points": "0.00",
+        "toi": "11.1",
+        "games": 7
+      },
+      "recentGames": [
+        {
+          "gameId": 2025021129,
+          "gameDate": "2026-03-24",
+          "opponent": "SJS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "13:19",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021113,
+          "gameDate": "2026-03-22",
+          "opponent": "CHI",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "7:59",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021024,
+          "gameDate": "2026-03-10",
+          "opponent": "SEA",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "7:11",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020992,
+          "gameDate": "2026-03-07",
+          "opponent": "BUF",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "15:00",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020979,
+          "gameDate": "2026-03-05",
+          "opponent": "BOS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "12:24",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020041,
+          "gameDate": "2025-10-13",
+          "opponent": "OTT",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "9:46",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025020016,
+          "gameDate": "2025-10-09",
+          "opponent": "CBJ",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "12:22",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        }
+      ],
+      "lastUpdated": "2026-03-29T14:18:11.896Z"
+    },
+    {
+      "playerId": 8482742,
+      "name": "Zachary L'Heureux",
+      "team": "NSH",
+      "position": "L",
+      "sweaterNumber": 68,
+      "season": {
+        "playerId": 8482742,
+        "gamesPlayed": 16,
+        "goals": 2,
+        "assists": 0,
+        "points": 2,
+        "shots": 16,
+        "shootingPct": 0,
+        "plusMinus": 2,
+        "powerPlayGoals": 0,
+        "powerPlayPoints": 0,
+        "shortHandedGoals": 0,
+        "gameWinningGoals": 0,
+        "avgToi": "0:00",
+        "faceoffWinPct": 0,
+        "shotsPerGame": "1.00",
+        "pointsPerGame": "0.13"
+      },
+      "L5": {
+        "shots": "1.40",
+        "points": "0.20",
+        "toi": "14.8",
+        "games": 5
+      },
+      "L10": {
+        "shots": "1.20",
+        "points": "0.10",
+        "toi": "13.7",
+        "games": 10
+      },
+      "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 2,
+          "toi": "13:45",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021144,
+          "gameDate": "2026-03-26",
+          "opponent": "NJD",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "14:08",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021129,
+          "gameDate": "2026-03-24",
+          "opponent": "SJS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "15:51",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021113,
+          "gameDate": "2026-03-22",
+          "opponent": "CHI",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 5,
+          "toi": "15:12",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021100,
+          "gameDate": "2026-03-21",
+          "opponent": "VGK",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "15:15",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021087,
+          "gameDate": "2026-03-19",
+          "opponent": "SEA",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 3,
+          "toi": "12:34",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021071,
+          "gameDate": "2026-03-17",
+          "opponent": "WPG",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "13:07",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021061,
+          "gameDate": "2026-03-15",
+          "opponent": "EDM",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "13:58",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021038,
+          "gameDate": "2026-03-12",
+          "opponent": "VAN",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "8:38",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021024,
+          "gameDate": "2026-03-10",
+          "opponent": "SEA",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "14:51",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        }
+      ],
+      "lastUpdated": "2026-03-29T14:18:15.981Z"
+    },
+    {
+      "playerId": 8476539,
+      "name": "Jonathan Marchessault",
+      "team": "NSH",
+      "position": "C",
+      "sweaterNumber": 81,
+      "season": {
+        "playerId": 8476539,
+        "gamesPlayed": 54,
+        "goals": 11,
+        "assists": 17,
+        "points": 28,
+        "shots": 117,
+        "shootingPct": 0,
+        "plusMinus": -16,
+        "powerPlayGoals": 4,
+        "powerPlayPoints": 7,
+        "shortHandedGoals": 0,
+        "gameWinningGoals": 1,
+        "avgToi": "0:00",
+        "faceoffWinPct": 0,
+        "shotsPerGame": "2.17",
+        "pointsPerGame": "0.52"
+      },
+      "L5": {
+        "shots": "0.80",
+        "points": "1.00",
+        "toi": "17.2",
+        "games": 5
+      },
+      "L10": {
+        "shots": "1.70",
+        "points": "0.90",
+        "toi": "17.0",
+        "games": 10
+      },
+      "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "17:07",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021144,
+          "gameDate": "2026-03-26",
+          "opponent": "NJD",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "17:45",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021129,
+          "gameDate": "2026-03-24",
+          "opponent": "SJS",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 3,
+          "points": 3,
+          "shots": 1,
+          "toi": "14:44",
+          "plusMinus": 3,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 1
+        },
+        {
+          "gameId": 2025021113,
+          "gameDate": "2026-03-22",
+          "opponent": "CHI",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 2,
+          "toi": "17:05",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021100,
+          "gameDate": "2026-03-21",
+          "opponent": "VGK",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 0,
+          "toi": "19:05",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 1
+        },
+        {
+          "gameId": 2025021087,
+          "gameDate": "2026-03-19",
+          "opponent": "SEA",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 3,
+          "toi": "14:04",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021071,
+          "gameDate": "2026-03-17",
+          "opponent": "WPG",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 2,
+          "points": 2,
+          "shots": 3,
+          "toi": "18:12",
+          "plusMinus": 2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021061,
+          "gameDate": "2026-03-15",
+          "opponent": "EDM",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 4,
+          "toi": "16:44",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021038,
+          "gameDate": "2026-03-12",
+          "opponent": "VAN",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "17:00",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
+        {
+          "gameId": 2025021024,
+          "gameDate": "2026-03-10",
+          "opponent": "SEA",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 2,
+          "points": 2,
+          "shots": 1,
+          "toi": "17:56",
+          "plusMinus": 2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        }
+      ],
+      "lastUpdated": "2026-03-29T14:18:16.172Z"
+    },
     {
       "playerId": 8475158,
       "name": "Ryan O'Reilly",
@@ -12,13 +690,13 @@
       "sweaterNumber": 90,
       "season": {
         "playerId": 8475158,
-        "gamesPlayed": 71,
+        "gamesPlayed": 72,
         "goals": 24,
         "assists": 42,
         "points": 66,
-        "shots": 136,
+        "shots": 138,
         "shootingPct": 0,
-        "plusMinus": 8,
+        "plusMinus": 6,
         "powerPlayGoals": 5,
         "powerPlayPoints": 17,
         "shortHandedGoals": 0,
@@ -26,21 +704,35 @@
         "avgToi": "0:00",
         "faceoffWinPct": 0,
         "shotsPerGame": "1.92",
-        "pointsPerGame": "0.93"
+        "pointsPerGame": "0.92"
       },
       "L5": {
         "shots": "1.60",
-        "points": "1.00",
-        "toi": "19.8",
+        "points": "0.80",
+        "toi": "19.0",
         "games": 5
       },
       "L10": {
         "shots": "1.60",
-        "points": "0.70",
-        "toi": "20.7",
+        "points": "0.60",
+        "toi": "20.3",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "17:41",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -166,23 +858,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020992,
-          "gameDate": "2026-03-07",
-          "opponent": "BUF",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 2,
-          "toi": "21:20",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:36.480Z"
+      "lastUpdated": "2026-03-29T14:18:16.320Z"
     },
     {
       "playerId": 8483513,
@@ -192,35 +870,49 @@
       "sweaterNumber": 49,
       "season": {
         "playerId": 8483513,
-        "gamesPlayed": 37,
+        "gamesPlayed": 38,
         "goals": 6,
         "assists": 2,
         "points": 8,
-        "shots": 32,
+        "shots": 33,
         "shootingPct": 0,
-        "plusMinus": -8,
+        "plusMinus": -9,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 1,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.86",
-        "pointsPerGame": "0.22"
+        "shotsPerGame": "0.87",
+        "pointsPerGame": "0.21"
       },
       "L5": {
         "shots": "1.00",
         "points": "0.20",
-        "toi": "9.0",
+        "toi": "9.8",
         "games": 5
       },
       "L10": {
         "shots": "0.80",
         "points": "0.20",
-        "toi": "9.2",
+        "toi": "9.3",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "12:09",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -346,23 +1038,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020979,
-          "gameDate": "2026-03-05",
-          "opponent": "BOS",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "10:33",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:36.610Z"
+      "lastUpdated": "2026-03-29T14:18:16.457Z"
     },
     {
       "playerId": 8474564,
@@ -372,11 +1050,11 @@
       "sweaterNumber": 91,
       "season": {
         "playerId": 8474564,
-        "gamesPlayed": 72,
+        "gamesPlayed": 73,
         "goals": 36,
         "assists": 22,
         "points": 58,
-        "shots": 176,
+        "shots": 177,
         "shootingPct": 0,
         "plusMinus": -20,
         "powerPlayGoals": 11,
@@ -385,22 +1063,36 @@
         "gameWinningGoals": 10,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "2.44",
-        "pointsPerGame": "0.81"
+        "shotsPerGame": "2.42",
+        "pointsPerGame": "0.79"
       },
       "L5": {
-        "shots": "2.80",
-        "points": "1.40",
-        "toi": "17.0",
+        "shots": "3.00",
+        "points": "1.20",
+        "toi": "16.4",
         "games": 5
       },
       "L10": {
         "shots": "2.50",
-        "points": "0.90",
-        "toi": "18.0",
+        "points": "0.80",
+        "toi": "17.9",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "16:35",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -526,23 +1218,9 @@
           "plusMinus": 2,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020992,
-          "gameDate": "2026-03-07",
-          "opponent": "BUF",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 1,
-          "toi": "17:53",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 1
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:36.720Z"
+      "lastUpdated": "2026-03-29T14:18:16.632Z"
     },
     {
       "playerId": 8482768,
@@ -552,35 +1230,49 @@
       "sweaterNumber": 40,
       "season": {
         "playerId": 8482768,
-        "gamesPlayed": 60,
+        "gamesPlayed": 61,
         "goals": 3,
         "assists": 12,
         "points": 15,
         "shots": 60,
         "shootingPct": 0,
-        "plusMinus": -5,
+        "plusMinus": -6,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.00",
+        "shotsPerGame": "0.98",
         "pointsPerGame": "0.25"
       },
       "L5": {
-        "shots": "0.20",
+        "shots": "0.00",
         "points": "0.40",
-        "toi": "11.2",
+        "toi": "12.4",
         "games": 5
       },
       "L10": {
         "shots": "0.50",
         "points": "0.50",
-        "toi": "11.2",
+        "toi": "11.6",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "14:16",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -706,23 +1398,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020992,
-          "gameDate": "2026-03-07",
-          "opponent": "BUF",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "9:49",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:37.909Z"
+      "lastUpdated": "2026-03-29T14:18:17.835Z"
     },
     {
       "playerId": 8482103,
@@ -902,7 +1580,7 @@
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:38.140Z"
+      "lastUpdated": "2026-03-29T14:18:17.990Z"
     },
     {
       "playerId": 8484241,
@@ -912,35 +1590,49 @@
       "sweaterNumber": 71,
       "season": {
         "playerId": 8484241,
-        "gamesPlayed": 61,
+        "gamesPlayed": 62,
         "goals": 16,
-        "assists": 10,
-        "points": 26,
+        "assists": 11,
+        "points": 27,
         "shots": 91,
         "shootingPct": 0,
-        "plusMinus": 0,
+        "plusMinus": 1,
         "powerPlayGoals": 4,
         "powerPlayPoints": 8,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.49",
-        "pointsPerGame": "0.43"
+        "shotsPerGame": "1.47",
+        "pointsPerGame": "0.44"
       },
       "L5": {
         "shots": "0.80",
-        "points": "0.20",
-        "toi": "13.2",
+        "points": "0.40",
+        "toi": "13.5",
         "games": 5
       },
       "L10": {
-        "shots": "1.50",
+        "shots": "1.20",
         "points": "0.50",
-        "toi": "13.7",
+        "toi": "13.5",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 0,
+          "toi": "14:40",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -1066,23 +1758,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020992,
-          "gameDate": "2026-03-07",
-          "opponent": "BUF",
-          "homeRoad": "R",
-          "goals": 1,
-          "assists": 0,
-          "points": 1,
-          "shots": 3,
-          "toi": "15:57",
-          "plusMinus": -1,
-          "powerPlayGoals": 1,
-          "powerPlayPoints": 1
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:38.313Z"
+      "lastUpdated": "2026-03-29T14:18:18.156Z"
     },
     {
       "playerId": 8482111,
@@ -1092,35 +1770,49 @@
       "sweaterNumber": 20,
       "season": {
         "playerId": 8482111,
-        "gamesPlayed": 42,
+        "gamesPlayed": 43,
         "goals": 0,
         "assists": 7,
         "points": 7,
         "shots": 25,
         "shootingPct": 0,
-        "plusMinus": -2,
+        "plusMinus": -3,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.60",
-        "pointsPerGame": "0.17"
+        "shotsPerGame": "0.58",
+        "pointsPerGame": "0.16"
       },
       "L5": {
-        "shots": "0.60",
-        "points": "0.40",
-        "toi": "12.9",
+        "shots": "0.40",
+        "points": "0.20",
+        "toi": "12.8",
         "games": 5
       },
       "L10": {
         "shots": "0.40",
         "points": "0.20",
-        "toi": "12.1",
+        "toi": "12.7",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "14:10",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021100,
           "gameDate": "2026-03-21",
@@ -1246,23 +1938,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020955,
-          "gameDate": "2026-03-02",
-          "opponent": "DET",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "8:01",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:38.490Z"
+      "lastUpdated": "2026-03-29T14:18:18.260Z"
     },
     {
       "playerId": 8479980,
@@ -1272,13 +1950,13 @@
       "sweaterNumber": 41,
       "season": {
         "playerId": 8479980,
-        "gamesPlayed": 58,
+        "gamesPlayed": 59,
         "goals": 3,
         "assists": 12,
         "points": 15,
-        "shots": 51,
+        "shots": 52,
         "shootingPct": 0,
-        "plusMinus": -4,
+        "plusMinus": -6,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
@@ -1286,21 +1964,35 @@
         "avgToi": "0:00",
         "faceoffWinPct": 0,
         "shotsPerGame": "0.88",
-        "pointsPerGame": "0.26"
+        "pointsPerGame": "0.25"
       },
       "L5": {
         "shots": "1.00",
         "points": "0.20",
-        "toi": "21.8",
+        "toi": "22.1",
         "games": 5
       },
       "L10": {
-        "shots": "1.10",
+        "shots": "0.90",
         "points": "0.30",
-        "toi": "22.3",
+        "toi": "22.2",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "20:00",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -1426,23 +2118,9 @@
           "plusMinus": 2,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020992,
-          "gameDate": "2026-03-07",
-          "opponent": "BUF",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "20:59",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:38.643Z"
+      "lastUpdated": "2026-03-29T14:18:18.418Z"
     },
     {
       "playerId": 8474600,
@@ -1452,35 +2130,49 @@
       "sweaterNumber": 59,
       "season": {
         "playerId": 8474600,
-        "gamesPlayed": 60,
+        "gamesPlayed": 61,
         "goals": 12,
         "assists": 36,
         "points": 48,
-        "shots": 159,
+        "shots": 160,
         "shootingPct": 0,
-        "plusMinus": -16,
+        "plusMinus": -17,
         "powerPlayGoals": 4,
         "powerPlayPoints": 20,
         "shortHandedGoals": 0,
         "gameWinningGoals": 3,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "2.65",
-        "pointsPerGame": "0.80"
+        "shotsPerGame": "2.62",
+        "pointsPerGame": "0.79"
       },
       "L5": {
-        "shots": "1.80",
+        "shots": "1.60",
         "points": "0.60",
-        "toi": "25.4",
+        "toi": "24.9",
         "games": 5
       },
       "L10": {
-        "shots": "2.20",
-        "points": "0.60",
-        "toi": "26.3",
+        "shots": "2.10",
+        "points": "0.50",
+        "toi": "26.0",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "23:30",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -1606,23 +2298,9 @@
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020992,
-          "gameDate": "2026-03-07",
-          "opponent": "BUF",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 2,
-          "toi": "25:56",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 1
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:39.817Z"
+      "lastUpdated": "2026-03-29T14:18:19.576Z"
     },
     {
       "playerId": 8480246,
@@ -1632,35 +2310,49 @@
       "sweaterNumber": 48,
       "season": {
         "playerId": 8480246,
-        "gamesPlayed": 69,
+        "gamesPlayed": 70,
         "goals": 3,
         "assists": 7,
         "points": 10,
-        "shots": 69,
+        "shots": 71,
         "shootingPct": 0,
-        "plusMinus": -11,
+        "plusMinus": -12,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.00",
+        "shotsPerGame": "1.01",
         "pointsPerGame": "0.14"
       },
       "L5": {
-        "shots": "0.40",
+        "shots": "0.80",
         "points": "0.00",
-        "toi": "18.1",
+        "toi": "16.4",
         "games": 5
       },
       "L10": {
         "shots": "0.90",
         "points": "0.00",
-        "toi": "18.9",
+        "toi": "18.2",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "12:00",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -1786,23 +2478,9 @@
           "plusMinus": 2,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020992,
-          "gameDate": "2026-03-07",
-          "opponent": "BUF",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "18:41",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:39.942Z"
+      "lastUpdated": "2026-03-29T14:18:19.731Z"
     },
     {
       "playerId": 8476869,
@@ -1812,35 +2490,49 @@
       "sweaterNumber": 76,
       "season": {
         "playerId": 8476869,
-        "gamesPlayed": 72,
+        "gamesPlayed": 73,
         "goals": 2,
         "assists": 21,
         "points": 23,
-        "shots": 100,
+        "shots": 102,
         "shootingPct": 0,
-        "plusMinus": -4,
+        "plusMinus": -6,
         "powerPlayGoals": 0,
         "powerPlayPoints": 2,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.39",
+        "shotsPerGame": "1.40",
         "pointsPerGame": "0.32"
       },
       "L5": {
         "shots": "1.40",
-        "points": "0.80",
-        "toi": "23.6",
+        "points": "0.60",
+        "toi": "22.3",
         "games": 5
       },
       "L10": {
-        "shots": "1.00",
+        "shots": "1.20",
         "points": "0.50",
-        "toi": "23.8",
+        "toi": "23.6",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 2,
+          "toi": "20:02",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -1966,23 +2658,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020992,
-          "gameDate": "2026-03-07",
-          "opponent": "BUF",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "21:35",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:40.188Z"
+      "lastUpdated": "2026-03-29T14:18:19.832Z"
     },
     {
       "playerId": 8482715,
@@ -1992,10 +2670,10 @@
       "sweaterNumber": 85,
       "season": {
         "playerId": 8482715,
-        "gamesPlayed": 11,
+        "gamesPlayed": 12,
         "goals": 2,
-        "assists": 3,
-        "points": 5,
+        "assists": 4,
+        "points": 6,
         "shots": 5,
         "shootingPct": 0,
         "plusMinus": 1,
@@ -2005,22 +2683,36 @@
         "gameWinningGoals": 1,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.45",
-        "pointsPerGame": "0.45"
+        "shotsPerGame": "0.42",
+        "pointsPerGame": "0.50"
       },
       "L5": {
-        "shots": "0.20",
+        "shots": "0.00",
         "points": "0.20",
-        "toi": "12.8",
+        "toi": "12.1",
         "games": 5
       },
       "L10": {
         "shots": "0.40",
-        "points": "0.40",
-        "toi": "12.8",
+        "points": "0.50",
+        "toi": "12.4",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 0,
+          "toi": "10:15",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -2146,23 +2838,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020992,
-          "gameDate": "2026-03-07",
-          "opponent": "BUF",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "13:44",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:40.380Z"
+      "lastUpdated": "2026-03-29T14:18:19.949Z"
     },
     {
       "playerId": 8482482,
@@ -2172,11 +2850,11 @@
       "sweaterNumber": 83,
       "season": {
         "playerId": 8482482,
-        "gamesPlayed": 48,
+        "gamesPlayed": 49,
         "goals": 1,
         "assists": 11,
         "points": 12,
-        "shots": 48,
+        "shots": 49,
         "shootingPct": 0,
         "plusMinus": -3,
         "powerPlayGoals": 0,
@@ -2186,21 +2864,35 @@
         "avgToi": "0:00",
         "faceoffWinPct": 0,
         "shotsPerGame": "1.00",
-        "pointsPerGame": "0.25"
+        "pointsPerGame": "0.24"
       },
       "L5": {
         "shots": "0.60",
         "points": "0.00",
-        "toi": "14.1",
+        "toi": "14.2",
         "games": 5
       },
       "L10": {
-        "shots": "1.10",
-        "points": "0.40",
-        "toi": "15.3",
+        "shots": "1.00",
+        "points": "0.30",
+        "toi": "15.2",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021161,
+          "gameDate": "2026-03-28",
+          "opponent": "MTL",
+          "homeRoad": "H",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "14:31",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -2326,23 +3018,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020848,
-          "gameDate": "2026-01-29",
-          "opponent": "NJD",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 2,
-          "toi": "16:03",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:40.556Z"
+      "lastUpdated": "2026-03-29T14:18:20.048Z"
     },
     {
       "playerId": 8475760,
@@ -2352,35 +3030,49 @@
       "sweaterNumber": 72,
       "season": {
         "playerId": 8475760,
-        "gamesPlayed": 50,
+        "gamesPlayed": 51,
         "goals": 6,
         "assists": 2,
         "points": 8,
         "shots": 69,
         "shootingPct": 0,
-        "plusMinus": -10,
+        "plusMinus": -11,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 1,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.38",
+        "shotsPerGame": "1.35",
         "pointsPerGame": "0.16"
       },
       "L5": {
         "shots": "0.80",
         "points": "0.00",
-        "toi": "8.1",
+        "toi": "8.4",
         "games": 5
       },
       "L10": {
         "shots": "0.90",
         "points": "0.10",
-        "toi": "8.8",
+        "toi": "8.9",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "9:19",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -2506,23 +3198,9 @@
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "8:33",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:40.742Z"
+      "lastUpdated": "2026-03-29T14:18:20.221Z"
     },
     {
       "playerId": 8479407,
@@ -2532,35 +3210,49 @@
       "sweaterNumber": 63,
       "season": {
         "playerId": 8479407,
-        "gamesPlayed": 71,
+        "gamesPlayed": 72,
         "goals": 19,
         "assists": 41,
         "points": 60,
-        "shots": 156,
+        "shots": 157,
         "shootingPct": 0,
-        "plusMinus": -13,
+        "plusMinus": -15,
         "powerPlayGoals": 4,
         "powerPlayPoints": 19,
         "shortHandedGoals": 0,
         "gameWinningGoals": 3,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "2.20",
-        "pointsPerGame": "0.85"
+        "shotsPerGame": "2.18",
+        "pointsPerGame": "0.83"
       },
       "L5": {
-        "shots": "1.80",
-        "points": "1.80",
-        "toi": "18.8",
+        "shots": "1.60",
+        "points": "1.60",
+        "toi": "18.1",
         "games": 5
       },
       "L10": {
-        "shots": "2.00",
-        "points": "1.60",
-        "toi": "18.2",
+        "shots": "1.70",
+        "points": "1.50",
+        "toi": "18.1",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "19:15",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -2686,23 +3378,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 2
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 4,
-          "toi": "20:31",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:40.916Z"
+      "lastUpdated": "2026-03-29T14:18:20.387Z"
     },
     {
       "playerId": 8477015,
@@ -2712,35 +3390,49 @@
       "sweaterNumber": 16,
       "season": {
         "playerId": 8477015,
-        "gamesPlayed": 64,
+        "gamesPlayed": 65,
         "goals": 14,
         "assists": 22,
         "points": 36,
         "shots": 96,
         "shootingPct": 0,
-        "plusMinus": -1,
+        "plusMinus": -3,
         "powerPlayGoals": 2,
         "powerPlayPoints": 6,
         "shortHandedGoals": 0,
         "gameWinningGoals": 1,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.50",
-        "pointsPerGame": "0.56"
+        "shotsPerGame": "1.48",
+        "pointsPerGame": "0.55"
       },
       "L5": {
-        "shots": "2.20",
-        "points": "1.40",
-        "toi": "19.5",
+        "shots": "1.60",
+        "points": "1.00",
+        "toi": "19.6",
         "games": 5
       },
       "L10": {
-        "shots": "2.30",
-        "points": "1.10",
-        "toi": "18.7",
+        "shots": "1.70",
+        "points": "1.00",
+        "toi": "19.0",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "20:01",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -2866,23 +3558,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 1,
-          "assists": 0,
-          "points": 1,
-          "shots": 6,
-          "toi": "17:16",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:41.090Z"
+      "lastUpdated": "2026-03-29T14:18:20.568Z"
     },
     {
       "playerId": 8481032,
@@ -2892,35 +3570,49 @@
       "sweaterNumber": 47,
       "season": {
         "playerId": 8481032,
-        "gamesPlayed": 68,
+        "gamesPlayed": 69,
         "goals": 8,
         "assists": 6,
         "points": 14,
         "shots": 55,
         "shootingPct": 0,
-        "plusMinus": -18,
+        "plusMinus": -19,
         "powerPlayGoals": 0,
         "powerPlayPoints": 1,
         "shortHandedGoals": 0,
         "gameWinningGoals": 2,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.81",
-        "pointsPerGame": "0.21"
+        "shotsPerGame": "0.80",
+        "pointsPerGame": "0.20"
       },
       "L5": {
-        "shots": "0.60",
-        "points": "0.60",
-        "toi": "8.2",
+        "shots": "0.20",
+        "points": "0.20",
+        "toi": "8.4",
         "games": 5
       },
       "L10": {
         "shots": "0.50",
         "points": "0.30",
-        "toi": "8.4",
+        "toi": "8.7",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "10:26",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -3046,23 +3738,9 @@
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "7:16",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:41.283Z"
+      "lastUpdated": "2026-03-29T14:18:20.709Z"
     },
     {
       "playerId": 8474149,
@@ -3072,35 +3750,49 @@
       "sweaterNumber": 33,
       "season": {
         "playerId": 8474149,
-        "gamesPlayed": 19,
-        "goals": 0,
+        "gamesPlayed": 20,
+        "goals": 1,
         "assists": 0,
-        "points": 0,
-        "shots": 17,
+        "points": 1,
+        "shots": 19,
         "shootingPct": 0,
-        "plusMinus": -4,
+        "plusMinus": -3,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.89",
-        "pointsPerGame": "0.00"
+        "shotsPerGame": "0.95",
+        "pointsPerGame": "0.05"
       },
       "L5": {
-        "shots": "1.00",
-        "points": "0.00",
-        "toi": "12.3",
+        "shots": "1.20",
+        "points": "0.20",
+        "toi": "12.2",
         "games": 5
       },
       "L10": {
-        "shots": "0.60",
-        "points": "0.00",
-        "toi": "11.0",
+        "shots": "0.80",
+        "points": "0.10",
+        "toi": "11.6",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 2,
+          "toi": "12:36",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -3226,23 +3918,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020777,
-          "gameDate": "2026-01-19",
-          "opponent": "CGY",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "7:06",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:41.481Z"
+      "lastUpdated": "2026-03-29T14:18:20.849Z"
     },
     {
       "playerId": 8479996,
@@ -3252,35 +3930,49 @@
       "sweaterNumber": 12,
       "season": {
         "playerId": 8479996,
-        "gamesPlayed": 59,
+        "gamesPlayed": 60,
         "goals": 15,
         "assists": 7,
         "points": 22,
         "shots": 91,
         "shootingPct": 0,
-        "plusMinus": 2,
+        "plusMinus": 3,
         "powerPlayGoals": 1,
         "powerPlayPoints": 2,
         "shortHandedGoals": 0,
         "gameWinningGoals": 3,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.54",
+        "shotsPerGame": "1.52",
         "pointsPerGame": "0.37"
       },
       "L5": {
-        "shots": "0.80",
+        "shots": "0.40",
         "points": "0.00",
-        "toi": "14.4",
+        "toi": "13.8",
         "games": 5
       },
       "L10": {
-        "shots": "0.90",
+        "shots": "0.70",
         "points": "0.20",
-        "toi": "14.3",
+        "toi": "14.1",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "12:18",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -3406,23 +4098,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "14:36",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:42.661Z"
+      "lastUpdated": "2026-03-29T14:18:22.025Z"
     },
     {
       "playerId": 8481721,
@@ -3602,7 +4280,7 @@
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:42.829Z"
+      "lastUpdated": "2026-03-29T14:18:22.176Z"
     },
     {
       "playerId": 8484177,
@@ -3612,35 +4290,49 @@
       "sweaterNumber": 29,
       "season": {
         "playerId": 8484177,
-        "gamesPlayed": 23,
+        "gamesPlayed": 24,
         "goals": 2,
         "assists": 4,
         "points": 6,
         "shots": 33,
         "shootingPct": 0,
-        "plusMinus": -2,
+        "plusMinus": -1,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "1.43",
-        "pointsPerGame": "0.26"
+        "shotsPerGame": "1.38",
+        "pointsPerGame": "0.25"
       },
       "L5": {
-        "shots": "1.80",
+        "shots": "1.40",
         "points": "0.00",
-        "toi": "11.8",
+        "toi": "12.6",
         "games": 5
       },
       "L10": {
-        "shots": "1.60",
+        "shots": "1.50",
         "points": "0.10",
-        "toi": "11.6",
+        "toi": "11.9",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "13:28",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -3766,23 +4458,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "10:39",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:42.989Z"
+      "lastUpdated": "2026-03-29T14:18:22.377Z"
     },
     {
       "playerId": 8480002,
@@ -3792,35 +4470,49 @@
       "sweaterNumber": 13,
       "season": {
         "playerId": 8480002,
-        "gamesPlayed": 71,
+        "gamesPlayed": 72,
         "goals": 26,
-        "assists": 29,
-        "points": 55,
-        "shots": 186,
+        "assists": 30,
+        "points": 56,
+        "shots": 191,
         "shootingPct": 0,
-        "plusMinus": -7,
+        "plusMinus": -8,
         "powerPlayGoals": 10,
         "powerPlayPoints": 20,
         "shortHandedGoals": 0,
         "gameWinningGoals": 5,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "2.62",
-        "pointsPerGame": "0.77"
+        "shotsPerGame": "2.65",
+        "pointsPerGame": "0.78"
       },
       "L5": {
-        "shots": "2.80",
-        "points": "1.00",
-        "toi": "20.1",
+        "shots": "3.40",
+        "points": "1.20",
+        "toi": "19.5",
         "games": 5
       },
       "L10": {
         "shots": "2.50",
-        "points": "1.20",
-        "toi": "20.5",
+        "points": "1.10",
+        "toi": "20.0",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 5,
+          "toi": "19:12",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -3946,23 +4638,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 1,
           "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 2,
-          "points": 2,
-          "shots": 5,
-          "toi": "24:17",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:43.193Z"
+      "lastUpdated": "2026-03-29T14:18:22.557Z"
     },
     {
       "playerId": 8481559,
@@ -3972,35 +4650,49 @@
       "sweaterNumber": 86,
       "season": {
         "playerId": 8481559,
-        "gamesPlayed": 50,
+        "gamesPlayed": 51,
         "goals": 20,
         "assists": 39,
         "points": 59,
-        "shots": 179,
+        "shots": 182,
         "shootingPct": 0,
-        "plusMinus": -2,
+        "plusMinus": -4,
         "powerPlayGoals": 4,
         "powerPlayPoints": 20,
         "shortHandedGoals": 0,
         "gameWinningGoals": 3,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "3.58",
-        "pointsPerGame": "1.18"
+        "shotsPerGame": "3.57",
+        "pointsPerGame": "1.16"
       },
       "L5": {
-        "shots": "4.40",
-        "points": "2.20",
-        "toi": "22.2",
+        "shots": "4.20",
+        "points": "1.60",
+        "toi": "21.8",
         "games": 5
       },
       "L10": {
-        "shots": "4.30",
+        "shots": "4.10",
         "points": "1.80",
         "toi": "21.6",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 3,
+          "toi": "22:17",
+          "plusMinus": -2,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -4126,23 +4818,9 @@
           "plusMinus": 1,
           "powerPlayGoals": 1,
           "powerPlayPoints": 2
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 5,
-          "toi": "22:44",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:43.367Z"
+      "lastUpdated": "2026-03-29T14:18:22.702Z"
     },
     {
       "playerId": 8479772,
@@ -4224,7 +4902,7 @@
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:44.554Z"
+      "lastUpdated": "2026-03-29T14:18:23.887Z"
     },
     {
       "playerId": 8478414,
@@ -4234,35 +4912,49 @@
       "sweaterNumber": 28,
       "season": {
         "playerId": 8478414,
-        "gamesPlayed": 66,
-        "goals": 21,
+        "gamesPlayed": 67,
+        "goals": 22,
         "assists": 15,
-        "points": 36,
-        "shots": 235,
+        "points": 37,
+        "shots": 238,
         "shootingPct": 0,
-        "plusMinus": -14,
+        "plusMinus": -15,
         "powerPlayGoals": 6,
         "powerPlayPoints": 10,
         "shortHandedGoals": 0,
         "gameWinningGoals": 4,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "3.56",
+        "shotsPerGame": "3.55",
         "pointsPerGame": "0.55"
       },
       "L5": {
-        "shots": "3.60",
-        "points": "0.60",
+        "shots": "3.40",
+        "points": "0.80",
         "toi": "18.6",
         "games": 5
       },
       "L10": {
-        "shots": "3.90",
+        "shots": "3.50",
         "points": "0.60",
-        "toi": "18.3",
+        "toi": "18.2",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 1,
+          "assists": 0,
+          "points": 1,
+          "shots": 3,
+          "toi": "18:05",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -4388,23 +5080,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 1,
-          "assists": 0,
-          "points": 1,
-          "shots": 7,
-          "toi": "19:19",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:44.744Z"
+      "lastUpdated": "2026-03-29T14:18:24.006Z"
     },
     {
       "playerId": 8482110,
@@ -4414,11 +5092,11 @@
       "sweaterNumber": 91,
       "season": {
         "playerId": 8482110,
-        "gamesPlayed": 71,
+        "gamesPlayed": 72,
         "goals": 15,
-        "assists": 19,
-        "points": 34,
-        "shots": 132,
+        "assists": 20,
+        "points": 35,
+        "shots": 134,
         "shootingPct": 0,
         "plusMinus": -2,
         "powerPlayGoals": 4,
@@ -4428,21 +5106,35 @@
         "avgToi": "0:00",
         "faceoffWinPct": 0,
         "shotsPerGame": "1.86",
-        "pointsPerGame": "0.48"
+        "pointsPerGame": "0.49"
       },
       "L5": {
-        "shots": "1.80",
-        "points": "0.20",
-        "toi": "17.4",
+        "shots": "2.00",
+        "points": "0.40",
+        "toi": "17.1",
         "games": 5
       },
       "L10": {
-        "shots": "1.90",
+        "shots": "1.70",
         "points": "0.30",
-        "toi": "17.3",
+        "toi": "17.2",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 2,
+          "toi": "17:49",
+          "plusMinus": 0,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -4568,23 +5260,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 1,
           "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 4,
-          "toi": "18:49",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:44.903Z"
+      "lastUpdated": "2026-03-29T14:18:24.165Z"
     },
     {
       "playerId": 8476474,
@@ -4764,7 +5442,7 @@
           "powerPlayPoints": 1
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:45.012Z"
+      "lastUpdated": "2026-03-29T14:18:24.325Z"
     },
     {
       "playerId": 8484958,
@@ -4774,35 +5452,49 @@
       "sweaterNumber": 42,
       "season": {
         "playerId": 8484958,
-        "gamesPlayed": 44,
+        "gamesPlayed": 45,
         "goals": 2,
         "assists": 2,
         "points": 4,
         "shots": 41,
         "shootingPct": 0,
-        "plusMinus": -13,
+        "plusMinus": -14,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 0,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.93",
+        "shotsPerGame": "0.91",
         "pointsPerGame": "0.09"
       },
       "L5": {
         "shots": "1.40",
-        "points": "0.20",
-        "toi": "8.0",
+        "points": "0.00",
+        "toi": "8.4",
         "games": 5
       },
       "L10": {
-        "shots": "1.50",
+        "shots": "1.30",
         "points": "0.20",
-        "toi": "8.2",
+        "toi": "8.3",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 0,
+          "toi": "9:21",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -4928,23 +5620,9 @@
           "plusMinus": 0,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020961,
-          "gameDate": "2026-03-03",
-          "opponent": "FLA",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "7:56",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:45.213Z"
+      "lastUpdated": "2026-03-29T14:18:24.490Z"
     },
     {
       "playerId": 8479395,
@@ -5124,7 +5802,7 @@
           "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:46.417Z"
+      "lastUpdated": "2026-03-29T14:18:25.641Z"
     },
     {
       "playerId": 8475455,
@@ -5134,35 +5812,49 @@
       "sweaterNumber": 5,
       "season": {
         "playerId": 8475455,
-        "gamesPlayed": 71,
+        "gamesPlayed": 72,
         "goals": 3,
-        "assists": 11,
-        "points": 14,
+        "assists": 12,
+        "points": 15,
         "shots": 47,
         "shootingPct": 0,
-        "plusMinus": -8,
+        "plusMinus": -7,
         "powerPlayGoals": 0,
         "powerPlayPoints": 0,
         "shortHandedGoals": 0,
         "gameWinningGoals": 2,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "0.66",
-        "pointsPerGame": "0.20"
+        "shotsPerGame": "0.65",
+        "pointsPerGame": "0.21"
       },
       "L5": {
         "shots": "0.40",
         "points": "0.40",
-        "toi": "17.8",
+        "toi": "17.6",
         "games": 5
       },
       "L10": {
-        "shots": "0.60",
-        "points": "0.20",
-        "toi": "17.6",
+        "shots": "0.50",
+        "points": "0.30",
+        "toi": "17.5",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 1,
+          "points": 1,
+          "shots": 0,
+          "toi": "15:02",
+          "plusMinus": 1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -5288,23 +5980,9 @@
           "plusMinus": 2,
           "powerPlayGoals": 0,
           "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "16:21",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:46.621Z"
+      "lastUpdated": "2026-03-29T14:18:25.856Z"
     },
     {
       "playerId": 8476462,
@@ -5314,35 +5992,49 @@
       "sweaterNumber": 7,
       "season": {
         "playerId": 8476462,
-        "gamesPlayed": 66,
+        "gamesPlayed": 67,
         "goals": 10,
         "assists": 22,
         "points": 32,
-        "shots": 179,
+        "shots": 180,
         "shootingPct": 0,
-        "plusMinus": -5,
+        "plusMinus": -6,
         "powerPlayGoals": 4,
         "powerPlayPoints": 13,
         "shortHandedGoals": 0,
         "gameWinningGoals": 3,
         "avgToi": "0:00",
         "faceoffWinPct": 0,
-        "shotsPerGame": "2.71",
+        "shotsPerGame": "2.69",
         "pointsPerGame": "0.48"
       },
       "L5": {
-        "shots": "1.80",
-        "points": "0.60",
-        "toi": "22.4",
+        "shots": "1.40",
+        "points": "0.40",
+        "toi": "21.3",
         "games": 5
       },
       "L10": {
-        "shots": "2.00",
+        "shots": "1.80",
         "points": "0.70",
-        "toi": "22.6",
+        "toi": "22.0",
         "games": 10
       },
       "recentGames": [
+        {
+          "gameId": 2025021157,
+          "gameDate": "2026-03-28",
+          "opponent": "CAR",
+          "homeRoad": "R",
+          "goals": 0,
+          "assists": 0,
+          "points": 0,
+          "shots": 1,
+          "toi": "20:46",
+          "plusMinus": -1,
+          "powerPlayGoals": 0,
+          "powerPlayPoints": 0
+        },
         {
           "gameId": 2025021144,
           "gameDate": "2026-03-26",
@@ -5468,743 +6160,9 @@
           "plusMinus": -1,
           "powerPlayGoals": 0,
           "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "27:15",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
         }
       ],
-      "lastUpdated": "2026-03-28T14:17:46.798Z"
-    },
-    {
-      "playerId": 8482684,
-      "name": "Luke Hughes",
-      "team": "NJD",
-      "position": "D",
-      "sweaterNumber": 43,
-      "season": {
-        "playerId": 8482684,
-        "gamesPlayed": 61,
-        "goals": 6,
-        "assists": 27,
-        "points": 33,
-        "shots": 138,
-        "shootingPct": 0,
-        "plusMinus": -5,
-        "powerPlayGoals": 2,
-        "powerPlayPoints": 11,
-        "shortHandedGoals": 0,
-        "gameWinningGoals": 1,
-        "avgToi": "0:00",
-        "faceoffWinPct": 0,
-        "shotsPerGame": "2.26",
-        "pointsPerGame": "0.54"
-      },
-      "L5": {
-        "shots": "2.20",
-        "points": "0.20",
-        "toi": "22.4",
-        "games": 5
-      },
-      "L10": {
-        "shots": "2.90",
-        "points": "0.60",
-        "toi": "22.3",
-        "games": 10
-      },
-      "recentGames": [
-        {
-          "gameId": 2025021144,
-          "gameDate": "2026-03-26",
-          "opponent": "NSH",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "20:21",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021130,
-          "gameDate": "2026-03-24",
-          "opponent": "DAL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 1,
-          "toi": "21:29",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021095,
-          "gameDate": "2026-03-20",
-          "opponent": "WSH",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "23:51",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021077,
-          "gameDate": "2026-03-18",
-          "opponent": "NYR",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "23:52",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021064,
-          "gameDate": "2026-03-16",
-          "opponent": "BOS",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "22:35",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021050,
-          "gameDate": "2026-03-14",
-          "opponent": "LAK",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 1,
-          "toi": "22:09",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021032,
-          "gameDate": "2026-03-12",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 1,
-          "assists": 1,
-          "points": 2,
-          "shots": 5,
-          "toi": "25:03",
-          "plusMinus": -1,
-          "powerPlayGoals": 1,
-          "powerPlayPoints": 2
-        },
-        {
-          "gameId": 2025021005,
-          "gameDate": "2026-03-08",
-          "opponent": "DET",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 4,
-          "toi": "21:59",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020991,
-          "gameDate": "2026-03-07",
-          "opponent": "NYR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 4,
-          "toi": "19:13",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 4,
-          "toi": "22:11",
-          "plusMinus": 2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        }
-      ],
-      "lastUpdated": "2026-03-28T14:17:46.955Z"
-    },
-    {
-      "playerId": 8480192,
-      "name": "Johnathan Kovacevic",
-      "team": "NJD",
-      "position": "D",
-      "sweaterNumber": 8,
-      "season": {
-        "playerId": 8480192,
-        "gamesPlayed": 23,
-        "goals": 0,
-        "assists": 4,
-        "points": 4,
-        "shots": 24,
-        "shootingPct": 0,
-        "plusMinus": -5,
-        "powerPlayGoals": 0,
-        "powerPlayPoints": 0,
-        "shortHandedGoals": 0,
-        "gameWinningGoals": 0,
-        "avgToi": "0:00",
-        "faceoffWinPct": 0,
-        "shotsPerGame": "1.04",
-        "pointsPerGame": "0.17"
-      },
-      "L5": {
-        "shots": "1.00",
-        "points": "0.00",
-        "toi": "17.8",
-        "games": 5
-      },
-      "L10": {
-        "shots": "1.10",
-        "points": "0.20",
-        "toi": "17.9",
-        "games": 10
-      },
-      "recentGames": [
-        {
-          "gameId": 2025021144,
-          "gameDate": "2026-03-26",
-          "opponent": "NSH",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "17:25",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021130,
-          "gameDate": "2026-03-24",
-          "opponent": "DAL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "19:12",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021095,
-          "gameDate": "2026-03-20",
-          "opponent": "WSH",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "15:10",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021077,
-          "gameDate": "2026-03-18",
-          "opponent": "NYR",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "20:53",
-          "plusMinus": 3,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021064,
-          "gameDate": "2026-03-16",
-          "opponent": "BOS",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "16:10",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021050,
-          "gameDate": "2026-03-14",
-          "opponent": "LAK",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "21:25",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021032,
-          "gameDate": "2026-03-12",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "16:30",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021005,
-          "gameDate": "2026-03-08",
-          "opponent": "DET",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "15:50",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020991,
-          "gameDate": "2026-03-07",
-          "opponent": "NYR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 2,
-          "points": 2,
-          "shots": 1,
-          "toi": "20:05",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "15:51",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        }
-      ],
-      "lastUpdated": "2026-03-28T14:17:47.125Z"
-    },
-    {
-      "playerId": 8483495,
-      "name": "Simon Nemec",
-      "team": "NJD",
-      "position": "D",
-      "sweaterNumber": 17,
-      "season": {
-        "playerId": 8483495,
-        "gamesPlayed": 57,
-        "goals": 10,
-        "assists": 15,
-        "points": 25,
-        "shots": 86,
-        "shootingPct": 0,
-        "plusMinus": -1,
-        "powerPlayGoals": 1,
-        "powerPlayPoints": 2,
-        "shortHandedGoals": 0,
-        "gameWinningGoals": 3,
-        "avgToi": "0:00",
-        "faceoffWinPct": 0,
-        "shotsPerGame": "1.51",
-        "pointsPerGame": "0.44"
-      },
-      "L5": {
-        "shots": "1.20",
-        "points": "0.60",
-        "toi": "18.7",
-        "games": 5
-      },
-      "L10": {
-        "shots": "1.40",
-        "points": "0.40",
-        "toi": "19.2",
-        "games": 10
-      },
-      "recentGames": [
-        {
-          "gameId": 2025021144,
-          "gameDate": "2026-03-26",
-          "opponent": "NSH",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 1,
-          "toi": "17:18",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021130,
-          "gameDate": "2026-03-24",
-          "opponent": "DAL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 0,
-          "toi": "16:57",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021095,
-          "gameDate": "2026-03-20",
-          "opponent": "WSH",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "20:32",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021077,
-          "gameDate": "2026-03-18",
-          "opponent": "NYR",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 1,
-          "toi": "18:53",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021064,
-          "gameDate": "2026-03-16",
-          "opponent": "BOS",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "19:48",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021050,
-          "gameDate": "2026-03-14",
-          "opponent": "LAK",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "17:57",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025021032,
-          "gameDate": "2026-03-12",
-          "opponent": "CGY",
-          "homeRoad": "H",
-          "goals": 1,
-          "assists": 0,
-          "points": 1,
-          "shots": 1,
-          "toi": "21:22",
-          "plusMinus": -2,
-          "powerPlayGoals": 1,
-          "powerPlayPoints": 1
-        },
-        {
-          "gameId": 2025021005,
-          "gameDate": "2026-03-08",
-          "opponent": "DET",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 3,
-          "toi": "20:45",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020991,
-          "gameDate": "2026-03-07",
-          "opponent": "NYR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "19:57",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020971,
-          "gameDate": "2026-03-04",
-          "opponent": "TOR",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "18:53",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        }
-      ],
-      "lastUpdated": "2026-03-28T14:17:48.323Z"
-    },
-    {
-      "playerId": 8477488,
-      "name": "Brett Pesce",
-      "team": "NJD",
-      "position": "D",
-      "sweaterNumber": 22,
-      "season": {
-        "playerId": 8477488,
-        "gamesPlayed": 37,
-        "goals": 1,
-        "assists": 6,
-        "points": 7,
-        "shots": 45,
-        "shootingPct": 0,
-        "plusMinus": -11,
-        "powerPlayGoals": 0,
-        "powerPlayPoints": 0,
-        "shortHandedGoals": 0,
-        "gameWinningGoals": 0,
-        "avgToi": "0:00",
-        "faceoffWinPct": 0,
-        "shotsPerGame": "1.22",
-        "pointsPerGame": "0.19"
-      },
-      "L5": {
-        "shots": "0.80",
-        "points": "0.20",
-        "toi": "19.8",
-        "games": 5
-      },
-      "L10": {
-        "shots": "0.80",
-        "points": "0.10",
-        "toi": "19.5",
-        "games": 10
-      },
-      "recentGames": [
-        {
-          "gameId": 2025020961,
-          "gameDate": "2026-03-03",
-          "opponent": "FLA",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "22:04",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020943,
-          "gameDate": "2026-02-28",
-          "opponent": "STL",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 1,
-          "points": 1,
-          "shots": 1,
-          "toi": "18:21",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020922,
-          "gameDate": "2026-02-26",
-          "opponent": "PIT",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "19:53",
-          "plusMinus": -1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020910,
-          "gameDate": "2026-02-25",
-          "opponent": "BUF",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 1,
-          "toi": "18:50",
-          "plusMinus": -2,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020905,
-          "gameDate": "2026-02-05",
-          "opponent": "NYI",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "19:44",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020887,
-          "gameDate": "2026-02-03",
-          "opponent": "CBJ",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "19:59",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020866,
-          "gameDate": "2026-01-31",
-          "opponent": "OTT",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "18:29",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020848,
-          "gameDate": "2026-01-29",
-          "opponent": "NSH",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 2,
-          "toi": "18:51",
-          "plusMinus": 1,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020835,
-          "gameDate": "2026-01-27",
-          "opponent": "WPG",
-          "homeRoad": "H",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "21:32",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        },
-        {
-          "gameId": 2025020820,
-          "gameDate": "2026-01-25",
-          "opponent": "SEA",
-          "homeRoad": "R",
-          "goals": 0,
-          "assists": 0,
-          "points": 0,
-          "shots": 0,
-          "toi": "16:55",
-          "plusMinus": 0,
-          "powerPlayGoals": 0,
-          "powerPlayPoints": 0
-        }
-      ],
-      "lastUpdated": "2026-03-28T14:17:48.439Z"
+      "lastUpdated": "2026-03-29T14:18:25.967Z"
     }
   ]
 }
