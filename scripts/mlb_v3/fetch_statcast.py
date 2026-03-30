@@ -489,7 +489,6 @@ def fetch_park_factors(year: int) -> "tuple[dict | None, str]":
 
     Returns (payload, date_range) or (None, "").
     """
-    from pybaseball import park_factors_by_handedness
     from pybaseball import cache as pb_cache
     pb_cache.enable()
 
@@ -501,6 +500,7 @@ def fetch_park_factors(year: int) -> "tuple[dict | None, str]":
 
     print(f"  ↓ [{label}] park_factors_by_handedness({year}) ...")
     try:
+        from pybaseball import park_factors_by_handedness
         df = park_factors_by_handedness(year)
         print(f"  ✓ [{label}] {len(df)} rows, cols: {list(df.columns)[:10]}")
 
@@ -671,13 +671,13 @@ print(f"{'═'*64}")
 _park_payload: "dict | None" = None
 _park_dr: str = ""
 try:
-    import pybaseball  # noqa: F401 — presence check before calling fetcher
-    _park_payload, _park_dr = fetch_park_factors(PRIOR)
-except ImportError:
-    print(f"  ⚠ pybaseball not installed — calling fetch_park_factors which has static fallback")
     _park_payload, _park_dr = fetch_park_factors(PRIOR)
 except Exception as e:
-    print(f"  ⚠ park_factors fetch failed: {e}")
+    print(f"  ⚠ park_factors fetch raised unexpectedly: {e} — using static fallback directly")
+    dr  = "static fallback (FanGraphs 3yr regressed 2023–2025)"
+    _park_payload = {"year": PRIOR, "fetched": TODAY, "date_range": dr,
+                     "source": "static_fallback", "venues": [dict(r) for r in _STATIC_PARK_FACTORS]}
+    _park_dr = dr
 
 if _park_payload is None:
     # Should never reach here — fetch_park_factors() always returns the static table
