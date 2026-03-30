@@ -27,7 +27,7 @@ function json(statusCode, body, { cacheSeconds = 120 } = {}) {
 
 export async function handler(event) {
   try {
-    const store = createStore();
+    const store = createStore("rrmodelblobs");
     const url = new URL(
       event.rawUrl ||
         `https://${event.headers.host}${event.path}${event.rawQuery ? "?" + event.rawQuery : ""}`

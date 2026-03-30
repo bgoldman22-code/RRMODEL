@@ -10,8 +10,8 @@ const BLOBS_TOKEN = process.env.NETLIFY_BLOBS_TOKEN
   || process.env.NETLIFY_AUTH_TOKEN
   || "nfp_UhqxsS88iqAnWCKbegv2w3PApVrYws6K6263";
 
-function createStore() {
-  const NAME = process.env.BLOBS_STORE || "rrmodelblobs";
+function createStore(storeName) {
+  const NAME = storeName || process.env.BLOBS_STORE || "rrmodelblobs";
   // Always use explicit credentials — auto-inject is unreliable
   return _getStore({ name: NAME, siteID: SITE_ID, token: BLOBS_TOKEN });
 }
