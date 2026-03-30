@@ -399,6 +399,18 @@ function buildConsensus(oddsEvents, gameMap, dateStr, snapshotUtc) {
 // ──────────────────────────────────────────────────────────────
 
 async function uploadToBlobs(dateStr, records) {
+  const fs   = await import("fs");
+  const path = await import("path");
+
+  // ALWAYS write a local file so the generate step can read it directly
+  // (same GitHub Actions job → shared filesystem, no Blobs round-trip)
+  const localDir = "tmp/f5_ml_cache";
+  fs.mkdirSync(localDir, { recursive: true });
+  const localPath = path.join(localDir, `live_odds_${dateStr}.json`);
+  fs.writeFileSync(localPath, JSON.stringify(records, null, 2));
+  console.log(`  📄  Wrote ${records.length} records → ${localPath}`);
+
+  // Also upload to Blobs (for future reference / direct API access)
   const siteID =
     process.env.NETLIFY_SITE_ID ||
     process.env.NETLIFY_BLOBS_SITE_ID ||
@@ -409,32 +421,28 @@ async function uploadToBlobs(dateStr, records) {
     process.env.NETLIFY_BLOBS_TOKEN;
 
   if (!siteID || !token) {
-    console.warn("⚠️  No Netlify Blobs credentials — writing local file instead");
-    const fs = await import("fs");
-    const path = await import("path");
-    const dir = "tmp/f5_ml_odds";
-    fs.mkdirSync(dir, { recursive: true });
-    const fp = path.join(dir, `${dateStr}.json`);
-    fs.writeFileSync(fp, JSON.stringify(records, null, 2));
-    console.log(`  📄  Wrote ${records.length} records → ${fp}`);
+    console.warn("⚠️  No Netlify Blobs credentials — skipping Blobs upload");
     return;
   }
 
-  const store = getStore({ name: BLOBS_STORE, siteID, token });
-  const key   = `mlb/f5_ml/odds/live/${dateStr}.json`;
-  const body  = JSON.stringify(records);
+  try {
+    const store = getStore({ name: BLOBS_STORE, siteID, token });
+    const key   = `mlb/f5_ml/odds/live/${dateStr}.json`;
+    const body  = JSON.stringify(records);
 
-  await store.set(key, body, {
-    contentType: "application/json",
-    metadata: {
-      date:       dateStr,
-      records:    String(records.length),
-      games:      String(new Set(records.map((r) => r.game_pk)).size),
-      fetched_at: new Date().toISOString(),
-    },
-  });
-
-  console.log(`  ☁️  Uploaded ${records.length} records → Blobs: ${key}`);
+    await store.set(key, body, {
+      contentType: "application/json",
+      metadata: {
+        date:       dateStr,
+        records:    String(records.length),
+        games:      String(new Set(records.map((r) => r.game_pk)).size),
+        fetched_at: new Date().toISOString(),
+      },
+    });
+    console.log(`  ☁️  Uploaded ${records.length} records → Blobs: ${key}`);
+  } catch (e) {
+    console.warn(`  ⚠️  Blobs upload failed (non-fatal): ${e.message || e}`);
+  }
 }
 
 // ──────────────────────────────────────────────────────────────

@@ -26,7 +26,8 @@ import fs from "fs";
 // CONFIG
 // ──────────────────────────────────────────────────────────────
 const LEAD_MINUTES   = parseInt(process.env.LEAD_MINUTES   || "90", 10);
-const WINDOW_MINUTES = parseInt(process.env.WINDOW_MINUTES || "10", 10);
+// GitHub Actions cron routinely delays 5-40+ minutes, so keep window wide
+const WINDOW_MINUTES = parseInt(process.env.WINDOW_MINUTES || "30", 10);
 const MLB_API        = "https://statsapi.mlb.com/api/v1";
 const BLOBS_STORE    = process.env.BLOBS_STORE || "rrmodelblobs";
 const SEASON_START_MONTH = 3;   // March
@@ -234,8 +235,8 @@ async function main() {
   console.log(`  Last pitch:  ${lastPitchET} ET`);
 
   // ── Compute trigger windows ──
-  const morningStart = 9 * 60;       // 09:00 ET
-  const morningEnd   = 9 * 60 + 15;  // 09:15 ET
+  const morningStart = 8 * 60 + 30;  // 08:30 ET — wide to survive cron drift
+  const morningEnd   = 10 * 60;      // 10:00 ET
   const preAfternoonTarget = firstMin - LEAD_MINUTES;
   const preNightTarget     = lastMin  - LEAD_MINUTES;
 
