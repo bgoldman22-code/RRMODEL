@@ -6,13 +6,17 @@ on:
   workflow_dispatch:
     inputs:
       year:
-        description: 'Season year (leave blank for current year)'
+        description: 'Current season year (leave blank for calendar year)'
         required: false
         default: ''
       dry_run:
         description: 'Dry run — fetch only, no upload to Blobs'
         required: false
         default: 'false'
+      scope:
+        description: 'Which years to fetch: both (default), prior-only, current-only'
+        required: false
+        default: 'both'
 
 concurrency:
   group: mlb-statcast-daily
@@ -53,12 +57,19 @@ jobs:
           CMD="python scripts/mlb_v3/fetch_statcast.py"
           YEAR="${{ github.event.inputs.year }}"
           DRY="${{ github.event.inputs.dry_run }}"
+          SCOPE="${{ github.event.inputs.scope }}"
           if [ -n "$YEAR" ]; then
             CMD="$CMD --year $YEAR"
           fi
           if [ "$DRY" = "true" ]; then
             CMD="$CMD --dry-run"
           fi
+          if [ "$SCOPE" = "prior-only" ]; then
+            CMD="$CMD --prior-only"
+          elif [ "$SCOPE" = "current-only" ]; then
+            CMD="$CMD --current-only"
+          fi
+          # Scheduled runs (no scope input) fetch both years by default
           echo "Running: $CMD"
           eval "$CMD"
 
