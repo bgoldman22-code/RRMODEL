@@ -81,11 +81,12 @@ export async function handler(event) {
       message: "F5 ML picks are not yet available for today. The model needs a few days of 2026 season data before generating picks. Check back soon!",
       meta: {
         model_id: "f5_ml_v2_0_0",
+        fn_version: "2026-03-30c",
         note: "Picks are generated daily during the MLB season via GitHub Actions once sufficient game data is available.",
       },
     });
   } catch (err) {
     console.error("f5-ml-latest error:", err);
-    return json(500, { ok: false, error: err.message || "Internal server error" });
+    return json(500, { ok: false, error: err.message || "Internal server error", fn_version: "2026-03-30c" });
   }
 }
