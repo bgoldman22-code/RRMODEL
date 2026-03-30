@@ -1,0 +1,70 @@
+name: MLB V3 Statcast Daily
+
+on:
+  schedule:
+    - cron: '0 12 * * *'   # 7 AM ET (12:00 UTC)
+  workflow_dispatch:
+    inputs:
+      year:
+        description: 'Season year (leave blank for current year)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Dry run — fetch only, no upload to Blobs'
+        required: false
+        default: 'false'
+
+concurrency:
+  group: mlb-statcast-daily
+  cancel-in-progress: true
+
+jobs:
+  fetch-statcast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-statcast-${{ hashFiles('scripts/mlb_v3/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-statcast-
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pandas requests pybaseball numpy
+
+      - name: Fetch Statcast data → upload to Netlify Blobs
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          CMD="python scripts/mlb_v3/fetch_statcast.py"
+          YEAR="${{ github.event.inputs.year }}"
+          DRY="${{ github.event.inputs.dry_run }}"
+          if [ -n "$YEAR" ]; then
+            CMD="$CMD --year $YEAR"
+          fi
+          if [ "$DRY" = "true" ]; then
+            CMD="$CMD --dry-run"
+          fi
+          echo "Running: $CMD"
+          eval "$CMD"
+
+      - name: Validate — read back Blobs and print row counts
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: python scripts/mlb_v3/validate_blobs.py
