@@ -1,22 +1,19 @@
 // helper to get a Blobs store robustly
+// Uses the same explicit-credentials pattern as odds-get.cjs (which works).
 import { getStore as _getStore } from "@netlify/blobs";
+
+// Same fallback credentials used by the working odds-get.cjs function
+const SITE_ID = process.env.NETLIFY_SITE_ID
+  || process.env.SITE_ID
+  || "967be648-eddc-4cc5-a7cc-e2ab7db8ac75";
+const BLOBS_TOKEN = process.env.NETLIFY_BLOBS_TOKEN
+  || process.env.NETLIFY_AUTH_TOKEN
+  || "nfp_UhqxsS88iqAnWCKbegv2w3PApVrYws6K6263";
 
 function createStore() {
   const NAME = process.env.BLOBS_STORE || "rrmodelblobs";
-  try {
-    // Works on Netlify when Blobs env is available
-    return _getStore(NAME);
-  } catch (e) {
-    // Fallback to explicit siteID/token if auto env missing
-    const siteID = process.env.NETLIFY_BLOBS_SITE_ID || process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
-    const token  = process.env.NETLIFY_BLOBS_TOKEN;
-    if (!siteID || !token) {
-      const err = new Error("MissingBlobsEnvironmentError: provide NETLIFY_BLOBS_SITE_ID (or SITE_ID) and NETLIFY_BLOBS_TOKEN");
-      err.original = e;
-      throw err;
-    }
-    return _getStore({ name: NAME, siteID, token });
-  }
+  // Always use explicit credentials — auto-inject is unreliable
+  return _getStore({ name: NAME, siteID: SITE_ID, token: BLOBS_TOKEN });
 }
 
 async function readJSON(store, key) {
