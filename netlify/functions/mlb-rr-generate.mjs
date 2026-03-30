@@ -13,9 +13,14 @@
  * Called by frontend on-demand; cached 10 min in Netlify Blobs.
  */
 
-import { pitcherHRMultiplier } from './lib/hrPitcherMultiplier.js';
 import { parkHRFactorForAbbrev } from './lib/parkFactors.js';
 import { weatherHRMultiplier }   from './lib/weatherMultiplier.js';
+import {
+  loadStatcastMaps,
+  parkFactorFromBlob,
+  batterStatcastMult,
+  pitcherStatcastMult,
+} from './lib/statcastLoader.mjs';
 
 // Lazy Blobs import — avoids crash when Blobs env isn't configured
 let _getStore = null;
@@ -286,6 +291,11 @@ export async function handler(event) {
       };
     }
 
+    // ═══ 0) Load Statcast blobs (parallel with nothing, done once) ══════════
+    console.log('📡 Loading Statcast blobs…');
+    const statcast = await loadStatcastMaps(season);
+    console.log(`  parkMap=${statcast.parkMap.size} batterMap=${statcast.batterMap.size} pitcherEvMap=${statcast.pitcherEvMap.size}`);
+
     // ═══ 1) Today's schedule ═══════════════════════════════
     console.log(`⚾ Fetching MLB schedule for ${today}…`);
     const sched = await fetchJSON(SCHEDULE_URL(today));
@@ -401,8 +411,6 @@ export async function handler(event) {
     }
 
     // ═══ 6) Pitchers, weather, odds, hot/cold in parallel ═
-    let learn = null;
-    try { learn = await safeGetStore('mlb-learning'); } catch { /* Blobs not configured — pitcher profiles unavailable */ }
     const [pitcherMap, oddsMap, hotMap] = await Promise.all([
       getProbablePitcherMap(games),
       fetchHROdds(games),
@@ -428,6 +436,16 @@ export async function handler(event) {
       const starterFacing = meta.side === 'home' ? awayStarter : homeStarter;
       const venue = meta.game?.venue?.name || 'Unknown';
 
+      // Opposing pitcher info for Statcast pitcher multiplier
+      const pitcherInfo = pitcherMap.get(tid);
+      const pitcherName = pitcherInfo?.name || null;
+      const pitcherMlbId = pitcherInfo?.pitcherId || null;
+
+      // Statcast pitcher multiplier (barrel allowed, arsenal RV, FanGraphs HR/FB)
+      const pitcherStatMult = pitcherMlbId
+        ? pitcherStatcastMult(statcast.pitcherEvMap, statcast.arsenalMap, statcast.fgByName, pitcherMlbId, pitcherName)
+        : 1.0;
+
       for (const r of rosterByTeam.get(tid) || []) {
         const pid = r?.person?.id;
         const st  = statById.get(pid);
@@ -436,33 +454,30 @@ export async function handler(event) {
         const seasonPA = Number(st.pa || 0);
         if (seasonPA <= 0) continue;
 
-        // Bayesian HR rate
+        // Bayesian HR rate from MLB Stats API (blended current + prior in step 5)
         const adjHR = seasonHR + PRIOR_PA * PRIOR_HR_RATE;
         const adjPA = seasonPA + PRIOR_PA;
         const p_pa  = Math.max(0, Math.min(0.15, adjHR / adjPA));
 
-        // Pitcher multiplier
-        let pitcherMult = 1.0, pitcherName = null;
-        try {
-          const info = pitcherMap.get(tid);
-          if (info?.pitcherId) {
-            const prof = await learn?.get(`profiles/pitcher/${info.pitcherId}.json`, { type: 'json' });
-            if (prof?.samples && prof?.hr) pitcherMult = pitcherHRMultiplier({ samples: prof.samples, hr: prof.hr });
-            pitcherName = info.name || null;
-          }
-        } catch { /* 1.0 */ }
+        // Batter Statcast multiplier (barrel%, hard-hit% from blobs)
+        const batStatMult = batterStatcastMult(statcast.batterMap, pid);
 
-        // Park + weather
-        const parkMult    = parkHRFactorForAbbrev(homeAb);
+        // Park factor — blob-driven (handedness-aware) with static fallback
+        const batterHand = r?.batSide?.code || null; // 'R', 'L', or 'S'
+        const parkMult = parkFactorFromBlob(statcast.parkMap, homeAb, batterHand, parkHRFactorForAbbrev);
+
+        // Weather
         const wx          = weatherByPk.get(meta.game?.gamePk) || {};
         const weatherMult = weatherHRMultiplier(wx);
 
-        // Hot/cold
+        // Hot/cold (14-day)
         const hc = hotMap.get(String(pid)) || { hr14: 0, pa14: 0 };
         const hcMult = hotColdMultiplier(hc.hr14, hc.pa14, seasonHR, seasonPA);
 
-        // Per-game HR probability
-        const p_pa_adj = Math.max(0, Math.min(0.15, p_pa * pitcherMult * parkMult * weatherMult * hcMult));
+        // Per-game HR probability — now includes Statcast batter + pitcher signals
+        const p_pa_adj = Math.max(0, Math.min(0.15,
+          p_pa * batStatMult * pitcherStatMult * parkMult * weatherMult * hcMult
+        ));
         const p_game   = 1 - Math.pow(1 - p_pa_adj, EXP_PA);
         const probability = Math.min(CAP_PROB, Math.max(0.001, p_game));
 
@@ -484,13 +499,23 @@ export async function handler(event) {
           starter: starterFacing,
           booksCount: oddsRec?.books || 0,
           oddsSource: oddsRec ? 'live' : 'model',
+          // Debug fields (stripped from frontend payload in step 8)
+          _debug: {
+            batStatMult: Math.round(batStatMult * 1000) / 1000,
+            pitcherStatMult: Math.round(pitcherStatMult * 1000) / 1000,
+            parkMult: Math.round(parkMult * 1000) / 1000,
+            hcMult: Math.round(hcMult * 1000) / 1000,
+            wPrior: st.wPrior || 0,
+          },
         });
       }
     }
 
     // ═══ 8) Sort, filter, recommend ════════════════════════
-    const topByProb = [...candidates].sort((a, b) => b.probability - a.probability).slice(0, 10);
-    const topByEV   = candidates.filter(c => c.ev > 0.02 && c.probability >= 0.12).sort((a, b) => b.ev - a.ev).slice(0, 20);
+    // Strip _debug fields before building output lists
+    const strip = (c) => { const { _debug, ...rest } = c; return rest; }; // eslint-disable-line no-unused-vars
+    const topByProb = [...candidates].sort((a, b) => b.probability - a.probability).slice(0, 10).map(strip);
+    const topByEV   = candidates.filter(c => c.ev > 0.02 && c.probability >= 0.12).sort((a, b) => b.ev - a.ev).slice(0, 20).map(strip);
     const recommendations = recommendRR(Math.min(topByEV.length, 6));
 
     // ═══ 9) Response + cache ═══════════════════════════════
@@ -501,6 +526,9 @@ export async function handler(event) {
         candidatesCount: candidates.length,
         oddsAvailable: oddsMap.size > 0,
         oddsPlayerCount: oddsMap.size,
+        statcastBatters: statcast.batterMap.size,
+        statcastPitchers: statcast.pitcherEvMap.size,
+        statcastParks: statcast.parkMap.size,
         season,
         generatedAt: new Date().toISOString(),
       },
