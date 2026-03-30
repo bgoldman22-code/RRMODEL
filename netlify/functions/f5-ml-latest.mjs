@@ -34,6 +34,38 @@ export async function handler(event) {
     );
     const date  = url.searchParams.get("date");
     const label = url.searchParams.get("label");
+    const diag  = url.searchParams.get("diag") === "1";
+
+    // Diagnostic mode: show store config and raw read attempts
+    if (diag) {
+      const testKey = "mlb/f5_ml/latest.json";
+      let readResult = null, readError = null;
+      try {
+        const raw = await store.get(testKey);
+        readResult = raw ? `got ${typeof raw}, length=${typeof raw === 'string' ? raw.length : 'n/a'}` : "null";
+      } catch (e) {
+        readError = e.message;
+      }
+      let readJsonResult = null, readJsonError = null;
+      try {
+        readJsonResult = await readJSON(store, testKey);
+        readJsonResult = readJsonResult ? `parsed, keys=${Object.keys(readJsonResult).join(",")}` : "null";
+      } catch (e) {
+        readJsonError = e.message;
+      }
+      return json(200, {
+        diag: true,
+        storeName: process.env.BLOBS_STORE || "rrmodelblobs",
+        siteIdSource: process.env.NETLIFY_SITE_ID ? "env:NETLIFY_SITE_ID" : process.env.SITE_ID ? "env:SITE_ID" : "hardcoded",
+        tokenSource: process.env.NETLIFY_BLOBS_TOKEN ? "env:NETLIFY_BLOBS_TOKEN" : process.env.NETLIFY_AUTH_TOKEN ? "env:NETLIFY_AUTH_TOKEN" : "hardcoded",
+        testKey,
+        readResult,
+        readError,
+        readJsonResult,
+        readJsonError,
+        fn_version: "2026-03-30d",
+      });
+    }
 
     let blobKey;
     let cacheSeconds = 60; // default for latest
