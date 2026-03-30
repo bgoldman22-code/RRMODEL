@@ -55,7 +55,8 @@ export async function handler(event) {
       }
       return json(200, {
         diag: true,
-        storeName: process.env.BLOBS_STORE || "rrmodelblobs",
+        storeName: "rrmodelblobs",
+        envBlobsStore: process.env.BLOBS_STORE || "(unset)",
         siteIdSource: process.env.NETLIFY_SITE_ID ? "env:NETLIFY_SITE_ID" : process.env.SITE_ID ? "env:SITE_ID" : "hardcoded",
         tokenSource: process.env.NETLIFY_BLOBS_TOKEN ? "env:NETLIFY_BLOBS_TOKEN" : process.env.NETLIFY_AUTH_TOKEN ? "env:NETLIFY_AUTH_TOKEN" : "hardcoded",
         testKey,

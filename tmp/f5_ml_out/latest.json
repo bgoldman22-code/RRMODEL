@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "model_id": "f5_ml_v2_0_0",
+  "generated_at": "2026-03-27T20:09:52.545826+00:00",
+  "game_date": "2025-09-15",
+  "pricing_mode": "consensus",
+  "run_label": "morning",
+  "thresholds": {
+    "ev_min": 0.1,
+    "edge_min": 0.07,
+    "min_odds_american": -200,
+    "max_odds_american": 300
+  },
+  "schedule_context": {
+    "first_pitch_et": "",
+    "last_pitch_et": "",
+    "games_on_slate": 0
+  },
+  "picks": [],
+  "meta": {
+    "games_on_slate": 0,
+    "games_scored": 0,
+    "total_picks": 0,
+    "generation_time_ms": 9911,
+    "reason": "No odds for date"
+  }
+}

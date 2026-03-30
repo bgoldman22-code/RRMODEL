@@ -227,7 +227,7 @@ async function fetchF5OddsPerEvent(apiKey, eventId) {
 async function fetchF5Odds(apiKey) {
   // 1) Get all events
   const eventList = await fetchEventList(apiKey);
-  if (eventList.length === 0) return [];
+  if (eventList.length === 0) return { events: [], source: "none" };
 
   // 2) Fetch F5 odds per event (sequentially to be kind to rate limits)
   console.log(`🎰  Fetching F5 ML odds per event (${eventList.length} events)…`);
@@ -254,7 +254,59 @@ async function fetchF5Odds(apiKey) {
   }
 
   console.log(`  F5 odds: ${oddsFound} events with odds, ${oddsEmpty} without`);
-  return eventsWithOdds;
+
+  // 3) If we got F5 odds, use them
+  if (eventsWithOdds.length > 0) {
+    return { events: eventsWithOdds, source: "f5" };
+  }
+
+  // 4) FALLBACK: Use full-game h2h moneyline (bulk endpoint — free/cheap)
+  //    This is common for Opening Day or early morning when F5 lines aren't posted yet.
+  //    We dampen the odds towards 50/50 since F5 outcomes are less predictable.
+  console.log(`\n🔄  No F5 odds available — falling back to full-game h2h moneyline…`);
+  const fallbackEvents = await fetchFullGameH2hBulk(apiKey);
+  if (fallbackEvents.length > 0) {
+    return { events: fallbackEvents, source: "h2h_fallback" };
+  }
+
+  return { events: [], source: "none" };
+}
+
+/**
+ * Fallback: fetch full-game h2h moneyline odds from the bulk endpoint.
+ * These are more widely available than F5 odds, especially early in the day.
+ */
+async function fetchFullGameH2hBulk(apiKey) {
+  const url =
+    `${ODDS_API_BASE}/sports/${SPORT}/odds` +
+    `?apiKey=${apiKey}` +
+    `&regions=${REGION}` +
+    `&markets=h2h` +
+    `&oddsFormat=american`;
+
+  console.log(`  Fetching bulk h2h odds…`);
+  const resp = await fetch(url);
+
+  const remaining = resp.headers.get("x-requests-remaining");
+  const used      = resp.headers.get("x-requests-used");
+  const last      = resp.headers.get("x-requests-last");
+  console.log(`  Quota: used=${used}, remaining=${remaining}, cost=${last}`);
+
+  if (!resp.ok) {
+    const body = await resp.text().catch(() => "");
+    console.warn(`  ⚠️  Bulk h2h error: HTTP ${resp.status} — ${body}`);
+    return [];
+  }
+
+  const events = await resp.json();
+  if (!Array.isArray(events)) return [];
+
+  // Filter to events that actually have h2h bookmakers
+  const withOdds = events.filter(evt =>
+    evt.bookmakers?.some(bk => bk.markets?.some(m => m.key === "h2h"))
+  );
+  console.log(`  Full-game h2h: ${withOdds.length} events with odds (of ${events.length} total)`);
+  return withOdds;
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -468,13 +520,15 @@ async function main() {
   const snapshotUtc = new Date().toISOString();
 
   // 1. Fetch both data sources in parallel
-  const [mlbGames, oddsEvents] = await Promise.all([
+  const [mlbGames, oddsResult] = await Promise.all([
     fetchMLBSchedule(dateStr),
     fetchF5Odds(apiKey),
   ]);
 
+  const { events: oddsEvents, source: oddsSource } = oddsResult;
+
   if (oddsEvents.length === 0) {
-    console.log("⚠️  No F5 odds available from TheOddsAPI — writing empty file");
+    console.log("⚠️  No odds available from TheOddsAPI (neither F5 nor h2h) — writing empty file");
     await uploadToBlobs(dateStr, []);
     return;
   }
@@ -485,15 +539,22 @@ async function main() {
     return;
   }
 
+  // Determine which market key to look for in the bookmaker data
+  const marketKey = oddsSource === "h2h_fallback" ? "h2h" : MARKET;
+  if (oddsSource === "h2h_fallback") {
+    console.log(`\n⚠️  Using full-game h2h as fallback — odds will be dampened towards 50/50`);
+  }
+
   // 2. Resolve TheOddsAPI events → MLB game_pk
   const gameMap = resolveGamePks(oddsEvents, mlbGames);
 
   // 3. Build consensus odds
-  const records = buildConsensus(oddsEvents, gameMap, dateStr, snapshotUtc);
+  const records = buildConsensus(oddsEvents, gameMap, dateStr, snapshotUtc, marketKey, oddsSource);
 
   console.log(
     `\n📊  Consensus: ${records.length} records ` +
     `(${new Set(records.map((r) => r.game_pk)).size} games, ` +
+    `source: ${oddsSource}, ` +
     `books range: ${Math.min(...records.map((r) => r.books_available))}–` +
     `${Math.max(...records.map((r) => r.books_available))})`
   );
