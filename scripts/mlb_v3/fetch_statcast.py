@@ -242,9 +242,11 @@ def fetch_batters_ev(year: int) -> "tuple[dict | None, str]":
     date_high  = season_end(year) if is_prior else TODAY
     date_range = f"{season_start(year)} – {date_high}"
 
+    # min=1 so early-season data (even 1 PA) is included.
+    # The JS backend applies its own PA-threshold logic for blend weighting.
     url = (
         f"https://baseballsavant.mlb.com/leaderboard/statcast"
-        f"?type=batter&year={year}&position=&team=&min=25&csv=true"
+        f"?type=batter&year={year}&position=&team=&min=1&csv=true"
     )
     df = fetch_csv(url, label)
     if df is None or len(df) == 0:
@@ -360,9 +362,10 @@ def fetch_pitchers_ev(year: int) -> "tuple[dict | None, str]":
     date_high  = season_end(year) if is_prior else TODAY
     date_range = f"{season_start(year)} – {date_high}"
 
+    # min=1 so early-season data is included; blend weighting handled by JS backend.
     url = (
         f"https://baseballsavant.mlb.com/leaderboard/statcast"
-        f"?type=pitcher&year={year}&position=&team=&min=25&csv=true"
+        f"?type=pitcher&year={year}&position=&team=&min=1&csv=true"
     )
     df = fetch_csv(url, label)
     if df is None or len(df) == 0:
@@ -397,9 +400,10 @@ def fetch_arsenal(year: int) -> "tuple[dict | None, str]":
     date_high  = season_end(year) if is_prior else TODAY
     date_range = f"{season_start(year)} – {date_high}"
 
+    # min=1 so early-season data is included; blend weighting handled by JS backend.
     url = (
         f"https://baseballsavant.mlb.com/leaderboard/pitch-arsenal-stats"
-        f"?type=pitcher&pitchType=&year={year}&team=&min=25&csv=true"
+        f"?type=pitcher&pitchType=&year={year}&team=&min=1&csv=true"
     )
     df = fetch_csv(url, label)
     if df is None or len(df) == 0:
