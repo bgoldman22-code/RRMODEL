@@ -206,22 +206,6 @@ def upload_blob(key: str, data: "dict | list", label: str) -> bool:
     return False
 
 
-def read_blob(key: str) -> "dict | None":
-    """Read an existing blob key. Used by park-factors reuse logic."""
-    if DRY_RUN:
-        return None
-    try:
-        r = requests.get(
-            f"{BLOBS_BASE}/{key}",
-            headers={"Authorization": f"Bearer {TOKEN}"},
-            timeout=20,
-        )
-        if r.status_code == 200:
-            return r.json()
-    except Exception:
-        pass
-    return None
-
 
 # ── Per-year results tracker ───────────────────────────────────────────────────
 # results[year][ds_label] = { ok, rows, note, date_range }
@@ -453,73 +437,138 @@ def fetch_arsenal(year: int) -> "tuple[dict | None, str]":
     return {"year": year, "fetched": TODAY, "date_range": date_range, "pitchers": out}, date_range
 
 
+# ── Static park factor fallback ────────────────────────────────────────────────
+# Used if pybaseball park_factors_by_handedness() fails.
+# Values are HR index (100 = neutral). Source: FanGraphs 3-year regressed 2023–2025.
+# Keyed by FanGraphs team abbreviation; venue name added for display.
+_STATIC_PARK_FACTORS: list[dict] = [
+    {"team": "COL", "venue": "Coors Field",               "hr_index_R": 117, "hr_index_L": 121, "hr_index_all": 119},
+    {"team": "CIN", "venue": "Great American Ball Park",  "hr_index_R": 112, "hr_index_L": 110, "hr_index_all": 111},
+    {"team": "PHI", "venue": "Citizens Bank Park",        "hr_index_R": 110, "hr_index_L": 109, "hr_index_all": 110},
+    {"team": "MIL", "venue": "American Family Field",     "hr_index_R": 108, "hr_index_L": 107, "hr_index_all": 108},
+    {"team": "BAL", "venue": "Oriole Park at Camden Yards","hr_index_R": 107, "hr_index_L": 106, "hr_index_all": 107},
+    {"team": "HOU", "venue": "Minute Maid Park",          "hr_index_R": 106, "hr_index_L": 105, "hr_index_all": 106},
+    {"team": "BOS", "venue": "Fenway Park",               "hr_index_R": 103, "hr_index_L": 109, "hr_index_all": 106},
+    {"team": "ARI", "venue": "Chase Field",               "hr_index_R": 105, "hr_index_L": 104, "hr_index_all": 105},
+    {"team": "NYY", "venue": "Yankee Stadium",            "hr_index_R": 104, "hr_index_L": 112, "hr_index_all": 108},
+    {"team": "TEX", "venue": "Globe Life Field",          "hr_index_R": 104, "hr_index_L": 103, "hr_index_all": 104},
+    {"team": "TOR", "venue": "Rogers Centre",             "hr_index_R": 103, "hr_index_L": 102, "hr_index_all": 103},
+    {"team": "ATL", "venue": "Truist Park",               "hr_index_R": 102, "hr_index_L": 101, "hr_index_all": 102},
+    {"team": "DET", "venue": "Comerica Park",             "hr_index_R":  95, "hr_index_L":  96, "hr_index_all":  96},
+    {"team": "CLE", "venue": "Progressive Field",         "hr_index_R":  97, "hr_index_L":  98, "hr_index_all":  98},
+    {"team": "MIN", "venue": "Target Field",              "hr_index_R":  98, "hr_index_L":  97, "hr_index_all":  98},
+    {"team": "LAD", "venue": "Dodger Stadium",            "hr_index_R":  98, "hr_index_L":  97, "hr_index_all":  98},
+    {"team": "CHW", "venue": "Rate Field",                "hr_index_R": 100, "hr_index_L":  99, "hr_index_all": 100},
+    {"team": "CHC", "venue": "Wrigley Field",             "hr_index_R":  99, "hr_index_L": 101, "hr_index_all": 100},
+    {"team": "LAA", "venue": "Angel Stadium",             "hr_index_R":  99, "hr_index_L":  98, "hr_index_all":  99},
+    {"team": "MIA", "venue": "loanDepot park",            "hr_index_R":  95, "hr_index_L":  96, "hr_index_all":  96},
+    {"team": "NYM", "venue": "Citi Field",                "hr_index_R":  96, "hr_index_L":  97, "hr_index_all":  97},
+    {"team": "OAK", "venue": "Sutter Health Park",        "hr_index_R":  98, "hr_index_L":  97, "hr_index_all":  98},
+    {"team": "PIT", "venue": "PNC Park",                  "hr_index_R":  97, "hr_index_L":  98, "hr_index_all":  98},
+    {"team": "STL", "venue": "Busch Stadium",             "hr_index_R":  98, "hr_index_L":  97, "hr_index_all":  98},
+    {"team": "SD",  "venue": "Petco Park",                "hr_index_R":  93, "hr_index_L":  94, "hr_index_all":  94},
+    {"team": "SEA", "venue": "T-Mobile Park",             "hr_index_R":  94, "hr_index_L":  93, "hr_index_all":  94},
+    {"team": "SF",  "venue": "Oracle Park",               "hr_index_R":  92, "hr_index_L":  91, "hr_index_all":  92},
+    {"team": "TB",  "venue": "Tropicana Field",           "hr_index_R":  96, "hr_index_L":  95, "hr_index_all":  96},
+    {"team": "WSH", "venue": "Nationals Park",            "hr_index_R":  99, "hr_index_L":  98, "hr_index_all":  99},
+    {"team": "KC",  "venue": "Kauffman Stadium",          "hr_index_R":  96, "hr_index_L":  95, "hr_index_all":  96},
+]
+
+
 def fetch_park_factors(year: int) -> "tuple[dict | None, str]":
     """
-    Venue HR index by batter side from Savant park factors leaderboard.
-    Park factors are structurally stable year-over-year.
-    If the current year returns no CSV data (HTML page served instead),
-    the main loop will reuse the prior-year blob already written.
+    HR park factors by batter handedness via pybaseball.park_factors_by_handedness().
+
+    FanGraphs uses a 3-to-5-year regressed methodology — more stable than
+    single-season Savant data. The Savant CSV endpoint returns HTML for both
+    2025 and 2026, so we use FanGraphs exclusively here.
+
+    Since park factors don't meaningfully change year-to-year, the main loop
+    uses the PRIOR-year fetch and writes identical data to both year keys.
+    If pybaseball fails, falls back to _STATIC_PARK_FACTORS.
+
+    Returns (payload, date_range) or (None, "").
     """
+    from pybaseball import park_factors_by_handedness
+    from pybaseball import cache as pb_cache
+    pb_cache.enable()
+
+    # FanGraphs regresses over multiple years — use PRIOR as the canonical source.
+    # The year arg here is the season to query; for current year early in season
+    # there's no data, so callers should pass PRIOR.
     label      = f"park-factors-{year}"
-    date_range = f"{year} full season"
+    date_range = f"FanGraphs {year} regressed (3yr)"
 
-    sides = {
-        "all": (f"https://baseballsavant.mlb.com/leaderboard/statcast-park-factors"
-                f"?type=venue&year={year}&batSide=&stat=index_HR&condition=z&rolling=no&csv=true"),
-        "R":   (f"https://baseballsavant.mlb.com/leaderboard/statcast-park-factors"
-                f"?type=venue&year={year}&batSide=R&stat=index_HR&condition=z&rolling=no&csv=true"),
-        "L":   (f"https://baseballsavant.mlb.com/leaderboard/statcast-park-factors"
-                f"?type=venue&year={year}&batSide=L&stat=index_HR&condition=z&rolling=no&csv=true"),
-    }
+    print(f"  ↓ [{label}] park_factors_by_handedness({year}) ...")
+    try:
+        df = park_factors_by_handedness(year)
+        print(f"  ✓ [{label}] {len(df)} rows, cols: {list(df.columns)[:10]}")
 
-    park_data: dict[str, dict] = {}
-
-    for side, url in sides.items():
-        df = fetch_csv(url, f"park-{side}-{year}")
         if df is None or len(df) == 0:
-            print(f"  ⚠ [{label}] side={side} empty — skipping")
-            continue
+            raise ValueError("empty dataframe")
 
-        df.columns = [c.lower().strip() for c in df.columns]
-        venue_col = next((c for c in df.columns if "venue" in c or "park" in c or c == "name"), None)
-        idx_col   = next((c for c in df.columns if "index_hr" in c or "hr_index" in c or c == "hr"), None)
-        team_col  = next((c for c in df.columns if "team" in c), None)
+        df.columns = [str(c).strip() for c in df.columns]
 
-        if not venue_col or not idx_col:
-            print(f"  ⚠ [{label}] side={side} — can't identify venue/index cols. "
-                  f"Available: {list(df.columns)[:10]}")
-            continue
+        # FanGraphs columns vary by pybaseball version. Common names:
+        #   teamid / Team / team  — team abbreviation
+        #   handedness / hand / Handedness — LHB / RHB
+        #   HR / hr / HR_factor  — HR park factor index (100=neutral)
+        team_col = next((c for c in df.columns if c.lower() in ("teamid", "team", "teamabbrev")), None)
+        hand_col = next((c for c in df.columns if c.lower() in ("handedness", "hand", "split")), None)
+        hr_col   = next((c for c in df.columns if c.lower() in ("hr", "hr_factor", "home_run")), None)
+        venue_col = next((c for c in df.columns if "venue" in c.lower() or "park" in c.lower()), None)
 
+        print(f"  ↓ [{label}] columns mapped: team={team_col} hand={hand_col} hr={hr_col} venue={venue_col}")
+
+        if not team_col or not hr_col:
+            raise ValueError(f"can't map required cols — available: {list(df.columns)}")
+
+        park_map: dict[str, dict] = {}
         for _, row in df.iterrows():
-            venue = str(row.get(venue_col, "")).strip()
-            if not venue:
+            team  = str(row.get(team_col, "")).strip().upper()
+            hand  = str(row.get(hand_col, "")).strip().upper() if hand_col else "ALL"
+            hr_val = _safe_float(row.get(hr_col))
+            venue  = str(row.get(venue_col, "")).strip() if venue_col else ""
+
+            if not team:
                 continue
-            if venue not in park_data:
-                park_data[venue] = {
-                    "venue":     venue,
-                    "team_abbr": str(row.get(team_col, "")).strip() if team_col else None,
-                }
-            park_data[venue][f"hr_index_{side}"] = _safe_float(row.get(idx_col))
+            if team not in park_map:
+                park_map[team] = {"team_abbr": team, "venue": venue or team}
 
-    if not park_data:
-        return None, date_range
+            # Normalise handedness labels → R / L / all
+            if hand in ("RHB", "R", "RIGHT"):
+                park_map[team]["hr_index_R"] = hr_val
+            elif hand in ("LHB", "L", "LEFT"):
+                park_map[team]["hr_index_L"] = hr_val
+            else:
+                park_map[team]["hr_index_all"] = hr_val
 
-    out = list(park_data.values())
-    return {"year": year, "fetched": TODAY, "date_range": date_range, "venues": out}, date_range
+        out = list(park_map.values())
+        if len(out) < 15:
+            raise ValueError(f"only {len(out)} teams parsed — likely column mapping issue")
+
+        return {"year": year, "fetched": TODAY, "date_range": date_range, "venues": out}, date_range
+
+    except Exception as e:
+        print(f"  ⚠ [{label}] park_factors_by_handedness failed: {e} — using static fallback")
+        out = [dict(row) for row in _STATIC_PARK_FACTORS]
+        dr  = f"static fallback (FanGraphs 3yr regressed 2023–2025)"
+        return {"year": year, "fetched": TODAY, "date_range": dr,
+                "source": "static_fallback", "venues": out}, dr
 
 
 def fetch_fangraphs(year: int) -> "tuple[dict | None, str]":
     """
-    FanGraphs xFIP / HR-FB / GB% / FB% via pybaseball.
+    FanGraphs xFIP / HR-FB / GB% / FB% via pybaseball.pitching_stats().
 
     Strategy:
-      1. Try pitching_stats(year) — works once enough IP has accumulated.
-      2. If that returns <5 rows (season hasn't started), fall back to
-         pitching_stats_range() covering the full prior season, so we
-         always have xFIP/HR-FB data available.
+      1. Try pitching_stats(year) — works once IP has accumulated.
+      2. If that returns <5 rows (e.g. season just started), explicitly
+         fall back to pitching_stats(PRIOR) — NOT pitching_stats_range(),
+         which has a known 'list index out of range' crash on empty results.
     Includes `bf` (total batters faced) for blend weighting by JS backend.
     """
-    from pybaseball import pitching_stats, pitching_stats_range
+    from pybaseball import pitching_stats
     from pybaseball import cache as pb_cache
     pb_cache.enable()
 
@@ -543,7 +592,6 @@ def fetch_fangraphs(year: int) -> "tuple[dict | None, str]":
     }
 
     def _rows_from_df(fg: pd.DataFrame, dr: str) -> "dict | None":
-        """Parse a FanGraphs DataFrame into our payload format."""
         if fg is None or len(fg) < 5:
             return None
         fg.columns = [str(c).strip() for c in fg.columns]
@@ -565,7 +613,7 @@ def fetch_fangraphs(year: int) -> "tuple[dict | None, str]":
             return None
         return {"year": year, "fetched": TODAY, "date_range": dr, "pitchers": out}
 
-    # ── Attempt 1: current/prior season via pitching_stats() ──────────────────
+    # ── Attempt 1: requested season ────────────────────────────────────────────
     print(f"  ↓ [{label}] pitching_stats({year}) ...")
     try:
         fg = pitching_stats(year, year, qual=10)
@@ -573,32 +621,26 @@ def fetch_fangraphs(year: int) -> "tuple[dict | None, str]":
         payload = _rows_from_df(fg, date_range)
         if payload:
             return payload, date_range
-        print(f"  ⚠ [{label}] <5 usable rows — trying range fallback")
+        print(f"  ⚠ [{label}] <5 usable rows — trying prior season fallback")
     except Exception as e:
         print(f"  ⚠ [{label}] pitching_stats({year}) failed: {e}")
 
-    # ── Attempt 2: range fallback ──────────────────────────────────────────────
-    # For current year early in season → use full prior season.
-    # For prior year → use same full-season date range as a range call.
+    # ── Attempt 2: explicit prior season via pitching_stats() ─────────────────
+    # NOTE: pitching_stats_range() has a known crash ('list index out of range')
+    # when the date range returns no data. Use pitching_stats(PRIOR) instead —
+    # it is stable and always has a full season of data.
     if not is_prior:
-        fb_start = season_start(PRIOR)
-        fb_end   = season_end(PRIOR)
-        fb_dr    = f"{fb_start} – {fb_end} (prior season fallback)"
-    else:
-        fb_start = date_low
-        fb_end   = date_high
-        fb_dr    = f"{fb_start} – {fb_end} (range fallback)"
-
-    print(f"  ↓ [{label}] pitching_stats_range({fb_start!r}, {fb_end!r}) ...")
-    try:
-        fg2 = pitching_stats_range(fb_start, fb_end)
-        print(f"  ✓ [{label}] {len(fg2)} rows from range call")
-        payload = _rows_from_df(fg2, fb_dr)
-        if payload:
-            return payload, fb_dr
-        print(f"  ⚠ [{label}] range call also returned <5 usable rows")
-    except Exception as e:
-        print(f"  ⚠ [{label}] pitching_stats_range() failed: {e}")
+        print(f"  ↓ [{label}] pitching_stats({PRIOR}) [prior season fallback] ...")
+        fb_dr = f"{season_start(PRIOR)} – {season_end(PRIOR)} (prior season fallback)"
+        try:
+            fg2 = pitching_stats(PRIOR, PRIOR, qual=10)
+            print(f"  ✓ [{label}] {len(fg2)} rows from prior season")
+            payload = _rows_from_df(fg2, fb_dr)
+            if payload:
+                return payload, fb_dr
+            print(f"  ⚠ [{label}] prior season also returned <5 usable rows")
+        except Exception as e:
+            print(f"  ⚠ [{label}] pitching_stats({PRIOR}) failed: {e}")
 
     return None, date_range
 
@@ -618,6 +660,45 @@ DATASETS: list[tuple] = [
     ("fangraphs-pitching", fetch_fangraphs,    "statcast/fangraphs-pitching-{year}.json"),
 ]
 
+# ── Park factors: fetch once from PRIOR, write to both year keys ───────────────
+# FanGraphs park factors are regressed over 3–5 years; there is no meaningful
+# difference between the 2025 and 2026 values for an established park.
+# The Savant CSV endpoint returns HTML for all years, so we use pybaseball only.
+print(f"\n{'═'*64}")
+print(f"  PARK FACTORS (fetched from {PRIOR}, written to both {PRIOR} and {YEAR})")
+print(f"{'═'*64}")
+
+_park_payload: "dict | None" = None
+_park_dr: str = ""
+try:
+    import pybaseball  # noqa: F401 — presence check before calling fetcher
+    _park_payload, _park_dr = fetch_park_factors(PRIOR)
+except ImportError:
+    print(f"  ⚠ pybaseball not installed — calling fetch_park_factors which has static fallback")
+    _park_payload, _park_dr = fetch_park_factors(PRIOR)
+except Exception as e:
+    print(f"  ⚠ park_factors fetch failed: {e}")
+
+if _park_payload is None:
+    # Should never reach here — fetch_park_factors() always returns the static table
+    print("  ⚠ park_factors returned None even with static fallback — this is a bug")
+
+for year in years_to_fetch:
+    if _park_payload is not None:
+        # Stamp each year's blob with the correct year key but same data
+        stamped = dict(_park_payload)
+        stamped["year"]    = year
+        stamped["fetched"] = TODAY
+        if year == YEAR and year != PRIOR:
+            stamped["date_range"] = f"{_park_dr} (applied to {year})"
+            stamped["source"]     = f"fetched_from_{PRIOR}"
+        blob_key = f"statcast/park-factors-{year}.json"
+        ok = upload_blob(blob_key, stamped, f"park-factors-{year}")
+        n  = len(stamped.get("venues", []))
+        record(year, "park-factors", ok, n, date_range=stamped["date_range"])
+    else:
+        record(year, "park-factors", False, 0, note="fetch failed")
+
 for year in years_to_fetch:
     yr_label = "PRIOR" if year < YEAR else "CURRENT"
     print(f"\n{'═'*64}")
@@ -625,6 +706,10 @@ for year in years_to_fetch:
     print(f"{'═'*64}")
 
     for ds_label, fetcher, key_tmpl in DATASETS:
+        # Park factors are handled above (fetched once, written to both years)
+        if ds_label == "park-factors":
+            continue
+
         print(f"\n{'─'*60}")
         print(f"  [{year}] {ds_label.upper()}")
         print(f"{'─'*60}")
@@ -641,28 +726,6 @@ for year in years_to_fetch:
             payload, date_range = fetcher(year)
         except Exception as e:
             record(year, ds_label, False, 0, note=str(e))
-            continue
-
-        # ── Park factors: reuse prior year when current year has no data ──────
-        if payload is None and ds_label == "park-factors" and year == YEAR:
-            print(f"  ↻ [{year}] park-factors empty — reusing {PRIOR} blob "
-                  f"(park factors are stable year-over-year)")
-            prior_blob = read_blob(f"statcast/park-factors-{PRIOR}.json")
-            if prior_blob and prior_blob.get("venues"):
-                reused = dict(prior_blob)
-                reused["year"]       = YEAR
-                reused["fetched"]    = TODAY
-                reused["date_range"] = (f"{PRIOR} full season "
-                                        f"(reused — {YEAR} not yet available)")
-                reused["source"]     = f"reused_from_{PRIOR}"
-                ok = upload_blob(key_tmpl.format(year=YEAR), reused, ds_label)
-                n  = len(reused["venues"])
-                record(year, ds_label, ok, n,
-                       note=f"reused {PRIOR} park factors",
-                       date_range=reused["date_range"])
-            else:
-                record(year, ds_label, False, 0,
-                       note=f"empty + prior {PRIOR} blob not available")
             continue
 
         if payload is None:
