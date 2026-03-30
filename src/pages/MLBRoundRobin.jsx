@@ -1,10 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { exportToPNG } from '../lib/exportUtils';
 
 export default function MLBRoundRobin() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const exportRef = useRef(null);
+
+  const handleExport = async () => {
+    if (!exportRef.current) return;
+    try {
+      const filename = `mlb-hr-round-robin-${data?.date || new Date().toISOString().split('T')[0]}`;
+      await exportToPNG(exportRef.current, filename, { scale: 3, width: 900, windowWidth: 900 });
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed: ' + error.message);
+    }
+  };
 
   useEffect(() => {
     loadPredictions();
@@ -91,17 +104,27 @@ export default function MLBRoundRobin() {
             {meta.oddsAvailable ? ` ✅ Live odds (${meta.oddsPlayerCount || 0} players)` : ' ⚠️ Model odds (no live HR lines yet)'}
           </p>
         </div>
-        <button
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            refreshing
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
-          }`}
-        >
-          {refreshing ? '⟳ Refreshing...' : '🔄 Refresh Odds'}
-        </button>
+        <div className="flex items-center gap-2">
+          {(topByEV.length > 0 || topByProb.length > 0) && (
+            <button
+              onClick={handleExport}
+              className="px-4 py-2 rounded-lg font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+            >
+              📸 Export PNG
+            </button>
+          )}
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              refreshing
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
+          >
+            {refreshing ? '⟳ Refreshing...' : '🔄 Refresh Odds'}
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -278,6 +301,97 @@ export default function MLBRoundRobin() {
           Model: 6-Factor Probability • Park Factors • Hot/Cold Streaks • Pitcher Matchups
         </p>
       </div>
+
+      {/* Hidden Export Container */}
+      {(topByEV.length > 0 || topByProb.length > 0) && (
+        <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+          <div ref={exportRef} style={{ width: '900px', backgroundColor: '#ffffff', padding: '24px', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h2 style={{ fontSize: '26px', fontWeight: 'bold', margin: 0 }}>⚾ MLB HR Round Robin</h2>
+              <p style={{ fontSize: '13px', color: '#6b7280', margin: '4px 0 0 0' }}>
+                {data?.date || new Date().toLocaleDateString()} | {meta.gamesCount} Games | {meta.oddsAvailable ? 'Live Odds' : 'Model Odds'} | {topByEV.length} EV Picks
+              </p>
+            </div>
+
+            {/* Recommended Structures */}
+            {recommendations.length > 0 && (
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '8px' }}>📊 Recommended Structures</div>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  {recommendations.map((rec, idx) => (
+                    <div key={idx} style={{ flex: 1, padding: '10px', border: rec.recommended ? '2px solid #22c55e' : '1px solid #d1d5db', borderRadius: '8px', backgroundColor: rec.recommended ? '#f0fdf4' : '#fff' }}>
+                      <div style={{ fontSize: '18px', fontWeight: 'bold' }}>{rec.structure}</div>
+                      <div style={{ fontSize: '12px', color: '#6b7280' }}>{rec.parlays} parlays</div>
+                      {rec.roi && <div style={{ fontSize: '14px', color: '#059669', fontWeight: '600', marginTop: '4px' }}>{rec.roi} ROI</div>}
+                      {rec.recommended && <div style={{ fontSize: '11px', color: '#16a34a', fontWeight: 'bold', marginTop: '4px' }}>⭐ RECOMMENDED</div>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Top by Probability */}
+            {topByProb.length > 0 && (
+              <>
+                <div style={{ marginBottom: '8px', fontSize: '15px', fontWeight: '600' }}>🎯 Top 10 by Probability</div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', marginBottom: '20px' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#eff6ff' }}>
+                      <th style={{ padding: '10px 8px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #bfdbfe' }}>Player</th>
+                      <th style={{ padding: '10px 8px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #bfdbfe' }}>Matchup</th>
+                      <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #bfdbfe' }}>Probability</th>
+                      <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #bfdbfe' }}>Odds</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topByProb.map((pick, idx) => (
+                      <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f0f9ff', borderBottom: '1px solid #e5e7eb' }}>
+                        <td style={{ padding: '8px', fontWeight: '500' }}>{pick.player}</td>
+                        <td style={{ padding: '8px' }}>{pick.team} vs {pick.opponent}</td>
+                        <td style={{ padding: '8px', textAlign: 'center', color: '#2563eb', fontWeight: 'bold' }}>{(pick.probability * 100).toFixed(1)}%</td>
+                        <td style={{ padding: '8px', textAlign: 'center' }}>{pick.odds > 0 ? '+' : ''}{pick.odds}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+
+            {/* Top by EV */}
+            {topByEV.length > 0 && (
+              <>
+                <div style={{ marginBottom: '8px', fontSize: '15px', fontWeight: '600' }}>💰 Top 20 by Expected Value</div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', marginBottom: '16px' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#ecfdf5' }}>
+                      <th style={{ padding: '10px 8px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #a7f3d0' }}>Player</th>
+                      <th style={{ padding: '10px 8px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #a7f3d0' }}>Matchup</th>
+                      <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #a7f3d0' }}>EV</th>
+                      <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #a7f3d0' }}>Probability</th>
+                      <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #a7f3d0' }}>Odds</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topByEV.map((pick, idx) => (
+                      <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f0fdf4', borderBottom: '1px solid #e5e7eb' }}>
+                        <td style={{ padding: '8px', fontWeight: '500' }}>{pick.player}</td>
+                        <td style={{ padding: '8px' }}>{pick.team} vs {pick.opponent}</td>
+                        <td style={{ padding: '8px', textAlign: 'center', color: '#059669', fontWeight: 'bold' }}>+{(pick.ev * 100).toFixed(1)}%</td>
+                        <td style={{ padding: '8px', textAlign: 'center' }}>{(pick.probability * 100).toFixed(1)}%</td>
+                        <td style={{ padding: '8px', textAlign: 'center' }}>{pick.odds > 0 ? '+' : ''}{pick.odds}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+
+            <div style={{ fontSize: '11px', color: '#9ca3af', borderTop: '1px solid #e5e7eb', paddingTop: '8px' }}>
+              bgroundrobin.com | Model: 6-Factor Probability • Park Factors • Hot/Cold Streaks • Pitcher Matchups
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

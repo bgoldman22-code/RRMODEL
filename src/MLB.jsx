@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { americanFromProb, impliedFromAmerican, evFromProbAndOdds } from "./utils/ev.js";
 import { hotColdMultiplier } from "./utils/hotcold.js";
 import { normName } from "./lib/nameNormalize.js";
 import { buildWhy } from "./utils/why.js";
 import { pitchTypeEdgeMultiplier } from "./utils/model_scalers.js";
+import { exportToPNG } from "./lib/exportUtils.js";
 
 // === Variance Controls (no UI/odds changes) ===
 const ANCHOR_CAP = 3;                 // Max anchors allowed per slate
@@ -253,6 +254,18 @@ const [meta, setMeta]   = useState({});
   const [pureEV, setPureEV] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const exportRef = useRef(null);
+
+  const handleExport = async () => {
+    if (!exportRef.current) return;
+    try {
+      const filename = `mlb-hr-picks-${meta.date || new Date().toISOString().split('T')[0]}`;
+      await exportToPNG(exportRef.current, filename, { scale: 3, width: 900, windowWidth: 900 });
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed: ' + error.message);
+    }
+  };
 
   async function getCalibration(){
     try{ const j = await fetchJSON("/.netlify/functions/mlb-calibration"); return j?.global?.scale ? j : { global:{ scale:1.0 }, bins:[] }; }
@@ -615,9 +628,16 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
     <div className="p-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">MLB HR — Calibrated + Hot/Cold + Odds-first EV</h1>
-        <button onClick={build} className="px-3 py-2 bg-blue-600 text-white rounded" disabled={loading}>
-          {loading ? "Working..." : "Generate"}
-        </button>
+        <div className="flex items-center gap-2">
+          {picks.length > 0 && (
+            <button onClick={handleExport} className="px-3 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors">
+              📸 Export PNG
+            </button>
+          )}
+          <button onClick={build} className="px-3 py-2 bg-blue-600 text-white rounded" disabled={loading}>
+            {loading ? "Working..." : "Generate"}
+          </button>
+        </div>
       </div>
       {message && <div className="mt-3 text-red-700">{message}</div>}
       <div className="mt-2 text-sm text-gray-600">
@@ -785,6 +805,81 @@ rows.sort((a,b)=> (b.rankScore ?? b.ev) - (a.rankScore ?? a.ev));
       )}
 
       </div>
+
+      {/* Hidden Export Container */}
+      {picks.length > 0 && (
+        <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+          <div ref={exportRef} style={{ width: '900px', backgroundColor: '#ffffff', padding: '24px', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h2 style={{ fontSize: '26px', fontWeight: 'bold', margin: 0 }}>⚾ MLB HR Picks</h2>
+              <p style={{ fontSize: '13px', color: '#6b7280', margin: '4px 0 0 0' }}>
+                {meta.date || new Date().toLocaleDateString()} | {picks.length} Picks + {bonus.length} Bonus | Calibration: {meta.calibrationScale?.toFixed(2)} | Odds: {meta.usedOdds ? 'Live' : 'Model'}
+              </p>
+            </div>
+
+            {/* Main Picks Table */}
+            <div style={{ marginBottom: '16px', fontSize: '15px', fontWeight: '600' }}>🎯 Top {picks.length} Picks (EV-ranked)</div>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', marginBottom: '24px' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#eff6ff' }}>
+                  <th style={{ padding: '10px 8px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #bfdbfe' }}>Player</th>
+                  <th style={{ padding: '10px 8px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #bfdbfe' }}>Game</th>
+                  <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #bfdbfe' }}>Model HR%</th>
+                  <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #bfdbfe' }}>Model Odds</th>
+                  <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #bfdbfe' }}>Actual Odds</th>
+                  <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: '600', borderBottom: '2px solid #bfdbfe' }}>EV (1u)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {picks.map((r, idx) => (
+                  <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f0f9ff', borderBottom: '1px solid #e5e7eb' }}>
+                    <td style={{ padding: '8px', fontWeight: '500' }}>{r.name}</td>
+                    <td style={{ padding: '8px' }}>{r.game}</td>
+                    <td style={{ padding: '8px', textAlign: 'center' }}>{(r.p_model * 100).toFixed(1)}%</td>
+                    <td style={{ padding: '8px', textAlign: 'center' }}>{r.modelAmerican > 0 ? `+${r.modelAmerican}` : r.modelAmerican}</td>
+                    <td style={{ padding: '8px', textAlign: 'center' }}>{r.american > 0 ? `+${r.american}` : r.american}</td>
+                    <td style={{ padding: '8px', textAlign: 'center', color: r.ev > 0 ? '#059669' : '#dc2626', fontWeight: 'bold' }}>{r.ev.toFixed(3)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Bonus Picks */}
+            {bonus.length > 0 && (
+              <>
+                <div style={{ marginBottom: '8px', fontSize: '14px', fontWeight: '600' }}>➕ Bonus Picks ({bonus.length})</div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', marginBottom: '16px' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#f9fafb' }}>
+                      <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600', borderBottom: '1px solid #d1d5db' }}>Player</th>
+                      <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600', borderBottom: '1px solid #d1d5db' }}>Game</th>
+                      <th style={{ padding: '8px', textAlign: 'center', fontWeight: '600', borderBottom: '1px solid #d1d5db' }}>HR%</th>
+                      <th style={{ padding: '8px', textAlign: 'center', fontWeight: '600', borderBottom: '1px solid #d1d5db' }}>Odds</th>
+                      <th style={{ padding: '8px', textAlign: 'center', fontWeight: '600', borderBottom: '1px solid #d1d5db' }}>EV</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bonus.map((r, idx) => (
+                      <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                        <td style={{ padding: '6px 8px' }}>{r.name}</td>
+                        <td style={{ padding: '6px 8px' }}>{r.game}</td>
+                        <td style={{ padding: '6px 8px', textAlign: 'center' }}>{(r.p_model * 100).toFixed(1)}%</td>
+                        <td style={{ padding: '6px 8px', textAlign: 'center' }}>{r.american > 0 ? `+${r.american}` : r.american}</td>
+                        <td style={{ padding: '6px 8px', textAlign: 'center' }}>{r.ev.toFixed(3)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+
+            <div style={{ fontSize: '11px', color: '#9ca3af', borderTop: '1px solid #e5e7eb', paddingTop: '8px' }}>
+              bgroundrobin.com | Model: 6-Factor Probability • Park Factors • Hot/Cold Streaks • Pitcher Matchups
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
