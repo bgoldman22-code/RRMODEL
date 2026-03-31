@@ -828,7 +828,9 @@ print(f"  Players built:        {len(features_out)}  {'✅' if len(features_out)
 print(f"  Barrel pct coverage:  {barrel_coverage:.1%}  {'✅' if barrel_coverage > 0.80 else '⚠️ <80%'}")
 print(f"  Pitcher HR/FB cov:    {hrfb_coverage:.1%}  {'✅' if hrfb_coverage > 0.70 else '⚠️ <70%'}")
 print(f"  Pull park score cov:  {pull_coverage:.1%}  {'✅' if pull_coverage > 0.85 else '⚠️ <85% (spray data)'}")
-print(f"  Pitcher zone% cov:    {zone_coverage:.1%}  {'✅' if zone_coverage > 0.90 else '⚠️ <90%'}")
+# pitcher_zone_pct sourced from FanGraphs — currently blocked server-side, imputes to median 0.42.
+# Feature retained in model at index 10. See TICKET_FANGRAPHS_FEATURES.md for fix path.
+print(f"  Pitcher zone% cov:    {zone_coverage:.1%}  {'✅' if zone_coverage > 0.90 else '⚠️ warn-only: FanGraphs blocked, imputing median 0.42'}")
 print(f"  Probs in [0.05,0.45]: {prob_in_range:.1%}  {'✅' if prob_in_range > 0.95 else '⚠️'}")
 if probs:
     ev25_count = sum(1 for f in features_out if f["model_prob"] >= 0.25)
