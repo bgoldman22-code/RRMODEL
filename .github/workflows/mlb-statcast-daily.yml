@@ -17,6 +17,14 @@ on:
         description: 'Which years to fetch: both (default), prior-only, current-only'
         required: false
         default: 'both'
+      date:
+        description: 'Override date for feature vector build (YYYY-MM-DD, default: today)'
+        required: false
+        default: ''
+      skip_features:
+        description: 'Skip daily feature vector build (Statcast refresh only)'
+        required: false
+        default: 'false'
 
 concurrency:
   group: mlb-statcast-daily
@@ -25,7 +33,7 @@ concurrency:
 jobs:
   fetch-statcast:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repo
@@ -40,15 +48,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-statcast-${{ hashFiles('scripts/mlb_v3/requirements.txt') }}
+          key: ${{ runner.os }}-pip-statcast-v2-${{ hashFiles('scripts/mlb_v3/requirements.txt') }}
           restore-keys: |
+            ${{ runner.os }}-pip-statcast-v2-
             ${{ runner.os }}-pip-statcast-
 
       - name: Install Python dependencies
         run: |
           pip install --upgrade pip
-          pip install pandas requests pybaseball numpy
+          pip install pandas requests pybaseball numpy scikit-learn xgboost joblib
 
+      # ── Step 1: Fetch all 6 Statcast / FanGraphs datasets ──────────────────
       - name: Fetch Statcast data → upload to Netlify Blobs
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
@@ -58,24 +68,39 @@ jobs:
           YEAR="${{ github.event.inputs.year }}"
           DRY="${{ github.event.inputs.dry_run }}"
           SCOPE="${{ github.event.inputs.scope }}"
-          if [ -n "$YEAR" ]; then
-            CMD="$CMD --year $YEAR"
-          fi
-          if [ "$DRY" = "true" ]; then
-            CMD="$CMD --dry-run"
-          fi
-          if [ "$SCOPE" = "prior-only" ]; then
-            CMD="$CMD --prior-only"
-          elif [ "$SCOPE" = "current-only" ]; then
-            CMD="$CMD --current-only"
-          fi
-          # Scheduled runs (no scope input) fetch both years by default
+          if [ -n "$YEAR" ]; then CMD="$CMD --year $YEAR"; fi
+          if [ "$DRY" = "true" ]; then CMD="$CMD --dry-run"; fi
+          if [ "$SCOPE" = "prior-only" ]; then CMD="$CMD --prior-only"
+          elif [ "$SCOPE" = "current-only" ]; then CMD="$CMD --current-only"; fi
           echo "Running: $CMD"
           eval "$CMD"
 
+      # ── Step 2: Validate Blobs row counts ──────────────────────────────────
       - name: Validate — read back Blobs and print row counts
         if: ${{ github.event.inputs.dry_run != 'true' }}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: python scripts/mlb_v3/validate_blobs.py
+
+      # ── Step 3: Build today's per-player feature vectors ───────────────────
+      # Runs after Statcast blobs are confirmed written. Writes
+      # statcast/features-{YYYY-MM-DD}.json to rrmodelblobs.
+      # The Netlify function reads this blob at request time and runs
+      # XGBoost inference. If this step fails the function falls back to V2.
+      - name: Build daily feature vectors → upload to Netlify Blobs
+        if: ${{ github.event.inputs.dry_run != 'true' && github.event.inputs.skip_features != 'true' }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          CMD="python scripts/mlb_v3/build_daily_features.py"
+          DATE_OVERRIDE="${{ github.event.inputs.date }}"
+          YEAR="${{ github.event.inputs.year }}"
+          if [ -n "$DATE_OVERRIDE" ]; then CMD="$CMD --date $DATE_OVERRIDE"; fi
+          if [ -n "$YEAR" ]; then CMD="$CMD --year $YEAR"; fi
+          echo "Running: $CMD"
+          eval "$CMD"
+        # Non-fatal: feature build failure is logged but doesn't fail the pipeline.
+        # The JS function detects the missing blob and falls back gracefully.
+        continue-on-error: true

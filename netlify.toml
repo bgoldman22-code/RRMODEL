@@ -13,6 +13,14 @@
   # Removed bloated included_files - functions should only include what they specifically need
   # Individual functions can declare their own included_files if required
 
+# ── MLB V3 Python inference function ─────────────────────────────────────────
+# Bundles the serialized XGBoost artifacts alongside the function.
+[functions."mlb-score-v3"]
+  included_files = [
+    "data/mlb_v3/artifacts/xgb_calibrator.joblib",
+    "data/mlb_v3/artifacts/train_medians.json",
+  ]
+
 [build.environment]
   NODE_VERSION = "20"
   NETLIFY_USE_YARN = "false"
@@ -73,3 +81,14 @@
 # ⚽ Bundesliga BTTS Function - include cache file
 [functions."bundesliga-btts-predict"]
   included_files = ["data/bundesliga/cache/bundesliga_btts_latest.json"]
+
+# ⚾ MLB HR V3 Results Logger — nightly 11 PM ET (04:00 UTC next day)
+[[scheduled.functions]]
+  name = "mlb-results-logger"
+  cron = "0 4 * * *"
+
+# ⚾ MLB HR V3 — route /mlb-hr-v3 to the V3 slate function
+[[redirects]]
+  from = "/mlb-hr-v3"
+  to = "/.netlify/functions/mlb-slate-v3"
+  status = 200

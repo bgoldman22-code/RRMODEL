@@ -279,24 +279,62 @@ def fetch_spray(year: int) -> "tuple[dict | None, str]":
     """
     Batter pull-rate (overall + fly-ball) from Savant pitch-by-pitch search.
     Full season for prior year; YTD for current year.
+
+    Savant caps individual requests at ~25k rows. To get full-season coverage
+    we split into monthly date chunks (Apr-Sep for prior; Apr-today for current)
+    and concatenate all pages. This pushes coverage from ~85% to ~95%+.
     """
+    import calendar
+
     label      = f"spray-{year}"
     is_prior   = (year < YEAR)
     date_low   = season_start(year)
     date_high  = season_end(year) if is_prior else TODAY
     date_range = f"{date_low} – {date_high}"
 
-    url = (
-        f"https://baseballsavant.mlb.com/statcast_search/csv"
-        f"?all=true&hfGT=R%7C&hfSea={year}%7C"
-        f"&player_type=batter"
-        f"&game_date_gt={date_low}&game_date_lt={date_high}"
-        f"&hfAB=home_run%7Csingle%7Cdouble%7Ctriple%7Cfield_out%7C"
-        f"&type=details"
-    )
-    df = fetch_csv(url, label, timeout=120)
-    if df is None or len(df) == 0:
+    # Build monthly date chunks: (chunk_start, chunk_end) strings
+    start_dt = datetime.strptime(date_low,  "%Y-%m-%d")
+    end_dt   = datetime.strptime(date_high, "%Y-%m-%d")
+
+    chunks = []
+    cur = start_dt.replace(day=1)
+    while cur <= end_dt:
+        last_day = calendar.monthrange(cur.year, cur.month)[1]
+        chunk_end = cur.replace(day=last_day)
+        chunks.append((
+            cur.strftime("%Y-%m-%d"),
+            min(chunk_end, end_dt).strftime("%Y-%m-%d"),
+        ))
+        # Advance to first day of next month
+        if cur.month == 12:
+            cur = cur.replace(year=cur.year + 1, month=1, day=1)
+        else:
+            cur = cur.replace(month=cur.month + 1, day=1)
+
+    # Fetch all chunks and concatenate
+    frames: list = []
+    for chunk_lo, chunk_hi in chunks:
+        url = (
+            f"https://baseballsavant.mlb.com/statcast_search/csv"
+            f"?all=true&hfGT=R%7C&hfSea={year}%7C"
+            f"&player_type=batter"
+            f"&game_date_gt={chunk_lo}&game_date_lt={chunk_hi}"
+            f"&hfAB=home_run%7Csingle%7Cdouble%7Ctriple%7Cfield_out%7C"
+            f"&type=details"
+        )
+        chunk_label = f"{label}-{chunk_lo[:7]}"
+        df_chunk = fetch_csv(url, chunk_label, timeout=120)
+        if df_chunk is not None and len(df_chunk) > 0:
+            frames.append(df_chunk)
+            print(f"  ✓ [{chunk_label}] {len(df_chunk):,} rows")
+        else:
+            print(f"  ⚠ [{chunk_label}] 0 rows or error — skipping")
+
+    if not frames:
         return None, date_range
+
+    df = pd.concat(frames, ignore_index=True)
+    print(f"  [{label}] total {len(df):,} rows from {len(frames)} chunks")
 
     df.columns = [c.lower().strip() for c in df.columns]
     needed = {"batter", "stand", "hc_x", "launch_angle"}
@@ -583,16 +621,17 @@ def fetch_fangraphs(year: int) -> "tuple[dict | None, str]":
     label      = f"fangraphs-{year}"
 
     col_map = {
-        "Name":  "player_name",
-        "IDfg":  "fg_id",
-        "xFIP":  "xfip",
-        "HR/FB": "hr_fb_rate",
-        "GB%":   "gb_pct",
-        "FB%":   "fb_pct",
-        "FIP":   "fip",
-        "ERA":   "era",
-        "IP":    "ip",
-        "TBF":   "bf",   # total batters faced — used for JS blend weighting
+        "Name":    "player_name",
+        "IDfg":    "fg_id",
+        "xFIP":    "xfip",
+        "HR/FB":   "hr_fb_rate",
+        "GB%":     "gb_pct",
+        "FB%":     "fb_pct",
+        "FIP":     "fip",
+        "ERA":     "era",
+        "IP":      "ip",
+        "TBF":     "bf",      # total batters faced — used for JS blend weighting
+        "Zone%":   "zone_pct",  # pitcher Zone% — feature [10] in v2 schema
     }
 
     def _rows_from_df(fg: pd.DataFrame, dr: str) -> "dict | None":

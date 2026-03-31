@@ -23,6 +23,7 @@ import NCAAMBBPredictions from "./pages/NCAAMBBPredictions";  // NCAA MBB Predic
 import NCAAMBBV2Predictions from "./pages/NCAAMBBV2Predictions";  // NCAA MBB V2 (Calibrated + Away Dog Filter)
 import NFLAnytimeTDV2 from "./pages/NFLAnytimeTDV2"; // NFL Anytime TD V2 (live)
 import MLBF5ML from "./pages/MLBF5ML";  // MLB F5 Moneyline (Smart Scheduler)
+import MLB_V3 from "./MLB_V3";  // MLB HR Model V3 (XGBoost + Statcast)
 import HRR from "./HRR";
 import HRDiagnosticsFooter from "./components/HRDiagnosticsFooter.jsx";
 
@@ -76,7 +77,8 @@ export default function App() {
         { label: '2+ Hits', path: '/mlb-hits2' },
         { label: 'HRR (Hit-Run-RBI)', path: '/hrr' },
         { label: 'Round Robin V2 🎯', path: '/mlb-rr' },
-        { label: 'F5 Moneyline ⚾', path: '/mlb-f5-ml' }
+        { label: 'F5 Moneyline ⚾', path: '/mlb-f5-ml' },
+        { label: 'HR Model V3 🤖', path: '/mlb-hr-v3' }
       ]
     },
     nfl: {
@@ -147,6 +149,7 @@ export default function App() {
           <Route path="/hrr" element={<HRR />} />
           <Route path="/mlb-rr" element={<MLBRoundRobin />} />
           <Route path="/mlb-f5-ml" element={<MLBF5ML />} />
+          <Route path="/mlb-hr-v3" element={<MLB_V3 />} />
           {/* CHANGED: Removed simple NFL TD route */}
           <Route path="/nfl-td-comprehensive" element={<NFLTouchdownPropsComprehensive />} />
           <Route path="/nfl-anytime-td-v2" element={<NFLAnytimeTDV2 />} />

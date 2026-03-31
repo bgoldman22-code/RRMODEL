@@ -1,0 +1,129 @@
+{
+  "schema_version": "v2",
+  "trained_on": "2025-01-01",
+  "auc_2025_holdout": 0.65078,
+  "n_features": 11,
+  "features": [
+    {
+      "index": 0,
+      "name": "hr_rate_bayes",
+      "type": "float",
+      "description": "Bayesian-shrunk HR rate (200 PA prior)"
+    },
+    {
+      "index": 1,
+      "name": "barrel_pct",
+      "type": "float",
+      "description": "Batter barrel% (Statcast percentile rank)"
+    },
+    {
+      "index": 2,
+      "name": "hard_hit_pct",
+      "type": "float",
+      "description": "Batter hard-hit% (Statcast percentile rank)"
+    },
+    {
+      "index": 3,
+      "name": "pitcher_barrel",
+      "type": "float",
+      "description": "Pitcher barrel% allowed (Statcast percentile rank)"
+    },
+    {
+      "index": 4,
+      "name": "pitcher_rv100",
+      "type": "float",
+      "description": "Pitcher run value per 100 pitches"
+    },
+    {
+      "index": 5,
+      "name": "pitcher_hrfb",
+      "type": "float",
+      "description": "Pitcher HR/FB rate (FanGraphs)"
+    },
+    {
+      "index": 6,
+      "name": "park_hr_factor",
+      "type": "float",
+      "description": "Park HR factor (1.0 = neutral)"
+    },
+    {
+      "index": 7,
+      "name": "temp_adj",
+      "type": "float",
+      "description": "(temp_f - 70) * 0.003; 0 for dome"
+    },
+    {
+      "index": 8,
+      "name": "wind_adj",
+      "type": "float",
+      "description": "wind_out_mph * 0.002; 0 for dome"
+    },
+    {
+      "index": 9,
+      "name": "pull_park_score",
+      "type": "float",
+      "description": "pull_rate_fly \u00d7 directional park factor (null if no spray data, not imputed with 0)"
+    },
+    {
+      "index": 10,
+      "name": "pitcher_zone_pct",
+      "type": "float",
+      "description": "Pitcher Zone% (FanGraphs \u2014 fraction of pitches in zone)"
+    }
+  ],
+  "dropped_features": [
+    {
+      "name": "batter_oswing_pct",
+      "reason": "FanGraphs batting_stats() returns HTTP 403 for all seasons; 0% coverage; 0.0% feature gain. Investigating alternative endpoints separately."
+    }
+  ],
+  "best_params": {
+    "n_estimators": 400,
+    "max_depth": 3,
+    "learning_rate": 0.05,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "min_child_weight": 10,
+    "gamma": 1.0,
+    "reg_alpha": 0.1,
+    "reg_lambda": 1.0,
+    "eval_metric": "logloss",
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "train_seasons": [
+    2022,
+    2023
+  ],
+  "val_season": 2024,
+  "test_season": 2025,
+  "note_scale_pos_weight": "Not used \u2014 sprint validation showed it degrades RR ROI. Pure class weights omitted.",
+  "backtest_bias_warning": {
+    "affected_metric": "sprint_d1_rr_roi_point_estimate",
+    "reported_value": "+50.5%",
+    "reported_ci_lower_90pct": "+10.4%",
+    "bias_type": "lookahead — non-date-gated spray data in retrospective matrix",
+    "detail": "In feature_sprint_d1.py Phase B, spray_sc is loaded as a full-season aggregate for each season (game_date_lt=TODAY for 2025, full season for 2022-2024) and applied uniformly to all game rows without per-row date gating. A game row from April 2025 therefore receives pull_rate_fly computed from all 2025 fly balls through the run date rather than only fly balls prior to that game. Because pull tendency is a highly stable within-season trait (r~0.9+), the inflation is expected to be small but unquantified.",
+    "treatment": "These backtest figures are OPTIMISTIC UPPER BOUNDS. Do not use for capital allocation above $10/unit until the rolling spray recompute (see backlog) has been completed and validated.",
+    "production_status": "CLEAN — build_daily_features.py fetches spray-{SEASON}.json with game_date_lt=TODAY each day, so live inference only uses spray data through the current date. No lookahead in production.",
+    "remediation_schedule": "Rolling spray recompute deferred until after first full week of live data. Live results logger calibration data takes priority."
+  },
+  "inference_steps": [
+    "1. Compute hr_rate_bayes: (hr_total + ALPHA) / (pa + ALPHA + BETA) where ALPHA=200*GLOBAL_HR, BETA=200*(1-GLOBAL_HR)",
+    "2. Compute temp_adj: (temp_f - 70) * 0.003; set 0 for dome venues",
+    "3. Compute wind_adj: wind_out_mph * 0.002 (positive=out); set 0 for dome venues",
+    "4. Compute pull_park_score: pull_rate_fly \u00d7 directional_park_factor; leave null (do NOT impute 0) if spray data unavailable",
+    "5. Look up pitcher_zone_pct from FanGraphs pitcher blob (zone_pct key)",
+    "6. Impute all 11 features with train_medians.json values where null (except pull_park_score which uses its own median)",
+    "7. Stack feature vector in strict index order [0..10]",
+    "8. model.predict_proba(X)[:,1] \u2192 raw score",
+    "9. calibrator.transform(raw_score) \u2192 calibrated probability",
+    "10. EV = calibrated_prob * (decimal_odds - 1) - (1 - calibrated_prob)"
+  ],
+  "ev_thresholds": {
+    "min_ev": 0.15,
+    "min_calibrated_prob": 0.04,
+    "max_calibrated_prob": 0.35,
+    "note": "RR filter also applies: kelly_fraction > 0 (positive EV given the odds)"
+  }
+}
