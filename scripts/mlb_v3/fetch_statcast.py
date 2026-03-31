@@ -468,6 +468,7 @@ def fetch_arsenal(year: int) -> "tuple[dict | None, str]":
             "avg_spin":          _safe_float(row.get("avg_spin")    or row.get("spin_rate")),
             "run_value_per_100": _safe_float(row.get("run_value_per_100") or row.get("rv/100")),
             "whiff_percent":     _safe_float(row.get("whiff_percent") or row.get("whiff%")),
+            "zone_percent":      _safe_float(row.get("zone_percent") or row.get("zone%")),
         }
         if pitch["pitch_type"]:
             pit_map[pid]["pitches"].append(pitch)

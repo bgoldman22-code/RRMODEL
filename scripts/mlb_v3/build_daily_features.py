@@ -471,6 +471,32 @@ def get_pitcher_features(pid: int, name: str) -> dict:
     pitcher_hrfb     = safe_float((fg or {}).get("hr_fb_rate") or (fg or {}).get("hr/fb"))
     pitcher_zone_pct = safe_float((fg or {}).get("zone_pct"))
 
+    # Fallback: derive zone% from arsenal blob (usage-weighted across pitch types)
+    # Used when FanGraphs is unavailable (403) or blob pre-dates zone_pct field.
+    if pitcher_zone_pct is None and pid:
+        def _weighted_zone(ars_map):
+            entry = ars_map.get(pid)
+            if not entry:
+                return None
+            pitches = entry.get("pitches", [])
+            total_u, total_z = 0.0, 0.0
+            for p in pitches:
+                u = safe_float(p.get("pitch_usage"), 0) or 0
+                z = safe_float(p.get("zone_percent"))
+                if z is not None:
+                    total_u  += u
+                    total_z  += u * z
+            return (total_z / total_u) if total_u > 0 else None
+        z_c = _weighted_zone(ars_c_by_id)
+        z_p = _weighted_zone(ars_p_by_id)
+        if z_c is not None and z_p is not None:
+            pitcher_zone_pct = z_c * w_c + z_p * w_p
+        else:
+            pitcher_zone_pct = z_c if z_c is not None else z_p
+        # Arsenal zone% is 0-100; model trained on 0-1 decimal → convert if needed
+        if pitcher_zone_pct is not None and pitcher_zone_pct > 1.0:
+            pitcher_zone_pct = pitcher_zone_pct / 100.0
+
     return {
         "pitcher_barrel":   pitcher_barrel,
         "pitcher_rv100":    pitcher_rv100,
