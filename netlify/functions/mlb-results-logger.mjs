@@ -3,11 +3,23 @@
 // Fetches HR outcomes for the past 7 days, matches against qualifying picks,
 // writes picks-log/mlb_hr_v3/{date}.json and updates statcast/live-calibration.json
 
-import { getStore } from "./_blobs.mjs";
+import { getStore } from "@netlify/blobs";
 
 const STORE    = "rrmodelblobs";
 const MLB_API  = "https://statsapi.mlb.com/api/v1";
 const LOOKBACK = 7; // days to backfill
+
+// ─── Blob store helper (mirrors _blobs.mjs auth fallback pattern) ─────────────
+function getRRStore() {
+  try {
+    return getStore({ name: STORE });
+  } catch (err) {
+    const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
+    const token  = process.env.NETLIFY_API_TOKEN || process.env.NETLIFY_AUTH_TOKEN;
+    if (!siteID || !token) throw err;
+    return getStore({ name: STORE, siteID, token });
+  }
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function dateStr(d) {
@@ -230,7 +242,7 @@ export default async function handler(req) {
 
   let store;
   try {
-    store = getStore(STORE);
+    store = getRRStore();
   } catch (err) {
     console.error("[mlb-results-logger] Failed to get blob store:", err.message);
     return new Response(JSON.stringify({ error: "store_init_failed", message: err.message }), {

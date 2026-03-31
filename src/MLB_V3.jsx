@@ -16,15 +16,17 @@ const GRADE_COLORS = {
 };
 
 const FEATURE_LABELS = {
-  hr_rate_bayes:   "HR Rate (Bayes)",
-  barrel_pct:      "Barrel %",
-  hard_hit_pct:    "Hard Hit %",
-  pitcher_barrel:  "Pitcher Barrel Allowed",
-  pitcher_rv100:   "Pitcher Arsenal RV/100",
-  pitcher_hrfb:    "Pitcher HR/FB",
-  park_hr_factor:  "Park HR Factor",
-  temp_adj:        "Temp Adjustment",
-  wind_adj:        "Wind Adjustment",
+  hr_rate_bayes:     "HR Rate (Bayes)",
+  barrel_pct:        "Barrel %",
+  hard_hit_pct:      "Hard Hit %",
+  pitcher_barrel:    "Pitcher Barrel Allowed",
+  pitcher_rv100:     "Pitcher Arsenal RV/100",
+  pitcher_hrfb:      "Pitcher HR/FB",
+  park_hr_factor:    "Park HR Factor",
+  temp_adj:          "Temp Adjustment",
+  wind_adj:          "Wind Adjustment",
+  pull_park_score:   "Pull × Park Score",
+  pitcher_zone_pct:  "Pitcher Zone %",
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -45,9 +47,11 @@ function fmtUnits(v) {
 
 function fmtFeature(key, val) {
   if (val == null) return "—";
-  if (key === "hr_rate_bayes") return val.toFixed(4);
-  if (key === "pitcher_rv100") return val.toFixed(4);
-  if (key === "park_hr_factor") return val.toFixed(3);
+  if (key === "hr_rate_bayes")    return val.toFixed(4);
+  if (key === "pitcher_rv100")    return val.toFixed(4);
+  if (key === "park_hr_factor")   return val.toFixed(3);
+  if (key === "pull_park_score")  return val.toFixed(4);
+  if (key === "pitcher_zone_pct") return `${(val * 100).toFixed(1)}%`;
   if (key === "temp_adj") return `${val >= 0 ? "+" : ""}${val.toFixed(1)}°F`;
   if (key === "wind_adj") return `${val >= 0 ? "+" : ""}${val.toFixed(1)} mph`;
   return val.toFixed(1);
