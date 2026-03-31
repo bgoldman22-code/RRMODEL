@@ -255,7 +255,9 @@ def impute_and_infer(feature_dict: dict) -> float:
         if math.isnan(vec[i]):
             vec[i] = TRAIN_MEDIANS[col]
     X = vec.reshape(1, -1)
-    return float(xgb_cal.predict_proba(X)[0, 1])
+    # xgb_base is XGBClassifier → predict_proba; xgb_cal is IsotonicRegression → predict
+    raw_p = float(xgb_base.predict_proba(X)[0, 1])
+    return float(xgb_cal.predict(np.array([raw_p]))[0])
 
 
 # ── Load Statcast blobs ───────────────────────────────────────────────────────
