@@ -373,7 +373,7 @@ export default function MLB_V3() {
   }
 
   const d = state.data;
-  const { rr, qualifying_picks = [], straight_bets = [], candidates = [], meta = {}, data_freshness } = d;
+  const { rr, qualifying_picks = [], straight_bets = [], candidates = [], top_10 = [], meta = {}, data_freshness } = d;
   const x2 = rr?.x2_combos || [];
   const x3 = rr?.x3_combos || [];
   const highConviction = rr?.high_conviction_day;
@@ -535,7 +535,7 @@ export default function MLB_V3() {
 
       {/* ── Top 10 by Model Probability (always shown) ───────────────────── */}
       <Top10Table
-        candidates={candidates}
+        candidates={top_10.length > 0 ? top_10 : candidates}
         showFeatures={showTopFeatures}
         onToggleFeatures={setShowTopFeatures}
       />
