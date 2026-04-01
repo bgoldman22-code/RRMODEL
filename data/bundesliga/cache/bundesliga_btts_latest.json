@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-04-01T10:28:29.726100+00:00",
+  "generated_at": "2026-04-01T22:15:55.492157+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -96,13 +96,13 @@
         "away_season_avg_goals_against": 1.6470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.62,
-        "btts_no": 2.19,
+        "btts_yes": 1.63,
+        "btts_no": 2.17,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5748031496062992,
-      "edge": 0.10174477271842164,
-      "expected_value": 0.06280541525828495,
+      "market_probability": 0.5710526315789474,
+      "edge": 0.10549529074577346,
+      "expected_value": 0.06472103726734568,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -132,19 +132,19 @@
         "away_season_avg_goals_against": 1.3235294117647058
       },
       "market_odds": {
-        "btts_yes": 1.53,
-        "btts_no": 2.36,
+        "btts_yes": 1.54,
+        "btts_no": 2.35,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6066838046272494,
-      "edge": -0.005699796081498176,
+      "market_probability": 0.6041131105398457,
+      "edge": -0.003129101994094552,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-0.6%, need 5%)"
+        "min_edge (edge=-0.3%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -719,13 +719,13 @@
         "away_season_avg_goals_against": 1.6470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.62,
-        "btts_no": 2.19,
+        "btts_yes": 1.63,
+        "btts_no": 2.17,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5748031496062992,
-      "edge": 0.10174477271842164,
-      "expected_value": 0.06280541525828495,
+      "market_probability": 0.5710526315789474,
+      "edge": 0.10549529074577346,
+      "expected_value": 0.06472103726734568,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
