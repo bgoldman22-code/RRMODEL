@@ -116,6 +116,89 @@ function FeaturePanel({ player }) {
   );
 }
 
+// ─── Top 10 Candidates Table (always shown) ───────────────────────────────────
+function Top10Table({ candidates, showFeatures, onToggleFeatures }) {
+  const top10 = (candidates || []).slice(0, 10);
+  if (top10.length === 0) return null;
+  return (
+    <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
+      <div className="px-5 py-4 border-b bg-gray-50 flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h2 className="font-bold text-gray-900 text-base">
+            Top 10 by Model Probability
+          </h2>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Sorted by XGBoost calibrated HR probability · EV threshold not applied · live odds not required
+          </p>
+        </div>
+        <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={showFeatures}
+            onChange={e => onToggleFeatures(e.target.checked)}
+            className="rounded"
+          />
+          Show model inputs
+        </label>
+      </div>
+      <div className="divide-y">
+        {top10.map((p, i) => {
+          const hasOdds = p.american_odds != null;
+          const hasEV   = p.ev != null;
+          return (
+            <div key={p.player_id ?? i} className="px-5 py-3 hover:bg-gray-50 transition-colors">
+              <div className="flex items-start justify-between gap-3">
+                {/* Rank + name */}
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <span className="text-lg font-bold text-gray-300 w-6 shrink-0 text-center">
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-gray-900">{p.player_name}</span>
+                      {p.grade && <GradeBadge grade={p.grade} />}
+                      {!hasOdds && (
+                        <span className="text-xs bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded">
+                          No odds
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-0.5">
+                      {p.team_abbrev ?? p.team} · vs {p.opp_pitcher_name ?? p.opp_pitcher ?? "—"} · {p.venue ?? ""}
+                    </div>
+                  </div>
+                </div>
+                {/* Stats */}
+                <div className="flex items-center gap-4 shrink-0 text-right text-xs">
+                  <div>
+                    <div className="font-mono font-bold text-blue-700 text-sm">{fmtPct(p.model_prob)}</div>
+                    <div className="text-gray-400">Model P</div>
+                  </div>
+                  {hasOdds && (
+                    <div>
+                      <div className="font-mono font-semibold text-gray-700">{fmtOdds(p.american_odds)}</div>
+                      <div className="text-gray-400">Odds</div>
+                    </div>
+                  )}
+                  {hasEV && (
+                    <div>
+                      <div className={`font-mono font-semibold ${p.ev >= 0.25 ? "text-emerald-700" : "text-gray-500"}`}>
+                        {fmtPct(p.ev)}
+                      </div>
+                      <div className="text-gray-400">EV</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              {showFeatures && <FeaturePanel player={p} />}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── Pick Card (straight bets) ────────────────────────────────────────────────
 function PickCard({ pick, showFeatures }) {
   return (
@@ -238,6 +321,7 @@ function useExportPNG(ref, filename) {
 export default function MLB_V3() {
   const [state, setState] = useState({ status: "idle", data: null, error: null });
   const [showFeatures, setShowFeatures] = useState(false);
+  const [showTopFeatures, setShowTopFeatures] = useState(false);
   const rrRef = useRef(null);
 
   const load = useCallback(async () => {
@@ -289,7 +373,7 @@ export default function MLB_V3() {
   }
 
   const d = state.data;
-  const { rr, qualifying_picks = [], straight_bets = [], meta = {}, data_freshness } = d;
+  const { rr, qualifying_picks = [], straight_bets = [], candidates = [], meta = {}, data_freshness } = d;
   const x2 = rr?.x2_combos || [];
   const x3 = rr?.x3_combos || [];
   const highConviction = rr?.high_conviction_day;
@@ -448,6 +532,13 @@ export default function MLB_V3() {
           </p>
         </div>
       )}
+
+      {/* ── Top 10 by Model Probability (always shown) ───────────────────── */}
+      <Top10Table
+        candidates={candidates}
+        showFeatures={showTopFeatures}
+        onToggleFeatures={setShowTopFeatures}
+      />
 
       {/* ── Model Transparency Panel ──────────────────────────────────────── */}
       {qualifying_picks.length > 0 && (
