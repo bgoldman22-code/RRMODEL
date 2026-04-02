@@ -108,6 +108,27 @@ _DIRECTIONAL_PARKS = {
     "WSH": {"R": 0.99, "L": 0.98}, "KC":  {"R": 0.96, "L": 0.95},
 }
 
+
+def barrel_pct_to_percentile(raw_pct: "float | None") -> "float | None":
+    """Convert raw Savant barrel-batted-rate (e.g. 12.5%) to approximate
+    percentile rank (1-100) matching the scale used in training data.
+    Breakpoints calibrated so league-avg ~12% ≈ 50th percentile.
+    """
+    if raw_pct is None:
+        return None
+    breakpoints = [
+        (0,   1), (2,   5), (4,  10), (6,  20), (8,  30),
+        (10, 40), (12, 50), (14, 60), (16, 70), (18, 80),
+        (20, 88), (25, 94), (30, 97), (40, 99), (100, 100),
+    ]
+    for i in range(len(breakpoints) - 1):
+        x0, y0 = breakpoints[i]
+        x1, y1 = breakpoints[i + 1]
+        if x0 <= raw_pct <= x1:
+            return round(y0 + (raw_pct - x0) / (x1 - x0) * (y1 - y0), 2)
+    return 100.0
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 parser = argparse.ArgumentParser(description="Build MLB V3 daily feature vectors")
 parser.add_argument("--date", type=str, default="",
@@ -354,13 +375,11 @@ def get_batter_stats(pid: int) -> dict:
     # which gives true percentile ranks (0-100).
     # Resolution: read brl_percent (percentile) if present, else use barrel_batted_rate
     # scaled to approximate rank (league avg barrel% ≈ 8.5% → rank 50).
-    brl_pct_c = safe_float(cur.get("brl_percent") or cur.get("barrel_batted_rate"))
-    brl_pct_p = safe_float(pri.get("brl_percent") or pri.get("barrel_batted_rate"))
-    if brl_pct_c is not None and brl_pct_c < 1.0:
-        # Looks like a percentile rank in [0,1] — scale to 0-100
-        brl_pct_c *= 100
-    if brl_pct_p is not None and brl_pct_p < 1.0:
-        brl_pct_p *= 100
+    # Read barrel_pct directly — blob stores percentile rank 1-100 (matches training scale)
+    brl_raw_c = safe_float(cur.get("barrel_pct"))
+    brl_raw_p = safe_float(pri.get("barrel_pct"))
+    brl_pct_c = brl_raw_c  # already percentile rank; no conversion needed
+    brl_pct_p = brl_raw_p
     hh_c = safe_float(cur.get("hard_hit_percent") or cur.get("hard_hit%"))
     hh_p = safe_float(pri.get("hard_hit_percent") or pri.get("hard_hit%"))
     # hard_hit_percent from Savant EV leaderboard is a raw % (e.g. 45.2)
