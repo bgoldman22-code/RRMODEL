@@ -545,14 +545,18 @@ raw_games = (sched or {}).get("dates", [{}])[0].get("games", []) if sched else [
 games = [g for g in raw_games if g.get("status", {}).get("statusCode") not in ("F", "O", "D")]
 
 if not games:
-    print(f"  No MLB games found for {FEATURE_DATE} — writing empty features blob")
+    print(f"  No MLB games found for {FEATURE_DATE} — writing empty features file")
     payload = {
         "date": FEATURE_DATE, "season": SEASON,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "features": [], "games_count": 0,
         "note": "No games scheduled or games already final",
     }
-    upload_blob(f"statcast/features-{FEATURE_DATE}.json", payload, "features-empty")
+    _out_dir = ROOT / "public" / "mlb_v3"
+    _out_dir.mkdir(parents=True, exist_ok=True)
+    _out_path = _out_dir / f"features-{FEATURE_DATE}.json"
+    _out_path.write_text(json.dumps(payload, ensure_ascii=False))
+    print(f"  ✅ Written {_out_path} (empty)")
     sys.exit(0)
 
 print(f"  {len(games)} games found")
@@ -781,7 +785,7 @@ for tid, ctx in team_ctx.items():
 features_out.sort(key=lambda x: x["model_prob"], reverse=True)
 print(f"  Built {len(features_out)} player feature vectors ({skipped} skipped — no stats)")
 
-# ── Write to Blob ─────────────────────────────────────────────────────────────
+# ── Write feature vectors to static file ─────────────────────────────────────
 payload = {
     "date":          FEATURE_DATE,
     "season":        SEASON,
@@ -791,7 +795,18 @@ payload = {
     "features":      features_out,
 }
 
-ok = upload_blob(f"statcast/features-{FEATURE_DATE}.json", payload, "features")
+import glob as _glob
+_pub_dir = ROOT / "public" / "mlb_v3"
+_pub_dir.mkdir(parents=True, exist_ok=True)
+# Prune feature files older than 7 days to keep repo size in check
+for _old in _glob.glob(str(_pub_dir / "features-*.json")):
+    import os as _os, datetime as _dt
+    if (_dt.datetime.now().timestamp() - _os.path.getmtime(_old)) > 7 * 86400:
+        _os.remove(_old)
+_out_path = _pub_dir / f"features-{FEATURE_DATE}.json"
+_out_path.write_text(json.dumps(payload, ensure_ascii=False))
+print(f"  ✅ Written {_out_path} ({len(features_out)} players)")
+ok = True
 
 # ── Update meta.json ──────────────────────────────────────────────────────────
 meta = load_blob("statcast/meta.json") or {}
@@ -836,4 +851,4 @@ if probs:
     ev25_count = sum(1 for f in features_out if f["model_prob"] >= 0.25)
     print(f"  Players ≥25% model:   {ev25_count}  (expected 3-15 on typical day)")
 
-print(f"\n{'✅' if ok else '❌'} Feature blob {'written' if ok else 'FAILED'} → statcast/features-{FEATURE_DATE}.json")
+print(f"\n{'✅' if ok else '❌'} Feature file {'written' if ok else 'FAILED'} → public/mlb_v3/features-{FEATURE_DATE}.json")
