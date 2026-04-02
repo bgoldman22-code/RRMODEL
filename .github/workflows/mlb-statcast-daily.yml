@@ -59,7 +59,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install --upgrade pip
-          pip install pandas requests pybaseball numpy scikit-learn xgboost joblib
+          pip install pandas requests pybaseball numpy scikit-learn==1.5.2 xgboost joblib
 
       # ── Step 1: Fetch all 6 Statcast / FanGraphs datasets ──────────────────
       - name: Fetch Statcast data → upload to Netlify Blobs
