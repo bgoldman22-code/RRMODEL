@@ -1,27 +1,7 @@
 {
-  "date": "2026-04-05",
+  "date": "2026-04-06",
   "model": "Variant B",
   "min_edge": 0.1,
-  "kelly_fraction": 0.25,
-  "bankroll": 10000.0,
-  "num_picks": 1,
-  "total_bet_size": 1000,
-  "avg_edge": 0.29911880804587443,
-  "max_edge": 0.29911880804587443,
-  "picks": [
-    {
-      "date": "2026-04-05",
-      "home_team": "West Virginia Mountaineers",
-      "away_team": "Oklahoma Sooners",
-      "side": "away",
-      "odds": -178,
-      "model_prob": 0.9394065778300471,
-      "implied_prob": 0.6402877697841727,
-      "edge": 0.29911880804587443,
-      "kelly_full": 0.5324314783216565,
-      "kelly_applied": 0.1,
-      "bet_size_dollars": 1000,
-      "market": "away_ml"
-    }
-  ]
+  "picks": [],
+  "note": "No bets passed odds-aware filtering"
 }
