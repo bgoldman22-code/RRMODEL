@@ -21,6 +21,13 @@
     "data/mlb_v3/artifacts/train_medians.json",
   ]
 
+# 🏀 NBA — extend timeout to 26s (default 10s too short for 15-game slate)
+[functions."nba-predictions-elite-v2-1"]
+  timeout = 26
+
+[functions."nba-predictions-elite-v2"]
+  timeout = 26
+
 [build.environment]
   NODE_VERSION = "20"
   NETLIFY_USE_YARN = "false"
