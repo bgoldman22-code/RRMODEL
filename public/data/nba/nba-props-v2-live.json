@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-11T19:45:12.160Z",
+  "generated_at": "2026-04-12T12:22:16.408Z",
   "model_version": "nba_phase3.5_mixed_logistic_lgbm_v1_20251125",
   "source": "Phase 3.5: Logistic PRA + LightGBM per-market",
   "filters": {
@@ -7,12 +7,85 @@
     "points_prob_min": 0.57,
     "rebounds_prob_min": 0.535
   },
-  "picks": [],
+  "picks": [
+    {
+      "player": "Tari Eason",
+      "team": "Houston Rockets",
+      "opponent": "Memphis Grizzlies",
+      "propType": "points",
+      "prediction": 0.5703727335731295,
+      "modelProbability": 0.5703727335731295,
+      "vegasLine": 14.5,
+      "betSide": "OVER",
+      "edge": 5.817761162190993,
+      "confidence": 57,
+      "odds": -105,
+      "book": "Fanatics",
+      "game": "Memphis Grizzlies @ Houston Rockets",
+      "gameTime": "2026-04-13T00:40:00Z",
+      "model": "points_lightgbm",
+      "threshold": 0.57,
+      "kellyStake": 6,
+      "kellyFraction": 0.11926410382491537,
+      "modelVersion": "points_v1",
+      "hitRates": {
+        "L5_hitRate": 40,
+        "L5_avg": 9,
+        "L5_games": 5,
+        "L10_hitRate": 50,
+        "L10_avg": 10.1,
+        "L10_games": 10,
+        "L20_hitRate": 25,
+        "L20_avg": 8.2,
+        "L20_games": 20
+      },
+      "L5_over_pct": 0.4,
+      "L10_over_pct": 0.5,
+      "L5_sample_size": 5,
+      "L10_sample_size": 10
+    },
+    {
+      "player": "Deandre Ayton",
+      "team": "Los Angeles Lakers",
+      "opponent": "Utah Jazz",
+      "propType": "rebounds",
+      "prediction": 0.6497395789291865,
+      "modelProbability": 0.6497395789291865,
+      "vegasLine": 8.5,
+      "betSide": "OVER",
+      "edge": 6.6406245595853175,
+      "confidence": 65,
+      "odds": -140,
+      "book": "Fanatics",
+      "game": "Utah Jazz @ Los Angeles Lakers",
+      "gameTime": "2026-04-13T00:40:00Z",
+      "model": "rebounds_lightgbm",
+      "threshold": 0.535,
+      "kellyStake": 6,
+      "kellyFraction": 0.1593749894300478,
+      "modelVersion": "rebounds_v2",
+      "hitRates": {
+        "L5_hitRate": 0,
+        "L5_avg": 3.6,
+        "L5_games": 5,
+        "L10_hitRate": 30,
+        "L10_avg": 6.3,
+        "L10_games": 10,
+        "L20_hitRate": 35,
+        "L20_avg": 6.8,
+        "L20_games": 20
+      },
+      "L5_over_pct": 0,
+      "L10_over_pct": 0.3,
+      "L5_sample_size": 5,
+      "L10_sample_size": 10
+    }
+  ],
   "stats": {
-    "total_picks": 0,
+    "total_picks": 2,
     "by_market": {
-      "points": 0,
-      "rebounds": 0,
+      "points": 1,
+      "rebounds": 1,
       "assists": 0
     },
     "errors": 0
