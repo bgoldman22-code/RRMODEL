@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-04-13T22:20:24.490617+00:00",
+  "generated_at": "2026-04-14T10:35:52.915361+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -23,19 +23,19 @@
         "away_season_avg_goals_against": 1.7647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.88,
-        "btts_no": 1.97,
+        "btts_yes": 1.87,
+        "btts_no": 1.98,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.5116883116883117,
-      "edge": -0.001817036977347919,
+      "market_probability": 0.5142857142857141,
+      "edge": -0.004414439574750295,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-0.2%, need 5%)"
+        "min_edge (edge=-0.4%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -48,7 +48,7 @@
       "away_team": "Augsburg",
       "commence_time": "2026-04-18T13:30:00Z",
       "model_probability": 0.7222946207780088,
-      "dixon_coles_prob": 0.7027918114774401,
+      "dixon_coles_prob": 0.7027918114774402,
       "xgboost_prob": 0.728,
       "expected_home_goals": 5.5258545903782395,
       "expected_away_goals": 1.222222222222222,
@@ -123,7 +123,7 @@
       "model_probability": 0.4985624889664688,
       "dixon_coles_prob": 0.5688516468742104,
       "xgboost_prob": 0.478,
-      "expected_home_goals": 2.210341836151295,
+      "expected_home_goals": 2.2103418361512954,
       "expected_away_goals": 1.0,
       "key_features": {
         "combined_form_btts_rate": 0.65,
@@ -157,8 +157,8 @@
       "home_team": "Union Berlin",
       "away_team": "VfL Wolfsburg",
       "commence_time": "2026-04-18T13:30:00Z",
-      "model_probability": 0.5113197701353778,
-      "dixon_coles_prob": 0.625217391591338,
+      "model_probability": 0.5113197701353779,
+      "dixon_coles_prob": 0.6252173915913382,
       "xgboost_prob": 0.4779999999999999,
       "expected_home_goals": 1.3814636475945596,
       "expected_away_goals": 1.75,
@@ -175,7 +175,7 @@
         "bookmaker": "pinnacle"
       },
       "market_probability": 0.5501285347043702,
-      "edge": -0.038808764568992404,
+      "edge": -0.03880876456899229,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
@@ -198,7 +198,7 @@
       "dixon_coles_prob": 0.7267998060832342,
       "xgboost_prob": 0.7000000000000001,
       "expected_home_goals": 1.3262051016907772,
-      "expected_away_goals": 4.5,
+      "expected_away_goals": 4.500000000000001,
       "key_features": {
         "combined_form_btts_rate": 1.0,
         "home_form_btts_rate": 1.0,
@@ -308,7 +308,7 @@
       "dixon_coles_prob": 0.2993324575137704,
       "xgboost_prob": 0.648,
       "expected_home_goals": 0.9472893583505552,
-      "expected_away_goals": 0.5714285714285714,
+      "expected_away_goals": 0.5714285714285713,
       "key_features": {
         "combined_form_btts_rate": 0.7,
         "home_form_btts_rate": 0.6,
@@ -565,7 +565,7 @@
       "model_probability": 0.6169825607780507,
       "dixon_coles_prob": 0.8186038010419097,
       "xgboost_prob": 0.558,
-      "expected_home_goals": 2.210341836151295,
+      "expected_home_goals": 2.2103418361512954,
       "expected_away_goals": 2.5,
       "key_features": {
         "combined_form_btts_rate": 0.65,
@@ -600,10 +600,10 @@
       "away_team": "Werder Bremen",
       "commence_time": "2026-04-26T13:30:00Z",
       "model_probability": 0.7681542050782786,
-      "dixon_coles_prob": 0.905414109071878,
+      "dixon_coles_prob": 0.9054141090718779,
       "xgboost_prob": 0.728,
       "expected_home_goals": 3.3155127542269436,
-      "expected_away_goals": 2.8,
+      "expected_away_goals": 2.7999999999999994,
       "key_features": {
         "combined_form_btts_rate": 0.7,
         "home_form_btts_rate": 0.6,
@@ -674,7 +674,7 @@
       "away_team": "Augsburg",
       "commence_time": "2026-04-18T13:30:00Z",
       "model_probability": 0.7222946207780088,
-      "dixon_coles_prob": 0.7027918114774401,
+      "dixon_coles_prob": 0.7027918114774402,
       "xgboost_prob": 0.728,
       "expected_home_goals": 5.5258545903782395,
       "expected_away_goals": 1.222222222222222,
@@ -782,10 +782,10 @@
       "away_team": "Werder Bremen",
       "commence_time": "2026-04-26T13:30:00Z",
       "model_probability": 0.7681542050782786,
-      "dixon_coles_prob": 0.905414109071878,
+      "dixon_coles_prob": 0.9054141090718779,
       "xgboost_prob": 0.728,
       "expected_home_goals": 3.3155127542269436,
-      "expected_away_goals": 2.8,
+      "expected_away_goals": 2.7999999999999994,
       "key_features": {
         "combined_form_btts_rate": 0.7,
         "home_form_btts_rate": 0.6,
