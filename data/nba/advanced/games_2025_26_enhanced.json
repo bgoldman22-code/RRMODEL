@@ -2,45 +2,205 @@
   {
     "gameId": "401866755",
     "date": "2026-04-14T23:30Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "30",
       "name": "Charlotte Hornets",
       "abbreviation": "CHA",
-      "score": "0",
+      "score": "127",
       "record": "44-38"
     },
     "awayTeam": {
       "id": "14",
       "name": "Miami Heat",
       "abbreviation": "MIA",
-      "score": "0",
+      "score": "126",
       "record": "43-39"
     },
     "venue": "Spectrum Center",
-    "attendance": 0,
+    "attendance": 19698,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 54,
+      "offRebounds": 17,
+      "defRebounds": 37,
+      "assists": 26,
+      "steals": 4,
+      "blocks": 7,
+      "turnovers": 6,
+      "fouls": 21
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 48,
+      "offRebounds": 12,
+      "defRebounds": 36,
+      "assists": 32,
+      "steals": 4,
+      "blocks": 8,
+      "turnovers": 7,
+      "fouls": 9
+    },
     "highAltitude": false,
-    "altitudeAdjustment": 0
+    "altitudeAdjustment": 0,
+    "gamePace": -8,
+    "homePossessions": -8,
+    "awayPossessions": -8,
+    "homeAdvanced": {
+      "pace": -8,
+      "offRtg": null,
+      "defRtg": null,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 32.075471698113205,
+      "ftFga": null
+    },
+    "awayAdvanced": {
+      "pace": -8,
+      "offRtg": null,
+      "defRtg": null,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 24.489795918367346,
+      "ftFga": null
+    }
   },
   {
     "gameId": "401866754",
     "date": "2026-04-15T02:00Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "21",
       "name": "Phoenix Suns",
       "abbreviation": "PHX",
-      "score": "0",
+      "score": "110",
       "record": "45-37"
     },
     "awayTeam": {
       "id": "22",
       "name": "Portland Trail Blazers",
       "abbreviation": "POR",
-      "score": "0",
+      "score": "114",
       "record": "42-40"
     },
     "venue": "Mortgage Matchup Center",
+    "attendance": 17071,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 38,
+      "offRebounds": 9,
+      "defRebounds": 29,
+      "assists": 20,
+      "steals": 12,
+      "blocks": 6,
+      "turnovers": 13,
+      "fouls": 24
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 42,
+      "offRebounds": 13,
+      "defRebounds": 29,
+      "assists": 27,
+      "steals": 9,
+      "blocks": 10,
+      "turnovers": 15,
+      "fouls": 27
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0,
+    "gamePace": 3,
+    "homePossessions": 3,
+    "awayPossessions": 3,
+    "homeAdvanced": {
+      "pace": 3,
+      "offRtg": 0,
+      "defRtg": 0,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 23.684210526315788,
+      "ftFga": null
+    },
+    "awayAdvanced": {
+      "pace": 3,
+      "offRtg": 0,
+      "defRtg": 0,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 30.952380952380953,
+      "ftFga": null
+    }
+  },
+  {
+    "gameId": "401866757",
+    "date": "2026-04-15T23:30Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "20",
+      "name": "Philadelphia 76ers",
+      "abbreviation": "PHI",
+      "score": "0",
+      "record": "45-37"
+    },
+    "awayTeam": {
+      "id": "19",
+      "name": "Orlando Magic",
+      "abbreviation": "ORL",
+      "score": "0",
+      "record": "45-37"
+    },
+    "venue": "Xfinity Mobile Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0
+  },
+  {
+    "gameId": "401866756",
+    "date": "2026-04-16T02:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "12",
+      "name": "LA Clippers",
+      "abbreviation": "LAC",
+      "score": "0",
+      "record": "42-40"
+    },
+    "awayTeam": {
+      "id": "9",
+      "name": "Golden State Warriors",
+      "abbreviation": "GS",
+      "score": "0",
+      "record": "37-45"
+    },
+    "venue": "Intuit Dome",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0
