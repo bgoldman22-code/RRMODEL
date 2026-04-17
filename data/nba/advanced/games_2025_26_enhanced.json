@@ -1,162 +1,48 @@
 [
   {
-    "gameId": "401866757",
-    "date": "2026-04-15T23:30Z",
-    "status": "STATUS_FINAL",
+    "gameId": "401866758",
+    "date": "2026-04-17T23:30Z",
+    "status": "STATUS_SCHEDULED",
     "homeTeam": {
-      "id": "20",
-      "name": "Philadelphia 76ers",
-      "abbreviation": "PHI",
-      "score": "109",
-      "record": "45-37"
-    },
-    "awayTeam": {
       "id": "19",
       "name": "Orlando Magic",
       "abbreviation": "ORL",
-      "score": "97",
+      "score": "0",
       "record": "45-37"
     },
-    "venue": "Xfinity Mobile Arena",
-    "attendance": 19746,
-    "homeStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 40,
-      "offRebounds": 7,
-      "defRebounds": 33,
-      "assists": 17,
-      "steals": 8,
-      "blocks": 9,
-      "turnovers": 11,
-      "fouls": 27
+    "awayTeam": {
+      "id": "30",
+      "name": "Charlotte Hornets",
+      "abbreviation": "CHA",
+      "score": "0",
+      "record": "44-38"
     },
-    "awayStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 41,
-      "offRebounds": 9,
-      "defRebounds": 32,
-      "assists": 19,
-      "steals": 5,
-      "blocks": 4,
-      "turnovers": 14,
-      "fouls": 21
-    },
+    "venue": "Kia Center",
+    "attendance": 0,
     "highAltitude": false,
-    "altitudeAdjustment": 0,
-    "gamePace": 4.5,
-    "homePossessions": 4.5,
-    "awayPossessions": 4.5,
-    "homeAdvanced": {
-      "pace": 4.5,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 17.94871794871795,
-      "ftFga": null
-    },
-    "awayAdvanced": {
-      "pace": 4.5,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 21.428571428571427,
-      "ftFga": null
-    }
+    "altitudeAdjustment": 0
   },
   {
-    "gameId": "401866756",
-    "date": "2026-04-16T02:00Z",
-    "status": "STATUS_FINAL",
+    "gameId": "401866759",
+    "date": "2026-04-18T02:00Z",
+    "status": "STATUS_SCHEDULED",
     "homeTeam": {
-      "id": "12",
-      "name": "LA Clippers",
-      "abbreviation": "LAC",
-      "score": "121",
-      "record": "42-40"
+      "id": "21",
+      "name": "Phoenix Suns",
+      "abbreviation": "PHX",
+      "score": "0",
+      "record": "45-37"
     },
     "awayTeam": {
       "id": "9",
       "name": "Golden State Warriors",
       "abbreviation": "GS",
-      "score": "126",
+      "score": "0",
       "record": "37-45"
     },
-    "venue": "Intuit Dome",
-    "attendance": 17927,
-    "homeStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 36,
-      "offRebounds": 9,
-      "defRebounds": 27,
-      "assists": 30,
-      "steals": 15,
-      "blocks": 3,
-      "turnovers": 17,
-      "fouls": 23
-    },
-    "awayStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 36,
-      "offRebounds": 10,
-      "defRebounds": 26,
-      "assists": 29,
-      "steals": 12,
-      "blocks": 3,
-      "turnovers": 20,
-      "fouls": 19
-    },
+    "venue": "Mortgage Matchup Center",
+    "attendance": 0,
     "highAltitude": false,
-    "altitudeAdjustment": 0,
-    "gamePace": 9,
-    "homePossessions": 9,
-    "awayPossessions": 9,
-    "homeAdvanced": {
-      "pace": 9,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 25.71428571428571,
-      "ftFga": null
-    },
-    "awayAdvanced": {
-      "pace": 9,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 27.027027027027028,
-      "ftFga": null
-    }
+    "altitudeAdjustment": 0
   }
 ]
