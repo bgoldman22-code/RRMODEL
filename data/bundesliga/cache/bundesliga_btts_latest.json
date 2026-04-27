@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-04-26T22:15:18.372415+00:00",
+  "generated_at": "2026-04-27T10:45:38.206417+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -96,13 +96,13 @@
         "away_season_avg_goals_against": 1.7647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.54,
-        "btts_no": 2.35,
-        "bookmaker": "onexbet"
+        "btts_yes": 1.56,
+        "btts_no": 2.5,
+        "bookmaker": "pinnacle"
       },
-      "market_probability": 0.6041131105398457,
-      "edge": 0.06416051113267263,
-      "expected_value": 0.041662669566670536,
+      "market_probability": 0.6157635467980296,
+      "edge": 0.05251007487448878,
+      "expected_value": 0.033660304406723573,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -111,7 +111,7 @@
       "gates_failed": [],
       "bet_decision": {
         "should_bet": true,
-        "recommended_stake_pct": 2.9703940339200288,
+        "recommended_stake_pct": 2.3441997711825344,
         "confidence": "LOW"
       }
     },
@@ -169,19 +169,19 @@
         "away_season_avg_goals_against": 1.1470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.37,
-        "btts_no": 3.26,
+        "btts_yes": 1.38,
+        "btts_no": 3.2,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.7041036717062635,
-      "edge": -0.00028084760034852163,
+      "market_probability": 0.6986899563318778,
+      "edge": 0.005132867774037209,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap"
       ],
       "gates_failed": [
-        "min_edge (edge=-0.0%, need 5%)",
-        "min_odds (odds=1.37, min 1.40)"
+        "min_edge (edge=0.5%, need 5%)",
+        "min_odds (odds=1.38, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -280,19 +280,19 @@
         "away_season_avg_goals_against": 1.2647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.53,
-        "btts_no": 2.37,
-        "bookmaker": "onexbet"
+        "btts_yes": 1.54,
+        "btts_no": 2.53,
+        "bookmaker": "pinnacle"
       },
-      "market_probability": 0.6076923076923076,
-      "edge": -0.11915778533813748,
+      "market_probability": 0.6216216216216216,
+      "edge": -0.13308709926745144,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-11.9%, need 5%)"
+        "min_edge (edge=-13.3%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -317,19 +317,19 @@
         "away_season_avg_goals_against": 1.6470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.53,
-        "btts_no": 2.55,
+        "btts_yes": 1.55,
+        "btts_no": 2.51,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.625,
-      "edge": -0.022387216270743915,
+      "market_probability": 0.6182266009852216,
+      "edge": -0.015613817255965556,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-2.2%, need 5%)"
+        "min_edge (edge=-1.6%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -723,13 +723,13 @@
         "away_season_avg_goals_against": 1.7647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.54,
-        "btts_no": 2.35,
-        "bookmaker": "onexbet"
+        "btts_yes": 1.56,
+        "btts_no": 2.5,
+        "bookmaker": "pinnacle"
       },
-      "market_probability": 0.6041131105398457,
-      "edge": 0.06416051113267263,
-      "expected_value": 0.041662669566670536,
+      "market_probability": 0.6157635467980296,
+      "edge": 0.05251007487448878,
+      "expected_value": 0.033660304406723573,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -738,7 +738,7 @@
       "gates_failed": [],
       "bet_decision": {
         "should_bet": true,
-        "recommended_stake_pct": 2.9703940339200288,
+        "recommended_stake_pct": 2.3441997711825344,
         "confidence": "LOW"
       }
     },
