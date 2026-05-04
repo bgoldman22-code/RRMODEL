@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-05-03T22:18:08.062183+00:00",
+  "generated_at": "2026-05-04T10:46:37.457620+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 9,
@@ -11,9 +11,9 @@
       "away_team": "Eintracht Frankfurt",
       "commence_time": "2026-05-08T18:30:00Z",
       "model_probability": 0.610498239345276,
-      "dixon_coles_prob": 0.3045526216751832,
+      "dixon_coles_prob": 0.3045526216751833,
       "xgboost_prob": 0.7000000000000001,
-      "expected_home_goals": 2.210341836151295,
+      "expected_home_goals": 2.2103418361512954,
       "expected_away_goals": 0.4,
       "key_features": {
         "combined_form_btts_rate": 0.8,
@@ -61,18 +61,18 @@
       },
       "market_odds": {
         "btts_yes": 1.54,
-        "btts_no": 2.58,
+        "btts_no": 2.56,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.6262135922330097,
-      "edge": -0.06828433890522845,
+      "market_probability": 0.624390243902439,
+      "edge": -0.06646099057465782,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-6.8%, need 5%)"
+        "min_edge (edge=-6.6%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -85,9 +85,9 @@
       "away_team": "Bayer Leverkusen",
       "commence_time": "2026-05-09T13:30:00Z",
       "model_probability": 0.6813141885709508,
-      "dixon_coles_prob": 0.877232399512583,
+      "dixon_coles_prob": 0.8772323995125831,
       "xgboost_prob": 0.624,
-      "expected_home_goals": 2.2103418361512954,
+      "expected_home_goals": 2.210341836151296,
       "expected_away_goals": 4.2,
       "key_features": {
         "combined_form_btts_rate": 0.7,
@@ -134,13 +134,13 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.79,
-        "btts_no": 2.08,
+        "btts_yes": 1.83,
+        "btts_no": 2.04,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.537467700258398,
-      "edge": 0.11487111945143802,
-      "expected_value": 0.06417380974940672,
+      "market_probability": 0.5271317829457364,
+      "edge": 0.1252070367640996,
+      "expected_value": 0.06841914577273203,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -194,7 +194,7 @@
       "away_team": "Bayern Munich",
       "commence_time": "2026-05-09T16:30:00Z",
       "model_probability": 0.5659660707393654,
-      "dixon_coles_prob": 0.81880573594198,
+      "dixon_coles_prob": 0.8188057359419801,
       "xgboost_prob": 0.492,
       "expected_home_goals": 1.9340491066323833,
       "expected_away_goals": 3.125,
@@ -280,19 +280,19 @@
         "away_season_avg_goals_against": 1.6176470588235294
       },
       "market_odds": {
-        "btts_yes": 1.54,
-        "btts_no": 2.53,
+        "btts_yes": 1.51,
+        "btts_no": 2.64,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.6216216216216216,
-      "edge": -0.03902540387824638,
+      "market_probability": 0.6361445783132531,
+      "edge": -0.053548360569877884,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-3.9%, need 5%)"
+        "min_edge (edge=-5.4%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -305,7 +305,7 @@
       "away_team": "Union Berlin",
       "commence_time": "2026-05-10T17:30:00Z",
       "model_probability": 0.4737094591957994,
-      "dixon_coles_prob": 0.4590430197103924,
+      "dixon_coles_prob": 0.4590430197103923,
       "xgboost_prob": 0.478,
       "expected_home_goals": 0.947289358350555,
       "expected_away_goals": 1.2857142857142858,
@@ -317,19 +317,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.7,
-        "btts_no": 2.05,
-        "bookmaker": "onexbet"
+        "btts_yes": 1.74,
+        "btts_no": 2.13,
+        "bookmaker": "pinnacle"
       },
-      "market_probability": 0.5466666666666666,
-      "edge": -0.07295720747086726,
+      "market_probability": 0.5503875968992248,
+      "edge": -0.07667813770342541,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-7.3%, need 5%)"
+        "min_edge (edge=-7.7%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -356,13 +356,13 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.79,
-        "btts_no": 2.08,
+        "btts_yes": 1.83,
+        "btts_no": 2.04,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.537467700258398,
-      "edge": 0.11487111945143802,
-      "expected_value": 0.06417380974940672,
+      "market_probability": 0.5271317829457364,
+      "edge": 0.1252070367640996,
+      "expected_value": 0.06841914577273203,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
