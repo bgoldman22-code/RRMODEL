@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-05-05T10:39:32.247974+00:00",
+  "generated_at": "2026-05-05T22:24:13.715704+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 9,
@@ -24,18 +24,18 @@
       },
       "market_odds": {
         "btts_yes": 1.49,
-        "btts_no": 2.73,
+        "btts_no": 2.71,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.6469194312796209,
-      "edge": -0.0364211919343449,
+      "market_probability": 0.6452380952380953,
+      "edge": -0.03473985589281925,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-3.6%, need 5%)"
+        "min_edge (edge=-3.5%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -97,19 +97,19 @@
         "away_season_avg_goals_against": 0.7058823529411765
       },
       "market_odds": {
-        "btts_yes": 1.35,
-        "btts_no": 3.38,
+        "btts_yes": 1.33,
+        "btts_no": 3.46,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.7145877378435518,
-      "edge": -0.033273549272600955,
+      "market_probability": 0.7223382045929019,
+      "edge": -0.04102401602195105,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap"
       ],
       "gates_failed": [
-        "min_edge (edge=-3.3%, need 5%)",
-        "min_odds (odds=1.35, min 1.40)"
+        "min_edge (edge=-4.1%, need 5%)",
+        "min_odds (odds=1.33, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
