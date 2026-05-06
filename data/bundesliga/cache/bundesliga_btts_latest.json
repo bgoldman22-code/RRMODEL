@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-05-06T10:47:49.191120+00:00",
+  "generated_at": "2026-05-06T22:21:06.720035+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 9,
@@ -97,19 +97,19 @@
         "away_season_avg_goals_against": 0.7058823529411765
       },
       "market_odds": {
-        "btts_yes": 1.35,
-        "btts_no": 3.38,
+        "btts_yes": 1.34,
+        "btts_no": 3.44,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.7145877378435518,
-      "edge": -0.033273549272600955,
+      "market_probability": 0.7196652719665271,
+      "edge": -0.038351083395576246,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap"
       ],
       "gates_failed": [
-        "min_edge (edge=-3.3%, need 5%)",
-        "min_odds (odds=1.35, min 1.40)"
+        "min_edge (edge=-3.8%, need 5%)",
+        "min_odds (odds=1.34, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -206,19 +206,19 @@
         "away_season_avg_goals_against": 1.3235294117647058
       },
       "market_odds": {
-        "btts_yes": 1.35,
-        "btts_no": 3.24,
+        "btts_yes": 1.34,
+        "btts_no": 3.26,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.7058823529411764,
-      "edge": -0.13991628220181096,
+      "market_probability": 0.7086956521739131,
+      "edge": -0.14272958143454761,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap"
       ],
       "gates_failed": [
-        "min_edge (edge=-14.0%, need 5%)",
-        "min_odds (odds=1.35, min 1.40)"
+        "min_edge (edge=-14.3%, need 5%)",
+        "min_odds (odds=1.34, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -280,19 +280,19 @@
         "away_season_avg_goals_against": 1.6176470588235294
       },
       "market_odds": {
-        "btts_yes": 1.49,
-        "btts_no": 2.73,
+        "btts_yes": 1.48,
+        "btts_no": 2.75,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.6469194312796209,
-      "edge": -0.0643232135362457,
+      "market_probability": 0.6501182033096927,
+      "edge": -0.0675219855663175,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-6.4%, need 5%)"
+        "min_edge (edge=-6.8%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
