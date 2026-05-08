@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-05-07T22:27:40.600340+00:00",
+  "generated_at": "2026-05-08T10:39:09.231407+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 9,
@@ -11,9 +11,9 @@
       "away_team": "Eintracht Frankfurt",
       "commence_time": "2026-05-08T18:30:00Z",
       "model_probability": 0.610498239345276,
-      "dixon_coles_prob": 0.3045526216751833,
+      "dixon_coles_prob": 0.3045526216751832,
       "xgboost_prob": 0.7000000000000001,
-      "expected_home_goals": 2.2103418361512954,
+      "expected_home_goals": 2.210341836151295,
       "expected_away_goals": 0.4,
       "key_features": {
         "combined_form_btts_rate": 0.8,
@@ -23,19 +23,19 @@
         "away_season_avg_goals_against": 1.4705882352941178
       },
       "market_odds": {
-        "btts_yes": 1.49,
-        "btts_no": 2.71,
+        "btts_yes": 1.47,
+        "btts_no": 2.83,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.6452380952380953,
-      "edge": -0.03473985589281925,
+      "market_probability": 0.6581395348837209,
+      "edge": -0.04764129553844487,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-3.5%, need 5%)"
+        "min_edge (edge=-4.8%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -85,9 +85,9 @@
       "away_team": "Bayer Leverkusen",
       "commence_time": "2026-05-09T13:30:00Z",
       "model_probability": 0.6813141885709508,
-      "dixon_coles_prob": 0.8772323995125831,
+      "dixon_coles_prob": 0.877232399512583,
       "xgboost_prob": 0.624,
-      "expected_home_goals": 2.210341836151296,
+      "expected_home_goals": 2.2103418361512954,
       "expected_away_goals": 4.2,
       "key_features": {
         "combined_form_btts_rate": 0.7,
@@ -97,19 +97,19 @@
         "away_season_avg_goals_against": 0.7058823529411765
       },
       "market_odds": {
-        "btts_yes": 1.34,
-        "btts_no": 3.44,
+        "btts_yes": 1.33,
+        "btts_no": 3.47,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.7196652719665271,
-      "edge": -0.038351083395576246,
+      "market_probability": 0.7229166666666667,
+      "edge": -0.04160247809571582,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap"
       ],
       "gates_failed": [
-        "min_edge (edge=-3.8%, need 5%)",
-        "min_odds (odds=1.34, min 1.40)"
+        "min_edge (edge=-4.2%, need 5%)",
+        "min_odds (odds=1.33, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -194,7 +194,7 @@
       "away_team": "Bayern Munich",
       "commence_time": "2026-05-09T16:30:00Z",
       "model_probability": 0.5659660707393654,
-      "dixon_coles_prob": 0.8188057359419801,
+      "dixon_coles_prob": 0.81880573594198,
       "xgboost_prob": 0.492,
       "expected_home_goals": 1.9340491066323833,
       "expected_away_goals": 3.125,
@@ -206,19 +206,19 @@
         "away_season_avg_goals_against": 1.3235294117647058
       },
       "market_odds": {
-        "btts_yes": 1.33,
-        "btts_no": 3.31,
+        "btts_yes": 1.34,
+        "btts_no": 3.33,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.7133620689655172,
-      "edge": -0.1473959982261518,
+      "market_probability": 0.7130620985010707,
+      "edge": -0.14709602776170527,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap"
       ],
       "gates_failed": [
         "min_edge (edge=-14.7%, need 5%)",
-        "min_odds (odds=1.33, min 1.40)"
+        "min_odds (odds=1.34, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -243,19 +243,19 @@
         "away_season_avg_goals_against": 1.7058823529411764
       },
       "market_odds": {
-        "btts_yes": 1.61,
-        "btts_no": 2.4,
+        "btts_yes": 1.6,
+        "btts_no": 2.42,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.5985037406483791,
-      "edge": -0.04840164638757061,
+      "market_probability": 0.6019900497512438,
+      "edge": -0.051887955490435345,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-4.8%, need 5%)"
+        "min_edge (edge=-5.2%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -305,7 +305,7 @@
       "away_team": "Union Berlin",
       "commence_time": "2026-05-10T17:30:00Z",
       "model_probability": 0.4737094591957994,
-      "dixon_coles_prob": 0.4590430197103923,
+      "dixon_coles_prob": 0.4590430197103924,
       "xgboost_prob": 0.478,
       "expected_home_goals": 0.947289358350555,
       "expected_away_goals": 1.2857142857142858,
